@@ -31,7 +31,10 @@ This script understands various command-line arguments:
     -backlink: check for references between the foreign pages as well, list 
               all those that are missing as WARNINGs.
     -log: log to the file treelang.log as well as printing to the screen.
-    
+     -lang: specifies the language the bot is run on (e.g. -lang:de).
+           Overwrites the settings in username.dat
+	
+
      All other arguments are words that make up the page name.
 """
 #
@@ -325,6 +328,8 @@ for arg in sys.argv[1:]:
         bell = 0
     elif arg=='-log':
         log = 1
+    elif arg.startswith('-lang:'):
+        mylang = arg[6:]
     else:
         inname.append(arg)
 
@@ -451,6 +456,8 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:", pl.asselflink(), "links to incorrect", xpl.aslink()
+
+
 
 
 
