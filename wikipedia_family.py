@@ -15,7 +15,7 @@ langs = {
     'bn':'bn.wikipedia.org',   # Bengali
     'bs':'bs.wikipedia.org',   # Bosnian
     'ca':'ca.wikipedia.org',   # Catalan
-    'chr':'chr.wikipedia.org'  # Cherokee
+    'chr':'chr.wikipedia.org', # Cherokee
     'co':'co.wikipedia.org',   # Corsican
     'cs':'cs.wikipedia.org',   # Czech
     'csb':'csb.wikipedia.org', # Kashubian
@@ -74,7 +74,7 @@ langs = {
     'pl':'pl.wikipedia.org',   # Polish
     'pt':'pt.wikipedia.org',   # Portuguese
     'ro':'ro.wikipedia.org',   # Romanian
-    'roa-rup':'roa-rup.wikipedia.org' # Aromanian
+    'roa-rup':'roa-rup.wikipedia.org', # Aromanian
     'ru':'ru.wikipedia.org',   # Russian
     'sa':'sa.wikipedia.org',   # Sanskrit
     'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
@@ -107,7 +107,7 @@ langs = {
     'yo':'yo.wikipedia.org',   # Yoruba
     'za':'za.wikipedia.org',   # Zhuang
     'zh':'zh.wikipedia.org',   # Chinese
-    'zh-cfr':'zh-cfr.wikipedia.org' # Min-Nan
+    'zh-cfr':'zh-cfr.wikipedia.org', # Min-Nan
     'zh-cn':'zh.wikipedia.org', # Simplified Chinese
     'zh-tw':'zh.wikipedia.org', # Traditional Chinese
     }
