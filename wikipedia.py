@@ -26,7 +26,7 @@ langs = {
     'af':'af.wikipedia.org',   # Afrikaans
     'ar':'ar.wikipedia.org',   # Arabic, UTF-8
     'bs':'bs.wikipedia.org',   # Bosnian, UTF-8
-    'ca':'ca.wikipedia.org',   # Catalan
+    'ca':'ca.wikipedia.org',   # Catalan, UTF-8
     'cs':'cs.wikipedia.org',   # Czech, UTF-8
     'cy':'cy.wikipedia.org',   # Welsh, UTF-8
     'da':'da.wikipedia.org',   # Danish
@@ -60,7 +60,7 @@ langs = {
     'nah':'nah.wikipedia.org', # Nahuatl (UTF-8?)
     'nds':'nds.wikipedia.org', # Lower Saxon
     'nl':'nl.wikipedia.org',   # Dutch
-    'no':'no.wikipedia.org',   # Norwegian
+    'no':'no.wikipedia.org',   # Norwegian, UTF-8
     'oc':'oc.wikipedia.org',   # Occitan, UTF-8
     'pl':'pl.wikipedia.org',   # Polish, UTF-8
     'pt':'pt.wikipedia.org',   # Portuguese
@@ -85,12 +85,12 @@ langs = {
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'no', 'pt', 'af', 'la', 'ia', 'et', 'eu',
+          'pt', 'af', 'la', 'ia', 'et', 'eu',
           'mr', 'id', 'simple', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it']
+latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
