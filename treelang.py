@@ -1,3 +1,4 @@
+#coding: iso-8859-1
 # Script to check language links for general pages
 #
 # $Id$
@@ -8,7 +9,7 @@
 import sys,copy,wikipedia,re
 
 # language to check for missing links and modify
-mylang = 'nl'
+mylang = wikipedia.mylang
 
 # Summary used in the modification request
 wikipedia.setAction('%s: semi-automatic interwiki script'%wikipedia.username)
@@ -36,6 +37,16 @@ yearADfmt={'ja':'%d&#24180;'} # Others default to '%d'
 
 yearBCfmt={'de':'%d v. Chr.','en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
            'es':'%d adC','eo':'-%d'} # No default
+
+msg={
+    'en':('Adding','Removing','Modifying'),
+    'nl':('Erbij','Eraf','Anders'),
+    'da':('Tilføjer', 'Fjerner','Ændrer'),
+    }
+if msg.has_key(mylang):
+    msglang=mylang
+else:
+    msglang='en'
 
 def autonomous_problem(pl,reason=''):
     if autonomous:
@@ -126,11 +137,11 @@ def compareLanguages(old,new):
             adding.append(code2)
     s=""
     if adding:
-        s=s+" Adding:"+",".join(adding)
+        s=s+" %s:"%(msg[msglang][0])+",".join(adding)
     if removing:
-        s=s+" Removing:"+",".join(removing)
+        s=s+" %s:"%(msg[msglang][1])+",".join(removing)
     if modifying:
-        s=s+" Modifying:"+",".join(modifying)
+        s=s+" %s:"%(msg[msglang][2])+",".join(modifying)
     return s
 
 #===========
