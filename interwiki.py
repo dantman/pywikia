@@ -981,6 +981,8 @@ if __name__ == "__main__":
                     number = int(arg[8:])
                 elif arg.startswith('-array:'):
                     globalvar.minarraysize = int(arg[7:])
+                    if globalvar.minarraysize < globalvar.maxquerysize:
+                        globalvar.maxquerysize = globalvar.minarraysize
                 elif arg.startswith('-neverlink:'):
                     globalvar.neverlink += arg[11:].split(",")
                 elif arg.startswith('-showpage'):
@@ -1019,7 +1021,13 @@ if __name__ == "__main__":
             inpl = wikipedia.PageLink(wikipedia.getSite(), inname)
             sa.add(inpl, hints = hints)
 
-        sa.run()
+        try:
+            sa.run()
+        except KeyboardInterrupt:
+            sa.dump('interwiki.dump')
+        except:
+            sa.dump('interwiki.dump')
+            raise
 
     finally:
         wikipedia.stopme()
