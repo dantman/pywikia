@@ -35,10 +35,10 @@ myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
 
-deIndentTables = 1
-splitLongSentences = 1
+deIndentTables = 0
+splitLongSentences = 0
 
-DEBUG=1
+DEBUG=0
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
@@ -117,7 +117,7 @@ for arg in sys.argv[1:]:
 
         # OK, that's only theory but works most times.
         # Most browsers assume that <th> gets a new row and we do the same
-        newText = re.sub("([\r\n]+\|\ [\w\W]*?)([\r\n]+\!)", "\\1\r\n|-----\\2",
+        newText = re.sub("([\r\n]+\|\ [^\r\n]*?)([\r\n]+\!)", "\\1\r\n|-----\\2",
                          newText, 0)
 
         # most <th> come with '''title'''. Senseless in my eyes cuz
