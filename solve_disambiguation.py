@@ -162,13 +162,13 @@ ignore={
           'Wikipedia:Common words, searching for which is not possible'
       ),
     'da':('Wikipedia:Links til sider med flertydige titler'),
-    'fr':('Wikipédia:Liens aux pages d\'homonymie',
-          'Wikipédia:Homonymie',
-          'Wikipédia:Homonymie/Homonymes dynastiques',
-          'Wikipédia:Prise de décision, noms des membres de dynasties/liste des dynastiens',
+    'fr':('Wikipï¿½dia:Liens aux pages d\'homonymie',
+          'Wikipï¿½dia:Homonymie',
+          'Wikipï¿½dia:Homonymie/Homonymes dynastiques',
+          'Wikipï¿½dia:Prise de dï¿½cision, noms des membres de dynasties/liste des dynastiens',
           'Liste de toutes les combinaisons de deux lettres',
-          'STLs de [A-Z]AA à [A-Z]ZZ',
-          'Wikipédia:Pages sans interwiki,.',
+          'STLs de [A-Z]AA ï¿½ [A-Z]ZZ',
+          'Wikipï¿½dia:Pages sans interwiki,.',
           ),
     'de':(
           u'100 WÃ¶rter des 21. Jahrhunderts',
@@ -418,8 +418,7 @@ for wrd in (page_list):
                 if wikipedia.isInterwikiLink(m.group(1)):
                     continue
                 else:
-                    linkpl=wikipedia.PageLink(thispl.code(), m.group(1),
-                                              incode = refpl.code())
+                    linkpl=wikipedia.PageLink(thispl.code(), m.group(1))
                 # Check whether the link found is to thispl.
                 if linkpl != thispl:
                     continue
@@ -532,8 +531,7 @@ for wrd in (page_list):
                         print '\nUnknown option'
                         continue
                     new_page_title = alternatives[choice]
-                    reppl = wikipedia.PageLink(thispl.code(), new_page_title,
-                                               incode = refpl.code())
+                    reppl = wikipedia.PageLink(thispl.code(), new_page_title)
                     new_page_title = reppl.linkname()
                     # There is a function that uncapitalizes the link target's first letter
                     # if the link description starts with a small letter. This is useful on
