@@ -382,7 +382,7 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             # All done for this.
             # print "DBG> ",repr(self.title), self.timestamp, len(self.text)
             # Uncode the text
-            text = unescape(self.text)
+            text = self.text
             # Remove trailing newlines and spaces
             while text and text[-1] in '\n ':
                 text = text[:-1]
