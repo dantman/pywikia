@@ -36,10 +36,10 @@ fixedSites = ''
 notFixedSites = ''
 warnings = 0
 
-deIndentTables = 0
-splitLongSentences = 0
+deIndentTables = 1
+splitLongSentences = 1
 
-DEBUG=0
+DEBUG=1
 
 #be careful, some bad HTML-tables is still not recognized
 noControl = 0
@@ -61,18 +61,24 @@ for arg in sys.argv[1:]:
         
         newText = text
 
+        ##################
         # every open-tag gets a new line.
         newText = re.sub("(\<[tT]{1}[dDhH]{1}([^>]*?)\>[^<]*?)"
                          + "(\<\/[Tt]{1}[dDhH]{1}[^>]*?\>)",
-                         "\n\\1\\3", newText, 0)
-        newText = re.sub("(\<[tT]{1}[rR]{1}[^>]*?\>)",
-                         "\n\\1", newText, 0)
-        # bring every tag into one single line.
+                         "\r\n\\1\\3", newText, 0)
+        print newText
+        newText = re.sub("(\<[tT]{1}[rR]{1})",
+                         "\r\n\\1", newText, 0)
+
+        ##################
+        # bring every <tag> into one single line.
         num = 1
         while num != 0:
-            newText, num = re.subn("(\<[^>\n\r]+?)[\r\n]+(\>)",
-                                   "\\1 \\2", newText, 0)
+            newText, num = re.subn("(\<[^!]{1}[^>\n\r]*?)[\r\n]+",
+                                   "\\1 ", newText, 0)
+            warnings = warnings + num
 
+            
         ##################
         # the <table> tag
         newText = re.sub("<(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
@@ -86,7 +92,7 @@ for arg in sys.argv[1:]:
         # end </table>
         newText = re.sub("[\s]*<\/(TABLE|table)\>", "\r\n|}", newText, 0)
 
-
+        
         ##################
         # captions
         newText = re.sub("<caption ([\w\W]*?)>([\w\W]*?)<\/caption>",
