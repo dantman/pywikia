@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 
 import urllib
-import family
+import family,wikipedia
 
 # The wikimedia family that is known as Wikibooks
 
@@ -75,5 +75,5 @@ class Family(family.Family):
         return '/wsiwiki/index.php?title=%s&action=history&limit=%d' % (name, config.special_page_limit)
 
     def export_address(self, code):
-        return 'wsiwiki/index.php?title=%s:Export' % self.special_namespace_url(code)
+        return '/wsiwiki/index.php?title=%s:Export' % self.special_namespace_url(code)
 
