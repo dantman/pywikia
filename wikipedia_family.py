@@ -15,12 +15,13 @@ class Family(family.Family):
         'ab':'ab.wikipedia.org',   # Abkhazian
         'af':'af.wikipedia.org',   # Afrikaans
         'als':'als.wikipedia.org', # Alsatian
-        'am':'am.wikipedia.org',   # ???
+        'am':'am.wikipedia.org',   # Amharic
         'an':'an.wikipedia.org',   # Aragonese
         'ang':'ang.wikipedia.org', # Anglo-Saxon
         'ar':'ar.wikipedia.org',   # Arabic
         'as':'as.wikipedia.org',   # Assamese
         'ast':'ast.wikipedia.org', # Asturian
+        'av':'av.wikipedia.org',   # Avar
         'ay':'ay.wikipedia.org',   # Aymara
         'az':'az.wikipedia.org',   # Azerbaijan
         'ba':'ba.wikipedia.org',   # Bashkir
@@ -38,6 +39,7 @@ class Family(family.Family):
         'co':'co.wikipedia.org',   # Corsican
         'cs':'cs.wikipedia.org',   # Czech
         'csb':'csb.wikipedia.org', # Kashubian
+        'cv':'cv.wikipedia.org',   # Chuvash
         'cy':'cy.wikipedia.org',   # Welsh
         'da':'da.wikipedia.org',   # Danish
         'de':'de.wikipedia.org',   # German
@@ -66,6 +68,7 @@ class Family(family.Family):
         'he':'he.wikipedia.org',   # Hebrew
         'hi':'hi.wikipedia.org',   # Hindi
         'hr':'hr.wikipedia.org',   # Croatian
+        'ht':'ht.wikipedia.org',   # Haitian
         'hu':'hu.wikipedia.org',   # Hungarian
         'hy':'hy.wikipedia.org',   # Armenian
         'ia':'ia.wikipedia.org',   # Interlingua
@@ -135,6 +138,7 @@ class Family(family.Family):
         'ru':'ru.wikipedia.org',   # Russian
         'rw':'rw.wikipedia.org',   # Kinyarwanda
         'sa':'sa.wikipedia.org',   # Sanskrit
+        'sc':'sc.wikipedia.org',   # Sardinian
         'scn':'scn.wikipedia.org', # Sicilian
         'sd':'sd.wikipedia.org',   # Sindhi
         'se':'se.wikipedia.org',   # Saami
@@ -146,6 +150,7 @@ class Family(family.Family):
         'sl':'sl.wikipedia.org',   # Slovenian
         'sm':'sm.wikipedia.org',   # Samoan
         'sn':'sn.wikipedia.org',   # Shona
+        'so':'so.wikipedia.org',   # Somali
         'sq':'sq.wikipedia.org',   # Albanian
         'sr':'sr.wikipedia.org',   # Serbian
         'ss':'ss.wikipedia.org',   # Swati
@@ -169,11 +174,13 @@ class Family(family.Family):
         'tr':'tr.wikipedia.org',   # Turkish
         'ts':'ts.wikipedia.org',   # Tsonga
         'tt':'tt.wikipedia.org',   # Tatar
+        'tum':'tum.wikipedia.org', # Tumbuka
         'tw':'tw.wikipedia.org',   # Twi (variety of Akan)
         'ug':'ug.wikipedia.org',   # Uyghur
         'uk':'uk.wikipedia.org',   # Ukrainian
         'ur':'ur.wikipedia.org',   # Urdu
         'uz':'uz.wikipedia.org',   # Uzbek
+        've':'ve.wikipedia.org',   # Venda
         'vi':'vi.wikipedia.org',   # Vietnamese
         'vo':'vo.wikipedia.org',   # Volapuk
         'wa':'wa.wikipedia.org',   # Walon
@@ -246,7 +253,8 @@ class Family(family.Family):
                 'tlh':'none',
                 'zh-min-nan':'minnan',
                 'nb':'no',
-                'jp':'ja'}
+                'jp':'ja',
+                'test':'none'}
         
     # A few selected big languages for things that we do not want to loop over
     # all languages. This is only needed by the titletranslate.py module, so
@@ -267,8 +275,8 @@ class Family(family.Family):
     
     seriouslangs = biglangs4 + [
         'als', 'an', 'ang', 'ar', 'be', 'csb', 'fa', 'fo', 'ga', 'gd',
-        'hi', 'ie', 'jv', 'kn', 'ks', 'kw', 'lv', 'mi', 'minnan', 'nds',
-        'oc', 'sa', 'su', 'ta', 'th', 'tl', 'tokipona', 'ur', 'vi']
+        'hi', 'ie', 'jv', 'kn', 'ks', 'kw', 'lv', 'mi', 'minnan', 'ml', 'nds',
+        'oc', 'sa', 'scn', 'su', 'ta', 'th', 'tl', 'tokipona', 'ur', 'vi']
     
     # other groups of language that we might want to do at once
         
@@ -280,7 +288,7 @@ class Family(family.Family):
     # Languages that used to be coded in iso-8859-1
     latin1old = ['de', 'et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
                  'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
-                 'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
+                 'nds', 'co', 'mi', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
                  'ga', 'na', 'es', 'test']
 
     def version(self, code):

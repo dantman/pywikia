@@ -1940,8 +1940,10 @@ getSite()
 def altlang(code):
     if code=='aa':
         return ['am']
-    if code in ['fa','ku']:
+    if code in ['fa','so']:
         return ['ar']
+    if code=='ku':
+        return ['ar','tr']
     if code=='sk':
         return ['cs']
     if code=='nds':
@@ -1954,7 +1956,7 @@ def altlang(code):
         return ['es','fr']
     if code=='gl':
         return ['es','pt']
-    if code in ['br','ln','lo','th','vi','wa']:
+    if code in ['br','ht','ln','lo','th','vi','wa']:
         return ['fr']
     if code in ['ie','oc']:
         return ['ie','oc','fr']
@@ -1962,7 +1964,7 @@ def altlang(code):
         return ['fr','de']
     if code=='co':
         return ['fr','it']
-    if code=='scn':
+    if code in ['sc','scn']:
         return ['it']
     if code=='rm':
         return ['it','de','fr']
@@ -1972,7 +1974,7 @@ def altlang(code):
         return ['pl']
     if code in ['mo','roa-rup']:
         return ['ro']
-    if code in ['be','hy','lt','lv','uk']:
+    if code in ['av','be','cv','hy','lt','lv','tt','uk']:
         return ['ru']
     if code in ['kk','ky','tk','ug','uz']:
         return ['tr','ru']
