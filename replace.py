@@ -148,7 +148,30 @@ fixes = {
 }
 
 class ReplacePageGenerator:
-    def __init__(self, source, replacements, exceptions, regex, namespace = -1, textfilename = None, sqlfilename = None, pagenames = None):
+    """
+    Generator which will yield PageLinks for pages that might contain text to
+    replace. These pages might be retrieved from a local SQL dump file or a
+    text file, or as a list of pages entered by the user.
+
+    Arguments:
+        * source       - Where the bot should retrieve the page list from.
+                         Can be 'sqldump', 'textfile' or 'userinput'.
+        * replacements - A dictionary where keys are original texts and values
+                         are replacement texts.
+        * exceptions   - A list of strings; pages which contain one of these
+                         won't be changed.
+        * regex        - If the entries of replacements and exceptions should
+                         be interpreted as regular expressions
+        * namespace    - Namespace to process in case of a SQL dump. -1 means
+                         that all namespaces should be searched.
+        * textfilename - The textfile's path, either absolute or relative, which
+                         will be used when source is 'textfile'.
+        * sqlfilename  - The dump's path, either absolute or relative, which
+                         will be used when source is 'sqldump'.
+        * pagenames    - a list of pages which will be used when source is
+                         'userinput'.
+    """
+    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, sqlfilename = None, pagenames = None):
         self.source = source
         self.replacements = replacements
         self.exceptions = exceptions
@@ -239,28 +262,9 @@ class ReplacePageGenerator:
     
     # TODO: Make MediaWiki's search feature available.
     def generate(self):
-        """
-        Generator which will yield PageLinks for pages that might contain text to
-        replace. These pages might be retrieved from a local SQL dump file or a
-        text file, or as a list of pages entered by the user.
-    
-        Arguments:
-            * source       - where the bot should retrieve the page list from.
-                             can be 'sqldump', 'textfile' or 'userinput'.
-            * replacements - a dictionary where keys are original texts and values
-                             are replacement texts.
-            * exceptions   - a list of strings; pages which contain one of these
-                             won't be changed.
-            * regex        - if the entries of replacements and exceptions should
-                             be interpreted as regular expressions
-            * namespace    - namespace to process in case of a SQL dump
-            * textfilename - the textfile's path, either absolute or relative, which
-                             will be used when source is 'textfile'.
-            * sqlfilename  - the dump's path, either absolute or relative, which
-                             will be used when source is 'sqldump'.
-            * pagenames    - a list of pages which will be used when source is
-                             'userinput'.
-        """
+        '''
+        Starts the generator.
+        '''
         if self.source == 'sqldump':
             for pl in self.read_pages_from_sql_dump():
                 yield pl
@@ -281,7 +285,7 @@ class ReplaceRobot:
         
     def exceptionApplies(self, original_text):
         """
-        Returns True iff one of the exceptions apply for the given text.
+        Returns True iff one of the exceptions applies for the given text.
         """
         for exception in self.exceptions:
             if self.regex:
