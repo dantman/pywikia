@@ -128,37 +128,23 @@ SaxError = xml.sax._exceptions.SAXParseException
 # The most important thing in this whole module: The PageLink class
 class PageLink:
     """A Wikipedia page link."""
-    def __init__(self, code, name = None, urlname = None,
-                 linkname = None, incode = None):
-        """Constructor. Normally called with two arguments:
-             1) The language code on which the page resides
-             2) The name of the page as suitable for a URL
-
-             The argument incode can be specified to help decode
-             the name; it is the language where this link was found.
+    def __init__(self, code, title = None, incode = None):
+        """
+        Constructor. Normally called with two arguments:
+        Parameters:
+         1) The language code of the wiki on which the page resides
+         2) The title of the page as a unicode string
+             
+        The argument incode can be specified to help decode
+        the name; it is the language where this link was found.
         """     
-        self._incode = incode
         self._code = code
-        if linkname is None and urlname is None and name is not None:
-            # Clean up the name, it can come from anywhere.
-            name = name.strip()
-            if name and name[0]==':':
-                name=name[1:]
-            self._urlname = link2url(name, self._code, incode = self._incode)
-            self._linkname = url2link(self._urlname, code = self._code,
-                                      incode = mylang)
-        elif linkname is not None:
-            # We do not trust a linkname either....
-            #name = linkname.strip()
-            if name and name[0]==':':
-                name=name[1:]
-            self._urlname = link2url(name, self._code, incode=self._incode)
-            self._linkname = url2link(self._urlname, code = self._code,
-                                      incode = mylang)
-        elif urlname is not None:
-            self._urlname = urlname
-            self._linkname = url2link(urlname, code = self._code,
-                                      incode = mylang)
+        # Clean up the name, it can come from anywhere.
+        title = title.strip()
+        if title and title[0]==':':
+            title = title[1:]
+        self._urlname = link2url(title, self._code, incode = incode)
+        self._linkname = url2link(self._urlname, code = self._code, incode = mylang)
 
     def code(self):
         """The code for the language of the page this PageLink refers to,
@@ -166,6 +152,9 @@ class PageLink:
         return self._code
     
     def encoding(self):
+        """
+        Returns the character encoding used on this page's wiki.
+        """
         return code2encoding(self._code)
     
     def urlname(self):
@@ -346,8 +335,7 @@ class PageLink:
             if newname[0] == ' ':
                 print "ERROR> link from %s to %s:%s has leading space?!"%(self,newcode,repr(newname))
             try:
-                result.append(self.__class__(newcode, linkname=newname,
-                                             incode = self.code()))
+                result.append(self.__class__(newcode, newname, incode = self.code()))
             except UnicodeEncodeError:
                 print "ERROR> link from %s to %s:%s is invalid encoding?!"%(self,newcode,repr(newname))
             except NoSuchEntity:
@@ -694,7 +682,7 @@ class GetAll:
         return data
     
 def getall(code, pages):
-    print "Getting %d pages from %s:"%(len(pages),code)
+    print u'Getting %d pages from %s:' % (len(pages), code)
     return GetAll(code, pages).run()
     
 # Library functions
@@ -943,7 +931,7 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
     """
     host = family.hostname(code)
     name = re.sub(' ', '_', name)
-    output(url2unicode("Getting page %s:%s"%(code, name), language = code))
+    output(url2unicode(u'Getting page %s:%s' % (code, name), language = code))
     # A heuristic to encode the URL into %XX for characters that are not
     # allowed in a URL.
     if not '%' in name and do_quote: # It should not have been done yet
