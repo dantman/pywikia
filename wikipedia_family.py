@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -133,6 +133,7 @@ class Family(family.Family):
         'ru':'ru.wikipedia.org',   # Russian
         'rw':'rw.wikipedia.org',   # Kinyarwanda
         'sa':'sa.wikipedia.org',   # Sanskrit
+        'scn':'scn.wikipedia.org', # Sicilian
         'sd':'sd.wikipedia.org',   # Sindhi
         'se':'se.wikipedia.org',   # Saami
         'sg':'sg.wikipedia.org',   # Sango
@@ -158,7 +159,7 @@ class Family(family.Family):
         'ti':'ti.wikipedia.org',   # Tigrinya
         'tk':'tk.wikipedia.org',   # Turkmen
         'tl':'tl.wikipedia.org',   # Tagalog
-        'tlh':'tlh.wikipedia.org', # Klingon
+        #'tlh':'tlh.wikipedia.org', # Klingon
         'tn':'tn.wikipedia.org',   # Tswana
         'to':'to.wikipedia.org',   # Tongan
         'tokipona':'tokipona.wikipedia.org', # Toki Pona
@@ -215,7 +216,7 @@ class Family(family.Family):
                   'ml','mt','mi','mr','ms','minnan','mn','my','nah','na',
                   'nv','nl','ne','ja','no','nb','nn','oc','om','ug','pi',
                   'ps','nds','pl','pt','pa','ro','rm','qu','ru','se','sa',
-                  'st','sq','si','simple','sd','sk','sl','sr','su','fi',
+                  'st','sq','scn','si','simple','sd','sk','sl','sr','su','fi',
                   'sv','tl','tg','ta','tt','te','th','tlh','tk','tw','vi',
                   'tokipona','tpi','to','tn','tr','ur','uk','uz','vo','wa',
                   'yi','yo','za','zh','zh-cn','zh-tw']
@@ -237,7 +238,7 @@ class Family(family.Family):
                'jbo','hu','mk','ml','mg','mt','mi','minnan',
                'mo','mn','my','nah','na','nv','fj','ng','nl','ne','ja','no','nn',
                'oc','or','om','ug','pi','pa','ps','km','lo','nds','pl','pt','ro',
-               'rm','qu','ru','se','sa','sg','st','tn','sq','si','simple','sd','ss',
+               'rm','qu','ru','se','sa','sg','st','tn','sq','scn','si','simple','sd','ss',
                'sk','sl','sr','fi','sv','tl','ta','tt','te','th','ti','tlh',
                'vi','tg','tokipona','tpi','to','tr','tk','tw','ur','uk','uz',
                'vo','wa','wo','ts','yi','yo','zh','zh-tw','zh-cn']

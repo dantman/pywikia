@@ -119,6 +119,7 @@ class Family(family.Family):
         'roa-rup':'roa-rup.wiktionary.org', # Aromanian
         'ru':'ru.wiktionary.org',   # Russian
         'sa':'sa.wiktionary.org',   # Sanskrit
+        'scn':'scn.wiktionary.org', # Sicilian
         'sd':'sd.wiktionary.org',   # Sindhi
         'se':'se.wiktionary.org',   # Saami
         'si':'si.wiktionary.org',   # Sinhalese

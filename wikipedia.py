@@ -1923,6 +1923,8 @@ def altlang(code):
         return ['fr','de']
     if code=='co':
         return ['fr','it']
+    if code=='scn':
+        return ['it']
     if code=='rm':
         return ['it','de','fr']
     if code=='fy':
@@ -1936,7 +1938,7 @@ def altlang(code):
     if code in ['kk','ky','tk','ug','uz']:
         return ['tr','ru']
     if code in ['bo','ja','ko','minnan','za','zh','zh-cn','zh-tw']:
-        return ['zh','zh-cn','zh-tw']
+        return ['zh','zh-tw','zh-cn']
     if code=='da':
         return ['nb','no']
     if code in ['is','no','nb','nn']:
