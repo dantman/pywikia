@@ -1,6 +1,6 @@
 """
 Script to find images on a subject on another wikipedia and copy them
-to one's own Wikipedia.
+to WikiCommons.
 
 Arguments:
 
@@ -25,7 +25,7 @@ import re,sys,string
 import httplib
 import wikipedia, lib_images
 
-# This is a purely interactive robot. We set the delay lower.
+# This is a purely interactive robot. We set the delay off.
 wikipedia.get_throttle.setDelay(0)
 
 # if the -file argument is used, page titles are dumped in this array.
@@ -63,8 +63,9 @@ if page_title != []:
      page_title = ' '.join(page_title)
      page_list.append(page_title)
 
-
+# Use mysite when getting pages, but commons when uploading pages.
 mysite = wikipedia.getSite()
+wikipedia.argHandler('-lang:commons')
 
 # if no page title was given as an argument, and none was
 # read from a file, query the user
