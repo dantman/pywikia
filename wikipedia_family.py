@@ -328,6 +328,9 @@ def image_namespace_url(code, fallback = 'en'):
 def mediawiki_namespace(code, fallback = 'en'):
     return namespace(code, 8, fallback)
 
+def template_namespace(code, fallback = 'en'):
+    return namespace(code, 10, fallback)
+ 
 def category_namespace(code, fallback = 'en'):
     return namespace(code, 14, fallback)
 

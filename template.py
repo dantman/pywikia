@@ -129,7 +129,7 @@ else:
     
 
 # get template namespace
-ns = wikipedia.family.template[wikipedia.mylang]
+ns = wikipedia.family.template_namespace(wikipedia.mylang, fallback = None)
 # Download 'What links here' of the template page
 thispl = wikipedia.PageLink(wikipedia.mylang, ns + ':' + old)
 
