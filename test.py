@@ -17,8 +17,7 @@ if 0:
     text=text+'\nrobot was here\n'
     status,reason,data=wikipedia.putPage('test','Robottest',text)
     print status,reason
-
-if 1:
+elif 1:
     for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
             pass
@@ -32,9 +31,8 @@ if 1:
     if wikipedia.loggedin:
         print "Logged in"
     else:
-        print "not logged in"
-        
-if 0:
+        print "not logged in"        
+elif 0:
     x1='\xb1\xb3\xbf'
     import codecs
     encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('iso-8859-2')
