@@ -18,52 +18,42 @@ the links from; other arguments are ignored.
 #
 # Distribute under the terms of the PSF license.
 #
+# Modified by Gerrit Holl, 01-11-2004
 
 import sys
 import wikipedia, lib_images
 
-filename = None
-list = []
+def getfn():
+    fns = []
 
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if filename:
-            print "Ignoring argument %s"%arg
-        else:
-            filename = arg
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            fns.append(arg)
 
-if not filename:
-    print "No file specified to get the image links from"
-    sys.exit(1)
+    if len(fns) == 0:
+        fns.append(raw_input("Please enter a filename: "))
 
-mysite = wikipedia.getSite()
+    return fns
 
-# We want to be able to get our pictures from WikiCommons, so we
-# add it to the list of languages. UGLY.
-mysite.family._addlang('commons','commons.wikimedia.org')
+def main():
 
-for image in wikipedia.PageLinksFromFile(filename):
-    if image.isImage():
-        try:
-            image.get()
-            print "--------------------------------------------------"
-            print "Image: %s"% (image.linkname())
-            try:
-                # show the image description page's contents
-                print image.get()
-            except wikipedia.NoPage:
-                print "Description empty."
-            except wikipedia.IsRedirectPage:
-                print "Description page is redirect?!"
-            answer=wikipedia.input(u"Copy this image (y/N)?")
-            if answer.lower().startswith('y'):
-                lib_images.transfer_image(image)
-        # If we can't get the image description page, just go on with
-        # the next one.
-        except wikipedia.NoPage:
-            print >>sys.stderr, "%s could not be found" % image
-        except wikipedia.IsRedirectPage:
-            print >>sys.stderr, "%s is a redirect page" % image
-        except wikipedia.LockedPage:
-            print "%s is locked" % image
+    for filename in getfn():
+        print "Handling images from %s" % filename
+        for image in wikipedia.PageLinksFromFile(filename):
+            if image.isImage():
+                print "-" * 50
+                print "Image: %s" % image.linkname()
+                try:
+                    # show the image description page's contents
+                    print image.get()
+                except wikipedia.NoPage:
+                    print "Description empty."
+                except wikipedia.IsRedirectPage:
+                    print "Description page is redirect?!"
+                answer=wikipedia.input(u"Copy this image (y/N)?")
+                if answer.lower().startswith('y'):
+                    lib_images.transfer_image(image)
+
+if __name__ == "__main__":
+    main()
