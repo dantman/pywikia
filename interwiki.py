@@ -392,7 +392,7 @@ class Subject(object):
             site = pl.site()
             if site == mysite and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
                 if pl != self.inpl:
-                    self.problem("Found link to %s"%pl.aslink())
+                    self.problem("Found link to %s"%pl.aslink(None))
                     self.whereReport(pl)
                     nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
@@ -612,10 +612,10 @@ class Subject(object):
                     if xpl != pl and not xpl in linked:
                         for l in linked:
                             if l.site() == xpl.site():
-                                wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (pl.asselflink(), xpl.aslink(), l.aslink()))
+                                wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (pl.asselflink(), xpl.aslink(None), l.aslink(None)))
                                 break
                         else:
-                            wikipedia.output(u"WARNING: %s does not link to %s" % (pl.asselflink(), xpl.aslink()))
+                            wikipedia.output(u"WARNING: %s does not link to %s" % (pl.asselflink(), xpl.aslink(None)))
                 # Check for superfluous links
                 for xpl in linked:
                     # Chinese internal links are ok.
@@ -629,7 +629,7 @@ class Subject(object):
                                 break
                         else:
                             # New warning
-                            wikipedia.output(u"WARNING: %s links to incorrect %s" % (pl.asselflink(), xpl.aslink()))
+                            wikipedia.output(u"WARNING: %s links to incorrect %s" % (pl.asselflink(), xpl.aslink(None)))
     
 class SubjectArray(object):
     """A class keeping track of a list of subjects, controlling which pages

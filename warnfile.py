@@ -30,7 +30,7 @@ def ReadWarnfile(fn):
         if m:
             #print "DBG>",line
             if m.group(1)==mysite.lang:
-                #print m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
+                print m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
                 if not hints.has_key(m.group(2)):
                     hints[m.group(2)]=[]
                 #print m.group(3)
@@ -39,7 +39,11 @@ def ReadWarnfile(fn):
                 else:
                     sign='+'
                 try:
-                    thesite = mysite.getSite(code = m.group(4))
+                    if ':' in m.group(4):
+                        family, lang = m.group(4).split(':')
+                        thesite = wikipedia.getSite(code=lang, fam=family)
+                    else:
+                        thesite = mysite.getSite(code = m.group(4))
                     hints[m.group(2)].append((sign,wikipedia.PageLink(thesite,wikipedia.link2url(m.group(5),site = thesite))))
                 except wikipedia.Error:
                     print "DBG> Failed to add", line
@@ -87,6 +91,6 @@ def ReadWarnfile(fn):
 
 if __name__ == "__main__":
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg):
+        arg = wikipedia.argHandler(arg)
         if arg:
             ReadWarnfile(arg)

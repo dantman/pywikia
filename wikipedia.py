@@ -248,10 +248,14 @@ class PageLink(object):
         """A more complete string representation"""
         return "%s{%s}" % (self.__class__.__name__, str(self))
 
-    def aslink(self):
+    def aslink(self, othersite = ()):
         """A string representation in the form of a link. The link will
-           be an interwiki link if needed"""
-        return self._site.linkto(self.linkname(), othersite = self._tosite)
+           be an interwiki link if needed. Specify othersite if you want to
+           use the link somewhere else than on the _tosite wiki (e.g. specify
+           None to make the link complete."""
+        if othersite == ():
+            othersite = self._tosite
+        return self._site.linkto(self.linkname(), othersite = othersite)
 
     def aslocallink(self):
         """A string representation in the form of a local link"""
