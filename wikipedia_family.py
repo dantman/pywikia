@@ -23,7 +23,7 @@ class Family(family.Family):
             'be':'be.wikipedia.org',   # Belorussian
             'bg':'bg.wikipedia.org',   # Bulgarian
             'bh':'bh.wikipedia.org',   # Bhojpuri
-            'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
+            'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan)
             'bn':'bn.wikipedia.org',   # Bengali
             'br':'br.wikipedia.org',   # Breton
             'bs':'bs.wikipedia.org',   # Bosnian
@@ -336,17 +336,17 @@ class Family(family.Family):
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
 
-        self.alphabetic = ['af','ar','an','roa-rup','ast','ay','bg','be','bn','bs','br',
-                      'ca','chr','co','cs','cy','da','de','als','et',
-                      'el','en','es','eo','eu','fa','fr','fy','ga','gv',
-                      'gd','gl','ko','ha','hi','hr','io','id','ia','is','it',
-                      'he','jv','kn','ka','csb','ks','kw','ky','sw','la','lv',
-                      'lt','jbo','hu','mk','mg','ml','mi','mr','ms','minnan',
-                      'mn','nah','na','nl','ja','no','nb','nn','oc','om','ug','nds',
-                      'pl','pt','ro','rm','qu','ru','se','sa','st','sq','si','simple',
-                      'sk','sl','sr','su','fi','sv','ta','tt','th','tlh','tk',
-                      'tw','vi','tokipona','tpi','tr','ur','uk','vo','wa','yi',
-                      'yo','za','zh','zh-cn','zh-tw']
+        self.alphabetic = ['af','ar','an','roa-rup','ast','ay','az','bg','be','bn','bh',
+                      'bi','bs','br','ca','chr','co','cs','cy','da','de','als','et',
+                      'el','en','es','eo','eu','ee','fa','fo','fr','fy','ga','gv','gd',
+                      'gl','gn','gu','ko','ha','hi','hr','io','id','ia','xh','is','zu',
+                      'it','he','jv','kn','ka','csb','ks','kw','km','ky','sw','ku','la',
+                      'lv','lt','lb','jbo','hu','mk','mg','ml','mi','mr','ms','minnan',
+                      'mn','nah','na','nl','ja','no','nb','nn','oc','om','ug','nds','pl',
+                      'pt','ro','rm','qu','ru','se','sa','st','sq','si','simple','sk',
+                      'sl','sr','su','fi','sv','tl','ta','tt','te','th','tlh','tk','tw',
+                      'vi','tokipona','tpi','tn','tr','ur','uk','uz','vo','wa','yi','yo',
+                      'za','zh','zh-cn','zh-tw']
         
         self.interwiki_putfirst = {
             'en': self.alphabetic,
