@@ -118,11 +118,14 @@ for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
     elif arg.startswith('-pos:'):
-        pl=wikipedia.PageLink(wikipedia.mylang,arg[5:])
-        if pl.exists():
-            alternatives.append(pl.linkname())
+        if arg[5]!=':':
+            pl=wikipedia.PageLink(wikipedia.mylang,arg[5:])
+            if pl.exists():
+                alternatives.append(pl.linkname())
+            else:
+                print "Possibility does not actually exist:",pl
         else:
-            print "Possibility does not actually exist:",pl
+            alternatives.append(arg[5:])
     elif arg=='-just':
         getalternatives=0
     else:
@@ -192,10 +195,16 @@ def treat(refpl, thispl):
             while 1:
                 print "== %s =="%(refpl)
                 print reftxt[max(0,m.start()-context):m.end()+context]
-                choice=raw_input("Which replacement (#,r#,n=none,q=quit,m=more context,l=list,a=add new):")
+                choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
+                                 "        m=more context,l=list,a=add new):")
                 if choice=='n':
-                    choice=-1
                     return
+                elif choice=='s':
+                    choice=-1
+                    break
+                elif choice=='u':
+                    choice=-2
+                    break
                 elif choice=='a':
                     ns=raw_input('New alternative:')
                     alternatives.append(ns)
@@ -219,22 +228,29 @@ def treat(refpl, thispl):
                         pass
                     else:
                         break
-            if choice<0:
+            if choice==-1:
+                # Next link on this page
                 continue
             g1 = m.group(1)
             g2 = m.group(2)
             if not g2:
                 g2 = g1
-            replacement = alternatives[choice]
-            reppl = wikipedia.PageLink(thispl.code(), replacement,
-                                       incode = refpl.code())
-            replacement = reppl.linkname()
-            if replaceit or replacement == g2:
-                reptxt = replacement
+            if choice==-2:
+                # unlink
+                reftxt = reftxt[:m.start()] + g2 + reftxt[m.end():]
             else:
-                reptxt = "%s|%s" % (replacement, g2)
-                print "DBG> ",repr(reptxt)
-            reftxt = reftxt[:m.start()+2] + reptxt + reftxt[m.end()-2:]
+                # Normal replacement
+                replacement = alternatives[choice]
+                reppl = wikipedia.PageLink(thispl.code(), replacement,
+                                           incode = refpl.code())
+                replacement = reppl.linkname()
+                if replaceit or replacement == g2:
+                    reptxt = replacement
+                else:
+                    reptxt = "%s|%s" % (replacement, g2)
+                    print "DBG> ",repr(reptxt)
+                reftxt = reftxt[:m.start()+2] + reptxt + reftxt[m.end()-2:]
+
             print reftxt[max(0,m.start()-30):m.end()+30]
         if not debug:
             refpl.put(reftxt)
