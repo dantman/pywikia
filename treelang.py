@@ -98,9 +98,10 @@ def sametranslate(pl,arr):
             newname=newname.split(' ')
             newname[-1]=newname[-1].upper()
             newname=' '.join(newname)
-        x=wikipedia.PageLink(newcode,newname)
-        if x not in arr:
-            arr[x]=None
+        if not newcode in ['zh-cn','zh-tw','test']:
+            x=wikipedia.PageLink(newcode,newname)
+            if x not in arr:
+                arr[x]=None
     
 def autotranslate(pl,arr,same=0):
     if same:
@@ -427,5 +428,6 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:",pl.asselflink(),"links to incorrect",xpl.aslink()
+
 
 
