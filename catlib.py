@@ -77,7 +77,7 @@ class _CatLink(wikipedia.PageLink):
             txt = wikipedia.getPage(cat.code(), cat.urlname(), do_edit = 0)
             # index where subcategory listing begins
             # this only works for the current version of the MonoBook skin
-            ibegin = txt.index('<br style="clear:both;" />')
+            ibegin = txt.index('"clear:both;"')
             # index where article listing ends
             iend = txt.index('<!-- end content -->')
             txt = txt[ibegin:iend]
