@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -78,6 +78,7 @@ class Family(family.Family):
         'iu':'iu.wikipedia.org',   # Inuktitut
         'ja':'ja.wikipedia.org',   # Japanese
         'jbo':'jbo.wikipedia.org', # Lojban
+        'jp':'ja.wikipedia.org',   # Japanese (incorrect code)
         'jv':'jv.wikipedia.org',   # Javanese
         'ka':'ka.wikipedia.org',   # Georgian
         'kk':'kk.wikipedia.org',   # Kazakh
@@ -99,7 +100,7 @@ class Family(family.Family):
         'mg':'mg.wikipedia.org',   # Malagasy
         'mi':'mi.wikipedia.org',   # Maori
         'minnan':'zh-min-nan.wikipedia.org', # Min-Nan
-        'zh-min-nan':'zh-min-nan.wikipedia.org', # Min-Nan
+        'zh-min-nan':'zh-min-nan.wikipedia.org', # Min-Nan (old code)
         'mk':'mk.wikipedia.org',   # Macedonian
         'ml':'ml.wikipedia.org',   # Malayalam
         'mn':'mn.wikipedia.org',   # Mongolian
@@ -115,8 +116,8 @@ class Family(family.Family):
         'ne':'ne.wikipedia.org',   # Nepalese
         'ng':'ng.wikipedia.org',   # Ndonga
         'nl':'nl.wikipedia.org',   # Dutch
-        'nn':'nn.wikipedia.org',   # Nynorsk
-        'no':'no.wikipedia.org',   # Norwegian
+        'nn':'nn.wikipedia.org',   # Norse (nynorsk)
+        'no':'no.wikipedia.org',   # Norse (bokmal)
         'nv':'nv.wikipedia.org',   # Navajo
         'oc':'oc.wikipedia.org',   # Occitan
         'om':'om.wikipedia.org',   # Oromo
@@ -244,7 +245,8 @@ class Family(family.Family):
                 'dk':'da',
                 'tlh':'none',
                 'zh-min-nan':'minnan',
-                'nb':'no'}
+                'nb':'no',
+                'jp':'ja'}
         
     # A few selected big languages for things that we do not want to loop over
     # all languages. This is only needed by the titletranslate.py module, so
