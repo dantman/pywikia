@@ -85,8 +85,8 @@ def altlang(code):
         return ['id','ms','jv','su']
     if code in ['bs','hr','mk','sh','sr']:
         return ['hr','sr','bs']
-    if code=='ia':
-        return ['la','es','fr','it']
+    if code in ['ia','ie']:
+        return ['ia','la','ie','es','fr','it']
     if code=='sa':
         return ['hi']
     if code=='yi':
