@@ -66,15 +66,28 @@ import wikipedia, config
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
 # below.
 msg = {
-       'de':u'Bot: Automatisierte Textersetzung',
-       'en':u'Robot: Automated text replacement',
-       'es':u'Robot: Reemplazo automático de texto',
-       'fr':u'Bot : Remplacement de texte automatisé',
-       'hu':u'Robot: Automatikus szövegcsere',
+       'de':u'Bot: Automatisierte Textersetzung %s',
+       'en':u'Robot: Automated text replacement %s',
+       'es':u'Robot: Reemplazo automático de texto %s',
+       'fr':u'Bot : Remplacement de texte automatisé %s',
+       'hu':u'Robot: Automatikus szövegcsere %s',
        }
 
 # Predefined replacements tasks.
 fixes = {
+    'cat': {
+        'regex': True,
+        'msg': {
+            'de':u'Bot: entferne Grundkategorien'
+            },
+        'replacements': {
+            r'\[\[Kategorie:Zeit:.+?\]\][\r\n ]*': '',
+            r'\[\[Kategorie:Raum:.+?\]\][\r\n ]*': '',
+            r'\[\[Kategorie:Thema:.+?\]\][\r\n ]*': '',
+            r'\[\[Kategorie:Typ:.+?\]\][\r\n ]*': '',
+        }
+    },
+            
     # These replacements will convert HTML to wiki syntax where possible, and
     # make remaining tags XHTML compliant.
     'HTML': {
@@ -308,7 +321,7 @@ if (len(commandline_replacements) == 2 and fix == None):
 elif fix == None:
     old = wikipedia.input(u'Please enter the text that should be replaced:')
     new = wikipedia.input(u'Please enter the new text:')
-    change = ' (-' + old + ' +' + new
+    change = '(-' + old + ' +' + new
     replacements[old] = new
     while True:
         old = wikipedia.input(u'Please enter another text that should be replaced, or press Enter to start:')
@@ -318,7 +331,12 @@ elif fix == None:
         new = wikipedia.input(u'Please enter the new text:')
         change = change + ' & -' + old + ' +' + new
         replacements[old] = new
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg)+change)
+    default_summary_message =  wikipedia.translate(wikipedia.mylang, msg) % change
+    wikipedia.output(u'The summary message will default to: %s' % default_summary_message)
+    summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
+    if summary_message == '':
+        summary_message = default_summary_message
+    wikipedia.setAction(summary_message)
 else:
     # Perform one of the predefined actions.
     try:
