@@ -11,7 +11,11 @@ arguments:
     rename - move all pages in a category to another category
     tidy - tidy up a category by moving its articles into subcategories
 
-For example, to add a new category, 
+For example, to add a new category, type:
+
+     python category.py
+
+and follow the on-screen instructions.
 
 See comments below for details.
 """
@@ -90,7 +94,7 @@ def add_category():
             try:
 	        cats = pl2.categories()
             except wikipedia.NoPage:
-	    	print "%s doesn't exit yet. Ignoring."%(pl2.aslocallink())
+	    	print "%s doesn't exist yet. Ignoring."%(pl2.aslocallink())
 		pass
             except wikipedia.IsRedirectPage,arg:
 	    	pl3 = wikipedia.PageLink(wikipedia.mylang,arg.args[0])
@@ -177,9 +181,10 @@ a number adjacent to them. It will then automatically loop over all pages
 in the category. It will ask you to type the number of the appropriate
 replacement, and perform the change robotically.
 
-Multiple references in one page will be scanned in order, but typing 'n' on
-any one of them will leave the complete page unchanged; it is not possible to
-leave only one reference unchanged.
+If you don't want to move the article to a subcategory, but to another
+category, you can use the 'j' (jump) command.
+
+Typing 's' will leave the complete page unchanged.
 
 Important:
  * every category page must contain some text; otherwise an edit box will be
