@@ -311,7 +311,7 @@ if page_list == []:
     pagename = wikipedia.input(u'Which page to check:')
     page_list.append(pagename)
 
-for wrd in (page_list):
+for wrd in page_list:
     # when run with -redir argument, there's another summary message
     if solve_redirect:
         wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg_redir) % wrd)
@@ -379,14 +379,14 @@ for wrd in (page_list):
         wikipedia.output(u"%3d - %s" % (i, alternatives[i]))
     
     def treat(refpl, thispl):
-        '''
+        """
         Parameters:
             thispl - The disambiguation page or redirect we don't want anything
                      to link on
             refpl - A page linking to thispl
         Returns False if the user pressed q to completely quit the program.
         Otherwise, returns True.
-        '''
+        """
         try:
             text=refpl.get()
             # make a backup of the original text so we can show the changes later
@@ -600,14 +600,16 @@ for wrd in (page_list):
     active=True
 
     refs = getReferences(thispl)
-    refpls = []
-    for ref in refs:
-        refpls.append(wikipedia.PageLink(wikipedia.mylang, ref))
-    wikipedia.getall(wikipedia.mylang, refpls)
-    for refpl in refpls:
-        if active and not refpl.urlname() in skip_primary:
-            if not treat(refpl, thispl):
-                active=False
+    if len(refs) > 0:
+
+        refpls = []
+        for ref in refs:
+            refpls.append(wikipedia.PageLink(wikipedia.mylang, ref))
+        wikipedia.getall(wikipedia.mylang, refpls)
+        for refpl in refpls:
+            if active and not refpl.urlname() in skip_primary:
+                if not treat(refpl, thispl):
+                    active=False
 
     # clear alternatives before working on next disambiguation page
     alternatives = []
