@@ -399,6 +399,7 @@ else:
     oldtext = m[inpl]
     s = wikipedia.interwikiFormat(new, incode = wikipedia.mylang)
     s2 = wikipedia.removeLanguageLinks(oldtext)
+    print repr(s),repr(s2[:100])
     newtext = s + s2
     if debug:
         if not autonomous and not sys.platform == 'win32':

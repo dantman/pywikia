@@ -639,10 +639,7 @@ def interwikiFormat(links, incode):
         except AttributeError:
             s.append('[[%s:%s]]' % (code, links[code]))
     s=' '.join(s) + '\r\n'
-    if code2encoding(incode) == 'utf-8':
-        return html2unicode(s, language = incode)
-    else:
-        return s
+    return html2unicode(s, language = incode)
             
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
@@ -671,7 +668,7 @@ def url2link(percentname,incode,code):
     result = underline2space(percentname)
     x = url2unicode(result, language = code)
     if code2encoding(incode) == code2encoding(code):
-        #print "url2link", repr(x), "same encoding"
+        #print "url2link", repr(x), "same encoding",incode,code
         return unicode2html(x, encoding = code2encoding(code))
     else:
         #print "url2link", repr(x), "different encoding"
@@ -732,7 +729,6 @@ def unicode2html(x, encoding='latin1'):
     try:
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
         x,l = encode_func(x)
-        #print "unicode2html",x
     except UnicodeError:
         x = UnicodeToAsciiHtml(x)
     return str(x)
