@@ -93,12 +93,17 @@ class _CatLink(wikipedia.PageLink):
                 pages.append(title)
         # get supercategories
         supercats=[]
-        ibegin = self_txt.index('<div id="catlinks">')
-        iend = self_txt.index('<!-- end content -->')
-        self_txt = self_txt[ibegin:iend]
-        Rsupercat = re.compile('title=.*\"([^\"]*)\"')
-        for title in Rsupercat.findall(self_txt):
-            supercats.append(title)
+        try:
+            ibegin = self_txt.index('<div id="catlinks">')
+            iend = self_txt.index('<!-- end content -->')
+        except ValueError:
+            # no supercategories found
+            pass
+        else:
+            self_txt = self_txt[ibegin:iend]
+            Rsupercat = re.compile('title=.*\"([^\"]*)\"')
+            for title in Rsupercat.findall(self_txt):
+                supercats.append(title)
         
         return (pages, supercats)
     
