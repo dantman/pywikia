@@ -347,6 +347,8 @@ class Subject:
                         for pl2 in arr.iterkeys():
                             self.todo[pl2] = pl2.code()
                             counter.plus(pl2.code())
+                            self.foundin[pl2] = [None]
+                            
 
     def isDone(self):
         """Return True if all the work for this subject has completed."""
