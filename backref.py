@@ -1,7 +1,14 @@
+# Script to check pages referred to via interwiki links for the reverse link
+#
+# $Id$
+#
+# (C) Rob W.W. Hooft, 2003
+# Distribute under the terms of the GPL.
+
 import os,wikipedia,sys
 
-codefrom='nl'
-codeto=None
+codefrom = wikipedia.mylang
+codeto = None
 mode=0
 word=[]
 
@@ -25,7 +32,7 @@ if mode==1:
 elif mode==2:
     pages=open(word).readlines()
 elif mode==3:
-    pages=wikipedia.allnlpages(start=word)
+    pages=wikipedia.allpages(start=word)
 else:
     raise "Please specify one of -one -file or -start"
 
@@ -77,5 +84,3 @@ for f in pages:
                 if not found:
                     print >> fil, "%s does not link to %s"%(pl2,pl)
                     fil.flush()
-                    
-                    
