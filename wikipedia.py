@@ -654,7 +654,7 @@ def interwikiFormat(links, incode):
         except AttributeError:
             s.append('[[%s:%s]]' % (code, links[code]))
     s=config.interwiki_langs_separator.join(s) + '\r\n'
-    return html2unicode(s, language = incode)
+    return unicodeName(s, language = incode)
             
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
