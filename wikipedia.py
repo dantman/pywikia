@@ -192,12 +192,12 @@ class PageLink(object):
         title = title.strip()
         if title[0]==':':
             title = title[1:]
-        splitTitle = title.split(':')
+        title = title.split(':')
         # translate a default namespace name into the local namespace name
-        if len(splitTitle) > 1:
+        if len(title) > 1:
             for ns in site.family.namespaces.keys():
-                if splitTitle[0] == site.family.namespace('_default', ns):
-                    splitTitle[0] = site.namespace(ns)
+                if title[0] == site.family.namespace('_default', ns):
+                    title[0] = site.namespace(ns)
         self._urlname = link2url(title, site = self._site, insite = insite)
         self._linkname = url2link(self._urlname, site = self._site, insite = self._tosite)
 
