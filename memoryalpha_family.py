@@ -1,8 +1,7 @@
 import family, config
     
-# The wikimedia family that is known as wikitravel
+# The memory-alpha family, a set of StarTrek wikis.
 
-# Translation used on all wikitravels for the 'article' text.
 # A language not mentioned here is not known by the robot
 
 class Family(family.Family):
@@ -19,7 +18,7 @@ class Family(family.Family):
     # if you carefully avoid the options, you could get away without these
     # for another wikimedia family.
 
-    biglangs = ['en','fr','ro']
+    biglangs = ['en','de']
 
     def hostname(self,code):
         return 'www.memory-alpha.org'
