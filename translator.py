@@ -147,9 +147,11 @@ types = {
 
     # regular expressions for number formats
     "numbers": {
-        "translations": {
+        "translations": [
             # miljoen shouldn't be abbreviated on nl:
-            { "en":"Mill.",      "de":"Mio.",    "nl":"miljoen", },
+            { "en":"mill.",      "de":"Mio.",    "nl":"miljoen", },
+            { "en":"bill.",      "de":"Mrd." },
+        ],
         "regexes": {
             "fr": {
                 # fr uses &nbsp; or space to separate thousands, de uses dots
@@ -160,26 +162,35 @@ types = {
                 # de uses dots to separate thousands, en uses commas
                 # de uses commas to indicate floating point numbers, en uses dots
                 # switch both - temporary placeholder required
-#                "(?P<pre>\d+)\,(?P<block>\d\d\d)": {"de":"\g<pre>(TEMP_DOT)\g<block>", },
-#                "(?P<pre>\d+)\.(?P<block>\d\d\d)": {"de":"\g<pre>(TEMP_DOT)\g<block>", },
+                "(?P<pre>\d+)\,(?P<block>\d\d\d)":        {"de":"\g<pre>TEMPORARY_DOT\g<block>", },
+                "(?P<pre>\d+)\.(?P<block>\d+)":           {"de":"\g<pre>,\g<block>", },
+                "TEMPORARY\_DOT": {"de":".", },
+            },
+            "de": {
+                # de uses dots to separate thousands, en uses commas
+                # de uses commas to indicate floating point numbers, en uses dots
+                # switch both - temporary placeholder required
+                "(?P<pre>\d+)\.(?P<block>\d\d\d)":             {"en":"\g<pre>TEMPORARY_COMMA\g<block>", },
+                "(?P<pre>\d+)\,(?P<block>\d+)":                {"en":"\g<pre>.\g<block>", },
+                "TEMPORARY\_COMMA": {"en":",", },
             },
         },
     },
     
     "months": {
         "translations": [
-				    { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",   "nl":"januari", },
-				    { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":"fevrier",   "nl":"februari", },
-				    { "sl":"marec",     "it":"marzo",     "en":"March",     "de":"M&auml;rz", "fr":"mars",      "nl":"maart", },
-				    { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",     "nl":"april", },
-				    { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",       "nl":"mei", },
-				    { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",      "nl":"juni", },
-				    { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",   "nl":"juli", },
-				    { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":"aout",      "nl":"augustus", },
-				    { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre", "nl":"september", },
-				    { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",   "nl":"oktober", },
-				    { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",  "nl":"november", },
-				    { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":"decembre",  "nl":"december", },
+            { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",   "nl":"januari", },
+            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":"fevrier",   "nl":"februari", },
+            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":"M&auml;rz", "fr":"mars",      "nl":"maart", },
+            { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",     "nl":"april", },
+            { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",       "nl":"mei", },
+            { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",      "nl":"juni", },
+            { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",   "nl":"juli", },
+            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":"aout",      "nl":"augustus", },
+            { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre", "nl":"september", },
+            { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",   "nl":"oktober", },
+            { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",  "nl":"november", },
+            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":"decembre",  "nl":"december", },
         ]
     },
     
@@ -201,8 +212,6 @@ types = {
         "translations": [
             { "en":"[[Square kilometre|km&sup2;]]",  "de":"[[Quadratkilometer|km&sup2;]]",  "nl":"[[Vierkante kilometer|km&sup2;]]", },
             { "en":u"[[Square kilometre|km\xB2]]",   "de":u"[[Quadratkilometer|km\xB2]]",   "nl":u"[[Vierkante kilometer|km\xB2]]",     },
-            # million
-            { "en":"mill.",                          "de":"Mio.",                            },
             { "en":"as of ",                         "de":"Stand: ",                         },
             { "en":"years",                          "de":"Jahre",                           "nl":"jaar"},
         ]
@@ -238,7 +247,7 @@ types = {
             
     "city": {
         "translations": [
-            { "en":"Base data",                              "de":"Basisdaten",                                "nl":"Basisgegevens",                              },
+            { "en":"Base data",                              "de":"Basisdaten",                                "nl":"Basisgegevens",               "fr":"Informations",       },
             { "en":"[[Location]]:",                          "de":"[[Geografische Lage]]:",                    "nl":"Ligging", },
             { "en":"[[Altitude]]:",                          "de":u"[[H\xF6he]]:",                             "nl":"Hoogte:", },
             { "en":"Highest point:",                         "de":u"H\xF6chster Punkt:",                       "nl":"Hoogste punt:",},
@@ -278,7 +287,7 @@ types = {
             { "en":"Independent",                            "de":"Parteilos",                                 "nl":"geen partij"             },
             { "en":"Region",                                 "de":"[[Region]]",                                "nl":"Landstreek"                },
         ],
-        "includes": ["images", "geography"],
+        "includes": ["images", "geography", "numbers"],
     },
     
     # translations for cities in Germany
@@ -343,7 +352,6 @@ types = {
     "dep": {
         "translations": [
             # some entries on fr: lack colons, others have spaces before the colons.
-            { "de":"Basisdaten",                                   "fr":"Informations",                              },
             { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]] :", },
             { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]]:",  },
             { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]] :",                      },
@@ -364,20 +372,17 @@ types = {
             { "de":"[[Kommune (Frankreich)|Kommunen]]:",           "fr":"[[Communes de France|Communes]]",           },
             { "de":u"Pr\xE4sident des<br>[[Allgemeiner Rat|Allgemeinen Rates]]:",
                                                                    "fr":u"[[Pr\xE9sident du Conseil g\xE9n\xE9ral|Pr\xE9sident du Conseil<br> g\xE9n\xE9ral]]", },
-            # image alt text
-            { "de":"Lage von ",                                    "fr":"Localisation de la ",                       },
-            { "de":"Lage von ",                                    "fr":"Localisation des ",                       },
-            { "de":"Lage von ",                                    "fr":"Localisation de ",                       },
-            { "de":" in Frankreich",                               "fr":" en France",                                },
             # table header for image
             { "de":"Geografische Lage",                            "fr":"Localisation",                              },
         ],
         "regexes": {
             "fr": {
-                "\[\[[aA]rrondissements (des |du |de la |de l\'|d\'|de )":  {"de":u"[[Arrondissemens im D\xE9partement ", },
-                "\[\[[cC]ommunes (des |du |de la |de l\'|d\'|de )":         {"de":u"[[Kommunen im D\xE9partement ",       },
-                "\[\[[cC]antons (des |du |de la|de l\'|d\'|de )":           {"de":u"[[Kantone im D\xE9partement ",        },
-                "Blason (des |du |de la |de l\'|d\'|de )":                  {"de":"Wappen von ",                          },
+                "\[\[[aA]rrondissements (des |du |de la |de l\'|d\'|de )":           {"de":u"[[Arrondissemens im D\xE9partement ", },
+                "\[\[[cC]ommunes (des |du |de la |de l\'|d\'|de )":                  {"de":u"[[Kommunen im D\xE9partement ",       },
+                "\[\[[cC]antons (des |du |de la|de l\'|d\'|de )":                    {"de":u"[[Kantone im D\xE9partement ",        },
+                "Blason (des |du |de la |de l\'|d\'|de )":                           {"de":"Wappen von ",                          },
+                # image alt text
+                "Localisation (des |du |de la |de l\'|d\'|de ) (?P<dep>) en France": {"de":"Lage von \g<dep> in Frankreich",       },
             },  
         },
         "includes": ["numbers", "images", "geography"],
