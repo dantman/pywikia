@@ -299,7 +299,7 @@ class Subject:
                         if globalvar.untranslatedonly:
                             # Ignore the interwiki links.
                             iw = ()
-                    if pl.isEmpty():
+                    elif pl.isEmpty():
                         print "NOTE: %s is empty; ignoring it and its interwiki links" % pl.asasciilink()
                         # Ignore the interwiki links
                         iw = ()
