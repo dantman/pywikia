@@ -16,6 +16,11 @@ Command line options:
    -just     only use the alternatives given on the command line, do not 
              read the page for other possibilities
 
+Options that are accepted by more robots:
+
+   -lang:XX  set your home wikipedia to XX instead of the one given in
+             username.dat
+             
 To complete a move of a page, one can use:
 
     python solve_disambiguation.py -just -pos:New_Name Old_Name
@@ -35,11 +40,9 @@ if not wikipedia.special.has_key(wikipedia.mylang):
     import sys
     sys.exit(1)
 
-mylang = wikipedia.mylang
-
 def getreferences(pl):
     host = wikipedia.langs[pl.code()]
-    url="/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(wikipedia.special[mylang],pl.urlname())
+    url="/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(wikipedia.special[wikipedia.mylang], pl.urlname())
     txt,charset=wikipedia.getUrl(host,url)
     Rref=re.compile('<li><a href.* title="([^"]*)"')
     return Rref.findall(txt)
@@ -49,7 +52,9 @@ alternatives=[]
 getalternatives=1
 
 for arg in sys.argv[1:]:
-    if arg.startswith('-pos:'):
+    if wikipedia.argHandler(arg):
+        pass
+    elif arg.startswith('-pos:'):
         alternatives.append(arg[5:])
     elif arg=='-just':
         getalternatives=0
@@ -60,7 +65,7 @@ wrd=' '.join(wrd)
 
 wikipedia.setAction('Robot-assisted disambiguation '+wrd)
 
-thispl=wikipedia.PageLink(mylang,wrd)
+thispl=wikipedia.PageLink(wikipedia.mylang, wrd)
 
 if getalternatives:
     thistxt=thispl.get()
@@ -78,7 +83,7 @@ exps=[]
 zz='\[\[(%s)(\|[^\]]*)?\]\]'
 Rthis=re.compile(zz%thispl.linkname())
 exps.append(Rthis)
-uln=wikipedia.html2unicode(thispl.linkname(),language=mylang)
+uln=wikipedia.html2unicode(thispl.linkname(),language = wikipedia.mylang)
 aln=wikipedia.addEntity(uln)
 Rthis=re.compile(zz%aln)
 exps.append(Rthis)
@@ -88,7 +93,7 @@ Rthis=re.compile(zz%aln.lower())
 exps.append(Rthis)
 
 for ref in getreferences(thispl):
-    refpl=wikipedia.PageLink(mylang,ref)
+    refpl=wikipedia.PageLink(wikipedia.mylang, ref)
     try:
         reftxt=refpl.get()
     except wikipedia.IsRedirectPage:
