@@ -476,6 +476,18 @@ class PageLink(object):
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
         for l in Rlink.findall(self.get(read_only = True)):
             result.append(PageLink(self._site,l[0]))
+        if im <> 'Image:':
+            im='Image:'
+            w1=r'('+im+'[^\]\|]*)'
+            w2=r'([^\]]*)'
+            Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
+            for l in Rlink.findall(self.get(read_only = True)):
+                result.append(PageLink(self._site,l[0]))
+            w1=r'('+im.lower()+'[^\]\|]*)'
+            w2=r'([^\]]*)'
+            Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
+            for l in Rlink.findall(self.get(read_only = True)):
+                result.append(PageLink(self._site,l[0]))
         return result
 
     def getRedirectTo(self, read_only = False):
