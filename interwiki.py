@@ -76,6 +76,13 @@ This script understands various command-line arguments:
                    that amount of pages and then stop. This is only useful in
                    combination with -start. The default is not to stop.
 
+    -array:        used as -array:#, specifies that the robot should process
+                   that amount of pages at once, only starting to load new
+                   pages in the original language when the total falls below
+                   that number. Default is to process (at least) 100 pages at
+                   once. The number of new ones loaded is equal to the number
+                   that is loaded at once from another language (default 60)
+
     -years:        run on all year pages in numerical order. Stop at year 2050.
                    If the argument is given in the form -years:XYZ, it
                    will run from [[XYZ]] through [[2050]]. If XYZ is a
@@ -1018,6 +1025,8 @@ if __name__ == "__main__":
                 start = arg[7:]
             elif arg.startswith('-number:'):
                 number = int(arg[8:])
+            elif arg.startswith('-array:'):
+                globalvar.minarraysize = int(arg[7:])
             else:
                 inname.append(arg)
 
