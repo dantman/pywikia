@@ -1459,6 +1459,37 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         x = unicode(x, charset, errors = 'replace')
         return x
 
+def newpages(number=10, onlyonce=False site=None, throttle=True):
+    """Generator which yields new articles subsequently.
+       It starts with the article created 'number' articles
+       ago (first argument). When these are all yielded (as
+       PageLinks) it fetches NewPages again. If there is no
+       new page, it blocks until there is one, sleeping between
+       subsequent fetches of NewPages.
+
+       NOT FINISHED
+    """
+    raise NotImplementedError, "this function is not finished yet, do not use"
+    if site is None:
+        site = getSite()
+    while True:
+        returned_html = getPage(site, site.newpagesname(number), do_quote=False, get_edit_page=False, throttle=throttle)
+        start = "<ol start='1' class='special'>"
+        end = "</ol>"
+        startpos = returned_html.index(start) + len(start)
+        endpos = startpos + returned_html[startpos:].index(end)
+        relevant = returned_html[startpos:endpos]
+        lines = [line.strip() for line in relevant.strip().split('\n')][::-1]
+        for line in lines:
+            # get date, pagelink, size, user, comment
+            print line
+        if onlyonce:
+            break
+        # get new batch: make sure they overlap and start with the newest
+        # if they don't overlap, refetch with more articles
+        # if the overlay = 100%: wait a while and try again
+        return
+
 def allpages(start = '!', site = None, throttle = True):
     """Generator which yields all articles in the home language in
        alphanumerical order, starting at a given page. By default,
@@ -2146,6 +2177,9 @@ class Site(object):
 
     def allpagesname(self, s):
         return self.family.allpagesname(self.lang, s)
+
+    def newpagesname(self, n=50):
+        return self.family.newpagesname(self.lang, n)
 
     def references_address(self, s):
         return self.family.references_address(self.lang, s)
