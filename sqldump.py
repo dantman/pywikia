@@ -1,7 +1,13 @@
+# -*- coding: utf-8  -*-
 """
 Reads a cur SQL dump and offers a generator over SQLentry objects. Each SQLentry
 object represents a page.
 """
+#
+# (C) Daniel Herding, 2004
+#
+# Distributed under the terms of the PSF license.
+# 
 
 import re
 import wikipedia, config
@@ -38,22 +44,22 @@ class SQLdump:
     # Generator. Reads one line at a time from the SQL dump file, and parses it
     # to create SQLentry objects. Stops when the end of file is reached.
     def pages(self):
-        pageR = re.compile("\((\d+),"     # cur_id
-                         + "(\d+),"       # cur_namespace
-                         + "\'(.*?)\',"   # cur_title
-                         + "\'(.*?)\',"   # cur_text           (page contents)
-                         + "\'(.*?)\',"   # cur_comment        (last edit's summary text)
-                         + "(\d+),"       # cur_user           (user ID of last contributor)
-                         + "\'(.*?)\',"   # cur_user_text      (user name)
-                         + "\'(\d+)\',"   # cur_timestamp
-                         + "\'(.*?)\',"   # cur_restrictions   (protected page?)
-                         + "(\d+),"       # cur_counter        (view counter, disabled)
-                         + "(\d+),"       # cur_is_redirect
-                         + "(\d+),"       # cur_minor_edit
-                         + "(\d+),"       # cur_is_new
-                         + "([\d\.]+?),"  # cur_random         (for random page function)
-                         + "\'(\d+)\',"   # inverse_timestamp  (obsolete)
-                         + "\'(\d+)\'")   # cur_touched        (cache update timestamp)
+        pageR = re.compile("\((\d+),"    # cur_id
+                         + "(\d+),"      # cur_namespace
+                         + "'(.*?)',"    # cur_title
+                         + "'(.*?)',"    # cur_text           (page contents)
+                         + "'(.*?)',"    # cur_comment        (last edit's summary text)
+                         + "(\d+),"      # cur_user           (user ID of last contributor)
+                         + "'(.*?)',"    # cur_user_text      (user name)
+                         + "'(\d+)',"    # cur_timestamp
+                         + "'(.*?)',"    # cur_restrictions   (protected page?)
+                         + "(\d+),"      # cur_counter        (view counter, disabled on WP)
+                         + "(\d+),"      # cur_is_redirect
+                         + "(\d+),"      # cur_minor_edit
+                         + "(\d+),"      # cur_is_new
+                         + "([\d\.]+?)," # cur_random         (for random page function)
+                         + "'(\d+)',"    # inverse_timestamp  (obsolete)
+                         + "'(\d+)'\)")  # cur_touched        (cache update timestamp)
         print 'Reading SQL dump'
         import codecs
         f=codecs.open(self.filename, 'r', encoding = self.encoding)
