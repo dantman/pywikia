@@ -190,8 +190,15 @@ class PageLink(object):
             self._tosite = getSite() # Default to home wiki
         # Clean up the name, it can come from anywhere.
         title = title.strip()
-        if title and title[0]==':':
+        if title[0]==':':
             title = title[1:]
+        title = title.split(':')
+        # translate a default namespace name into the local namespace name
+        if len(title) > 1:
+            for ns in site.family.namespaces.keys():
+                if title[0] == site.family.namespace('_default',ns):
+                    title[0] = site.namespace(ns)
+        title = ':'.join(title)
         self._urlname = link2url(title, site = self._site, insite = insite)
         self._linkname = url2link(self._urlname, site = self._site, insite = self._tosite)
 
@@ -952,6 +959,7 @@ class GetAll(object):
             print repr(pl)
             print repr(self.pages)
             print "BUG> bug, page not found in list"
+            return
         m = redirectRe(self.site).match(text)
         if m:
             edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
