@@ -86,10 +86,10 @@ langs = {
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
           'mr', 'id', 'simple', 'gl', 'lv', 'sw',
-          'tt', 'uk', 'vo', 'ga']
+          'tt', 'uk', 'vo', 'ga', 'da']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'da']
+latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -155,9 +155,10 @@ interwiki_putfirst = {
     'fr':['af','ar','ms','bs','ca','cs','cy','da','de',
           'et','el','en','es','eo','eu','fr','fy','ga',
           'gl','ko','hi','hr','id','it','ia','he','sw',
-          'la','lv','hu','ml','mr','nl','ja','no','oc',
-          'pt','ro','ru','sq','simple','sl','sr','fi',
-          'sv','tt','vi','tr','uk','vo','zh','zh-cn','zh-tw'],
+          'la','lv','lt','hu','ml','mr','nah','nl','ja',
+          'no','oc','nds','pl','pt','ro','ru','sq','simple',
+          'sl','sr','fi','sv','tt','vi','tr','uk','vo',
+          'zh','zh-cn','zh-tw'],
     'hu':['en'],
     'pl':['af','sq','en','ar','eu','bs','zh','zh-tw','zh-cn',
           'hr','cs','da','eo','et','fi','fr','fy','gl',
