@@ -86,6 +86,9 @@ def get_image(original_url, source_wiki, original_description, debug=False):
     uo = wikipedia.MyURLopener()
     file = uo.open(fn)
     contents = file.read()
+    if contents.find("The requested URL was not found on this server.") != -1:
+        print "Couldn't download the image."
+        return
     file.close()
     # Isolate the pure name
     if '/' in fn:
