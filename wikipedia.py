@@ -894,6 +894,7 @@ def getUrl(host,address):
     uo = MyURLopener()
     if cookies:
         uo.addheader('Cookie', cookies)
+    print ('Opening: http://%s%s'%(host, address))
     f = uo.open('http://%s%s'%(host, address))
     text = f.read()
     #print f.info()
@@ -1597,7 +1598,9 @@ def setMyLang(code):
         #print "Not logged in"
         cookies = None
         loggedin = False
-
+    if mylang.lower() == 'commons':
+        family._addlang(mylang,'commons.wikimedia.org')
+        
 def checkLogin():
     global loggedin
     txt = getPage(mylang,'Non-existing page', get_edit_page = False)

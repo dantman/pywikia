@@ -5,6 +5,7 @@ import config, urllib
 # Parent class for all wiki families
 
 class Family:
+    # Note that if mylang is 'commons', it is automatically added.
     langs = {}
 
     # MediaWiki default namespace titles
@@ -65,7 +66,7 @@ class Family:
         },
     }
 
-    def _addlang(self, code, location, namespaces):
+    def _addlang(self, code, location, namespaces = {}):
         """Add a new language to the langs and namespaces of the family.
            This is supposed to be called in the constructor of the family."""
         self.langs[code] = location
