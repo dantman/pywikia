@@ -22,7 +22,7 @@ It will then send the image to wikipedia.
 #
 __version__='$Id$'
 
-import re,sys
+import os, sys, re
 import wikipedia, lib_images, config
 
 fn = ''
@@ -46,7 +46,14 @@ if not wikipedia.cookies:
 
 desc=' '.join(desc)
 
-if fn=='':
-    fn = wikipedia.input(u'File or URL where image is now: ')
+ok = (fn!='') and ( ('://') in fn or os.path.exists(fn))
+while not ok:
+    if not fn:
+        wikipedia.output(u'No input filename given')
+    else:
+        wikipedia.output(u'Invalid input filename given. Try again.')
+    fn = wikipedia.input(u'File or URL where image is now:')
+    ok = (fn!='') and ( ('://') in fn or os.path.exists(fn))
 
+     
 lib_images.get_image(fn, None, desc, keep)
