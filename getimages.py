@@ -43,17 +43,26 @@ wikipedia.family._addlang('commons','commons.wikimedia.org')
 
 for image in wikipedia.PageLinksFromFile(filename):
     if image.isImage():
-        image.get()
-        print "--------------------------------------------------"
-        print "Image: %s"% (image.linkname())
         try:
-            # show the image description page's contents
-            print image.get()
+            image.get()
+            print "--------------------------------------------------"
+            print "Image: %s"% (image.linkname())
+            try:
+                # show the image description page's contents
+                print image.get()
+            except wikipedia.NoPage:
+                print "Description empty."
+            except wikipedia.IsRedirectPage:
+                print "Description page is redirect?!"
+            answer=wikipedia.input(u"Copy this image (y/N)?")
+            if answer != "":
+                if answer[0] in ["y","Y"]:
+                    lib_images.transfer_image(image)
+        # If we can't get the image description page, just go on with
+        # the next one.
         except wikipedia.NoPage:
-            print "Description empty."
+            pass
         except wikipedia.IsRedirectPage:
-            print "Description page is redirect?!"
-        answer=wikipedia.input(u"Copy this image (y/N)?")
-        if answer != "":
-            if answer[0] in ["y","Y"]:
-                lib_images.transfer_image(image)
+            pass
+        except wikipedia.LockedPage:
+            pass
