@@ -412,8 +412,8 @@ def main():
             for old, new in replacements.items():
                 if regex:
                     # TODO: compiling the regex each time might be inefficient
-                    old = re.compile(old)
-                    new_text = old.sub(new, new_text)
+                    oldR = re.compile(old)
+                    new_text = oldR.sub(new, new_text)
                 else:
                     new_text = new_text.replace(old, new)
             if new_text == original_text:
@@ -426,7 +426,7 @@ def main():
                     continue
             else:
                 #wikipedia.showDiff(original_text, new_text)
-                wikipedia.showColorDiff(original_text, new_text, replacements)
+                wikipedia.showColorDiff(original_text, new_text, replacements, regex)
                 if not acceptall:
                     choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
                     if choice in ['a', 'A']:

@@ -2354,7 +2354,7 @@ def showDiff(oldtext, newtext):
             output(line)
 
 
-def showColorDiff(oldtext, newtext, replacements):
+def showColorDiff(oldtext, newtext, replacements, regex):
     sep = '\r\n'
     ol = oldtext.split(sep)
     if len(ol) == 1:
@@ -2365,11 +2365,19 @@ def showColorDiff(oldtext, newtext, replacements):
         if line[0] in ['-']:
             old = line
             for a, b in replacements.items():
-                old = old.replace(a, '\x1b[91;1m' + a + '\x1b[0m')
+                if regex:
+                    a = re.compile("(" + a + ")")
+                    old = a.sub('\x1b[91;1m\\1\x1b[0m', old)
+                else:
+                    old = old.replace(a, '\x1b[91;1m' + a + '\x1b[0m')
             output(old)
             new = line
             for a, b in replacements.items():
-                new = new.replace(a, '\x1b[92;1m' + b + '\x1b[0m')
+                if regex:
+                    a = re.compile(a)
+                    new = a.sub('\x1b[92;1m' + b + '\x1b[0m', new)
+                else:
+                    new = new.replace(a, '\x1b[92;1m' + b + '\x1b[0m')
             output('+' + new[1:])
 
     
