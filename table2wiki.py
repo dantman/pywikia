@@ -46,7 +46,12 @@ notFixedSites = ''
 notFoundSites = ''
 quietMode = False # use -quiet to get less output
 
+# if the -file argument is used, page titles are dumped in this array.
+# otherwise it will only contain one page.
 articles = []    
+# if -file is not used, this temporary array is used to read the page title.
+page_title = []
+
 for arg in sys.argv[1:]:
     if arg.startswith('-file:'):
 
@@ -75,7 +80,15 @@ for arg in sys.argv[1:]:
         articles = "test"
         config.DEBUG = True
     else:
-        articles.append(arg)
+        page_title.append(arg)
+
+# if the page is given as a command line argument,
+# connect the title's parts with spaces
+if page_title != []:
+     page_title = ' '.join(page_title)
+     articles.append(page_title)
+        
+        
 for article in articles:
     if config.DEBUG:
         f = open("table2wiki.testTable")
