@@ -28,6 +28,11 @@ Command line options:
              the (only) alternative; if not set, the pages linked to from
              the page redirected to are used. If the page is not a redirect
              page, this will raise an error
+             
+   -primary  "primary topic" disambiguation (Begriffsklärung nach Modell 2).
+             That's titles where one topic is much more important, the
+             disambiguation page is saved somewhere else, and the important
+             topic gets the nice name.
    
    -file:XYZ reads a list of pages, which can for example be gotten through 
              extract_names.py. XYZ is the name of the file from which the
@@ -81,6 +86,13 @@ msg_redir={
           'de':'Bot-unterst\xfctzte Redirectaufl\xf6sung',
           'nl':'Robot-geholpen doorverwijzing',
           'fr':'Correction de lien vers redirect'
+          }
+
+# disambiguation page name format for "primary topic" disambiguations
+# (Begriffsklärungen nach Modell 2)
+primary_topic_format={
+          'de':'%s_(Begriffskl\xe4rung)',
+          'en':'%s_(disambiguation)'
           }
 
 # List pages that will be ignored if they got a link to a disambiguation
@@ -318,11 +330,13 @@ solve_redirect = 0
 page_list = []
 # if -file is not used, this temporary array is used to read the page title.
 page_title = []
-
+primary = False
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
+    elif arg == '-primary':
+        primary = True
     elif arg.startswith('-file'):
         if len(arg) == 5:
             file = raw_input('Please enter the list\'s filename: ')
@@ -386,7 +400,11 @@ for wrd in (page_list):
             sys.exit(1)
     elif getalternatives:
         try:
-            thistxt = thispl.get()
+            if primary:
+                disamb_pl = wikipedia.PageLink(wikipedia.mylang, primary_topic_format[wikipedia.mylang] % wrd)
+                thistxt = disamb_pl.get()
+            else:
+                thistxt = thispl.get()
         except wikipedia.IsRedirectPage,arg:
             thistxt = wikipedia.PageLink(wikipedia.mylang, str(arg)).get()
         thistxt = wikipedia.removeLanguageLinks(thistxt)
