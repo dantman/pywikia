@@ -153,7 +153,7 @@ def add_category(sort_by_last_name = False):
     newcat = newcat[:1].capitalize() + newcat[1:]
 
     # get edit summary message
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_change) % newcat)
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_add) % newcat)
     
     cat_namespace = wikipedia.family.category_namespace(wikipedia.mylang)
 
