@@ -120,7 +120,7 @@ special = {
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['it', 'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
+oldsoftware = ['it', 'no', 'pt', 'af', 'la', 'ca', 'ia', 'et', 'eu',
                'simple', 'nds', 'mr', 'id', 'gl', 'lv', 'sw',
                'tt', 'uk', 'vo', 'ga']
 
