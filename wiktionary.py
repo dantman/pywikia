@@ -1,5 +1,12 @@
 #!/usr/bin/python
 
+langheader = {	'nl': '{{-nl-}}',
+		'en': '==English=='
+            }
+
+posheader = {	'nl': '{{-noun-}}',
+		'en': '=== Noun ==='
+            }
 class WiktionaryEntry:				# This refers to an entire page
 	def __init__(self,wikilang,term):	# wikilang here refers to the language of the Wiktionary
 		self.wikilang=wikilang
@@ -13,11 +20,8 @@ class WiktionaryEntry:				# This refers to an entire page
 		return self.subentries
 
 	def wikiwrap(self):
-		print 'testing'
 		for subentry in self.subentries:
-			print 'testing'
-			entry='test'
-#			entry=subentry.wikiwrap(wikilang) + '\n\n'
+			entry=subentry.wikiwrap(self.wikilang) + '\n\n'
 
 		# Here something needs to be inserted for treating interwiktionary links
 		# that will have to wait for the moment
@@ -38,11 +42,11 @@ class SubEntry:					# On one page, different terms in different languages can be
 
 	def wikiwrap(self,wikilang):
 		for meaning in self.meanings:
-			subentry=langheader(wikilang) + '\n'	# langheader is a dictionary that has the proper way to create a header indicating the language of a subentry for this Wiktionary
+			subentry=langheader[wikilang] + '\n'	# langheader is a dictionary that has the proper way to create a header indicating the language of a subentry for this Wiktionary
 			term=meaning.term
-			subentry+=posheader(wikilang,term.pos)	# posheader is a dictionary that has the proper way to create headers indicating part of speech
+			subentry+=posheader[wikilang] # ,term.pos)	# posheader is a dictionary that has the proper way to create headers indicating part of speech
 			subentry+='\n'	
-			subentry+=term.getTerm + ' ' + term.getGender + ' ' + meaning.definition
+			subentry= subentry + term.getTerm() + ' ' + term.getGender() + ' ' + meaning.definition()
 			subentry+='\n\n'
 			return subentry
 			
@@ -108,14 +112,14 @@ class Noun(Term):
 		self.gender=gender
 		
 	def getGender(self):
-		return(gender)
+		return(self.gender)
 
 	def wikiwrap(self,wikilang):
 		return()
 		
 
 if __name__ == '__main__':
-	apage = WiktionaryEntry('nl',u'iets')
+	apage = WiktionaryEntry('nl',u'iemand')
 	print 'Wiktionary language: %s'%apage.wikilang
 	print 'Wiktionary apage: %s'%apage.term
 	print
@@ -123,11 +127,11 @@ if __name__ == '__main__':
 	print 'Noun: %s'%aword.term
 	aword.setGender('o')
 	print 'Gender: %s'%aword.gender
-        frtrans = Noun('fr',u"quelque'chose")
+        frtrans = Noun('fr',u"quelqu'un")
 	frtrans.setGender('f')
-	entrans = Noun('en',u'something')
+	entrans = Noun('en',u'somebody')
 	
-	ameaning = Meaning(u'een ding',aword)
+	ameaning = Meaning(u'een persoon',aword)
 	ameaning.addTranslation(frtrans)
 	ameaning.addTranslation(entrans)
 			
@@ -137,7 +141,7 @@ if __name__ == '__main__':
 	apage.addSubEntry(asubentry)
 
 	print
-	t= apage.wikiwrap
+	t=apage.wikiwrap()
 	print t
 	
 #	{{-nl-}}
