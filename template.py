@@ -74,7 +74,7 @@ def treat(refpl):
     else:
         # Check if template is really used in this article
         if not templateR.search(reftxt):
-            print "Not found in %s"%refpl
+            print "Not found in %s" % refpl.linkname()
             return
         
         # Replace all occurences of the template in this article
