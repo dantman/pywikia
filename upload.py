@@ -76,8 +76,7 @@ def main(args):
     wiki = ''
 
     for arg in args:
-        arg = wikipedia.argHandler(arg)
-        if arg:
+        if wikipedia.argHandler(arg):
             print arg
             if arg.startswith('-keep'):
                 keep = True
@@ -87,14 +86,11 @@ def main(args):
                 filename = arg
             else:
                 description.append(arg)
-        description = ' '.join(description)
-        bot = UploadRobot(filename, description, wiki, keep)
-        bot.run()
+    description = ' '.join(description)
+    bot = UploadRobot(filename, description, wiki, keep)
+    bot.run()
 
 try:
     main(sys.argv[1:])
-except:
-    wikipedia.stopme()
-    raise
-else:
+finally:
     wikipedia.stopme()
