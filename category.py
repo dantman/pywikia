@@ -3,9 +3,23 @@
 """
 Scripts to manage categories.
 
-Run the bot without arguments for instructions.
+Syntax: python category.py action [-option]
 
-See comments below for details.
+where action can be one of these:
+ * add    - mass-add a category to a list of pages
+ * remove - remove category tag from all pages in a category
+ * rename - move all pages in a category to another category
+ * tidy   - tidy up a category by moving its articles into subcategories
+ * tree   - show a tree of subcategories of a given category
+
+and  option can be one of these:
+ * person - sort persons by their last name (for action 'add')
+
+For example, to create a new category from a list of persons, type:
+    
+  python category.py add -person
+    
+and follow the on-screen instructions.
 """
 
 #
@@ -15,7 +29,7 @@ See comments below for details.
 # Distribute under the terms of the PSF license.
 # 
 import re, sys, string
-import wikipedia, config, interwiki
+import wikipedia, config, interwiki, catlib
 
 # Summary messages
 msg_add={
@@ -25,10 +39,10 @@ msg_add={
     }
 
 msg_change={
-    'de':u'Bot: Ändere [[Kategorie:%s]]',
-    'en':u'Robot: Changing [[Category:%s]]',
-    'es':u'Bot: Cambiada [[Categoría:%s]]',
-    'nl':u'Bot: Wijziging [[Categorie:%s]]',
+    'de':u'Bot: Ändere Kategorie %s',
+    'en':u'Robot: Changing category %s',
+    'es':u'Bot: Cambiada categoría %s',
+    'nl':u'Bot: Wijziging Categorie %s',
     }
 
 msg_remove={
@@ -40,12 +54,53 @@ msg_remove={
 
 
 
-def add_category(sort_by_last_name = False):
-'''
-A robot to mass-add a category to a list of pages.
-'''
+catContentDB={}
+def get_subcats(supercat):
+    '''
+    For a given supercategory, return a list of CatLinks for all its
+    subcategories.
+    Saves this list in a temporary database so that it won't be loaded from the
+    server next time it's required.
+    '''
+    # if we already know which subcategories exist here
+    if catContentDB.has_key(supercat):
+        return catContentDB[supercat][0]
+    else:
+        subcatlist = supercat.subcategories()
+        articlelist = supercat.articles()
+        # add to dictionary
+        catContentDB[cat] = [subcatlist, articlelist]
+        return subcatlist
 
-    def sorted_by_last_name(catlink, pagelink):
+def get_articles(cat):
+    '''
+    For a given category, return a list of PageLinks for all its articles.
+    Saves this list in a temporary database so that it won't be loaded from the
+    server next time it's required.
+    '''
+    # if we already know which articles exist here
+    if catContentDB.has_key(cat):
+        return catContentDB[cat][1]
+    else:
+        subcatlist = cat.subcategories()
+        articlelist = cat.articles()
+        # add to dictionary
+        catContentDB[cat] = [subcatlist, articlelist]
+        return articlelist
+
+superclassDB={}
+# like the above, but for supercategories
+def get_supercats(subcat):
+    # if we already know which subcategories exist here
+    if superclassDB.has_key(subcat):
+        return superclassDB[subcat]
+    else:
+        supercatlist = subcat.supercategories()
+        # add to dictionary
+        superclassDB[subcat] = supercatlist
+        return supercatlist
+
+def sorted_by_last_name(catlink, pagelink):
         '''
         given a CatLink, returns a CatLink which has an explicit sort key which
         sorts persons by their last names.
@@ -71,6 +126,10 @@ A robot to mass-add a category to a list of pages.
         else:
             return wikipedia.PageLink(wikipedia.mylang, catlink.linkname())
 
+def add_category(sort_by_last_name = False):
+    '''
+    A robot to mass-add a category to a list of pages.
+    '''
     print "This bot has two modes: you can add a category link to all"
     print "pages mentioned in a List that is now in another wikipedia page"
     print "or you can add a category link to all pages that link to a"
@@ -213,32 +272,6 @@ def tidy_category(cat_title):
     wikipedia.get_throttle.setDelay(5)
     wikipedia.put_throttle.setDelay(10)
 
-    subclassDB={}
-    # for a given supercategory, return a list of all its subcategories.
-    # save this list in a temporary database so that it won't be loaded from the
-    # server next time it's required.
-    def get_subcats(supercat):
-        # if we already know which subcategories exist here
-        if subclassDB.has_key(supercat):
-            return subclassDB[supercat]
-        else:
-            subcatlist = supercat.subcategories()
-            # add to dictionary
-            subclassDB[supercat] = subcatlist
-            return subcatlist
-
-    superclassDB={}
-    # like the above, but for supercategories
-    def get_supercats(subcat):
-        # if we already know which subcategories exist here
-        if superclassDB.has_key(subcat):
-            return superclassDB[subcat]
-        else:
-            supercatlist = subcat.supercategories()
-            # add to dictionary
-            superclassDB[subcat] = supercatlist
-            return supercatlist
-            
     # given an article which is in category original_cat, ask the user if it should
     # be moved to one of original_cat's subcategories. Recursively run through
     # subcategories' subcategories.
@@ -342,7 +375,63 @@ def tidy_category(cat_title):
             print '==================================================================='
             move_to_category(article, catlink, catlink)
 
+def treeview(cat, max_depth, current_depth = 0, supercat = None):
+    '''
+    Returns a multi-line string which contains a tree view of all subcategories
+    of cat, up to level max_depth.
+    
+    Parameters:
+        * cat - a CatLink which will be the tree's root
+        * current_depth - the current level in the tree (for recursion)
+        * supercat - the CatLink of the category we're coming from
+        * max_depth - the limit beyond which no subcategories will be listed
+    '''
+    # Translations to say that the current category is in more categories than
+    # the one we're coming from
+    also_in_cats = {
+        'de': u'(auch in %s)',
+        'en': u'(also in %s)',
+        }
+        
+    result = ''
+    result += ('#' * current_depth)
+    result += '[[:%s|%s]]' % (cat.linkname(), cat.linkname().split(':', 1)[1])
+    result += ' (%d)' % len(get_articles(cat))
+    supercats = get_supercats(cat)
+    # If the current cat is not our tree's root
+    if supercat != None:
+        # Find out which other cats are supercats of the current cat
+        try:
+            supercats.remove(supercat)
+        except:
+            pass
+        if supercats != []:
+            supercat_names = []
+            for i in range(len(supercats)):
+                # create a list of wiki links to the supercategories
+                supercat_names.append('[[:%s|%s]]' % (supercats[i].linkname(), supercats[i].linkname().split(':', 1)[1]))
+                # print this list, seperated with commas, using translations given in also_in_cats
+            result += ' ' + also_in_cats[wikipedia.mylang] % ', '.join(supercat_names)
+    result += '\n'
+    if current_depth < max_depth:
+        for subcat in get_subcats(cat):
+            result += treeview(subcat, max_depth, current_depth + 1, supercat = cat)
+    else:
+        if get_subcats(cat) != []:
+            result += '#' * (current_depth + 1) + '[...]'
+    return result
 
+def print_treeview(catname, max_depth = 10):
+    '''
+    Prints the multi-line string generated by treeview.
+
+    Parameters:
+        * catname - the title of the category which will be the tree's root
+        * max_depth - the limit beyond which no subcategories will be listed
+    '''
+    # TODO: make max_depth changeable with a parameter or config file entry 
+    cat = catlib.CatLink(wikipedia.mylang, catname)
+    wikipedia.output(treeview(cat, max_depth, 0))
 
 if __name__ == "__main__":
     action = None
@@ -358,9 +447,10 @@ if __name__ == "__main__":
             action = 'rename'
         elif arg == 'tidy':
             action = 'tidy'
+        elif arg == 'tree':
+            action = 'tree'
         elif arg == '-person':
             sort_by_last_name = True
-    import catlib
     if action == 'add':
         add_category(sort_by_last_name)
     elif action == 'remove':
@@ -373,18 +463,9 @@ if __name__ == "__main__":
     elif action == 'tidy':
         cat_title = wikipedia.input(u'Which category do you want to tidy up?')
         tidy_category(cat_title)
+    elif action == 'tree':
+        cat_title = wikipedia.input(u'For which category do you want to create a tree view?')
+        print_treeview(cat_title)
     else:
-        print
-        print 'Syntax: python category.py action [-option]'
-        print 'where action can be one of these:'
-        print ' * add  - mass-add a category to a list of pages'
-        print ' * remove - remove category tag from all pages in a category'
-        print ' * rename - move all pages in a category to another category'
-        print ' * tidy - tidy up a category by moving its articles into subcategories'
-        print 'and  option can be one of these:'
-        print ' * person - sort persons by their last name (for action \'add\')'
-        print 
-        print 'For example, to create a new category from a list of persons, type:'
-        print '  python category.py add -person'
-        print 'and follow the on-screen instructions.'
-       
+        wikipedia.output(__doc__, 'utf-8')
+
