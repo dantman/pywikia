@@ -493,11 +493,19 @@ for wrd in (page_list):
                         reftxt = edit_window.edit(reftxt)
                         edited = True
                     elif choice=='l':
+                        #########
+                        # The GUI for the list is disabled because it doesn't
+                        # work exactly as expected.
+                        #########
                         #list in new window
-                        print '\n\t\t--> beachte neues Fenster <--'
-                        import gui
-                        list_window = gui.ListBoxWindow()
-                        mylist = list_window.list(alternatives)
+                        #print '\n\t\t--> beachte neues Fenster <--'
+                        #import gui
+                        #list_window = gui.ListBoxWindow()
+                        #mylist = list_window.list(alternatives)
+                        ##########
+                        print '\n'
+                        for i in range(len(alternatives)):
+                            wikipedia.output("%3d - %s" % (i, alternatives[i]))
                     elif choice=='x' and edited:
                         choice=-3
                         break
