@@ -26,14 +26,14 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: boilerplate.py,v 1.5 2004/04/05 13:47:28 a_engels Exp $'
+__version__='$Id: windows_chars.py,v 1.1 2004/04/14 11:31:07 wikipedian Exp $'
 #
 import wikipedia,re,sys,string
 
 # Summary message
 msg={
     'en':'robot: changing Windows-1252 characters to HTML entities',
-    'de':'Bot: Wandle Windows-1252-Zeichen zu HTML-Entitäten',
+    'de':'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
     }
 
 def getReferences(pl):
@@ -91,6 +91,9 @@ def treat(pl):
     try:
         reftxt=pl.get()
     except wikipedia.IsRedirectPage:
+        pass
+    except wikipedia.NoPage:
+        print "Page not found: " + pl.linkname()
         pass
     else:
         count = 0
