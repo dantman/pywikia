@@ -14,16 +14,17 @@ host = "http://wortschatz.uni-leipzig.de/wort-des-tages/RDF/WdT/"
 
 localArticleList = "Stichwortliste_de_Wikipedia_2004-04-17_sortiert.txt"
 
-XMLfiles = {"ereignis.xml"      : "Eregnisse",
-            "kuenstler.xml"     : "Kunst, Kultur und Wissenschaft", 
-            "organisation.xml"  : "Organisationen",
-            "ort.xml"           : "Orte",
-            "politiker.xml"     : "Politker",
-            "schlagwort.xml"    : u"Schlagwörter",
-            "sportler.xml"      : "Sportler",
-            "sport.xml"         : "Sport",
-            "person.xml"        : "sonstige"
-            }
+XMLfiles = {
+    "ort.xml"           : "Orte",
+    "ereignis.xml"      : "Eregnisse",
+    "kuenstler.xml"     : "Kunst, Kultur und Wissenschaft", 
+    "organisation.xml"  : "Organisationen",
+    "politiker.xml"     : "Politker",
+    "schlagwort.xml"    : u"Schlagwörter",
+    "sportler.xml"      : "Sportler",
+    "sport.xml"         : "Sport",
+    "person.xml"        : "sonstige"
+    }
 article = "Wikipedia:Wort_des_Tages"
 
 newText = "\n== " + str(datetime.date.today()) + " =="
@@ -43,17 +44,30 @@ for file in XMLfiles:
 
 
     # and make a result text for wikipedia
-    newText = newText + "\n* '''" +  XMLfiles[file] + ":''' \n"
+    skip = []
     for a in data:
         if localArticleList != "":
             import string
             for line in fileinput.input(localArticleList):
-                if string.strip(line) == a:
-                    skip = 1
-                    break
-        if skip == 0:
-            newText = newText + "[[" + a + "]] ([" + \
-                      data[a]['link'] + ' ' + data[a]['count'] + ']) \n'
+                try:
+                    if unicode(string.strip(line)) == a:
+                        skip.append(a)
+                        print "skipping: " + a
+                        break
+                except:
+                    pass
+            fileinput.close()
+    for a in skip:
+        del data[a]
+    print data
+
+    if data:
+        newText = newText + "\n* '''" +  XMLfiles[file] + ":''' \n"
+    for a in data:
+        if DEBUG:
+            print "checking: " + a
+        newText = newText + "[[" + a + "]] ([" + \
+                  data[a]['link'] + ' ' + data[a]['count'] + ']) \n'
     if DEBUG:
         print newText
 
