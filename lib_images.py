@@ -83,23 +83,23 @@ def get_image(fn,target,description):
     print "The filename on wikipedia will default to:",fn
     newfn = raw_input("Better name : ")
     if newfn:
-        fn = newfn
+        # this is currently hardcoded to use the MS-DOS Codepage 850 to read
+        # the input. I will probably add a config option later.
+        fn = unicode(newfn, 'cp850')
+    fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
+
     # Wikipedia doesn't allow spaces in the file name.
     # Replace them here to avoid an extra confirmation form
     fn = fn.replace(' ', '_')
-    fn = fn.encode('utf-8')
     
-    # A proper description for the submission
-
-    # What I would have _liked_ to put here:
-    # if description=='':
-    #     description = raw_input('Description : ')
-    # Unfortunately, the result is not ASCII then. I assume
-    # but am not sure that the problem is newlines.
-
-    description = description.encode('utf-8')
+    # A proper description for the submission.
+    # Only ask for a description if no one was found on the original image
+    # description page.
     if description=='':
         description = raw_input('Description : ')
+        description = unicode(description, 'cp850')
+    description = description.encode(wikipedia.code2encoding(wikipedia.mylang))
+    print description
 
     data = post_multipart(wikipedia.langs[wikipedia.mylang],
                           uploadaddr,
