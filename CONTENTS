@@ -20,64 +20,70 @@ Library routines
 LICENSE                : a reference to the Python Software Foundation license
 wikipedia.py           : The wikipedia library
 config.py              : Configuration module containing all defaults
+date.py                : Date formats in various languages
+lib_images.py          : Part of the Wikipedia library special for the uploading
 logger.py              : A support library logging screen output to a file
+titletranslate.py      : rules and tricks to auto-translate wikipage titles
+translator.py          : various translations (for copy_table.py)
 unequal.py             : A few routines coordinating exceptions to the 
                          rule that interwiki-linked pages are equal
-titletranslate.py      : rules and tricks to auto-translate wikipage titles
+                         of images
+nl-exceptions.dat      : Some more specific exceptions
 
 Utilities
 ---------
-extract_names.py       : A program to make a list of 480 pagenames based on a 
-                         html file that is the result of a Special:Allpages 
-                         request.
+extract_names.py       
+extract_wikilinks.py   : Two bots to get all linked-to Wikipedia pages from an
+                         HTML-file. They differ in their output: extract_names
+                         gives bare names (can be used for solve_disambiguation.py,
+                         table2wiki.py or windows-chars.py), extract_wikilinks
+                         gives them in interwiki-link format (can be used for
+                         interwiki.py)
 login.py               : Log in to an account on your "home" wikipedia. 
-xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
-                         created by interwiki.py), and if it contains an error,
-                         show a stacktrace with the location of the error.
 splitwarning.py        : split a treelang.log file into warning files for each
                          separate language. suggestion: Zip the created files up, 
                          put them somewhere on the internet, and send an 
                          announcement of the location on the robot mailinglist.
+test.py                : Check whether you are logged in.
+xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
+                         created by interwiki.py), and if it contains an error,
+                         show a stacktrace with the location of the error.
 
 Robots
 ------
-autoredir.py           : Make redirect pages for capitalized months like 
-                         [[1 Januari]]; a one-time robot for the nl: Wikipedia 
-backref.py             : List all pages for which nl:->xx: does not correspond 
-                         to xx:->nl:. This is obsolescent now that treelang has
-                         a "-backref" command line parameter.
+boilerplate.py         : change one boilerplate (that is {{msg:...}}) into
+                         another
 brackethttp.py         : a bot replacing a ()-bracketed http: link by an
                          explicit [ ] link to avoid a parser problem.
-disamb_all.py          : Run the robot solve_disambiguation.py (see below) over
-                         articles listed in a file passed as argument.
+copy_table.py          : copy a table from one wikipedia to another, making
+                         automatic translations
+imagetransfer.py       : Given a Wikipedia page, check the interwiki links
+                         for images, and let the user choose among them for
+                         images to upload
 interwiki.py           : A robot to check interwiki links on all pages (or
                          a range of pages) of a wikipedia.
-warnfile.py            : A robot that parses a warning file created by interwiki.py
-                         on another wikipedia language, and implements the
-                         suggested changes without verifying them.
-table2wiki.py	       : Semi-automatic converting HTML-tables to wiki-tables.
-		         A GUI for better control will be written soon.
-test.py                : Misc testing, now configured to test whether you are 
-                         logged in.
-yearlayout.py          : An old robot used to change the layout of all nl: year 
-                         pages.
-solve_disambiguation.py: Disambiguate pages from the command line. 
-upload.py              : A new robot that can currently only simply upload
-                         an image to wikipedia, but it will in the future
-                         be able to insert the image in a wiki page as well.
-standardize_interwiki.py:A robot that downloads a page, and reformats the 
-                         interwiki links in a standard way (i.e. move all
-                         of them to the bottom or the top, with the same
-                         separator, in the right order).
 pagelist.py            : Starting with one or more pages, spiders the wiki forward
                          as well as backward, and thus can be used to get a list
                          of Wikipedia pages connected to a certain subject.
 replace.py             : Search an article or a provided collection of articles for
                          a text and replace it by another text. Both text are set in
                          two configurable text files.
+solve_disambiguation.py: Interactive robot doing disambiguation.
+standardize_interwiki.py:A robot that downloads a page, and reformats the 
+                         interwiki links in a standard way (i.e. move all
+                         of them to the bottom or the top, with the same
+                         separator, in the right order).
+table2wiki.py	       : Semi-automatic converting HTML-tables to wiki-tables.
+upload.py              : upload an image to Wikipedia
+warnfile.py            : A robot that parses a warning file created by interwiki.py
+                         on another wikipedia language, and implements the
+                         suggested changes without verifying them.
+windows_chars.py       : change characters that are not part of Latin-1 into
+                         something harmless. It is advisable to do this on
+                         Latin-1 Wikipedias before switching to UTF-8.
 
 More precise information, and a list of the options that are available for
-the various programs, are given inside the programs' source code files.
+the various programs, are given at the start of the programs' source code files.
 
 You need to have at least python version 2.3 installed on your computer
 to be able to run any of the code in this package. Support for older
@@ -96,9 +102,6 @@ mylang='xx'
 
 There are other variables that can be set in the configuration file, please
 check config.py for ideas.
-
-The robot has been used on en:, da:, fr:, fy: and hu: so far. We're
-ironing out bugs showing up on UTF-8 wikipedia's.
 
 You do not need to "install" this package to be able to make use of
 it. You can actually just run it from the directory where you unpacked
