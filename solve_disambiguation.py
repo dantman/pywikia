@@ -159,7 +159,7 @@ if getalternatives:
 
 # print choices on screen
 for i in range(len(alternatives)):
-    print "%3d"%i,alternatives[i]
+    print "%3d" % i, repr(alternatives[i])
 
 def treat(refpl, thispl):
     try:
@@ -215,7 +215,7 @@ def treat(refpl, thispl):
                     context*=2
                 elif choice=='l':
                     for i in range(len(alternatives)):
-                        print "%3d" % i,alternatives[i]
+                        print "%3d" % i,repr(alternatives[i])
                 else:
                     if choice[0] == 'r':
                         replaceit = 1
