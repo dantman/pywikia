@@ -44,10 +44,6 @@ msg={
     'en':'Robot-assisted disambiguation ',
     'da':'Retter flertydigt link til '
     }
-if msg.has_key(wikipedia.mylang):
-    msglang=wikipedia.mylang
-else:
-    msglang='en'
 
 def getreferences(pl):
     host = wikipedia.langs[pl.code()]
@@ -71,6 +67,11 @@ for arg in sys.argv[1:]:
         wrd.append(arg)
 
 wrd=' '.join(wrd)
+
+if msg.has_key(wikipedia.mylang):
+    msglang=wikipedia.mylang
+else:
+    msglang='en'
 
 wikipedia.setAction(msg[msglang]+wrd)
 
