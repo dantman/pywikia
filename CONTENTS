@@ -33,6 +33,8 @@ backref.py             : List all pages for which nl:->xx: does not correspond
                          to xx:->nl:. This is obsolescent now that treelang has
                          a "-backref" command line parameter.
 getlang.py             : Get interwiki links for years AD
+disamb_all.py          : Run the robot solve_disambiguation.py (see below) over
+                         articles listed in a file passed as argument.
 test.py                : Misc testing, now configured to test whether you are 
                          logged in.
 treelang_all.py        : A script that runs treelang.py for each of the
