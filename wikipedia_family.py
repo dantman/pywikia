@@ -1,3 +1,5 @@
+import config
+
 # The wikimedia family that is known as wikipedia, the encyclopedia
 
 # Known wikipedia languages, given as a dictionary mapping the language code
@@ -329,13 +331,16 @@ def get_address(code, name):
     return '/w/wiki.phtml?title='+name+"&redirect=no"
 
 def references_address(code, name):
-    return "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(special[code], name)
+    return "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s&limit=%d"%(special[code], name, config.special_page_limit)
 
 def upload_address(code):
     return '/wiki/%s:Upload'%special[code]
 
-def maintenance_address(code, maintenance_page):
-    return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special[code]) + maintenance_page
+def maintenance_address(code, maintenance_page, default_limit = True):
+    if default_limit:
+        return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special[code]) + maintenance_page
+    else:
+        return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special[code]) + maintenance_page + '&limit=' + str(config.special_page_limit)
 
 def login_address(code):
     return '/w/wiki.phtml?title=%s:Userlogin&amp;action=submit'%special[code]

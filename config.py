@@ -75,6 +75,11 @@ put_throttle = 60
 # than 'noisysleep' seconds, it is logged on the screen.
 noisysleep = 5.0
 
+# Maximum of pages which can be retrieved by special pages. Increase this if
+# you heavily use boilerplate.py, double_redirect.py, and especially if you're
+# running solve_disambiguation.py with the -primary argument.
+special_page_limit = 500
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.

@@ -31,8 +31,8 @@ import re, sys, string
 
 # Summary message
 msg={
-    'en':'Robot: Changing boilerplate text',
-    'de':'Bot: \xc4ndere Textbaustein',
+    'en':u'Robot: Changing boilerplate text',
+    'de':u'Bot: \xc4ndere Textbaustein',
     }
 
 def getReferences(pl):
@@ -50,7 +50,6 @@ for arg in sys.argv[1:]:
         oldformat = True
     else:
         arg = unicode(arg, config.console_encoding)
-        arg = arg.encode(wikipedia.code2encoding(wikipedia.mylang))
         boilerplate_names.append(arg)
 
 if boilerplate_names == []:
@@ -100,6 +99,8 @@ def treat(refpl):
 boilerplateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
 
 # loop over all pages using the boilerplate
+print '%d' % len(getReferences(thispl))
+sys.exit()
 for ref in getReferences(thispl):
     refpl=wikipedia.PageLink(wikipedia.mylang, ref)
     treat(refpl)
