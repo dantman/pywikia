@@ -62,6 +62,7 @@ for arg in sys.argv[1:]:
         #captions
         newText = re.sub("<caption(.*?)>(.*?)<\/caption>",
                          "\n|+\\1 | \\2", newText, 0)
+        newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText, 0)
 
         #very simple <tr>
         newText = re.sub("\n\<(tr|TR)([^>]*?)\>", "\n|-----\\2\r\n", newText, 0)
@@ -82,22 +83,25 @@ for arg in sys.argv[1:]:
 
         # OK, that's only theory but works most times.
         # Most browsers assume that <th> gets a new row and we do the same
-        newText = re.sub("\n\|([\S\s]*?)\n\!", "|\\1\r\n|-----\r\n!",
+        newText = re.sub("\n\|([^-][^|]+?)[\r\n]+\!", "|\\1\r\n|-----\r\n!",
                          newText, 0)
 
         # kills spaces after | or ! or {|
-
         newText = re.sub("[\r\n]+\|[\s]*\n", "\r\n| ", newText, 0)
+        # kills trailing spaces and tabs
+        newText = re.sub("[\t\ ][\t\ ]+([\r\n]){1}", "\\1", newText, 0)
+
+        
         # kill extra new-lines
         newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
         # shortening if <table> had no arguments/parameters
-        newText = re.sub("[\r\n]+\{\|\ \| ", "\r\n\[| ", newText, 0)
+        newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\[| ", newText, 0)
         # shortening if <td> had no args
-        newText = re.sub("[\r\n]+\|\ \| ", "\r\n| ", newText, 0)
+        newText = re.sub("[\r\n]+\|[\ ]+\| ", "\r\n| ", newText, 0)
         # shortening if <th> had no args
-        newText = re.sub("[\r\n]+\!\ \| ", "\r\n! ", newText, 0)
+        newText = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newText, 0)
         # merge two short <td>s (works only once :-(
-        newText = re.sub("[\r\n]+(\| [^\n\r]{1,30})[\r\n]+\| ([^\r\n]{1,30})[\r\n]+",
+        newText = re.sub("[\r\n]+(\| [^\n\r]{1,35})[\r\n]+\| ([^\r\n]{1,35})[\r\n]+",
                          "\r\n\\1 || \\2\r\n", newText, 0)
         # ain't working, yet
 #        newText = re.sub('(\{\|[\w\W]*?\=)([^"][^ >]*)(.*?\|\})',
