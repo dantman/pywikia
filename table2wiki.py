@@ -281,7 +281,6 @@ for article in articles:
     ##################
     # proper attributes. attribute values need to be in quotation marks.
     num = 1
-    print newText
     while num != 0:
         # group 1 starts with newlines, followed by a table tag
         # (either !, |, {|, or |---), then zero or more attribute key-value
