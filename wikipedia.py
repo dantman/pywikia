@@ -902,7 +902,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             if edittime[code, link2url(name, code)] == "0":
                 print "DBG> page may be locked?!"
                 #pass
-                #raise LockedPage()
+                raise LockedPage()
     
             x = text[i1:i2]
             x = unescape(x)
