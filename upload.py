@@ -47,7 +47,7 @@ if not wikipedia.cookies:
 desc=' '.join(desc)
 
 if fn=='':
-    fn = raw_input('File or URL where image is now : ')
+    fn = wikipedia.input(u'File or URL where image is now : ')
 
 #convert arguments from encoding used by user's console
 #to unicode

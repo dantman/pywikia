@@ -129,7 +129,7 @@ def add_category(sort_by_last_name = False):
                 if catpl in cats:
                     print "%s already has %s"%(pl2.aslocallink(),catpl.aslocallink())
                 else:
-                    wikipedia.output('Adding %s' % catpl.aslocallink())
+                    wikipedia.output(u'Adding %s' % catpl.aslocallink())
                     cats.append(catpl)
                     text = pl2.get()
                     text = wikipedia.replaceCategoryLinks(text, cats)
@@ -301,7 +301,7 @@ def tidy_category():
                     print ''
                     print 'Original categories: '
                     for cat in article.categories(): 
-                        wikipedia.output('* %s' % cat.linkname()) 
+                        wikipedia.output(u'* %s' % cat.linkname()) 
                     # show more text if the user uses this function again
                     length = length+500
             elif choice[0] == 'u':

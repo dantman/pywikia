@@ -47,7 +47,7 @@ for arg in sys.argv[1:]:
         if len(arg) == 5:
             # todo: check for console encoding to allow special characters
             # in filenames, as done below with pagename
-            file = raw_input('Please enter the list\'s filename: ')
+            file = wikipedia.input(u'Please enter the list\'s filename: ')
         else:
             file = arg[6:]
         # open file and read page titles out of it
@@ -68,7 +68,7 @@ if page_title != []:
 # if no page title was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
-    pagename = raw_input('Which page to check: ')
+    pagename = wikipedia.input(u'Which page to check: ')
     pagename = unicode(pagename, config.console_encoding)
     pagename = pagename.encode(wikipedia.myencoding())
     page_list.append(pagename)

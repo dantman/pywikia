@@ -336,7 +336,7 @@ class Subject:
                     sys.stdout.write('\07')
                 newhint = None
                 while 1:
-                    newhint = raw_input("Hint:")
+                    newhint = wikipedia.input(u'Hint:')
                     if newhint and not ':' in newhint:
                         print "Please enter a hint like language:pagename"
                         #print "or type 'q' to stop generating new pages"
@@ -976,7 +976,7 @@ if __name__ == "__main__":
 
     inname = '_'.join(inname)
     if sa.isDone() and not inname:
-        inname = raw_input('Which page to check: ')
+        inname = wikipedia.input(u'Which page to check: ')
         inname = unicode(inname, config.console_encoding)
         inname = inname.encode(wikipedia.myencoding())
 

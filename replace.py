@@ -320,10 +320,10 @@ for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfi
         # Load the page's text from the wiki
         original_text = pl.get()
     except wikipedia.NoPage:
-        wikipedia.output('Page %s not found' % pl.linkname())
+        wikipedia.output(u'Page %s not found' % pl.linkname())
         continue
     except wikipedia.LockedPage:
-        wikipedia.output('Skipping locked page %s' % pl.linkname())
+        wikipedia.output(u'Skipping locked page %s' % pl.linkname())
         continue
     except wikipedia.IsRedirectPage:
         pass
@@ -335,7 +335,7 @@ for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfi
             exception = re.compile(exception)
             hit = exception.search(original_text)
             if hit:
-                wikipedia.output('Skipping %s because it contains %s' % (pl.linkname(), hit.group(0)))
+                wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), hit.group(0)))
                 # Does anyone know how to break out of the _outer_ loop?
                 # Then we wouldn't need the skip_page variable.
                 skip_page = True
@@ -343,7 +343,7 @@ for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfi
         else:
             hit = original_text.find(exception)
             if hit != -1:
-                wikipedia.output('Skipping %s because it contains %s' % (pl.linkname(), original_text[hit:hit + len(exception)]))
+                wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), original_text[hit:hit + len(exception)]))
                 skip_page = True
                 break
     if not skip_page:

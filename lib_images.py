@@ -148,21 +148,14 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         fn = unicode(fn, wikipedia.code2encoding(source_wiki))
     if not keep:
         print "The filename on wikipedia will default to:",fn
-        newfn = raw_input("Better name : ")
-        if newfn:
-            fn = unicode(newfn, config.console_encoding)
-    try:
-        fn = fn.encode(wikipedia.myencoding())
-    except UnicodeDecodeError:
-        print "This filename can't be displayed in " + wikipedia.myencoding()
-        sys.exit(1)
+        newfn = wikipedia.input(u'Better name : ', encode = wikipedia.myencoding())
     # Wikipedia doesn't allow spaces in the file name.
     # Replace them here to avoid an extra confirmation form
     fn = fn.replace(' ', '_')
     
     # A proper description for the submission.
     if description=='':
-        description = wikipedia.input('Give a description for the image:')
+        description = wikipedia.input(u'Give a description for the image:')
     else:
         print ("The suggested description is:")
         print
@@ -170,7 +163,7 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         print
         print ("Enter return to use this description, enter a text to add something")
         print ("at the end, or enter = followed by a text to replace the description.")
-        newtext = wikipedia.input('Enter return, text or =text : ')
+        newtext = wikipedia.input(u'Enter return, text or =text : ')
         if newtext=='':
             pass
         elif newtext[0]=='=':
@@ -206,7 +199,7 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         else:
              # dump the HTML page
              print returned_html + "\n\n"
-             answer = raw_input("Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
+             answer = raw_input(u"Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
              if answer in ["y", "Y"]:
                  return get_image(original_url, source_wiki, original_description, debug)
              else:

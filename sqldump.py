@@ -170,7 +170,7 @@ if __name__=="__main__":
             pass
         elif arg.startswith('-sql'):
             if len(arg) == 4:
-                filename = wikipedia.input('Please enter the SQL dump\'s filename: ')
+                filename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
             else:
                 filename = arg[5:]
     sqldump = SQLdump(filename, wikipedia.myencoding())
@@ -182,5 +182,5 @@ if __name__=="__main__":
             text += '[[%s:%s]]' % (k, i[k])
         #wikipedia.output(page.full_title())
         if Rpercentlink.search(text):
-            wikipedia.output('*[[%s]]' % page.full_title())
+            wikipedia.output(u'*[[%s]]' % page.full_title())
  

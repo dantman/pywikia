@@ -75,7 +75,7 @@ for arg in sys.argv[1:]:
         copy_images = True
     elif arg.startswith('-file'):
         if len(arg) == 5:
-            file = raw_input('Please enter the list\'s filename: ')
+            file = wikipedia.input(u'Please enter the list\'s filename: ')
         else:
             file = arg[6:]
         # open file and read page titles out of it
@@ -134,10 +134,10 @@ def treat(to_pl):
     # search start of table
     table = get_table(from_text)
     if not table:
-        wikipedia.output("No table found in %s:%s" % (from_lang, from_pl.linkname()))
+        wikipedia.output(u"No table found in %s:%s" % (from_lang, from_pl.linkname()))
         return
 
-    print_debug("Copying images")
+    print_debug(u"Copying images")
     if copy_images:
         # extract image links from original table
         images=imagelinks(from_lang, table)
@@ -149,7 +149,7 @@ def treat(to_pl):
             if new_filename:
                 old_image_tag = wikipedia.PageLink(wikipedia.mylang, image).linkname()
                 new_image_tag = wikipedia.PageLink(wikipedia.mylang, wikipedia.family.image_namespace(wikipedia.mylang) + new_filename).linkname()
-                print_debug("Replacing " + old_image_tag + " with " + new_image_tag)
+                print_debug(u"Replacing " + old_image_tag + " with " + new_image_tag)
                 # We want to replace "Image:My pic.jpg" as well as "image:my_pic.jpg", so we need a regular expression.
                 old_image_tag = old_image_tag.replace(" ", "[ \_]")
                 old_image_tag = "[" + old_image_tag[0].upper() + old_image_tag[0].lower() + "]" + old_image_tag[1:]
@@ -163,7 +163,7 @@ def treat(to_pl):
         print "Could not translate table."
         return
 
-    print_debug("\n" + translated_table)
+    print_debug(u"\n" + translated_table)
     # add table to top of the article, seperated by a blank lines
     to_text = translated_table + "\n\n" + to_text
     if not debug:
@@ -186,7 +186,7 @@ def get_table(text):
     if not first_start_tag:
         return
     else:
-        print_debug("First start tag found at " + str(first_start_tag.start()))
+        print_debug(u"First start tag found at " + str(first_start_tag.start()))
         pos = first_start_tag.end()
         # number of start tags minus numer of end tags
         table_level = 1
@@ -198,20 +198,20 @@ def get_table(text):
         next_start_tag = re.search(startR, remaining_text, pos)
         next_end_tag = re.search(endR, remaining_text, pos)
         if not next_end_tag:
-            print_debug("Error: missing end tag")
+            print_debug(u"Error: missing end tag")
             pass
         # if another cascaded table is opened before the current one is closed    
         elif next_start_tag and next_start_tag.start() < next_end_tag.start():
-            print_debug( "Next start tag found at " + str(pos + next_start_tag.start()))
+            print_debug(u"Next start tag found at " + str(pos + next_start_tag.start()))
             pos += next_start_tag.end()
             table_level += 1
-            print_debug("Table level is " + str(table_level))
+            print_debug(u"Table level is " + str(table_level))
         else:
-            print_debug( "Next end tag found at " + str(pos + next_end_tag.start()))
+            print_debug(u"Next end tag found at " + str(pos + next_end_tag.start()))
             pos += next_end_tag.end()
             table_level -= 1
-            print_debug("Table level is " + str(table_level))
-    print_debug("Table starts at " + str(first_start_tag.start()) + " and ends at " + str(pos) +"\n")
+            print_debug(u"Table level is " + str(table_level))
+    print_debug(u"Table starts at " + str(first_start_tag.start()) + " and ends at " + str(pos) +"\n")
     print_debug(text[first_start_tag.start():pos])
     return text[first_start_tag.start():pos]
 

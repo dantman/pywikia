@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.12 2004/07/14 12:22:33 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.13 2004/07/16 16:03:54 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -123,7 +123,7 @@ for arg in sys.argv[1:]:
         pass
     elif arg.startswith('-file'):
         if len(arg) == 5:
-            filename = wikipedia.input('Please enter the list\'s filename: ')
+            filename = wikipedia.input(u'Please enter the list\'s filename: ')
         else:
             filename = arg[6:]
         # open file and read page titles out of it
@@ -134,7 +134,7 @@ for arg in sys.argv[1:]:
         f.close()
     elif arg.startswith('-sql'):
         if len(arg) == 4:
-            sqlfilename = wikipedia.input('Please enter the SQL dump\'s filename: ')
+            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
         else:
             sqlfilename = arg[5:]
         action = 'parse_sqldump'
@@ -150,7 +150,7 @@ if page_title != []:
 # if no page was given as an argument, and none was
 # read from a file, query the user
 if page_list == [] and action != 'parse_sqldump':
-    pagename = wikipedia.input('Which page to check: ', wikipedia.myencoding())
+    pagename = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
     page_list.append(pagename)
 
 # get edit summary message

@@ -198,7 +198,7 @@ def change_category(article, old_cat_title, new_cat_title):
             cats.remove(cat)
             removed = True
     if not removed:
-        wikipedia.output('ERROR: %s is not in category %s!' % (article.linkname(), old_cat_title))
+        wikipedia.output(u'ERROR: %s is not in category %s!' % (article.linkname(), old_cat_title))
         return
     if new_cat_title != None:
         if sort_key == '':

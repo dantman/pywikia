@@ -103,7 +103,7 @@ for arg in sys.argv[1:]:
         oldformat = True
     elif arg.startswith('-sql'):
         if len(arg) == 4:
-            sqlfilename = wikipedia.input('Please enter the SQL dump\'s filename: ')
+            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
         else:
             sqlfilename = arg[5:]
     else:
