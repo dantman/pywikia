@@ -113,7 +113,10 @@ class _CatLink(wikipedia.PageLink):
             # this only works for the current version of the MonoBook skin
             ibegin = txt.index('"clear:both;"')
             # index where article listing ends
-            iend = txt.index('<div id="catlinks">')
+            try:
+                iend = txt.index('<div id="catlinks">')
+            except ValueError:
+                iend = txt.index('<!-- end content -->')
             txt = txt[ibegin:iend]
             for title in Rtitle.findall(txt):
                 if iscattitle(title):
