@@ -487,6 +487,7 @@ for wrd in (page_list):
         except wikipedia.IsRedirectPage,arg:
             thistxt = wikipedia.PageLink(wikipedia.mylang, str(arg)).get()
         thistxt = wikipedia.removeLanguageLinks(thistxt)
+        thistxt = wikipedia.removeCategoryLinks(thistxt, wikipedia.mylang)
         w=r'([^\]\|]*)'
         Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
         for a in Rlink.findall(thistxt):
