@@ -123,6 +123,9 @@ def getPage(code, name):
         m = re.search('value="(\d+)" name="wpEdittime"',text)
         if m:
             edittime[code,name]=m.group(1)
+        else:
+            print "No edittime found"
+            edittime[code,name]=0
     i1 = re.search('<textarea[^>]*>',text).end()
     i2 = re.search('</textarea>',text).start()
     if i2-i1 < 2:
