@@ -1721,6 +1721,8 @@ if not family.langs.has_key(mylang):
 # This code is used by translate() below.
 
 def altlang(code):
+    if code=='aa':
+        return ['am']
     if code in ['fa','ku']:
         return ['ar']
     if code=='sk':
@@ -1735,8 +1737,10 @@ def altlang(code):
         return ['es','fr']
     if code=='gl':
         return ['es','pt']
-    if code in ['br','oc','th','vi','wa']:
+    if code in ['br','ln','lo','th','vi','wa']:
         return ['fr']
+    if code in ['ie','oc']:
+        return ['ie','oc','fr']
     if code=='als':
         return ['fr','de']
     if code=='co':
@@ -1749,11 +1753,11 @@ def altlang(code):
         return ['pl']
     if code in ['mo','roa-rup']:
         return ['ro']
-    if code in ['be','lt','lv','uk']:
+    if code in ['be','hy','lt','lv','uk']:
         return ['ru']
-    if code in ['ky','tk','ug','uz']:
+    if code in ['kk','ky','tk','ug','uz']:
         return ['tr','ru']
-    if code in ['ja','ko','minnan','za','zh','zh-cn','zh-tw']:
+    if code in ['bo','ja','ko','minnan','za','zh','zh-cn','zh-tw']:
         return ['zh','zh-cn','zh-tw']
     if code=='da':
         return ['nb','no']
@@ -1767,8 +1771,8 @@ def altlang(code):
         return ['id','ms','jv','su']
     if code in ['bs','hr','mk','sh','sr']:
         return ['hr','sr','bs']
-    if code in ['ia','ie']:
-        return ['ia','la','ie','es','fr','it']
+    if code=='ia':
+        return ['la','es','fr','it']
     if code=='sa':
         return ['hi']
     if code=='yi':

@@ -13,10 +13,12 @@ class Family(family.Family):
     def __init__(self):
         global langs
         self.langs = {
+            'aa':'aa.wikipedia.org',   # Afar
             'af':'af.wikipedia.org',   # Afrikaans
             'als':'als.wikipedia.org', # Alsatian
             'an':'an.wikipedia.org',   # Aragonese
             'ar':'ar.wikipedia.org',   # Arabic
+            'as':'as.wikipedia.org',   # Assamese
             'ast':'ast.wikipedia.org', # Asturian
             'ay':'ay.wikipedia.org',   # Aymara
             'az':'az.wikipedia.org',   # Azerbaijan
@@ -25,6 +27,7 @@ class Family(family.Family):
             'bh':'bh.wikipedia.org',   # Bhojpuri
             'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan)
             'bn':'bn.wikipedia.org',   # Bengali
+            'bo':'bo.wikipedia.org',   # Tibetan
             'br':'br.wikipedia.org',   # Breton
             'bs':'bs.wikipedia.org',   # Bosnian
             'ca':'ca.wikipedia.org',   # Catalan
@@ -59,6 +62,7 @@ class Family(family.Family):
             'hi':'hi.wikipedia.org',   # Hindi
             'hr':'hr.wikipedia.org',   # Croatian
             'hu':'hu.wikipedia.org',   # Hungarian
+            'hy':'hy.wikipedia.org',   # Armenian
             'ia':'ia.wikipedia.org',   # Interlingua
             'id':'id.wikipedia.org',   # Indonesian
             'ie':'ie.wikipedia.org',   # Interlingue
@@ -69,6 +73,7 @@ class Family(family.Family):
             'jbo':'jbo.wikipedia.org', # Lojban
             'jv':'jv.wikipedia.org',   # Javanese
             'ka':'ka.wikipedia.org',   # Georgian
+            'kk':'kk.wikipedia.org',   # Kazakh
             'km':'km.wikipedia.org',   # Khmer
             'kn':'kn.wikipedia.org',   # Kannada
             'ko':'ko.wikipedia.org',   # Korean
@@ -78,6 +83,8 @@ class Family(family.Family):
             'ky':'ky.wikipedia.org',   # Kirghiz
             'la':'la.wikipedia.org',   # Latin
             'lb':'lb.wikipedia.org',   # Luxembourgish
+            'ln':'ln.wikipedia.org',   # Lingala
+            'lo':'lo.wikipedia.org',   # Lao
             'lt':'lt.wikipedia.org',   # Latvian
             'lv':'lv.wikipedia.org',   # Livonian
             'mg':'mg.wikipedia.org',   # Malagasy
@@ -88,16 +95,23 @@ class Family(family.Family):
             'mn':'mn.wikipedia.org',   # Mongolian
             'mr':'mr.wikipedia.org',   # Marathi
             'ms':'ms.wikipedia.org',   # Malay
+            'mt':'mt.wikipedia.org',   # Maltese
+            'my':'my.wikipedia.org',   # Burmese
             'na':'na.wikipedia.org',   # Nauruan
             'nah':'nah.wikipedia.org', # Nahuatl
             'nb':'no.wikipedia.org',   # Norse - new code for Bokmal to distinguish from Nynorsk
             'nds':'nds.wikipedia.org', # Lower Saxon
+            'ne':'ne.wikipedia.org',   # Nepalese
             'nl':'nl.wikipedia.org',   # Dutch
             'nn':'nn.wikipedia.org',   # Nynorsk
             'no':'no.wikipedia.org',   # Norwegian
+            'nv':'nv.wikipedia.org',   # Navajo
             'oc':'oc.wikipedia.org',   # Occitan
             'om':'om.wikipedia.org',   # Oromo
+            'pa':'pa.wikipedia.org',   # Punjabi
+            'pi':'pi.wikipedia.org',   # Pali
             'pl':'pl.wikipedia.org',   # Polish
+            'ps':'ps.wikipedia.org',   # Pashto (Afghan)
             'pt':'pt.wikipedia.org',   # Portuguese
             'qu':'qu.wikipedia.org',   # Quechua
             'rm':'rm.wikipedia.org',   # Romansch
@@ -105,6 +119,7 @@ class Family(family.Family):
             'roa-rup':'roa-rup.wikipedia.org', # Aromanian
             'ru':'ru.wikipedia.org',   # Russian
             'sa':'sa.wikipedia.org',   # Sanskrit
+            'sd':'sd.wikipedia.org',   # Sindhi
             'se':'se.wikipedia.org',   # Saami
             'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
             'si':'si.wikipedia.org',   # Sinhalese
@@ -120,11 +135,13 @@ class Family(family.Family):
             'ta':'ta.wikipedia.org',   # Tamil
             'te':'te.wikipedia.org',   # Telugu
             'test':'test.wikipedia.org',
+            'tg':'tg.wikipedia.org',   # Tajik
             'th':'th.wikipedia.org',   # Thai
             'tk':'tk.wikipedia.org',   # Turkmen
             'tl':'tl.wikipedia.org',   # Tagalog
             'tlh':'tlh.wikipedia.org', # Klingon
             'tn':'tn.wikipedia.org',   # Tswana
+            'to':'to.wikipedia.org',   # Tongan
             'tokipona':'tokipona.wikipedia.org', # Toki Pona
             'tpi':'tpi.wikipedia.org', # Tok Pisin
             'tr':'tr.wikipedia.org',   # Turkish
@@ -336,17 +353,20 @@ class Family(family.Family):
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
 
-        self.alphabetic = ['af','ar','an','roa-rup','ast','ay','az','bg','be','bn','bh',
-                      'bi','bs','br','ca','chr','co','cs','cy','da','de','als','et',
-                      'el','en','es','eo','eu','ee','fa','fo','fr','fy','ga','gv','gd',
-                      'gl','gn','gu','ko','ha','hi','hr','io','id','ia','xh','is','zu',
-                      'it','he','jv','kn','ka','csb','ks','kw','km','ky','sw','ku','la',
-                      'lv','lt','lb','jbo','hu','mk','mg','ml','mi','mr','ms','minnan',
-                      'mn','nah','na','nl','ja','no','nb','nn','oc','om','ug','nds','pl',
-                      'pt','ro','rm','qu','ru','se','sa','st','sq','si','simple','sk',
-                      'sl','sr','su','fi','sv','tl','ta','tt','te','th','tlh','tk','tw',
-                      'vi','tokipona','tpi','tn','tr','ur','uk','uz','vo','wa','yi','yo',
-                      'za','zh','zh-cn','zh-tw']
+        self.alphabetic = ['aa','af','ar','an','roa-rup','as','ast','ay','az','bg',
+                           'be','bn','bh','bi','bo','bs','br','ca','chr','co','cs',
+                           'cy','da','de','als','et','el','en','es','eo','eu','ee',
+                           'fa','fo','fr','fy','ga','gv','gd','gl','gn','gu','ko',
+                           'ha','hy','hi','hr','io','id','ia','xh','is','zu','it',
+                           'he','jv','kn','ka','csb','ks','kk','kw','km','ky','sw',
+                           'ku','lo','la','lv','lt','lb','ln','jbo','hu','mk','mg',
+                           'ml','mt','mi','mr','ms','minnan','mn','my','nah','na',
+                           'nv','nl','ne','ja','no','nb','nn','oc','om','ug','pi',
+                           'ps','nds','pl','pt','pa','ro','rm','qu','ru','se','sa',
+                           'st','sq','si','simple','sd','sk','sl','sr','su','fi',
+                           'sv','tl','tg','ta','tt','te','th','tlh','tk','tw','vi',
+                           'tokipona','tpi','to','tn','tr','ur','uk','uz','vo','wa',
+                           'yi','yo','za','zh','zh-cn','zh-tw']
         
         self.interwiki_putfirst = {
             'en': self.alphabetic,
@@ -361,10 +381,10 @@ class Family(family.Family):
                    'es','eo','eu','fa','fo','fr','fy','ga','gv','sm','gd','gl',
                    'gay','gu','ko','ha','hy','hi','hr','iba','io','ia','iu','ik',
                    'xh','zu','is','it','he','kl','kn','ka','csb','ks','kaw','kw',
-                   'kk','rw','ky','rn','sw','ku','la','ls','lv','lt','li','ln',
+                   'kk','rw','ky','rn','sw','ku','lo','la','ls','lv','lt','li','ln',
                    'jbo','mad','hu','mak','mk','ml','mg','mt','mi','min','minnan',
-                   'mo','mn','my','nah','na','fj','ng','nl','ne','ja','no','nn',
-                   'oc','or','om','ug','pa','ps','km','lo','nds','pl','pt','ro',
+                   'mo','mn','my','nah','na','nv','fj','ng','nl','ne','ja','no','nn',
+                   'oc','or','om','ug','pi','pa','ps','km','lo','nds','pl','pt','ro',
                    'rm','qu','ru','se','sa','sg','st','tn','sq','si','simple','sd','ss',
                    'sk','sl','sr','fi','sv','tl','ta','tt','te','th','ti','tlh',
                    'vi','tg','tokipona','tpi','to','tr','tk','tw','ur','uk','uz',
@@ -440,3 +460,4 @@ class Family(family.Family):
         if code in self.latin1old:
             return 'utf-8', 'iso-8859-1'
         return self.code2encoding(code),
+
