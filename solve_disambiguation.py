@@ -421,7 +421,10 @@ for wrd in (page_list):
                 for ref_redir in getReferences(refpl):
                     refpl_redir=wikipedia.PageLink(wikipedia.mylang, ref_redir)
                     treat(refpl_redir, refpl)
-            pass
+                choice2 = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
+                if choice2 == 'y':
+                    redir_text = '#REDIRECT [[%s]]' % target
+                    refpl.put(redir_text)
         else:
             n = 0
             curpos = 0
