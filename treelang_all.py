@@ -10,22 +10,41 @@ __version__='$Id$'
 #
 import os,wikipedia,sys
 
-if sys.platform=='win32':
-    normalstatus=0,1
+options=[]
+start=[]
+
+for arg in sys.argv[1:]:
+    if arg[0] == '-' and len(arg)>1:
+        options.append(arg)
+    else:
+        start.append(arg)
+
+if options:
+    options=' '.join(options)
 else:
-    normalstatus=0,256
+    options='-backlink -autonomous'
+
+if start:
+    start='_'.join(start)
+else:
+    start='A'
     
-for pl in wikipedia.allpages(start=sys.argv[1]):
-    f=pl.urlname()
+if sys.platform == 'win32':
+    normalstatus = 0, 1
+else:
+    normalstatus = 0, 256
+    
+for pl in wikipedia.allpages(start = start):
+    f = pl.urlname()
     wikipedia.throttle()
-    f=f.replace("'",r"'\''")
+    f = f.replace("'", r"'\''")
     if os.isatty(1):
         print
         print repr(f)
     if sys.platform=='win32':
-        status=os.system("python treelang.py -backlink -autonomous %s"%f)
+        status = os.system("python treelang.py %s %s" % (options, f))
     else:
-        status=os.system("python treelang.py -backlink -autonomous '%s'"%f)
+        status = os.system("python treelang.py %s '%s'" % (options, f))
     if status not in normalstatus:
-        print "Exit status ",status
+        print "Exit status ", status
         sys.exit(1)
