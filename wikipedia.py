@@ -24,6 +24,7 @@ loggedin = False
 
 langs = {
     'af':'af.wikipedia.org',   # Afrikaans, UTF-8
+    'als':'als.wikipedia.org', # Alsassian, UTF-8?
     'ar':'ar.wikipedia.org',   # Arabic, UTF-8
     'bg':'bg.wikipedia.org',   # Bulgarian, UTF-8
     'bs':'bs.wikipedia.org',   # Bosnian, UTF-8
@@ -59,7 +60,7 @@ langs = {
     'lv':'lv.wikipedia.org',   # Livonian
     'ml':'ml.wikipedia.org',   # Malayalam (UTF-8?)
     'mr':'mr.wikipedia.org',   # Marathi
-    'ms':'ms.wikipedia.org',   # Malaysian
+    'ms':'ms.wikipedia.org',   # Malay
     'na':'na.wikipedia.org',   # Nauruan
     'nah':'nah.wikipedia.org', # Nahuatl (UTF-8?)
     'nds':'nds.wikipedia.org', # Lower Saxon
@@ -212,14 +213,14 @@ edittime = {}
 # after those, in code-alphabetical order.
 interwiki_putfirst = {
     'en':['af','ar','ms','bs','ca','co','cs','cy','da','de',
-          'et','el','en','es','eo','eu','fr','fy','ga',
+          'als','et','el','en','es','eo','eu','fr','fy','ga',
           'gl','ko','hi','hr','id','is','it','ia','he','sw',
           'la','lv','lt','hu','ml','mr','nah','na','nl','ja',
           'no','oc','nds','pl','pt','ro','ru','sq','simple',
           'sk','sl','sr','fi','sv','ta','tt','vi','tr',
           'uk','vo','zh','zh-cn','zh-tw'],
     'fr':['af','ar','ms','bs','ca','co','cs','cy','da','de',
-          'et','el','en','es','eo','eu','fr','fy','ga',
+          'als','et','el','en','es','eo','eu','fr','fy','ga',
           'gl','ko','hi','hr','id','is','it','ia','he','sw',
           'la','lv','lt','hu','ml','mr','nah','na','nl','ja',
           'no','oc','nds','pl','pt','ro','ru','sq','simple',
