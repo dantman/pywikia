@@ -1024,12 +1024,31 @@ def removeLanguageLinks(text):
     """Given the wiki-text of a page, return that page with all interwiki
        links removed. If a link to an unknown language is encountered,
        a warning is printed."""
-    for code in family.langs:
-        # this regex matches an interwiki link, plus trailing whitespace.
-        text = re.sub(r'\[\['+code+':([^\]]*)\]\][\s]*', '', text)
-    m=re.search(r'\[\[([a-z][a-z]):([^\]]*)\]\]', text)
-    if m:
-        print "WARNING: Link to unknown language %s name %s"%(m.group(1), repr(m.group(2)))
+    # This regular expression will find every link that is possibly an
+    # interwiki link, plus trailing whitespace. The language code is grouped.
+    # NOTE: This assumes that language codes only consist of non-capital
+    # ASCII letters and hyphens.
+    interwikiR = re.compile(r'\[\[([a-z\-]+):[^\]]*\]\][\s]*')
+    # How much of the text we have looked at so far
+    index = 0
+    done = False
+    while not done:
+        # Look for possible interwiki links in the remaining text
+        match = interwikiR.search(text, index)
+        if not match:
+            done = True
+        else:
+            # Extract what would be the language code
+            code = match.group(1)
+            if code in family.langs:
+                # We found a valid interwiki link. Remove it.
+                text = text[:match.start()] + text[match.end():]
+                # continue the search on the remaining text
+                index = match.start()
+            else:
+                index = match.end()
+                if len(code) == 2:
+                    print "WARNING: Link to unknown language %s" % (match.group(1))
     return normalWhitespace(text)
 
 def replaceLanguageLinks(oldtext, new):
