@@ -1352,11 +1352,16 @@ def deletePage(pl, reason = None, prompt = True):
             output('Deletion successful.')
         else:
             output('Deletion failed:.')
-            # remove the irrelevant sections
-            ibegin = returned_html.index('<!-- start content -->') + 22
-            iend = returned_html.index('<!-- end content -->')
-            returned_html = returned_html[ibegin:iend]
             # show debug information
+            try:
+                ibegin = returned_html.index('<!-- start content -->') + 22
+                iend = returned_html.index('<!-- end content -->')
+            except ValueError:
+                # if begin/end markers weren't found, show entire HTML file
+                output(returned_html, code2encoding(mylang))
+            else:
+                # otherwise, remove the irrelevant sections
+                returned_html = returned_html[ibegin:iend]
             output(returned_html, code2encoding(mylang))
                                     
     
@@ -1489,7 +1494,7 @@ def setMyLang(code):
     mylang = code
     # Retrieve session cookies for login.
     try:
-        f = open('%s-login.data' % mylang)
+        f = open('login-data/%s-login.data' % mylang)
         cookies = '; '.join([x.strip() for x in f.readlines()])
         loggedin = True
         #print cookies
