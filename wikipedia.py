@@ -82,7 +82,7 @@ langs = {'en':'en.wikipedia.org', # English
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-          'mr', 'id', 'simple', 'gl', 'lv', 'oc', 'sw',
+          'mr', 'id', 'simple', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vi', 'vo', 'ga']
 
 # Languages that used to be coded in iso-8859-1
