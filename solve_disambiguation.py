@@ -208,7 +208,10 @@ ignore_title = {
           u'Categoria:Desambiguação',
           u'Wikipedia:Links para desambiguar páginas',
           u'Wikipedia:Desambiguação',
-          )
+          ),
+    'fy':(
+          u'Wikipedy:Fangnet',
+          ),
     }
 
 class ReferringPageGenerator:
