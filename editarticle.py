@@ -81,6 +81,7 @@ class EditArticle(object):
         parser.add_option("-u", "--username", help="Username to login with (ignored with -a)")
         parser.add_option("-p", "--page", help="Page to edit")
         parser.add_option("-e", "--editor", help="Editor to use")
+        parser.add_option("-j", "--join_lines", action="store_true", default=False, help="Join consecutive lines if possible")
         parser.add_option("-w", "--watch", action="store_true", default=False, help="Watch article after edit")
         self.options = parser.parse_args(args=my_args)[0]
 
@@ -93,20 +94,23 @@ class EditArticle(object):
 
     def repair(self, content):
         """Removes single newlines and prepare encoding for local wiki"""
-        lines = content.splitlines()
-        result = []
-        for i, line in enumerate(lines):
-            try:
-                nextline = lines[i+1]
-            except IndexError:
-                nextline = "last"
-            result.append(line)
-            if line.strip() == "" or line[0] not in self.joinchars or \
-               nextline.strip() == "" or nextline[0] not in self.joinchars:
-                result.append('\n')
-            else:
-                result.append(" ")
-        s = "".join(result)
+        if self.options.join_lines:
+            lines = content.splitlines()
+            result = []
+            for i, line in enumerate(lines):
+                try:
+                    nextline = lines[i+1]
+                except IndexError:
+                    nextline = "last"
+                result.append(line)
+                if line.strip() == "" or line[0] not in self.joinchars or \
+                   nextline.strip() == "" or nextline[0] not in self.joinchars:
+                    result.append('\n')
+                else:
+                    result.append(" ")
+            s = "".join(result)
+        else:
+            s = content
         return wikipedia.unicode2html(s, self.site.encoding())
 
     def edit(self):
