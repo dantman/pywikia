@@ -453,12 +453,11 @@ for wrd in (page_list):
                 # Make sure that next time around we will not find this same hit.
                 curpos = m.start() + 1 
                 # Try to standardize the page.
-                try:
+                if wikipedia.isInterwikiLink(m.group(1)):
+                    linkpl = None
+                else:
                     linkpl=wikipedia.PageLink(thispl.code(), m.group(1),
                                               incode = refpl.code())
-                except wikipedia.NoSuchEntity:
-                    # Probably this is an interwiki link....
-                    linkpl = None
                 # Check whether the link found is to thispl.
                 if linkpl != thispl:
                     continue

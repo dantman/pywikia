@@ -1287,10 +1287,21 @@ def link2url(name, code, incode = None):
         print "Cannot convert %s into a URL for %s" % (repr(name), code)
         # Put entities in there. The URL will not be found.
         result = addEntity(name)
+        print "Using entities instead",result
+        print "BUG> This is probably a bug in the robot that did not recognize an interwiki link!"
         #raise
     result = space2underline(result)
     return urllib.quote(result)
 
+def isInterwikiLink(s):
+    """Try to check whether s is in the form "xx:link" where xx: is a
+       known language. In such a case we are dealing with an interwiki link."""
+    if not ':' in s:
+        return False
+    l,k=s.split(':',1)
+    if l in langs:
+        return True
+    return False
 
 def getReferences(pl):
     host = langs[pl.code()]
