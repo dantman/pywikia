@@ -60,7 +60,7 @@ for arg in sys.argv[1:]:
     else:
         articles.append(arg)
 for article in articles:
-    if DEBUG:
+    if config.DEBUG:
         f = open("table2wiki.testTable")
         text = f.read()
     else:
@@ -178,7 +178,7 @@ for article in articles:
         # kills indention within tables. Be warned, it might seldom bring
         # bad results.
         # True by default. Set 'deIndentTables = False' in user-config.py
-        if deIndentTables:
+        if config.deIndentTables:
             num = 1
             while num != 0:
                 newText, num = re.subn("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
@@ -242,7 +242,7 @@ for article in articles:
         ##################
         # I hate those long line because they make a wall of letters
         # Off by default, set 'splitLongParagraphs = True' in user-config.py
-        if splitLongParagraphs:
+        if config.splitLongParagraphs:
             num = 1
             while num != 0:
                 newText, num = re.subn("(\r\n[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{100,})",
@@ -251,7 +251,7 @@ for article in articles:
         ##################
         if newText!=text:
             import difflib
-            if DEBUG:
+            if config.DEBUG:
                 print text
                 print newText
             else:
@@ -263,7 +263,7 @@ for article in articles:
             #print "\nOriginal text\n" + text
             #print "\nModified text\n" + newText
 
-            if table2wikiAskOnlyWarnings and warnings == 0:
+            if config.table2wikiAskOnlyWarnings and warnings == 0:
                 doUpload="y"
             else:
                 print "There were " + str(warnings) + " replacement(s) that\
