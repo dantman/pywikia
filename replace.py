@@ -283,23 +283,22 @@ class ReplaceRobot:
         self.regex = regex
         self.acceptall = acceptall
         
-    def exceptionApplies(self, original_text):
+    def checkExceptions(self, original_text):
         """
-        Returns True iff one of the exceptions applies for the given text.
+        If one of the exceptions applies for the given text, returns the 
+        substring. which matches the exception. Otherwise it returns None.
         """
         for exception in self.exceptions:
             if self.regex:
                 exception = re.compile(exception)
                 hit = exception.search(original_text)
                 if hit:
-                    wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), hit.group(0)))
-                    return True
+                    return hit.group(0)
             else:
                 hit = original_text.find(exception)
                 if hit != -1:
-                    wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), original_text[hit:hit + len(exception)]))
-                    return True
-        return False
+                    return original_text[hit:hit + len(exception)]
+        return None
 
     def doReplacements(self, original_text):
         """
@@ -335,9 +334,11 @@ class ReplaceRobot:
                 continue
             except wikipedia.IsRedirectPage:
                 continue
-        
+            match = self.checkExceptions(original_text)
             # skip all pages that contain certain texts
-            if not self.exceptionApplies(original_text):
+            if match:
+                wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), match))
+            else:
                 new_text = self.doReplacements(original_text)
                 if new_text == original_text:
                     wikipedia.output('No changes were necessary in %s' % pl.linkname())
