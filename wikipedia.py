@@ -1286,10 +1286,11 @@ def interwikiFormat(links, insite = None):
         #In this case I might have to change the order
         ar2 = []
         for code in putfirst:
-            site = insite.getSite(code = code)
-            if site in ar:
-                del ar[ar.index(site)]
-                ar2 = ar2 + [site]
+            if code in getSite().family.langs:
+                site = insite.getSite(code = code)
+                if site in ar:
+                    del ar[ar.index(site)]
+                    ar2 = ar2 + [site]
         ar = ar2 + ar
     for site in ar:
         try:
@@ -1396,7 +1397,7 @@ def categoryFormat(links, insite = None):
     s = []
     for pl in links:
         s.append(pl.aslink())
-    if site.category_on_one_line():
+    if Site(default_code).category_on_one_line():
         sep = ' '
     else:
         sep = '\r\n'
@@ -1797,7 +1798,7 @@ class Site(object):
         return cmp(self.family.name,other.family.name)
 
     def category_on_one_line(self):
-        return self.lang in self.family.category_on_one_line
+        return self.lang in config.category_on_one_line
 
     def redirect(self):
         return self.family.redirect.get(self.lang,None)
