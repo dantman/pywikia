@@ -43,10 +43,21 @@ __version__='$Id$'
 
 import re,sys,wikipedia,config,time
 
-myComment = {'de':'Bot: Tabellensyntax konvertiert',
-             'en':'User-controlled Bot: table syntax updated',
-             'nl':'Tabel gewijzigd van HTML- naar Wikisyntax'
-             }
+msg_no_warnings = {'de':'Bot: Tabellensyntax konvertiert',
+                   'en':'User-controlled Bot: table syntax updated',
+                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax'
+                  }
+
+msg_one_warning = {'de':'Bot: Tabellensyntax konvertiert - %d Warnung!',
+                   'en':'User-controlled Bot: table syntax updated - %d warning!',
+                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d warning!'
+                  }
+
+msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
+                         'en':'User-controlled Bot: table syntax updated - %d warnings!',
+                         'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d warnings!'
+                        }
+                 
 fixedSites = ''
 notFixedSites = ''
 notFoundSites = ''
@@ -387,9 +398,15 @@ for article in articles:
 
         if doUpload == 'y':
             warn = ""
-            if warnings > 0:
-                warn = " - " + str(warnings) + " warnings!"
-            status, reason, data = pl.put(newText, myComment[wikipedia.chooselang(wikipedia.mylang,myComment)] + warn)
+            if warnings == 0:
+                # get edit summary message
+                wikipedia.setAction(msg_no_warnings[wikipedia.chooselang(wikipedia.mylang, msg_no_warnings)])
+            elif warnings == 1:
+                wikipedia.setAction(msg_one_warning[wikipedia.chooselang(wikipedia.mylang, msg_one_warning)] % warnings)
+            else:
+                wikipedia.setAction(msg_multiple_warnings[wikipedia.chooselang(wikipedia.mylang, msg_multiple_warnings)] % warnings)
+            # save page
+            status, reason, data = pl.put(newText)
             # Printing a status report isn't a bad idea, but the MediaWiki
             # software gives a '302 Temporarily Moved' when you save a page,
             # so this might be confusing.
