@@ -30,10 +30,10 @@ console_encoding = None
 # attop is a list of languages that prefer to have the interwiki
 # links at the top of the page. You can use interwiki_attop.append('xx')
 # in user-config.py to add more.
-interwiki_attop = ['fr', 'pl']
+interwiki_attop = ['fr']
 # on_one_line is a list of languages that want the interwiki links
 # one-after-another on a single line
-interwiki_on_one_line = ['fr', 'hu', 'pl']
+interwiki_on_one_line = ['fr', 'hu']
 
 # String used as separator between interwiki links and the text
 interwiki_text_separator = '\r\n'
