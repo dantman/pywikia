@@ -568,7 +568,8 @@ def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
     if code == 'ascii':
         return code # Special case where we do not want special characters.
-    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl','ro','hr','tr','ar']:
+    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs',
+                'el','sl','ro','hr','tr','ar','zh-cn','zh-tw','fy']:
         return 'utf-8'
     return 'iso-8859-1'
 
