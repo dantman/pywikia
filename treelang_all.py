@@ -60,6 +60,8 @@ for arg in sys.argv[1:]:
                     hints[m.group(2)].append('%s:%s'%(m.group(3),wikipedia.link2url(m.group(4),m.group(3))))
         f.close()
     elif arg[0] == '-' and len(arg)>1:
+        # Options are both for us and for the treelang robot itself
+        wikipedia.argHandler(arg)
         options.append(arg)
     elif os.path.exists(arg):
         file.append(arg)
