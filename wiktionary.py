@@ -2,81 +2,118 @@
 # -*- coding: utf-8  -*-
 
 wiktionaryformats = {
-			'nl': {
-				'langheader':	u'{{-%%ISOLangcode%%-}}',
-				'translang':	u'*{{%%ISOLangcode%%}}',
-				'beforeexampleterm': u"'''",
-				'afterexampleterm': u"'''",
-				'gender': u"{{%%gender%%}}",
-				'posheader': {
-						'noun':	u'{{-noun-}}',
-						'adjective': u'{{-adj-}}',
-						},
-				'translationsheader': u"{{-trans-}}",
-				'transbefore': u'{|border=0 width=100%\n|-\n|bgcolor="{{bgclr}}" valign=top width=48%|\n{|\n',
-				'transinbetween': u'|}\n| width=1% |\n|bgcolor="{{bgclr}}" valign=top width=48%|\n{|\n',
-				'transafter': u'|}\n|}',
-				'transnoMtoZ': u'<-- Vertalingen van M tot Z komen hier>',
-				'synonymsheader': u"{{-syn-}}",
+	'nl': {
+		'langheader':	u'{{-%%ISOLangcode%%-}}',
+		'translang':	u'*{{%%ISOLangcode%%}}',
+		'beforeexampleterm': u"'''",
+		'afterexampleterm': u"'''",
+		'gender': u"{{%%gender%%}}",
+		'posheader': {
+				'noun':	u'{{-noun-}}',
+				'adjective': u'{{-adj-}}',
+				'verb': u'{{-verb-}}',
 				},
-			'en': {
-				'langheader':	u'== %%langname%% ==',
-				'translang':	u'*%%langname%%',
-				'beforeexampleterm': u"'''",
-				'afterexampleterm': u"'''",
-				'gender': u"''%%gender%%''",
-				'posheader': {
-						'noun': u'=== Noun ===',
-						'adjective': u'=== Adjective ===',
-						},
-				'translationsheader': u"==== Translations ====",
-				'transbefore': u'{|border=0 width=100%\n|-\n|bgcolor="#FFFFE0" valign=top width=48%|\n{|\n',
-				'transinbetween': u'|}\n| width=1% |\n|bgcolor="#FFFFE0" valign=top width=48%|\n{|\n',
-				'transafter': u'|}\n|}',
-				'transnoMtoZ': u'<-- Translations from M tot Z go here>',
-				'synonymsheader': u"==== Synonyms ====",
-				}
-		            }
-#print wiktionaryformats['nl']['langheader']
-#print wiktionaryformats['en']['langheader']
-#print wiktionaryformats['nl']['posheader']['noun']
-#print wiktionaryformats['en']['posheader']['noun']
-			   
-langnames =	{'nl':	{
-			'nl' : u'Nederlands',
-			'en' : u'Engels',
-			'de' : u'Duits',
-			'fr' : u'Frans',
-			'it' : u'Italiaans',
-			},
-		 'de':	{
-			'nl' : u'Niederländisch',
-			'en' : u'Englisch',
-			'de' : u'Deutsch',
-			'fr' : u'Französisch',
-			'it' : u'Italienisch',
-			},
-		 'en':	{
-			'nl' : u'Dutch',
-			'en' : u'English',
-			'de' : u'German',
-			'fr' : u'French',
-			'it' : u'Italian',
-			}
+		'translationsheader': u"{{-trans-}}",
+		'transbefore': u'{|border=0 width=100%\n|-\n|bgcolor="{{bgclr}}" valign=top width=48%|\n{|\n',
+		'transinbetween': u'|}\n| width=1% |\n|bgcolor="{{bgclr}}" valign=top width=48%|\n{|\n',
+		'transafter': u'|}\n|}',
+		'transnoMtoZ': u'<-- Vertalingen van N tot Z komen hier>',
+		'synonymsheader': u"{{-syn-}}",
+		'relatedheader': u'{{-rel-}}',
+		},
+	'en': {
+		'langheader':	u'== %%langname%% ==',
+		'translang':	u'*%%langname%%',
+		'beforeexampleterm': u"'''",
+		'afterexampleterm': u"'''",
+		'gender': u"''%%gender%%''",
+		'posheader': {
+				'noun': u'=== Noun ===',
+				'adjective': u'=== Adjective ===',
+				'verb': u'=== Verb ===',
+				},
+		'translationsheader': u"==== Translations ====",
+		'transbefore': u'{|border=0 width=100%\n|-\n|bgcolor="#FFFFE0" valign=top width=48%|\n{|\n',
+		'transinbetween': u'|}\n| width=1% |\n|bgcolor="#FFFFE0" valign=top width=48%|\n{|\n',
+		'transafter': u'|}\n|}',
+		'transnoMtoZ': u'<-- Translations from N tot Z go here>',
+		'synonymsheader': u"==== Synonyms ====",
+		'relatedheader': u'=== Related words ===',
 		}
-#print langnames
+}
+			   
+langnames = {
+	'nl':	{
+		'nl' : u'Nederlands',
+		'en' : u'Engels',
+		'de' : u'Duits',
+		'fr' : u'Frans',
+		'it' : u'Italiaans',
+		'eo' : u'Esperanto',
+		'es' : u'Spaans',
+		},
+	 'de':	{
+		'nl' : u'Niederländisch',
+		'en' : u'Englisch',
+		'de' : u'Deutsch',
+		'fr' : u'Französisch',
+		'it' : u'Italienisch',
+		'eo' : u'Esperanto',
+		'es' : u'Spanisch',
+		},
+	 'en':	{
+		'nl' : u'Dutch',
+		'en' : u'English',
+		'de' : u'German',
+		'fr' : u'French',
+		'it' : u'Italian',
+		'eo' : u'Esperanto',
+		'es' : u'Spanish',
+		},
+	'eo':	{
+		'nl' : u'Nederlanda',
+		'en' : u'Angla',
+		'de' : u'Germana',
+		'fr' : u'Franca',
+		'it' : u'Italiana',
+		'eo' : u'Esperanto',
+		'es' : u'Hispana',
+		},
+	'it':	{
+		'nl' : u'olandese',
+		'en' : u'inglese',
+		'de' : u'tedesco',
+		'fr' : u'francese',
+		'it' : u'italiano',
+		'eo' : u'esperanto',
+		'es' : u'spagnuolo',
+		},
+	'fr':	{
+		'nl' : u'nEEEerlandais',
+		'en' : u'anglais',
+		'de' : u'allemand',
+		'fr' : u'franCCCais',
+		'it' : u'italien',
+		'eo' : u'espEEEranto',
+		'es' : u'espagnol',
+		},
+	'es':	{
+		'nl' : u'olandEEEs',
+		'en' : u'inglEEEs',
+		'de' : u'alemAAAn',
+		'fr' : u'francEEEs',
+		'it' : u'italiano',
+		'eo' : u'esperanto',
+		'es' : u'espaNNNol',
+		},
+}
+
 # A big thanks to Rob Hooft for the following:
 class sortonname:
 	def __init__(self, lang):
-#		print "lang in constructor: %s"%lang
 		self.lang = lang
 
 	def __call__(self, one, two):
-#		print "one in call: %s"%one
-#		print "two in call: %s"%two
-#		print "self.lang: %s"%self.lang
-#		print "self.lang[one]: %s"%self.lang[one]
-#		print "self.lang[two]: %s"%self.lang[two]
 		return cmp(self.lang[one], self.lang[two])
 
 			   
@@ -84,24 +121,64 @@ class WiktionaryEntry:				# This refers to an entire page
 	def __init__(self,wikilang,term):	# wikilang here refers to the language of the Wiktionary
 		self.wikilang=wikilang
 		self.term=term
-		self.subentries = []
-
+		self.subentries = {}		# subentries is a dictionary of subentry objects indexed by wikilang
+		self.sortedsubentries = []
+		
 	def addSubEntry(self,subentry):
-		self.subentries.append(subentry)	# subentries is a list of subentry objects
+#	    	self.translations.setdefault( translation.lang, [] ).append( translation )
+		print "already available subentries: %s"%self.subentries
+		self.subentries[self.wikilang] = subentry
 	
 	def listSubentries(self):
 		return self.subentries
 
+	def sortSubentries(self):
+		
+		print self.subentries
+		if not self.subentries == {}:
+			self.sortedsubentries = self.subentries.keys()
+			self.sortedsubentries.sort(sortonname(langnames[self.wikilang]))
+			
+			print "should now be sorted: %s"%self.sortedsubentries
+			i = 0
+			while 1:
+				x = self.sortedsubentries[i]
+				if x == self.wikilang:	# search the subentry of the same language of the Wiktionary
+					samelangsubentry = self.sortedsubentries[i]
+					del self.sortedsubentries[i]
+					self.sortedsubentries.reverse()
+					self.sortedsubentries.append(samelangsubentry)
+					self.sortedsubentries.reverse()	# and put it before all the others
+					break
+
 	def wikiwrap(self):
 		entry = ''
-		for subentry in self.subentries:
-			entry= entry + subentry.wikiwrap(self.wikilang) + '\n'
+		self.sortSubentries()
+		print "sorted: %s",self.sortedsubentries
+		for subentry in self.sortedsubentries:
+			entry= entry + self.subentries[subentry].wikiwrap(self.wikilang) + '\n'
 
 		# TODO Here something needs to be inserted for treating interwiktionary links
 			
 		return entry
 	
-class SubEntry:					# On one page, terms with the same spelling in different languages can be described
+	def showcontents(self):
+		indentation = 0
+		print ' ' * indentation + 'wikilang = %s'% self.wikilang
+
+		print ' ' * indentation + 'term = %s'% self.term
+
+#		print self.subentries
+		subentrieskeys = self.subentries.keys()
+#		print subentrieskeys
+		for subentrieskey in subentrieskeys:
+#			print 'subentrieskey ' + subentrieskey
+			self.subentries[subentrieskey].showcontents(indentation+2)
+#			for subentry in self.subentries[subentrieskey]:
+#				print 'subentry ' + subentry
+#				subentry.showcontents(indentation)
+
+class SubEntry:		# On one page, terms with the same spelling in different languages can be described
 	def __init__(self,subentrylang):
 		self.subentrylang=subentrylang
 		self.meanings = {} # a dictionary containing the meanings grouped by part of speech
@@ -109,7 +186,7 @@ class SubEntry:					# On one page, terms with the same spelling in different lan
 		
 	def addMeaning(self,meaning):
 		term = meaning.term
-	    	self.meanings.setdefault( term.pos, [] ).append(meaning)
+		self.meanings.setdefault( term.pos, [] ).append(meaning)
 		if not term.pos in self.posorder:	# we only need each part of speech once
 			self.posorder.append(term.pos)
 	
@@ -117,16 +194,9 @@ class SubEntry:					# On one page, terms with the same spelling in different lan
 		return self.meanings
 
 	def wikiwrap(self,wikilang):
-#		print self.subentrylang, self.meanings[0].term.term
+		print "wikilang: %s"%wikilang
 		subentry = wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][self.subentrylang]).replace('%%ISOLangcode%%',self.subentrylang) + '\n'
 
-		# We need to group all the same parts of speeches together
-
-		# Then we need to print the POS-header
-		# and list all the Definitions
-
-		# followed by the synonyms and translations sections
-		
 		for pos in self.posorder:
 			meanings = self.meanings[pos]
 		
@@ -151,8 +221,19 @@ class SubEntry:					# On one page, terms with the same spelling in different lan
 				for meaning in meanings:
 					subentry += meaning.wikiwrapTranslations(wikilang)
 				subentry +='\n'	
-	
 		return subentry
+
+	def showcontents(self,indentation):
+		print ' ' * indentation + 'subentrylang = %s'% self.subentrylang
+
+		print ' ' * indentation + 'posorder:' + repr(self.posorder)
+
+		meaningkeys = self.meanings.keys()
+		for meaningkey in meaningkeys:
+			for meaning in self.meanings[meaningkey]:
+				meaning.showcontents(indentation+2)
+
+		
 			
 class Meaning:					# On one page, different terms in different languages can be described
 	def __init__(self,definition,term):
@@ -238,6 +319,24 @@ class Meaning:					# On one page, different terms in different languages can be 
 			alreadydone = 1
 		return wrappedtranslations + wiktionaryformats[wikilang]['transafter'] + '\n'
 	
+	def showcontents(self,indentation):
+		print ' ' * indentation + 'term: '
+		self.term.showcontents(indentation+2)
+		print ' ' * indentation + 'definition = %s'% self.definition
+		print ' ' * indentation + 'etymology = %s'% self.etymology
+
+		print ' ' * indentation + 'Synonyms:'
+		for synonym in self.synonyms:
+			synonym.showcontents(indentation+2)
+
+		print ' ' * indentation + 'Translations:'
+		translationkeys = self.translations.keys()
+		for translationkey in translationkeys:
+			for translation in self.translations[translationkey]:
+				translation.showcontents(indentation+2)
+
+			
+		
 class Term:
 	def __init__(self,lang,term):
 		self.lang=lang			# lang here refers to the language of the term
@@ -273,6 +372,12 @@ class Term:
 	def wikiwrapastranslation(self,wikilang):
 		return '[[' + self.term + ']]' + self.wikiwrapgender(wikilang)
 
+	def showcontents(self,indentation):
+		print ' ' * indentation + 'lang = %s'% self.lang
+		print ' ' * indentation + 'pos = %s'% self.pos
+		print ' ' * indentation + 'term = %s'% self.term
+		print ' ' * indentation + 'relatedwords = %s'% self.relatedwords
+
 class Noun(Term):
 	def __init__(self,lang,term,gender=''):
 		self.pos='noun'		# part of speech
@@ -284,7 +389,10 @@ class Noun(Term):
 		
 	def getGender(self):
 		return(self.gender)
-
+	
+	def showcontents(self,indentation):
+		Term.showcontents(self,indentation)
+		print ' ' * indentation + 'gender = %s'% self.gender
 
 class Adjective(Term):
 	def __init__(self,lang,term,gender=''):
@@ -298,6 +406,9 @@ class Adjective(Term):
 	def getGender(self):
 		return(self.gender)
 
+	def showcontents(self,indentation):
+		Term.showcontents(self,indentation)
+		print ' ' * indentation + 'gender = %s'% self.gender
 
 if __name__ == '__main__':
 	apage = WiktionaryEntry('nl',u'iemand')
@@ -308,7 +419,7 @@ if __name__ == '__main__':
 #	print 'Noun: %s'%aword.term
 	aword.setGender('m')
 #	print 'Gender: %s'%aword.gender
-        frtrans = Noun('fr',u"quelqu'un")
+	frtrans = Noun('fr',u"quelqu'un")
 	frtrans.setGender('m')
 	entrans1 = Noun('en',u'somebody')
 	entrans2 = Noun('en',u'someone')
