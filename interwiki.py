@@ -548,6 +548,7 @@ class Subject(object):
                 old[pl.site()] = pl
         except wikipedia.NoPage:
             wikipedia.output(u"BUG: %s no longer exists?" % self.inpl.aslink())
+            break
         ####
         mods, removing = compareLanguages(old, new)
         if not mods and not globalvar.always:
