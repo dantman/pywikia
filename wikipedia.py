@@ -45,6 +45,7 @@ langs = {'en':'www.wikipedia.org', # English
 
 charsets = {}
 
+# Get the name of the user for submit messages
 try:
     f=open('username.dat')
     username=f.readline()[:-1]
@@ -53,6 +54,7 @@ except IOError:
     print >> sys.stderr, "Please make a file username.dat with your name in there"
     sys.exit(1)
 
+# Default action
 action = username+' - Wikipedia python library'
 
 debug = 0
@@ -74,7 +76,40 @@ class IsRedirectPage(Error):
 class LockedPage(Error):
     """Wikipedia page does not exist"""
 
+#
+class PageLink:
+    def __init__(self,code,name=None,urlname=None,linkname=None,incode=None):
+        self._incode=incode
+        self._code=code
+        if linkname is None and urlname is None and name is not None:
+            # Clean up the name, it can come from anywhere.
+            self._urlname=link2url(name,self._code)
+            self._linkname=url2link(self._urlname,code=self._code,incode=self._incode)
+        elif linkname is not None:
+            self._linkname=linkname
+            self._urlname=link2url(linkname,self._code)
+        elif urlname is not None:
+            self.urlname=urlname
+            self.linkname=url2link(urlname,code=self._code,incode=self._incode)
 
+    def urlname(self):
+        return self._urlname
+
+    def linkname(self):
+        return self._linkname
+
+    def code(self):
+        return self._code
+    
+    def str(self):
+        return "%s:%s"%(self._code,url2link(self._urlname,code=self._code,incode='ascii'))
+
+    def get(self):
+        return getPage(self.code(),self.urlname())
+
+    def put(self,newtext,comment=None):
+        return putPage(self.code(),self.urlname(),newtext,comment)
+                        
 # Library functions
 def unescape(s):
     if '&' not in s:
@@ -252,7 +287,7 @@ def languages(first=[]):
 
 def allnlpages(start='%20%200'):
     import sys
-    start=link2url(start,code='nl',incode='nl')
+    start=link2url(start,code='nl')
     m=0
     while 1:
         text=getPage('nl','Speciaal:Allpages&printable=yes&from=%s'%start,do_quote=0,do_edit=0)
@@ -318,13 +353,12 @@ def code2encoding(code):
     return 'iso-8859-1'
 
 def code2encodings(code):
-    if code in ['meta','eo','ja','zh','hi','he','hu','ko']:
-        return 'utf-8',
-    elif code=='pl':
+    # Historic compatibility
+    if code=='pl':
         return 'utf-8','iso-8859-2'
-    elif code=='ru':
+    if code=='ru':
         return 'utf-8','iso-8859-5'
-    return 'iso-8859-1',
+    return code2encoding(code),
     
 def url2link(percentname,incode,code):
     """Convert a url-name of a page into a proper name for an interwiki link
@@ -339,18 +373,18 @@ def url2link(percentname,incode,code):
         #print "url2link",repr(x),"different encoding"
         return unicode2html(x,encoding='ascii')
     
-def link2url(name,code,incode):
+def link2url(name,code):
     """Convert a interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link,
        incode the language of the page the link is in."""
-    import urllib
-    name=name[0].upper()+name[1:]
-    name=name.strip()
     if '%' in name:
         name=url2unicode(name,language=code)
     else:
-        import urllib
-        name=html2unicode(name,language=code,inlanguage=incode)
+        name=html2unicode(name,language=code)
+    # Remove spaces from beginning and the end
+    name=name.strip()
+    # Standardize capitalization
+    name=name[0].upper()+name[1:]
     try:
         result=str(name.encode(code2encoding(code)))
     except UnicodeError:
@@ -420,18 +454,21 @@ def removeEntity(name):
             i=i+1
     return result
 
-def html2unicode(name,language,inlanguage):
+def unicodeName(name,language):
+    for encoding in code2encodings(language):
+        try:
+            return unicode(name,encoding)
+        except UnicodeError:
+            continue
+    print name
+    raise "Would be encoding into local, probably a bug"
+    #return unicode(name,code2encoding(inlanguage))
+    
+def html2unicode(name,language):
     name=removeEntity(name)
+    name=unicodeName(name,language)
+
     import re
-    if not '&#' in name:
-        for encoding in code2encodings(language):
-            try:
-                return unicode(name,encoding)
-            except UnicodeError:
-                continue
-        print name
-        raise "Would be encoding into local, probably a bug"
-        #return unicode(name,code2encoding(inlanguage))
     Runi=re.compile('&#(\d+);')
     result=u''
     i=0
@@ -441,6 +478,10 @@ def html2unicode(name,language,inlanguage):
             result=result+unichr(int(m.group(1)))
             i=i+m.end()
         else:
-            result=result+name[i]
-            i=i+1
+            try:
+                result=result+name[i]
+                i=i+1
+            except UnicodeDecodeError:
+                print repr(name)
+                raise
     return result
