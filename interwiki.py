@@ -194,7 +194,7 @@ class Global(object):
        Use of globals outside of this is to be avoided."""
     always = False
     autonomous = False
-    backlink = True
+    backlink = config.interwiki_backlink
     bell = True
     confirm = False
     debug = True
@@ -867,7 +867,6 @@ if __name__ == "__main__":
         start = None
         number = None
         skipfile = None
-        globalvar.backlink = config.interwiki_backlink
         
         sa=SubjectArray()
         
