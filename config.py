@@ -30,6 +30,9 @@ treelang_backlink = True
 # Should treelang keep a logfile?
 treelang_log = True
 
+# Slow down the robot such that it never requests a second page within
+# 'throttle' seconds.
+throttle = 6
 
 # End of configuration section
 # ============================
