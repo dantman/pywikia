@@ -279,18 +279,21 @@ for article in articles:
     newText = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newText, 0)
     
     ##################
-    # proper attributes
+    # proper attributes. attribute values need to be in quotation marks.
     num = 1
+    print newText
     while num != 0:
-        newText, num = re.subn(r'([\r\n]+(\!|\||\{\|)[^\r\n\|]+)[ ]+\=[ ]+([\w]+)(\s)',
-                               '\\1="\\3"\\4', newText, 0)
-    # again proper attributes
-    num = 1
-    while num != 0:
-        newText, num = re.subn('([\r\n]+(\{\||\!|\|)([^\r\n\|]+))\=' +
-                               '([\w]+?)([\W]{1})',
-                               '\\1="\\4"\\5', newText, 0)
-
+        # group 1 starts with newlines, followed by a table tag
+        # (either !, |, {|, or |---), then zero or more attribute key-value
+        # pairs where the value already has correct quotation marks, and
+        # finally the key of the attribute we want to fix here.
+        # group 3 is the value of the attribute we want to fix here.
+        # We recognize it by searching for a string of non-whitespace characters
+        # - [^\s]+? - which is not embraced by quotation marks - [^"]
+        # group 4 is a whitespace character and probably unnecessary..
+        newText, num = re.subn(r'([\r\n]+(\!|\||\{\|)[^\r\n\|]+)[ ]*=[ ]*([^"][^\s]+?[^"])(\s)',
+                               r'\1="\3"\4', newText, 1)
+       
     ##################
     # merge two short <td>s
     num = 1
