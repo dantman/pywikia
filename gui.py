@@ -22,6 +22,11 @@ class EditBoxWindow:
     # saves the buffer into a variable, and closes the window.
     def pressedOK(self):
         self.text = self.editbox.get('1.0', END)
+        # if the editbox contains ASCII characters only, editbox.get() will
+        # return string, otherwise unicode (very annoying). We only want
+        # it to return unicode, so we work around this.  
+        if type(self.text) == type(''):
+            self.text = unicode(self.text, 'ascii')
         self.myParent.destroy()
 
     def __init__(self, parent = None):
@@ -68,7 +73,7 @@ class EditBoxWindow:
         self.editbox.tag_config('all', wrap=WORD)
         # wait for user to push a button which will destroy (close) the window
         self.myParent.mainloop()
-        return self.text
+        return self.text 
 
 
 class ListBoxWindow:
