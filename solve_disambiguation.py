@@ -211,6 +211,7 @@ ignore={
     'de':(
           u'100 Wörter des 21. Jahrhunderts',
           u'Abkürzungen/[A-Z]',
+          u'Benutzer:Zwobot/Probleme',
           u'Benutzer:Katharina/Begriffsklärungen',
           u'Benutzer:Tsor/Begriffsklärungen',
           u'Benutzer Diskussion:.+',
@@ -446,8 +447,8 @@ for wrd in (page_list):
                     wikipedia.output("== %s ==" % refpl.linkname())
                     wikipedia.output(reftxt[max(0,m.start()-context):m.end()+context])
                     if always == None:
-                        choice=wikipedia.input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
-                                         "        m=more context,l=list,a=add new):")
+                        choice=wikipedia.input("Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                                               "        q=quit, m=more context, l=list, a=add new):")
                     else:
                         choice=always
                     if choice=='n':
@@ -476,6 +477,10 @@ for wrd in (page_list):
                         return False
                     elif choice=='m':
                         context*=2
+                    elif choice=='e':
+                        import gui
+                        edit_window = gui.EditBoxWindow()
+                        reftxt = edit_window.edit(reftxt)
                     elif choice=='l':
                         print '\n'
                         for i in range(len(alternatives)):
