@@ -46,12 +46,29 @@ msg={
     'nl':'Robot-geholpen doorverwijzing ',
     }
 
+ignore={
+    'nl':('Wikipedia:Onderhoudspagina',
+          'Wikipedia:Doorverwijspagina')
+    }
+
 def getreferences(pl):
     host = wikipedia.langs[pl.code()]
     url="/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(wikipedia.special[wikipedia.mylang], pl.urlname())
     txt,charset=wikipedia.getUrl(host,url)
     Rref=re.compile('<li><a href.* title="([^"]*)"')
-    return Rref.findall(txt)
+    x=Rref.findall(txt)
+    x.sort()
+    # Remove duplicates
+    for i in range(len(x)-1, 0, -1):
+        if x[i] == x[i-1]:
+            del x[i]
+    # Remove ignorables
+    if ignore.has_key(pl.code()):
+        ig=ignore[pl.code()]
+        for i in range(len(x)-1, -1, -1):
+            if x[i] in ig:
+                del x[i]
+    return x
 
 wrd=[]
 alternatives=[]
