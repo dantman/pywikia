@@ -43,7 +43,9 @@ treelang_backlink: if set to True, all problems in foreign wikipedias will
 treelang_log:      if set to True, all messages will be logged to a file
                    as well as being displayed to the screen.
 
-Both these options are set to True by default.
+Both these options are set to True by default. They can be changed through
+the user-config.py configuration file.
+
 """
 #
 # (C) Rob W.W. Hooft, 2003
