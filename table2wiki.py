@@ -27,9 +27,6 @@ KNOW BUGS
 Broken HTML-tables will most likely result in broken wiki-tables!
 Please check every article you change.
 
-WARNING!
-Indented HTML-tables will result in ugly wiki-tables.
-You can kill indentions but it's switched off by default.
 
 """
 
@@ -40,7 +37,8 @@ __version__='$Id$'
 
 import re,sys,wikipedia,config,time
 
-myComment = {'en':'User-controlled Bot: table syntax updated',
+myComment = {'de':'Bot: Tabellensyntax konvertiert'
+             'en':'User-controlled Bot: table syntax updated',
              'nl':'Tabel gewijzigd van HTML- naar Wikisyntax'
              }
 fixedSites = ''
