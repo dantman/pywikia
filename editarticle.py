@@ -35,6 +35,7 @@ import tempfile
 
 import wikipedia
 import login
+import config
 
 def options(args):
     parser = optparse.OptionParser()
@@ -64,10 +65,10 @@ def editpage(pl, editor, redirect=False):
             oldcontent = pl.get(force=True, get_redirect=redirect)
         else:
             raise
-    ofp.write(oldcontent.encode('utf-8')) # FIXME: encoding of wiki
+    ofp.write(oldcontent.encode(config.console_encoding)) # FIXME: encoding of wiki
     ofp.close()
     os.system("%s %s" % (editor, ofn))
-    newcontent = open(ofn).read().decode('utf-8')
+    newcontent = open(ofn).read().decode(config.console_encoding)
     return oldcontent, newcontent
 
 def main():
