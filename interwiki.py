@@ -141,10 +141,10 @@ This script understands various command-line arguments:
     -lang:         specifies the language the bot is run on (e.g. -lang:de).
                    Overwrites the settings in username.dat
 
-Two configuration options can be used to change the workings of this robot:
+A configuration option can be used to change the working of this robot:
 
-treelang_log:      if set to True, all messages will be logged to a file
-                   as well as being displayed to the screen.
+interwiki_backlink: if set to True, all problems in foreign wikipedias will
+                    be reported
 
 Both these options are set to True by default. They can be changed through
 the user-config.py configuration file.
@@ -866,7 +866,8 @@ if __name__ == "__main__":
         start = None
         number = None
         skipfile = None
-
+        globalvar.backlink = config.interwiki_backlink
+        
         sa=SubjectArray()
         
         if not config.never_log:

@@ -65,6 +65,9 @@ table2wikiSkipWarnings = False
 always_log = False
 # Should no bot, not even interwiki.py, keep a logfile?
 never_log = False
+# Should interwiki.py report warnings for missing links between foreign
+# languages?
+interwiki_backlink = True
 
 # Slow down the robot such that it never requests a second page within
 # 'minthrottle' seconds. This can be lengthened if the server is slow,
