@@ -109,7 +109,7 @@ This script understands various command-line arguments:
                    against the live wikipedia is using the warnfile.py
                    robot.
 
-    -noredirect:   do not follow redirects.
+    -noredirect    do not follow redirects (note: without ending columns).
 
     -noshownew:    don't show the source of every new pagelink found.
     
