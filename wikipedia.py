@@ -127,7 +127,10 @@ def getPage(code, name):
     """Get the contents of page 'name' from the 'code' language wikipedia"""
     host = langs[code]
     name = re.sub(' ', '_', name)
-    name = urllib.quote(name)
+    if not '%' in name: # It should not have been done yet
+        if name!=urllib.quote(name):
+            print "DBG> quoting",name
+        name = urllib.quote(name)
     if host[-4:] == '.org': # New software
         address = '/w/wiki.phtml?title='+name+'&action=edit'
     elif host[-4:]=='.com': # Old software
@@ -158,7 +161,7 @@ def getPage(code, name):
     try:
         i1 = re.search('<textarea[^>]*>',text).end()
     except AttributeError:
-        print "No text area."
+        print "No text area.",host,address
         raise NoPage()
     i2 = re.search('</textarea>',text).start()
     if i2-i1 < 2: # new software
