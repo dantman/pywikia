@@ -47,6 +47,9 @@ category_on_one_line = []
 # String used as separator between category links and the text
 category_text_separator = '\r\n'
 
+# When both at the bottom should categories come after interwikilinks?
+categories_last = ['en']
+
 # will split long paragraphs for better reading the source.
 # only table2wiki.py use it by now
 splitLongParagraphs = False

@@ -1206,18 +1206,27 @@ def removeLanguageLinks(text):
                     print "WARNING: Link to unknown language %s" % (match.group(1))
     return normalWhitespace(text)
 
-def replaceLanguageLinks(oldtext, new):
+def replaceLanguageLinks(oldtext, new, code=None):
     """Replace the interwiki language links given in the wikitext given
        in oldtext by the new links given in new.
 
        'new' should be a dictionary with the language names as keys, and
        either PageLink objects or the link-names of the pages as values.
-    """   
+    """
+    if code == None:
+        code = mylang
     s = interwikiFormat(new)
     s2 = removeLanguageLinks(oldtext)
     if s:
         if mylang in config.interwiki_attop:
             newtext = s + config.interwiki_text_separator + s2
+        elif code in config.categories_last:
+            cats = getCategoryLinks(s2,code)
+            s3 = []
+            for catname in cats:
+                s3.append(PageLink(code,catname))
+            s2 = removeCategoryLinks(s2,code) + config.interwiki_text_separator + s
+            newtext = replaceCategoryLinks(s2, s3, code=code)
         else:
             newtext = s2 + config.interwiki_text_separator + s
     else:
@@ -1319,8 +1328,9 @@ def replaceCategoryLinks(oldtext, new, code = None):
     # first remove interwiki links and add them later, so that
     # interwiki tags appear below category tags if both are set
     # to appear at the bottom of the article
-    interwiki_links = getLanguageLinks(oldtext)
-    oldtext = removeLanguageLinks(oldtext)
+    if not code in config.categories_last:
+        interwiki_links = getLanguageLinks(oldtext)
+        oldtext = removeLanguageLinks(oldtext)
     s = categoryFormat(new)
     s2 = removeCategoryLinks(oldtext, code)
     if s:
@@ -1331,7 +1341,8 @@ def replaceCategoryLinks(oldtext, new, code = None):
     else:
         newtext = s2
     # now re-add interwiki links
-    newtext = replaceLanguageLinks(newtext, interwiki_links)
+    if not config.categories_last:
+        newtext = replaceLanguageLinks(newtext, interwiki_links)
     return newtext
     
 def categoryFormat(links):
