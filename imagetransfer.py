@@ -33,21 +33,13 @@ for arg in sys.argv[1:]:
 
 inname = '_'.join(inname)
 
-if inname=='':
-    inname=raw_input("For which page are images to be found: ")
-
-if not wikipedia.special.has_key(wikipedia.mylang):
-    print "Please add the translation for the Special: namespace in"
-    print "Your home wikipedia to the wikipedia.py module"
-    import sys
-    sys.exit(1)
-
 if not wikipedia.cookies:
     print "You must be logged in to upload images"
     import sys
     sys.exit(1)
     
-uploadaddr='/wiki/%s:Upload'%wikipedia.special[wikipedia.mylang]
+if inname=='':
+    inname=raw_input("For which page are images to be found: ")
 
 inpl = wikipedia.PageLink(wikipedia.mylang, inname)
 ilinks = inpl.interwiki()

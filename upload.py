@@ -26,12 +26,6 @@ for arg in sys.argv[1:]:
         print "Unknown argument: ",arg
         sys.exit(1)
         
-if not wikipedia.special.has_key(wikipedia.mylang):
-    print "Please add the translation for the Special: namespace in"
-    print "Your home wikipedia to the wikipedia.py module"
-    import sys
-    sys.exit(1)
-
 if not wikipedia.cookies:
     print "You must be logged in to upload images"
     import sys

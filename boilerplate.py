@@ -28,12 +28,6 @@ __version__='$Id$'
 #
 import wikipedia,re,sys,string
 
-if not wikipedia.special.has_key(wikipedia.mylang):
-    print "Please add the translation for the Special: namespace in"
-    print "Your home wikipedia to the wikipedia.py module"
-    import sys
-    sys.exit(1)
-
 # Summary message
 msg={
     'en':'Robot: Changing boilerplate text',

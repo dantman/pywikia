@@ -29,6 +29,7 @@ langs = {
     'az':'az.wikipedia.org',   # Azerbaijan
     'bg':'bg.wikipedia.org',   # Bulgarian
     'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
+    'bn':'bn.wikipedia.org',   # Bengali
     'bs':'bs.wikipedia.org',   # Bosnian
     'ca':'ca.wikipedia.org',   # Catalan
     'co':'co.wikipedia.org',   # Corsican
@@ -52,6 +53,7 @@ langs = {
     'gd':'gd.wikipedia.org',   # Scottish Gaelic
     'gl':'gl.wikipedia.org',   # Galician
     'gn':'gn.wikipedia.org',   # Guarani
+    'gv':'gv.wikipedia.org',   # Manx
     'he':'he.wikipedia.org',   # Hebrew
     'hi':'hi.wikipedia.org',   # Hindi
     'hr':'hr.wikipedia.org',   # Croatian
@@ -69,6 +71,7 @@ langs = {
     'la':'la.wikipedia.org',   # Latin
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
+    'mg':'mg.wikipedia.org',   # Malagasy
     'mi':'mi.wikipedia.org',   # Maori
     'mk':'mk.wikipedia.org',   # Macedonian
     'ml':'ml.wikipedia.org',   # Malayalam
@@ -76,6 +79,7 @@ langs = {
     'ms':'ms.wikipedia.org',   # Malay
     'na':'na.wikipedia.org',   # Nauruan
     'nah':'nah.wikipedia.org', # Nahuatl
+    'nb':'no.wikipedia.org',   # Norse - new code for Bokmal to distinguish from Nynorsk
     'nds':'nds.wikipedia.org', # Lower Saxon
     'nl':'nl.wikipedia.org',   # Dutch
     'no':'no.wikipedia.org',   # Norwegian
@@ -105,8 +109,7 @@ langs = {
     'ur':'ur.wikipedia.org',   # Urdu
     'vi':'vi.wikipedia.org',   # Vietnamese
     'vo':'vo.wikipedia.org',   # Volapuk
-    'wa':'wa.wikipedia.org',   # Walon - not yet in use, but this is going to be the code
-    'walon':'wikipedia.walon.org', # Walon
+    'wa':'wikipedia.walon.org',   # Walon
     'xh':'xh.wikipedia.org',   # isiXhosa
     'yi':'yi.wikipedia.org',   # Yiddish
     'zh':'zh.wikipedia.org',   # Chinese
@@ -127,57 +130,34 @@ latin1old = ['et', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
 # This is e.g. used by the login script.
 special = {
     'af': 'Spesiaal',
-    'als':'Special',
-    'ar': 'Special',
-    'az': 'Special',
+    'ar': '%D8%AE%D8%A7%D8%B5',
     'bg': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D0%BD%D0%B8',
-    'bs': 'Special',
+    'bn': '%E0%A6%AC%E0%A6%BF%E0%A6%B6%E0%A7%87%E0%A6%B7',
     'ca': 'Especial',
-    'co': 'Special',
     'cs': 'Speci%C3%A1ln%C3%AD',
     'csb': 'Specjalna',
     'cy': 'Arbennig',
     'da': 'Speciel',
     'de': 'Spezial',
-    'el': 'Special',
     'en': 'Special',
     'eo': 'Speciala',
     'es': 'Especial',
     'et': 'Eri',
-    'eu': 'Special',
     'fa': '%D9%88%DB%8C%DA%98%D9%87',
     'fi': 'Toiminnot',
     'fr': 'Special',
     'fy': 'Wiki',
     'ga': 'Speisialta',
-    'gd': 'Special',
-    'gl': 'Special',
-    'gn': 'Special',
     'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
     'hi': '%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7',
-    'hr': 'Special',
     'hu': 'Speci%C3%A1lis',
     'ia': 'Special',
-    'id': 'Special',
-    'is': 'Special',
-    'it': 'Speciale',
+    'id': 'Istimewa',
     'ja': '%E7%89%B9%E5%88%A5',
-    'jv': 'Special',
-    'ka': 'Special',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
-    'ks': 'Special',
-    'ku': 'Special',
     'la': 'Specialis',
-    'lt': 'Special',
-    'lv': 'Special',
-    'mi': 'Special',
-    'mk': 'Special',
-    'ml': 'Special',
-    'mr': 'Special',
     'ms': 'Istimewa',
-    'na': 'Special',
-    'nah':'Special',
-    'nds': 'Special',
+    'nb': 'Spesial',
     'nl': 'Speciaal',
     'no': 'Spesial',
     'oc': 'Especial',
@@ -185,31 +165,14 @@ special = {
     'pt': 'Especial',
     'ro': 'Special',
     'ru': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5',
-    'simple': 'Special',
     'sk': '%C5%A0peci%C3%A1lne',
     'sl': 'Posebno',
     'sq': 'Special',
     'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
-    'st': 'Special',
-    'su': 'Special',
     'sv': 'Special',
-    'sw': 'Special',
     'ta': '%E0%AE%9A%E0%AE%BF%E0%AE%B1%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81',
-    'test': 'Special',
     'th': '%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9',
-    'tl': 'Special',
-    'tr': 'Special',
-    'tt': 'Special',
-    'uk': 'Special',
-    'ur': 'Special',
-    'vi': 'Special',
-    'vo': 'Special',
-    'walon': 'Sipeci%C3%A5s',
-    'xh': 'Special',
-    'yi': 'Special',
-    'zh': 'Special',
-    'zh-cn': 'Special',
-    'zh-tw': 'Special',
+    'wa': 'Sipeci%C3%A5s',
     }
 
 # And the image namespace. Only necessary when it is not 'Image'.
@@ -220,6 +183,7 @@ image = {
     #'bn': To be checked,
     'ca': 'Imatge',
     'cs': 'Soubor',
+    'csb': 'Imagem',
     'cy': 'Delwedd',
     'da': 'Billede',
     'de': 'Bild',
@@ -241,6 +205,7 @@ image = {
     'ko': '%EA%B7%B8%EB%A6%BC',
     'la': 'Imago',
     'ms': 'Imej',
+    'nb': 'Bilde',
     'nl': 'Afbeelding',
     'no': 'Bilde',
     'oc': 'Image',
@@ -255,7 +220,17 @@ image = {
     'sv': 'Bild',
     'ta': '%E0%AE%AA%E0%AE%9F%E0%AE%BF%E0%AE%AE%E0%AE%AE%E0%AF%8D',
     'th': '%E0%B8%A0%E0%B8%B2%E0%B8%9E',
+    'wa': 'Im%C3%A5dje',
     }
+
+
+# Defaults for Special: and Image: namespace names
+
+for lang in langs:
+    if not lang in special:
+        special[lang] = 'Special'
+    if not lang in image:
+        image[lang] = 'Image'
 
 obsolete = ['sh', 'dk', 'wa']
 
@@ -298,31 +273,34 @@ edittime = {}
 # after those, in code-alphabetical order.
 
 interwiki_putfirst = {
-    'en':['af','ar','om','bg','bs','ca','co','cs','cy','da','de',
-          'als','et','el','en','es','eo','eu','fa','fr','fy',
-          'ga','gd','gl','ko','hi','hr','id','is','it','ia',
-          'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
-          'mk','ml','mi','mr','ms','nah','na','nl','ja','no',
-          'oc','nds','pl','pt','ro','ru','st','sq','simple',
-          'sk','sl','sr','su','fi','sv','ta','tt','th','ur',
-          'vi','tr','uk','vo','yi','zh','zh-cn','zh-tw'],
-    'fr':['af','ar','om','bg','bs','ca','co','cs','cy','da','de',
-          'als','et','el','en','es','eo','eu','fa','fr','fy',
-          'ga','gd','gl','ko','hi','hr','id','is','it','ia',
-          'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
-          'mk','ml','mi','mr','ms','nah','na','nl','ja','no',
-          'oc','nds','pl','pt','ro','ru','st','sq','simple',
-          'sk','sl','sr','su','fi','sv','ta','tt','th','ur',
-          'vi','tr','uk','vo','yi','zh','zh-cn','zh-tw'],
+    'en':['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
+          'de','als','et','el','en','es','eo','eu','fa','fr',
+          'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
+          'it','ia','he','jv','ka','csb','ks','sw','la','lv',
+          'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
+          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
+          'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
+          'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
+          'zh-tw'],
+    'fr':['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
+          'de','als','et','el','en','es','eo','eu','fa','fr',
+          'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
+          'it','ia','he','jv','ka','csb','ks','sw','la','lv',
+          'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
+          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
+          'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
+          'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
+          'zh-tw'],
     'hu':['en'],
-    'pl':['af','ar','om','bg','bs','ca','co','cs','cy','da','de',
-          'als','et','el','en','es','eo','eu','fa','fr','fy',
-          'ga','gd','gl','ko','hi','hr','id','is','it','ia',
-          'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
-          'mk','ml','mi','mr','ms','nah','na','nl','ja','no',
-          'oc','nds','pl','pt','ro','ru','st','sq','simple',
-          'sk','sl','sr','su','fi','sv','ta','tt','th','ur',
-          'vi','tr','uk','vo','yi','zh','zh-cn','zh-tw'],
+    'pl':['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
+          'de','als','et','el','en','es','eo','eu','fa','fr',
+          'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
+          'it','ia','he','jv','ka','csb','ks','sw','la','lv',
+          'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
+          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
+          'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
+          'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
+          'zh-tw'],
     }
 
 # Local exceptions
@@ -592,10 +570,7 @@ class PageLink:
 
     def imagelinks(self):
         result = []
-        if self._code in image:
-            im=image[self._code] + ':'
-        else:
-            im='Image:'
+        im=image[self._code] + ':'
         w1=r'('+im+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
@@ -743,9 +718,6 @@ class GetAll:
         import httplib
         try:
             addr = self.addr%special[self.code]
-        except KeyError:
-            print "BUG: Can not find name of Special in %s:" % self.code
-            raise
         pagenames = u'\r\n'.join([x.hashfreeLinkname() for x in self.pages])
         pagenames = forCode(pagenames, self.code)
         data = urlencode((
@@ -1059,8 +1031,7 @@ def languages(first = []):
 
 def allpages(start = '%21%200'):
     """Iterate over all Wikipedia pages in the home language, starting
-       at the given page. This will raise an exception if the home language
-       does not have a translation of 'Special' listed above."""
+       at the given page."""
     start = link2url(start, code = mylang)
     m=0
     while 1:
