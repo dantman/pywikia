@@ -1,4 +1,4 @@
-﻿# -*- coding: iso-8859-1 -*-
+# -*- coding: iso-8859-1 -*-
 
 # Translation database. Non-ASCII characters must be encoded in hexadecimal
 # unicode and prefixed with a small u,
