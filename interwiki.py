@@ -593,8 +593,20 @@ class Subject(object):
                                     # Nothing more to do
                                     break
                         print "NOTE: Updating live wikipedia..."
-                        status, reason, data = self.inpl.put(newtext,
-                                                             comment=u'robot '+mods)
+                        import socket, time
+                        timeout=60
+                        while 1:
+                            try:    
+                                status, reason, data = self.inpl.put(newtext,
+                                                                 comment=u'robot '+mods)
+                            except socket.error:
+                                if timeout>3600:
+                                    raise
+                                print "ERROR putting page. Sleeping %d seconds before trying again"%timeout
+                                timeout=timeout*2
+                                time.sleep(timeout)
+                            else:
+                                break
                         if str(status) != '302':
                             print status, reason
                         else:
@@ -717,7 +729,17 @@ class SubjectArray(object):
         if len(self.subjects) - mycount < globalvar.minarraysize:
             # Can we make more home-language queries by adding subjects?
             if self.generator and mycount < globalvar.maxquerysize:
-                self.generateMore(globalvar.maxquerysize - mycount)
+                timeout = 60
+                while timeout<3600:
+                    try:
+                        self.generateMore(globalvar.maxquerysize - mycount)
+                    except wikipedia.NoPage:
+                        # Could not extract allpages special page?
+                        wikipedia.output('ERROR: could not retrieve more pages. Will try again in %d seconds'%timeout)
+                        time.sleep(timeout)
+                        timeout *= 2
+                    else:
+                        break
             # If we have a few, getting the home language is a good thing.
             if self.counts[wikipedia.getSite()] > 4:
                 return wikipedia.getSite()
