@@ -186,7 +186,6 @@ def tidy_category():
     wikipedia.put_throttle.setDelay(10)
 
     subclassDB={}
-    
     # for a given supercategory, return a list of all its subcategories.
     # save this list in a temporary database so that it won't be loaded from the
     # server next time it's required.
@@ -199,34 +198,54 @@ def tidy_category():
             # add to dictionary
             subclassDB[supercat] = subcatlist
             return subcatlist
-    
+
+    superclassDB={}
+    # like the above, but for supercategories
+    def get_supercats(subcat):
+        # if we already know which subcategories exist here
+        if superclassDB.has_key(subcat):
+            return superclassDB[subcat]
+        else:
+            supercatlist = subcat.supercategories()
+            # add to dictionary
+            superclassDB[subcat] = supercatlist
+            return supercatlist
+            
     # given an article which is in category original_cat, ask the user if it should
     # be moved to one of original_cat's subcategories. Recursively run through
     # subcategories' subcategories.
     # NOTE: current_cat is only used for internal recursion. You should always use
     # current_cat = original_cat.
-    def move_to_subcategory(article, original_cat, current_cat):
+    def move_to_category(article, original_cat, current_cat):
         print
         wikipedia.output(u'Treating page %s, currently in category %s' % (article.linkname(), current_cat.linkname()))
         subcatlist = get_subcats(current_cat)
+        supercatlist = get_supercats(current_cat)
         print
         if len(subcatlist) == 0:
             print 'This category has no subcategories.'
             print
+        if len(supercatlist) == 0:
+            print 'This category has no supercategories.'
+            print
         # show subcategories as possible choices (with numbers)
+        for i in range(len(supercatlist)):
+            # layout: we don't expect a cat to have more than 10 supercats
+            print 'u%d - Move up to %s' % (i, supercatlist[i].linkname())
         for i in range(len(subcatlist)):
-            print '%d - Move to %s' % (i, subcatlist[i].linkname())
-        print 'j - Jump to another category'
-        print 's - Skip this article'
-        print 'r - Remove this category tag'
-        print '? - Read the page'
+            # layout: we don't expect a cat to have more than 100 subcats
+            print '%2d - Move down to %s' % (i, subcatlist[i].linkname())
+        print ' j - Jump to another category'
+        print ' n - Skip this article'
+        print ' r - Remove this category tag'
+        print ' ? - Read the page'
         wikipedia.output(u'Enter - Save category as %s' % current_cat.linkname())
 
         flag = False
         length = 1000
         while not flag:
             choice=wikipedia.input(u'Choice:')
-            if choice == 's':
+            if choice == 'n':
                 flag = True
             elif choice == '':
                 wikipedia.output(u'Saving category as %s' % current_cat.linkname())
@@ -241,7 +260,7 @@ def tidy_category():
                 new_cat_title = wikipedia.input(u'Please enter the category the article should be moved to:')
                 new_cat = catlib.CatLink(new_cat_title)
                 # recurse into chosen category
-                move_to_subcategory(article, original_cat, new_cat)
+                move_to_category(article, original_cat, new_cat)
                 flag = True
             elif choice == 'r':
                 # remove the category tag
@@ -250,13 +269,22 @@ def tidy_category():
             elif choice == '?':
                 wikipedia.output(article.get()[0:length])
                 length = length+500            
+            elif choice[0] == 'u':
+                try:
+                    choice=int(choice[1:])
+                except ValueError:
+                    # user pressed an unknown command. Prompt him again.
+                    continue
+                move_to_category(article, original_cat, supercatlist[choice])
+                flag = True
             else:
                 try:
                     choice=int(choice)
                 except ValueError:
-                    pass
+                    # user pressed an unknown command. Prompt him again.
+                    continue
                 # recurse into subcategory
-                move_to_subcategory(article, original_cat, subcatlist[choice])
+                move_to_category(article, original_cat, subcatlist[choice])
                 flag = True
     
     # begin main part of tidy_category
@@ -274,7 +302,7 @@ def tidy_category():
         for article in articles:
             print
             print '==================================================================='
-            move_to_subcategory(article, catlink, catlink)
+            move_to_category(article, catlink, catlink)
 
 
 
