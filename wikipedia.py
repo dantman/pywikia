@@ -204,6 +204,10 @@ class PageLink:
         """A string representation in the form of an interwiki link"""
         return "[[%s:%s]]" % (self.code(), self.linkname())
 
+    def aslocallink(self):
+        """A string representation in the form of a local link"""
+        return "[[%s]]" % (self.linkname())
+
     def asselflink(self):
         """A string representation in the form of a local link, but prefixed by
            the language code"""
@@ -327,6 +331,13 @@ class PageLink:
                 print "ERROR> link from %s to %s:%s contains invalid unicode reference?!"%(self,newcode,repr(newname))
         return result
 
+    def categories(self):
+        result = []
+        ll = getCategoryLinks(self.get(),self.code())
+        for catname in ll:
+            result.append(self.__class__(self.code(), linkname=catname))
+        return result
+            
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            PageLink objects"""
@@ -346,10 +357,15 @@ class PageLink:
         return hash(str(self))
 
     def links(self):
-        # Gives the normal (not-interwiki) pages the page redirects to, as PageLinks
+        # Gives the normal (not-interwiki, non-category) pages the page
+        # directs to, as strings
         result = []
         try:
             thistxt = removeLanguageLinks(self.get())
+        except IsRedirectPage:
+            pass
+        try:
+            thistxt = removeCategoryLinks(self.get(), self.code())
         except IsRedirectPage:
             pass
         w=r'([^\]\|]*)'
@@ -952,24 +968,7 @@ def removeLanguageLinks(text):
     m=re.search(r'\[\[([a-z][a-z]):([^\]]*)\]\]', text)
     if m:
         print "WARNING: Link to unknown language %s name %s"%(m.group(1), repr(m.group(2)))
-    # Remove white space at the beginning
-    while 1:
-        if text and text.startswith('\r\n'):
-            text=text[2:]
-        elif text and text.startswith(' '):
-            # This assumes that the first line NEVER starts with a space!
-            text=text[1:]
-        else:
-            break
-    # Remove white space at the end
-    while 1:
-        if text and text[-1:] in '\r\n \t':
-            text=text[:-1]
-        else:
-            break
-    # Add final newline back in
-    text += '\n'
-    return text
+    return normalWhitespace(text)
 
 def replaceLanguageLinks(oldtext, new):
     """Replace the interwiki language links given in the wikitext given
@@ -1022,6 +1021,96 @@ def interwikiFormat(links):
         sep = '\r\n'
     s=sep.join(s) + '\r\n'
     return s 
+
+def normalWhitespace(text):
+    # Remove white space at the beginning
+    while 1:
+        if text and text.startswith('\r\n'):
+            text=text[2:]
+        elif text and text.startswith(' '):
+            # This assumes that the first line NEVER starts with a space!
+            text=text[1:]
+        else:
+            break
+    # Remove white space at the end
+    while 1:
+        if text and text[-1:] in '\r\n \t':
+            text=text[:-1]
+        else:
+            break
+    # Add final newline back in
+    text += '\n'
+    return text
+
+# Categories
+
+def getCategoryLinks(text, code):
+    """Returns a list of category links.
+       in the form {code:pagename}. Do not call this routine directly, use
+       PageLink objects instead"""
+    result = []
+    ns = family.category_namespaces(code)
+    for prefix in ns:
+        R = re.compile(r'\[\['+prefix+':([^\]]*)\]\]')
+        for t in R.findall(text):
+            if t:
+                if code == 'eo':
+                    t = t.replace('xx','x')
+                t = t.capitalize()
+                result.append(ns[0]+':'+t)
+            else:
+                print "ERROR: empty category link"
+    return result
+
+def removeCategoryLinks(text, code):
+    """Given the wiki-text of a page, return that page with all category
+       links removed. """
+    ns = family.category_namespaces(code)
+    for prefix in ns:
+        text = re.sub(r'\[\['+prefix+':([^\]]*)\]\]', '', text)
+    return normalWhitespace(text)
+
+def replaceCategoryLinks(oldtext, new, code = None):
+    """Replace the category links given in the wikitext given
+       in oldtext by the new links given in new.
+
+       'new' should be a list of category pagelink objects.
+    """
+    if code is None:
+        code = mylang
+    s = categoryFormat(new)
+    s2 = removeCategoryLinks(oldtext, code)
+    if s:
+        if mylang in config.category_atbottom:
+            newtext = s2 + config.category_text_separator + s
+        else:
+            newtext = s + config.category_text_separator + s2
+    else:
+        newtext = s2
+    return newtext
+    
+def categoryFormat(links):
+    """Create a suitable string encoding all category links for a wikipedia
+       page.
+
+       'links' should be a list of category pagelink objects.
+
+       The string is formatted for inclusion in mylang.
+    """
+    if not links:
+        return ''
+    s = []
+    for pl in links:
+        s.append(pl.aslocallink())
+    if mylang in config.category_on_one_line:
+        sep = ' '
+    else:
+        sep = '\r\n'
+    s.sort()
+    s=sep.join(s) + '\r\n'
+    return s 
+
+# end of category specific code
 
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""

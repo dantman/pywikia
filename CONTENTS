@@ -55,6 +55,7 @@ xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
 
 Robots
 ------
+addcategory.py         : add a category link to all pages mentioned on a page.
 boilerplate.py         : change one boilerplate (that is {{msg:...}}) into
                          another
 brackethttp.py         : a bot replacing a ()-bracketed http: link by an

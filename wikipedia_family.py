@@ -212,6 +212,23 @@ image = {
     'wa': 'Im%C3%A5dje',
     }
 
+# Category namespace. 'Category' works on all languages?!?!?....
+
+category = {
+    'en': 'Category',
+    'nl': 'Categorie'
+    }
+
+def category_namespaces(code):
+    ns = []
+    ns.append(category[code])
+    ns.append(category[code].lower())
+    ns.append(category['en'])
+    ns.append(category['en'].lower())
+    return ns
+
+# Redirect code can be translated, but is only in one language now.
+
 redirect = {
     'cy': 'ail-cyfeirio',
     }

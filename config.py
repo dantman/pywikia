@@ -27,16 +27,25 @@ username = ''
 # windows, and iso-8859-1 on other systems
 console_encoding = None
 
-# atbottom is a list of languages that prefer to have the interwiki
-# links at the bottom of the page. You can use interwiki_atbottom.append('xx')
+# attop is a list of languages that prefer to have the interwiki
+# links at the top of the page. You can use interwiki_attop.append('xx')
 # in user-config.py to add more.
 interwiki_attop = ['fr', 'pl']
-# on_separate_lines is a list of languages that want the interwiki links
-# each on a separate line
+# on_one_line is a list of languages that want the interwiki links
+# one-after-another on a single line
 interwiki_on_one_line = ['fr', 'hu', 'pl']
 
 # String used as separator between interwiki links and the text
 interwiki_text_separator = '\r\n'
+
+# Similar for category
+category_atbottom = []
+# on_one_line is a list of languages that want the category links
+# one-after-another on a single line
+category_on_one_line = []
+
+# String used as separator between category links and the text
+category_text_separator = '\r\n'
 
 # will split long paragraphs for better reading the source.
 # only table2wiki.py use it by now

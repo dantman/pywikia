@@ -24,6 +24,12 @@ image = {
     'ro': 'Imagine'
     }
 
+# Category namespace.
+
+category = {
+    'en': 'Category'
+    }
+
 redirect = {}
 
 interwiki_putfirst = {}
