@@ -210,23 +210,40 @@ ignore={
       )
     }
 
+class ReferringPageGenerator:
+    def __init__(self, disambPl):
+        self.disambPl = disambPl
+        
+    def getReferences(self):
+        refs = wikipedia.getReferences(self.disambPl, follow_redirects = False)
+        print "Found %d references" % len(refs)
+        # Remove ignorables
+        if ignore.has_key(self.disambPl.site().lang):
+            ignore_regexes = []
+            for ig in ignore[self.disambPl.site().lang]:
+                ig = ig.encode(wikipedia.myencoding())
+                ignore_regexes.append(re.compile(ig))
+            for Rignore in ignore_regexes:
+                for i in range(len(refs)-1, -1, -1):
+                    if Rignore.match(refs[i]):
+                        wikipedia.output('Ignoring page ' + refs[i], wikipedia.myencoding())
+                        del refs[i]
+        return refs
+    
+    def generate(self):
+        refs = self.getReferences()
+        refpls = []
+        for ref in refs:
+            refpls.append(wikipedia.PageLink(self.disambPl.site(), ref))
+        try:
+            wikipedia.getall(self.disambPl.site(), refpls, throttle=False)
+        except wikipedia.SaxError:
+            # Ignore this error, and get the pages the traditional way.
+            pass
+        for refpl in refpls:
+            yield refpl
 
 
-def getReferences(pl):
-    refs = wikipedia.getReferences(pl, follow_redirects = False)
-    print "Found %d references" % len(refs)
-    # Remove ignorables
-    if ignore.has_key(pl.site().lang):
-        ignore_regexes =[]
-        for ig in ignore[pl.site().lang]:
-            ig = ig.encode(wikipedia.myencoding())
-            ignore_regexes.append(re.compile(ig))
-        for Rignore in ignore_regexes:
-            for i in range(len(refs)-1, -1, -1):
-                if Rignore.match(refs[i]):
-                    wikipedia.output('Ignoring page ' + refs[i], wikipedia.myencoding())
-                    del refs[i]
-    return refs
 
 def unique(list):
     # remove duplicate entries
@@ -430,6 +447,13 @@ def main():
                 else:
                     choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N|c(hange redirect)]' % refpl.linkname())
                     if choice == 'y':
+                        gen = ReferringPageGenerator(thispl)
+                        for refpl in gen.generate():
+                            if not refpl.urlname() in skip_primary:
+                                # run until the user selected 'quit'
+                                if not treat(refpl, thispl):
+                                    break
+                        
                         for ref_redir in getReferences(refpl):
                             refpl_redir=wikipedia.PageLink(mysite, ref_redir)
                             treat(refpl_redir, refpl)
@@ -637,23 +661,12 @@ def main():
             s=s.replace(')','\\)')
             return s
 
-        active=True
-
-        refs = getReferences(thispl)
-        if len(refs) > 0:
-
-            refpls = []
-            for ref in refs:
-                refpls.append(wikipedia.PageLink(mysite, ref))
-            try:
-                wikipedia.getall(mysite, refpls, throttle=False)
-            except wikipedia.SaxError:
-                # Ignore this error, and get the pages the traditional way.
-                pass
-            for refpl in refpls:
-                if active and not refpl.urlname() in skip_primary:
-                    if not treat(refpl, thispl):
-                        active=False
+        gen = ReferringPageGenerator(thispl)
+        for refpl in gen.generate():
+            if not refpl.urlname() in skip_primary:
+                # run until the user selected 'quit'
+                if not treat(refpl, thispl):
+                    break
 
         # clear alternatives before working on next disambiguation page
         alternatives = []
