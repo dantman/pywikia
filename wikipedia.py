@@ -293,19 +293,15 @@ def removeLanguageLinks(text):
     return text
     
 def interwikiFormat(links):
-    s=''
+    s=[]
     ar=links.keys()
     ar.sort()
     for code in ar:
-        s = s + '[[%s:%s]]'%(code, links[code])
-    return s+'\r\n'
+        s.append('[[%s:%s]]'%(code, links[code]))
+    return ' '.join(s)+'\r\n'
 
 def code2encoding(code):
-    if code=='ru':
-        return 'iso-8859-5'
-    if code=='pl':
-        return 'iso-8859-2'
-    if code in ['meta','eo','ja','zh','hi','he','hu']:
+    if code in ['meta','ru','eo','ja','zh','hi','he','hu','pl']:
         return 'utf-8'
     return 'iso-8859-1'
     
