@@ -126,22 +126,22 @@ types = {
     # only for internal use
     "geography": {
         "translations": [
-            { "en":"[[Area]]:",                            "de":u"[[Fl\xE4che]]:",                "nl":"[[Oppervlakte]]:",         "fr":"[[Superficie]]:",  },
+            { "en":"[[Area]]:",                            "de":u"[[Fl\xE4che]]:",                "nl":"Oppervlakte:",         "fr":"[[Superficie]]:",  },
             { "en":"[[Population]]:",                      "de":"[[Einwohner]]:",                 "nl":"Inwoneraantal:",                },
             { "en":"[[Population density]]:",              "de":u"[[Bev\xF6lkerungsdichte]]:",    "nl":"[[Bevolkingsdichtheid]]:",   },
-            { "en":"inh./km&sup2;",                        "de":"Einw./km&sup2;",                 "nl":"Einw./km&sup2;",           "fr":"hab/km&sup2;", },
+            { "en":"inh./km&sup2;",                        "de":"Einw./km&sup2;",                 "nl":"inw./km&sup2;",           "fr":"hab/km&sup2;", },
             { "en":u"inh./km\xB2",                         "de":u"Einw./km\xB2",                  "nl":u"inw./km\xB2",                                  "fr":u"hab/km\xB2",  },
             { "en":"inhabitants/km&sup2;",                 "de":"Einwohner/km&sup2;",             "nl":"inwoners / km&sup2;",                },
             { "en":u"inhabitants/km\xB2",                  "de":u"Einwohner/km\xB2",              "nl":u"inwoners / km\xB2",               },
             { "en":"inhabitants per km&sup2;",             "de":"Einwohner pro km&sup2;",         "nl":"inwoners per km&sup2;",               }, 
             { "en":u"inhabitants per km\xB2",              "de":u"Einwohner pro km\xB2",           "nl":u"inwoners per km\xB2",                    },
             { "en":"inh.",                                 "de":"Einw.",                          "nl":"inw.",                      "fr":"hab.", },
-            { "en":"m above [[sea level]]",                "de":u"m \xFC. [[Normalnull|NN]]",     "nl":"m boven [[zeeniveau]]",                           },
+            { "en":"above [[sea level]]",                  "de":u"\xFC. [[Normalnull|NN]]",       "nl":"boven [[Normaal Amsterdams Peil|NAP]]",                           },
             # longitude, latitude
-            { "en":"' north",                              "de":u"' n\xF6rdl. Breite",             },
-            { "en":"' north",                              "de":"' n. Br.",                        },
-            { "en":"' east",                               "de":u"' \xF6stl. L\xE4nge",            },
-            { "en":"' east",                               "de":u"' \xF6. L.",                     },
+            { "en":"' north",                              "de":u"' n\xF6rdl. Breite",            "nl":"' NB" },
+            { "en":"' north",                              "de":"' n. Br.",                       "nl":"' NB" },
+            { "en":"' east",                               "de":u"' \xF6stl. L\xE4nge",           "nl":"' OL" },
+            { "en":"' east",                               "de":u"' \xF6. L.",                    "nl":"' OL" },
             { "en":"Map",                                  "de":"Karte",                          "nl":"Kaart",                        },
             { "en":"Coat of Arms",                         "de":"Wappen",                         "nl":"Wapen",                       "fr":"Blason"      },
         ],
@@ -151,14 +151,14 @@ types = {
     "city": {
         "translations": [
             { "en":"Base data",                              "de":"Basisdaten"                                                              },
-            { "en":"[[Location]]:",                          "de":"[[Geografische Lage]]:",                    "nl":"[[Geografische locatie]]", },
-            { "en":"[[Altitude]]:",                          "de":u"[[H\xF6he]]:",                             "nl":"[[Hoogte]]:", },
-            { "en":"Highest point:",                         "de":u"H\xF6chster Punkt:",                                                          },
-            { "en":"Lowest point:",                          "de":u"Niedrigster Punkt:",                                                       },
+            { "en":"[[Location]]:",                          "de":"[[Geografische Lage]]:",                    "nl":"Ligging", },
+            { "en":"[[Altitude]]:",                          "de":u"[[H\xF6he]]:",                             "nl":"Hoogte:", },
+            { "en":"Highest point:",                         "de":u"H\xF6chster Punkt:",                       "nl":"Hoogste punt:",},
+            { "en":"Lowest point:",                          "de":"Niedrigster Punkt:",                        "nl":"Laagste punt:"},
             { "en":"[[Postal code]]:",                       "de":"[[Postleitzahl]]:",                         "nl":"[[Postcode]]:",                 },
             { "en":"[[Postal code]]s:",                      "de":"[[Postleitzahl]]en:",                       "nl":"[[Postcode]]s:",                 },
-            { "en":"[[Area code]]:",                         "de":"[[Telefonvorwahl|Vorwahl]]:",               "nl":"[[Net-number]]:",             },
-            { "en":"[[Area code]]s:",                        "de":"[[Telefonvorwahl|Vorwahlen]]:",             "nl":"[[Net-number]]s:",             },
+            { "en":"[[Area code]]:",                         "de":"[[Telefonvorwahl|Vorwahl]]:",               "nl":"[[Netnummer]]:",             },
+            { "en":"[[Area code]]s:",                        "de":"[[Telefonvorwahl|Vorwahlen]]:",             "nl":"[[Netnummer]]s:",             },
             { "en":"[[License plate]]:",                     "de":"[[KFZ-Kennzeichen]]:",                      "nl":"[[Autonummerbord]]:",         },
             { "en":"[[License plate]]:",                     "de":"[[Kfz-Kennzeichen]]:",                      "nl":"[[Autonummerbord]]:",           },
             { "en":"City structure:",                        "de":"Gliederung des Stadtgebiets:",              "nl":"Ondergemeentelijke indeling:",  },
@@ -166,9 +166,9 @@ types = {
             { "en":"Municipality's address:",                "de":"Adresse der Gemeindeverwaltung:",           "nl":"Adres gemeentehuis:",       },
             # city hall snail mail address
             { "en":"Municipality's address:",                "de":"Adresse der Stadtverwaltung:",              "nl":"Adres stadhuis:",       },
-            { "en":"Website:",                               "de":"Website:",                                       },
-            { "en":"E-Mail adress:",                         "de":"[[E-Mail]]-Adresse:",                       "nl":"E-mail adres:",               },
-            { "en":"E-Mail adress:",                         "de":"E-Mail-Adresse:",                           "nl":"E-mail adres:",               },
+            { "en":"Website:",                               "de":"Website:",                                  "nl":"Website:"     },
+            { "en":"E-Mail adress:",                         "de":"[[E-Mail]]-Adresse:",                       "nl":"Email-adres:",               },
+            { "en":"E-Mail adress:",                         "de":"E-Mail-Adresse:",                           "nl":"Email-adres:",               },
             # table header
             { "en":"Politics",                               "de":"Politik",                                   "nl":"Politiek",                  },
             # female mayor
@@ -178,11 +178,17 @@ types = {
             { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeister]]:",                    "nl":"[[Burgemeester]]:",           },
             { "en":"Governing [[Political party|party]]:",   "de":"Regierende [[Politische Partei|Partei]]",   "nl":"Regerende partij",               },
             { "en":"Governing [[Political party|parties]]:", "de":"Regierende [[Politische Partei|Parteien]]", "nl":"Regerende partijen",             },
-            { "en":"Majority [[Political party|party]]:",   "de":"[[Politische Partei|Mehrheitspartei]]",                 },
+            { "en":"Majority [[Political party|party]]:",   "de":"[[Politische Partei|Mehrheitspartei]]",      "nl":"Meerderheidspartij"},
             { "en":"Debts:",                                 "de":"Schulden:",                                     },
-            { "en":"[[Unemployment]]:",                      "de":"[[Arbeitslosenquote]]:",                    "nl":"[[Werkloosheidspercentage]]:", },
+            { "en":"[[Unemployment]]:",                      "de":"[[Arbeitslosenquote]]:",                    "nl":"Werkloosheidspercentage:", },
             {                                                "de":u"[[Ausl\xE4nderanteil]]:",                  "nl":"Percentage buitenlanders",            },
             { "en":"Age distribution:",                      "de":"Altersstruktur:",                           "nl":"Leeftijdsopbouw:",          },
+            {                                                "de":"Stadtteile",                                "nl":"wijken"},
+            {                                                "de":"[[Stadtbezirk]]e",                          "nl":"deelgemeenten"},
+            { "en":"Independent",                            "de":"Parteilos",                                 "nl":"geen partij"},
+            { "en":"Region",                                 "de":"[[Region]]",                                "nl":"Landstreek"},
+            
+
         ],
         "includes": ["images", "geography"],
     },
@@ -198,14 +204,34 @@ types = {
             { "en":"District-free town",       "de":"[[Kreisfreie Stadt]]",                 "nl":"[[Stadsdistrict]]",                       },
             { "en":"[[Municipality key]]:",    "de":"[[Amtliche Gemeindekennzahl]]:", },
             { "en":"[[Municipality key]]:",    "de":u"[[Amtlicher Gemeindeschl\xFCssel]]:",                                              },
-            { "en":"urban district",           "de":"[[Stadtbezirk]]e",                                                                   },
+            { "en":"urban districts",          "de":"[[Stadtbezirk]]e",                     "nl":"stadsdelen",                                             },
             # female first mayor, no exact translation in en:
             { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeisterin]]:",         "nl":"[[Burgermeester]]:"},
             { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]in:",         "nl":"[[Burgermeester]]:"},
             # male first mayor, no exact translation in en:
             { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]:",           "nl":"[[Burgermeester]]:"},
             # "bis" is used between postal codes
-            { "en":" to ",                     "de":" bis ",                                                                            },
+            { "en":" to ",                     "de":" bis ",                                "nl":"t/m"},          
+            # parties
+            { "en":"[[Christian Democratic Union of Germany|CDU]]", "de":"[[CDU]]",                            "nl":"[[Christlich Demokratische Union|CDU]]"},
+            { "en":"[[Social Democratic Party of Germany|SPD]]", "de":"[[SPD]]",                               "nl":"[[Sozialdemokratische Partei Deutschlands|SPD]]"},
+            { "en":"[[Christian Social Union in Bavaria|CSU]]", "de":"[[CSU]]",                                "nl":"[[CSU]]"},
+            { "en":"[[Free Democratic Party of Germany|FDP]]", "de":"[[FDP (Deutschland)|FDP]]",               "nl":"[[FDP]]"},
+            { "en":u"[[German Green Party|Bündnis 90/Die Gr\xFCnen]]", "de":u"[[Bündnis 90/Die Gr\xFCnen]]",   "nl":u"[[Die Gr\xFCnen]]"},
+            # Bundeslaender
+            { "en":"[[Party of Democratic Socialism|PDS]]",  "de":"[[PDS]]",                                   "nl":"[[PDS]]"},
+            { "en":"[[Bavaria]]",               "de":"[[Bayern]]",                          "nl":"[[Beieren]]"},
+            { "en":"[[Bremen (state)|Bremen]]", "de":"[[Bremen (Land)|Bremen]]",            "nl":"[[Bremen]]"},
+            { "en":"[[Hesse]]",                 "de":"[[Hessen]]",                          "nl":"[[Hessen]]"},
+            { "en":"[[Mecklenburg-Western Pomerania]]", "de":"[[Mecklenburg-Vorpommern]]"   "nl":"[[Mecklenburg-Voorpommeren]]"},
+            { "en":"[[Lower Saxony]]",          "de":"[[Niedersachsen]]",                   "nl":"[[Nedersaksen]]"},
+            { "en":"[[North Rhine-Westphalia]]", "de":"[[Nordrhein-Westfalen]]",            "nl":"[[Noordrijn-Westfalen]]"},
+            { "en":"[[Rhineland-Palatinate]]",  "de":"[[Rheinland-Pfalz]]",                 "nl":"[[Rijnland-Palts]]"},
+            { "en":"[[Saxony]]",                "de":"[[Sachsen (Bundesland)|Sachsen]]",    "nl":"[[Saksen (deelstaat)|Saksen]]"},
+            { "en":"[[Saxony-Anhalt]]",         "de":"[[Sachsen-Anhalt]]",                  "nl":"[[Saksen-Anhalt]]"},
+            { "en":"[[Schleswig-Holstein]]",    "de":"[[Schleswig-Holstein]]",              "nl":"[[Sleeswijk-Holstein]]"},
+            { "en":"[[Thuringia]]",             "de":u"[[Th\xFCringen]]",                   "nl":u"[[Th\xFCringen]]",},
+
         ],
         "regexes": {
             "de": {
