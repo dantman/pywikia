@@ -373,7 +373,14 @@ def treat(refpl, thispl):
                 reppl = wikipedia.PageLink(thispl.code(), replacement,
                                            incode = refpl.code())
                 replacement = reppl.linkname()
-                if g2[0] in 'abcdefghijklmnopqrstuvwxyz':
+                # There is a function that uncapitalizes the link target's first letter
+                # if the link description starts with a small letter. This is useful on
+                # nl: but annoying on de:.
+                # At the moment the de: exclusion is only a workaround because I don't
+                # know if other languages don't want this feature either.
+                # We might want to introduce a list of languages that don't want to use
+                # this feature.
+                if wikipedia.mylang != 'de' and g2[0] in 'abcdefghijklmnopqrstuvwxyz':
                     replacement = replacement[0].lower() + replacement[1:]
                 if replaceit or replacement == g2:
                     reptxt = replacement
