@@ -1224,9 +1224,11 @@ def link2url(name, code, incode = None):
         name = name.replace('&#364;x','Ux')
         name = name.replace('&#364;X','UX')
     if '%' in name:
+        # There might be %XX encoding. Just try to decode, if that fails
+        # we must ignore the % sign and it is apparently in the title.
         try:
             name = url2unicode(name, language = code)
-        except UnicodeEncodeError:
+        except UnicodeError:
             name = html2unicode(name, language = code, altlanguage = incode)
     else:
         name = html2unicode(name, language = code, altlanguage = incode)
