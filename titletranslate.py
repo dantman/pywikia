@@ -66,10 +66,13 @@ def translate(pl, arr, same = False, hints = None, auto = True):
             else:
                 codes = codes.split(',')
             for newcode in codes:
-                if newcode != site.lang:
-                    x = wikipedia.PageLink(site.getSite(code=newcode), newname)
-                    if x not in arr:
-                        arr[x] = None
+                if newcode in site.languages():
+                    if newcode != site.language():
+                        x = wikipedia.PageLink(site.getSite(code=newcode), newname)
+                        if x not in arr:
+                            arr[x] = None
+                else:
+                    wikipedia.output(u"Ignoring unknown language code %s"%newcode)
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
     if date.datetable.has_key(site.lang) and auto:
