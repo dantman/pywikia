@@ -1143,7 +1143,7 @@ def allpages(start = '!', site = None):
         # Try to find begin and end markers
         try:
             # In 1.4, another table was added above the navigational links
-            if site.version() == "1.4":
+            if site.version() < "1.4":
                 begin_s = '<table'
                 end_s = '</table'
             else:
