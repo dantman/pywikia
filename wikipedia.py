@@ -2399,6 +2399,7 @@ def showColorDiff(oldtext, newtext):
     If regex is true, the dictionary contents are interpreted as regular
     expressions.
     """
+    # For information on difflib, see http://pydoc.org/2.3/difflib.html
     def printLastLine(lastline, lastcolor):
         # highlight the minus red or the plus green
         if lastline != None:
@@ -2410,6 +2411,9 @@ def showColorDiff(oldtext, newtext):
     # starting with + or - occurs.
     lastline = None
     lastcolor = None
+    # For testing only: show original diff
+    #for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
+    #    output(line)
     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
         if line[0] == '-':
             # if lastline wasn't followed by a line starting with ?
@@ -2423,9 +2427,12 @@ def showColorDiff(oldtext, newtext):
         elif line[0] == '?':
             # iterate backwards over the whole line
             for i in range(len(line)-1, -1, -1):
-                # the original diff marks changes with a ^ under the changed
+                # The original diff marks changes with a ^ under the changed
                 # part. We'll highlight with colors instead.
-                if line[i] != ' ':
+                # If the line seperator is changed, the ? line would be one byte
+                # longer than the +/- line, causing an out of bounds exception,
+                # so we check if i<len(line)-1.
+                if line[i] != ' ' and i<len(line)-1:
                     lastline = lastline[:i] + '\x1b[' + lastcolor + ';1m' + lastline[i] + '\x1b[0m' + lastline[i+1:]
             output(lastline)
             lastline = None
