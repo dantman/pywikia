@@ -27,7 +27,8 @@ langs = {'en':'www.wikipedia.org', # English
          'bs':'bs.wikipedia.org', # Bosnisch
 	 'he':'he.wikipedia.org', # Hebrew
          'hi':'hi.wikipedia.org', # Hindi
-         #'nds':'nds.wikipedia.org', # Nedersaksisch
+         'nds':'nds.wikipedia.org', # Nedersaksisch
+         'ro':'ro.wikipedia.org', # Romanian
          'it':'it.wikipedia.org', # Italian
          'no':'no.wikipedia.org', # Norwegian
          'pt':'pt.wikipedia.org', # Portuguese
@@ -38,12 +39,14 @@ langs = {'en':'www.wikipedia.org', # English
          'fi':'fi.wikipedia.org', # Finnish
          'ia':'ia.wikipedia.org', # Interlingua
          'et':'et.wikipedia.org', # Ests
-         'eu':'eu.wikipedia.org',
+         'eu':'eu.wikipedia.org', # Basque
          #'simple':'simple.wikipedia.org', # Simplified english
          #'test':'test.wikipedia.org',
          }
 
 oldsoftware=['it','no','pt','af','fy','la','ca','fi','ia','et','eu','simple']
+
+needput = True # Set to True if you want write-access to the Wikipedia.
 
 charsets = {}
 
@@ -78,6 +81,8 @@ class IsRedirectPage(Error):
 class LockedPage(Error):
     """Wikipedia page does not exist"""
 
+class NoSuchEntity(ValueError):
+    """No entity exist for this character"""
 #
 class PageLink:
     def __init__(self,code,name=None,urlname=None,linkname=None,incode=None):
@@ -130,6 +135,8 @@ class PageLink:
                 result.append(self.__class__(newcode,linkname=newname,incode=self.code()))
             except UnicodeEncodeError:
                 print "ERROR> link from %s to %s:%s is invalid encoding?!"%(self,newcode,repr(newname))
+            except NoSuchEntity:
+                print "ERROR> link from %s to %s:%s contains invalid character?!"%(self,newcode,repr(newname))
         return result
 
     def __cmp__(self,other):
@@ -212,6 +219,7 @@ class MyURLopener(urllib.FancyURLopener):
     version="RobHooftWikiRobot/1.0"
     
 def getUrl(host,address):
+    #print host,address
     uo=MyURLopener()
     f=uo.open('http://%s%s'%(host,address))
     text=f.read()
@@ -242,7 +250,7 @@ def getPage(code, name, do_edit=1, do_quote=1):
             print "DBG> quoting",name
         name = urllib.quote(name)
     if code not in oldsoftware:
-        address = '/w/wiki.phtml?title='+name
+        address = '/w/wiki.phtml?title='+name+"&redirect=no"
         if do_edit:
             address += '&action=edit'
     else:
@@ -293,7 +301,8 @@ def getPage(code, name, do_edit=1, do_quote=1):
         m=Rredirect.match(text[i1:i2])
         if m:
             raise IsRedirectPage(m.group(1))
-        assert edittime[code,name]!=0 or code in oldsoftware, "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
+        if needput:
+            assert edittime[code,name]!=0 or code in oldsoftware, "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
 
         x=text[i1:i2]
         x=unescape(x)
@@ -392,7 +401,7 @@ def interwikiFormat(links):
     return ' '.join(s)+'\r\n'
             
 def code2encoding(code):
-    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl']:
+    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl','ro']:
         return 'utf-8'
     return 'iso-8859-1'
 
@@ -511,7 +520,7 @@ def addEntity(name):
                     result+='&%s;'%k;
                     break
             else:
-                raise ValueError("Cannot locate entity for character %s"%repr(c))
+                raise NoSuchEntity("Cannot locate entity for character %s"%repr(c))
     print "DBG> addEntity:",repr(name),repr(result)
     return result
 
