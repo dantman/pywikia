@@ -102,7 +102,7 @@ class NoPage(Error):
     """Wikipedia page does not exist"""
 
 class NoEditBox(Error):
-    """Wikipedia page does not provide an edit box"""
+    """Wikipedia page does not provide an edit box. This probably means the server is down."""
 
 class IsRedirectPage(Error):
     """Wikipedia page is a redirect page"""
@@ -284,6 +284,7 @@ class PageLink:
                     self._getexception = NoEditBox
                     raise
                 else:
+                    time.sleep(30)
                     self.get(trynumber=trynumber+1)
             except IsRedirectPage,arg:
                 self._getexception = IsRedirectPage
@@ -307,10 +308,7 @@ class PageLink:
         except SubpageError:
             return False
         except NoEditBox:
-            if trynumber=3:
-                raise
-            else:
-                return self.exists(trynumber=trynumber+1)
+            raise
         return True
 
     def isRedirectPage(self,trynumber=1):
@@ -321,10 +319,7 @@ class PageLink:
         except IsRedirectPage:
             return True
         except NoEditBox:
-            if trynumber=3:
-                raise
-            else:
-                return self.exists(trynumber=trynumber+1)
+            raise
         return False
     
     def isEmpty(self):
@@ -435,10 +430,7 @@ class PageLink:
         except IsRedirectPage, arg:
             return arg
         except NoEditBox:
-            if trynumber=3:
-                raise
-            else:
-                return self.exists(trynumber=trynumber+1)
+            raise
         else:
             raise IsNotRedirectPage(self)
         
