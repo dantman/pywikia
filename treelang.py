@@ -75,7 +75,8 @@ yearBCfmt={'de':'%d v. Chr.','en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
 msg={
     'en':('Adding','Removing','Modifying'),
     'nl':('Erbij','Eraf','Anders'),
-    'da':('Tilføjer', 'Fjerner','Ændrer'),
+    'da':('Tilføjer','Fjerner','Ændrer'),
+    'fr':('Ajoute','Retire','Modifie')
     }
 if msg.has_key(mylang):
     msglang=mylang
