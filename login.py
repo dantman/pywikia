@@ -53,11 +53,11 @@ def makepath(path):
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
 
-def allowedbot(site):
+def allowedbot(username, site):
     """Checks whether the bot is listed on Wikipedia:bots"""
     pl = wikipedia.PageLink(site, "Wikipedia:Bots")
     text = pl.get()
-    return "[[User:%s" % username in text
+    return "[[user:%s" % username in text.lower()
 
 def login(site, username, password, remember=True):
     """Login to wikipedia.
@@ -147,7 +147,7 @@ def main(args):
     # Ensure bot policy on the English Wikipedia
     ensite=wikipedia.getSite(code='en',fam='wikipedia')
     if mysite == ensite:
-        if not allowedbot(ensite):
+        if not allowedbot(username, ensite):
             print "Your username is not listed on [[Wikipedia:Bots]]"
             print "Please make sure you are allowed to use the robot"
             print "Before actually using it!"
