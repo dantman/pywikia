@@ -92,6 +92,7 @@ langs = {
     'vi':'vi.wikipedia.org',   # Vietnamese
     'vo':'vo.wikipedia.org',   # Volapuk
     'walon':'wikipedia.walon.org', # Walon
+    'xh':'xh.wikipedia.org',   #isiXhosa
     'zh':'zh.wikipedia.org',   # Chinese
     'zh-cn':'zh.wikipedia.org', # Simplified Chinese
     'zh-tw':'zh.wikipedia.org', # Traditional Chinese
@@ -176,6 +177,7 @@ special = {
     'vi': 'Special',
     'vo': 'Special',
     'walon': 'Sipeci%C3%A5s',
+    'xh': 'Special',
     'zh': 'Special',
     'zh-cn': 'Special',
     'zh-tw': 'Special',
