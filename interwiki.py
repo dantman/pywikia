@@ -57,7 +57,7 @@ This script understands various command-line arguments:
                    from the named file
                    
     -confirm:      ask for confirmation before any page is changed on the
-                   live wikipedia. Without this argument, additions and
+                   live wiki. Without this argument, additions and
                    unambiguous modifications are made without confirmation.
 
     -autonomous:   run automatically, do not ask any questions. If a question
@@ -69,7 +69,7 @@ This script understands various command-line arguments:
     -nobacklink:   switch off the backlink warnings
 
     -start:        used as -start:pagename, specifies that the robot should
-                   go alphabetically through all pages on the home wikipedia,
+                   go alphabetically through all pages on the home wiki,
                    starting at the named page.
 
     -number:       used as -number:#, specifies that the robot should process
@@ -114,11 +114,11 @@ This script understands various command-line arguments:
                    pages.
 
     -warnfile:     used as -warnfile:filename, reads all warnings from the
-                   given file that apply to the home wikipedia language,
+                   given file that apply to the home wiki language,
                    and read the rest of the warning as a hint. Then
                    treats all the mentioned pages. A quicker way to
                    implement warnfile suggestions without verifying them
-                   against the live wikipedia is using the warnfile.py
+                   against the live wiki is using the warnfile.py
                    robot.
 
     -noredirect    do not follow redirects (note: without ending columns).
@@ -143,7 +143,7 @@ This script understands various command-line arguments:
 
 A configuration option can be used to change the working of this robot:
 
-interwiki_backlink: if set to True, all problems in foreign wikipedias will
+interwiki_backlink: if set to True, all problems in foreign wikis will
                     be reported
 
 Both these options are set to True by default. They can be changed through
@@ -219,7 +219,7 @@ class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
        all its translations)"""
     def __init__(self, pl, hints = None):
-        """Constructor. Takes as arguments the PageLink on the home wikipedia
+        """Constructor. Takes as arguments the PageLink on the home wiki
            plus optionally a list of hints for translation"""
         # Remember the "origin page"
         self.inpl = pl
@@ -239,7 +239,7 @@ class Subject(object):
         self.hintsasked = False
         
     def pl(self):
-        """Return the PageLink on the home wikipedia"""
+        """Return the PageLink on the home wiki"""
         return self.inpl
     
     def translate(self, hints = None):
@@ -524,7 +524,7 @@ class Subject(object):
            should be called exactly once after the todo list has gone empty.
 
            This contains a shortcut: if a subject array is given in the argument
-           sa, just before submitting a page change to the live wikipedia it is
+           sa, just before submitting a page change to the live wiki it is
            checked whether we will have to wait. If that is the case, the sa will
            be told to make another get request first."""
         if not self.isDone():
@@ -609,7 +609,7 @@ class Subject(object):
                                 if not qdone:
                                     # Nothing more to do
                                     break
-                        print "NOTE: Updating live wikipedia..."
+                        print "NOTE: Updating live wiki..."
                         timeout=60
                         while 1:
                             try:    
