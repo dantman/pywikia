@@ -23,7 +23,8 @@ Command line options:
                Page titles should be saved one per line, without [[brackets]].
                The -pos parameter won't work if -file is used.                              
 
--image         Copy all images within the found table to the target Wikipedia
+-image         Copy all images within the found table to the target Wikipedia.
+               Make sure the bot is logged in before trying to upload images.
 
 Article_Name:  Name of the article where a table should be inserted
 
@@ -58,6 +59,8 @@ def print_debug(text):
 # if the -file argument is used, page titles are dumped in this array.
 # otherwise it will only contain one page.
 page_list = []
+# if -file is not used, this temporary array is used to read the page title.
+page_title = []
 from_lang = ""
 type = ""
 debug = False
@@ -87,7 +90,13 @@ for arg in sys.argv[1:]:
                 page_list.append(line)
         f.close()
     else:
-        page_list.append(arg)
+        page_title.append(arg)
+
+# if the page name is given as a command line argument,
+# connect the title's parts with spaces
+if page_title != []:
+     page_title = ' '.join(page_title)
+     page_list.append(page_title)
 
 # returns the image namespace name for a given language, followed by a colon.
 # if the namespace name is unknown, "Image:" is default.
@@ -149,8 +158,10 @@ def treat(to_pl):
             old_image_tag = wikipedia.PageLink(wikipedia.mylang, image).linkname()
             new_image_tag = wikipedia.PageLink(wikipedia.mylang, image_namespace(wikipedia.mylang) + new_filename).linkname()
             print_debug("Replacing " + old_image_tag + " with " + new_image_tag)
-            # We want to find "Image:my pic.jpg" as well as "Image:my_pic.jpg", so we need a regular expression.
+            # We want to replace "Image:My pic.jpg" as well as "image:my_pic.jpg", so we need a regular expression.
             old_image_tag = old_image_tag.replace(" ", "[ \_]")
+            old_image_tag = "[" + old_image_tag[0].upper() + old_image_tag[0].lower() + "]" + old_image_tag[1:]
+            #todo: regex for first letter of filename, i.e. first letter after the colon
             rOld_image_tag = re.compile(old_image_tag)
             table = re.sub(old_image_tag, new_image_tag, table)
 
