@@ -146,8 +146,13 @@ run, do: "python interwiki.py -autonomous -restore -start:Brilliant_0"
 __version__ = '$Id$'
 #
 import sys, copy, re
+import time
+import codecs
+import socket
+import logger
 
 import wikipedia, config, unequal, date
+import titletranslate
 
 msg = {
     'cs':(u'Přidal', u'Odebral', u'Změnil'),
@@ -215,7 +220,6 @@ class Subject(object):
     
     def translate(self, hints = None):
         """Add the translation hints given to the todo list"""
-        import titletranslate
         arr = {}
         titletranslate.translate(self.inpl, arr, same = globalvar.same, hints = hints, auto = globalvar.auto)
         for pl in arr.iterkeys():
@@ -355,7 +359,6 @@ class Subject(object):
                         break
                     else:
                         arr = {}
-                        import titletranslate
                         titletranslate.translate(pl, arr, same = False,
                                                  hints = [newhint], auto = globalvar.auto)
                         for pl2 in arr.iterkeys():
@@ -377,7 +380,6 @@ class Subject(object):
             sys.stdout.write('\07')
         self.problemfound = True
         if globalvar.autonomous:
-            import codecs
             f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
             f.write("%s {%s}\n" % (self.inpl.aslink(), txt))
             f.close()
@@ -612,7 +614,6 @@ class Subject(object):
                                     # Nothing more to do
                                     break
                         print "NOTE: Updating live wikipedia..."
-                        import socket, time
                         timeout=60
                         while 1:
                             try:    
@@ -687,7 +688,6 @@ class SubjectArray(object):
         self.generator = generator
 
     def dump(self, fn):
-        import codecs
         f = codecs.open(fn, 'w', 'utf-8')
         for subj in self.subjects:
             f.write(subj.pl().aslink(None)+'\n')
@@ -870,7 +870,6 @@ def compareLanguages(old, new):
     return s,removing
 
 def ReadWarnfile(fn, sa):
-    import re
     R=re.compile(r'WARNING: ([^\[]*):\[\[([^\[]+)\]\]([^\[]+)\[\[([^\[]+):([^\[]+)\]\]')
     f=open(fn)
     hints={}
@@ -1013,7 +1012,6 @@ if __name__ == "__main__":
                 inname.append(arg)
 
     if globalvar.log:
-        import logger
         sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
 
     unequal.read_exceptions()
