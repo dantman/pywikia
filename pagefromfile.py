@@ -82,8 +82,8 @@ for arg in sys.argv[1:]:
     if arg:
         if arg.startswith("-start:"):
             starttext=arg[7:]
-        elif arg.startswith("-stop:"):
-            endtext=arg[6:]
+        elif arg.startswith("-end:"):
+            endtext=arg[5:]
         elif arg.startswith("-file:"):
             filename=arg[6:]
         elif arg=="-include":
