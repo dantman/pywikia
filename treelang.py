@@ -218,11 +218,20 @@ print "==upload=="
 oldtext=m[mylang,inname]
 s=wikipedia.interwikiFormat(new)
 s2=wikipedia.removeLanguageLinks(oldtext)
-if s and not s2.startswith('\r\n'):
-    s2='\r\n'+s2
 newtext=s+s2
 if debug:
-    print s
+    if 1:
+        f=open('/tmp/wik.in','w')
+        f.write(oldtext)
+        f.close()
+        f=open('/tmp/wik.out','w')
+        f.write(newtext)
+        f.close()
+        import os
+        f=os.popen('diff -u /tmp/wik.in /tmp/wik.out','r')
+        print f.read()
+    else:
+        print s
 if newtext!=oldtext:
     print "NOTE: Replacing %s: %s"%(mylang,inname)
     if forreal:
