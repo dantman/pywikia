@@ -108,6 +108,9 @@ def main():
     newfn = raw_input("Better name : ")
     if newfn:
         fn = newfn
+    # Wikipedia doesn't allow spaces in the file name.
+    # Replace them here to avoid an extra confirmation form
+    newfn = newfn.replace(' ', '_')
     
     # A proper description for the submission
     description = raw_input('Description : ')
