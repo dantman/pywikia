@@ -47,7 +47,7 @@ def sametranslate(pl,arr):
     for newcode in wikipedia.langs:
         # Put as suggestion into array
         newname=pl.linkname()
-        if newcode=='eo' and same=='name':
+        if newcode in ['eo','cs'] and same=='name':
             newname=newname.split('_')
             newname[-1]=newname[-1].upper()
             newname='_'.join(newname)
