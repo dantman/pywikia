@@ -110,7 +110,7 @@ class Global:
     force = False
     forreal = True
     log = config.treelang_log
-    minquerysize = 10
+    minquerysize = 1
     maxquerysize = 60
     same = False
     skip = {}
