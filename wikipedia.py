@@ -945,7 +945,10 @@ def allpages(start = '%21%200'):
         if n < 100:
             break
         m += n
-        sys.stderr.write('AllPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl',incode='ascii')))
+        ####
+        # This line has been disabled because it caused bug #992575.
+        ####
+        #sys.stderr.write('AllPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl',incode='ascii')))
 
 
 # Part of library dealing with interwiki links
