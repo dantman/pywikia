@@ -147,7 +147,7 @@ class EditArticle(object):
         fp.close()
         wikipedia.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
     
-    def showdiff(old, new):
+    def showdiff(self,old, new):
         diff = difflib.context_diff(old.splitlines(), new.splitlines())
         wikipedia.output(u"\n".join(diff))
 
