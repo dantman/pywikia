@@ -24,7 +24,42 @@ wiktionaryformats = {
 #print wiktionaryformats['en']['langheader']
 #print wiktionaryformats['nl']['posheader']['noun']
 #print wiktionaryformats['en']['posheader']['noun']
-			    
+			   
+langnames =	{'nl':	{
+			'nl' : 'Nederlands',
+			'en' : 'Engels',
+			'de' : 'Duits',
+			'fr' : 'Frans',
+			},
+		 'de':	{
+			'nl' : 'Niederländisch',
+			'en' : 'Englisch',
+			'de' : 'Deutsch',
+			'fr' : 'Französisch',
+			},
+		 'en':	{
+			'nl' : 'Dutch',
+			'en' : 'English',
+			'de' : 'German',
+			'fr' : 'French',
+			}
+		}
+print langnames
+# A big thanks to Rob for the following:
+class sortonname:
+	def __init__(self, lang):
+#		print "lang in constructor: %s"%lang
+		self.lang = lang
+
+	def __call__(self, one, two):
+#		print "one in call: %s"%one
+#		print "two in call: %s"%two
+#		print "self.lang: %s"%self.lang
+#		print "self.lang[one]: %s"%self.lang[one]
+#		print "self.lang[two]: %s"%self.lang[two]
+		return cmp(self.lang[one], self.lang[two])
+
+			   
 class WiktionaryEntry:				# This refers to an entire page
 	def __init__(self,wikilang,term):	# wikilang here refers to the language of the Wiktionary
 		self.wikilang=wikilang
@@ -63,11 +98,32 @@ class SubEntry:					# On one page, different terms in different languages can be
 			subentry=wiktionaryformats[wikilang]['langheader'] + '\n'
 			term=meaning.term
 
-			subentry+=wiktionaryformats[wikilang]['posheader'][term.pos]
-			subentry+='\n'	
-			subentry= subentry + term.wikiwrapasexample(wikilang) + '; ' + meaning.definition
-			subentry+='\n'
-			return subentry
+			subentry += wiktionaryformats[wikilang]['posheader'][term.pos]
+			subentry +='\n'	
+			subentry = subentry + term.wikiwrapasexample(wikilang) + '; ' + meaning.definition
+			subentry +='\n\n'
+			first = 1
+			for synonym in meaning.synonyms:
+				if not first:
+					subentry += ', '
+					first = 0
+				subentry = subentry + synonym.term.wikiwrapforlist(wikilang)
+			first = 1
+			subentry +='\n'	
+
+			alllanguages=meaning.translations.keys()
+
+			alllanguages.sort(sortonname(langnames[wikilang]))
+			for language in alllanguages:
+				print meaning.translations[language]
+#			for translation in meaning.translations:
+#				term=translation.term
+#				print translation
+#				if not first:
+#					subentry += ', '
+#					first = 0
+#				subentry = subentry + translation.wikiwrapastranslation(wikilang)
+#			return subentry
 			
 class Meaning:					# On one page, different terms in different languages can be described
 	def __init__(self,definition,term):
@@ -75,7 +131,7 @@ class Meaning:					# On one page, different terms in different languages can be 
 		self.term=term
 		self.etymology=""
 		self.synonyms= []
-		self.translations= []
+		self.translations= {}
 		
 	def setDefinition(self,definition):
 		self.definition=definition
@@ -102,8 +158,9 @@ class Meaning:					# On one page, different terms in different languages can be 
 		return self.translations
 
 	def addTranslation(self,translation):
-		self.translations.append(translation)
+	    	self.translations.setdefault( translation.lang, [] ).append( translation )
 
+		
 class Term:
 	def __init__(self,lang,term):
 		self.lang=lang			# lang here refers to the language of the term
@@ -127,6 +184,18 @@ class Term:
 		if self.gender:
 			term = term + ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
 			
+		return term
+	
+	def wikiwrapforlist(self,wikilang):
+		term='[[' + self.term + ']]'
+		if self.gender:
+			term = term + ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
+		return term
+	
+	def wikiwrapastranslation(self,wikilang):
+		term='[[' + self.term + ']]'
+		if self.gender:
+			term = term + ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
 		return term
 
 class Noun(Term):
@@ -156,11 +225,18 @@ if __name__ == '__main__':
 	print 'Gender: %s'%aword.gender
         frtrans = Noun('fr',u"quelqu'un")
 	frtrans.setGender('m')
-	entrans = Noun('en',u'somebody')
-	
+	entrans1 = Noun('en',u'somebody')
+	entrans2 = Noun('en',u'someone')
+
+	print 'frtrans: %s'%frtrans
+
 	ameaning = Meaning(u'een persoon',aword)
 	ameaning.addTranslation(frtrans)
-	ameaning.addTranslation(entrans)
+	print ameaning.translations
+	ameaning.addTranslation(entrans1)
+	print ameaning.translations
+	ameaning.addTranslation(entrans2)
+	print ameaning.translations
 			
 	asubentry = SubEntry('nl')
 	asubentry.addMeaning(ameaning)
