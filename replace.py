@@ -238,7 +238,7 @@ else:
     if fix.has_key('msg'):
         wikipedia.setAction(fix['msg'][wikipedia.chooselang(wikipedia.mylang, fix['msg'])])
     if fix.has_key('exceptions'):
-        regex = fix['exceptions']
+        exceptions = fix['exceptions']
     replacements = fix['replacements']
 
 acceptall = False
