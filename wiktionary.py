@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
+import editarticle
+
 wiktionaryformats = {
 	'nl': {
 		'langheader':	u'{{-%%ISOLangcode%%-}}',
@@ -110,6 +112,15 @@ langnames = {
 		},
 }
 
+def invertlangnames():
+	invertedlangnames = {}
+	for ISOKey in langnames.keys():
+		for ISOKey2 in langnames[ISOKey].keys():
+#			print langnames[ISOKey][ISOKey2]
+			invertedlangnames.setdefault(langnames[ISOKey][ISOKey2], ISOKey2)
+#			print invertedlangnames
+	return invertedlangnames
+
 # A big thanks to Rob Hooft for the following:
 class sortonname:
 	def __init__(self, lang):
@@ -117,7 +128,6 @@ class sortonname:
 
 	def __call__(self, one, two):
 		return cmp(self.lang[one], self.lang[two])
-
 class WiktionaryPage:
 	"""	This class contains all that can appear on one Wiktionary page """
 	def __init__(self,wikilang,term):	# wikilang here refers to the language of the Wiktionary
@@ -532,7 +542,46 @@ class Adjective(Term):
 		Term.showcontents(self,indentation)
 		print ' ' * indentation + 'gender = %s'% self.gender
 
+class Header:
+	def __init__(self,line):
+		"""	Constructor
+			Generally called with one parameter:
+			- The line read from a Wiktonary page
+			  after determining it's probably a header
+
+		"""
+		self.type=''		# The type of header, i.e. lang, pos, other
+		self.contents=''	# If lang, which lang? If pos, which pos?
+		self.level=0
+		if line.count('=')>1:
+			self.level = line.count('=') // 2 # integer floor division without fractional part
+			self.header = line.replace('=','').strip()
+			
+		elif not line.find('{{')==-1:
+			self.header = line.replace('{{-','').replace('-}}','').strip()
+		else:
+			self.header = ''
+		
+		print self.level
+		print '|',self.header,'|'
+	
+def parseWikiPage(ofn):
+	content = open(ofn).readlines()
+	for line in content:
+		if len(line) <2: continue
+#		print 'line0:',line[0], 'line-2:',line[-2],'|','stripped line-2',line.rstrip()[-2]
+		if line.strip()[0]=='='and line.rstrip()[-2]=='=' or not line.find('{{-')==-1 and not line.find('-}}')==-1:
+			context=Header(line)
+
 if __name__ == '__main__':
+
+
+	print invertlangnames()			
+
+#	ofn = '/home/jo/tmp/unitest.txt'
+#	parseWikiPage(ofn)
+	
+def temp():	
 	apage = WiktionaryPage('nl',u'iemand')
 #	print 'Wiktionary language: %s'%apage.wikilang
 #	print 'Wiktionary apage: %s'%apage.term
@@ -647,4 +696,26 @@ if __name__ == '__main__':
 
 #	{{-syn-}}
 #	* [[Italiaans]]
-	
+
+def run():
+	ea = EditArticle(['-p', 'Andorra', '-e', 'bluefish'])
+	ea.initialise_data()
+	try:
+		ofn, old = ea.fetchpage()
+		
+		parseWikiPage(ofn)
+		new = ea.edit(ofn)
+	except wikipedia.LockedPage:
+		sys.exit("You do not have permission to edit %s" % self.pagelink.hashfreeLinkname())
+	if old != new:
+		new = ea.repair(new)
+		ea.showdiff(old, new)
+		comment = ea.getcomment()
+	        try:
+			ea.pagelink.put(new, comment=comment, minorEdit=False, watchArticle=ea.options.watch, anon=ea.options.anonymous)
+		except wikipedia.EditConflict:
+			ea.handle_edit_conflict()
+	else:
+		wikipedia.output(u"Nothing changed")
+			
+	   
