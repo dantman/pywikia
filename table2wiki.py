@@ -35,8 +35,8 @@ myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
 
-deIndentTables = 0
-splitLongSentences = 0
+deIndentTables = 1
+splitLongSentences = 1
 
 DEBUG=0
 
@@ -66,6 +66,8 @@ for arg in sys.argv[1:]:
             newText, num = re.subn("(\<[^>\n\r]+?)[\r\n]+(\>)",
                                    "\\1 \\2", newText, 0)
 
+
+        ##################
         # the <table> tag
         newText = re.sub("<(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
                          "{| \\2\n\\3", newText, 0)
@@ -79,17 +81,20 @@ for arg in sys.argv[1:]:
         newText = re.sub("[\s]*<\/(TABLE|table)\>", "\r\n|}", newText, 0)
 
 
+        ##################
         # captions
         newText = re.sub("<caption ([\w\W]*?)>([\w\W]*?)<\/caption>",
                          "\n|+\\1 | \\2", newText, 0)
         newText = re.sub("<caption>([\w\W]*?)<\/caption>",
                          "\n|+ \\1", newText, 0)
 
-
-        #very simple <tr>
+        ##################
+        # very simple <tr>
         newText = re.sub("[\r\n]+<(tr|TR)([^>]*?)\>", "\r\n|-----\\2\r\n", newText, 0)
 
-        #<th> often people don't write them within <tr>, be warned!
+
+        ##################
+        # <th> often people don't write them within <tr>, be warned!
         newText = re.sub("[\r\n]+<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
                          "\n!\\2 | \\3\r\n", newText, 0)
         # fail save. sometimes people forget </th>
@@ -98,6 +103,7 @@ for arg in sys.argv[1:]:
         newText = re.sub("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)\n",
                          "\n!\\2 | \\3\n", newText, 0)
 
+        ##################
         # normal <td>
         newText = re.sub("[\r\n]+\<(td|TD)\>([\w\W]*?)\<\/(TD|td)\>",
                          "\n| \\2\n", newText, 0)         
@@ -110,20 +116,27 @@ for arg in sys.argv[1:]:
                          "\n|\\2 | \\3\n", newText, 0)
 
 
-
+        ##################
         # Garbage collecting ;-)
         newText = re.sub("[\r\n]*\<\/[Tt][rRdDhH]\>", "", newText, 0)
 
+        ##################
         # OK, that's only theory but works most times.
         # Most browsers assume that <th> gets a new row and we do the same
-        newText = re.sub("([\r\n]+\|\ [^\r\n]*?)([\r\n]+\!)", "\\1\r\n|-----\\2",
-                         newText, 0)
+        newText = re.sub("([\r\n]+\|\ [^\r\n]*?)([\r\n]+\!)",
+                         "\\1\r\n|-----\\2", newText, 0)
+        # adds a |---- below for the case the new <tr> is missing
+        newText = re.sub("([\r\n]+\!\ [^\r\n]*?[\r\n]+)(\|\ )",
+                         "\\1|-----\r\n\\2", newText, 0)
+        
 
+        ##################
         # most <th> come with '''title'''. Senseless in my eyes cuz
         # <th> should be bold anyways.
         newText = re.sub("[\r\n]+\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
                          "\n!\\1\\3", newText, 0)
 
+        ##################
         # kills indention within tables. Be warned, it might bring
         # bad results.
         if deIndentTables:
@@ -132,13 +145,15 @@ for arg in sys.argv[1:]:
                 newText, num = re.subn("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
                                        "\\1\n\\2", newText, 0)
 
+        ##################
         # kills additional spaces after | or ! or {|
         newText = re.sub("[\r\n]+\|[\t ]+?\n", "\r\n| ", newText, 0)
         # kills trailing spaces and tabs
         newText = re.sub("([^\|])[\t\ ]+[\r\n]+", "\\1\r\n", newText, 0)
-
         # kill extra new-lines
         newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
+
+        ##################        
         # shortening if <table> had no arguments/parameters
         newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\[| ", newText, 0)
         # shortening if <td> had no args
@@ -148,14 +163,15 @@ for arg in sys.argv[1:]:
         # shortening of <caption> had no args
         newText = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newText, 0)
 
-        # merge two short <td>s (works only once :-(
+        ##################
+        # merge two short <td>s
         num = 1
         while num != 0:
             newText, num = re.subn("[\r\n]+(\|[^\|\-\}]{1}[^\n\r]{0,35})" +
                                    "[\r\n]+\|[^\|\-\}]{1}([^\r\n]{0,35})[\r\n]+",
                                    "\r\n\\1 || \\2\r\n", newText, 0)
 
-
+        ##################
         # proper attributes
         num = 1
         while num != 0:
@@ -168,25 +184,30 @@ for arg in sys.argv[1:]:
                                    '([^\"\s]+?)([\W]{1})',
                                    '\\1="\\4"\\5', newText, 0)
 
+        ##################
         # strip <center> from <th>
         newText = re.sub("(\n\![\w\W]+?)\<center\>([\w\W]+?)\<\/center\>",
                          "\\1 \\2", newText, 0)
-        #strip align="center" from <th> because the .css does it
+        # strip align="center" from <th> because the .css does it
         newText = re.sub("(\n\![^\r\n\|]+?)align\=\"center\"([^\n\r\|]+?\|)",
                          "\\1 \\2", newText, 0)
-        
+
+        ##################
         # kill additional spaces within arguments
         num = 1
         while num != 0:
-            newText, num = re.subn("\n(\||\!)([^|\r\n]+?)[ \t]{2,}([^\r\n]+?)",
+            newText, num = re.subn("\n(\||\!)([^|\r\n]*?)[ \t]{2,}([^\r\n]+?)",
                                    "\n\\1\\2 \\3", newText, 0)
-        
+
+        ##################
+        # I hate those long line because they make a wall of letters
         if splitLongSentences:
             num = 1
             while num != 0:
-                newText, num = re.subn("(\r\n[^\n\r]{2x00,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{100,})",
+                newText, num = re.subn("(\r\n[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{100,})",
                                        "\\1\r\n\\2", newText, 0)
                 
+        ##################
         if newText!=text:
             import difflib
             if DEBUG:
@@ -214,7 +235,8 @@ for arg in sys.argv[1:]:
         else:
             print "No changes were necessary in " + arg
             notFixedSites = notFixedSites + " " + arg
-            
+        print "\n\n"
+        
 print "\tFollowing pages were corrected\n" + fixedSites
 print "\n\tFollowing pages had errors and were not corrected\n" + notFixedSites
                   
