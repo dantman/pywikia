@@ -114,12 +114,16 @@ import time
 import math
 import difflib
 import re, urllib, codecs, sys
-import sets
 import xml.sax, xml.sax.handler
 import warnings
 
 import config, mediawiki_messages
 import htmlentitydefs
+
+try:
+    set # introduced in Python2.4: faster and future
+except NameError:
+    from sets import Set as set
 
 # Keep the modification time of all downloaded pages for an eventual put.
 # We are not going to be worried about the memory this can take.
@@ -563,7 +567,7 @@ class PageLink(object):
         edited the page.
         """
         edits = self.getVersionHistory()
-        users = sets.Set()
+        users = set()
         for edit in edits:
             users.add(edit[1])
         return users
