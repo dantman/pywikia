@@ -82,11 +82,11 @@ langs = {'en':'en.wikipedia.org', # English
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-          'mr', 'id', 'simple', 'gl', 'lt', 'lv', 'oc', 'sw',
+          'mr', 'id', 'simple', 'gl', 'lv', 'oc', 'sw',
           'tt', 'uk', 'vi', 'vo', 'ga']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['cs', 'sl', 'bs', 'fy', 'vi']
+latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -110,7 +110,7 @@ special = {'en': 'Special',
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
 oldsoftware = ['it', 'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-               'simple', 'nds', 'mr', 'id', 'gl', 'lt', 'lv', 'sw',
+               'simple', 'nds', 'mr', 'id', 'gl', 'lv', 'sw',
                'tt', 'uk', 'vi', 'vo', 'ga']
 
 # A few selected big languages for things that we do not want to loop over
@@ -122,7 +122,7 @@ biglangs = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es']
 seriouslangs = ['en', 'de', 'fr', 'nl', 'pl', 'ja', 'sv', 'es', 'eo', 'da',
                 'zh', 'sl', 'cs', 'he', 'ro', 'ko', 'ru', 'ms', 'hu', 'fy',
                 'bs', 'hr', 'sr', 'el', 'ca', 'et', 'fi', 'gl', 'ia', 'it',
-                'la', 'no', 'nds', 'pt', 'simple']
+                'la', 'no', 'nds', 'pt', 'af', 'simple']
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 
