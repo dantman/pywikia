@@ -13,7 +13,11 @@ __version__='$Id$'
 import sys,re
 import wikipedia
 
-mylang='nl'
+mylang=wikipedia.mylang
+
+if mylang!='nl':
+    print "This script will only work for the Dutch wikipedia listings"
+    sys.exit(1)
 
 def scanfile(fn):
     f=open(fn)
