@@ -81,9 +81,6 @@ def refresh_messages(lang = None):
     print 'Retrieving MediaWiki messages' 
     allmessages, charset = wikipedia.getUrl(host,url)
 
-    #f=open('/home/daniel/mediawiki-messages/mediawiki-messages-nl.dat', 'r')
-    #allmessages =  f.read()
-    
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
     itemR = re.compile("<tr bgcolor=\"#F0F0FF\">\n"
@@ -106,9 +103,13 @@ def refresh_messages(lang = None):
         dictionary[item[0]] = unicode(item[1], wikipedia.myencoding())
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
-    f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % lang), 'w')
-    pickle.dump(dictionary, f)
-    f.close()
+    if dictionary == {}:
+        print 'Error extracting MediaWiki messages for language %s.' % lang
+        sys.exit()
+    else:
+        f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % lang), 'w')
+        pickle.dump(dictionary, f)
+        f.close()
     
 if __name__ == "__main__":
     debug = False
