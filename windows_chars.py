@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.9 2004/07/13 22:17:03 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.10 2004/07/13 23:20:24 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -51,6 +51,7 @@ windows_1252 = [u"\x80",         u"\x82", u"\x83", u"\x84", u"\x85", u"\x86", u"
 # Loads a page from the live Wikipedia, changes all Windows-1252 characters to
 # HTML entities, and saves it
 def treat(page):
+    print
     pl=wikipedia.PageLink(wikipedia.mylang, page)
     try:
         reftxt=pl.get()
@@ -103,11 +104,11 @@ def parse_sqldump(filename):
     # open sql dump and read page titles out of it
     import sqldump
     sqldump = sqldump.SQLdump(filename, 'latin-1')
-    for page in sqldump.pages():
+    for entry in sqldump.entries():
         for char in windows_1252:
-         if page.text.find(char) != -1:
-             treat(page.title)
-             break
+            if entry.text.find(char) != -1:
+                treat(entry.full_title())
+                break
     
 # if the -file argument is used, page titles are dumped in this array.
 # otherwise it will only contain one page.

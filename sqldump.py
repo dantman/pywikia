@@ -12,6 +12,26 @@ object represents a page.
 import re
 import wikipedia, config
 
+    
+default_namespaces = {
+    '0':  None,
+    '1':  'Talk',
+    '2':  'User',
+    '3':  'User_talk',
+    '4':  'Project',
+    '5':  'Project_talk',
+    '6':  'Image',
+    '7':  'Image_talk',
+    '8':  'MediaWiki',
+    '9':  'MediaWiki_talk',
+    '10': 'Template',
+    '11': 'Template_talk',
+    '12': 'Help',
+    '13': 'Help_talk',
+    '14': 'Category',
+    '15': 'Category_talk'
+    }
+
 # Represents a wiki page, read from an SQL dump. See
 # http://meta.wikimedia.org/wiki/Cur_table for details.
 class SQLentry:
@@ -33,9 +53,25 @@ class SQLentry:
         self.inversetimestamp = inversetimestamp
         self.touched = touched
 
+    # Returns the full page title in the form 'namespace:title'.
+    # WARNING: The bot doesn't use the localized (translated) MediaWiki default
+    # namespace identifiers, instead we are using a feature described at
+    # http://meta.wikimedia.org/wiki/MediaWiki_User's_Guide:_Namespaces#Automatic_conversions_of_page_names
+    # which automatically redirects the default namespace identifiers to the
+    # localized ones when requesting a page.
+    # This is OK when you want to load, save, move or delete the page, but if
+    # you want to put the string returned by this function into another page's
+    # text, you should somehow change this function to make it return the
+    # localized namespace identifiers. 
+    def full_title(self):
+        if default_namespaces[self.namespace] == None:
+            return self.title
+        else:
+            return default_namespaces[self.namespace] + ':' + self.title
+
 # Represents one parsed SQL dump file. Reads the local file at initialization,
 # parses it with a regular expression, and offers access to the resulting
-# SQLentry objects through the pages() generator.
+# SQLentry objects through the entries() generator.
 class SQLdump:
     def __init__(self, filename, encoding):
         self.filename = filename
@@ -43,7 +79,7 @@ class SQLdump:
     
     # Generator. Reads one line at a time from the SQL dump file, and parses it
     # to create SQLentry objects. Stops when the end of file is reached.
-    def pages(self):
+    def entries(self):
         pageR = re.compile("\((\d+),"    # cur_id
                          + "(\d+),"      # cur_namespace
                          + "'(.*?)',"    # cur_title
@@ -89,8 +125,9 @@ if __name__=="__main__":
             else:
                 filename = arg[5:]
     sqldump = SQLdump(filename, wikipedia.myencoding())
-    for page in sqldump.pages():
-        print page.title
+    for page in sqldump.entries():
+        if page.namespace != '0':
+            print page.full_title()
             
             
  
