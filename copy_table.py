@@ -113,7 +113,7 @@ def imagelinks(lang, text):
     # regular expression which matches e.g. "Image" as well as "image" (for en:)
     im = '[' + image_ns[0].upper() + image_ns[0].lower() + ']' + image_ns[1:]
     w1=r'('+im+'[^\]\|]*)'
-    w2=r'([^\]\|]*)'
+    w2=r'([^\]]*)'
     Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
     result = []
     for l in Rlink.findall(text):
