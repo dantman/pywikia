@@ -164,7 +164,8 @@ elif getalternatives:
     try:
         thistxt = thispl.get()
     except wikipedia.IsRedirectPage,arg:
-        thistxt = wikipedia.PageLink(wikipedia.mylang, str(arg)).get()    
+        thistxt = wikipedia.PageLink(wikipedia.mylang, str(arg)).get()
+    thistxt = wikipedia.removeLanguageLinks(thistxt)
     w=r'([^\]\|]*)'
     Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
     for a in Rlink.findall(thistxt):
