@@ -1,8 +1,5 @@
 *.pyc
 user-config.py
-login-data/*-login.data
-mediawiki-messages/mediawiki-messages-*.dat
-disambiguations/*
 autonomous_problem.dat
 treelang.log
 *.dump
