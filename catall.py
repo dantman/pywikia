@@ -89,7 +89,7 @@ for p in wikipedia.allpages(start = start):
                 make_categories(p,newcats)
         else:
             if docorrections:
-            wikipedia.output("========== %s ==========" % p.linkname())
+                wikipedia.output("========== %s ==========" % p.linkname())
                 for c in cats:
                     print c.linkname()
                 print "----------------------------------------"
