@@ -1,6 +1,83 @@
 # -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
+
+Contents of the library (objects and functions to be used outside, situation
+late August 2004)
+
+Classes:
+PageLink: A MediaWiki page
+    __init__: PageLink(xx,Title) - the page with title Title on language xx:
+    linkname: The name of the page, in a form suitable for an interwiki link
+    urlname: The name of the page, in a form suitable for a URL
+    catname: The name of the page, with the namespace part removed
+    hashname: The section of the page (the part of the name after '#')
+    hashfreeLinkname: The name without the section part
+    ascii_linkname: The name of the page, using ASCII-only
+    aslink: The name of the page in the form [[xx:Title]]
+    aslocallink: The name of the page in the form [[Title]]
+    asselflink: The name of the page in the form xx:[[Title]]
+    
+    code: The language code of the page
+    encoding: The encoding the page is in
+
+    get (*): The text of the page
+    exists (*): True if the page actually exists, false otherwise
+    isRedirectPage (*): True if the page is a redirect, false otherwise
+    isEmpty (*): True if the page has 4 characters or less content, not
+        counting interwiki and category links
+    interwiki (*): The interwiki links from the page (list of PageLinks)
+    categories (*): The categories the page is in (list of PageLinks)
+    links (*): The normal links from the page (list of links)
+    imagelinks (*): The pictures on the page (list of strings)
+    getRedirectTo (*): The page the page redirects to
+
+    put(newtext): Saves the page
+    delete: Deletes the page (requires being logged in)
+
+    (*): This loads the page if it has not been loaded before
+
+Other functions:
+getall(xx,Pages): Get all pages in Pages (where Pages is a list of PageLinks,
+    and xx: the language the pages are on)
+PageLinksFromFile(fn): Get from fn a list of PageLinks in the form
+    [[xx:Title]]
+setAction(text): Use 'text' instead of "Wikipedia python library" in
+    summaries
+forCode(text,xx): Change 'text' such that it is usable on language xx:
+allpages(): Get all page titles in one's home language as PageLinks (or all
+    pages from 'Start' if allpages(start='Start') is used).
+getReferences(Pagelink): The pages linking to the Pagelink object, as a
+    list of strings
+checkLogin(): gives True if the bot is logged in on the home language, False
+    otherwise
+argHandler(text): Checks whether text is an argument defined on wikipedia.py
+    (these are -family, -lang, -throttle, -putthrottle and -nil)
+translate(xx, dict): dict is a dictionary, giving text depending on language,
+    xx is a language. Returns the text in the most applicable language for
+    the xx: wikipedia
+
+myencoding(): The coding used in the home wiki
+code2encoding(xx): The code used in language xx:
+
+output(text): Prints the text 'text' in the encoding of the user's console.
+input(text): Asks input from the user, printing the text 'text' first.
+showDiff(oldtext, newtext): Prints the differences between oldtext and newtext
+    on the screen
+
+getLanguageLinks(text,xx): get all interlanguage links in wikicode text 'text'
+    in the form xx:pagename
+removeLanguageLinks(text): gives the wiki-code 'text' without any interlanguage
+    links.
+replaceLanguageLinks(oldtext, new): in the wiki-code 'oldtext' remove the
+    language links and replace them by the language links in new, a dictionary
+    with the languages as keys and either PageLinks or linknames as values
+getCategoryLinks(text,xx): get all category links in text 'text' (links in the
+    form xx:pagename)
+removeCategoryLinks(text,xx): remove all category links in 'text'
+replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
+    those in new (new a list of category PageLinks)
+
 """
 #
 # (C) Rob W.W. Hooft, Andre Engels, 2003-2004
@@ -13,9 +90,6 @@ import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
 
 import config, mediawiki_messages
-    
-# Are we debugging this module? 0 = No, 1 = Yes, 2 = Very much so.
-debug = 0
 
 # Keep a record of whether we are logged in as a user or not
 # The actual value will be set at the end of this module
@@ -36,66 +110,6 @@ charsets = {}
 # Keep the modification time of all downloaded pages for an eventual put.
 # We are not going to be worried about the memory this can take.
 edittime = {}
-
-# Languages to use for comment text after the actual language but before
-# en:. For example, if for language 'xx', you want the preference of
-# languages to be:
-# xx:, then fr:, then ru:, then en:
-# you let altlang return ['fr','ru'].
-# This code is used by translate() below.
-
-def altlang(code):
-    if code in ['fa','ku']:
-        return ['ar']
-    if code=='sk':
-        return ['cs']
-    if code=='nds':
-        return ['de','nl']
-    if code in ['ca','gn','nah']:
-        return ['es']
-    if code=='eu':
-        return ['es','fr']
-    if code=='gl':
-        return ['es','pt']
-    if code in ['br','oc','th','vi','wa']:
-        return ['fr']
-    if code=='als':
-        return ['fr','de']
-    if code=='co':
-        return ['fr','it']
-    if code=='fy':
-        return ['nl']
-    if code=='csb':
-        return ['pl']
-    if code in ['mo','roa-rup']:
-        return ['ro']
-    if code in ['be','lt','lv','uk']:
-        return ['ru']
-    if code=='uz':
-        return ['ru','tr']
-    if code in ['ja','ko','minnan','za','zh','zh-cn','zh-tw']:
-        return ['zh','zh-cn','zh-tw']
-    if code=='da':
-        return ['nb','no']
-    if code in ['is','no','nb']:
-        return ['no','nb','nn','da']
-    if code=='sv':
-        return ['da','no','nb']
-    if code in ['id','jv','ms','su']:
-        return ['id','ms','jv','su']
-    if code in ['bs','hr','mk','sh','sr']:
-        return ['hr','sr','bs']
-    if code in ['ia','ie']:
-        return ['ia','la','ie','es','fr','it']
-    if code=='sa':
-        return ['hi']
-    if code=='yi':
-        return ['he']
-    if code=='bi':
-        return ['tpi']
-    if code=='tpi':
-        return ['bi']
-    return []
 
 # Local exceptions
 
@@ -169,13 +183,14 @@ class PageLink:
 
     def catname(self):
         """The name of the page without the namespace part. Gives an error
-        if the page is from the main namespace."""
-        title=self.linkname()
-        parts=title.split(':')
-        parts=parts[1:]
-        if parts==[]:
+        if the page is from the main namespace. Note that this is a raw way
+        of doing things - it simply looks for a : in the name."""
+        t=self.hashfreeLinkname()
+        p=t.split(':')
+        p=p[1:]
+        if p==[]:
             raise NoNamespace(self)
-        return ':'.join(parts)
+        return ':'.join(p)
 
     def hashname(self):
         """The name of the section this PageLink refers to. Sections are
@@ -188,7 +203,6 @@ class PageLink:
         else:
             hn = ln[ln.find('#') + 1:]
             hn = re.sub('&hash;', '&#', hn)
-            #print "hn=", hn
             return hn
 
     def hashfreeLinkname(self):
@@ -255,7 +269,6 @@ class PageLink:
                     hn = underline2space(hn)
                     m = re.search("== *%s *==" % hn, self._contents)
                     if not m:
-                        # raise SectionError("Hashname does not exist: %s" % self)
                         output("WARNING: Hashname does not exist: %s" % self)
             # Store any exceptions for later reference
             except NoPage:
@@ -304,9 +317,9 @@ class PageLink:
         txt = removeLanguageLinks(txt)
         txt = removeCategoryLinks(txt, self.code())
         if len(txt) < 4:
-            return 1
+            return True
         else:
-            return 0
+            return False
         
     def put(self, newtext, comment=None, watchArticle = False, minorEdit = True):
         """Replace the new page with the contents of the first argument.
@@ -360,7 +373,6 @@ class PageLink:
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            PageLink objects"""
-        #print "__cmp__", self, other
         if not hasattr(other, 'code'):
             return -1
         if not self.code() == other.code():
@@ -503,7 +515,6 @@ class PageLink:
                 output(u'Deletion successful.')
             else:
                 output(u'Deletion failed:.')
-                # show debug information
                 try:
                     ibegin = returned_html.index('<!-- start content -->') + 22
                     iend = returned_html.index('<!-- end content -->')
@@ -545,8 +556,6 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
     def endElement(self, name):
         if name == 'revision':
             # All done for this.
-            # print "DBG> ",repr(self.title), self.timestamp, len(self.text)
-            # Uncode the text
             text = self.text
             # Remove trailing newlines and spaces
             while text and text[-1] in '\n ':
@@ -572,7 +581,6 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             self.timestamp += data
             
 class GetAll:
-    debug = 0
     def __init__(self, code, pages):
         self.code = code
         self.pages = []
@@ -599,19 +607,17 @@ class GetAll:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 pl._getexception = NoPage
             elif hasattr(pl,'_contents') and pl.code()=="eo":
-                # Edit-pages use X-convention, XML export does not. Double
-                # X-es where necessary so that we can submit a changed page
-                # later.
+                # Edit-pages on eo: use X-convention, XML export does not.
+                # Double X-es where necessary so that we can submit a changed
+                # page later.
                 for c in 'C','G','H','J','S','U':
                     for c2 in c,c.lower():
                         for x in 'X','x':
                             pl._contents = pl._contents.replace(c2+x,c2+x+x)
 
     def oneDone(self, title, timestamp, text):
-        #print "DBG>", repr(title), timestamp, len(text)
         pl = PageLink(self.code, title)
         for pl2 in self.pages:
-            #print "DBG>", pl, pl2, pl2.hashfreeLinkname()
             if PageLink(self.code, pl2.hashfreeLinkname()) == pl:
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
@@ -620,43 +626,28 @@ class GetAll:
             print repr(pl)
             print repr(self.pages)
             print "BUG> bug, page not found in list"
-        if self.debug:
-            xtext = pl2.get(read_only = True)
-            if text != xtext:
-                print "################Text differs"
-                import difflib
-                for line in difflib.ndiff(xtext.split('\r\n'), text.split('\r\n')):
-                    if line[0] in ['+', '-']:
-                        print repr(line)[2:-1]
-            if edittime[self.code, link2url(title, self.code)] != timestamp:
-                print "################Timestamp differs"
-                print "-",edittime[self.code, link2url(title, self.code)]
-                print "+",timestamp
+        m = redirectRe(self.code).match(text)
+        if m:
+            pl2._getexception = IsRedirectPage(m.group(1))
         else:
-            m = redirectRe(self.code).match(text)
-            if m:
-                #output("DBG> %s is a redirect page" % pl2.aslink())
-                pl2._getexception = IsRedirectPage(m.group(1))
-            else:
-                if len(text)<50:
-                    output(u"DBG> short text in %s:" % pl2.aslink())
-                    output(text)
-                hn = pl2.hashname()
-                if hn:
-                    m = re.search("== *%s *==" % hn, text)
-                    if not m:
-                        # pl2._getexception = SectionError("Hashname does not exist: %s" % self)
-                        output("WARNING: Hashname does not exist: %s" % self)
-                    else:
-                        # Store the content
-                        pl2._contents = text
-                        # Store the time stamp
-                        edittime[self.code, link2url(title, self.code)] = timestamp
+            if len(text)<50:
+                output(u"DBG> short text in %s:" % pl2.aslink())
+                output(text)
+            hn = pl2.hashname()
+            if hn:
+                m = re.search("== *%s *==" % hn, text)
+                if not m:
+                    output("WARNING: Hashname does not exist: %s" % self)
                 else:
                     # Store the content
                     pl2._contents = text
                     # Store the time stamp
                     edittime[self.code, link2url(title, self.code)] = timestamp
+            else:
+                # Store the content
+                pl2._contents = text
+                # Store the time stamp
+                edittime[self.code, link2url(title, self.code)] = timestamp
 
     def getData(self):
         import httplib
@@ -725,9 +716,6 @@ def urlencode(query):
        a http POST request"""
     l=[]
     for k, v in query:
-        if debug:
-            print "k =", k
-            print "v =", v
         k = urllib.quote(k)
         v = urllib.quote(v)
         l.append(k + '=' + v)
@@ -846,11 +834,6 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
     except KeyError:
         print edittime
 	raise
-    if debug:
-        print text
-        print address
-        print data
-        return None, None, None
     output(url2unicode("Changing page %s:%s"%(code,name), language = code))
     # Submit the prepared information
     conn = httplib.HTTPConnection(host)
@@ -941,8 +924,6 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
     address = family.get_address(code, name)
     if get_edit_page:
         address += '&action=edit&printable=yes'
-    if debug:
-        print host, address
     # Make sure Brion doesn't get angry by waiting if the last time a page
     # was retrieved was not long enough ago.
     get_throttle()
@@ -954,8 +935,6 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
         text, charset = getUrl(host,address)
         # Extract the actual text from the textedit field
         if get_edit_page:
-            if debug:
-                print "Raw:", len(text), type(text), text.count('x')
             if charset is None:
                 print "WARNING: No character set found"
             else:
@@ -966,8 +945,6 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
                 if code2encoding(code).lower() != charset.lower():
                     raise ValueError("code2encodings has wrong charset for %s. It should be %s"%(code,charset))
                 
-            if debug>1:
-                print repr(text)
             if not read_only:
                 # check if we're logged in
                 if text.find('Userlogin') != -1:
@@ -984,15 +961,17 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
             except AttributeError:
+                # We assume that the server is down. Wait some time, then try again.
                 print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %d minutes..." % (host, address, retry_idle_time)
                 time.sleep(retry_idle_time * 60)
+                # Next time wait longer, but not longer than half an hour
                 retry_idle_time *= 2
+                if retry_idle_time > 30:
+                    retry_idle_time = 30
                 continue
             i2 = re.search('</textarea>', text).start()
             if i2-i1 < 2:
                 raise NoPage(code, name)
-            if debug:
-                print text[i1:i2]
             m = redirectRe(code).match(text[i1:i2])
             if m:
                 output(u"DBG> %s is redirect to %s" % (url2unicode(name, language = code), unicode(m.group(1), code2encoding(code))))
@@ -1015,7 +994,7 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
 
 def languages(first = []):
     """Return a list of language codes for known wikipedia servers. If a list
-       of language codes is given as argument, these will be put at the front
+       of language codes is given as an argument, these will be put at the front
        of the returned list."""
     result = []
     for key in first:
@@ -1141,7 +1120,7 @@ def removeLanguageLinks(text):
                 index = match.start()
             else:
                 index = match.end()
-                if len(code) == 2:
+                if len(code) == 2 or len(code) == 3:
                     print "WARNING: Link to unknown language %s" % (match.group(1))
     return normalWhitespace(text)
 
@@ -1658,6 +1637,68 @@ if not family.langs.has_key(mylang):
     setMyLang('test')
     family.langs['test']='test.wikipedia.org'
 
+
+# Languages to use for comment text after the actual language but before
+# en:. For example, if for language 'xx', you want the preference of
+# languages to be:
+# xx:, then fr:, then ru:, then en:
+# you let altlang return ['fr','ru'].
+# This code is used by translate() below.
+
+def altlang(code):
+    if code in ['fa','ku']:
+        return ['ar']
+    if code=='sk':
+        return ['cs']
+    if code=='nds':
+        return ['de','nl']
+    if code in ['ca','gn','nah']:
+        return ['es']
+    if code=='eu':
+        return ['es','fr']
+    if code=='gl':
+        return ['es','pt']
+    if code in ['br','oc','th','vi','wa']:
+        return ['fr']
+    if code=='als':
+        return ['fr','de']
+    if code=='co':
+        return ['fr','it']
+    if code=='fy':
+        return ['nl']
+    if code=='csb':
+        return ['pl']
+    if code in ['mo','roa-rup']:
+        return ['ro']
+    if code in ['be','lt','lv','uk']:
+        return ['ru']
+    if code=='uz':
+        return ['ru','tr']
+    if code in ['ja','ko','minnan','za','zh','zh-cn','zh-tw']:
+        return ['zh','zh-cn','zh-tw']
+    if code=='da':
+        return ['nb','no']
+    if code in ['is','no','nb']:
+        return ['no','nb','nn','da']
+    if code=='sv':
+        return ['da','no','nb']
+    if code in ['id','jv','ms','su']:
+        return ['id','ms','jv','su']
+    if code in ['bs','hr','mk','sh','sr']:
+        return ['hr','sr','bs']
+    if code in ['ia','ie']:
+        return ['ia','la','ie','es','fr','it']
+    if code=='sa':
+        return ['hi']
+    if code=='yi':
+        return ['he']
+    if code=='bi':
+        return ['tpi']
+    if code=='tpi':
+        return ['bi']
+    return []
+
+
 def translate(code, dict):
     """
     Given a language code and a dictionary, returns the dictionary's value for
@@ -1671,9 +1712,9 @@ def translate(code, dict):
     """
     if dict.has_key(code):
         return dict[code]
-    for alternative in altlang(code):
-        if dict.has_key(alternative):
-            return dict[alternative]
+    for alt in altlang(code):
+        if dict.has_key(alt):
+            return dict[alt]
     if dict.has_key('en'):
         return dict['en']
     return dict.values()[0]
