@@ -625,9 +625,11 @@ def urlencode(query):
     return '&'.join(l)
 
 def space2underline(name):
+    name = re.sub('  +', ' ', name)
     return name.replace(' ', '_')
 
 def underline2space(name):
+    name = re.sub('__+', '_', name)
     return name.replace('_', ' ')
 
 # Mechanics to slow down page download rate.
