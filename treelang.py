@@ -396,7 +396,7 @@ else:
             else:
                 answer='y'
             if answer=='y':
-                status,reason,data=wikipedia.putPage(mylang,inname,newtext,comment='%s: robot '%wikipedia.username+mods)
+                status,reason,data=wikipedia.putPage(mylang,inname,newtext,comment='robot '+mods)
                 if str(status)!='302':
                     print status,reason
 
