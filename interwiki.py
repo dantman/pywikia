@@ -175,7 +175,7 @@ import titletranslate
 
 msg = {
     'af':(u'Bygevoeg', u'Verwyder', u'Verander'),
-    'cs':(u'Přidal', u'Odebral', u'Změnil'),
+    'cs':(u'přidal', u'odebral', u'změnil'),
     'da':(u'Tilføjer', u'Fjerner', u'Ændrer'),
     'de':(u'Ergänze', u'Entferne', u'Ändere'),
     'en':(u'Adding', u'Removing', u'Modifying'),
