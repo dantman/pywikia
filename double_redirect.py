@@ -48,6 +48,13 @@ def fixDoubleRedirects():
         txt = "#REDIRECT [[%s]]" % second_target
         redir.put(txt)
 
+# read command line parameters
+for arg in sys.argv[1:]:
+    if wikipedia.argHandler(arg):
+        pass
+    else:
+        print 'Unknown argument: %s' % arg
+
 # get summary text
 wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)])
 fixDoubleRedirects()
