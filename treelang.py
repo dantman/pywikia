@@ -397,16 +397,22 @@ else:
     print mods
     print "==changes should be made=="
     oldtext = m[inpl]
-    s = wikipedia.interwikiFormat(new)
+    s = wikipedia.interwikiFormat(new, incode = wikipedia.mylang)
     s2 = wikipedia.removeLanguageLinks(oldtext)
     newtext = s + s2
     if debug:
         if not autonomous and not sys.platform == 'win32':
             f = open('/tmp/wik.in', 'w')
-            f.write(oldtext)
+            if type(oldtext)==type(u''):
+                f.write(wikipedia.UnicodeToAsciiHtml(oldtext))
+            else:
+                f.write(oldtext)
             f.close()
             f = open('/tmp/wik.out', 'w')
-            f.write(newtext)
+            if type(newtext)==type(u''):
+                f.write(wikipedia.UnicodeToAsciiHtml(newtext))
+            else:
+                f.write(newtext)
             f.close()
             import os
             f=os.popen('diff -u /tmp/wik.in /tmp/wik.out', 'r')

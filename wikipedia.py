@@ -612,7 +612,7 @@ def removeLanguageLinks(text):
             break
     return text
     
-def interwikiFormat(links):
+def interwikiFormat(links, incode):
     """Create a suitable string to start a wikipedia page consisting of
        interwikilinks given as a dictionary of code:pagename in the argument.
     """
@@ -624,7 +624,11 @@ def interwikiFormat(links):
             s.append(links[code].aslink())
         except AttributeError:
             s.append('[[%s:%s]]' % (code, links[code]))
-    return ' '.join(s) + '\r\n'
+    s=' '.join(s) + '\r\n'
+    if code2encoding(incode) == 'utf-8':
+        return html2unicode(s, language = incode)
+    else:
+        return s
             
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""

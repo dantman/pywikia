@@ -161,7 +161,7 @@ for year in range(starty, endy + 1):
             if status:
                 print mycode,str(year), ":", status
             del ml[mycode]
-            s = wikipedia.interwikiFormat(ml)
+            s = wikipedia.interwikiFormat(ml, incode = wikipedia.mylang)
             newtext = s + wikipedia.removeLanguageLinks(text[mycode])
             if debug:
                 print newtext
