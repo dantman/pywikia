@@ -30,7 +30,6 @@ class EditBoxWindow:
         self.myParent.destroy()
 
     def __init__(self, parent = None):
-        print 'bla2'
         if parent == None:
             # create a new window
             parent = Tk()
