@@ -18,7 +18,6 @@ class Family:
         self.langs[code] = location
         
         for num, val in namespaces.items():
-            print num,code
             self.namespaces[num][code]=val
         
     def namespace(self, code, namespace_number, fallback = 'en'):
