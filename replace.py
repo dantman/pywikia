@@ -386,7 +386,7 @@ def main():
 
     # Read commandline parameters.
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, logname = 'replace.log')
         if arg:
             if arg == '-regex':
                 regex = True
