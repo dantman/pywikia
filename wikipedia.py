@@ -98,7 +98,7 @@ langs = {
     }
 
 # Languages that are coded in iso-8859-1
-latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'da', 'dk']
+latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'da', 'dk', 'test']
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['et', 'ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy',
