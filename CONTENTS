@@ -52,6 +52,21 @@ solve_disambiguation.py:
      the number of the appropriate replacement, and perform the change
      robotically.
 
-All of the programs have "nl:" as their default. It may take a little or 
-a lot to make them run on other wikipedias. Be especially careful if your
-wikipedia uses UTF-8, as that has not been tested at all.
+     Options:
+       -pos:XXXX adds XXXX as an alternative disambiguation
+
+       -just only use the alternatives given on the command line, do not 
+             read the page for other possibilities
+
+     To complete a move of a page, one can use:
+
+       python solve_disambiguation.py -just -pos:New%20Name Old%20Name
+
+To run any of the programs, you need a file named 'username.dat' in
+your current directory. It has two lines: The first line is your real
+name; this will be used to identify you when the robot is making
+changes. The second line is normally 2 characters: the code of your
+home wikipedia. If the second line is missing, your home wikipedia is
+assumed to be 'nl'. It may take a little or a lot to make the programs
+run on non-nl: wikipedias. Be especially careful if your wikipedia uses
+UTF-8, as that has not been tested at all.
