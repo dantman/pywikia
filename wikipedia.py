@@ -144,7 +144,7 @@ special = {
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
     'ks': 'Special',
     'ku': 'Special',
-    'la': 'Special',
+    'la': 'Specialis',
     'lt': 'Special',
     'lv': 'Special',
     'ml': 'Special',
@@ -604,7 +604,7 @@ class GetAll:
             print repr(title)
             print repr(pl)
             print repr(self.pages)
-            raise "bug, page not found in list"
+            print "BUG> bug, page not found in list"
         if self.debug:
             xtext = pl2.get()
             if text != xtext:
@@ -1320,7 +1320,7 @@ def html2unicode(name, language, altlanguage=None):
     name = removeEntity(name)
 
     Runi = re.compile('&#(\d+);')
-    Runi2 = re.compile('&#x([0-9a-f]+);')
+    Runi2 = re.compile('&#x([0-9a-fA-F]+);')
     result = u''
     i=0
     while i < len(name):
