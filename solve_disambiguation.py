@@ -1,4 +1,4 @@
-# -*- coding: utf8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
 
@@ -63,6 +63,7 @@ To complete a move of a page, one can use:
 #
 # (C) Rob W.W. Hooft, 2003
 # (C) Daniel Herding, 2004
+# (C) Andre Engels, 2003-2004
 #
 # Distribute under the terms of the PSF license.
 #
@@ -441,13 +442,18 @@ for wrd in (page_list):
                     continue
     
                 n += 1
+                edited = False
                 context = 30
                 while 1:
                     print '\n'
                     wikipedia.output("== %s ==" % refpl.linkname())
                     wikipedia.output(reftxt[max(0,m.start()-context):m.end()+context])
                     if always == None:
-                        choice=wikipedia.input("Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                        if edited:
+                            choice=wikipedia.input("Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                                               "        q=quit, m=more context, l=list, a=add new, x=save in this form):")
+                        else:
+                            choice=wikipedia.input("Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
                                                "        q=quit, m=more context, l=list, a=add new):")
                     else:
                         choice=always
@@ -481,10 +487,14 @@ for wrd in (page_list):
                         import gui
                         edit_window = gui.EditBoxWindow()
                         reftxt = edit_window.edit(reftxt)
+                        edited = True
                     elif choice=='l':
                         print '\n'
                         for i in range(len(alternatives)):
                             wikipedia.output("%3d - %s" % (i, alternatives[i]))
+                    elif choice=='x' and edited:
+                        choice=-3
+                        break
                     else:
                         if len(choice)>0 and choice[0] == 'r':
                             replaceit = 1
@@ -510,6 +520,9 @@ for wrd in (page_list):
                 if choice==-2:
                     # unlink
                     reftxt = reftxt[:m.start()] + link_text + reftxt[m.end():]
+                elif choice==-3:
+                    # user has edited page
+                    pass
                 else:
                     # Normal replacement
                     new_page_title = alternatives[choice]
