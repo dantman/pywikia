@@ -201,11 +201,10 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
 
     formdata = {}
     formdata["wpUploadDescription"] = description
-    if wikipedia.version() >= '1.4':
+    if wikipedia.family.version() >= '1.4':
         formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
-    else:
-        formdata["wpUploadAffirm"] = "1"
+    formdata["wpUploadAffirm"] = "1"
     formdata["wpUpload"] = "upload bestand"
     formdata["wpIgnoreWarning"] = "1"
 

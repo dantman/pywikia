@@ -407,11 +407,7 @@ class Family(family.Family):
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
         
-        #
-        # Two functions to figure out the encoding of different languages
-        # This may be a lot simpler for other families!
-        # 
-        
+                
         # Languages that are coded in iso-8859-1
         self.latin1 = ['en', 'sv', 'nl', 'da', 'dk']
         
@@ -420,8 +416,13 @@ class Family(family.Family):
                      'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
                      'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
                      'ga', 'na', 'es', 'test']
+
+    def version(self, code):
+        if code=="test":
+            return "1.4"
+        else:
+            return "1.3"
         
-                
     def code2encoding(self, code):
         """Return the encoding for a specific language wikipedia"""
         if code in self.latin1:
