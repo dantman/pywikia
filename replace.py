@@ -147,119 +147,194 @@ fixes = {
     
 }
 
-def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, namespace):
-    """
-    Generator which will yield PageLinks to pages that might contain text to
-    replace. These pages will be retrieved from a local sql dump file
-    (cur table).
-
-    Arguments:
-        * sqlfilename  - the dump's path, either absolute or relative
-        * replacements - a dictionary where old texts are keys and new texts
-                         are values
-        * exceptions   - a list of strings; pages which contain one of these
-                         won't be changed.
-        * regex        - if the entries of replacements and exceptions should
-                         be interpreted as regular expressions
-    """
-    mysite = wikipedia.getSite()
-    import sqldump
-    dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
-    for entry in dump.entries():
-        skip_page = False
-        if namespace != -1 and namespace != entry.namespace:
-            continue
-        else:
-            for exception in exceptions:
-                if regex:
+class ReplaceRobot:
+    def read_pages_from_sql_dump(self):
+        """
+        Generator which will yield PageLinks to pages that might contain text to
+        replace. These pages will be retrieved from a local sql dump file
+        (cur table).
+    
+        Arguments:
+            * sqlfilename  - the dump's path, either absolute or relative
+            * replacements - a dictionary where old texts are keys and new texts
+                             are values
+            * exceptions   - a list of strings; pages which contain one of these
+                             won't be changed.
+            * regex        - if the entries of replacements and exceptions should
+                             be interpreted as regular expressions
+        """
+        mysite = wikipedia.getSite()
+        import sqldump
+        dump = sqldump.SQLdump(self.sqlfilename, wikipedia.myencoding())
+        for entry in dump.entries():
+            skip_page = False
+            if self.namespace != -1 and self.namespace != entry.namespace:
+                continue
+            else:
+                for exception in self.exceptions:
+                    if regex:
+                        exception = re.compile(exception)
+                        if exception.search(entry.text):
+                            skip_page = True
+                            break
+                    else:
+                        if entry.text.find(exception) != -1:
+                            skip_page = True
+                            break
+            if not skip_page:
+                for old in self.replacements.iterkeys():
+                    if self.regex:
+                        old = re.compile(old)
+                        if old.search(entry.text):
+                            yield wikipedia.PageLink(mysite, entry.full_title())
+                            break
+                    else:
+                        if entry.text.find(old) != -1:
+                            yield wikipedia.PageLink(mysite, entry.full_title())
+                            break
+    
+    def read_pages_from_text_file(self):
+        """
+        Generator which will yield pages that are listed in a text file created by
+        the bot operator. Will regard everything inside [[double brackets]] as a
+        page name, and yield PageLinks for these pages.
+    
+        Arguments:
+            * textfilename - the textfile's path, either absolute or relative
+        """
+        f = open(self.textfilename, 'r')
+        # regular expression which will find [[wiki links]]
+        R = re.compile(r'.*\[\[([^\]]*)\]\].*')
+        m = False
+        for line in f.readlines():
+            # BUG: this will only find one link per line.
+            # TODO: use findall() instead.
+            m=R.match(line)
+            if m:
+                yield wikipedia.PageLink(wikipedia.getSite(), m.group(1))
+        f.close()
+    
+    def read_pages_from_wiki_page(self):
+        '''
+        Generator which will yield pages that are listed in a wiki page. Will
+        regard everything inside [[double brackets]] as a page name, except for
+        interwiki and category links, and yield PageLinks for these pages.
+    
+        Arguments:
+            * pagetitle - the title of a page on the home wiki
+        '''
+        listpage = wikipedia.PageLink(wikipedia.getSite(), self.pagetitle)
+        list = wikipedia.get(listpage, read_only = True)
+        # TODO - UNFINISHED
+    
+    # TODO: Make MediaWiki's search feature available.
+    def generator(self, source, replacements, exceptions, regex, namespace = -1, textfilename = None, sqlfilename = None, pagenames = None):
+        """
+        Generator which will yield PageLinks for pages that might contain text to
+        replace. These pages might be retrieved from a local SQL dump file or a
+        text file, or as a list of pages entered by the user.
+    
+        Arguments:
+            * source       - where the bot should retrieve the page list from.
+                             can be 'sqldump', 'textfile' or 'userinput'.
+            * replacements - a dictionary where keys are original texts and values
+                             are replacement texts.
+            * exceptions   - a list of strings; pages which contain one of these
+                             won't be changed.
+            * regex        - if the entries of replacements and exceptions should
+                             be interpreted as regular expressions
+            * namespace    - namespace to process in case of a SQL dump
+            * textfilename - the textfile's path, either absolute or relative, which
+                             will be used when source is 'textfile'.
+            * sqlfilename  - the dump's path, either absolute or relative, which
+                             will be used when source is 'sqldump'.
+            * pagenames    - a list of pages which will be used when source is
+                             'userinput'.
+        """
+        if source == 'sqldump':
+            for pl in self.read_pages_from_sql_dump():
+                yield pl
+        elif source == 'textfile':
+            for pl in self.read_pages_from_text_file():
+                yield pl
+        elif source == 'userinput':
+            for pagename in pagenames:
+                yield wikipedia.PageLink(wikipedia.getSite(), pagename)
+                
+    def __init__(self, source, replacements, exceptions, regex, namespace = -1, acceptall = False, textfilename = None, sqlfilename = None, pagenames = None):
+        self.source = source
+        self.replacements = replacements
+        self.exceptions = exceptions
+        self.regex = regex
+        self.namespace = namespace
+        self.acceptall = acceptall
+        self.textfilename = textfilename
+        self.sqlfilename = sqlfilename
+        self.pagenames = pagenames
+        
+    def run(self):
+        # Run the generator which will yield PageLinks to pages which might need to be
+        # changed.
+        for pl in self.generator(self.source, self.replacements, self.exceptions, self.regex, self.namespace, self.textfilename, self.sqlfilename, self.pagenames):
+            print ''
+            try:
+                # Load the page's text from the wiki
+                original_text = pl.get()
+            except wikipedia.NoPage:
+                wikipedia.output(u'Page %s not found' % pl.linkname())
+                continue
+            except wikipedia.LockedPage:
+                wikipedia.output(u'Skipping locked page %s' % pl.linkname())
+                continue
+            except wikipedia.IsRedirectPage:
+                continue
+        
+            skip_page = False
+            # skip all pages that contain certain texts
+            for exception in self.exceptions:
+                if self.regex:
                     exception = re.compile(exception)
-                    if exception.search(entry.text):
+                    hit = exception.search(original_text)
+                    if hit:
+                        wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), hit.group(0)))
+                        # Does anyone know how to break out of the _outer_ loop?
+                        # Then we wouldn't need the skip_page variable.
                         skip_page = True
                         break
                 else:
-                    if entry.text.find(exception) != -1:
+                    hit = original_text.find(exception)
+                    if hit != -1:
+                        wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), original_text[hit:hit + len(exception)]))
                         skip_page = True
                         break
-        if not skip_page:
-            for old in replacements.keys():
-                if regex:
-                    old = re.compile(old)
-                    if old.search(entry.text):
-                        yield wikipedia.PageLink(mysite, entry.full_title())
-                        break
+            if not skip_page:
+                # create a copy of the original text to work on, so we can later compare
+                # if any changes were made
+                new_text = original_text
+                for old, new in self.replacements.iteritems():
+                    if self.regex:
+                        # TODO: compiling the regex each time might be inefficient
+                        oldR = re.compile(old)
+                        new_text = oldR.sub(new, new_text)
+                    else:
+                        new_text = new_text.replace(old, new)
+                if new_text == original_text:
+                    try:
+                        # Sometime the bot crashes when it can't decode a character.
+                        # Let's not let it crash
+                        print 'No changes were necessary in %s' % pl.linkname()
+                    except UnicodeEncodeError:
+                        print 'Error decoding pl.linkname()'
+                        continue
                 else:
-                    if entry.text.find(old) != -1:
-                        yield wikipedia.PageLink(mysite, entry.full_title())
-                        break
-
-def read_pages_from_text_file(textfilename):
-    """
-    Generator which will yield pages that are listed in a text file created by
-    the bot operator. Will regard everything inside [[double brackets]] as a
-    page name, and yield PageLinks for these pages.
-
-    Arguments:
-        * textfilename - the textfile's path, either absolute or relative
-    """
-    f = open(textfilename, 'r')
-    # regular expression which will find [[wiki links]]
-    R = re.compile(r'.*\[\[([^\]]*)\]\].*')
-    m = False
-    for line in f.readlines():
-        # BUG: this will only find one link per line.
-        # TODO: use findall() instead.
-        m=R.match(line)
-        if m:
-            yield wikipedia.PageLink(wikipedia.getSite(), m.group(1))
-    f.close()
-
-def read_pages_from_wiki_page(pagetitle):
-    '''
-    Generator which will yield pages that are listed in a wiki page. Will
-    regard everything inside [[double brackets]] as a page name, except for
-    interwiki and category links, and yield PageLinks for these pages.
-
-    Arguments:
-        * pagetitle - the title of a page on the home wiki
-    '''
-    listpage = wikipedia.PageLink(wikipedia.getSite(), pagetitle)
-    list = wikipedia.get(listpage, read_only = True)
-    # TODO - UNFINISHED
-
-# TODO: Make MediaWiki's search feature available.
-def generator(source, replacements, exceptions, regex, namespace, textfilename = None, sqlfilename = None, pagenames = None):
-    """
-    Generator which will yield PageLinks for pages that might contain text to
-    replace. These pages might be retrieved from a local SQL dump file or a
-    text file, or as a list of pages entered by the user.
-
-    Arguments:
-        * source       - where the bot should retrieve the page list from.
-                         can be 'sqldump', 'textfile' or 'userinput'.
-        * replacements - a dictionary where keys are original texts and values
-                         are replacement texts.
-        * exceptions   - a list of strings; pages which contain one of these
-                         won't be changed.
-        * regex        - if the entries of replacements and exceptions should
-                         be interpreted as regular expressions
-        * namespace    - namespace to process in case of a SQL dump
-        * textfilename - the textfile's path, either absolute or relative, which
-                         will be used when source is 'textfile'.
-        * sqlfilename  - the dump's path, either absolute or relative, which
-                         will be used when source is 'sqldump'.
-        * pagenames    - a list of pages which will be used when source is
-                         'userinput'.
-    """
-    if source == 'sqldump':
-        for pl in read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, namespace):
-            yield pl
-    elif source == 'textfile':
-        for pl in read_pages_from_text_file(textfilename):
-            yield pl
-    elif source == 'userinput':
-        for pagename in pagenames:
-            yield wikipedia.PageLink(wikipedia.getSite(), pagename)
-
+                    wikipedia.showColorDiff(original_text, new_text)
+                    if not self.acceptall:
+                        choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
+                        if choice in ['a', 'A']:
+                            acceptall = True
+                    if acceptall or choice in ['y', 'Y']:
+                        pl.put(new_text)
+    
 def main():
     # How we want to retrieve information on which pages need to be changed.
     # Can either be 'sqldump', 'textfile' or 'userinput'.
@@ -370,74 +445,15 @@ def main():
         if fix.has_key('exceptions'):
             exceptions = fix['exceptions']
         replacements = fix['replacements']
+    bot = ReplaceRobot(source, replacements, exceptions, regex, namespace, acceptall, textfilename, sqlfilename, pagenames)
+    bot.run()
 
-    # Run the generator which will yield PageLinks to pages which might need to be
-    # changed.
-    for pl in generator(source, replacements, exceptions, regex, namespace, textfilename, sqlfilename, pagenames):
-        print ''
-        try:
-            # Load the page's text from the wiki
-            original_text = pl.get()
-        except wikipedia.NoPage:
-            wikipedia.output(u'Page %s not found' % pl.linkname())
-            continue
-        except wikipedia.LockedPage:
-            wikipedia.output(u'Skipping locked page %s' % pl.linkname())
-            continue
-        except wikipedia.IsRedirectPage:
-            continue
-    
-        skip_page = False
-        # skip all pages that contain certain texts
-        for exception in exceptions:
-            if regex:
-                exception = re.compile(exception)
-                hit = exception.search(original_text)
-                if hit:
-                    wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), hit.group(0)))
-                    # Does anyone know how to break out of the _outer_ loop?
-                    # Then we wouldn't need the skip_page variable.
-                    skip_page = True
-                    break
-            else:
-                hit = original_text.find(exception)
-                if hit != -1:
-                    wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), original_text[hit:hit + len(exception)]))
-                    skip_page = True
-                    break
-        if not skip_page:
-            # create a copy of the original text to work on, so we can later compare
-            # if any changes were made
-            new_text = original_text
-            for old, new in replacements.items():
-                if regex:
-                    # TODO: compiling the regex each time might be inefficient
-                    oldR = re.compile(old)
-                    new_text = oldR.sub(new, new_text)
-                else:
-                    new_text = new_text.replace(old, new)
-            if new_text == original_text:
-                try:
-                    # Sometime the bot crashes when it can't decode a character.
-                    # Let's not let it crash
-                    print 'No changes were necessary in %s' % pl.linkname()
-                except UnicodeEncodeError:
-                    print 'Error decoding pl.linkname()'
-                    continue
-            else:
-                wikipedia.showColorDiff(original_text, new_text)
-                #wikipedia.showColorDiff(original_text, new_text, replacements, regex)
-                if not acceptall:
-                    choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
-                    if choice in ['a', 'A']:
-                        acceptall = True
-                if acceptall or choice in ['y', 'Y']:
-                    pl.put(new_text)
 
-try:
-    main()
-except:
-    wikipedia.stopme()
-    raise
-else:
-    wikipedia.stopme()
+if __name__ == "__main__":
+    try:
+        main()
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()
