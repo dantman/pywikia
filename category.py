@@ -75,10 +75,6 @@ class CategoryDatabase:
         else:
             try:
                 f = open(filename, 'r')
-            except IOError:
-                # Apparently the file category.dump does not exist
-                self.rebuild()
-            else:
                 databases = pickle.load(f)
                 f.close()
                 # keys are categories, values are 2-tuples with lists as entries.
@@ -86,6 +82,9 @@ class CategoryDatabase:
                 # like the above, but for supercategories
                 self.superclassDB = databases['superclassDB']
                 del databases
+            except:
+                # If something goes wrong, just rebuild the database
+                self.rebuild()
         
     def rebuild(self):
         self.catContentDB={}
@@ -352,7 +351,7 @@ class CategoryTidyRobot:
         self.catDB = catDB        
 
         # This is a purely interactive robot. We set the delays lower.
-        wikipedia.get_throttle.setDelay(5)
+        wikipedia.get_throttle.setDelay(1)
         wikipedia.put_throttle.setDelay(10)
     
     def move_to_category(self, article, original_cat, current_cat):
@@ -550,8 +549,8 @@ class CategoryTreeRobot:
             wikipedia.output(tree)
 
 if __name__ == "__main__":
-    catDB = CategoryDatabase()        
     try:
+        catDB = CategoryDatabase()
         action = None
         sort_by_last_name = False
         restore = False
@@ -585,8 +584,7 @@ if __name__ == "__main__":
             bot = CategoryMoveRobot(oldCatTitle, newCatTitle)
             bot.run()
         elif action == 'tidy':
-            cat_title = wikipedia.input(u'Which category do you want to tidy up?')
-            tidy_category(catTitle)
+            catTitle = wikipedia.input(u'Which category do you want to tidy up?')
             bot = CategoryTidyRobot(catTitle, catDB)
             bot.run()
         elif action == 'tree':
