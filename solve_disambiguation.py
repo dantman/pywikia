@@ -52,6 +52,10 @@ if not wikipedia.special.has_key(wikipedia.mylang):
     import sys
     sys.exit(1)
 
+# This is a purely interactive robot. We set the delays lower.
+wikipedia.get_throttle.setDelay(5)
+wikipedia.put_throttle.setDelay(10)
+
 msg={
     'en':'Robot-assisted disambiguation',
     'da':'Retter flertydigt link til',
