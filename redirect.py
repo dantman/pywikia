@@ -15,6 +15,7 @@ where action can be one of these:
 
 and argument can be:
 
+* namespace:n - Namespace to process. Works only with a sql dump
 * sql - retrieve information from a local dump (http://download.wikimedia.org).
 
 if this argument isn't given, info will be loaded from the maintenance page of
@@ -62,13 +63,17 @@ def get_redirects_from_dump(sqlfilename):
     dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
     redirR = wikipedia.redirectRe(wikipedia.getSite())
     for entry in dump.entries():
+        if (entry.id % 10000) == 0:
+            print 'Checking entry %s' % (entry.id)
+        if namespace != -1 and namespace != entry.namespace:
+            continue
         if entry.redirect:
             m = redirR.search(entry.text)
             if m == None:
                 # NOTE: due to a MediaWiki bug, many articles are falsely marked with the
                 # redirect flag, so this warning will eventually show up several times.
                 # Ask a MediaWiki developer to fix the SQL database.
-                print 'WARNING: can\'t extract the target of redirect %s, ignoring' % (entry.full_title())
+                wikipedia.output(u'WARNING: can\'t extract the target of redirect %s, ignoring' % (entry.full_title()))
             else:
                 target = m.group(1)
                 # There might be redirects to another wiki. Ignore these.
@@ -205,7 +210,8 @@ def fix_double_redirects(source):
                 wikipedia.output(u'%s doesn\'t exist.' % second_redir.linkname())
             else:
                 txt = "#REDIRECT [[%s]]" % second_target
-                redir.put(txt)
+                status, reason, data = redir.put(txt)
+                print status, reason
 
 # read command line parameters
 # what the bot should do (either resolve double redirs, or delete broken redirs)
@@ -213,6 +219,9 @@ action = None
 # where the bot should get his infos from (either None to load the maintenance
 # special page from the live wiki, the filename of a local sql dump file)
 source = None
+# Which namespace should be processed when using a SQL dump
+# default to -1 which means all namespaces will be processed
+namespace = -1
 for arg in sys.argv[1:]:
     arg = wikipedia.argHandler(arg)
     if arg:
@@ -227,6 +236,8 @@ for arg in sys.argv[1:]:
                 sqlfilename = arg[5:]
             import sqldump
             source = sqlfilename
+        elif arg.startswith('-namespace:'):
+            namespace = int(arg[11:])
         else:
             print 'Unknown argument: %s' % arg
 
