@@ -239,7 +239,6 @@ category = {
     'nl': u'Categorie',
     'no': u'Kategori',
     'fr': u'Catégorie',
-    'ru': u'Category',
     'sl': u'Category',
     'sv': u'Kategori',
     'test': u'Category'
@@ -248,13 +247,15 @@ category = {
 def category_namespaces(code):
     ns = []
     if not category.has_key(code):
-        print "DBG> No category namespace known for %s"%code
-        code = 'en'
-    ns.append(category[code])
-    ns.append(category[code].lower())
-    if category[code] != category['en']:
-    	ns.append(category['en'])
-    	ns.append(category['en'].lower())
+        #print "DBG> No category namespace known for %s" % code
+        import mediawiki_messages
+        ns.append(mediawiki_messages.get('nstab-category', lang = code))
+    else:
+        ns.append(category[code])
+        ns.append(category[code].lower())
+        if category[code] != category['en']:
+            ns.append(category['en'])
+            ns.append(category['en'].lower())
     return ns
 
 # Redirect code can be translated, but is only in one language now.
