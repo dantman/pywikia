@@ -1,3 +1,4 @@
+# -*- coding: utf-8  -*-
 """Split a treelang.log file into chunks of warnings separated by language"""
 #
 # (C) Rob W.W. Hooft, 2003
@@ -23,5 +24,5 @@ for line in open('treelang.log'):
             files[code].write(line)
             count[code] += 1
 for code in files.keys():
-    print '%s (%d)' % (code, count[code])
+    print '*%s (%d)' % (code, count[code])
 
