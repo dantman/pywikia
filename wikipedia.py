@@ -1191,13 +1191,13 @@ def getLanguageLinks(text, insite = None):
     # ASCII letters and hyphens.
     interwikiR = re.compile(r'\[\[([a-z\-]+):([^\]]*)\]\]')
     for lang, pagetitle in interwikiR.findall(text):
-        if lang in insite.family.obsolete:
-            output(u"ERROR: ignoring link to obsolete language %s" % lang)
-        elif not pagetitle:
+        if not pagetitle:
             print "ERROR: empty link to %s:" % lang
         # Check if it really is in fact an interwiki link to a known
         # language, or if it's e.g. a category tag or an internal link
-        elif lang in insite.family.langs:
+        elif lang in insite.family.obsolete:
+            lang=insite.family.obsolete[lang]
+        if lang in insite.family.langs:
             if '|' in pagetitle:
                 # ignore text after the pipe
                 pagetitle = pagetitle[:pagetitle.index('|')]

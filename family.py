@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import config, urllib
 
@@ -295,8 +295,11 @@ class Family(object):
 
     interwiki_putfirst = {}
 
-    # Which languages do no longer exist and should trigger a warning?
-    obsolete = []
+    # Which language codes do no longer exist and by which language code should
+    # they be replaced. If for example the language with code xx: now should get
+    # code yy:, add {'xx':'yy'} to obsolete.
+
+    obsolete = {}
 
     # A few selected big languages for things that we do not want to loop over
     # all languages. This is only needed by the titletranslate.py module, so

@@ -99,6 +99,7 @@ class Family(family.Family):
         'mg':'mg.wikipedia.org',   # Malagasy
         'mi':'mi.wikipedia.org',   # Maori
         'minnan':'zh-min-nan.wikipedia.org', # Min-Nan
+        'zh-min-nan':'zh-min-nan.wikipedia.org', # Min-Nan
         'mk':'mk.wikipedia.org',   # Macedonian
         'ml':'ml.wikipedia.org',   # Malayalam
         'mn':'mn.wikipedia.org',   # Mongolian
@@ -239,7 +240,10 @@ class Family(family.Family):
                'vo','wa','wo','ts','yi','yo','zh','zh-tw','zh-cn']
         }
         
-    obsolete = ['sh', 'dk', 'tlh']
+    obsolete = {'sh':'hr',
+                'dk':'da',
+                'tlh':'none',
+                'zh-min-nan':'minnan'}
         
     # A few selected big languages for things that we do not want to loop over
     # all languages. This is only needed by the titletranslate.py module, so
