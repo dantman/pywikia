@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Script to replace bad Windows-1252 (cp1252) characters with 
-HTML entities on ISO 8859-1 wikis.
+HTML entities on ISO 8859-1 wikis. Don't run this script on a UTF-8 wiki.
 
 Syntax: python windows_chars.py [page_title] [file[:filename]]
 
@@ -12,6 +12,12 @@ Command line options:
               list is taken. If XYZ is not given, the user is asked for a
               filename.
               Page titles should be saved one per line, without [[brackets]].
+
+   -sql:XYZ   reads a local SQL cur dump, available at
+              http://download.wikimedia.org/. Searches for pages with
+              Windows-1252 characters, and tries to repair them on the live
+              wiki. Example:
+              python windows_chars.py -sql:20040711_cur_table.sql.sql -lang:es
 
 Options that are accepted by more robots:
 
@@ -26,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.7 2004/07/13 13:00:43 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.8 2004/07/13 16:46:16 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -37,47 +43,15 @@ msg={
     'de':'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
     }
 
-# if the -file argument is used, page titles are dumped in this array.
-# otherwise it will only contain one page.
-page_list = []
-# if -file is not used, this temporary array is used to read the page title.
-page_title = []
+# characters that are in Windows-1252, but not in ISO 8859-1
+windows_1252 = [u"\x80",         u"\x82", u"\x83", u"\x84", u"\x85", u"\x86", u"\x87", u"\x88", u"\x89", u"\x8A", u"\x8B", u"\x8C",      u"\x8E",
+                        u"\x91", u"\x92", u"\x93", u"\x94", u"\x95", u"\x96", u"\x97", u"\x98", u"\x99", u"\x9A", u"\x9B", u"\x9C",      u"\x9E", u"\x9F"]
+    
 
-for arg in sys.argv[1:]:
-    arg = unicode(arg, config.console_encoding)
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg.startswith('-file'):
-        if len(arg) == 5:
-            file = wikipedia.input('Please enter the list\'s filename: ')
-        else:
-            file = arg[6:]
-        # open file and read page titles out of it
-        f=open(file)
-        for line in f.readlines():
-            if line != '\n':           
-                page_list.append(line)
-        f.close()
-    else:
-        page_title.append(arg)
-
-# if the page is given as a command line argument,
-# connect the title's parts with spaces
-if page_title != []:
-     page_title = ' '.join(page_title)
-     page_list.append(page_title)
-
-# if no page was given as an argument, and none was
-# read from a file, query the user
-if page_list == []:
-    pagename = wikipedia.input('Which page to check: ', wikipedia.myencoding())
-    page_list.append(pagename)
-
-# get edit summary message
-msglang = wikipedia.chooselang(wikipedia.mylang,msg)
-wikipedia.setAction(msg[msglang])
-
-def treat(pl):
+# Loads a page from the live Wikipedia, changes all Windows-1252 characters to
+# HTML entities, and saves it
+def treat(page):
+    pl=wikipedia.PageLink(wikipedia.mylang, page)
     try:
         reftxt=pl.get()
     except wikipedia.IsRedirectPage:
@@ -87,8 +61,7 @@ def treat(pl):
         pass
     else:
         count = 0
-        for char in [u"\x80",         u"\x82", u"\x83", u"\x84", u"\x85", u"\x86", u"\x87", u"\x88", u"\x89", u"\x8A", u"\x8B", u"\x8C",      u"\x8E",
-                             u"\x91", u"\x92", u"\x93", u"\x94", u"\x95", u"\x96", u"\x97", u"\x98", u"\x99", u"\x9A", u"\x9B", u"\x9C",      u"\x9E", u"\x9F"]:
+        for char in windows_1252:
             count += reftxt.count(char)
         
         print str(count) + " Windows-1252 characters were found."
@@ -124,10 +97,71 @@ def treat(pl):
             reftxt = reftxt.replace(u"\x9F", "&Yuml;")   # latin capital letter Y with diaeresis
             pl.put(reftxt)
 
+# opens a local SQL dump file, searches for pages with Windows-1252 characters,
+# and tries to repair them on the live wiki.
+def parse_sqldump(filename):
+    # open sql dump and read page titles out of it
+    import sqldump
+    sqldump = sqldump.SQLdump(filename, 'latin-1')
+    for page in sqldump.entries:
+        for char in windows_1252:
+         if page.text.find(char) != -1:
+             treat(page.title)
+             break
+    
+# if the -file argument is used, page titles are dumped in this array.
+# otherwise it will only contain one page.
+page_list = []
+# if -file is not used, this temporary array is used to read the page title.
+page_title = []
+
+action = None 
+for arg in sys.argv[1:]:
+    arg = unicode(arg, config.console_encoding)
+    if wikipedia.argHandler(arg):
+        pass
+    elif arg.startswith('-file'):
+        if len(arg) == 5:
+            filename = wikipedia.input('Please enter the list\'s filename: ')
+        else:
+            filename = arg[6:]
+        # open file and read page titles out of it
+        f=open(filename)
+        for line in f.readlines():
+            if line != '\n':           
+                page_list.append(line)
+        f.close()
+    elif arg.startswith('-sql'):
+        if len(arg) == 4:
+            sqlfilename = wikipedia.input('Please enter the SQL dump\'s filename: ')
+        else:
+            sqlfilename = arg[5:]
+        action = 'parse_sqldump'
+    else:
+        page_title.append(arg)
+
+# if a single page is given as a command line argument,
+# reconnect the title's parts with spaces
+if page_title != []:
+     page_title = ' '.join(page_title)
+     page_list.append(page_title)
+
+# if no page was given as an argument, and none was
+# read from a file, query the user
+if page_list == [] and action != 'parse_sqldump':
+    pagename = wikipedia.input('Which page to check: ', wikipedia.myencoding())
+    page_list.append(pagename)
+
+# get edit summary message
+msglang = wikipedia.chooselang(wikipedia.mylang,msg)
+wikipedia.setAction(msg[msglang])
+
 if wikipedia.myencoding() == "utf-8":
     print "There is no need to run this robot on UTF-8 wikis."
 else:
-    # loop over all given pages
-    for page in page_list:
-        pl=wikipedia.PageLink(wikipedia.mylang, page)
-        treat(pl)
+    if action == 'parse_sqldump':
+        parse_sqldump(sqlfilename)
+    else:
+        # loop over all given pages
+        for page in page_list:
+            treat(page)
