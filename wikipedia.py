@@ -1078,6 +1078,11 @@ def replaceCategoryLinks(oldtext, new, code = None):
     """
     if code is None:
         code = mylang
+    # first remove interwiki links and add them later, so that
+    # interwiki tags appear below category tags if both are set
+    # to appear at the bottom of the article
+    interwiki_links = getLanguageLinks(oldtext)
+    oldtext = removeLanguageLinks(oldtext)
     s = categoryFormat(new)
     s2 = removeCategoryLinks(oldtext, code)
     if s:
@@ -1087,6 +1092,8 @@ def replaceCategoryLinks(oldtext, new, code = None):
             newtext = s + config.category_text_separator + s2
     else:
         newtext = s2
+    # now re-add interwiki links
+    newtext = replaceLanguageLinks(newtext, interwiki_links)
     return newtext
     
 def categoryFormat(links):
