@@ -7,13 +7,17 @@ extract_names.py : A program to make a list of 480 pagenames based on a html
 getlang.py : Get interwiki links for years AD
 parsepopular.py : Make statistics based on 2 html dumps of most popular
                   pages.
-test.py : Misc testing
+test.py : Misc testing, now configured to test whether you are logged in.
 treelang_all.py : A script that runs treelang.py for each of 
                   the pages in the NL: wikipedia. Might need minor changes
                   to work in your environment
 treelang.py : The core of the general interwiki robot.
 wikipedia.py : The wikipedia library
 yearlayout.py : An old robot used to change the layout of all nl: year pages.
+login.py : Log in to an account on your "home" wikipedia. THIS WILL SHOW
+           YOUR PASSWORD ON SCREEN! To log out, throw away the login.data
+           file that is created. You can only log in to one wikipedia at a time,
+           and it should be the one mentioned in username.dat.
 
 backref.py understands various command-line arguments:
     xx: (including the colon) check links to and from xx: instead of 
