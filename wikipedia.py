@@ -161,6 +161,9 @@ class PageLink:
            without :"""
         return self._code
 
+    def name(self):
+        return urllib.unquote(self._linkname)
+    
     def urlname(self):
         """The name of the page this PageLink refers to, in a form suitable
            for the URL of the page."""
@@ -1267,7 +1270,7 @@ def UnicodeToAsciiHtml(s):
     return ''.join(html)
 
 def url2unicode(percentname, language):
-    x=urllib.unquote(str(percentname))
+    x=urllib.unquote(percentname)
     #print "DBG> ",language,repr(percentname),repr(x)
     # Try utf-8 first. It almost cannot succeed by accident!
     for encoding in ('utf-8',)+code2encodings(language):
@@ -1459,7 +1462,10 @@ def input(question, encode = False):
     return text
     
 # Works like print, but uses the encoding used by the user's console instead
-# of ASCII. Argument text should be a unicode string.
+# of ASCII. If encoding is None, text should be a unicode string. Otherwise it
+# should be encoded in that encoding.
 # If a character can't be displayed, it will be replaced with a question mark.
-def output(text):
+def output(text, encoding = None):
+    if encoding:
+        text = unicode(text, encoding)
     print text.encode(config.console_encoding, 'replace')

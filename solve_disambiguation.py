@@ -1,4 +1,4 @@
-# -*- coding: cp1252 -*-
+# -*- coding: utf8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
 
@@ -29,7 +29,7 @@ Command line options:
                the page redirected to are used. If the page is not a redirect
                page, this will raise an error
                
-   -primary    "primary topic" disambiguation (Begriffsklärung nach Modell 2).
+   -primary    "primary topic" disambiguation (BegriffsklÃ¤rung nach Modell 2).
                That's titles where one topic is much more important, the
                disambiguation page is saved somewhere else, and the important
                topic gets the nice name.
@@ -94,7 +94,7 @@ msg_redir={
           }
 
 # disambiguation page name format for "primary topic" disambiguations
-# (Begriffsklärungen nach Modell 2)
+# (BegriffsklÃ¤rungen nach Modell 2)
 primary_topic_format={
           'de':'%s_(Begriffskl\xe4rung)',
           'en':'%s_(disambiguation)',
@@ -107,11 +107,11 @@ primary_topic_format={
 # to find out the setting for your Wikipedia.
 # Note: this is a regular expression.
 link_trail={
-   'de':'[a-z|ä|ö|ü|ß]*',
-   'da':'[a-z|æ|ø|å]*',
-   'en':'[a-z]*',
-   'fr':'[a-z|à|â|ç|é|è|ê|î|ô|û]*',
-   'nl':'[a-z|ä|ö|ü|ï|ë|é|è|é|à|ç]*'
+   'de':u'[a-z|Ã¤|Ã¶|Ã¼|ÃŸ]*',
+   'da':u'[a-z|Ã¦|Ã¸|Ã¥]*',
+   'en':u'[a-z]*',
+   'fr':u'[a-z|Ã |Ã¢|Ã§|Ã©|Ã¨|Ãª|Ã®|Ã´|Ã»]*',
+   'nl':u'[a-z|Ã¤|Ã¶|Ã¼|Ã¯|Ã«|Ã©|Ã¨|Ã©|Ã |Ã§]*'
    }
           
 # List pages that will be ignored if they got a link to a disambiguation
@@ -208,18 +208,18 @@ ignore={
   'Wikip\xE9dia\x3APages sans interwiki\x2Cz'
   ),
     'de':(
-          '100 W\xf6rter des 21. Jahrhunderts',
-          'Abk\xfcrzungen/[A-Z]',
-          'Benutzer\:Tsor/Begriffskl\xe4rungen',
-          'Benutzer Diskussion\:.+',
-          'Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
-          'GISLexikon \([A-Z]\)',
-          'Lehnwort',
-          'Liste aller 2-Buchstaben-Kombinationen',
-          'Wikipedia:Begriffskl\xe4rung.*',
-          'Wikipedia\:Geographisch mehrdeutige Bezeichnungen',
-          'Wikipedia\:Liste mathematischer Themen\/BKS',
-          'Wikipedia\:WikiProjekt Altertumswissenschaft\/.+',
+          u'100 WÃ¶rter des 21. Jahrhunderts',
+          u'AbkÃ¼rzungen/[A-Z]',
+          u'Benutzer\:Tsor/BegriffsklÃ¤rungen',
+          u'Benutzer Diskussion\:.+',
+          u'DreibuchstabenkÃ¼rzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
+          u'GISLexikon \([A-Z]\)',
+          u'Lehnwort',
+          u'Liste aller 2-Buchstaben-Kombinationen',
+          u'Wikipedia:BegriffsklÃ¤rung.*',
+          u'Wikipedia\:Geographisch mehrdeutige Bezeichnungen',
+          u'Wikipedia\:Liste mathematischer Themen\/BKS',
+          u'Wikipedia\:WikiProjekt Altertumswissenschaft\/.+',
       )
     }
 
@@ -235,7 +235,7 @@ def getReferences(pl):
         for Rignore in ignore_regexes:
             for i in range(len(x)-1, -1, -1):
                 if Rignore.match(x[i]):
-                    print 'Ignoring page ' + x[i]
+                    wikipedia.output('Ignoring page ' + x[i], wikipedia.code2encoding(wikipedia.mylang))
                     del x[i]
     return x
 
@@ -433,8 +433,8 @@ for wrd in (page_list):
                 context = 30
                 while 1:
                     print '\n'
-                    print "== %s =="%(refpl)
-                    print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-context):m.end()+context])
+                    wikipedia.output("== %s ==" % refpl.name())
+                    wikipedia.output(reftxt[max(0,m.start()-context):m.end()+context])
                     if always == None:
                         choice=wikipedia.input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
                                          "        m=more context,l=list,a=add new):")
