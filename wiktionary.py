@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8  -*-
 
 wiktionaryformats = {
 			'nl': {
@@ -56,7 +57,7 @@ langnames =	{'nl':	{
 			}
 		}
 #print langnames
-# A big thanks to Rob for the following:
+# A big thanks to Rob Hooft for the following:
 class sortonname:
 	def __init__(self, lang):
 #		print "lang in constructor: %s"%lang
@@ -88,23 +89,23 @@ class WiktionaryEntry:				# This refers to an entire page
 		for subentry in self.subentries:
 			entry= entry + subentry.wikiwrap(self.wikilang) + '\n'
 
-		# Here something needs to be inserted for treating interwiktionary links
-		# that will have to wait for the moment
+		# TODO Here something needs to be inserted for treating interwiktionary links
 			
 		return entry
-
-class SubEntry:					# On one page, different terms in different languages can be described
+	
+class SubEntry:					# On one page, terms with the same spelling in different languages can be described
 	def __init__(self,subentrylang):
 		self.subentrylang=subentrylang
 		self.meanings = []
 		
 	def addMeaning(self,meaning):
-		self.meanings.append(meaning)	# meanings is a list of meaning subentry objects
+		self.meanings.append(meaning)	# meanings is a list of Meaning subentry objects
 	
 	def getMeanings(self):
 		return self.meanings
 
 	def wikiwrap(self,wikilang):
+		print self.subentrylang, self.meanings[0].term.term
 		subentry = wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][self.subentrylang]).replace('%%ISOLangcode%%',self.subentrylang) + '\n'
 		for meaning in self.meanings:
 			term=meaning.term
@@ -194,7 +195,9 @@ class Term:
 		self.lang=lang			# lang here refers to the language of the term
 		self.term=term
 		self.relatedwords=[]
-		
+	def __getitem__(self):
+		return self
+
 	def setTerm(self,term):
 		self.term=term
 	
@@ -335,11 +338,10 @@ if __name__ == '__main__':
 	anothermeaning.addTranslation(ittrans)
 	anothermeaning.addTranslation(ittrans2)
 
-	anothersubentry = SubEntry('nl')
-	anothersubentry.addMeaning(ameaning)
-	anothersubentry.addMeaning(anothermeaning)
+	asubentry.addMeaning(ameaning)
+	asubentry.addMeaning(anothermeaning)
 
-	apage.addSubEntry(anothersubentry)
+	apage.addSubEntry(asubentry)
 
 	print
 	u=apage.wikiwrap()
