@@ -55,7 +55,11 @@ while tocheck <> []:
                     elif answer=='n':
                         exclude.append(new)
             for new in wikipedia.getReferences(pg):
-                if not (new in tocheck or new in include or new in exclude):
+                try:
+                    test=(new in tocheck or new in include or new in exclude)
+                except UnicodeDecodeError:
+                    test=False
+                if not test:
                     print("%s")%new
                     answer = raw_input("(y/n)? ")
                     if answer=='y':
@@ -64,18 +68,21 @@ while tocheck <> []:
                         exclude.append(new)
     else:
         exclude.append(pname)
-        for new in wikipedia.getReferences(pg):
-            if not (new in tocheck or new in include or new in exclude):
-                print("%s")%new
-                answer = raw_input("(y/n)? ")
-                if answer=='y':
-                    tocheck.append(new)
-                elif answer=='n':
-                    exclude.append(new)
-    print()
+        try:
+            test=(new in tocheck or new in include or new in exclude)
+        except UnicodeDecodeError:
+            test=False
+        if not test:
+            print("%s")%new
+            answer = raw_input("(y/n)? ")
+            if answer=='y':
+                tocheck.append(new)
+            elif answer=='n':
+                exclude.append(new)
+    print
 
 include.sort()
-print()
+print
 print("Collection of pages complete.")
 print("=============================")
 for page in include:
