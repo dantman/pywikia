@@ -249,7 +249,7 @@ class Subject:
             self.foundin[pl]=[foundin]
             self.todo[pl] = pl.code()
             counter.plus(pl.code())
-            #print "DBG> Found new to do:",pl.asasciilink()
+            # wikipedia.output("DBG> Found new to do: %s" % pl.aslink())
             return True
         
     def workDone(self, counter):
@@ -274,7 +274,7 @@ class Subject:
                     iw = pl.interwiki()
                 except wikipedia.IsRedirectPage,arg:
                     pl3 = wikipedia.PageLink(pl.code(),arg.args[0])
-                    print "NOTE: %s is redirect to %s" % (pl.asasciilink(), pl3.asasciilink())
+                    wikipedia.output(u"NOTE: %s is redirect to %s" % (pl.aslink(), pl3.aslink()))
                     if pl == self.inpl:
                         # This is a redirect page itself. We don't need to
                         # follow the redirection.
@@ -293,7 +293,7 @@ class Subject:
                             if globalvar.shownew:
                                 wikipedia.output("%s: %s gives new redirect %s" %  (self.inpl.asselflink(), pl.aslink(), pl3.aslink()))
                 except wikipedia.NoPage:
-                    print "NOTE: %s does not exist" % pl.asasciilink()
+                    wikipedia.output(u"NOTE: %s does not exist" % pl.aslink())
                     #print "DBG> ",pl.urlname()
                     if pl == self.inpl:
                         # This is the home subject page.
@@ -303,7 +303,7 @@ class Subject:
                         self.todo = {}
                         pass
                 except wikipedia.SubpageError:
-                    print "NOTE: %s subpage does not exist" % pl.asasciilink()
+                    wikipedia.output(u"NOTE: %s subpage does not exist" % pl.aslink())
                 else:
                     if self.inpl == pl:
                         self.untranslated = (len(iw) == 0)
@@ -311,7 +311,7 @@ class Subject:
                             # Ignore the interwiki links.
                             iw = ()
                     elif pl.isEmpty():
-                        print "NOTE: %s is empty; ignoring it and its interwiki links" % pl.asasciilink()
+                        wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % pl.aslink())
                         # Ignore the interwiki links
                         iw = ()
                     for pl2 in iw:
@@ -326,7 +326,7 @@ class Subject:
         del self.pending
         # Check whether we need hints and the user offered to give them
         if self.untranslated and not self.hintsasked:
-            print "NOTE: %s does not have any interwiki links" % self.inpl.asasciilink()
+            wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.inpl.aslink())
         if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isredirect:
             # Only once! 
             self.hintsasked = True
@@ -373,9 +373,9 @@ class Subject:
     def whereReport(self, pl, indent=4):
         for pl2 in self.foundin[pl]:
             if pl2 is None:
-                print " "*indent,"Given as a hint."
+                print " "*indent, "Given as a hint."
             else:
-                print " "*indent,pl2.asasciilink()
+                print " "*indent, pl2.asasciilink()
 
     def assemble(self):
         # No errors have been seen so far
@@ -430,7 +430,7 @@ class Subject:
                     i = 0
                     for pl2 in v:
                         i += 1
-                        print "  (%d) Found link to %s in:"%(i,pl2.asasciilink())
+                        wikipedia.output(u"  (%d) Found link to %s in:"%(i,pl2.aslink()))
                         self.whereReport(pl2, indent=8)
                     if not globalvar.autonomous:
                         while 1:
@@ -456,7 +456,7 @@ class Subject:
                 if len(v) == 1:
                     print "="*30
                     pl2 = v[0]
-                    print "Found link to %s in:"%pl2.asasciilink()
+                    wikipedia.output(u"Found link to %s in:" % pl2.aslink())
                     self.whereReport(pl2, indent=4)
                     while 1:
                         if acceptall: 
@@ -510,7 +510,7 @@ class Subject:
             for pl in self.inpl.interwiki():
                 old[pl.code()] = pl
         except wikipedia.NoPage:
-            print "BUG:", self.inpl.asasciilink(), "No longer exists?"
+            wikipedia.output(u"BUG: %s no longer exists?" % self.inpl.aslink())
         ####
         mods, removing = compareLanguages(old, new)
         if not mods and not globalvar.always:
@@ -528,7 +528,7 @@ class Subject:
                 if globalvar.backlink:
                     self.reportBacklinks(new)
             else:
-                print "NOTE: Replace %s" % self.inpl.asasciilink()
+                wikipedia.output(u"NOTE: Replace %s" % self.inpl.aslink())
                 if globalvar.forreal:
                     # Determine whether we need permission to submit
                     ask = False
@@ -636,7 +636,7 @@ class SubjectArray:
            generator"""
         fs = self.firstSubject()
         if fs:
-            print "NOTE: The first unfinished subject is:", fs.pl().asasciilink()
+            wikipedia.output("NOTE: The first unfinished subject is:", fs.pl().aslink())
         print "NOTE: Number of pages queued is %d, trying to add %d more."%(
             len(self.subjects), number)
         for i in range(number):
@@ -920,7 +920,7 @@ if __name__ == "__main__":
                 startmonth = 1
             fd = date.FormatDate(wikipedia.mylang)
             pl = wikipedia.PageLink(wikipedia.mylang, fd(startmonth, 1))
-            print "Starting with %s" % pl.asasciilink()
+            wikipedia.output("Starting with %s" % pl.aslink())
             for month in range(startmonth, 12+1):
                 for day in range(1, date.days_in_month[month]+1):
                     pl = wikipedia.PageLink(wikipedia.mylang, fd(month, day))
