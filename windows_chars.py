@@ -32,15 +32,15 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.10 2004/07/13 23:20:24 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.11 2004/07/14 10:21:05 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
 
 # Summary message
 msg={
-    'en':'robot: changing Windows-1252 characters to HTML entities',
-    'de':'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
+    'en':u'robot: changing Windows-1252 characters to HTML entities',
+    'de':u'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
     }
 
 # characters that are in Windows-1252, but not in ISO 8859-1
