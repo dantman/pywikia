@@ -410,6 +410,8 @@ class PageLink:
         # Given a redirect page, gives the page it redirects to
         try:
             self.get()
+        except NoPage:
+            raise NoPage(self)
         except IsRedirectPage, arg:
             return arg
         else:
