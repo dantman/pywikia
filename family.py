@@ -444,8 +444,8 @@ class Family(object):
             return '%s:Allpages&from=%s' % (
                 self.special_namespace_url(code), start)
 
-    def newpagesname(self, code):
-        return "%s:Newpages" % (self.special_namespace_url(code))
+    def newpagesname(self, code, limit=50):
+        return "%s:Newpages&limit=%d" % (self.special_namespace_url(code), limit)
 
     def code2encoding(self, code):
         """Return the encoding for a specific language wikipedia"""
