@@ -415,6 +415,8 @@ class PageLink:
             return False
         except IsRedirectPage:
             return True
+        except SubpageError:
+            return False
         return True
 
     def isRedirectPage(self):
