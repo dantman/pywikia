@@ -16,6 +16,7 @@ class Family(family.Family):
             'af':'af.wikipedia.org',   # Afrikaans
             'als':'als.wikipedia.org', # Alsatian
             'ar':'ar.wikipedia.org',   # Arabic
+            'ast':'ast.wikipedia.org', # Asturian
             'ay':'ay.wikipedia.org',   # Aymara            'az':'az.wikipedia.org',   # Azerbaijan
             'be':'be.wikipedia.org',   # Belorussian
             'bg':'bg.wikipedia.org',   # Bulgarian

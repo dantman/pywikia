@@ -1665,7 +1665,7 @@ def altlang(code):
         return ['cs']
     if code=='nds':
         return ['de','nl']
-    if code in ['ay','ca','gn','nah','qu']:
+    if code in ['ast','ay','ca','gn','nah','qu']:
         return ['es']
     if code=='eu':
         return ['es','fr']
