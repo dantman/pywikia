@@ -38,7 +38,7 @@ def main():
     print newcat
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
     
-    catpl = wikipedia.PageLink(wikipedia.mylang, ns[0]+':'+newcat)
+    catpl = wikipedia.PageLink(wikipedia.mylang, ns[0].encode(wikipedia.code2encoding(wikipedia.mylang))+':'+newcat)
     print "Will add %s"%catpl.aslocallink()
 
     answer = ''
