@@ -2360,7 +2360,7 @@ def showDiff(oldtext, newtext):
         if line[0] in ['+','-']:
             output(line)
 
-
+"""
 def showColorDiff(oldtext, newtext, replacements, regex):
     sep = '\r\n'
     ol = oldtext.split(sep)
@@ -2369,24 +2369,67 @@ def showColorDiff(oldtext, newtext, replacements, regex):
         ol = oldtext.split(sep)
     nl = newtext.split(sep)
     for line in difflib.ndiff(ol,nl):
-        if line[0] in ['-']:
-            old = line
-            for a, b in replacements.items():
+        if line[0] == '-':
+            oldline = line
+            for a, b in replacements.iteritems():
                 if regex:
                     a = re.compile("(" + a + ")")
-                    old = a.sub('\x1b[91;1m\\1\x1b[0m', old)
+                    oldline = a.sub('\x1b[91;1m\\1\x1b[0m', oldline)
                 else:
-                    old = old.replace(a, '\x1b[91;1m' + a + '\x1b[0m')
-            output(old)
-            new = line
-            for a, b in replacements.items():
+                    oldline = oldline.replace(a, '\x1b[91;1m' + a + '\x1b[0m')
+            # mark the minus red
+            oldline = '\x1b[91;1m-\x1b[0m' + oldline[1:]
+            output(oldline)
+            newline = line
+            for a, b in replacements.iteritems():
                 if regex:
                     a = re.compile(a)
-                    new = a.sub('\x1b[92;1m' + b + '\x1b[0m', new)
+                    newline = a.sub('\x1b[92;1m' + b + '\x1b[0m', newline)
                 else:
-                    new = new.replace(a, '\x1b[92;1m' + b + '\x1b[0m')
-            output('+' + new[1:])
+                    newline = newline.replace(a, '\x1b[92;1m' + b + '\x1b[0m')
+            # replace the minus with a green plus
+            output('\x1b[92;1m+\x1b[0m' + newline[1:])
+"""
 
+def showColorDiff(oldtext, newtext):
+    """
+    Returns a string showing the differences between oldtext and newtext.
+    The differences are highlighted (only seems to work on Unix systems) using
+    the dictionary replacements, which describes which changes were made.
+    If regex is true, the dictionary contents are interpreted as regular
+    expressions.
+    """
+    def printLastLine(lastline, lastcolor):
+        # highlight the minus red or the plus green
+        if lastline != None:
+            lastline = '\x1b[' + lastcolor + ';1m' + lastline[0] + '\x1b[0m' + lastline[1:]
+            output(lastline)
+        
+    # This will store the last line beginning with + or -.
+    # It will be printed as soon as a line beginning with a ? or another line
+    # starting with + or - occurs.
+    lastline = None
+    lastcolor = None
+    for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
+        if line[0] == '-':
+            # if lastline wasn't followed by a line starting with ?
+            printLastLine(lastline, lastcolor)
+            lastline = line
+            lastcolor = '91' # red
+        elif line[0] == '+':
+            printLastLine(lastline, lastcolor)
+            lastline = line
+            lastcolor = '92' # green
+        elif line[0] == '?':
+            # iterate backwards over the whole line
+            for i in range(len(line)-1, -1, -1):
+                # the original diff marks changes with a ^ under the changed
+                # part. We'll highlight with colors instead.
+                if line[i] != ' ':
+                    lastline = lastline[:i] + '\x1b[' + lastcolor + ';1m' + lastline[i] + '\x1b[0m' + lastline[i+1:]
+            output(lastline)
+            lastline = None
+    printLastLine(lastline, lastcolor)
     
 def output(text, decoder = None, newline = True):
     """Works like print, but uses the encoding used by the user's console
