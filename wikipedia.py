@@ -621,7 +621,7 @@ def allpages(start = '%21%200'):
         #print text
         R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         n = 0
-        for hit in R.findall(tet):
+        for hit in R.findall(text):
             if not ':' in hit:
                 # Some dutch exceptions.
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
