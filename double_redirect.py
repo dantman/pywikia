@@ -24,13 +24,15 @@ msg={
     'de':'Bot: Korrigiere doppelten Redirect',
     }
 
-def getDoubleRedirects():
+def fixDoubleRedirects():
     host = wikipedia.family.hostname(wikipedia.mylang)
+    # double redirect maintenance page's URL
     url = wikipedia.family.maintenance_address(wikipedia.mylang, 'doubleredirects', default_limit = False)
     
     print 'Retrieving maintenance page...' 
     maintenance_txt, charset = wikipedia.getUrl(host,url)
     
+    # regular expression which finds redirects which point to another redirect inside the HTML
     Rredir = re.compile('\<li\>\<a href=\"\/w\/wiki.phtml\?title=(.*?)&amp;redirect=no\"')
     redir_names = Rredir.findall(maintenance_txt)
     print 'Retrieved %d redirects from maintenance page.\n' % len(redir_names)
@@ -41,10 +43,11 @@ def getDoubleRedirects():
             second_redir = wikipedia.PageLink(wikipedia.mylang, target)
             second_target = str(second_redir.getRedirectTo())
         except wikipedia.IsNotRedirectPage:
-            print 'The specified page is not a double redirect.'
+            print 'The specified page is not a double redirect.\n'
             continue
         txt = "#REDIRECT [[%s]]" % second_target
         redir.put(txt)
 
+# get summary text
 wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)])
-getDoubleRedirects()
+fixDoubleRedirects()
