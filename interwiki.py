@@ -553,7 +553,7 @@ class Subject:
                         else:
                             if globalvar.bell:
                                 sys.stdout.write('\07')
-                            answer = raw_input('submit y/n ?')
+                            answer = wikipedia.input('Submit? [y|N]')
                     else:
                         # If we do not need to ask, allow
                         answer = 'y'
