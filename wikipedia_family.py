@@ -128,6 +128,7 @@ class Family(family.Family):
         'nn':'nn.wikipedia.org',   # Norse (nynorsk)
         'no':'no.wikipedia.org',   # Norse (bokmal)
         'nv':'nv.wikipedia.org',   # Navajo
+        'ny':'ny.wikipedia.org',   # Chichewa
         'oc':'oc.wikipedia.org',   # Occitan
         'om':'om.wikipedia.org',   # Oromo
         'or':'or.wikipedia.org',   # Oriya
@@ -216,7 +217,7 @@ class Family(family.Family):
     # after those, in code-alphabetical order.
     
     alphabetic = ['aa','af','ar','an','roa-rup','as','ast','ay','az','bg',
-                  'be','bn','bh','bi','bo','bs','br','ca','chr','cho','co','cs',
+                  'be','bn','bh','bi','bo','bs','br','ca','chr','ny','cho','co','cs',
                   'cy','da','de','dv','als','et','el','en','es','eo','eu','ee',
                   'fa','fo','fr','fy','ga','gv','gd','gl','got','gn','gu','ko',
                   'ha','haw','hy','hi','hr','io','id','ia','xh','is','zu','it',
