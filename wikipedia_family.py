@@ -33,6 +33,7 @@ langs = {
     'eu':'eu.wikipedia.org',   # Basque
     'fa':'fa.wikipedia.org',   # Farsi
     'fi':'fi.wikipedia.org',   # Finnish
+    'fo':'fo.wikipedia.org',   # Faroese
     'fr':'fr.wikipedia.org',   # French
     'fy':'fy.wikipedia.org',   # Frisian
     'ga':'ga.wikipedia.org',   # Irish Gaelic
@@ -52,6 +53,7 @@ langs = {
     'ja':'ja.wikipedia.org',   # Japanese
     'jv':'jv.wikipedia.org',   # Javanese
     'ka':'ka.wikipedia.org',   # Georgian
+    'km':'km.wikipedia.org',   # Khmer
     'ko':'ko.wikipedia.org',   # Korean
     'ks':'ks.wikipedia.org',   # Ekspreso, but should become Kashmiri
     'ku':'ku.wikipedia.org',   # Kurdish
