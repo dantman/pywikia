@@ -59,6 +59,7 @@ langs = {
     'ml':'ml.wikipedia.org',   # Malayalam (UTF-8?)
     'mr':'mr.wikipedia.org',   # Marathi
     'ms':'ms.wikipedia.org',   # Malaysian
+    'na':'na.wikipedia.org',   # Nauruan
     'nah':'nah.wikipedia.org', # Nahuatl (UTF-8?)
     'nds':'nds.wikipedia.org', # Lower Saxon
     'nl':'nl.wikipedia.org',   # Dutch
@@ -90,7 +91,7 @@ langs = {
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
           'eu', 'mr', 'id', 'is', 'lv', 'sw', 'co'
-          'tt', 'uk', 'vo', 'ga', 'da', 'test']
+          'tt', 'uk', 'vo', 'ga', 'da', 'na', 'test']
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['et', 'ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy',
@@ -135,6 +136,7 @@ special = {
     'ml': 'Special',
     #'mr': '',
     'ms': 'Special',
+    #'na': '',
     'nah':'Special',
     #'nds': '',
     'nl': 'Speciaal',
@@ -166,7 +168,7 @@ special = {
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
 oldsoftware = ['co', 'eu', 'ga', 'id', 'is', 'lv', 'mr', 'nds', 'sw',
-               'tt', 'uk', 'vo']
+               'tt', 'uk', 'vo', 'na']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
@@ -202,26 +204,26 @@ edittime = {}
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
 interwiki_putfirst = {
-    'en':['af','ar','ms','bs','ca','cs','cy','da','de',
+    'en':['af','ar','ms','bs','ca','co','cs','cy','da','de',
           'et','el','en','es','eo','eu','fr','fy','ga',
-          'gl','ko','hi','hr','id','it','ia','he','sw',
-          'la','lv','lt','hu','ml','mr','nah','nl','ja',
+          'gl','ko','hi','hr','id','is','it','ia','he','sw',
+          'la','lv','lt','hu','ml','mr','nah','na','nl','ja',
           'no','oc','nds','pl','pt','ro','ru','sq','simple',
           'sk','sl','sr','fi','sv','ta','tt','vi','tr',
           'uk','vo','zh','zh-cn','zh-tw'],
-    'fr':['af','ar','ms','bs','ca','cs','cy','da','de',
+    'fr':['af','ar','ms','bs','ca','co','cs','cy','da','de',
           'et','el','en','es','eo','eu','fr','fy','ga',
-          'gl','ko','hi','hr','id','it','ia','he','sw',
-          'la','lv','lt','hu','ml','mr','nah','nl','ja',
+          'gl','ko','hi','hr','id','is','it','ia','he','sw',
+          'la','lv','lt','hu','ml','mr','nah','na','nl','ja',
           'no','oc','nds','pl','pt','ro','ru','sq','simple',
           'sk','sl','sr','fi','sv','ta','tt','vi','tr',
           'uk','vo','zh','zh-cn','zh-tw'],
     'hu':['en'],
     'pl':['af','sq','en','ar','eu','bs','zh','zh-tw',
           'zh-cn','hr','cs','da','eo','et','fi','fr',
-          'fy','gl','el','he','hi','es','nl','id','ia',
-          'ga','ja','ca','ko','la','lt','lv','ml','ms',
-          'mr','de','no','pt','oc','ru','ro','sk','sl',
+          'fy','gl','el','he','hi','es','nl','id','ia','is',
+          'ga','ja','ca','ko','co','la','lt','lv','ml','ms',
+          'mr','na','de','no','pt','oc','ru','ro','sk','sl',
           'sr','sw','sv','ta','tt','tr','uk','simple',
           'vo','cy','hu','vi','it'],
     }
