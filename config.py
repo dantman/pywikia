@@ -20,7 +20,7 @@ username = ''
 interwiki_attop = ['fr', 'pl']
 # on_separate_lines is a list of languages that want the interwiki links
 # each on a separate line
-interwiki_on_one_line = ['fr', 'pl']
+interwiki_on_one_line = ['fr', 'pl', 'no']
 
 # String used as separator between interwiki links and the text
 interwiki_text_separator = '\r\n'
