@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -415,7 +415,18 @@ class Subject(object):
         if zhtwsite in new and zhcnsite in new:
             if len(new[zhcnsite]) == 1 and len(new[zhtwsite]) == 1:
                 if new[zhcnsite][0].linkname() == new[zhtwsite][0].linkname():
-                    new[zhsite] = [wikipedia.PageLink(zhsite,new[zhcnsite][0].linkname())]
+                    zhpl = wikipedia.PageLink(zhsite,new[zhcnsite][0].linkname())
+                    new[zhsite] = [zhpl]
+                    for pl2 in self.foundin[new[zhcnsite][0]]:
+                        if self.foundin.has_key(zhpl):
+			    self.foundin[zhpl]=self.foundin[zhpl] + self.foundin[new[zhcnsite][0]]
+			else:
+			    self.foundin[zhpl]=self.foundin[new[zhcnsite][0]]
+                    for pl2 in self.foundin[new[zhtwsite][0]]:
+                        if self.foundin.has_key(zhpl):
+			    self.foundin[zhpl]=self.foundin[zhpl] + self.foundin[new[zhtwsite][0]]
+			else:
+			    self.foundin[zhpl]=self.foundin[new[zhtwsite][0]]
                     del new[zhcnsite]
                     del new[zhtwsite]
                     print "Changing equivalent zh-cn and zh-tw links into a single zh link"
