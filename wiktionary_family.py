@@ -13,14 +13,22 @@ class Family(family.Family):
 
     def __init__(self):
         self.langs = {
+            'aa':'aa.wiktionary.org',   # Afar
             'af':'af.wiktionary.org',   # Afrikaans
             'als':'als.wiktionary.org', # Alsatian
+            'an':'an.wiktionary.org',   # Aragonese
             'ar':'ar.wiktionary.org',   # Arabic
+            'as':'as.wiktionary.org',   # Assamese
+            'ast':'ast.wiktionary.org', # Asturian
+            'ay':'ay.wiktionary.org',   # Aymara
             'az':'az.wiktionary.org',   # Azerbaijan
             'be':'be.wiktionary.org',   # Belorussian
             'bg':'bg.wiktionary.org',   # Bulgarian
-            'bi':'bi.wiktionary.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
+            'bh':'bh.wiktionary.org',   # Bhojpuri
+            'bi':'bi.wiktionary.org',   # Bislama
             'bn':'bn.wiktionary.org',   # Bengali
+            'bo':'bo.wiktionary.org',   # Tibetan
+            'br':'br.wiktionary.org',   # Breton
             'bs':'bs.wiktionary.org',   # Bosnian
             'ca':'ca.wiktionary.org',   # Catalan
             'chr':'chr.wiktionary.org', # Cherokee
@@ -30,6 +38,7 @@ class Family(family.Family):
             'cy':'cy.wiktionary.org',   # Welsh
             'da':'da.wiktionary.org',   # Danish
             'de':'de.wiktionary.org',   # German
+            'ee':'ee.wiktionary.org',   # Ewe
             'el':'el.wiktionary.org',   # Greek
             'en':'en.wiktionary.org',   # English
             'eo':'eo.wiktionary.org',   # Esperanto
@@ -38,29 +47,43 @@ class Family(family.Family):
             'eu':'eu.wiktionary.org',   # Basque
             'fa':'fa.wiktionary.org',   # Farsi
             'fi':'fi.wiktionary.org',   # Finnish
+            'fo':'fo.wiktionary.org',   # Faroese
             'fr':'fr.wiktionary.org',   # French
             'fy':'fy.wiktionary.org',   # Frisian
             'ga':'ga.wiktionary.org',   # Irish Gaelic
             'gd':'gd.wiktionary.org',   # Scottish Gaelic
             'gl':'gl.wiktionary.org',   # Galician
             'gn':'gn.wiktionary.org',   # Guarani
+            'gu':'gu.wiktionary.org',   # Gujarati
             'gv':'gv.wiktionary.org',   # Manx
+            'ha':'ha.wiktionary.org',   # Hausa
             'he':'he.wiktionary.org',   # Hebrew
             'hi':'hi.wiktionary.org',   # Hindi
             'hr':'hr.wiktionary.org',   # Croatian
             'hu':'hu.wiktionary.org',   # Hungarian
+            'hy':'hy.wiktionary.org',   # Armenian
             'ia':'ia.wiktionary.org',   # Interlingua
             'id':'id.wiktionary.org',   # Indonesian
+            'ie':'ie.wiktionary.org',   # Interlingue
             'io':'io.wiktionary.org',   # Ido
             'is':'is.wiktionary.org',   # Icelandic
             'it':'it.wiktionary.org',   # Italian
             'ja':'ja.wiktionary.org',   # Japanese
+            'jbo':'jbo.wiktionary.org', # Lojban
             'jv':'jv.wiktionary.org',   # Javanese
             'ka':'ka.wiktionary.org',   # Georgian
+            'kk':'kk.wiktionary.org',   # Kazakh
+            'km':'km.wiktionary.org',   # Khmer
+            'kn':'kn.wiktionary.org',   # Kannada
             'ko':'ko.wiktionary.org',   # Korean
             'ks':'ks.wiktionary.org',   # Ekspreso, but should become Kashmiri
             'ku':'ku.wiktionary.org',   # Kurdish
+            'kw':'kw.wiktionary.org',   # Cornish
+            'ky':'ky.wiktionary.org',   # Kirghiz
             'la':'la.wiktionary.org',   # Latin
+            'lb':'lb.wiktionary.org',   # Luxembourgish
+            'ln':'ln.wiktionary.org',   # Lingala
+            'lo':'lo.wiktionary.org',   # Lao
             'lt':'lt.wiktionary.org',   # Latvian
             'lv':'lv.wiktionary.org',   # Livonian
             'mg':'mg.wiktionary.org',   # Malagasy
@@ -71,20 +94,32 @@ class Family(family.Family):
             'mn':'mn.wiktionary.org',   # Mongolian
             'mr':'mr.wiktionary.org',   # Marathi
             'ms':'ms.wiktionary.org',   # Malay
+            'mt':'mt.wiktionary.org',   # Maltese
+            'my':'my.wiktionary.org',   # Burmese
             'na':'na.wiktionary.org',   # Nauruan
             'nah':'nah.wiktionary.org', # Nahuatl
             'nb':'no.wiktionary.org',   # Norse - new code for Bokmal to distinguish from Nynorsk
             'nds':'nds.wiktionary.org', # Lower Saxon
+            'ne':'ne.wiktionary.org',   # Nepalese
             'nl':'nl.wiktionary.org',   # Dutch
+            'nn':'nn.wiktionary.org',   # Nynorsk
             'no':'no.wiktionary.org',   # Norwegian
+            'nv':'nv.wiktionary.org',   # Navajo
             'oc':'oc.wiktionary.org',   # Occitan
             'om':'om.wiktionary.org',   # Oromo
+            'pa':'pa.wiktionary.org',   # Punjabi
+            'pi':'pi.wiktionary.org',   # Pali
             'pl':'pl.wiktionary.org',   # Polish
+            'ps':'ps.wiktionary.org',   # Pashto (Afghan)
             'pt':'pt.wiktionary.org',   # Portuguese
+            'qu':'qu.wiktionary.org',   # Quechua
+            'rm':'rm.wiktionary.org',   # Romansch
             'ro':'ro.wiktionary.org',   # Romanian
             'roa-rup':'roa-rup.wiktionary.org', # Aromanian
             'ru':'ru.wiktionary.org',   # Russian
             'sa':'sa.wiktionary.org',   # Sanskrit
+            'sd':'sd.wiktionary.org',   # Sindhi
+            'se':'se.wiktionary.org',   # Saami
             'si':'si.wiktionary.org',   # Sinhalese
             'simple':'simple.wiktionary.org', # Simple English
             'sk':'sk.wiktionary.org',   # Slovakian
@@ -96,15 +131,23 @@ class Family(family.Family):
             'sv':'sv.wiktionary.org',   # Swedish
             'sw':'sw.wiktionary.org',   # Swahili
             'ta':'ta.wiktionary.org',   # Tamil
+            'te':'te.wikitonary.org',   # Telugu
+            'test':'test.wikipedia.org.',
+            'tg':'tg.wiktionary.org',   # Tajik
             'th':'th.wiktionary.org',   # Thai
+            'tk':'tk.wiktionary.org',   # Turkmen
             'tl':'tl.wiktionary.org',   # Tagalog
             'tlh':'tlh.wiktionary.org', # Klingon
+            'tn':'tn.wiktionary.org',   # Tswana
+            'to':'to.wiktionary.org',   # Tongan
             'tokipona':'tokipona.wiktionary.org', # Toki Pona
             'tpi':'tpi.wiktionary.org', # Tok Pisin
             'tr':'tr.wiktionary.org',   # Turkish
             'tt':'tt.wiktionary.org',   # Tatar
+            'ug':'ug.wiktionary.org',   # Uyghur
             'uk':'uk.wiktionary.org',   # Ukrainian
             'ur':'ur.wiktionary.org',   # Urdu
+            'uz':'uz.wiktionary.org',   # Uzbek
             'vi':'vi.wiktionary.org',   # Vietnamese
             'vo':'vo.wiktionary.org',   # Volapuk
             'wa':'wa.wiktionary.org',   # Walon
@@ -115,6 +158,7 @@ class Family(family.Family):
             'zh':'zh.wiktionary.org',   # Chinese
             'zh-cn':'zh.wiktionary.org', # Simplified Chinese
             'zh-tw':'zh.wiktionary.org', # Traditional Chinese
+            'zu':'zu.wikipedia.org',    # Zulu
             }
 
         # Translation used on all Wikipedias for the different namespaces.
@@ -325,7 +369,7 @@ class Family(family.Family):
        
         # Function to figure out the encoding of different languages
         # Languages that are coded in iso-8859-1
-        self.latin1 = ['es','nl']
+        self.latin1 = ['es']
     
     def code2encoding(self, code):
         """Return the encoding for a specific language wiktionary"""
