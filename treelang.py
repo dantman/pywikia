@@ -439,7 +439,7 @@ if backlink:
                 if xpl != pl and not xpl in linked:
                     for l in linked:
                         if l.code() == xpl.code():
-                            print "WARNING:", pl.asasciiselflink(), "does not link to", xpl.aslink(), "but to", l.asasciilink()
+                            print "WARNING:", pl.asasciiselflink(), "does not link to", xpl.asasciilink(), "but to", l.asasciilink()
                             break
                     else:
                         print "WARNING:", pl.asasciiselflink(), "does not link to", xpl.asasciilink()
