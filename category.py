@@ -208,7 +208,7 @@ def add_category(sort_by_last_name = False):
             else:
                 wikipedia.output(u"Current categories:")
                 for curpl in cats:
-                    wikipedia.output(u"* %s" % cat.aslink())
+                    wikipedia.output(u"* %s" % pl.aslink())
                 catpl = wikipedia.PageLink(wikipedia.getSite(), cat_namespace + ':' + newcat)
                 if sort_by_last_name:
                     catpl = sorted_by_last_name(catpl, pl2) 
