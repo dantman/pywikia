@@ -58,21 +58,6 @@ msg_change={
     'pt':u'Bot: Modificando [[Categoria:%s]]',
     }
 
-msg_remove={
-    'da':u'Robot: Fjerner fra kategori %s',
-    'de':u'Bot: Entferne aus Kategorie %s',
-    'en':u'Robot: Removing from category %s',
-    'es':u'Bot: Eliminada de la categoría %s',
-    'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
-    'nl':u'Bot: Verwijderd uit Categorie %s',
-    'pt':u'Bot: Removendo [[Categoria:%s]]',
-    }
-
-deletion_reason_remove = {
-    'de':u'Bot: Kategorie wurde aufgelöst',
-    'en':u'Robot: Category was disbanded',
-    }
-
 deletion_reason_rename = {
     'de':u'Bot: Kategorie wurde nach %s verschoben',
     'en':u'Robot: Category was moved to %s',
@@ -281,35 +266,52 @@ def rename_category(old_cat_title, new_cat_title):
             reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_rename) % new_cat_title
             old_cat.delete(reason)
 
-def remove_category(cat_title):
+class CategoryRemoveRobot:
     '''
-    Asks for a category, and removes the category tag from all pages 
-    in that category and from the category pages of all subcategories, without
-    prompting.
-    Doesn't remove category tags pointing at subcategories. Doesn't delete the
-    category page.
+    Removes the category tag from all pages in a given category and from the
+    category pages of all subcategories, without prompting.
+    Doesn't remove category tags pointing at subcategories.
     '''
-    cat = catlib.CatLink(wikipedia.getSite(), cat_title)
-    # get edit summary message
-    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_remove) % cat_title)
+    deletion_reason_remove = {
+        'de':u'Bot: Kategorie wurde aufgelöst',
+        'en':u'Robot: Category was disbanded',
+    }
     
-    articles = cat.articles(recurse = 0)
-    if len(articles) == 0:
-        wikipedia.output(u'There are no articles in category ' + cat_title)
-    else:
-        for article in articles:
-            catlib.change_category(article, cat_title, None)
-    # Also removes the category tag from subcategories' pages 
-    subcategories = cat.subcategories(recurse = 0)
-    if len(subcategories) == 0:
-        wikipedia.output(u'There are no subcategories in category ' + cat_title)
-    else:
-        for subcategory in subcategories:
-            catlib.change_category(subcategory, cat_title, None)
-    # TODO: only try to delete if bot has admin status
-    if cat.isEmpty():
-        reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_remove)
-        cat.delete(reason)
+    msg_remove={
+        'da':u'Robot: Fjerner fra kategori %s',
+        'de':u'Bot: Entferne aus Kategorie %s',
+        'en':u'Robot: Removing from category %s',
+        'es':u'Bot: Eliminada de la categoría %s',
+        'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
+        'nl':u'Bot: Verwijderd uit Categorie %s',
+        'pt':u'Bot: Removendo [[Categoria:%s]]',
+    }
+    
+    def __init__(self, catTitle):
+        self.catTitle = catTitle
+        # get edit summary message
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.catTitle)
+        
+    def run(self):
+        cat = catlib.CatLink(wikipedia.getSite(), self.catTitle)
+      
+        articles = cat.articles(recurse = 0)
+        if len(articles) == 0:
+            wikipedia.output(u'There are no articles in category %s' % self.catTitle)
+        else:
+            for article in articles:
+                catlib.change_category(article, self.catTitle, None)
+        # Also removes the category tag from subcategories' pages 
+        subcategories = cat.subcategories(recurse = 0)
+        if len(subcategories) == 0:
+            wikipedia.output(u'There are no subcategories in category %s' % self.catTitle)
+        else:
+            for subcategory in subcategories:
+                catlib.change_category(subcategory, self.catTitle, None)
+        # TODO: only try to delete if bot has admin status
+        if cat.isEmpty():
+            reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
+            cat.delete(reason)
 
 class CategoryTidyRobot:
     """
@@ -568,8 +570,9 @@ if __name__ == "__main__":
         if action == 'add':
             add_category(sort_by_last_name)
         elif action == 'remove':
-            cat_title = wikipedia.input(u'Please enter the name of the category that should be removed:')
-            remove_category(cat_title)
+            catTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
+            bot = CategoryRemoveRobot(catTitle)
+            bot.run()
         elif action == 'rename':
             old_cat_title = wikipedia.input(u'Please enter the old name of the category:')
             new_cat_title = wikipedia.input(u'Please enter the new name of the category:')
