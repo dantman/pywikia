@@ -9,7 +9,7 @@ argument is the name of the file from which the list is taken.
 # Distribute under the terms of the PSF license.
 #
 #
-import os,sys
+import os, sys
 
 import wikipedia
 
@@ -41,11 +41,7 @@ for pl in lst:
     if sys.platform=='win32':
         status = os.system("solve_disambiguation.py %s" % (f))
     else:
-        if debug:
-            print ("python treelang.py '%s'" % (f))
-            status = 0
-        else:
-            status = os.system("python treelang.py '%s'" % (f))
+        status = os.system("solve_disambiguation.py '%s'" % (f))
     if status not in normalstatus:
         print "Exit status ", status
         sys.exit(1)
