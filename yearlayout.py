@@ -73,10 +73,10 @@ def header(year):
 
 # Recognize wildly different versions of the key phrases.
 
-pre='((\r?\n)*---- *)?(\r?\n)?(\'\'\')?'
+pre='((\r?\n)*---- *)?(\r?\n)*(\'\'\')?'
 post=':?(\'\'\')?:? *(\\<[Bb][Rr]\\>)? *(\r?\n)*'
 R1=re.compile(pre+'(Geboren|Geboorten|Geboortes|Geboortedata)'+post,re.MULTILINE)
-R2=re.compile(pre+'(Overleden|Sterfdata|Gestorven)'+post,re.MULTILINE)
+R2=re.compile(pre+'(Overleden|Sterf(te)?data|Gestorven)'+post,re.MULTILINE)
 R3=re.compile(pre+'Gebeurtenissen'+post,re.MULTILINE)
 pre='(\r?\n)+'
 post='(\r?\n)+'
@@ -85,11 +85,11 @@ R5=re.compile(pre+' +'+post,re.MULTILINE)
 R10=re.compile(pre+'\[\[\d+( v. Chr.)?\]\]( --)? *'+post)
 R11=re.compile(pre+"'''\d+\''' -- *"+post)
 R12=re.compile(pre+"\(\[\[0\]\]\) -- *"+post)
-pre='((\r?\n)+---- *)?(\r?\n)'
+pre='((\r?\n)+---- *)?(\r?\n)+'
 post=' *(\\<[Bb][Rr]\\>)? *(\r?\n)+'
 R6=re.compile(pre+" ?(''')?(Jaren)?:?(''')?:? *[-\\[\\]\\<\\>\'\| 0-9,]{10,150}"+post,re.MULTILINE)
 R7=re.compile(pre+" ?(''')?[Dd]ecennia:?(''')?:? *\\[\\[Jaaroverzichten\\]\\]"+post,re.MULTILINE)
-R8=re.compile(pre+'\[\[[Ee]euwen\]\]:? *[-\\[\\]\\<\\>\'\| 0-9euwvChr\.]{14,70}'+post,re.MULTILINE)
+R8=re.compile(pre+'\[\[[Ee]euwen\]\]:? *(\\<\\/?b\\>|eeuw|[-\\[\\]\\<\\>\'\| 0-9evChr\.]){14,70}'+post,re.MULTILINE)
 pre='(\r?\n)+ *'
 post=' *(\r?\n)+'
 R9=re.compile(pre+'<!-- robot -->(.|\n)+?<!-- /robot -->'+post,re.MULTILINE)
@@ -98,8 +98,12 @@ def do(year):
     page=str(year)
     if debug:
         page='Robottest'
-        
-    text=wikipedia.getPage(mylang,page)
+
+    try:        
+        text=wikipedia.getPage(mylang,page)
+    except wikipedia.NoPage:
+	return
+
     orgtext=text
     
     # Replace all of these by the standardized formulae
@@ -126,17 +130,26 @@ def do(year):
     if debug:
         print text
     else:
+        if orgtext==text or (orgtext[:-1]==text[:-2]):
+            print "Identical, no change"
+            return
         print "="*70
-        f=open('/tmp/wik.in','w')
-        f.write(orgtext)
-        f.close()
-        f=open('/tmp/wik.out','w')
-        f.write(text)
-        f.close()
-        f=os.popen('diff -u /tmp/wik.in /tmp/wik.out','r')
-        print f.read()
+        if 0:
+            f=open('/tmp/wik.in','w')
+            f.write(orgtext)
+            f.close()
+            f=open('/tmp/wik.out','w')
+            f.write(text)
+            f.close()
+            f=os.popen('diff -u /tmp/wik.in /tmp/wik.out','r')
+            print f.read()
+        else:
+            print text
         print "="*70
-        answer=raw_input('submit y/n ?')
+        if ask:
+            answer=raw_input('submit y/n ?')
+        else:
+            answer='y'
         if answer=='y':
             status,reason,data=wikipedia.putPage(mylang,page,text)
             print status,reason
@@ -145,5 +158,10 @@ def do(year):
 
 if __name__=="__main__":
     if len(sys.argv)==2:
+        ask=1
         do(int(sys.argv[1]))
+    elif len(sys.argv)==3:
+        for y in range(int(sys.argv[1]),int(sys.argv[2])+1):
+            ask=0
+            do(y)
 
