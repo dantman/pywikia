@@ -96,7 +96,15 @@ elif hints:
         lst.append(wikipedia.PageLink(wikipedia.mylang,linkname=key))
     lst.sort()
 else:
-    lst=wikipedia.allpages(start = start)
+    print "For looping over all articles in the wikipedia, the interwiki.py"
+    print "script is more appropriate."
+    print
+    print "please run: "
+    print "  python interwiki.py %s -start:%s"%(options,start)
+    sys.exit(1)
+    # If you really need this functionality, disable the exit line above
+    # and enable the lst= line down here:
+    #lst = wikipedia.allpages(start = start)
         
 for pl in lst:
     f = pl.urlname()

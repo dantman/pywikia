@@ -41,16 +41,21 @@ brackethttp.py         : a bot replacing a ()-bracketed http: link by an
 disamb_all.py          : Run the robot solve_disambiguation.py (see below) over
                          articles listed in a file passed as argument.
 getlang.py             : Get interwiki links for years AD
-interwiki.py           : New robot, currently in testing phase only, that will
-                         replace treelang.py and treelang_all.py in due time.
-                         This uses a non-linear approach to be less demanding
-                         on the wikipedia servers.
+interwiki.py           : A robot to check interwiki links on all pages (or
+                         a range of pages) of a wikipedia.
+                         This uses a non-linear approach and is therefore
+                         less demanding on the wikipedia servers than 
+                         treelang.py
 test.py                : Misc testing, now configured to test whether you are 
                          logged in.
-treelang_all.py        : A script that runs treelang.py for each of the
-                         pages in your home wikipedia. 
+treelang_all.py        : An almost obsolete script that runs treelang.py for 
+                         each of the pages in your home wikipedia. The
+                         functionality still left here is to run over a
+                         list of warnings, the -warnfile option, which has
+                         not yet been implemented in interwiki.py
 treelang.py            : Recursive search for interwiki links that are 
-                         appropriate to a page. Obsolescent.
+                         appropriate to a page. Obsolescent, use interwiki.py
+                         instead.
 yearlayout.py          : An old robot used to change the layout of all nl: year 
                          pages.
 solve_disambiguation.py: Disambiguate pages from the command line. 
