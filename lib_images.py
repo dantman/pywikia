@@ -100,8 +100,7 @@ def get_image(original_url, source_site, original_description, keep=False, debug
         try:
             fn = unicode(fn, source_site.encoding())
         except TypeError:
-            print 'Type error in lib_images.py. This should not happen. Please report this problem.'
-            pass
+            print >>sys.stderr, 'Type error in lib_images.py. This should not happen. Please report this problem.'
     if not keep:
         print "The filename on wikipedia will default to:", fn
         # ask newfn until it's valid
@@ -144,7 +143,7 @@ def get_image(original_url, source_site, original_description, keep=False, debug
         newtext = wikipedia.input(u'Enter return, text or =text : ')
         if newtext=='':
             pass
-        elif newtext[0]=='=':
+        elif newtext.startswith('='):
             description=newtext[1:]
         else:
             description=description+' '+newtext
@@ -195,11 +194,12 @@ def get_image(original_url, source_site, original_description, keep=False, debug
     return fn
 
 
-# Gets a wikilink to an image, downloads it and its description,
-# and uploads it to another wikipedia
-# Returns the filename which was used to upload the image
-# This function is used by imagetransfer.py and by copy_table.py
 def transfer_image(imagelink, debug=False):
+    """Gets a wikilink to an image, downloads it and its description,
+       and uploads it to another wikipedia.
+       Returns the filename which was used to upload the image
+       This function is used by imagetransfer.py and by copy_table.py
+    """
     # convert HTML entities to encoding of the source wiki
     image_linkname = wikipedia.html2unicode(imagelink.linkname(), imagelink.site())
     image_linkname = image_linkname.encode('utf-8')
