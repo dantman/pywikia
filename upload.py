@@ -49,4 +49,4 @@ if fn=='':
 desc = unicode(desc, config.console_encoding)
 fn = unicode(fn, config.console_encoding)
 
-lib_images.get_image(fn, wikipedia.mylang, desc)
+lib_images.get_image(fn, None, desc)

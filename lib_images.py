@@ -118,6 +118,9 @@ def get_content_type(filename):
 # Gets the image at URL original_url, and uploads it to the home Wikipedia.
 # original_description is the proposed description; if description is
 # empty (''), asks for a description.
+# source_wiki is the language code for the Wikipedia the image is loaded from.
+# if source_wiki is None, it indicates that the image is uploaded directly
+# from the user's harddisk (via upload.py).
 # Returns the filename which was used to upload the image
 # If the upload fails, the user is asked whether to try again or not.
 # If the user chooses not to retry, returns null.
@@ -139,8 +142,9 @@ def get_image(original_url, source_wiki, original_description, debug=False):
         fn = fn.split('/')[-1]
     if '\\' in fn:
         fn = fn.split('\\')[-1]
-    # convert ISO 8859-1 to Unicode, or parse UTF-8 
-    # fn = unicode(fn, wikipedia.code2encoding(source_wiki))
+    # convert ISO 8859-1 to Unicode, or parse UTF-8
+    if source_wiki != None:
+        fn = unicode(fn, wikipedia.code2encoding(source_wiki))
     print "The filename on wikipedia will default to:",fn
     newfn = raw_input("Better name : ")
     if newfn:
