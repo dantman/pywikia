@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Very simple script to replace a MediaWiki boilerplate text with another one,
-and to convert the old boilerplate format to the new one.
+Very simple script to replace a template with another one,
+and to convert the old MediaWiki boilerplate format to the new template format.
 
 Syntax: python boilerplate.py [-newformat] oldBoilerplate [newBoilerplate]
 
-Specify the MediaWiki boilerplate on the command line. The program will
-pick up the boilerplate page, and look for all pages using it. It will
-then automatically loop over them, and replace the boilerplate text.
+Specify the template on the command line. The program will
+pick up the template page, and look for all pages using it. It will
+then automatically loop over them, and replace the template.
 
 Command line options:
 
 -oldformat:   Use the old format {{msg:Stub}} instead of {{Stub}}.
-              
-other:        First argument is the old boilerplate name, second one is the new
+
+-remove:      Remove every occurence of the template from every article
+
+other:        First argument is the old template name, second one is the new
               name. If only one argument is given, the bot resolves the
-              boilerplate by putting its text directly into the article.
+              template by putting its text directly into the article.
               This is done by changing {{...}} or {{msg:...}} into {{subst:...}}
 """
 #
@@ -29,12 +31,17 @@ __version__='$Id$'
 import wikipedia, config
 import re, sys, string
 
-# Summary message
-msg={
-    'en':u'Robot: Changing boilerplate text',
-    'de':u'Bot: Ändere Textbaustein',
+# Summary messages
+msg_change={
+    'en':u'Robot: Changing template: %s',
+    'de':u'Bot: Ändere Vorlage: %s',
     }
 
+msg_remove={
+    'en':u'Robot: Removing template: %s',
+    'de':u'Bot: Entferne Vorlage: %s',
+    }
+    
 def getReferences(pl):
     x = wikipedia.getReferences(pl)
     return x
@@ -42,18 +49,21 @@ def getReferences(pl):
 oldformat = False
 boilerplate_names = []
 resolve = False
+remove = False
 # read command line parameters
 for arg in sys.argv[1:]:
     arg = unicode(arg, config.console_encoding)
     if wikipedia.argHandler(arg):
         pass
+    elif arg == '-remove':
+        remove = True
     elif arg == '-oldformat':
         oldformat = True
     else:
         boilerplate_names.append(arg)
 
 if boilerplate_names == []:
-    print "Syntax: python boilerplate.py [-oldformat] oldBoilerplate [newBoilerplate]"
+    print "Syntax: python boilerplate.py [-oldformat] [-remove] oldBoilerplate [newBoilerplate]"
     sys.exit()
 old = boilerplate_names[0]
 if len(boilerplate_names) >= 2:
@@ -65,7 +75,11 @@ else:
     resolve = True
 
 # get edit summary message
-wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)]+': '+old)
+if remove:
+    wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang, msg_remove)] % old)
+else:
+    wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang, msg_change)] % old)
+    
 
 # get template namespace
 ns = wikipedia.family.template[wikipedia.mylang]
@@ -84,7 +98,9 @@ def treat(refpl):
             return
         
         # Replace all occurences of the boilerplate in this article
-        if resolve:
+        if remove:
+            reftxt = re.sub(boilerplateR, '', reftxt)
+        elif resolve:
             reftxt = re.sub(boilerplateR, '{{subst:' + old + '}}', reftxt)
         elif oldformat:
             reftxt = re.sub(boilerplateR, '{{msg:' + new + '}}', reftxt)
