@@ -652,6 +652,9 @@ def urlencode(query):
        a http POST request"""
     l=[]
     for k, v in query:
+        if debug:
+            print "k =", k
+            print "v =", v
         k = urllib.quote(k)
         v = urllib.quote(v)
         l.append(k + '=' + v)
@@ -859,7 +862,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             if m:
                 edittime[code, link2url(name, code)] = m.group(1)
             else:
-                edittime[code, link2url(name, code)] = 0
+                edittime[code, link2url(name, code)] = "0"
         try:
             i1 = re.search('<textarea[^>]*>', text).end()
         except AttributeError:
@@ -875,9 +878,9 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
         if m:
             output(u"DBG> %s is redirect to %s" % (url2unicode(name, language = code), unicode(m.group(1), code2encoding(code))))
             raise IsRedirectPage(m.group(1))
-        if edittime[code, name] == 0:
+        if edittime[code, name] == "0":
             print "DBG> page may be locked?!"
-            pass
+            #pass
             #raise LockedPage()
 
         x = text[i1:i2]
