@@ -3,7 +3,7 @@ import os,wikipedia,sys
 if sys.platform=='win32':
     normalstatus=0,1
 else:
-    normalstatus==0,256
+    normalstatus=0,256
     
 for f in wikipedia.allnlpages(start=sys.argv[1]):
     f=f.replace("'",r"'\''")
