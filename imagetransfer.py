@@ -84,7 +84,7 @@ for page_list_item in page_list:
     ilinks = inpl.interwiki()
     
     for page in ilinks:
-        if page.code() in source_wikis or source_wikis==[]:
+        if page.site() in source_wikis or source_wikis==[]:
             site=page.site()
             try:
                 for i in page.imagelinks():
