@@ -10,8 +10,9 @@ import sys,copy,wikipedia,re
 # language to check for missing links and modify
 mylang = 'nl'
 
+theuser='Rob Hooft'
 # Summary used in the modification request
-wikipedia.setAction('Rob Hooft: semi-automatic interwiki script')
+wikipedia.setAction('%s: semi-automatic interwiki script'%theuser)
 
 debug = 1
 forreal = 1
@@ -208,6 +209,15 @@ def treesearch(code,name):
     if n==0 and not arr[code,name]:
         print "Mother doesn't exist"
         return
+    if untranslated:
+        if len(arr)>1:
+            print "Already has translations"
+            return
+        else:
+            newhint=raw_input("Hint:")
+            if not newhint:
+                return
+            hints.append(newhint)
     # Then add translations if we survived.
     autotranslate(name,arr,same=same)
     modifications=1
@@ -226,6 +236,7 @@ same=0
 only_if_status=1
 confirm=0
 autonomous=0
+untranslated=0
 hints=[]
 
 for arg in sys.argv[1:]:
@@ -235,6 +246,8 @@ for arg in sys.argv[1:]:
         only_if_status=0
     elif arg=='-same':
         same=1
+    elif arg=='-untranslated':
+        untranslated=1
     elif arg.startswith('-hint:'):
         hints.append(arg[6:])
     elif arg=='-name':
