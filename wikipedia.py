@@ -12,6 +12,7 @@ import re,urllib,codecs,sys
 
 # Are we debugging this module? 0 = No, 1 = Yes, 2 = Very much so.
 debug = 0
+loggedin = False
 
 # Known wikipedia languages, given as a dictionary mapping the language code
 # to the hostname of the site hosting that wikipedia. For human consumption,
@@ -379,6 +380,9 @@ def putPage(code, name, text, comment = None):
     if not loggedin or code != mylang:
         comment = username + ' - ' + comment
     try:
+        if type(text) == type(u''):
+            encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(code2encoding(code))
+            text,l = encode_func(text)
         data = urlencode((
             ('wpSummary', comment),
             ('wpMinoredit', '1'),
@@ -530,7 +534,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             print repr(x)
             raise 
         # Convert the unicode characters to &# references, and make it ascii.
-        x = str(UnicodeToAsciiHtml(x))
+        #x = str(UnicodeToAsciiHtml(x))
     return x
 
 def languages(first = []):
@@ -754,7 +758,10 @@ def addEntity(name):
 def unicodeName(name, language, altlanguage = None):
     for encoding in code2encodings(language):
         try:
-            return unicode(name, encoding)
+            if type(name)==type(u''):
+                return name
+            else:
+                return unicode(name, encoding)
         except UnicodeError:
             continue
     if altlanguage is not None:
