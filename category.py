@@ -3,19 +3,7 @@
 """
 Scripts to manage categories.
 
-This bot has the following functions, which must be given as command line
-arguments:
-
-    add  - mass-add a category to a list of pages
-    remove - remove category tag from all pages in a category
-    rename - move all pages in a category to another category
-    tidy - tidy up a category by moving its articles into subcategories
-
-For example, to add a new category, type:
-
-     python category.py
-
-and follow the on-screen instructions.
+Run the bot without arguments for instructions.
 
 See comments below for details.
 """
@@ -26,7 +14,7 @@ See comments below for details.
 #
 # Distribute under the terms of the PSF license.
 # 
-import re, sys
+import re, sys, string
 import wikipedia, config, catlib, interwiki
 
 
@@ -48,7 +36,7 @@ A robot to mass-add a category to a list of pages.
 Just run this robot without any additional arguments.
 
 """
-def add_category():
+def add_category(sort_by_last_name = False):
     print "This bot has two modes: you can add a category link to all"
     print "pages mentioned in a List that is now in another wikipedia page"
     print "or you can add a category link to all pages that link to a"
@@ -72,17 +60,18 @@ def add_category():
     newcat = newcat.encode(wikipedia.code2encoding(wikipedia.mylang))
     newcat = newcat[:1].capitalize() + newcat[1:]
 
-    print newcat
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
     
-    catpl = wikipedia.PageLink(wikipedia.mylang, ns[0].encode(wikipedia.code2encoding(wikipedia.mylang))+':'+newcat)
-    print "Will add %s"%catpl.aslocallink()
+    cat_namespace = ns[0].encode(wikipedia.code2encoding(wikipedia.mylang))
+    if not sort_by_last_name:
+        catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
+        print "Will add %s"%catpl.aslocallink()
 
     answer = ''
     for nm in pagenames:
         pl2 = wikipedia.PageLink(wikipedia.mylang, nm)
         if answer != 'a':
-	    answer = ''
+            answer = ''
         while answer not in ('y','n','a'):
             answer = wikipedia.input("%s [y/n/a(ll)] : "%(pl2.asasciilink()))
             if answer == 'a':
@@ -92,15 +81,26 @@ def add_category():
 	
 	if answer == 'y' or answer == 'a':
             try:
-	        cats = pl2.categories()
+                cats = pl2.categories()
             except wikipedia.NoPage:
-	    	print "%s doesn't exist yet. Ignoring."%(pl2.aslocallink())
-		pass
+                print "%s doesn't exist yet. Ignoring."%(pl2.aslocallink())
+                pass
             except wikipedia.IsRedirectPage,arg:
-	    	pl3 = wikipedia.PageLink(wikipedia.mylang,arg.args[0])
-		print "WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink())
-	    else:
+                pl3 = wikipedia.PageLink(wikipedia.mylang,arg.args[0])
+                print "WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink())
+            else:
                 print "Current categories: ",cats
+                if sort_by_last_name:
+                    page_name = pl2.linkname()
+                    split_string = page_name.split(' ')
+                    if len(split_string) > 1:
+                        # pull last part of the name to the beginning, and append the rest after a comma
+                        # e.g. "John von Neumann" becomes "Neumann, John von"
+                        new_name = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
+                        # give explicit sort key
+                        catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat + '|' + new_name)
+                    else:
+                        catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
                 if catpl in cats:
                     print "%s already has %s"%(pl2.aslocallink(),catpl.aslocallink())
                 else:
@@ -154,7 +154,7 @@ def remove_category():
     old_title = wikipedia.input('Please enter the name of the category that should be removed: ')
     old_cat = catlib.CatLink(old_title)
     # get edit summary message
-    wikipedia.setAction(msg_delete[wikipedia.chooselang(wikipedia.mylang,msg_delete)] % old_title)
+    wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang,msg_remove)] % old_title)
     
     articles = old_cat.articles(recurse = 0)
     if len(articles) == 0:
@@ -283,22 +283,41 @@ def tidy_category():
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == []:
+    action = None
+    sort_by_last_name = False
+    for arg in sys.argv[1:]:
+        if wikipedia.argHandler(arg):
+            pass
+        elif arg == 'add':
+            action = 'add'
+        elif arg == 'remove':
+            action = 'remove'
+        elif arg == 'rename':
+            action = 'rename'
+        elif arg == 'tidy':
+            action = 'tidy'
+        elif arg == '-person':
+            sort_by_last_name = True
+    if action == 'add':
+        add_category(sort_by_last_name)
+    elif action == 'remove':
+        remove_category()
+    elif action == 'rename':
+        rename_category()
+    elif action == 'tidy':
+        tidy_category()
+    else:
         print
-        print 'Syntax: python category.py action'
+        print 'Syntax: python category.py action [-option]'
         print 'where action can be one of these:'
         print ' * add  - mass-add a category to a list of pages'
         print ' * remove - remove category tag from all pages in a category'
         print ' * rename - move all pages in a category to another category'
         print ' * tidy - tidy up a category by moving its articles into subcategories'
-    for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
-            pass
-        elif arg == 'add':
-            add_category()
-        elif arg == 'remove':
-            remove_category()
-        elif arg == 'rename':
-            rename_category()
-        elif arg == 'tidy':
-            tidy_category()
+        print 'and  option can be one of these:'
+        print ' * person - sort persons by their last name'
+        print 
+        print 'For example, to create a new category from a list of persons, type:'
+        print '  python category.py add -person'
+        print 'and follow the on-screen instructions.'
+       
