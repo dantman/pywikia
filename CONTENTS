@@ -72,6 +72,9 @@ standardize_interwiki.py:A robot that downloads a page, and reformats the
 pagelist.py            : Starting with one or more pages, spiders the wiki forward
                          as well as backward, and thus can be used to get a list
                          of Wikipedia pages connected to a certain subject.
+replace.py             : Search an article or a provided collection of articles for
+                         a text and replace it by another text. Both text are set in
+                         two configurable text files.
 
 More precise information, and a list of the options that are available for
 the various programs, are given inside the programs' source code files.
