@@ -86,7 +86,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         i=int(m.group(0))
         if i==0:
             return
-        if site.lang in ['ja','zh','ko','ur','minnan','zh-min-nan']:
+        if site.lang in date.yearADfmt:
             # These have different texts for years
             return
         if site.lang in ['ia','la'] and i<1400:
@@ -94,14 +94,8 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         if site.lang in ['simple','lt'] and i<200:
             return
         for newcode in site.family.seriouslangs:
-            if newcode in ['ja', 'zh']:
-                fmt = '%d&#24180;'
-            elif newcode == 'ko':
-                fmt = '%d&#45380;'
-            elif newcode =='minnan':
-                fmt = '%d n&icirc;'
-            elif newcode == 'ur':
-                fmt = '%d&#1587;&#1576;&#1605;'
+            if newcode in date.yearADfmt:
+                fmt = date.yearADfmt[newcode]
             else:
                 fmt = '%d'
             if newcode == 'ja' and i<1900:

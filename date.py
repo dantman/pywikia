@@ -263,7 +263,6 @@ yearBCfmt = {
                 'hr':'%d p.n.e.',
 		'is':'%d f. Kr.',
                 'it':'%d AC',
-                'ko':'%d&#45380;',
                 'la':'%d a.C.n',
                 'lb':'-%d',
                 'nds':'%d v. Chr.',
@@ -292,7 +291,9 @@ maxyearBC = {
 yearADfmt = {
 		'ja':'%d&#24180;',
 		'zh':'%d&#24180;',
-		'ko':'%d&#45380;'
+		'ko':'%d&#45380;',
+                'minnan':'%d n&icirc;',
+                'ur':'%d&#1587;&#1576;&#1605;'
 }
              
              
