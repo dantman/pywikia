@@ -121,13 +121,13 @@ class WiktionaryEntry:				# This refers to an entire page
 	def __init__(self,wikilang,term):	# wikilang here refers to the language of the Wiktionary
 		self.wikilang=wikilang
 		self.term=term
-		self.subentries = {}		# subentries is a dictionary of subentry objects indexed by wikilang
+		self.subentries = {}		# subentries is a dictionary of subentry objects indexed by subentrylang
 		self.sortedsubentries = []
 		
 	def addSubEntry(self,subentry):
 #	    	self.translations.setdefault( translation.lang, [] ).append( translation )
 		print "already available subentries: %s"%self.subentries
-		self.subentries[self.wikilang] = subentry
+		self.subentries.setdefault(subentry.subentrylang, []).append(subentry)
 	
 	def listSubentries(self):
 		return self.subentries
@@ -141,7 +141,7 @@ class WiktionaryEntry:				# This refers to an entire page
 			
 			print "should now be sorted: %s"%self.sortedsubentries
 			i = 0
-			while 1:
+			while i< len(self.sortedsubentries):
 				x = self.sortedsubentries[i]
 				if x == self.wikilang:	# search the subentry of the same language of the Wiktionary
 					samelangsubentry = self.sortedsubentries[i]
@@ -150,13 +150,15 @@ class WiktionaryEntry:				# This refers to an entire page
 					self.sortedsubentries.append(samelangsubentry)
 					self.sortedsubentries.reverse()	# and put it before all the others
 					break
+				i+=1
 
 	def wikiwrap(self):
 		entry = ''
 		self.sortSubentries()
 		print "sorted: %s",self.sortedsubentries
-		for subentry in self.sortedsubentries:
-			entry= entry + self.subentries[subentry].wikiwrap(self.wikilang) + '\n'
+		for index in self.sortedsubentries:
+			for subentry in self.subentries[index]:
+				entry= entry + subentry.wikiwrap(self.wikilang) + '\n----\n'
 
 		# TODO Here something needs to be inserted for treating interwiktionary links
 			
@@ -173,10 +175,10 @@ class WiktionaryEntry:				# This refers to an entire page
 #		print subentrieskeys
 		for subentrieskey in subentrieskeys:
 #			print 'subentrieskey ' + subentrieskey
-			self.subentries[subentrieskey].showcontents(indentation+2)
-#			for subentry in self.subentries[subentrieskey]:
+#			self.subentries[subentrieskey].showcontents(indentation+2)
+			for subentry in self.subentries[subentrieskey]:
 #				print 'subentry ' + subentry
-#				subentry.showcontents(indentation)
+				subentry.showcontents(indentation+2)
 
 class SubEntry:		# On one page, terms with the same spelling in different languages can be described
 	def __init__(self,subentrylang):
