@@ -26,8 +26,16 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         return sametranslate(pl, arr, same)
     if hints:
         for h in hints:
-            codes, newname = h.split(':', 1)
+            if h.find(':') == -1:
+                # argument given as -hint:xy where xy is a language code
+                codes = h
+                newname = ''
+            else:
+                codes, newname = h.split(':', 1)
             if newname == '':
+                # if given as -hint:xy or -hint:xy:, assume that there should
+                # be a page in language xy with the same title as the page 
+                # we're currently working on
                 newname = pl.linkname()
             if codes == 'all':
                 codes = wikipedia.family.seriouslangs
