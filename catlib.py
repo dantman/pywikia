@@ -92,14 +92,15 @@ class _CatLink(wikipedia.PageLink):
                         catstodo.append(ncat)
                 pages.append(title)
         # get supercategories
+        supercats=[]
         ibegin = self_txt.index('<div id="catlinks">')
         iend = self_txt.index('<!-- end content -->')
         self_txt = self_txt[ibegin:iend]
         Rsupercat = re.compile('title=.*\"([^\"]*)\"')
         for title in Rsupercat.findall(self_txt):
-            print title
+            supercats.append(title)
         
-        return pages
+        return (pages, supercats)
     
     def subcategories(self, recurse = False):
         """Create a list of all subcategories of the current category.
@@ -109,7 +110,7 @@ class _CatLink(wikipedia.PageLink):
            Returns a sorted, unique list of all subcategories.
         """
         subcats = []
-        for title in self.catlist(recurse):
+        for title in self.catlist(recurse)[0]:
             if iscattitle(title):
                 ncat = _CatLink(self.code(), title)
                 subcats.append(ncat)
@@ -124,7 +125,7 @@ class _CatLink(wikipedia.PageLink):
            Returns a sorted, unique list of all categories.
         """
         articles = []
-        for title in self.catlist(recurse):
+        for title in self.catlist(recurse)[0]:
             if not iscattitle(title):
                 npage = wikipedia.PageLink(self.code(), title)
                 articles.append(npage)
@@ -137,12 +138,8 @@ class _CatLink(wikipedia.PageLink):
 
            Returns a sorted, unique list of all subcategories.
         """
-        subcats = []
-        for title in self.catlist(recurse):
-            if iscattitle(title):
-                ncat = _CatLink(self.code(), title)
-                subcats.append(ncat)
-        return unique(subcats)
+        (pages, supercats) = self.catlist()
+        return unique(supercats)
     
     
 def CatLink(s):
