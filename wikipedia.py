@@ -1867,6 +1867,9 @@ class Site(object):
 
     def language(self):
         return self.lang
+
+    def languages(self):
+        return self.family.langs.keys()
     
 _sites = {}
 

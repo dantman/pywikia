@@ -6,13 +6,16 @@
 #
 __version__ = '$Id$'
 #
+
+import wikipedia
+
 files={}
 count={}
 for line in open('treelang.log'):
     if line[:8] == 'WARNING:':
-        if line.find('Link to unknown language') == -1:
-            code = line.split(':')[1]
-            code = code.strip()
+        code = line.split(':')[1]
+        code = code.strip()
+        if code in wikipedia.getSite().languages():
             if not files.has_key(code):
                 files[code] = open('warning_%s.log' % code, 'w')
                 count[code] = 0
