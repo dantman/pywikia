@@ -135,6 +135,9 @@ class PageLink:
 
     def aslink(self):
         return "[[%s:%s]]"%(self.code(),self.linkname())
+
+    def asselflink(self):
+        return "%s:[[%s]]"%(self.code(),self.linkname())
     
     def get(self):
         if not hasattr(self,'_contents'):
@@ -349,12 +352,12 @@ def languages(first=[]):
             result.append(key)
     return result
 
-def allnlpages(start='%20%200'):
+def allpages(start='%20%200'):
     import sys
-    start=link2url(start,code='nl')
+    start=link2url(start,code=mylang)
     m=0
     while 1:
-        text=getPage('nl','Speciaal:Allpages&printable=yes&from=%s'%start,do_quote=0,do_edit=0)
+        text=getPage(mylang,'Speciaal:Allpages&printable=yes&from=%s'%start,do_quote=0,do_edit=0)
         #print text
         R=re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         n=0
@@ -362,12 +365,12 @@ def allnlpages(start='%20%200'):
             if not ':' in hit:
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
                     n=n+1
-                    yield url2link(hit,code='nl',incode='nl')
+                    yield url2link(hit,code=mylang,incode=mylang)
                     start=hit+'%20%200'
         if n<100:
             break
         m=m+n
-        sys.stderr.write('AllNLPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl',incode='ascii')))
+        sys.stderr.write('AllPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl',incode='ascii')))
 
 # Part of library dealing with interwiki links
 
