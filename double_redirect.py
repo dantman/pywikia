@@ -28,13 +28,12 @@ def getDoubleRedirects():
     host = wikipedia.family.hostname(wikipedia.mylang)
     url = wikipedia.family.maintenance_address(wikipedia.mylang, 'doubleredirects', default_limit = False)
     
-    print 
     print 'Retrieving maintenance page...' 
     maintenance_txt, charset = wikipedia.getUrl(host,url)
     
     Rredir = re.compile('\<li\>\<a href=\"\/w\/wiki.phtml\?title=(.*?)&amp;redirect=no\"')
     redir_names = Rredir.findall(maintenance_txt)
-    print 'Retrieved %d redirects from maintenance page.' % len(redir_names)
+    print 'Retrieved %d redirects from maintenance page.\n' % len(redir_names)
     for redir_name in redir_names:
         redir = wikipedia.PageLink(wikipedia.mylang, redir_name)
         try:

@@ -156,6 +156,11 @@ class PageLink:
             self._linkname = url2link(urlname, code = self._code,
                                       incode = mylang)
 
+    def code(self):
+        """The code for the language of the page this PageLink refers to,
+           without :"""
+        return self._code
+
     def urlname(self):
         """The name of the page this PageLink refers to, in a form suitable
            for the URL of the page."""
@@ -197,11 +202,6 @@ class PageLink:
         else:
             return self.linkname()
             
-    def code(self):
-        """The code for the language of the page this PageLink refers to,
-           without :"""
-        return self._code
-
     def ascii_linkname(self):
         return url2link(self._urlname, code = self._code, incode = 'ascii')
     
@@ -745,7 +745,7 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
         if watchArticle and watchArticle != '0':
             predata.append(('wpWatchthis', '1'))
         data = urlencode(tuple(predata))
-            
+    
     except KeyError:
         print edittime
 	raise
@@ -754,7 +754,7 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
         print address
         print data
         return None, None, None
-    print "Changing page %s:%s" % (code, name)
+    output(url2unicode("Changing page %s:%s"%(code,name), language = code))
     conn = httplib.HTTPConnection(host)
 
     conn.putrequest("POST", address)
@@ -811,7 +811,7 @@ def getUrl(host,address):
 def getPage(code, name, do_edit = 1, do_quote = 1):
     """Get the contents of page 'name' from the 'code' language wikipedia
        Do not use this directly; use the PageLink object instead."""
-    print "Getting page %s:%s"%(code,name)
+    output(url2unicode("Getting page %s:%s"%(code,name), language = code))
     host = family.hostname(code)
     name = re.sub(' ', '_', name)
     if not '%' in name and do_quote: # It should not have been done yet
@@ -864,7 +864,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             print text[i1:i2]
         m = redirectRe(code).match(text[i1:i2])
         if m:
-            print "DBG> %s is redirect to %s"%(name,m.group(1))
+            output(u"DBG> %s is redirect to %s" % (url2unicode(name, language = code), unicode(m.group(1), code2encoding(code))))
             raise IsRedirectPage(m.group(1))
         if edittime[code, name] == 0:
             print "DBG> page may be locked?!"
@@ -1448,7 +1448,7 @@ def chooselang(code, choice):
         return 'en'
     return choice[1]
 
-# works like raw_input(), but returns a unicode string instead of ASCII.
+# Works like raw_input(), but returns a unicode string instead of ASCII.
 # if encode is True, it will encode the string into a format suitable for
 # the local wiki (utf-8 or iso8859-1).
 def input(question, encode = False):
@@ -1457,3 +1457,9 @@ def input(question, encode = False):
     if encode:
         text = text.encode(code2encoding(mylang))
     return text
+    
+# Works like print, but uses the encoding used by the user's console instead
+# of ASCII. Argument text should be a unicode string.
+# If a character can't be displayed, it will be replaced with a question mark.
+def output(text):
+    print text.encode(config.console_encoding, 'replace')

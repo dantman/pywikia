@@ -161,18 +161,15 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
     
     # A proper description for the submission.
     if description=='':
-        print ('Give a description for the image:')
-        description = raw_input('')
-        description = unicode(description, config.console_encoding)
+        description = wikipedia.input('Give a description for the image:')
     else:
         print ("The suggested description is:")
         print
-        print wikipedia.UnicodeToAsciiHtml(description)
+        print wikipedia.output(description)
         print
         print ("Enter return to use this description, enter a text to add something")
         print ("at the end, or enter = followed by a text to replace the description.")
-        newtext = raw_input('Enter return, text or =text : ')
-        newtext = unicode(newtext, config.console_encoding)
+        newtext = wikipedia.input('Enter return, text or =text : ')
         if newtext=='':
             pass
         elif newtext[0]=='=':
