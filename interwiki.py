@@ -356,6 +356,8 @@ class Subject:
                     err = 'Someone refers to %s with us' % pl.asasciilink()
                     if returnonquestion:
                         print "ERROR: %s"%err
+                        if globalvar.bell:
+                            sys.stdout.write('\07')
                         return None
                     self.problem(err)
                     if globalvar.autonomous:
@@ -367,6 +369,8 @@ class Subject:
                     err = "'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink())
                     if returnonquestion:
                         print "ERROR: %s"%err
+                        if globalvar.bell:
+                            sys.stdout.write('\07')
                         return None
                     self.problem(err)
                     if globalvar.autonomous:
@@ -874,6 +878,7 @@ if __name__ == "__main__":
     except:
         sa.dump('interwiki.dump')
         raise
+
 
 
 
