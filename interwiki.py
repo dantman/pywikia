@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -845,27 +845,20 @@ def compareLanguages(old, new):
         s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[2]) + ",".join([x.lang for x in modifying])
     return s,removing
 
-def ReadWarnfile(fn, sa):
-    R=re.compile(r'WARNING: ([^\[]+):\[\[([^\[]+)\]\]([^\[]+)\[\[([^\[]+):([^\[]+):([^\[]+)\]\]')
-    f=open(fn)
-    hints={}
-    for line in f.readlines():
-        m=R.search(line)
-        if m:
-            if m.group(1)==wikipedia.getSite().language():
-                if not hints.has_key(m.group(2)):
-                    hints[m.group(2)]=[]
-                if m.group(3) != ' links to incorrect ':
-                    try:
-                        hints[m.group(2)].append('%s:%s'%(m.group(5),wikipedia.link2url(m.group(6),wikipedia.getSite(m.group(5)))))
-                    except wikipedia.Error:
-                        print "DBG> Failed to add", line
-                    except KeyError:
-                        print "DBG> Language %s not found"%m.group(5)
-    f.close()
-    for pagename in hints:
+def ReadWarnfile(filename, sa):
+    import warnfile
+    reader = warnfile.WarnfileReader(filename)
+    # we won't use removeHints
+    hints = reader.getHints()[0]
+    for pagename in hints.iterkeys():
         pl = wikipedia.PageLink(wikipedia.getSite(), pagename)
-        sa.add(pl, hints = hints[pagename])
+        # The WarnfileReader gives us a list of pagelinks, but titletranslate.py expects a list of strings, so we convert it back.
+        # TODO: This is a quite ugly hack, in the future we should maybe make titletranslate expect a list of pagelinks.
+        hintStrings = []
+        for hint in hints[pagename]:
+            #lang = 
+            hintStrings.append('%s:%s' % (hint.site().language(), hint.linkname()))
+        sa.add(pl, hints = hintStrings)
 
 #===========
         
