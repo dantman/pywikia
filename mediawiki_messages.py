@@ -88,8 +88,8 @@ def refresh_messages(lang = None):
     # First group is MediaWiki key string. Second group is the current value string.
     itemR = re.compile("<tr bgcolor=\"#F0F0FF\">\n"
                      + "<td>\n"
-                     + "<p><a href=\"\/wiki/MediaWiki:.+?\" title=\"MediaWiki:.+?\">(.+?)<\/a><br \/>\n"
-                     + ".*?<a href=.+? title=.+?>.+?<\/a><\/p>\n"
+                     + "<p><a href=.+?>(.+?)<\/a><br \/>\n"
+                     + ".*?<a href=.+?>.+?<\/a><\/p>\n"
                      + "</td>\n"
                      + "<td>\n"
                      + "<p>.+?</p>\n"
@@ -104,11 +104,11 @@ def refresh_messages(lang = None):
     for item in items:
         # Key strings only contain ASCII characters, so we can use them as dictionary keys
         dictionary[item[0]] = unicode(item[1], wikipedia.myencoding())
-        # Save the dictionary to disk
-        # The file is stored in the mediawiki_messages subdir. Create if necessary. 
-        f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % lang), 'w')
-        pickle.dump(dictionary, f)
-        f.close()
+    # Save the dictionary to disk
+    # The file is stored in the mediawiki_messages subdir. Create if necessary. 
+    f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % lang), 'w')
+    pickle.dump(dictionary, f)
+    f.close()
     
 if __name__ == "__main__":
     for arg in sys.argv[1:]:
