@@ -66,6 +66,7 @@ langs = {
     'lb':'lb.wikipedia.org',   # Luxembourgish
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
+    'meta':'meta.wikipedia.org', # Wikimedia meta wiki
     'mg':'mg.wikipedia.org',   # Malagasy
     'mi':'mi.wikipedia.org',   # Maori
     'minnan':'minnan.wikipedia.org', # Min-Nan
