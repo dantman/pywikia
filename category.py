@@ -69,7 +69,7 @@ def get_subcats(supercat):
         subcatlist = supercat.subcategories()
         articlelist = supercat.articles()
         # add to dictionary
-        catContentDB[cat] = [subcatlist, articlelist]
+        catContentDB[supercat] = [subcatlist, articlelist]
         return subcatlist
 
 def get_articles(cat):
