@@ -70,7 +70,7 @@ def main():
                     cats.append(catpl)
                     text = pl2.get()
                     text = wikipedia.replaceCategoryLinks(text, cats)
-                    pl2.put(text, comment = catpl.aslocallink())
+                    pl2.put(text, comment = catpl.aslocallink().encode(wikipedia.code2encoding(wikipedia.mylang)))
 
 if __name__ == "__main__":
     for arg in sys.argv[1:]:
