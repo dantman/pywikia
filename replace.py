@@ -68,7 +68,7 @@ def parseFile(filename):
 	
 	f.close()
 	
-	return true
+	return True
 
 
 # parse arguments
@@ -101,4 +101,5 @@ for article in articlelist:
 	newtext = re.sub(unicode(textsearch,'iso-8859-1'), unicode(textsubst,'iso-8859-1'), text, 1)
 	
 	if newtext!=text:
+		print "Replacing matching text"
 		pl.put(newtext, comment)
