@@ -3,28 +3,41 @@
 (C) 2004 Thomas R. Koll, <tomk32@tomk32.de>
  Distribute under the terms of the PSF license.
 
-This bot downloads the HTML-pages of articles and
-saves the interesting parts, i.e. the article-text
+This bot downloads the HTML-pages of articles and images
+and saves the interesting parts, i.e. the article-text
 and the footer to a file like Hauptseite.txt.
+
+TODO:
+   change the paths in the HTML-file
 
 
 Options:
 
-      -o:    Specifies the output-directory where to save the files   
+      -o:                Specifies the output-directory where to save the files   
+
+      -images:           Downlaod all images
+      -overwrite:[I|A|B] Ignore existing Images|Article|Both and
+                         download them even if the exist
+
+
+Features, not bugs:
+* Won't d/l images of an article if you set -overwrite:A
+
 
 $Id$
 """
 
-import wikipedia,httplib,StringIO,re,sys,urllib
+import wikipedia,httplib,StringIO,re,sys,md5,os
 
 def extractArticle(data):
     """ takes a string with the complete HTML-file
     and returns the article which is contained in
     <div id='article'> and  the pagestats which
     contain information on last change """
-    
+
+    images = []
     s = StringIO.StringIO(data)
-    rPagestats = re.compile('.*(\<span id\=\'pagestats\'\>.*\<\/span\>).*')
+    rPagestats = re.compile('.*(\<span id\=(\"|\')pagestats(\"|\')\>.*\<\/span\>).*')
     rBody = re.compile('.*<div id\=\"bodyContent\">.*')
     rFooter = re.compile('.*<div id\=\"footer\">.*')
     rDivOpen = re.compile('.*<div ')
@@ -56,39 +69,113 @@ def extractArticle(data):
                 divLast = -1
     return result
 
-lang = wikipedia.mylang
-sa = []
-output_directory = ""
-for arg in sys.argv[1:]:
-    if arg.startswith("-lang:"):
-        lang = arg[6:]
-    if arg.startswith("-file:"):
-        for pl in wikipedia.PageLinksFromFile(arg[6:]):
-            sa.append(pl)
-    if arg.startswith("-o:"):
-        output_directory = arg[3:]
-    else:
-        sa.append(arg)
+def extractImages(data):
+    """ takes a string with the complete HTML-file
+    and returns the article which is contained in
+    <div id='article'> and  the pagestats which
+    contain information on last change """
 
-headers = {"Content-type": "application/x-www-form-urlencoded", 
-           "User-agent": "RobHooftWikiRobot/1.0"}
-conn = httplib.HTTPConnection(wikipedia.family.hostname(wikipedia.mylang))
+    images = []
 
-R = re.compile('.*/wiki/(.*)')
-data = ""
-for article in sa:
-    ua = article
-    while len(data) < 2:
-        url = '/wiki/'+ua
-        conn.request("GET", url, "", headers)
-        response = conn.getresponse()
-        data = response.read()
-        if len(data) < 2:
-            result = R.match(response.getheader("Location", ))
-            ua = result.group(1)
-    conn.close()
-    data = extractArticle(data)
-    f = open (output_directory + article + ".txt", 'w')
-    f.write (data['article'] + '\n' + data['footer'])
-    f.close
-    print "saved " + article
+    s = StringIO.StringIO(data)
+    rImage = re.compile('.*?<a href=\"\/wiki\/[^:]*:([^"]*)" class="image"')
+    rThumb = re.compile('.*?<div class="magnify"[^>]*?><a href="\/wiki\/[^:]*?:([^"]*)"')
+    for line in s:
+        img = rImage.match(line)
+        try:
+            path = md5.new(img.group(1)).hexdigest()
+            images.append( {'image':img.group(1),
+                            'path':  str(path[0])+"/"+str(path[0:2])+"/"})
+            img = True
+        except:
+            img = False
+
+
+        img = rThumb.match(line)
+        try: 
+            path = md5.new(img.group(1)).hexdigest()
+            images.append( {'image':img.group(1),
+                            'path':  str(path[0])+"/"+str(path[0:2])+"/"})
+        except:
+            img = False
+
+    return images
+
+
+if __name__ == "__main__":
+
+
+    lang = wikipedia.mylang
+    sa = []
+    output_directory = ""
+    save_images = False
+    overwrite_images = False
+    overwrite_articles = False
+    
+    for arg in sys.argv[1:]:
+        if arg.startswith("-lang:"):
+            lang = arg[6:]
+        elif arg.startswith("-file:"):
+            for pl in wikipedia.PageLinksFromFile(arg[6:]):
+                sa.append(pl)
+        elif arg.startswith("-o:"):
+            output_directory = arg[3:]
+        elif arg.startswith("-images"):
+            save_images = True
+        elif arg.startswith("-overwrite:"):
+            if arg[11] == "I":
+                overwrite_images = True
+            elif arg[11] == "A":
+                overwrite_articles = True
+            elif arg[11] == "B":
+                overwrite_images = True
+                overwrite_articles = True                
+        else:
+            sa.append(arg)
+
+    headers = {"Content-type": "application/x-www-form-urlencoded", 
+               "User-agent": "RobHooftWikiRobot/1.0"}
+    conn = httplib.HTTPConnection(wikipedia.family.hostname(lang))
+    
+
+    R = re.compile('.*/wiki/(.*)')
+    data = ""
+    for article in sa:
+        if os.path.isfile(output_directory + article + ".txt") and overwrite_articles == False:
+            print "skipping " + article
+            continue
+        data = ""
+        ua = article
+        while len(data) < 2:
+            url = '/wiki/'+ ua
+            conn.request("GET", url, "", headers)
+            response = conn.getresponse()
+            data = response.read()
+            if len(data) < 2:
+                print ua + " failed. reading",
+                result = R.match(response.getheader("Location", ))
+                ua = result.group(1)
+                print ua
+        data = extractArticle(data)
+        f = open (output_directory + article + ".txt", 'w')
+        f.write (data['article'] + '\n' + data['footer'])
+        f.close()
+        print "saved " + article
+        
+        if save_images:
+            images = extractImages(data['article'])
+            for i in images:
+                if overwrite_images == False and os.path.isfile(output_directory + i['image']):
+                    print "skipping existing " + i['image']
+                    continue
+                print 'downloading ' + i['image'],
+                uo = wikipedia.MyURLopener()
+                file = uo.open( "http://upload.wikimedia.org/wikipedia/"
+                                +lang + '/' + i['path'] + i['image'])
+                content = file.read()
+                f = open(output_directory + i['image'], "wb")
+                f.write(content)
+                f.close()
+                print 'done'
+        
+conn.close()
