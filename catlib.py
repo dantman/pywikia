@@ -101,9 +101,11 @@ class _CatLink(wikipedia.PageLink):
             pass
         else:
             self_txt = self_txt[ibegin:iend]
-            Rsupercat = re.compile('title=.*\"([^\"]*)\"')
+            Rsupercat = re.compile('title ="([^"]*)"')
             for title in Rsupercat.findall(self_txt):
-                supercats.append(title)
+                # There might be a link to Special:Categories we don't want
+                if iscattitle(title):
+                    supercats.append(title)
         
         return (pages, supercats)
     
@@ -143,7 +145,10 @@ class _CatLink(wikipedia.PageLink):
 
            Returns a sorted, unique list of all subcategories.
         """
-        (pages, supercats) = self.catlist()
+        supercats = []
+        for title in self.catlist(recurse)[1]:
+            ncat = _CatLink(self.code(), title)
+            supercats.append(ncat)
         return unique(supercats)
     
     
