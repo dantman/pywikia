@@ -210,6 +210,7 @@ class PageLink:
             return self.linkname()
             
     def ascii_linkname(self):
+        # TODO: this is bugged! incode must be a language code, not an encoding!
         return url2link(self._urlname, code = self._code, incode = 'ascii')
     
     def __str__(self):
@@ -1153,23 +1154,25 @@ def code2encodings(code):
        wikipedia"""
     return family.code2encodings(code)
 
-def url2link(percentname,incode,code):
+def url2link(percentname, incode, code):
     """Convert a url-name of a page into a proper name for an interwiki link
        the argument 'incode' specifies the encoding of the target wikipedia
        """
     result = underline2space(percentname)
     x = url2unicode(result, language = code)
-    e = code2encoding(incode)
-    if e == 'utf-8':
+    return unicode2html(x, encoding = code2encoding(incode))
+    ## The following is the original, buggy code. It was replaced with the line
+    ## above.
+    #if e == 'utf-8':
         # utf-8 can handle anything
-        return x
-    elif e == code2encoding(code):
-        #print "url2link", repr(x), "same encoding",incode,code
-        return unicode2html(x, encoding = code2encoding(code))
-    else:
-        # In all other cases, replace difficult chars by &#; refs.
-        #print "url2link", repr(x), "different encoding"
-        return unicode2html(x, encoding = 'ascii')
+    #    return x
+    #elif e == code2encoding(code):
+    #    #print "url2link", repr(x), "same encoding",incode,code
+    #    return unicode2html(x, encoding = code2encoding(code))
+    #else:
+    #    # In all other cases, replace difficult chars by &#; refs.
+    #    #print "url2link", repr(x), "different encoding"
+    #    return unicode2html(x, encoding = 'ascii')
     
 def link2url(name, code, incode = None):
     """Convert an interwiki link name of a page to the proper name to be used
