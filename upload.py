@@ -33,7 +33,7 @@ for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
     elif arg.startswith('-keep'):
-	keep = True
+        keep = True
     elif fn=='':
         fn = arg
     else:

@@ -146,15 +146,15 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
     if source_wiki != None:
         fn = unicode(fn, wikipedia.code2encoding(source_wiki))
     if not keep:
-	print "The filename on wikipedia will default to:",fn
-	newfn = raw_input("Better name : ")
-	if newfn:
-	    fn = unicode(newfn, config.console_encoding)
+        print "The filename on wikipedia will default to:",fn
+        newfn = raw_input("Better name : ")
+        if newfn:
+            fn = unicode(newfn, config.console_encoding)
     try:
-	fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
+        fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
     except UnicodeDecodeError:
-	print "This filename can't be displayed in " + wikipedia.code2encoding(wikipedia.mylang)
-	sys.exit(1)
+        print "This filename can't be displayed in " + wikipedia.code2encoding(wikipedia.mylang)
+        sys.exit(1)
     # Wikipedia doesn't allow spaces in the file name.
     # Replace them here to avoid an extra confirmation form
     fn = fn.replace(' ', '_')
