@@ -277,6 +277,7 @@ class Family(object):
     # Redirect code can be translated.
 
     redirect = {
+        'bg': 'виж',
         'cy': 'ail-cyfeirio',
         'ga': 'athsheoladh'
         }
