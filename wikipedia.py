@@ -1020,7 +1020,8 @@ def removeLanguageLinks(text):
        links removed. If a link to an unknown language is encountered,
        a warning is printed."""
     for code in family.langs:
-        text = re.sub(r'\[\['+code+':([^\]]*)\]\]', '', text)
+        # this regex matches an interwiki link, plus trailing whitespace.
+        text = re.sub(r'\[\['+code+':([^\]]*)\]\][\s]*', '', text)
     m=re.search(r'\[\[([a-z][a-z]):([^\]]*)\]\]', text)
     if m:
         print "WARNING: Link to unknown language %s name %s"%(m.group(1), repr(m.group(2)))
