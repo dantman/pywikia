@@ -36,7 +36,9 @@ This script understands various command-line arguments:
     -name:         similar to -same, but UPPERCASE the last name for eo:
 
     -wiktionary:   similar to -same, but will ONLY accept names that are
-                   identical to the original
+                   identical to the original. Also, if the title is not
+                   capitalized, it will only go through other wikis without
+                   automatic capitalization.
                    
     -askhints:     for each page one or more hints are asked. See hint: above
                    for the format, one can for example give "en:something" or
@@ -344,7 +346,7 @@ class Subject(object):
                     for pl2 in iw:
                       if unequal.unequal(self.inpl, pl2):
                           print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
-                      elif globalvar.same=='wiktionary' and pl2.linkname()!=self.inpl.linkname():
+                      elif globalvar.same=='wiktionary' and pl2.linkname().lower()!=self.inpl.linkname().lower():
                           print "NOTE: Ignoring %s for %s in wiktionary mode"% (pl2, self.inpl)
                       else:   
                           if self.conditionalAdd(pl2, counter, pl):

@@ -158,6 +158,7 @@ class Family(family.Family):
         'yo':'yo.wiktionary.org',   # Yoruba
         'za':'za.wiktionary.org',   # Zhuang
         'zh':'zh.wiktionary.org',   # Chinese
+        'zh-min-nan':'minnan.wiktionary.org', # Minnan alternative
         'zh-cn':'zh.wiktionary.org', # Simplified Chinese
         'zh-tw':'zh.wiktionary.org', # Traditional Chinese
         'zu':'zu.wikipedia.org',    # Zulu
@@ -170,6 +171,13 @@ class Family(family.Family):
     nocapitalize = ['cs', 'de', 'es', 'fa', 'fr', 'gu', 'hi', 'hr',
                     'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl', 'sa',
                     'sq', 'sv', 'sw', 'tlh','tokipona', 'tr']
+
+    obsolete = {'nb':'no',
+                'tlh':'none',
+                'tokipona':'none',
+                'zh-min-nan':'minnan',
+                'zh-tw':'zh',
+                'zh-cn':'zh'}
 
     # Which languages have a special order for putting interlanguage links,
     # and what order is it? If a language is not in interwiki_putfirst,
@@ -201,6 +209,18 @@ class Family(family.Family):
         }
         
     # group of languages that we might want to do at once
+
+    biglangs = ['de', 'en', 'fr', 'gl', 'hu', 'it', 'ja', 'nl', 'pl', 'sv']
+                
+    biglangs2 = biglangs + [
+        'es', 'fi', 'hi', 'ko', 'la', 'pt', 'ru', 'tr', 'zh']
+    
+    biglangs3 = biglangs2 + [
+        'ca', 'eo', 'et', 'gu', 'he', 'hr', 'ro']
+    
+    biglangs4 = biglangs3
+                
+    seriouslangs = biglangs4
     
     cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
        

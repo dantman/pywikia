@@ -20,7 +20,14 @@ def sametranslate(pl, arr, same):
             newname = ' '.join(newname)
         x=wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family), newname)
         if x not in arr:
-            arr[x] = None
+            if same == "wiktionary":
+                if site.language() in site.family.nocapitalize:
+                    if newcode in site.family.nocapitalize:
+                        arr[x] = None
+                    elif pl.linkname().lower() == pl.linkname():
+                        arr[x] = None
+            else:
+                arr[x] = None
 
 def translate(pl, arr, same = False, hints = None, auto = True):
     site = pl.site()
