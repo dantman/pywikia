@@ -5,7 +5,7 @@
 # (C) Rob W.W. Hooft, 2003
 # Distribute under the terms of the GPL.
 
-import sys,copy,wikipedia
+import sys,copy,wikipedia,re
 
 # language to check for missing links and modify
 mylang = 'nl'
@@ -16,6 +16,35 @@ wikipedia.setAction('Rob Hooft: semi-automatic interwiki script')
 debug = 1
 forreal = 1
 
+datetable={
+    'januari':{'en':'January %d','de':'%d. Januar','fr':'%d janvier','af':'01-%02d'},
+    'februari':{'en':'February %d','de':'%d. Februar','fr':'%d fevrier','af':'02-%02d'},
+    'maart':{'en':'March %d','de':'%d. M&auml;rz','fr':'%d mars','af':'03-%02d'},
+    'april':{'en':'April %d','de':'%d. April','fr':'%d avril','af':'04-%02d'},
+    'mei':{'en':'May %d','de':'%d. Mai','fr':'%d mai','af':'05-%02d'},
+    'juni':{'en':'June %d','de':'%d. Juni','fr':'%d juin','af':'06-%02d'},
+    'juli':{'en':'July %d','de':'%d. Juli','fr':'%d juillet','af':'07-%02d'},
+    'augustus':{'en':'August %d','de':'%d. August','fr':'%d aout','af':'08-%02d'},
+    'september':{'en':'September %d','de':'%d. September','fr':'%d septembre','af':'09-%02d'},
+    'oktober':{'en':'October %d','de':'%d. Oktober','fr':'%d octobre','af':'10-%02d'},
+    'november':{'en':'November %d','de':'%d. November','fr':'%d novembre','af':'11-%02d'},
+    'december':{'en':'December %d','de':'%d. Dezember','fr':'%d decembre','af':'12-%02d'},
+}
+
+def autotranslate(name,arr):
+    # Autotranslate dates into some other languages, the rest will come from
+    # existing interwiki links.
+    Rdate=re.compile('(\d+)_(%s)'%('|'.join(datetable.keys())))
+    m=Rdate.match(name)
+    if m:
+        for newcode,fmt in datetable[m.group(2)].items():
+            newname=fmt%int(m.group(1))
+            # Standardize
+            newname=wikipedia.url2link(newname)
+            newname=wikipedia.link2url(newname)
+            # Put as suggestion into array
+            arr[newcode,newname]=None
+            
 def compareLanguages(old,new):
     removing=[]
     adding=[]
@@ -71,6 +100,7 @@ def treestep(arr,code,name):
     
 def treesearch(code,name):
     arr={(code,name):None}
+    autotranslate(name,arr)
     modifications=1
     while modifications:
         modifications=0
@@ -78,8 +108,19 @@ def treesearch(code,name):
             if arr[newcode,newname] is None:
                 modifications+=treestep(arr,newcode,newname)
     return arr
+
+name=[]
+
+ask=1
+for arg in sys.argv[1:]:
+    if arg=='-force':
+        ask=0
+    else:
+        name.append(arg)
     
-name=raw_input('Which page to check:')
+name='_'.join(name)
+if not name:
+    name=raw_input('Which page to check:')
 
 name=wikipedia.link2url(name)
 
@@ -88,6 +129,7 @@ print "==Result=="
 new={}
 k=m.keys()
 k.sort()
+old=None
 for code,cname in k:
     if code==mylang:
         if m[code,cname]:
@@ -107,17 +149,25 @@ for code,cname in k:
         else:
             new[code]=wikipedia.url2link(cname)
 print "==status=="
+if old is None:
+    sys.exit(1)
 #print old
 print compareLanguages(old,new)
 print "==upload=="
 s=wikipedia.interwikiFormat(new)
-newtext=s+wikipedia.removeLanguageLinks(oldtext)
+s2=wikipedia.removeLanguageLinks(oldtext)
+if not s2.startswith('\r\n'):
+    s2='\r\n'+s2
+newtext=s+s2
 if debug:
     print s
 if newtext!=oldtext:
     print "NOTE: Replacing %s: %s"%(mylang,name)
     if forreal:
-        answer=raw_input('submit y/n ?')
+        if ask:
+            answer=raw_input('submit y/n ?')
+        else:
+            answer='y'
         if answer=='y':
             status,reason,data=wikipedia.putPage(mylang,name,newtext)
             if str(status)!='302':
