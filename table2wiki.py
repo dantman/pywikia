@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: iso-8859-1  -*-
+# -*- coding: utf-8  -*-
 """
 Nifty script to convert HTML-tables to Wikipedia's syntax.
 
@@ -58,6 +58,7 @@ articles = []
 # if -file is not used, this temporary array is used to read the page title.
 page_title = []
 
+debug = False
 action = None
 for arg in sys.argv[1:]:
     if arg.startswith('-file:'):
@@ -104,9 +105,11 @@ if page_title != []:
 if action == 'parse_sqldump':
     import sqldump
     sqldump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
-    for page in sqldump.pages():
-        if page.text.find('<table') != -1:
-            articles.append(page.title)
+    for entry in sqldump.entries():
+        # TODO: make next line case-insensitive
+        if entry.text.find('<table') != -1:
+            if entry.namespace != '0':
+                articles.append(entry.full_title())
         
 for article in articles:
     if debug:
@@ -324,7 +327,7 @@ for article in articles:
     if config.splitLongParagraphs:
         num = 1
         while num != 0:
-            newText, num = re.subn("(\r\n[A-Z]{1}[^\n\r]{200,}?[a-z����]\.)\ ([A-Z���]{1}[^\n\r]{200,})",
+            newText, num = re.subn("(\r\n[A-Z]{1}[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{200,})",
                                    "\\1\r\n\\2", newText, 0)
             
     ##################
