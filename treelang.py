@@ -30,7 +30,8 @@ This script understands various command-line arguments:
                  to autonomous_problems.dat and terminate.
     -backlink: check for references between the foreign pages as well, list 
               all those that are missing as WARNINGs.
-
+    -log: log to the file treelang.log as well as printing to the screen.
+    
      All other arguments are words that make up the page name.
 """
 #
@@ -50,6 +51,7 @@ wikipedia.setAction('semi-automatic interwiki script')
 
 debug = 1
 forreal = 1
+log = 0
 
 datetablelang='nl'
 datetable={
@@ -83,6 +85,22 @@ if msg.has_key(mylang):
 else:
     msglang='en'
 
+class Logger:
+    """A class that replaces a standard output file by a logfile PLUS the
+       standard output. This is used by the "log" option."""
+    def __init__(self, original, filename='treelang.log'):
+        self.original = original
+        self.f = open(filename, 'a')
+
+    def write(self, s):
+        self.f.write(s)
+        self.original.write(s)
+        self.flush()
+        
+    def flush(self):
+        self.f.flush()
+        self.original.flush()
+        
 def autonomous_problem(pl,reason=''):
     if autonomous:
         f=open('autonomous_problem.dat','a')
@@ -305,8 +323,13 @@ for arg in sys.argv[1:]:
     elif arg=='-autonomous':
         autonomous = True
         bell=0
+    elif arg=='-log':
+        log = 1
     else:
         inname.append(arg)
+
+if log:
+    sys.stdout = Logger(sys.stdout)
     
 inname='_'.join(inname)
 if not inname:
