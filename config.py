@@ -100,20 +100,19 @@ del _key,_tp
 # When called as main program, list all configuration variables
 #
 if __name__=="__main__":
-    from misc import args
-    _args=args
-    del args
+    import sys as _sys
     _all=1
-    for _arg in _args.ArgLoop():
+    for _arg in _sys.argv[1:]:
         if _arg=="modified":
             _all=0
         else:
-            _arg.unknown()
+            print "Unknown arg %s ignored"%_arg
     _k=globals().keys()
     _k.sort()
     for _name in _k:
         if _name[0]!='_':
             if _all or _glv[_name]!=globals()[_name]:
                 print _name,"=",repr(globals()[_name])
-
+    del _sys
+    
 del _glv
