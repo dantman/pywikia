@@ -1368,7 +1368,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
     if not site.lang in config.categories_last:
         interwiki_links = getLanguageLinks(oldtext, insite = site)
         oldtext = removeLanguageLinks(oldtext, site = site)
-    s = categoryFormat(new, site = site)
+    s = categoryFormat(new, insite = site)
     s2 = removeCategoryLinks(oldtext, site = site)
     if s:
         if site.lang in config.category_attop:
