@@ -30,7 +30,7 @@ def get_imagelinks(url):
     text = file.read()
     file.close()
     text = text.lower()
-    R=re.compile("[(HREF)(href)]=[\"'](.*?)[\"']")
+    R=re.compile("[\"'](.*?)[\"']")
     for link in R.findall(text):
         ext = os.path.splitext(link)[1].lower().strip('.')
         if ext in fileformats:
@@ -42,9 +42,7 @@ def get_imagelinks(url):
 
 def main(give_url,image_url):
     url = give_url
-    fileformats = ('jpg', 'jpeg', 'png', 'gif', 'svg', 'ogg')
     basicdesc = []
-    mysite = wikipedia.getSite()
 
     if not mysite.loggedin():
         print "You must be logged in to upload images"
@@ -105,10 +103,8 @@ for arg in sys.argv[1:]:
         else:
             desc += [arg]
 try:
+    fileformats = ('jpg', 'jpeg', 'png', 'gif', 'svg', 'ogg')
+    mysite = wikipedia.getSite()
     main(url,image_url)
-except:
+finally:
     wikipedia.stopme()
-    raise
-else:
-    raise
-
