@@ -96,31 +96,54 @@ class WiktionaryEntry:				# This refers to an entire page
 class SubEntry:					# On one page, terms with the same spelling in different languages can be described
 	def __init__(self,subentrylang):
 		self.subentrylang=subentrylang
-		self.meanings = []
+		self.meanings = {} # a dictionary containing the meanings grouped by part of speech
+		self.posorder = [] # we don't want to shuffle the order of the parts of speech, so we keep a list to keep the order they were found
 		
 	def addMeaning(self,meaning):
-		self.meanings.append(meaning)	# meanings is a list of Meaning subentry objects
+		term = meaning.term
+	    	self.meanings.setdefault( term.pos, [] ).append(meaning)
+		if not term.pos in self.posorder:	# we only need each part of speech once
+			self.posorder.append(term.pos)
 	
 	def getMeanings(self):
 		return self.meanings
 
 	def wikiwrap(self,wikilang):
-		print self.subentrylang, self.meanings[0].term.term
+#		print self.subentrylang, self.meanings[0].term.term
 		subentry = wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][self.subentrylang]).replace('%%ISOLangcode%%',self.subentrylang) + '\n'
-		for meaning in self.meanings:
-			term=meaning.term
-			
-			subentry += wiktionaryformats[wikilang]['posheader'][term.pos]
+
+		# We need to group all the same parts of speeches together
+
+		# Then we need to print the POS-header
+		# and list all the Definitions
+
+		# followed by the synonyms and translations sections
+		
+		for pos in self.posorder:
+			meanings = self.meanings[pos]
+		
+			subentry += wiktionaryformats[wikilang]['posheader'][pos]
 			subentry +='\n'	
 			
-			subentry = subentry + term.wikiwrapasexample(wikilang) + '; ' + meaning.definition
+			for meaning in meanings:
+				term=meaning.term
 			
+				subentry = subentry + term.wikiwrapasexample(wikilang) + '; ' + meaning.definition
+			
+				subentry +='\n'	
 			subentry +='\n'	
+			if meaning.hasSynonyms():
+				subentry = subentry + wiktionaryformats[wikilang]['synonymsheader'] + '\n'
+				for meaning in meanings:
+					subentry += meaning.wikiwrapSynonyms(wikilang)
+				subentry +='\n'	
 			
-			subentry += meaning.wikiwrapSynonyms(wikilang)
-			
-			subentry += meaning.wikiwrapTranslations(wikilang)
-			
+			if meaning.hasTranslations():
+				subentry = subentry + wiktionaryformats[wikilang]['translationsheader'] + '\n'
+				for meaning in meanings:
+					subentry += meaning.wikiwrapTranslations(wikilang)
+				subentry +='\n'	
+	
 		return subentry
 			
 class Meaning:					# On one page, different terms in different languages can be described
@@ -148,6 +171,12 @@ class Meaning:					# On one page, different terms in different languages can be 
 	
 	def getSynonyms(self):
 		return self.synonyms
+
+	def hasSynonyms(self):
+		if self.synonyms == []:
+			return 0
+		else:
+			return 1
 	
 	def setTranslations(self,translations):
 		self.translations=translations
@@ -158,6 +187,12 @@ class Meaning:					# On one page, different terms in different languages can be 
 	def addTranslation(self,translation):
 	    	self.translations.setdefault( translation.lang, [] ).append( translation )
 
+	def hasTranslations(self):
+		if self.translations == []:
+			return 0
+		else:
+			return 1
+	
 	def wikiwrapSynonyms(self,wikilang):
 		first = 1
 		wrappedsynonyms = ''
@@ -165,7 +200,6 @@ class Meaning:					# On one page, different terms in different languages can be 
 			if first==0:
 				wrappedsynonyms += ', '
 			else:
-				wrappedsynonyms = wiktionaryformats[wikilang]['synonymsheader'] + '\n'
 				first = 0
 			wrappedsynonyms = wrappedsynonyms + synonym.wikiwrapforlist(wikilang)
 		return wrappedsynonyms + '\n'
@@ -174,8 +208,7 @@ class Meaning:					# On one page, different terms in different languages can be 
 		# We want to output the translations in such a way that they end up sorted alphabetically on the language name in the language of the current Wiktionary
 		alllanguages=self.translations.keys()
 		alllanguages.sort(sortonname(langnames[wikilang]))
-
-		wrappedtranslations = wiktionaryformats[wikilang]['translationsheader'] + '\n'
+		wrappedtranslations = ''
 		for language in alllanguages:
 			# Indicating the language according to the wikiformats dictionary
 			wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
