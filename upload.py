@@ -95,8 +95,8 @@ print "Uploading image to ",wikipedia.langs[wikipedia.mylang]
 def main():
     fn = raw_input('File or URL where image is now : ')
     # Get file contents
-    import urllib
-    file = urllib.urlopen(fn)
+    uo = wikipedia.MyURLopener()
+    file = uo.open(fn)
     contents = file.read()
     file.close()
     # Isolate the pure name
