@@ -243,25 +243,28 @@ only_if_status=1
 confirm=0
 autonomous=0
 untranslated=0
+backlink=0
 hints=[]
 
 for arg in sys.argv[1:]:
     if arg=='-force':
-        ask=0
+        ask = False
     elif arg=='-always':
-        only_if_status=0
+        only_if_status = False
+    elif arg=='-backlink':
+        backlink=True
     elif arg=='-same':
-        same=1
+        same = True
     elif arg=='-untranslated':
-        untranslated=1
+        untranslated = True
     elif arg.startswith('-hint:'):
         hints.append(arg[6:])
     elif arg=='-name':
         same='name'
     elif arg=='-confirm':
-        confirm=1
+        confirm = True
     elif arg=='-autonomous':
-        autonomous=1
+        autonomous = True
         bell=0
     else:
         inname.append(arg)
@@ -322,40 +325,53 @@ for pl in inpl.interwiki():
 mods=compareLanguages(old,new)
 if not mods and only_if_status:
     print "No changes"
-    sys.exit(1)
-print mods
-print "==upload=="
-oldtext=m[inpl]
-s=wikipedia.interwikiFormat(new)
-s2=wikipedia.removeLanguageLinks(oldtext)
-newtext=s+s2
-if debug:
-    if not autonomous and not sys.platform=='win32':
-        f=open('/tmp/wik.in','w')
-        f.write(oldtext)
-        f.close()
-        f=open('/tmp/wik.out','w')
-        f.write(newtext)
-        f.close()
-        import os
-        f=os.popen('diff -u /tmp/wik.in /tmp/wik.out','r')
-        print f.read()
-    else:
-        print s
-if newtext!=oldtext:
-    print "NOTE: Replacing %s: %s"%(mylang,inname)
-    if forreal:
-        if ask:
-            if confirm:
-                if bell:
-                    sys.stdout.write('\07')
-                autonomous_problem(inpl,'removing a language')
-                answer=raw_input('submit y/n ?')
+else:
+    print mods
+    print "==changes should be made=="
+    oldtext=m[inpl]
+    s=wikipedia.interwikiFormat(new)
+    s2=wikipedia.removeLanguageLinks(oldtext)
+    newtext=s+s2
+    if debug:
+        if not autonomous and not sys.platform=='win32':
+            f=open('/tmp/wik.in','w')
+            f.write(oldtext)
+            f.close()
+            f=open('/tmp/wik.out','w')
+            f.write(newtext)
+            f.close()
+            import os
+            f=os.popen('diff -u /tmp/wik.in /tmp/wik.out','r')
+            print f.read()
+        else:
+            print s
+    if newtext!=oldtext:
+        print "NOTE: Replace %s: %s"%(mylang,inname)
+        if forreal:
+            if ask:
+                if confirm:
+                    if bell:
+                        sys.stdout.write('\07')
+                    autonomous_problem(inpl,'removing a language')
+                    answer=raw_input('submit y/n ?')
+                else:
+                    answer='y'
             else:
                 answer='y'
-        else:
-            answer='y'
-        if answer=='y':
-            status,reason,data=wikipedia.putPage(mylang,inname,newtext,comment='%s: robot '%wikipedia.username+mods)
-            if str(status)!='302':
-                print status,reason
+            if answer=='y':
+                status,reason,data=wikipedia.putPage(mylang,inname,newtext,comment='%s: robot '%wikipedia.username+mods)
+                if str(status)!='302':
+                    print status,reason
+
+if backlink:
+    for code in new.keys():
+        pl=new[code]
+        linked=pl.interwiki()
+        for xpl in new.values()+[inpl]:
+            if xpl!=pl and not xpl in linked:
+                for l in linked:
+                    if l.code()==xpl.code():
+                        print "WARNING:",pl.asselflink(),"does not link to",xpl.aslink(),"but to",l.aslink()
+                        break
+                else:
+                    print "WARNING:",pl.asselflink(),"does not link to",xpl.aslink()
