@@ -19,7 +19,7 @@ copy_message = {
 success_message = {
     "af":"Laai suksesvol",
     "als":"Successful upload",
-    "ar":"%D8%AA%D8%AD%D9%85%D9%8A%D9%84 %D8%A7%D9%84%D9%85%D9%84%D9%81 %D8%A8%D9%86%D8%AC%D8%A7%D8%AD"
+    "ar":"%D8%AA%D8%AD%D9%85%D9%8A%D9%84 %D8%A7%D9%84%D9%85%D9%84%D9%81 %D8%A8%D9%86%D8%AC%D8%A7%D8%AD",
     "ca":"L'arxiu s'ha carregat amb %C3%A8xit",
     "co":"Successful upload",
     "cs":"Nacten%C3%AD_%C3%BAspe%C5%A1ne_provedeno%21",
@@ -28,13 +28,13 @@ success_message = {
     "de":"Erfolgreich hochgeladen",
     "en":"Succesful upload",
     "eo":"uto sukcesis!",
-    "es":"Subida exitosa"
+    "es":"Subida exitosa",
     "et":"%C3%9Cleslaadimine %C3%B5nnestus",
     "eu":"Succesful upload",
     "fi":"Tallennus onnistui",
     "fy":"Oanbieden slagge",
     "gl":"Successful upload",
-    "he":"%D7%94%D7%A2%D7%9C%D7%90%D7%AA %D7%94%D7%A7%D7%95%D7%91%D7%A5 %D7%94%D7%A6%D7%9C%D7%99%D7%97%D7%94"
+    "he":"%D7%94%D7%A2%D7%9C%D7%90%D7%AA %D7%94%D7%A7%D7%95%D7%91%D7%A5 %D7%94%D7%A6%D7%9C%D7%99%D7%97%D7%94",
     "hr":"Successful upload",
     "hu":"Sikeresen felk",
     "ia":"Carga complete",
@@ -55,7 +55,7 @@ success_message = {
     "pl":"Przes%C5%82anie pliku powiod%C5%82o si%C4%99",
     "pt":"Carregamento efetuado com sucesso",
     "ro":"Fi%C5%9Fierul a fost trimis",
-    "ru":"%D0%AF%D0%BF%D0%BE%D0%BD%D1%81%D0%BA%D0%BE%D0%B5_%D0%BC%D0%BE%D1%80%D0%B5"
+    "ru":"%D0%AF%D0%BF%D0%BE%D0%BD%D1%81%D0%BA%D0%BE%D0%B5_%D0%BC%D0%BE%D1%80%D0%B5",
     "simple":"Succesful upload",
     "sl":"Nalaganje uspe%C5%A1no",
     "sv":"Uppladdningen lyckades",
@@ -185,7 +185,6 @@ def get_image(original_url, source_wiki, original_description, debug=False):
         description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
     except UnicodeDecodeError:
         description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
-    description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
     # don't upload if we're in debug mode
     if not debug:
         returned_html = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
