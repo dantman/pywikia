@@ -1,7 +1,6 @@
 # -*- coding: utf-8  -*-
 '''
-This bot will find in SQL dump or in Wikipedia sites.
-Download please "cur table", see http://download.wikimedia.org).
+This bot seeks of information.
 
 You can run the bot with the following commandline parameters:
 
@@ -9,6 +8,8 @@ You can run the bot with the following commandline parameters:
                Argument can also be given as "-sql:filename".
 -file        - Search information from a local text file.
                Argument can also be given as "-file:filename".
+-cat         - Search categories.
+               Argument can also be given as "-cat:category_name".
 -page        - Only search a single page.
                Argument can also be given as "-page:pagename".
 
@@ -24,146 +25,174 @@ Use: python find.py -argument
 
 from __future__ import generators
 import sys, re, codecs
-import wikipedia, config, sqldump
+import wikipedia, config, sqldump, catlib
 
-def read_pages_from_sql_dump(sqlfilename, title):
-    dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
-    for entry in dump.entries():
-        if title:
-            text=entry.title
-        else:
-            text=entry.text
-        skip_page = False
-        if namespace != -1 and namespace != entry.namespace:
-            continue
-        if not skip_page:
-            for old in replacements.keys():
-                if regex:
-                    old = re.compile(old)
-                    if old.search(text):
-                        yield wikipedia.PageLink(wikipedia.getSite(), entry.full_title())
-                        break
-                else:
-                    if text.find(old) != -1:
-                       yield wikipedia.PageLink(wikipedia.getSite(), entry.full_title())
-                       break
+class ReadPages:
+    
+    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, sqlfilename = None, categoryname = None, pagenames = None):
+        self.source = source
+        self.replacements = replacements
+        self.exceptions = exceptions
+        self.regex = regex
+        self.namespace = namespace
+        self.textfilename = textfilename
+        self.sqlfilename = sqlfilename
+        self.categoryname = categoryname
+        self.pagenames = pagenames
+    
+    def read_pages_from_sql_dump(self):
 
-#TODO: all
-def read_pages_from_text_file(textfilename):
-    pageR = re.compile("\((\d+),"      # cur_id             (page ID number)
-                     + "(\d+),"        # cur_namespace      (namespace number)
-                     + "'(.*?)',"      # cur_title          (page title w/o namespace)
-                     + "'(.*?)',"      # cur_text           (page contents)
-                     + "'(.*?)',"      # cur_comment        (last edit's summary text)
-                     + "(\d+),"        # cur_user           (user ID of last contributor)
-                     + "'(.*?)',"      # cur_user_text      (user name)
-                     + "'(\d{14})',"   # cur_timestamp      (time of last edit)
-                     + "'(.*?)',"      # cur_restrictions   (protected pages have 'sysop' here)
-                     + "(\d+),"        # cur_counter        (view counter, disabled on WP)
-                     + "([01]),"       # cur_is_redirect
-                     + "([01]),"       # cur_minor_edit
-                     + "([01]),"       # cur_is_new
-                     + "([\d\.]+?),"   # cur_random         (for random page function)
-                     + "'(\d{14})',"   # inverse_timestamp  (obsolete)
-                     + "'(\d{14})'\)") # cur_touched        (cache update timestamp)
-    print 'Reading file'
-    arq = codecs.open(textfilename, 'r', 'utf-8')
-#    for pl in generator(source, replacements, exceptions, namespace, regex, title, textfilename, sqlfilename, pagenames):
-    eof = False
-    while not eof:
-        line = arq.readline()
-        if line == '':
-            print 'End of file.'
-        eof = True
-        entries = []
-        for id, namespace, title, text, comment, userid, username, timestamp, restrictions, counter, redirect, minor, new, random, inversetimestamp, touched in pageR.findall(line):
-             new_entry = SQLentry(id, namespace, title, text, comment, userid, username, timestamp, restrictions, counter, redirect, minor, new, random, inversetimestamp, touched)
-             yield new_entry
-    print 'End of file.'
-    arq.close()
-
-#TODO: all
-def read_pages_from_wiki_page(pagetitle):
-    '''
-    Generator which will yield pages that are listed in a wiki page. Will
-    regard everything inside [[double brackets]] as a page name, except for
-    interwiki and category links, and yield PageLinks for these pages.
-    '''
-
-    listpage = wikipedia.PageLink(wikipedia.getSite(), pagetitle)
-    list = wikipedia.get(listpage, read_only = True)
-
-def generator(source, replacements, exceptions, regex, namespace, title, textfilename = None, sqlfilename = None, pagenames = None):
-    #-sql
-    if source == 'sqldump':
-        for pl in read_pages_from_sql_dump(sqlfilename, title):
-            yield pl
-    #-file
-    elif source == 'textfile':
-        for pl in read_pages_from_text_file(textfilename):
-            yield pl
-    #-page
-    elif source == 'userinput':
-        for pagename in pagenames:
-            yield wikipedia.PageLink(wikipedia.getSite(), pagename)
-
-source = None
-replacements = {}
-exceptions = []
-regex = False
-title = False
-count = None
-sqlfilename = 'dump.sql'
-textfilename = ''
-pagenames = []
-namespace = -1
-
-try:
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
-        if arg:
-            if arg == '-regex':
-                regex = True
-            elif arg.startswith('-file'):
-                if len(arg) == 5:
-                    textfilename = wikipedia.input(u'Please enter the filename:')
-                else:
-                    textfilename = arg[6:]
-                source = 'textfile'
-            elif arg.startswith('-sql'):
-                if len(arg) == 4:
-                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
-                else:
-                    sqlfilename = arg[5:]
-                source = 'sqldump'
-                wikipedia.stopme()
-            elif arg.startswith('-page'):
-                if len(arg) == 5:
-                    pagenames.append(wikipedia.input(u'Which page do you want to find?'))
-                else:
-                    pagenames.append(arg[6:])
-                source = 'userinput'
+        mysite = wikipedia.getSite()
+        import sqldump
+        dump = sqldump.SQLdump(self.sqlfilename, wikipedia.myencoding())
+        for entry in dump.entries():
+            skip_page = False
+            if self.namespace != -1 and self.namespace != entry.namespace:
+                continue
             else:
-                commandline_replacements.append(arg)
-            
-    #TODO: def search
-    if count == None:
-        old = wikipedia.input(u'Text search (Warning! Case and Acent Sensitive):')
-        new = " "
-        replacements[old] = new
+                for exception in self.exceptions:
+                    if self.regex:
+                        exception = re.compile(exception)
+                        if exception.search(entry.text):
+                            skip_page = True
+                            break
+                    else:
+                        if entry.text.find(exception) != -1:
+                            skip_page = True
+                            break
+            if not skip_page:
+                for old in self.replacements.iterkeys():
+                    if self.regex:
+                        old = re.compile(old)
+                        if old.search(entry.text):
+                            yield wikipedia.PageLink(mysite, entry.full_title())
+                            break
+                    else:
+                        if entry.text.find(old) != -1:
+                            yield wikipedia.PageLink(mysite, entry.full_title())
+                            break
 
-    # TODO: def record
+    def read_pages_from_category(self):
+        category = catlib.CatLink(wikipedia.getSite(), self.categoryname)
+        for page in category.articles(recurse = False):
+            yield page
+
+    def read_pages_from_text_file(self):
+        f = open(self.textfilename, 'r')
+        # regular expression which will find [[wiki links]]
+        R = re.compile(r'.*\[\[([^\]]*)\]\].*')
+        m = False
+        for line in f.readlines():
+            # BUG: this will only find one link per line.
+            # TODO: use findall() instead.
+            m=R.match(line)
+            if m:
+                yield wikipedia.PageLink(wikipedia.getSite(), m.group(1))
+        f.close()
+
+    def read_pages_from_wiki_page(self):
+        listpage = wikipedia.PageLink(wikipedia.getSite(), self.pagetitle)
+        list = wikipedia.get(listpage, read_only = True)
+
+    def generate(self):
+        #-sql
+        if self.source == 'sqldump':
+            for pl in self.read_pages_from_sql_dump():
+                yield pl
+        #-file
+        elif self.source == 'textfile':
+            for pl in self.read_pages_from_text_file():
+                yield pl
+        #-cat
+        elif self.source == 'category':
+            for pl in self.read_pages_from_category():
+                yield pl
+        #-page
+        elif self.source == 'userinput':
+            for pagename in self.pagenames:
+                yield wikipedia.PageLink(wikipedia.getSite(), pagename)
+
+                
+class FindPages:
+
+    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, sqlfilename = None, categoryname = None, pagenames = None):
+        self.source = source
+        self.replacements = replacements
+        self.exceptions = exceptions
+        self.regex = regex
+        self.namespace = namespace
+        self.textfilename = textfilename
+        self.sqlfilename = sqlfilename
+        self.categoryname = categoryname
+        self.pagenames = pagenames
+        self.search = search
+        self.record = record
+        
+    def search (self):
+        if count == None:
+            old = wikipedia.input(u'Text search (Case and Acent Sensitive):')
+            new = " "
+            replacements[old] = new
+
     # Save search in find.dat
-    count = 0
-    arq = codecs.open('find.dat', 'w', 'utf-8')
-    for pl in generator(source, replacements, exceptions, regex, namespace, title, textfilename, sqlfilename, pagenames):
-        arq.write("# [[%s]] \n" % pl.linkname())
-        count +=1
-        print str(count), pl.linkname()
-    arq.close()
-except:
-    wikipedia.stopme()
-    raise
-else:
-    wikipedia.stopme()
+    def record (self):
+        count = 0
+        arq = codecs.open('find.dat', 'w', 'utf-8')
+        for pl in self.generate:
+            arq.write("# [[%s]] \n" % pl.linkname())
+            count +=1
+            print str(count), pl.linkname()
+        arq.close()
 
+def main():
+    source = None
+    replacements = {}
+    exceptions = []
+    regex = False
+    title = False
+    count = None
+    sqlfilename = 'dump.sql'
+    textfilename = ''
+    pagenames = []
+    namespace = -1
+
+if __name__ == "__main__":
+    try:
+        for arg in sys.argv[1:]:
+            arg = wikipedia.argHandler(arg)
+            if arg:
+                if arg == '-regex':
+                    regex = True
+                elif arg.startswith('-file'):
+                    if len(arg) == 5:
+                        textfilename = wikipedia.input(u'Please enter the filename:')
+                    else:
+                        textfilename = arg[6:]
+                    source = 'textfile'
+                elif arg.startswith('-sql'):
+                    if len(arg) == 4:
+                        sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
+                    else:
+                        sqlfilename = arg[5:]
+                    source = 'sqldump'
+                elif arg.startswith('-cat'):
+                    if len(arg) == 4:
+                        categoryname = wikipedia.input(u'Please enter the category name:')
+                    else:
+                        categoryname = arg[5:]
+                    source = 'category'
+                elif arg.startswith('-page'):
+                    if len(arg) == 5:
+                        pagenames.append(wikipedia.input(u'Which page do you want to find?'))
+                    else:
+                        pagenames.append(arg[6:])
+                    source = 'userinput'
+                else:
+                    wikipedia.output(__doc__, 'utf-8')
+                    sys.exit()
+
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()
