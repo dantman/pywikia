@@ -244,7 +244,7 @@ def tidy_category():
                 flag = True
             elif choice == 'r':
                 # remove the category tag
-                catlib.change_category(article, original_cat, None)
+                catlib.change_category(article, original_cat.catname(), None)
                 flag = True
             elif choice == '?':
                 print wikipedia.UnicodeToAsciiHtml(article.get())[0:length]
