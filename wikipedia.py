@@ -427,6 +427,8 @@ class PageLink:
             self.get()
         except NoPage:
             raise NoPage(self)
+        except LockedPage:
+            raise LockedPage(self)
         except IsRedirectPage, arg:
             return arg
         else:
