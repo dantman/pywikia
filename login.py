@@ -13,10 +13,11 @@ file named login.data
 The wikipedia library will be looking for this file and will use the login
 information if it is present.
 
-To log out, throw away the login.data file that is created.
+Arguments:
 
-You can only log in to one wikipedia at a time,
-and it should be the one mentioned in username.dat.
+  -lang:xx Log in to the given wikipedia language
+  
+To log out, throw away the XX-login.data file that is created.
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -25,10 +26,17 @@ and it should be the one mentioned in username.dat.
 #
 __version__='$Id$'
 
-import re
+import re,sys
 import httplib
 import wikipedia
 
+for arg in sys.argv[1:]:
+    if wikipedia.argHandler(arg):
+        pass
+    else:
+        print "Unknown argument: ",arg
+        sys.exit(1)
+        
 if not wikipedia.special.has_key(wikipedia.mylang):
     print "Please add the translation for the Special: namespace in"
     print "Your home wikipedia to the wikipedia.py module"
@@ -69,11 +77,11 @@ conn.close()
 #print response.status, response.reason
 #print data
 #print dir(response)
-f=open('login.data','w')
+f=open('%s-login.data' % wikipedia.mylang, 'w')
 n=0
 msg=response.msg
 Reat=re.compile(': (.*?);')
-print repr(msg.getallmatchingheaders('set-cookie'))
+#print repr(msg.getallmatchingheaders('set-cookie'))
 for eat in msg.getallmatchingheaders('set-cookie'):
     m=Reat.search(eat)
     if m:
