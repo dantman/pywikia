@@ -12,6 +12,11 @@ file named login.data
 
 The wikipedia library will be looking for this file and will use the login
 information if it is present.
+
+To log out, throw away the login.data file that is created.
+
+You can only log in to one wikipedia at a time,
+and it should be the one mentioned in username.dat.
 """
 #
 # (C) Rob W.W. Hooft, 2003
