@@ -77,11 +77,11 @@ def isdate(s):
 
 def asktoadd(pl):
     checkflag = 0 # we have not loaded this page yet
-    if skipdates and isdate(pl):
+    if skipdates and isdate(pl.linkname()):
         return
     if not (pl in tocheck or pl in include or pl in exclude):
         print
-        print("==%s==")%pl
+        print("==%s==")%pl.linkname()
         while 1:
             answer = raw_input("y(es)/n(o)/i(gnore)/(o)ther options? ")
             if answer=='y':
@@ -101,11 +101,10 @@ def asktoadd(pl):
             elif answer=='a':
                 page = raw_input("Specify page to add:")
                 if not (page in tocheck or page in include):
-                    tocheck.append(page)
+                    tocheck.append(wikipedia.PageLink(wikipedia.mylang,page))
             elif answer=='x':
-                page = wikipedia.PageLink(wikipedia.mylang,pl)
-                if page.exists():
-                    if page.isRedirectPage():
+                if pl.exists():
+                    if pl.isRedirectPage():
                         print("Redirect page. Will be included normally.")
                         tocheck.append(pl)
                     else:
@@ -115,13 +114,14 @@ def asktoadd(pl):
                     exclude.append(pl)
                 break
             elif answer=='r':
-                page = raw_input("Specify page to remove:")
-                exclude.append(wikipedia.PageLink(wikipedia.mylang,page).linkname())
+                pagename = raw_input("Specify page to remove:")
+                page = wikipedia.PageLink(wikipedia.mylang,pagename)
+                exclude.append(page)
                 for i in range(len(tocheck)-1, -1, -1):
-                    if tocheck[i] == wikipedia.PageLink(wikipedia.mylang,page).linkname():
+                    if tocheck[i] == page:
                         del tocheck[i]
                 for i in range(len(include)-1, -1, -1):
-                    if include[i] == wikipedia.PageLink(wikipedia.mylang,page).linkname():
+                    if include[i] == page:
                         del include[i]
             elif answer=='l':
                 print("Number of pages still to check: %s")%len(tocheck)
@@ -131,13 +131,12 @@ def asktoadd(pl):
                 print include
                 print("Pages to be checked:")
                 print tocheck
-                print("==%s==")%pl
+                print("==%s==")%pl.linkname()
             elif answer=='t':
                 if checkflag == 0:
                     try:
-                        thispage = wikipedia.PageLink(wikipedia.mylang,pl).get()
-                        print("==%s==")%pl
-                        print wikipedia.UnicodeToAsciiHtml(thispage[0:500])
+                        print("==%s==")%pl.linkname()
+                        print wikipedia.UnicodeToAsciiHtml(pl.get()[0:500])
                         ctoshow = 1000
                         checkflag = 1
                     except wikipedia.NoPage:
@@ -150,11 +149,13 @@ def asktoadd(pl):
                         print("This is a redirect page. It redirects to: [[%s]].")%arg
                         checkflag = 2
                 elif checkflag == 1:
-                    print("==%s==")%pl
-                    print wikipedia.UnicodeToAsciiHtml(thispage[0:ctoshow])
+                    print("==%s==")%pl.linkname()
+                    print wikipedia.UnicodeToAsciiHtml(pl.get()[0:ctoshow])
                     ctoshow = ctoshow + 500
                 elif checkflag == 2:
                     print("Unable to show the text of this page.")
+            else:
+                print("Not understood.")
 
 
 tocheck = []
@@ -168,32 +169,31 @@ for arg in sys.argv[1:]:
     elif arg=='-nodate':
         skipdates=True
     else:
-        tocheck.append(arg)
+        tocheck.append(wikipedia.PageLink(wikipedia.mylang,arg))
 
 if tocheck == []:
     answer = raw_input("Which page to start with? ")
-    tocheck.appen(answer)
+    tocheck.append(wikipedia.PageLink(wikipedia.mylang,answer))
 
 while tocheck <> []:
-    pg = wikipedia.PageLink(wikipedia.mylang,tocheck[0])
-    pname = pg.linkname()
+    pg = tocheck[0]
     tocheck = tocheck[1:]
     if pg.exists():
         if pg.isRedirectPage():
-            exclude.append(pname)
-            new = wikipedia.PageLink(wikipedia.mylang,str(pg.getRedirectTo())).linkname()
+            exclude.append(pg)
+            new = wikipedia.PageLink(wikipedia.mylang,str(pg.getRedirectTo()))
             if not (new in tocheck or new in include or new in exclude):
                 tocheck.append(new)
         else:
-            include.append(pname)
+            include.append(pg)
             for new in pg.links():
-                asktoadd(wikipedia.PageLink(wikipedia.mylang,new).linkname())
+                asktoadd(wikipedia.PageLink(wikipedia.mylang,new))
             for new in wikipedia.getReferences(pg):
-                asktoadd(wikipedia.PageLink(wikipedia.mylang,new).linkname())
+                asktoadd(wikipedia.PageLink(wikipedia.mylang,new))
     else:
-        exclude.append(pname)
+        exclude.append(pg)
         for new in wikipedia.getReferences(pg):
-            asktoadd(wikipedia.PageLink(wikipedia.mylang,new).linkname())
+            asktoadd(wikipedia.PageLink(wikipedia.mylang,new))
     print
 
 include.sort()
