@@ -1,4 +1,4 @@
-# -*- coding: cp1252 -*-
+# -*- coding: utf-8 -*-
 """
 Very simple script to replace a MediaWiki boilerplate text with another one,
 and to convert the old boilerplate format to the new one.
@@ -32,7 +32,7 @@ import re, sys, string
 # Summary message
 msg={
     'en':u'Robot: Changing boilerplate text',
-    'de':u'Bot: \xc4ndere Textbaustein',
+    'de':u'Bot: Ändere Textbaustein',
     }
 
 def getReferences(pl):
