@@ -10,16 +10,18 @@ wiktionaryformats = {
 						'noun':	u'{{-noun-}}'
 						},
 				'translationsheader': u"{{-trans-}}",
+				'synonymsheader': u"{{-syn-}}",
 				},
 			'en': {
-				'langheader':	u'==%%langname%%==',
+				'langheader':	u'== %%langname%% ==',
 				'beforeexampleterm': u"'''",
 				'afterexampleterm': u"'''",
 				'gender': u"''%%gender%%''",
 				'posheader': {
 						'noun': u'=== Noun ==='
 						},
-				'translationsheader': u"===Translations===",
+				'translationsheader': u"==== Translations ====",
+				'synonymsheader': u"==== Synonyms ====",
 				}
 		            }
 #print wiktionaryformats['nl']['langheader']
@@ -102,33 +104,15 @@ class SubEntry:					# On one page, different terms in different languages can be
 
 			subentry += wiktionaryformats[wikilang]['posheader'][term.pos]
 			subentry +='\n'	
+			
 			subentry = subentry + term.wikiwrapasexample(wikilang) + '; ' + meaning.definition
-			subentry +='\n\n'
-			first = 1
-			for synonym in meaning.synonyms:
-				if first==0:
-					subentry += ', '
-				else:
-					first = 0
-				subentry = subentry + synonym.term.wikiwrapforlist(wikilang)
+			
 			subentry +='\n'	
-
-			alllanguages=meaning.translations.keys()
-			alllanguages.sort(sortonname(langnames[wikilang]))
-
-			subentry = subentry + wiktionaryformats[wikilang]['translationsheader'] + '\n'
-			for language in alllanguages:
-#				print meaning.translations[language]
-				subentry = subentry + langnames[wikilang][language] + ': '
-				first = 1
-				for translation in meaning.translations[language]:
-					term=translation.term
-					if first==0:
-						subentry += ', '
-					else:					
-						first = 0
-					subentry = subentry + translation.wikiwrapastranslation(wikilang)
-				subentry += '\n'
+			
+			subentry += meaning.wikiwrapSynonyms(wikilang)
+			
+			subentry += meaning.wikiwrapTranslations(wikilang)
+			
 			return subentry
 			
 class Meaning:					# On one page, different terms in different languages can be described
@@ -166,7 +150,37 @@ class Meaning:					# On one page, different terms in different languages can be 
 	def addTranslation(self,translation):
 	    	self.translations.setdefault( translation.lang, [] ).append( translation )
 
+	def wikiwrapSynonyms(self,wikilang):
+		first = 1
+		wrappedsynonyms = ''
+		for synonym in self.synonyms:
+			if first==0:
+				wrappedsynonyms += ', '
+			else:
+				wrappedsynonyms = wiktionaryformats[wikilang]['synonymsheader'] + '\n'
+				first = 0
+			wrappedsynonyms = wrappedsynonyms + synonym.wikiwrapforlist(wikilang)
+		return wrappedsynonyms + '\n'
 		
+	def wikiwrapTranslations(self,wikilang):
+		alllanguages=self.translations.keys()
+		alllanguages.sort(sortonname(langnames[wikilang]))
+
+		wrappedtranslations = wiktionaryformats[wikilang]['translationsheader'] + '\n'
+		for language in alllanguages:
+#			print meaning.translations[language]
+			wrappedtranslations = wrappedtranslations + langnames[wikilang][language] + ': '
+			first = 1
+			for translation in self.translations[language]:
+				term=translation.term
+				if first==0:
+					wrappedtranslations += ', '
+				else:					
+					first = 0
+				wrappedtranslations = wrappedtranslations + translation.wikiwrapastranslation(wikilang)
+			wrappedtranslations += '\n'
+		return wrappedtranslations + '\n'
+	
 class Term:
 	def __init__(self,lang,term):
 		self.lang=lang			# lang here refers to the language of the term
@@ -252,6 +266,11 @@ if __name__ == '__main__':
 	print
 	t=apage.wikiwrap()
 	print t
+	apage.wikilang = 'en'
+	print
+	t=apage.wikiwrap()
+	print t
+	
 	
 #	{{-nl-}}
 #	{{-noun-}}
