@@ -77,6 +77,13 @@ special = {'en':'Special',
            'de':'Spezial',
            'fr':'Special',
            'fy':'Wiki',
+           'eo':'Speciala',
+           'es':'Especial',
+           'ia':'Special',
+           'it':'Speciale',
+           'pl':'Specjalna',
+           'ro':'Special',
+           'sv':'Special'
            }
 
 # Wikipedia's out of the list that are not running the phase-III software,
