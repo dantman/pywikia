@@ -669,7 +669,6 @@ class PageGroup(object):
 
     def _compare(self,p1,p2):
         # Compare two pagelinks. True iff p1 <= p2
-
         if p1.linkname() < p2.linkname():
             return True
         elif p2.linkname() < p1.linkname():
@@ -743,7 +742,7 @@ class PageGroup(object):
     def _addall(self,l1,l2):
         l=l1
         for i in l2:
-            self._add(l,i)
+            l = self._add(l,i)
         return l
 
     def contains(self,pl):
