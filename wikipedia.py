@@ -1498,59 +1498,62 @@ def newpages(number=10, onlyonce=False, site=None):
         returned_html = getPage(site, site.newpagesname(number), do_quote=False, get_edit_page=False, throttle=throttle)
         start = "<ol start='1' class='special'>"
         end = "</ol>"
-        startpos = returned_html.index(start) + len(start)
-        endpos = startpos + returned_html[startpos:].index(end)
-        relevant = returned_html[startpos:endpos]
-        lines = [line.strip() for line in relevant.strip().split('\n')][::-1]
-
-        ds = {
-            "date": ("<li>", "<a href="),
-            "title": ('title="', '">'),
-            "length": ("</a> (", " "),
-            "user_login": ('">', "</a>"),
-            "comment": ("em>","</em>"),
-            "user_anon": (" . . ", " <", "</li>"),
-            }
-
-        all = [["date"], ["title"], ["length"], ["user_login", "user_anon"], ["comment"]]
-        for line in lines:
-            d = {}
-
-            start = 0
-            for info in all:
-                for subinfo in info:
+        try:
+            startpos = returned_html.index(start) + len(start)
+            endpos = startpos + returned_html[startpos:].index(end)
+            relevant = returned_html[startpos:endpos]
+            lines = [line.strip() for line in relevant.strip().split('\n')][::-1]
+    
+            ds = {
+                "date": ("<li>", "<a href="),
+                "title": ('title="', '">'),
+                "length": ("</a> (", " "),
+                "user_login": ('">', "</a>"),
+                "comment": ("em>","</em>"),
+                "user_anon": (" . . ", " <", "</li>"),
+                }
+    
+            all = [["date"], ["title"], ["length"], ["user_login", "user_anon"], ["comment"]]
+            for line in lines:
+                d = {}
+    
+                start = 0
+                for info in all:
+                    for subinfo in info:
+                        try:
+                            start = start + line[start:].index(ds[subinfo][0]) + len(ds[subinfo][0])
+                        except ValueError:
+                            continue
+                        try:
+                            end = start + line[start:].index(ds[subinfo][1])
+                        except ValueError:
+                            end = start + line[start:].index(ds[subinfo][2]) # ugly, IndexError thus means ValueError
+                        d[subinfo] = line[start:end]
+                        break
+                if d["title"] in seen:
+    ##                print "DEBUG: already seen %r" % d["title"]
+                    continue
+                else:
+                    seen.add(d["title"])
                     try:
-                        start = start + line[start:].index(ds[subinfo][0]) + len(ds[subinfo][0])
+                        dtt = time.strptime(d["date"].strip(), u'%H:%M, %d. %b %Y')
                     except ValueError:
-                        continue
-                    try:
-                        end = start + line[start:].index(ds[subinfo][1])
-                    except ValueError:
-                        end = start + line[start:].index(ds[subinfo][2]) # ugly, IndexError thus means ValueError
-                    d[subinfo] = line[start:end]
-                    break
-            if d["title"] in seen:
-##                print "DEBUG: already seen %r" % d["title"]
-                continue
+                        # error on parsing date, fallback to time only plus current date
+                        timeonly = d["date"].strip()
+                        timeonly = timeonly[:timeonly.index(',')]
+                        dtt = time.strptime(timeonly+' '+time.strftime('%d %m %Y',time.localtime()), '%H:%M %d %m %Y')
+                    d["date"] = datetime.datetime.fromtimestamp(time.mktime(dtt))
+                    d["length"] = int(d["length"])
+                    d["title"] = PageLink(site, d["title"])
+                    yield d
+            if onlyonce:
+                break
             else:
-                seen.add(d["title"])
-                try:
-                    dtt = time.strptime(d["date"].strip(), u'%H:%M, %d. %b %Y')
-                except ValueError:
-                    # error on parsing date, fallback to time only plus current date
-                    timeonly = d["date"].strip()
-                    timeonly = timeonly[:timeonly.index(',')]
-                    dtt = time.strptime(timeonly+' '+time.strftime('%d %m %Y',time.localtime()), '%H:%M %d %m %Y')
-                d["date"] = datetime.datetime.fromtimestamp(time.mktime(dtt))
-                d["length"] = int(d["length"])
-                d["title"] = PageLink(site, d["title"])
-                yield d
-        if onlyonce:
-            break
-        else:
-##            print "DEBUG: seen'm all, restart..."
-            pass
-        # FIXME: if they don't overlap, refetch with more articles
+    ##            print "DEBUG: seen'm all, restart..."
+                pass
+            # FIXME: if they don't overlap, refetch with more articles
+        except ValueError:
+            continue
 
 def allpages(start = '!', site = None, throttle = True):
     """Generator which yields all articles in the home language in
