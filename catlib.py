@@ -72,9 +72,9 @@ class _CatLink(wikipedia.PageLink):
             site = wikipedia.getSite()
         import re
         if site.version() < "1.4":
-            Rtitle = re.compile('title=\n?\"([^\"]*)\"')
+            Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
         else:
-            Rtitle = re.compile('/wiki/\S* title=\n?\"([^\"]*)\"')
+            Rtitle = re.compile('/wiki/\S* title\s?=\s?\"([^\"]*)\"')
         ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
