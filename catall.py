@@ -38,7 +38,7 @@ def choosecats(pagetext):
     print ("?: Give (more of) the text of the page.")
     print ("xx: if the first, remove all categories and add no new.")
     while flag == False:
-        choice=raw_input("? ")
+        choice=wikipedia.input("?")
         if choice=="":
             flag=True
         elif choice=="-":
