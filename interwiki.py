@@ -78,6 +78,12 @@ treelang_log:      if set to True, all messages will be logged to a file
 Both these options are set to True by default. They can be changed through
 the user-config.py configuration file.
 
+If interwiki.py is terminated before it is finished, it will write a file
+"interwiki.dump"; the program will read it if invoked with the
+"-restore". option, and finish all the subjects in that list. Please check what
+the last subject in the list is (say it is "Brilliant"), and to continue the
+run, do: "python interwiki.py -autonomous -restore -start:Brilliant_0"
+
 """
 #
 # (C) Rob W.W. Hooft, 2003
