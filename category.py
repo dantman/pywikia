@@ -52,7 +52,11 @@ def add_category():
     print "answer to the first question."
     listpage = wikipedia.input('Wikipedia page with list of pages to change: ')
     if listpage:
-        pl = wikipedia.PageLink(wikipedia.mylang, listpage)
+        try:
+            pl = wikipedia.PageLink(wikipedia.mylang, listpage)
+        except NoPage:
+            print 'The page ' + listpage + ' could not be loaded from the server.'
+            sys.exit()
         pagenames = pl.links()
     else:
         refpage = wikipedia.input('Wikipedia page that is now linked to: ')
@@ -60,8 +64,7 @@ def add_category():
         pagenames = wikipedia.getReferences(pl)
     print "  ==> %d pages to process"%len(pagenames)
     print
-    newcat = wikipedia.input('Category to add (do not give namespace) : ', encode = True)
-    newcat = newcat
+    newcat = wikipedia.input('Category to add (do not give namespace) : ')
     newcat = newcat.encode(wikipedia.code2encoding(wikipedia.mylang))
     newcat = newcat[:1].capitalize() + newcat[1:]
 
