@@ -136,7 +136,7 @@ def main():
                     sqlfilename = arg[5:]
                 source = sqlfilename
             elif arg.startswith('-start:'):
-                start = int(arg[7:])
+                start = arg[7:]
             else:
                 print 'Unknown argument: %s' % arg
 
