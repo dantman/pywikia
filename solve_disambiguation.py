@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
 
@@ -21,24 +21,24 @@ Command line options:
 
    -pos:XXXX adds XXXX as an alternative disambiguation
 
-   -just       only use the alternatives given on the command line, do not 
+   -just       only use the alternatives given on the command line, do not
                read the page for other possibilities
 
    -redir      if the page is a redirect page, use the page redirected to as
                the (only) alternative; if not set, the pages linked to from
                the page redirected to are used. If the page is not a redirect
                page, this will raise an error
-               
+
    -primary    "primary topic" disambiguation (Begriffsklärung nach Modell 2).
                That's titles where one topic is much more important, the
                disambiguation page is saved somewhere else, and the important
                topic gets the nice name.
-              
+
    -primary:XY like the above, but use XY as the only alternative, instead of
                searching for alternatives in [[Keyword (disambiguation)]].
                Note: this is the same as -primary -just -pos:XY
-   
-   -file:XYZ   reads a list of pages, which can for example be gotten through 
+
+   -file:XYZ   reads a list of pages, which can for example be gotten through
                extract_names.py. XYZ is the name of the file from which the
                list is taken. If XYZ is not given, the user is asked for a
                filename.
@@ -55,7 +55,7 @@ Options that are accepted by more robots:
 
    -lang:XX  set your home wikipedia to XX instead of the one given in
              username.dat
-             
+
 To complete a move of a page, one can use:
 
     python solve_disambiguation.py -just -pos:New_Name Old_Name
@@ -64,6 +64,7 @@ To complete a move of a page, one can use:
 # (C) Rob W.W. Hooft, 2003
 # (C) Daniel Herding, 2004
 # (C) Andre Engels, 2003-2004
+# (C) WikiWichtel, 2004
 #
 # Distribute under the terms of the PSF license.
 #
@@ -114,11 +115,11 @@ link_trail={
    'fr':u'[a-z|à|â|ç|é|è|ê|î|ô|û]*',
    'nl':u'[a-z|ä|ö|ü|ï|ë|é|è|é|à|ç]*'
    }
-          
+
 # List pages that will be ignored if they got a link to a disambiguation
 # page. An example is a page listing disambiguations articles.
 # Special chars should be encoded with unicode (\x##) and space used
-# instead of _ 
+# instead of _
 
 # TODO: convert everything to regular exceptions (only de: done yet, will crash)
 ignore={
@@ -309,7 +310,7 @@ for arg in sys.argv[1:]:
         # open file and read page titles out of it
         f=open(file)
         for line in f.readlines():
-            if line != '\n':           
+            if line != '\n':
                 page_list.append(line)
         f.close()
     elif arg.startswith('-pos:'):
@@ -347,21 +348,21 @@ for wrd in (page_list):
     # when run with -redir argument, there's another summary message
     if solve_redirect:
         wikipedia.setAction(msg_redir[wikipedia.chooselang(wikipedia.mylang,msg_redir)]+': '+wrd)
-    else: 
+    else:
         wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)]+': '+wrd)
-    
+
     thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
-    
+
     # If run with the -primary argument, read from a file which pages should
     # not be worked on; these are the ones where the user pressed n last time.
     # If run without the -primary argument, don't ignore any pages.
     skip_primary = []
     filename = 'disambiguations/' + thispl.urlname() + '.txt'
     try:
-        # The file is stored in the disambiguation/ subdir. Create if necessary. 
+        # The file is stored in the disambiguation/ subdir. Create if necessary.
         f = open(makepath(filename), 'r')
         for line in f.readlines():
-            # remove trailing newlines and carriage returns            
+            # remove trailing newlines and carriage returns
             while line[-1] in ['\n', '\r']:
                 line = line[:-1]
             #skip empty lines
@@ -370,7 +371,7 @@ for wrd in (page_list):
         f.close()
     except IOError:
         pass
-    
+
     if solve_redirect:
         try:
             alternatives.append(str(thispl.getRedirectTo()))
@@ -399,7 +400,7 @@ for wrd in (page_list):
         Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
         for a in Rlink.findall(thistxt):
             alternatives.append(a[0])
-    
+
     alternatives = unique(alternatives)
     # sort possible choices
     alternatives.sort()
@@ -430,7 +431,7 @@ for wrd in (page_list):
                         refpl.put(reftxt)
                     return True
                 # Make sure that next time around we will not find this same hit.
-                curpos = m.start() + 1 
+                curpos = m.start() + 1
                 # Try to standardize the page.
                 if wikipedia.isInterwikiLink(m.group(1)):
                     linkpl = None
@@ -440,7 +441,7 @@ for wrd in (page_list):
                 # Check whether the link found is to thispl.
                 if linkpl != thispl:
                     continue
-    
+
                 n += 1
                 edited = False
                 context = 30
@@ -463,7 +464,7 @@ for wrd in (page_list):
                             filename = 'disambiguations/' + thispl.urlname() + '.txt'
                             try:
                                 # Open file for appending. If none exists yet, create a new one.
-                                # The file is stored in the disambiguation/ subdir. Create if necessary. 
+                                # The file is stored in the disambiguation/ subdir. Create if necessary.
                                 f = open(makepath(filename), 'a')
                                 f.write(refpl.urlname() + '\n')
                                 f.close()
@@ -489,9 +490,11 @@ for wrd in (page_list):
                         reftxt = edit_window.edit(reftxt)
                         edited = True
                     elif choice=='l':
-                        print '\n'
-                        for i in range(len(alternatives)):
-                            wikipedia.output("%3d - %s" % (i, alternatives[i]))
+                        #list in new window
+                        print '\n\t\t--> beachte neues Fenster <--'
+                        import gui
+                        list_window = gui.ListBoxWindow()
+                        mylist = list_window.list(alternatives)
                     elif choice=='x' and edited:
                         choice=-3
                         break
@@ -546,7 +549,7 @@ for wrd in (page_list):
                     else:
                         newlink = "[[%s|%s]]" % (new_page_title, link_text)
                     reftxt = reftxt[:m.start()] + newlink + reftxt[m.end():]
-    
+
                 wikipedia.output(reftxt[max(0,m.start()-30):m.end()+30])
             if not debug:
                 refpl.put(reftxt)
@@ -557,7 +560,7 @@ for wrd in (page_list):
     else:
         linktrail='[a-z]*'
     trailR=re.compile(linktrail)
-        
+
     # The regular expression which finds links. Results consist of three groups:
     # group(1) is the target page title, that is, everything before | or ].
     # group(2) is the alternative link title, that's everything between | and ].
@@ -569,7 +572,7 @@ for wrd in (page_list):
         s=s.replace('(','\\(')
         s=s.replace(')','\\)')
         return s
-    
+
     active=True
 
     for ref in getReferences(thispl):
@@ -577,6 +580,6 @@ for wrd in (page_list):
         if active and not refpl.urlname() in skip_primary:
             if not treat(refpl, thispl):
                 active=False
-    
+
     # clear alternatives before working on next disambiguation page
     alternatives = []
