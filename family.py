@@ -343,4 +343,9 @@ class Family(object):
         """Return a list of historical encodings for a specific language
            wikipedia"""
         return self.code2encoding(code),
-    
+
+    def __cmp__(self, otherfamily):
+        try:
+            return cmp(self.name, otherfamily.name)
+        except AttributeError:
+            return cmp(id(self), id(otherfamily))

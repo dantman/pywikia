@@ -607,10 +607,13 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             self.timestamp=u''
         elif name == 'text':
             self.destination = 'text'
+            self.text=u''
         elif name == 'title':
             self.destination = 'title'
+            self.title=u''
         elif name == 'timestamp':
             self.destination = 'timestamp'
+            self.timestamp=u''
 
     def endElement(self, name):
         if name == 'revision':
@@ -1778,7 +1781,7 @@ class Site(object):
             return 1
         if self.family==other.family:
             return cmp(self.lang,other.lang)
-        return cmp(self.family,other.family)
+        return cmp(self.family.name,other.family.name)
 
     def category_on_one_line(self):
         return self.lang in self.family.category_on_one_line
