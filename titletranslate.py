@@ -89,6 +89,12 @@ def translate(pl, arr, same = False, hints = None):
             elif newcode == 'la':
                 # la pages are not years but numbers
                 pass
+            elif newcode == 'gl':
+                # gl years do not exist
+                pass
+            elif newcode == 'nds' and i<2000 or i>2010:
+                # nds years do not exist except for 2003
+                pass
             else:
                 newname = fmt%i 
                 x=wikipedia.PageLink(newcode, newname)
