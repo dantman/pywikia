@@ -45,20 +45,23 @@ import re,sys,wikipedia,config,time
 
 msg_no_warnings = {'de':'Bot: Tabellensyntax konvertiert',
                    'en':'User-controlled Bot: table syntax updated',
-                    'es':'Bot controlado: actualizada sintaxis de tabla',
-                    'nl':'Tabel gewijzigd van HTML- naar Wikisyntax'
+                   'es':'Bot controlado: actualizada sintaxis de tabla',
+                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax',
+                   'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada',
                   }
 
 msg_one_warning = {'de':'Bot: Tabellensyntax konvertiert - %d Warnung!',
                    'en':'User-controlled Bot: table syntax updated - %d warning!',
                    'es':'Bot controlado: actualizada sintaxis de tabla - %d aviso!',
-                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!'
+                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
+                   'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
                   }
 
 msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
                          'en':'User-controlled Bot: table syntax updated - %d warnings!',
                          'es':'Bot controlado: actualizada sintaxis de tabla - %d avisos!',
-                         'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!'
+                         'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!',
+                         'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
                         }
                  
 def convert(text, site = None):
