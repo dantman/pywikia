@@ -40,6 +40,15 @@ if not wikipedia.special.has_key(wikipedia.mylang):
     import sys
     sys.exit(1)
 
+msg={
+    'en':'Robot-assisted disambiguation ',
+    'da':'Retter flertydigt link til '
+    }
+if msg.has_key(wikipedia.mylang):
+    msglang=wikipedia.mylang
+else:
+    msglang='en'
+
 def getreferences(pl):
     host = wikipedia.langs[pl.code()]
     url="/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(wikipedia.special[wikipedia.mylang], pl.urlname())
@@ -63,7 +72,7 @@ for arg in sys.argv[1:]:
 
 wrd=' '.join(wrd)
 
-wikipedia.setAction('Robot-assisted disambiguation '+wrd)
+wikipedia.setAction(msg[msglang]+wrd)
 
 thispl=wikipedia.PageLink(wikipedia.mylang, wrd)
 
