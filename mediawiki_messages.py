@@ -1,5 +1,19 @@
 # -*- coding: utf-8 -*-
 """
+Allows access to the MediaWiki messages, that's the label texts of the MediaWiki
+software in the current language. These can be used in other bots.
+
+The function refresh_messages() downloads all the current messages and saves
+them to disk. It is run automatically when a bot first tries to access one of
+the messages. It can be updated manually by running this script, e.g. when
+somebody changed the current message at the wiki.
+
+Syntax: python mediawiki_messages [-lang:xx]
+
+Command line options:
+
+-lang:XX download labels in language XX instead of the one given in
+         username.dat
 
 """
 #
@@ -13,12 +27,12 @@ import re, sys, pickle, codecs
 
 def get(key):
     import os.path
-    if not os.path.exists('mediawiki_messages/mediawiki-messages-%s.dat' % wikipedia.mylang):
+    if not os.path.exists('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang):
         refresh_messages()
     # TODO: It's quite inefficient to reload the file every time this function
     # is used. Maybe we can save its content the first time the function is
     # called.
-    f = open('mediawiki_messages/mediawiki-messages-%s.dat' % wikipedia.mylang, 'r')
+    f = open('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang, 'r')
     dictionary = pickle.load(f)
     f.close()
     key = key[0].lower() + key[1:]
@@ -79,15 +93,14 @@ def refresh_messages():
         # Key strings only contain ASCII characters, so we can use them as dictionary keys
         dictionary[item[0]] = unicode(item[1], wikipedia.code2encoding(wikipedia.mylang))
         # Save the dictionary to disk
-        # Create directory for these files, if it doesn't exist already
-        makepath('mediawiki_messages')
         # The file is stored in the mediawiki_messages subdir. Create if necessary. 
-        f = open(makepath('mediawiki_messages/mediawiki-messages-%s.dat' % wikipedia.mylang), 'w')
+        f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang), 'w')
         pickle.dump(dictionary, f)
         f.close()
     
 if __name__ == "__main__":
-    # TODO: lang param
-    
+    for arg in sys.argv[1:]:
+        if wikipedia.argHandler(arg):
+            pass
     refresh_messages()
 
