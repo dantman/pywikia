@@ -275,14 +275,22 @@ def tidy_category():
 
 
 if __name__ == "__main__":
+    if sys.argv[1:] == []:
+        print
+        print 'Syntax: python category.py action'
+        print 'where action can be one of these:'
+        print ' * add  - mass-add a category to a list of pages'
+        print ' * remove - remove category tag from all pages in a category'
+        print ' * rename - move all pages in a category to another category'
+        print ' * tidy - tidy up a category by moving its articles into subcategories'
     for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
             pass
-        elif arg == "add":
+        elif arg == 'add':
             add_category()
-        elif arg == "remove":
+        elif arg == 'remove':
             remove_category()
-        elif arg == "rename":
+        elif arg == 'rename':
             rename_category()
-        elif arg == "tidy":
+        elif arg == 'tidy':
             tidy_category()
