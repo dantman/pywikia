@@ -424,11 +424,12 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
     throttle()
     text, charset = getUrl(host,address)
     # Keep login status for external use
-    global loggedin
-    if "Userlogin" in text:
-        loggedin = False
-    else:
-        loggedin = True
+    if code == mylang:
+        global loggedin
+        if "Userlogin" in text:
+            loggedin = False
+        else:
+            loggedin = True
     # Extract the actual text from the textedit field
     if do_edit:
         if debug:
