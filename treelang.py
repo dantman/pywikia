@@ -57,6 +57,12 @@ def sametranslate(name,arr):
 def autotranslate(name,arr,same=0):
     if same:
         return sametranslate(name,arr)
+    if hints:
+        for h in hints:
+            newcode,newname=h.split(':')
+            newname=wikipedia.url2link(newname)
+            newname=wikipedia.link2url(newname)
+            arr[newcode,newname]=None
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
     Rdate=re.compile('(\d+)_(%s)'%('|'.join(datetable.keys())))
@@ -219,6 +225,7 @@ same=0
 only_if_status=1
 confirm=0
 autonomous=0
+hints=[]
 
 for arg in sys.argv[1:]:
     if arg=='-force':
@@ -227,6 +234,8 @@ for arg in sys.argv[1:]:
         only_if_status=0
     elif arg=='-same':
         same=1
+    elif arg.startswith('-hint:'):
+        hints.append(arg[6:])
     elif arg=='-name':
         same='name'
     elif arg=='-confirm':
