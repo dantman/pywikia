@@ -34,19 +34,24 @@ yearlayout.py          : An old robot used to change the layout of all nl: year
 login.py               : Log in to an account on your "home" wikipedia. 
 solve_disambiguation.py: Disambiguate pages from the command line. 
 
-You need at least python version 2.3 installed on your computer to be
-able to run any of the code in this package. Support for older
+More precise information, and a list of the options that are available for
+the various programs, are given with the programs.
+
+You need to have at least python version 2.3 installed on your computer
+to be able to run any of the code in this package. Support for older
 versions of python is not planned.
 
 Before you run any of the programs, you need to create a file named
 'username.dat' in your current directory. It has two lines: The first
-line is your real name; this will be used to identify you when the
-robot is making changes, unless you are logged in. The second line is
-normally 2 characters: the code of your home wikipedia. If the second
-line is missing, your home wikipedia is assumed to be 'test'. It may
-take a little or a lot to make the programs run on non-nl:
+line is your Wikipedia nickname; this will be used to identify you
+when the robot is making changes, unless you are logged in. The
+second line is normally 2 characters: the code of your home wikipedia.
+If the second line is missing, your home wikipedia is assumed to be
+'test'. It may take a little or a lot to make the programs run on non-nl:
 wikipedias. It has been used on en:, da: and fy: so far.
 
 You do not need to "install" this package to be able to make use of
 it. You can actually just run it from the directory where you unpacked
 it or where you have your copy of the CVS sources.
+
+
