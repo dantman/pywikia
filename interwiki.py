@@ -384,7 +384,7 @@ class Subject:
                 if pl != self.inpl:
                     self.problem("Found link to %s"%pl.asasciilink())
                     self.whereReport(pl)
-                nerr += 1
+                    nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
                 if code in new:
                     new[code].append(pl)
