@@ -9,6 +9,11 @@ align= "center"
 </tr>
 <th>easy th</th>
 <th>bad th
-<tr><td>bad td
+<td>bad td
 <td>good td</td>
+</tr><tr bgcolor="#FFFFFF"><td>[[Website]]:</td><td>[http://www.bad-laasphe.de/ www.bad-laasphe.de]<td> 
+</tr> <!--
+<tr bgcolor="#FFFFFF"><td>[[E-Mail]]-Adresse:</td><td>[mailto:info@example.org info@example.org]</td></tr> 
+
+-->
 </table>
