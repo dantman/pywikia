@@ -14,7 +14,7 @@ import re, time
 import wikipedia, config
 
 
-class SQLentry:
+class SQLentry(object):
     '''
     Represents a wiki page, read from an SQL dump. 
     
@@ -121,7 +121,7 @@ class SQLentry:
 # Represents one parsed SQL dump file. Reads the local file at initialization,
 # parses it with a regular expression, and offers access to the resulting
 # SQLentry objects through the entries() generator.
-class SQLdump:
+class SQLdump(object):
     def __init__(self, filename, encoding):
         self.filename = filename
         self.encoding = encoding

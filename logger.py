@@ -6,7 +6,7 @@
 __version__ = '$Id$'
 #
 
-class Logger:
+class Logger(object):
     """A class that replaces a standard output file by a logfile PLUS the
        standard output. This is used by the "log" option."""
     def __init__(self, original, filename='wikipedia.log'):

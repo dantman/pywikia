@@ -178,7 +178,7 @@ class Global:
     askhints = False
     auto = True
     
-class Subject:
+class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
        all its translations)"""
     def __init__(self, pl, hints = None):

@@ -13,7 +13,7 @@ import re
 
 import wikipedia
 
-class Exceptions:
+class Exceptions(object):
     def __init__(self):
         self.d={}
 

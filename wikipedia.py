@@ -142,7 +142,7 @@ class NoNamespace(Error):
 SaxError = xml.sax._exceptions.SAXParseException
 
 # The most important thing in this whole module: The PageLink class
-class PageLink:
+class PageLink(object):
     """A Wikipedia page link."""
     def __init__(self, code, title = None, incode = None):
         """
@@ -593,7 +593,7 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
         elif self.destination == 'timestamp':
             self.timestamp += data
             
-class GetAll:
+class GetAll(object):
     def __init__(self, code, pages):
         self.code = code
         self.pages = []
@@ -750,7 +750,7 @@ def underline2space(name):
 
 import time
 
-class Throttle:
+class Throttle(object):
     def __init__(self, delay = config.throttle, ignore = 0):
         """Make sure there are at least 'delay' seconds between page-gets
            after 'ignore' initial page-gets"""
