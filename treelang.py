@@ -161,7 +161,7 @@ def treestep(arr,code,name,abort_on_redirect=0):
             return 1
         return 0
     arr[code,name]=text
-    for newcode,newname in wikipedia.getLanguageLinks(text).iteritems():
+    for newcode,newname in wikipedia.getLanguageLinks(text,incode=code).iteritems():
         # Recognize and standardize for Wikipedia
         newname=newname[0].upper()+newname[1:]
         newname=newname.strip()
@@ -304,7 +304,7 @@ for code,cname in k:
         else:
             new[code]=wikipedia.url2link(cname,code=code,incode=mylang)
 print "==status=="
-old=wikipedia.getLanguageLinks(m[mylang,inname])
+old=wikipedia.getLanguageLinks(m[mylang,inname],incode=mylang)
 if old is None:
     print "No old languages found. Does the dutch page not exist?"
     sys.exit(1)
@@ -346,6 +346,6 @@ if newtext!=oldtext:
         else:
             answer='y'
         if answer=='y':
-            status,reason,data=wikipedia.putPage(mylang,inname,newtext,comment='Rob Hooft: robot '+mods)
+            status,reason,data=wikipedia.putPage(mylang,inname,newtext,comment='%s: robot '%wikipedia.username+mods)
             if str(status)!='302':
                 print status,reason

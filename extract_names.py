@@ -1,5 +1,5 @@
 import sys,re
-R=re.compile('/wiki/(.*?)" *class=[\'\"]internal')
+R=re.compile('/wiki/(.*?)" *')
 fn=sys.argv[1]
 f=open(fn)
 text=f.read()

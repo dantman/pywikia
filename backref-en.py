@@ -12,7 +12,9 @@ for f in wikipedia.allnlpages(start=sys.argv[1]):
     xf=wikipedia.link2url(f,code=codefrom)
     stdf=wikipedia.url2link(xf,code=codefrom,incode=codefrom)
     try:
-        ll=wikipedia.getLanguageLinks(wikipedia.getPage(codefrom,wikipedia.link2url(f,code=codefrom)))
+        urlname=wikipedia.link2url(f,code=codefrom)
+        txt=wikipedia.getPage(codefrom,urlname)
+        ll=wikipedia.getLanguageLinks(txt,incode=codefrom)
     except wikipedia.IsRedirectPage:
         continue
     except wikipedia.NoPage:
@@ -21,7 +23,8 @@ for f in wikipedia.allnlpages(start=sys.argv[1]):
     for code,name in ll.iteritems():
         if code==codeto:
             try:
-                enll=wikipedia.getLanguageLinks(wikipedia.getPage(codeto,name))
+                ftxt=wikipedia.getPage(codeto,name)
+                enll=wikipedia.getLanguageLinks(ftxt,incode=codeto)
             except wikipedia.NoPage:
                 print >> sys.stderr, "%s:%s does not exist, referred from %s:%s"%(codeto,name,codefrom,f)
                 sys.stderr.flush()

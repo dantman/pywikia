@@ -51,7 +51,7 @@ def findlangs(year):
                     return None,None
         else:
             text[code]=t
-            l=wikipedia.getLanguageLinks(t)
+            l=wikipedia.getLanguageLinks(t,incode=code)
             if code=='ja':
                 l[code]=year+'&#24180;' # Add self-reference
             else:

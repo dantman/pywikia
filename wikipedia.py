@@ -307,7 +307,7 @@ def allnlpages(start='%20%200'):
 
 # Part of library dealing with interwiki links
 
-def getLanguageLinks(text):
+def getLanguageLinks(text,incode=None):
     """Returns a dictionary of other language links mentioned in the text
        in the form {code:pagename}"""
     result = {}
@@ -318,6 +318,8 @@ def getLanguageLinks(text):
                 t=m.group(1)
                 if '|' in t:
                     t.replace('|','')
+                if incode=='eo':
+                    t.replace('xx','x')
                 result[code] = t
             else:
                 print "ERROR: empty link to %s:"%(code)
@@ -375,8 +377,7 @@ def url2link(percentname,incode,code):
     
 def link2url(name,code):
     """Convert a interwiki link name of a page to the proper name to be used
-       in a URL for that page. code should specify the language for the link,
-       incode the language of the page the link is in."""
+       in a URL for that page. code should specify the language for the link"""
     if '%' in name:
         name=url2unicode(name,language=code)
     else:
@@ -384,16 +385,13 @@ def link2url(name,code):
     # Remove spaces from beginning and the end
     name=name.strip()
     # Standardize capitalization
-    name=name[0].upper()+name[1:]
+    if name:
+        name=name[0].upper()+name[1:]
     try:
         result=str(name.encode(code2encoding(code)))
     except UnicodeError:
-        try:
-            #print "Trying to encode into latin1"
-            result=str(name.encode('latin1'))
-            #print "Result=",result
-        except UnicodeError:
-            result=str(name.encode('utf-8'))
+        print "Cannot convert %s into a URL for %s"%(repr(name),code)
+        raise
     result=space2underline(result)
     return urllib.quote(result)
 
