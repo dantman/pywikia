@@ -291,7 +291,7 @@ def allpagesname(code, start):
     # This is very ugly: to get all pages, the wikipedia code
     # 'fakes' getting a page with the returned name.
     # This will need to be fixed someday.
-    if version(code)="1.2":
+    if version(code)=="1.2":
         return '%s:Allpages&printable=yes&from=%s'%(special[code], start)
     else:
         return '%s:Allpages&from=%s'%(special[code], start)
