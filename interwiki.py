@@ -1012,7 +1012,7 @@ if __name__ == "__main__":
                 for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
                     sa.add(pl,hints=hints)
                     last = pl
-                start = pl.linkname()
+                start = str(pl.linkname().encode(pl.encoding()))
             elif arg.startswith('-file:'):
                 for pl in wikipedia.PageLinksFromFile(arg[6:]):
                     sa.add(pl,hints=hints)
