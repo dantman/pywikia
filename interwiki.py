@@ -859,7 +859,7 @@ if __name__ == "__main__":
             print "Starting with day %s" % (date.date_format[startmonth][wikipedia.mylang]) % 1
             for month in range(startmonth, 12+1):
                 for day in range(1, date.days_in_month[month]+1):
-                    sa.add(wikipedia.PageLink(wikipedia.mylang, (date.date_format[startmonth][wikipedia.mylang]) % day))
+                    sa.add(wikipedia.PageLink(wikipedia.mylang, (date.date_format[month][wikipedia.mylang]) % day))
         elif arg == '-nobell':
             globalvar.bell = False
         elif arg.startswith('-skipfile:'):
