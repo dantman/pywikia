@@ -42,7 +42,7 @@ def refresh_messages():
     itemR = re.compile("<tr bgcolor=\"#F0F0FF\">\n"
                      + "<td>\n"
                      + "<p><a href=\"\/wiki/MediaWiki:.+?\" title=\"MediaWiki:.+?\">(.+?)<\/a><br \/>\n"
-                     + "<a href=.+? class=\"new\" title=.+?>.+?<\/a><\/p>\n"
+                     + "<a href=.+? title=.+?>.+?<\/a><\/p>\n"
                      + "</td>\n"
                      + "<td>\n"
                      + "<p>.+?</p>\n"
