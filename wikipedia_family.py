@@ -224,6 +224,7 @@ class Family(family.Family):
     interwiki_putfirst = {
         'en': alphabetic,
         'fr': alphabetic,
+	'he': ['en'],
         'hu': ['en'],
         'pl': alphabetic,
         'simple': alphabetic,
