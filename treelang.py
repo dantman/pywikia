@@ -403,16 +403,10 @@ else:
     if debug:
         if not autonomous and not sys.platform == 'win32':
             f = open('/tmp/wik.in', 'w')
-            if type(oldtext)==type(u''):
-                f.write(wikipedia.UnicodeToAsciiHtml(oldtext))
-            else:
-                f.write(oldtext)
+            f.write(wikipedia.forCode(oldtext, 'ascii'))
             f.close()
             f = open('/tmp/wik.out', 'w')
-            if type(newtext)==type(u''):
-                f.write(wikipedia.UnicodeToAsciiHtml(newtext))
-            else:
-                f.write(newtext)
+            f.write(wikipedia.forCode(newtext, 'ascii'))
             f.close()
             import os
             f=os.popen('diff -u /tmp/wik.in /tmp/wik.out', 'r')
