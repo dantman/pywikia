@@ -60,6 +60,9 @@ test.py                : Check whether you are logged in.
 xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
                          created by interwiki.py), and if it contains an error,
                          show a stacktrace with the location of the error.
+editarticle.py         : Edit an article with your favourite editor. Run
+                         the script with the "--help" option to get
+                         detailed infortion on possiblities.
 
 === Robots ===
 
