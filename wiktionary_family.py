@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -166,7 +166,7 @@ class Family(family.Family):
     # On most Wikipedias page names must start with a capital letter, but some
     # languages don't use this.
         
-    nocapitalize = ['cs','fr','it','nl','tlh','tokipona']
+    nocapitalize = ['cs','de','fr','it','nl','tlh','tokipona']
 
     # Which languages have a special order for putting interlanguage links,
     # and what order is it? If a language is not in interwiki_putfirst,
