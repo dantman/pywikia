@@ -23,7 +23,8 @@ for arg in sys.argv[1:]:
         pl = wikipedia.PageLink(wikipedia.mylang, arg)
         text = pl.get()
         
-        newText = re.sub("\((http:\/\/([^ ]*))\)", "([\\1 \\2])", text)
+        newText = re.sub("(http:\/\/([^ ]*[^\] ]))\)", "[\\1 \\2])", text)
+
         if newText != text:
             import difflib
             for line in difflib.ndiff(text.split('\r\n'),newText.split('\r\n')):
