@@ -348,53 +348,6 @@ def convert(text, site = None):
         print "No changes were necessary"
         return None
 
-quietMode = False # use -quiet to get less output
-
-            
-# if the -file argument is used, page titles are stored in this array.
-# otherwise it will only contain one page.
-articles = []
-# if -file is not used, this temporary array is used to read the page title.
-page_title = []
-
-debug = False
-action = None
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if arg.startswith('-file:'):
-    
-            f=open(arg[6:], 'r')
-            R=re.compile(r'.*\[\[([^\]]*)\]\].*')
-            m = False
-            for line in f.readlines():
-                m=R.match(line)            
-                if m:
-                    articles.append(m.group(1))
-                else:
-                    print "ERROR: Did not understand %s line:\n%s" % (
-                        arg[6:], repr(line))
-            f.close()
-        elif arg.startswith('-sql'):
-            if len(arg) == 4:
-                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
-            else:
-                sqlfilename = arg[5:]
-            action = 'parse_sqldump'
-        elif arg.startswith('-skip:'):
-            articles = articles[articles.index(arg[6:]):]
-        elif arg.startswith('-auto'):
-            config.table2wikiAskOnlyWarnings = True
-            config.table2wikiSkipWarnings = True
-            print "Automatic mode!\n"
-        elif arg.startswith('-quiet'):
-            quietMode = True
-        elif arg.startswith('-debug'):
-            articles = "test"
-            debug = True
-        else:
-            page_title.append(arg)
-
 def treat(page_title, site = None):
     '''
     Loads a page, converts all HTML tables in its text to wiki syntax,
@@ -424,39 +377,93 @@ def treat(page_title, site = None):
         pl.put(converted_text)
         return True
 
-# if the page is given as a command line argument,
-# connect the title's parts with spaces
-if page_title != []:
-     page_title = ' '.join(page_title)
-     articles.append(page_title)
-
-fixedSites = ''
-notFixedSites = ''
-
-if action == 'parse_sqldump':
-    import sqldump
-    sqldump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
-    for entry in sqldump.entries():
-        # TODO: make next line case-insensitive
-        tableTagR = re.compile('<table', re.IGNORECASE)
-        if tableTagR.search(entry.text):
-            treat(entry.full_title())
-else:
-    if debug:
-        f = open("table2wiki.testTable")
-        text = f.read()
-        f.close()
-        if convert(text):
-            fixedSites += ' (test table)' 
-        else:
-            notFixedSites += ' (test table)'
-    else:
-        for article in articles:
-            print '\n'
-            if treat(article):
-                fixedSites += ' ' + article
+def main():
+    quietMode = False # use -quiet to get less output
+    # if the -file argument is used, page titles are stored in this array.
+    # otherwise it will only contain one page.
+    articles = []
+    # if -file is not used, this temporary array is used to read the page title.
+    page_title = []
+    print page_title
+    debug = False
+    action = None
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg.startswith('-file:'):
+                f=open(arg[6:], 'r')
+                R=re.compile(r'.*\[\[([^\]]*)\]\].*')
+                m = False
+                for line in f.readlines():
+                    m=R.match(line)            
+                    if m:
+                        articles.append(m.group(1))
+                    else:
+                        print "ERROR: Did not understand %s line:\n%s" % (
+                            arg[6:], repr(line))
+                f.close()
+            elif arg.startswith('-sql'):
+                if len(arg) == 4:
+                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                else:
+                    sqlfilename = arg[5:]
+                action = 'parse_sqldump'
+            elif arg.startswith('-skip:'):
+                articles = articles[articles.index(arg[6:]):]
+            elif arg.startswith('-auto'):
+                config.table2wikiAskOnlyWarnings = True
+                config.table2wikiSkipWarnings = True
+                print "Automatic mode!\n"
+            elif arg.startswith('-quiet'):
+                quietMode = True
+            elif arg.startswith('-debug'):
+                articles = "test"
+                debug = True
             else:
-                notFixedSites += ' ' + article
+                page_title.append(arg)
 
-print "\n\tFollowing pages were converted:\n" + fixedSites
-print "\n\tFollowing pages were not converted:\n" + notFixedSites
+    print page_title
+    # if the page is given as a command line argument,
+    # connect the title's parts with spaces
+    if page_title != []:
+        page_title = ' '.join(page_title)
+        articles.append(page_title)
+
+    fixedSites = ''
+    notFixedSites = ''
+
+    if action == 'parse_sqldump':
+        import sqldump
+        sqldump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
+        for entry in sqldump.entries():
+            # TODO: make next line case-insensitive
+            tableTagR = re.compile('<table', re.IGNORECASE)
+            if tableTagR.search(entry.text):
+                treat(entry.full_title())
+    else:
+        if debug:
+            f = open("table2wiki.testTable")
+            text = f.read()
+            f.close()
+            if convert(text):
+                fixedSites += ' (test table)' 
+            else:
+                notFixedSites += ' (test table)'
+        else:
+            for article in articles:
+                print '\n'
+                if treat(article):
+                    fixedSites += ' ' + article
+                else:
+                    notFixedSites += ' ' + article
+
+    print "\n\tFollowing pages were converted:\n" + fixedSites
+    print "\n\tFollowing pages were not converted:\n" + notFixedSites
+
+try:
+    main()
+except:
+    wikipedia.stopme()
+    raise
+else:
+    wikipedia.stopme()

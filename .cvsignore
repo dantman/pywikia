@@ -6,3 +6,4 @@ treelang.log
 warning*.log
 *.txt
 check_extern.log
+throttle.log

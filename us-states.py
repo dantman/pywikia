@@ -22,102 +22,111 @@ Specific arguments:
 
 import re,wikipedia,sys
 
-start = '0'
-force = False
-msg = {'en':'Creating state abbreviation redirect'
-       }
+def main():
+    start = '0'
+    force = False
+    msg = {'en':'Creating state abbreviation redirect'
+           }
 
-abbrev = {
-    'Alabama': 'AL',
-    'Alaska': 'AK',
-    'Arizona': 'AZ',
-    'Arkansas': 'AR',
-    'California': 'CA',
-    'Colorado': 'CO',
-    'Delaware': 'DE',
-    'Florida': 'FL',
-    'Georgia': 'GA',
-    'Hawaii': 'HI',
-    'Idaho': 'ID',
-    'Illinois': 'IL',
-    'Indiana': 'IN',
-    'Iowa': 'IA',
-    'Kansas': 'KS',
-    'Kentucky': 'KY',
-    'Louisiana': 'LA',
-    'Maine': 'ME',
-    'Maryland': 'MD',
-    'Massachusetts': 'MA',
-    'Michigan': 'MI',
-    'Minnesota': 'MN',
-    'Mississippi': 'MS',
-    'Missouri': 'MO',
-    'Montana': 'MT',
-    'North Carolina': 'NC',
-    'North Dakota': 'ND',
-    'Nebraska': 'NE',
-    'Nevada': 'NV',
-    'New Hampshire': 'NH',
-    'New Jersey': 'NJ',
-    'New Mexico': 'NM',
-    'New York': 'NY',
-    'Ohio': 'OH',
-    'Oklahoma': 'OK',
-    'Oregon': 'OR',
-    'Pennsylvania': 'PA',
-    'Rhode Island': 'RI',
-    'South Carolina': 'SC',
-    'South Dakota': 'SD',
-    'Tennessee': 'TN',
-    'Texas': 'TX',
-    'Utah': 'UT',
-    'Vermont': 'VT',
-    'Virginia': 'VA',
-    'Washington': 'WA',
-    'West Virginia': 'WV',
-    'Wisconsin': 'WI',
-    'Wyoming': 'WY'
-    }
+    abbrev = {
+        'Alabama': 'AL',
+        'Alaska': 'AK',
+        'Arizona': 'AZ',
+        'Arkansas': 'AR',
+        'California': 'CA',
+        'Colorado': 'CO',
+        'Delaware': 'DE',
+        'Florida': 'FL',
+        'Georgia': 'GA',
+        'Hawaii': 'HI',
+        'Idaho': 'ID',
+        'Illinois': 'IL',
+        'Indiana': 'IN',
+        'Iowa': 'IA',
+        'Kansas': 'KS',
+        'Kentucky': 'KY',
+        'Louisiana': 'LA',
+        'Maine': 'ME',
+        'Maryland': 'MD',
+        'Massachusetts': 'MA',
+        'Michigan': 'MI',
+        'Minnesota': 'MN',
+        'Mississippi': 'MS',
+        'Missouri': 'MO',
+        'Montana': 'MT',
+        'North Carolina': 'NC',
+        'North Dakota': 'ND',
+        'Nebraska': 'NE',
+        'Nevada': 'NV',
+        'New Hampshire': 'NH',
+        'New Jersey': 'NJ',
+        'New Mexico': 'NM',
+        'New York': 'NY',
+        'Ohio': 'OH',
+        'Oklahoma': 'OK',
+        'Oregon': 'OR',
+        'Pennsylvania': 'PA',
+        'Rhode Island': 'RI',
+        'South Carolina': 'SC',
+        'South Dakota': 'SD',
+        'Tennessee': 'TN',
+        'Texas': 'TX',
+        'Utah': 'UT',
+        'Vermont': 'VT',
+        'Virginia': 'VA',
+        'Washington': 'WA',
+        'West Virginia': 'WV',
+        'Wisconsin': 'WI',
+        'Wyoming': 'WY'
+        }
 
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if arg.startswith('-start:'):
-            start = arg[7:]
-        elif arg == '-force':
-            force = True
-        else:
-            print('Warning: argument "%s" not understood; ignoring.')%arg
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg.startswith('-start:'):
+                start = arg[7:]
+            elif arg == '-force':
+                force = True
+            else:
+                print('Warning: argument "%s" not understood; ignoring.')%arg
 
-mysite = wikipedia.getSite()
-for p in wikipedia.allpages(start = start, site = mysite):
-    for sn in abbrev:
-        R=re.compile('[^[]]*' + '\%2C_' + sn)
-        for res in R.findall(p.urlname()):
-            pl=wikipedia.PageLink(mysite, p.urlname().replace(sn,abbrev[sn]))
-            # A bit hacking here - the real work is done in the 'except wikipedia.NoPage'
-            # part rather than the 'try'.
-            try:
-                goal = pl.getRedirectTo()
-                if wikipedia.PageLink(mysite, goal):
-                    print("Not creating %s - redirect already exists.") % goal
-                else:
-                    print("WARNING!!! %s already exists but redirects elsewhere!") % goal
-            except wikipedia.IsNotRedirectPage:
-                print("WARNING!!! Page %s already exists and is not a redirect. Please check page!") % goal
-            except wikipedia.NoPage:
-                change=''
-                if p.isRedirectPage():
-                    p2 = wikipedia.PageLink(mysite, p.getRedirectTo())
-                    print ('Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.')%p2.urlname().replace("%2C",",").replace("_"," ")
-                else:
-                    p2 = p
-                if force:
-                    change='y'
-                else:
-                    while not change in ['y','n']:
-                        print ("Create redirect %s")%pl.urlname().replace("%2C",",").replace("_"," ")
-                        change = raw_input("(y/n)? ")
-                if change=='y':
-                    text = '#REDIRECT [['+p2.urlname().replace("%2C",",").replace("_"," ")+']]'
-                    pl.put(text, comment = wikipedia.translate(mysite, msg), minorEdit = '0')
+    mysite = wikipedia.getSite()
+    for p in wikipedia.allpages(start = start, site = mysite):
+        for sn in abbrev:
+            R=re.compile('[^[]]*' + '\%2C_' + sn)
+            for res in R.findall(p.urlname()):
+                pl=wikipedia.PageLink(mysite, p.urlname().replace(sn,abbrev[sn]))
+                # A bit hacking here - the real work is done in the 'except wikipedia.NoPage'
+                # part rather than the 'try'.
+                try:
+                    goal = pl.getRedirectTo()
+                    if wikipedia.PageLink(mysite, goal):
+                        print("Not creating %s - redirect already exists.") % goal
+                    else:
+                        print("WARNING!!! %s already exists but redirects elsewhere!") % goal
+                except wikipedia.IsNotRedirectPage:
+                    print("WARNING!!! Page %s already exists and is not a redirect. Please check page!") % goal
+                except wikipedia.NoPage:
+                    change=''
+                    if p.isRedirectPage():
+                        p2 = wikipedia.PageLink(mysite, p.getRedirectTo())
+                        print ('Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.')%p2.urlname().replace("%2C",",").replace("_"," ")
+                    else:
+                        p2 = p
+                    if force:
+                        change='y'
+                    else:
+                        while not change in ['y','n']:
+                            print ("Create redirect %s")%pl.urlname().replace("%2C",",").replace("_"," ")
+                            change = raw_input("(y/n)? ")
+                    if change=='y':
+                        text = '#REDIRECT [['+p2.urlname().replace("%2C",",").replace("_"," ")+']]'
+                        pl.put(text, comment = wikipedia.translate(mysite, msg), minorEdit = '0')
+
+try:
+    main()
+except:
+    wikipedia.stopme()
+    raise
+else:
+    wikipedia.stopme()

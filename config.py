@@ -67,8 +67,12 @@ treelang_backlink = True
 treelang_log = True
 
 # Slow down the robot such that it never requests a second page within
-# 'throttle' seconds.
-throttle = 5
+# 'minthrottle' seconds. This can be lengthened if the server is slow,
+# but never more than 'maxthrottle' seconds. However - if you are running
+# more than one bot in parallel the times are lengthened.
+minthrottle = 1
+maxthrottle = 60
+
 # Slow down the robot such that it never makes a second change within
 # 'put_throttle' seconds.
 put_throttle = 60

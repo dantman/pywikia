@@ -118,44 +118,52 @@ textfilename = ''
 pagenames = []
 namespace = -1
 
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if arg == '-regex':
-            regex = True
-        elif arg.startswith('-file'):
-            if len(arg) == 5:
-                textfilename = wikipedia.input(u'Please enter the filename:')
+try:
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg == '-regex':
+                regex = True
+            elif arg.startswith('-file'):
+                if len(arg) == 5:
+                    textfilename = wikipedia.input(u'Please enter the filename:')
+                else:
+                    textfilename = arg[6:]
+                source = 'textfile'
+            elif arg.startswith('-sql'):
+                if len(arg) == 4:
+                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
+                else:
+                    sqlfilename = arg[5:]
+                source = 'sqldump'
+                wikipedia.stopme()
+            elif arg.startswith('-page'):
+                if len(arg) == 5:
+                    pagenames.append(wikipedia.input(u'Which page do you want to find?'))
+                else:
+                    pagenames.append(arg[6:])
+                source = 'userinput'
             else:
-                textfilename = arg[6:]
-            source = 'textfile'
-        elif arg.startswith('-sql'):
-            if len(arg) == 4:
-                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
-            else:
-                sqlfilename = arg[5:]
-            source = 'sqldump'
-        elif arg.startswith('-page'):
-            if len(arg) == 5:
-                pagenames.append(wikipedia.input(u'Which page do you want to find?'))
-            else:
-                pagenames.append(arg[6:])
-            source = 'userinput'
-        else:
-            commandline_replacements.append(arg)
+                commandline_replacements.append(arg)
             
-#TODO: def search
-if count == None:
-    old = wikipedia.input(u'Text search (Warning! Case and Acent Sensitive):')
-    new = " "
-    replacements[old] = new
+    #TODO: def search
+    if count == None:
+        old = wikipedia.input(u'Text search (Warning! Case and Acent Sensitive):')
+        new = " "
+        replacements[old] = new
 
-# TODO: def record
-# Save search in find.dat
-count = 0
-arq = codecs.open('find.dat', 'w', 'utf-8')
-for pl in generator(source, replacements, exceptions, regex, namespace, title, textfilename, sqlfilename, pagenames):
-    arq.write("# [[%s]] \n" % pl.linkname())
-    count +=1
-    print str(count), pl.linkname()
-arq.close()
+    # TODO: def record
+    # Save search in find.dat
+    count = 0
+    arq = codecs.open('find.dat', 'w', 'utf-8')
+    for pl in generator(source, replacements, exceptions, regex, namespace, title, textfilename, sqlfilename, pagenames):
+        arq.write("# [[%s]] \n" % pl.linkname())
+        count +=1
+        print str(count), pl.linkname()
+    arq.close()
+except:
+    wikipedia.stopme()
+    raise
+else:
+    wikipedia.stopme()
+

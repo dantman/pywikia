@@ -37,7 +37,6 @@ def getfn():
     return fns
 
 def main():
-
     for filename in getfn():
         print "Handling images from %s" % filename
         for image in wikipedia.PageLinksFromFile(filename):
@@ -56,4 +55,10 @@ def main():
                     lib_images.transfer_image(image)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()

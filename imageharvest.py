@@ -40,9 +40,60 @@ def get_imagelinks(url):
                 links += [relativepath+"/"+link]
     return links
 
+def main(give_url,image_url):
+    url = give_url
+    fileformats = ('jpg', 'jpeg', 'png', 'gif', 'svg', 'ogg')
+    basicdesc = []
+    mysite = wikipedia.getSite()
+
+    if not mysite.loggedin():
+        print "You must be logged in to upload images"
+        import sys
+        sys.exit(1)
+
+    if url == '':
+        if image_url:
+            url = wikipedia.input(u"What URL range should I check (use $ for the part that is changeable)")
+        else:
+            url = wikipedia.input(u"From what URL should I get the images?")
+
+    if image_url:
+        minimum=1
+        maximum=99
+        answer= wikipedia.input(u"What is the first number to check (default: 1)")
+        if answer:
+            minimum=int(answer)
+        answer= wikipedia.input(u"What is the last number to check (default: 99)")
+        if answer:
+            maximum=int(answer)
+
+    if basicdesc == []:
+        basicdesc = wikipedia.input(
+            u"What text should be added at the end of the description of each image from this url?")
+    else:
+        basicdesc = ' '.join(desc)
+
+    if image_url:
+        ilinks = []
+        i = minimum
+        while i <= maximum:
+            ilinks += [url.replace("$",str(i))]
+            i += 1
+    else:
+        ilinks = get_imagelinks(url)
+
+    for image in ilinks:
+        answer =wikipedia.input(u"Include image %s (y/N/s(top))?"%image)
+        if answer in ["y","Y"]:
+            desc = wikipedia.input(u"Give the description of this image:")
+            desc = desc + "\r\n\n\r" + basicdesc
+            lib_images.get_image(image, None, desc)
+        elif answer in ["s","S"]:
+            break
+
+
+
 url = ''
-fileformats = ('jpg', 'jpeg', 'png', 'gif', 'svg', 'ogg')
-basicdesc = []
 image_url = False
   
 for arg in sys.argv[1:]:
@@ -53,51 +104,11 @@ for arg in sys.argv[1:]:
             url = arg
         else:
             desc += [arg]
-
-mysite = wikipedia.getSite()
-
-if not mysite.loggedin():
-    print "You must be logged in to upload images"
-    import sys
-    sys.exit(1)
-
-if url == '':
-    if image_url:
-        url = wikipedia.input(u"What URL range should I check (use $ for the part that is changeable)")
-    else:
-        url = wikipedia.input(u"From what URL should I get the images?")
-
-if image_url:
-    minimum=1
-    maximum=99
-    answer= wikipedia.input(u"What is the first number to check (default: 1)")
-    if answer:
-        minimum=int(answer)
-    answer= wikipedia.input(u"What is the last number to check (default: 99)")
-    if answer:
-        maximum=int(answer)
-
-if basicdesc == []:
-    basicdesc = wikipedia.input(
-        u"What text should be added at the end of the description of each image from this url?")
+try:
+    main(url,image_url)
+except:
+    wikipedia.stopme()
+    raise
 else:
-    basicdesc = ' '.join(desc)
-
-if image_url:
-    ilinks = []
-    i = minimum
-    while i <= maximum:
-        ilinks += [url.replace("$",str(i))]
-        i += 1
-else:
-    ilinks = get_imagelinks(url)
-
-for image in ilinks:
-    answer =wikipedia.input(u"Include image %s (y/N/s(top))?"%image)
-    if answer in ["y","Y"]:
-        desc = wikipedia.input(u"Give the description of this image:")
-        desc = desc + "\r\n\n\r" + basicdesc
-        lib_images.get_image(image, None, desc)
-    elif answer in ["s","S"]:
-        break
+    raise
 

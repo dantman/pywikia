@@ -161,60 +161,61 @@ working = 0
 nonworking = 0
 totalchecked = 0
 
-while cont:
-    print
-    i = 0
-    if len(todo)<61 and do_all:
-        for pl in wikipedia.allpages(start = start):
-            todo.append(pl)
-            i += 1
-            if i==480:
-                break
-        start = todo[len(todo)-1].linkname() + '_0'
-    # todo is a list of pages to do, donow are the pages we will be doing in this run.
-    if len(todo)>60:
-        # Take the first 60.
-        donow = todo[0:60]
-        todo = todo[60:]
-    else:
-        donow = todo
-        # If there was more to do, the 'if len(todo)<61' part would have extended
-        # todo beyond this size.
-        cont = False
-    try:
-        wikipedia.getall(mysite, donow)
-    except wikipedia.SaxError:
-        # Ignore this error, and get the pages the traditional way.
-        pass
-    checked +=len(donow)
-    for pl in donow:
-        R = re.compile(r'http://[^\s}<\]]+[^\s.,:;)\?!\]}<]')
-        try:
-            for url in R.findall(pl.get()):
-                url = wikipedia.unicode2html(url,'ascii')
-                try:
-                    error = URLerrorFinder().open(url)
-                except IOError:
-                    error = -1
-                if error in allowederrorcodes:
-                    working += 1
-                else:
-                    nonworking += 1
-                    print
-                    wikipedia.output(u'Page "%s" links to:'%pl.linkname())
-                    wikipedia.output(url)
-                    wikipedia.output(u'Which gave error: %s %s'%(error,errorname(error)))
-        # If anything is wrong with the Wikipedia page, just ignore
-        except wikipedia.NoPage:
-            pass
-        except wikipedia.IsRedirectPage:
-            pass
-        except wikipedia.LockedPage:
-            pass
-    if checked>499 or not cont:
-        totalchecked += 500
-        checked -= 500
+try:
+    while cont:
         print
-        print '======================================================================'
-        wikipedia.output(u'%s pages checked, last was [[%s]]'%(totalchecked+checked,donow[len(donow)-1]))
-        print 'In those pages there were %s correct and %s problematic external links.'%(working,nonworking)
+        i = 0
+        if len(todo)<61 and do_all:
+            for pl in wikipedia.allpages(start = start):
+                todo.append(pl)
+                i += 1
+                if i==480:
+                    break
+            start = todo[len(todo)-1].linkname() + '_0'
+        # todo is a list of pages to do, donow are the pages we will be doing in this run.
+        if len(todo)>60:
+            # Take the first 60.
+            donow = todo[0:60]
+            todo = todo[60:]
+        else:
+            donow = todo
+            # If there was more to do, the 'if len(todo)<61' part would have extended
+            # todo beyond this size.
+            cont = False
+        try:
+            wikipedia.getall(mysite, donow)
+        except wikipedia.SaxError:
+            # Ignore this error, and get the pages the traditional way.
+            pass
+        checked +=len(donow)
+        for pl in donow:
+            R = re.compile(r'http://[^\s}<\]]+[^\s.,:;)\?!\]}<]')
+            try:
+                for url in R.findall(pl.get()):
+                    url = wikipedia.unicode2html(url,'ascii')
+                    try:
+                        error = URLerrorFinder().open(url)
+                    except IOError:
+                        error = -1
+                    if error in allowederrorcodes:
+                        working += 1
+                    else:
+                        nonworking += 1
+                        print
+                        wikipedia.output(u'Page "%s" links to:'%pl.linkname())
+                        wikipedia.output(url)
+                        wikipedia.output(u'Which gave error: %s %s'%(error,errorname(error)))
+            # If anything is wrong with the Wikipedia page, just ignore
+            except (wikipedia.NoPage,wikipedia.IsRedirectPage,wikipedia.LockedPage):
+                pass
+        if checked>499 or not cont:
+            totalchecked += 500
+            checked -= 500
+            print
+            print '======================================================================'
+            wikipedia.output(u'%s pages checked, last was [[%s]]'%(totalchecked+checked,donow[len(donow)-1]))
+            print 'In those pages there were %s correct and %s problematic external links.'%(working,nonworking)
+except:
+    wikipedia.stopme()
+    raise
+wikipedia.stopme()

@@ -90,7 +90,14 @@ def ReadWarnfile(fn):
             
 
 if __name__ == "__main__":
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
-        if arg:
-            ReadWarnfile(arg)
+    try:
+        for arg in sys.argv[1:]:
+            arg = wikipedia.argHandler(arg)
+            if arg:
+                ReadWarnfile(arg)
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()
+

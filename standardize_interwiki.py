@@ -28,29 +28,35 @@ if start:
 else:
     start='0'
 
-for pl in wikipedia.allpages(start = start):
-    print pl
-    try:
-        oldtext = pl.get()
-    except wikipedia.IsRedirectPage:
-        print "--->is redirect"
-        continue
-    except wikipedia.LockedPage:
-        print "--->is locked"
-        continue
-    old = pl.interwiki()
-    new = {}
-    for pl2 in old:
-        new[pl2.site()] = pl2
-    newtext = wikipedia.replaceLanguageLinks(oldtext, new)
-    if new:
-        if newtext != oldtext:
-            # Display the difference
-            wikipedia.showDiff(oldtext, newtext)
-            # Submit changes
-            if forreal:
-                status, reason, data = pl.put(newtext,
-                                          comment='robot interwiki standardization')
-                if str(status) != '302':
-                    print status, reason
-        
+try:
+    for pl in wikipedia.allpages(start = start):
+        print pl
+        try:
+            oldtext = pl.get()
+        except wikipedia.IsRedirectPage:
+            print "--->is redirect"
+            continue
+        except wikipedia.LockedPage:
+            print "--->is locked"
+            continue
+        old = pl.interwiki()
+        new = {}
+        for pl2 in old:
+            new[pl2.site()] = pl2
+        newtext = wikipedia.replaceLanguageLinks(oldtext, new)
+        if new:
+            if newtext != oldtext:
+                # Display the difference
+                wikipedia.showDiff(oldtext, newtext)
+                # Submit changes
+                if forreal:
+                    status, reason, data = pl.put(newtext,
+                                              comment='robot interwiki standardization')
+                    if str(status) != '302':
+                        print status, reason
+except:
+    wikipedia.stopme()
+    raise
+else:
+    wikipedia.stopme()
+

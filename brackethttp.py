@@ -17,18 +17,24 @@ import wikipedia
 myComment = {'en':'Bot: URL fixed'
              }
 
-for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    else:
-        pl = wikipedia.PageLink(wikipedia.getSite(), arg)
-        text = pl.get()
-        
-        newText = re.sub("(http:\/\/([^ ]*[^\] ]))\)", "[\\1 \\2])", text)
-
-        if newText != text:
-            wikipedia.showDiff(text, newText)
-            status, reason, data = pl.put(newText, wikipedia.translate(wikipedia.mylang,myComment))
-            print status, reason
+try:
+    for arg in sys.argv[1:]:
+        if wikipedia.argHandler(arg):
+            pass
         else:
-            print "No bad link found"
+            pl = wikipedia.PageLink(wikipedia.getSite(), arg)
+            text = pl.get()
+        
+            newText = re.sub("(http:\/\/([^ ]*[^\] ]))\)", "[\\1 \\2])", text)
+
+            if newText != text:
+                wikipedia.showDiff(text, newText)
+                status, reason, data = pl.put(newText, wikipedia.translate(wikipedia.mylang,myComment))
+                print status, reason
+            else:
+                print "No bad link found"
+except:
+    wikipedia.stopme()
+    raise
+
+wikipedia.stopme()

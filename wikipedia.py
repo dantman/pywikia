@@ -15,7 +15,7 @@ PageLink: A MediaWiki page
     hashfreeLinkname: The name without the section part
     ascii_linkname: The name of the page, using ASCII-only
     aslink: The name of the page in the form [[xx:Title]]
-    aslocallink: The name of the page in the form [[Title]]
+    aslocallink: The name of the pagthroe in the form [[Title]]
     asselflink: The name of the page in the form xx:[[Title]]
     
     site: The wikimedia site of the page
@@ -70,7 +70,7 @@ getReferences(Pagelink): The pages linking to the Pagelink object, as a
 checkLogin(): gives True if the bot is logged in on the home language, False
     otherwise
 argHandler(text): Checks whether text is an argument defined on wikipedia.py
-    (these are -family, -lang, -throttle, -putthrottle and -nil)
+    (these are -family, -lang, -clearthrottle, -putthrottle and -nil)
 translate(xx, dict): dict is a dictionary, giving text depending on language,
     xx is a language. Returns the text in the most applicable language for
     the xx: wikipedia
@@ -92,6 +92,9 @@ getCategoryLinks(text,xx): get all category links in text 'text' (links in the
 removeCategoryLinks(text,xx): remove all category links in 'text'
 replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
     those in new (new a list of category PageLinks)
+stopme(): Put this on a bot when it is not or not any more communicating
+    with the Wiki. It will remove the bot from the list of running processes,
+    and thus not slow down other bot threads any more.
 
 """
 #
@@ -154,6 +157,9 @@ class PageInList(Error):
 
 class EmptyGroup(Error):
     """PageGroup is empty"""
+
+class NotLoggedIn(Error):
+    """Anonymous editing Wikipedia is not possible"""
 
 SaxError = xml.sax._exceptions.SAXParseException
 
@@ -284,7 +290,7 @@ class PageLink(object):
            the language"""
         return "%s:[[%s]]" % (self._site.lang, self.linkname())
     
-    def get(self, read_only = False, force = False, get_redirect=False):
+    def get(self, read_only = False, force = False, get_redirect=False, throttle = True):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -315,7 +321,7 @@ class PageLink(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents = getPage(self.site(), self.urlname(), read_only = read_only, get_redirect=get_redirect)
+                self._contents = getPage(self.site(), self.urlname(), read_only = read_only, get_redirect = get_redirect, throttle = throttle)
                 hn = self.hashname()
                 if hn:
                     hn = underline2space(hn)
@@ -395,7 +401,7 @@ class PageLink(object):
             return True
         return False
         
-    def put(self, newtext, comment=None, watchArticle = False, minorEdit = True, anon=False):
+    def put(self, newtext, comment=None, watchArticle = False, minorEdit = True):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
@@ -408,7 +414,7 @@ class PageLink(object):
             if not self.site().gettoken():
                 output(u"Getting page to get a token.")
                 self.get(force = True)
-        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, anon, self.site().token)
+        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().token)
 
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
@@ -556,7 +562,7 @@ class PageLink(object):
             h.putrequest('POST', selector)
             h.putheader('content-type', content_type)
             h.putheader('content-length', str(len(body)))
-            h.putheader("User-agent", "RobHooftWikiRobot/1.0")
+            h.putheader("User-agent", "PythonWikipediaBot/1.0")
             h.putheader('Host', host)
             if cookies:
                 h.putheader('Cookie', cookies)
@@ -840,11 +846,12 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             self.timestamp += data
             
 class GetAll(object):
-    def __init__(self, site, pages):
+    def __init__(self, site, pages, throttle):
         """First argument is Site object.
         Second argument is list (should have .append and be iterable)"""
         self.site = site
         self.pages = []
+        self.throttle = throttle
         for pl in pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 self.pages.append(pl)
@@ -884,7 +891,7 @@ class GetAll(object):
                     if pl.hashfreeLinkname() != pl.hashfreeLinkname(doublex = True):
                         # Maybe we have used x-convention when we should not?
                         try:
-                            pl.get(force = True)
+                            pl.get(force = True, throttle = self.throttle)
                         except (NoPage, IsRedirectPage, LockedPage, SectionError):
                             pass
                     else:
@@ -951,20 +958,22 @@ class GetAll(object):
                     ))
         #print repr(data)
         headers = {"Content-type": "application/x-www-form-urlencoded", 
-                   "User-agent": "RobHooftWikiRobot/1.0"}
+                   "User-agent": "PythonWikipedia/1.0"}
         # Slow ourselves down
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
+        now = time.time()
         conn = httplib.HTTPConnection(self.site.hostname())
         conn.request("POST", addr, data, headers)
         response = conn.getresponse()
         data = response.read()
         conn.close()
+        get_throttle.setDelay(time.time() - now)
         return data
     
-def getall(site, pages):
+def getall(site, pages, throttle = True):
     print u'Getting %d pages from %s:' % (len(pages), repr(site))
-    return GetAll(site, pages).run()
+    return GetAll(site, pages, throttle).run()
     
 # Library functions
 
@@ -1042,27 +1051,83 @@ def underline2space(name):
 
 # Mechanics to slow down page download rate.
 
-
 class Throttle(object):
-    def __init__(self, delay = config.throttle, ignore = 0):
+    def __init__(self, mindelay = config.minthrottle, maxdelay = config.maxthrottle, multiplydelay = True):
         """Make sure there are at least 'delay' seconds between page-gets
            after 'ignore' initial page-gets"""
-        self.delay = delay
-        self.ignore = ignore
+        self.mindelay = mindelay
+        self.maxdelay = maxdelay
+        self.pid = False # If self.pid remains False, we're not checking for multiple processes
         self.now = 0
         self.next_multiplicity = 1.0
+        self.checkdelay = 240 # Check the file with processes again after this many seconds
+        self.dropdelay = 360 # Drop processes from the list that have not made a check in this many seconds
+        self.lastwait = 0.0
+        self.delay = 0
+        if multiplydelay:
+            self.checkMultiplicity()
 
-    def setDelay(self, delay = config.throttle):
+    def checkMultiplicity(self):
+        processes = {}
+        my_pid = 1
+        try:
+            f = open('throttle.log','r')
+        except IOError:
+            if not self.pid:
+                pass
+            else:
+                raise
+        else:
+            now = time.time()
+            for line in f.readlines():
+                line = line.split(' ')
+                pid = int(line[0])
+                ptime = int(line[1].split('.')[0])
+                if now - ptime <= self.dropdelay:
+                    processes[pid] = ptime
+                    if pid >= my_pid:
+                        my_pid = pid+1
+        if not self.pid:
+            self.pid = my_pid
+        self.checktime = time.time()
+        processes[self.pid] = self.checktime
+        f = open('throttle.log','w')
+        for p in processes.keys():
+            f.write(str(p)+' '+str(processes[p])+'\n')
+        f.close()
+        self.process_multiplicity = len(processes)
+        print("Checked for running processes. %s processes currently running, "%len(processes) +
+              "including the current process.")
+
+    def setDelay(self, delay = config.minthrottle, absolute = False):
+        if absolute:
+            self.mindelay = delay
+            self.maxdelay = delay
         self.delay = delay
+        # Don't count the time we already waited as part of our waiting time :-0
+        self.now = time.time()
+
+    def getDelay(self):
+        thisdelay = self.delay
+        thisdelay *= self.next_multiplicity
+        if self.pid: # If self.pid, we're checking for multiple processes
+            if time.time() > self.checktime + self.checkdelay:
+                self.checkMultiplicity()
+            if self.delay < self.mindelay:
+                self.delay = self.mindelay
+            elif self.delay > self.maxdelay:
+                self.delay = self.maxdelay
+            if time.time() > self.checktime + self.checkdelay:
+                self.check_multiplicity()
+            self.delay *= self.process_multiplicity
+        return thisdelay
 
     def waittime(self):
         """Calculate the time in seconds we will have to wait if a query
            would be made right now"""
-        if self.ignore > 0:
-            return 0.0
         # Take the previous requestsize in account calculating the desired
         # delay this time
-        thisdelay = self.next_multiplicity * self.delay
+        thisdelay = self.getDelay()
         now = time.time()
         ago = now - self.now
         if ago < thisdelay:
@@ -1070,31 +1135,49 @@ class Throttle(object):
             return delta
         else:
             return 0.0
-        
+
+    def drop(self):
+        """Remove me from the list of running bots processes."""
+        self.checktime = 0
+        processes = {}
+        try:
+            f = open('throttle.log','r')
+        except IOError:
+            return
+        else:
+            now = time.time()
+            for line in f.readlines():
+                line = line.split(' ')
+                pid = int(line[0])
+                ptime = int(line[1].split('.')[0])
+                if now - ptime <= self.dropdelay and pid != self.pid:
+                    processes[pid] = ptime
+        f = open('throttle.log','w')
+        for p in processes.keys():
+            f.write(str(p)+' '+str(processes[p])+'\n')
+        f.close()
+    
     def __call__(self, requestsize = 1):
         """This is called from getPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
            since the last time it was called before it returns."""
-        if self.ignore > 0:
-            self.ignore -= 1
-        else:
-            waittime = self.waittime()
-            # Calculate the multiplicity of the next delay based on how
-            # big the request is that is being posted now.
-            # We want to add "one delay" for each factor of two in the
-            # size of the request. Getting 64 pages at once allows 6 times
-            # the delay time for the server.
-            self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
-            # Announce the delay if it exceeds a preset limit
-            if waittime > config.noisysleep:
-                print "Sleeping for %.1f seconds" % waittime
-            time.sleep(waittime)
+        waittime = self.waittime()
+        # Calculate the multiplicity of the next delay based on how
+        # big the request is that is being posted now.
+        # We want to add "one delay" for each factor of two in the
+        # size of the request. Getting 64 pages at once allows 6 times
+        # the delay time for the server.
+        self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
+        # Announce the delay if it exceeds a preset limit
+        if waittime > config.noisysleep:
+            print "Sleeping for %.1f seconds" % waittime
+        time.sleep(waittime)
         self.now = time.time()
 
-get_throttle = Throttle()
-put_throttle = Throttle(config.put_throttle)
+get_throttle = Throttle(config.minthrottle,config.maxthrottle)
+put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
 
-def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, anon=False, token = None):
+def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None):
     """Upload 'text' on page 'name' to the 'site' wiki.
        Use of this routine can normally be avoided; use PageLink.put
        instead.
@@ -1110,8 +1193,9 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     if comment is None:
         comment=action
     # Prefix the comment with the user name if the user is not logged in.
-    if not site.loggedin() and not anon:
-        comment = username + ' - ' + comment
+    if not site.loggedin():
+        print "Anonymous editing currently not possible."
+        raise NotLoggedIn
     # Use the proper encoding for the comment
     comment = comment.encode(site.encoding())
     try:
@@ -1151,8 +1235,8 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     conn.putrequest("POST", address)
     conn.putheader('Content-Length', str(len(data)))
     conn.putheader("Content-type", "application/x-www-form-urlencoded")
-    conn.putheader("User-agent", "RobHooftWikiRobot/1.0")
-    if not anon and site.cookies():
+    conn.putheader("User-agent", "PythonWikipediaBot/1.0")
+    if site.cookies():
         conn.putheader('Cookie',site.cookies())
     conn.endheaders()
     conn.send(data)
@@ -1164,6 +1248,9 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     if data != '':
         if "<title>Edit conflict" in data: # FIXME: multi-lingual
             raise EditConflict()
+        elif "<title>500 Internal Server Error" in data:
+            print "Anonymous editing currently not possible."
+            raise NotLoggedIn
         else:
             output(data, decoder = myencoding())
     return response.status, response.reason, data
@@ -1179,7 +1266,7 @@ def forSite(text, site):
     return text
 
 class MyURLopener(urllib.FancyURLopener):
-    version="RobHooftWikiRobot/1.0"
+    version="PythonWikipediaBot/1.0"
     
 def getUrl(host, address, site = None):
     """Low-level routine to get a URL from wikipedia.
@@ -1207,7 +1294,7 @@ def getUrl(host, address, site = None):
     #print text
     return text,charset
     
-def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True, get_redirect=False):
+def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True, get_redirect=False, throttle = True):
     """
     Get the contents of page 'name' from the 'site' wiki
     Do not use this directly; for 99% of the possible ideas you can
@@ -1240,13 +1327,16 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         address += '&action=edit&printable=yes'
     # Make sure Brion doesn't get angry by waiting if the last time a page
     # was retrieved was not long enough ago.
-    get_throttle()
+    if throttle:
+        get_throttle()
     # Try to retrieve the page until it was successfully loaded (just in case
     # the server is down or overloaded)
     # wait for retry_idle_time minutes (growing!) between retries.
     retry_idle_time = 1
     while True:
+        starttime = time.time()
         text, charset = getUrl(host, address, site)
+        get_throttle.setDelay(time.time() - starttime)\
         # Extract the actual text from the textedit field
         if get_edit_page:
             if charset is None:
@@ -1311,7 +1401,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             site.puttoken('')
         return x
 
-def allpages(start = '!', site = None):
+def allpages(start = '!', site = None, throttle = True):
     """Generator which yields all articles in the home language in
        alphanumerical order, starting at a given page. By default,
        it starts at '!', so it should yield all pages.
@@ -1324,7 +1414,7 @@ def allpages(start = '!', site = None):
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
         start = link2url(start, site = site)
         # load a list which contains a series of article names (always 480?)
-        returned_html = getPage(site, site.allpagesname(start), do_quote = False, get_edit_page = False)
+        returned_html = getPage(site, site.allpagesname(start), do_quote = False, get_edit_page = False, throttle = throttle)
         # Try to find begin and end markers
         try:
             # In 1.4, another table was added above the navigational links
@@ -2119,10 +2209,8 @@ def argHandler(arg):
         default_family = arg[8:]
     elif arg.startswith('-lang:'):
         default_code = arg[6:]
-    elif arg.startswith('-throttle:'):
-        get_throttle.setDelay(int(arg[10:]))
     elif arg.startswith('-putthrottle:'):
-        put_throttle.setDelay(int(arg[13:]))
+        put_throttle.setDelay(int(arg[13:]),absolute = True)
     else:
         return arg
     return None
@@ -2319,3 +2407,10 @@ def input(question, encode = False, decoder=None):
     if encode:
         text = text.encode(myencoding())
     return text
+
+def stopme():
+    """This should be run when a bot does not interact with the Wiki, or
+       when it has stopped doing so. After a bot has run stopme() it will
+       not slow down other bots any more.
+    """
+    get_throttle.drop()

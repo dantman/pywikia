@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Script to replace bad Windows-1252 (cp1252) characters with 
 HTML entities on ISO 8859-1 wikis. Don't run this script on a UTF-8 wiki.
@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.17 2004/10/16 11:37:34 hooft Exp $'
+__version__='$Id: windows_chars.py,v 1.18 2004/10/17 08:52:09 hooft Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -112,58 +112,67 @@ def parse_sqldump(filename):
             if entry.text.find(char) != -1:
                 treat(entry.full_title())
                 break
-    
-# if the -file argument is used, page titles are dumped in this array.
-# otherwise it will only contain one page.
-page_list = []
-# if -file is not used, this temporary array is used to read the page title.
-page_title = []
 
-action = None 
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if arg.startswith('-file'):
-            if len(arg) == 5:
-                filename = wikipedia.input(u'Please enter the list\'s filename: ')
+def main():
+    # if the -file argument is used, page titles are dumped in this array.
+    # otherwise it will only contain one page.
+    page_list = []
+    # if -file is not used, this temporary array is used to read the page title.
+    page_title = []
+
+    action = None 
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg.startswith('-file'):
+                if len(arg) == 5:
+                    filename = wikipedia.input(u'Please enter the list\'s filename: ')
+                else:
+                    filename = arg[6:]
+                # open file and read page titles out of it
+                f=open(filename)
+                for line in f.readlines():
+                    if line != '\n':           
+                        page_list.append(line)
+                f.close()
+            elif arg.startswith('-sql'):
+                if len(arg) == 4:
+                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                else:
+                    sqlfilename = arg[5:]
+                action = 'parse_sqldump'
             else:
-                filename = arg[6:]
-            # open file and read page titles out of it
-            f=open(filename)
-            for line in f.readlines():
-                if line != '\n':           
-                    page_list.append(line)
-            f.close()
-        elif arg.startswith('-sql'):
-            if len(arg) == 4:
-                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
-            else:
-                sqlfilename = arg[5:]
-            action = 'parse_sqldump'
-        else:
-            page_title.append(arg)
+                page_title.append(arg)
 
-# if a single page is given as a command line argument,
-# reconnect the title's parts with spaces
-if page_title != []:
-     page_title = ' '.join(page_title)
-     page_list.append(page_title)
+    # if a single page is given as a command line argument,
+    # reconnect the title's parts with spaces
+    if page_title != []:
+        page_title = ' '.join(page_title)
+        page_list.append(page_title)
 
-# if no page was given as an argument, and none was
-# read from a file, query the user
-if page_list == [] and action != 'parse_sqldump':
-    pagename = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
-    page_list.append(pagename)
+    # if no page was given as an argument, and none was
+    # read from a file, query the user
+    if page_list == [] and action != 'parse_sqldump':
+        pagename = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
+        page_list.append(pagename)
 
-# get edit summary message
-wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
+    # get edit summary message
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
-if wikipedia.getSite().encoding() == "utf-8":
-    print "There is no need to run this robot on UTF-8 wikis."
-else:
-    if action == 'parse_sqldump':
-        parse_sqldump(sqlfilename)
+    if wikipedia.getSite().encoding() == "utf-8":
+        print "There is no need to run this robot on UTF-8 wikis."
     else:
-        # loop over all given pages
-        for page in page_list:
-            treat(page)
+        if action == 'parse_sqldump':
+            parse_sqldump(sqlfilename)
+        else:
+            # loop over all given pages
+            for page in page_list:
+                treat(page)
+
+try:
+    main()
+except:
+    wikipedia.stopme()
+    raise
+else:
+    wikipedia.stopme()

@@ -102,9 +102,7 @@ def extractImages(data):
     return images
 
 
-if __name__ == "__main__":
-
-
+def main():
     mysite = wikipedia.getSite()
     sa = []
     output_directory = ""
@@ -177,5 +175,13 @@ if __name__ == "__main__":
                 f.write(content)
                 f.close()
                 print 'done'
-        
-conn.close()
+
+if __name__ == "__main__":
+    try:
+        main()
+        conn.close()
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()

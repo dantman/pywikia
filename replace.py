@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an SQL dump or a text file, or only
@@ -260,173 +260,184 @@ def generator(source, replacements, exceptions, regex, namespace, textfilename =
         for pagename in pagenames:
             yield wikipedia.PageLink(wikipedia.getSite(), pagename)
 
-# How we want to retrieve information on which pages need to be changed.
-# Can either be 'sqldump', 'textfile' or 'userinput'.
-source = None
-# Array which will collect commandline parameters.
-# First element is original text, second element is replacement text.
-commandline_replacements = []
-# A dictionary where keys are original texts and values are replacement texts.
-replacements = {}
-# Don't edit pages which contain certain texts.
-exceptions = []
-# Should the elements of 'replacements' and 'exceptions' be interpreted
-# as regular expressions?
-regex = False
-# Predefined fixes from dictionary 'fixes' (see above).
-fix = None
-# the dump's path, either absolute or relative, which will be used when source
-# is 'sqldump'.
-sqlfilename = ''
-# the textfile's path, either absolute or relative, which will be used when
-# source is 'textfile'.
-textfilename = ''
-# a list of pages which will be used when source is 'userinput'.
-pagenames = []
-# will become True when the user presses a ('yes to all') or uses the -always
-# commandline paramater.
-acceptall = False
-# Which namespace should be processed when using a SQL dump
-# default to -1 which means all namespaces will be processed
-namespace = -1
-# Load default summary message.
-wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
+def main():
+    # How we want to retrieve information on which pages need to be changed.
+    # Can either be 'sqldump', 'textfile' or 'userinput'.
+    source = None
+    # Array which will collect commandline parameters.
+    # First element is original text, second element is replacement text.
+    commandline_replacements = []
+    # A dictionary where keys are original texts and values are replacement texts.
+    replacements = {}
+    # Don't edit pages which contain certain texts.
+    exceptions = []
+    # Should the elements of 'replacements' and 'exceptions' be interpreted
+    # as regular expressions?
+    regex = False
+    # Predefined fixes from dictionary 'fixes' (see above).
+    fix = None
+    # the dump's path, either absolute or relative, which will be used when source
+    # is 'sqldump'.
+    sqlfilename = ''
+    # the textfile's path, either absolute or relative, which will be used when
+    # source is 'textfile'.
+    textfilename = ''
+    # a list of pages which will be used when source is 'userinput'.
+    pagenames = []
+    # will become True when the user presses a ('yes to all') or uses the -always
+    # commandline paramater.
+    acceptall = False
+    # Which namespace should be processed when using a SQL dump
+    # default to -1 which means all namespaces will be processed
+    namespace = -1
+    # Load default summary message.
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
-# Read commandline parameters.
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if arg == '-regex':
-            regex = True
-        elif arg.startswith('-file'):
-            if len(arg) == 5:
-                textfilename = wikipedia.input(u'Please enter the filename:')
+    # Read commandline parameters.
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg == '-regex':
+                regex = True
+            elif arg.startswith('-file'):
+                if len(arg) == 5:
+                    textfilename = wikipedia.input(u'Please enter the filename:')
+                else:
+                    textfilename = arg[6:]
+                source = 'textfile'
+            elif arg.startswith('-sql'):
+                if len(arg) == 4:
+                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
+                else:
+                    sqlfilename = arg[5:]
+                source = 'sqldump'
+            elif arg.startswith('-page'):
+                if len(arg) == 5:
+                    pagenames.append(wikipedia.input(u'Which page do you want to chage?'))
+                else:
+                    pagenames.append(arg[6:])
+                source = 'userinput'
+            elif arg.startswith('-except:'):
+                exceptions.append(arg[8:])
+            elif arg.startswith('-fix:'):
+                fix = arg[5:]
+            elif arg == '-always':
+                acceptall = True
+            elif arg.startswith('-namespace:'):
+                namespace = int(arg[11:])
             else:
-                textfilename = arg[6:]
-            source = 'textfile'
-        elif arg.startswith('-sql'):
-            if len(arg) == 4:
-                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
-            else:
-                sqlfilename = arg[5:]
-            source = 'sqldump'
-        elif arg.startswith('-page'):
-            if len(arg) == 5:
-                pagenames.append(wikipedia.input(u'Which page do you want to chage?'))
-            else:
-                pagenames.append(arg[6:])
-            source = 'userinput'
-        elif arg.startswith('-except:'):
-            exceptions.append(arg[8:])
-        elif arg.startswith('-fix:'):
-            fix = arg[5:]
-        elif arg == '-always':
-            acceptall = True
-        elif arg.startswith('-namespace:'):
-            namespace = int(arg[11:])
-        else:
-            commandline_replacements.append(arg)
+                commandline_replacements.append(arg)
 
-if source == None or len(commandline_replacements) not in [0, 2]:
-    # syntax error, show help text from the top of this file
-    wikipedia.output(__doc__, 'utf-8')
-    sys.exit()
-if (len(commandline_replacements) == 2 and fix == None):
-    replacements[commandline_replacements[0]] = commandline_replacements[1]
-    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
-elif fix == None:
-    old = wikipedia.input(u'Please enter the text that should be replaced:')
-    new = wikipedia.input(u'Please enter the new text:')
-    change = '(-' + old + ' +' + new
-    replacements[old] = new
-    while True:
-        old = wikipedia.input(u'Please enter another text that should be replaced, or press Enter to start:')
-        if old == '':
-            change = change + ')'
-            break
-        new = wikipedia.input(u'Please enter the new text:')
-        change = change + ' & -' + old + ' +' + new
-        replacements[old] = new
-    default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
-    wikipedia.output(u'The summary message will default to: %s' % default_summary_message)
-    summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
-    if summary_message == '':
-        summary_message = default_summary_message
-    wikipedia.setAction(summary_message)
-else:
-    # Perform one of the predefined actions.
-    try:
-        fix = fixes[fix]
-    except KeyError:
-        wikipedia.output(u'Available predefined fixes are: %s' % fixes.keys())
+    if source == None or len(commandline_replacements) not in [0, 2]:
+        # syntax error, show help text from the top of this file
+        wikipedia.output(__doc__, 'utf-8')
+        wikipedia.stopme()
         sys.exit()
-    if fix.has_key('regex'):
-        regex = fix['regex']
-    if fix.has_key('msg'):
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), fix['msg']))
-    if fix.has_key('exceptions'):
-        exceptions = fix['exceptions']
-    replacements = fix['replacements']
+    if (len(commandline_replacements) == 2 and fix == None):
+        replacements[commandline_replacements[0]] = commandline_replacements[1]
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
+    elif fix == None:
+        old = wikipedia.input(u'Please enter the text that should be replaced:')
+        new = wikipedia.input(u'Please enter the new text:')
+        change = '(-' + old + ' +' + new
+        replacements[old] = new
+        while True:
+            old = wikipedia.input(u'Please enter another text that should be replaced, or press Enter to start:')
+            if old == '':
+                change = change + ')'
+                break
+            new = wikipedia.input(u'Please enter the new text:')
+            change = change + ' & -' + old + ' +' + new
+            replacements[old] = new
+        default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
+        wikipedia.output(u'The summary message will default to: %s' % default_summary_message)
+        summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
+        if summary_message == '':
+            summary_message = default_summary_message
+        wikipedia.setAction(summary_message)
+    else:
+        # Perform one of the predefined actions.
+        try:
+            fix = fixes[fix]
+        except KeyError:
+            wikipedia.output(u'Available predefined fixes are: %s' % fixes.keys())
+            wikipedia.stopme()
+            sys.exit()
+        if fix.has_key('regex'):
+            regex = fix['regex']
+        if fix.has_key('msg'):
+            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), fix['msg']))
+        if fix.has_key('exceptions'):
+            exceptions = fix['exceptions']
+        replacements = fix['replacements']
 
-# Run the generator which will yield PageLinks to pages which might need to be
-# changed.
-for pl in generator(source, replacements, exceptions, regex, namespace, textfilename, sqlfilename, pagenames):
-    print ''
-    try:
-        # Load the page's text from the wiki
-        original_text = pl.get()
-    except wikipedia.NoPage:
-        wikipedia.output(u'Page %s not found' % pl.linkname())
-        continue
-    except wikipedia.LockedPage:
-        wikipedia.output(u'Skipping locked page %s' % pl.linkname())
-        continue
-    except wikipedia.IsRedirectPage:
-        continue
+    # Run the generator which will yield PageLinks to pages which might need to be
+    # changed.
+    for pl in generator(source, replacements, exceptions, regex, namespace, textfilename, sqlfilename, pagenames):
+        print ''
+        try:
+            # Load the page's text from the wiki
+            original_text = pl.get()
+        except wikipedia.NoPage:
+            wikipedia.output(u'Page %s not found' % pl.linkname())
+            continue
+        except wikipedia.LockedPage:
+            wikipedia.output(u'Skipping locked page %s' % pl.linkname())
+            continue
+        except wikipedia.IsRedirectPage:
+            continue
     
-    skip_page = False
-    # skip all pages that contain certain texts
-    for exception in exceptions:
-        if regex:
-            exception = re.compile(exception)
-            hit = exception.search(original_text)
-            if hit:
-                wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), hit.group(0)))
-                # Does anyone know how to break out of the _outer_ loop?
-                # Then we wouldn't need the skip_page variable.
-                skip_page = True
-                break
-        else:
-            hit = original_text.find(exception)
-            if hit != -1:
-                wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), original_text[hit:hit + len(exception)]))
-                skip_page = True
-                break
-    if not skip_page:
-        # create a copy of the original text to work on, so we can later compare
-        # if any changes were made
-        new_text = original_text
-        for old, new in replacements.items():
+        skip_page = False
+        # skip all pages that contain certain texts
+        for exception in exceptions:
             if regex:
-                # TODO: compiling the regex each time might be inefficient
-                old = re.compile(old)
-                new_text = old.sub(new, new_text)
+                exception = re.compile(exception)
+                hit = exception.search(original_text)
+                if hit:
+                    wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), hit.group(0)))
+                    # Does anyone know how to break out of the _outer_ loop?
+                    # Then we wouldn't need the skip_page variable.
+                    skip_page = True
+                    break
             else:
-                new_text = new_text.replace(old, new)
-        if new_text == original_text:
-            try:
-                # Sometime the bot crashes when it can't decode a character.
-                # Let's not let it crash
-                print 'No changes were necessary in %s' % pl.linkname()
-            except UnicodeEncodeError:
-                print 'Error decoding pl.linkname()'
-                continue
-        else:
-            #wikipedia.showDiff(original_text, new_text)
-            wikipedia.showColorDiff(original_text, new_text, replacements)
-            if not acceptall:
-                choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
-                if choice in ['a', 'A']:
-                    acceptall = True
-            if acceptall or choice in ['y', 'Y']:
-                pl.put(new_text)
+                hit = original_text.find(exception)
+                if hit != -1:
+                    wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), original_text[hit:hit + len(exception)]))
+                    skip_page = True
+                    break
+        if not skip_page:
+            # create a copy of the original text to work on, so we can later compare
+            # if any changes were made
+            new_text = original_text
+            for old, new in replacements.items():
+                if regex:
+                    # TODO: compiling the regex each time might be inefficient
+                    old = re.compile(old)
+                    new_text = old.sub(new, new_text)
+                else:
+                    new_text = new_text.replace(old, new)
+            if new_text == original_text:
+                try:
+                    # Sometime the bot crashes when it can't decode a character.
+                    # Let's not let it crash
+                    print 'No changes were necessary in %s' % pl.linkname()
+                except UnicodeEncodeError:
+                    print 'Error decoding pl.linkname()'
+                    continue
+            else:
+                #wikipedia.showDiff(original_text, new_text)
+                wikipedia.showColorDiff(original_text, new_text, replacements)
+                if not acceptall:
+                    choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
+                    if choice in ['a', 'A']:
+                        acceptall = True
+                if acceptall or choice in ['y', 'Y']:
+                    pl.put(new_text)
+
+try:
+    main()
+except:
+    wikipedia.stopme()
+    raise
+else:
+    raise

@@ -66,6 +66,17 @@ def findpage(t):
     findpage(t[location.end()+1:])
     return
 
+def main():
+    text = []
+    if utf:
+        f=codecs.open(filename,'rb',encoding='utf-8')
+    else:
+        f=open(filename,'r')
+    for line in f.readlines():
+        text.append(line)
+    text=''.join(text)
+    findpage(text)
+
 for arg in sys.argv[1:]:
     arg = wikipedia.argHandler(arg)
     if arg:
@@ -85,20 +96,14 @@ for arg in sys.argv[1:]:
             sys.stdout = logger.Logger(sys.stdout, filename = 'pagefromfile.log')
         else:
             print "Disregarding unknown argument %s."%arg
-
 mysite = wikipedia.getSite()
 commenttext = wikipedia.translate(mysite,msg)
 
-text = []
-
-if utf:
-    f=codecs.open(filename,'rb',encoding='utf-8')
+try:
+    main()
+except:
+    wikipedia.stopme()
+    raise
 else:
-    f=open(filename,'r')
-for line in f.readlines():
-    text.append(line)
+    raise
 
-text=''.join(text)
-
-findpage(text)
-    

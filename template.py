@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Very simple script to replace a template with another one,
 and to convert the old MediaWiki boilerplate format to the new template format.
@@ -93,71 +93,80 @@ def getReferences(pl):
     x = wikipedia.getReferences(pl)
     return x
 
-oldformat = False
-template_names = []
-resolve = False
-remove = False
-# If sqlfilename is None, references will be loaded from the live wiki.
-sqlfilename = None
-# read command line parameters
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if arg == '-remove':
-            remove = True
-        elif arg == '-oldformat':
-            oldformat = True
-        elif arg.startswith('-sql'):
-            if len(arg) == 4:
-                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+def main():
+    oldformat = False
+    template_names = []
+    resolve = False
+    remove = False
+    # If sqlfilename is None, references will be loaded from the live wiki.
+    sqlfilename = None
+    # read command line parameters
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg == '-remove':
+                remove = True
+            elif arg == '-oldformat':
+                oldformat = True
+            elif arg.startswith('-sql'):
+                if len(arg) == 4:
+                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                else:
+                    sqlfilename = arg[5:]
             else:
-                sqlfilename = arg[5:]
-        else:
-            template_names.append(arg)
+                template_names.append(arg)
 
-if template_names == []:
-    print "Syntax: python template.py [-oldformat] [-remove] oldTemplate [newTemplate]"
-    sys.exit()
-old = template_names[0]
-if len(template_names) >= 2:
-    new = template_names[1]
-else:
-    # if only one argument is given, don't replace the template with another
-    # one, but resolve the template by putting its text directly into the
-    # article.
-    resolve = True
+    if template_names == []:
+        print "Syntax: python template.py [-oldformat] [-remove] oldTemplate [newTemplate]"
+        sys.exit()
+    old = template_names[0]
+    if len(template_names) >= 2:
+        new = template_names[1]
+    else:
+        # if only one argument is given, don't replace the template with another
+        # one, but resolve the template by putting its text directly into the
+        # article.
+        resolve = True
 
-mysite = wikipedia.getSite()
+    mysite = wikipedia.getSite()
 
-# get edit summary message
-if remove:
-    wikipedia.setAction(wikipedia.translate(mysite, msg_remove) % old)
-else:
-    wikipedia.setAction(wikipedia.translate(mysite, msg_change) % old)
+    # get edit summary message
+    if remove:
+        wikipedia.setAction(wikipedia.translate(mysite, msg_remove) % old)
+    else:
+        wikipedia.setAction(wikipedia.translate(mysite, msg_change) % old)
     
 
-# get template namespace
-ns = mysite.template_namespace(fallback = None)
-# Download 'What links here' of the template page
-thispl = wikipedia.PageLink(mysite, ns + ':' + old)
+    # get template namespace
+    ns = mysite.template_namespace(fallback = None)
+    # Download 'What links here' of the template page
+    thispl = wikipedia.PageLink(mysite, ns + ':' + old)
 
 
-# regular expression to find the original template.
-# {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
-# The new syntax, {{vfd}}, will also be found.
-templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
+    # regular expression to find the original template.
+    # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
+    # The new syntax, {{vfd}}, will also be found.
+    templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
 
-# loop over all pages using the template
-if sqlfilename == None:
-    for ref in getReferences(thispl):
-        refpl=wikipedia.PageLink(mysite, ref)
-        treat(refpl)
-        print ''
-else:
-    import sqldump
-    dump = sqldump.SQLdump(sqlfilename, mysite.encoding())
-    for entry in dump.entries():
-        if templateR.search(entry.text):
-            pl=wikipedia.PageLink(mysite, entry.full_title())
-            treat(pl)
+    # loop over all pages using the template
+    if sqlfilename == None:
+        for ref in getReferences(thispl):
+            refpl=wikipedia.PageLink(mysite, ref)
+            treat(refpl)
             print ''
+    else:
+        import sqldump
+        dump = sqldump.SQLdump(sqlfilename, mysite.encoding())
+        for entry in dump.entries():
+            if templateR.search(entry.text):
+                pl=wikipedia.PageLink(mysite, entry.full_title())
+                treat(pl)
+                print ''
+
+try:
+    main()
+except:
+    wikipedia.stopme()
+    raise
+else:
+    wikipedia.stopme()

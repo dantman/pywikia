@@ -29,48 +29,56 @@ __version__='$Id$'
 import os, sys, re
 import wikipedia, lib_images, config
 
-fn = ''
-desc = []
-keep = False
-wiki = ''
+def main(args):
+    fn = ''
+    desc = []
+    keep = False
+    wiki = ''
 
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if arg.startswith('-keep'):
-            keep = True
-        elif arg.startswith('-wiki:'):
-            wiki=arg[6:]
-        elif fn=='':
-            fn = arg
-        else:
-            desc.append(arg)
+    for arg in args:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg.startswith('-keep'):
+                keep = True
+            elif arg.startswith('-wiki:'):
+                wiki=arg[6:]
+            elif fn=='':
+                fn = arg
+            else:
+                desc.append(arg)
 
-mysite = wikipedia.getSite()
-if not mysite.loggedin():
-    print "You must be logged in to upload images"
-    import sys
-    sys.exit(1)
+    mysite = wikipedia.getSite()
+    if not mysite.loggedin():
+        print "You must be logged in to upload images"
+        import sys
+        sys.exit(1)
 
-desc=' '.join(desc)
+    desc=' '.join(desc)
 
-if wiki:
-    othersite = mysite.getSite(wiki)
-    while not fn:
-        wikipedia.output(u'No input filename given')
-        fn = wikipedia.input(u'Give filename:')
-    full_image_name = "%s:%s"%(othersite.image_namespace(),fn)
-    pl = wikipedia.PageLink(othersite, full_image_name)
-    lib_images.transfer_image(pl)
-else:
-    ok = (fn!='') and ( ('://') in fn or os.path.exists(fn))
-    while not ok:
-        if not fn:
+    if wiki:
+        othersite = mysite.getSite(wiki)
+        while not fn:
             wikipedia.output(u'No input filename given')
-        else:
-            wikipedia.output(u'Invalid input filename given. Try again.')
-        fn = wikipedia.input(u'File or URL where image is now:')
+            fn = wikipedia.input(u'Give filename:')
+        full_image_name = "%s:%s"%(othersite.image_namespace(),fn)
+        pl = wikipedia.PageLink(othersite, full_image_name)
+        lib_images.transfer_image(pl)
+    else:
         ok = (fn!='') and ( ('://') in fn or os.path.exists(fn))
+        while not ok:
+            if not fn:
+                wikipedia.output(u'No input filename given')
+            else:
+                wikipedia.output(u'Invalid input filename given. Try again.')
+            fn = wikipedia.input(u'File or URL where image is now:')
+            ok = (fn!='') and ( ('://') in fn or os.path.exists(fn))
      
-    lib_images.get_image(fn, None, desc, keep)
+        lib_images.get_image(fn, None, desc, keep)
 
+try:
+    main(sys.argv[1:])
+except:
+    wikipedia.stopme()
+    raise
+else:
+    wikipedia.stopme()

@@ -15,6 +15,7 @@ for arg in sys.argv[1:]:
     arg = wikipedia.argHandler(arg)
     if arg:
         print "Unknown argument",arg
+        wikipedia.stopme()
         sys.exit(1)
 
 mysite = wikipedia.getSite()
@@ -22,3 +23,5 @@ if mysite.loggedin(check=1):
     print "Logged in (%s)" % repr(mysite)
 else:
     print "Not logged in (%s)" % repr(mysite)
+
+wikipedia.stopme()

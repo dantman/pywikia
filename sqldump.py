@@ -226,6 +226,7 @@ def query(sqldump, action):
             yield entry
  
 if __name__=="__main__":
+    wikipedia.stopme() # No need to have me on the stack, as I'm not contacting the wiki
     import sys
     action = None
     for arg in sys.argv[1:]:

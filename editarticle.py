@@ -179,4 +179,10 @@ def main():
     app.run()
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+        wikipedia.stopme()
+        raise
+    wikipedia.stopme()
+

@@ -171,51 +171,57 @@ def get_table(text):
     return text[first_start_tag.start():pos]
 
 if __name__=="__main__":
-    # if the -file argument is used, page titles are dumped in this array.
-    # otherwise it will only contain one page.
-    page_list = []
-    # if -file is not used, this temporary array is used to read the page title.
-    page_title = []
-    from_lang = ""
-    type = ""
-    debug = False
-    copy_images = False
+    try:
+        # if the -file argument is used, page titles are dumped in this array.
+        # otherwise it will only contain one page.
+        page_list = []
+        # if -file is not used, this temporary array is used to read the page title.
+        page_title = []
+        from_lang = ""
+        type = ""
+        debug = False
+        copy_images = False
 
-    # read command line parameters
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
-        if arg:
-            if arg.startswith("-from"):
-                from_lang = arg[6:]
-            elif arg.startswith("-type:"):
-                type = arg[6:]
-            elif arg == "-debug":
-                debug = True
-            elif arg == "-image":
-                copy_images = True
-            elif arg.startswith('-file'):
-                if len(arg) == 5:
-                    file = wikipedia.input(u'Please enter the list\'s filename: ')
+        # read command line parameters
+        for arg in sys.argv[1:]:
+            arg = wikipedia.argHandler(arg)
+            if arg:
+                if arg.startswith("-from"):
+                    from_lang = arg[6:]
+                elif arg.startswith("-type:"):
+                    type = arg[6:]
+                elif arg == "-debug":
+                    debug = True
+                elif arg == "-image":
+                    copy_images = True
+                elif arg.startswith('-file'):
+                    if len(arg) == 5:
+                        file = wikipedia.input(u'Please enter the list\'s filename: ')
+                    else:
+                        file = arg[6:]
+                    # open file and read page titles out of it
+                    f=open(file)
+                    for line in f.readlines():
+                        if line != '\n':           
+                            page_list.append(line)
+                    f.close()
                 else:
-                    file = arg[6:]
-                # open file and read page titles out of it
-                f=open(file)
-                for line in f.readlines():
-                    if line != '\n':           
-                        page_list.append(line)
-                f.close()
-            else:
-                page_title.append(arg)
+                    page_title.append(arg)
 
-    # if the page name is given as a command line argument,
-    # connect the title's parts with spaces
-    if page_title != []:
-         page_title = ' '.join(page_title)
-         page_list.append(page_title)
+        # if the page name is given as a command line argument,
+        # connect the title's parts with spaces
+        if page_title != []:
+            page_title = ' '.join(page_title)
+            page_list.append(page_title)
 
-    mysite = wikipedia.getSite()
-    fromsite = mysite.getSite(code=from_lang)
+        mysite = wikipedia.getSite()
+        fromsite = mysite.getSite(code=from_lang)
     
-    for current_page_name in page_list:
-        thispl = wikipedia.PageLink(mysite, current_page_name)
-        treat(thispl, fromsite)
+        for current_page_name in page_list:
+            thispl = wikipedia.PageLink(mysite, current_page_name)
+            treat(thispl, fromsite)
+    except:
+        wikipedia.stopme()
+        raise
+    wikipedia.stopme()
+

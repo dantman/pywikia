@@ -9,6 +9,7 @@ __version__ = '$Id$'
 
 import wikipedia
 
+wikipedia.stopme() # No need to have me on the stack - I don't contact the wiki
 files={}
 count={}
 for line in open('treelang.log'):

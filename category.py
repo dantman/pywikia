@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -474,54 +474,62 @@ def print_treeview(catname, max_depth = 10):
     else:
         wikipedia.output(tree)
 
-if __name__ == "__main__":
-    action = None
-    sort_by_last_name = False
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
-        if arg:
-            if arg == 'add':
-                action = 'add'
-            elif arg == 'remove':
-                action = 'remove'
-            elif arg == 'rename':
-                action = 'rename'
-            elif arg == 'tidy':
-                action = 'tidy'
-            elif arg == 'tree':
-                action = 'tree'
-            elif arg == '-person':
-                sort_by_last_name = True
-            elif arg == '-restore':
-                f = open('cattree.dump', 'r')
-                databases = pickle.load(f)
-                f.close()
-                catContentDB = databases['catContentDB'] 
-                superclassDB = databases['superclassDB']
-                del databases
+def main():
+    if __name__ == "__main__":
+        action = None
+        sort_by_last_name = False
+        for arg in sys.argv[1:]:
+            arg = wikipedia.argHandler(arg)
+            if arg:
+                if arg == 'add':
+                    action = 'add'
+                elif arg == 'remove':
+                    action = 'remove'
+                elif arg == 'rename':
+                    action = 'rename'
+                elif arg == 'tidy':
+                    action = 'tidy'
+                elif arg == 'tree':
+                    action = 'tree'
+                elif arg == '-person':
+                    sort_by_last_name = True
+                elif arg == '-restore':
+                    f = open('cattree.dump', 'r')
+                    databases = pickle.load(f)
+                    f.close()
+                    catContentDB = databases['catContentDB'] 
+                    superclassDB = databases['superclassDB']
+                    del databases
                 
-    # catlib needs to be imported at this position because its constructor uses
-    # mylang which might have been changed by wikipedia.argHandler().
-    import catlib
-    if action == 'add':
-        add_category(sort_by_last_name)
-    elif action == 'remove':
-        cat_title = wikipedia.input(u'Please enter the name of the category that should be removed:')
-        remove_category(cat_title)
-    elif action == 'rename':
-        old_cat_title = wikipedia.input(u'Please enter the old name of the category:')
-        new_cat_title = wikipedia.input(u'Please enter the new name of the category:')
-        rename_category(old_cat_title, new_cat_title)
-    elif action == 'tidy':
-        cat_title = wikipedia.input(u'Which category do you want to tidy up?')
-        tidy_category(cat_title)
-    elif action == 'tree':
-        cat_title = wikipedia.input(u'For which category do you want to create a tree view?')
-        try:
-            print_treeview(cat_title)
-        except:
-            dump('cattree.dump')
-            raise
-    else:
-        # show help
-        wikipedia.output(__doc__, 'utf-8')
+        # catlib needs to be imported at this position because its constructor uses
+        # mylang which might have been changed by wikipedia.argHandler().
+        import catlib
+        if action == 'add':
+            add_category(sort_by_last_name)
+        elif action == 'remove':
+            cat_title = wikipedia.input(u'Please enter the name of the category that should be removed:')
+            remove_category(cat_title)
+        elif action == 'rename':
+            old_cat_title = wikipedia.input(u'Please enter the old name of the category:')
+            new_cat_title = wikipedia.input(u'Please enter the new name of the category:')
+            rename_category(old_cat_title, new_cat_title)
+        elif action == 'tidy':
+            cat_title = wikipedia.input(u'Which category do you want to tidy up?')
+            tidy_category(cat_title)
+        elif action == 'tree':
+            cat_title = wikipedia.input(u'For which category do you want to create a tree view?')
+            try:
+                print_treeview(cat_title)
+            except:
+                dump('cattree.dump')
+                raise
+        else:
+            # show help
+            wikipedia.output(__doc__, 'utf-8')
+
+try:
+    main()
+except:
+    wikipedia.stopme()
+    raise
+wikipedia.stopme()

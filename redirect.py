@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Script to resolve double redirects, and to delete broken redirects.
 Requires access to MediaWiki's maintenance pages or to a SQL dump file. Delete function requires
@@ -219,44 +219,55 @@ def fix_double_redirects(source):
                 status, reason, data = redir.put(txt)
                 print status, reason
 
-# read command line parameters
-# what the bot should do (either resolve double redirs, or delete broken redirs)
-action = None
-# where the bot should get his infos from (either None to load the maintenance
-# special page from the live wiki, the filename of a local sql dump file)
-source = None
-# Which namespace should be processed when using a SQL dump
-# default to -1 which means all namespaces will be processed
-namespace = -1
-# at which redirect shall we start searching double redirects again (only with dump)
-# default to -1 which means all redirects are checked
-restart = -1
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        if arg == 'double':
-            action = 'double'
-        elif arg == 'broken':
-            action = 'broken'
-        elif arg.startswith('-sql'):
-            if len(arg) == 4:
-                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+def main():
+    # read command line parameters
+    # what the bot should do (either resolve double redirs, or delete broken redirs)
+    action = None
+    # where the bot should get his infos from (either None to load the maintenance
+    # special page from the live wiki, the filename of a local sql dump file)
+    source = None
+    # Which namespace should be processed when using a SQL dump
+    # default to -1 which means all namespaces will be processed
+    namespace = -1
+    # at which redirect shall we start searching double redirects again (only with dump)
+    # default to -1 which means all redirects are checked
+    restart = -1
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg == 'double':
+                action = 'double'
+            elif arg == 'broken':
+                action = 'broken'
+            elif arg.startswith('-sql'):
+                if len(arg) == 4:
+                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                else:
+                    sqlfilename = arg[5:]
+                import sqldump
+                source = sqlfilename
+            elif arg.startswith('-namespace:'):
+                namespace = int(arg[11:])
+            elif arg.startswith('-restart:'):
+                restart = int(arg[9:])
             else:
-                sqlfilename = arg[5:]
-            import sqldump
-            source = sqlfilename
-        elif arg.startswith('-namespace:'):
-            namespace = int(arg[11:])
-        elif arg.startswith('-restart:'):
-            restart = int(arg[9:])
-        else:
-            print 'Unknown argument: %s' % arg
+                print 'Unknown argument: %s' % arg
 
-if action == 'double':
-    # get summary text
-    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_double))
-    fix_double_redirects(source)
-elif action == 'broken':
-    delete_broken_redirects(source)
-else:
-    wikipedia.output(__doc__, 'utf-8')
+    if action == 'double':
+        # get summary text
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_double))
+        fix_double_redirects(source)
+    elif action == 'broken':
+        delete_broken_redirects(source)
+    else:
+        wikipedia.output(__doc__, 'utf-8')
+
+if True:
+    try:
+        main()
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()
+

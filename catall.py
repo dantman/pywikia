@@ -81,27 +81,31 @@ else:
 
 mysite = wikipedia.getSite()
 
-for p in wikipedia.allpages(start = start, site = mysite):
-    try:
-        text=p.get()
-        cats=p.categories()
-        if cats == []:
-            wikipedia.output(u"========== %s ==========" % p.linkname())
-            print "No categories"
-            print "----------------------------------------"
-            newcats=choosecats(text)
-            if newcats != [] and newcats != None:
-                make_categories(p, newcats, mysite)
-        else:
-            if docorrections:
+try:
+    for p in wikipedia.allpages(start = start, site = mysite):
+        try:
+            text=p.get()
+            cats=p.categories()
+            if cats == []:
                 wikipedia.output(u"========== %s ==========" % p.linkname())
-                for c in cats:
-                    print c.linkname()
+                print "No categories"
                 print "----------------------------------------"
                 newcats=choosecats(text)
-                if newcats == None:
-                    make_categories(p, [], mysite)
-                elif newcats != []:
+                if newcats != [] and newcats != None:
                     make_categories(p, newcats, mysite)
-    except wikipedia.IsRedirectPage:
-        pass
+            else:
+                if docorrections:
+                    wikipedia.output(u"========== %s ==========" % p.linkname())
+                    for c in cats:
+                        print c.linkname()
+                    print "----------------------------------------"
+                    newcats=choosecats(text)
+                    if newcats == None:
+                        make_categories(p, [], mysite)
+                    elif newcats != []:
+                        make_categories(p, newcats, mysite)
+        except wikipedia.IsRedirectPage:
+            pass
+except:
+    wikipedia.stopme()
+    raise

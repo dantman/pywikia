@@ -160,4 +160,11 @@ def main(args):
         print "Login failed. Wrong password?"
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    try:
+        main(sys.argv[1:])
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()
+

@@ -137,7 +137,7 @@ def asktoadd(pl):
             else:
                 print("Not understood.")
 
-if __name__=="__main__":
+def main():
     tocheck = []
     include = []
     exclude = []
@@ -186,5 +186,11 @@ if __name__=="__main__":
     for page in include:
         print page
 
+if __name__=="__main__":
+    try:
+        main()
+    except:
+        wikipedia.stopme()
+        raise
+    wikipedia.stopme()
 
- 

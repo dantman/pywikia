@@ -1052,17 +1052,21 @@ if __name__ == "__main__":
             globalvar.skip[pl] = None
 
     if start:
-        if number:
-            print "Treating %d pages starting at %s" % (number, start)
-            i = 0
-            for pl in wikipedia.allpages(start = start):
-                sa.add(pl,hints=hints)
-                i += 1
-                if i >= number:
-                    break
-        else:
-            print "Treating pages starting at %s" % start
-            sa.setGenerator(wikipedia.allpages(start = start))
+        try:
+            if number:
+                print "Treating %d pages starting at %s" % (number, start)
+                i = 0
+                for pl in wikipedia.allpages(start = start):
+                    sa.add(pl,hints=hints)
+                    i += 1
+                    if i >= number:
+                        break
+            else:
+                print "Treating pages starting at %s" % start
+                sa.setGenerator(wikipedia.allpages(start = start))
+        except:
+            wikipedia.stopme()
+            raise
 
     inname = '_'.join(inname)
     if sa.isDone() and not inname:
@@ -1075,8 +1079,10 @@ if __name__ == "__main__":
     try:
         sa.run()
     except KeyboardInterrupt:
+        wikipedia.stopme()
         sa.dump('interwiki.dump')
     except:
+        wikipedia.stopme()
         sa.dump('interwiki.dump')
         raise
-
+    wikipedia.stopme()

@@ -12,13 +12,14 @@ Arguments:
             they occur in the HTML file)
 """
 #
-# (C) Rob W.W. Hooft, Andre Engels, 2003-2004
+# (C) Rob W.W. Hooft, Andre Engels, 2003-2005
 #
 # Distribute under the terms of the PSF license.
 #
 __version__='$Id$'
 #
 import sys,re,wikipedia
+wikipedia.stopme() # This bot does not contact the Wiki, so no need to get it on the list 
 R = re.compile('/wiki/(.*?)" *')
 fn = []
 sorted = False

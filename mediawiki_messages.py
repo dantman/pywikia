@@ -123,8 +123,7 @@ def refresh_all_messages():
                 family, lang = match.group(1).split(':')
             site = wikipedia.getSite(code = lang, fam = family)
             refresh_messages(site)
-
-if __name__ == "__main__":
+def main():
     debug = False
     refresh_all = False
     for arg in sys.argv[1:]:
@@ -141,3 +140,13 @@ if __name__ == "__main__":
         refresh_messages(wikipedia.getSite())
     if debug:
         print "DBG> successfulupload contains %s" % get('successfulupload')
+
+if __name__ == "__main__":
+    try:
+        main()
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()
+
