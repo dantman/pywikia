@@ -69,6 +69,7 @@ class Family(family.Family):
         'gu':'gu.wikipedia.org',   # Gujarati
         'gv':'gv.wikipedia.org',   # Manx
         'ha':'ha.wikipedia.org',   # Hausa
+        'haw':'haw.wikipedia.org', # Hawaiian
         'he':'he.wikipedia.org',   # Hebrew
         'hi':'hi.wikipedia.org',   # Hindi
         'hr':'hr.wikipedia.org',   # Croatian
@@ -218,7 +219,7 @@ class Family(family.Family):
                   'be','bn','bh','bi','bo','bs','br','ca','chr','cho','co','cs',
                   'cy','da','de','dv','als','et','el','en','es','eo','eu','ee',
                   'fa','fo','fr','fy','ga','gv','gd','gl','got','gn','gu','ko',
-                  'ha','hy','hi','hr','io','id','ia','xh','is','zu','it',
+                  'ha','haw','hy','hi','hr','io','id','ia','xh','is','zu','it',
                   'he','jv','kn','ka','csb','ks','kk','kw','km','ky','sw',
                   'ku','lo','la','lv','lt','lb','ln','jbo','hu','mk','mg',
                   'ml','mt','mi','mr','ms','minnan','mn','mus','my','nah','na',

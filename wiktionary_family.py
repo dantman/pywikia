@@ -58,6 +58,7 @@ class Family(family.Family):
         'gu':'gu.wiktionary.org',   # Gujarati
         'gv':'gv.wiktionary.org',   # Manx
         'ha':'ha.wiktionary.org',   # Hausa
+        'haw':'haw.wiktionary.org', # Hawaiian
         'he':'he.wiktionary.org',   # Hebrew
         'hi':'hi.wiktionary.org',   # Hindi
         'hr':'hr.wiktionary.org',   # Croatian
