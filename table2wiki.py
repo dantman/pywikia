@@ -129,14 +129,10 @@ for article in articles:
                      "\r\n|+ \\1", newText, 0)
     
     ##################
-    # very simple <tr>
-    newText = re.sub("\<(tr|TR)([^>]*?)\>", "\r\n|-----\\2\r\n", newText, 0)
-    newText = re.sub("\<(tr|TR)\>", "\r\n|-----\r\n", newText, 0)
-
-    ##################
     # <th> often people don't write them within <tr>, be warned!
     newText = re.sub("[\r\n]+<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
                      "\r\n!\\2 | \\3\r\n", newText, 0)
+
     # fail save. sometimes people forget </th>
     newText, n = re.subn("[\r\n]+<(th|TH)\>([\w\W]*?)[\r\n]+",
                          "\r\n! \\2\r\n", newText, 0)
@@ -144,7 +140,12 @@ for article in articles:
     newText, n = re.subn("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)[\r\n]+",
                              "\r\n!\\2 | \\3\r\n", newText, 0)
     warnings = warnings + n
-    
+
+
+    ##################
+    # very simple <tr>
+    newText = re.sub("\<(tr|TR)([^>]*?)\>", "\r\n|-----\\2\r\n", newText, 0)
+    newText = re.sub("\<(tr|TR)\>", "\r\n|-----\r\n", newText, 0)
 
     ##################
     # normal <td>
@@ -175,8 +176,8 @@ for article in articles:
     newText, n = re.subn("\<(td|TD)\>([\w\W]*?)[\r\n]+",
                          "\r\n| \\2\r\n", newText, 0)
     warnings = warnings + n
-    
-    
+
+
     ##################
     # Garbage collecting ;-)
     newText = re.sub("\<td\>[\r\n]*\<\/tr\>", "", newText, 0)
@@ -212,11 +213,13 @@ for article in articles:
             
     ##################
     # kills additional spaces after | or ! or {|
-    newText = re.sub("[\r\n]+\|[\t ]+?[\r\n]+", "\r\n| ", newText, 0)
+    # This line was creating problems, so I commented it out --Daniel
+    # newText = re.sub("[\r\n]+\|[\t ]+?[\r\n]+", "\r\n| ", newText, 0)
     # kills trailing spaces and tabs
     newText = re.sub("\r\n(.*)[\t\ ]+[\r\n]+", "\r\n\\1\r\n", newText, 0)
     # kill extra new-lines
     newText = re.sub("[\r\n]{4,}(\!|\|)", "\r\n\\1", newText, 0);
+
 
     ##################        
     # shortening if <table> had no arguments/parameters
@@ -257,6 +260,10 @@ for article in articles:
     newText = re.sub("([\r\n]+\![^\r\n]+?)\<center\>([\w\W]+?)\<\/center\>",
                      "\\1 \\2", newText, 0)
     # strip align="center" from <th> because the .css does it
+    # if there are no other attributes than align, we don't need that | either
+    newText = re.sub("([\r\n]+\! +)align\=\"center\" +\|",
+                     "\\1", newText, 0)
+    # if there are other attributes, simply strip the align="center"
     newText = re.sub("([\r\n]+\![^\r\n\|]+?)align\=\"center\"([^\n\r\|]+?\|)",
                      "\\1 \\2", newText, 0)
     
