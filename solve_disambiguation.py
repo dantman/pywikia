@@ -52,6 +52,9 @@ Command line options:
                some choices for XY don't make sense and will result in a loop,
                e.g. "l" or "m".
 
+   -main       only check pages in the main namespace, not in the talk,
+               wikipedia, user, etc. namespaces.
+
 Options that are accepted by more robots:
 
    -lang:XX  set your home wikipedia to XX instead of the one given in
@@ -126,7 +129,6 @@ link_trail={
 # Special chars should be encoded with unicode (\x##) and space used
 # instead of _
 
-# TODO: convert everything to regular exceptions (only de: done yet, will crash)
 ignore={
     'nl':('Wikipedia:Onderhoudspagina',
           'Wikipedia:Doorverwijspagina',
@@ -268,6 +270,7 @@ page_list = []
 # if -file is not used, this temporary array is used to read the page title.
 page_title = []
 primary = False
+main_only = False
 
 for arg in sys.argv[1:]:
     arg = wikipedia.argHandler(arg)
@@ -310,17 +313,26 @@ for arg in sys.argv[1:]:
             getalternatives=0
         elif arg=='-redir':
             solve_redirect=1
+        elif arg=='-main':
+            main_only = True
         else:
             page_title.append(arg)
 
 # Make sure to have the last one
 mysite = wikipedia.getSite()
+mylang = mysite.language()
+
+if main_only:
+    if ignore.has_key(mylang):
+    	ignore[mylang] += mysite.namespaces()
+    else:
+        ignore[mylang] = mysite.namespaces()
 
 # if the disambiguation page is given as a command line argument,
 # connect the title's parts with spaces
 if page_title != []:
-     page_title = ' '.join(page_title)
-     page_list.append(page_title)
+    page_title = ' '.join(page_title)
+    page_list.append(page_title)
 
 # if no disambiguation pages was given as an argument, and none was
 # read from a file, query the user
@@ -374,7 +386,7 @@ for wrd in page_list:
     elif getalternatives:
         try:
             if primary:
-                disamb_pl = wikipedia.PageLink(mysite, primary_topic_format[mysite.lang] % wrd)
+                disamb_pl = wikipedia.PageLink(mysite, primary_topic_format[mylang] % wrd)
                 thistxt = disamb_pl.get()
             else:
                 thistxt = thispl.get()
@@ -573,7 +585,7 @@ for wrd in page_list:
                     # know if other languages don't want this feature either.
                     # We might want to introduce a list of languages that don't want to use
                     # this feature.
-                    if mysite.lang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
+                    if mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
                         new_page_title = new_page_title[0].lower() + new_page_title[1:]
                     if replaceit and trailing_chars: 
                         newlink = "[[%s]]%s" % (new_page_title, trailing_chars)
@@ -596,8 +608,8 @@ for wrd in page_list:
                 refpl.put(text)
         return True
 
-    if mysite.lang in link_trail:
-        linktrail=link_trail[mysite.lang]
+    if mylang in link_trail:
+        linktrail=link_trail[mylang]
     else:
         linktrail='[a-z]*'
     trailR=re.compile(linktrail)

@@ -1856,6 +1856,14 @@ class Site(object):
     def namespace(self, num):
         return self.family.namespace(self.lang, num)
 
+    def namespaces(self):
+        list=()
+        for n in self.family.namespaces:
+            ns = self.family.namespace(self.lang, n)
+            if ns != None:
+                list += (self.family.namespace(self.lang, n),)
+        return list
+
     def allmessages_address(self):
         return self.family.allmessages_address(self.lang)
 
