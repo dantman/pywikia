@@ -31,10 +31,12 @@ This script understands various command-line arguments:
     -backlink: check for references between the foreign pages as well, list 
               all those that are missing as WARNINGs.
     -log: log to the file treelang.log as well as printing to the screen.
-     -lang: specifies the language the bot is run on (e.g. -lang:de).
-           Overwrites the settings in username.dat
-	
 
+    Arguments that are interpreted by more bot:
+
+    -lang: specifies the language the bot is run on (e.g. -lang:de).
+           Overwrites the settings in username.dat
+    
      All other arguments are words that make up the page name.
 """
 #
@@ -45,9 +47,6 @@ This script understands various command-line arguments:
 __version__ = '$Id$'
 #
 import sys, copy, wikipedia, re
-
-# language to check for missing links and modify
-mylang = wikipedia.mylang
 
 # Summary used in the modification request
 wikipedia.setAction('semi-automatic interwiki script')
@@ -82,8 +81,8 @@ msg = {
     'da':('Tilføjer','Fjerner','Ændrer'),
     'fr':('Ajoute','Retire','Modifie')
     }
-if msg.has_key(mylang):
-    msglang = mylang
+if msg.has_key(wikipedia.mylang):
+    msglang = wikipedia.mylang
 else:
     msglang = 'en'
 
@@ -138,7 +137,7 @@ def autotranslate(pl, arr, same=0):
                     arr[x] = None
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
-    if mylang == datetablelang:
+    if wikipedia.mylang == datetablelang:
         Rdate = re.compile('(\d+)_(%s)' % ('|'.join(datetable.keys())))
         m = Rdate.match(pl.linkname())
         if m:
@@ -162,7 +161,7 @@ def autotranslate(pl, arr, same=0):
         return
 
     # Autotranslate years B.C.
-    if mylang == 'nl':
+    if wikipedia.mylang == 'nl':
         Ryear = re.compile('^(\d+)_v._Chr.')
         m = Ryear.match(pl.linkname())
         if m:
@@ -204,7 +203,7 @@ exceptions = []
 
 Re = re.compile(r'\[\[(.*)\]\] *< *\[\[(.*)\]\]')
 try:
-    f = open('%s-exceptions.dat'%mylang)
+    f = open('%s-exceptions.dat' % wikipedia.mylang)
 except IOError:
     pass
 else:
@@ -242,7 +241,7 @@ def treestep(arr, pl, abort_on_redirect = 0):
         arr[pl] = 1
         return 0
     except wikipedia.IsRedirectPage,arg:
-        if abort_on_redirect and pl.code() == mylang:
+        if abort_on_redirect and pl.code() == wikipedia.mylang:
             raise
         newpl = wikipedia.PageLink(pl.code(), str(arg))
         arr[pl] = ''
@@ -307,7 +306,9 @@ backlink = 0
 hints = []
 
 for arg in sys.argv[1:]:
-    if arg == '-force':
+    if wikipedia.argHandler(arg):
+        pass
+    elif arg == '-force':
         ask = False
     elif arg == '-always':
         only_if_status = False
@@ -328,8 +329,6 @@ for arg in sys.argv[1:]:
         bell = 0
     elif arg=='-log':
         log = 1
-    elif arg.startswith('-lang:'):
-        mylang = arg[6:]
     else:
         inname.append(arg)
 
@@ -340,7 +339,7 @@ inname = '_'.join(inname)
 if not inname:
     inname = raw_input('Which page to check:')
 
-inpl = wikipedia.PageLink(mylang,inname)
+inpl = wikipedia.PageLink(wikipedia.mylang, inname)
 
 m = treesearch(inpl)
 if not m:
@@ -351,7 +350,7 @@ new = {}
 k = m.keys()
 k.sort()
 for pl in k:
-    if pl.code() == mylang and m[pl]:
+    if pl.code() == wikipedia.mylang and m[pl]:
         if pl!=inpl:
             print "ERROR: %s refers back to %s" % (inpl, pl)
             confirm += 1
@@ -413,7 +412,7 @@ else:
         else:
             print s
     if newtext != oldtext:
-        print "NOTE: Replace %s: %s" % (mylang, inname)
+        print "NOTE: Replace %s: %s" % (wikipedia.mylang, inname)
         if forreal:
             if ask:
                 if confirm:
@@ -426,7 +425,7 @@ else:
             else:
                 answer = 'y'
             if answer == 'y':
-                status, reason, data = wikipedia.putPage(mylang, inname, newtext,
+                status, reason, data = wikipedia.putPage(wikipedia.mylang, inname, newtext,
                                                          comment='robot '+mods)
                 if str(status) != '302':
                     print status, reason
@@ -456,8 +455,3 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:", pl.asselflink(), "links to incorrect", xpl.aslink()
-
-
-
-
-
