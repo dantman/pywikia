@@ -76,3 +76,4 @@ for f in pages:
                     print >> fil, "%s does not link to %s"%(pl2,pl)
                     fil.flush()
                     
+                    

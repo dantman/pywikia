@@ -109,6 +109,9 @@ class PageLink:
 
     def __repr__(self):
         return "PageLink{%s}"%str(self)
+
+    def aslink(self):
+        return "[[%s:%s]]"%(self.code(),self.linkname())
     
     def get(self):
         return getPage(self.code(),self.urlname())
@@ -367,12 +370,17 @@ def removeLanguageLinks(text):
     
 def interwikiFormat(links):
     s=[]
-    ar=links.keys()
-    ar.sort()
-    for code in ar:
-        s.append('[[%s:%s]]'%(code, links[code]))
+    if type(links)==type({}):
+        ar=links.keys()
+        ar.sort()
+        for code in ar:
+            s.append('[[%s:%s]]'%(code, links[code]))
+    else:
+        links.sort()
+        for pl in links:
+            s.append(pl.aslink())
     return ' '.join(s)+'\r\n'
-
+            
 def code2encoding(code):
     if code in ['meta','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl']:
         return 'utf-8'
