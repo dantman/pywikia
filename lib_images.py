@@ -182,7 +182,12 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
     # if that's not possible (e.g. because there are non-Latin-1 characters and
     # the home Wikipedia uses Latin-1), convert all non-ASCII characters to
     # HTML entities.
-    description = wikipedia.unicode2html(description, wikipedia.code2encoding(wikipedia.mylang))
+    try:
+        description = description.encode(wikipedia.code2encoding(wikipedia.mylang))
+    except UnicodeEncodeError:
+        description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
+    except UnicodeDecodeError:
+        description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang)) 	
     # don't upload if we're in debug mode
     if not debug:
         returned_html = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
