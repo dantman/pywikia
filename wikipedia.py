@@ -231,10 +231,10 @@ def languages(first=[]):
     return result
 
 def allnlpages(start='%20%200'):
-    wikipedia.link2url(start)
+    start=link2url(start)
     m=0
     while 1:
-        text=wikipedia.getPage('nl','Speciaal:Allpages&printable=yes&from=%s'%start,do_quote=0,do_edit=0)
+        text=getPage('nl','Speciaal:Allpages&printable=yes&from=%s'%start,do_quote=0,do_edit=0)
         #print text
         R=re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         n=0
@@ -242,12 +242,12 @@ def allnlpages(start='%20%200'):
             if not ':' in hit:
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
                     n=n+1
-                    yield wikipedia.url2link(hit)
+                    yield url2link(hit)
                     start=hit+'%20%200'
         if n<100:
             break
         m=m+n
-        sys.stderr.write('AllNLPages: %d done; continuing from "%s";\n'%(m,wikipedia.link2url(start)))
+        sys.stderr.write('AllNLPages: %d done; continuing from "%s";\n'%(m,url2link(start)))
 
 # Part of library dealing with interwiki links
 
@@ -259,7 +259,10 @@ def getLanguageLinks(text):
         m=re.search(r'\[\['+code+':([^\]]*)\]\]', text)
         if m:
             if m.group(1):
-                result[code] = m.group(1)
+                t=m.group(1)
+                if '|' in t:
+                    t.replace('|','')
+                result[code] = t
             else:
                 print "ERROR: empty link to %s:"%(code)
     return result
