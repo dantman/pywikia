@@ -1292,7 +1292,7 @@ def isInterwikiLink(s):
 def getReferences(pl, follow_redirects = True):
     host = family.hostname(pl.code())
     url = family.references_address(mylang, pl.urlname())
-    output('Getting references to %s:%s' % (pl.code(), pl.linkname()))
+    output(u'Getting references to %s:%s' % (pl.code(), pl.linkname()))
     txt, charset = getUrl(host,url)
     # remove brackets which would disturb the regular expression cascadedListR 
     txt = txt.replace('<a', 'a')
@@ -1372,12 +1372,12 @@ def deletePage(pl, reason = None, prompt = True):
         return content_type, body
 
     if reason == None:
-        reason = input('Please enter a reason for the deletion:', myencoding())
+        reason = input(u'Please enter a reason for the deletion:', myencoding())
     answer = 'y'
     if prompt:
-        answer = input('Do you want to delete %s? [y|N]' % pl.linkname())
+        answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
     if answer in ['y', 'Y']:
-        output('Deleting page %s...' % pl.linkname())
+        output(u'Deleting page %s...' % pl.linkname())
         returned_html = post_multipart(family.hostname(mylang),
                                        family.delete_address(pl.urlname()),
                                        (('wpReason', reason),
@@ -1389,9 +1389,9 @@ def deletePage(pl, reason = None, prompt = True):
         deleted_msg = re.escape(deleted_msg)
         deleted_msgR = re.compile(deleted_msg)
         if deleted_msgR.search(returned_html):
-            output('Deletion successful.')
+            output(u'Deletion successful.')
         else:
-            output('Deletion failed:.')
+            output(u'Deletion failed:.')
             # show debug information
             try:
                 ibegin = returned_html.index('<!-- start content -->') + 22
