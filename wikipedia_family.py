@@ -221,7 +221,8 @@ category = {
     'nl': u'Categorie',
     'no': u'Kategori',
     'fr': u'Cat\xe9gorie',
-    'sv': u'Kategori'
+    'sv': u'Kategori',
+    'test': u'Category'
 }
 
 def category_namespaces(code):
@@ -295,7 +296,7 @@ biglangs4 = biglangs3 + [
                 'ar', 'bs', 'el', 'eu', 'fy', 'gl', 'hu', 'is', 'ko', 'ku',
                 'lt', 'nds', 'oc', 'ru', 'sr', 'tr', 'uk']
 
-seriouslang = biglangs4 + [
+seriouslangs = biglangs4 + [
                 'fa', 'hi', 'lv', 'ta', 'th', 'tt', 'ur', 'vi']
 
 # other groups of language that we might want to do at once

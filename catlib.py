@@ -170,9 +170,9 @@ def change_category(article, old_cat_title, new_cat_title):
             cats.remove(cat)
     if new_cat_title != None:
         if sort_key == '':
-            new_cat = catlib.CatLink(new_cat_title)
+            new_cat = CatLink(new_cat_title)
         else:
-            new_cat = catlib.CatLink(new_cat_title + '|' + sort_key)
+            new_cat = CatLink(new_cat_title + '|' + sort_key)
         cats.append(new_cat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
