@@ -907,7 +907,7 @@ def getUrl(host,address):
     uo = MyURLopener()
     if cookies:
         uo.addheader('Cookie', cookies)
-    print ('Opening: http://%s%s'%(host, address))
+    #print ('Opening: http://%s%s'%(host, address))
     f = uo.open('http://%s%s'%(host, address))
     text = f.read()
     #print f.info()
