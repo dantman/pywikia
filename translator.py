@@ -155,6 +155,7 @@ types = {
         "regexes": {
             "fr": {
                 # fr uses &nbsp; or space to separate thousands, de uses dots
+                # note: this doesn't work for numbers > 1,000,000, don't know why
                 "(?P<pre>\d+)\&nbsp;(?P<block>\d\d\d)": {"de":"\g<pre>.\g<block>", },
                 "(?P<pre>\d+) (?P<block>\d\d\d)": {"de":"\g<pre>.\g<block>", },
             },
@@ -179,18 +180,18 @@ types = {
     
     "months": {
         "translations": [
-            { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",   "nl":"januari", },
-            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":"fevrier",   "nl":"februari", },
-            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":"M&auml;rz", "fr":"mars",      "nl":"maart", },
-            { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",     "nl":"april", },
-            { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",       "nl":"mei", },
-            { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",      "nl":"juni", },
-            { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",   "nl":"juli", },
-            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":"aout",      "nl":"augustus", },
-            { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre", "nl":"september", },
-            { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",   "nl":"oktober", },
-            { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",  "nl":"november", },
-            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":"decembre",  "nl":"december", },
+            { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",      "nl":"januari", },
+            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":u"f\xE9vrier",  "nl":"februari", },
+            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":u"M\xE4rz",  "fr":"mars",         "nl":"maart", },
+            { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",        "nl":"april", },
+            { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",          "nl":"mei", },
+            { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",         "nl":"juni", },
+            { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",      "nl":"juli", },
+            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":u"ao\xFBt",     "nl":"augustus", },
+            { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre",    "nl":"september", },
+            { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",      "nl":"oktober", },
+            { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",     "nl":"november", },
+            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":u"d\xE9cembre", "nl":"december", },
         ]
     },
     
