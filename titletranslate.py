@@ -102,15 +102,12 @@ def translate(pl, arr, same = False, hints = None, auto = True):
             if newcode == 'ja' and i<1900:
                 # ja pages before 1900 are redirects
                 pass
-            elif newcode == 'ia' and i<1400:
+            elif newcode in ['ia','la'] and i<1400:
                 # some ia pages are numbers
                 pass
             elif newcode in ['simple','lt'] and i<200:
                 # some simple pages are numbers
                 # lt:69 has yet another meaning
-                pass
-            elif newcode in ['mr', 'id', 'lv', 'sw', 'tt']:
-                # years do not exist
                 pass
             else:
                 newname = fmt%i 
