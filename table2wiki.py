@@ -118,7 +118,9 @@ if action == 'parse_sqldump':
     sqldump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
     for entry in sqldump.entries():
         # TODO: make next line case-insensitive
-        if entry.text.find('<table') != -1:
+        tableTagR = re.compile('<table', re.IGNORECASE)
+        if tableTagR.search(entry.text):
+            # TODO: use generator functionality instead
             articles.append(entry.full_title())
         
 for article in articles:
@@ -422,6 +424,3 @@ for article in articles:
         
 print "\tFollowing pages were corrected\n" + fixedSites
 print "\n\tFollowing pages had errors and were not corrected\n" + notFixedSites
-                  
-
-
