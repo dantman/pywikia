@@ -58,13 +58,13 @@ langs = {'en':'en.wikipedia.org', # English
          'mr':'mr.wikipedia.org', # ?
          'cy':'cy.wikipedia.org', # Welsh, UTF-8
          'simple':'simple.wikipedia.org', # Simplified english
-         #'test':'test.wikipedia.org',
+         'test':'test.wikipedia.org',
          }
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-          'mr', 'simple' ]
+          'mr', 'simple', 'test' ]
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['cs', 'sl', 'bs', 'fy']
@@ -83,7 +83,8 @@ special = {'en':'Special',
            'it':'Speciale',
            'pl':'Specjalna',
            'ro':'Special',
-           'sv':'Special'
+           'sv':'Special',
+           'test':'Special'
            }
 
 # Wikipedia's out of the list that are not running the phase-III software,
