@@ -653,6 +653,7 @@ class GetAll(object):
                 output(u"BUGWARNING: %s already done!" % pl.aslink())
 
     def run(self):
+        import socket
         dt=15
         while 1:
             try:
