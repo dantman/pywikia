@@ -124,7 +124,7 @@ def spellcheck(page):
     text = page
     loc = 0
     while True:
-        wordsearch = re.compile(r'([\s\=\<\>]*)([^\s\=\<\>]+)')
+        wordsearch = re.compile(r'([\s\=\<\>\_]*)([^\s\=\<\>\_]+)')
         match = wordsearch.search(text,loc)
         if not match:
             # No more words on this page
