@@ -88,7 +88,8 @@ msg = {
     'en':('Adding','Removing','Modifying'),
     'nl':('Erbij','Eraf','Anders'),
     'da':('Tilføjer','Fjerner','Ændrer'),
-    'fr':('Ajoute','Retire','Modifie')
+    'fr':('Ajoute','Retire','Modifie'),
+    'de':('Ergänze','Entferne','Ändere'),
     }
 
 class Logger:
