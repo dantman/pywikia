@@ -119,6 +119,7 @@ link_trail={
 # Special chars should be encoded with unicode (\x##) and space used
 # instead of _ 
 
+# TODO: convert everything to regular exceptions (only de: done yet, will crash)
 ignore={
     'nl':('Wikipedia:Onderhoudspagina',
           'Wikipedia:Doorverwijspagina',
@@ -210,6 +211,7 @@ ignore={
     'de':(
           u'100 Wörter des 21. Jahrhunderts',
           u'Abkürzungen/[A-Z]',
+          u'Benutzer\:Katharina/Begriffsklärungen',
           u'Benutzer\:Tsor/Begriffsklärungen',
           u'Benutzer Diskussion\:.+',
           u'Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
@@ -226,7 +228,7 @@ ignore={
 
 
 def getReferences(pl):
-    x = wikipedia.getReferences(pl)
+    x = wikipedia.getReferences(pl, follow_redirects = False)
     # Remove ignorables
     if ignore.has_key(pl.code()):
         ignore_regexes =[]
@@ -400,11 +402,16 @@ for wrd in (page_list):
     # print choices on screen
     for i in range(len(alternatives)):
         wikipedia.output("%3d - %s" % (i, alternatives[i]))
-    
     def treat(refpl, thispl):
         try:
             reftxt=refpl.get()
         except wikipedia.IsRedirectPage:
+            wikipedia.output('%s is a redirect to %s' % (refpl.linkname(), thispl.linkname()))
+            choice = wikipedia.input('Do you want to work on pages linking to %s? [y|N]' % refpl.linkname())
+            if choice == 'y':
+                for ref_redir in getReferences(refpl):
+                    refpl_redir=wikipedia.PageLink(wikipedia.mylang, ref_redir)
+                    treat(refpl_redir, refpl)
             pass
         else:
             n = 0

@@ -1251,11 +1251,27 @@ def isInterwikiLink(s):
         return True
     return False
 
-def getReferences(pl):
+def getReferences(pl, follow_redirects = True):
     host = family.hostname(pl.code())
     url = family.references_address(mylang, pl.urlname())
     txt, charset = getUrl(host,url)
-    Rref = re.compile('<li><a href.*="([^"]*)"')
+    # remove brackets which would disturb the regular expression cascadedListR 
+    txt = txt.replace('<a', 'a')
+    txt = txt.replace('</a', '/a')
+    txt = txt.replace('<li', 'li')
+    txt = txt.replace('</li', 'li')
+    if not follow_redirects:
+        # remove these links from HTML which are in an unordered
+        # list at level > 1.
+        cascadedListR = re.compile(r"(.*<ul>[^<]*)<ul>[^<]*<\/ul>([^<]*</\ul>.*)")
+        endR = re.compile(r"</ul>")
+        # current index in txt string
+        pos = 0
+        while cascadedListR.search(txt):
+            print 'match'
+            m = cascadedListR.search(txt)
+            txt = m.group(1) + m.group(2)
+    Rref = re.compile('li>a href.*="([^"]*)"')
     x = Rref.findall(txt)
     x.sort()
     # Remove duplicates
