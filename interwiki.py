@@ -400,7 +400,7 @@ class Subject(object):
         wikipedia.output(u"ERROR: %s" % txt)
         self.confirm += 1
         # beep at the first error
-        if globalvar.bell and not self.problemfound and not globalvar.autonomous and not globalvar.force:
+        if globalvar.bell and not self.problemfound and not globalvar.autonomous:
             sys.stdout.write('\07')
         self.problemfound = True
         if globalvar.autonomous:
