@@ -104,11 +104,14 @@ def asktoadd(pl):
                     except wikipedia.LockedPage:
                         print("Cannot load page.")
                         checkflag = 2
+                    except wikipedia.IsRedirectPage,arg:
+                        print("This is a redirect page. It redirects to: [[%s]].")%arg
+                        checkflag = 2
                 elif checkflag == 1:
                     print("==%s==")%pl
                     print wikipedia.UnicodeToAsciiHtml(thispage[0:ctoshow])
                     ctoshow = ctoshow + 500
-                elif checklfag == 2:
+                elif checkflag == 2:
                     print("Unable to show the text of this page.")
 
 
