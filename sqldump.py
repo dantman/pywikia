@@ -103,6 +103,8 @@ class SQLdump:
             # read only one (very long) line because we would risk out of memory
             # errors if we read the entire file at once
             line = f.readline()
+            # unescape apostrophes
+            line = line.replace("\\'", "'")
             if line == '':
                 print 'End of file.'
                 break
@@ -126,8 +128,6 @@ if __name__=="__main__":
                 filename = arg[5:]
     sqldump = SQLdump(filename, wikipedia.myencoding())
     for page in sqldump.entries():
-        if page.namespace != '0':
-            print page.full_title()
-            
-            
+        if page.namespace == '0' and page.redirect == '0' and len(page.text) < 200 and page.text.find(u'Begriffsklärung') == -1:
+            print '*[[%s]]' % page.full_title() + ' - ' + str(len(page.text))
  
