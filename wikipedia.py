@@ -145,6 +145,9 @@ class SectionError(ValueError):
 class NoNamespace(Error):
     """Wikipedia page is not in a special namespace"""
 
+class EditConflict(Error):
+    """There has been an edit conflict while uploading the page"""
+
 SaxError = xml.sax._exceptions.SAXParseException
 
 # The most important thing in this whole module: The PageLink class
@@ -980,7 +983,10 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     data = response.read()
     conn.close()
     if data != '':
-        output(data, decoder = myencoding())
+        if "<title>Edit conflict" in data: # FIXME: multi-lingual
+            raise EditConflict()
+        else:
+            output(data, decoder = myencoding())
     return response.status, response.reason, data
 
 def forSite(text, site):

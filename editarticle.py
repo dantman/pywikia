@@ -14,11 +14,10 @@
 # TODO: - non existing pages
 #       - correct encoding
 #       - use cookies to remember login
-#       - edit conflict
+#       - edit conflicts
 #       - difflib
 #       - minor edits
 #       - watch/unwatch
-#       - remove tmpfiles (post-edit crash however...?)
 #       - ...
 #
 
@@ -39,7 +38,7 @@ import wikipedia
 import login
 import config
 
-joinchars = string.letters + '[]' # join lines if line starts with this ones
+joinchars = string.letters + '[]' + string.digits # join lines if line starts with this ones
 
 def options(args):
     parser = optparse.OptionParser()
@@ -62,7 +61,8 @@ def repair(content):
         except IndexError:
             nextline = "last"
         result.append(line)
-        if line == "" or line[0] not in joinchars:
+        if line.strip() == "" or line[0] not in joinchars or \
+           nextline.strip() == "" or nextline[0] not in joinchars:
             result.append('\n')
         else:
             result.append(" ")
@@ -90,7 +90,7 @@ def editpage(pl, editor, redirect=False):
     os.system("%s %s" % (editor, ofn))
     newcontent = open(ofn).read().decode(config.console_encoding)
     os.unlink(ofn)
-    return oldcontent, repair(newcontent)
+    return oldcontent, newcontent
 
 def main():
     args = []
@@ -123,17 +123,22 @@ def main():
     except wikipedia.LockedPage:
         sys.exit("You do not have permission to edit %s" % pl.hashfreeLinkname())
     if old != new:
+        new = repair(new)
         diff = difflib.context_diff(old.splitlines(), new.splitlines())
-        wikipedia.output("\n".join(diff))
-        print "watching:", opts.watch
+        wikipedia.output(u"\n".join(diff))
         comment = wikipedia.input(u"What did you change? ") + sig
-        print repr(comment)
         comment = wikipedia.unicode2html(comment, site.encoding())
         new = wikipedia.unicode2html(new, site.encoding())
-        pl.put(new, comment=wikipedia.unicode2html(comment, site.encoding()), minorEdit=False, watchArticle=opts.watch, anon=opts.anonymous)
+        try:
+            pl.put(new, comment=wikipedia.unicode2html(comment, site.encoding()), minorEdit=False, watchArticle=opts.watch, anon=opts.anonymous)
+        except wikipedia.EditConflict:
+            fn = os.path.join(tempfile.gettempdir(), page)
+            fp = open(fn, 'w')
+            fp.write(new)
+            fp.close()
+            wikipedia.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
     else:
         wikipedia.output(u"Nothing changed")
-
 
 if __name__ == "__main__":
     main()
