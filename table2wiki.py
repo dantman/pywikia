@@ -127,6 +127,9 @@ for article in articles:
             time.sleep(60)
             continue
     warnings = 0
+    # this array will contain strings that will be shown in case of possible
+    # errors, before the user is asked if he wants to accept the changes.
+    warning_messages = []
     newText = text
     ##################
     # bring every <tag> into one single line.
@@ -140,16 +143,16 @@ for article in articles:
 
 
     ##################
-    # <table> tag with parameters, with more text on the same line
+    # <table> tag with attributes, with more text on the same line
     newText = re.sub("[\r\n]*?<(?i)(table) ([\w\W]*?)>([\w\W]*?)[\r\n ]*",
                      "\r\n{| \\2\r\n\\3", newText, 0)
-    # <table> tag without parameters, with more text on the same line
+    # <table> tag without attributes, with more text on the same line
     newText = re.sub("[\r\n]*?<(TABLE|table)>([\w\W]*?)[\r\n ]*",
                      "\r\n{|\n\\2\r\n", newText, 0)
-    # <table> tag with parameters, without more text on the same line
+    # <table> tag with attributes, without more text on the same line
     newText = re.sub("[\r\n]*?<(TABLE|table) ([\w\W]*?)>[\r\n ]*",
                      "\r\n{| \\2\r\n", newText, 0)
-    # <table> tag without parameters, without more text on the same line
+    # <table> tag without attributes, without more text on the same line
     newText = re.sub("[\r\n]*?<(TABLE|table)>[\r\n ]*",
                      "\r\n{|\r\n", newText, 0)
     # end </table>
@@ -168,12 +171,19 @@ for article in articles:
                      "\r\n!\\2 | \\3\r\n", newText, 0)
 
     # fail save. sometimes people forget </th>
+    # <th> without attributes
     newText, n = re.subn("[\r\n]+<(th|TH)>([\w\W]*?)[\r\n]+",
                          "\r\n! \\2\r\n", newText, 0)
-    warnings = warnings + n
+    if n>0:
+        warning_messages.append('WARNING: found <th> without </th>. (%d occurences)' % n)
+        warnings += n
+
+    # <th> with attributes
     newText, n = re.subn("[\r\n]+<(th|TH)([^>]*?)>([\w\W]*?)[\r\n]+",
                              "\r\n!\\2 | \\3\r\n", newText, 0)
-    warnings = warnings + n
+    if n>0:
+        warning_messages.append('WARNING: found <th> without </th>. (%d occurences)' % n)
+        warnings += n
 
 
     ##################
@@ -193,9 +203,12 @@ for article in articles:
 
     # WARNING: this sub might eat cells of bad HTML, but most likely it
     # will correct errors
+    # TODO: some more docu please
     newText, n = re.subn("[\r\n]+<(td|TD)>([^\r\n]*?)<(td|TD)>",
                          "\r\n| \\2\r\n", newText, 0)
-    warnings = warnings + n
+    if n>0:
+        warning_messages.append('WARNING: (sorry, bot code unreadable (1). I don\'t know why this warning is given.) (%d occurences)' % n)
+        warnings += n
     
     # fail save, sometimes it's a <td><td></tr>
     #        newText, n = re.subn("[\r\n]+<(td|TD)>([^<]*?)<(td|TD)><\/(tr|TR)>",
@@ -205,23 +218,31 @@ for article in articles:
     #
     newText, n = re.subn("[\r\n]+<(td|TD)([^>]+?)>([^\r\n]*?)<\/(td|TD)>",
                          "\r\n|\\2 | \\3\r\n", newText, 0)
-    warnings = warnings + n
+    if n>0:
+        warning_messages.append('WARNING: found <td><td></tr>, but no </td>. (%d occurences)' % n)
+        warnings += n
     
     # fail save. sometimes people forget </td>
     # <td> without arguments, with missing </td> 
     newText, n = re.subn("<(td|TD)>([^<]*?)[\r\n]+",
                          "\r\n| \\2\r\n", newText, 0)
-    warnings = warnings + n
+    if n>0:
+        warning_messages.append('WARNING: found <td> without </td>. (%d occurences)' % n)
+        warnings += n
 
     # <td> with arguments, with missing </td> 
     newText, n = re.subn("[\r\n]*<(td|TD)([^>]*?)>([\w\W]*?)[\r\n]+",
                          "\r\n|\\2 | \\3\r\n", newText, 0)
     if n > 0:
-        print 'Found <td> without </td>. This shouldn\'t cause problems.'
+        warning_messages.append('NOTE: Found <td> without </td>. This shouldn\'t cause problems.')
 
+    # TODO: some docu please
     newText, n = re.subn("<(td|TD)>([\w\W]*?)[\r\n]+",
                          "\r\n| \\2\r\n", newText, 0)
-    warnings = warnings + n
+
+    if n>0:
+        warning_messages.append('WARNING: (sorry, bot code unreadable (2). I don\'t know why this warning is given.) (%d occurences)' % n)
+        warnings += n
 
 
     ##################
@@ -348,12 +369,13 @@ for article in articles:
         if config.table2wikiAskOnlyWarnings and warnings == 0:
             doUpload="y"
         else:
+            for warning_message in warning_messages:
+                print warning_message
             if config.table2wikiSkipWarnings:
                 doUpload="n"
             else:
-                print "There were " + str(warnings) + " replacement(s) that"
-                print " might result bad output"
-                doUpload=raw_input('Is it correct? [y|N]')
+                print "There were " + str(warnings) + " replacement(s) that might lead to bad output"
+                doUpload = wikipedia.input(u'Is it correct? [y|N]')
                     
 
         if doUpload == 'y':
