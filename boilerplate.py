@@ -50,7 +50,7 @@ boilerplate_names = []
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
-    elif arg == '-msg':
+    elif arg == '-newformat':
         oldformat = False
     else:
         boilerplate_names.append(arg)
