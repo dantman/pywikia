@@ -2,7 +2,7 @@ import os,wikipedia,sys
 
 codefrom='nl'
 codeto='en'
-mode=3
+mode=0
 word=[]
 
 for arg in sys.argv[1:]:
@@ -12,7 +12,7 @@ for arg in sys.argv[1:]:
         mode=1
     elif arg=='-file':
         mode=2
-    elif mode=='-start':
+    elif arg=='-start':
         mode=3
     else:
         word.append(arg)
