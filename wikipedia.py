@@ -101,6 +101,9 @@ class Error(Exception):
 class NoPage(Error):
     """Wikipedia page does not exist"""
 
+class NoEditBox(Error):
+    """Wikipedia page does not provide an edit box"""
+
 class IsRedirectPage(Error):
     """Wikipedia page is a redirect page"""
 
@@ -274,8 +277,11 @@ class PageLink:
                     if not m:
                         raise SubpageError("Hashname does not exist: %s" % self)
             except NoPage:
+                self._getexception = NoPage
+                raise
+            except NoEditBox:
                 if trynumber==3:
-                    self._getexception = NoPage
+                    self._getexception = NoEditBox
                     raise
                 else:
                     self.get(trynumber=trynumber+1)
@@ -291,7 +297,7 @@ class PageLink:
                 raise
         return self._contents
 
-    def exists(self):
+    def exists(self,trynumber=1):
         try:
             self.get()
         except NoPage:
@@ -300,15 +306,25 @@ class PageLink:
             return True
         except SubpageError:
             return False
+        except NoEditBox:
+            if trynumber=3:
+                raise
+            else:
+                return self.exists(trynumber=trynumber+1)
         return True
 
-    def isRedirectPage(self):
+    def isRedirectPage(self,trynumber=1):
         try:
             self.get()
         except NoPage:
             return False
         except IsRedirectPage:
             return True
+        except NoEditBox:
+            if trynumber=3:
+                raise
+            else:
+                return self.exists(trynumber=trynumber+1)
         return False
     
     def isEmpty(self):
@@ -410,7 +426,7 @@ class PageLink:
             result.append(PageLink(self._code,l[0]))
         return result
 
-    def getRedirectTo(self):
+    def getRedirectTo(self,trynumber=1):
         # Given a redirect page, gives the page it redirects to
         try:
             self.get()
@@ -418,6 +434,11 @@ class PageLink:
             raise NoPage(self)
         except IsRedirectPage, arg:
             return arg
+        except NoEditBox:
+            if trynumber=3:
+                raise
+            else:
+                return self.exists(trynumber=trynumber+1)
         else:
             raise IsNotRedirectPage(self)
         
@@ -875,7 +896,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
         except AttributeError:
             print "BUG: Yikes: No text area.",host,address
             print repr(text)
-            raise NoPage(code, name)
+            raise NoEditBox(code, name)
         i2 = re.search('</textarea>', text).start()
         if i2-i1 < 2:
             raise NoPage(code, name)
