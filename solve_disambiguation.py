@@ -418,7 +418,7 @@ for wrd in (page_list):
                         print "Not found in %s"%refpl
                     elif not debug:
                         refpl.put(reftxt)
-                    return
+                    return True
                 # Make sure that next time around we will not find this same hit.
                 curpos = m.start() + 1 
                 # Try to standardize the page.
