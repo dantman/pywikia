@@ -112,7 +112,8 @@ def dump(filename):
         'catContentDB': catContentDB,
         'superclassDB': superclassDB
     }
-    pickle.dump(databases, f)
+    # store dump to disk in binary format
+    pickle.dump(databases, f, bin=1)
     f.close()
     
 def sorted_by_last_name(catlink, pagelink):
