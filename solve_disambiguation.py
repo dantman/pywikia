@@ -136,17 +136,22 @@ if getalternatives:
 for i in range(len(alternatives)):
     print "%3d"%i,alternatives[i]
 
+def resafe(s):
+    s=s.replace('(','\\(')
+    s=s.replace(')','\\)')
+    return s
+    
 exps=[]
 zz='\[\[(%s)(\|[^\]]*)?\]\]'
-Rthis=re.compile(zz%thispl.linkname())
+Rthis=re.compile(zz%resafe(thispl.linkname()))
 exps.append(Rthis)
 uln=wikipedia.html2unicode(thispl.linkname(),language = wikipedia.mylang)
 aln=wikipedia.addEntity(uln)
-Rthis=re.compile(zz%aln)
+Rthis=re.compile(zz%resafe(aln))
 exps.append(Rthis)
-Rthis=re.compile(zz%thispl.linkname().lower())
+Rthis=re.compile(zz%resafe(thispl.linkname()).lower())
 exps.append(Rthis)
-Rthis=re.compile(zz%aln.lower())
+Rthis=re.compile(zz%resafe(aln.lower()))
 exps.append(Rthis)
 
 for ref in getreferences(thispl):
