@@ -85,17 +85,17 @@ langs = {
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'pt', 'af', 'la', 'ia', 'et', 'eu',
+          'pt', 'la', 'ia', 'et', 'eu',
           'mr', 'id', 'simple', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no']
+latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no','af']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
 special = {
-    #'af': '',
+    'af': 'Spesiaal',
     'ar': 'Special',
     'bs': 'Special',
     'ca': 'Especial',
@@ -157,7 +157,7 @@ special = {
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['af', 'et', 'eu', 'ga', 'gl', 'ia', 'id', 'la', 'lv',
+oldsoftware = ['et', 'eu', 'ga', 'gl', 'ia', 'id', 'la', 'lv',
                'mr', 'nds', 'pt', 'simple', 'sw', 'tt', 'uk', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
