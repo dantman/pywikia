@@ -157,7 +157,7 @@ def CatLink(code, name):
     # Standardized namespace
     ns = wikipedia.family.category_namespaces(code)[0]
     # Prepend it
-    return _CatLink(code, "%s:%s"%(ns, s))
+    return _CatLink(code, "%s:%s" % (ns, name))
 
 def test():
     pl=CatLink(wikipedia.mylang, 'Software')
