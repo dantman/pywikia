@@ -4,7 +4,7 @@
 #
 # (C) Rob W.W. Hooft, 2003
 # Distribute under the terms of the GPL.
-import re,urllib,codecs
+import re,urllib,codecs,sys
 
 # known wikipedia languages
 langs = {'en':'www.wikipedia.org', # English
@@ -27,6 +27,7 @@ langs = {'en':'www.wikipedia.org', # English
          'bs':'bs.wikipedia.org',
 	 'he':'he.wikipedia.org', # Hebrew
          'hi':'hi.wikipedia.org', # Hindi
+         'nds':'nds.wikipedia.org', # Nedersaksisch
          'it':'it.wikipedia.com', # Italian
          'no':'no.wikipedia.com', # Norwegian
          'pt':'pt.wikipedia.com', # Portuguese
@@ -44,7 +45,15 @@ langs = {'en':'www.wikipedia.org', # English
 
 charsets = {}
 
-action = 'Rob Hooft - Wikipedia python library'
+try:
+    f=open('username.dat')
+    username=f.readline()[:-1]
+    f.close()
+except IOError:
+    print >> sys.stderr, "Please make a file username.dat with your name in there"
+    sys.exit(1)
+
+action = username+' - Wikipedia python library'
 
 debug = 0
 
@@ -251,12 +260,12 @@ def allnlpages(start='%20%200'):
             if not ':' in hit:
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
                     n=n+1
-                    yield url2link(hit)
+                    yield url2link(hit,code='nl')
                     start=hit+'%20%200'
         if n<100:
             break
         m=m+n
-        sys.stderr.write('AllNLPages: %d done; continuing from "%s";\n'%(m,url2link(start)))
+        sys.stderr.write('AllNLPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl')))
 
 # Part of library dealing with interwiki links
 
@@ -304,16 +313,30 @@ def code2encoding(code):
     if code in ['meta','ru','eo','ja','zh','hi','he','hu','pl']:
         return 'utf-8'
     return 'iso-8859-1'
+
+def code2encodings(code):
+    if code in ['meta','eo','ja','zh','hi','he','hu']:
+        return 'utf-8',
+    elif code=='pl':
+        return 'utf-8','iso-8859-2'
+    elif code=='ru':
+        return 'utf-8','iso-8859-5'
+    return 'iso-8859-1',
     
-def url2link(percentname,into='latin1',code='nl'):
+def url2link(percentname,incode,code):
     """Convert a url-name of a page into a proper name for an interwiki link
        the optional argument 'into' specifies the encoding of the target wikipedia
        """
     result=underline2space(percentname)
-    x=url2unicode(result,encoding=code2encoding(code))
-    return unicode2html(x,encoding=into)
+    x=url2unicode(result,language=code)
+    if code2encoding(incode)==code2encoding(code):
+        #print "url2link",repr(x),"same encoding"
+        return unicode2html(x,encoding=code2encoding(code))
+    else:
+        #print "url2link",repr(x),"different encoding"
+        return unicode2html(x,encoding='ascii')
     
-def link2url(name,code='nl',incode='nl'):
+def link2url(name,code,incode):
     """Convert a interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link,
        incode the language of the page the link is in."""
@@ -321,7 +344,7 @@ def link2url(name,code='nl',incode='nl'):
     name=name[0].upper()+name[1:]
     name=name.strip()
     if '%' in name:
-        name=url2unicode(name,encoding=code2encoding(code))
+        name=url2unicode(name,language=code)
     else:
         import urllib
         name=html2unicode(name,encoding=code2encoding(code),
@@ -353,17 +376,16 @@ def UnicodeToAsciiHtml(s):
     #print
     return ''.join(html)
 
-def url2unicode(percentname,encoding='iso-8859-1'):
+def url2unicode(percentname,language):
     x=urllib.unquote(percentname)
-    try:
-        # Try to interpret the result as utf-8?
-        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
-        x,l=decode_func(x)
-    except UnicodeError:
-        # Apparently it was another encoding?
-        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
-        x,l=decode_func(x)
-    return x
+    for encoding in code2encodings(language):
+        try:
+            encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
+            x,l=decode_func(x)
+            return x
+        except UnicodeError:
+            pass
+    raise UnicodeError("Could not decode %s"%repr(percentname))
 
 def unicode2html(x,encoding='latin1'):
     # We have a unicode string. We can attempt to encode it into the desired
