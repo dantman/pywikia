@@ -6,7 +6,6 @@
 # Distribute under the terms of the GPL.
 import wikipedia,re,sys
 
-wikipedia.action = wikipedia.username+': Robot-assisted disambiguation '
 
 mylang = wikipedia.mylang
 
@@ -31,7 +30,7 @@ for arg in sys.argv[1:]:
 
 wrd=' '.join(wrd)
 
-wikipedia.action += wrd
+wikipedia.setAction('Robot-assisted disambiguation '+wrd)
 
 thispl=wikipedia.PageLink(mylang,wrd)
 
@@ -76,7 +75,7 @@ for ref in getreferences(thispl):
             continue
         context=30
         while 1:
-            print "== %s =="%(refpl),m.start(),m.end()
+            print "== %s =="%(refpl)
             print reftxt[max(0,m.start()-context):m.end()+context]
             choice=raw_input("Which replacement (n=none,q=quit,m=more context,l=list,a=add new):")
             if choice=='n':
