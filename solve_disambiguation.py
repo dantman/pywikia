@@ -470,8 +470,13 @@ def main():
                     # that will actually change the page
                     while True:
                         print '\n'
-                        wikipedia.output(u"== %s ==" % refpl.linkname())
-                        wikipedia.output(text[max(0, m.start() - context):m.end()+context])
+                        wikipedia.output(u">>> %s <<<" % refpl.linkname())
+                        displayedText = text[max(0, m.start() - context):m.end()+context]
+                        # at the beginning of the link, start red color
+                        displayedText = displayedText[:context] + '\x1b[91;1m' + displayedText[context:]
+                        # at the end of the link, reset the color to default
+                        displayedText = displayedText[:-context] + '\x1b[0m' + displayedText[-context:] 
+                        wikipedia.output(displayedText)
                         if always == None:
                             if edited:
                                 choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
