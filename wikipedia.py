@@ -442,6 +442,41 @@ class GetAll:
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 pl._getexception = NoPage
+            elif hasattr(pl,'_contents') and pl.code()=="eo":
+                # Edit-pages use X-convention, XML export does not. Double
+                # X-es where necessary.
+                pl._contents = pl._contents.replace('CX','CXX')
+                pl._contents = pl._contents.replace('Cx','Cxx')
+                pl._contents = pl._contents.replace('cx','cxx')
+                pl._contents = pl._contents.replace('GX','GXX')
+                pl._contents = pl._contents.replace('Gx','Gxx')
+                pl._contents = pl._contents.replace('gx','gxx')
+                pl._contents = pl._contents.replace('HX','HXX')
+                pl._contents = pl._contents.replace('Hx','Hxx')
+                pl._contents = pl._contents.replace('hx','hxx')
+                pl._contents = pl._contents.replace('JX','JXX')
+                pl._contents = pl._contents.replace('Jx','Jxx')
+                pl._contents = pl._contents.replace('jx','jxx')
+                pl._contents = pl._contents.replace('SX','SXX')
+                pl._contents = pl._contents.replace('Sx','Sxx')
+                pl._contents = pl._contents.replace('sx','sxx')
+                pl._contents = pl._contents.replace('UX','UXX')
+                pl._contents = pl._contents.replace('Ux','Uxx')
+                pl._contents = pl._contents.replace('ux','uxx')
+                # Also would have liked to do this part, but I must have done
+                # something wrong.
+                # pl._contents = pl._contents.replace('%C4%89','cx')
+                # pl._contents = pl._contents.replace('%C4%88','CX')
+                # pl._contents = pl._contents.replace('%C4%9D','gx')
+                # pl._contents = pl._contents.replace('%C4%9C','GX')
+                # pl._contents = pl._contents.replace('%C4%A5','hx')
+                # pl._contents = pl._contents.replace('%C4%A4','HX')
+                # pl._contents = pl._contents.replace('%C4%B5','jx')
+                # pl._contents = pl._contents.replace('%C4%B4','JX')
+                # pl._contents = pl._contents.replace('%C5%9D','sx')
+                # pl._contents = pl._contents.replace('%C5%9C','SX')
+                # pl._contents = pl._contents.replace('%C5%AD','ux')
+                # pl._contents = pl._contents.replace('%C5%AC','UX')
 
     def oneDone(self, title, timestamp, text):
         #print "DBG>", repr(title), timestamp, len(text)
