@@ -218,34 +218,45 @@ def tidy_category():
         print 'j - Jump to another category'
         print 's - Skip this article'
         print 'r - Remove this category tag'
+        print '? - Read the page'
         print 'Enter - Save category as ' + current_cat.ascii_linkname()
-        
-        choice=wikipedia.input("Choice: ")
-        if choice == 's':
-            pass
-        elif choice == '':
-            print 'Saving category as ' + current_cat.ascii_linkname()
-            if current_cat == original_cat:
-                print 'No changes necessarry.'
+
+        flag = False
+        length = 1000
+        while not flag:
+            choice=wikipedia.input("Choice: ")
+            if choice == 's':
+                flag = True
+            elif choice == '':
+                print 'Saving category as ' + current_cat.ascii_linkname()
+                if current_cat == original_cat:
+                    print 'No changes necessarry.'
+                else:
+                    print original_cat.catname()
+                    print current_cat.catname()
+                    catlib.change_category(article, original_cat.catname(), current_cat.catname())
+                flag = True
+            elif choice == 'j':
+                new_cat_title = wikipedia.input('Please enter the category the article should be moved to: ')
+                new_cat = catlib.CatLink(new_cat_title)
+                # recurse into chosen category
+                move_to_subcategory(article, original_cat, new_cat)
+                flag = True
+            elif choice == 'r':
+                # remove the category tag
+                catlib.change_category(article, original_cat, None)
+                flag = True
+            elif choice == '?':
+                print wikipedia.UnicodeToAsciiHtml(article.get())[0:length]
+                length = length+500            
             else:
-                print original_cat.catname()
-                print current_cat.catname()
-                catlib.change_category(article, original_cat.catname(), current_cat.catname())
-        elif choice == 'j':
-            new_cat_title = wikipedia.input('Please enter the category the article should be moved to: ')
-            new_cat = catlib.CatLink(new_cat_title)
-            # recurse into chosen category
-            move_to_subcategory(article, original_cat, new_cat)
-        elif choice == 'r':
-            # remove the category tag
-            catlib.change_category(article, original_cat, None)
-        else:
-            try:
-                choice=int(choice)
-            except ValueError:
-                pass
-            # recurse into subcategory
-            move_to_subcategory(article, original_cat, subcatlist[choice])
+                try:
+                    choice=int(choice)
+                except ValueError:
+                    pass
+                # recurse into subcategory
+                move_to_subcategory(article, original_cat, subcatlist[choice])
+                flag = True
     
     # begin main part of tidy_category
     cat_title = wikipedia.input('Which category do you want to tidy up? ')
