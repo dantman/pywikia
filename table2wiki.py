@@ -338,10 +338,9 @@ def convert(text):
                 wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_multiple_warnings) % warnings)
             return newText
         else:
-            print "OK. I'm not uploading"
             return None
     else:
-        print "No changes were necessary in " + article
+        print "No changes were necessary"
         return None
 
 quietMode = False # use -quiet to get less output
