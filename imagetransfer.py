@@ -66,7 +66,7 @@ for i in range(len(imagelist)):
     print "--------------------------------------------------"
     print "%s. Found image: %s"% (i,imagelink.aslink())
     try:
-        print imagelink.get()
+        print wikipedia.UnicodeToAsciiHtml(imagelink.get())
     except wikipedia.NoPage:
         print "Description empty."        
 
