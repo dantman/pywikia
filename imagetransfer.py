@@ -20,11 +20,6 @@ equivalent pages on other wikipedias.
 # Distribute under the terms of the PSF license.
 #
 __version__='$Id$'
-from __future__ import generators
-import urllib, codecs
-import xml.sax, xml.sax.handler
-
-import config, mediawiki_messages
 
 import re,sys,string
 import httplib
