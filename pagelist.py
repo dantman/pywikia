@@ -19,6 +19,7 @@ choose:
 Y(es) - include the page
 N(o) - do not include the page or
 I(gnore) - do not include the page, but if you meet it again, ask again.
+X - add the page, but do not check links to and from it
 Other possiblities:
 A(dd) - add another page, which may have been one that was included before
 R(emove) - remove a page that is already in the list
@@ -35,9 +36,11 @@ import sys, copy, re
 import wikipedia
 
 def asktoadd(pl):
+    checkflag = 0 # we have not loaded this page yet
     if not (pl in tocheck or pl in include or pl in exclude):
+        print
+        print("==%s==")%pl
         while 1:
-            print("%s")%pl
             answer = raw_input("y(es)/n(o)/i(gnore)/(o)ther options? ")
             if answer=='y':
                 tocheck.append(pl)
@@ -48,15 +51,27 @@ def asktoadd(pl):
             elif answer=='i':
                 break
             elif answer=='o':
+                print("x: Add the page, but do not check links to and from it")
+                print("t: Give the beginning of the text of the page")
                 print("a: Add another page")
                 print("r: Remove a page already in the list")
                 print("l: Give a list of the pages to check or to include")
-            elif answer=='s':
-                save()
             elif answer=='a':
                 page = raw_input("Specify page to add:")
                 if not (page in tocheck or page in include):
                     tocheck.append(page)
+            elif answer=='x':
+                page = wikipedia.PageLink(wikipedia.mylang,pl)
+                if page.exists():
+                    if page.isRedirectPage():
+                        print("Redirect page. Will be included normally.")
+                        tocheck.append(pl)
+                    else:
+                        include.append(pl)
+                else:
+                    print("Page does not exist; not added.")
+                    exclude.append(pl)
+                break
             elif answer=='r':
                 page = raw_input("Specify page to remove:")
                 exclude.append(wikipedia.PageLink(wikipedia.mylang,page).linkname())
@@ -67,13 +82,35 @@ def asktoadd(pl):
                     if include[i] == wikipedia.PageLink(wikipedia.mylang,page).linkname():
                         del include[i]
             elif answer=='l':
-                print('Number of pages still to check: %s')%len(tocheck)
-                print('Number of pages checked and to be included: %s')%len(include)
-                print('Number of pages not to include: %s')%len(exclude)
-                print('Pages to be included:')
+                print("Number of pages still to check: %s")%len(tocheck)
+                print("Number of pages checked and to be included: %s")%len(include)
+                print("Number of pages not to include: %s")%len(exclude)
+                print("Pages to be included:")
                 print include
-                print('Pages to be checked:')
+                print("Pages to be checked:")
                 print tocheck
+                print("==%s==")%pl
+            elif answer=='t':
+                if checkflag == 0:
+                    try:
+                        thispage = wikipedia.PageLink(wikipedia.mylang,pl).get()
+                        print("==%s==")%pl
+                        print wikipedia.UnicodeToAsciiHtml(thispage[0:200])
+                        ctoshow = 300
+                        checkflag = 1
+                    except wikipedia.NoPage:
+                        print("This page does not exist.")
+                        checkflag = 2
+                    except wikipedia.LockedPage:
+                        print("Cannot load page.")
+                        checkflag = 2
+                elif checkflag == 1:
+                    print("==%s==")%pl
+                    print wikipedia.UnicodeToAsciiHtml(thispage[0:ctoshow])
+                    ctoshow = ctoshow + 100
+                elif checklfag == 2:
+                    print("Unable to show the text of this page.")
+
 
 tocheck = []
 include = []
