@@ -38,6 +38,31 @@ A robot to mass-add a category to a list of pages.
 Just run this robot without any additional arguments.
 
 """
+
+# given a CatLink, returns a CatLink which has an explicit sort key which
+# sorts persons by their last names.
+# Trailing words in brackets will be removed.
+# Example: If category_name is 'Author' and pl is a PageLink to
+# [[Alexandre Dumas (senior)]], this function will return this CatLink:
+# [[Category:Dumas, Alexandre]]
+def sorted_by_last_name(catlink, pagelink):
+    page_name = pagelink.linkname()
+    # regular expression that matches a name followed by a space and
+    # disambiguation brackets. Group 1 is the name without the rest.
+    bracketsR = re.compile('(.*) \(.+?\)')
+    match_object = bracketsR.match(page_name)
+    if match_object:
+        page_name = match_object.group(1)
+    split_string = page_name.split(' ')
+    if len(split_string) > 1:
+        # pull last part of the name to the beginning, and append the rest after a comma
+        # e.g. "John von Neumann" becomes "Neumann, John von"
+        sorted_key = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
+        # give explicit sort key
+        return wikipedia.PageLink(wikipedia.mylang, catlink.linkname() + '|' + sorted_key)
+    else:
+        return wikipedia.PageLink(wikipedia.mylang, catlink.linkname())
+
 def add_category(sort_by_last_name = False):
     print "This bot has two modes: you can add a category link to all"
     print "pages mentioned in a List that is now in another wikipedia page"
@@ -62,11 +87,7 @@ def add_category(sort_by_last_name = False):
     newcat = newcat[:1].capitalize() + newcat[1:]
 
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
-    
     cat_namespace = ns[0].encode(wikipedia.myencoding())
-    if not sort_by_last_name:
-        catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
-        print "Will add %s"%catpl.aslocallink()
 
     answer = ''
     for nm in pagenames:
@@ -79,7 +100,7 @@ def add_category(sort_by_last_name = False):
             if answer == 'a':
                 confirm = ''
 		while confirm not in ('y','n'):
-	            confirm = wikipedia.input(u'This should be used if and only if you are sure that your links are correct !!! Are you sure ? [y/n]:')
+	            confirm = wikipedia.input(u'This should be used if and only if you are sure that your links are correct! Are you sure? [y/n]:')
 	
 	if answer == 'y' or answer == 'a':
             try:
@@ -92,20 +113,13 @@ def add_category(sort_by_last_name = False):
                 print "WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink())
             else:
                 print "Current categories: ",cats
+                catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
                 if sort_by_last_name:
-                    page_name = pl2.linkname()
-                    split_string = page_name.split(' ')
-                    if len(split_string) > 1:
-                        # pull last part of the name to the beginning, and append the rest after a comma
-                        # e.g. "John von Neumann" becomes "Neumann, John von"
-                        new_name = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
-                        # give explicit sort key
-                        catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat + '|' + new_name)
-                    else:
-                        catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
+                    catpl = sorted_by_last_name(catpl, pl2) 
                 if catpl in cats:
                     print "%s already has %s"%(pl2.aslocallink(),catpl.aslocallink())
                 else:
+                    wikipedia.output('Adding %s' % catpl.aslocallink())
                     cats.append(catpl)
                     text = pl2.get()
                     text = wikipedia.replaceCategoryLinks(text, cats)
