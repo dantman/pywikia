@@ -46,6 +46,7 @@ def get(key, lang = None):
     dictionary = pickle.load(f)
     f.close()
     key = key[0].lower() + key[1:]
+    print dictionary
     if dictionary.has_key(key):
         return dictionary[key]
     else:
@@ -82,10 +83,10 @@ def refresh_messages(lang):
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
     itemR = re.compile("<tr bgcolor=\"#f0f0ff\"><td>\n"
-                     + "\s*<a href=.+?>.+?<\/a><br \/>\n"
-                     + "\s*.*?<a href=.+?>.+?<\/a>\n"
+                     + "\s*<a href=.+?>(.+?)<\/a><br \/>\n"
+                     + "\s*<a href=.+?>.+?<\/a>\n"
                      + "\s*</td><td>\n"
-                     + "\s*.+?\n"
+                     + "\s*(.+?)\n"
                      + "\s*</td><td>\n"
                      + "\s*.+?\n"
                      + "\s*<\/td><\/tr>", re.DOTALL)
