@@ -76,12 +76,16 @@ def putPage(code, name, text):
     if host[-4:] == '.com':
         raise Error("Cannot put pages on a .com wikipedia")
     address = '/w/wiki.phtml?title=%s&action=submit'%(name)
-    data = urlencode((
-        ('wpSummary', action),
-        ('wpMinoredit', '1'),
-        ('wpSave', '1'),
-        ('wpEdittime', edittime[code,name]),
-        ('wpTextbox1', text)))
+    try:
+        data = urlencode((
+            ('wpSummary', action),
+            ('wpMinoredit', '1'),
+            ('wpSave', '1'),
+            ('wpEdittime', edittime[code,name]),
+            ('wpTextbox1', text)))
+    except KeyError:
+        print edittime
+	raise
     if debug:
         print text
         print address

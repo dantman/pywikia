@@ -43,6 +43,7 @@ def beforeandafter(x):
         a.append(1)
     else:
         a.append(x+1)
+    print a
     return tuple(a)
 
 def cstr(c):
@@ -60,7 +61,10 @@ def cmap(cs):
     
 def header(year):
     s=[]
-    cent=(int(year)-1)/100+1
+    if year>0:
+        cent=(int(year)-1)/100+1
+    else:
+        cent=-((int(-year)-1)/100+1)
     s.append('<!-- robot -->')
     s.append('<table align=center><tr><td align=center>')
     s.append("[[Eeuwen]]: [[%s]] -- '''[[%s]]''' -- [[%s]]"%cmap(beforeandafter(cent)))
@@ -82,12 +86,12 @@ pre='(\r?\n)+'
 post='(\r?\n)+'
 R4=re.compile(pre+'\\* *'+post,re.MULTILINE)
 R5=re.compile(pre+' +'+post,re.MULTILINE)
-R10=re.compile(pre+'\[\[\d+( v. Chr.)?\]\]( --)? *'+post)
-R11=re.compile(pre+"'''\d+\''' -- *"+post)
+R10=re.compile(pre+'\[\[\d+( v. Chr.)?(\\|\d+)?\]\]( --)? *'+post)
+R11=re.compile(pre+"'''\d+( v. Chr.)?\''' -- *"+post)
 R12=re.compile(pre+"\(\[\[0\]\]\) -- *"+post)
 pre='((\r?\n)+---- *)?(\r?\n)+'
 post=' *(\\<[Bb][Rr]\\>)? *(\r?\n)+'
-R6=re.compile(pre+" ?(''')?(Jaren)?:?(''')?:? *[-\\[\\]\\<\\>\'\| 0-9,]{10,150}"+post,re.MULTILINE)
+R6=re.compile(pre+" ?(''')?(Jaren)?:?(''')?:? *(\\<\\/?b\\>|\'\'\'|[-\\[\\]\\<\\>\| 0-9,]){10,150}"+post,re.MULTILINE)
 R7=re.compile(pre+" ?(''')?[Dd]ecennia:?(''')?:? *\\[\\[Jaaroverzichten\\]\\]"+post,re.MULTILINE)
 R8=re.compile(pre+'\[\[[Ee]euwen\]\]:? *(\\<\\/?b\\>|eeuw|[-\\[\\]\\<\\>\'\| 0-9evChr\.]){14,70}'+post,re.MULTILINE)
 pre='(\r?\n)+ *'
@@ -95,7 +99,7 @@ post=' *(\r?\n)+'
 R9=re.compile(pre+'<!-- robot -->(.|\n)+?<!-- /robot -->'+post,re.MULTILINE)
 
 def do(year):
-    page=str(year)
+    page=ystr(year)
     if debug:
         page='Robottest'
 
