@@ -210,6 +210,8 @@ class NoSuchEntity(ValueError):
 class SubpageError(ValueError):
     """The subpage specified by # does not exist"""
 
+SaxError = xml.sax._exceptions.SAXParseException
+
 # Regular expression recognizing redirect pages
 
 Rredirect = re.compile(r'\#redirect:? *\[\[(.*?)\]\]', re.I)
@@ -492,7 +494,10 @@ class GetAll:
         try:
             xml.sax.parseString(data, handler)
         except xml.sax._exceptions.SAXParseException:
-            print data
+            f=open('sax_parse_bug.dat','w')
+            f.write(data)
+            f.close()
+            print "Dumped invalid XML to sax_parse_bug.dat"
             raise
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
@@ -578,6 +583,18 @@ def getall(code, pages):
     return GetAll(code, pages).run()
     
 # Library functions
+
+def PageLinksFromFile(fn):
+    f=open(fn, 'r')
+    R=re.compile(r'\[\[([^:]*):([^\]]*)\]\]')
+    for line in f.readlines():
+        m=R.match(line)
+        if m:
+            yield PageLink(m.group(1), m.group(2))
+        else:
+            print "ERROR: Did not understand %s line:\n%s" % (fn, repr(line))
+    f.close()
+    
 def unescape(s):
     """Replace escaped HTML-special characters by their originals"""
     if '&' not in s:

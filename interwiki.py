@@ -202,7 +202,12 @@ class Subject:
                 except wikipedia.IsRedirectPage,arg:
                     pl3 = wikipedia.PageLink(pl.code(),arg.args[0])
                     print "NOTE: %s is redirect to %s"% (pl.asasciilink(), pl3.asasciilink())
-                    self.conditionalAdd(pl3, counter)
+                    if len(self.done) == 1 and len(self.todo) == 0 and len(self.pending) == 1:
+                        # This is a redirect page itself. We don't need to
+                        # follow the redirection.
+                        pass
+                    else:
+                        self.conditionalAdd(pl3, counter)
                 except wikipedia.NoPage:
                     print "NOTE: %s does not exist"% pl.asasciilink()
                 except wikipedia.SubpageError:
@@ -235,7 +240,7 @@ class Subject:
         self.confirm += 1
         if globalvar.autonomous:
             f=open('autonomous_problem.dat', 'a')
-            f.write("%s {%s}\n" % (self.inpl, txt))
+            f.write("%s {%s}\n" % (self.inpl.asasciilink(), txt))
             f.close()
             
     def finish(self):
@@ -463,7 +468,11 @@ class SubjectArray:
                 if len(plgroup)>=globalvar.maxquerysize:
                     break
         # Get the content of the assembled list in one blow
-        wikipedia.getall(code, plgroup)
+        try:
+            wikipedia.getall(code, plgroup)
+        except wikipedia.SaxError:
+            # Ignore this error, and get the pages the traditional way.
+            pass
         # Tell all of the subjects that the promised work is done
         for subj in group:
             subj.workDone(self)
@@ -581,26 +590,12 @@ if __name__ == "__main__":
     sa=SubjectArray()
 
     if skipfile:
-        f=open(skipfile, 'r')
-        R=re.compile(r'\[\[([^:]*):([^\]]*)\]\]')
-        for line in f.readlines():
-            m=R.match(line)
-            if m:
-                globalvar.skip[wikipedia.PageLink(m.group(1),m.group(2))] = None
-            else:
-                print "Did not understand skip line", line
-        f.close()
+        for pl in wikipedia.PageLinksFromFile(skipfile):
+            globalvar.skip[pl] = None
 
     if restore:
-        f=open('interwiki.dump','r')
-        R=re.compile(r'\[\[([^:]*):([^\]]*)\]\]')
-        for line in f.readlines():
-            m=R.match(line)
-            if m:
-                sa.add(wikipedia.PageLink(m.group(1),m.group(2)))
-            else:
-                print "Did not understand dump line", line
-        f.close()
+        for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
+            sa.add(pl)
         
     if mode == 1:
         inname = '_'.join(inname)
