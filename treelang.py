@@ -72,8 +72,9 @@ datetable = {
 
 yearADfmt = {'ja':'%d&#24180;'} # Others default to '%d'
 
-yearBCfmt = {'de':'%d v. Chr.','en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
-           'es':'%d adC','eo':'-%d','nl':'%d v. Chr.'} # No default
+yearBCfmt = {'da':'%d f.Kr.','de':'%d v. Chr.',
+             'en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
+             'es':'%d adC','eo':'-%d','nl':'%d v. Chr.'} # No default
 
 msg = {
     'en':('Adding','Removing','Modifying'),
