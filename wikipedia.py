@@ -7,37 +7,38 @@
 import re,urllib,codecs
 
 # known wikipedia languages
-langs = {'en':'www.wikipedia.org',
-         'pl':'pl.wikipedia.org',
-         'da':'da.wikipedia.org',
-         'sv':'sv.wikipedia.org',
-         'zh':'zh.wikipedia.org',
-         'eo':'eo.wikipedia.org',
-         'nl':'nl.wikipedia.org',
-         'de':'de.wikipedia.org',
-         'fr':'fr.wikipedia.org',
-         'es':'es.wikipedia.org',
-         'cs':'cs.wikipedia.org',
-         'ru':'ru.wikipedia.org',
-         'ja':'ja.wikipedia.org',
-         'sl':'sl.wikipedia.org',
-         'ko':'ko.wikipedia.org',
-         'hu':'hu.wikipedia.org',
+langs = {'en':'www.wikipedia.org', # English
+         'pl':'pl.wikipedia.org', # Polish
+         'da':'da.wikipedia.org', # Danish
+         'sv':'sv.wikipedia.org', # Swedish
+         'zh':'zh.wikipedia.org', # Chinese
+         'eo':'eo.wikipedia.org', # Esperanto
+         'nl':'nl.wikipedia.org', # Dutch
+         'de':'de.wikipedia.org', # German
+         'fr':'fr.wikipedia.org', # French
+         'es':'es.wikipedia.org', # Spanish
+         'cs':'cs.wikipedia.org', # Czech
+         'ru':'ru.wikipedia.org', # Russian
+         'ja':'ja.wikipedia.org', # Japanese
+         'sl':'sl.wikipedia.org', # Slovenian
+         'ko':'ko.wikipedia.org', # Korean
+         'hu':'hu.wikipedia.org', # Hungarian
          'el':'el.wikipedia.org',
          'bs':'bs.wikipedia.org',
-         'hi':'hi.wikipedia.org',
-         'it':'it.wikipedia.com',
-         'no':'no.wikipedia.com',
-         'pt':'pt.wikipedia.com',
-         'af':'af.wikipedia.com',
-         'fy':'fy.wikipedia.com',
-         'la':'la.wikipedia.com',
-         'ca':'ca.wikipedia.com',
-         'fi':'fi.wikipedia.com',
-         'ia':'ia.wikipedia.com',
-         'et':'et.wikipedia.com',
+	 'he':'he.wikipedia.org', # Hebrew
+         'hi':'hi.wikipedia.org', # Hindi
+         'it':'it.wikipedia.com', # Italian
+         'no':'no.wikipedia.com', # Norwegian
+         'pt':'pt.wikipedia.com', # Portuguese
+         'af':'af.wikipedia.com', # Afrikaans
+         'fy':'fy.wikipedia.com', # Frysk
+         'la':'la.wikipedia.com', # Latin
+         'ca':'ca.wikipedia.com', # Catalan
+         'fi':'fi.wikipedia.com', # Finnish
+         'ia':'ia.wikipedia.com', # Interlingua
+         'et':'et.wikipedia.com', 
          'eu':'eu.wikipedia.com',
-         'simple':'simple.wikipedia.com',
+         #'simple':'simple.wikipedia.com', # Simplified english
          #'test':'test.wikipedia.org',
          }
 
@@ -216,7 +217,12 @@ def getPage(code, name, do_edit=1, do_quote=1):
     if charset=='utf-8':
         # Make it to a unicode string
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
-        x,l=decode_func(x)
+        try:
+            x,l=decode_func(x)
+        except UnicodeError:
+            print code,name
+            print repr(x)
+            raise 
         # Convert the unicode characters to &# references, and make it ascii.
         x=str(UnicodeToAsciiHtml(x))
     return x
@@ -299,7 +305,7 @@ def code2encoding(code):
         return 'iso-8859-5'
     if code=='pl':
         return 'iso-8859-2'
-    if code in ['meta','eo','ja','zh','hi']:
+    if code in ['meta','eo','ja','zh','hi','he','hu']:
         return 'utf-8'
     return 'iso-8859-1'
     
@@ -325,11 +331,14 @@ def link2url(name,code='nl',incode='nl'):
         name=html2unicode(name,encoding=code2encoding(code),
                           inencoding=code2encoding(incode))
     try:
-        #print "Trying to encode into latin1"
-        result=str(name.encode('latin1'))
-        #print "Result=",result
+        result=str(name.encode(code2encoding(code)))
     except UnicodeError:
-        result=str(name.encode('utf-8'))
+        try:
+            #print "Trying to encode into latin1"
+            result=str(name.encode('latin1'))
+            #print "Result=",result
+        except UnicodeError:
+            result=str(name.encode('utf-8'))
     result=space2underline(result)
     return urllib.quote(result)
 
