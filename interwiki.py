@@ -395,6 +395,19 @@ class Subject:
             if 'zh' in new:
                 del new['zh']
                 print "Ignoring links to zh in presence of zh-cn or zh-tw"
+        # Remove Chinese internal links
+        if wikipedia.mylang=='zh' or wikipedia.mylang=='zh-cn':
+            if 'zh-tw' in new:
+                if len(new['zh-tw']) > 1:
+                    nerr +=1
+                    self.problem("Found more than one link for traditional Chinese")
+                del new['zh-tw']
+        if wikipedia.mylang=='zh' or wikipedia.mylang=='zh-tw':
+            if 'zh-cn' in new:
+                if len(new['zh-cn']) > 1:
+                    nerr +=1
+                    self.problem("Found more than one link for simplified Chinese")
+                del new['zh-cn']
         # See if new{} contains any problematic values
         result = {}
         for k, v in new.items():
@@ -570,7 +583,10 @@ class Subject:
                             print "WARNING:", pl.asasciiselflink(), "does not link to", xpl.asasciilink()
                 # Check for superfluous links
                 for xpl in linked:
-                    if not xpl in shouldlink:
+                    # Chinese internal links are ok.
+                    if l.code() in ['zh-cn','zh-tw','zh'] and xpl.code() in ['zh-cn','zh-tw']:
+                        pass
+                    elif not xpl in shouldlink:
                         # Check whether there is an alternative page on that language.
                         for l in shouldlink:
                             if l.code() == xpl.code():
@@ -756,9 +772,13 @@ def compareLanguages(old, new):
     modifying = []
     for code in old.keys():
         if code not in new:
-            # Zh is allowed to be removed if it is replaced by both zh-cn and
-            # zh-tw.  Do not call such a removal a removal but a modification.
-            if code == 'zh' and 'zh-cn' in new and 'zh-tw' in new:
+            # zh internal links should not be present (as interwiki-links)
+            # in the first place
+            if wikipedia.mylang in ['zh','zh-cn','zh-tw'] and code in ['zh','zh-cn','zh-tw']:
+                pass
+            # Zh is allowed to be removed if it is replaced by zh-cn or
+            # zh-tw. Do not call such a modification a removal but a change
+            elif code == 'zh' and 'zh-cn' in new or 'zh-tw' in new:
                 modifying.append(code)
             else:
                 removing.append(code)
