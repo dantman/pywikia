@@ -21,65 +21,66 @@ loggedin = False
 # to the hostname of the site hosting that wikipedia. For human consumption,
 # the full name of the language is given behind each line as a comment
 
-langs = {'en':'en.wikipedia.org', # English
-         'pl':'pl.wikipedia.org', # Polish, UTF-8
-         'da':'da.wikipedia.org', # Danish
-         'sv':'sv.wikipedia.org', # Swedish
-         'zh':'zh.wikipedia.org', # Chinese, UTF-8
-         'eo':'eo.wikipedia.org', # Esperanto, UTF-8
-         'nl':'nl.wikipedia.org', # Dutch
-         'de':'de.wikipedia.org', # German
-         'fr':'fr.wikipedia.org', # French
-         'es':'es.wikipedia.org', # Spanish
-         'cs':'cs.wikipedia.org', # Czech, UTF-8
-         'ru':'ru.wikipedia.org', # Russian, UTF-8
-         'ja':'ja.wikipedia.org', # Japanese, UTF-8
-         'sl':'sl.wikipedia.org', # Slovenian, UTF-8
-         'ko':'ko.wikipedia.org', # Korean, UTF-8
-         'hu':'hu.wikipedia.org', # Hungarian, UTF-8
-         'el':'el.wikipedia.org', # Greek, UTF-8
-         'bs':'bs.wikipedia.org', # Bosnian, UTF-8
-	 'he':'he.wikipedia.org', # Hebrew, UTF-8
-         'hi':'hi.wikipedia.org', # Hindi, UTF-8
-         'nds':'nds.wikipedia.org', # Lower Saxon
-         'ro':'ro.wikipedia.org', # Romanian, UTF-8
-         'fy':'fy.wikipedia.org', # Frisian, UTF-8
-         'ar':'ar.wikipedia.org', # Arabic, UTF-8
-         'zh-tw':'zh.wikipedia.org', # Traditional Chinese, UTF-8
-         'zh-cn':'zh.wikipedia.org', # Simplified Chinese, UTF-8
-         'it':'it.wikipedia.org', # Italian
-         'no':'no.wikipedia.org', # Norwegian
-         'pt':'pt.wikipedia.org', # Portuguese
-         'af':'af.wikipedia.org', # Afrikaans
-         'la':'la.wikipedia.org', # Latin
-         'ca':'ca.wikipedia.org', # Catalan
-         'fi':'fi.wikipedia.org', # Finnish
-         'ia':'ia.wikipedia.org', # Interlingua
-         'et':'et.wikipedia.org', # Estonian
-         'eu':'eu.wikipedia.org', # Basque
-         'hr':'hr.wikipedia.org', # Croatian, UTF-8
-         'tr':'tr.wikipedia.org', # Turkish, UTF-8
-         'mr':'mr.wikipedia.org', # Marathi
-         'cy':'cy.wikipedia.org', # Welsh, UTF-8
-         'id':'id.wikipedia.org', # Indonesian
-         'ms':'ms.wikipedia.org', # Malaysian
-         'gl':'gl.wikipedia.org', # Galician
-         'lv':'lv.wikipedia.org', # Livonian
-         'lt':'lt.wikipedia.org', # Latvian
-         'ml':'ml.wikipedia.org', # Malayalam (UTF-8?)
-         'nah':'nah.wikipedia.org', # Nahuatl (UTF-8?)
-         'oc':'oc.wikipedia.org', # Occitan, UTF-8
-         'sq':'sq.wikipedia.org', # Albanian (UTF-8?)
-         'sr':'sr.wikipedia.org', # Serbian, UTF-8
-         'sw':'sw.wikipedia.org', # Swahili
-         'tt':'tt.wikipedia.org', # Tatar
-         'uk':'uk.wikipedia.org', # Ukrainian (Latin-1?)
-         'vi':'vi.wikipedia.org', # Vietnamese
-         'vo':'vo.wikipedia.org', # Volapuk
-         'ga':'ga.wikipedia.org', # Irish Gaelic
-         'simple':'simple.wikipedia.org', # Simple English
-         'test':'test.wikipedia.org',
-         }
+langs = {
+    'af':'af.wikipedia.org',   # Afrikaans
+    'ar':'ar.wikipedia.org',   # Arabic, UTF-8
+    'bs':'bs.wikipedia.org',   # Bosnian, UTF-8
+    'ca':'ca.wikipedia.org',   # Catalan
+    'cs':'cs.wikipedia.org',   # Czech, UTF-8
+    'cy':'cy.wikipedia.org',   # Welsh, UTF-8
+    'da':'da.wikipedia.org',   # Danish
+    'de':'de.wikipedia.org',   # German
+    'el':'el.wikipedia.org',   # Greek, UTF-8
+    'en':'en.wikipedia.org',   # English
+    'eo':'eo.wikipedia.org',   # Esperanto, UTF-8
+    'es':'es.wikipedia.org',   # Spanish
+    'et':'et.wikipedia.org',   # Estonian
+    'eu':'eu.wikipedia.org',   # Basque
+    'fi':'fi.wikipedia.org',   # Finnish
+    'fr':'fr.wikipedia.org',   # French
+    'fy':'fy.wikipedia.org',   # Frisian, UTF-8
+    'ga':'ga.wikipedia.org',   # Irish Gaelic
+    'gl':'gl.wikipedia.org',   # Galician
+    'he':'he.wikipedia.org',   # Hebrew, UTF-8
+    'hi':'hi.wikipedia.org',   # Hindi, UTF-8
+    'hr':'hr.wikipedia.org',   # Croatian, UTF-8
+    'hu':'hu.wikipedia.org',   # Hungarian, UTF-8
+    'ia':'ia.wikipedia.org',   # Interlingua
+    'id':'id.wikipedia.org',   # Indonesian
+    'it':'it.wikipedia.org',   # Italian
+    'ja':'ja.wikipedia.org',   # Japanese, UTF-8
+    'ko':'ko.wikipedia.org',   # Korean, UTF-8
+    'la':'la.wikipedia.org',   # Latin
+    'lt':'lt.wikipedia.org',   # Latvian
+    'lv':'lv.wikipedia.org',   # Livonian
+    'ml':'ml.wikipedia.org',   # Malayalam (UTF-8?)
+    'mr':'mr.wikipedia.org',   # Marathi
+    'ms':'ms.wikipedia.org',   # Malaysian
+    'nah':'nah.wikipedia.org', # Nahuatl (UTF-8?)
+    'nds':'nds.wikipedia.org', # Lower Saxon
+    'nl':'nl.wikipedia.org',   # Dutch
+    'no':'no.wikipedia.org',   # Norwegian
+    'oc':'oc.wikipedia.org',   # Occitan, UTF-8
+    'pl':'pl.wikipedia.org',   # Polish, UTF-8
+    'pt':'pt.wikipedia.org',   # Portuguese
+    'ro':'ro.wikipedia.org',   # Romanian, UTF-8
+    'ru':'ru.wikipedia.org',   # Russian, UTF-8
+    'simple':'simple.wikipedia.org', # Simple English
+    'sl':'sl.wikipedia.org',   # Slovenian, UTF-8
+    'sq':'sq.wikipedia.org',   # Albanian (UTF-8?)
+    'sr':'sr.wikipedia.org',   # Serbian, UTF-8
+    'sv':'sv.wikipedia.org',   # Swedish
+    'sw':'sw.wikipedia.org',   # Swahili
+    'test':'test.wikipedia.org',
+    'tr':'tr.wikipedia.org',   # Turkish, UTF-8
+    'tt':'tt.wikipedia.org',   # Tatar
+    'uk':'uk.wikipedia.org',   # Ukrainian (Latin-1?)
+    'vi':'vi.wikipedia.org',   # Vietnamese
+    'vo':'vo.wikipedia.org',   # Volapuk
+    'zh':'zh.wikipedia.org',   # Chinese, UTF-8
+    'zh-cn':'zh.wikipedia.org', # Simplified Chinese, UTF-8
+    'zh-tw':'zh.wikipedia.org', # Traditional Chinese, UTF-8
+    }
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
@@ -92,25 +93,30 @@ latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
-special = {'en': 'Special',
-           'nl': 'Speciaal',
-           'da': 'Speciel',
-           'de': 'Spezial',
-           'fr': 'Special',
-           'fy': 'Wiki',
-           'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
-           'hu': 'Speci%C3%A1lis',
-           'ja': '%E7%89%B9%E5%88%A5',
-           'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
-           'eo': 'Speciala',
-           'es': 'Especial',
-           'ia': 'Special',
-           'it': 'Speciale',
-           'pl': 'Specjalna',
-           'ro': 'Special',
-           'sv': 'Special',
-           'test': 'Special'
-           }
+special = {
+    'ar': 'Special',
+    'da': 'Speciel',
+    'de': 'Spezial',
+    'en': 'Special',
+    'eo': 'Speciala',
+    'es': 'Especial',
+    'fr': 'Special',
+    'fy': 'Wiki',
+    'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
+    'hu': 'Speci%C3%A1lis',
+    'ia': 'Special',
+    'it': 'Speciale',
+    'ja': '%E7%89%B9%E5%88%A5',
+    'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
+    'nl': 'Speciaal',
+    'pl': 'Specjalna',
+    'ro': 'Special',
+    'ru': 'Special',
+    'sq': 'Special',
+    'sv': 'Special',
+    'test': 'Special',
+    'zh': 'Special',
+    }
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
@@ -340,6 +346,8 @@ def setAction(s):
 setAction('Wikipedia python library')
 
 def urlencode(query):
+    """This can encode a query so that it can be sent as a query using
+       a http POST request"""
     l=[]
     for k, v in query:
         k = urllib.quote(str(k))
@@ -358,17 +366,17 @@ def underline2space(name):
 import time
 
 class Throttle:
-    def __init__(self, delay = 6, ignore = 0):
+    def __init__(self, delay = config.throttle, ignore = 0):
         """Make sure there are at least 'delay' seconds between page-gets
            after 'ignore' initial page-gets"""
         self.delay = delay
         self.ignore = ignore
         self.now = 0
 
-    def setDelay(self, delay = 6):
+    def setDelay(self, delay = config.throttle):
         self.delay = delay
         
-    def __call__(self,newdelay=None):
+    def __call__(self, newdelay = None):
         """This is called from getPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
            since the last time it was called before it returns.
@@ -386,10 +394,13 @@ class Throttle:
                 time.sleep(self.delay - ago)
             self.now = time.time()
 
-throttle=Throttle()
+throttle = Throttle()
 
 def putPage(code, name, text, comment = None):
-    """Upload 'text' on page 'name' to the 'code' language wikipedia."""
+    """Upload 'text' on page 'name' to the 'code' language wikipedia.
+       Use of this routine can normally be avoided; use PageLink.put
+       instead.
+    """
     import httplib
     host = langs[code]
     if code in oldsoftware:
@@ -563,8 +574,6 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
         print code,name
         print repr(x)
         raise 
-        # Convert the unicode characters to &# references, and make it ascii.
-        #x = str(UnicodeToAsciiHtml(x))
     return x
 
 def languages(first = []):
@@ -627,6 +636,9 @@ def getLanguageLinks(text,incode=None):
     return result
 
 def removeLanguageLinks(text):
+    """Given the wiki-text of a page, return that page with all interwiki
+       links removed. If a link to an unknown language is encountered,
+       a warning is printed."""
     for code in langs:
         text=re.sub(r'\[\['+code+':([^\]]*)\]\]', '', text)
     m=re.search(r'\[\[([a-z][a-z]):([^\]]*)\]\]', text)
@@ -643,6 +655,12 @@ def removeLanguageLinks(text):
     return text
 
 def replaceLanguageLinks(oldtext, new):
+    """Replace the interwiki language links given in the wikitext given
+       in oldtext by the new links given in new.
+
+       'new' should be a dictionary with the language names as keys, and
+       either PageLink objects or the link-names of the pages as values.
+    """   
     s = interwikiFormat(new, incode = mylang)
     s2 = removeLanguageLinks(oldtext)
     if mylang in config.interwiki_atbottom:
@@ -652,8 +670,14 @@ def replaceLanguageLinks(oldtext, new):
     return newtext
     
 def interwikiFormat(links, incode):
-    """Create a suitable string to start a wikipedia page consisting of
-       interwikilinks given as a dictionary of code:pagename in the argument.
+    """Create a suitable string encoding all interwiki links for a wikipedia
+       page.
+
+       'links' should be a dictionary with the language names as keys, and
+       either PageLink objects or the link-names of the pages as values.
+
+       'incode' should be the name of the wikipedia language that is the
+       target of the string.
     """
     s = []
     ar = links.keys()
