@@ -6,6 +6,7 @@ import family, config
 # The wikimedia family that is known as Wikibooks
 
 class Family(family.Family):
+    name = 'wikibooks'
 
     def __init__(self):
         # Known wikibooks languages, given as a dictionary mapping the language code
