@@ -800,7 +800,6 @@ def redirectRe(site):
         txt = '(?:redirect|'+'|'.join(site.redirect())+')'
     else:
         txt = 'redirect'
-        print txt
     return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]\]|\|)', re.I)
 
 # Shortcut get to get multiple pages at once
