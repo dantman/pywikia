@@ -191,14 +191,14 @@ class PageLink:
 
     def ascii_linkname(self):
         return url2link(self._urlname, code = self._code, incode = 'ascii')
-        
+    
     def __str__(self):
         """A simple ASCII representation of the pagelink"""
         return "%s:%s" % (self._code, self.ascii_linkname())
 
     def __repr__(self):
         """A more complete string representation"""
-        return "PageLink{%s}" % str(self)
+        return "%s{%s}" % (self.__class__.__name__, str(self))
 
     def aslink(self):
         """A string representation in the form of an interwiki link"""

@@ -10,9 +10,60 @@ __version__ = '$Id$'
 #
 import wikipedia
 
+class CatTitleRecognition:
+    """Special object to recognize categories in a certain language.
+
+       Purpose is to construct an object using a language code, and
+       to call the object as a function to see whether a title represents
+       a category page.
+    """
+    def __init__(self, lang):
+        self.ns = wikipedia.family.category_namespaces(lang)
+
+    def __call__(self, s):
+        """True if s points to a category page."""
+        # try different possibilities for namespaces
+        # (first letter lowercase, English 'category')
+        for ins in self.ns:
+            if s.startswith(ins + ':'):
+                return True
+        return False
+        
+iscattitle = CatTitleRecognition(wikipedia.mylang)
+
+def unique(l):
+    """Given a list of hashable object, return an alphabetized unique list.
+    """
+    l=dict.fromkeys(l).keys()
+    l.sort()
+    return l
+    
 class _CatLink(wikipedia.PageLink):
-    #returns a list of the titles of all subcategories and all articles in this category
-    def catlist(self, recurse = 0):
+    """Subclass of PageLink that has some special tricks that only work for
+       category: pages"""
+    def catlist(self, recurse = False):
+        """Cache result of make_catlist for a second call
+
+           This should not be used outside of this module.
+        """
+        if recurse:
+            if not hasattr(self,'_catlistT'):
+                self._catlistT = self._make_catlist(True)
+            return self._catlistT
+        else:
+            if not hasattr(self,'_catlistF'):
+                self._catlistF = self._make_catlist(False)
+            return self._catlistF
+            
+    def _make_catlist(self, recurse = False):
+        """Make a list of all articles and categories that are in this
+           category. If recurse is set to True, articles and categories
+           of any subcategories are also retrieved.
+
+           Returns a non-unique list of page titles in random order.
+
+           This should not be used outside of this module.
+        """
         import re
         Rtitle = re.compile('title=\"([^\"]*)\"')
         ns = wikipedia.family.category_namespaces(wikipedia.mylang)
@@ -30,54 +81,59 @@ class _CatLink(wikipedia.PageLink):
             iend = txt.index('<!-- end content -->')
             txt = txt[ibegin:iend]
             for title in Rtitle.findall(txt):
-                # try different possibilities for namespaces (first letter lowercase, English 'category')
-                for ins in ns:
-                    # if the current link points at a subcategory page
-                    if title.startswith(ins + ':'):
-                        ncat = _CatLink(self.code(), title)
-                        if recurse and ncat not in catsdone:
-                            catstodo.append(ncat)
+                if iscattitle(title):
+                    ncat = _CatLink(self.code(), title)
+                    if recurse and ncat not in catsdone:
+                        catstodo.append(ncat)
                 pages.append(title)
-        # TODO: filter duplicate results
         return pages
     
-    #returns a list of all subcategories in this category
-    def subcategories(self, recurse = 0):
-        ns = wikipedia.family.category_namespaces(wikipedia.mylang)
+    def subcategories(self, recurse = False):
+        """Create a list of all subcategories of the current category.
+
+           If recurse = True, also return subcategories of the subcategories.
+
+           Returns a sorted, unique list of all subcategories.
+        """
         subcats = []
         for title in self.catlist(recurse):
-            for ins in ns:
-                # if the current link points at a subcategory page
-                if title.startswith(ins + ':'):
-                    ncat = _CatLink(self.code(), title)
-                    subcats.append(ncat)
-        return subcats
+            if iscattitle(title):
+                ncat = _CatLink(self.code(), title)
+                subcats.append(ncat)
+        return unique(subcats)
     
     #returns a list of all articles in this category
-    def articles(self, recurse = 0):
+    def articles(self, recurse = False):
+        """Create a list of all pages in the current category.
+
+           If recurse = True, also return pages in all subcategories.
+
+           Returns a sorted, unique list of all categories.
+        """
         articles = []
-        titles = self.catlist(recurse)
-        for title in titles:
-            is_category = False
-            for namespace in wikipedia.family.category_namespaces(wikipedia.mylang):
-                # if the current link points to a subcategory
-                if title.startswith(namespace + ':'):
-                    is_category = True
-            if not is_category:
+        for title in self.catlist(recurse):
+            if not iscattitle(title):
                 npage = wikipedia.PageLink(self.code(), title)
                 articles.append(npage)
-        return articles
+        return unique(articles)
 
      #TODO: create supercategories() function
 
 def CatLink(s):
+    """Factory method to create category link objects from the category name"""
+    # Standardized namespace
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)[0]
+    # Prepend it
     return _CatLink(wikipedia.mylang, "%s:%s"%(ns, s))
 
 def test():
     pl=CatLink('Software')
     
-    print pl.catlist(recurse = 0)
+    print pl.catlist(recurse = False)
+
+    print pl.subcategories(recurse = False)
+
+    print pl.articles(recurse = False)
 
 if __name__=="__main__":
     import sys
