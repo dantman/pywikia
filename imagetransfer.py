@@ -55,8 +55,23 @@ for page in ilinks:
         imagelist.append(i)
 
 for i in range(len(imagelist)):
-    lib_images.transfer_image(imagelist[i], wikipedia.mylang, debug=True)
+    imagelink = imagelist[i]
+    print "--------------------------------------------------"
+    print "%s. Found image: %s"% (i,imagelink.aslink())
+    try:
+        print imagelink.get()
+    except wikipedia.NoPage:
+        print "Description empty."        
 
 print "=================================================="
 
-print "Bot still in development; use upload.py for uploading."
+while 1:
+    print("Give the number of the image to download.")
+    todo=raw_input("To end uploading, press enter: ")
+    if not todo:
+        break
+    todo=int(todo)
+    if todo in range(len(imagelist)):
+        lib_images.transfer_image(imagelist[todo], wikipedia.mylang)
+    else:
+        print("No such image number.")
