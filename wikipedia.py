@@ -1017,6 +1017,7 @@ class GetAll(object):
         data = response.read()
         conn.close()
         get_throttle.setDelay(time.time() - now)
+        print data
         return data
     
 def getall(site, pages, throttle = True):
@@ -2291,6 +2292,12 @@ class Site(object):
 
     def maintenance_address(self, sub, default_limit = True):
         return self.family.maintenance_address(self.lang, sub, default_limit)
+
+    def double_redirects_address(self, default_limit = True):
+        return self.family.double_redirects_address(self.lang, default_limit)
+
+    def broken_redirects_address(self, default_limit = True):
+        return self.family.broken_redirects_address(self.lang, default_limit)
 
     def language(self):
         return self.lang

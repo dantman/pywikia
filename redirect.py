@@ -115,15 +115,15 @@ class RedirectGenerator:
             mysite = wikipedia.getSite()
             host = mysite.hostname()
             # broken redirect maintenance page's URL
-            url = mysite.maintenance_address('brokenredirects', default_limit = False)
-            print 'Retrieving maintenance page...' 
+            url = mysite.broken_redirects_address(default_limit = False)
+            print 'Retrieving special page...' 
             maintenance_txt, charset = wikipedia.getUrl(host,url)
             
             # regular expression which finds redirects which point to a non-existing page inside the HTML
             Rredir = re.compile('\<li\>\<a href=\"\/w\/wiki.phtml\?title=(.*?)&amp;redirect=no\"')
         
             redir_names = Rredir.findall(maintenance_txt)
-            print 'Retrieved %d redirects from maintenance page.\n' % len(redir_names)
+            print 'Retrieved %d redirects from special page.\n' % len(redir_names)
             for redir_name in redir_names:
                 yield redir_name
         else:
@@ -150,15 +150,17 @@ class RedirectGenerator:
             # retrieve information from the live wiki's maintenance page
             host = mysite.hostname()
             # double redirect maintenance page's URL
-            url = mysite.maintenance_address('doubleredirects', default_limit = False)
+            url = mysite.double_redirects_address(default_limit = False)
             
-            print 'Retrieving maintenance page...' 
+            print 'Retrieving special page...' 
             maintenance_txt, charset = wikipedia.getUrl(host,url)
+            print maintenance_txt
         
             # regular expression which finds redirects which point to another redirect inside the HTML
-            Rredir = re.compile('\<li\>\<a href=\"\/w\/wiki.phtml\?title=(.*?)&amp;redirect=no\"')
+            #<li><a href="/Abrikosow?redirect=no" title="Abrikosow">Abrikosow</a> <a href="/Abrikosow?action=edit&amp;redirect=no" class="new" title="Abrikosow">(Ändern)</a> => <a href="/Alexei_Alexejewitsch_Abrikosow" title="Alexei Alexejewitsch Abrikosow">Alexei Alexejewitsch Abrikosow</a> (#REDIRECT [[Alexei Alexejewitsch Abrikossow]])</li>
+            Rredir = re.compile('\<li\>\<a href=".+?" title=(.*?)">')
             redir_names = Rredir.findall(maintenance_txt)
-            print 'Retrieved %d redirects from maintenance page.\n' % len(redir_names)
+            print 'Retrieved %d redirects from special page.\n' % len(redir_names)
             for redir_name in redir_names:
                 yield redir_name
         else:

@@ -569,6 +569,18 @@ class Family:
         else:
             return '%s?title=%s:Maintenance&subfunction=%s&limit=%d' % (self.path(code), self.special_namespace_url(code), maintenance_page, config.special_page_limit)
 
+    def double_redirects_address(self, code, default_limit = True):
+        if default_limit:
+            return '%s?title=%s:DoubleRedirects' % (self.path(code), self.special_namespace_url(code))
+        else:
+            return '%s?title=%s:DoubleRedirects&limit=%d' % (self.path(code), self.special_namespace_url(code), config.special_page_limit)
+
+    def broken_redirects_address(self, code, default_limit = True):
+        if default_limit:
+            return '%s?title=%s:BrokenRedirects' % (self.path(code), self.special_namespace_url(code))
+        else:
+            return '%s?title=%s:BrokenRedirects&limit=%d' % (self.path(code), self.special_namespace_url(code), config.special_page_limit)
+
     def allmessages_address(self, code):
         return "%s?title=%s:Allmessages&ot=html" % (self.path(code), self.special_namespace_url(code))
 
