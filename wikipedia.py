@@ -434,6 +434,7 @@ class PageLink(object):
                 print "ERROR> link from %s to %s:%s has leading :?!"%(self,repr(newsite),repr(newname))
             if newname[0] == ' ':
                 print "ERROR> link from %s to %s:%s has leading space?!"%(self,repr(newsite),repr(newname))
+            newname = newname.replace("{{PAGENAME}}",self.linkname())
             try:
                 result.append(self.__class__(newsite, newname, insite = self.site()))
             except UnicodeEncodeError:
