@@ -243,7 +243,7 @@ class PageLink:
     #       the language code"""
     #    return "%s:[[%s]]" % (self.code(), self.linkname())
     
-    def get(self):
+    def get(self, trynumber=1):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -274,8 +274,11 @@ class PageLink:
                     if not m:
                         raise SubpageError("Hashname does not exist: %s" % self)
             except NoPage:
-                self._getexception = NoPage
-                raise
+                if trynumber==3:
+                    self._getexception = NoPage
+                    raise
+                else:
+                    self.get(trynumber=trynumber+1)
             except IsRedirectPage,arg:
                 self._getexception = IsRedirectPage
                 self._redirarg = arg
