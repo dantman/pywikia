@@ -295,7 +295,6 @@ class PageLink:
             return cmp(self.code(), other.code())
         u1=html2unicode(self.linkname(), language = self.code())
         u2=html2unicode(other.linkname(), language = other.code())
-        #print "__cmp__",repr(u1),repr(u2)
         return cmp(u1,u2)
 
     def __hash__(self):
@@ -424,6 +423,8 @@ def forCode(text, code):
        you would copy text verbatim from an UTF-8 language into a iso-8859-1
        language, and none of the robots in the package should do such things"""
     if type(text) == type(u''):
+        if code == 'ascii':
+            return UnicodeToAsciiHtml(text)
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(code2encoding(code))
         text,l = encode_func(text)
     return text
@@ -739,13 +740,14 @@ def unicode2html(x, encoding='latin1'):
 def removeEntity(name):
     import re, htmlentitydefs
     Rentity = re.compile(r'&([A-Za-z]+);')
-    result = ''
+    result = u''
     i = 0
     while i < len(name):
         m = Rentity.match(name[i:])
         if m:
-            if htmlentitydefs.entitydefs.has_key(m.group(1)):
-                result = result + htmlentitydefs.entitydefs[m.group(1)]
+            if htmlentitydefs.name2codepoint.has_key(m.group(1)):
+                x = htmlentitydefs.name2codepoint[m.group(1)]
+                result = result + unichr(x)
                 i += m.end()
             else:
                 result += name[i]
@@ -792,8 +794,8 @@ def unicodeName(name, language, altlanguage = None):
     #return unicode(name,code2encoding(inlanguage))
     
 def html2unicode(name, language, altlanguage=None):
-    name = removeEntity(name)
     name = unicodeName(name, language, altlanguage)
+    name = removeEntity(name)
 
     import re
     Runi = re.compile('&#(\d+);')
