@@ -369,8 +369,20 @@ class Subject:
                     if globalvar.autonomous:
                         return None
             elif pl.exists() and not pl.isRedirectPage():
-                if temp.has_key(code) and temp[code] is None:
+                if new.has_key(code) and new[code] is None:
                     print "NOTE: Ignoring %s"%(pl.asasciilink())
+                elif temp.has_key(code) and temp[code] is None:
+                    answer = ' '
+                    while answer not in 'yng':
+                        answer = raw_input('%s y(es)/n(o)/g(ive up)? '%pl.asasciilink())
+                    answer = self.ask(askit,pl)
+                    if answer == 'y':
+                        temp[code] = pl
+                        new[code] = pl
+                    elif answer == 'n':
+                        pass
+                    elif answer == 'g':
+                        return None
                 elif temp.has_key(code) and temp[code] != pl:
                     err = "'%s' as well as '%s'" % (temp[code].asasciilink(), pl.asasciilink())
                     self.problem(err)
@@ -379,15 +391,14 @@ class Subject:
                     while 1:
                         answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
                         if answer.startswith('f'):
-                            new[pl.code()] = temp[pl.code()]
+                            new[code] = temp[code]
                             break
                         elif answer.startswith('l'):
-                            temp[pl.code()] = pl
-                            new[pl.code()] = pl
+                            temp[code] = pl
+                            new[code] = pl
                             break
                         elif answer.startswith('n'):
-                            temp[pl.code()] = None
-                            new[pl.code()] = None
+                            temp[code] = None
                             break
                         elif answer.startswith('g'):
                             # Give up
@@ -401,10 +412,9 @@ class Subject:
                     pass # do not add global zh if there is a specific zh-tw or zh-cn
                 elif code not in temp:
                     temp[code] = pl
-        # Remove the neithers
-        for k,v in new.items():
+        for k,v in temp.items():
             if v is None:
-                del new[k]
+                new[k] = None
         return new
 
     def ask(self, askall, pl):
@@ -962,3 +972,4 @@ if __name__ == "__main__":
     except:
         sa.dump('interwiki.dump')
         raise
+
