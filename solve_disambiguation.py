@@ -336,18 +336,26 @@ class DisambiguationRobot:
 
         self.mysite = wikipedia.getSite()
         self.mylang = self.mysite.language()
-        
+
+        # compile regular expressions
         self.ignore_contents_regexes = []
         if self.ignore_contents.has_key(self.mylang):
             for ig in self.ignore_contents[self.mylang]:
                 self.ignore_contents_regexes.append(re.compile(ig))
         
-    def ignoredBecauseOfContents(self, text):
+    def checkContents(self, text):
+        '''
+        For a given text, returns False if none of the regular
+        expressions given in the dictionary at the top of this class
+        matches a substring of the text.
+        Otherwise returns the substring which is matched by one of
+        the regular expressions.
+        '''
         for ig in self.ignore_contents_regexes:
             match = ig.search(text)
             if match:
                 return match.group()
-        return False
+        return None
     
     def makeAlternativesUnique(self):
         # remove duplicate entries
@@ -396,7 +404,7 @@ class DisambiguationRobot:
         include = False
         try:
             text=refpl.get(throttle=False)
-            ignoreReason = self.ignoredBecauseOfContents(text)
+            ignoreReason = self.checkContents(text)
             if ignoreReason:
                 wikipedia.output('\n\nSkipping %s because it contains %s.\n\n' % (refpl.linkname(), ignoreReason))
             else:
@@ -585,10 +593,10 @@ class DisambiguationRobot:
     
     def run(self):
         if self.main_only:
-            if ignore.has_key(self.mylang):
-                ignore[self.mylang] += self.mysite.namespaces()
+            if ignore_title.has_key(self.mylang):
+                ignore_title[self.mylang] += self.mysite.namespaces()
             else:
-                ignore[self.mylang] = self.mysite.namespaces()
+                ignore_title[self.mylang] = self.mysite.namespaces()
     
         for disambTitle in self.page_list:
             # when run with -redir argument, there's another summary message
