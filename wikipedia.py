@@ -172,8 +172,13 @@ oldsoftware = ['co', 'eu', 'ga', 'id', 'is', 'lv', 'mr', 'nds', 'sw',
 # all languages.
 biglangs = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es']
 
-# And a larger selection in case we say 'all languages' but don't really
-# mean 'all'
+# Similar, but larger group
+
+biglangs2 = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es', 'eo', 'ca',
+             'it', 'ja', 'zh', 'sl', 'he', 'fi', 'ro', 'cs']
+
+# And a much larger selection in case we say 'all languages' but don't
+# really mean 'all'
 seriouslangs = ['af', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
                 'es', 'et', 'fi', 'fr', 'fy', 'gl', 'he', 'hr', 'hu',
                 'ia', 'it', 'ja', 'ko', 'la', 'ms', 'nds', 'nl', 'no',

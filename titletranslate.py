@@ -51,6 +51,8 @@ def translate(pl, arr, same = False, hints = None):
                 codes = wikipedia.seriouslangs
             elif codes == 'main':
                 codes = wikipedia.biglangs
+            elif codes == 'more':
+                codes = wikipedia.biglangs2
             else:
                 codes = codes.split(',')
             for newcode in codes:

@@ -21,7 +21,8 @@ This script understands various command-line arguments:
                    where to start looking for translations. This is only
                    useful if you specify a single page to work on.
                    Special hints: all gives a hint for all seriouslangs, main
-                   gives a hint for all majorlangs.
+                   gives a hint for 8 of the largest languages, more for about
+                   20 larger ones.
                    
     -same:         try to translate the page to other languages by
                    testing whether a page with the same name exists on each of
@@ -853,6 +854,7 @@ if __name__ == "__main__":
     except:
         sa.dump('interwiki.dump')
         raise
+
 
 
 
