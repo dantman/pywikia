@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Nifty script to convert HTML-tables to Wikipedia's syntax.
@@ -454,9 +454,9 @@ else:
         for article in articles:
             print '\n'
             if treat(article):
-                fixedSites += ' ' + page_title
+                fixedSites += ' ' + article
             else:
-                notFixedSites += ' ' + page_title
+                notFixedSites += ' ' + article
 
 print "\n\tFollowing pages were converted:\n" + fixedSites
 print "\n\tFollowing pages were not converted:\n" + notFixedSites
