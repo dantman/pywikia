@@ -95,8 +95,8 @@ def asktoadd(pl):
                     try:
                         thispage = wikipedia.PageLink(wikipedia.mylang,pl).get()
                         print("==%s==")%pl
-                        print wikipedia.UnicodeToAsciiHtml(thispage[0:200])
-                        ctoshow = 300
+                        print wikipedia.UnicodeToAsciiHtml(thispage[0:500])
+                        ctoshow = 1000
                         checkflag = 1
                     except wikipedia.NoPage:
                         print("This page does not exist.")
@@ -107,7 +107,7 @@ def asktoadd(pl):
                 elif checkflag == 1:
                     print("==%s==")%pl
                     print wikipedia.UnicodeToAsciiHtml(thispage[0:ctoshow])
-                    ctoshow = ctoshow + 100
+                    ctoshow = ctoshow + 500
                 elif checklfag == 2:
                     print("Unable to show the text of this page.")
 
