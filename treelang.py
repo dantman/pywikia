@@ -1,6 +1,37 @@
 #coding: iso-8859-1
 """
-Script to check language links for general pages
+Script to check language links for general pages. This works by downloading the
+page, and using existing translations plus hints from the command line to
+download the equivalent pages from other languages. All of such pages are
+downloaded as well and checked for interwiki links recursively until there are
+no more links that are encountered. A rationalization process then selects the
+right interwiki links, and if this is unambiguous, the interwiki links in the
+original page will be automatically updated and the modified page uploaded.
+
+This script understands various command-line arguments:
+    -force: do not ask permission to make "controversial" changes, like
+            removing a language because none of the found alternatives actually
+            exists.
+    -always: make changes even when a single byte is changed in the page,
+             not only when one of the links has a significant change.
+    -same: try to translate the page to other languages by testing whether
+           a page with the same name exists on each of the other known 
+           wikipedias
+    -hint: used as -hint:de:Anweisung to give the robot a hint where to
+           start looking for translations
+    -name: similar to -same, but UPPERCASE the last name for eo:
+    -untranslated: only run on untranslated pages, and interactively ask
+                   for a translation hints on such pages.
+    -confirm: ask for confirmation in all cases. Without this argument, 
+              additions and unambiguous modifications are made without
+              confirmation.
+    -autonomous: run automatically, do not ask any questions. If a question
+                 to an operator is needed, write the name of the page
+                 to autonomous_problems.dat and terminate.
+    -backref: check for references between the foreign pages as well, list 
+              all those that are missing as WARNINGs.
+
+     All other arguments are words that make up the page name.
 """
 #
 # (C) Rob W.W. Hooft, 2003
