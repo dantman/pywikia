@@ -102,7 +102,8 @@ for page_list_item in page_list:
         print "--------------------------------------------------"
         print "%s. Found image: %s"% (i,imagelink.aslink())
         try:
-            print wikipedia.UnicodeToAsciiHtml(imagelink.get())
+            # show the image description page's contents
+            wikipedia.output(imagelink.get())
         except wikipedia.NoPage:
             print "Description empty."
         except wikipedia.IsRedirectPage:

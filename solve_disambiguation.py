@@ -519,7 +519,7 @@ for wrd in (page_list):
                         newlink = "[[%s|%s]]" % (new_page_title, link_text)
                     reftxt = reftxt[:m.start()] + newlink + reftxt[m.end():]
     
-                print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-30):m.end()+30])
+                wikipedia.output(reftxt[max(0,m.start()-30):m.end()+30])
             if not debug:
                 refpl.put(reftxt)
         return True

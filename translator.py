@@ -397,19 +397,11 @@ import wikipedia, string, re
 class Global:
     debug = False
 
-# prints text on the screen only if in -debug mode
+# Prints text on the screen only if in debug mode.
+# Argument text should be raw unicode.
 def print_debug(text):
     if Global.debug:
-        # try to encode the description to the encoding used for python output.
-        # if that's not possible (e.g. because there are non-ISO 8859-15
-        # characters and the console uses ISO 8859-15), convert all non-ASCII
-        # characters to HTML entities.
-        try:
-            text.encode("iso8859-15")
-        except UnicodeEncodeError:
-            print "(Cannot print debug information because it includes Unicode characters, converting all non-ASCII characters to HTML entities)"
-            text = wikipedia.UnicodeToAsciiHtml(text).encode("iso8859-15")
-        print text
+        wikipedia.output(text)
 
 # Translate the string given as argument 'text' from language 'from_lang' to 
 # language 'to_lang', using translation list 'type' in above dictionary.
