@@ -4,7 +4,7 @@
 #
 # (C) Rob W.W. Hooft, 2003
 # Distribute under the terms of the GPL.
-import urllib,re
+import re,urllib,codecs
 
 # known wikipedia languages
 langs = {'en':'www.wikipedia.org',
@@ -17,6 +17,11 @@ langs = {'en':'www.wikipedia.org',
          'de':'de.wikipedia.org',
          'fr':'fr.wikipedia.org',
          'es':'es.wikipedia.org',
+         'cs':'cs.wikipedia.org',
+         'ru':'ru.wikipedia.org',
+         'ja':'ja.wikipedia.org',
+         'sl':'sl.wikipedia.org',
+         'ko':'ko.wikipedia.org',
          'it':'it.wikipedia.com',
          'no':'no.wikipedia.com',
          'pt':'pt.wikipedia.com',
@@ -27,8 +32,10 @@ langs = {'en':'www.wikipedia.org',
          'fi':'fi.wikipedia.com',
          'ia':'ia.wikipedia.com',
          'et':'et.wikipedia.com',
-         'cs':'cs.wikipedia.org',
+         'test':'test.wikipedia.org',
          }
+
+charsets = {}
 
 action = 'Rob Hooft - Wikipedia python library'
 
@@ -44,6 +51,7 @@ class Error(Exception):
 
 class NoPage(Error):
     """Wikipedia page does not exist"""
+
 
 # Library functions
 def unescape(s):
@@ -69,7 +77,7 @@ def urlencode(query):
         l.append(k + '=' + v)
     return '&'.join(l)
 
-def spu(name):
+def space2underline(name):
     return name.replace(' ','_')
 
 def putPage(code, name, text):
@@ -78,13 +86,13 @@ def putPage(code, name, text):
     host = langs[code]
     if host[-4:] == '.com':
         raise Error("Cannot put pages on a .com wikipedia")
-    address = '/w/wiki.phtml?title=%s&action=submit'%spu(name)
+    address = '/w/wiki.phtml?title=%s&action=submit'%space2underline(name)
     try:
         data = urlencode((
             ('wpSummary', action),
             ('wpMinoredit', '1'),
             ('wpSave', '1'),
-            ('wpEdittime', edittime[code,spu(name)]),
+            ('wpEdittime', edittime[code,space2underline(name)]),
             ('wpTextbox1', text)))
     except KeyError:
         print edittime
@@ -102,41 +110,74 @@ def putPage(code, name, text):
     conn.close()
     return response.status, response.reason, data
 
+def getUrl(host,address):
+    uo=urllib.FancyURLopener()
+    f=uo.open('http://%s%s'%(host,address))
+    text=f.read()
+    ct=f.info()['Content-Type']
+    R=re.compile('charset=([^\'\"]+)')
+    m=R.search(ct)
+    if m:
+        charset=m.group(1)
+    else:
+        charset=None
+    return text,charset
+    
 def getPage(code, name):
     """Get the contents of page 'name' from the 'code' language wikipedia"""
     host = langs[code]
     name = re.sub(' ', '_', name)
     name = urllib.quote(name)
     if host[-4:] == '.org': # New software
-        url = 'http://'+host+'/w/wiki.phtml?title='+name+'&action=edit'
+        address = '/w/wiki.phtml?title='+name+'&action=edit'
     elif host[-4:]=='.com': # Old software
-        url = 'http://'+host+'/wiki.cgi?action=edit&id='+name
+        address = '/wiki.cgi?action=edit&id='+name
     if debug:
-        print url
-    f = urllib.urlopen(url)
-    text = f.read()
-    f.close()
+        print host,address
+    text,charset = getUrl(host,address)
+    if debug:
+        print "Raw:",len(text),type(text),text.count('x')
+    if charset is None:
+        print "WARNING: No character set found"
+    else:
+        # Store character set for later reference
+        if charsets.has_key(code):
+            assert charsets[code]==charset
+        charsets[code]=charset
+    if debug>1:
+        print repr(text)
     m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
     if m:
-        edittime[code,spu(name)]=m.group(1)
+        edittime[code,space2underline(name)]=m.group(1)
     else:
         m = re.search('value="(\d+)" name="wpEdittime"',text)
         if m:
             edittime[code,name]=m.group(1)
         else:
-            print "No edittime found"
             edittime[code,name]=0
-    i1 = re.search('<textarea[^>]*>',text).end()
+    try:
+        i1 = re.search('<textarea[^>]*>',text).end()
+    except AttributeError:
+        print "No text area."
+        raise NoPage()
     i2 = re.search('</textarea>',text).start()
-    if i2-i1 < 2:
+    if i2-i1 < 2: # new software
         raise NoPage()
-    elif text[i1:i2] == 'Describe the new page here.\n':
+    if text[i1:i2] == 'Describe the new page here.\n': # old software
         raise NoPage()
-    else:
-        if code=='eo':
-            return unescape(text[i1:i2]).decode('utf-8')
-        else:
-            return unescape(text[i1:i2])
+
+    assert edittime[code,name]!=0 or host[-4:]=='.com', "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
+
+    x=text[i1:i2]
+    x=unescape(x)
+
+    if charset=='utf-8':
+        # Make it to a unicode string
+        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
+        x,l=decode_func(x)
+        # Convert the unicode characters to &# references, and make it ascii.
+        x=str(UnicodeToHtml(x))
+    return x
 
 def languages(first=[]):
     """Return a list of language codes for known wikipedia servers"""
@@ -176,4 +217,102 @@ def interwikiFormat(links):
     for code in ar:
         s = s + '[[%s:%s]]'%(code, links[code])
     return s
+
+def url2link(percentname,into='latin1'):
+    """Convert a url-name of a page into a proper name for an interwiki link
+       the optional argument 'into' specifies the encoding of the target wikipedia
+       """
+    x=url2unicode(percentname)
+    if into=='latin1':
+        return unicode2latin1(x)
+    else:
+        raise "Unknown encoding"
     
+def link2url(name):
+    """Convert a interwiki link name of a page to the proper name to be used
+       in a URL for that page"""
+    import urllib
+    if '%' in name:
+        name=url2unicode(name)
+    else:
+        import urllib
+        name=html2unicode(name)
+    try:
+        result=str(name.encode('latin1'))
+    except UnicodeError:
+        result=str(name.encode('utf-8'))
+    return urllib.quote(result)
+
+######## Unicode library functions ########
+
+def UnicodeToHtml(s):
+    html=[]
+    i=0
+    for c in s:
+        cord=ord(c)
+        #print cord,
+        if cord < 128:
+            html.append(c)
+        else:
+            html.append('&#%d;'%cord)
+    #print
+    return ''.join(html)
+
+def url2unicode(percentname):
+    x=urllib.unquote(percentname)
+    try:
+        # Try to interpret the result as utf-8?
+        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
+        x,l=decode_func(x)
+    except UnicodeError:
+        # Apparently it was latin1?
+        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('latin1')
+        x,l=decode_func(x)
+    return x
+
+def unicode2latin1(x):
+    # We have a unicode string. We can attempt to make it latin1, and
+    # if that doesn't work, we encode the unicode into html # entities.
+    try:
+        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('latin1')
+        x,l=encode_func(x)
+    except UnicodeError:
+        x=UnicodeToHtml(x)
+    return str(x)
+    
+def removeEntity(name):
+    import re,htmlentitydefs
+    Rentity=re.compile(r'&([A-Za-z]+);')
+    result=''
+    i=0
+    while i<len(name):
+        m=Rentity.match(name[i:])
+        if m:
+            if htmlentitydefs.entitydefs.has_key(m.group(1)):
+                result=result+htmlentitydefs.entitydefs[m.group(1)]
+                i=i+m.end()
+            else:
+                result=result+name[i]
+                i=i+1
+        else:
+            result=result+name[i]
+            i=i+1
+    return result
+
+def html2unicode(name):
+    name=removeEntity(name)
+    import re
+    if not '&#' in name:
+        return unicode(name,'latin1')
+    Runi=re.compile('&#(\d+);')
+    result=u''
+    i=0
+    while i<len(name):
+        m=Runi.match(name[i:])
+        if m:
+            result=result+unichr(int(m.group(1)))
+            i=i+m.end()
+        else:
+            result=result+name[i]
+            i=i+1
+    return result
