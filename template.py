@@ -3,7 +3,7 @@
 Very simple script to replace a template with another one,
 and to convert the old MediaWiki boilerplate format to the new template format.
 
-Syntax: python boilerplate.py [-newformat] oldTemplate [newTemplate]
+Syntax: python template.py [-newformat] oldTemplate [newTemplate]
 
 Specify the template on the command line. The program will
 pick up the template page, and look for all pages using it. It will
@@ -33,7 +33,7 @@ Example:
 If you have a template called [[Template:Cities in Washington]] and want to
 change it to [[Template:Cities in Washington state]], start
 
-    python boilerplate.py "Cities in Washington" "Cities in Washington state"
+    python template.py "Cities in Washington" "Cities in Washington state"
 
 Move the page [[Template:Cities in Washington]] manually afterwards.
 """
@@ -110,7 +110,7 @@ for arg in sys.argv[1:]:
         template_names.append(arg)
 
 if template_names == []:
-    print "Syntax: python boilerplate.py [-oldformat] [-remove] oldTemplate [newTemplate]"
+    print "Syntax: python template.py [-oldformat] [-remove] oldTemplate [newTemplate]"
     sys.exit()
 old = template_names[0]
 if len(template_names) >= 2:
