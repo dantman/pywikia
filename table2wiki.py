@@ -108,8 +108,7 @@ if action == 'parse_sqldump':
     for entry in sqldump.entries():
         # TODO: make next line case-insensitive
         if entry.text.find('<table') != -1:
-            if entry.namespace != '0':
-                articles.append(entry.full_title())
+            articles.append(entry.full_title())
         
 for article in articles:
     if debug:
