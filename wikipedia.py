@@ -152,10 +152,10 @@ class NoNamespace(Error):
 class EditConflict(Error):
     """There has been an edit conflict while uploading the page"""
 
-class PageInList(Error):
-    """Trying to page to list that is already included"""
+class PageInList(LookupError):
+    """Trying to add page to list that is already included"""
 
-class EmptyGroup(Error):
+class EmptyGroup(ValueError):
     """PageGroup is empty"""
 
 class NotLoggedIn(Error):
@@ -434,7 +434,8 @@ class PageLink(object):
                 print "ERROR> link from %s to %s:%s has leading :?!"%(self,repr(newsite),repr(newname))
             if newname[0] == ' ':
                 print "ERROR> link from %s to %s:%s has leading space?!"%(self,repr(newsite),repr(newname))
-            newname = newname.replace("{{PAGENAME}}",self.linkname())
+            for pagenametext in self.site().family.pagenamecodes(self.site().language()):
+                newname = newname.replace("{{"+pagenametext+"}}",self.linkname())
             try:
                 result.append(self.__class__(newsite, newname, insite = self.site()))
             except UnicodeEncodeError:
@@ -796,9 +797,10 @@ class PageGroup(object):
 # Regular expression recognizing redirect pages
 def redirectRe(site):
     if site.redirect():
-        txt = '(?:redirect|'+site.redirect()+')'
+        txt = '(?:redirect|'+'|'.join(site.redirect())+')'
     else:
         txt = 'redirect'
+        print txt
     return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]\]|\|)', re.I)
 
 # Shortcut get to get multiple pages at once

@@ -287,10 +287,56 @@ class Family(object):
     # Redirect code can be translated.
 
     redirect = {
-        'bg': u'виж',
-        'cy': 'ail-cyfeirio',
-        'ga': 'athsheoladh'
+        'bg': [u'виж'],
+        'cy': ['ail-cyfeirio'],
+        'et': ['suuna'],
+        'ga': ['athsheoladh'],
+        # is has some redirect code
+        'nn': ['omdiriger'],
+        # ru has two redirect codes
+        # sr has a redirect code
+        # tt has a redirect code
         }
+
+    # So can be pagename code
+    pagename = {
+        # bg has a pagename code
+        # is has a pagename code
+        'nn': ['SIDENAMN','SIDENAVN']
+        # ru has a pagename code
+        # tt has a pagename code
+        }
+
+    pagenamee = {
+        'nn': ['SIDENAMNE','SIDENAVNE']
+        # ru has some pagenamee code
+        }
+
+    def pagenamecodes(self,code):
+        pos = ['PAGENAME']
+        pos2 = []
+        if code in self.pagename.keys():
+            pos = pos + self.pagename[code]
+        elif code == 'als':
+            return self.pagenamecodes('de')
+        elif code == 'bm':
+            return self.pagenamecodes('fr')
+        for p in pos:
+            pos2 += [p,p.lower()]
+        return pos2
+
+    def pagename2codes(self,code):
+        pos = ['PAGENAME']
+        pos2 = []
+        if code in self.pagenamee.keys():
+            pos = pos + self.pagenamee[code]
+        elif code == 'als':
+            return self.pagename2codes('de')
+        elif code == 'bm':
+            return self.pagename2codes('fr')
+        for p in pos:
+            pos2 += [p,p.lower()]
+        return pos2
 
     # On most Wikipedias page names must start with a capital letter, but some
     # languages don't use this.
