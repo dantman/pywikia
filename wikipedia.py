@@ -130,10 +130,11 @@ biglangs = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es']
 
 # And a larger selection in case we say 'all languages' but don't really
 # mean 'all'
-seriouslangs = ['en', 'de', 'fr', 'nl', 'pl', 'ja', 'sv', 'es', 'eo', 'da',
-                'zh', 'sl', 'cs', 'he', 'ro', 'ko', 'ru', 'ms', 'hu', 'fy',
-                'bs', 'hr', 'sr', 'el', 'ca', 'et', 'fi', 'gl', 'ia', 'it',
-                'la', 'no', 'nds', 'pt', 'af', 'simple']
+seriouslangs = ['af', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
+                'es', 'et', 'fi', 'fr', 'fy', 'gl', 'he', 'hr', 'hu',
+                'ia', 'it', 'ja', 'ko', 'la', 'ms', 'nds', 'nl', 'no',
+                'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'zh',
+                'simple']
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 

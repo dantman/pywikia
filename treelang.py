@@ -78,8 +78,6 @@ datetable = {
     'december':{'en':'December %d','de':'%d. Dezember','fr':'%d decembre','af':'12-%02d'},
 }
 
-yearADfmt = {'ja':'%d&#24180;'} # Others default to '%d'
-
 yearBCfmt = {'da':'%d f.Kr.','de':'%d v. Chr.',
              'en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
              'es':'%d adC','eo':'-%d','nl':'%d v. Chr.'} # No default
@@ -157,9 +155,9 @@ def autotranslate(pl, arr, same=0):
     Ryear = re.compile('^\d+$')
     m = Ryear.match(pl.linkname())
     if m:
-        for newcode in wikipedia.langs:
-            if newcode not in ['test','zh-cn','zh-tw']:
-                fmt = yearADfmt.get(newcode, '%d')
+        for newcode in wikipedia.seriouslangs:
+            if newcode!='ja':
+                fmt = '%d'
                 newname = fmt%int(m.group(0)) 
                 x=wikipedia.PageLink(newcode, newname)
                 if x not in arr:
@@ -171,7 +169,7 @@ def autotranslate(pl, arr, same=0):
         Ryear = re.compile('^(\d+)_v._Chr.')
         m = Ryear.match(pl.linkname())
         if m:
-            for newcode in wikipedia.langs:
+            for newcode in wikipedia.seriouslangs:
                 fmt = yearBCfmt.get(newcode)
                 if fmt:
                     newname = fmt % int(m.group(1))
@@ -454,6 +452,11 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:", pl.asasciiselflink(), "links to incorrect", xpl.asasciilink()
+
+
+
+
+
 
 
 
