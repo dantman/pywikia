@@ -290,6 +290,7 @@ page_title = []
 primary = False
 
 for arg in sys.argv[1:]:
+    arg = unicode(arg, config.console_encoding)
     if wikipedia.argHandler(arg):
         pass
     elif arg.startswith('-primary:'):
@@ -341,15 +342,15 @@ if page_title != []:
 # if no disambiguation pages was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
-    pagename = wikipedia.input('Which page to check:', encode = True)
+    pagename = wikipedia.input('Which page to check:')
     page_list.append(pagename)
 
 for wrd in (page_list):
     # when run with -redir argument, there's another summary message
     if solve_redirect:
-        wikipedia.setAction(msg_redir[wikipedia.chooselang(wikipedia.mylang,msg_redir)]+': '+wrd)
+        wikipedia.setAction(msg_redir[wikipedia.chooselang(wikipedia.mylang,msg_redir)] + u': ' + wrd)
     else:
-        wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)]+': '+wrd)
+        wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)] + u': ' + wrd)
 
     thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
 
@@ -374,7 +375,9 @@ for wrd in (page_list):
 
     if solve_redirect:
         try:
-            alternatives.append(str(thispl.getRedirectTo()))
+            target = str(thispl.getRedirectTo())
+            target = unicode(target, wikipedia.myencoding()) 
+            alternatives.append(target)
         except wikipedia.NoPage:
             print "The specified page was not found."
             user_input = wikipedia.input("Please enter the name of the page where the redirect should have pointed at, or press enter to quit:")
@@ -407,7 +410,7 @@ for wrd in (page_list):
 
     # print choices on screen
     for i in range(len(alternatives)):
-        wikipedia.output("%3d - %s" % (i, alternatives[i]), wikipedia.myencoding())
+        wikipedia.output("%3d - %s" % (i, alternatives[i]))
     def treat(refpl, thispl):
         try:
             reftxt=refpl.get()
