@@ -52,13 +52,13 @@ msg_no_warnings = {'de':'Bot: Tabellensyntax konvertiert',
 msg_one_warning = {'de':'Bot: Tabellensyntax konvertiert - %d Warnung!',
                    'en':'User-controlled Bot: table syntax updated - %d warning!',
                    'es':'Bot controlado: actualizada sintaxis de tabla - %d aviso!',
-                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d warning!'
+                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!'
                   }
 
 msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
                          'en':'User-controlled Bot: table syntax updated - %d warnings!',
                          'es':'Bot controlado: actualizada sintaxis de tabla - %d avisos!',
-                         'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d warnings!'
+                         'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!'
                         }
                  
 def convert(text, site = None):
