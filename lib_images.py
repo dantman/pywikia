@@ -162,7 +162,6 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
     # Convert the filename (currently Unicode) to the encoding used on the
     # target wiki
     fn = fn.encode(wikipedia.myencoding())
-    print repr(fn)
     # A proper description for the submission.
     if description=='':
         description = wikipedia.input(u'Give a description for the image:')
