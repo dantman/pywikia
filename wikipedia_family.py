@@ -15,6 +15,7 @@ class Family(family.Family):
         self.langs = {
             'af':'af.wikipedia.org',   # Afrikaans
             'als':'als.wikipedia.org', # Alsatian
+            'an':'an.wikipedia.org',   # Aragonese
             'ar':'ar.wikipedia.org',   # Arabic
             'ast':'ast.wikipedia.org', # Asturian
             'ay':'ay.wikipedia.org',   # Aymara
@@ -35,6 +36,7 @@ class Family(family.Family):
             'da':'da.wikipedia.org',   # Danish
             'de':'de.wikipedia.org',   # German
             'dk':'da.wikipedia.org',   # Danish (wrong name)
+            'ee':'ee.wikipedia.org',   # Ewe
             'el':'el.wikipedia.org',   # Greek
             'en':'en.wikipedia.org',   # English
             'eo':'eo.wikipedia.org',   # Esperanto
@@ -103,6 +105,7 @@ class Family(family.Family):
             'roa-rup':'roa-rup.wikipedia.org', # Aromanian
             'ru':'ru.wikipedia.org',   # Russian
             'sa':'sa.wikipedia.org',   # Sanskrit
+            'se':'se.wikipedia.org',   # Saami
             'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
             'si':'si.wikipedia.org',   # Sinhalese
             'simple':'simple.wikipedia.org', # Simple English
@@ -333,14 +336,14 @@ class Family(family.Family):
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
 
-        self.alphabetic = ['af','ar','roa-rup','ast','ay','bg','be','bn','bs','br',
+        self.alphabetic = ['af','ar','an','roa-rup','ast','ay','bg','be','bn','bs','br',
                       'ca','chr','co','cs','cy','da','de','als','et',
                       'el','en','es','eo','eu','fa','fr','fy','ga','gv',
                       'gd','gl','ko','ha','hi','hr','io','id','ia','is','it',
                       'he','jv','kn','ka','csb','ks','kw','ky','sw','la','lv',
                       'lt','jbo','hu','mk','mg','ml','mi','mr','ms','minnan',
                       'mn','nah','na','nl','ja','no','nb','nn','oc','om','ug','nds',
-                      'pl','pt','ro','rm','qu','ru','sa','st','sq','si','simple',
+                      'pl','pt','ro','rm','qu','ru','se','sa','st','sq','si','simple',
                       'sk','sl','sr','su','fi','sv','ta','tt','th','tlh','tk',
                       'tw','vi','tokipona','tpi','tr','ur','uk','vo','wa','yi',
                       'yo','za','zh','zh-cn','zh-tw']
@@ -362,7 +365,7 @@ class Family(family.Family):
                    'jbo','mad','hu','mak','mk','ml','mg','mt','mi','min','minnan',
                    'mo','mn','my','nah','na','fj','ng','nl','ne','ja','no','nn',
                    'oc','or','om','ug','pa','ps','km','lo','nds','pl','pt','ro',
-                   'rm','qu','ru','sa','sg','st','tn','sq','si','simple','sd','ss',
+                   'rm','qu','ru','se','sa','sg','st','tn','sq','si','simple','sd','ss',
                    'sk','sl','sr','fi','sv','tl','ta','tt','te','th','ti','tlh',
                    'vi','tg','tokipona','tpi','to','tr','tk','tw','ur','uk','uz',
                    'vo','wa','wo','ts','yi','yo','zh','zh-tw','zh-cn']

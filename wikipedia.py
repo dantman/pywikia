@@ -1599,7 +1599,7 @@ def setMyLang(code):
         cookies = None
         loggedin = False
     if mylang.lower() == 'commons':
-        family._addlang(mylang,'commons.wikimedia.org')
+        family._addlang(mylang,'commons.wikimedia.org',{4:'Commons', 5:'Commons talk'})
         
 def checkLogin():
     global loggedin
@@ -1670,7 +1670,7 @@ def altlang(code):
         return ['de','nl']
     if code=='lb':
         return ['de','fr']
-    if code in ['ast','ay','ca','gn','nah','qu']:
+    if code in ['an','ast','ay','ca','gn','nah','qu']:
         return ['es']
     if code=='eu':
         return ['es','fr']
@@ -1702,6 +1702,8 @@ def altlang(code):
         return ['no','nb','nn','da']
     if code=='sv':
         return ['da','no','nb']
+    if code=='se':
+        return ['no','nb','sv','fi','da','nn']
     if code in ['id','jv','ms','su']:
         return ['id','ms','jv','su']
     if code in ['bs','hr','mk','sh','sr']:
