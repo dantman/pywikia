@@ -420,7 +420,6 @@ class Subject:
         return new
 
     def ask(self, askall, pl):
-        print "Really: %s"%askall
         if not askall:
             return 'y'
         answer = ' '
@@ -431,7 +430,6 @@ class Subject:
     def assemblesecondrun(self, previous, askall=False):
         new = previous
         askit = askall
-        print askit
         for pl in self.done.keys():
             code = pl.code()
             if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
