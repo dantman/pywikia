@@ -793,10 +793,11 @@ def forCode(text, code):
        you would copy text verbatim from an UTF-8 language into a iso-8859-1
        language, and none of the robots in the package should do such things"""
     if type(text) == type(u''):
-        if code == 'ascii':
-            return UnicodeToAsciiHtml(text)
-        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(code2encoding(code))
-        text,l = encode_func(text)
+        #if code == 'ascii':
+        #    return UnicodeToAsciiHtml(text)
+        #encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(code2encoding(code))
+        #text,l = encode_func(text)
+        text = text.encode(code2encoding(mylang))
     return text
 
 class MyURLopener(urllib.FancyURLopener):
