@@ -86,10 +86,18 @@ replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
 __version__ = '$Id$'
 #
 from __future__ import generators
+import os
+import httplib
+import socket
+import traceback
+import time
+import math
+import difflib
 import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
 
 import config, mediawiki_messages
+import htmlentitydefs
 
 # Keep a record of whether we are logged in as a user or not
 # The actual value will be set at the end of this module
@@ -528,7 +536,6 @@ class PageLink(object):
             fields. files is a sequence of (name, filename, value) elements for 
             data to be uploaded as files. Return the server's response page.
             """
-            import httplib
             content_type, body = encode_multipart_formdata(fields)
             h = httplib.HTTP(host)
             h.putrequest('POST', selector)
@@ -665,14 +672,12 @@ class GetAll(object):
                 output(u"BUGWARNING: %s already done!" % pl.aslink())
 
     def run(self):
-        import socket
         dt=15
         while 1:
             try:
                 data = self.getData()
             except socket.error:
                 # Print the traceback of the caught exception
-                import traceback
                 print ''.join(traceback.format_exception(*sys.exc_info()))
                 output(u'DBG> got socket error in GetAll.run. Sleeping for %d seconds'%dt)
                 time.sleep(dt)
@@ -756,7 +761,6 @@ class GetAll(object):
     def getData(self):
         if not self.pages:
             return
-        import httplib
         addr = self.site.export_address()
         # In the next line, we assume that what we got for eo: is NOT in x-convention
         # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
@@ -861,7 +865,6 @@ def underline2space(name):
 
 # Mechanics to slow down page download rate.
 
-import time
 
 class Throttle(object):
     def __init__(self, delay = config.throttle, ignore = 0):
@@ -904,7 +907,6 @@ class Throttle(object):
             # We want to add "one delay" for each factor of two in the
             # size of the request. Getting 64 pages at once allows 6 times
             # the delay time for the server.
-            import math
             self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
             # Announce the delay if it exceeds a preset limit
             if waittime > config.noisysleep:
@@ -920,7 +922,6 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
        Use of this routine can normally be avoided; use PageLink.put
        instead.
     """
-    import httplib
     # Check whether we are not too quickly after the previous putPage, and
     # wait a bit until the interval is acceptable
     put_throttle()
@@ -1599,7 +1600,6 @@ def unicode2html(x, encoding):
     return x
     
 def removeEntity(name):
-    import htmlentitydefs
     Rentity = re.compile(r'&([A-Za-z]+);')
     result = u''
     i = 0
@@ -1620,7 +1620,6 @@ def removeEntity(name):
 
 def addEntity(name):
     """Convert a unicode name into ascii name with entities"""
-    import htmlentitydefs
     result = ''
     for c in name:
         if ord(c) < 128:
@@ -1726,8 +1725,7 @@ class Site(object):
         return self._loggedin
 
     def _fill(self):
-        import os
-        # Retrieve session cookies for login.
+        """Retrieve session cookies for login"""
         fn = 'login-data/%s-%s-login.data' % (self.family.name,self.lang)
         if not os.path.exists(fn):
             fn = 'login-data/%s-login.data' % self.lang
@@ -2002,7 +2000,6 @@ def translate(code, dict):
 
 # Taken from interwiki.py. 
 def showDiff(oldtext, newtext):
-    import difflib
     sep = '\r\n'
     ol = oldtext.split(sep)
     if len(ol) == 1:
@@ -2015,7 +2012,6 @@ def showDiff(oldtext, newtext):
 
 
 def showColorDiff(oldtext, newtext, replacements):
-    import difflib
     sep = '\r\n'
     ol = oldtext.split(sep)
     if len(ol) == 1:
@@ -2045,7 +2041,6 @@ def output(text, decoder = None, newline = True):
         text = unicode(text, decoder)
     elif type(text) != type(u''):
         print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!" 	 
-        import traceback 	 
         print traceback.print_stack() 	 
         print "DBG> Attempting to recover, but please report this problem"
         try:
