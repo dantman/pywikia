@@ -83,8 +83,13 @@ def get_image(fn, target, description, debug=False):
     newfn = raw_input("Better name : ")
     if newfn:
         fn = unicode(newfn, config.console_encoding)
-    fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
-
+    else:
+        fn = unicode(fn, config.console_encoding)
+    try:
+        fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
+    except UnicodeDecodeError:
+        print "This filename can't be displayed in " + wikipedia.code2encoding(wikipedia.mylang)
+        sys.exit(1)
     # Wikipedia doesn't allow spaces in the file name.
     # Replace them here to avoid an extra confirmation form
     fn = fn.replace(' ', '_')
