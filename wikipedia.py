@@ -11,6 +11,8 @@ __version__ = '$Id$'
 #
 import re,urllib,codecs,sys
 
+import config
+
 # Are we debugging this module? 0 = No, 1 = Yes, 2 = Very much so.
 debug = 0
 loggedin = False
@@ -625,6 +627,15 @@ def removeLanguageLinks(text):
         else:
             break
     return text
+
+def replaceLanguageLinks(oldtext, new):
+    s = interwikiFormat(new, incode = mylang)
+    s2 = removeLanguageLinks(oldtext)
+    if config.interwiki_atbottom:
+        newtext = s2 + config.interwiki_text_separator + s
+    else:
+        newtext = s + config.interwiki_text_separator + s2
+    return newtext
     
 def interwikiFormat(links, incode):
     """Create a suitable string to start a wikipedia page consisting of
@@ -633,12 +644,16 @@ def interwikiFormat(links, incode):
     s = []
     ar = links.keys()
     ar.sort()
+    if config.interwiki_englishfirst:
+        if 'en' in ar:
+            del ar[ar.index('en')]
+            ar[:0]=['en']
     for code in ar:
         try:
             s.append(links[code].aslink())
         except AttributeError:
             s.append('[[%s:%s]]' % (code, links[code]))
-    s=' '.join(s) + '\r\n'
+    s=config.interwiki_langs_separator.join(s) + '\r\n'
     return html2unicode(s, language = incode)
             
 def code2encoding(code):
@@ -837,26 +852,21 @@ def argHandler(arg):
     return 1
 
 #########################
-# Read configuration files: username.dat and login.data
+# Interpret configuration 
 #########################
 
 # Get the name of the user for submit messages
-try:
-    f = open('username.dat')
-    username = f.readline()[:-1]
-    try:
-        setMyLang(f.readline()[:-1])
-    except IOError:
-        print "No Home-wikipedia given in username.dat"
-        print "Defaulting to test: wikipedia"
-        setMyLang('test')
-        langs['test']='test.wikipedia.org'
-    if not langs.has_key(mylang):
-        print "Home-wikipedia from username.dat does not exist"
-        print "Defaulting to test: wikipedia"
-        setMyLang('test')
-        langs['test']='test.wikipedia.org'
-    f.close()
-except IOError:
-    print >> sys.stderr, "Please make a file username.dat with your name in there"
+username = config.username
+if not config.username:
+    print "Please make a file user-config.py, and put in there:"
+    print "One line saying \"username='yy'\""
+    print "One line saying \"mylang='xx'\""
+    print "....filling in your real name and home wikipedia."
+    print "for other possible configuration variables check config.py"
     sys.exit(1)
+setMyLang(config.mylang)
+if not langs.has_key(mylang):
+    print "Home-wikipedia from user-config.py does not exist"
+    print "Defaulting to test: wikipedia"
+    setMyLang('test')
+    langs['test']='test.wikipedia.org'
