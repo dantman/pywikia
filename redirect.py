@@ -90,8 +90,8 @@ def fix_double_redirects():
         redir.put(txt)
 
 # read command line parameters
+action = ''
 for arg in sys.argv[1:]:
-    action = None
     if wikipedia.argHandler(arg):
         pass
     elif arg == 'double':
@@ -101,19 +101,19 @@ for arg in sys.argv[1:]:
     else:
         print 'Unknown argument: %s' % arg
 
-    if action == 'double':
-        # get summary text
-        wikipedia.setAction(msg_double[wikipedia.chooselang(wikipedia.mylang, msg_double)])
-        fix_double_redirects()
-    elif action == 'broken':
-        delete_broken_redirects()
-    else:
-        print 'Syntax: python redirect.py action'
-        print 'where action can be one of these:'
-        print ' * double - fix redirects which point to other redirects'
-        print ' * broken - delete redirects where targets don\'t exist. Requires adminship.'
-        print ''
-        print 'NOTE: For resolving redirects, please use solve_disambiguation.py -redir.'
-        # TODO: make this runnable from within this bot.
+if action == 'double':
+    # get summary text
+    wikipedia.setAction(msg_double[wikipedia.chooselang(wikipedia.mylang, msg_double)])
+    fix_double_redirects()
+elif action == 'broken':
+    delete_broken_redirects()
+else:
+    print 'Syntax: python redirect.py action'
+    print 'where action can be one of these:'
+    print ' * double - fix redirects which point to other redirects'
+    print ' * broken - delete redirects where targets don\'t exist. Requires adminship.'
+    print ''
+    print 'NOTE: For resolving redirects, please use solve_disambiguation.py -redir.'
+    # TODO: make this runnable from within this bot.
 
        
