@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -286,7 +286,12 @@ class Family(family.Family):
                 'de': u'Kategorie Diskussion',        
             },
         }
+
+        # On most Wikipedias page names must start with a capital letter, but some
+        # languages don't use this.
         
+        self.nocapitalize = ['fr','it','nl','tlh','tokipona']
+
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
         # alphabetical order on language code is used. For languages that are in
@@ -320,7 +325,7 @@ class Family(family.Family):
        
         # Function to figure out the encoding of different languages
         # Languages that are coded in iso-8859-1
-        self.latin1 = ['es']
+        self.latin1 = ['es','nl']
     
     def code2encoding(self, code):
         """Return the encoding for a specific language wiktionary"""
