@@ -426,6 +426,8 @@ else:
                                                          comment='robot '+mods)
                 if str(status) != '302':
                     print status, reason
+            else:
+                backlink = False
 
 if backlink:
     for code in new.keys():
@@ -452,6 +454,9 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:", pl.asasciiselflink(), "links to incorrect", xpl.asasciilink()
+
+
+
 
 
 
