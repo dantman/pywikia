@@ -39,7 +39,7 @@ interwiki_on_one_line = ['fr', 'hu', 'pl']
 interwiki_text_separator = '\r\n'
 
 # Similar for category
-category_atbottom = ['de']
+category_atbottom = ['de','nl']
 # on_one_line is a list of languages that want the category links
 # one-after-another on a single line
 category_on_one_line = []

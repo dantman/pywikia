@@ -22,11 +22,13 @@ import wikipedia, config, catlib, interwiki
 msg_change={
     'en':u'Robot: Changing [[Category:%s]]',
     'de':u'Bot: \xc4ndere [[Kategorie:%s]]',
+    'nl':u'Bot: Wijziging [[Categorie:%s]]',
     }
 
 msg_remove={
     'en':u'Robot: Removing from category %s',
     'de':u'Bot: Entferne aus Kategorie %s',
+    'nl':u'Bot: Verwijderd uit Categorie %s',
     }
 
 
@@ -117,14 +119,18 @@ def change_category(article, old_cat_title, new_cat_title):
     cats = article.categories()
     sort_key = ''
     for cat in cats:
-        ns = wikipedia.family.category_namespaces(wikipedia.mylang)[0].encode(wikipedia.code2encoding(wikipedia.mylang))
-        if cat.linkname() == ns + ':' + old_cat_title:
-            # because a lits element is removed, the iteration will skip the 
+        cattext=':'.join(cat.linkname().split(':')[1:])
+        cattext=cattext[1:]
+        cattext=':'.join(cattext)
+        print cattext
+        print old_cat_title
+        if cattext == old_cat_title:
+            # because a list element is removed, the iteration will skip the 
             # next element. this might lead to forgotten categories, but
             # usually each category should only appear once per article.
             cats.remove(cat)
-        elif cat.linkname().startswith(ns + ':' + old_cat_title + '|'):
-            sort_key = cat.linkname().split('|', 1)[1]
+        elif cattext.startswith(old_cat_title + '|'):
+            sort_key = cat.catname().split('|', 1)[1]
             cats.remove(cat)
     if new_cat_title != None:
         if sort_key == '':
@@ -255,7 +261,9 @@ def tidy_category():
             if current_cat == original_cat:
                 print 'No changes necessarry.'
             else:
-                change_category(article, original_cat, current_cat)
+                print original_cat.catname()
+                print current_cat.catname()
+                change_category(article, original_cat.catname(), current_cat.catname())
         elif choice == 'j':
             new_cat_title = wikipedia.input('Please enter the category the article should be moved to: ')
             new_cat = catlib.CatLink(new_cat_title)
