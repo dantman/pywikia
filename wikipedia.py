@@ -80,11 +80,11 @@ langs = {'en':'en.wikipedia.org', # English
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-          'mr', 'id', 'simple', 'gl', 'lt', 'lv', 'sw',
+          'mr', 'id', 'simple', 'gl', 'lt', 'lv', 'oc', 'sw',
           'tt', 'uk', 'vi', 'vo', 'ga']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['cs', 'sl', 'bs', 'fy']
+latin1old = ['cs', 'sl', 'bs', 'fy', 'vi']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
