@@ -631,7 +631,7 @@ def removeLanguageLinks(text):
 def replaceLanguageLinks(oldtext, new):
     s = interwikiFormat(new, incode = mylang)
     s2 = removeLanguageLinks(oldtext)
-    if config.interwiki_atbottom:
+    if mylang in config.interwiki_atbottom:
         newtext = s2 + config.interwiki_text_separator + s
     else:
         newtext = s + config.interwiki_text_separator + s2
@@ -644,7 +644,7 @@ def interwikiFormat(links, incode):
     s = []
     ar = links.keys()
     ar.sort()
-    if config.interwiki_englishfirst:
+    if mylang in config.interwiki_englishfirst:
         if 'en' in ar:
             del ar[ar.index('en')]
             ar[:0]=['en']

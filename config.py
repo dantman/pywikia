@@ -14,10 +14,16 @@ __version__ = '$Id$'
 # ===========               
 mylang='test'
 username=''
-interwiki_atbottom = False
+# atbottom is a list of languages that prefer to have the interwiki
+# links at the bottom of the page. You can use interwiki_atbottom.append('xx')
+# in user-config.py to add more.
+interwiki_atbottom = [] 
 interwiki_langs_separator = ' '
 interwiki_text_separator = '\r\n'
-interwiki_englishfirst = False
+# atbottom is a list of languages that prefer to have the english interwiki
+# link upfront. You can use interwiki_englishfirst.append('xx')
+# in user-config.py to add more.
+interwiki_englishfirst = []
 
 
 
