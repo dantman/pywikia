@@ -245,7 +245,10 @@ class Family(family.Family):
                 'zh-min-nan':'minnan',
                 'nb':'no',
                 'jp':'ja',
-                'test':'none'}
+                'test':'none',
+                'tokipona':'none',
+                'zh-tw':'zh',
+                'zh-cn':'zh'}
         
     # A few selected big languages for things that we do not want to loop over
     # all languages. This is only needed by the titletranslate.py module, so
