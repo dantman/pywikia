@@ -81,6 +81,7 @@ def get_image(fn,target,description):
     # Wikipedia doesn't allow spaces in the file name.
     # Replace them here to avoid an extra confirmation form
     fn = fn.replace(' ', '_')
+    fn = fn.encode('utf-8')
     
     # A proper description for the submission
 
@@ -90,7 +91,9 @@ def get_image(fn,target,description):
     # Unfortunately, the result is not ASCII then. I assume
     # but am not sure that the problem is newlines.
 
-    description = raw_input('Description : ')
+    description = description.encode('utf-8')
+    if description=='':
+        description = raw_input('Description : ')
 
     data = post_multipart(wikipedia.langs[wikipedia.mylang],
                           uploadaddr,
@@ -99,6 +102,7 @@ def get_image(fn,target,description):
                            ('wpUpload','upload bestand')),
                           (('wpUploadFile',fn,contents),)
                           )
+    print data                      
 
     return fn
 
