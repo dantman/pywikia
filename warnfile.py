@@ -16,77 +16,94 @@ Example:
 # 
 __version__ = '$Id$'
 #
-import sys, wikipedia, interwiki
+import wikipedia, interwiki
+import sys, re
 
-def ReadWarnfile(fn):
-    import re
-    print "Parsing...."
-    R=re.compile(r'WARNING: ([^\[]*):\[\[([^\[]+)\]\]([^\[]+)\[\[([^\[]+):([^\[]+)\]\]')
-    f=open(fn)
-    hints={}
-    mysite=wikipedia.getSite()
-    for line in f.readlines():
-        m=R.search(line)
-        if m:
-            #print "DBG>",line
-            if m.group(1)==mysite.lang:
-                print m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
-                if not hints.has_key(m.group(2)):
-                    hints[m.group(2)]=[]
-                #print m.group(3)
-                if m.group(3) == ' links to incorrect ':
-                    sign='-'
-                else:
-                    sign='+'
-                try:
-                    if ':' in m.group(4):
-                        family, lang = m.group(4).split(':')
-                        thesite = wikipedia.getSite(code=lang, fam=family)
-                    else:
-                        thesite = mysite.getSite(code = m.group(4))
-                    hints[m.group(2)].append((sign,wikipedia.PageLink(thesite,wikipedia.link2url(m.group(5),site = thesite))))
-                except wikipedia.Error:
-                    print "DBG> Failed to add", line
-                #print "DBG> %s : %s" % (m.group(2), hints[m.group(2)])
-    f.close()
-    k=hints.keys()
-    k.sort()
-    print "Fixing... %d pages" % len(k)
-    for pagename in k:
-        pl = wikipedia.PageLink(mysite, pagename)
-        old={}
-        try:
-           for pl2 in pl.interwiki():
-              old[pl2.site()] = pl2
-        except wikipedia.IsRedirectPage:
-           wikipedia.output(u"%s is a redirect page; not changing" % pl.aslink())
-           continue
-        except wikipedia.NoPage:
-           wikipedia.output(u"Page %s not found; skipping" % pl.aslink())
-           continue
-        new={}
-        new.update(old)
-        for sign,pl2 in hints[pagename]:
-            site = pl2.site()
-            if sign == '+':
-                new[site] = pl2
-            elif sign == '-':
-                try:
-                    del new[site]
-                except KeyError:
-                    pass
-            else:
-                raise "Bug"
-        mods, removing = interwiki.compareLanguages(old, new)
-        if mods:
-            wikipedia.output(pl.aslink() + mods)
-            oldtext = pl.get()
-            newtext = wikipedia.replaceLanguageLinks(oldtext, new)
-            if 1:
-                wikipedia.showDiff(oldtext, newtext)
-                status, reason, data = pl.put(newtext, comment='warnfile '+mods)
-                if str(status) != '302':
-                    print status, reason
+class WarnfileReader:
+    def __init__(self, filename):
+        self.filename = filename
+
+    def getHints(self):
+        print "Parsing warnfile..."
+        R=re.compile(r'WARNING: (?P<locallang>[^\[]*):\[\[(?P<localtitle>[^\[]+)\]\](?P<warningtype>[^\[]+)\[\[(?P<targetsite>[^:]+:[^:]+):(?P<targettitle>[^\[]+)\]\]')
+        #f = open(filename, 'r')
+        import codecs
+        f = codecs.open(self.filename, 'r', 'latin-1')
+        hints={}
+        removeHints={}
+        mysite=wikipedia.getSite()
+        for line in f.readlines():
+            m=R.search(line)
+            if m:
+                #print "DBG>",line
+                if m.group('locallang')==mysite.lang:
+                    #wikipedia.output(u' '.join([m.group('locallang'), m.group('localtitle'), m.group('warningtype'), m.group('targetsite'), m.group('targettitle')]))
+                    #print m.group(3)
+                    removing = (m.group('warningtype') == ' links to incorrect ')
+                    try:
+                        if ':' in m.group('targetsite'):
+                            family, lang = m.group('targetsite').split(':')
+                            thesite = wikipedia.getSite(code=lang, fam=family)
+                        else:
+                            thesite = mysite.getSite(code = m.group('targetsite'))
+                        targetPl = wikipedia.PageLink(thesite, m.group('targettitle'))
+                        if removing:
+                            if not removeHints.has_key(m.group('localtitle')):
+                                removeHints[m.group('localtitle')]=[]
+                            removeHints[m.group('localtitle')].append(targetPl)
+                        else:
+                            if not hints.has_key(m.group('localtitle')):
+                                hints[m.group('localtitle')]=[]
+                            hints[m.group('localtitle')].append(targetPl)
+                    except wikipedia.Error:
+                        print "DBG> Failed to add", line
+                    #print "DBG> %s : %s" % (m.group(2), hints[m.group(2)])
+        f.close()
+        return hints, removeHints
+    
+class WarnfileRobot:
+    def __init__(self, warnfileReader):
+        self.warnfileReader = warnfileReader
+
+    def run(self):
+        hints, removeHints = self.warnfileReader.getHints()
+        k=hints.keys()
+        k.sort()
+        print "Fixing... %d pages" % len(k)
+        for pagename in k:
+            pl = wikipedia.PageLink(wikipedia.getSite(), pagename)
+            old={}
+            try:
+                for pl2 in pl.interwiki():
+                    old[pl2.site()] = pl2
+            except wikipedia.IsRedirectPage:
+                wikipedia.output(u"%s is a redirect page; not changing" % pl.aslink())
+                continue
+            except wikipedia.NoPage:
+                wikipedia.output(u"Page %s not found; skipping" % pl.aslink())
+                continue
+            new={}
+            new.update(old)
+            if hints.has_key(pagename):
+                for pl2 in hints[pagename]:
+                    site = pl2.site()
+                    new[site] = pl2
+            if removeHints.has_key(pagename):
+                for pl2 in removeHints[pagename]:
+                    try:
+                        del new[site]
+                    except KeyError:
+                        pass
+            mods, removing = interwiki.compareLanguages(old, new)
+            if mods:
+                wikipedia.output(pl.aslink() + mods)
+                oldtext = pl.get()
+                newtext = wikipedia.replaceLanguageLinks(oldtext, new)
+                if 1:
+                    wikipedia.showColorDiff(oldtext, newtext)
+                    status, reason, data = pl.put(newtext, comment='warnfile '+mods)
+                    if str(status) != '302':
+                        print status, reason
             
 
 if __name__ == "__main__":
@@ -94,7 +111,9 @@ if __name__ == "__main__":
         for arg in sys.argv[1:]:
             arg = wikipedia.argHandler(arg)
             if arg:
-                ReadWarnfile(arg)
+                reader = WarnfileReader(arg)
+                bot = WarnfileRobot(reader)
+                bot.run()
     except:
         wikipedia.stopme()
         raise
