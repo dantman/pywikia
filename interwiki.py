@@ -415,7 +415,7 @@ class Subject(object):
         new = {}
         for pl in self.done.keys():
             site = pl.site()
-            if site == mysite and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
+            if site == mysite and pl.exists() and not pl.isRedirectPage():
                 if pl != self.inpl:
                     self.problem("Found link to %s"%pl.aslink(None))
                     self.whereReport(pl)
