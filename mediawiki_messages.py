@@ -99,7 +99,7 @@ def refresh_messages():
     dictionary = {}
     for item in items:
         # Key strings only contain ASCII characters, so we can use them as dictionary keys
-        dictionary[item[0]] = unicode(item[1], wikipedia.code2encoding(wikipedia.mylang))
+        dictionary[item[0]] = unicode(item[1], wikipedia.myencoding())
         # Save the dictionary to disk
         # The file is stored in the mediawiki_messages subdir. Create if necessary. 
         f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang), 'w')

@@ -152,9 +152,9 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         if newfn:
             fn = unicode(newfn, config.console_encoding)
     try:
-        fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
+        fn = fn.encode(wikipedia.myencoding())
     except UnicodeDecodeError:
-        print "This filename can't be displayed in " + wikipedia.code2encoding(wikipedia.mylang)
+        print "This filename can't be displayed in " + wikipedia.myencoding()
         sys.exit(1)
     # Wikipedia doesn't allow spaces in the file name.
     # Replace them here to avoid an extra confirmation form
@@ -183,11 +183,11 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
     # the home Wikipedia uses Latin-1), convert all non-ASCII characters to
     # HTML entities.
     try:
-        description = description.encode(wikipedia.code2encoding(wikipedia.mylang))
+        description = description.encode(wikipedia.myencoding())
     except UnicodeEncodeError:
-        description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
+        description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.myencoding())
     except UnicodeDecodeError:
-        description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang)) 	
+        description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.myencoding()) 	
     # don't upload if we're in debug mode
     if not debug:
         returned_html = post_multipart(wikipedia.family.hostname(wikipedia.mylang),

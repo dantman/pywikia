@@ -67,7 +67,7 @@ if page_title != []:
 if page_list == []:
     pagename = raw_input('Which page to check: ')
     pagename = unicode(pagename, config.console_encoding)
-    pagename = pagename.encode(wikipedia.code2encoding(wikipedia.mylang))
+    pagename = pagename.encode(wikipedia.myencoding())
     page_list.append(pagename)
     
 if not wikipedia.cookies:

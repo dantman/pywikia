@@ -783,7 +783,7 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
     response = conn.getresponse()
     data = response.read()
     conn.close()
-    output(data, decoder = code2encoding(mylang))
+    output(data, decoder = myencoding())
     return response.status, response.reason, data
 
 def forCode(text, code):
@@ -797,7 +797,7 @@ def forCode(text, code):
         #    return UnicodeToAsciiHtml(text)
         #encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(code2encoding(code))
         #text,l = encode_func(text)
-        text = text.encode(code2encoding(mylang))
+        text = text.encode(myencoding())
     return text
 
 class MyURLopener(urllib.FancyURLopener):
@@ -1146,6 +1146,10 @@ def categoryFormat(links):
 
 # end of category specific code
 
+# Returns the character encoding used by the current home wiki
+def myencoding():
+    return code2encoding(mylang)
+
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
     return family.code2encoding(code)
@@ -1338,7 +1342,7 @@ def deletePage(pl, reason = None, prompt = True):
         return content_type, body
 
     if reason == None:
-        reason = input('Please enter a reason for the deletion:', code2encoding(mylang))
+        reason = input('Please enter a reason for the deletion:', myencoding())
     answer = 'y'
     if prompt:
         answer = input('Do you want to delete %s? [y|N]' % pl.linkname())
@@ -1364,11 +1368,11 @@ def deletePage(pl, reason = None, prompt = True):
                 iend = returned_html.index('<!-- end content -->')
             except ValueError:
                 # if begin/end markers weren't found, show entire HTML file
-                output(returned_html, code2encoding(mylang))
+                output(returned_html, myencoding())
             else:
                 # otherwise, remove the irrelevant sections
                 returned_html = returned_html[ibegin:iend]
-            output(returned_html, code2encoding(mylang))
+            output(returned_html, myencoding())
                                     
     
 ######## Unicode library functions ########
@@ -1581,8 +1585,8 @@ def output(text, decoder = None, newline=True):
         print text.encode(config.console_encoding, 'replace'),
 
 # Works like raw_input(), but returns a unicode string instead of ASCII.
-# if encode is True, it will encode the string into a format suitable for
-# the local wiki (utf-8 or iso8859-1).
+# if encode is True, it will encode the entered string into a format suitable
+# for the local wiki (utf-8 or iso8859-1). Otherwise it will return Unicode.
 # If decoder is None, question should be a unicode string. Otherwise it
 # should be encoded in the given encoding.
 # Unlike raw_input, this function automatically adds a space after the question.
@@ -1591,5 +1595,5 @@ def input(question, encode = False, decoder=None):
     text = raw_input()
     text = unicode(text, config.console_encoding)
     if encode:
-        text = text.encode(code2encoding(mylang))
+        text = text.encode(myencoding())
     return text

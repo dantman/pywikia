@@ -26,7 +26,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.6 2004/07/13 12:26:00 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.7 2004/07/13 13:00:43 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -70,7 +70,7 @@ if page_title != []:
 # if no page was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
-    pagename = wikipedia.input('Which page to check: ', wikipedia.code2encoding(wikipedia.mylang))
+    pagename = wikipedia.input('Which page to check: ', wikipedia.myencoding())
     page_list.append(pagename)
 
 # get edit summary message
@@ -124,7 +124,7 @@ def treat(pl):
             reftxt = reftxt.replace(u"\x9F", "&Yuml;")   # latin capital letter Y with diaeresis
             pl.put(reftxt)
 
-if wikipedia.code2encoding(wikipedia.mylang) == "utf-8":
+if wikipedia.myencoding() == "utf-8":
     print "There is no need to run this robot on UTF-8 wikis."
 else:
     # loop over all given pages

@@ -63,7 +63,7 @@ def add_category(sort_by_last_name = False):
 
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
     
-    cat_namespace = ns[0].encode(wikipedia.code2encoding(wikipedia.mylang))
+    cat_namespace = ns[0].encode(wikipedia.myencoding())
     if not sort_by_last_name:
         catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
         print "Will add %s"%catpl.aslocallink()
@@ -109,7 +109,7 @@ def add_category(sort_by_last_name = False):
                     cats.append(catpl)
                     text = pl2.get()
                     text = wikipedia.replaceCategoryLinks(text, cats)
-                    pl2.put(text, comment = catpl.aslocallink().encode(wikipedia.code2encoding(wikipedia.mylang)))
+                    pl2.put(text, comment = catpl.aslocallink().encode(wikipedia.myencoding()))
 
 def rename_category():
     old_cat_title = wikipedia.input('Please enter the old name of the category:')
