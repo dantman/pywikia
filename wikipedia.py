@@ -1677,6 +1677,20 @@ def translate(code, dict):
         return dict['en']
     return dict.values()[0]
 
+# Taken from interwiki.py. TODO: move to wikipedia.py.
+def showDiff(oldtext, newtext):
+    import difflib
+    sep = '\r\n'
+    ol = oldtext.split(sep)
+    if len(ol) == 1:
+        sep = '\n'
+        ol = oldtext.split(sep)
+    nl = newtext.split(sep)
+    for line in difflib.ndiff(ol,nl):
+        if line[0] in ['+','-']:
+            output(line)
+
+    
 def output(text, decoder = None, newline = True):
     """Works like print, but uses the encoding used by the user's console
        (console_encoding in the configuration file) instead of ASCII. If

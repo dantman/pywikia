@@ -113,19 +113,6 @@ fixes = {
     }
 }
 
-# Taken from interwiki.py. TODO: move to wikipedia.py.
-def showDiff(oldtext, newtext):
-    import difflib
-    sep = '\r\n'
-    ol = oldtext.split(sep)
-    if len(ol) == 1:
-        sep = '\n'
-        ol = oldtext.split(sep)
-    nl = newtext.split(sep)
-    for line in difflib.ndiff(ol,nl):
-        if line[0] in ['+','-']:
-            wikipedia.output(line)
-
 def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex):
     '''
     Generator which will yield PageLinks to pages that might contain text to
@@ -362,7 +349,7 @@ for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfi
         if new_text == original_text:
             print 'No changes were necessary in %s' % pl.linkname()
         else:
-            showDiff(original_text, new_text)
+            wikipedia.showDiff(original_text, new_text)
             if not acceptall:
                 choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
             if choice in ['a', 'A']:
