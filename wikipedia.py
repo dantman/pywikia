@@ -662,12 +662,17 @@ def urlencode(query):
         l.append(k + '=' + v)
     return '&'.join(l)
 
+
+Rmorespaces = re.compile('  +')
+
 def space2underline(name):
-    name = re.sub('  +', ' ', name)
+    name = Rmorespaces.sub(' ', name)
     return name.replace(' ', '_')
 
+Rmoreunderlines = re.compile('__+')
+
 def underline2space(name):
-    name = re.sub('__+', '_', name)
+    name = Rmoreunderlines.sub('_', name)
     return name.replace('_', ' ')
 
 # Mechanics to slow down page download rate.
