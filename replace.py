@@ -352,8 +352,7 @@ for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfi
             wikipedia.showDiff(original_text, new_text)
             if not acceptall:
                 choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
-            if choice in ['a', 'A']:
-                acceptall = True
-                choice = 'y'
-            if choice in ['y', 'Y']:
+                if choice in ['a', 'A']:
+                    acceptall = True
+            if acceptall or choice in ['y', 'Y']:
                 pl.put(new_text)
