@@ -44,7 +44,7 @@ Just run this robot without any additional arguments.
 # Trailing words in brackets will be removed.
 # Example: If category_name is 'Author' and pl is a PageLink to
 # [[Alexandre Dumas (senior)]], this function will return this CatLink:
-# [[Category:Dumas, Alexandre]]
+# [[Category:Author|Dumas, Alexandre]]
 def sorted_by_last_name(catlink, pagelink):
     page_name = pagelink.linkname()
     # regular expression that matches a name followed by a space and
@@ -127,7 +127,7 @@ def add_category(sort_by_last_name = False):
 
 def rename_category():
     old_cat_title = wikipedia.input(u'Please enter the old name of the category:')
-    old_cat = catlib.CatLink(old_cat_title)
+    old_cat = catlib.CatLink(wikipedia.mylang, old_cat_title)
     new_cat_title = wikipedia.input(u'Please enter the new name of the category:')
     
     # get edit summary message
@@ -151,7 +151,7 @@ def rename_category():
 # in that category, without prompting.
 def remove_category():
     old_cat_title = wikipedia.input(u'Please enter the name of the category that should be removed:')
-    old_cat = catlib.CatLink(old_cat_title)
+    old_cat = catlib.CatLink(wikipedia.mylang, old_cat_title)
     # get edit summary message
     wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang,msg_remove)] % old_cat_title)
     
@@ -271,7 +271,7 @@ def tidy_category():
                 flag = True
             elif choice == 'j':
                 new_cat_title = wikipedia.input(u'Please enter the category the article should be moved to:')
-                new_cat = catlib.CatLink(new_cat_title)
+                new_cat = catlib.CatLink(wikipedia.mylang, new_cat_title)
                 # recurse into chosen category
                 move_to_category(article, original_cat, new_cat)
                 flag = True
@@ -314,7 +314,7 @@ def tidy_category():
     
     # begin main part of tidy_category
     cat_title = wikipedia.input(u'Which category do you want to tidy up?')
-    catlink = catlib.CatLink(cat_title)
+    catlink = catlib.CatLink(wikipedia.mylang, cat_title)
     
     # get edit summary message
     wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % cat_title)

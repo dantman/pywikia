@@ -152,15 +152,15 @@ class _CatLink(wikipedia.PageLink):
         return unique(supercats)
     
     
-def CatLink(s):
+def CatLink(code, name):
     """Factory method to create category link objects from the category name"""
     # Standardized namespace
-    ns = wikipedia.family.category_namespaces(wikipedia.mylang)[0]
+    ns = wikipedia.family.category_namespaces(code)[0]
     # Prepend it
-    return _CatLink(wikipedia.mylang, "%s:%s"%(ns, s))
+    return _CatLink(code, "%s:%s"%(ns, s))
 
 def test():
-    pl=CatLink('Software')
+    pl=CatLink(wikipedia.mylang, 'Software')
     
     print pl.catlist(recurse = False)
 
@@ -202,9 +202,9 @@ def change_category(article, old_cat_title, new_cat_title):
         return
     if new_cat_title != None:
         if sort_key == '':
-            new_cat = CatLink(new_cat_title)
+            new_cat = CatLink(wikipedia.mylang, new_cat_title)
         else:
-            new_cat = CatLink(new_cat_title + '|' + sort_key)
+            new_cat = CatLink(wikipedia.mylang, new_cat_title + '|' + sort_key)
         cats.append(new_cat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
