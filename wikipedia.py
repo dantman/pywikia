@@ -1174,7 +1174,8 @@ def UnicodeToAsciiHtml(s):
 def url2unicode(percentname, language):
     x=urllib.unquote(str(percentname))
     #print "DBG> ",language,repr(percentname),repr(x)
-    for encoding in code2encodings(language):
+    # Try utf-8 first. It almost cannot succeed by accident!
+    for encoding in ('utf-8',)+code2encodings(language):
         try:
             encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
             x,l = decode_func(x)
