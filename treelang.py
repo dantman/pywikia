@@ -404,12 +404,7 @@ else:
     print mods
     print "==changes should be made=="
     oldtext = m[inpl]
-    s = wikipedia.interwikiFormat(new, incode = wikipedia.mylang)
-    s2 = wikipedia.removeLanguageLinks(oldtext)
-    if bottom:
-        newtext = s2 + s
-    else:
-        newtext = s + s2
+    newtext = wikipedia.replaceLanguageLinks(oldtext, new)
     if debug:
         if not autonomous and not sys.platform == 'win32':
             f = open('/tmp/wik.in', 'w')
