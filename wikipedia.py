@@ -562,13 +562,13 @@ def PageLinksFromFile(fn):
     
 def unescape(s):
     """Replace escaped HTML-special characters by their originals"""
-    if '&' not in s:
-        return s
-    s = s.replace("&lt;", "<")
-    s = s.replace("&gt;", ">")
-    s = s.replace("&apos;", "'")
-    s = s.replace("&quot;", '"')
-    s = s.replace("&amp;", "&") # Must be last
+    # if '&' not in s:
+    #     return s
+    # s = s.replace("&lt;", "<")
+    # s = s.replace("&gt;", ">")
+    # s = s.replace("&apos;", "'")
+    # s = s.replace("&quot;", '"')
+    # s = s.replace("&amp;", "&") # Must be last
     return s
 
 def setAction(s):
