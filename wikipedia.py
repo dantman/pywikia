@@ -537,6 +537,38 @@ class PageLink(object):
             raise IsNotRedirectPage(self)
             
             
+    def getVersionHistory(self):
+        """
+        Loads the version history page and returns a list of tuples, where each
+        tuple represents one edit and is built of edit date/time, user name, and edit
+        summary.
+        """
+        site = self.site()
+        host = site.hostname()
+        url = site.family.version_history_address('de', 'Test')#self.urlname())
+        
+        output(u'Getting version history of %s' % self.linkname())
+        txt, charset = getUrl(host, url, site)
+        
+        # regular expression matching one edit in the version history.
+        # results will have 3 groups: edit date/time, user name, and edit
+        # summary.
+        editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">(.*?)</a></span>.*?(?:<em>(.*?)</em>)?</li>')
+        edits = editR.findall(txt)
+        return edits
+        
+    def contributingUsers(self):
+        """
+        Returns a list of all user names (including anonymous IPs) of those who
+        edited the page.
+        """
+        edits = self.getVersionHistory()
+        users = []
+        for edit in edits:
+            users.append(edit[1])
+        # TODO: make unique, sort (like in catlib)
+        return users
+                          
     def delete(pl, reason = None, prompt = True):
         """Deletes the page from the wiki. Requires administrator status. If
            reason is None, asks for a reason. If prompt is True, asks the user

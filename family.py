@@ -423,6 +423,9 @@ class Family(object):
     def delete_address(self, code, name):
         return '/w/wiki.phtml?title=%s&action=delete' % name
 
+    def version_history_address(self, code, name):
+        return '/w/wiki.phtml?title=%s&action=history&limit=%d' % (name, config.special_page_limit)
+
     def export_address(self, code):
         return '/wiki/%s:Export' % self.special_namespace_url(code)
 
