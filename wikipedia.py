@@ -99,6 +99,10 @@ class LockedPage(Error):
 
 class NoSuchEntity(ValueError):
     """No entity exist for this character"""
+
+class SubpageError(ValueError):
+    """The subpage specified by # does not exist"""
+    
 #
 class PageLink:
     def __init__(self,code,name=None,urlname=None,linkname=None,incode=None):
@@ -124,6 +128,17 @@ class PageLink:
     def linkname(self):
         return self._linkname
 
+    def hashname(self):
+        ln=self.linkname()
+        ln=re.sub('&#','&hash;',ln)
+        if not '#' in ln:
+            return None
+        else:
+            hn=ln[ln.find('#')+1:]
+            hn=re.sub('&hash;','&#',hn)
+            #print "hn=",hn
+            return hn
+        
     def code(self):
         return self._code
     
@@ -142,6 +157,12 @@ class PageLink:
     def get(self):
         if not hasattr(self,'_contents'):
             self._contents=getPage(self.code(),self.urlname())
+            hn=self.hashname()
+            if hn:
+                m=re.search("== *%s *=="%hn,self._contents)
+                if not m:
+                    raise SubpageError("Hashname does not exist: %s"%self)
+                
         return self._contents
 
     def put(self,newtext,comment=None):

@@ -160,6 +160,9 @@ else:
         exceptions.append((m.group(1),m.group(2)))
 
 def bigger(pl):
+    if pl.hashname():
+        # If we refer to part of the page, it is bigger
+        return True
     x1 = str(inpl)
     x2 = str(pl)
     for small,big in exceptions:
@@ -366,12 +369,13 @@ else:
 if backlink:
     for code in new.keys():
         pl=new[code]
-        linked=pl.interwiki()
-        for xpl in new.values()+[inpl]:
-            if xpl!=pl and not xpl in linked:
-                for l in linked:
-                    if l.code()==xpl.code():
-                        print "WARNING:",pl.asselflink(),"does not link to",xpl.aslink(),"but to",l.aslink()
-                        break
-                else:
-                    print "WARNING:",pl.asselflink(),"does not link to",xpl.aslink()
+        if not bigger(pl):
+            linked=pl.interwiki()
+            for xpl in new.values()+[inpl]:
+                if xpl!=pl and not xpl in linked:
+                    for l in linked:
+                        if l.code()==xpl.code():
+                            print "WARNING:",pl.asselflink(),"does not link to",xpl.aslink(),"but to",l.aslink()
+                            break
+                    else:
+                        print "WARNING:",pl.asselflink(),"does not link to",xpl.aslink()
