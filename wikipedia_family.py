@@ -43,6 +43,7 @@ langs = {
     'gd':'gd.wikipedia.org',   # Scottish Gaelic
     'gl':'gl.wikipedia.org',   # Galician
     'gn':'gn.wikipedia.org',   # Guarani
+    'gu':'gu.wikipedia.org',   # Gujarati
     'gv':'gv.wikipedia.org',   # Manx
     'ha':'ha.wikipedia.org',   # Hausa
     'he':'he.wikipedia.org',   # Hebrew
