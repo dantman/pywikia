@@ -247,11 +247,13 @@ class PageLink:
         """The code for the language of the page this PageLink refers to,
            without :"""
         return self._code
-    
+
+    def ascii_linkname(self):
+        return url2link(self._urlname, code = self._code, incode = 'ascii')
+        
     def __str__(self):
         """A simple ASCII representation of the pagelink"""
-        nm = url2link(self._urlname, code = self._code, incode = 'ascii')
-        return "%s:%s" % (self._code, nm)
+        return "%s:%s" % (self._code, self.ascii_linkname())
 
     def __repr__(self):
         """A more complete string representation"""
@@ -265,6 +267,15 @@ class PageLink:
         """A string representation in the form of a local link, but prefixed by
            the language code"""
         return "%s:[[%s]]" % (self.code(), self.linkname())
+
+    def asasciilink(self):
+        """A string representation in the form of an interwiki link"""
+        return "[[%s:%s]]" % (self.code(), self.ascii_linkname())
+
+    def asasciiselflink(self):
+        """A string representation in the form of a local link, but prefixed by
+           the language code"""
+        return "%s:[[%s]]" % (self.code(), self.ascii_linkname())
     
     def get(self):
         """The wiki-text of the page. This will retrieve the page if it has not
