@@ -189,6 +189,7 @@ class Subject:
             self.confirm = 1
         else:
             self.confirm = 0
+        self.problemfound = False
         self.untranslated = None
         self.hintsasked = False
 
@@ -347,76 +348,112 @@ class Subject:
         """Report a problem with the resolution of this subject."""
         print "ERROR: %s"%txt
         self.confirm += 1
+        # beep at the first error
+        if globalvar.bell and not self.problemfound and not globalvar.autonomous:
+            sys.stdout.write('\07')
+        self.problemfound = True
         if globalvar.autonomous:
             f=open('autonomous_problem.dat', 'a')
             f.write("%s {%s}\n" % (self.inpl.asasciilink(), txt))
             f.close()
 
-    def ask(self, askall, pl):
-        if not askall:
-            return True
-        answer = ' '
-        while answer not in 'yn':
-            answer = raw_input('%s y/n? '%pl.asasciilink())
-        return answer=='y'
-    
-    def assemble(self, returnonquestion = False, askall = False):
+    def assemblefirstrun(self):
+        temp = {}
         new = {}
         for pl in self.done.keys():
             code = pl.code()
             if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
                 if pl != self.inpl:
                     err = 'Someone refers to %s with us' % pl.asasciilink()
-                    if returnonquestion:
-                        print "ERROR: %s"%err
-                        if globalvar.bell:
-                            sys.stdout.write('\07')
-                        return None
                     self.problem(err)
                     if globalvar.autonomous:
                         return None
             elif pl.exists() and not pl.isRedirectPage():
-                if new.has_key(code) and new[code] is None:
+                if temp.has_key(code) and temp[code] is None:
                     print "NOTE: Ignoring %s"%(pl.asasciilink())
-                elif new.has_key(code) and new[code] != pl:
-                    err = "'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink())
-                    if returnonquestion:
-                        print "ERROR: %s"%err
-                        if globalvar.bell:
-                            sys.stdout.write('\07')
-                        return None
+                elif temp.has_key(code) and temp[code] != pl:
+                    err = "'%s' as well as '%s'" % (temp[code].asasciilink(), pl.asasciilink())
                     self.problem(err)
                     if globalvar.autonomous:
                         return None
-                    # beep before asking question
-                    if globalvar.bell:
-                      sys.stdout.write('\07')
                     while 1:
                         answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
                         if answer.startswith('f'):
                             break
                         elif answer.startswith('l'):
+                            temp[pl.code()] = pl
                             new[pl.code()] = pl
                             break
                         elif answer.startswith('n'):
+                            temp[pl.code()] = None
                             new[pl.code()] = None
                             break
                         elif answer.startswith('g'):
                             # Give up
                             return None
+                elif code in ('zh-tw','zh-cn') and temp.has_key('zh') and temp['zh'] is not None:
+                    temp['zh'] = None # Remove the global zh link
+                    temp[code] = pl # Add the more precise one
+                elif code == 'zh' and (
+                    (temp.has_key('zh-tw') and temp['zh-tw'] is not None) or
+                    (temp.has_key('zh-cn') and temp['zh-cn'] is not None)):
+                    pass # do not add global zh if there is a specific zh-tw or zh-cn
+                elif code not in temp:
+                    temp[code] = pl
+        # Remove the neithers
+        for k,v in new.items():
+            if v is None:
+                del new[k]
+        return new
+
+    def ask(self, askall, pl):
+        if not askall:
+            return 'y'
+        answer = ' '
+        while answer not in 'ynag':
+            answer = raw_input('%s y(es)/n(o)/a(ll yes)/g(ive up)? '%pl.asasciilink())
+        return answer
+
+    def assemblesecondrun(self, previous, askall):
+        new = previous
+        askit = askall
+        for pl in self.done.keys():
+            code = pl.code()
+            if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
+                pass
+            elif pl.exists() and not pl.isRedirectPage():
+                if new.has_key(code):
+                    pass
                 elif code in ('zh-tw','zh-cn') and new.has_key('zh') and new['zh'] is not None:
                     print "NOTE: Ignoring %s, using %s"%(new['zh'].asasciilink(),pl.asasciilink())
-                    if self.ask(askall, pl):
+                    answer = self.ask(askit,pl)
+                    if answer == 'y':
                         new['zh'] = None # Remove the global zh link
                         new[code] = pl # Add the more precise one
+                    elif answer == 'n':
+                        pass
+                    elif answer == 'g':
+                        return None
+                    elif answer == 'a':
+                        new['zh'] = None # Remove the global zh link
+                        new[code] = pl # Add the more precise one
+                        askit = False
                 elif code == 'zh' and (
                     (new.has_key('zh-tw') and new['zh-tw'] is not None) or
                     (new.has_key('zh-cn') and new['zh-cn'] is not None)):
                     print "NOTE: Ignoring %s"%(pl.asasciilink())
                     pass # do not add global zh if there is a specific zh-tw or zh-cn
                 elif code not in new:
-                    if self.ask(askall, pl):
+                    answer = self.ask(askit,pl)
+                    if answer == 'y':
                         new[code] = pl
+                    elif answer == 'n':
+                        pass
+                    elif answer == 'g':
+                        return None
+                    elif answer == 'a':
+                        new[code] = pl
+                        askit = False
 
         # Remove the neithers
         for k,v in new.items():
@@ -445,16 +482,20 @@ class Subject:
         print "======Post-processing %s======"%(self.inpl.asasciilink())
         # Assemble list of accepted interwiki links
         if globalvar.autonomous:
-            new = self.assemble()
+            new = self.assemblefirstrun()
             if new == None: # There are questions
                 return
+            else:
+                new = self.assemblesecondrun(new)
         else:
-            new = self.assemble(returnonquestion = True)
-            if new == None: # There are questions
-                new = self.assemble(askall = True)
-                if new == None:
-                    return # User said give up
-            
+            new = self.assemblefirstrun()
+            if new == None: # User said give up
+                return
+            new = self.assemblesecondrun(new, self.problemfound)
+            if new == None: # User said give up
+                return
+
+
         print "==status=="
         old={}
         try:
@@ -920,12 +961,3 @@ if __name__ == "__main__":
     except:
         sa.dump('interwiki.dump')
         raise
-
-
-
-
-
-
-
-
-
