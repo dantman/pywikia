@@ -196,7 +196,8 @@ class Subject:
         self.problemfound = False
         self.untranslated = None
         self.hintsasked = False
-
+        self.foundin = {self.inpl:[]}
+        
     def pl(self):
         """Return the PageLink on the home wikipedia"""
         return self.inpl
@@ -233,17 +234,19 @@ class Subject:
             del self.pending
             return None
 
-    def conditionalAdd(self, pl, counter):
+    def conditionalAdd(self, pl, counter, foundin):
         """Add the pagelink given to the todo list, but only if we didn't know
            it before. If it is added, update the counter accordingly."""
-        if (pl not in self.done and
-            pl not in self.todo and
-            pl not in self.pending):
+        # For each pl remember where it was found
+        if self.foundin.has_key(pl):
+            self.foundin[pl].append(foundin)
+            return False
+        else:
+            self.foundin[pl]=[foundin]
             self.todo[pl] = pl.code()
             counter.plus(pl.code())
             #print "DBG> Found new to do:",pl.asasciilink()
             return True
-        return False
         
     def workDone(self, counter):
         """This is called by a worker to tell us that the promised work
@@ -282,7 +285,7 @@ class Subject:
                     elif unequal.unequal(self.inpl, pl3):
                         print "NOTE: %s is unequal to %s, not adding it" % (pl3, self.inpl)
                     else:
-                        if self.conditionalAdd(pl3, counter):
+                        if self.conditionalAdd(pl3, counter, pl):
                             if globalvar.shownew:
                                 print "%s: %s gives new redirect %s"% (self.inpl.asasciiselflink(), pl.asasciilink(), pl3.asasciilink())
                 except wikipedia.NoPage:
@@ -311,7 +314,7 @@ class Subject:
                       if unequal.unequal(self.inpl, pl2):
                           print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
                       else:   
-                          if self.conditionalAdd(pl2, counter):
+                          if self.conditionalAdd(pl2, counter, pl):
                               if globalvar.shownew:
                                   print "%s: %s gives new interwiki %s"% (self.inpl.asasciiselflink(), pl.asasciilink(), pl2.asasciilink())
                               
@@ -361,123 +364,48 @@ class Subject:
             f.write("%s {%s}\n" % (self.inpl.asasciilink(), txt))
             f.close()
 
-    def assemblefirstrun(self):
-        temp = {}
+    def assemble(self):
         new = {}
+        nerr = 0
         for pl in self.done.keys():
             code = pl.code()
             if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
                 if pl != self.inpl:
-                    err = 'Someone refers to %s with us' % pl.asasciilink()
-                    self.problem(err)
-                    if globalvar.autonomous:
-                        return None
+                    self.problem("Found link to %s"%pl.asasciilink())
+                    for pl2 in self.foundin[pl]:
+                        print "    ",pl2.asasciilink()
+                nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
-                if new.has_key(code) and new[code] is None:
-                    print "NOTE: Ignoring %s"%(pl.asasciilink())
-                elif temp.has_key(code) and temp[code] is None:
-                    if globalvar.autonomous:
-                        return None
-                    answer = ' '
-                    while answer not in 'yng':
-                        answer = raw_input('%s y(es)/n(o)/g(ive up)? '%pl.asasciilink())
-                    if answer == 'y':
-                        temp[code] = pl
-                        new[code] = pl
-                    elif answer == 'n':
-                        pass
-                    elif answer == 'g':
-                        return None
-                elif temp.has_key(code) and temp[code] != pl:
-                    err = "'%s' as well as '%s'" % (temp[code].asasciilink(), pl.asasciilink())
-                    self.problem(err)
-                    if globalvar.autonomous:
-                        return None
-                    while 1:
-                        answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
-                        if answer.startswith('f'):
-                            new[code] = temp[code]
-                            break
-                        elif answer.startswith('l'):
-                            temp[code] = pl
-                            new[code] = pl
-                            break
-                        elif answer.startswith('n'):
-                            temp[code] = None
-                            break
-                        elif answer.startswith('g'):
-                            # Give up
-                            return None
-                elif code in ('zh-tw','zh-cn') and temp.has_key('zh') and temp['zh'] is not None:
-                    temp['zh'] = None # Remove the global zh link
-                    new['zh'] = None
-                    temp[code] = pl # Add the more precise one
-                elif code == 'zh' and (
-                    (temp.has_key('zh-tw') and temp['zh-tw'] is not None) or
-                    (temp.has_key('zh-cn') and temp['zh-cn'] is not None)):
-                    pass # do not add global zh if there is a specific zh-tw or zh-cn
-                elif code not in temp:
-                    temp[code] = pl
-        for k,v in temp.items():
-            if v is None:
-                new[k] = None
-        return new
-
-    def ask(self, askall, pl):
-        if not askall:
-            return 'y'
-        answer = ' '
-        while answer not in 'ynag':
-            answer = raw_input('%s y(es)/n(o)/a(ll yes)/g(ive up)? '%pl.asasciilink())
-        return answer
-
-    def assemblesecondrun(self, previous, askall=False):
-        new = previous
-        askit = askall
-        for pl in self.done.keys():
-            code = pl.code()
-            if code == wikipedia.mylang:
-                pass
-            elif pl.exists() and not pl.isRedirectPage():
-                if new.has_key(code):
-                    pass
-                elif code in ('zh-tw','zh-cn') and new.has_key('zh') and new['zh'] is not None:
-                    print "NOTE: Ignoring %s, using %s"%(new['zh'].asasciilink(),pl.asasciilink())
-                    answer = self.ask(askit,pl)
-                    if answer == 'y':
-                        new['zh'] = None # Remove the global zh link
-                        new[code] = pl # Add the more precise one
-                    elif answer == 'n':
-                        pass
-                    elif answer == 'g':
-                        return None
-                    elif answer == 'a':
-                        new['zh'] = None # Remove the global zh link
-                        new[code] = pl # Add the more precise one
-                        askit = False
-                elif code == 'zh' and (
-                    (new.has_key('zh-tw') and new['zh-tw'] is not None) or
-                    (new.has_key('zh-cn') and new['zh-cn'] is not None)):
-                    print "NOTE: Ignoring %s"%(pl.asasciilink())
-                    pass # do not add global zh if there is a specific zh-tw or zh-cn
-                elif code not in new:
-                    answer = self.ask(askit,pl)
-                    if answer == 'y':
-                        new[code] = pl
-                    elif answer == 'n':
-                        pass
-                    elif answer == 'g':
-                        return None
-                    elif answer == 'a':
-                        new[code] = pl
-                        askit = False
-
-        # Remove the neithers
+                if code in new:
+                    new[code].append(pl)
+                else:
+                    new[code] = [pl]
+        if 'zh-cn' in new or 'zh-tw' in new:
+            if 'zh' in new:
+                del new[zh]
+                print "Ignoring links to zh in presence of zh-cn or zh-tw"
+        result = {}
         for k,v in new.items():
-            if v is None:
-                del new[k]
-
-        return new
+            if len(v) > 1:
+                self.problem("Found more than one link for %s"%k)
+                i = 0
+                for pl2 in v:
+                    i += 1
+                    print "  (%d) Found link to %s in:"%(i,pl2.asasciilink())
+                    for pl3 in self.foundin[pl2]:
+                        print "        %s"%pl3.asasciilink()
+                nerr += 1
+                if not globalvar.autonomous:
+                    answer = raw_input("Which variant should be used [type number or (g)ive up] :")
+                    if answer in 'gG':
+                        return None
+                    answer = int(answer)
+                    result[k] = v[answer-1]
+            else:
+                result[k] = v[0]
+        if globalvar.autonomous and nerr>0:
+                return None
+        return result
     
     def finish(self, sa = None):
         """Round up the subject, making any necessary changes. This method
@@ -498,20 +426,9 @@ class Subject:
             return
         print "======Post-processing %s======"%(self.inpl.asasciilink())
         # Assemble list of accepted interwiki links
-        if globalvar.autonomous:
-            new = self.assemblefirstrun()
-            if new == None: # There are questions
-                return
-            else:
-                new = self.assemblesecondrun(new)
-        else:
-            new = self.assemblefirstrun()
-            if new == None: # User said give up
-                return
-            new = self.assemblesecondrun(new, self.problemfound)
-            if new == None: # User said give up
-                return
-
+        new = self.assemble()
+        if new == None: # User said give up or autonomous with problem
+            return
 
         print "==status=="
         old={}
