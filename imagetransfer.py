@@ -75,8 +75,8 @@ if page_list == []:
     pagename = pagename.encode(wikipedia.myencoding())
     page_list.append(pagename)
 
-if not mysite.loggedin():
-    print "You must be logged in to upload images"
+if not wikipedia.getSite().loggedin():
+    print "You must be logged in on WikiCommons."
     import sys
     sys.exit(1)
     
@@ -110,7 +110,21 @@ for page_list_item in page_list:
             # show the image description page's contents
             wikipedia.output(imagelink.get())
         except wikipedia.NoPage:
-            print "Description empty."
+            try:
+                # Maybe the image is on WikiCommons?
+                commonslink = imagelink.linkname()
+                commonslink = [wikipedia.getSite().image_namespace()] + commonslink.split(':')[1:]
+                commonslink = ':'.join(commonslink)
+                commonslink = wikipedia.PageLink(wikipedia.getSite(),commonslink)
+                if commonslink.get():
+                    print "Image is already on WikiCommons."
+                    wikipedia.output(commonslink.get())
+                else:
+                    print "Description empty."
+            except wikipedia.NoPage:
+                print "Description empty."
+            except wikipedia.IsRedirectPage:
+                print "Description page on WikiCommons is redirect?!"
         except wikipedia.IsRedirectPage:
             print "Description page is redirect?!"
     
