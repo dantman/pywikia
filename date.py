@@ -51,6 +51,12 @@ yearBCfmt = {'da':'%d f.Kr.',
              'es':'%d adC',
              'eo':'-%d',
              'nl':'%d v. Chr.'} # No default
+
+# format for dates A.D., required for interwiki.py with the -years argument
+# if a language is not listed here, interwiki.py assumes '%d' as the date format.
+yearADfmt = {'ja':'%d&#24180;',
+             'zh':'%d&#24180;'
+            }
              
              
 # date format translation list required for titletranslate.py and for pagelist.py

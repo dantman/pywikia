@@ -134,7 +134,7 @@ __version__ = '$Id$'
 #
 import sys, copy, re
 
-import wikipedia, config, unequal, titletranslate, date
+import wikipedia, config, unequal, date
 
 msg = {
     'da':('Tilføjer','Fjerner','Ændrer'),
@@ -832,11 +832,16 @@ if __name__ == "__main__":
                 if i % 100 == 0:
                     print "Preparing %d..." % i
                 # For years BC, append language-dependent text, e.g. "v. Chr."
-                # This text is read from titletranslate.py
+                # This text is read from date.py
                 if i < 0:
-                    current_year = (titletranslate.yearBCfmt[wikipedia.mylang]) % (-i)
+                    current_year = (date.yearBCfmt[wikipedia.mylang]) % (-i)
                 else:
-                    current_year = str(i)
+                    # For years AD, some languages need special formats
+                    # This format is read from date.py
+                    if date.yearADfmt.has_key(wikipedia.mylang):
+                        current_year = (date.yearADfmt[wikipedia.mylang]) % i
+                    else:
+                        current_year = '%d' % i
                 # There is no year 0
                 if i != 0:
                     sa.add(wikipedia.PageLink(wikipedia.mylang, current_year))
