@@ -63,8 +63,6 @@ xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
 
 === Robots ===
 
-boilerplate.py         : change one template (that is {{...}}) into
-                         another
 brackethttp.py         : a bot replacing a ()-bracketed http: link by an
                          explicit [ ] link to avoid a parser problem.
 category.py            : add a category link to all pages mentioned on a page,
@@ -83,10 +81,10 @@ pagelist.py            : Starting with one or more pages, spiders the wiki
 redirect.py            : Fix double redirects and broken redirects. Note:
                          solve_disambiguation also has functions which treat
                          redirects.
-replace.py             : Search an article or a provided collection of 
-                         articles for a text and replace it by another
+replace.py             : Search articles for a text and replace it by another
                          text. Both text are set in two configurable
-                         text files.
+                         text files. The bot can either work on a set of given
+                         pages or crawl an SQL dump.
 saveHTML.py            : ?                       
 solve_disambiguation.py: Interactive robot doing disambiguation.
 standardize_interwiki.py:A robot that downloads a page, and reformats the 
@@ -94,6 +92,8 @@ standardize_interwiki.py:A robot that downloads a page, and reformats the
                          of them to the bottom or the top, with the same
                          separator, in the right order).
 table2wiki.py          : Semi-automatic converting HTML-tables to wiki-tables.
+template.py            : change one template (that is {{...}}) into
+                         another
 upload.py              : upload an image to Wikipedia
 us-states.py           : A robot to add redirects to cities for US state 
                          abbreviations.
