@@ -48,7 +48,8 @@ def findpage(t):
         return
     try:
         title = re.search("'''(.*?)'''",page).group(1)
-        pl = wikipedia.PageLink(mysite,title)
+        pl = wikipedia.PageLink(mysite,wikipedia.UnicodeToAsciiHtml(title))
+        print pl.linkname()
         if pl.exists():
             print "Page %s already exists, not adding!"%title
         else:
@@ -63,11 +64,11 @@ for arg in sys.argv[1:]:
     if arg:
         if arg.startswith("-start:"):
             starttext=arg[7:]
-        if arg.startswith("-stop:"):
+        elif arg.startswith("-stop:"):
             endtext=arg[6:]
-        if arg.startswith("-file:"):
+        elif arg.startswith("-file:"):
             filename=arg[6:]
-        if arg=="-include":
+        elif arg=="-include":
             include = True
         else:
             print "Disregarding unknown argument %s."%arg
