@@ -57,6 +57,7 @@ if not wikipedia.special.has_key(wikipedia.mylang):
 wikipedia.get_throttle.setDelay(5)
 wikipedia.put_throttle.setDelay(10)
 
+# Summary message when run without -redir parameter
 msg={
     'en':'Robot-assisted disambiguation',
     'da':'Retter flertydigt link til',
@@ -64,6 +65,15 @@ msg={
     'nl':'Robot-geholpen doorverwijzing',
     'fr':'Homonymie r\xE9solue \xE0 l\'aide du robot'
     }
+
+# Summary message when run with -redir parameter
+msg_redir={
+          'en':'Robot-assisted disambiguation',
+          'da':'Retter flertydigt link til',
+          'de':'Bot-unterst\xfctzte Redirectaufl\xf6sung',
+          'nl':'Robot-geholpen doorverwijzing',
+          'fr':'Homonymie r\xE9solue \xE0 l\'aide du robot'
+          }
 
 # List pages that will be ignored if they got a link to a disambiguation
 # page. An example is a page listing disambiguations articles.
@@ -185,7 +195,16 @@ ignore={
 		  'Wikip\xE9dia\x3APages sans interwiki\x2Cz'
 		  ),
     'de':('Wikipedia:Begriffskl\xe4rung',
-          'Wikipedia:Liste mathematischer Themen/BKS')
+          'Wikipedia:Liste mathematischer Themen/BKS',
+          'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
+          'Liste aller 2-Buchstaben-Kombinationen',
+          'Dreibuchstabenkürzel von AAA bis DZZ',
+          'Dreibuchstabenkürzel von EAA bis HZZ',
+          'Dreibuchstabenkürzel von IAA bis LZZ',
+          'Dreibuchstabenkürzel von MAA bis PZZ',
+          'Dreibuchstabenkürzel von QAA bis TZZ',
+          'Dreibuchstabenkürzel von UAA bis XZZ',
+          'Dreibuchstabenkürzel von YAA bis ZZZ')
     }
 
 
@@ -239,7 +258,10 @@ if msg.has_key(wikipedia.mylang):
 else:
     msglang = 'en'
 
-wikipedia.setAction(msg[msglang]+': '+wrd)
+if solve_redirect:
+  wikipedia.setAction(msg_redir[msglang]+': '+wrd)
+else: 
+  wikipedia.setAction(msg[msglang]+': '+wrd)
 
 thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
 
