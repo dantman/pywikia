@@ -769,7 +769,7 @@ def showDiff(oldtext, newtext):
     nl = newtext.split(sep)
     for line in difflib.ndiff(ol,nl):
         if line[0] in ['+','-']:
-            print repr(line)[2:-1]
+            wikipedia.output(line)
     
 def compareLanguages(old, new):
     removing = []

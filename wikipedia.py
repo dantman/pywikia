@@ -569,8 +569,8 @@ class GetAll:
                 pl2._getexception = IsRedirectPage(m.group(1))
             else:
                 if len(text)<50:
-                    output(u"DBG> short text in %s" % pl2.aslink())
-                    print repr(text)
+                    output(u"DBG> short text in %s:" % pl2.aslink())
+                    output(text)
                 hn = pl2.hashname()
                 if hn:
                     m = re.search("== *%s *==" % hn, text)
