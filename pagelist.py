@@ -24,6 +24,15 @@ import sys, copy, re
 
 import wikipedia
 
+def asktoadd(pl):
+    if not (pl in tocheck or pl in include or pl in exclude):
+        print("%s")%pl
+        answer = raw_input("(y/n)? ")
+        if answer=='y':
+            tocheck.append(pl)
+        elif answer=='n':
+            exclude.append(pl)
+
 tocheck = []
 include = []
 exclude = []
@@ -35,50 +44,25 @@ for arg in sys.argv[1:]:
         tocheck.append(arg)
 
 while tocheck <> []:
-    pname = tocheck[0]
-    pg = wikipedia.PageLink(wikipedia.mylang,pname)
+    pg = wikipedia.PageLink(wikipedia.mylang,tocheck[0])
+    pname = pg.linkname()
     tocheck = tocheck[1:]
     if pg.exists():
         if pg.isRedirectPage():
             exclude.append(pname)
-            new = pg.getRedirectTo()
+            new = wikipedia.PageLink(wikipedia.mylang,pg.getRedirectTo()).linkname()
             if not (new in tocheck or new in include or new in exclude):
                 tocheck.append(new)
         else:
             include.append(pname)
             for new in pg.links():
-                if not (new in tocheck or new in include or new in exclude):
-                    print("%s")%new
-                    answer = raw_input("(y/n)? ")
-                    if answer=='y':
-                        tocheck.append(new)
-                    elif answer=='n':
-                        exclude.append(new)
+                asktoadd(wikipedia.PageLink(wikipedia.mylang,new).linkname())
             for new in wikipedia.getReferences(pg):
-                try:
-                    test=(new in tocheck or new in include or new in exclude)
-                except UnicodeDecodeError:
-                    test=False
-                if not test:
-                    print("%s")%new
-                    answer = raw_input("(y/n)? ")
-                    if answer=='y':
-                        tocheck.append(new)
-                    elif answer=='n':
-                        exclude.append(new)
+                asktoadd(wikipedia.PageLink(wikipedia.mylang,new).linkname())
     else:
         exclude.append(pname)
-        try:
-            test=(new in tocheck or new in include or new in exclude)
-        except UnicodeDecodeError:
-            test=False
-        if not test:
-            print("%s")%new
-            answer = raw_input("(y/n)? ")
-            if answer=='y':
-                tocheck.append(new)
-            elif answer=='n':
-                exclude.append(new)
+        for new in wikipedia.getReferences(pg):
+            asktoadd(wikipedia.PageLink(wikipedia.mylang,new).linkname())
     print
 
 include.sort()
