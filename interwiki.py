@@ -132,6 +132,12 @@ This script understands various command-line arguments:
                    specify a list of languages to disregard, separated by
                    commas.
 
+    -showpage      when asking for hints, show the first bit of the text
+                   of the page always, rather than doing so only when being
+                   asked for (by typing '?'). Only useful in combination
+                   with a hint-asking option like -untranslated, -askhints
+                   or -untranslatedonly
+
     Arguments that are interpreted by more bots:
 
     -lang:         specifies the language the bot is run on (e.g. -lang:de).
@@ -209,7 +215,9 @@ class Global(object):
     askhints = False
     auto = True
     neverlink = []
-    
+    showtextlink = 0
+    showtextlinkadd = 300
+
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
        all its translations)"""
@@ -373,11 +381,16 @@ class Subject(object):
                 if globalvar.bell:
                     sys.stdout.write('\07')
                 newhint = None
+                t = globalvar.showtextlink
+                if t:
+                    wikipedia.output(pl.get()[:t])
                 while 1:
-                    newhint = wikipedia.input(u'Hint:')
-                    if newhint and not ':' in newhint:
+                    newhint = wikipedia.input(u'Give a hint (? to see pagetext):')
+                    if newhint == '?':
+                        t += globalvar.showtextlinkadd
+                        wikipedia.output(pl.get()[:t])
+                    elif newhint and not ':' in newhint:
                         print "Please enter a hint like language:pagename"
-                        #print "or type 'q' to stop generating new pages"
                         print "or type nothing if you do not have a hint"
                     elif not newhint:
                         break
@@ -920,172 +933,169 @@ def ReadWarnfile(fn, sa):
 globalvar=Global()
     
 if __name__ == "__main__":
-    inname = []
-    hints = []
-    start = None
-    number = None
-    skipfile = None
-
-    sa=SubjectArray()
-
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
-        if arg:
-            if arg == '-noauto':
-                globalvar.auto = False
-            elif arg.startswith('-hint:'):
-                hints.append(arg[6:])
-
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
-        if arg:
-            if arg == '-force':
-                globalvar.force = True
-            elif arg == '-always':
-                globalvar.always = True
-            elif arg == '-same':
-                globalvar.same = True
-            elif arg == '-wiktionary':
-                globalvar.same = 'wiktionary'
-            elif arg == '-untranslated':
-                globalvar.untranslated = True
-            elif arg == '-untranslatedonly':
-                globalvar.untranslated = True
-                globalvar.untranslatedonly = True
-            elif arg == '-askhints':
-                globalvar.untranslated = True
-                globalvar.untranslatedonly = False
-                globalvar.askhints = True
-            elif arg == '-noauto':
-                pass
-            elif arg.startswith('-hint:'):
-                pass
-            elif arg.startswith('-warnfile:'):
-                ReadWarnfile(arg[10:], sa)
-            elif arg == '-name':
-                globalvar.same = 'name'
-            elif arg == '-confirm':
-                globalvar.confirm = True
-            elif arg == '-autonomous':
-                globalvar.autonomous = True
-            elif arg == '-noshownew':
-                globalvar.shownew = False
-            elif arg == '-nolog':
-                globalvar.log = False
-            elif arg == '-nobacklink':
-                globalvar.backlink = False
-            elif arg == '-noredirect':
-                globalvar.followredirect = False
-            elif arg.startswith('-years'):
-                # Look if user gave a specific year at which to start
-                # Must be a natural number or negative integer.
-                if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
-                    startyear = int(arg[7:])
-                else:
-                    startyear = 1
-                print "Starting with year %d" %startyear
-                for i in range(startyear,2050):
-                    if i % 100 == 0:
-                        print "Preparing %d..." % i
-                    # For years BC, append language-dependent text, e.g. "v. Chr."
-                    # This text is read from date.py
-                    if i < 0:
-                        current_year = (date.yearBCfmt[wikipedia.getSite().lang]) % (-i)
-                    else:
-                        # For years AD, some languages need special formats
-                        # This format is read from date.py
-                        if date.yearADfmt.has_key(wikipedia.getSite().lang):
-                            current_year = (date.yearADfmt[wikipedia.getSite().lang]) % i
-                        else:
-                            current_year = '%d' % i
-                    # There is no year 0
-                    if i != 0:
-                        sa.add(wikipedia.PageLink(wikipedia.getSite(), current_year),hints=hints)
-                globalvar.followredirect = False
-            elif arg.startswith('-days'):
-                if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
-                    # Looks as if the user gave a specific month at which to start
-                    # Must be a natural number.
-                    startmonth = int(arg[6:])
-                else:
-                    startmonth = 1
-                fd = date.FormatDate(wikipedia.getSite())
-                pl = wikipedia.PageLink(wikipedia.getSite(), fd(startmonth, 1))
-                wikipedia.output(u"Starting with %s" % pl.aslink())
-                for month in range(startmonth, 12+1):
-                    for day in range(1, date.days_in_month[month]+1):
-                        pl = wikipedia.PageLink(wikipedia.getSite(), fd(month, day))
-                        sa.add(pl,hints=hints)
-            elif arg == '-nobell':
-                globalvar.bell = False
-            elif arg.startswith('-skipfile:'):
-                skipfile = arg[10:]
-            elif arg == '-restore':
-                for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
-                    sa.add(pl,hints=hints)
-            elif arg == '-continue':
-                for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
-                    sa.add(pl,hints=hints)
-                try:
-                    start = str(pl.linkname().encode(pl.encoding()))
-                except NameError:
-                    print "Dump file is empty?! Starting at the beginning."
-                    start = "!"
-            elif arg.startswith('-file:'):
-                for pl in wikipedia.PageLinksFromFile(arg[6:]):
-                    sa.add(pl,hints=hints)
-            elif arg.startswith('-start:'):
-                start = arg[7:]
-            elif arg.startswith('-number:'):
-                number = int(arg[8:])
-            elif arg.startswith('-array:'):
-                globalvar.minarraysize = int(arg[7:])
-            elif arg.startswith('-neverlink:'):
-                globalvar.neverlink += arg[11:].split(",")
-            else:
-                inname.append(arg)
-
-    if globalvar.log:
-        sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
-
-    unequal.read_exceptions()
-    
-    if skipfile:
-        for pl in wikipedia.PageLinksFromFile(skipfile):
-            globalvar.skip[pl] = None
-
-    if start:
-        try:
-            if number:
-                print "Treating %d pages starting at %s" % (number, start)
-                i = 0
-                for pl in wikipedia.allpages(start = start):
-                    sa.add(pl,hints=hints)
-                    i += 1
-                    if i >= number:
-                        break
-            else:
-                print "Treating pages starting at %s" % start
-                sa.setGenerator(wikipedia.allpages(start = start))
-        except:
-            wikipedia.stopme()
-            raise
-
-    inname = '_'.join(inname)
-    if sa.isDone() and not inname:
-        inname = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
-
-    if inname:
-        inpl = wikipedia.PageLink(wikipedia.getSite(), inname)
-        sa.add(inpl, hints = hints)
-
     try:
+        inname = []
+        hints = []
+        start = None
+        number = None
+        skipfile = None
+
+        sa=SubjectArray()
+
+        for arg in sys.argv[1:]:
+            arg = wikipedia.argHandler(arg)
+            if arg:
+                if arg == '-noauto':
+                    globalvar.auto = False
+                elif arg.startswith('-hint:'):
+                    hints.append(arg[6:])
+
+        for arg in sys.argv[1:]:
+            arg = wikipedia.argHandler(arg)
+            if arg:
+                if arg == '-force':
+                    globalvar.force = True
+                elif arg == '-always':
+                    globalvar.always = True
+                elif arg == '-same':
+                    globalvar.same = True
+                elif arg == '-wiktionary':
+                    globalvar.same = 'wiktionary'
+                elif arg == '-untranslated':
+                    globalvar.untranslated = True
+                elif arg == '-untranslatedonly':
+                    globalvar.untranslated = True
+                    globalvar.untranslatedonly = True
+                elif arg == '-askhints':
+                    globalvar.untranslated = True
+                    globalvar.untranslatedonly = False
+                    globalvar.askhints = True    
+                elif arg == '-noauto':
+                    pass
+                elif arg.startswith('-hint:'):
+                    pass
+                elif arg.startswith('-warnfile:'):
+                    ReadWarnfile(arg[10:], sa)
+                elif arg == '-name':
+                    globalvar.same = 'name'
+                elif arg == '-confirm':
+                    globalvar.confirm = True
+                elif arg == '-autonomous':
+                    globalvar.autonomous = True
+                elif arg == '-noshownew':
+                    globalvar.shownew = False
+                elif arg == '-nolog':
+                    globalvar.log = False
+                elif arg == '-nobacklink':
+                    globalvar.backlink = False
+                elif arg == '-noredirect':
+                    globalvar.followredirect = False
+                elif arg.startswith('-years'):
+                    # Look if user gave a specific year at which to start
+                    # Must be a natural number or negative integer.
+                    if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
+                        startyear = int(arg[7:])
+                    else:
+                        startyear = 1
+                    print "Starting with year %d" %startyear
+                    for i in range(startyear,2050):
+                        if i % 100 == 0:
+                            print "Preparing %d..." % i
+                        # For years BC, append language-dependent text, e.g. "v. Chr."
+                        # This text is read from date.py
+                        if i < 0:
+                            current_year = (date.yearBCfmt[wikipedia.getSite().lang]) % (-i)
+                        else:
+                            # For years AD, some languages need special formats
+                            # This format is read from date.py
+                            if date.yearADfmt.has_key(wikipedia.getSite().lang):
+                                current_year = (date.yearADfmt[wikipedia.getSite().lang]) % i
+                            else:
+                                current_year = '%d' % i
+                        # There is no year 0
+                        if i != 0:
+                            sa.add(wikipedia.PageLink(wikipedia.getSite(), current_year),hints=hints)
+                    globalvar.followredirect = False
+                elif arg.startswith('-days'):
+                    if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
+                        # Looks as if the user gave a specific month at which to start
+                        # Must be a natural number.
+                        startmonth = int(arg[6:])
+                    else:
+                        startmonth = 1
+                    fd = date.FormatDate(wikipedia.getSite())
+                    pl = wikipedia.PageLink(wikipedia.getSite(), fd(startmonth, 1))
+                    wikipedia.output(u"Starting with %s" % pl.aslink())
+                    for month in range(startmonth, 12+1):
+                        for day in range(1, date.days_in_month[month]+1):
+                            pl = wikipedia.PageLink(wikipedia.getSite(), fd(month, day))
+                            sa.add(pl,hints=hints)
+                elif arg == '-nobell':
+                    globalvar.bell = False
+                elif arg.startswith('-skipfile:'):
+                    skipfile = arg[10:]
+                elif arg == '-restore':
+                    for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
+                        sa.add(pl,hints=hints)
+                elif arg == '-continue':
+                    for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
+                        sa.add(pl,hints=hints)
+                    try:
+                        start = str(pl.linkname().encode(pl.encoding()))
+                    except NameError:
+                        print "Dump file is empty?! Starting at the beginning."
+                        start = "!"
+                elif arg.startswith('-file:'):
+                    for pl in wikipedia.PageLinksFromFile(arg[6:]):
+                        sa.add(pl,hints=hints)
+                elif arg.startswith('-start:'):
+                    start = arg[7:]
+                elif arg.startswith('-number:'):
+                    number = int(arg[8:])
+                elif arg.startswith('-array:'):
+                    globalvar.minarraysize = int(arg[7:])
+                elif arg.startswith('-neverlink:'):
+                    globalvar.neverlink += arg[11:].split(",")
+                elif arg.startswith('-showpage'):
+                    globalvar.showtextlink += globalvar.showtextlinkadd
+                else:
+                    inname.append(arg)
+
+        if globalvar.log:
+            sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
+
+        unequal.read_exceptions()
+    
+        if skipfile:
+            for pl in wikipedia.PageLinksFromFile(skipfile):
+                globalvar.skip[pl] = None
+
+        if start:
+            try:
+                if number:
+                    print "Treating %d pages starting at %s" % (number, start)
+                    i = 0
+                    for pl in wikipedia.allpages(start = start):
+                        sa.add(pl,hints=hints)
+                        i += 1
+                        if i >= number:
+                            break
+                else:
+                    print "Treating pages starting at %s" % start
+                    sa.setGenerator(wikipedia.allpages(start = start))
+            except:
+                wikipedia.stopme()
+                raise
+
+        inname = '_'.join(inname)
+        if sa.isDone() and not inname:
+            inname = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
+
+        if inname:
+            inpl = wikipedia.PageLink(wikipedia.getSite(), inname)
+            sa.add(inpl, hints = hints)
+
         sa.run()
-    except KeyboardInterrupt:
+
+    finally:
         wikipedia.stopme()
-        sa.dump('interwiki.dump')
-    except:
-        wikipedia.stopme()
-        sa.dump('interwiki.dump')
-        raise
-    wikipedia.stopme()
