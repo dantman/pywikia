@@ -57,7 +57,6 @@ def add_category(sort_by_last_name = False):
     print "  ==> %d pages to process"%len(pagenames)
     print
     newcat = wikipedia.input('Category to add (do not give namespace) : ')
-    newcat = newcat.encode(wikipedia.code2encoding(wikipedia.mylang))
     newcat = newcat[:1].capitalize() + newcat[1:]
 
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
