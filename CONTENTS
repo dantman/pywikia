@@ -103,6 +103,11 @@ mylang='xx'
 There are other variables that can be set in the configuration file, please
 check config.py for ideas.
 
+After that, you are advised to create a username + password for the bot, and
+run login.py. If this is not done, the bot will make its edits under an IP
+number rather than a login name, a practice which is not liked by people
+checking Recentchanges.
+
 You do not need to "install" this package to be able to make use of
 it. You can actually just run it from the directory where you unpacked
 it or where you have your copy of the CVS sources.
