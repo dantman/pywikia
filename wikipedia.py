@@ -274,7 +274,7 @@ class PageLink(object):
            the language"""
         return "%s:[[%s]]" % (self._site.lang, self.linkname())
     
-    def get(self, read_only = False, force = False):
+    def get(self, read_only = False, force = False, get_redirect=False):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -305,7 +305,7 @@ class PageLink(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents = getPage(self.site(), self.urlname(), read_only = read_only)
+                self._contents = getPage(self.site(), self.urlname(), read_only = read_only, get_redirect=get_redirect)
                 hn = self.hashname()
                 if hn:
                     hn = underline2space(hn)
@@ -1022,7 +1022,7 @@ def getUrl(host, address, site = None):
     #print text
     return text,charset
     
-def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True):
+def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True, get_redirect=False):
     """
     Get the contents of page 'name' from the 'site' wiki
     Do not use this directly; for 99% of the possible ideas you can
@@ -1035,6 +1035,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
                        normal page.
         read_only     - If true, doesn't raise LockedPage exceptions.
         do_quote      - ??? (TODO: what is this for?)
+        get_redirect  - Get the contents, even if it is a redirect page
  
     This routine returns a unicode string containing the wiki text if
     get_edit_page is True; otherwise it returns a unicode string containing
@@ -1098,7 +1099,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             if i2-i1 < 2:
                 raise NoPage(site, name)
             m = redirectRe(site).match(text[i1:i2])
-            if m:
+            if m and not get_redirect:
                 output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), unicode(m.group(1), site.encoding())))
                 raise IsRedirectPage(m.group(1))
             if edittime[repr(site), link2url(name, site = site)] == "0" and not read_only:
