@@ -33,6 +33,9 @@ for arg in sys.argv[1:]:
 
 inname = '_'.join(inname)
 
+if inname=='':
+    inname=raw_input("For which page are images to be found: ")
+
 if not wikipedia.special.has_key(wikipedia.mylang):
     print "Please add the translation for the Special: namespace in"
     print "Your home wikipedia to the wikipedia.py module"
@@ -51,8 +54,12 @@ ilinks = inpl.interwiki()
 
 for page in ilinks:
     lang=page.code()
-    for i in page.imagelinks():
-        imagelist.append(i)
+    try:
+        for i in page.imagelinks():
+            imagelist.append(i)
+    except wikipedia.NoPage:
+        pass
+        
 
 for i in range(len(imagelist)):
     imagelink = imagelist[i]
@@ -65,8 +72,8 @@ for i in range(len(imagelist)):
 
 print "=================================================="
 
-while 1:
-    print("Give the number of the image to download.")
+while len(imagelist)>0:
+    print("Give the number of the image to upload.")
     todo=raw_input("To end uploading, press enter: ")
     if not todo:
         break
