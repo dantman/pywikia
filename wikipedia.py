@@ -117,8 +117,8 @@ class LockedPage(Error):
 class NoSuchEntity(ValueError):
     """No entity exist for this character"""
 
-class SubpageError(ValueError):
-    """The subpage specified by # does not exist"""
+class SectionError(ValueError):
+    """The section specified by # does not exist"""
 
 class NoNamespace(Error):
     """Wikipedia page is not in a special namespace"""
@@ -149,7 +149,7 @@ class PageLink:
                                       incode = mylang)
         elif linkname is not None:
             # We do not trust a linkname either....
-            name = linkname.strip()
+            #name = linkname.strip()
             if name and name[0]==':':
                 name=name[1:]
             self._urlname = link2url(name, self._code, incode=self._incode)
@@ -189,8 +189,8 @@ class PageLink:
         return ':'.join(parts)
 
     def hashname(self):
-        """The name of the subpage this PageLink refers to. Subpages are
-           denominated by a # in the linkname(). If no subpage is referenced,
+        """The name of the section this PageLink refers to. Sections are
+           denominated by a # in the linkname(). If no section is referenced,
            None is returned."""
         ln = self.linkname()
         ln = re.sub('&#', '&hash;', ln)
@@ -250,7 +250,7 @@ class PageLink:
                         to change the page. This exception won't be raised
                         if the argument read_only is True.
 
-            SubpageError: The subject does not exist on a page with a # link
+            SectionError: The subject does not exist on a page with a # link
         """
         # Make sure we re-raise an exception we got on an earlier attempt
         if hasattr(self, '_redirarg'):
@@ -266,7 +266,8 @@ class PageLink:
                     hn = underline2space(hn)
                     m = re.search("== *%s *==" % hn, self._contents)
                     if not m:
-                        raise SubpageError("Hashname does not exist: %s" % self)
+                        # raise SectionError("Hashname does not exist: %s" % self)
+                        output("WARNING: Hashname does not exist: %s" % self)
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
@@ -278,8 +279,8 @@ class PageLink:
             except LockedPage: # won't happen if read_only is True
                 self._getexception = LockedPage
                 raise
-            except SubpageError:
-                self._getexception = SubpageError
+            except SectionError:
+                self._getexception = SectionError
                 raise
         return self._contents
 
@@ -291,7 +292,7 @@ class PageLink:
             return False
         except IsRedirectPage:
             return True
-        except SubpageError:
+        except SectionError:
             return False
         return True
 
@@ -656,7 +657,8 @@ class GetAll:
                 if hn:
                     m = re.search("== *%s *==" % hn, text)
                     if not m:
-                        pl2._getexception = SubpageError("Hashname does not exist: %s" % self)
+                        # pl2._getexception = SectionError("Hashname does not exist: %s" % self)
+                        output("WARNING: Hashname does not exist: %s" % self)
                     else:
                         # Store the content
                         pl2._contents = text

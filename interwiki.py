@@ -302,8 +302,8 @@ class Subject:
                             counter.minus(pl2.code())
                         self.todo = {}
                         pass
-                except wikipedia.SubpageError:
-                    wikipedia.output(u"NOTE: %s subpage does not exist" % pl.aslink())
+                #except wikipedia.SectionError:
+                #    wikipedia.output(u"NOTE: section %s does not exist" % pl.aslink())
                 else:
                     if self.inpl == pl:
                         self.untranslated = (len(iw) == 0)
