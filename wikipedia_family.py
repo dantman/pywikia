@@ -174,6 +174,14 @@ special = {
     'wa': 'Sipeci%C3%A5s',
     }
 
+# Translation used on all wikipedias for the MediaWiki: namespace.
+# Only necessary when it is not 'MediaWiki'.
+# Access this dictionary via the mediawiki_namespace() function.
+mediawiki = {
+    'en': u'MediaWiki',
+    'bg': u'МедияУики',
+    }
+    
 # And the image namespace.
 
 image = {
@@ -246,6 +254,12 @@ category = {
     'test': u'Category'
 }
 
+def mediawiki_namespace(code):
+    if mediawiki.has_key(code):
+        return mediawiki[code]
+    else:
+        return mediawiki['en']
+    
 def category_namespaces(code):
     ns = []
     if not category.has_key(code):
