@@ -786,6 +786,29 @@ def html2unicode(name, language, altlanguage=None):
                 raise
     return result
 
+def setMyLang(code):
+    """Change the home language"""
+    global mylang
+    global cookies
+
+    mylang = code
+    # Retrieve session cookies for login.
+    try:
+        f = open('%s-login.data' % mylang)
+        cookies = '; '.join([x.strip() for x in f.readlines()])
+        #print cookies
+        f.close()
+    except IOError:
+        #print "Not logged in"
+        cookies = None
+
+def argHandler(arg):
+    if arg.startswith('-lang:'):
+        setMyLang(arg[6:])
+    else:
+        return 0
+    return 1
+
 #########################
 # Read configuration files: username.dat and login.data
 #########################
@@ -795,27 +818,18 @@ try:
     f = open('username.dat')
     username = f.readline()[:-1]
     try:
-        mylang = f.readline()[:-1]
+        setMyLang(f.readline()[:-1])
     except IOError:
         print "No Home-wikipedia given in username.dat"
         print "Defaulting to test: wikipedia"
-        mylang = 'test'
+        setMyLang('test')
         langs['test']='test.wikipedia.org'
     if not langs.has_key(mylang):
         print "Home-wikipedia from username.dat does not exist"
         print "Defaulting to test: wikipedia"
-        mylang = 'test'
+        setMyLang('test')
         langs['test']='test.wikipedia.org'
     f.close()
 except IOError:
     print >> sys.stderr, "Please make a file username.dat with your name in there"
     sys.exit(1)
-
-# Retrieve session cookies for login.
-try:
-    f = open('login.data')
-    cookies = '; '.join([x.strip() for x in f.readlines()])
-    #print cookies
-    f.close()
-except IOError:
-    cookies = None
