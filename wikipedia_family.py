@@ -396,7 +396,7 @@ class Family(family.Family):
                         'oc', 'sk', 'sr', 'su', 'tr', 'ru', 'uk']
         
         self.seriouslangs = self.biglangs4 + [
-                        'ar', 'be', 'bs', 'csb', 'el', 'fa', 'ga', 'hi', 'jv', 'lv',
+                        'ar', 'be', 'bs', 'csb', 'el', 'fa', 'ga', 'hi', 'jv', 'lb', 'lv',
                         'mi', 'minnan', 'sa', 'ta', 'th', 'tokipona', 'tt', 'ur', 'vi']
         
         # other groups of language that we might want to do at once
