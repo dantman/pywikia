@@ -1231,25 +1231,18 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
        Use of this routine can normally be avoided; use PageLink.put
        instead.
     """
-    oldtext = None
+    print "putPage with token %s"%token
     safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
     if site.version() >= "1.4":
         if not token:
             output(u"Getting page to get a token.")
             try:
-                oldtext = PageLink(site,url2link(name,site,site)).get()
-            except Error:
-                pass
-            try:
-                newtext = PageLink(site,url2link(name,site,site)).get(force = True)
+                PageLink(site,url2link(name,site,site)).get(force = True)
                 token = site.gettoken()
             except Error:
                 pass
         else:
             safetuple = (site,name,text,comment,watchArticle,minorEdit,newPage)
-    if oldtext:
-        if oldtext != newtext:
-            raise EditConflict
     # Check whether we are not too quickly after the previous putPage, and
     # wait a bit until the interval is acceptable
     put_throttle()
