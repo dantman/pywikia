@@ -156,12 +156,14 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         print "The filename on wikipedia will default to:", fn
         # ask newfn until it's valid
         ok = False
+        # FIXME: these 2 belong somewhere else, presumably in family
         forbidden = '/' # to be extended
+        allowed_formats = (u'jpg', u'jpeg', u'png', u'gif', u'svg', u'ogg')
         while not ok:
             newfn = wikipedia.input(u'Better name:')
             ext = os.path.splitext(newfn)[1].lower().strip('.')
-            if ext not in (u'jpg', u'png'):
-                ans = wikipedia.input(u"File is not jpg or png but %s. Continue [y/N]? " % ext)
+            if ext not in allowed_formats:
+                ans = wikipedia.input(u"File is not is %s but %s. Continue [y/N]? " % (allowed_formats, ext))
                 if not ans.lower().startswith('y'):
                     continue
             for c in forbidden:
