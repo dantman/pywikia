@@ -25,6 +25,17 @@ interwiki_on_one_line = ['fr', 'pl', 'no', 'hu']
 # String used as separator between interwiki links and the text
 interwiki_text_separator = '\r\n'
 
+# will split long paragraphs for better reading the source.
+# only table2wiki.py use it by now
+splitLongParagraphs = False
+# sometimes HTML-tables are indented for better reading.
+# That can do very ugly results.
+deIndentTables = True
+# table2wiki.py works quite stable, so you might switch to True
+table2wikiAskOnlyWarnings = False
+# guess what. Very useful in table2wiki.py
+DEBUG = False
+
 # Should treelang report warnings for missing links between foreign
 # languages?
 treelang_backlink = True
