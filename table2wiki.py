@@ -3,6 +3,11 @@
 """
 Nifty script to convert HTML-tables to Wikipedia's syntax.
 
+
+-file:filename
+    will read any [[wikipedia link]] and use these articles
+
+SQL-Querie
 SELECT CONCAT('"', cur_title, '"')
        FROM cur
        WHERE cur_text LIKE '%<table%'
@@ -34,6 +39,7 @@ mylang = 'de'
 myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
+notFoundSites = ''
 warnings = 0
 
 deIndentTables = 1
@@ -44,23 +50,40 @@ DEBUG=0
 #be careful, some bad HTML-tables is still not recognized
 noControl = 0
 
+articles = []    
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
+    if arg.startswith('-file:'):
+
+        f=open(arg[6:], 'r')
+        R=re.compile(r'.*\[\[([^\]]*)\]\].*')
+        m = False
+        for line in f.readlines():
+            m=R.match(line)            
+            if m:
+                articles.append(m.group(1))
+            else:
+                print "ERROR: Did not understand %s line:\n%s" % (
+                    arg[6:], repr(line))
+        f.close()
+    elif wikipedia.argHandler(arg):
         pass
     else:
-        if DEBUG:
-            f = open("table2wiki.testTable")
-            text = f.read()
-        else:
-            pl = wikipedia.PageLink(mylang, arg)
-            try:
-                text = pl.get()
-            except wikipedia.NoPage:
-                print "ERROR: couldn't find " + arg
-                continue
+        articles.append(arg)
+for article in articles:
+    if DEBUG:
+        f = open("table2wiki.testTable")
+        text = f.read()
+    else:
+        pl = wikipedia.PageLink(mylang, article)
+        try:
+            text = pl.get()
+        except wikipedia.NoPage:
+            print "ERROR: couldn't find " + article
+            notFoundSites = notFoundSites + " " + article
+            continue
         
         newText = text
-
+        
         ##################
         # every open-tag gets a new line.
         newText = re.sub("(\<[tT]{1}[dDhH]{1}([^>]*?)\>[^<]*?)"
@@ -68,7 +91,7 @@ for arg in sys.argv[1:]:
                          "\r\n\\1\\3", newText, 0)
         newText = re.sub("(\<[tT]{1}[rR]{1})",
                          "\r\n\\1", newText, 0)
-
+        
         ##################
         # bring every <tag> into one single line.
         num = 1
@@ -182,13 +205,13 @@ for arg in sys.argv[1:]:
         newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
 
         ##################        
-        # shortening if <table> had no arguments/parameters
+        # shortening if <table> had no articleuments/parameters
         newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\[| ", newText, 0)
-        # shortening if <td> had no args
+        # shortening if <td> had no articles
         newText = re.sub("[\r\n]+\|[\ ]+\| ", "\r\n| ", newText, 0)
-        # shortening if <th> had no args
+        # shortening if <th> had no articles
         newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText, 0)
-        # shortening of <caption> had no args
+        # shortening of <caption> had no articles
         newText = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newText, 0)
 
         ##################
@@ -221,7 +244,7 @@ for arg in sys.argv[1:]:
                          "\\1 \\2", newText, 0)
 
         ##################
-        # kill additional spaces within arguments
+        # kill additional spaces within articleuments
         num = 1
         while num != 0:
             newText, num = re.subn("\n(\||\!)([^|\r\n]*?)[ \t]{2,}([^\r\n]+?)",
@@ -261,13 +284,13 @@ for arg in sys.argv[1:]:
             if doUpload == 'y':
                 status, reason, data = pl.put(newText, myComment)
                 print status,reason
-                fixedSites = fixedSites + " " + arg
+                fixedSites = fixedSites + " " + article
             else:
-                notFixedSites = notFixedSites + " " + arg
+                notFixedSites = notFixedSites + " " + article
                 print "OK. I'm not uploading"
         else:
-            print "No changes were necessary in " + arg
-            notFixedSites = notFixedSites + " " + arg
+            print "No changes were necessary in " + article
+            notFixedSites = notFixedSites + " " + article
         print "\n"
         warnings = 0
         
