@@ -301,15 +301,33 @@ class PageLink:
 
             LockedPage: The page is locked, and therefore its contents can
                         not be retrieved.
+
+            SubpageError: The subject does not exist on a page with a # link
         """
+        # Make sure we re-raise an exception we got on an earlier attempt
+        if hasattr(self, '_getexception'):
+            raise self._getexception
+        # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
-            self._contents = getPage(self.code(), self.urlname())
-            hn = self.hashname()
-            if hn:
-                m = re.search("== *%s *==" % hn, self._contents)
-                if not m:
-                    raise SubpageError("Hashname does not exist: %s" % self)
-                
+            try:
+                self._contents = getPage(self.code(), self.urlname())
+                hn = self.hashname()
+                if hn:
+                    m = re.search("== *%s *==" % hn, self._contents)
+                    if not m:
+                        raise SubpageError("Hashname does not exist: %s" % self)
+            except NoPage:
+                self._getexception = NoPage
+                raise
+            except IsRedirectPage,arg:
+                self._getexception = IsRedirectPage,arg
+                raise
+            except LockedPage:
+                self._getexception = LockedPage
+                raise
+            except SubpageError:
+                self._getexception = SubpageError
+                raise
         return self._contents
 
     def exists(self):
@@ -319,7 +337,7 @@ class PageLink:
             return False
         return True
     
-    def put(self,newtext,comment=None):
+    def put(self, newtext, comment=None):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
@@ -373,6 +391,11 @@ class PageLink:
         else:
             raise IsNotRedirectPage(self)
 
+# Shortcut get to get multiple pages at once
+
+def getall(code, pages):
+    print "DBG> getall", code, pages
+    
 # Library functions
 def unescape(s):
     """Replace escaped HTML-special characters by their originals"""
