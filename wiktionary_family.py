@@ -170,7 +170,7 @@ class Family(family.Family):
         
     nocapitalize = ['cs', 'de', 'es', 'fa', 'fr', 'gu', 'hi', 'hr',
                     'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl', 'sa',
-                    'sq', 'sv', 'sw', 'tlh','tokipona', 'tr']
+                    'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona', 'tr']
 
     obsolete = {'nb':'no',
                 'tlh':'none',
