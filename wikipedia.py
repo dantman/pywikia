@@ -52,6 +52,8 @@ PageGroup: A group of PageLinks (internally ordered)
     aslist(): Use the PageGroup as an ordinary list
     show(): Write down the contents of the PageGroup on the screen
     addall(list): Add all PageLinks from a (not necessarily ordered) list
+    getone(): Get any one element
+    isEmpty(): True IFF the group is empty
 
 Other functions:
 getall(xx,Pages): Get all pages in Pages (where Pages is a list of PageLinks,
@@ -133,6 +135,9 @@ charsets = {}
 # Keep the modification time of all downloaded pages for an eventual put.
 # We are not going to be worried about the memory this can take.
 edittime = {}
+
+# Our EditToken. Is checked at least once each session.
+token = None
 
 # Local exceptions
 
@@ -408,7 +413,6 @@ class PageLink(object):
         if p[0]==self.site().image_namespace():
             return True
         return False
-
         
     def put(self, newtext, comment=None, watchArticle = False, minorEdit = True, anon=False):
         """Replace the new page with the contents of the first argument.
@@ -419,7 +423,10 @@ class PageLink(object):
             newPage="0"
         else:
             newPage="1"
-        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, anon)
+        while not token:
+            output(u"Getting page to get a token.")
+            self.get()
+        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, anon, token)
 
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
@@ -780,10 +787,19 @@ class PageGroup(object):
 
     def show(self):
         for pl in self._list:
-            print(pl.linkname())
+            output(u''+pl.linkname())
 
     def addall(self,pagelist):
         self._list=self._addall(self._list,pagelist)
+
+    def getone(self):
+        try:
+            return self._list[0]
+        except IndexError:
+            raise EmptyGroup
+
+    def isEmpty(self):
+        return len(self._list) == 0
 
 # Regular expression recognizing redirect pages
 def redirectRe(site):
@@ -1096,7 +1112,7 @@ class Throttle(object):
 get_throttle = Throttle()
 put_throttle = Throttle(config.put_throttle)
 
-def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, anon=False):
+def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, anon=False, token = None):
     """Upload 'text' on page 'name' to the 'site' wiki.
        Use of this routine can normally be avoided; use PageLink.put
        instead.
@@ -1121,8 +1137,11 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         text = forSite(text, site)
         predata = [
             ('wpSave', '1'),
+            ('wpPreview', '0'),
             ('wpSummary', comment),
-            ('wpTextbox1', text)]
+            ('wpTextbox1', text),
+            ('wpSection', ''),
+            ('wpEditToken', token)]
         # Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions
         if newPage and newPage != '0':
@@ -1132,8 +1151,12 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         # Pass the minorEdit and watchArticle arguments to the Wiki.
         if minorEdit and minorEdit != '0':
             predata.append(('wpMinoredit', '1'))
+        else:
+            predata.append(('wpMinoredit', '0'))
         if watchArticle and watchArticle != '0':
             predata.append(('wpWatchthis', '1'))
+        else:
+            predata.append(('wpWatchthis', '0'))
         # Encode all of this into a HTTP request
         data = urlencode(tuple(predata))
     
@@ -1290,7 +1313,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             if edittime[repr(site), link2url(name, site = site)] == "0" and not read_only:
                 print "DBG> page may be locked?!"
                 raise LockedPage()
-    
+
             x = text[i1:i2]
             x = unescape(x)
             while x and x[-1] in '\n ':
@@ -1301,6 +1324,12 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         # Convert to a unicode string. If there's invalid unicode data inside
         # the page, replace it with question marks.
         x = unicode(x, charset, errors = 'replace')
+
+        # Looking for the token
+        R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+        tokenloc = R.search(text)
+        if tokenloc:
+            token = tokenloc.group(1)
         return x
 
 def allpages(start = '!', site = None):
