@@ -453,7 +453,7 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             # Uncode the text
             text = unescape(self.text)
             # Remove trailing newlines and spaces
-            while text[-1] in '\n ':
+            while text and text[-1] in '\n ':
                 text = text[:-1]
             # Replace newline by cr/nl
             text = u'\r\n'.join(text.split('\n'))
@@ -853,7 +853,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
 
         x = text[i1:i2]
         x = unescape(x)
-        while x[-1] in '\n ':
+        while x and x[-1] in '\n ':
             x = x[:-1]
     else:
         x = text # If not editing

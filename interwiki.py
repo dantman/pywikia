@@ -201,7 +201,7 @@ class Subject:
                     iw = pl.interwiki()
                 except wikipedia.IsRedirectPage,arg:
                     pl3 = wikipedia.PageLink(pl.code(),arg.args[0])
-                    print "NOTE: %s is redirect to %s"% (pl.asasciilink(), pl3.asasciilink())
+                    print "NOTE: %s is redirect to %s" % (pl.asasciilink(), pl3.asasciilink())
                     if len(self.done) == 1 and len(self.todo) == 0 and len(self.pending) == 1:
                         # This is a redirect page itself. We don't need to
                         # follow the redirection.
@@ -209,26 +209,27 @@ class Subject:
                     else:
                         self.conditionalAdd(pl3, counter)
                 except wikipedia.NoPage:
-                    print "NOTE: %s does not exist"% pl.asasciilink()
+                    print "NOTE: %s does not exist" % pl.asasciilink()
                 except wikipedia.SubpageError:
-                    print "NOTE: %s subpage does not exist"% pl.asasciilink()
+                    print "NOTE: %s subpage does not exist" % pl.asasciilink()
                 else:
                     for pl2 in iw:
                         self.conditionalAdd(pl2, counter)
         # These pages are no longer 'in progress'
         del self.pending
         # Check whether we need hints and the user offered to give them
-        if len(self.done) == 1 and len(self.todo) == 0 and globalvar.untranslated:
-            if globalvar.bell:
-                sys.stdout.write('\07')
-            print "%s does not have any interwiki links"%self.inpl.asasciilink()
-            newhint = raw_input("Hint:")
-            if newhint:
-                arr = {}
-                titletranslate.translate(pl, arr, same = False,
-                                         hints = [newhint])
-                for pl in arr.iterkeys():
-                    self.todo[pl] = pl.code()
+        if len(self.done) == 1 and len(self.todo) == 0:
+            print "NOTE: %s does not have any interwiki links" % self.inpl.asasciilink()
+            if globalvar.untranslated:
+                if globalvar.bell:
+                    sys.stdout.write('\07')
+                newhint = raw_input("Hint:")
+                if newhint:
+                    arr = {}
+                    titletranslate.translate(pl, arr, same = False,
+                                             hints = [newhint])
+                    for pl in arr.iterkeys():
+                        self.todo[pl] = pl.code()
 
     def isDone(self):
         """Return True if all the work for this subject has completed."""
@@ -246,10 +247,13 @@ class Subject:
     def finish(self):
         """Round up the subject, making any necessary changes. This method
            should be called exactly once after the todo list has gone empty."""
-        if self.inpl.isRedirectPage():
-            return
         if not self.isDone():
             raise "Bugcheck: finish called before done"
+        if self.inpl.isRedirectPage():
+            return
+        if len(self.done) == 1:
+            # No interwiki at all
+            return
         print "======Post-processing %s======"%(self.inpl.asasciilink())
         # Assemble list of accepted interwiki links
         new = {}
