@@ -877,24 +877,22 @@ def compareLanguages(old, new):
     return s,removing
 
 def ReadWarnfile(fn, sa):
-    R=re.compile(r'WARNING: ([^\[]*):\[\[([^\[]+)\]\]([^\[]+)\[\[([^\[]+):([^\[]+)\]\]')
+    R=re.compile(r'WARNING: ([^\[]+):\[\[([^\[]+)\]\]([^\[]+)\[\[([^\[]+):([^\[]+):([^\[]+)\]\]')
     f=open(fn)
     hints={}
     for line in f.readlines():
         m=R.search(line)
         if m:
-            #print "DBG>",line
-            if m.group(1)==wikipedia.getSite():
-                #print m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
+            if m.group(1)==wikipedia.getSite().language():
                 if not hints.has_key(m.group(2)):
                     hints[m.group(2)]=[]
-                #print m.group(3)
                 if m.group(3) != ' links to incorrect ':
                     try:
-                        hints[m.group(2)].append('%s:%s'%(m.group(4),wikipedia.link2url(m.group(5),m.group(4))))
+                        hints[m.group(2)].append('%s:%s'%(m.group(5),wikipedia.link2url(m.group(6),wikipedia.getSite(m.group(5)))))
                     except wikipedia.Error:
                         print "DBG> Failed to add", line
-                #print "DBG> %s : %s" % (m.group(2), hints[m.group(2)])
+                    except KeyError:
+                        print "DBG> Language %s not found"%m.group(5)
     f.close()
     for pagename in hints:
         pl = wikipedia.PageLink(wikipedia.getSite(), pagename)
