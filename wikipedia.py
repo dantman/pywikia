@@ -1119,10 +1119,8 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         text = forSite(text, site)
         predata = [
             ('wpSave', '1'),
-            ('wpPreview', '0'),
             ('wpSummary', comment),
-            ('wpTextbox1', text),
-            ('wpSection', '')]
+            ('wpTextbox1', text)]
         # Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions
         if newPage and newPage != '0':
@@ -1132,12 +1130,8 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         # Pass the minorEdit and watchArticle arguments to the Wiki.
         if minorEdit and minorEdit != '0':
             predata.append(('wpMinoredit', '1'))
-        else:
-            predata.append(('wpMinoredit', '0'))
         if watchArticle and watchArticle != '0':
             predata.append(('wpWatchthis', '1'))
-        else:
-            predata.append(('wpWatchthis', '0'))
         # Give the token, but only if one is supplied.
         if token:
             predata.append(('wpEditToken', token))
@@ -1155,7 +1149,6 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     conn = httplib.HTTPConnection(host)
 
     conn.putrequest("POST", address)
-
     conn.putheader('Content-Length', str(len(data)))
     conn.putheader("Content-type", "application/x-www-form-urlencoded")
     conn.putheader("User-agent", "RobHooftWikiRobot/1.0")
