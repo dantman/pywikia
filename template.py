@@ -46,6 +46,7 @@ Move the page [[Template:Cities in Washington]] manually afterwards.
 __version__='$Id$'
 #
 import wikipedia, config
+import replace
 import re, sys, string
 
 class TemplatePageGenerator:
@@ -58,10 +59,6 @@ class TemplatePageGenerator:
         ns = mysite.template_namespace(fallback = None)
         # Download 'What links here' of the template page
         self.templatePl = wikipedia.PageLink(mysite, ns + ':' + templateName)
-        # regular expression to find the original template.
-        # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
-        # The new syntax, {{vfd}}, will also be found.
-        self.templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}')
 
     def generate(self):
         # yield all pages using the template
@@ -72,8 +69,12 @@ class TemplatePageGenerator:
         else:
             import sqldump
             dump = sqldump.SQLdump(self.sqlfilename, mysite.encoding())
+            # regular expression to find the original template.
+            # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
+            # The new syntax, {{vfd}}, will also be found.
+            templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}')
             for entry in dump.entries():
-                if self.templateR.search(entry.text):
+                if templateR.search(entry.text):
                     pl = wikipedia.PageLink(mysite, entry.full_title())
                     yield pl
 
@@ -95,10 +96,6 @@ class TemplateRobot:
         self.new = new
         self.remove = remove
         self.oldFormat = oldFormat
-        # regular expression to find the original template.
-        # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
-        # The new syntax, {{vfd}}, will also be found.
-        self.templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
         # if only one argument is given, don't replace the template with another
         # one, but resolve the template by putting its text directly into the
         # article.
@@ -111,39 +108,22 @@ class TemplateRobot:
             wikipedia.setAction(wikipedia.translate(mysite, self.msg_change) % old)
 
     def run(self):
-        for pl in self.generator.generate():
-            self.treat(pl)
-    
-    def treat(self, refpl):
-        try:
-            reftxt=refpl.get()
-        except wikipedia.IsRedirectPage:
-            wikipedia.output(u'Skipping redirect %s' % refpl.linkname())
-            pass
-        except wikipedia.LockedPage:
-            wikipedia.output(u'Skipping locked page %s' % refpl.linkname())
-            pass
-        except wikipedia.NoPage:
-            wikipedia.output('Page %s not found' % refpl.linkname())
-            pass
+        # regular expression to find the original template.
+        # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
+        # The new syntax, {{vfd}}, will also be found.
+        templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '}}')
+        replacements = {}
+        if self.remove:
+            replacements[templateR] = ''
+        elif self.resolve:
+            replacements[templateR] = '{{subst:' + self.old + '}}'
+        elif self.oldFormat:
+            replacements[templateR] = '{{msg:' + self.new + '}}'
         else:
-            # Check if template is really used in this article
-            if not self.templateR.search(reftxt):
-                wikipeida.output("Not found in %s" % refpl.linkname())
-                return
-            
-            # Replace all occurences of the template in this article
-            if self.remove:
-                reftxt = re.sub(self.templateR, '', reftxt)
-            elif self.resolve:
-                reftxt = re.sub(self.templateR, '{{subst:' + self.old + '}}', reftxt)
-            elif self.oldFormat:
-                reftxt = re.sub(self.templateR, '{{msg:' + self.new + '}}', reftxt)
-            else:
-                reftxt = re.sub(self.templateR, '{{' + self.new + '}}', reftxt)
+            replacements[templateR] = '{{' + self.new + '}}'
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, regex = True)
+        replaceBot.run()
     
-            refpl.put(reftxt)
-        
 def main():
     oldFormat = False
     template_names = []
@@ -182,8 +162,5 @@ def main():
 
 try:
     main()
-except:
-    wikipedia.stopme()
-    raise
-else:
+finally:
     wikipedia.stopme()

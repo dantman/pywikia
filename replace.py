@@ -272,7 +272,7 @@ class ReplacePageGenerator:
                 yield wikipedia.PageLink(wikipedia.getSite(), pagename)
 
 class ReplaceRobot:
-    def __init__(self, generator, replacements, exceptions, regex, acceptall = False):
+    def __init__(self, generator, replacements, exceptions = [], regex = False, acceptall = False):
         self.generator = generator
         self.replacements = replacements
         self.exceptions = exceptions
