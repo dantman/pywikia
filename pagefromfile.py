@@ -14,6 +14,11 @@ Specific arguments:
 -file:xxx   Give the filename we are getting our material from
 -include    The beginning and end text should be included in the
             page.
+-utf        The input file is UTF-8
+
+Note the '-utf' option is necessary on older versions of Windows;
+whether it's necessary or useful on Windows XP and/or other
+operating systems is unclear.
 """
 #
 # (C) Andre Engels, 2004
@@ -36,6 +41,7 @@ starttext = "{{-scn-}}"
 endtext = "{{-proofreading-}}"
 filename = "dict.txt"
 include = False
+utf = False
 
 def findpage(t):
     try:
@@ -70,6 +76,9 @@ for arg in sys.argv[1:]:
             filename=arg[6:]
         elif arg=="-include":
             include = True
+        elif arg=="-utf":
+            import codecs
+            utf = True
         else:
             print "Disregarding unknown argument %s."%arg
 
@@ -78,7 +87,10 @@ commenttext = wikipedia.translate(mysite,msg)
 
 text = []
 
-f=open(filename)
+if utf:
+    f=codecs.open(filename,'r',encoding='utf-8')
+else:
+    f=open(filename,'r')
 for line in f.readlines():
     text.append(line)
 
