@@ -44,6 +44,7 @@ msg_add={
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
     'en':u'Robot: Adding [[Category:%s]]',
     'es':u'Bot: Añadida [[Categoría:%s]]',
+    'fr':u'Robot : ajoute [[Catégorie:%s]]',
     'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     }
@@ -53,6 +54,7 @@ msg_change={
     'de':u'Bot: Ändere Kategorie %s',
     'en':u'Robot: Changing category %s',
     'es':u'Bot: Cambiada categoría %s',
+    'fr':u'Robot : modifie catégorie %s',
     'is':u'Vélmenni: Breyti flokknum [[Flokkur:%s]]',
     'nl':u'Bot: Wijziging Categorie %s',
     'pt':u'Bot: Modificando [[Categoria:%s]]',
@@ -61,6 +63,7 @@ msg_change={
 deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach %s verschoben',
     'en':u'Robot: Category was moved to %s',
+    'fr':u'Robot : catégorie déplacée sur %s',
     }
 
 class CategoryDatabase:
@@ -496,6 +499,7 @@ class CategoryTreeRobot:
             'da': u'(også i %s)',
             'de': u'(auch in %s)',
             'en': u'(also in %s)',
+            'fr': u'(également dans %s)',
             'is': u'(einnig í %s)',
             'pt': u'(também em %s)',
             }
