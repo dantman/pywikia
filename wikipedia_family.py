@@ -231,6 +231,7 @@ category = {
     'nl': u'Categorie',
     'no': u'Kategori',
     'fr': u'Cat\xe9gorie',
+    'ru': u'Category',
     'sv': u'Kategori',
     'test': u'Category'
 }

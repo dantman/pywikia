@@ -244,6 +244,7 @@ def tidy_category():
         flag = False
         length = 1000
         while not flag:
+            print ''
             choice=wikipedia.input(u'Choice:')
             if choice == 'n':
                 flag = True
@@ -252,8 +253,6 @@ def tidy_category():
                 if current_cat == original_cat:
                     print 'No changes necessarry.'
                 else:
-                    print original_cat.catname()
-                    print current_cat.catname()
                     catlib.change_category(article, original_cat.catname(), current_cat.catname())
                 flag = True
             elif choice == 'j':
@@ -267,8 +266,20 @@ def tidy_category():
                 catlib.change_category(article, original_cat.catname(), None)
                 flag = True
             elif choice == '?':
-                wikipedia.output(article.get()[0:length])
-                length = length+500            
+                print ''
+                full_text = article.get()
+                print ''
+                wikipedia.output(full_text[0:length])
+                
+                # if categories possibly weren't visible, show them additionally
+                # (maybe this should always be shown?)
+                if len(full_text) > length:
+                    print ''
+                    print 'Original categories: '
+                    for original_cat in article.categories(): 
+                        wikipedia.output('* %s' % original_cat.linkname()) 
+                    # show more text if the user uses this function again
+                    length = length+500
             elif choice[0] == 'u':
                 try:
                     choice=int(choice[1:])
