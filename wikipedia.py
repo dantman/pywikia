@@ -410,13 +410,6 @@ class PageLink(object):
             newPage="0"
         else:
             newPage="1"
-        if self.site().version() >= "1.4":
-            if not self.site().gettoken():
-                output(u"Getting page to get a token.")
-                try:
-                    self.get(force = True)
-                except (NoPage, IsRedirectPage, LockedPage):
-                    pass
         return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().token)
 
     def interwiki(self):
@@ -1194,6 +1187,17 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
        Use of this routine can normally be avoided; use PageLink.put
        instead.
     """
+    safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
+    if site.version() >= "1.4":
+        if not token:
+            output(u"Getting page to get a token.")
+            try:
+                PageLink(site,url2link(name,site,site)).get(force = True)
+                token=site.gettoken()
+            except Error:
+                pass
+        else:
+            safetuple = (site,name,text,comment,watchArticle,minorEdit,newPage)
     # Check whether we are not too quickly after the previous putPage, and
     # wait a bit until the interval is acceptable
     put_throttle()
@@ -1263,6 +1267,12 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         elif "<title>500 Internal Server Error" in data:
             print "Anonymous editing currently not possible."
             raise NotLoggedIn
+        elif safetuple and "<" in data:
+            # We might have been using an outdated token
+            print "Changing page has failed. Retrying."
+            putPage(safetuple[0], safetuple[1], safetuple[2], comment=safetuple[3],
+                    watchArticle=safetuple[4], minorEdit=safetuple[5], newPage=safetuple[6],
+                    token=None)
         else:
             output(data, decoder = myencoding())
     return response.status, response.reason, data
