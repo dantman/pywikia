@@ -95,6 +95,7 @@ import math
 import difflib
 import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
+import warnings
 
 import config, mediawiki_messages
 import htmlentitydefs
@@ -516,6 +517,8 @@ class PageLink(object):
         except LockedPage:
             raise LockedPage(self)
         except IsRedirectPage, arg:
+            if '|' in arg:
+                warnings.warn("%s has a | character, this makes no sense", Warning)
             return str(arg)
         else:
             raise IsNotRedirectPage(self)
@@ -614,7 +617,7 @@ def redirectRe(site):
         txt = '(?:redirect|'+site.redirect()+')'
     else:
         txt = 'redirect'
-    return re.compile(r'\#'+txt+':? *\[\[(.*?)\]\]', re.I)
+    return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]\]|\|)', re.I)
 
 # Shortcut get to get multiple pages at once
 class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
