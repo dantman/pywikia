@@ -382,6 +382,9 @@ class Family(object):
     
     def hostname(self, code):
         return self.langs[code]
+    
+    def path(self, code):
+        return '/w/index.php'
 
     # Which version of MediaWiki is used?
 
@@ -389,45 +392,41 @@ class Family(object):
         return "1.4"
 
     def put_address(self, code, name):
-        return '/w/wiki.phtml?title=%s&action=submit'%name
+        return '%s?title=%s&action=submit' % (self.path(code), name)
 
     def get_address(self, code, name):
-        return '/w/wiki.phtml?title='+name+"&redirect=no"
+        return '%s?title=%s&redirect=no' % (self.path(code), name)
 
     def references_address(self, code, name):
-        return "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s&limit=%d" % (self.special_namespace_url(code), name, config.special_page_limit)
+        return '%s?title=%s:Whatlinkshere&target=%s&limit=%d' % (self.path(code), self.special_namespace_url(code), name, config.special_page_limit)
+        #return "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s&limit=%d" % (self.special_namespace_url(code), name, config.special_page_limit)
 
     def upload_address(self, code):
-        return '/wiki/%s:Upload'%self.special_namespace_url(code)
+        return '%s?title=%s:Upload' % (self.path(code), self.special_namespace_url(code))
 
     def maintenance_address(self, code, maintenance_page, default_limit = True):
         if default_limit:
-            return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' %
-                    self.special_namespace_url(code)) + maintenance_page
+            return '%s?title=%s:Maintenance&subfunction=%s' % (self.path(code), self.special_namespace_url(code), maintenance_page)
         else:
-            return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' %
-                    self.special_namespace_url(code)) + maintenance_page + '&limit=' + str(config.special_page_limit)
+            return '%s?title=%s:Maintenance&subfunction=%s&limit=%d' % (self.path(code), self.special_namespace_url(code), maintenance_page, config.special_page_limit)
 
     def allmessages_address(self, code):
-        return ("/w/wiki.phtml?title=%s:Allmessages&ot=html" %
-                self.special_namespace_url(code))
+        return "%s?title=%s:Allmessages&ot=html" % (self.path(code), self.special_namespace_url(code))
 
     def login_address(self, code):
-        return ('/w/wiki.phtml?title=%s:Userlogin&amp;action=submit' %
-                self.special_namespace_url(code))
+        return '%s?title=%s:Userlogin&action=submit' % (self.path(code), self.special_namespace_url(code))
 
     def move_address(self, code):
-        return ('/w/wiki.phtml?title=%s:Movepage&action=submit' %
-                self.special_namespace_url(code))
+        return '%s?title=%s:Movepage&action=submit' % (self.path(code), self.special_namespace_url(code))
 
     def delete_address(self, code, name):
-        return '/w/wiki.phtml?title=%s&action=delete' % name
+        return '%s?title=%s&action=delete' % (self.path(code), name)
 
     def version_history_address(self, code, name):
-        return '/w/wiki.phtml?title=%s&action=history&limit=%d' % (name, config.special_page_limit)
+        return '%s?title=%s&action=history&limit=%d' % (self.path(code), name, config.special_page_limit)
 
     def export_address(self, code):
-        return '/wiki/%s:Export' % self.special_namespace_url(code)
+        return '%s?title=%s:Export' % (self.path(code), self.special_namespace_url(code))
 
     def allpagesname(self, code, start):
         # This is very ugly: to get all pages, the wikipedia code
