@@ -1,3 +1,4 @@
+# -*- coding: cp1252 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
 
@@ -99,7 +100,9 @@ ignore={
     'da':('Wikipedia:Links til sider med flertydige titler'),
     'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie',
           'Wikip\xE9dia:Homonymie',
-          'Liste de toutes les combinaisons de deux lettres')
+          'Liste de toutes les combinaisons de deux lettres'),
+    'de':{'Wikipedia:Begriffsklärung',
+          'Wikipedia:Liste mathematischer Themen/BKS')
     }
 
 def getReferences(pl):
@@ -285,3 +288,4 @@ linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\]')
 for ref in getReferences(thispl):
     refpl=wikipedia.PageLink(wikipedia.mylang, ref)
     treat(refpl, thispl)
+
