@@ -243,7 +243,7 @@ def getReferences(pl):
         for Rignore in ignore_regexes:
             for i in range(len(x)-1, -1, -1):
                 if Rignore.match(x[i]):
-                    wikipedia.output(u'Ignoring page ' + x[i], wikipedia.myencoding())
+                    wikipedia.output('Ignoring page ' + x[i], wikipedia.myencoding())
                     del x[i]
     return x
 
