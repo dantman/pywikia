@@ -3,15 +3,15 @@
 1 18-jarige
 1 1e
 1 1px
-1 2004)</small
 1 220°C
 1 227,90/km²
 1 3°26
-1 48,84%)<br>39.320
-1 49,99%)<br>9.337
+1 444,09/km²
 1 4°02
+1 4°49
 1 4°76
 1 50°56
+1 50°59
 1 51°05
 1 52°26
 1 53°33
@@ -19,6 +19,7 @@
 1 983,89/km²
 1 A-Ha
 1 A-majeur
+0 A4-tje A4'tje
 1 AAG
 1 Aad
 1 Aag
@@ -42,7 +43,10 @@
 0 Aalterbrug Aalter-Brug
 1 Aamon
 1 Aandoeningen
+1 Aar sele
 1 Aarle
+1 Aarschot
+1 Aarsele
 1 Adolf
 1 Adrina
 1 Afrikaan
@@ -65,6 +69,7 @@
 1 Annerveenschekanaal
 1 Antwerpen
 1 Apollohuis
+1 Arendschot
 1 Armstrong
 1 Asparagales
 1 Assen-Deurze-Rolde-Gieten-Gasselte-Gasselternijveen-Gasselternijveenschemond-Stadskanaal
@@ -76,12 +81,16 @@
 0 Athena Athene
 1 Athene
 1 Auke
+1 Aurelianus
+0 Australie Australië
 1 Australië
 1 Austria
 1 Aves
 1 BNN
 1 Ba'al
 1 Bahama's
+0 Bahamas Bahama's
+0 Bahrain Bahrein
 1 Bakelse
 1 Balloo
 1 Balloërveld
@@ -111,6 +120,9 @@
 1 Braxton
 1 Brazilië
 1 Bredevoort
+0 Britanië Brittannië
+0 Britannië Brittannië
+0 Brittanië Brittannië
 1 Brugge
 1 Brussel
 1 Brussel-Gent
@@ -118,6 +130,7 @@
 1 CD
 1 CD&V
 1 Categorie
+0 Ceasar Caesar
 1 Charles
 1 Chomsky
 1 Chordata
@@ -134,6 +147,7 @@
 1 Daens
 1 Dale
 1 Delft
+1 Demer
 1 Dendermonde
 1 Descartes
 1 Deurne
@@ -146,9 +160,15 @@
 1 Dirk
 1 Dokkum
 1 Dongeradeel
+0 Drente Drenthe
+0 Drenth Drent
+0 Drenthen Drenten
+0 Drenths Drents
+0 Drenthse Drentse
 1 Drentse
 1 Drongelens
 1 Duitse
+1 E0E0E0
 1 E40
 1 Ealsum
 1 Earth
@@ -171,18 +191,23 @@
 1 FEIEA
 1 Fagnes
 1 Fenicische
+0 Filipijnen Filippijnen
+0 Filipijns Filippijns
+0 Filipijnse Filippijnse
 1 Flash
 1 Francia
 1 Frans
 1 Fries
 1 Friese
 1 Friesland
+0 Frieze Friese
 1 Frode
 1 Furuholmen
 1 Gaasterland-Sloten
 1 Gaye
 1 Gebaseerd
 1 Gelderland
+1 Gelrode
 1 GemeenteDongeradeel
 1 GemeentenGelderland
 1 GemeentenNoord-Holland
@@ -191,8 +216,10 @@
 1 Gent
 1 Gent-Brugge
 1 Gerrit
+0 Ghandi Gandhi
 1 Gieterveen
 1 Gieterzandvoort
+0 Goerese Goereese
 1 Goethia
 1 Goorloop
 1 Gotische
@@ -204,6 +231,7 @@
 1 Groningen-Haren-Zuidlaren-Schuilingsoord-Annen-Eext-Gieten
 1 Groningen-Westlaren-Zuidlaren-Schuilingsoord-Annen
 1 Gronings
+0 Guinese Guineese
 1 Guus
 1 HP
 1 Haagse
@@ -252,9 +280,11 @@
 1 Keulenaar
 1 Knesselare
 1 Knikman
+0 Koninginnendag Koninginnedag
 1 Kremlin
 1 Kudelstaart
 1 Lackluster
+1 Langdorp
 1 Latijn
 1 Latijnse
 1 Lauren
@@ -262,27 +292,37 @@
 1 Leibniz
 1 Leigraaf
 1 Lemegeton
+1 Leuven
 1 Lil
 1 Liliopsida
 1 Limburg
 1 Lintelo
+0 Litauwen Litouwen
 1 Lloyds
 1 Locke
 1 Londen
 1 Lotenhulle
 1 Louis
 1 Maas
+0 Madagascar Madagaskar
 1 Magnoliophyta
-1 Mannen<br>Vrouwen
+0 Malediven Maldiven
 1 Martens
 1 Meinesz
 1 Messchaert
 1 Michiel
+0 Middelandse Middellandse
 0 Middeleeuwe Middeleeuwse
 1 Middeleeuwen
+0 Middeleeuws middeleeuws
 1 Middeleeuwse
 1 Middellandse
 1 Midden-Siberië
+0 Middeneuropees Midden-Europees
+0 Middeneuropese Midden-Europese
+0 Middenlandse Middellandse
+0 Misissippi Mississippi
+0 Missisippi Mississippi
 1 Missy
 1 Moeren
 1 Morten
@@ -303,26 +343,58 @@
 1 Nieuw-Deurne
 1 Nieuwediep
 1 Nieuwerkerken
+0 Nieuwzeelands Nieuw-Zeelands
+0 Nieuwzeelandse Nieuw-Zeelandse
 1 Noam
 1 Nooitgedacht
 1 Noord-Brabant
 1 Noord-Frankrijk
 1 Noord-Holland
 1 Noord-Spanje
+0 Noordafrikaans Noord-Afrikaans
+0 Noordafrikaanse Noord-Afrikaanse
+0 Noordamerikaans Noord-Amerikaans
+0 Noordamerikaanse Noord-Amerikaanse
+0 Noordbrabants Noord-Brabants
+0 Noordbrabantse Noord-Brabantse
+0 Noordeuropees Noord-Europees
+0 Noordeuropese Noord-Europese
 1 Noordewier
 1 Noordewier-Reddingius
+0 Noordhollands Noord-Hollands
+0 Noordhollandse Noord-Hollandse
+0 Noordkoreaans Noord-Koreaans
+0 Noordkoreaanse Noord-Koreaanse
+0 Noordnederlands Noord-Nederlands
+0 Noordnederlandse Noord-Nederlandse
 1 Noorwegen
 1 O.L
 1 Ontario
+1 Onze-Lieve-Vrouwkerk
 1 Oost-Europa
 1 Oost-Groningen
 1 Oost-Indische
 1 Oost-Vlaanderen
+0 Oostafrikaans Oost-Afrikaans
+0 Oostafrikaanse Oost-Afrikaanse
+0 Oostaziatisch Oost-Aziatisch
+0 Oostaziatische Oost-Aziatische
 1 Oostdongeradeel
+0 Oostduits Oost-Duits
+0 Oostduitse Oost-Duitse
 1 Oostende
 1 Oostenrijk
 0 Oosteuropa Oost-Europa
+0 Oosteuropees Oost-Europees
+0 Oosteuropese Oost-Europese
+0 Oostindisch Oost-Indisch
 1 Oostindische
+0 Oostnederlands Oost-Nederlands
+0 Oostnederlandse Oost-Nederlandse
+0 Oostromeins Oost-Romeins
+0 Oostromeinse Oost-Romeinse
+0 Oostvlaams Oost-Vlaams
+0 Oostvlaamse Oost-Vlaamse
 1 Opmeer
 1 Orchidaceae
 1 Orchideeënfamilie
@@ -338,6 +410,10 @@
 1 Phalacrocorax
 1 Philatelie
 1 Philatéliques
+0 Phoenicisch Fenicisch
+0 Phoenicische Fenicische
+0 Phoeniciër Feniciër
+0 Phoeniciërs Feniciërs
 1 Pieter
 1 Plantae
 1 Plato
@@ -347,16 +423,20 @@
 1 Poppelse
 0 Produktie productie
 1 Pseudomonarchia
+0 Pyrenese Pyreneese
 1 R&B-zangeres
 1 RSI
 1 Ransdorp
 1 Reddingius
 1 Renate
 1 Rigoureus
+0 Rijssel Rijsel
+1 Rillaar
 1 Rips
 1 Rixtel
 1 Rolde
 1 SACD
+0 Sanskrit Sanskriet
 1 Scandinavië
 1 Schelde
 1 Schipborg
@@ -366,6 +446,8 @@
 1 Sibley
 1 Sint-Maria-Aalter
 1 Sint-Martenskerk
+1 Sint-Rochus
+1 Sint-Rochusverlichting
 1 Sinterklaas
 1 Sinterklaasfilm
 1 Sliedrecht
@@ -374,19 +456,35 @@
 1 Spaanse
 1 Spitsbek
 1 St
+1 Stadsfeestzaal
 1 Staten
 1 Staten-Generaal
 1 Steenkolen-Handelsvereeniging
 1 Steenwijker
 1 Strain
+0 Sudan Soedan
+0 Tartaren Tataren
 0 Tesamen Tezamen
 1 Tezamen
+0 Tjech Tsjech
+0 Tjechen Tsjechen
+0 Tjechisch Tsjechisch
+0 Tjechische Tsjechische
+0 Tjechië Tsjechië
 1 Toni
 1 Toor
 1 Traas
 1 Tsjernobyl
+0 Twenthe Twente
+0 Tyrrheense Tyrreense
+0 Uganda Oeganda
 1 Unneland
 1 Utrecht
+0 Uzbeek Oezbeek
+0 Uzbeeks Oezbeeks
+0 Uzbeekse Oezbeekse
+0 Uzbeken Oezbeken
+0 Uzbekistan Oezbekistan
 1 VBN
 1 VOC
 1 VVPR
@@ -396,6 +494,7 @@
 1 Vereenigde
 1 Verenigde
 1 Vlaams
+1 Vlaams-Brabant
 1 Vlaamse
 1 Vlaanderen
 1 Vledder
@@ -407,10 +506,21 @@
 1 Warthog
 1 Weerijs
 1 West-Europa
+0 Westduits West-Duits
+0 Westduitse West-Duitse
 1 Westerwoldse
+0 Westeuropees West-Europees
+0 Westeuropese West-Europese
+0 Westfrieze Westfriese
+0 Westindisch West-Indisch
+0 Westindische West-Indische
 1 Westland
 1 Westlander''': Een
 0 Westlander''':Een Westlander''': Een
+0 Westromeins West-Romeins
+0 Westromeinse West-Romeinse
+0 Westvlaams West-Vlaams
+0 Westvlaamse West-Vlaamse
 1 Wevelgem
 1 Weyer
 1 Wibrandus
@@ -422,7 +532,20 @@
 1 Youri
 1 Zaltbommel
 1 Zuid-Holland
+0 Zuidafrikaans Zuid-Afrikaans
+0 Zuidafrikaanse Zuid-Afrikaanse
+0 Zuidamerikaans Zuid-Amerikaans
+0 Zuidamerikaanse Zuid-Amerikaanse
 1 Zuiderwoude
+0 Zuideuropees Zuid-Europees
+0 Zuideuropese Zuid-Europese
+0 Zuidhollands Zuid-Hollands
+0 Zuidhollandse Zuid-Hollandse
+0 Zuidkoreaans Zuid-Koreaans
+0 Zuidkoreaanse Zuid-Koreaanse
+0 Zuidlimburgs Zuid-Limburgs
+0 Zuidnederlands Zuid-Nederlands
+0 Zuidnederlandse Zuid-Nederlandse
 1 Zuidoost-Azië
 1 a
 1 a-mineur
@@ -496,15 +619,50 @@
 1 aardig
 1 aardrijkskunde
 1 aardrijkskundige
+0 abacadabra abracadabra
+0 abboneert abonneert
+0 abbonnee abonnee
+0 abbonnees abonnees
+0 abbonnement abonnement
+0 abbonneren abonneren
+0 aberatie aberratie
+0 aberaties aberraties
+0 abotoir abattoir
+0 abotoirs abattoirs
+0 acabadabra abracadabra
+0 accelleratie acceleratie
+0 accellereerde accelereerde
+0 accellereerden accelereerden
+0 accellereert accelereert
+0 accellereren accelereren
+0 accomodatie accommodatie
+0 accomodeerde accommodeerde
+0 accomodeerden accommodeerden
+0 accomodeert accommodeert
+0 accomoderen accommoderen
+0 accoord akkoord
+0 accoorden akkoorden
+0 accuut acuut
 1 acht
 1 achterlaten
 1 achterschip
+0 acolade accolade
+0 acolades accolades
+0 acoustisch akoestisch
+0 acoustische akoestische
 1 acre
 1 acteur
 1 actie
 1 actief
+0 acuraat accuraat
+0 adekwaat adequaat
 1 adel
+0 adelijk adellijk
+0 adelijke adellijke
+0 adelijken adellijken
 1 adenine
+0 adfundum ad_fundum
+0 adhoc ad hoc
 1 administratieve
 1 adoptie
 1 aestivalis
@@ -517,14 +675,39 @@
 1 afhankelijk
 1 afklemming
 1 afkomstig
+0 afront affront
+0 afronteerde affronteerde
+0 afronteerden affronteerden
+0 afronteert affronteert
+0 afronteren affronteren
 1 afschermen
 1 aftrek
 1 afwijking
 1 afwijkingen
 1 afwijkingsmogelijkheden
 1 afzakken
+0 aggressie agressie
+0 aggressief agressief
+0 aggressieve agressieve
+0 aggressiever agressiever
+0 aggressievere agressievere
+0 aggressiviteit agressiviteit
+0 agregaat aggregaat
 1 aid
 1 ain't
+0 akkordeerde accordeerde
+0 akkordeert accordeert
+0 akkorderen accorderen
+0 akoesties akoestisch
+0 akoord akkoord
+0 akordeerde accordeerde
+0 akordeert accordeert
+0 akorderen accorderen
+0 aktie actie
+0 aktief actief
+0 akties acties
+0 aktieve actieve
+0 akwisitie acquisitie
 1 al
 1 alba
 1 albinisme
@@ -532,49 +715,103 @@
 1 alfa
 1 algemeen
 1 algemene
-1 align="center
-1 align="center">''Phalacrocoracidae''</th></tr
-1 align="right
-1 align=center
+0 algorithme algoritme
+0 algorithmen algoritmen
+0 algorithmes algoritmes
+0 algorithmiek algoritmiek
+0 algorithmisch algoritmisch
+1 align
 1 alle
 1 alleen
 1 allemaal
+0 allerlij allerlei
 1 alles
 1 allesbehalve
+0 alluminimum aluminium
+0 alluminium aluminium
 1 als
 1 alternatief
 1 alternatieve
 1 altijd
+0 alumimimum aluminium
+0 amfibiën amfibieën
+0 amoniak ammoniak
+0 amuniensus amanuensis
 1 analyse
 1 analyseren
+0 analyst analist
 1 ancien
 1 and
 1 andere
 1 anderen
+0 anderzins anderszins
+0 anecdote anekdote
 1 anemie
 1 anker
+0 antarkties antarctisch
+0 anthrax antrax Anthrax miltvuur
+0 anti-held antiheld
+0 antikwaar antiquaar
 1 anus
 1 apart
+0 apartement appartement
+0 apartementen appartementen
+0 apenzuur apezuur
+0 aplaudiseerde applaudisseerde
+0 aplaudiseerden applaudisseerden
+0 aplaudiseert applaudisseert
+0 aplaudiseren applaudisseren
+0 aplaudisseerde applaudisseerde
+0 aplaudisseerden applaudisseerden
+0 aplaudisseert applaudisseert
+0 aplaudisseren applaudisseren
+0 aplaus applaus
+0 aplausiseren applaudisseren
+0 apocrieve apocriefe
+0 appelkompote appelcompote
+0 applaudiseerde applaudisseerde
+0 applaudiseerden applaudisseerden
+0 applaudiseert applaudisseert
+0 applaudiseren applaudisseren
 1 april
 1 arbeidsintensiever
+1 arend
 1 aristotelis
 1 arme
 1 aroma's
+0 arondisement arrondissement
+0 arondisementen arrondissementen
+0 arondissement arrondissement
+0 arondissementen arrondissementen
+0 arrondisement arrondissement
+0 arrondisementen arrondissementen
 1 arrondissement
 1 ars
+0 art-direktor artdirector
+0 arthritis artritis
+0 arthrose artrose
+0 artiekel artikel
 1 artikel
+0 artist artiest
+0 artisten artiesten
 1 as
 1 assen
 1 assistent
 1 atheromatose
+0 aubainmarie au_bain_marie
 1 augustus
 1 auritus
+0 authorisatie autorisatie
+0 authoriteit autoriteit
 1 automatische
 1 b.v
 1 baarmoeder
+0 babies baby's
+0 babietje baby'tje
 1 back
 1 background
 1 bacterie
+0 bacterieën bacteriën
 1 badinerend
 1 bakblik
 1 bakmeel
@@ -584,12 +821,25 @@
 1 band
 1 bank
 1 bankverzekeringsgroep
+0 barbekju barbecue
+0 barjaire barrière
 1 basis
+0 batiken batikken
 1 batterij
 1 bazaantuig
+0 beconcureer beconcurreer
+0 beconcureerd beconcurreerd
+0 beconcureerde beconcurreerde
+0 beconcureerden beconcurreerden
+0 beconcureert beconcurreert
+0 beconcureren beconcurreren
 1 bedektzadigen
 1 bedoeld
 1 bedrag
+0 bedriegelijk bedrieglijk
+0 bedriegelijke bedrieglijke
+0 bedrigelijk bedrieglijk
+0 bedrigelijke bedrieglijke
 1 bedrijf
 1 bedrijfsjournalistiek
 1 bedrijfsopbrengst
@@ -602,19 +852,24 @@
 1 beemd
 1 been
 1 beg
+1 begijnhof
 1 begin
 1 beginsel
 1 begraafplaats
 1 begrafenisondernemer
 1 begraven
+0 begravenis begrafenis
 1 begrepen
 1 begrijpelijker
 1 begrip
 1 begrippen
+0 begroeing begroeiing
 1 behaald
 1 behaalde
 1 behalve
 1 behandeling
+0 behartenswaardig behartigenswaardig
+0 behartenswaardige behartigenswaardige
 1 beheer
 0 beheerkosten beheerskosten
 1 beheerskosten
@@ -624,6 +879,8 @@
 1 beiaard
 1 beide
 1 beiden
+1 bek
+1 bekaf
 1 bekeken
 1 bekend
 1 bekendheid
@@ -652,9 +909,11 @@
 1 beleggingsstijl
 1 belegt
 1 beleid
+1 beleven
 1 belfort
 1 belichaamt
 1 bemoeide
+0 bemoeiienis bemoeienis
 1 benadering
 1 benaderingen
 1 benaming
@@ -734,9 +993,8 @@
 1 bezit
 1 bezitten
 1 bezitters
-1 bgcolor="#E0E0E0
-1 bgcolor="pink">'''{{familia}}'''</th></tr
-1 bgcolor=pink>{{taxonomy}}</th></tr
+1 bgcolor
+0 biathlon biatlon
 1 bij
 1 bijkomend
 1 bijleggen
@@ -747,14 +1005,24 @@
 1 binnen
 1 binnenvaartuig
 1 binomial_name
+0 bioenergie bio-energie
 1 biografie
 1 biologie
 1 biologische
+1 bioscoopcomplex
+0 bischop bisschop
+0 bischoppelijk bisschoppelijk
+0 bischoppelijke bisschoppelijke
+0 bischoppen bisschoppen
+0 bison bizon
+0 bisons bizons
+0 blackbox black box
 1 blad
 1 bladeren
 1 blauw
 1 blijkt
 1 blijven
+0 blindenman blindeman
 1 bloeden
 1 bloedgroep
 1 bloedvaten
@@ -772,18 +1040,22 @@
 1 boekjaren
 1 boekwaarde
 1 bomen
+0 bonvivant bon-vivant
+0 bonvivants bon-vivants
 1 boon
 1 booten
-1 border="0
-1 border="1
-1 border=0
-1 border=1
+1 border
 1 bos
+0 bosage bosschage
+0 bosages bosschages
 1 bosje
+0 bossage bosschage
+0 bossages bosschages
 1 botsing
 1 botten
 1 bottom-up
 1 boursière
+0 bousouki bouzouki
 1 bouwen
 1 bouwer
 1 bouwprojecten
@@ -793,6 +1065,8 @@
 1 bovendien
 1 bovenste
 1 br
+0 bramaan Brahmaan
+0 bravoer bravoure
 1 brede
 1 breed
 1 breedtegraad
@@ -806,6 +1080,9 @@
 1 broertjes
 1 bron
 1 bronzen
+1 bruine
+0 bruskeren bruuskeren
+0 bruskkeren bruuskeren
 1 buigt
 1 buik
 1 buikpijn
@@ -813,38 +1090,106 @@
 1 buiten
 1 buitenaf
 1 buitengewone
+0 buitenisig buitenissig
+0 buitenisige buitenissige
+0 buitennissig buitenissig
+0 buitennissige buitenissige
 1 buitenzijde
+0 buiïg buiig
+0 bureau's bureaus
+0 bureaux bureaus
+0 burgelijk burgerlijk
+0 burgelijke burgerlijke
 1 burgemeester
+0 burgermeester burgemeester
+0 burgermeesters burgemeesters
+0 burnout burn-out
+0 buro bureau
+0 buro's bureaus
 1 busverbindingen
 1 buurt
 1 buurtschap
 1 bv
+0 cabarettier cabaretier
+0 cabarettiers cabaretiers
+0 cafeine cafeïne
+0 caffeine cafeïne
+0 caffeïne cafeïne
+0 café's cafés
+1 cafés
 1 call
+0 calligrafie kalligrafie
+0 camé camee
+0 cappucino cappuccino
 1 caption
+0 capuccino cappuccino
+0 capucino cappuccino
+0 caramel karamel
 1 carnaval
 1 carnavaleske
+0 carousel carrousel
+0 carousels carrousels
+0 caroussel carrousel
+0 caroussels carrousels
+0 carriljon carillon
+0 cassière caissière
+0 categorien categorieën
 1 categorieën
-1 cellpadding="1
-1 cellspacing="0
-1 cellspacing=0
+0 catheter katheter
+0 catheters katheters
+0 celcius Celsius
+1 cellpadding
+1 cellspacing
+1 center
+0 centra's centra centrums
 1 centrale
 1 centrum
 1 chordadieren
+0 chrisant chrysant
+0 chrisanten chrysanten
 1 christelijke
 1 chronologie
 1 cijfer
 1 circa
+0 circel cirkel
+0 clavecimbel klavecimbel
+0 clericaal klerikaal
+0 clericale klerikale
+0 clerikaal klerikaal
+0 clerikale klerikale
 1 clubbing
 1 cm
 1 coach
 1 color
-1 colspan="2
+1 colspan
 1 combinatie
+0 comitee comité
+0 comittee comité
 1 commissarissen
+0 commitee comité
+0 commiteerde committeerde
+0 commiteerden committeerden
+0 commiteren committeren
+0 committee comité Committee
+0 commité comité
 1 complete
 1 computers
 1 concreet
 1 concreto
+0 concureerde concurreerde
+0 concureerden concurreerden
+0 concureert concurreert
+0 concurent concurrent
+0 concurenten concurrenten
+0 concurentie concurrentie
+0 concureren concurreren
+0 concurerend concurrerend
+0 concurerende concurrerende
+0 conferanse conference
+0 confiskeerde confisqueerde
+0 confiskeerden confisqueerden
+0 confiskeert confisqueert
+0 confiskeren confisqueren
 1 congenitale
 1 conservatorium
 1 constructie
@@ -852,17 +1197,37 @@
 1 contante
 1 context
 1 controle
+0 coordinatie coördinatie
+0 copie kopie
+0 copieën kopieën
 1 cormorant
+0 cosmos kosmos
 1 coupon
 1 coördinaten
 1 creatief
 1 criticus
+0 crocus krokus
+0 crocussen krokussen
+0 cubisme kubisme
+0 cubistisch kubistisch
+0 cubistische kubistische
+0 cubus kubus
+0 cubussen kubussen
+1 cultureel
 1 cultuur
 1 cultuurprogramma
+0 curzes cursus
+0 cylinder cilinder
+0 cylinders cilinders
+0 cylindrisch cilindrisch
+0 cylindrische cilindrische
+0 cypres cipres
+0 cypressen cipressen
 1 czarny
 1 daar
 1 daarbij
 1 daarin
+0 daarintegen daarentegen
 1 daarmee
 1 daarna
 1 daarom
@@ -879,7 +1244,9 @@
 1 dankbaar
 1 dankte
 1 darmaandoening
+0 dasplays displays
 1 dat
+0 data's data of datums
 1 date
 1 dateren
 1 datum
@@ -892,6 +1259,8 @@
 1 defect
 1 deficiëntie
 1 definitief
+0 degenere dégénéré
+0 dekoletee decolleté
 1 dekschuiten
 1 dele
 1 delen
@@ -905,14 +1274,27 @@
 1 derde
 1 derden
 1 dergelijke
+1 destijds
 1 deze
 1 dezelfde
+0 dezjavu déjà_vu
+0 diacritisch diakritisch
+0 diacritische diakritische
+0 diagnostiseerde diagnosticeerde
+0 diagnostiseerden diagnosticeerden
+0 diagnostiseert diagnosticeert
+0 diagnostiseren diagnosticeren
+0 diarrhee diarree
 1 dichtbundel
 1 dichter
+0 dichtgeslipt dichtgeslibd
 1 dichtheid
+0 dichtsbijzijnd dichtstbijzijnd
+0 dichtsbijzijnde dichtstbijzijnde
 1 didactisch
 0 didvidend dividend
 1 die
+0 dieeten diëten
 1 diefstal
 1 dien
 1 dienst
@@ -924,9 +1306,19 @@
 1 differentieel
 1 dijen
 1 dingen
+0 dioxyde dioxide
 1 directie
+0 direkt direct
+0 direkteur directeur
+0 direktie directie
 1 discontovoet
+0 discusie discussie
+0 discusies discussies
 1 disorder
+0 distansieerde distantieerden
+0 distansieerden distantieerden
+0 distansieert distantieert
+0 distansiëren distantiëren
 1 district
 1 dit
 1 diverse
@@ -951,12 +1343,15 @@
 1 doorzagen
 1 dorp
 1 dorpen/buurtschappen
+0 dowjonesindex Dow-Jonesindex
 1 dp
 1 dr
 1 dragen
+0 dreumessen dreumesen
 1 drie
 1 drift
 1 droge
+0 drommedaris dromedaris
 1 drukt
 1 drukte
 1 drummer
@@ -970,12 +1365,14 @@
 1 durfkapitaal
 1 dus
 1 dwars
+0 défakto de facto
 1 e3e3e3
 1 echter
 1 ecologie
 1 economie
 1 economisch
 1 economische
+0 ecotax ecotaks
 1 ee
 1 een
 1 eens
@@ -1001,11 +1398,23 @@
 1 eindredactie
 1 eisen
 1 eivormige
+0 ekseem eczeem
+0 electrocutie elektrocutie
+0 electron elektron
+0 electronica elektronica
+0 electronika elektronica
+0 electronisch elektronisch
+0 electronische elektronische
 1 elektrische
+0 elektrokuteren elektrocuteren
+0 elektrokutie elektrocutie
+0 elektronika elektronica
 1 elementen
 1 elf
 1 elk
+0 emfaze emfase
 1 emigreerde
+0 eminansgrise éminence_grise
 1 empirische
 1 empirisme
 1 en
@@ -1017,37 +1426,82 @@
 1 eng
 1 enig
 1 enige
+0 enigzins enigszins
 1 enkel
 1 enkel-oedeem
 1 enkele
 1 enkelvoudige
 1 enorm
+0 enseneerde ensceneerde
+0 enseneerden ensceneerden
+0 enseneert ensceneert
+0 enseneren ensceneren
 1 enthousiasme
 1 enthousiast
+0 entrekoot entrecote
 1 enz
+0 epidemiën epidemieën
+0 epinefrine adrenaline
+0 epinephrine adrenaline
 1 er
+1 ere
 1 erfelijk
 1 erfelijke
 1 erg
 1 ervan
 1 ervaren
 1 ervaring
+0 esteet estheet
+0 esteten estheten
+0 estetesch esthetische
+0 estetica esthetica esthetiek
+0 estetici esthetici
+0 esteticus estheticus
+0 estetiek esthetiek
+0 estetisch esthetisch
+0 etappe's etappes
 1 eten
+0 ethnisch etnisch
+0 ethnische etnische
+0 ethnografie etnografie
+0 etica ethica ethiek
+0 eticus ethicus
+0 etiek ethiek
+0 etisch ethisch
+0 etische ethische
+0 eutenasie euthanasie
+0 euthenasie euthanasie
 1 even
 1 eveneens
+1 evenement
 1 evenmin
 1 eventuele
+0 exlibres ex-libres
 1 exogene
 1 exposure
+0 extentie extensie
 1 externe
 1 extra
+0 exzeem eczeem
+0 facinerend fascinerend
 1 factoren
 1 facultaire
 1 faculteiten
+0 faecaal fecaal
+0 faecale fecale
+0 faecaliën fecaliën
+0 faeces feces
+0 faillisement faillissement
+0 faillisementen faillissementen
+0 fajiesement faillissement
+0 falikant faliekant
 1 familiaal
 1 familieleden
+0 fassimiel fascimile
 1 ffffff
 1 fiets
+0 fietster fietsster
+0 fietsters fietssters
 1 figuur
 1 fijner
 1 filatelie
@@ -1057,15 +1511,28 @@
 0 financiëring financiering
 1 finishlijn
 1 fiscaal
+0 fitnus fitness
 1 fiume
+0 flambwajant flamboyant
+0 flambwajante flamboyante
 1 flink
 1 fluctuaties
 1 fluitist
+0 fondu fondue
 1 formule
 1 foto
+0 fotocopie fotokopie
+0 fotocopieerde fotokopieerde
+0 fotocopieerden fotokopieerden
+0 fotocopieert fotokopieert
+0 fotocopieën fotokopieën
+0 fotocopiëren fotokopiëren
 1 foute
 1 fractiesecretaris
+0 frele frêle
 1 frequente
+0 frikandel frikadel
+0 frikandellen frikadellen
 1 functie
 1 functieverlies
 1 functioneren
@@ -1078,29 +1545,49 @@
 1 garanties
 1 gaven
 1 gazons
+0 ge-upload geüpload
+0 ge-uploade geüploade
+0 geabbonneerd geabonneerd
+0 geaccellereerd geaccelereerd
 1 geaccepteerd
+0 geaccomodeerd geaccommodeerd
 1 geadopteerd
+0 geaplaudiseerd geapplaudisseerd
+0 geaplaudisseerd geapplaudisseerd
+0 geapplaudiseerd geapplaudisseerd
 1 gearresteerd
 1 gebeurd
 1 gebeuren
 1 gebied
 1 geboorte
 1 geboren
+1 gebouwd
 1 gebouwde
 1 gebracht
 1 gebruik
 1 gebruikers
 1 gebruikt
+0 gebruskeerd gebruuskeerd
+0 gebruskkeerd gebruuskeerd
+0 gecommiteerd gecommitteerd
+0 gecommiteerde gecommitteerde
 1 gecompliceerd
 1 geconcentreerd
+0 geconcurereerd geconcurrereerd
+0 geconfiskeerd geconfisqueerd
 1 gecreëerd
 1 gedaan
 1 gedaante
+0 gedachtengang gedachtegang
+0 gedachtengoed gedachtegoed
 1 gedeeld
 1 gedeelte
 1 gedeeltelijk
 1 gedempt
+0 gedestileerd gedistilleerd
+0 gediagnostiseerd gediagnosticeerd
 1 gediskwalificeerd
+0 gedistansieerd gedistantieerd
 1 gediversificeerd
 1 gedrag
 1 gedrukt
@@ -1113,8 +1600,12 @@
 1 geenszins
 1 geest
 1 geestelijk
+0 gefotocopieerd gefotokopieerd
+0 gefotocopieerde gefotokopieerde
 1 gefundeerd
 1 gegraven
+0 gegrilled gegrild
+0 gegrillede gegrilde
 1 gehad
 1 gehandhaafd
 1 gehanteerde
@@ -1125,6 +1616,13 @@
 1 gehucht
 1 gehuwd
 1 gejaagd
+0 gekapsijsd gekapseisd
+0 gekaramelliseerd gekarameliseerd
+0 gekaramelliseerde gekarameliseerde
+0 gekasteid gekastijd
+0 gekasteide gekastijde
+0 gekontroleerd gecontroleerd
+0 gekontroleerde gecontroleerde
 1 gekozen
 1 geld
 1 geleend
@@ -1139,6 +1637,7 @@
 1 gemeentehuis
 1 gemeentelijke
 1 gemeenten
+1 gemeentenVlaams-Brabant
 1 gemeentevlag
 1 gemeentewapen
 1 gemiddeld
@@ -1158,14 +1657,21 @@
 0 genotsmiddelen genotmiddelen
 1 geografie
 1 geografische
+0 geoxydeerd geoxideerd
+0 geoxydeerde geoxideerde
 1 geplaatst
 1 gepoogd
 1 geprezen
 1 gerapporteerde
 1 gerealiseerd
+0 gerechterlijk gerechtelijk
+0 gerechterlijke gerechtelijke
 1 gereedschap
 1 gereformeerd
 1 geregelde
+0 gerelaxed gerelaxt
+0 gerenomeerd gerenommeerd
+1 gerestaureerde
 1 geringe
 1 geschiedenis
 1 geschiedkunde
@@ -1180,6 +1686,9 @@
 1 gesprek
 1 gesteld
 1 gestelde
+1 gesticht
+0 gestruktureerd gestructureerd
+0 gestruktureerde gestructureerde
 1 getalenteerde
 1 getrouwd
 1 gevaarlijke
@@ -1192,33 +1701,64 @@
 1 gevolge
 1 gewaardeerd
 1 geweest
+0 geweldadig gewelddadig
+0 geweldadige gewelddadige
 1 gewenste
 1 gewest
 1 gewone
 1 geworden
+0 gezamelijk gezamenlijk
+0 gezamelijke gezamenlijke
+0 gezamelijkheid gezamenlijkheid
 1 gezamenlijk
 1 gezegd
 1 gezeild
+0 gezelschapspel gezelschapsspel
+0 gezelschapspelen gezelschapsspelen
+0 gezelschapspelletje gezelschapsspelletje
+0 gezelschapspelletjes gezelschapsspelletjes
+0 gezgd gezegd
 1 gezien
+0 gezinte gezindte
 1 gezocht
 1 gezonde
 1 gezwellen
+0 geënseneerd geënsceneerd
+0 geïntereseerd geïnteresseerd
+0 geïntereseerde geïnteresseerde
 1 geïnteresseerde
+0 geïnterreseerd geïnteresseerd
+0 geïnterreseerde geïnteresseerde
 1 geïnvesteerde
 1 gietijzeren
 1 ging
 1 gingen
 1 globale
+0 glooing glooiing
 1 god
 1 goed
 1 goeddunken
 1 goede
+0 goededag goedendag
+0 goedenmiddag goedemiddag
 1 goederen
 1 goedkeuring
+0 goelasj goulash
+0 gortepap gortenpap
+0 gothiek gotiek
+0 gothisch gotisch
+0 gothische gotische
+0 goulasj goulash
 1 graafschap
+0 graffitti graffiti
+0 grafiti graffiti
+0 grafitti graffiti
 1 graslanden
+1 gratis
 1 greep
 1 grens
+0 grenzenloos grenzeloos
+0 grenzenloze grenzeloze
 1 grijpt
 1 grindwinning
 1 groeide
@@ -1233,11 +1773,17 @@
 0 grootte grote
 1 grote
 1 groter
+0 guerilla guerrilla
 1 gunning
+0 gynecologen gynaecologen
+0 gynecologie gynaecologie
+0 gynecoloog gynaecoloog
 1 ha
 1 haar
 1 had
 1 hadden
+0 hagepreek hagenpreek
+0 hagepreken hagenpreken
 1 halfdroge
 1 hals
 1 halverwege
@@ -1246,10 +1792,21 @@
 1 handen
 1 handicap
 1 handicaps
+0 handvaten handvatten
 1 hangen
+0 happyend happy_end
+0 hardstikke hartstikke in_hoge_mate zeer erg
 1 harmonieleer
+0 harmonika harmonica
+0 harmonika's harmonica's
+0 harstikke hartstikke in_hoge_mate zeer erg
+0 hartenlust hartelust
 1 hartinfarct
 1 hartruis
+0 hartstikke in_hoge_mate zeer erg
+0 hartvochtig hardvochtig
+0 hartvochtige hardvochtige
+0 havikken haviken
 1 head
 1 heart
 1 hebben
@@ -1258,14 +1815,19 @@
 1 heel
 1 heer
 1 heerst
+1 heet
 1 hel
 1 helaas
 1 hele
 1 helft
+0 helicopter helikopter
+0 helicopters helikopters
 1 helm
 1 helpen
 1 hem
 1 hemorroïden
+0 hepatites hepatitis
+1 herbergt
 1 herdenkingssingle
 1 heren
 1 herhaald
@@ -1277,6 +1839,7 @@
 1 heupbreuk
 1 hielden
 1 hielpen
+0 hiepoteek hypotheek
 1 hier
 1 hierbij
 1 hierdoor
@@ -1288,6 +1851,8 @@
 1 hiervoor
 1 hij
 1 historische
+0 hmtl html
+0 hobbies hobby's
 1 hoe
 1 hoeft
 1 hoekig
@@ -1316,6 +1881,7 @@
 1 hooi
 1 hop
 1 hopelijk
+0 hopenlijk hopelijk
 1 hopteelt
 1 horloges
 1 houden
@@ -1336,15 +1902,25 @@
 1 ideeën
 1 ie
 1 iedereen
+0 ieluster illuster
+0 ielustere illustere
 1 iemand
 1 iets
 0 ijssel IJssel
 1 ijzer
 1 ijzermaal
+1 ijzerzandsteen
 1 ik
+0 ikonen iconen
+0 ikonografie iconografie
+0 ikonografisch iconografisch
+0 ikoon icoon
 1 image
 1 impact
 1 impliceert
+0 impressariaat impresariaat
+0 impressario impresario
+0 impressario's impresario's
 1 in
 1 inachtneming
 1 inbreng
@@ -1353,6 +1929,7 @@
 1 indien
 1 individuele
 1 industrial
+1 industrieterrein
 1 infarct
 1 infectieziekte
 1 infectieziekten
@@ -1372,13 +1949,40 @@
 1 inschrijving
 1 inschrijvingsrecht
 1 insecten
+0 insekt insect
+0 insekten insecten
 1 inspraak
 1 instinctief
 1 institutionele
 1 instituut
 1 instortingsgevaar
 1 interactie
+0 interesant interessant
+0 interesante interessante
+0 intereseerde interesseerde
+0 intereseerden interesseerden
+0 intereseert interesseert
+0 intereseren interesseren
 1 interessant
+0 interimmanager interim-manager
+0 interresant interessant
+0 interresante interessante
+0 interreseerde interesseerde
+0 interreseerden interesseerden
+0 interreseert interesseert
+0 interreseren interesseren
+0 interressant interessant
+0 interressante interessante
+0 interresse interesse
+0 interresseerde interesseerde
+0 interresseerden interesseerden
+0 interresseert interesseert
+0 interresseren interesseren
+0 interresses interesses
+0 intervieuw interview
+0 intervieuwen interviewen
+0 intervieuwer interviewer
+0 intervieuws interviews
 1 intussen
 1 investering
 1 invloed
@@ -1401,14 +2005,21 @@
 1 jan
 1 januari
 1 jaren
+1 jarenlang
 1 je
+0 joghurt yoghurt
 1 jonggestorven
 1 jongste
 1 jr
 1 juiste
 1 juli
 1 juni
+1 kaarsjes
 1 kaart
+0 kado cadeau
+0 kado's cadeaus
+0 kaleidoscopisch caleidoscopisch
+0 kaliefaat kalifaat
 1 kalkhoudende
 1 kan
 1 kanaal
@@ -1416,12 +2027,33 @@
 1 kanalisatie
 1 kanalisering
 1 kaneel
+0 kangaroe kangoeroe
+0 kangaroes kangoeroes
+0 kangeroe kangoeroe
+0 kangeroes kangoeroes
+0 kangoeroe's kangoeroes
 1 kans
 1 kant
 1 kapitaal
 1 kapitaalaangroei
+0 kapsijsde kapseisde
+0 kapsijst kapseist
+0 kapsijzen kapseizen
+0 karakiet karekiet
 1 karaktertrekken
+0 kartograaf cartograaf
+0 kartografie cartografie
+0 karweizaad karwijzaad
+0 kasmier kasjmier
+0 kassiere caissière
+0 kassieres caissières
+0 kasteidde kastijdde
+0 kasteidden kastijdden
+0 kasteiden kastijden
+0 kasteidt kastijdt
 1 kathedraal
+0 kayak kajak
+0 kayaks kajaks
 1 keer
 1 kennis
 1 kenproces
@@ -1441,37 +2073,82 @@
 1 kleine
 1 kleiner
 0 klener kleiner
+0 klerenlijer klerelijer
 1 kleur
 1 kleuren
 1 klinisch
 1 klinische
 1 klinker
+0 klisjee cliché
+0 klisjees clichés
+0 klitteband klittenband
+0 klittebanden klittenbanden
 1 klooster
 1 km&sup2
+0 knieen knieën
 1 knollen
 1 knoopte
 1 know-how
 1 knowledge
+0 koeouttjoek caoutchouc
+0 koepee coupé
 1 koers
 1 koersdaling
 1 koersdalingen
 1 koersgevoelige
 1 koersontwikkeling
 1 koersschommeling
+0 kolibri kolibrie
+0 kolibri's kolibries
 1 kolonies
+0 kolonieën koloniën
+0 kolosaal kolossaal
+0 kolosale kolossale
 1 komen
+0 komenikee communiqué
+0 komitee comité
+0 komittee comité
+0 kommitee comité
+0 kommittee comité
 1 kompas
+0 komplot complot
+0 komplotteerde complotteerde
+0 komplotteerden complotteerden
+0 komplotten complotten
+0 komplotteren complotteren
+0 komplottheorie complottheorie
+0 kompote compote
 1 komt
+0 koningsschap koningschap
+0 kontakt contact
+0 kontakten contacten
+0 kontrole controle
+0 kontroleerde controleerde
+0 kontroleerden controleerden
+0 kontroleert controleert
+0 kontroleren controleren
 1 koorts
 1 koper
+0 kopieisten kopiisten
+0 kopiën kopieën
 1 koppeling
 1 koriander
+0 korpus corpus
+0 korrekt correct
+0 korrekte correcte
 1 kortweg
+0 kosmetica cosmetica
+0 kosmetisch cosmetisch
+0 kosmetische cosmetische
 1 kostbaar
 1 kosten
+0 kostenloos kosteloos
+0 kostenloze kosteloze
 1 kostschool
+0 kranberries cranberry's
 1 kreeg
 1 kregen
+0 kreme crème
 1 krijgen
 1 krijgt
 1 kritiek
@@ -1481,27 +2158,38 @@
 1 kunstschilder
 1 kunstwerken
 1 kusten
+0 kwaker quaker
+0 kwakers quakers
 1 kwaliteitsaanduidingen
 1 kwam
 1 kwamen
+0 kwis quiz
+0 kwissen quizzen
 1 l
+0 laaste laatste
 1 laat
 1 laatste
 1 laboratorium
 1 laboratoriumonderzoek
+0 labyrinth labyrint
+0 ladenkast ladekast
 1 lage
 1 lager
+0 lambrizeren lambriseren
+0 lambrizering lambrisering
+0 lambrizeringen lambriseringen
 1 lancetvormige
 1 land
-1 land=Amerika
 1 landhuis
 1 lang
 1 langdurig
 1 lange
 1 langs
+0 lasagna lasagne
 1 laten
 1 later
 0 latijns Latijn
+0 lazanja lasagne
 1 leden
 1 leer
 1 legioenen
@@ -1529,6 +2217,9 @@
 1 levensverzekeringsmaatschappijen
 1 leverbaar
 1 leveren
+0 lichtbewolkt licht bewolkt
+0 lidteken litteken
+0 lidtekens littekens
 1 liefdadigheid
 1 liep
 1 liepen
@@ -1541,7 +2232,12 @@
 1 lijn
 1 lijnen
 1 lijst
+0 limerik limerick
 1 lindeboom
+0 lineaal liniaal
+0 linealen linialen
+0 liniair lineair
+0 liniaire lineaire
 1 link
 1 links
 1 liquide
@@ -1549,12 +2245,19 @@
 0 literaircriticus literair criticus
 1 live
 1 living
+0 locaal lokaal
+0 locale lokale
 1 locatie
 1 logboek
+0 lokatie locatie
+0 lokatief locatief
+0 lokaties locaties
 1 lopen
 1 lopende
 1 loper
 1 losse
+0 loup loep
+0 loupe loep
 1 louter
 1 love
 1 lozen
@@ -1565,12 +2268,19 @@
 1 maand
 1 maandblad
 1 maar
+0 maccaroni macaroni
 1 machtige
+0 macrocosmos macrokosmos
+0 mafia maffia
+0 mafioze maffiose
 1 mag
 1 magazine
 1 maken
 1 man
 1 management
+0 manderijn mandarijn
+0 manderijnen mandarijnen
+0 manenschijn maneschijn
 1 manier
 1 mannen
 1 marathon
@@ -1586,10 +2296,13 @@
 1 materialist
 1 materieel
 1 materiële
+0 mavodiploma mavo-diploma
 1 maximaal
 1 me
 1 mechanisch
 1 medaille
+0 mediaevist mediëvist
+0 mediaevisten mediëvisten
 1 medische
 1 mee
 1 meer
@@ -1612,17 +2325,34 @@
 1 met
 1 metalen
 1 methode
+0 metresse maîtresse
 1 metrologie
 1 micro
 1 middel
+0 middeleeuwen Middeleeuwen
+0 middeleuwen Middeleeuwen
+0 middeleuws middeleeuws
 1 midden
+0 mikrokosmos microkosmos
+0 milenia millennia
+0 milenium millennium
+0 milennia millennia
+0 milennium millennium
 1 milieu
+0 miligram milligram
+0 mililiter milliliter
+0 milimeter millimeter
+0 millenia millennia
+0 millenium millennium
+0 mimicrie mimicry
 1 minder
 1 mindere
 1 minimumomvang
 1 minole
 1 minst
 1 minste
+0 minuskule minuscule
+0 minuskuul minuscuul
 1 mis
 1 misgaat
 1 misschien
@@ -1633,6 +2363,7 @@
 1 moderne
 1 moeder
 1 moedervlek
+1 moeite
 1 moest
 1 moet
 1 moeten
@@ -1640,23 +2371,31 @@
 1 mogelijke
 1 mogelijkheid
 1 molenaar
+1 molens
 1 momenteel
+0 mondharmonika mondharmonica
+0 mondharmonika's mondharmonica's
 1 mondt
+0 monnikken monniken
 1 monster
 1 monteerde
 1 motivatie
 1 motor
 1 motorfietsmerk
 1 motorvoertuig
+0 musea's musea museums
+0 musseum museum
 1 mutatie
 0 muziekcarriere muziekcarri&egrave;re
 1 muzieknoot
 1 my
 1 m²
 1 na
+0 na-oorlogs naoorlogs
+0 na-oorlogse naoorlogse
 1 naam
-1 naam=Aaliyah
 1 naamswijziging
+0 naapen na-apen
 1 naar
 1 naast
 1 nabij
@@ -1665,6 +2404,7 @@
 1 nageslacht
 1 name
 1 namelijk
+0 namenlijk namelijk
 1 nationaal
 1 nativisme
 1 natte
@@ -1678,20 +2418,31 @@
 1 navigatie
 1 nederlandse
 1 neemt
+1 neergekomen
+0 neergevleid neergevlijd
+1 neerschoot
+0 neervleien neervlijen
+0 neerwaards neerwaarts
 1 nemen
 1 nest
 1 net
 1 netnummer
+0 nettoinkomen netto-inkomen
 1 nettowinst
 1 neus
 1 niet
 1 niet-erfelijke
 1 niet-financiële
+0 nietroker niet-roker
 1 niettemin
 1 nieuw
 1 nieuwe
 1 nieuwgevormd
 1 nieuws
+0 niveau's niveaus
+0 nivo niveau
+0 nivo's niveaus
+0 nochthans nochtans
 1 nodige
 1 noem
 1 nog
@@ -1703,6 +2454,7 @@
 1 noorden
 0 noordfranse Noord-Franse
 1 noordoostelijke
+0 noordwaards noordwaarts
 1 noordwesten
 1 normaal
 1 notaris
@@ -1711,17 +2463,29 @@
 1 notie
 1 nu
 1 nummer
+0 nummeriek numeriek
+0 nummerieke numerieke
 1 o
 1 obligatielening
 1 obligaties
+0 october oktober
 1 oefent
 1 of
 1 offerte
+0 officiele officiële
+0 officiëel officieel
+0 oficieel officieel
+0 oficiële officiële
+0 ofset offset
 1 oksels
+0 oktaaf octaaf
+0 oktafen octaven
+0 oktaven octaven
 1 om
 0 omder onder
 1 omgegaan
 1 omgeving
+0 ommelet omelet
 1 omringd
 1 omroepmedewerkers
 1 omtrent
@@ -1731,7 +2495,12 @@
 1 onbekende
 1 onbestaande
 1 ondanks
+0 ondekken ontdekken
+0 ondekt ontdekt
+0 ondekte ontdekte
+0 ondekten ontdekten
 1 onder
+0 onderandere onder andere
 1 onderbouwen
 1 onderdelen
 1 ondergeschikten
@@ -1739,6 +2508,7 @@
 1 onderhandse
 1 onderhevig
 1 onderhoud
+0 ondermeer onder meer
 1 onderneming
 1 ondernemingen
 1 onderscheid
@@ -1762,12 +2532,23 @@
 0 ongever ongeveer
 1 ongevlekte
 1 ongunstig
+0 onlineverbinding on-lineverbinding
+0 onmiddelijk onmiddellijk
+0 onmiddelijke onmiddellijke
 1 onroerend
 1 ons
+0 onstaan ontstaan
+0 onstaat ontstaat
+0 onstond ontstond
+0 onstonden ontstonden
 1 ontbinding
 1 ontbonden
 1 onthechten
 1 ontmoeten
+0 ontrekken onttrekken
+0 ontrekt onttrekt
+0 ontrok onttrok
+0 ontrokken onttrokken
 1 ontslag
 1 ontspringt
 1 ontstaan
@@ -1784,6 +2565,7 @@
 1 onverwachte
 1 onvoldoende
 1 onzekerheid
+0 oo-serieus au_sérieux
 1 oogst
 1 ooievaar
 1 ooit
@@ -1795,6 +2577,7 @@
 1 oorzaken
 1 oosten
 1 ooster
+0 oostwaards oostwaarts
 1 op
 1 opbrengt
 1 opdracht
@@ -1824,10 +2607,12 @@
 1 optekenen
 1 optraden
 1 optreden
+0 opwaards opwaarts
 1 opwegen
 1 opzichte
 1 opzwellen
 1 oranjesnippers
+0 orca orka
 1 orchis
 1 orde
 1 ordent
@@ -1838,6 +2623,7 @@
 1 ouderlijk
 1 ouders
 1 oudheidkundige
+0 oudleerling oud-leerling
 1 oudsher
 1 oudste
 1 oven
@@ -1856,13 +2642,26 @@
 1 overstromingen
 1 overtollig
 1 overzichtslijst
+0 oxydatie oxidatie
+0 oxyde oxide
+0 oxydeert oxideert
+0 oxyderen oxideren
 1 pH
 1 paaltje
 1 paardenkont
 1 pal
 1 paling
 1 panden
+0 pannekoek pannenkoek
+0 pannekoeken pannenkoeken
+0 paparazi paparazzi
 1 papier
+0 parafine paraffine
+0 paralel parallel
+0 paralelepipedum parallellepipedum
+0 paralelle parallelle
+0 paralellen parallellen
+1 parking
 1 parochie
 1 particulier
 1 particuliere
@@ -1871,18 +2670,26 @@
 1 passief
 1 pastorie
 1 pathologie
+0 penitentair penitentiair
+0 penitentaire penitentiaire
 1 pensioenfondsen
 1 per
 1 perk
 1 permanent
 1 permanente
+0 perpetuem perpetuum
+0 perse per se
 1 personeelsblad
 1 persoonlijke
 1 perssecretaris
+1 pest
 1 pestis
 1 pijlers
 1 pimentpoeder
 1 pink
+0 pitoresk pittoresk
+0 pitoreske pittoreske
+0 pitoresque pittoresk
 1 plaats
 1 placenta
 1 plannen
@@ -1891,27 +2698,46 @@
 1 plassen
 1 platinastatus
 1 platte
+1 plek
 1 plus
 1 poelen
 1 poging
 1 polemologisch
 1 politicus
 1 politieagente
+0 politiecorps politiekorps
+0 politiecorpsen politiekorpsen
 1 politieke
+1 polyvalente
 1 populair
 1 populaire
+0 porcelein porselein
+0 porceleinen porseleinen
 1 portefeuille
+0 portemonee portemonnee
+0 portemonees portemonnees
 1 positie
 1 post
 1 postcode
+0 posthume postume
+0 posthuum postuum
+0 potporie potpourri
 1 praam
+1 prachtig
+0 prae pre
+0 praeses preses
 1 praevia
+0 prakkizeren prakkiseren
 1 praktijk
 1 praktisch
 1 praktische
+0 praktizeren praktiseren
 1 prawo
 1 precies
 1 predikant
+0 predikatief predicatief
+0 predikatieve predicatieve
+0 predikatieven predicatieven
 1 preferente
 1 prehistorie
 1 prestaties
@@ -1920,28 +2746,66 @@
 1 prijsaanbieding
 1 prijsvorming
 1 prins
+0 prinsgemaal prins-gemaal
 1 printen
 1 prionen
+0 privevermogen privé-vermogen
 1 probeerde
 1 proberen
 1 procedures
 1 procenten
 1 proces
 1 produceerde
+0 produkt product
+0 produkten producten
+0 produktie productie
+0 produktief productief
+0 produkties producties
+0 produktieve productieve
+0 produktiviteit productiviteit
 1 progressieve
 1 project
+0 promilage promillage
+0 propaedeuse propedeuse
+0 propaedeutisch propedeutisch
 1 protesten
 1 provinciale
 1 provincie
+0 provincieën provinciën
+0 pseudowetenschap pseudo-wetenschap
 1 psychisch
 1 psychologie
+0 pubertijd puberteit
 1 publicatieplicht
+0 publikatie publicatie
+0 publikaties publicaties
+0 pullover pull-over trui
 1 pure
+0 pyama pyjama
+0 pyama's pyjama's
+0 pyramidaal piramidaal
+0 pyramidale piramidale
+0 pyramide piramide
+0 pyramiden piramiden
+0 pyramides piramides
+1 qua
+0 quanta kwanta
+0 quantum kwantum
+0 quantumdynamica kwantumdynamica
+0 quantumfysica kwantumfysica
+0 quantummechanica kwantummechanica
+0 quantummechanisch kwantummechanisch
+0 quantummechanische kwantummechanische
+0 quantumtheorie kwantumtheorie
+0 quartz kwarts
 1 queen
 1 quotes
+0 qweker quaker
 1 r
 1 raaf
 1 raden
+0 ragoe ragout
+0 ragoût ragout
 1 raken
 1 raketmotor
 1 rand
@@ -1949,16 +2813,32 @@
 1 ratio
 1 rationalisme
 1 rationalist
+0 reaktie reactie
+0 reaktief reactief
+0 reakties reacties
 1 realiseerde
 1 realiseren
 1 recht
+0 rechtelijk rechterlijk
+0 rechtelijke rechterlijke
 1 rechten
+0 rechtsafgaan rechtsaf_gaan
+0 rechtsafslaan rechts_afslaan
+0 rechtsstreeks rechtstreeks
+0 rechtsstreekse rechtstreekse
+0 rechtzaak rechtszaak
+0 rechtzaken rechtszaken
 1 records
 1 recreatie
+0 recruteren rekruteren
 1 rectum
 1 redde
 1 reden
+0 redereiker rederijker
+0 redereikers rederijkers
 1 reduite
+0 reduktie reductie
+0 reduktor reductor
 1 reeds
 1 reeks
 1 regel
@@ -1969,20 +2849,41 @@
 0 regiseerde regisseerde
 1 regisseerde
 1 reglementen
+0 reikweite reikwijdte
 1 rekening
 1 rekeningen
+0 reklame reclame
+0 reklameeerden reclameerden
+0 reklameerde reclameerde
+0 reklameert reclameert
+0 reklameren reclameren
 1 relatie
+0 relekst relaxt
 1 rendement
 1 rendementen
 1 renderende
 1 repetitive
+0 repressaille represaille
+0 repressailles represailles
+0 reqest rekest
+0 request rekest
+1 restaurants
+1 restauratie
 1 resultaat
 1 return
 1 reuzel
 1 revisoren
 1 revival
+0 reëele reële
 1 reële
+0 rhetoriek retoriek
+0 rhetorisch retorisch
+0 rhetorische retorisch
+0 rheuma reuma
 1 richting
+1 right
+0 rigoereus rigoureus
+0 rigoreus rigoureus
 1 rijksweg
 1 rijnaak
 1 riool
@@ -1992,6 +2893,7 @@
 1 risicospreiding
 1 risicovol
 1 riskeren
+1 rivier
 1 rivieren
 1 riviervalleien
 1 rock
@@ -2004,16 +2906,29 @@
 1 rondbouw
 1 roofwesp
 1 ros
+0 royalties royalty's
 1 rozet
 1 rubriek
+0 ruggenspraak ruggespraak
 1 ruiten
 1 ruzies
 1 samen
 1 samengesteld
 1 samenhangt
 1 samenwerking
+0 santekraam santenkraam
+0 sateliet satelliet
+0 satelieten satellieten
+0 satteliet satelliet
+0 sattelieten satellieten
+0 sattelliet satelliet
+0 sattellieten satellieten
+0 scetch sketch
+0 scetches sketches
 1 schaal
 1 schaarsheid
+0 schaatster schaatsster
+0 schaatsters schaatssters
 1 schakelen
 1 schede
 1 scheepje
@@ -2024,6 +2939,7 @@
 1 schilderachtige
 1 schip
 1 schoeneraak
+1 scholen
 1 scholierenlijn
 1 school
 1 schoon
@@ -2032,6 +2948,9 @@
 1 schuit
 1 schut
 1 schutten
+0 science fiction sciencefiction
+0 science-fiction sciencefiction
+0 secte sekte
 1 sector
 1 seed-kapitaal
 1 seizoen
@@ -2043,8 +2962,26 @@
 1 sequel
 1 serie
 1 series
+0 sexappeal sex-appeal
+0 sexe sekse
+0 sexualisme seksualisme
+0 sexualiteit seksualiteit
+0 sexueel seksueel
+0 sexuele seksuele
+1 sfeervol
+0 shi'iet sjiiet
+0 shi'itisch sjiitisch
+0 shiiet sjiiet
+0 shiietisch sjiitisch
 1 shines
+0 sierraad sieraad
+0 sierraden sieraden
+0 simpatieen sympathieën
 1 simpelweg
+0 sint juttemis sint-juttemis
+0 sjiek chic
+0 sjieke chique
+0 sjokeren choqueren
 1 slaat
 1 slangenstaart
 0 slangestaart slangenstaart
@@ -2055,15 +2992,22 @@
 1 slingerende
 1 sluimerend
 1 sluizen
-1 small>(01/07/2004)</small
+1 small
 1 smalle
 1 smid
+0 smink schmink
 1 snel
 1 sneldienst
 1 snelweg
+0 snietsel schnitzel
 1 snijbrander
 1 snufje
 1 sociaal
+0 sociaaldemocraat sociaal-democraat
+0 sociaaldemocraten sociaal-democraten
+0 sociaaldemocratie sociaal-democratie
+0 sociaaldemocratisch sociaal-democratisch
+0 sociaaldemocratische sociaal-democratische
 1 sociale
 1 soelaas
 1 somebody
@@ -2073,6 +3017,9 @@
 1 soorten
 1 sopraan
 1 soundtracks
+0 souverein soeverein
+0 souvereine soevereine
+0 sowiezo sowieso
 1 sparen
 1 specerijen
 1 speciale
@@ -2082,7 +3029,11 @@
 1 speeltuin
 1 spelen
 1 spellingsalfabet
+0 sperciebonen sperziebonen
+0 spercieboon sperzieboon
 1 spinnendoder
+0 spinneweb spinnenweb
+0 spinnewebben spinnenwebben
 1 spitsbek
 1 spoorlijn
 1 sporen
@@ -2095,14 +3046,19 @@
 1 stad
 1 stadhuis
 1 stadium
+1 stadscentrum
 1 stamt
 1 standbeeld
 1 stappen
 1 stapte
 1 startgeld
+0 statiebezoek staatsiebezoek
+0 statiebezoeken staatsiebezoeken
 1 status
 1 steden
 1 steeds
+0 steelde stal
+0 steelden stalen
 1 steevast
 1 stel
 1 stellen
@@ -2115,35 +3071,48 @@
 1 sterft
 1 sterk
 1 sterke
+0 sterradiaal steradiaal
 1 stevenloos
+0 stewardes stewardess
 1 stichters
+0 stiekum stiekem
 1 stijgen
 1 stijging
 1 stoffen
 1 stond
 1 stopt
 1 straat
+0 strafrechterlijk strafrechtelijk
 1 strak
 1 streek
 1 streekgids
 1 streeknamen
 1 streling
 1 strenge
+0 strict strikt
 1 strikt
 1 strikte
 1 strips
 1 stromingen
 1 strontschippers
 1 stroomgebied
+0 strukturen structuren
+0 struktureren structureren
+0 struktuur structuur
 1 studentenpartij
 1 studentenraden
 1 studies
 1 stukje
 1 stukken
 1 style
-1 style="background
-1 style="float
+0 subcategorien subcategorieën
 1 succes
+0 success succes
+0 sukses succes
+0 suksessen successen
+0 suksessie successie
+0 superdeluxe super-de-luxe
+0 surceance surseance
 1 surfplanken
 1 symbool
 1 symptomen
@@ -2160,6 +3129,7 @@
 1 taarten
 1 takken
 1 tamme
+0 tax taks
 1 taxobox_begin
 1 taxobox_begin_placement
 1 taxobox_classis_entry
@@ -2194,7 +3164,12 @@
 1 tell
 1 tellen
 1 telt
+0 temiddenvan te_midden_van
 1 ten
+0 tengevolge ten_gevolge
+0 tenlangeleste ten_langen_leste
+0 tennister tennisster
+0 tennisters tennissters
 1 tenslotte
 1 tentoonstelling
 1 tenzij
@@ -2205,19 +3180,26 @@
 1 term
 1 termen
 1 terminologie
+0 terpetijn terpentijn
 1 terug
 1 terugbetaald
 1 terugkeerde
+1 terugkerend
 1 terugtrekken
 1 terugverdienen
 1 terwijl
+0 terwillevan ter_wille_van
+0 terzake ter_zake
+0 teveel te_veel
 0 tevinden te vinden te vinden te vinden
 1 tezamen
 1 that
 1 the
+1 theaterzalen
 1 theelepel
 1 theelepels
 1 theorie
+0 theoriën theorieën
 1 these
 1 tientallen
 1 tijd
@@ -2239,6 +3221,7 @@
 1 toekomst
 1 toekomstige
 1 toen
+0 toendertijd toentertijd
 1 toenemende
 1 toerde
 1 toevallig
@@ -2249,19 +3232,23 @@
 1 top-down
 1 tot
 1 totale
+0 totstandkomen tot_stand_komen
+0 tourisme toerisme
+0 tournooi toernooi
+0 tournooien toernooien
 1 toxoplasmose
-1 tr><td>{{Classis}}:</td><td>Aves</td></tr
-1 tr><td>{{Ordo}}:</td><td>Pelecaniformes</td></tr
-1 tr><td>{{regnum}}:</td><td>Animalia</td></tr
 1 trackrecord
 1 trad
 1 traditie
+0 traffiek trafiek
 1 transfusie
 1 trauma
 1 traumatisch
 1 trein
+0 trigoniometrie trigonometrie
 1 trilling
 1 trio
+0 trucendoos trukendoos
 1 tuinbouw
 1 turnsters
 1 tussen
@@ -2273,7 +3260,10 @@
 1 twintigste
 1 type
 1 types
+0 typfout typefout
 1 typisch
+0 typwerk typewerk
+0 tyran tiran
 1 uit
 1 uitbraak
 1 uiteindelijk
@@ -2283,6 +3273,7 @@
 1 uitgaat
 1 uitgaf
 1 uitgebracht
+1 uitgebreid
 1 uitgediept
 1 uitgedrukt
 1 uitgegeven
@@ -2300,26 +3291,37 @@
 1 uitkwam
 1 uitmaken
 1 uitnodiging
+0 uitreksel uittreksel
+0 uitreksels uittreksels
 1 uitsluitend
 1 uitspraak
 1 uitstaande
 1 uitstekend
 1 uitstroomt
 1 uitstulpen
+0 uittentreure uitentreuren
 1 uitvoer
 1 uitvoeren
 1 uitvoering
 1 uitwendige
 1 uitzending
+0 ukepuk ukkepuk
 1 ulceraties
 1 uniek
+0 uptodate up-to-date
 1 uren
-1 urile''</small></th
 1 ustulata
 1 ustulatus
 1 vaak
+0 vaarde voer
+0 vaarden voeren
 1 vaarweg
+0 vacantie vakantie
+0 vacuem vacuüm
+0 vacuum vacuüm
 1 vader
+0 vakature vacature
+0 vakatures vacatures
 1 vaker
 1 vaktermen
 1 val
@@ -2335,6 +3337,7 @@
 1 vaste
 1 vastgelegd
 1 vaststelbaar
+0 veder verder
 1 vee
 1 veel
 1 veelal
@@ -2346,6 +3349,13 @@
 1 vennootschap
 1 veranderd
 1 veranderen
+0 verassen verrassen
+0 verassend verrassend
+0 verassing verrasing
+0 verassingen verrassingen
+0 verast verrast
+0 veraste verraste
+0 verasten verrasten
 1 verband
 1 verbetering
 1 verbinding
@@ -2364,7 +3374,12 @@
 1 vergelijkt
 1 vergen
 1 vergoeding
+0 vergoeilijken vergoelijken
+0 vergoeilijkt vergoelijkt
+0 vergoeilijkte vergoelijkte
+0 vergoeilijkten vergoelijkten
 1 vergroten
+1 verhaal
 1 verhandelbaar
 1 verhandelbaarheid
 1 verhandeld
@@ -2381,6 +3396,7 @@
 1 verlaagde
 1 verleden
 1 verlenen
+1 verlicht
 1 verliet
 1 verliezen
 1 verloop
@@ -2388,20 +3404,27 @@
 1 vermeld
 1 vermelden
 1 vermenigvuldigen
+0 vermijen vermeien
+0 vermijt vermeit vermijdt
 1 verminderde
 1 vermoedelijke
 1 vermogen
 1 vermogensbeheer
 1 vermogensverschaffers
+0 vermouth vermout
 1 veronderstelling
 1 veronderstelt
 1 veroordeeld
 1 veroorzaakt
 1 veroorzaken
+0 verot verrot
+0 verotte(verrotte 
+0 verotten verrotten
 1 verouderde
 1 verplichting
 1 verruilde
 1 verschaffer
+1 verscheidene
 1 verschil
 1 verschillen
 1 verschillende
@@ -2414,6 +3437,8 @@
 1 vertegenwoordigen
 1 vertegenwoordiging
 1 verteld
+0 vertikaal verticaal
+0 vertikale verticale
 1 vertonen
 1 vervaldatum
 1 vervolgens
@@ -2423,6 +3448,7 @@
 1 verwezen
 1 verwezenlijken
 1 verzameling
+0 verzamelingsleer verzamelingenleer
 1 verzamelnaam
 1 verzilveren
 1 vestinggracht
@@ -2433,6 +3459,7 @@
 1 videobanden
 1 vierde
 1 vierkante
+0 viesavis vis-à-vis
 1 vijf
 1 villa
 1 vinden
@@ -2442,6 +3469,7 @@
 1 visserschip
 1 vissersschip
 1 vlak
+1 vlakbij
 1 vleugels
 1 vliegtuigje
 1 vloeiend
@@ -2452,6 +3480,7 @@
 1 voer
 1 voet
 1 voetstuk
+1 vogel
 1 voice
 1 volgde
 1 volgende
@@ -2462,6 +3491,7 @@
 1 volledige
 1 volmaakt
 1 volstort
+0 voltooing voltooiing
 1 volume
 1 vondsten
 1 voor
@@ -2484,6 +3514,7 @@
 1 voorstaat
 1 voortbeweging
 1 voortbewogen
+1 voorts
 1 voorvoegsel
 1 voorwaarde
 1 voorwaarden
@@ -2499,15 +3530,22 @@
 1 vrachtschip
 1 vrienden
 1 vriendin
+1 vrij
 1 vrijwel
 1 vroeg
 1 vroeger
 1 vroegere
+1 vrouwen
 1 vrouwentoilet
+0 vulcanisatie vulkanisatie
+0 vulcaniseren vulkaniseren
+0 vulcanisme vulkanisme
+0 vulcanologie vulkanologie
 1 vuur
 1 vóór
 1 waar
 1 waarbij
+1 waard
 1 waarde
 1 waarheden
 1 waarin
@@ -2521,6 +3559,8 @@
 1 waarschijnlijk
 1 waarvan
 1 wachten
+1 wachtende
+1 wagens
 1 wallenkanten
 1 wandelden
 1 wanneer
@@ -2543,6 +3583,7 @@
 1 weekblad
 1 weer
 1 weergegeven
+0 weerzijden weerszijden
 1 weet
 1 weg
 1 weiden
@@ -2558,6 +3599,7 @@
 1 wenst
 1 werd
 1 werden
+0 werdt werd
 1 wereld
 1 wereldwijd
 1 werk
@@ -2565,10 +3607,12 @@
 1 werkzaam
 1 werkzaamheden
 1 west
+0 westwaards westwaarts
 1 wetenschappelijk
 1 wetenschappen
 1 wettelijk
 1 width
+0 wiegedood wiegendood
 1 wiel
 1 wielen
 1 wiens
@@ -2578,6 +3622,7 @@
 1 wil
 1 wild
 1 willekeurige
+1 winkelcentrum
 1 winst
 1 winstaandelen
 1 winsten
@@ -2586,17 +3631,21 @@
 1 wissel
 1 wisten
 1 witte
+0 woesternij woestenij
 1 wolf
 1 woonkern
 1 woonkernen
 1 woont
+0 woonwerkverkeer woon-werkverkeer
 1 woord
 1 woorden
 1 woordspeling
+0 woordvoerdster woordvoerster
 1 worden
 1 wordt
 1 www.aag.tudelft.nl
 1 www.aalen.de
+0 yak jak
 1 z
 1 zaadbal
 1 zal
@@ -2629,7 +3678,11 @@
 1 zijn
 1 zijtak
 1 zilverkleurig
+0 zinj zijn
+0 zinnenbeeld zinnebeeld
 1 zitten
+0 zjaine gêne
+0 zjaket jacquet
 1 zo
 1 zo'n
 1 zoals
@@ -2651,8 +3704,11 @@
 1 zou
 1 zover
 1 zowel
+0 zowiezo sowieso
+0 zoëven zo-even
 1 zuid
 1 zuiden
+0 zuidwaards zuidwaarts
 1 zuiver
 1 zulke
 1 zullen
@@ -2665,7 +3721,7 @@
 1 zwartpaars
 1 zwemmende
 1 zwemvogels
-1 ´vóór
+0 zwezerikken zwezeriken
 1 Å
 1 één
 1 überhaupt
