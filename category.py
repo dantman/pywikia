@@ -29,7 +29,7 @@ and follow the on-screen instructions.
 # Distribute under the terms of the PSF license.
 # 
 import re, sys, string
-import wikipedia, config, interwiki, catlib
+import wikipedia, config, interwiki
 
 # Summary messages
 msg_add={
@@ -153,7 +153,7 @@ def add_category(sort_by_last_name = False):
     newcat = newcat[:1].capitalize() + newcat[1:]
 
     # get edit summary message
-    wikipedia.setAction(msg_add[wikipedia.chooselang(wikipedia.mylang, msg_change)] % newcat)
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_change) % newcat)
     
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
     cat_namespace = ns[0].encode(wikipedia.myencoding())
@@ -198,7 +198,7 @@ def rename_category(old_cat_title, new_cat_title):
     old_cat = catlib.CatLink(wikipedia.mylang, old_cat_title)
     
     # get edit summary message
-    wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % old_cat_title)
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg_change) % old_cat_title)
     
     articles = old_cat.articles(recurse = 0)
     if len(articles) == 0:
@@ -224,7 +224,7 @@ def remove_category(cat_title):
     '''
     cat = catlib.CatLink(wikipedia.mylang, cat_title)
     # get edit summary message
-    wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang,msg_remove)] % cat_title)
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg_remove) % cat_title)
     
     articles = cat.articles(recurse = 0)
     if len(articles) == 0:
@@ -363,7 +363,7 @@ def tidy_category(cat_title):
     catlink = catlib.CatLink(wikipedia.mylang, cat_title)
     
     # get edit summary message
-    wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % cat_title)
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_change) % cat_title)
     
     
     articles = catlink.articles(recurse = 0)
@@ -400,26 +400,26 @@ def treeview(cat, max_depth, current_depth = 0, supercat = None):
     # We will remove an element of this array, but will need the original array
     # later, so we create a shallow copy with [:]
     supercats = get_supercats(cat)[:]
-    # If the current cat is not our tree's root
-    if supercat != None:
-        # Find out which other cats are supercats of the current cat
-        try:
-            supercats.remove(supercat)
-        except:
-            pass
-        if supercats != []:
-            supercat_names = []
-            for i in range(len(supercats)):
-                # create a list of wiki links to the supercategories
-                supercat_names.append('[[:%s|%s]]' % (supercats[i].linkname(), supercats[i].linkname().split(':', 1)[1]))
-                # print this list, seperated with commas, using translations given in also_in_cats
-            result += ' ' + also_in_cats[wikipedia.mylang] % ', '.join(supercat_names)
+    # Find out which other cats are supercats of the current cat
+    try:
+        supercats.remove(supercat)
+    except:
+        pass
+    if supercats != []:
+        supercat_names = []
+        for i in range(len(supercats)):
+            # create a list of wiki links to the supercategories
+            supercat_names.append('[[:%s|%s]]' % (supercats[i].linkname(), supercats[i].linkname().split(':', 1)[1]))
+            # print this list, seperated with commas, using translations given in also_in_cats
+        result += ' ' + wikipedia.translate(wikipedia.mylang, also_in_cats) % ', '.join(supercat_names)
     result += '\n'
     if current_depth < max_depth:
         for subcat in get_subcats(cat):
+            # recurse into subdirectories
             result += treeview(subcat, max_depth, current_depth + 1, supercat = cat)
     else:
         if get_subcats(cat) != []:
+            # show that there are more categories beyond the depth limit
             result += '#' * (current_depth + 1) + '[...]\n'
     return result
 
@@ -453,6 +453,7 @@ if __name__ == "__main__":
             action = 'tree'
         elif arg == '-person':
             sort_by_last_name = True
+    import catlib
     if action == 'add':
         add_category(sort_by_last_name)
     elif action == 'remove':

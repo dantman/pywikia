@@ -42,7 +42,7 @@ edittime = {}
 # languages to be:
 # xx:, then fr:, then ru:, then en:
 # you let altlang return ['fr','ru'].
-# This code is used by chooselang below.
+# This code is used by translate() below.
 
 def altlang(code):
     if code in ['fa','ku']:
@@ -1662,6 +1662,7 @@ def chooselang(code, choice):
        the options gives result, we just take the first language in the
        list.
     """
+    # NOTE: obsolete, use translate() whenever possible
     if code in choice:
         return code
     for alternative in altlang(code):
@@ -1670,6 +1671,26 @@ def chooselang(code, choice):
     if 'en' in choice:
         return 'en'
     return choice[1]
+
+def translate(code, dict):
+    """
+    Given a language code and a dictionary, returns the dictionary's value for
+    key 'code' if this key exists; otherwise tries to return a value for an
+    alternative language that is most applicable to use on the Wikipedia in
+    language 'code'.
+    The language itself is always checked first, then languages that
+    have been defined to be alternatives, and finally English. If none of
+    the options gives result, we just take the first language in the
+    list.
+    """
+    if dict.has_key(code):
+        return dict[code]
+    for alternative in altlang(code):
+        if dict.has_key(alternative):
+            return dict[alternative]
+    if dict.has_key('en'):
+        return dict['en']
+    return dict.values()[0]
 
 def output(text, decoder = None, newline = True):
     """Works like print, but uses the encoding used by the user's console
