@@ -150,7 +150,7 @@ for arg in sys.argv[1:]:
         elif arg=='-nolog':
             log = False
         else:
-            print('Argument %s unknown; ignoring')%arg
+            print 'Argument %s unknown; ignoring'%arg
 
 if log:
     import logger
@@ -202,9 +202,9 @@ while cont:
                 else:
                     nonworking += 1
                     print
-                    print 'Page "%s" links to:'%pl.linkname()
-                    print url
-                    print 'Which gave error: %s %s'%(error,errorname(error))
+                    wikipedia.output(u'Page "%s" links to:'%pl.linkname())
+                    wikipedia.output(url)
+                    wikipedia.output(u'Which gave error: %s %s'%(error,errorname(error)))
         # If anything is wrong with the Wikipedia page, just ignore
         except wikipedia.NoPage:
             pass
@@ -217,5 +217,5 @@ while cont:
         checked -= 500
         print
         print '======================================================================'
-        print '%s pages checked, last was [[%s]]'%(totalchecked+checked,donow[len(donow)-1])
+        wikipedia.output(u'%s pages checked, last was [[%s]]'%(totalchecked+checked,donow[len(donow)-1]))
         print 'In those pages there were %s correct and %s problematic external links.'%(working,nonworking)
