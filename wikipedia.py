@@ -907,8 +907,7 @@ def allpages(start = '%21%200'):
                 # Some dutch exceptions.
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
                     n = n + 1
-                    yield PageLink(mylang, url2link(hit, code = mylang,
-                                                    incode = mylang))
+                    yield PageLink(mylang, hit)
                     start = hit + '%20%200'
         if n < 100:
             break
