@@ -98,7 +98,7 @@ def add_category():
 	    else:
                 print "Current categories: ",cats
                 if catpl in cats:
-                    print "%s already has %s"%(pl.aslocallink(),catpl.aslocallink())
+                    print "%s already has %s"%(pl2.aslocallink(),catpl.aslocallink())
                 else:
                     cats.append(catpl)
                     text = pl2.get()
