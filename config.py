@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # (C) Rob W.W. Hooft, 2003
 #
