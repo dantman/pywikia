@@ -294,7 +294,7 @@ class PageLink:
         else:
             return 0
         
-    def put(self, newtext, comment=None, watchArticle = '0', minorEdit = '1'):
+    def put(self, newtext, comment=None, watchArticle = False, minorEdit = True):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
@@ -704,7 +704,7 @@ class Throttle:
 get_throttle = Throttle()
 put_throttle = Throttle(config.put_throttle)
 
-def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1', newPage = '0'):
+def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False):
     """Upload 'text' on page 'name' to the 'code' language wikipedia.
        Use of this routine can normally be avoided; use PageLink.put
        instead.
@@ -719,22 +719,20 @@ def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1
         comment = username + ' - ' + comment
     try:
         text = forCode(text, code)
-        if newPage=='1':
-            data = urlencode((
-                ('wpMinoredit', minorEdit),
-                ('wpSave', '1'),
-                ('wpWatchthis', watchArticle),
-                ('wpEdittime', ''),
-                ('wpSummary', comment),
-                ('wpTextbox1', text)))
+        predata = [
+            ('wpSave', '1'),
+            ('wpSummary', comment),
+            ('wpTextbox1', text)]
+        if newPage and newPage != '0':
+            predata.append(('wpEdittime', ''))
         else:
-            data = urlencode((
-                ('wpMinoredit', minorEdit),
-                ('wpSave', '1'),
-                ('wpWatchthis', watchArticle),
-                ('wpEdittime', edittime[code, link2url(name, code)]),
-                ('wpSummary', comment),
-                ('wpTextbox1', text)))
+            predata.append(('wpEdittime', edittime[code, link2url(name, code)]))
+        if minorEdit and minorEdit != '0':
+            predata.append(('wpMinorEdit', '1'))
+        if watchArticle and watchArticle != '0':
+            predata.append(('wpWatchthis', '1'))
+        data = urlencode(tuple(predata))
+            
     except KeyError:
         print edittime
 	raise
