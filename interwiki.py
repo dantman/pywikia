@@ -81,6 +81,9 @@ This script understands various command-line arguments:
                    
                    This implies -noredirect.
 
+    -noauto:       Do not use the automatic translation feature for years and
+                   dates, only use found links and hits.
+
     -days:         Like -years, but runs through all date pages. Stops at
                    Dec 31.  If the argument is given in the form -days:X,
                    it will start at month no. X through Dec 31. If the
@@ -173,6 +176,7 @@ class Global:
     untranslated = False
     untranslatedonly = False
     askhints = False
+    auto = True
     
 class Subject:
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -205,7 +209,7 @@ class Subject:
         """Add the translation hints given to the todo list"""
         import titletranslate
         arr = {}
-        titletranslate.translate(self.inpl, arr, same = globalvar.same, hints = hints)
+        titletranslate.translate(self.inpl, arr, same = globalvar.same, hints = hints, auto = globalvar.auto)
         for pl in arr.iterkeys():
             self.todo[pl] = pl.code()
             self.foundin[pl] = [None]
@@ -342,7 +346,7 @@ class Subject:
                         arr = {}
                         import titletranslate
                         titletranslate.translate(pl, arr, same = False,
-                                                 hints = [newhint])
+                                                 hints = [newhint], auto = globalvar.auto)
                         for pl2 in arr.iterkeys():
                             self.todo[pl2] = pl2.code()
                             counter.plus(pl2.code())
@@ -857,6 +861,8 @@ if __name__ == "__main__":
             globalvar.untranslated = True
             globalvar.untranslatedonly = False
             globalvar.askhints = True
+        elif arg == '-noauto':
+            globalvar.auto = False
         elif arg.startswith('-hint:'):
             hints.append(arg[6:])
         elif arg.startswith('-warnfile:'):

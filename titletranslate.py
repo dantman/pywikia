@@ -21,7 +21,7 @@ def sametranslate(pl, arr, same):
         if x not in arr:
             arr[x] = None
 
-def translate(pl, arr, same = False, hints = None):
+def translate(pl, arr, same = False, hints = None, auto = True):
     if same:
         return sametranslate(pl, arr, same)
     if hints:
@@ -50,7 +50,7 @@ def translate(pl, arr, same = False, hints = None):
                         arr[x] = None
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
-    if date.datetable.has_key(wikipedia.mylang):
+    if date.datetable.has_key(wikipedia.mylang) and auto:
         dt='(\d+) (%s)' % ('|'.join(date.datetable[wikipedia.mylang].keys()))
         Rdate = re.compile(dt)
         m = Rdate.match(pl.linkname())
@@ -65,7 +65,7 @@ def translate(pl, arr, same = False, hints = None):
     # Autotranslate years A.D.
     Ryear = re.compile('^\d+$')
     m = Ryear.match(pl.linkname())
-    if m:
+    if m and auto:
         i=int(m.group(0))
         for newcode in wikipedia.family.seriouslangs:
             if newcode in ['ja', 'zh']:
@@ -92,7 +92,7 @@ def translate(pl, arr, same = False, hints = None):
         return
 
     # Autotranslate years B.C.
-    if wikipedia.mylang == 'nl':
+    if wikipedia.mylang == 'nl' and auto:
         Ryear = re.compile('^(\d+)_v._Chr.')
         m = Ryear.match(pl.linkname())
         if m:
