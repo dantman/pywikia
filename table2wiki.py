@@ -35,10 +35,10 @@ myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
 
-deIndentTables = 0
+deIndentTables = 1
 splitLongSentences = 1
 
-DEBUG=0
+DEBUG=1
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
@@ -56,11 +56,17 @@ for arg in sys.argv[1:]:
                 continue
         
         newText = text
+
+        # every open-tag gets a new line.
         newText = re.sub("(\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
                          "\n\\1", newText, 0)
-        newText = re.sub("\n[\t ]*\<", "\n<", newText, 0)
+        # bring every tag into one single line.
+        num = 1
+        while num != 0:
+            newText, num = re.subn("(\<[^>\n\r]+?)[\r\n]+(\>)",
+                                   "\\1 \\2", newText, 0)
 
-        #the <table> tag
+        # the <table> tag
         newText = re.sub("<(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
                          "{| \\2\n\\3", newText, 0)
         newText = re.sub("<(TABLE|table)>([\w\W]*?)<(tr|TR)>",
@@ -69,17 +75,16 @@ for arg in sys.argv[1:]:
                          "{| \\2\n", newText, 0)
         newText = re.sub("\<(TABLE|table)\>[\n ]*",
                          "{|\n", newText, 0)
-        #end </table>
+        # end </table>
         newText = re.sub("[\s]*<\/(TABLE|table)\>", "\n|}", newText, 0)
 
 
-        #captions
+        # captions
         newText = re.sub("<caption ([\w\W]*?)>([\w\W]*?)<\/caption>",
                          "\n|+\\1 | \\2", newText, 0)
         newText = re.sub("<caption>([\w\W]*?)<\/caption>",
                          "\n|+ \\1", newText, 0)
 
-        newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText, 0)
 
         #very simple <tr>
         newText = re.sub("[\r\n]+<(tr|TR)([^>]*?)\>", "\r\n|-----\\2\r\n", newText, 0)
@@ -112,7 +117,7 @@ for arg in sys.argv[1:]:
 
         # OK, that's only theory but works most times.
         # Most browsers assume that <th> gets a new row and we do the same
-        newText = re.sub("([\r\n]+\|[^-][^\n\r]*)([\r\n]+\!)", "\\1\r\n|-----\\2",
+        newText = re.sub("([\r\n]+\|\ [\w\W]*?)([\r\n]+\!)", "\\1\r\n|-----\\2",
                          newText, 0)
 
         # most <th> come with '''title'''. Senseless in my eyes cuz
@@ -123,8 +128,10 @@ for arg in sys.argv[1:]:
         # kills indention within tables. Be warned, it might bring
         # bad results.
         if deIndentTables:
-            newText = re.sub("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
-                             "\\1\n\\2", newText, 0)
+            num = 1
+            while num != 0:
+                newText, num = re.subn("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
+                                       "\\1\n\\2", newText, 0)
 
         # kills spaces after | or ! or {|
         newText = re.sub("[\r\n]+\|[\t ]*\n", "\r\n| ", newText, 0)
@@ -138,6 +145,8 @@ for arg in sys.argv[1:]:
         # shortening if <td> had no args
         newText = re.sub("[\r\n]+\|[\ ]+\| ", "\r\n| ", newText, 0)
         # shortening if <th> had no args
+        newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText, 0)
+        # shortening of <caption> had no args
         newText = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newText, 0)
 
         # merge two short <td>s (works only once :-(
@@ -163,7 +172,7 @@ for arg in sys.argv[1:]:
         if splitLongSentences:
             num = 1
             while num != 0:
-                newText, num = re.subn("(\r\n[^\n\r]{300,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1})",
+                newText, num = re.subn("(\r\n[^\n\r]{2x00,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{100,})",
                                        "\\1\r\n\\2", newText, 0)
                 
         if newText!=text:
