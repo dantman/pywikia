@@ -98,7 +98,7 @@ else:
         
 for pl in lst:
     f = pl.urlname()
-    wikipedia.throttle()
+    wikipedia.get_throttle()
     f = f.replace("'", r"'\''")
     if os.isatty(1):
         print

@@ -33,6 +33,9 @@ treelang_log = True
 # Slow down the robot such that it never requests a second page within
 # 'throttle' seconds.
 throttle = 6
+# Slow down the robot such that it never makes a second change within
+# 'put_throttle' seconds.
+put_throttle=60
 
 # End of configuration section
 # ============================

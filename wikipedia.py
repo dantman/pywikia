@@ -416,7 +416,8 @@ class Throttle:
                 time.sleep(self.delay - ago)
             self.now = time.time()
 
-throttle = Throttle()
+get_throttle = Throttle()
+put_throttle = Throttle(config.put_throttle)
 
 def putPage(code, name, text, comment = None):
     """Upload 'text' on page 'name' to the 'code' language wikipedia.
@@ -424,6 +425,7 @@ def putPage(code, name, text, comment = None):
        instead.
     """
     import httplib
+    put_throttle()
     host = langs[code]
     if code in oldsoftware:
         raise Error("Cannot put pages on old wikipedia software")
@@ -529,7 +531,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
     if debug:
         print host, address
     # Make sure Brion doesn't get angry by slowing ourselves down.
-    throttle()
+    get_throttle()
     text, charset = getUrl(host,address)
     # Keep login status for external use
     if code == mylang:
@@ -924,7 +926,9 @@ def argHandler(arg):
     if arg.startswith('-lang:'):
         setMyLang(arg[6:])
     elif arg.startswith('-throttle:'):
-        throttle.setDelay(int(arg[10:]))
+        get_throttle.setDelay(int(arg[10:]))
+    elif arg.startswith('-putthrottle:'):
+        put_throttle.setDelay(int(arg[13:]))
     else:
         return 0
     return 1
