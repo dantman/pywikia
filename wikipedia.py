@@ -911,7 +911,10 @@ def allpages(start = '%21%200'):
         text = getPage(mylang, family.allpagesname(mylang, start),
                        do_quote=0, do_edit=0)
         #print text
-        R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
+        if family.version(mylang)=="1.2":
+            R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
+        else:
+            R = re.compile('title =\"(.*?)\"')
         n = 0
         for hit in R.findall(text):
             if not ':' in hit:

@@ -259,6 +259,13 @@ cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
 def hostname(code):
     return langs[code]
 
+# Which version of MediaWiki is used?
+def version(code):
+    if code=="en":
+        return "1.2"
+    else:
+        return "1.3"
+
 def put_address(code, name):
     return '/w/wiki.phtml?title=%s&action=submit'%name
 
@@ -284,7 +291,10 @@ def allpagesname(code, start):
     # This is very ugly: to get all pages, the wikipedia code
     # 'fakes' getting a page with the returned name.
     # This will need to be fixed someday.
-    return '%s:Allpages&printable=yes&from=%s'%(special[code], start)
+    if version(code)="1.2":
+        return '%s:Allpages&printable=yes&from=%s'%(special[code], start)
+    else:
+        return '%s:Allpages&from=%s'%(special[code], start)
 
 #
 # Two functions to figure out the encoding of different languages

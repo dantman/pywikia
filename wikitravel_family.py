@@ -51,6 +51,9 @@ biglangs = ['en','fr','ro']
 def hostname(code):
     return 'wikitravel.org'
 
+def version(code):
+    return "1.2"
+
 def put_address(code, name):
     return '/%s/wiki/wiki.phtml?title=%s&action=submit'%(code,name)
 
@@ -76,7 +79,10 @@ def allpagesname(code, start):
     # This is very ugly: to get all pages, the wikipedia code
     # 'fakes' getting a page with the returned name.
     # This will need to be fixed someday.
-    return '%s:Allpages&printable=yes&from=%s'%(special[code], start)
+    if version(code)="1.2":
+        return '%s:Allpages&printable=yes&from=%s'%(special[code], start)
+    else:
+        return '%s:Allpages&from=%s'%(special[code], start)
 
 # Two functions to figure out the encoding of different languages
 # This may be a lot simpler for other families!
