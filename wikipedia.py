@@ -966,6 +966,8 @@ def argHandler(arg):
         get_throttle.setDelay(int(arg[10:]))
     elif arg.startswith('-putthrottle:'):
         put_throttle.setDelay(int(arg[13:]))
+    elif arg == '-nil':
+        return 1
     else:
         return 0
     return 1

@@ -26,6 +26,8 @@ for arg in sys.argv[1:]:
 
 if options:
     options=' '.join(options)
+else:
+    options='-nil'
 
 if sys.platform == 'win32':
     normalstatus = 0, 1
@@ -35,7 +37,6 @@ else:
 lst=[]
 
 for fn in file:
-    print fn
     f=open(fn)
     for line in f.readlines():
         lst.append(wikipedia.PageLink(wikipedia.mylang,line))
@@ -51,7 +52,7 @@ for pl in lst:
     if sys.platform=='win32':
         status = os.system("solve_disambiguation.py %s %s" % (options, f))
     else:
-        status = os.system("solve_disambiguation.py %s '%s'" % (options, f))
+        status = os.system("python solve_disambiguation.py %s '%s'" % (options, f))
     if status not in normalstatus:
         print "Exit status ", status
         sys.exit(1)
