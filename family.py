@@ -72,7 +72,7 @@ class Family:
                 'hi': u'विशेष',
                 'hu': u'Speciális',
                 'id': u'Istimewa',
-                'is': u'Kerfissíður',
+                'is': u'Kerfissíða',
                 'it': u'Speciale',
                 'ja': u'特別',
                 'ko': u'특수기능',
