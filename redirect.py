@@ -129,7 +129,6 @@ def delete_broken_redirects(source):
                 target_page = wikipedia.PageLink(wikipedia.mylang, target_name)
                 target_page.get(read_only = True)
             except wikipedia.NoPage:
-                wikipedia.output('Deleting %s...' % redir_page.linkname())
                 wikipedia.deletePage(redir_page, reason, prompt = False)
             except wikipedia.IsRedirectPage:
                 wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
