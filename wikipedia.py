@@ -227,6 +227,9 @@ image = {
     'wa': 'Im%C3%A5dje',
     }
 
+redirect = {
+    'cy': 'ail-cyfeirio',
+    }
 
 # Defaults for Special: and Image: namespace names
 
@@ -331,10 +334,6 @@ class SubpageError(ValueError):
     """The subpage specified by # does not exist"""
 
 SaxError = xml.sax._exceptions.SAXParseException
-
-# Regular expression recognizing redirect pages
-
-Rredirect = re.compile(r'\#redirect:? *\[\[(.*?)\]\]', re.I)
 
 # The most important thing in this whole module: The PageLink class
 class PageLink:
@@ -597,6 +596,15 @@ class PageLink:
             raise IsNotRedirectPage(self)
         
 
+# Regular expression recognizing redirect pages
+
+def redirectRe(code):
+    if redirect.has_key(code):
+        txt = '(redirect|'+redirect[code]+')'
+    else:
+        txt = 'redirect'
+    return re.compile(r'\#'+txt+':? *\[\[(.*?)\]\]', re.I)
+
 # Shortcut get to get multiple pages at once
 class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
     def setCallback(self, callback):
@@ -699,7 +707,7 @@ class GetAll:
                 print "-",edittime[self.code, link2url(title, self.code)]
                 print "+",timestamp
         else:
-            m=Rredirect.match(text)
+            m = redirectRe(self.code).match(text)
             if m:
                 #print "DBG> ",pl2.asasciilink(),"is a redirect page"
                 pl2._getexception = IsRedirectPage(m.group(1))
@@ -998,7 +1006,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             raise NoPage(code, name)
         if debug:
             print text[i1:i2]
-        m=Rredirect.match(text[i1:i2])
+        m = redirectRe(code).match(text[i1:i2])
         if m:
             print "DBG> %s is redirect to %s"%(name,m.group(1))
             raise IsRedirectPage(m.group(1))
