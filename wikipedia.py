@@ -1463,7 +1463,7 @@ def chooselang(code, choice):
 # If a character can't be displayed, it will be replaced with a question mark.
 def output(text, decoder = None, newline=True):
     if decoder:
-        text = unicode(text, decode)
+        text = unicode(text, decoder)
     if newline:
         print text.encode(config.console_encoding, 'replace')
     else:

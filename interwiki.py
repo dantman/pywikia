@@ -637,9 +637,8 @@ class SubjectArray:
            generator"""
         fs = self.firstSubject()
         if fs:
-            wikipedia.output("NOTE: The first unfinished subject is:", fs.pl().aslink())
-        print "NOTE: Number of pages queued is %d, trying to add %d more."%(
-            len(self.subjects), number)
+            wikipedia.output("NOTE: The first unfinished subject is " + fs.pl().aslink())
+        print "NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number)
         for i in range(number):
             try:
                 pl=self.generator.next()
