@@ -37,7 +37,7 @@ __version__='$Id$'
 
 import re,sys,wikipedia,config,time
 
-myComment = {'de':'Bot: Tabellensyntax konvertiert'
+myComment = {'de':'Bot: Tabellensyntax konvertiert',
              'en':'User-controlled Bot: table syntax updated',
              'nl':'Tabel gewijzigd van HTML- naar Wikisyntax'
              }
