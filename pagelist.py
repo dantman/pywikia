@@ -32,46 +32,46 @@ for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
     else:
-        new=wikipedia.PageLink(wikipedia.mylang,arg)
-        tocheck.append(new)
+        tocheck.append(arg)
 
 while tocheck <> []:
-    pg = tocheck[0]
+    pname = tocheck[0]
+    pg = wikipedia.PageLink(wikipedia.mylang,pname)
     tocheck = tocheck[1:]
     if pg.exists():
         if pg.isRedirectPage():
-            exclude.append(pg)
+            exclude.append(pname)
             new = pg.getRedirectTo()
             if not (new in tocheck or new in include or new in exclude):
-                tocheck.append(wikipedia.PageLink(wikipedia.mylang,new))
+                tocheck.append(new)
         else:
-            include.append(pg)
+            include.append(pname)
             for new in pg.links():
                 if not (new in tocheck or new in include or new in exclude):
                     print("%s")%new
                     answer = raw_input("(y/n)? ")
                     if answer=='y':
-                        tocheck.append(wikipedia.PageLink(wikipedia.mylang,new))
+                        tocheck.append(new)
                     elif answer=='n':
-                        exclude.append(wikipedia.PageLink(wikipedia.mylang,new))
+                        exclude.append(new)
             for new in wikipedia.getReferences(pg):
                 if not (new in tocheck or new in include or new in exclude):
                     print("%s")%new
                     answer = raw_input("(y/n)? ")
                     if answer=='y':
-                        tocheck.append(wikipedia.PageLink(wikipedia.mylang,new))
+                        tocheck.append(new)
                     elif answer=='n':
-                        exclude.append(wikipedia.PageLink(wikipedia.mylang,new))
+                        exclude.append(new)
     else:
-        exclude.append(pg)
+        exclude.append(pname)
         for new in wikipedia.getReferences(pg):
             if not (new in tocheck or new in include or new in exclude):
                 print("%s")%new
                 answer = raw_input("(y/n)? ")
                 if answer=='y':
-                    tocheck.append(wikipedia.PageLink(wikipedia.mylang,new))
+                    tocheck.append(new)
                 elif answer=='n':
-                    exclude.append(wikipedia.PageLink(wikipedia.mylang,new))
+                    exclude.append(new)
     print()
 
 include.sort()
@@ -79,6 +79,7 @@ print()
 print("Collection of pages complete.")
 print("=============================")
 for page in include:
-    print page.linkname()
+    print page
+
 
  
