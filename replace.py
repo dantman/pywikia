@@ -35,6 +35,13 @@ If you want to fix typos, e.g. Errror -> Error, use this:
 import sys, re
 import wikipedia, config
 
+# Summary messages
+msg = {
+       'en':u'Robot: Automated text replacement',
+       'de':u'Bot: Automatisierte Textersetzung',
+      }
+
+
 # taken from interwiki.py
 def showDiff(oldtext, newtext):
     import difflib
@@ -128,6 +135,7 @@ if regex:
     old = re.compile(old)
 
 acceptall = False
+wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang, msg)])
 
 for pl in generator(source, old, regex, textfilename, sqlfilename):
     # print pl.linkname()
