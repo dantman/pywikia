@@ -47,7 +47,9 @@ def main():
             except wikipedia.NoPage:
 	    	print "%s doesn't exit yet. Ignoring."%(pl2.aslocallink())
 		pass
-            else:
+            except wikipedia.IsRedirectPage,arg:
+	    	print "WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),arg)
+	    else:
                 print "Current categories: ",cats
                 if catpl in cats:
                     print "%s already has %s"%(pl.aslocallink(),catpl.aslocallink())
