@@ -62,6 +62,7 @@ def get_content_type(filename):
 # Gets the image at URL fn, and uploads it to Wikipedia 'target'.
 # Description is the proposed description; if description is empty (''),
 # a description is asked.
+# Returns the filename which was used to upload the image
 def get_image(fn,target,description):
     # Get file contents
     uo = wikipedia.MyURLopener()
@@ -104,6 +105,7 @@ def get_image(fn,target,description):
 
 # Gets a wikilink to an image, downloads it and its description,
 # and uploads it to another wikipedia
+# Returns the filename which was used to upload the image
 # This function is used by imagetransfer.py and by copy_table.py
 def transfer_image(imagelink, target, debug=False):
     if debug: print "--------------------------------------------------"
@@ -129,8 +131,9 @@ def transfer_image(imagelink, target, debug=False):
     try:
         if debug:
             print imagelink.get()
+            return filename
         else:
-            get_image(url,target,description)
+            return get_image(url,target,description)
     except wikipedia.NoPage:
         print "Page not found"
 

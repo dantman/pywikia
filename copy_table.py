@@ -35,7 +35,8 @@ Article_Name:  Name of the article where a table should be inserted
 #
 __version__='$Id$'
 #
-import wikipedia, translator, re, sys, string
+import wikipedia, translator, lib_images
+import re, sys, string
 
 # Summary message
 msg={
@@ -97,11 +98,12 @@ def imagelinks(lang, text):
         im=wikipedia.image[lang] + ':'
     else:
         im='Image:'
+    im = '[' + im[0].upper() + im[0].lower() + ']' + im[1:]
     w1=r'('+im+'[^\]\|]*)'
     w2=r'([^\]\|]*)'
     Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
     for l in Rlink.findall(text):
-        result.append(wikipedia.PageLink(lang, l[0]))
+        result.append(l[0])
     return result
 
 
@@ -129,10 +131,24 @@ def treat(to_pl):
     if not table:
         print "No table found in %s." % from_lang + ":" + from_pl.linkname()
         return
+
+    print_debug("Copying images")
+    if copy_images:
+        # extract image links from original table
+        images=imagelinks(from_lang, table)
+        for image in images:
+            print image
+            old_filename = string.split(image, ":", 1)[1]
+            new_filename = lib_images.transfer_image(wikipedia.PageLink(from_lang, image), wikipedia.mylang, debug)
+            print "Replacing " + old_filename + " with " + new_filename
+            table = table.replace(old_filename, new_filename)
+
+
     translated_table = translator.translate(table, type, from_lang, debug, wikipedia.mylang)
     if not translated_table:
         print "Could not translate table."
         return
+
     print_debug("\n" + translated_table)
     # add table to top of the article, seperated by a blank lines
     to_text = translated_table + "\n\n" + to_text
@@ -141,13 +157,6 @@ def treat(to_pl):
         # save changes on Wikipedia
         to_pl.put(to_text, minorEdit='0')
 
-    print_debug("Copying images")
-    if copy_images:
-        # extract image links from original table
-        images=imagelinks(from_lang, table)
-        import lib_images
-        for i in images:
-            lib_images.transfer_image(i, wikipedia.mylang, debug)
             
         
 
