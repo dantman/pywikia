@@ -77,23 +77,25 @@ class Family(family.Family):
         # if you carefully avoid the options, you could get away without these
         # for another wikimedia family./ca
         
-        self.biglangs = ['de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'pt', 'sv']
+        self.biglangs = [
+            'de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'pt', 'sv']
         
         self.biglangs2 = self.biglangs + [
-            'ca', 'da', 'eo', 'et', 'fi', 'no', 'ro', 'sl', 'zh']
+            'ca', 'da', 'eo', 'et', 'fi', 'id', 'no', 'ro', 'sl', 'zh']
         
         self.biglangs3 = self.biglangs2 + [
-            'af', 'bg', 'cs', 'he', 'hr', 'hu', 'id', 'la', 'ms', 'ru', 'uk', 'wa']
+            'bg', 'cs', 'he', 'hr', 'hu', 'ru', 'ms', 'sk', 'tt', 'uk', 'wa']
         
         self.biglangs4 = self.biglangs3 + [
-            'ast', 'bs', 'cy', 'el', 'eu', 'fy', 'gl', 'ia', 'io', 'is',
-            'ko', 'ku', 'lb', 'lt', 'nn', 'simple', 'sk', 'sr', 'tr', 'tt']
+            'af', 'ast', 'bs', 'cy', 'el', 'eu', 'fy', 'gl', 'ia', 'io',
+            'is', 'ko', 'ku', 'la', 'lb', 'lt', 'nn', 'simple', 'sr', 'tr']
         
         self.seriouslangs = self.biglangs4 + [
-            'als', 'an', 'ang', 'ar', 'be', 'csb', 'fa', 'fo', 'ga', 'gd',
-            'hi', 'ie', 'jv', 'kn', 'ks', 'kw', 'lv', 'mi', 'minnan', 'ml', 'nds',
-            'oc', 'sa', 'scn', 'sq', 'su', 'ta', 'th', 'tl', 'ur', 'vi']
-        
+            'als', 'an', 'ang', 'ar', 'be', 'bn', 'br', 'csb', 'fa', 'fo',
+            'ga', 'gd', 'hi', 'hy', 'ie', 'jv', 'ka', 'kn', 'ks', 'kw',
+            'li', 'lv', 'mi', 'ml', 'mr', 'nds', 'oc', 'os', 'sa', 'scn',
+            'se', 'sq', 'su', 'ta', 'te', 'th', 'tl', 'ur', 'vi', 'zh-min-nan']
+
         # other groups of language that we might want to do at once
             
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
