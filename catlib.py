@@ -75,6 +75,10 @@ class _CatLink(wikipedia.PageLink):
             cat = catstodo.pop()
             catsdone.append(cat)
             txt = wikipedia.getPage(cat.code(), cat.urlname(), do_edit = 0)
+            # save a copy of this text to find out self's supercategory.
+            # if recurse is true, this function should only return self's
+            # supercategory, not the ones of its subcats.
+            self_txt = txt
             # index where subcategory listing begins
             # this only works for the current version of the MonoBook skin
             ibegin = txt.index('"clear:both;"')
@@ -87,6 +91,14 @@ class _CatLink(wikipedia.PageLink):
                     if recurse and ncat not in catsdone:
                         catstodo.append(ncat)
                 pages.append(title)
+        # get supercategories
+        ibegin = self_txt.index('<div id="catlinks">')
+        iend = self_txt.index('<!-- end content -->')
+        self_txt = self_txt[ibegin:iend]
+        Rsupercat = re.compile('title=.*\"([^\"]*)\"')
+        for title in Rsupercat.findall(self_txt):
+            print title
+        
         return pages
     
     def subcategories(self, recurse = False):
@@ -118,8 +130,21 @@ class _CatLink(wikipedia.PageLink):
                 articles.append(npage)
         return unique(articles)
 
-     #TODO: create supercategories() function
+    def supercategories(self, recurse = False):
+        """Create a list of all subcategories of the current category.
 
+           If recurse = True, also return subcategories of the subcategories.
+
+           Returns a sorted, unique list of all subcategories.
+        """
+        subcats = []
+        for title in self.catlist(recurse):
+            if iscattitle(title):
+                ncat = _CatLink(self.code(), title)
+                subcats.append(ncat)
+        return unique(subcats)
+    
+    
 def CatLink(s):
     """Factory method to create category link objects from the category name"""
     # Standardized namespace

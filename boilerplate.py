@@ -11,13 +11,12 @@ then automatically loop over them, and replace the boilerplate text.
 
 Command line options:
 
--newformat:   Use the new format {{stub}} instead of {{msg:stub}}.
-              Note: we might want to change this to -oldformat and make the
-              new format the default later.
+-oldformat:   Use the old format {{msg:Stub}} instead of {{Stub}}.
+              
 other:        First argument is the old boilerplate name, second one is the new
               name. If only one argument is given, the bot resolves the
               boilerplate by putting its text directly into the article.
-              This is done by changing msg: into subst:.
+              This is done by changing {{...}} or {{msg:...}} into {{subst:...}}
 """
 #
 # (C) Daniel Herding, 2004
@@ -39,22 +38,21 @@ def getReferences(pl):
     x = wikipedia.getReferences(pl)
     return x
 
-oldformat = True
+oldformat = False
 boilerplate_names = []
 resolve = False
 # read command line parameters
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
-    elif arg == '-newformat':
-        oldformat = False
+    elif arg == '-oldformat':
+        oldformat = True
     else:
         boilerplate_names.append(arg)
 
 if boilerplate_names == []:
-    print "Syntax: python boilerplate.py [-newformat] oldBoilerplate [newBoilerplate]"
-    # Bug: this exit thingy doesn't work.
-    sys.exit
+    print "Syntax: python boilerplate.py [-oldformat] oldBoilerplate [newBoilerplate]"
+    sys.exit()
 old = boilerplate_names[0]
 if len(boilerplate_names) >= 2:
     new = boilerplate_names[1]
@@ -67,9 +65,10 @@ else:
 # get edit summary message
 wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)]+': '+old)
 
+# get template namespace
+ns = wikipedia.family.template[wikipedia.mylang]
 # Download 'What links here' of the boilerplate
-thispl = wikipedia.PageLink(wikipedia.mylang, 'MediaWiki:' + old)
-
+thispl = wikipedia.PageLink(wikipedia.mylang, ns + ':' + old)
 
 def treat(refpl):
     try:

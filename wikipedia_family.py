@@ -212,6 +212,12 @@ image = {
     'wa': 'Im%C3%A5dje',
     }
 
+# Template namespace
+template = {
+    'de':u'Vorlage',
+    'en':u'Template'
+    }
+
 # Category namespace. 'Category' works on all languages?!?!?....
 
 category = {
