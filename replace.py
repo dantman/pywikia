@@ -205,7 +205,7 @@ class ReplacePageGenerator:
                 continue
             else:
                 for exception in self.exceptions:
-                    if regex:
+                    if self.regex:
                         exception = re.compile(exception)
                         if exception.search(entry.text):
                             skip_page = True
