@@ -14,6 +14,7 @@ none yet, except for the boilerplates
              
 """
 #
+# (C) Daniel Herding, 2004
 # (C) Rob W.W. Hooft, 2003
 #
 # Distribute under the terms of the PSF license.
@@ -74,7 +75,7 @@ def treat(refpl):
     
 # regular expression to find the original boilerplate text.
 # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
-boilerplateR=re.compile(r'\{\{msg:[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
+boilerplateR=re.compile(r'\{\{[mM][sS][gG]:[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
 
 # loop over all pages using the boilerplate
 for ref in getReferences(thispl):
