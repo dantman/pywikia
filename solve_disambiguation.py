@@ -75,7 +75,7 @@ To complete a move of a page, one can use:
 __version__='$Id$'
 #
 import wikipedia, config
-import re,sys
+import re, sys, math
 
 # This is a purely interactive robot. We set the delays lower.
 wikipedia.put_throttle.setDelay(4)
@@ -224,6 +224,7 @@ class ReferringPageGenerator:
                 ig = ig.encode(wikipedia.myencoding())
                 ignore_regexes.append(re.compile(ig))
             for Rignore in ignore_regexes:
+                # run backwards because we might remove list items
                 for i in range(len(refs)-1, -1, -1):
                     if Rignore.match(refs[i]):
                         wikipedia.output('Ignoring page ' + refs[i], wikipedia.myencoding())
@@ -235,274 +236,383 @@ class ReferringPageGenerator:
         refpls = []
         for ref in refs:
             refpls.append(wikipedia.PageLink(self.disambPl.site(), ref))
-        try:
-            wikipedia.getall(self.disambPl.site(), refpls, throttle=False)
-        except wikipedia.SaxError:
-            # Ignore this error, and get the pages the traditional way.
-            pass
-        for refpl in refpls:
-            yield refpl
-
-
-
-def unique(list):
-    # remove duplicate entries
-    result={}
-    for i in list:
-        result[i]=None
-    return result.keys()
-
-
-def makepath(path):
-    """ creates missing directories for the given path and
-        returns a normalized absolute version of the path.
-
-    - if the given path already exists in the filesystem
-      the filesystem is not modified.
-
-    - otherwise makepath creates directories along the given path
-      using the dirname() of the path. You may append
-      a '/' to the path if you want it to be a directory path.
-
-    from holger@trillke.net 2002/03/18
-    """
-    from os import makedirs
-    from os.path import normpath,dirname,exists,abspath
-
-    dpath = normpath(dirname(path))
-    if not exists(dpath): makedirs(dpath)
-    return normpath(abspath(path))
-
-def listAlternatives(alternatives):
-        #########
-    # The GUI for the list is disabled because it doesn't
-    # work exactly as expected.
-    #########
-    #list in new window
-    #print '\n\t\t--> beachte neues Fenster <--'
-    #import gui
-    #list_window = gui.ListBoxWindow()
-    #mylist = list_window.list(alternatives)
-    ##########
-    print '\n'
-    for i in range(len(alternatives)):
-        wikipedia.output(u"%3d - %s" % (i, alternatives[i]))
-
-def treat(refpl, thispl):
-    """
-    Parameters:
-        thispl - The disambiguation page or redirect we don't want anything
-                 to link on
-        refpl - A page linking to thispl
-    Returns False if the user pressed q to completely quit the program.
-    Otherwise, returns True.
-    """
-    try:
-        include = False
-        text=refpl.get(throttle=False)
-        include = True
-    except wikipedia.IsRedirectPage:
-        wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), thispl.linkname()))
-        if solve_redirect:
-            choice = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
-            if choice2 == 'y':
-                redir_text = '#REDIRECT [[%s]]' % target
-                refpl.put(redir_text)
-        else:
-            choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N|c(hange redirect)]' % refpl.linkname())
-            if choice == 'y':
-                gen = ReferringPageGenerator(thispl)
-                for refpl in gen.generate():
-                    if not refpl.urlname() in skip_primary:
-                        # run until the user selected 'quit'
-                        if not treat(refpl, thispl):
-                            break
-                
-                for ref_redir in getReferences(refpl):
-                    refpl_redir=wikipedia.PageLink(mysite, ref_redir)
-                    treat(refpl_redir, refpl)
-            elif choice == 'c':
-                text="#%s [[%s]]"%(mysite.redirect(default=True), thispl.linkname())
-                include = "redirect"
-    if include in [True,"redirect"]:
-        # make a backup of the original text so we can show the changes later
-        original_text=text
-        n = 0
-        curpos = 0
-        edited = False
-        # This loop will run until we have finished the current page
-        while True:
-            m=linkR.search(text, pos = curpos)
-            if not m:
-                if n == 0:
-                    wikipedia.output(u"No changes necessary in %s" % refpl.linkname())
-                    return True
-                else:
-                    # stop loop and save page
-                    break
-            # Make sure that next time around we will not find this same hit.
-            curpos = m.start() + 1
-            # Try to standardize the page.
-            if wikipedia.isInterwikiLink(m.group(1)):
-                continue
-            else:
-                linkpl=wikipedia.PageLink(thispl.site(), m.group(1))
-            # Check whether the link found is to thispl.
-            if linkpl != thispl:
-                continue
-
-            n += 1
-            # how many bytes should be displayed around the current link
-            context = 30
-            # This loop will run while the user doesn't choose an option
-            # that will actually change the page
-            while True:
-                print '\n'
-                wikipedia.output(u">>> %s <<<" % refpl.linkname())
-                # at the beginning of the link, start red color.
-                # at the end of the link, reset the color to default
-                displayedText = text[max(0, m.start() - context):m.start()] + wikipedia.colorize(text[m.start():m.end()], '91') + text[m.end():m.end()+context]
-                wikipedia.output(displayedText)
-                if always == None:
-                    if edited:
-                        choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
-                                           "        q=quit, m=more context, l=list, a=add new, x=save in this form):")
-                    else:
-                        choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
-                                           "        q=quit, m=more context, l=list, a=add new):")
-                else:
-                    choice=always
-                if choice=='a':
-                    newAlternative = wikipedia.input(u'New alternative:')
-                    alternatives.append(newAlternative)
-                    listAlternatives(alternatives)
-                elif choice=='e':
-                    import gui
-                    edit_window = gui.EditBoxWindow()
-                    newtxt = edit_window.edit(text)
-                    # if user didn't press Cancel
-                    if newtxt:
-                        text = newtxt
-                        break
-                elif choice=='l':
-                    listAlternatives(alternatives)
-                elif choice=='m':
-                    # show more text around the link we're working on
-                    context*=2
-                else:
-                    break
-        
-            if choice == 'e':
-                # user has edited the page and then pressed 'OK'
-                edited = True
-                curpos = 0
-                continue
-            elif choice == 'n':
-                # skip this page
-                if primary:
-                    # If run with the -primary argument, skip this occurence next time.
-                    filename = 'disambiguations/' + thispl.urlname() + '.txt'
-                    try:
-                        # Open file for appending. If none exists yet, create a new one.
-                        # The file is stored in the disambiguation/ subdir. Create if necessary.
-                        f = open(makepath(filename), 'a')
-                        f.write(refpl.urlname() + '\n')
-                        f.close()
-                    except IOError:
-                        pass
-                return True
-            elif choice=='q':
-                # quit the program
-                return False
-            elif choice=='s':
-                # Next link on this page
-                n -= 1
-                continue
-            elif choice=='x' and edited:
-                # Save the page as is
-                break
-
-            # The link looks like this:
-            # [[page_title|link_text]]trailing_chars
-            page_title = m.group(1)
-            link_text = m.group(2)
-
-            if not link_text:
-                # or like this: [[page_title]]trailing_chars
-                link_text = page_title
-            trailing_chars = m.group(3)
-            if trailing_chars:
-                link_text += trailing_chars
-
-            if choice=='u':
-                # unlink
-                text = text[:m.start()] + link_text + text[m.end():]
-                continue
-            else:
-                if len(choice)>0 and choice[0] == 'r':
-                # we want to throw away the original link text
-                    replaceit = 1
-                    choice = choice[1:]
-                elif include == "redirect":
-                    replaceit = 1
-                else:
-                    replaceit = 0
-
+        while refpls:
+            # We don't want to load too many pages at once using XML export.
+            # We only get 20 at a time.
+            someRefPls = []
+            for i in range(0, 20):
                 try:
-                    choice=int(choice)
-                except ValueError:
-                    print '\nUnknown option'
-                    # step back to ask the user again what to do with the current link
-                    curpos -= 1
-                    continue
-                if choice >= len(alternatives) or choice < 0:
-                    print '\nChoice out of range. Please select a number between 0 and %d.' % (len(alternatives) - 1)
-                    # show list of possible choices
-                    listAlternatives(alternatives)
-                    # step back to ask the user again what to do with the current link
-                    curpos -= 1
-                    continue
-                new_page_title = alternatives[choice]
-                reppl = wikipedia.PageLink(thispl.site(), new_page_title)
-                new_page_title = reppl.linkname()
-                # There is a function that uncapitalizes the link target's first letter
-                # if the link description starts with a small letter. This is useful on
-                # nl: but annoying on de:.
-                # At the moment the de: exclusion is only a workaround because I don't
-                # know if other languages don't want this feature either.
-                # We might want to introduce a list of languages that don't want to use
-                # this feature.
-                if mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
-                    new_page_title = new_page_title[0].lower() + new_page_title[1:]
-                if replaceit and trailing_chars: 
-                    newlink = "[[%s]]%s" % (new_page_title, trailing_chars)
-                elif new_page_title == link_text or replaceit:
-                    newlink = "[[%s]]" % new_page_title
-                # check if we can create a link with trailing characters instead of a pipelink
-                elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(trailR, '', link_text[len(new_page_title):]) == '':
-                    newlink = "[[%s]]%s" % (new_page_title, link_text[len(new_page_title):])
-                else:
-                    newlink = "[[%s|%s]]" % (new_page_title, link_text)
-                text = text[:m.start()] + newlink + text[m.end():]
-                continue
+                    someRefPls.append(refpls.pop(0))
+                # Nothing left to do?
+                except IndexError:
+                    break
+            try:
+                wikipedia.getall(self.disambPl.site(), someRefPls, throttle=False)
+            except wikipedia.SaxError:
+                # Ignore this error, and get the pages the traditional way later.
+                pass
+            for refpl in someRefPls:
+                yield refpl
 
-            wikipedia.output(text[max(0,m.start()-30):m.end()+30])
-        if not debug:
+class DisambiguationRobot:
+    def __init__(self, always, alternatives, getAlternatives, solve_redirect, page_list, primary, main_only):
+        self.always = always
+        self.alternatives = alternatives
+        self.getAlternatives = getAlternatives
+        self.solve_redirect = solve_redirect
+        self.page_list = page_list
+        self.primary = primary
+        self.main_only = main_only
+
+        self.mysite = wikipedia.getSite()
+        self.mylang = self.mysite.language()
+
+    def makeAlternativesUnique(self):
+        # remove duplicate entries
+        result={}
+        for i in self.alternatives:
+            result[i]=None
+        self.alternatives = result.keys()
+    
+    
+    def makepath(self, path):
+        """ creates missing directories for the given path and
+            returns a normalized absolute version of the path.
+    
+        - if the given path already exists in the filesystem
+          the filesystem is not modified.
+    
+        - otherwise makepath creates directories along the given path
+          using the dirname() of the path. You may append
+          a '/' to the path if you want it to be a directory path.
+    
+        from holger@trillke.net 2002/03/18
+        """
+        from os import makedirs
+        from os.path import normpath,dirname,exists,abspath
+    
+        dpath = normpath(dirname(path))
+        if not exists(dpath): makedirs(dpath)
+        return normpath(abspath(path))
+    
+    def listAlternatives(self):
+            #########
+        # The GUI for the list is disabled because it doesn't
+        # work exactly as expected.
+        #########
+        #list in new window
+        #print '\n\t\t--> beachte neues Fenster <--'
+        #import gui
+        #list_window = gui.ListBoxWindow()
+        #mylist = list_window.list(alternatives)
+        ##########
+        print '\n'
+        for i in range(len(self.alternatives)):
+            wikipedia.output(u"%3d - %s" % (i, self.alternatives[i]))
+    
+    def treat(self, refpl, thispl):
+        """
+        Parameters:
+            thispl - The disambiguation page or redirect we don't want anything
+                     to link on
+            refpl - A page linking to thispl
+        Returns False if the user pressed q to completely quit the program.
+        Otherwise, returns True.
+        """
+        if self.mylang in link_trail:
+            linktrail=link_trail[self.mylang]
+        else:
+            linktrail='[a-z]*'
+        trailR=re.compile(linktrail)
+        # The regular expression which finds links. Results consist of three groups:
+        # group(1) is the target page title, that is, everything before | or ].
+        # group(2) is the alternative link title, that's everything between | and ].
+        # group(3) is the link trail, that's letters after ]] which are part of the word.
+        # note that the definition of 'letter' varies from language to language.
+        linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + linktrail + ')')
+        
+        try:
+            include = False
+            text=refpl.get(throttle=False)
+            include = True
+        except wikipedia.IsRedirectPage:
+            wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), thispl.linkname()))
+            if self.solve_redirect:
+                choice = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
+                if choice2 == 'y':
+                    redir_text = '#REDIRECT [[%s]]' % target
+                    refpl.put(redir_text)
+            else:
+                choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N|c(hange redirect)]' % refpl.linkname())
+                if choice == 'y':
+                    gen = ReferringPageGenerator(refpl)
+                    for refpl2 in gen.generate():
+                        if not refpl2.urlname() in skip_primary:
+                            # run until the user selected 'quit'
+                            if not self.treat(refpl2, thispl):
+                                break
+                elif choice == 'c':
+                    text="#%s [[%s]]"%(self.mysite.redirect(default=True), thispl.linkname())
+                    include = "redirect"
+        if include in [True,"redirect"]:
+            # make a backup of the original text so we can show the changes later
+            original_text=text
+            n = 0
+            curpos = 0
+            edited = False
+            # This loop will run until we have finished the current page
+            while True:
+                m=linkR.search(text, pos = curpos)
+                if not m:
+                    if n == 0:
+                        wikipedia.output(u"No changes necessary in %s" % refpl.linkname())
+                        return True
+                    else:
+                        # stop loop and save page
+                        break
+                # Make sure that next time around we will not find this same hit.
+                curpos = m.start() + 1
+                # Try to standardize the page.
+                if wikipedia.isInterwikiLink(m.group(1)):
+                    continue
+                else:
+                    linkpl=wikipedia.PageLink(thispl.site(), m.group(1))
+                # Check whether the link found is to thispl.
+                if linkpl != thispl:
+                    continue
+    
+                n += 1
+                # how many bytes should be displayed around the current link
+                context = 30
+                # This loop will run while the user doesn't choose an option
+                # that will actually change the page
+                while True:
+                    print '\n'
+                    wikipedia.output(u">>> %s <<<" % refpl.linkname())
+                    # at the beginning of the link, start red color.
+                    # at the end of the link, reset the color to default
+                    displayedText = text[max(0, m.start() - context):m.start()] + wikipedia.colorize(text[m.start():m.end()], '91') + text[m.end():m.end()+context]
+                    wikipedia.output(displayedText)
+                    if not self.always:
+                        if edited:
+                            choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                                               "        q=quit, m=more context, l=list, a=add new, x=save in this form):")
+                        else:
+                            choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                                               "        q=quit, m=more context, l=list, a=add new):")
+                    else:
+                        choice = self.always
+                    if choice=='a':
+                        newAlternative = wikipedia.input(u'New alternative:')
+                        self.alternatives.append(newAlternative)
+                        self.listAlternatives()
+                    elif choice=='e':
+                        import gui
+                        edit_window = gui.EditBoxWindow()
+                        newtxt = edit_window.edit(text)
+                        # if user didn't press Cancel
+                        if newtxt:
+                            text = newtxt
+                            break
+                    elif choice=='l':
+                        self.listAlternatives()
+                    elif choice=='m':
+                        # show more text around the link we're working on
+                        context*=2
+                    else:
+                        break
+            
+                if choice == 'e':
+                    # user has edited the page and then pressed 'OK'
+                    edited = True
+                    curpos = 0
+                    continue
+                elif choice == 'n':
+                    # skip this page
+                    if self.primary:
+                        # If run with the -primary argument, skip this occurence next time.
+                        filename = 'disambiguations/' + thispl.urlname() + '.txt'
+                        try:
+                            # Open file for appending. If none exists yet, create a new one.
+                            # The file is stored in the disambiguation/ subdir. Create if necessary.
+                            f = open(self.makepath(filename), 'a')
+                            f.write(refpl.urlname() + '\n')
+                            f.close()
+                        except IOError:
+                            pass
+                    return True
+                elif choice=='q':
+                    # quit the program
+                    return False
+                elif choice=='s':
+                    # Next link on this page
+                    n -= 1
+                    continue
+                elif choice=='x' and edited:
+                    # Save the page as is
+                    break
+    
+                # The link looks like this:
+                # [[page_title|link_text]]trailing_chars
+                page_title = m.group(1)
+                link_text = m.group(2)
+    
+                if not link_text:
+                    # or like this: [[page_title]]trailing_chars
+                    link_text = page_title
+                trailing_chars = m.group(3)
+                if trailing_chars:
+                    link_text += trailing_chars
+    
+                if choice=='u':
+                    # unlink
+                    text = text[:m.start()] + link_text + text[m.end():]
+                    continue
+                else:
+                    if len(choice)>0 and choice[0] == 'r':
+                    # we want to throw away the original link text
+                        replaceit = 1
+                        choice = choice[1:]
+                    elif include == "redirect":
+                        replaceit = 1
+                    else:
+                        replaceit = 0
+    
+                    try:
+                        choice=int(choice)
+                    except ValueError:
+                        print '\nUnknown option'
+                        # step back to ask the user again what to do with the current link
+                        curpos -= 1
+                        continue
+                    if choice >= len(self.alternatives) or choice < 0:
+                        print '\nChoice out of range. Please select a number between 0 and %d.' % (len(self.alternatives) - 1)
+                        # show list of possible choices
+                        self.listAlternatives()
+                        # step back to ask the user again what to do with the current link
+                        curpos -= 1
+                        continue
+                    new_page_title = self.alternatives[choice]
+                    reppl = wikipedia.PageLink(thispl.site(), new_page_title)
+                    new_page_title = reppl.linkname()
+                    # There is a function that uncapitalizes the link target's first letter
+                    # if the link description starts with a small letter. This is useful on
+                    # nl: but annoying on de:.
+                    # At the moment the de: exclusion is only a workaround because I don't
+                    # know if other languages don't want this feature either.
+                    # We might want to introduce a list of languages that don't want to use
+                    # this feature.
+                    if self.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
+                        new_page_title = new_page_title[0].lower() + new_page_title[1:]
+                    if replaceit and trailing_chars: 
+                        newlink = "[[%s]]%s" % (new_page_title, trailing_chars)
+                    elif new_page_title == link_text or replaceit:
+                        newlink = "[[%s]]" % new_page_title
+                    # check if we can create a link with trailing characters instead of a pipelink
+                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(trailR, '', link_text[len(new_page_title):]) == '':
+                        newlink = "[[%s]]%s" % (new_page_title, link_text[len(new_page_title):])
+                    else:
+                        newlink = "[[%s|%s]]" % (new_page_title, link_text)
+                    text = text[:m.start()] + newlink + text[m.end():]
+                    continue
+    
+                wikipedia.output(text[max(0,m.start()-30):m.end()+30])
             print '\nThe following changes have been made:\n'
             wikipedia.showColorDiff(original_text, text)
             print ''
             # save the page
             refpl.put(text)
-    return True
+        return True
+    
+    def run(self):
+        if self.main_only:
+            if ignore.has_key(self.mylang):
+                ignore[self.mylang] += self.mysite.namespaces()
+            else:
+                ignore[self.mylang] = self.mysite.namespaces()
+    
+        for wrd in self.page_list:
+            # when run with -redir argument, there's another summary message
+            if self.solve_redirect:
+                wikipedia.setAction(wikipedia.translate(self.mysite,msg_redir) % wrd)
+            else:
+                wikipedia.setAction(wikipedia.translate(self.mysite,msg) % wrd)
+    
+            thispl = wikipedia.PageLink(self.mysite, wrd)
+    
+            # If run with the -primary argument, read from a file which pages should
+            # not be worked on; these are the ones where the user pressed n last time.
+            # If run without the -primary argument, don't ignore any pages.
+            skip_primary = []
+            filename = 'disambiguations/' + thispl.urlname() + '.txt'
+            try:
+                # The file is stored in the disambiguation/ subdir. Create if necessary.
+                f = open(self.makepath(filename), 'r')
+                for line in f.readlines():
+                    # remove trailing newlines and carriage returns
+                    while line[-1] in ['\n', '\r']:
+                        line = line[:-1]
+                    #skip empty lines
+                    if line != '':
+                        skip_primary.append(line)
+                f.close()
+            except IOError:
+                pass
+    
+            if self.solve_redirect:
+                try:
+                    target = thispl.getRedirectTo()
+                    target = unicode(target, wikipedia.myencoding()) 
+                    self.alternatives.append(target)
+                except wikipedia.NoPage:
+                    print "The specified page was not found."
+                    user_input = wikipedia.input(u"Please enter the name of the page where the redirect should have pointed at, or press enter to quit:")
+                    if user_input == "":
+                        sys.exit(1)
+                    else:
+                        self.alternatives.append(user_input)
+                except wikipedia.IsNotRedirectPage:
+                    print "The specified page is not a redirect."
+                    sys.exit(1)
+            elif self.getAlternatives:
+                try:
+                    if self.primary:
+                        disamb_pl = wikipedia.PageLink(self.mysite, primary_topic_format[self.mylang] % wrd)
+                        thistxt = disamb_pl.get(throttle=False)
+                    else:
+                        thistxt = thispl.get(throttle=False)
+                except wikipedia.IsRedirectPage,arg:
+                    thistxt = wikipedia.PageLink(self.mysite, str(arg)).get(throttle=False)
+                thistxt = wikipedia.removeLanguageLinks(thistxt)
+                thistxt = wikipedia.removeCategoryLinks(thistxt, self.mysite)
+                # regular expression matching a wikilink
+                w = r'([^\]\|]*)'
+                Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
+                for matchObj in Rlink.findall(thistxt):
+                    self.alternatives.append(matchObj[0])
+    
+            self.makeAlternativesUnique()
+            # sort possible choices
+            self.alternatives.sort()
+            self.listAlternatives()
+    
+            gen = ReferringPageGenerator(thispl)
+            for refpl in gen.generate():
+                if not refpl.urlname() in skip_primary:
+                    # run until the user selected 'quit'
+                    if not self.treat(refpl, thispl):
+                        break
+    
+            # clear alternatives before working on next disambiguation page
+            self.alternatives = []
 
 def main():
     # the option that's always selected when the bot wonders what to do with
     # a link. If it's None, the user is prompted (default behaviour).
     always = None
     alternatives = []
-    getalternatives = 1
-    debug = 0
-    solve_redirect = 0
+    getAlternatives = True
+    solve_redirect = False
     # if the -file argument is used, page titles are dumped in this array.
     # otherwise it will only contain one page.
     page_list = []
@@ -516,7 +626,7 @@ def main():
         if arg:
             if arg.startswith('-primary:'):
                 primary = True
-                getalternatives=0
+                getAlternatives = False
                 alternatives.append(arg[9:])
             elif arg == '-primary':
                 primary = True
@@ -537,8 +647,8 @@ def main():
                 f.close()
             elif arg.startswith('-pos:'):
                 if arg[5]!=':':
-                    mysite = wikipedia.getSite()
-                    pl=wikipedia.PageLink(mysite,arg[5:])
+                    self.mysite = wikipedia.getSite()
+                    pl=wikipedia.PageLink(self.mysite,arg[5:])
                     if pl.exists():
                         alternatives.append(pl.linkname())
                     else:
@@ -549,24 +659,14 @@ def main():
                 else:
                     alternatives.append(arg[5:])
             elif arg=='-just':
-                getalternatives=0
+                getalternatives = False
             elif arg=='-redir':
-                solve_redirect=1
+                solve_redirect = True
             elif arg=='-main':
                 main_only = True
             else:
                 page_title.append(arg)
-
-    # Make sure to have the last one
-    mysite = wikipedia.getSite()
-    mylang = mysite.language()
-
-    if main_only:
-        if ignore.has_key(mylang):
-    	    ignore[mylang] += mysite.namespaces()
-        else:
-            ignore[mylang] = mysite.namespaces()
-
+                
     # if the disambiguation page is given as a command line argument,
     # connect the title's parts with spaces
     if page_title != []:
@@ -578,95 +678,11 @@ def main():
     if page_list == []:
         pagename = wikipedia.input(u'Which page to check:')
         page_list.append(pagename)
+                
+    bot = DisambiguationRobot(always, alternatives, getAlternatives, solve_redirect, page_list, primary, main_only)
+    bot.run()
 
-    for wrd in page_list:
-        # when run with -redir argument, there's another summary message
-        if solve_redirect:
-            wikipedia.setAction(wikipedia.translate(mysite,msg_redir) % wrd)
-        else:
-            wikipedia.setAction(wikipedia.translate(mysite,msg) % wrd)
-
-        thispl = wikipedia.PageLink(mysite, wrd)
-
-        # If run with the -primary argument, read from a file which pages should
-        # not be worked on; these are the ones where the user pressed n last time.
-        # If run without the -primary argument, don't ignore any pages.
-        skip_primary = []
-        filename = 'disambiguations/' + thispl.urlname() + '.txt'
-        try:
-            # The file is stored in the disambiguation/ subdir. Create if necessary.
-            f = open(makepath(filename), 'r')
-            for line in f.readlines():
-                # remove trailing newlines and carriage returns
-                while line[-1] in ['\n', '\r']:
-                    line = line[:-1]
-                #skip empty lines
-                if line != '':
-                    skip_primary.append(line)
-            f.close()
-        except IOError:
-            pass
-
-        if solve_redirect:
-            try:
-                target = thispl.getRedirectTo()
-                target = unicode(target, wikipedia.myencoding()) 
-                alternatives.append(target)
-            except wikipedia.NoPage:
-                print "The specified page was not found."
-                user_input = wikipedia.input(u"Please enter the name of the page where the redirect should have pointed at, or press enter to quit:")
-                if user_input == "":
-                    sys.exit(1)
-                else:
-                    alternatives.append(user_input)
-            except wikipedia.IsNotRedirectPage:
-                print "The specified page is not a redirect."
-                sys.exit(1)
-        elif getalternatives:
-            try:
-                if primary:
-                    disamb_pl = wikipedia.PageLink(mysite, primary_topic_format[mylang] % wrd)
-                    thistxt = disamb_pl.get(throttle=False)
-                else:
-                    thistxt = thispl.get(throttle=False)
-            except wikipedia.IsRedirectPage,arg:
-                thistxt = wikipedia.PageLink(mysite, str(arg)).get(throttle=False)
-            thistxt = wikipedia.removeLanguageLinks(thistxt)
-            thistxt = wikipedia.removeCategoryLinks(thistxt, mysite)
-            w=r'([^\]\|]*)'
-            Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
-            for a in Rlink.findall(thistxt):
-                alternatives.append(a[0])
-
-        alternatives = unique(alternatives)
-        # sort possible choices
-        alternatives.sort()
-
-        listAlternatives(alternatives)
-
-        if mylang in link_trail:
-            linktrail=link_trail[mylang]
-        else:
-            linktrail='[a-z]*'
-        trailR=re.compile(linktrail)
-
-        # The regular expression which finds links. Results consist of three groups:
-        # group(1) is the target page title, that is, everything before | or ].
-        # group(2) is the alternative link title, that's everything between | and ].
-        # group(3) is the link trail, that's letters after ]] which are part of the word.
-        # note that the definition of 'letter' varies from language to language.
-        linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + linktrail + ')')
-
-        gen = ReferringPageGenerator(thispl)
-        for refpl in gen.generate():
-            if not refpl.urlname() in skip_primary:
-                # run until the user selected 'quit'
-                if not treat(refpl, thispl):
-                    break
-
-        # clear alternatives before working on next disambiguation page
-        alternatives = []
-
+            
 try:
     main()
 except:
