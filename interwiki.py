@@ -66,8 +66,6 @@ This script understands various command-line arguments:
 
     -nobell:       do not use the terminal bell to announce a question
 
-    -nolog:        switch off the log file
-
     -nobacklink:   switch off the backlink warnings
 
     -start:        used as -start:pagename, specifies that the robot should
@@ -145,8 +143,6 @@ This script understands various command-line arguments:
 
 Two configuration options can be used to change the workings of this robot:
 
-treelang_backlink: if set to True, all problems in foreign wikipedias will
-                   be reported
 treelang_log:      if set to True, all messages will be logged to a file
                    as well as being displayed to the screen.
 
@@ -172,7 +168,7 @@ import sys, copy, re
 import time
 import codecs
 import socket
-import logger
+#import logger
 
 import wikipedia, config, unequal, date
 import titletranslate
@@ -198,14 +194,13 @@ class Global(object):
        Use of globals outside of this is to be avoided."""
     always = False
     autonomous = False
-    backlink = config.treelang_backlink
     bell = True
     confirm = False
     debug = True
     followredirect = True
     force = False
     forreal = True
-    log = config.treelang_log
+    #log = config.treelang_log
     minarraysize = 100
     maxquerysize = 60
     same = False
@@ -873,9 +868,11 @@ if __name__ == "__main__":
         skipfile = None
 
         sa=SubjectArray()
+        
+        wikipedia.activateLog('interwiki.log')
 
         for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg, botname='interwiki')
+            arg = wikipedia.argHandler(arg, logname='interwiki.log')
             if arg:
                 if arg == '-noauto':
                     globalvar.auto = False
@@ -912,8 +909,8 @@ if __name__ == "__main__":
                     globalvar.autonomous = True
                 elif arg == '-noshownew':
                     globalvar.shownew = False
-                elif arg == '-nolog':
-                    globalvar.log = False
+                #elif arg == '-nolog':
+                #    globalvar.log = False
                 elif arg == '-nobacklink':
                     globalvar.backlink = False
                 elif arg == '-noredirect':
@@ -988,9 +985,6 @@ if __name__ == "__main__":
                     globalvar.showtextlink += globalvar.showtextlinkadd
                 else:
                     inname.append(arg)
-
-        #if globalvar.log:
-        #    sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
 
         unequal.read_exceptions()
     

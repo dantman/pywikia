@@ -60,9 +60,6 @@ deIndentTables = True
 table2wikiAskOnlyWarnings = True
 table2wikiSkipWarnings = False
 
-# Should treelang report warnings for missing links between foreign
-# languages?
-treelang_backlink = True
 # Should treelang keep a logfile?
 treelang_log = True
 
