@@ -7,7 +7,7 @@
 import re,urllib,codecs,sys
 
 # known wikipedia languages
-langs = {'en':'www.wikipedia.org', # English
+langs = {'en':'en.wikipedia.org', # English
          'pl':'pl.wikipedia.org', # Polish
          'da':'da.wikipedia.org', # Danish
          'sv':'sv.wikipedia.org', # Swedish
@@ -75,8 +75,19 @@ except IOError:
     print >> sys.stderr, "Please make a file username.dat with your name in there"
     sys.exit(1)
 
+try:
+    f=open('login.data')
+    cookies='; '.join([x.strip() for x in f.readlines()])
+    #print cookies
+    f.close()
+except IOError:
+    cookies=None
+
 # Default action
-action = username+' - Wikipedia python library'
+if cookies:
+    action = 'Wikipedia python library'
+else:
+    action = username+' - Wikipedia python library'
 
 debug = 0
 
@@ -207,7 +218,10 @@ def unescape(s):
 def setAction(s):
     """Set a summary to use for changed page submissions"""
     global action
-    action = s
+    if cookies:
+        action = s
+    else:
+        action = username + ' - ' + s
 
 def urlencode(query):
     l=[]
@@ -222,6 +236,38 @@ def space2underline(name):
 
 def underline2space(name):
     return name.replace('_',' ')
+
+# Mechanics to slow down page download rate.
+
+import time
+
+class Throttle:
+    def __init__(self, delay=6, ignore=0):
+        """Make sure there are at least 'delay' seconds between page-gets
+           after 'ignore' initial page-gets"""
+        self.delay = delay
+        self.ignore = ignore
+        self.now = 0
+
+    def __call__(self,newdelay=None):
+        """This is called from getPage without arguments. It will make sure
+           that if there are no 'ignores' left, there are at least delay seconds
+           since the last time it was called before it returns.
+
+           A new delay can be set by calling this function with an argument
+           giving the desired delay in seconds."""
+        if newdelay is not None:
+            self.delay=newdelay
+        elif self.ignore > 0:
+            self.ignore -= 1
+        else:
+            now = time.time()
+            ago = now - self.now
+            if ago < self.delay:
+                time.sleep(self.delay - ago)
+            self.now = time.time()
+
+throttle=Throttle()
 
 def putPage(code, name, text, comment=None):
     """Upload 'text' on page 'name' to the 'code' language wikipedia."""
@@ -246,10 +292,18 @@ def putPage(code, name, text, comment=None):
         print text
         print address
         print data
-        #return None, None, None
-    headers = {"Content-type": "application/x-www-form-urlencoded"}
+        return None, None, None
     conn = httplib.HTTPConnection(host)
-    conn.request("POST", address, data, headers)
+
+    conn.putrequest("POST", address)
+
+    conn.putheader('Content-Length', str(len(data)))
+    conn.putheader("Content-type", "application/x-www-form-urlencoded")
+    if cookies and code==mylang:
+        conn.putheader('Cookie',cookies)
+    conn.endheaders()
+    conn.send(data)
+
     response = conn.getresponse()
     data = response.read()
     conn.close()
@@ -261,8 +315,11 @@ class MyURLopener(urllib.FancyURLopener):
 def getUrl(host,address):
     #print host,address
     uo=MyURLopener()
+    if cookies:
+        uo.addheader('Cookie',cookies)
     f=uo.open('http://%s%s'%(host,address))
     text=f.read()
+    #print f.info()
     ct=f.info()['Content-Type']
     R=re.compile('charset=([^\'\"]+)')
     m=R.search(ct)
@@ -270,6 +327,7 @@ def getUrl(host,address):
         charset=m.group(1)
     else:
         charset=None
+    #print text
     return text,charset
     
 def getPage(code, name, do_edit=1, do_quote=1):
@@ -299,7 +357,16 @@ def getPage(code, name, do_edit=1, do_quote=1):
         address = '/wiki.cgi?action=edit&id='+name
     if debug:
         print host,address
+    # Make sure Brion doesn't get angry by slowing ourselves down.
+    throttle()
     text,charset = getUrl(host,address)
+    # Keep login status for external use
+    global loggedin
+    if "Userlogin" in text:
+        loggedin = False
+    else:
+        loggedin = True
+    # Extract the actual text from the textedit field
     if do_edit:
         if debug:
             print "Raw:",len(text),type(text),text.count('x')
@@ -441,7 +508,7 @@ def interwikiFormat(links):
     return ' '.join(s)+'\r\n'
             
 def code2encoding(code):
-    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl','ro','hr','tr']:
+    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl','ro','hr','tr','ar']:
         return 'utf-8'
     return 'iso-8859-1'
 
