@@ -252,7 +252,7 @@ def languages(first=[]):
 
 def allnlpages(start='%20%200'):
     import sys
-    start=link2url(start)
+    start=link2url(start,code='nl',incode='nl')
     m=0
     while 1:
         text=getPage('nl','Speciaal:Allpages&printable=yes&from=%s'%start,do_quote=0,do_edit=0)
@@ -263,7 +263,7 @@ def allnlpages(start='%20%200'):
             if not ':' in hit:
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
                     n=n+1
-                    yield url2link(hit,code='nl')
+                    yield url2link(hit,code='nl',incode='nl')
                     start=hit+'%20%200'
         if n<100:
             break

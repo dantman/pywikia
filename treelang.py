@@ -153,7 +153,7 @@ def treestep(arr,code,name,abort_on_redirect=0):
         arg=str(arg)
         newname=arg[0].upper()+arg[1:]
         newname=newname.strip()
-        newname=wikipedia.link2url(newname)
+        newname=wikipedia.link2url(newname,code=code,incode=mylang)
         arr[code,name]=''
         print "NOTE: %s:%s is a redirect to %s"%(code,name,arg)
         if not (code,newname) in arr:
