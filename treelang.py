@@ -46,7 +46,7 @@ def autonomous_problem(name):
 def sametranslate(name,arr):
     for newcode in wikipedia.langs:
         xname=wikipedia.url2link(name,code=newcode,incode=mylang)
-        newname=wikipedia.link2url(xname,code=newcode,incode=mylang)
+        newname=wikipedia.link2url(xname,code=newcode)
         # Put as suggestion into array
         if newcode=='eo' and same=='name':
             newname=newname.split('_')
@@ -63,7 +63,7 @@ def autotranslate(name,arr,same=0):
         for h in hints:
             newcode,newname=h.split(':')
             newname=wikipedia.url2link(newname,code=newcode,incode=mylang)
-            newname=wikipedia.link2url(newname,code=newcode,incode=mylang)
+            newname=wikipedia.link2url(newname,code=newcode)
             arr[newcode,newname]=None
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
@@ -74,7 +74,7 @@ def autotranslate(name,arr,same=0):
             newname=fmt%int(m.group(1))
             # Standardize
             newname=wikipedia.url2link(newname,code=newcode,incode=mylang)
-            newname=wikipedia.link2url(newname,code=newcode,incode=mylang)
+            newname=wikipedia.link2url(newname,code=newcode)
             # Put as suggestion into array
             arr[newcode,newname]=None
         return
@@ -86,7 +86,7 @@ def autotranslate(name,arr,same=0):
         for newcode in wikipedia.langs:
             fmt = yearADfmt.get(newcode,'%d')
             newname = fmt%int(m.group(0))
-            newname=wikipedia.link2url(newname,code=newcode,incode=mylang)
+            newname=wikipedia.link2url(newname,code=newcode)
             # Put as suggestion into array
             arr[newcode,newname]=None
         return
@@ -99,7 +99,7 @@ def autotranslate(name,arr,same=0):
             fmt = yearBCfmt.get(newcode)
             if fmt:
                 newname = fmt%int(m.group(1))
-                newname=wikipedia.link2url(newname,code=newcode,incode=mylang)
+                newname=wikipedia.link2url(newname,code=newcode)
                 # Put as suggestion into array
                 arr[newcode,newname]=None
         return
@@ -114,8 +114,8 @@ def compareLanguages(old,new):
             confirm+=1
             removing.append(code)
         elif old[code]!=new[code]:
-            oo=wikipedia.url2link(wikipedia.link2url(old[code],code=code,incode=mylang),code=code,incode=mylang)
-            nn=wikipedia.url2link(wikipedia.link2url(new[code],code=code,incode=mylang),code=code,incode=mylang)
+            oo=wikipedia.url2link(wikipedia.link2url(old[code],code=code),code=code,incode=mylang)
+            nn=wikipedia.url2link(wikipedia.link2url(new[code],code=code),code=code,incode=mylang)
             if oo!=nn:
                 modifying.append(code)
     for code,name in new.iteritems():
@@ -153,7 +153,7 @@ def treestep(arr,code,name,abort_on_redirect=0):
         arg=str(arg)
         newname=arg[0].upper()+arg[1:]
         newname=newname.strip()
-        newname=wikipedia.link2url(newname,code=code,incode=mylang)
+        newname=wikipedia.link2url(newname,code=code)
         arr[code,name]=''
         print "NOTE: %s:%s is a redirect to %s"%(code,name,arg)
         if not (code,newname) in arr:
@@ -165,7 +165,7 @@ def treestep(arr,code,name,abort_on_redirect=0):
         # Recognize and standardize for Wikipedia
         newname=newname[0].upper()+newname[1:]
         newname=newname.strip()
-        newname=wikipedia.link2url(newname,code=newcode,incode=code)
+        newname=wikipedia.link2url(newname,code=newcode)
         #if newcode=='pl':
             #print "PL!!!!!"
             #print newname
@@ -264,7 +264,7 @@ inname='_'.join(inname)
 if not inname:
     inname=raw_input('Which page to check:')
 
-inname=wikipedia.link2url(inname,code=mylang,incode=mylang)
+inname=wikipedia.link2url(inname,code=mylang)
 
 m=treesearch(mylang,inname)
 if not m:

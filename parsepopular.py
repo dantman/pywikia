@@ -17,7 +17,7 @@ def scanfile(fn):
         if not m:
             break
         pos=m.end()
-        xlabel=wikipedia.link2url(m.group(1),code=mylang,incode=mylang)
+        xlabel=wikipedia.link2url(m.group(1),code=mylang)
         label=wikipedia.url2link(xlabel,code=mylang,incode=mylang)
         num=int(m.group(2))
         result[label]=num
@@ -49,7 +49,7 @@ for k in disappeared.keys():
 # Look up whether the other ones disappeared as redirects
 for k in disappeared.keys():
     try:
-        wikipedia.getPage(mylang,wikipedia.link2url(k,code=mylang,incode=mylang))
+        wikipedia.getPage(mylang,wikipedia.link2url(k,code=mylang)
     except wikipedia.IsRedirectPage,arg:
         disappeared[k]=wikipedia.url2link(str(arg),code=mylang,incode=mylang)
     except wikipedia.NoPage:
