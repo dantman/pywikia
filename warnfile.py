@@ -55,6 +55,9 @@ def ReadWarnfile(fn):
         except wikipedia.IsRedirectPage:
            wikipedia.output("%s is a redirect page; not changing" % pl.aslink())
            continue
+        except wikipedia.NoPage:
+           wikipedia.output("Page %s not found; skipping" % pl.aslink())
+           continue
         new={}
         new.update(old)
         for sign,pl2 in hints[pagename]:
