@@ -155,7 +155,7 @@ def add_category(sort_by_last_name = False):
         try:
             pl = wikipedia.PageLink(wikipedia.mylang, listpage)
         except NoPage:
-            print 'The page ' + listpage + ' could not be loaded from the server.'
+            wikipedia.output(u'The page ' + listpage + ' could not be loaded from the server.')
             sys.exit()
         pagenames = pl.links()
     else:
@@ -189,18 +189,18 @@ def add_category(sort_by_last_name = False):
             try:
                 cats = pl2.categories()
             except wikipedia.NoPage:
-                print "%s doesn't exist yet. Ignoring."%(pl2.aslocallink())
+                wikipedia.output(u"%s doesn't exist yet. Ignoring."%(pl2.aslocallink()))
                 pass
             except wikipedia.IsRedirectPage,arg:
                 pl3 = wikipedia.PageLink(wikipedia.mylang,arg.args[0])
-                print "WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink())
+                wikipedia.output(u"WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink()))
             else:
-                print "Current categories: ",cats
+                wikipedia.output(u"Current categories: ", cats)
                 catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
                 if sort_by_last_name:
                     catpl = sorted_by_last_name(catpl, pl2) 
                 if catpl in cats:
-                    print "%s already has %s"%(pl2.aslocallink(),catpl.aslocallink())
+                    wikipedia.output(u"%s already has %s"%(pl2.aslocallink(), catpl.aslocallink()))
                 else:
                     wikipedia.output(u'Adding %s' % catpl.aslocallink())
                     cats.append(catpl)
@@ -216,14 +216,14 @@ def rename_category(old_cat_title, new_cat_title):
     
     articles = old_cat.articles(recurse = 0)
     if len(articles) == 0:
-        print 'There are no articles in category ' + old_cat_title
+        wikipedia.output(u'There are no articles in category ' + old_cat_title)
     else:
         for article in articles:
             catlib.change_category(article, old_cat_title, new_cat_title)
     
     subcategories = old_cat.subcategories(recurse = 0)
     if len(subcategories) == 0:
-        print 'There are no subcategories in category ' + old_cat_title
+        wikipedia.output(u'There are no subcategories in category ' + old_cat_title)
     else:
         for subcategory in subcategories:
             catlib.change_category(subcategory, old_cat_title, new_cat_title)
@@ -242,14 +242,14 @@ def remove_category(cat_title):
     
     articles = cat.articles(recurse = 0)
     if len(articles) == 0:
-        print 'There are no articles in category ' + cat_title
+        wikipedia.output(u'There are no articles in category ' + cat_title)
     else:
         for article in articles:
             catlib.change_category(article, cat_title, None)
     # Also removes the category tag from subcategories' pages 
     subcategories = cat.subcategories(recurse = 0)
     if len(subcategories) == 0:
-        print 'There are no subcategories in category ' + cat_title
+        wikipedia.output(u'There are no subcategories in category ' + cat_title)
     else:
         for subcategory in subcategories:
             catlib.change_category(subcategory, cat_title, None)
@@ -306,10 +306,10 @@ def tidy_category(cat_title):
         # show subcategories as possible choices (with numbers)
         for i in range(len(supercatlist)):
             # layout: we don't expect a cat to have more than 10 supercats
-            print 'u%d - Move up to %s' % (i, supercatlist[i].linkname())
+            wikipedia.output(u'u%d - Move up to %s' % (i, supercatlist[i].linkname()))
         for i in range(len(subcatlist)):
             # layout: we don't expect a cat to have more than 100 subcats
-            print '%2d - Move down to %s' % (i, subcatlist[i].linkname())
+            wikipedia.output(u'%2d - Move down to %s' % (i, subcatlist[i].linkname()))
         print ' j - Jump to another category'
         print ' n - Skip this article'
         print ' r - Remove this category tag'
@@ -382,7 +382,7 @@ def tidy_category(cat_title):
     
     articles = catlink.articles(recurse = 0)
     if len(articles) == 0:
-        print 'There are no articles in category ' + cat_title
+        wikipedia.output(u'There are no articles in category ' + cat_title)
     else:
         for article in articles:
             print
@@ -508,5 +508,6 @@ if __name__ == "__main__":
             dump('cattree.dump')
             raise
     else:
+        # show help
         wikipedia.output(__doc__, 'utf-8')
 
