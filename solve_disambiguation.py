@@ -79,28 +79,28 @@ wikipedia.put_throttle.setDelay(10)
 
 # Summary message when run without -redir parameter
 msg={
-    'en':'Robot-assisted disambiguation',
-    'da':'Retter flertydigt link til',
-    'de':'Bot-unterst\xfctzte Begriffskl\xe4rung',
-    'nl':'Robot-geholpen doorverwijzing',
-    'fr':'Homonymie r\xE9solue \xE0 l\'aide du robot'
+    'en':u'Robot-assisted disambiguation',
+    'da':u'Retter flertydigt link til',
+    'de':u'Bot-unterstützte Begriffsklärung',
+    'nl':u'Robot-geholpen doorverwijzing',
+    'fr':u'Homonymie résolue à l\'aide du robot'
     }
 
 # Summary message when run with -redir parameter
 msg_redir={
-          'en':'Robot-assisted disambiguation',
-          'da':'Retter flertydigt link til',
-          'de':'Bot-unterst\xfctzte Redirectaufl\xf6sung',
-          'nl':'Robot-geholpen doorverwijzing',
-          'fr':'Correction de lien vers redirect'
+          'en':u'Robot-assisted disambiguation',
+          'da':u'Retter flertydigt link til',
+          'de':u'Bot-unterstützte Redirectauflösung',
+          'nl':u'Robot-geholpen doorverwijzing',
+          'fr':u'Correction de lien vers redirect'
           }
 
 # disambiguation page name format for "primary topic" disambiguations
 # (Begriffsklärungen nach Modell 2)
 primary_topic_format={
-          'de':'%s_(Begriffskl\xe4rung)',
-          'en':'%s_(disambiguation)',
-          'nl':'%s_(doorverwijspagina)'
+          'de':u'%s_(Begriffsklärung)',
+          'en':u'%s_(disambiguation)',
+          'nl':u'%s_(doorverwijspagina)'
           }
 
 # letters that can follow a link and are regarded as part of this link
@@ -174,42 +174,42 @@ ignore={
     'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie',
           'Wikip\xE9dia:Homonymie',
           'Wikip\xE9dia:Homonymie/Homonymes dynastiques',
-  'Wikip\xE9dia:Prise de d\xE9cision\x2C noms des membres de dynasties/liste des dynastiens',
-  'Liste de toutes les combinaisons de deux lettres',
-  'STLs de AAA \xE0 DZZ',
+          'Wikip\xE9dia:Prise de d\xE9cision\x2C noms des membres de dynasties/liste des dynastiens',
+          'Liste de toutes les combinaisons de deux lettres',
+          'STLs de AAA \xE0 DZZ',
           'STLs de EAA \xE0 HZZ',
           'STLs de IAA \xE0 LZZ',
           'STLs de MAA \xE0 PZZ',
           'STLs de QAA \xE0 TZZ',
-  'STLs de UAA \xE0 XZZ',
-  'STLs de YAA \xE0 ZZZ',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Ca',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cb',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cc',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cd',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Ce',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cf',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cg',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Ch',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Ci',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cj',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Ck',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cl',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cm',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cn',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Co',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cp',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cq',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cr',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cs',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Ct',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cu',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cv',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cw',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cx',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cy',
-  'Wikip\xE9dia\x3APages sans interwiki\x2Cz'
-  ),
+          'STLs de UAA \xE0 XZZ',
+          'STLs de YAA \xE0 ZZZ',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Ca',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cb',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cc',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cd',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Ce',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cf',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cg',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Ch',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Ci',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cj',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Ck',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cl',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cm',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cn',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Co',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cp',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cq',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cr',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cs',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Ct',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cu',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cv',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cw',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cx',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cy',
+          'Wikip\xE9dia\x3APages sans interwiki\x2Cz'
+          ),
     'de':(
           u'100 Wörter des 21. Jahrhunderts',
           u'Abkürzungen/[A-Z]',
