@@ -218,8 +218,7 @@ def fix_double_redirects(source):
                 txt = "#REDIRECT [[%s]]" % second_target
                 status, reason, data = redir.put(txt)
                 print status, reason
-
-def main():
+try:
     # read command line parameters
     # what the bot should do (either resolve double redirs, or delete broken redirs)
     action = None
@@ -261,13 +260,6 @@ def main():
         delete_broken_redirects(source)
     else:
         wikipedia.output(__doc__, 'utf-8')
-
-if True:
-    try:
-        main()
-    except:
-        wikipedia.stopme()
-        raise
-    else:
-        wikipedia.stopme()
+finally:
+    wikipedia.stopme()
 
