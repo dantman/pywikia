@@ -222,24 +222,31 @@ def tidy_category():
         if len(subcatlist) == 0:
             print 'This category has no subcategories.'
             print
+        # show subcategories as possible choices (with numbers)
         for i in range(len(subcatlist)):
             print '%d - Move to %s' % (i, subcatlist[i])
+        print 'j - Jump to another category'
+        print 's - Skip this article'
+        print 'r - Remove this category tag'
         print 'Enter - Save category as ' + current_cat.ascii_linkname()
         
         choice=wikipedia.input("Choice: ")
-        if choice == '':
+        if choice == 's':
+            pass
+        elif choice == '':
             print 'Saving category as ' + current_cat.ascii_linkname()
             if current_cat == original_cat:
                 print 'No changes necessarry.'
             else:
-                # Save the changes
-                cats = article.categories()
-                cats.remove(original_cat)
-                cats.append(current_cat)
-                text = article.get()
-                text = wikipedia.replaceCategoryLinks(text, cats)
-                print "Changing page %s" %(article)
-                article.put(text)
+                change_category(article, original_cat, current_cat)
+        elif choice == 'j':
+            new_cat_title = wikipedia.input('Please enter the category the article should be moved to: ')
+            new_cat = catlib.CatLink(new_cat_title)
+            # recurse into chosen category
+            move_to_subcategory(article, original_cat, new_cat)
+        elif choice == 'r':
+            # remove the category tag
+            change_category(article, original_cat, None)
         else:
             try:
                 choice=int(choice)
