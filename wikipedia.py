@@ -27,6 +27,7 @@ langs = {
     'ar':'ar.wikipedia.org',   # Arabic, UTF-8
     'bs':'bs.wikipedia.org',   # Bosnian, UTF-8
     'ca':'ca.wikipedia.org',   # Catalan, UTF-8
+    'co':'co.wikipedia.org',   # Corsican
     'cs':'cs.wikipedia.org',   # Czech, UTF-8
     'cy':'cy.wikipedia.org',   # Welsh, UTF-8
     'da':'da.wikipedia.org',   # Danish
@@ -48,6 +49,7 @@ langs = {
     'hu':'hu.wikipedia.org',   # Hungarian, UTF-8
     'ia':'ia.wikipedia.org',   # Interlingua, UTF-8
     'id':'id.wikipedia.org',   # Indonesian
+    'is':'is.wikipedia.org',   # Icelandic
     'it':'it.wikipedia.org',   # Italian, UTF-8
     'ja':'ja.wikipedia.org',   # Japanese, UTF-8
     'ko':'ko.wikipedia.org',   # Korean, UTF-8
@@ -87,7 +89,7 @@ langs = {
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'eu', 'mr', 'id', 'lv', 'sw',
+          'eu', 'mr', 'id', 'is', 'lv', 'sw', 'co'
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
@@ -101,6 +103,7 @@ special = {
     'ar': 'Special',
     'bs': 'Special',
     'ca': 'Especial',
+    #'co': '',
     'cs': 'Speci%C3%A1ln%C3%AD',
     'cy': 'Special',
     'da': 'Speciel',
@@ -122,6 +125,7 @@ special = {
     'hu': 'Speci%C3%A1lis',
     'ia': 'Special',
     #'id': '',
+    #'is': '',
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
@@ -161,8 +165,8 @@ special = {
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['eu', 'ga', 'id', 'lv', 'mr', 'nds', 'sw', 'tt',
-               'uk', 'vo']
+oldsoftware = ['co', 'eu', 'ga', 'id', 'is', 'lv', 'mr', 'nds', 'sw',
+               'tt', 'uk', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
