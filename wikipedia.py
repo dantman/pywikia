@@ -42,7 +42,7 @@ edittime = {}
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
 
-alphabetic = ['af','ar','roa-rup','om','bg','bn','be','bs',
+alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
               'ca','chr','co','cs','cy','da','de','als','et',
               'el','en','es','eo','eu','fa','fr','fy','ga','gv',
               'gd','gl','ko','hi','hr','io','id','ia','is','it',
