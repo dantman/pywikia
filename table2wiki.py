@@ -76,7 +76,7 @@ for arg in sys.argv[1:]:
         newText = re.sub("\<(TABLE|table)\>[\n ]*",
                          "{|\n", newText, 0)
         # end </table>
-        newText = re.sub("[\s]*<\/(TABLE|table)\>", "\n|}", newText, 0)
+        newText = re.sub("[\s]*<\/(TABLE|table)\>", "\r\n|}", newText, 0)
 
 
         # captions
@@ -97,7 +97,6 @@ for arg in sys.argv[1:]:
                          "\n! \\2\n", newText, 0)
         newText = re.sub("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)\n",
                          "\n!\\2 | \\3\n", newText, 0)
-
 
         # normal <td>
         newText = re.sub("[\r\n]+\<(td|TD)\>([\w\W]*?)\<\/(TD|td)\>",
@@ -133,8 +132,8 @@ for arg in sys.argv[1:]:
                 newText, num = re.subn("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
                                        "\\1\n\\2", newText, 0)
 
-        # kills spaces after | or ! or {|
-        newText = re.sub("[\r\n]+\|[\t ]*\n", "\r\n| ", newText, 0)
+        # kills additional spaces after | or ! or {|
+        newText = re.sub("[\r\n]+\|[\t ]+?\n", "\r\n| ", newText, 0)
         # kills trailing spaces and tabs
         newText = re.sub("([^\|])[\t\ ]+[\r\n]+", "\\1\r\n", newText, 0)
 
@@ -169,6 +168,19 @@ for arg in sys.argv[1:]:
                                    '([^\"\s]+?)([\W]{1})',
                                    '\\1="\\4"\\5', newText, 0)
 
+        # strip <center> from <th>
+        newText = re.sub("(\n\![\w\W]+?)\<center\>([\w\W]+?)\<\/center\>",
+                         "\\1 \\2", newText, 0)
+        #strip align="center" from <th> because the .css does it
+        newText = re.sub("(\n\![^\r\n\|]+?)align\=\"center\"([^\n\r\|]+?\|)",
+                         "\\1 \\2", newText, 0)
+        
+        # kill additional spaces within arguments
+        num = 1
+        while num != 0:
+            newText, num = re.subn("\n(\||\!)([^|\r\n]+?)[ \t]{2,}([^\r\n]+?)",
+                                   "\n\\1\\2 \\3", newText, 0)
+        
         if splitLongSentences:
             num = 1
             while num != 0:
