@@ -9,9 +9,10 @@ import httplib
 import wikipedia, config, mediawiki_messages
 
 copy_message = {
-    "en":u"This image was copied from %s. The original description was:\r\n\r\n%s",
-    "de":u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
-    "nl":u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
+    'en':u"This image was copied from %s. The original description was:\r\n\r\n%s",
+    'de':u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
+    'nl':u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
+    'pt':u"Esta imagem foi copiada de %s. A descrição original foi:\r\n\r\n%s",
 }
 
 def post_multipart(host, selector, fields, files, cookies): # UGLY COPY
@@ -236,4 +237,3 @@ def transfer_image(imagelink, debug=False):
     except wikipedia.NoPage:
         print "Page not found"
         return filename
-
