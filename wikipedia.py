@@ -716,8 +716,7 @@ class GetAll:
 
     def getData(self):
         import httplib
-        try:
-            addr = self.addr%special[self.code]
+        addr = self.addr%special[self.code]
         pagenames = u'\r\n'.join([x.hashfreeLinkname() for x in self.pages])
         pagenames = forCode(pagenames, self.code)
         data = urlencode((
