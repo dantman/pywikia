@@ -1783,6 +1783,9 @@ class Site(object):
     def encodings(self):
         return self.family.code2encodings(self.lang)
 
+    def category_namespace(self):
+        return self.family.category_namespace(self.lang)
+
     def category_namespaces(self):
         return self.family.category_namespaces(self.lang)
 
