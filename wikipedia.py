@@ -1506,7 +1506,7 @@ def newpages(number=10, onlyonce=False, site=None):
         ds = {
             "date": ("<li>", "<a href="),
             "title": ('title="', '">'),
-            "length": ("</a> (", " bytes"),
+            "length": ("</a> (", " "),
             "user_login": ('">', "</a>"),
             "comment": ("em>","</em>"),
             "user_anon": (" . . ", " <", "</li>"),
@@ -1534,7 +1534,13 @@ def newpages(number=10, onlyonce=False, site=None):
                 continue
             else:
                 seen.add(d["title"])
-                dtt = time.strptime(d["date"].strip(), "%H:%M, %d %b %Y")
+                try:
+                    dtt = time.strptime(d["date"].strip(), u'%H:%M, %d. %b %Y')
+                except ValueError:
+                    # error on parsing date, fallback to time only plus current date
+                    timeonly = d["date"].strip()
+                    timeonly = timeonly[:timeonly.index(',')]
+                    dtt = time.strptime(timeonly+' '+time.strftime('%d %m %Y',time.localtime()), '%H:%M %d %m %Y')
                 d["date"] = datetime.datetime.fromtimestamp(time.mktime(dtt))
                 d["length"] = int(d["length"])
                 d["title"] = PageLink(site, d["title"])
