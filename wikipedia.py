@@ -526,15 +526,14 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
     else:
         x = text # If not editing
         
-    if charset == 'utf-8':
-        # Make it to a unicode string
-        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
-        try:
-            x,l = decode_func(x)
-        except UnicodeError:
-            print code,name
-            print repr(x)
-            raise 
+    # Convert to a unicode string
+    encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(charset)
+    try:
+        x,l = decode_func(x)
+    except UnicodeError:
+        print code,name
+        print repr(x)
+        raise 
         # Convert the unicode characters to &# references, and make it ascii.
         #x = str(UnicodeToAsciiHtml(x))
     return x
