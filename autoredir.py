@@ -1,9 +1,19 @@
-#
-# Automatically make redirect pages for months with capital letters
+"""
+Automatically make redirect pages for months with capital letters
+
+This is a specialized one-time only robot that is tailored for the Dutch
+situation. In Dutch, months are written with a small letter, but many people
+make the mistake of using a capital letter. All of the pages with capital
+letters were created using this script, and were added to the list of
+disambiguation pages such that it raises an alert if someone refers to them.
+"""
 #
 # (C) Rob W.W. Hooft, 2003
-# Distribute under the terms of the PSF license
-
+#
+# Distribute under the terms of the PSF license.
+#
+__version__='$Id$'
+#
 import os,sys,re,wikipedia
 
 # Summary used in the modification request

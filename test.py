@@ -1,10 +1,15 @@
-#
-# Script to perform some tests.
+"""
+Script to perform some tests.
+"""
 #
 # (C) Rob W.W. Hooft, 2003
+#
 # Distribute under the terms of the PSF license
-
+#
+__version__='$Id$'
+#
 import re,sys,wikipedia
+
 if 0:
     wikipedia.langs={'test':'test.wikipedia.org'}
 

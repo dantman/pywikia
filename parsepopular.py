@@ -1,12 +1,15 @@
-# Script to parse two successive "most popular" listings to make a 
-# difference listing. This has never been very successful, but its use
-# is even more limited now that the page counters have been switched off....
-#
-# $Id$
+"""
+Script to parse two successive "most popular" listings to make a 
+difference listing. This has never been very successful, but its use
+is even more limited now that the page counters have been switched off....
+"""
 #
 # (C) Rob W.W. Hooft, 2003
+#
 # Distribute under the terms of the PSF license.
-
+#
+__version__='$Id$'
+#
 import sys,re
 import wikipedia
 

@@ -1,11 +1,14 @@
 #coding: iso-8859-1
-# Script to check language links for general pages
-#
-# $Id$
+"""
+Script to check language links for general pages
+"""
 #
 # (C) Rob W.W. Hooft, 2003
-# Distribute under the terms of the PSF license
-
+#
+# Distribute under the terms of the PSF license.
+#
+__version__='$Id$'
+#
 import sys,copy,wikipedia,re
 
 # language to check for missing links and modify

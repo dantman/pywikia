@@ -1,11 +1,14 @@
-# Script to solve disambiguations
-#
-# $Id$
+"""
+Script to help a human solve disambiguations by presenting a set of options.
+"""
 #
 # (C) Rob W.W. Hooft, 2003
+#
 # Distribute under the terms of the PSF license
+#
+__version__='$Id$'
+#
 import wikipedia,re,sys
-
 
 mylang = wikipedia.mylang
 

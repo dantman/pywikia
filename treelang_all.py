@@ -1,10 +1,13 @@
-# Loop over all pages, calling treelang for each
-#
-# $Id$
+"""
+Loop over all pages in the home wikipedia, calling treelang for each
+"""
 #
 # (C) Rob W.W. Hooft, 2003
+#
 # Distribute under the terms of the PSF license.
-
+#
+__version__='$Id$'
+#
 import os,wikipedia,sys
 
 if sys.platform=='win32':

@@ -1,9 +1,13 @@
-# Library to get and put pages on Wikipedia
-#
-# $Id$
+"""
+Library to get and put pages on Wikipedia
+"""
 #
 # (C) Rob W.W. Hooft, 2003
-# Distribute under the terms of the PSF license
+#
+# Distribute under the terms of the PSF license.
+#
+__version__='$Id$'
+#
 import re,urllib,codecs,sys
 
 # known wikipedia languages

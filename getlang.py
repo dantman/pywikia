@@ -1,25 +1,33 @@
-# Script to check language links for years A.D.
-#
-# $Id$
+"""
+Script to check language links for years A.D.
+
+This uses the fact that almost all wikipedia's have the years as plain number
+page names and can be trivially translated to check if the equivalent exists in
+another language.
+
+The range of years that is checked is given inside the script; there are no
+command line arguments.
+"""
 #
 # (C) Rob W.W. Hooft, 2003
+#
 # Distribute under the terms of the PSF license.
-
+#
+__version__='$Id$'
+#
 import sys,copy,wikipedia
 
 # languages to check for missing links and modify
-mylangs = ('nl', )
+mylangs = (wikipedia.mylang, )
 
 # selection of years to check
 years = range(1,2040+1)
-years=[496]
-years = range(401,438)
 
 # Set to 1 to actually change the pages
 forreal = 1
 
 # Summary used in the modification request
-wikipedia.setAction('Rob Hooft: automatic interwiki script for years')
+wikipedia.setAction('automatic interwiki script for years')
 
 debug = 0
 

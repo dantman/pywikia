@@ -1,9 +1,16 @@
-# Script to log the robot in to a wikipedia account
-#
-# $Id$
+"""
+Script to log the robot in to a wikipedia account.
+
+Suggestion is to make a special account to use for robot use only. Make
+sure this robot account is well known on your home wikipedia before using.
+"""
 #
 # (C) Rob W.W. Hooft, 2003
+#
 # Distribute under the terms of the PSF license.
+#
+__version__='$Id$'
+
 import re
 import httplib
 import wikipedia

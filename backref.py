@@ -1,10 +1,16 @@
-# Script to check pages referred to via interwiki links for the reverse link
-#
-# $Id$
+"""
+Script to check pages referred to via interwiki links for the reverse link
+
+This is now obsolete, please use the "backlink" option to treelang.py for a more
+powerful way to do the same thing.
+"""
 #
 # (C) Rob W.W. Hooft, 2003
-# Distribute under the terms of the PSF license
-
+#
+# Distribute under the terms of the PSF license.
+#
+__version__='$Id$'
+#
 import os,wikipedia,sys
 
 codefrom = wikipedia.mylang

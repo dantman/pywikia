@@ -1,9 +1,15 @@
-#
-# Script to reformat year pages in a consistent manner
+"""
+Script to reformat year pages in a consistent manner
+
+This was run on the nl: wikipedia once.
+"""
 #
 # (C) Rob W.W. Hooft, 2003
+#
 # Distribute under the terms of the PSF license
-
+#
+__version__='$Id$'
+#
 import os,sys,re,wikipedia
 
 # Summary used in the modification request
