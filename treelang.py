@@ -132,7 +132,7 @@ def autotranslate(pl, arr, same=0):
         return sametranslate(pl, arr)
     if hints:
         for h in hints:
-            codes, newname=h.split(':')
+            codes, newname = h.split(':', 1)
             if codes == 'all':
                 codes = wikipedia.biglangs
             else:
