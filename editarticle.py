@@ -5,7 +5,7 @@
 # (C) Gerrit Holl 2004
 # Distribute under the terms of the PSF license.
 
-# Version 0.2.
+# Version 0.3.
 #
 # Features:
 #       - logging in
