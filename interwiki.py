@@ -269,7 +269,7 @@ class Subject:
                         # In this case we can stop all hints!
                         for pl2 in self.todo:
                             counter.minus(pl2.code())
-                        self.todo = []
+                        self.todo = {}
                         pass
                 except wikipedia.SubpageError:
                     print "NOTE: %s subpage does not exist" % pl.asasciilink()
