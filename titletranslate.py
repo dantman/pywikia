@@ -27,6 +27,8 @@ def translate(pl, arr, same = False, hints = None):
     if hints:
         for h in hints:
             codes, newname = h.split(':', 1)
+            if newname == '':
+                newname = pl.linkname()
             if codes == 'all':
                 codes = wikipedia.seriouslangs
             elif codes == '10' or codes == 'main': # names 'main' and 'more' kept for backward compatibility

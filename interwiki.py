@@ -19,31 +19,33 @@ This script understands various command-line arguments:
 
     -hint:         used as -hint:de:Anweisung to give the robot a hint
                    where to start looking for translations. This is only
-                   useful if you specify a single page to work on.
+                   useful if you specify a single page to work on. If no
+                   text is given after the second ':', the name of the page
+                   itself is used as the title for the hint.
 
-    There are some special hints:
+    There are some special hints, trying a number of languages at once:
     all:    Provides the hint for all languages with at least ca. 100 pages
     10:     Provides the hint for ca. 10 of the largest languages
     20:     Provides the hint for ca. 20 of the largest languages
     30:     Provides the hint for ca. 30 of the largest languages
     cyril:  Provides the hint for all languages that use the cyrillic alphabet
                    
-    -same:         try to translate the page to other languages by
-                   testing whether a page with the same name exists on each of
-                   the other known wikipedias
+    -same:         looks over all 'serious' languages for the same title.
+                   -same is equivalent to -hint:all:
 
     -name:         similar to -same, but UPPERCASE the last name for eo:
 
-    -untranslated: untranslated pages are not skipped; instead in those
-                   cases interactively a translation hint is asked of the user.
+    -askhints:     for each page one or more hints are asked. See hint: above
+                   for the format, one can for example give "en:something" or
+                   "20:" as hint.
+
+    -untranslated: works normally on pages with at least interlanguage link;
+                   asks hints for pages that have none.
 
     -untranslatedonly: same as -untranslated, but pages which already have a
                    translation are skipped. Hint: do NOT use this in combination
                    with -start without a -number limit, because you will go through
                    the whole alphabet before any queries are performed!
-
-    -askhints: same as -untranslated, but translations are also asked for pages
-                   that already have translations.
 
     -file:         used as -file:filename, read a list of pages to treat
                    from the named file
@@ -55,9 +57,6 @@ This script understands various command-line arguments:
     -autonomous:   run automatically, do not ask any questions. If a question
                    to an operator is needed, write the name of the page
                    to autonomous_problems.dat and continue on the next page.
-
-    -test:         run on three pages named "Scheikunde", "Natuurkunde",
-                   and "Wiskunde". This is a trivial test of the functionality.
 
     -nobell:       do not use the terminal bell to announce a question
 
@@ -863,10 +862,6 @@ if __name__ == "__main__":
                     sa.add(wikipedia.PageLink(wikipedia.mylang, (date.date_format[startmonth][wikipedia.mylang]) % day))
         elif arg == '-nobell':
             globalvar.bell = False
-        elif arg == '-test':
-            sa.add(wikipedia.PageLink(wikipedia.mylang, 'Scheikunde'))
-            sa.add(wikipedia.PageLink(wikipedia.mylang, 'Wiskunde'))
-            sa.add(wikipedia.PageLink(wikipedia.mylang, 'Natuurkunde'))
         elif arg.startswith('-skipfile:'):
             skipfile = arg[10:]
         elif arg == '-restore':
