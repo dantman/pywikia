@@ -6,31 +6,32 @@ change a single page.
 
 You can run the bot with the following commandline parameters:
 
--sql        - Retrieve information from a local SQL dump (cur table, see
-              http://download.wikimedia.org).
-              Argument can also be given as "-sql:filename".
--file       - Retrieve information from a local text file.
-              Will read any [[wiki link]] and use these articles.
-              Argument can also be given as "-file:filename".
--page       - Only edit a single page.
-              Argument can also be given as "-page:pagename". You can give this
-              parameter multiple times to edit multiple pages.
--regex      - Make replacements using regular expressions. If this argument
-              isn't given, the bot will make simple text replacements.
--except:XYZ - Ignore pages which contain XYZ. If the -regex argument is given,
-              XYZ will be regarded as a regular expression.
--fix:XYZ    - Perform one of the predefined replacements tasks, which are given
-              in the dictionary 'fixes' defined inside this file.
-              The -regex argument and given replacements will be ignored if
-              you use -fix.
-              Currently available predefined fixes are:
-                  * HTML - convert HTML tags to wiki syntax, and fix XHTML
--always     - Don't prompt you for each replacement
-other:      - First argument is the old text, second argument is the new text.
-              If the -regex argument is given, the first argument will be
-              regarded as a regular expression, and the second argument might
-              contain expressions like \\1 or \g<name>.
-
+-sql         - Retrieve information from a local SQL dump (cur table, see
+               http://download.wikimedia.org).
+               Argument can also be given as "-sql:filename".
+-file        - Retrieve information from a local text file.
+               Will read any [[wiki link]] and use these articles.
+               Argument can also be given as "-file:filename".
+-page        - Only edit a single page.
+               Argument can also be given as "-page:pagename". You can give this
+               parameter multiple times to edit multiple pages.
+-regex       - Make replacements using regular expressions. If this argument
+               isn't given, the bot will make simple text replacements.
+-except:XYZ  - Ignore pages which contain XYZ. If the -regex argument is given,
+               XYZ will be regarded as a regular expression.
+-fix:XYZ     - Perform one of the predefined replacements tasks, which are given
+               in the dictionary 'fixes' defined inside this file.
+               The -regex argument and given replacements will be ignored if
+               you use -fix.
+               Currently available predefined fixes are:
+                   * HTML - convert HTML tags to wiki syntax, and fix XHTML
+-namespace:n - Namespace to process. Works only with a sql dump
+-always      - Don't prompt you for each replacement
+other:       - First argument is the old text, second argument is the new text.
+               If the -regex argument is given, the first argument will be
+               regarded as a regular expression, and the second argument might
+               contain expressions like \\1 or \g<name>.
+      
 NOTE: Only use either -sql or -file or -page, but don't mix them.
 
 Examples:
@@ -67,6 +68,7 @@ msg = {
        'de':u'Bot: Automatisierte Textersetzung',
        'en':u'Robot: Automated text replacement',
        'es':u'Robot: Reemplazo automático de texto',
+       'fr':u'Bot : Remplacement de texte automatisé',
        'hu':u'Robot: Automatikus szövegcsere',
        }
 
@@ -114,7 +116,7 @@ fixes = {
     }
 }
 
-def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex):
+def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, namespace):
     '''
     Generator which will yield PageLinks to pages that might contain text to
     replace. These pages will be retrieved from a local sql dump file
@@ -133,16 +135,19 @@ def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex):
     dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
     for entry in dump.entries():
         skip_page = False
-        for exception in exceptions:
-            if regex:
-                exception = re.compile(exception)
-                if exception.search(entry.text):
-                    skip_page = True
-                    break
-            else:
-                if entry.text.find(exception) != -1:
-                    skip_page = True
-                    break
+        if namespace == -1 or namespace != entry.namespace :
+            continue
+        else:
+            for exception in exceptions:
+                if regex:
+                    exception = re.compile(exception)
+                    if exception.search(entry.text):
+                        skip_page = True
+                        break
+                else:
+                    if entry.text.find(exception) != -1:
+                        skip_page = True
+                        break
         if not skip_page:
             for old in replacements.keys():
                 if regex:
@@ -177,7 +182,7 @@ def read_pages_from_text_file(textfilename):
     f.close()
 
 # TODO: Make MediaWiki's search feature available.
-def generator(source, replacements, exceptions, regex, textfilename = None, sqlfilename = None, pagenames = None):
+def generator(source, replacements, exceptions, regex, namespace, textfilename = None, sqlfilename = None, pagenames = None):
     '''
     Generator which will yield PageLinks for pages that might contain text to
     replace. These pages might be retrieved from a local SQL dump file or a
@@ -192,6 +197,7 @@ def generator(source, replacements, exceptions, regex, textfilename = None, sqlf
                          won't be changed.
         * regex        - if the entries of replacements and exceptions should
                          be interpreted as regular expressions
+        * namespace    - namespace to process in case of a SQL dump
         * textfilename - the textfile's path, either absolute or relative, which
                          will be used when source is 'textfile'.
         * sqlfilename  - the dump's path, either absolute or relative, which
@@ -200,7 +206,7 @@ def generator(source, replacements, exceptions, regex, textfilename = None, sqlf
                          'userinput'.
     '''
     if source == 'sqldump':
-        for pl in read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex):
+        for pl in read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, namespace):
             yield pl
     elif source == 'textfile':
         for pl in read_pages_from_text_file(textfilename):
@@ -235,7 +241,9 @@ pagenames = []
 # will become True when the user presses a ('yes to all') or uses the -always
 # commandline paramater.
 acceptall = False
-
+# Which namespace should be processed when using a SQL dump
+# default to -1 which means all namespaces will be processed
+namespace = -1
 # Load default summary message.
 wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg))
 
@@ -269,6 +277,8 @@ for arg in sys.argv[1:]:
             fix = arg[5:]
         elif arg == '-always':
             acceptall = True
+        elif arg.startswith('-namespace:'):
+            namespace = int(arg[11:])
         else:
             commandline_replacements.append(arg)
 
@@ -278,17 +288,21 @@ if source == None or len(commandline_replacements) not in [0, 2]:
     sys.exit()
 if (len(commandline_replacements) == 2 and fix == None):
     replacements[commandline_replacements[0]] = commandline_replacements[1]
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg )+ ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
 elif fix == None:
     old = wikipedia.input(u'Please enter the text that should be replaced:')
     new = wikipedia.input(u'Please enter the new text:')
+    change = ' (-' + old + ' +' + new
     replacements[old] = new
     while True:
         old = wikipedia.input(u'Please enter another text that should be replaced, or press Enter to start:')
         if old == '':
+            change = change + ')'
             break
         new = wikipedia.input(u'Please enter the new text:')
+        change = change + ' & -' + old + ' +' + new
         replacements[old] = new
-
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg)+change)
 else:
     # Perform one of the predefined actions.
     fix = fixes[fix]
@@ -302,7 +316,7 @@ else:
 
 # Run the generator which will yield PageLinks to pages which might need to be
 # changed.
-for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfilename, pagenames):
+for pl in generator(source, replacements, exceptions, regex, namespace, textfilename, sqlfilename, pagenames):
     print ''
     try:
         # Load the page's text from the wiki
@@ -346,7 +360,13 @@ for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfi
             else:
                 new_text = new_text.replace(old, new)
         if new_text == original_text:
-            print 'No changes were necessary in %s' % pl.linkname()
+            try:
+                # Sometime the bot crashes when it can't decode a character.
+                # Let's not let it crash
+                print 'No changes were necessary in %s' % pl.linkname()
+            except UnicodeEncodeError:
+                print 'Error decoding pl.linkname()'
+                continue
         else:
             wikipedia.showDiff(original_text, new_text)
             if not acceptall:
