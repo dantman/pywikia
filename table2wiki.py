@@ -22,7 +22,7 @@ KNOW BUGS
 Broken HTML-tables will most likely result in broken wiki-tables!
 Please check every article you change.
 
-WARNINGS
+WARNING!
 Indented HTML-tables will result in ugly wiki-tables.
 You can kill indentions but it's switched off by default.
 
@@ -33,21 +33,12 @@ You can kill indentions but it's switched off by default.
 # Distribute under the terms of the PSF license.
 __version__='$Id$'
 
-import re,sys,wikipedia
+import re,sys,wikipedia,config
 
 myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
 notFoundSites = ''
-warnings = 0
-
-deIndentTables = 1
-splitLongSentences = 1
-
-DEBUG=0
-
-#be careful, some bad HTML-tables is still not recognized
-noControl = 0
 
 articles = []    
 for arg in sys.argv[1:]:
@@ -80,7 +71,7 @@ for article in articles:
             print "ERROR: couldn't find " + article
             notFoundSites = notFoundSites + " " + article
             continue
-        
+        warnings = 0
         newText = text
         
         ##################
@@ -93,24 +84,21 @@ for article in articles:
 
         ##################
         # every open-tag gets a new line.
-        newText = re.sub("(\<[tT]{1}[dDhH]{1}([^>]*?)\>[\w\W]*?)"
-                         + "(\<\/[Tt]{1}[dDhH]{1}[^>]*?\>)",
-                         "\r\n\\1\\3", newText, 0)
-        newText = re.sub("(\<[tT]{1}[rR]{1})",
+        newText = re.sub("(\<[tT]{1}[dDhHrR]{1}([\w\W]*?)\>[\w\W]*?)",
                          "\r\n\\1", newText, 0)
         
 
             
         ##################
         # the <table> tag
-        newText = re.sub("<(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
-                         "{| \\2\n\\3", newText, 0)
-        newText = re.sub("<(TABLE|table)>([\w\W]*?)<(tr|TR)>",
-                         "{|\n\\2", newText, 0)
-        newText = re.sub("\<(TABLE|table) ([\w\W]*?)\>[\n ]*",
-                         "{| \\2\n", newText, 0)
-        newText = re.sub("\<(TABLE|table)\>[\n ]*",
-                         "{|\n", newText, 0)
+        newText = re.sub("[\r\n]*?\<(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
+                         "\r\n{| \\2\n\\3", newText, 0)
+        newText = re.sub("[\r\n]*?\<(TABLE|table)>([\w\W]*?)<(tr|TR)>",
+                         "\r\n{|\n\\2", newText, 0)
+        newText = re.sub("[\r\n]*?\<(TABLE|table) ([\w\W]*?)\>[\n ]*",
+                         "\r\n{| \\2\n", newText, 0)
+        newText = re.sub("[\r\n]*?\<(TABLE|table)\>[\n ]*",
+                         "\r\n{|\n", newText, 0)
         # end </table>
         newText = re.sub("[\s]*<\/(TABLE|table)\>", "\r\n|}", newText, 0)
 
@@ -187,8 +175,9 @@ for article in articles:
                          "\n!\\1\\3", newText, 0)
 
         ##################
-        # kills indention within tables. Be warned, it might bring
+        # kills indention within tables. Be warned, it might seldom bring
         # bad results.
+        # True by default. Set 'deIndentTables = False' in user-config.py
         if deIndentTables:
             num = 1
             while num != 0:
@@ -252,7 +241,8 @@ for article in articles:
 
         ##################
         # I hate those long line because they make a wall of letters
-        if splitLongSentences:
+        # Off by default, set 'splitLongParagraphs = True' in user-config.py
+        if splitLongParagraphs:
             num = 1
             while num != 0:
                 newText, num = re.subn("(\r\n[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{100,})",
@@ -273,7 +263,7 @@ for article in articles:
             #print "\nOriginal text\n" + text
             #print "\nModified text\n" + newText
 
-            if noControl and warnings == 0:
+            if table2wikiAskOnlyWarnings and warnings == 0:
                 doUpload="y"
             else:
                 print "There were " + str(warnings) + " replacement(s) that\
@@ -282,7 +272,10 @@ for article in articles:
 
 
             if doUpload == 'y':
-                status, reason, data = pl.put(newText, myComment)
+                warn = ""
+                if warnings > 0:
+                    warn = " - " + str(warnings) + " warnings!"
+                status, reason, data = pl.put(newText, myComment + warn)
                 print status,reason
                 fixedSites = fixedSites + " " + article
             else:
@@ -292,7 +285,6 @@ for article in articles:
             print "No changes were necessary in " + article
             notFixedSites = notFixedSites + " " + article
         print "\n"
-        warnings = 0
         
 print "\tFollowing pages were corrected\n" + fixedSites
 print "\n\tFollowing pages had errors and were not corrected\n" + notFixedSites
