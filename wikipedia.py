@@ -138,7 +138,7 @@ def getUrl(host,address):
         charset=None
     return text,charset
     
-def getPage(code, name):
+def getPage(code, name, do_edit=1, do_quote=1):
     """Get the contents of page 'name' from the 'code' language wikipedia"""
     host = langs[code]
     if host[-4:]=='.com':
@@ -151,59 +151,66 @@ def getPage(code, name):
         #print name
     else:
         name = re.sub(' ', '_', name)
-    if not '%' in name: # It should not have been done yet
+    if not '%' in name and do_quote: # It should not have been done yet
         if name!=urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
     if host[-4:] == '.org': # New software
-        address = '/w/wiki.phtml?title='+name+'&action=edit'
+        address = '/w/wiki.phtml?title='+name
+        if do_edit:
+            address += '&action=edit'
     elif host[-4:]=='.com': # Old software
+        if not do_edit:
+            raise "can not skip edit on old-software wikipedia"
         address = '/wiki.cgi?action=edit&id='+name
     if debug:
         print host,address
     text,charset = getUrl(host,address)
-    if debug:
-        print "Raw:",len(text),type(text),text.count('x')
-    if charset is None:
-        print "WARNING: No character set found"
-    else:
-        # Store character set for later reference
-        if charsets.has_key(code):
-            assert charsets[code]==charset
-        charsets[code]=charset
-    if debug>1:
-        print repr(text)
-    m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
-    if m:
-        edittime[code,space2underline(name)]=m.group(1)
-    else:
-        m = re.search('value="(\d+)" name="wpEdittime"',text)
-        if m:
-            edittime[code,name]=m.group(1)
+    if do_edit:
+        if debug:
+            print "Raw:",len(text),type(text),text.count('x')
+        if charset is None:
+            print "WARNING: No character set found"
         else:
-            edittime[code,name]=0
-    try:
-        i1 = re.search('<textarea[^>]*>',text).end()
-    except AttributeError:
-        #print "No text area.",host,address
-        #print repr(text)
-        raise LockedPage()
-    i2 = re.search('</textarea>',text).start()
-    if i2-i1 < 2: # new software
-        raise NoPage()
-    if debug:
-        print text[i1:i2]
-    if text[i1:i2] == 'Describe the new page here.\n': # old software
-        raise NoPage()
-    Rredirect=re.compile(r'\#redirect:? *\[\[(.*?)\]\]',re.I)
-    m=Rredirect.match(text[i1:i2])
-    if m:
-        raise IsRedirectPage(m.group(1))
-    assert edittime[code,name]!=0 or host[-4:]=='.com', "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
+            # Store character set for later reference
+            if charsets.has_key(code):
+                assert charsets[code]==charset
+            charsets[code]=charset
+        if debug>1:
+            print repr(text)
+        m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
+        if m:
+            edittime[code,space2underline(name)]=m.group(1)
+        else:
+            m = re.search('value="(\d+)" name="wpEdittime"',text)
+            if m:
+                edittime[code,name]=m.group(1)
+            else:
+                edittime[code,name]=0
+        try:
+            i1 = re.search('<textarea[^>]*>',text).end()
+        except AttributeError:
+            #print "No text area.",host,address
+            #print repr(text)
+            raise LockedPage(text)
+        i2 = re.search('</textarea>',text).start()
+        if i2-i1 < 2: # new software
+            raise NoPage()
+        if debug:
+            print text[i1:i2]
+        if text[i1:i2] == 'Describe the new page here.\n': # old software
+            raise NoPage()
+        Rredirect=re.compile(r'\#redirect:? *\[\[(.*?)\]\]',re.I)
+        m=Rredirect.match(text[i1:i2])
+        if m:
+            raise IsRedirectPage(m.group(1))
+        assert edittime[code,name]!=0 or host[-4:]=='.com', "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
 
-    x=text[i1:i2]
-    x=unescape(x)
-
+        x=text[i1:i2]
+        x=unescape(x)
+    else:
+        x=text # If not editing
+        
     if charset=='utf-8':
         # Make it to a unicode string
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
@@ -222,6 +229,25 @@ def languages(first=[]):
         if key not in result:
             result.append(key)
     return result
+
+def allnlpages(start='%20%200'):
+    wikipedia.link2url(start)
+    m=0
+    while 1:
+        text=wikipedia.getPage('nl','Speciaal:Allpages&printable=yes&from=%s'%start,do_quote=0,do_edit=0)
+        #print text
+        R=re.compile('/wiki/(.*?)" *class=[\'\"]printable')
+        n=0
+        for hit in R.findall(text):
+            if not ':' in hit:
+                if not hit in ['Hoofdpagina','In_het_nieuws']:
+                    n=n+1
+                    yield wikipedia.url2link(hit)
+                    start=hit+'%20%200'
+        if n<100:
+            break
+        m=m+n
+        sys.stderr.write('AllNLPages: %d done; continuing from "%s";\n'%(m,wikipedia.link2url(start)))
 
 # Part of library dealing with interwiki links
 
