@@ -21,6 +21,10 @@ treelang_all.py -warnfile:xxxxxx
 specifying the name of the file on the xxxxx. This will parse the warnings, and
 give them as hints to treelang in a special run that is optimized to solve the
 warnings.
+
+This script also read the treelang_backlink and treelang_log variables 
+(see treelang.py for more informations) your configuration file user-config.py .
+
 """
 #
 # (C) Rob W.W. Hooft, 2003
