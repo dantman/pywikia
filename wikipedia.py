@@ -86,7 +86,7 @@ langs = {
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'ia', 'et', 'eu',
           'mr', 'id', 'simple', 'gl', 'lv', 'sw',
-          'tt', 'uk', 'vo', 'ga', 'da']
+          'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi']
