@@ -151,7 +151,7 @@ class PageLink(object):
              
         The argument insite can be specified to help decode
         the name; it is the wikimedia site where this link was found.
-        """     
+        """
         self._site = site
         if tosite:
             self._tosite = tosite
@@ -168,7 +168,7 @@ class PageLink(object):
         """The site of the page this PageLink refers to,
            without :"""
         return self._site
-    
+
     def encoding(self):
         """
         Returns the character encoding used on this page's wiki.
@@ -1247,9 +1247,9 @@ def replaceLanguageLinks(oldtext, new, site = None):
     s = interwikiFormat(new, insite = site)
     s2 = removeLanguageLinks(oldtext, site = site)
     if s:
-        if site.lang in config.interwiki_attop:
+        if site.language() in config.interwiki_attop:
             newtext = s + config.interwiki_text_separator + s2
-        elif site.lang in config.categories_last:
+        elif site.language() in config.categories_last:
             cats = getCategoryLinks(s2, site = site)
             s3 = []
             for catname in cats:
@@ -1277,7 +1277,7 @@ def interwikiFormat(links, insite = None):
         return ''
     # Security check: site may not refer to itself.
     for pl in links.values():
-        if pl.site()==insite:
+        if pl==insite.language():
             raise ValueError("Trying to add interwiki link to self")
     s = []
     ar = links.keys()
@@ -1298,7 +1298,7 @@ def interwikiFormat(links, insite = None):
         try:
             s.append(links[site].aslink())
         except AttributeError:
-            s.append('[[%s:%s]]' % (site.linkto(links[site],othersite=insite)))
+            s.append(site.linkto(links[site],othersite=insite))
     if insite.lang in config.interwiki_on_one_line:
         sep = ' '
     else:
@@ -1340,7 +1340,7 @@ def getCategoryLinks(text, site):
             if t:
                 # remove leading / trailing spaces
                 t = t.strip()
-                if site.lang == 'eo':
+                if site.language() == 'eo':
                     t = t.replace('xx','x')
                 t = t[:1].capitalize() + t[1:]
                 result.append(ns[0]+':'+t)
@@ -1373,7 +1373,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
     s = categoryFormat(new, insite = site)
     s2 = removeCategoryLinks(oldtext, site = site)
     if s:
-        if site.lang in config.category_attop:
+        if site.language() in config.category_attop:
             newtext = s + config.category_text_separator + s2
         else:
             newtext = s2 + config.category_text_separator + s
@@ -1424,7 +1424,7 @@ def url2link(percentname, insite, site):
 def link2url(name, site, insite = None):
     """Convert an interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link"""
-    if site.lang == 'eo':
+    if site.language() == 'eo':
         name = name.replace('cx','&#265;')
         name = name.replace('Cx','&#264;')
         name = name.replace('CX','&#264;')
@@ -1694,7 +1694,7 @@ class Site(object):
         else:
             self.family = fam
         if self.lang == 'commons':
-            family._addlang(self.lang,'commons.wikimedia.org',{4:'Commons', 5:'Commons talk'})
+            self.family._addlang(self.lang,'commons.wikimedia.org',{4:'Commons', 5:'Commons talk'})
         if self.lang not in self.family.langs:
             raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
@@ -1825,6 +1825,9 @@ class Site(object):
 
     def maintenance_address(self, sub, default_limit = True):
         return self.family.maintenance_address(self.lang, sub, default_limit)
+
+    def language(self):
+        return self.lang
     
 _sites = {}
 

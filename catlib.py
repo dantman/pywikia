@@ -70,7 +70,7 @@ class _CatLink(wikipedia.PageLink):
             site = wikipedia.getSite()
         import re
         Rtitle = re.compile('title=\n?\"([^\"]*)\"')
-        ns = wikipedia.family.category_namespaces(site)
+        ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
         pages = []
@@ -84,9 +84,10 @@ class _CatLink(wikipedia.PageLink):
             retry_idle_time = 1
             while True:
                 try:
-                    txt = wikipedia.getPage(cat.code(), cat.urlname(), get_edit_page = False)
+                    txt = wikipedia.getPage(site, cat.urlname(), get_edit_page = False)
                 except:
                     # We assume that the server is down. Wait some time, then try again.
+                    raise
                     print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (cat.linkname(), retry_idle_time)
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
@@ -108,7 +109,7 @@ class _CatLink(wikipedia.PageLink):
             txt = txt[ibegin:iend]
             for title in Rtitle.findall(txt):
                 if iscattitle(title):
-                    ncat = _CatLink(self.code(), title)
+                    ncat = _CatLink(self.site(), title)
                     if recurse and ncat not in catsdone:
                         catstodo.append(ncat)
                 pages.append(title)
@@ -140,7 +141,7 @@ class _CatLink(wikipedia.PageLink):
         subcats = []
         for title in self.catlist(recurse)[0]:
             if iscattitle(title):
-                ncat = _CatLink(self.code(), title)
+                ncat = _CatLink(self.site(), title)
                 subcats.append(ncat)
         return unique(subcats)
     
@@ -155,7 +156,7 @@ class _CatLink(wikipedia.PageLink):
         articles = []
         for title in self.catlist(recurse)[0]:
             if not iscattitle(title):
-                npage = wikipedia.PageLink(self.code(), title)
+                npage = wikipedia.PageLink(self.site(), title)
                 articles.append(npage)
         return unique(articles)
 
@@ -168,7 +169,7 @@ class _CatLink(wikipedia.PageLink):
         """
         supercats = []
         for title in self.catlist(recurse)[1]:
-            ncat = _CatLink(self.code(), title)
+            ncat = _CatLink(self.site(), title)
             supercats.append(ncat)
         return unique(supercats)
     
@@ -176,7 +177,7 @@ class _CatLink(wikipedia.PageLink):
 def CatLink(code, name):
     """Factory method to create category link objects from the category name"""
     # Standardized namespace
-    ns = wikipedia.family.category_namespaces(code)[0]
+    ns = wikipedia.getSite().category_namespaces()[0]
     # Prepend it
     return _CatLink(code, "%s:%s" % (ns, name))
 

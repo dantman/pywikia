@@ -96,7 +96,7 @@ def get_image(original_url, source_site, original_description, keep=False, debug
         fn = fn.split('\\')[-1]
     # convert ISO 8859-1 to Unicode, or parse UTF-8. If source_site is None,
     # the filename is already in Unicode.
-    if source_sitr != None:
+    if source_site != None:
         try:
             fn = unicode(fn, source_site.encoding())
         except TypeError:
@@ -151,7 +151,7 @@ def get_image(original_url, source_site, original_description, keep=False, debug
 
     formdata = {}
     formdata["wpUploadDescription"] = description
-    if wikipedia.family.version(wikipedia.mylang) >= '1.4':
+    if wikipedia.getSite().version() >= '1.4':
         formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
     formdata["wpUploadAffirm"] = "1"
@@ -171,6 +171,7 @@ def get_image(original_url, source_site, original_description, keep=False, debug
 
     # don't upload if we're in debug mode
     if not debug:
+        mysite=wikipedia.getSite()
         returned_html = post_multipart(mysite.hostname(),
                               mysite.upload_address(),
                               formdata.items(),
