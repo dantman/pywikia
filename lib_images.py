@@ -232,7 +232,7 @@ def transfer_image(imagelink, debug=False):
     if debug: print "URL should be: %s" % url
     # localize the text that should be printed on the image description page
     try:
-        description = copy_message[wikipedia.translate(wikipedia.mylang, copy_message)] % (imagelink.code(), imagelink.get())
+        description = wikipedia.translate(wikipedia.mylang, copy_message) % (imagelink.code(), imagelink.get())
         # add interwiki link
         description += "\r\n\r\n" + imagelink.aslink()
     except wikipedia.NoPage:
