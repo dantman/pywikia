@@ -2105,6 +2105,8 @@ def Family(fam = None, fatal = True):
     if fam == None:
         fam = config.family
     try:
+        # search for family module in the 'families' subdirectory
+        sys.path.append('families')
         exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
