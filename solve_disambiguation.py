@@ -151,7 +151,11 @@ wikipedia.setAction(msg[msglang]+': '+wrd)
 thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
 
 if solve_redirect:
-    alternatives.append(str(thispl.getRedirectTo()))
+    try:
+        alternatives.append(str(thispl.getRedirectTo()))
+    except wikipedia.IsNotRedirectPage:
+        print "The specified page is not a redirect."
+        sys.exit(1)
 elif getalternatives:
     try:
         thistxt = thispl.get()
@@ -253,6 +257,8 @@ def treat(refpl, thispl):
                 reppl = wikipedia.PageLink(thispl.code(), replacement,
                                            incode = refpl.code())
                 replacement = reppl.linkname()
+                if g2[0] in 'abcdefghijklmnopqrstuvwxyz':
+                    replacement = replacement[0].lower() + replacement[1:]
                 if replaceit or replacement == g2:
                     reptxt = replacement
                 else:
