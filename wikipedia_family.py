@@ -250,6 +250,10 @@ redirect = {
     'cy': 'ail-cyfeirio',
     }
 
+# On most Wikipedias page names must start with a capital letter, but some
+# languages don't use this.
+
+nocapitalize = ['tokipona']
 
 # Which languages have a special order for putting interlanguage links,
 # and what order is it? If a language is not in interwiki_putfirst,

@@ -1227,7 +1227,8 @@ def link2url(name, code, incode = None):
     name = name.strip()
     # Standardize capitalization
     if name:
-        name = name[0].upper()+name[1:]
+        if not code in family.nocapitalize:
+            name = name[0].upper()+name[1:]
     #print "DBG>",repr(name)
     try:
         result = str(name.encode(code2encoding(code)))
