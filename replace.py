@@ -1,16 +1,24 @@
 # -*- coding: utf-8  -*-
 """
--sql       - Retrieve information from a local dump (http://download.wikimedia.org).
-             Argument can also be given as "-sql:filename".
--file      - Retrieve information from a local text file.
-             Will read any [[wiki link]] and use these articles
-             Argument can also be given as "-file:filename".
--regex     - Make replacements using regular expressions. If this argument isn't
-             given, the bot will make simple text replacements.
-other:     - First argument is the old text, second argument is the new text.
-             if the -regex argument is given, the first argument will be
-             regarded as a regular expression, and the second argument might
-             contain expressions like \\1 or \g<name>.
+-sql        - Retrieve information from a local dump (http://download.wikimedia.org).
+              Argument can also be given as "-sql:filename".
+-file       - Retrieve information from a local text file.
+              Will read any [[wiki link]] and use these articles
+              Argument can also be given as "-file:filename".
+-page       - Only edit a single page.
+              Argument can also be given as "-page:pagename".
+-regex      - Make replacements using regular expressions. If this argument
+              isn't given, the bot will make simple text replacements.
+-except:XYZ - Ignore pages which contain XYZ. If the -regex argument is given,
+              the XYZ will be regarded as a regular expression.
+-fix:XYZ    - Perform one of the predefined replacements tasks, which are given
+              in the dictionary 'fixes' below.
+              The -regex argument and given replacements will be ignored if
+              you use -fix.
+other:      - First argument is the old text, second argument is the new text.
+              If the -regex argument is given, the first argument will be
+              regarded as a regular expression, and the second argument might
+              contain expressions like \\1 or \g<name>.
 
 NOTE: Use either -sql or -file, but don't use both.
 
@@ -25,6 +33,10 @@ http://download.wikimedia.org, then use this command:
 If you want to fix typos, e.g. Errror -> Error, use this:
 
     python replace.py -sql "Errror" "Error"
+
+If you have a page called 'John Doe' and want to convert HTML to wiki tags, use:
+    
+    python replace.py -page:John_Doe -fix:HTML
 """
 #
 # (C) Daniel Herding, 2004
@@ -41,6 +53,30 @@ msg = {
        'de':u'Bot: Automatisierte Textersetzung',
       }
 
+# Predefinded fixes
+fixes = {
+    'HTML': {
+        'regex': True,
+        'exceptions':  ['<nowiki>'],
+        'msg': {
+               'en':u'Robot: Converting/fixing HTML',
+               'de':u'Bot: konvertiere/korrigiere HTML',
+              },
+        'replacements': {
+            # everything case-insensitive (?i)
+            r'(?i)<br>':                 r'<br />',
+            r'(?i)<b>':                  r"'''",
+            r'(?i)</b>':                 r"'''",
+            r'(?i)<strong>':             r"'''",
+            r'(?i)</strong>':            r"'''",
+            r'(?i)<em>':                 r"''",
+            r'(?i)</em>':                r"''",
+            r'(?i)<i>':                  r"''",
+            r'(?i)</i>':                 r"''",
+            r'(?i)([\r\n])<hr>([\r\n])': r'\1----\2'
+        }
+    }
+}
 
 # taken from interwiki.py
 def showDiff(oldtext, newtext):
@@ -57,20 +93,32 @@ def showDiff(oldtext, newtext):
 
 # Generator which will yield pages that might contain text to replace.
 # These pages will be retrieved from a local sql dump file.
-def read_pages_from_sql_dump(sqlfilename, old, regex):
+def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex):
     import sqldump
     dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
     for entry in dump.entries():
-        if regex:
-            if old.search(entry.text):
-                yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
-        else:
-            if entry.text.find(old) != -1:
-                yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+        for exception in exceptions:
+            if regex:
+                exception = re.compile(exception)
+                if exception.search(entry.text):
+                    break
+            else:
+                if entry.text.find(exception) != -1:
+                    break
+        for old in replacements.keys():
+            if regex:
+                old = re.compile(old)
+                if old.search(entry.text):
+                    yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+                    break
+            else:
+                if entry.text.find(old) != -1:
+                    yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+                    break
 
 # Generator which will yield pages that might contain text to replace.
 # These pages might be retrieved from a text file.
-def read_pages_from_text_file(textfilename, old, regex):
+def read_pages_from_text_file(textfilename):
         f = open(textfilename, 'r')
         # regular expression which will find [[wiki links]]
         R = re.compile(r'.*\[\[([^\]]*)\]\].*')
@@ -84,24 +132,37 @@ def read_pages_from_text_file(textfilename, old, regex):
 # Generator which will yield pages that might contain text to replace.
 # These pages might be retrieved from a local sql dump file or a text file.
 # TODO: Make MediaWiki's search feature available.
-def generator(source, old, regex, textfilename = None, sqlfilename = None):
+def generator(source, replacements, exceptions, regex, textfilename = None, sqlfilename = None, pagename = None):
     if source == 'sqldump':
-        for pl in read_pages_from_sql_dump(sqlfilename, old, regex):
+        for pl in read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex):
             yield pl
     elif source == 'textfile':
-        for pl in read_pages_from_text_file(textfilename, old, regex):
+        for pl in read_pages_from_text_file(textfilename):
             yield pl
+    elif source == 'singlepage':
+        yield wikipedia.PageLink(wikipedia.mylang, pagename)
 
 # How we want to retrieve information on which pages need to be changed.
 # Can either be 'sqldump' or 'textfile'.
 source = None
-# First element is original text, second element is replacement text
-replacements = []
-# Should the elements elements of 'replacements' be interpreted as regular
-# expressions?
+# Array which will collect commandline parameters.
+# First element is original text, second element is replacement text.
+commandline_replacements = []
+# Dictionary where keys are original texts and values are replacement texts.
+replacements = {}
+# Don't edit pages which contain certain texts
+exceptions = []
+# Should the elements elements of 'replacements' and 'exceptions' be interpreted
+# as regular expressions?
 regex = False
+# Predefined fixes from above dictionary
+fix = None
 sqlfilename = ''
 textfilename = ''
+pagename = ''
+
+# Summary message
+wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang, msg)])
 
 for arg in sys.argv[1:]:
     arg = unicode(arg, config.console_encoding)
@@ -121,38 +182,87 @@ for arg in sys.argv[1:]:
         else:
             sqlfilename = arg[5:]
         source = 'sqldump'
+    elif arg.startswith('-page'):
+        if len(arg) == 5:
+            pagename = wikipedia.input(u'Which page do you want to chage?')
+        else:
+            pagename = arg[6:]
+        source = 'singlepage'
+    elif arg.startswith('-except:'):
+        exceptions.append(arg[8:])
+    elif arg.startswith('-fix:'):
+        fix = arg[5:]
     else:
-        replacements.append(arg)
+        commandline_replacements.append(arg)
 
-if source == None or len(replacements) != 2:
+if source == None:
     print 'Please open replace.py with a text editor for syntax information and examples.'
     sys.exit()
+if (len(commandline_replacements) == 2 and fix == None):
+    replacements[commandline_replacements[0]] = commandline_replacements[1]
+elif fix == None:
+    old = wikipedia.input(u'Please enter the text that should be replaced:')
+    new = wikipedia.input(u'Please enter the new text:')
+    replacements[old] = new
+    while True:
+        old = wikipedia.input(u'Please enter another text that should be replaced, or press Enter to start:')
+        if old == '':
+            break
+        new = wikipedia.input(u'Please enter the new text:')
+        replacements[old] = new
 
-old = replacements[0]
-new = replacements[1]
-
-if regex:
-    old = re.compile(old)
+else:
+    # Perform one of the predefined actions
+    fix = fixes[fix]
+    if fix.has_key('regex'):
+        regex = fix['regex']
+    if fix.has_key('msg'):
+        wikipedia.setAction(fix['msg'][wikipedia.chooselang(wikipedia.mylang, fix['msg'])])
+    if fix.has_key('exceptions'):
+        regex = fix['exceptions']
+    replacements = fix['replacements']
 
 acceptall = False
-wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang, msg)])
 
-for pl in generator(source, old, regex, textfilename, sqlfilename):
+for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfilename, pagename):
     # print pl.linkname()
     original_text = pl.get()
-    if regex:
-        new_text = old.sub(new, original_text)
-    else:
-        new_text = original_text.replace(old, new)
-    if new_text == original_text:
-        print 'No changes were necessary in %s' % pl.linkname()
-    else:
-        showDiff(original_text, new_text)
-        if not acceptall:
-            choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
-        if choice in ['a', 'A']:
-            acceptall = True
-            choice = 'y'
-        if choice in ['y', 'Y']:
-            pl.put(new_text)
-
+    skip_page = False
+    for exception in exceptions:
+        if regex:
+            exception = re.compile(exception)
+            hit = exception.search(original_text)
+            if hit:
+                wikipedia.output('Skipping %s because it contains %s' % (pl.linkname(), hit.group(0)))
+                # Does anyone know how to break out of the _outer_ loop?
+                # Then we wouldn't need the skip_page variable.
+                skip_page = True
+                break
+        else:
+            hit = original_text.find(exception)
+            if hit != -1:
+                wikipedia.output('Skipping %s because it contains %s' % (pl.linkname(), original_text[hit:hit + len(exception)]))
+                skip_page = True
+                break
+    if not skip_page:
+        # create a copy of the original text to work on, so we can later compare
+        # if any changes were made
+        new_text = original_text
+        for old, new in replacements.items():
+            if regex:
+                # TODO: compiling the regex each time might be inefficient
+                old = re.compile(old)
+                new_text = old.sub(new, new_text)
+            else:
+                new_text = new_text.replace(old, new)
+        if new_text == original_text:
+            print 'No changes were necessary in %s' % pl.linkname()
+        else:
+            showDiff(original_text, new_text)
+            if not acceptall:
+                choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
+            if choice in ['a', 'A']:
+                acceptall = True
+                choice = 'y'
+            if choice in ['y', 'Y']:
+                pl.put(new_text)
