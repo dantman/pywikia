@@ -141,11 +141,13 @@ special = {
     'ro': 'Special',
     'ru': 'Special',
     'simple': 'Special',
+    'sk': '%C5%A0peci%C3%A1lne',
     'sl': 'Posebno',
     'sq': 'Special',
     'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
     'sv': 'Special',
     #'sw': '',
+    'ta': '%E0%AE%9A%E0%AE%BF%E0%AE%B1%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81',
     'test': 'Special',
     'tr': 'Special',
     #'tt': '',
@@ -159,8 +161,8 @@ special = {
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['eu', 'ga', 'id', 'lv',
-               'mr', 'nds', 'sw', 'tt', 'uk', 'vo']
+oldsoftware = ['eu', 'ga', 'id', 'lv', 'mr', 'nds', 'sw', 'tt',
+               'uk', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
@@ -196,22 +198,23 @@ interwiki_putfirst = {
           'gl','ko','hi','hr','id','it','ia','he','sw',
           'la','lv','lt','hu','ml','mr','nah','nl','ja',
           'no','oc','nds','pl','pt','ro','ru','sq','simple',
-          'sl','sr','fi','sv','tt','vi','tr','uk','vo',
-          'zh','zh-cn','zh-tw'],
+          'sk','sl','sr','fi','sv','ta','tt','vi','tr',
+          'uk','vo','zh','zh-cn','zh-tw'],
     'fr':['af','ar','ms','bs','ca','cs','cy','da','de',
           'et','el','en','es','eo','eu','fr','fy','ga',
           'gl','ko','hi','hr','id','it','ia','he','sw',
           'la','lv','lt','hu','ml','mr','nah','nl','ja',
           'no','oc','nds','pl','pt','ro','ru','sq','simple',
-          'sl','sr','fi','sv','tt','vi','tr','uk','vo',
-          'zh','zh-cn','zh-tw'],
+          'sk','sl','sr','fi','sv','ta','tt','vi','tr',
+          'uk','vo','zh','zh-cn','zh-tw'],
     'hu':['en'],
-    'pl':['af','sq','en','ar','eu','bs','zh','zh-tw','zh-cn',
-          'hr','cs','da','eo','et','fi','fr','fy','gl',
-          'el','he','hi','es','nl','id','ia','ga','ja',
-          'ca','ko','la','lv','ml','ms','mr','de','no',
-          'pt','oc','ru','ro','sl','sr','sw','sv','tt',
-          'tr','uk','simple','vo','cy','hu','vi','it'],
+    'pl':['af','sq','en','ar','eu','bs','zh','zh-tw',
+          'zh-cn','hr','cs','da','eo','et','fi','fr',
+          'fy','gl','el','he','hi','es','nl','id','ia',
+          'ga','ja','ca','ko','la','lt','lv','ml','ms',
+          'mr','de','no','pt','oc','ru','ro','sk','sl',
+          'sr','sw','sv','ta','tt','tr','uk','simple',
+          'vo','cy','hu','vi','it'],
     }
 
 # Local exceptions
