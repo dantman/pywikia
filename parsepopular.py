@@ -49,6 +49,8 @@ for k in disappeared.keys():
         wikipedia.getPage('nl',wikipedia.link2url(k))
     except wikipedia.IsRedirectPage,arg:
         disappeared[k]=wikipedia.url2link(str(arg))
+    except wikipedia.NoPage:
+        print "Deleted: %s (was %d) "%(k,map1[k])
     else:
         print "Genuinely disappeared: %s (was %d) "%(k,map1[k])
 
