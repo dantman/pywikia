@@ -47,14 +47,6 @@ if not wikipedia.cookies:
 desc=' '.join(desc)
 
 if fn=='':
-    fn = wikipedia.input(u'File or URL where image is now : ')
-
-#convert arguments from encoding used by user's console
-#to unicode
-desc = unicode(desc, config.console_encoding)
-try:
-    fn = unicode(fn, config.console_encoding)
-except TypeError:
-    pass
+    fn = wikipedia.input(u'File or URL where image is now: ')
 
 lib_images.get_image(fn, None, desc, keep)
