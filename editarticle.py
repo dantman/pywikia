@@ -9,7 +9,6 @@
 #
 # Features:
 #       - logging in
-#       - editing anonymously
 #
 # TODO: - non existing pages
 #       - correct encoding
@@ -20,7 +19,10 @@
 #       - watch/unwatch
 #       - ...
 #
+# Removed features:
+#       - editing anonymously
 
+__metaclass__ = type
 __version__ = "$Id$"
 sig = u" (edited with editarticle.py 0.3)"
 
@@ -38,7 +40,7 @@ import wikipedia
 import login
 import config
 
-class EditArticle(object):
+class EditArticle:
     joinchars = string.letters + '[]' + string.digits # join lines if line starts with this ones
 
     def __init__(self, args):
@@ -48,13 +50,13 @@ class EditArticle(object):
 
     def initialise_data(self):
         """Login, set editor, page and pagelink attributes"""
-        self.login(anonymous=self.options.anonymous)
+        self.login()#anonymous=self.options.anonymous)
         self.editor = self.options.editor or wikipedia.input(u"Editor to use: ", encode=True)
         self.setpage()
 
-    def login(self, anonymous):
-        """Initialises site and username data, or anonymous"""
-        if anonymous:
+    def login(self):#, anonymous):
+        """Initialises site and username data"""#, or anonymous"""
+        if False:#anonymous:
             self.site = wikipedia.getSite(user=None)
         else:
             self.username = self.options.username or wikipedia.input(u"Username: ", encode=True)
@@ -76,7 +78,7 @@ class EditArticle(object):
             if arg:
                 my_args.append(arg)
         parser = optparse.OptionParser()
-        parser.add_option("-a", "--anonymous", action="store_true", default=False, help="Login anonymously")
+##        parser.add_option("-a", "--anonymous", action="store_true", default=False, help="Login anonymously")
         parser.add_option("-r", "--edit_redirect", action="store_true", default=False, help="Ignore/edit redirects")
         parser.add_option("-u", "--username", help="Username to login with (ignored with -a)")
         parser.add_option("-p", "--page", help="Page to edit")
@@ -168,7 +170,7 @@ class EditArticle(object):
             self.showdiff(old, new)
             comment = self.getcomment()
             try:
-                self.pagelink.put(new, comment=comment, minorEdit=False, watchArticle=self.options.watch, anon=self.options.anonymous)
+                self.pagelink.put(new, comment=comment, minorEdit=False, watchArticle=self.options.watch)#, anon=self.options.anonymous)
             except wikipedia.EditConflict:
                 self.handle_edit_conflict()
         else:
