@@ -160,6 +160,7 @@ msg = {
     'nl':(u'Erbij', u'Eraf', u'Anders'),
     'nn':(u'la til', u'fjerna', u'endra'),
     'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
+    'pt':(u'Adicionando', u'Removendo',u'Modificando'),
     }
 
 class Global(object):
