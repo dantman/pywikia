@@ -37,6 +37,8 @@ for f in pages:
         ll=pl.interwiki()
     except wikipedia.IsRedirectPage:
         continue
+    except wikipedia.LockedPage: # Can't do anythinh with a locked page
+        continue
     except wikipedia.NoPage:
 	print "ERROR: Yikes, does not exist"
         continue
