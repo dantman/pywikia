@@ -105,6 +105,7 @@ latin1old = ['et', 'ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy',
 # This is e.g. used by the login script.
 special = {
     'af': 'Spesiaal',
+    'als':'Special',
     'ar': 'Special',
     'bg': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D0%BD%D0%B8',
     'bs': 'Special',
