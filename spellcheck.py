@@ -22,7 +22,7 @@ For each unknown word, you get a couple of options:
     s: Replace the word, but do not add the replacement
     *: Edit the page using the gui
 
-When the bot is ended, it will save its hopefully extended word list;
+When the bot is ended, it will save the extensions to its word list;
 there is one word list for each language.
 
 The bot does not rely on Latin script, but does rely on Latin punctuation.
@@ -30,8 +30,10 @@ It is therefore expected to work on for example Russian and Korean, but not
 on for example Japanese.
 
 Command-line options:
--html	change HTML-entities like &uuml; into their respective letters. This
-        is done both before and after the normal check.
+-html	  change HTML-entities like &uuml; into their respective letters.
+          This is done both before and after the normal check.
+-rebuild  save the complete wordlist, not just the changes, removing the
+          old wordlist.
 """
 #
 # (C) Andre Engels, 2005
@@ -104,6 +106,7 @@ def askAlternative(word,context=None):
             correct = word
             if not answer in "iI":
                 knownwords[word] = word
+                newwords.append(word)
         elif answer in "rRsS":
             correct = wikipedia.input(u"What should I replace it by?")
             if answer in "rR":
@@ -112,10 +115,13 @@ def askAlternative(word,context=None):
                         knownwords[word] += [correct.replace(' ','_')]
                     except KeyError:
                         knownwords[word] = [correct.replace(' ','_')]
+                    newwords.append(word)
                 knownwords[correct] = correct
+                newwords.append(correct)
         elif answer in "cC" and word[0].isupper():
             correct = word
             knownwords[uncap(word)] = uncap(word)
+            newwords.append(uncap(word))
         elif answer=="*":
             correct = edit
         else:
@@ -286,15 +292,18 @@ class Word(object):
     def declare_alternative(self,alt):
         if not alt in knownwords[self.word]:
             knownwords[self.word].append(word)
+            newwords.append(self.word)
         return self.alternatives
 
 try:
     edit = SpecialTerm("edit")
     title = []
     knownwords = {}
+    newwords = []
     start = None
     newpages = False
     correct_html_codes = False
+    rebuild = False
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg)
         if arg:
@@ -304,6 +313,8 @@ try:
                 newpages = True
             if arg.startswith("-html"):
                 correct_html_codes = True
+            if arg.startswith("-rebuild"):
+                rebuild = True
             title.append(arg)
     mysite = wikipedia.getSite()
     wikipedia.setAction(wikipedia.translate(mysite,msg))
@@ -377,9 +388,13 @@ try:
 finally:
     wikipedia.stopme()
     filename = 'spelling/spelling-' + mysite.language() + '.txt'
-    f = codecs.open(makepath(filename), 'w', encoding = mysite.encoding())
-    list = knownwords.keys()
-    list.sort()
+    if rebuild:
+        list = knownwords.keys()
+        list.sort()
+        f = codecs.open(makepath(filename), 'w', encoding = mysite.encoding())
+    else:
+        list = newwords
+        f = codecs.open(makepath(filename), 'a', encoding = mysite.encoding())
     for word in list:
         if Word(word).isCorrect():
             f.write("1 %s\n"%word)
