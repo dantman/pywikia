@@ -52,6 +52,9 @@ class Error(Exception):
 class NoPage(Error):
     """Wikipedia page does not exist"""
 
+class IsRedirectPage(Error):
+    """Wikipedia page does not exist"""
+
 
 # Library functions
 def unescape(s):
@@ -168,7 +171,10 @@ def getPage(code, name):
         raise NoPage()
     if text[i1:i2] == 'Describe the new page here.\n': # old software
         raise NoPage()
-
+    Rredirect=re.compile(r'\#redirect +\[\[(.*?)\]\]',re.I)
+    m=Rredirect.match(text[i1:i2])
+    if m:
+        raise IsRedirectPage(m.group(1))
     assert edittime[code,name]!=0 or host[-4:]=='.com', "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
 
     x=text[i1:i2]

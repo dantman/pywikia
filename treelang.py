@@ -45,6 +45,17 @@ def treestep(arr,code,name):
         print "---> Does not actually exist"
         arr[code,name]=''
         return 0
+    except wikipedia.IsRedirectPage,arg:
+        arg=str(arg)
+        newname=arg[0].upper()+arg[1:]
+        newname=newname.strip()
+        newname=wikipedia.link2url(newname)
+        arr[code,name]=''
+        print "NOTE: %s:%s is a redirect to %s"%(code,name,arg)
+        if not (code,newname) in arr:
+            arr[code,newname]=None
+            return 1
+        return 0
     arr[code,name]=text
     for newcode,newname in wikipedia.getLanguageLinks(text).iteritems():
         # Recognize and standardize for Wikipedia
