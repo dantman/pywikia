@@ -26,9 +26,9 @@ To log out, throw away the XX-login.data file that is created.
 #
 __version__='$Id$'
 
-import re,sys
+import re, sys, getpass
 import httplib
-import wikipedia,config
+import wikipedia, config
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
@@ -40,7 +40,7 @@ for arg in sys.argv[1:]:
 print "Logging in to ",wikipedia.family.hostname(wikipedia.mylang)
 
 username=raw_input('username: ')
-password=raw_input('password: ')
+password=getpass.getpass('password: ')
 
 if wikipedia.mylang=='en' and config.family=='wikipedia':
     pl=wikipedia.PageLink('en','Wikipedia:Bots')
