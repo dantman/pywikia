@@ -122,7 +122,10 @@ class PageLink:
     def interwiki(self):
         result=[]
         for newcode,newname in getLanguageLinks(self.get(),incode=self.code()).iteritems():
-            result.append(self.__class__(newcode,linkname=newname,incode=self.code()))
+            try:
+                result.append(self.__class__(newcode,linkname=newname,incode=self.code()))
+            except UnicodeEncodeError:
+                print "ERROR> link from %s to %s:%s is invalid encoding?!"%(self,newcode,repr(newname))
         return result
 
     def __cmp__(self,other):

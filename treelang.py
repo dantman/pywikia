@@ -140,9 +140,9 @@ def treestep(arr,pl,abort_on_redirect=0):
         arr[pl]=1
         return 0
     except wikipedia.IsRedirectPage,arg:
-        if abort_on_redirect and code==mylang:
+        if abort_on_redirect and pl.code()==mylang:
             raise
-        newpl=wikipedia.PageLink(code,arg)
+        newpl=wikipedia.PageLink(pl.code(),arg)
         arr[pl]=''
         print "NOTE: %s is a redirect to %s"%(pl,newpl)
         if not newpl in arr:
