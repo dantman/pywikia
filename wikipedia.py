@@ -568,7 +568,7 @@ class PageLink(object):
         # results will have 3 groups: edit date/time, user name, and edit
         # summary.
         editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">(.*?)</a></span>.*?(?:<em>(.*?)</em>)?</li>')
-        edits = editR.findall(txt)
+        edits = editR.findall(self._versionhistory)
         return edits
         
     def contributingUsers(self):
