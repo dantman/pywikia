@@ -437,7 +437,7 @@ for wrd in (page_list):
                     choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
                                      "        m=more context,l=list,a=add new):")
                     if choice=='n':
-                        return
+                        return True
                     elif choice=='s':
                         choice=-1
                         break
@@ -448,8 +448,7 @@ for wrd in (page_list):
                         ns=raw_input('New alternative:')
                         alternatives.append(ns)
                     elif choice=='q':
-                        sys.exit(0)
-                        break
+                        return False
                     elif choice=='m':
                         context*=2
                     elif choice=='l':
@@ -501,6 +500,7 @@ for wrd in (page_list):
                 print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-30):m.end()+30])
             if not debug:
                 refpl.put(reftxt)
+        return True
 
     linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\]')
 
@@ -509,9 +509,13 @@ for wrd in (page_list):
         s=s.replace(')','\\)')
         return s
     
+    active=True
+
     for ref in getReferences(thispl):
         refpl=wikipedia.PageLink(wikipedia.mylang, ref)
-        treat(refpl, thispl)
+        if active:
+            if not treat(refpl, thispl):
+                active=False
     
     # clear alternatives before working on next disambiguation page
     alternatives = []
