@@ -444,8 +444,13 @@ class Subject:
                                     break
                                 elif answer[0] in '0123456789':
                                     answer = int(answer)
-                                    result[k] = v[answer-1]
-                                    break
+                                    try:
+                                        result[k] = v[answer-1]
+                                    except IndexError:
+                                        # user input is out of range
+                                        pass
+                                    else:
+                                        break
             # We don't need to continue with the rest if we're in autonomous
             # mode.
             if globalvar.autonomous:
