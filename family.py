@@ -21,20 +21,22 @@ class Family:
             'tn','to','tpi','tr','ts','tt','tum','tw','ug','uk','ur','uz','ve',
             'vi','vo','wa','wo','xh','yi','yo','za','zh','zu']
 
-        self.alphabetic = ['aa','af','ar','an','roa-rup','as','ast','ay','az','bg',
-                    'be','bn','bh','bi','bo','bs','br','ca','chr','ny','cho','co','cs',
-                    'cy','da','de','dv','als','et','el','en','es','eo','eu','ee',
-                    'fa','fo','fr','fy','ga','gv','gd','gl','got','gn','gu','ko',
-                    'ha','haw','hy','hi','hr','io','id','ia','xh','is','zu','it',
-                    'he','jv','kn','ka','csb','ks','kk','kw','km','ky','sw',
-                    'ku','lo','la','lv','lt','lb','ln','jbo','hu','mk','mg',
-                    'ml','mt','mi','mr','ms','minnan','mn','mus','my','nah','na',
-                    'nv','cr','nl','ne','ja','no','nb','nn','oc','om','ug','pi',
-                    'ps','nds','pl','pt','pa','ro','rm','qu','ru','se','sa',
-                    'st','sq','scn','si','simple','sd','sk','sl','sr','su','fi',
-                    'sv','tl','tg','ta','tt','te','th','tlh','tk','tw','vi',
-                    'tokipona','tpi','to','tn','tr','ur','uk','uz','vo','wa',
-                    'yi','yo','za','zh','zh-cn','zh-tw']
+        self.alphabetic = [
+            'aa','ab','af','am','ang','ar','an','roa-rup','as','ast','av','ay',
+            'az','bg','ba','be','bn','bh','bi','bo','bs','br','ca','cv','ch','chr',
+            'ny','sn','cho','co','cs','cy','da','de','dv','dz','et','el','als','en',
+            'es','eo','eu','ee','fa','fo','fj','fr','fy','ga','gv','gd','gl',
+            'got','gn','gu','ko','ht','ha','haw','hy','hi','hr','io','ik','id',
+            'ia','ie','iu','xh','zu','is','it','he','jv','kl','kn','ka','kk',
+            'csb','ks','kw','km','ky','rn','sw','ku','lo','la','lv','lt','lb','li',
+            'ln','jbo','hu','mk','mg','ml','mt','mi','mr','ms','minnan','zh-min-nan',
+            'mn','mo','mus','my','nah','na','nv','cr','ng','nl','ne','nds','ja',
+            'no','nb','nn','oc','or','om','ug','pi','ps','nds','pl','pt','pa',
+            'ro','rm','qu','ru','se','sm','sa','sg','sc','st','tn','sq','scn',
+            'si','simple','sd','ss','sk','sl','sr','su','fi','sv','tl','tg','ta',
+            'tt','te','th','ti','tlh','vi','tokipona','tpi','to','tk','tum','tr',
+            'tw','uk','ur','ug','uz','ve','vo','wa','wo','ts','yi','yo','za','zh',
+            'zh-cn','zh-tw']
 
 
         # Note that if mylang is 'commons', it is automatically added.
