@@ -23,12 +23,13 @@
 #
 
 __version__ = "$Id$"
-sig = u" (edited with editarticle.py 0.2)"
+sig = u" (edited with editarticle.py 0.3)"
 
 import sys
 import os
 import httplib
 import urllib
+import string
 import getpass
 import difflib
 import optparse
@@ -37,6 +38,8 @@ import tempfile
 import wikipedia
 import login
 import config
+
+joinchars = string.letters + '[]' # join lines if line starts with this ones
 
 def options(args):
     parser = optparse.OptionParser()
@@ -59,7 +62,7 @@ def repair(content):
         except IndexError:
             nextline = "last"
         result.append(line)
-        if nextline.strip() == "" or line.strip() == "":
+        if line == "" or line[0] not in joinchars:
             result.append('\n')
         else:
             result.append(" ")
