@@ -15,6 +15,10 @@ The library itself
 LICENSE                : a reference to the Python Software Foundation license
 wikipedia.py           : The wikipedia library
 config.py              : Configuration module containing all defaults
+logger.py              : A support library logging screen output to a file
+unequal.py             : A few routines coordinating exceptions to the 
+                         rule that interwiki-linked pages are equal
+titletranslate.py      : rules and tricks to auto-translate wikipage titles
 
 Utilities
 ---------
@@ -32,15 +36,21 @@ autoredir.py           : Make redirect pages for capitalized months like
 backref.py             : List all pages for which nl:->xx: does not correspond 
                          to xx:->nl:. This is obsolescent now that treelang has
                          a "-backref" command line parameter.
-getlang.py             : Get interwiki links for years AD
+brackethttp.py         : a bot replacing a ()-bracketed http: link by an
+                         explicit [ ] link to avoid a parser problem.
 disamb_all.py          : Run the robot solve_disambiguation.py (see below) over
                          articles listed in a file passed as argument.
+getlang.py             : Get interwiki links for years AD
+interwiki.py           : New robot, currently in testing phase only, that will
+                         replace treelang.py and treelang_all.py in due time.
+                         This uses a non-linear approach to be less demanding
+                         on the wikipedia servers.
 test.py                : Misc testing, now configured to test whether you are 
                          logged in.
 treelang_all.py        : A script that runs treelang.py for each of the
                          pages in your home wikipedia. 
 treelang.py            : Recursive search for interwiki links that are 
-                         appropriate to a page.
+                         appropriate to a page. Obsolescent.
 yearlayout.py          : An old robot used to change the layout of all nl: year 
                          pages.
 solve_disambiguation.py: Disambiguate pages from the command line. 
