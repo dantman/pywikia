@@ -137,6 +137,20 @@ if getalternatives:
     for a in Rlink.findall(thistxt):
         alternatives.append(a[0])
 
+    # remove duplicates entries
+    ialternatives=[]
+    for i in alternatives:
+        if i not in ialternatives:
+            ialternatives.append(i)
+    
+    alternatives = ialternatives
+    #ialternatives variable should be destroyed there
+    
+    # sort possible choices
+    alternatives.sort()
+    
+
+# print choices on screen
 for i in range(len(alternatives)):
     print "%3d"%i,alternatives[i]
 
