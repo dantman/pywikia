@@ -18,7 +18,7 @@ file=[]
 hints={}
 
 debug = 0
-forreal = 0
+forreal = 1
 
 for arg in sys.argv[1:]:
     start.append(arg)
@@ -43,16 +43,17 @@ for pl in wikipedia.allpages(start = start):
     for pl2 in old:
         new[pl2.code()] = pl2
     newtext = wikipedia.replaceLanguageLinks(oldtext, new)
-    if newtext != oldtext:
-        # Display the difference
-        import difflib
-        for line in difflib.ndiff(oldtext.split('\r\n'),newtext.split('\r\n')):
-            if line[0] in ['+','-']:
-                print repr(line)[2:-1]
-        # Submit changes
-        if forreal:
-            status, reason, data = pl.put(newtext,
+    if new:
+        if newtext != oldtext:
+            # Display the difference
+            import difflib
+            for line in difflib.ndiff(oldtext.split('\r\n'),newtext.split('\r\n')):
+                if line[0] in ['+','-']:
+                    print repr(line)[2:-1]
+            # Submit changes
+            if forreal:
+                status, reason, data = pl.put(newtext,
                                           comment='robot interwiki standardization')
-            if str(status) != '302':
-                print status, reason
+                if str(status) != '302':
+                    print status, reason
         
