@@ -124,6 +124,7 @@ def get_image(fn, target, description, debug=False):
                               uploadaddr,
                               (('wpUploadDescription', description),
                                ('wpUploadAffirm', '1'),
+                               ('wpIgnoreWarning', '1'),
                                ('wpUpload','upload bestand')),
                               (('wpUploadFile',fn,contents),)
                               )
