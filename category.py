@@ -39,6 +39,7 @@ msg_add={
     'en':u'Robot: Adding [[Category:%s]]',
     'es':u'Bot: Añadida [[Categoría:%s]]',
     'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
+    'pt':u'Bot: Adicionando [[Categoria:%s]]',
     }
 
 msg_change={
@@ -48,6 +49,7 @@ msg_change={
     'es':u'Bot: Cambiada categoría %s',
     'is':u'Vélmenni: Breyti flokknum %s',
     'nl':u'Bot: Wijziging Categorie %s',
+    'pt':u'Bot: Modificando [[Categoria:%s]]',
     }
 
 msg_remove={
@@ -57,6 +59,7 @@ msg_remove={
     'es':u'Bot: Eliminada de la categoría %s',
     'is':u'Vélmenni: Breyti flokknum %s',
     'nl':u'Bot: Verwijderd uit Categorie %s',
+    'pt':u'Bot: Removendo [[Categoria:%s]]',
     }
 
 
