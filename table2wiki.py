@@ -64,7 +64,7 @@ for arg in sys.argv[1:]:
         # every open-tag gets a new line.
         newText = re.sub("(\<[tT]{1}[dDhH]{1}([^>]*?)\>[^<]*?)"
                          + "(\<\/[Tt]{1}[dDhH]{1}[^>]*?\>)",
-                         "\n\\1\\2", newText, 0)
+                         "\n\\1\\3", newText, 0)
         newText = re.sub("(\<[tT]{1}[rR]{1}[^>]*?\>)",
                          "\n\\1", newText, 0)
         # bring every tag into one single line.
