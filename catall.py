@@ -24,7 +24,8 @@ wikipedia.put_throttle.setDelay(10)
 
 msg={
     'en': 'Changing categories',
-    'nl': 'Verandering van categorieen'
+    'nl': 'Verandering van categorieen',
+    'pt': 'Alterando categoria'
     }
 
 def choosecats(pagetext):
