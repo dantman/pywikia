@@ -1034,6 +1034,31 @@ def languages(first = []):
             result.append(key)
     return result
 
+_cache_version = {}
+def version(lang=None, cached=True):
+    """Return version information as a string. If 'lang' argument
+       is not provided, version information is given for the home language.
+
+       Results are taken from cache if possible, unless cached=False.
+    """
+
+    if lang is None:
+        lang = mylang
+
+    if cached and lang in _cache_version:
+        return _cache_version[lang]
+
+    html = getPage(lang, "Special:Version", get_edit_page=False, do_quote=False)
+    start_s = "(<i>http://wikipedia.sf.net/</i>)</span>: "
+    end_s = "</dd>"
+    begin = html.index(start_s) + len(start_s)
+    end = html.index(end_s, begin)
+    content = html[begin:end]
+    
+    _cache_version[lang] = content
+
+    return content
+
 def allpages(start = '!'):
     """Generator which yields all articles in the home language in
        alphanumerical order, starting at a given page. By default,
