@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 """
 Script to replace bad Windows-1252 (cp1252) characters with 
 HTML entities on ISO 8859-1 wikis.
@@ -26,7 +26,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.4 2004/06/13 00:37:45 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.5 2004/07/01 13:38:03 wikipedian Exp $'
 #
 import wikipedia, config
 import re,sys
@@ -34,7 +34,7 @@ import re,sys
 # Summary message
 msg={
     'en':'robot: changing Windows-1252 characters to HTML entities',
-    'de':'Bot: Wandle Windows-1252-Zeichen in HTML-Entit�ten um',
+    'de':'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
     }
 
 def getReferences(pl):
@@ -55,7 +55,7 @@ for arg in sys.argv[1:]:
         if len(arg) == 5:
             # todo: check for console encoding to allow special characters
             # in filenames, as done below with pagename
-            file = raw_input('Please enter the list\'s filename: ')
+            file = wikipedia.input('Please enter the list\'s filename: ')
         else:
             file = arg[6:]
         # open file and read page titles out of it
@@ -76,9 +76,7 @@ if page_title != []:
 # if no page was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
-    pagename = raw_input('Which page to check: ')
-    pagename = unicode(pagename, config.console_encoding)
-    pagename = pagename.encode(wikipedia.code2encoding(wikipedia.mylang))
+    pagename = wikipedia.input('Which page to check: ', wikipedia.code2encoding(wikipedia.mylang))
     page_list.append(pagename)
 
 # get edit summary message
