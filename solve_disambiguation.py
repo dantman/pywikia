@@ -190,13 +190,13 @@ ignore_title = {
           u'Benutzer:Tsor/Begriffsklärungen',
           u'Benutzer:SirJective/Klammerzusatz',
           u'Benutzer Diskussion:.+',
-          u'Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
           u'GISLexikon \([A-Z]\)',
           u'Lehnwort',
           u'Liste aller 2-Buchstaben-Kombinationen',
           u'Wikipedia:Archiv:.+',
           u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
           u'Wikipedia:Begriffsklärung.*',
+          u'Wikipedia:Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
           u'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
           u'Wikipedia:Kurze Artikel',
           u'Wikipedia:Liste mathematischer Themen/BKS',
@@ -219,7 +219,7 @@ class ReferringPageGenerator:
         
     def getReferences(self):
         refs = wikipedia.getReferences(self.disambPl, follow_redirects = False)
-        print "Found %d references" % len(refs)
+        wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
         if ignore_title.has_key(self.disambPl.site().lang):
             ignore_title_regexes = []
@@ -237,6 +237,8 @@ class ReferringPageGenerator:
             refpl = wikipedia.PageLink(self.disambPl.site(), ref)
             if not self.primaryIgnoreManager.isIgnored(refpl):
                 refpls.append(refpl)
+
+        wikipedia.output(u"Will work on %d pages." % len(refpls))
         return refpls
     
     def generate(self):
