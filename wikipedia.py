@@ -508,6 +508,8 @@ def interwikiFormat(links):
     return ' '.join(s)+'\r\n'
             
 def code2encoding(code):
+    if code == 'ascii':
+        return code # Special case where we do not want special characters.
     if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl','ro','hr','tr','ar']:
         return 'utf-8'
     return 'iso-8859-1'
@@ -524,7 +526,7 @@ def code2encodings(code):
     
 def url2link(percentname,incode,code):
     """Convert a url-name of a page into a proper name for an interwiki link
-       the optional argument 'into' specifies the encoding of the target wikipedia
+       the argument 'incode' specifies the encoding of the target wikipedia
        """
     result=underline2space(percentname)
     x=url2unicode(result,language=code)
