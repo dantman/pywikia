@@ -332,8 +332,9 @@ class PageLink:
         if not hasattr(self, '_contents'):
             try:
                 self._contents = getPage(self.code(), self.urlname())
-                hn = underline2space(self.hashname())
+                hn = self.hashname()
                 if hn:
+                    hn = underline2space(hn)
                     m = re.search("== *%s *==" % hn, self._contents)
                     if not m:
                         raise SubpageError("Hashname does not exist: %s" % self)
