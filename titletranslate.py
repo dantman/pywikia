@@ -120,6 +120,9 @@ def translate(pl, arr, same = False, hints = None, auto = True):
             elif newcode=='no' and i>2010:
                 # no: redirects far future years to the century
                 pass
+            elif newcode=='ja' and i>2015:
+                # ja: redirects far future years to decades
+                pass
             elif newcode=='pl' and i>2019:
                 # pl: redirects far future years to decades
                 pass

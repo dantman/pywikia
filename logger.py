@@ -14,8 +14,8 @@ class Logger(object):
         self.f = open(filename, 'a')
 
     def write(self, s):
-        self.f.write(s)
         self.original.write(s)
+        self.f.write(s)
         self.flush()
         
     def flush(self):

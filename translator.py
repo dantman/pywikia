@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 '''
 This module translates a string from one language to another, using
@@ -30,12 +30,12 @@ types = {
     # translations for images (inside other tables)
     "images": {
          "translations": [
-             { "en":"[[image:",     "de":"[[bild:",          "nl":"[[afbeelding:",    "fr":"[[image:",      },
-             { "en":"[[Image:",     "de":"[[Bild:",          "nl":"[[Afbeelding:",    "fr":"[[Image:",      },
-             { "en":"larger image", "de":u"Bild vergrößern", "nl":"grotere versie",   "fr":u"En détail"  },
-             { "en":"larger image", "de":u"Bild vergrößern", "nl":"groter",           "fr":u"En détail"  },
+             { "en":"[[image:",     "de":"[[bild:",          "nl":"[[afbeelding:",    "fr":"[[image:",  "af":"[[beeld:"    },
+             { "en":"[[Image:",     "de":"[[Bild:",          "nl":"[[Afbeelding:",    "fr":"[[Image:",  "af":"[[Beeld:"    },
+             { "en":"larger image", "de":u"Bild vergrößern", "nl":"grotere versie",   "fr":u"En détail", "af":"In detail"  },
+             { "en":"larger image", "de":u"Bild vergrößern", "nl":"groter",           "fr":u"En détail", "af":"In detail"  },
              # usually used as link description for articles about flags, coats of arms etc.
-             { "en":"Details",      "de":u"Details",         "nl":"details",          "fr":u"Détails"    },
+             { "en":"Details",      "de":u"Details",         "nl":"details",          "fr":u"Détails", "af":"Details"    },
          ],
     },
     
@@ -189,18 +189,18 @@ types = {
     
     "months": {
         "translations": [
-            { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",    "nl":"januari", },
-            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":u"février",   "nl":"februari", },
-            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":u"März",     "fr":"mars",       "nl":"maart", },
-            { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",      "nl":"april", },
-            { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",        "nl":"mei", },
-            { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",       "nl":"juni", },
-            { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",    "nl":"juli", },
-            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":u"août",      "nl":"augustus", },
-            { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre",  "nl":"september", },
-            { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",    "nl":"oktober", },
-            { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",   "nl":"november", },
-            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":u"décembre",  "nl":"december", },
+            { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",    "nl":"januari",   "af":"Januarie"},
+            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":u"février",   "nl":"februari",  "af":"Februarie"},
+            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":u"März",     "fr":"mars",       "nl":"maart",     "af":"Maart"},
+            { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",      "nl":"april",     "af":"April"},
+            { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",        "nl":"mei",       "af":"Mei"},
+            { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",       "nl":"juni",      "af":"Junie"},
+            { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",    "nl":"juli",      "af":"Julie"},
+            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":u"août",      "nl":"augustus",  "af":"Augustus"},
+            { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre",  "nl":"september", "af":"September"},
+            { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",    "nl":"oktober",   "af":"Oktober"},
+            { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",   "nl":"november",  "af":"November"},
+            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":u"décembre",  "nl":"december",  "af":"Desember"},
         ]
     },
     

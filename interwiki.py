@@ -168,6 +168,7 @@ import wikipedia, config, unequal, date
 import titletranslate
 
 msg = {
+    'af':(u'Bygevoeg', u'Verwyder', u'Verander'),
     'cs':(u'Přidal', u'Odebral', u'Změnil'),
     'da':(u'Tilføjer', u'Fjerner', u'Ændrer'),
     'de':(u'Ergänze', u'Entferne', u'Ändere'),
