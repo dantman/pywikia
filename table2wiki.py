@@ -13,6 +13,9 @@ KNOW BUGS
 Broken HTML-tables will most likely result in broken wiki-tables!
 Please check every article you change.
 
+Indented HTML-tables will result in ugly wiki-tables.
+You can kill indentions but it's switched off by default.
+
 """
 
 # (C) 2003 Thomas R. Koll, <tomk32@tomk32.de>
@@ -26,6 +29,8 @@ mylang = 'de'
 myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
+
+deIndentTables = 0
 
 DEBUG=0
 
@@ -42,9 +47,9 @@ for arg in sys.argv[1:]:
             continue
         
         newText = text
-        newText = re.sub("([\S]+)(\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
-                         "\\1\n\\2", newText, 0)
-        newText = re.sub("\n[ ]*\<", "\n<", newText, 0)
+        newText = re.sub("(\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
+                         "\n\\1", newText, 0)
+        newText = re.sub("\n[\t ]*\<", "\n<", newText, 0)
 
         #the <table> tag
         newText = re.sub("<(TABLE|table) (.*?)>([\w\W]*?)<(tr|TR)>",
@@ -71,12 +76,20 @@ for arg in sys.argv[1:]:
         newText = re.sub("[\r\n]*<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
                          "\n!\\2 | \\3\r\n", newText, 0)
 
-        # sorry for the mess, but there are too many variants
-        newText = re.sub("[\r\n]*\<(td|TD)([^>]*)\>([\w\W]*?)\<\/(TD|td)\>",
+        # normal <td>
+        newText = re.sub("[\r\n]*\<(td|TD)\>([\w\W]*?)\<\/(TD|td)\>",
+                         "\n| \\2\n", newText, 0)         
+        newText = re.sub("[\r\n]*\<(td|TD)([^>]*?)\>([\w\W]*?)\<\/(TD|td)\>",
                          "\n|\\2 | \\3\n", newText, 0)
+        newText = re.sub("[\r\n]*<(td|TD)\>([\w\W]*?)\n",
+                         "\n| \\2\n", newText, 0)
+        newText = re.sub("[\r\n]*<(td|TD)([^>]*?)\>([\w\W]*?)\n",
+                         "\n|\\2 | \\3\n", newText, 0)
+
+
         # fail save. sometimes people forget </td>
-        newText = re.sub("[\r\n]*<(td|TD)([^<]*)\>([\w\W]*?)\n",
-                         "\n|\\2 | \\3\n", newText, 0)
+        newText = re.sub("[\r\n]*<(td|TD)([^<]*)\>([\t ]*)([\w\W]*?)\n",
+                         "\n|\\2 | \\4\n", newText, 0)
 
         # Garbage collecting ;-)
         newText = re.sub("[\r\n]*\<\/[Tt][rRdDhH]\>", "", newText, 0)
@@ -88,17 +101,23 @@ for arg in sys.argv[1:]:
 
         # most <th> come with '''title'''. Senseless in my eyes cuz
         # <th> should be bold anyways.
-        newText = re.sub("[\r\n]+\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
+        newText = re.sub("[\r\n]*\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
                          "\r\n!\\1\\3", newText, 0)
+
+        # kills indention within tables. Be warned, it might bring
+        # bad results.
+        if deIndentTables:
+            newText = re.sub("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
+                             "\\1\n\\2", newText, 0)
 
         # kills spaces after | or ! or {|
         newText = re.sub("[\r\n]+\|[\s]*\n", "\r\n| ", newText, 0)
         # kills trailing spaces and tabs
-        newText = re.sub("[\t\ ][\t\ ]+([\r\n]){1}", "\\1", newText, 0)
+        newText = re.sub("[\t\ ]+([\r\n]){1}", "\\1", newText, 0)
 
         
         # kill extra new-lines
-        newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
+        newText = re.sub(r"[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
         # shortening if <table> had no arguments/parameters
         newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\[| ", newText, 0)
         # shortening if <td> had no args
@@ -115,9 +134,14 @@ for arg in sys.argv[1:]:
                 
         if newText!=text:
             import difflib
-            for line in difflib.ndiff(text.split('\n'),newText.split('\n')):
-                if line[0] in ['+','-']:
-                    print unicode(repr(line)[2:-1])
+            if DEBUG:
+                print text
+                print newText
+            else:
+                for line in difflib.ndiff(text.split('\n'),
+                                          newText.split('\n')):
+                    if line[0] in ['+','-']:
+                        print unicode(repr(line)[2:-1])
                     
             #print "\nOriginal text\n" + text
             #print "\nModified text\n" + newText
@@ -125,7 +149,7 @@ for arg in sys.argv[1:]:
             doUpload=raw_input('Is it correct? [y|N]')
 
 
-            if doUpload == 'y' and not DEBUG:
+            if doUpload == 'y':
                 status, reason, data = pl.put(newText, myComment)
                 print status,reason
                 fixedSites = fixedSites + " " + arg
