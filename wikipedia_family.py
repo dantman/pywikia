@@ -215,9 +215,12 @@ image = {
 # Category namespace. 'Category' works on all languages?!?!?....
 
 category = {
+    'da': 'Kategori',
     'en': 'Category',
     'nl': 'Categorie',
-    'fr': 'Cat\xe9gorie'
+    'no': 'Kategori',
+    'fr': 'Cat\xe9gorie',
+    'sv': 'Kategori'
 }
 
 def category_namespaces(code):
