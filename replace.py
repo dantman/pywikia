@@ -147,18 +147,17 @@ fixes = {
     
 }
 
-class ReplaceRobot:
-    def __init__(self, source, replacements, exceptions, regex, namespace = -1, acceptall = False, textfilename = None, sqlfilename = None, pagenames = None):
+class ReplacePageGenerator:
+    def __init__(self, source, replacements, exceptions, regex, namespace = -1, textfilename = None, sqlfilename = None, pagenames = None):
         self.source = source
         self.replacements = replacements
         self.exceptions = exceptions
         self.regex = regex
         self.namespace = namespace
-        self.acceptall = acceptall
         self.textfilename = textfilename
         self.sqlfilename = sqlfilename
         self.pagenames = pagenames
-        
+    
     def read_pages_from_sql_dump(self):
         """
         Generator which will yield PageLinks to pages that might contain text to
@@ -239,7 +238,7 @@ class ReplaceRobot:
         # TODO - UNFINISHED
     
     # TODO: Make MediaWiki's search feature available.
-    def generator(self):
+    def generate(self):
         """
         Generator which will yield PageLinks for pages that might contain text to
         replace. These pages might be retrieved from a local SQL dump file or a
@@ -269,9 +268,17 @@ class ReplaceRobot:
             for pl in self.read_pages_from_text_file():
                 yield pl
         elif self.source == 'userinput':
-            for pagename in pagenames:
+            for pagename in self.pagenames:
                 yield wikipedia.PageLink(wikipedia.getSite(), pagename)
-                
+
+class ReplaceRobot:
+    def __init__(self, generator, replacements, exceptions, regex, acceptall = False):
+        self.generator = generator
+        self.replacements = replacements
+        self.exceptions = exceptions
+        self.regex = regex
+        self.acceptall = acceptall
+        
     def exceptionApplies(self, original_text):
         """
         Returns True iff one of the exceptions apply for the given text.
@@ -311,7 +318,7 @@ class ReplaceRobot:
         """
         # Run the generator which will yield PageLinks to pages which might need to be
         # changed.
-        for pl in self.generator():
+        for pl in self.generator.generate():
             print ''
             try:
                 # Load the page's text from the wiki
@@ -449,7 +456,9 @@ def main():
         if fix.has_key('exceptions'):
             exceptions = fix['exceptions']
         replacements = fix['replacements']
-    bot = ReplaceRobot(source, replacements, exceptions, regex, namespace, acceptall, textfilename, sqlfilename, pagenames)
+    
+    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace, textfilename, sqlfilename, pagenames)
+    bot = ReplaceRobot(gen, replacements, exceptions, regex, acceptall)
     bot.run()
 
 

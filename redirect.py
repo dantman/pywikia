@@ -52,10 +52,8 @@ reason_broken={
     'pt':u'Bot: Redirecionamento não existe',
     }
 
-class RedirectRobot:
-    
-    def __init__(self, action, source = None, namespace = -1, restart = -1):
-        self.action = action
+class RedirectGenerator:
+    def __init__(self, source = None, namespace = -1, restart = -1):
         self.source = source
         self.namespace = namespace
         self.restart = restart
@@ -113,8 +111,8 @@ class RedirectRobot:
         
     def retrieve_broken_redirects(self):
         if self.source == None:
-            mysite = wikipedia.getSite()
             # retrieve information from the live wiki's maintenance page
+            mysite = wikipedia.getSite()
             host = mysite.hostname()
             # broken redirect maintenance page's URL
             url = mysite.maintenance_address('brokenredirects', default_limit = False)
@@ -130,7 +128,7 @@ class RedirectRobot:
                 yield redir_name
         else:
             print 'Step 1: Getting a list of all redirects'
-            redirs = get_redirects_from_dump(self.source)
+            redirs = self.get_redirects_from_dump()
             print 'Step 2: Getting a list of all page titles'
             dump = sqldump.SQLdump(self.source, wikipedia.myencoding())
             # We save page titles in a dictionary where all values are None, so we
@@ -145,35 +143,7 @@ class RedirectRobot:
             for (key, value) in redirs.iteritems():
                 if not pagetitles.has_key(value):
                     yield key
-    
-    def delete_broken_redirects(self):
-        # get reason for deletion text
-        reason = wikipedia.translate(wikipedia.getSite(), reason_broken)
-    
-        for redir_name in self.retrieve_broken_redirects():
-            redir_page = wikipedia.PageLink(wikipedia.getSite(), redir_name)
-            try:
-                target_name = redir_page.getRedirectTo(read_only = True)
-            except wikipedia.IsNotRedirectPage:
-                wikipedia.output(u'%s is not a redirect.' % redir_page.linkname())
-            except wikipedia.NoPage:
-                wikipedia.output(u'%s doesn\'t exist.' % redir_page.linkname())
-            except wikipedia.LockedPage:
-                wikipedia.output(u'%s is locked.' % redir_page.linkname())
-            else:
-                try:
-                    target_page = wikipedia.PageLink(wikipedia.getSite(), target_name)
-                    target_page.get(read_only = True)
-                except wikipedia.NoPage:
-                    redir_page.delete(reason, prompt = False)
-                except wikipedia.IsRedirectPage:
-                    wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
-                else:
-                    wikipedia.output(u'Redirect target does exist! Won\'t delete anything.')
-                # idle for 1 minute
-            print ''
-            wikipedia.put_throttle()
-            
+
     def retrieve_double_redirects(self):
         if self.source == None:
             mysite = wikipedia.getSite()
@@ -201,10 +171,43 @@ class RedirectRobot:
                 if num>self.restart and dict.has_key(value):
                     print 'Checking redirect %s/%s' % (num, len(dict))
                     yield key
-                    
+    
+class RedirectRobot:    
+    def __init__(self, action, generator):
+        self.action = action
+        self.generator = generator
+    
+    def delete_broken_redirects(self):
+        # get reason for deletion text
+        reason = wikipedia.translate(wikipedia.getSite(), reason_broken)
+    
+        for redir_name in self.generator.retrieve_broken_redirects():
+            redir_page = wikipedia.PageLink(wikipedia.getSite(), redir_name)
+            try:
+                target_name = redir_page.getRedirectTo(read_only = True)
+            except wikipedia.IsNotRedirectPage:
+                wikipedia.output(u'%s is not a redirect.' % redir_page.linkname())
+            except wikipedia.NoPage:
+                wikipedia.output(u'%s doesn\'t exist.' % redir_page.linkname())
+            except wikipedia.LockedPage:
+                wikipedia.output(u'%s is locked.' % redir_page.linkname())
+            else:
+                try:
+                    target_page = wikipedia.PageLink(wikipedia.getSite(), target_name)
+                    target_page.get(read_only = True)
+                except wikipedia.NoPage:
+                    redir_page.delete(reason, prompt = False)
+                except wikipedia.IsRedirectPage:
+                    wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
+                else:
+                    wikipedia.output(u'Redirect target does exist! Won\'t delete anything.')
+                # idle for 1 minute
+            print ''
+            wikipedia.put_throttle()
+            
     def fix_double_redirects(self):
         mysite = wikipedia.getSite()
-        for redir_name in self.retrieve_double_redirects():
+        for redir_name in self.generator.retrieve_double_redirects():
             print ''
             redir = wikipedia.PageLink(mysite, redir_name)
             try:
@@ -272,7 +275,8 @@ def main():
     if not action:
         wikipedia.output(__doc__, 'utf-8')
     else:
-        bot = RedirectRobot(action, source, namespace, restart)
+        gen = RedirectGenerator(source, namespace, restart)
+        bot = RedirectRobot(action, gen)
         bot.run()
             
 try:
