@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -128,7 +128,7 @@ link_trail={
 # Special chars should be encoded with unicode (\x##) and space used
 # instead of _
 
-ignore={
+ignore_title = {
     'nl':('Wikipedia:Onderhoudspagina',
           'Wikipedia:Doorverwijspagina',
           'Wikipedia:Lijst van alle tweeletter-combinaties',
@@ -144,7 +144,8 @@ ignore={
           'Wikipedia:Ongelijke redirects',
           'Gebruiker:Cars en travel',
           'Wikipedia:Archief*',
-          'Overleg Wikipedia:Logboek*'),
+          'Overleg Wikipedia:Logboek*'
+          ),
      'en':('Wikipedia:Links to disambiguating pages',
           'Wikipedia:Disambiguation pages with links',
           'Wikipedia:Multiple-place names \([A-Z]\)',
@@ -171,7 +172,7 @@ ignore={
           'User:Egil/Sandbox',
           'Wikipedia talk:Make only links relevant to the context',
           'Wikipedia:Common words, searching for which is not possible'
-      ),
+          ),
     'da':('Wikipedia:Links til sider med flertydige titler'),
     'fr':(u'Wikipédia:Liens aux pages d\'homonymie',
           u'Wikipédia:Homonymie',
@@ -207,7 +208,7 @@ ignore={
           u'Categoria:Desambiguação',
           u'Wikipedia:Links para desambiguar páginas',
           u'Wikipedia:Desambiguação',
-      )
+          )
     }
 
 class ReferringPageGenerator:
@@ -218,12 +219,12 @@ class ReferringPageGenerator:
         refs = wikipedia.getReferences(self.disambPl, follow_redirects = False)
         print "Found %d references" % len(refs)
         # Remove ignorables
-        if ignore.has_key(self.disambPl.site().lang):
-            ignore_regexes = []
-            for ig in ignore[self.disambPl.site().lang]:
+        if ignore_title.has_key(self.disambPl.site().lang):
+            ignore_title_regexes = []
+            for ig in ignore_title[self.disambPl.site().lang]:
                 ig = ig.encode(wikipedia.myencoding())
-                ignore_regexes.append(re.compile(ig))
-            for Rignore in ignore_regexes:
+                ignore_title_regexes.append(re.compile(ig))
+            for Rignore in ignore_title_regexes:
                 # run backwards because we might remove list items
                 for i in range(len(refs)-1, -1, -1):
                     if Rignore.match(refs[i]):
@@ -318,6 +319,12 @@ class PrimaryIgnoreManager:
     
 
 class DisambiguationRobot:
+    ignore_contents = {
+        'de':(u'{{[Ii]nuse}}',
+              u'{{[Ll]öschen}}',
+            )
+    }
+    
     def __init__(self, always, alternatives, getAlternatives, solve_redirect, page_list, primary, main_only):
         self.always = always
         self.alternatives = alternatives
@@ -329,7 +336,19 @@ class DisambiguationRobot:
 
         self.mysite = wikipedia.getSite()
         self.mylang = self.mysite.language()
-
+        
+        self.ignore_contents_regexes = []
+        if self.ignore_contents.has_key(self.mylang):
+            for ig in self.ignore_contents[self.mylang]:
+                self.ignore_contents_regexes.append(re.compile(ig))
+        
+    def ignoredBecauseOfContents(self, text):
+        for ig in self.ignore_contents_regexes:
+            match = ig.search(text)
+            if match:
+                return match.group()
+        return False
+    
     def makeAlternativesUnique(self):
         # remove duplicate entries
         result={}
@@ -373,11 +392,15 @@ class DisambiguationRobot:
         # group(3) is the link trail, that's letters after ]] which are part of the word.
         # note that the definition of 'letter' varies from language to language.
         linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + linktrail + ')')
-        
+
+        include = False
         try:
-            include = False
             text=refpl.get(throttle=False)
-            include = True
+            ignoreReason = self.ignoredBecauseOfContents(text)
+            if ignoreReason:
+                wikipedia.output('\n\nSkipping %s because it contains %s.\n\n' % (refpl.linkname(), ignoreReason))
+            else:
+                include = True
         except wikipedia.IsRedirectPage:
             wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), disambPl.linkname()))
             if self.solve_redirect:
