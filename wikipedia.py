@@ -557,6 +557,8 @@ class PageLink(object):
         answer = 'y'
         if prompt:
             answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
+        print pl.site().hostname()
+        print pl.site().delete_address(pl.urlname())
         if answer in ['y', 'Y']:
             output(u'Deleting page %s...' % pl.linkname())
             returned_html = post_multipart(pl.site().hostname(),
@@ -1976,6 +1978,26 @@ def showDiff(oldtext, newtext):
     for line in difflib.ndiff(ol,nl):
         if line[0] in ['+','-']:
             output(line)
+
+
+def showColorDiff(oldtext, newtext, replacements):
+    import difflib
+    sep = '\r\n'
+    ol = oldtext.split(sep)
+    if len(ol) == 1:
+        sep = '\n'
+        ol = oldtext.split(sep)
+    nl = newtext.split(sep)
+    for line in difflib.ndiff(ol,nl):
+        if line[0] in ['-']:
+            old = line
+            for a, b in replacements.items():
+                old = old.replace(a, '\x1b[91;1m' + a + '\x1b[0m')
+            output(old)
+            new = line
+            for a, b in replacements.items():
+                new = new.replace(a, '\x1b[92;1m' + b + '\x1b[0m')
+            output('+' + new[1:])
 
     
 def output(text, decoder = None, newline = True):

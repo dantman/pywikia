@@ -421,7 +421,8 @@ for pl in generator(source, replacements, exceptions, regex, namespace, textfile
                 print 'Error decoding pl.linkname()'
                 continue
         else:
-            wikipedia.showDiff(original_text, new_text)
+            #wikipedia.showDiff(original_text, new_text)
+            wikipedia.showColorDiff(original_text, new_text, replacements)
             if not acceptall:
                 choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
                 if choice in ['a', 'A']:
