@@ -1017,7 +1017,6 @@ class GetAll(object):
         data = response.read()
         conn.close()
         get_throttle.setDelay(time.time() - now)
-        print data
         return data
     
 def getall(site, pages, throttle = True):
