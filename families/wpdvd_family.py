@@ -303,7 +303,7 @@ class Family(family.Family):
     # Methods
     
     def hostname(self, code):
-        return self.langs[code]
+        return 'dvd.wikidev.net'
     
     def path(self, code):
         return '/'
