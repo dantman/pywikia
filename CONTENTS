@@ -69,6 +69,9 @@ standardize_interwiki.py:A robot that downloads a page, and reformats the
                          interwiki links in a standard way (i.e. move all
                          of them to the bottom or the top, with the same
                          separator, in the right order).
+pagelist.py            : Starting with one or more pages, spiders the wiki forward
+                         as well as backward, and thus can be used to get a list
+                         of Wikipedia pages connected to a certain subject.
 
 More precise information, and a list of the options that are available for
 the various programs, are given inside the programs' source code files.
