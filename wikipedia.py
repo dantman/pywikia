@@ -350,8 +350,7 @@ def link2url(name,code,incode):
         name=url2unicode(name,language=code)
     else:
         import urllib
-        name=html2unicode(name,encoding=code2encoding(code),
-                          inencoding=code2encoding(incode))
+        name=html2unicode(name,language=code,inlanguage=incode)
     try:
         result=str(name.encode(code2encoding(code)))
     except UnicodeError:
@@ -421,14 +420,18 @@ def removeEntity(name):
             i=i+1
     return result
 
-def html2unicode(name,encoding='latin1',inencoding='latin1'):
+def html2unicode(name,language,inlanguage):
     name=removeEntity(name)
     import re
     if not '&#' in name:
-        try:
-            return unicode(name,encoding)
-        except UnicodeError:
-            return unicode(name,inencoding)
+        for encoding in code2encodings(language):
+            try:
+                return unicode(name,encoding)
+            except UnicodeError:
+                continue
+        print name
+        raise "Would be encoding into local, probably a bug"
+        #return unicode(name,code2encoding(inlanguage))
     Runi=re.compile('&#(\d+);')
     result=u''
     i=0
