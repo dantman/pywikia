@@ -12,6 +12,20 @@ To get started on proper usage of the interwiki robot, please refer to:
     http://meta.wikipedia.org/wiki/Interwiki_bot/Getting_started
 
 
+More about robot visit reference your language:
+
+?????????  : http://bg.wikipedia.org/wiki/?????????:???
+Deutsch    : http://de.wikipedia.org/wiki/Wikipedia:Bots
+English    : http://en.wikipedia.org/wiki/Wikipedia:Bots
+Esperanto  : http://eo.wikipedia.org/wiki/Vikipedio:Roboto
+Español    : http://es.wikipedia.org/wiki/Wikipedia:Bot
+Français   : http://fr.wikipedia.org/wiki/Wikipédia:Bot
+Italiano   : http://it.wikipedia.org/wiki/Wikipedia:Bot
+???        : http://ja.wikipedia.org/wiki/Wikipedia:Bot?????????
+Nederlands : http://nl.wikipedia.org/wiki/Help:Gebruik_van_bots
+Româna     : http://ro.wikipedia.org/wiki/Wikipedia:Bot
+??         : http://zh.wikipedia.org/wiki/Help:???
+
 
 The contents of the package are:
 
@@ -20,10 +34,6 @@ The contents of the package are:
 LICENSE                : a reference to the Python Software Foundation license
 wikipedia.py           : The wikipedia library
 wiktionary.py          : The wiktionary library
-wikipedia_family.py    : The description of the wikipedia family of wikis
-wikibooks_family.py    : The description of the wikibooks family of wikis
-wiktionary_family.py   : The description of the wiktionary family of wikis
-wikiquote_family.py    : The description of the wikiquote family of wikis
 config.py              : Configuration module containing all defaults. Do not
                          change these! See below how to change values.
 lib_images.py          : Part of the Wikipedia library special for the uploading
@@ -129,6 +139,8 @@ mediawiki-messages     : Information retrieved by mediawiki_messages.py will
                          be stored here.
 login-data             : login.py stores your cookies here (Your password won't
                          be stored as plaintext).
+families               : MediaWiki families
+
 
 More precise information, and a list of the options that are available for
 the various programs, are given at the start of the programs' source code files.
