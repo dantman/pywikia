@@ -423,7 +423,9 @@ for wrd in (page_list):
         Otherwise, returns True.
         '''
         try:
-            reftxt=refpl.get()
+            text=refpl.get()
+            # make a backup of the original text so we can show the changes later
+            original_text = text
         except wikipedia.IsRedirectPage:
             wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), thispl.linkname()))
             choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N]' % refpl.linkname())
@@ -442,7 +444,7 @@ for wrd in (page_list):
             edited = False
             # This loop will run until we have finished the current page
             while True:
-                m=linkR.search(reftxt, pos = curpos)
+                m=linkR.search(text, pos = curpos)
                 if not m:
                     if n == 0:
                         wikipedia.output(u"No changes necessary in %s" % refpl.linkname())
@@ -469,7 +471,7 @@ for wrd in (page_list):
                 while True:
                     print '\n'
                     wikipedia.output(u"== %s ==" % refpl.linkname())
-                    wikipedia.output(reftxt[max(0, m.start() - context):m.end()+context])
+                    wikipedia.output(text[max(0, m.start() - context):m.end()+context])
                     if always == None:
                         if edited:
                             choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
@@ -485,10 +487,10 @@ for wrd in (page_list):
                     elif choice=='e':
                         import gui
                         edit_window = gui.EditBoxWindow()
-                        newtxt = edit_window.edit(reftxt)
+                        newtxt = edit_window.edit(text)
                         # if user didn't press Cancel
                         if newtxt:
-                            reftxt = newtxt
+                            text = newtxt
                             break
                     elif choice=='m':
                         # show more text around the link we're working on
@@ -554,7 +556,7 @@ for wrd in (page_list):
 
                 if choice=='u':
                     # unlink
-                    reftxt = reftxt[:m.start()] + link_text + reftxt[m.end():]
+                    text = text[:m.start()] + link_text + text[m.end():]
                     continue
                 else:
                     if len(choice)>0 and choice[0] == 'r':
@@ -591,12 +593,16 @@ for wrd in (page_list):
                         newlink = "[[%s]]%s" % (new_page_title, link_text[len(new_page_title):])
                     else:
                         newlink = "[[%s|%s]]" % (new_page_title, link_text)
-                    reftxt = reftxt[:m.start()] + newlink + reftxt[m.end():]
+                    text = text[:m.start()] + newlink + text[m.end():]
                     continue
 
-                wikipedia.output(reftxt[max(0,m.start()-30):m.end()+30])
+                wikipedia.output(text[max(0,m.start()-30):m.end()+30])
             if not debug:
-                refpl.put(reftxt)
+                print '\nThe following changes have been made:\n'
+                wikipedia.showDiff(original_text, text)
+                print ''
+                # save the page
+                refpl.put(text)
         return True
 
     if wikipedia.mylang in link_trail:
