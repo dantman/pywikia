@@ -75,8 +75,8 @@ import wikipedia, config
 import re,sys
 
 # This is a purely interactive robot. We set the delays lower.
-wikipedia.get_throttle.setDelay(5)
-wikipedia.put_throttle.setDelay(10)
+wikipedia.get_throttle.setDelay(1)
+wikipedia.put_throttle.setDelay(4)
 
 # Summary message when run without -redir parameter
 msg={
