@@ -930,8 +930,9 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
         else:
             x = text # If not editing
             
-        # Convert to a unicode string
-        x = unicode(x, charset)
+        # Convert to a unicode string. If there's invalid unicode data inside
+        # the page, replace it with question marks.
+        x = unicode(x, charset, errors = 'replace')
         return x
 
 def languages(first = []):
