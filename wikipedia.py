@@ -6,7 +6,7 @@ Library to get and put pages on Wikipedia
 # (C) Rob W.W. Hooft, 2003
 #
 # Distribute under the terms of the PSF license.
-#
+# 
 __version__ = '$Id$'
 #
 import re,urllib,codecs,sys
@@ -28,7 +28,7 @@ langs = {
     'ca':'ca.wikipedia.org',   # Catalan
     'cs':'cs.wikipedia.org',   # Czech, UTF-8
     'cy':'cy.wikipedia.org',   # Welsh, UTF-8
-    'da':'da.wikipedia.org',   # Danish, UTF-8
+    'da':'da.wikipedia.org',   # Danish
     'de':'de.wikipedia.org',   # German
     'el':'el.wikipedia.org',   # Greek, UTF-8
     'en':'en.wikipedia.org',   # English
@@ -621,7 +621,7 @@ def allpages(start = '%21%200'):
         #print text
         R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         n = 0
-        for hit in R.findall(text):
+        for hit in R.findall(tet):
             if not ':' in hit:
                 # Some dutch exceptions.
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
@@ -778,7 +778,7 @@ def getReferences(pl):
     host = langs[pl.code()]
     url = "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(special[mylang], pl.urlname())
     txt, charset = getUrl(host,url)
-    Rref = re.compile('<li><a href.* title="([^"]*)"')
+    Rref = re.compile('<li><a href.*="([^"]*)"')
     x = Rref.findall(txt)
     x.sort()
     # Remove duplicates
