@@ -1,0 +1,14 @@
+<table align = center width=200px
+bgcolor = "#FFFFFF">
+<tr><td>cell 1
+</td><tr bgcolor=#FFBBFF>
+<td
+align= "center"
+>cell
+	2</td>
+</tr>
+<th>easy th</th>
+<th>bad th
+<tr><td>bad td
+<td>good td</td>
+</table>
