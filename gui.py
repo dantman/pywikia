@@ -30,29 +30,42 @@ class EditBoxWindow:
         self.myParent.destroy()
 
     def __init__(self, parent = None):
+        print 'bla2'
         if parent == None:
             # create a new window
             parent = Tk()
         self.myParent = parent
 
-        scrollbar = Scrollbar(parent)
-        # textfield with vertical scrollbar
-        self.editbox = Text(parent, yscrollcommand=scrollbar.set)
+        self.top_frame = Frame(parent)
+
+        scrollbar = Scrollbar(self.top_frame)
+        # textarea with vertical scrollbar
+        self.editbox = Text(self.top_frame, yscrollcommand=scrollbar.set)
         # add scrollbar to main frame, associate it with our editbox
         scrollbar.pack(side=RIGHT, fill=Y)
         scrollbar.config(command=self.editbox.yview)
 
-        # put textfield into main frame, using all available space
+        # put textarea into top frame, using all available space
         self.editbox.pack(anchor=CENTER, fill=BOTH)
+        self.top_frame.pack(side=TOP)
 
-        # lower subframe which will contain two buttons
-        self.bottom_frame = Frame(parent)
-        self.bottom_frame.pack(side=BOTTOM)
+        # lower left subframe which will contain a textfield and a Search button
+        self.bottom_left_frame = Frame(parent)
+        self.textfield = Entry(self.bottom_left_frame)
+        self.textfield.pack(side=LEFT, fill=X, expand=1)
 
-        buttonOK = Button(self.bottom_frame, text='OK', command=self.pressedOK)
-        buttonCancel = Button(self.bottom_frame, text='Cancel', command=parent.destroy)
+        buttonSearch = Button(self.bottom_left_frame, text='Find', command=self.find)
+        buttonSearch.pack(side=RIGHT)
+        self.bottom_left_frame.pack(side=LEFT, expand=1)
+        
+        # lower right subframe which will contain OK and Cancel buttons
+        self.bottom_right_frame = Frame(parent)
+
+        buttonOK = Button(self.bottom_right_frame, text='OK', command=self.pressedOK)
+        buttonCancel = Button(self.bottom_right_frame, text='Cancel', command=parent.destroy)
         buttonOK.pack(side=LEFT, fill=X)
         buttonCancel.pack(side=RIGHT, fill=X)
+        self.bottom_right_frame.pack(side=RIGHT, expand=1)
 
         # create a toplevel menu
         # menubar = Menu(root)
@@ -65,7 +78,7 @@ class EditBoxWindow:
 
     def edit(self, text):
         self.text = None
-        # put given text into our textfield
+        # put given text into our textarea
         self.editbox.insert(END, text)
         # wait for user to push a button which will destroy (close) the window
         # enable word wrap
@@ -75,6 +88,32 @@ class EditBoxWindow:
         self.myParent.mainloop()
         return self.text 
 
+    def find(self):
+        '''
+        Action-function for the Button: highlight all occurences of string.
+        Taken from O'Reilly's Python in a Nutshell.
+        '''
+        #remove previous uses of tag 'found', if any
+        self.editbox.tag_remove('found', '1.0', END)
+        # get string to look for (if empty, no searching)
+        s = self.textfield.get()
+        if s:
+            # start from the beginning (and when we come to the end, stop)
+            idx = '1.0'
+            while True:
+                # find next occurence, exit loop if no more
+                idx =self.editbox.search(s, idx, nocase=1, stopindex=END)
+                if not idx:
+                    break
+                # index right after the end of the occurence
+                lastidx = '%s+%dc' % (idx, len(s))
+                # tag the whole occurence (start included, stop excluded)
+                self.editbox.tag_add('found', idx, lastidx)
+                # prepare to search for next occurence
+                idx = lastidx
+            # use a red foreground for all the tagged occurencs
+            self.editbox.tag_config('found', foreground='red')
+       
 
 class ListBoxWindow:
 
@@ -94,7 +133,7 @@ class ListBoxWindow:
         self.listbox = Listbox(parent, selectmode=SINGLE)
         # put list into main frame, using all available space
         self.listbox.pack(anchor=CENTER, fill=BOTH)
-
+        
         # lower subframe which will contain one button
         self.bottom_frame = Frame(parent)
         self.bottom_frame.pack(side=BOTTOM)
