@@ -525,8 +525,7 @@ class Subject:
                 self.reportBacklinks(new)
         else:
             if mods:
-                mods = mods.encode(wikipedia.myencoding())
-                wikipedia.output("Changes to be made: %s" % mods, wikipedia.myencoding())
+                wikipedia.output("Changes to be made: %s" % mods)
             oldtext = self.inpl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if globalvar.debug:
@@ -570,7 +569,7 @@ class Subject:
                                     break
                         print "NOTE: Updating live wikipedia..."
                         status, reason, data = self.inpl.put(newtext,
-                                                             comment='robot '+mods)
+                                                             comment=u'robot '+mods)
                         if str(status) != '302':
                             print status, reason
                         else:

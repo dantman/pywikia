@@ -741,6 +741,7 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
     address = family.put_address(code, space2underline(name))
     if comment is None:
         comment=action
+    comment = comment.encode(myencoding())
     if not loggedin or code != mylang:
         comment = username + ' - ' + comment
     try:
