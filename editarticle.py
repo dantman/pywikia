@@ -47,7 +47,7 @@ def options(args):
 ##    parser.add_option("-p", "--password", help="Password to login with")
     return parser.parse_args(args=args)
 
-def editpage(pl, editor):
+def editpage(pl, editor, redirect=False):
     """Edit a pagelink using an editor.
     
     Takes two arguments: page and editor.
@@ -59,6 +59,11 @@ def editpage(pl, editor):
         oldcontent = pl.get()
     except wikipedia.NoPage:
         oldcontent = ""
+    except wikipedia.IsRedirectPage:
+        if redirect:
+            oldcontent = pl.get(force=True, get_redirect=redirect)
+        else:
+            raise
     ofp.write(oldcontent.encode('utf-8')) # FIXME: encoding of wiki
     ofp.close()
     os.system("%s %s" % (editor, ofn))
@@ -91,7 +96,7 @@ def main():
     if not opts.edit_redirect and pl.isRedirectPage():
         pl = wikipedia.PageLink(site, pl.getRedirectTo())
     try:
-        old, new = editpage(pl, editor)
+        old, new = editpage(pl, editor, redirect=opts.edit_redirect)
     except wikipedia.LockedPage:
         sys.exit("You do not have permission to edit %s" % pl.hashfreeLinkname())
     if old != new:
