@@ -233,9 +233,9 @@ class PageLink:
            the language code"""
         return "%s:[[%s]]" % (self.code(), self.linkname())
 
-    def asasciilink(self):
-        """A string representation in the form of an interwiki link"""
-        return "[[%s:%s]]" % (self.code(), self.ascii_linkname())
+    #def asasciilink(self):
+    #    """A string representation in the form of an interwiki link"""
+    #    return "[[%s:%s]]" % (self.code(), self.ascii_linkname())
 
     #def asasciiselflink(self):
     #    """A string representation in the form of a local link, but prefixed by
@@ -481,7 +481,7 @@ class GetAll:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 self.pages.append(pl)
             else:
-                print "BUGWARNING: %s already done!"%pl.asasciilink()
+                output(u"BUGWARNING: %s already done!" % pl.aslink())
 
     def run(self):
         data = self.getData()
@@ -563,11 +563,11 @@ class GetAll:
         else:
             m = redirectRe(self.code).match(text)
             if m:
-                #print "DBG> ",pl2.asasciilink(),"is a redirect page"
+                #output("DBG> %s is a redirect page" % pl2.aslink())
                 pl2._getexception = IsRedirectPage(m.group(1))
             else:
                 if len(text)<50:
-                    print "DBG> short text in",pl2.asasciilink()
+                    output(u"DBG> short text in %s" % pl2.aslink())
                     print repr(text)
                 hn = pl2.hashname()
                 if hn:

@@ -388,7 +388,7 @@ class Subject:
             code = pl.code()
             if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
                 if pl != self.inpl:
-                    self.problem("Found link to %s"%pl.asasciilink())
+                    self.problem("Found link to %s"%pl.aslink())
                     self.whereReport(pl)
                     nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
