@@ -26,7 +26,7 @@ class CatTitleRecognition(object):
     def __init__(self, site):
         self.ns = site.category_namespaces()
 
-    def __call__(self, s):
+    def check(self, s):
         """True if s points to a category page."""
         # try different possibilities for namespaces
         # (first letter lowercase, English 'category')
@@ -35,8 +35,6 @@ class CatTitleRecognition(object):
                 return True
         return False
         
-iscattitle = CatTitleRecognition(wikipedia.getSite())
-
 def unique(l):
     """Given a list of hashable object, return an alphabetized unique list.
     """
@@ -47,7 +45,10 @@ def unique(l):
 class _CatLink(wikipedia.PageLink):
     """Subclass of PageLink that has some special tricks that only work for
        category: pages"""
-    
+
+    def iscattitle(self, title):
+        return CatTitleRecognition(wikipedia.getSite()).check(title)
+        
     def catlist(self, recurse = False, purge = False):
         """Cache result of make_catlist for a second call
 
@@ -138,7 +139,7 @@ class _CatLink(wikipedia.PageLink):
                     iend = txt.index('<!-- end content -->')
                 txt = txt[ibegin:iend]
                 for title in Rtitle.findall(txt):
-                    if iscattitle(title):
+                    if self.iscattitle(title):
                         ncat = _CatLink(self.site(), title)
                         if recurse and ncat not in catsdone:
                             catstodo.append(ncat)
@@ -164,7 +165,7 @@ class _CatLink(wikipedia.PageLink):
             Rsupercat = re.compile('title ="([^"]*)"')
             for title in Rsupercat.findall(self_txt):
                 # There might be a link to Special:Categories we don't want
-                if iscattitle(title):
+                if self.iscattitle(title):
                     supercats.append(title)
         return (articles, subcats, supercats)
     

@@ -36,7 +36,7 @@ __version__ = '$Id$'
 # Distributed under the terms of the PSF license.
 # 
 import re, sys, string, pickle
-import wikipedia, config, interwiki
+import wikipedia, catlib, config, interwiki
 
 # Summary messages
 msg_add={
@@ -133,7 +133,6 @@ class CategoryDatabase:
         '''
         Saves the contents of the dictionaries superclassDB and catContentDB to disk.
         '''
-        print 'Dumping to ' + filename
         # this is currently only used by print_treeview(). We might want to add it
         # for others like the tidy bot.
         f = open(filename, 'w')
@@ -569,10 +568,6 @@ if __name__ == "__main__":
                 elif arg == '-rebuild':
                     catDB.rebuild()
                 
-        # catlib needs to be imported at this position because its constructor uses
-        # mylang which might have been changed by wikipedia.argHandler().
-        import catlib
-
         if action == 'add':
             add_category(sort_by_last_name)
         elif action == 'remove':
