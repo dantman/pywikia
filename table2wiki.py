@@ -44,13 +44,16 @@ for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
     else:
-        pl = wikipedia.PageLink(mylang, arg)
-        try:
-            a="sa"
-            text = pl.get()
-        except wikipedia.NoPage:
-            print "ERROR: couldn't find " + arg
-            continue
+        if DEBUG:
+            f = open("table2wiki.testTable")
+            text = f.read()
+        else:
+            pl = wikipedia.PageLink(mylang, arg)
+            try:
+                text = pl.get()
+            except wikipedia.NoPage:
+                print "ERROR: couldn't find " + arg
+                continue
         
         newText = text
         newText = re.sub("(\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
@@ -58,11 +61,11 @@ for arg in sys.argv[1:]:
         newText = re.sub("\n[\t ]*\<", "\n<", newText, 0)
 
         #the <table> tag
-        newText = re.sub("<(TABLE|table) (.*?)>([\w\W]*?)<(tr|TR)>",
+        newText = re.sub("<(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
                          "{| \\2\n\\3", newText, 0)
         newText = re.sub("<(TABLE|table)>([\w\W]*?)<(tr|TR)>",
                          "{|\n\\2", newText, 0)
-        newText = re.sub("\<(TABLE|table) (.*?)\>[\n ]*",
+        newText = re.sub("\<(TABLE|table) ([\w\W]*?)\>[\n ]*",
                          "{| \\2\n", newText, 0)
         newText = re.sub("\<(TABLE|table)\>[\n ]*",
                          "{|\n", newText, 0)
@@ -71,8 +74,11 @@ for arg in sys.argv[1:]:
 
 
         #captions
-        newText = re.sub("<caption(.*?)>(.*?)<\/caption>",
+        newText = re.sub("<caption ([\w\W]*?)>([\w\W]*?)<\/caption>",
                          "\n|+\\1 | \\2", newText, 0)
+        newText = re.sub("<caption>([\w\W]*?)<\/caption>",
+                         "\n|+ \\1", newText, 0)
+
         newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText, 0)
 
         #very simple <tr>
@@ -83,9 +89,9 @@ for arg in sys.argv[1:]:
                          "\n!\\2 | \\3\r\n", newText, 0)
         # fail save. sometimes people forget </th>
         newText = re.sub("[\r\n]+<(th|TH)\>([\w\W]*?)\n",
-                         "\n| \\2\n", newText, 0)
+                         "\n! \\2\n", newText, 0)
         newText = re.sub("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)\n",
-                         "\n|\\2 | \\3\n", newText, 0)
+                         "\n!\\2 | \\3\n", newText, 0)
 
 
         # normal <td>
@@ -123,7 +129,7 @@ for arg in sys.argv[1:]:
         # kills spaces after | or ! or {|
         newText = re.sub("[\r\n]+\|[\t ]*\n", "\r\n| ", newText, 0)
         # kills trailing spaces and tabs
-        newText = re.sub("[\t\ ]+([\r\n]){1}", "\\1", newText, 0)
+        newText = re.sub("([^\|])[\t\ ]+[\r\n]+", "\\1\r\n", newText, 0)
 
         # kill extra new-lines
         newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
@@ -145,18 +151,20 @@ for arg in sys.argv[1:]:
         # proper attributes
         num = 1
         while num != 0:
-            newText, num = re.subn(r'([\r\n]+(\!|\|)[^\n\|]+) \= ([^\s>]+)(\s)',
+            newText, num = re.subn(r'([\r\n]+(\!|\||\{\|)[^\r\n\|]+)[ ]+\=[ ]+([^\s>]+)(\s)',
                                    '\\1="\\3"\\4', newText, 0)
         # again proper attributes
         num = 1
         while num != 0:
-            newText, num = re.subn('(\s(\{\||\!|\||\|\-)([^\r\n\|]+))\=' +
+            newText, num = re.subn('([\r\n]+(\{\||\!|\|)([^\r\n\|]+))\=' +
                                    '([^\"\s]+?)([\W]{1})',
                                    '\\1="\\4"\\5', newText, 0)
 
         if splitLongSentences:
-            newText = re.sub("(\r\n[^\n\r]{300,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1})",
-                             "\\1\r\n\\2", newText, 0)
+            num = 1
+            while num != 0:
+                newText, num = re.subn("(\r\n[^\n\r]{300,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1})",
+                                       "\\1\r\n\\2", newText, 0)
                 
         if newText!=text:
             import difflib
