@@ -646,7 +646,7 @@ class SubjectArray:
                 pl=self.generator.next()
                 while pl in globalvar.skip:
                     pl=self.generator.next()
-                self.add(pl)
+                self.add(pl, hints = hints)
             except StopIteration:
                 self.generator = None
                 break
