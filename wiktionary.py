@@ -3,6 +3,7 @@
 wiktionaryformats = {
 			'nl': {
 				'langheader':	u'{{-%%ISOLangcode%%-}}',
+				'translang':	u'*{{%%ISOLangcode%%}}',
 				'beforeexampleterm': u"'''",
 				'afterexampleterm': u"'''",
 				'gender': u"{{%%gender%%}}",
@@ -14,6 +15,7 @@ wiktionaryformats = {
 				},
 			'en': {
 				'langheader':	u'== %%langname%% ==',
+				'translang':	u'*%%langname%%',
 				'beforeexampleterm': u"'''",
 				'afterexampleterm': u"'''",
 				'gender': u"''%%gender%%''",
@@ -163,13 +165,14 @@ class Meaning:					# On one page, different terms in different languages can be 
 		return wrappedsynonyms + '\n'
 		
 	def wikiwrapTranslations(self,wikilang):
+		# We want to output the translations in such a way that they end up sorted alphabetically on the language name in the language of the current Wiktionary
 		alllanguages=self.translations.keys()
 		alllanguages.sort(sortonname(langnames[wikilang]))
 
 		wrappedtranslations = wiktionaryformats[wikilang]['translationsheader'] + '\n'
 		for language in alllanguages:
-#			print meaning.translations[language]
-			wrappedtranslations = wrappedtranslations + langnames[wikilang][language] + ': '
+			# Indicating the language according to the wikiformats dictionary
+			wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
 			first = 1
 			for translation in self.translations[language]:
 				term=translation.term
