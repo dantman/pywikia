@@ -1012,7 +1012,7 @@ class GetAll(object):
         return data
     
 def getall(site, pages, throttle = True):
-    print u'Getting %d pages from %s:' % (len(pages), repr(site))
+    output(u'Getting %d pages from %s...' % (len(pages), site))
     return GetAll(site, pages, throttle).run()
     
 # Library functions
@@ -2327,7 +2327,7 @@ def checkLogin(site = None):
         site = getSite()
     return site.loggedin(check=True)
     
-def argHandler(arg):
+def argHandler(arg, botname = 'bot'):
     '''
     Takes a commandline parameter, converts it to unicode, and returns it unless
     it is one of the global parameters as -lang or -throttle. If it is a global
@@ -2342,11 +2342,19 @@ def argHandler(arg):
         # Linux uses the same encoding for both
         arg = unicode(arg, config.console_encoding)
     if arg.startswith('-family:'):
+        global default_family 
         default_family = arg[8:]
     elif arg.startswith('-lang:'):
+        global default_code
         default_code = arg[6:]
     elif arg.startswith('-putthrottle:'):
         put_throttle.setDelay(int(arg[13:]),absolute = True)
+    elif arg == '-log':
+        global logfile
+        try:
+            logfile = codecs.open('logs/%s.log' % botname, 'a', 'utf-8')
+        except IOError:
+            logfile = codecs.open('logs/%s.log' % botname, 'w', 'utf-8')
     else:
         return arg
     return None
@@ -2366,7 +2374,7 @@ if not config.username:
     sys.exit(1)
 default_family = config.family
 default_code = config.mylang
-
+logfile = None
 # Check
 getSite()
 
@@ -2485,37 +2493,6 @@ def showDiff(oldtext, newtext):
         if line[0] in ['+','-']:
             output(line)
 
-"""
-def showColorDiff(oldtext, newtext, replacements, regex):
-    sep = '\r\n'
-    ol = oldtext.split(sep)
-    if len(ol) == 1:
-        sep = '\n'
-        ol = oldtext.split(sep)
-    nl = newtext.split(sep)
-    for line in difflib.ndiff(ol,nl):
-        if line[0] == '-':
-            oldline = line
-            for a, b in replacements.iteritems():
-                if regex:
-                    a = re.compile("(" + a + ")")
-                    oldline = a.sub('\x1b[91;1m\\1\x1b[0m', oldline)
-                else:
-                    oldline = oldline.replace(a, '\x1b[91;1m' + a + '\x1b[0m')
-            # mark the minus red
-            oldline = '\x1b[91;1m-\x1b[0m' + oldline[1:]
-            output(oldline)
-            newline = line
-            for a, b in replacements.iteritems():
-                if regex:
-                    a = re.compile(a)
-                    newline = a.sub('\x1b[92;1m' + b + '\x1b[0m', newline)
-                else:
-                    newline = newline.replace(a, '\x1b[92;1m' + b + '\x1b[0m')
-            # replace the minus with a green plus
-            output('\x1b[92;1m+\x1b[0m' + newline[1:])
-"""
-
 def colorize(text, color):
     if sys.platform=='win32':
         return text
@@ -2587,6 +2564,10 @@ def output(text, decoder = None, newline = True):
             text = unicode(text, 'utf-8')
         except UnicodeDecodeError:
             text = unicode(text, 'iso8859-1')
+    if logfile:
+        # save the text in a logfile (will be written in utf-8)
+        logfile.write(text + '\n')
+        logfile.flush()
     if newline:
         print text.encode(config.console_encoding, 'replace')
     else:

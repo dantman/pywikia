@@ -875,17 +875,13 @@ if __name__ == "__main__":
         sa=SubjectArray()
 
         for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg)
+            arg = wikipedia.argHandler(arg, botname='interwiki')
             if arg:
                 if arg == '-noauto':
                     globalvar.auto = False
                 elif arg.startswith('-hint:'):
                     hints.append(arg[6:])
-
-        for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg)
-            if arg:
-                if arg == '-force':
+                elif arg == '-force':
                     globalvar.force = True
                 elif arg == '-always':
                     globalvar.always = True
@@ -993,8 +989,8 @@ if __name__ == "__main__":
                 else:
                     inname.append(arg)
 
-        if globalvar.log:
-            sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
+        #if globalvar.log:
+        #    sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
 
         unequal.read_exceptions()
     
