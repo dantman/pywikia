@@ -21,31 +21,35 @@ Command line options:
 
    -pos:XXXX adds XXXX as an alternative disambiguation
 
-   -just      only use the alternatives given on the command line, do not 
-              read the page for other possibilities
+   -just       only use the alternatives given on the command line, do not 
+               read the page for other possibilities
 
-   -redir     if the page is a redirect page, use the page redirected to as
-              the (only) alternative; if not set, the pages linked to from
-              the page redirected to are used. If the page is not a redirect
-              page, this will raise an error
-             
-   -primary   "primary topic" disambiguation (Begriffsklärung nach Modell 2).
-              That's titles where one topic is much more important, the
-              disambiguation page is saved somewhere else, and the important
-              topic gets the nice name.
+   -redir      if the page is a redirect page, use the page redirected to as
+               the (only) alternative; if not set, the pages linked to from
+               the page redirected to are used. If the page is not a redirect
+               page, this will raise an error
+               
+   -primary    "primary topic" disambiguation (Begriffsklärung nach Modell 2).
+               That's titles where one topic is much more important, the
+               disambiguation page is saved somewhere else, and the important
+               topic gets the nice name.
+              
+   -primary:XY like the above, but use XY as the only alternative, instead of
+               searching for alternatives in [[Keyword (disambiguation)]].
+               Note: this is the same as -primary -just -pos:XY
    
-   -file:XYZ  reads a list of pages, which can for example be gotten through 
-              extract_names.py. XYZ is the name of the file from which the
-              list is taken. If XYZ is not given, the user is asked for a
-              filename.
-              Page titles should be saved one per line, without [[brackets]].
-              The -pos parameter won't work if -file is used.
+   -file:XYZ   reads a list of pages, which can for example be gotten through 
+               extract_names.py. XYZ is the name of the file from which the
+               list is taken. If XYZ is not given, the user is asked for a
+               filename.
+               Page titles should be saved one per line, without [[brackets]].
+               The -pos parameter won't work if -file is used.
 
-   -always:XY instead of asking the user what to do, always perform the same
-              action. For example, XY can be "r0", "u" or "2". Be careful with
-              this option, and check the changes made by the bot. Note that
-              some choices for XY don't make sense and will result in a loop,
-              e.g. "l" or "m".
+   -always:XY  instead of asking the user what to do, always perform the same
+               action. For example, XY can be "r0", "u" or "2". Be careful with
+               this option, and check the changes made by the bot. Note that
+               some choices for XY don't make sense and will result in a loop,
+               e.g. "l" or "m".
 
 Options that are accepted by more robots:
 
@@ -338,6 +342,27 @@ def unique(list):
         result[i]=None
     return result.keys()
 
+
+def makepath(path):
+    """ creates missing directories for the given path and
+        returns a normalized absolute version of the path.
+
+    - if the given path already exists in the filesystem
+      the filesystem is not modified.
+
+    - otherwise makepath creates directories along the given path
+      using the dirname() of the path. You may append
+      a '/' to the path if you want it to be a directory path.
+
+    from holger@trillke.net 2002/03/18
+    """
+    from os import makedirs
+    from os.path import normpath,dirname,exists,abspath
+
+    dpath = normpath(dirname(path))
+    if not exists(dpath): makedirs(dpath)
+    return normpath(abspath(path))
+
 # the option that's always selected when the bot wonders what to do with
 # a link. If it's None, the user is prompted (default behaviour).
 always = None
@@ -355,6 +380,10 @@ primary = False
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
+    elif arg.startswith('-primary:'):
+        primary = True
+        getalternatives=0
+        alternatives.append(arg[9:])
     elif arg == '-primary':
         primary = True
     elif arg.startswith('-always:'):
@@ -413,11 +442,30 @@ else:
 for wrd in (page_list):
     # when run with -redir argument, there's another summary message
     if solve_redirect:
-      wikipedia.setAction(msg_redir[msglang]+': '+wrd)
+        wikipedia.setAction(msg_redir[msglang]+': '+wrd)
     else: 
-      wikipedia.setAction(msg[msglang]+': '+wrd)
+        wikipedia.setAction(msg[msglang]+': '+wrd)
     
     thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
+    
+    # If run with the -primary argument, read from a file which pages should
+    # not be worked on; these are the ones where the user pressed n last time.
+    # If run without the -primary argument, don't ignore any pages.
+    skip_primary = []
+    filename = 'disambiguations/' + thispl.urlname() + '.txt'
+    try:
+        # The file is stored in the disambiguation/ subdir. Create if necessary. 
+        f = open(makepath(filename), 'r')
+        for line in f.readlines():
+            # remove trailing newlines and carriage returns            
+            while line[-1] in ['\n', '\r']:
+                line = line[:-1]
+            #skip empty lines
+            if line != '':
+                skip_primary.append(line)
+        f.close()
+    except IOError:
+        pass
     
     if solve_redirect:
         try:
@@ -495,6 +543,17 @@ for wrd in (page_list):
                     else:
                         choice=always
                     if choice=='n':
+                        if primary:
+                            # If run with the -primary argument, skip this occurence next time.
+                            filename = 'disambiguations/' + thispl.urlname() + '.txt'
+                            try:
+                                # Open file for appending. If none exists yet, create a new one.
+                                # The file is stored in the disambiguation/ subdir. Create if necessary. 
+                                f = open(makepath(filename), 'a')
+                                f.write(refpl.urlname() + '\n')
+                                f.close()
+                            except IOError:
+                                pass
                         return True
                     elif choice=='s':
                         choice=-1
@@ -584,7 +643,7 @@ for wrd in (page_list):
 
     for ref in getReferences(thispl):
         refpl=wikipedia.PageLink(wikipedia.mylang, ref)
-        if active:
+        if active and not refpl.urlname() in skip_primary:
             if not treat(refpl, thispl):
                 active=False
     
