@@ -127,7 +127,7 @@ special = {
     'es': 'Especial',
     'et': 'Eri',
     'eu': 'Special',
-    'fa': 'Special',
+    'fa': '%D9%88%DB%8C%DA%98%D9%87',
     'fi': 'Toiminnot',
     'fr': 'Special',
     'fy': 'Wiki',
