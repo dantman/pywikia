@@ -288,16 +288,16 @@ for pl in k:
         if pl!=inpl:
             print "ERROR: %s refers back to %s"%(inpl,pl)
             confirm+=1
-            autonomous_problem(inpl,'Someone refers to another page with us')
+            autonomous_problem(inpl,'Someone refers to %s with us'%pl)
     elif m[pl]:
         print pl
         if new.has_key(pl.code()) and new[pl.code()]!=None and new[pl.code()]!=pl:
             print "ERROR: '%s' as well as '%s'"%(new[pl.code()],pl)
+            autonomous_problem(inpl,"'%s' as well as '%s'"%(new[pl.code()],pl))
             while 1:
                 if bell:
                     sys.stdout.write('\07')
                 confirm+=1
-                autonomous_problem(inpl,'There are alternatives in %s'%pl.code())
                 answer=raw_input("Use (f)ormer or (l)atter or (n)either or (q)uit?")
                 if answer.startswith('f'):
                     break
