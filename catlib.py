@@ -71,7 +71,10 @@ class _CatLink(wikipedia.PageLink):
         if site is None:
             site = wikipedia.getSite()
         import re
-        Rtitle = re.compile('title=\n?\"([^\"]*)\"')
+        if site.version() < "1.4":
+            Rtitle = re.compile('title=\n?\"([^\"]*)\"')
+        else:
+            Rtitle = re.compile('/wiki/\S* title=\n?\"([^\"]*)\"')
         ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
@@ -110,7 +113,7 @@ class _CatLink(wikipedia.PageLink):
             # this only works for the current version of the MonoBook skin
             ibegin = txt.index('"clear:both;"')
             # index where article listing ends
-            iend = txt.index('<!-- end content -->')
+            iend = txt.index('<div id="catlinks">')
             txt = txt[ibegin:iend]
             for title in Rtitle.findall(txt):
                 if iscattitle(title):
