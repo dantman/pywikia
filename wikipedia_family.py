@@ -330,8 +330,6 @@ class Family(family.Family):
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
 
-rm tk ug 
-
         self.alphabetic = ['af','ar','roa-rup','ay','bg','be','bn','bs','br',
                       'ca','chr','co','cs','cy','da','de','als','et',
                       'el','en','es','eo','eu','fa','fr','fy','ga','gv',
