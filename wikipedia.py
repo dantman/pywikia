@@ -165,8 +165,8 @@ class PageLink:
         return code2encoding(self._code)
     
     # sorry, this seems to be the same as linkname(). don't use it, i'll remove it later.
-    def name(self):
-        return urllib.unquote(self._linkname)
+    # def name(self):
+    #    return urllib.unquote(self._linkname)
     
     def urlname(self):
         """The name of the page this PageLink refers to, in a form suitable
@@ -222,7 +222,7 @@ class PageLink:
 
     def aslink(self):
         """A string representation in the form of an interwiki link"""
-        return "[[%s:%s]]" % (self.code(), self.name())
+        return "[[%s:%s]]" % (self.code(), self.linkname())
 
     def aslocallink(self):
         """A string representation in the form of a local link"""
@@ -240,7 +240,7 @@ class PageLink:
     #def asasciiselflink(self):
     #    """A string representation in the form of a local link, but prefixed by
     #       the language code"""
-    #    return "%s:[[%s]]" % (self.code(), self.name())
+    #    return "%s:[[%s]]" % (self.code(), self.linkname())
     
     def get(self):
         """The wiki-text of the page. This will retrieve the page if it has not

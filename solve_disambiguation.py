@@ -433,7 +433,7 @@ for wrd in (page_list):
                 context = 30
                 while 1:
                     print '\n'
-                    wikipedia.output("== %s ==" % refpl.name())
+                    wikipedia.output("== %s ==" % refpl.linkname())
                     wikipedia.output(reftxt[max(0,m.start()-context):m.end()+context])
                     if always == None:
                         choice=wikipedia.input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"

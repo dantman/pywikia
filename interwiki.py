@@ -520,7 +520,7 @@ class Subject:
                 self.reportBacklinks(new)
         else:
             if mods:
-                print "Changes to be made:",mods
+                wikipedia.output("Changes to be made: %s" % mods)
             oldtext = self.inpl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if globalvar.debug:
