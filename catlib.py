@@ -11,6 +11,11 @@ __version__ = '$Id$'
 import re, time
 import wikipedia
 
+msg_created_for_renaming = {
+    'de':u'Bot: Verschoben von %s. Autoren: %s',
+    'en':u'Robot: Moved from %s. Authors: %s',
+    }
+
 class CatTitleRecognition(object):
     """Special object to recognize categories in a certain language.
 
@@ -206,6 +211,23 @@ class _CatLink(wikipedia.PageLink):
     def isEmpty(self):
         (articles, subcats, supercats) = self.catlist(purge = True)
         return (articles == [] and subcats == [])
+    
+    def copyTo(self, catname):
+        """
+        Returns true if copying was successful, false if target page already
+        existed.
+        """
+        catname = self.site().category_namespace() + ':' + catname
+        targetCat = wikipedia.PageLink(self.site(), catname)
+        if targetCat.exists():
+            wikipedia.output('Target page %s already exists!' % targetCat.linkname())
+            return False
+        else:
+            wikipedia.output('Moving text from %s to %s.' % (self.linkname(), targetCat.linkname()))
+            authors = ', '.join(self.contributingUsers())
+            creationSummary = wikipedia.translate(wikipedia.getSite(), msg_created_for_renaming) % (self.linkname(), authors)
+            targetCat.put(self.get(), creationSummary)
+            return True
     
 def CatLink(code, name):
     """Factory method to create category link objects from the category name"""

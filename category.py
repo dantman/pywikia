@@ -74,7 +74,6 @@ deletion_reason_rename = {
     'en':u'Robot: Category was moved to %s',
     }
 
-
 catContentDB={}
 def get_subcats(supercat):
     '''
@@ -251,6 +250,11 @@ def rename_category(old_cat_title, new_cat_title):
     else:
         for subcategory in subcategories:
             catlib.change_category(subcategory, old_cat_title, new_cat_title)
+    # TODO: only try to delete if bot has admin status
+    if old_cat.copyTo(new_cat_title):
+        if old_cat.isEmpty():
+            reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_rename) % new_cat_title
+            old_cat.delete(reason)
 
 def remove_category(cat_title):
     '''
