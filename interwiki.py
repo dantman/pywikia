@@ -62,6 +62,11 @@ This script understands various command-line arguments:
     -restore:      restore a set of "dumped" pages the robot was working on
                    when it terminated.
                    
+    -warnfile:     used as -warnfile:filename, reads all warnings from the
+                   given file that apply to the home wikipedia language, and
+                   read the rest of the warning as a hint. Then treats all the
+                   mentioned pages.
+                   
     Arguments that are interpreted by more bots:
 
     -lang:         specifies the language the bot is run on (e.g. -lang:de).
@@ -118,6 +123,7 @@ class Global:
     log = config.treelang_log
     minarraysize = 100
     maxquerysize = 60
+    msglang = 'en'
     same = False
     skip = {}
     untranslated = False
@@ -512,9 +518,9 @@ class SubjectArray:
 
     def isDone(self):
         """Check whether there is still more work to do"""
-        return len(self.subjects) == 0 and self.generator is None
+        return len(self) == 0 and self.generator is None
 
-    def plus(self, code):
+    def plus(self, code): 
         """This is a routine that the Subject class expects in a counter"""
         try:
             self.counts[code] += 1
@@ -530,6 +536,9 @@ class SubjectArray:
         while not self.isDone():
             self.queryStep()
 
+    def __len__(self):
+        return len(self.subjects)
+    
 def compareLanguages(old, new):
     removing = []
     adding = []
@@ -545,12 +554,37 @@ def compareLanguages(old, new):
             adding.append(code2)
     s = ""
     if adding:
-        s = s + " %s:" % (msg[msglang][0]) + ",".join(adding)
+        s = s + " %s:" % (msg[globalvar.msglang][0]) + ",".join(adding)
     if removing: 
-        s = s + " %s:" % (msg[msglang][1]) + ",".join(removing)
+        s = s + " %s:" % (msg[globalvar.msglang][1]) + ",".join(removing)
     if modifying:
-        s = s + " %s:" % (msg[msglang][2]) + ",".join(modifying)
+        s = s + " %s:" % (msg[globalvar.msglang][2]) + ",".join(modifying)
     return s,removing
+
+def ReadWarnfile(fn, sa):
+    import re
+    R=re.compile(r'WARNING: ([^\[]*):\[\[([^\[]+)\]\]([^\[]+)\[\[([^\[]+):([^\[]+)\]\]')
+    f=open(fn)
+    hints={}
+    for line in f.readlines():
+        m=R.search(line)
+        if m:
+            #print "DBG>",line
+            if m.group(1)==wikipedia.mylang:
+                #print m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
+                if not hints.has_key(m.group(2)):
+                    hints[m.group(2)]=[]
+                #print m.group(3)
+                if m.group(3) != ' links to incorrect ':
+                    try:
+                        hints[m.group(2)].append('%s:%s'%(m.group(4),wikipedia.link2url(m.group(5),m.group(4))))
+                    except wikipedia.Error:
+                        print "DBG> Failed to add", line
+                #print "DBG> %s : %s" % (m.group(2), hints[m.group(2)])
+    f.close()
+    for pagename in hints:
+        pl = wikipedia.PageLink(wikipedia.mylang, pagename)
+        sa.add(pl, hints = hints[pagename])
 
 #===========
         
@@ -559,11 +593,12 @@ globalvar=Global()
 if __name__ == "__main__":
     inname = []
     hints = []
-    mode = 1
     start = None
     number = None
     skipfile = None
-    restore = False
+
+    sa=SubjectArray()
+
     for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
             pass
@@ -577,6 +612,8 @@ if __name__ == "__main__":
             globalvar.untranslated = True
         elif arg.startswith('-hint:'):
             hints.append(arg[6:])
+        elif arg.startswith('-warnfile:'):
+            ReadWarnfile(arg[10:], sa)
         elif arg == '-name':
             globalvar.same = 'name'
         elif arg == '-confirm':
@@ -590,13 +627,15 @@ if __name__ == "__main__":
         elif arg == '-nobell':
             globalvar.bell = False
         elif arg == '-test':
-            mode = 2
+            sa.add(wikipedia.PageLink(wikipedia.mylang, 'Scheikunde'))
+            sa.add(wikipedia.PageLink(wikipedia.mylang, 'Wiskunde'))
+            sa.add(wikipedia.PageLink(wikipedia.mylang, 'Natuurkunde'))
         elif arg.startswith('-skipfile:'):
             skipfile = arg[10:]
         elif arg == '-restore':
-            restore = True
+            for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
+                sa.add(pl)
         elif arg.startswith('-start:'):
-            mode = 3
             start = arg[7:]
         elif arg.startswith('-number:'):
             number = int(arg[8:])
@@ -604,50 +643,39 @@ if __name__ == "__main__":
             inname.append(arg)
 
     if msg.has_key(wikipedia.mylang):
-        msglang = wikipedia.mylang
-    else:
-        msglang = 'en'
+        globalvar.msglang = wikipedia.mylang
 
     if globalvar.log:
         import logger
         sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
 
     unequal.read_exceptions()
-
-    sa=SubjectArray()
     
     if skipfile:
         for pl in wikipedia.PageLinksFromFile(skipfile):
             globalvar.skip[pl] = None
 
-    if restore:
-        for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
-            sa.add(pl)
-        
-    if mode == 1:
-        inname = '_'.join(inname)
-        if not inname and not restore:
-            inname = raw_input('Which page to check:')
+    if start:
+        if number:
+            print "Treating %d pages starting at %s" % (number, start)
+            i = 0
+            for pl in wikipedia.allpages(start = start):
+                sa.add(pl)
+                i += 1
+                if i >= number:
+                    break
+        else:
+            print "Treating pages starting at %s" % start
+            sa.setGenerator(wikipedia.allpages(start = start))
 
-        if inname:
-            inpl = wikipedia.PageLink(wikipedia.mylang, inname)
-            sa.add(inpl, hints = hints)
-    elif mode == 2:
-        sa.add(wikipedia.PageLink(wikipedia.mylang, 'Scheikunde'))
-        sa.add(wikipedia.PageLink(wikipedia.mylang, 'Wiskunde'))
-        sa.add(wikipedia.PageLink(wikipedia.mylang, 'Natuurkunde'))
-    elif mode == 3 and number:
-        print "Treating %d pages starting at %s" % (number, start)
-        i = 0
-        for pl in wikipedia.allpages(start = start):
-            sa.add(pl)
-            i += 1
-            if i >= number:
-                break
-    elif mode == 3 and not number:
-        print "Treating pages starting at %s" % start
-        sa.setGenerator(wikipedia.allpages(start = start))
-        
+    inname = '_'.join(inname)
+    if sa.isDone() and not inname:
+        inname = raw_input('Which page to check:')
+
+    if inname:
+        inpl = wikipedia.PageLink(wikipedia.mylang, inname)
+        sa.add(inpl, hints = hints)
+
     try:
         sa.run()
     except KeyboardInterrupt:
