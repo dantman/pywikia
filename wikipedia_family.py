@@ -80,7 +80,7 @@ class Family(family.Family):
             'lv':'lv.wikipedia.org',   # Livonian
             'mg':'mg.wikipedia.org',   # Malagasy
             'mi':'mi.wikipedia.org',   # Maori
-            'minnan':'minnan.wikipedia.org', # Min-Nan
+            'minnan':'zh-min-nan.wikipedia.org', # Min-Nan
             'mk':'mk.wikipedia.org',   # Macedonian
             'ml':'ml.wikipedia.org',   # Malayalam
             'mn':'mn.wikipedia.org',   # Mongolian
