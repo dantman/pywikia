@@ -372,10 +372,11 @@ class Subject:
                 if new.has_key(code) and new[code] is None:
                     print "NOTE: Ignoring %s"%(pl.asasciilink())
                 elif temp.has_key(code) and temp[code] is None:
+                    if globalvar.autonomous:
+                        return None
                     answer = ' '
                     while answer not in 'yng':
                         answer = raw_input('%s y(es)/n(o)/g(ive up)? '%pl.asasciilink())
-                    answer = self.ask(askit,pl)
                     if answer == 'y':
                         temp[code] = pl
                         new[code] = pl
@@ -405,6 +406,7 @@ class Subject:
                             return None
                 elif code in ('zh-tw','zh-cn') and temp.has_key('zh') and temp['zh'] is not None:
                     temp['zh'] = None # Remove the global zh link
+                    new['zh'] = None
                     temp[code] = pl # Add the more precise one
                 elif code == 'zh' and (
                     (temp.has_key('zh-tw') and temp['zh-tw'] is not None) or
@@ -418,6 +420,7 @@ class Subject:
         return new
 
     def ask(self, askall, pl):
+        print "Really: %s"%askall
         if not askall:
             return 'y'
         answer = ' '
@@ -428,6 +431,7 @@ class Subject:
     def assemblesecondrun(self, previous, askall=False):
         new = previous
         askit = askall
+        print askit
         for pl in self.done.keys():
             code = pl.code()
             if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
