@@ -974,7 +974,8 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
                 
             if not read_only:
                 # check if we're logged in
-                if text.find('Userlogin') != -1:
+                p=re.compile('userlogin')
+                if p.search(text) != None:
                     output(u'Warning: You\'re probably not logged in on %s:' % code)
             m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
             if m:
