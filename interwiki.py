@@ -449,55 +449,6 @@ class Subject(object):
                     new[site].append(pl)
                 else:
                     new[site] = [pl]
-        # Clean up the Chinese links
-        zhcnsite = mysite.getSite(code='zh-cn')
-        zhtwsite = mysite.getSite(code='zh-tw')
-        zhsite = mysite.getSite(code='zh')
-        if zhtwsite in new and zhcnsite in new:
-            if len(new[zhcnsite]) == 1 and len(new[zhtwsite]) == 1:
-                if new[zhcnsite][0].linkname() == new[zhtwsite][0].linkname():
-                    zhpl = wikipedia.PageLink(zhsite,new[zhcnsite][0].linkname())
-                    new[zhsite] = [zhpl]
-                    for pl2 in self.foundin[new[zhcnsite][0]]:
-                        if self.foundin.has_key(zhpl):
-			    self.foundin[zhpl]=self.foundin[zhpl] + self.foundin[new[zhcnsite][0]]
-			else:
-			    self.foundin[zhpl]=self.foundin[new[zhcnsite][0]]
-                    for pl2 in self.foundin[new[zhtwsite][0]]:
-                        if self.foundin.has_key(zhpl):
-			    self.foundin[zhpl]=self.foundin[zhpl] + self.foundin[new[zhtwsite][0]]
-			else:
-			    self.foundin[zhpl]=self.foundin[new[zhtwsite][0]]
-                    del new[zhcnsite]
-                    del new[zhtwsite]
-                    print "Changing equivalent zh-cn and zh-tw links into a single zh link"
-                elif zhsite in new:
-                    del new[zhsite]
-                    print "Ignoring links to zh in presence of zh-cn and zh-tw"
-            elif zhsite in new:
-                del new[zhsite]
-                print "Ignoring links to zh in presence of zh-cn and zh-tw"
-        elif zhcnsite in new or zhtwsite in new:
-            if zhsite in new:
-                del new[zhsite]
-                print "Ignoring links to zh in presence of zh-cn and zh-tw"
-        # Remove Chinese internal links
-        if mysite==zhsite or mysite==zhtwsite:
-            if zhtwsite in new:
-                if len(new[zhtwsite]) > 1:
-                    nerr +=1
-                    self.problem("Found more than one link for traditional Chinese")
-                del new[zhtwsite]
-        if mysite==zhsite or mysite==zhtwsite:
-            if zhcnsite in new:
-                if len(new[zhcnsite]) > 1:
-                    nerr +=1
-                    self.problem("Found more than one link for simplified Chinese")
-                del new[zhcnsite]
-        if mysite==zhcnsite or mysite==zhtwsite:
-            if zhsite in new:
-                # Do not complain about more than one value. One may be cn, the other tw!
-                del new[zhsite]
         # See if new{} contains any problematic values
         result = {}
         for k, v in new.items():
@@ -608,6 +559,15 @@ class Subject(object):
             if globalvar.backlink:
                 self.reportBacklinks(new)
         else:
+            # Change no: to nb: in presence of nn:
+            if wikipedia.getSite('no') in new.keys():
+                print "That's no!"
+                if wikipedia.getSite('nn') in new or self.inpl.language() == 'nn':
+                    new[wikipedia.getSite('nb')] = wikipedia.PageLink(wikipedia.getSite('nb'),new[wikipedia.getSite('no')].linkname())
+                    del new[wikipedia.getSite('no')]
+            else:
+                print "That's yes!"
+                print new
             if mods:
                 wikipedia.output(u"Changes to be made: %s" % mods)
             oldtext = self.inpl.get()
@@ -689,9 +649,6 @@ class Subject(object):
                             wikipedia.output(u"WARNING: %s does not link to %s" % (pl.asselflink(), xpl.aslink(None)))
                 # Check for superfluous links
                 for xpl in linked:
-                    # Chinese internal links are ok.
-                    if pl.site().lang in ['zh-cn','zh-tw','zh'] and xpl.site().lang in ['zh-cn','zh-tw']:
-                        pass
                     elif not xpl in shouldlink:
                         # Check whether there is an alternative page on that language.
                         for l in shouldlink:
@@ -875,24 +832,7 @@ def compareLanguages(old, new):
     modifying = []
     mysite = wikipedia.getSite()
     for site in old.keys():
-        if site not in new:
-            zhcnsite = mysite.getSite(code='zh-cn')
-            zhtwsite = mysite.getSite(code='zh-tw')
-            zhsite = mysite.getSite(code='zh')
-            # zh internal links should not be present (as interwiki-links)
-            # in the first place
-            if mysite.lang in ['zh','zh-cn','zh-tw'] and site.lang in ['zh','zh-cn','zh-tw']:
-                pass
-            # Zh is allowed to be removed if it is replaced by zh-cn or
-            # zh-tw. Do not call such a modification a removal but a change
-            # Same for the reverse change.
-            elif site == zhsite and (zhcnsite in new or zhtwsite in new):
-                modifying.append(site)
-            elif (site == zhcnsite or site == zhtwsite) and zhsite in new:
-                modifying.append(site)
-            else:
-                removing.append(site)
-        elif old[site] != new[site]:
+        if old[site] != new[site]:
             modifying.append(site)
 
     for site2 in new.keys():
