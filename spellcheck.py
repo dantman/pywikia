@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: UTF-8 -*-
 """
 This bot spellchecks Wikipedia pages. It is very simple, only checking
 whether a word, stripped to its 'essence' is in the list or not, it does
@@ -39,6 +40,7 @@ import string,codecs
 msg={
     'en':u'Bot-aided spell checker',
     'nl':u'Spellingscontrole',
+    'pt':u'Bot de correção ortográfica',
 }
 
 class SpecialTerm(object):
