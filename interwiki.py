@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
 page, and using existing translations plus hints from the command line to
@@ -146,7 +146,8 @@ import sys, copy, re
 import wikipedia, config, unequal, date
 
 msg = {
-    'da':(u'Tilføjer', u'Fjerner',u'Ændrer'),
+    'cs':(u'Přidal', u'Odebral', u'Změnil'),
+    'da':(u'Tilføjer', u'Fjerner', u'Ændrer'),
     'de':(u'Ergänze', u'Entferne', u'Ändere'),
     'en':(u'Adding', u'Removing', u'Modifying'),
     'es':(u'Añadido', u'Eliminado', u'Modificado'),
