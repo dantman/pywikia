@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import config, urllib
 
@@ -264,9 +264,12 @@ class Family(object):
             namespaces.append(default_namespace_title.lower())
         return namespaces
 
-    # Redirect code can be translated, but is only in one language now.
+    # Redirect code can be translated.
 
-    redirect = {}
+    redirect = {
+        'cy': 'ail-cyfeirio',
+        'ga': 'athsheaoladh'
+        }
 
     # On most Wikipedias page names must start with a capital letter, but some
     # languages don't use this.

@@ -188,12 +188,6 @@ class Family(family.Family):
 
     # All namespaces are inherited from family.Family.
         
-    # Redirect code can be translated, but is only in one language now.
-    
-    redirect = {
-        'cy': 'ail-cyfeirio',
-        }
-        
     # On most Wikipedias page names must start with a capital letter, but some
     # languages don't use this.
         
