@@ -594,11 +594,13 @@ class GetAll:
             print "BUG: Can not find name of Special in %s:" % self.code
             raise
         pagenames = u'\r\n'.join([x.hashfreeLinkname() for x in self.pages])
+        pagenames = forCode(pagenames, self.code)
         data = urlencode((
                     ('action', 'submit'),
-                    ('pages', UnicodeToAsciiHtml(pagenames)),
+                    ('pages', pagenames),
                     ('curonly', 'True'),
                     ))
+        print repr(data)
         headers = {"Content-type": "application/x-www-form-urlencoded", 
                    "User-agent": "RobHooftWikiRobot/1.0"}
         # Slow ourselves down
