@@ -1102,7 +1102,7 @@ class Throttle(object):
         for p in processes.keys():
             f.write(str(p)+' '+str(processes[p])+'\n')
         f.close()
-        self.process_multiplicity = len(processes)
+        self.process_multiplicity = count
         print("Checked for running processes. %s processes currently running, "%len(processes) +
               "including the current process.")
 
@@ -1154,7 +1154,7 @@ class Throttle(object):
                 line = line.split(' ')
                 pid = int(line[0])
                 ptime = int(line[1].split('.')[0])
-                if now - ptime <= self.dropdelay and pid != self.pid:
+                if now - ptime <= self.releasepid and pid != self.pid:
                     processes[pid] = ptime
         f = open('throttle.log','w')
         for p in processes.keys():
