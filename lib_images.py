@@ -143,19 +143,26 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         fn = fn.split('/')[-1]
     if '\\' in fn:
         fn = fn.split('\\')[-1]
-    # convert ISO 8859-1 to Unicode, or parse UTF-8
+    # convert ISO 8859-1 to Unicode, or parse UTF-8. If source_wiki is None,
+    # the filename is already in Unicode.
     if source_wiki != None:
         try:
             fn = unicode(fn, wikipedia.code2encoding(source_wiki))
         except TypeError:
+            print 'Type error in lib_images.py. This should not happen. Please report this problem.'
             pass
     if not keep:
-        print "The filename on wikipedia will default to:",fn
-        newfn = wikipedia.input(u'Better name : ', encode = wikipedia.myencoding())
+        print "The filename on wikipedia will default to:", fn
+        newfn = wikipedia.input(u'Better name:')
+        if newfn != '':
+            fn = newfn
     # Wikipedia doesn't allow spaces in the file name.
     # Replace them here to avoid an extra confirmation form
     fn = fn.replace(' ', '_')
-    
+    # Convert the filename (currently Unicode) to the encoding used on the
+    # target wiki
+    fn = fn.encode(wikipedia.myencoding())
+    print repr(fn)
     # A proper description for the submission.
     if description=='':
         description = wikipedia.input(u'Give a description for the image:')
