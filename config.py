@@ -42,7 +42,7 @@ interwiki_text_separator = '\r\n'
 category_atbottom = ['de']
 # on_one_line is a list of languages that want the category links
 # one-after-another on a single line
-category_on_one_line = ['de']
+category_on_one_line = []
 
 # String used as separator between category links and the text
 category_text_separator = '\r\n'
