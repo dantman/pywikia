@@ -54,6 +54,16 @@ langs = {'en':'en.wikipedia.org', # English
          #'test':'test.wikipedia.org',
          }
 
+# Translation used on all wikipedia's for the Special: namespace.
+# This is e.g. used by the login script.
+special = {'en':'Special',
+           'nl':'Speciaal',
+           'da':'Speciel',
+           'de':'Spezial',
+           'fr':'Special',
+           'fy':'Wiki',
+           }
+           
 oldsoftware=['it','no','pt','af','fy','la','ca','fi','ia','et','eu','simple','nds','mr']
 
 biglangs=['en','pl','da','sv','nl','de','fr','es']
