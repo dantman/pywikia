@@ -434,7 +434,7 @@ for wrd in page_list:
                         refpl_redir=wikipedia.PageLink(mysite, ref_redir)
                         treat(refpl_redir, refpl)
                 elif choice == 'c':
-                    text="#%s [[%s]]"%(mysite.redirect(), thispl.linkname())
+                    text="#%s [[%s]]"%(mysite.redirect(default=True), thispl.linkname())
                     include = "redirect"
         if include in [True,"redirect"]:
             # make a backup of the original text so we can show the changes later

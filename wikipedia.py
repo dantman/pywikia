@@ -1844,9 +1844,12 @@ class Site(object):
     def category_on_one_line(self):
         return self.lang in config.category_on_one_line
 
-    def redirect(self):
-        return self.family.redirect.get(self.lang,None)
-    
+    def redirect(self,default=False):
+        if default:
+            return self.family.redirect.get(self.lang,"REDIRECT")
+        else:
+            return self.family.redirect.get(self.lang,None)
+                
     def interwiki_putfirst(self):
         return self.family.interwiki_putfirst.get(self.lang,None)
 
