@@ -379,7 +379,9 @@ class SubjectArray:
         """Generate more subjects. This is called internally when the
            list of subjects becomes to small, but only if there is a
            generator"""
-        print "NOTE: The first unfinished subject is:",self.firstSubject().pl().asasciilink()
+        fs = self.firstSubject()
+        if fs:
+            print "NOTE: The first unfinished subject is:", fs.pl().asasciilink()
         print "NOTE: Number of pages queued is %d, trying to add %d more."%(
             len(self.subjects), number)
         for i in range(number):
