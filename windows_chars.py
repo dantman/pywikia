@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.8 2004/07/13 16:46:16 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.9 2004/07/13 22:17:03 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -103,7 +103,7 @@ def parse_sqldump(filename):
     # open sql dump and read page titles out of it
     import sqldump
     sqldump = sqldump.SQLdump(filename, 'latin-1')
-    for page in sqldump.entries:
+    for page in sqldump.pages():
         for char in windows_1252:
          if page.text.find(char) != -1:
              treat(page.title)

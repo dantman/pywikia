@@ -29,15 +29,15 @@ class SQLentry:
 
 # Represents one parsed SQL dump file. Reads the local file at initialization,
 # parses it with a regular expression, and offers access to the resulting
-# SQLentry objects through the entries list variable.
+# SQLentry objects through the pages() generator.
 class SQLdump:
     def __init__(self, filename, encoding):
-        print 'Reading SQL dump'
-        import codecs
-        f=codecs.open(filename, 'r', encoding = encoding)
-        contents = f.read()
-        f.close()
-        self.entries = []
+        self.filename = filename
+        self.encoding = encoding
+    
+    # Generator. Reads one line at a time from the SQL dump file, and parses it
+    # to create SQLentry objects. Stops when the end of file is reached.
+    def pages(self):
         pageR = re.compile("\((\d+),"     # cur_id
                          + "(\d+),"       # cur_namespace
                          + "\'(.*?)\',"   # cur_title
@@ -54,10 +54,21 @@ class SQLdump:
                          + "([\d\.]+?),"  # cur_random         (for random page function)
                          + "\'(\d+)\',"   # inverse_timestamp  (obsolete)
                          + "\'(\d+)\'")   # cur_touched        (cache update timestamp)
-        print 'Parsing SQL dump'
-        for id, namespace, title, text, comment, userid, username, timestamp, restrictions, counter, redirect, minor, new, random, inversetimestamp, touched in pageR.findall(contents):
-             new_entry = SQLentry(id, namespace, title, text, comment, userid, username, timestamp, restrictions, counter, redirect, minor, new, random, inversetimestamp, touched)
-             self.entries.append(new_entry)
+        print 'Reading SQL dump'
+        import codecs
+        f=codecs.open(self.filename, 'r', encoding = self.encoding)
+        while True:
+            # read only one (very long) line because we would risk out of memory
+            # errors if we read the entire file at once
+            line = f.readline()
+            if line == '':
+                print 'End of file.'
+                break
+            self.entries = []
+            for id, namespace, title, text, comment, userid, username, timestamp, restrictions, counter, redirect, minor, new, random, inversetimestamp, touched in pageR.findall(line):
+                 new_entry = SQLentry(id, namespace, title, text, comment, userid, username, timestamp, restrictions, counter, redirect, minor, new, random, inversetimestamp, touched)
+                 yield new_entry
+        f.close()
 
 # test routines
 if __name__=="__main__":
