@@ -13,10 +13,27 @@ import re
 
 import wikipedia
 
-exceptions = []
+class Exceptions:
+    def __init__(self):
+        self.d={}
+
+    def add(self, one, two):
+        try:
+            self.d[one].append(two)
+        except KeyError:
+            self.d[one] = [two]
+
+    def check(self, one, two):
+        try:
+            return two in self.d[one]
+        except KeyError:
+            return False
+        
+_bigger = Exceptions()
+_unequal = Exceptions()
 
 def read_exceptions():
-    Re = re.compile(r'\[\[(.*)\]\] *< *\[\[(.*)\]\]')
+    Re = re.compile(r' *\[\[(.*)\]\] *([^ ]+) *\[\[(.*)\]\]')
     try:
         f = open('%s-exceptions.dat' % wikipedia.mylang)
     except IOError:
@@ -26,15 +43,17 @@ def read_exceptions():
             m = Re.match(line)
             if not m:
                 raise ValueError("Do not understand %s"%line)
-            exceptions.append((m.group(1),m.group(2)))
+            code, name = m.group(1).split(':',1)
+            pl1 = wikipedia.PageLink(code, name)
+            code, name = m.group(3).split(':',1)
+            pl2 = wikipedia.PageLink(code, name)
+            if m.group(2) == '<':
+                _bigger.add(pl1, pl2)
+            elif m.group(2) == '!=':
+                _unequal.add(pl1, pl2)
+            else:
+                raise ValueError("Do not understand operator %s"%line)
 
-def bigger(inpl, pl):
-    if pl.hashname():
-        # If we refer to part of the page, it is bigger
-        return True
-    x1 = str(inpl)
-    x2 = str(pl)
-    for small,big in exceptions:
-        if small == x1 and big == x2:
-            return True
-    return False
+bigger = _bigger.check
+
+unequal = _unequal.check
