@@ -1,7 +1,7 @@
 """
-This bot parse articles and replace a text by another. This is
-a development script and should not be used on live wikipedia
-cause you will break things using it.
+This bot parse articles and replace a text by another. This is a development
+script and should not be used on live wikipedia cause you will break things
+using it.
 
 Author: Ashar Voultoiz 2004.
 
@@ -16,10 +16,11 @@ which include code from (in no particular order):
 	Ashar Voultoiz
 	Rob W.W. Hooft
 	Thomas R. Koll
-
+------------------------------------------------------------------------------
 		
 Arguments:
-	-file : file containing the articles to be fixed
+	-file   : file containing the articles to be fixed (using [[Article name]]
+	          format.
 	
 	-search : file name containing text we will search for
 
