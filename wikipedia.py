@@ -1066,16 +1066,22 @@ def allpages(start = '!'):
 
        The objects returned by this generator are all PageLink()s.
     """
-    while 1:
+    while True:
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
         start = link2url(start, code = mylang)
         # load a list which contains a series of article names (always 480?)
         returned_html = getPage(mylang, family.allpagesname(mylang, start), do_quote = False, get_edit_page = False)
         # Try to find begin and end markers
         try:
-            # WARNING: broken for 1.4 (test.wikipedia.org)
-            ibegin = returned_html.index('<table')
-            iend = returned_html.index('</table')
+            # In 1.4, another table was added above the navigational links
+            if version(mylang) < "1.4":
+                begin_s = '<table'
+                end_s = '</table'
+            else:
+                begin_s = '</table><hr /><table'
+                end_s = '</table><div class="printfooter">'
+            ibegin = returned_html.index(begin_s)
+            iend = returned_html.index(end_s)
         except ValueError:
             raise NoPage('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
         # remove the irrelevant sections
