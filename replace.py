@@ -72,14 +72,10 @@ fixes = {
             r'(?i)<br>':                      r'<br />',
             # linebreak with attributes
             r'(?i)<br ([^>/]+?)>':            r'<br \1 />',
-            r'(?i)<b>':                       r"'''",
-            r'(?i)</b>':                      r"'''",
-            r'(?i)<strong>':                  r"'''",
-            r'(?i)</strong>':                 r"'''",
-            r'(?i)<em>':                      r"''",
-            r'(?i)</em>':                     r"''",
-            r'(?i)<i>':                       r"''",
-            r'(?i)</i>':                      r"''",
+            r'(?i)<b>(.*?)</b>':              r"'''\1'''",
+            r'(?i)<strong>(.*?)</strong>':    r"'''\1'''",
+            r'(?i)<i>(.*?)</i>':              r"''\1''",
+            r'(?i)<em>(.*?)</em>':            r"''\1''",
             # horizontal line without attributes in a single line
             r'(?i)([\r\n])<hr[ /]*>([\r\n])': r'\1----\2',
             # horizontal line without attributes with more text in the same line
@@ -116,24 +112,28 @@ def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex):
     import sqldump
     dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
     for entry in dump.entries():
+        skip_page = False
         for exception in exceptions:
             if regex:
                 exception = re.compile(exception)
                 if exception.search(entry.text):
+                    skip_page = True
                     break
             else:
                 if entry.text.find(exception) != -1:
+                    skip_page = True
                     break
-        for old in replacements.keys():
-            if regex:
-                old = re.compile(old)
-                if old.search(entry.text):
-                    yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
-                    break
-            else:
-                if entry.text.find(old) != -1:
-                    yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
-                    break
+        if not skip_page:
+            for old in replacements.keys():
+                if regex:
+                    old = re.compile(old)
+                    if old.search(entry.text):
+                        yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+                        break
+                else:
+                    if entry.text.find(old) != -1:
+                        yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+                        break
 
 # Generator which will yield pages that might contain text to replace.
 # These pages might be retrieved from a text file.
