@@ -370,8 +370,9 @@ if backlink:
     for code in new.keys():
         pl=new[code]
         if not bigger(pl):
+            shouldlink=new.values()+[inpl]
             linked=pl.interwiki()
-            for xpl in new.values()+[inpl]:
+            for xpl in shouldlink:
                 if xpl!=pl and not xpl in linked:
                     for l in linked:
                         if l.code()==xpl.code():
@@ -379,3 +380,14 @@ if backlink:
                             break
                     else:
                         print "WARNING:",pl.asselflink(),"does not link to",xpl.aslink()
+            # Check for superfluous links
+            for xpl in linked:
+                if not xpl in shouldlink:
+                    # Check whether there is an alternative page on that language.
+                    for l in shouldlink:
+                        if l.code()==xpl.code():
+                            # Already reported above.
+                            break
+                    else:
+                        # New warning
+                        print "WARNING:",pl.asselflink(),"links to incorrect",xpl.aslink()
