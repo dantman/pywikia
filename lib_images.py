@@ -199,18 +199,18 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
                               (('wpUploadFile',fn,contents),)
                               )
         # do we know how the "success!" HTML page should look like?
-        success_msg = mediawiki_messages.get('successfulupload')
-        success_msgR = re.compile(re.escape(success_msg))
-        if success_msgR.search(returned_html):
-             print "Upload successful."
-        else:
-             # dump the HTML page
-             print returned_html + "\n\n"
-             answer = raw_input("Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
-             if answer in ["y", "Y"]:
-                 return get_image(original_url, source_wiki, original_description, debug)
-             else:
-                 return
+        # success_msg = mediawiki_messages.get('successfulupload')
+        # success_msgR = re.compile(re.escape(success_msg))
+        # if success_msgR.search(returned_html):
+        #      print "Upload successful."
+        # else:
+        #      dump the HTML page
+        #      print returned_html + "\n\n"
+        #      answer = raw_input("Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
+        #      if answer in ["y", "Y"]:
+        #          return get_image(original_url, source_wiki, original_description, debug)
+        #      else:
+        #          return
     return fn
 
 
