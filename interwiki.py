@@ -283,6 +283,10 @@ class Subject:
                         if globalvar.untranslatedonly:
                             # Ignore the interwiki links.
                             iw = ()
+                    if pl.isEmpty():
+                        print "NOTE: %s is empty; ignoring it and its interwiki links" % pl.asasciilink()
+                        # Ignore the interwiki links
+                        iw = ()
                     for pl2 in iw:
                       if unequal.unequal(self.inpl, pl2):
                           print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
@@ -347,7 +351,7 @@ class Subject:
         new = {}
         for pl in self.done.keys():
             code = pl.code()
-            if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage():
+            if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
                 if pl != self.inpl:
                     if returnonquestion:
                         return None

@@ -406,6 +406,13 @@ class PageLink:
             return True
         return False
     
+    def isEmpty(self):
+        txt = self.get()
+        if len(removeLanguageLinks(txt)) < 4:
+            return 1
+        else:
+            return 0
+        
     def put(self, newtext, comment=None):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
