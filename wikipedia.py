@@ -271,7 +271,7 @@ class PageLink:
                     hn = underline2space(hn)
                     m = re.search("== *%s *==" % hn, self._contents)
                     if not m:
-                        output("WARNING: Hashname does not exist: %s" % self)
+                        output("WARNING: Hashname does not exist: %s" % self.linkname())
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
