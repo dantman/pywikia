@@ -471,11 +471,9 @@ def main():
                     while True:
                         print '\n'
                         wikipedia.output(u">>> %s <<<" % refpl.linkname())
-                        displayedText = text[max(0, m.start() - context):m.end()+context]
-                        # at the beginning of the link, start red color
-                        displayedText = displayedText[:context] + '\x1b[91;1m' + displayedText[context:]
+                        # at the beginning of the link, start red color.
                         # at the end of the link, reset the color to default
-                        displayedText = displayedText[:-context] + '\x1b[0m' + displayedText[-context:] 
+                        displayedText = text[max(0, m.start() - context):m.start()] + '\x1b[91;1m' + text[m.start():m.end()] + '\x1b[0m' + text[m.end():m.end()+context]
                         wikipedia.output(displayedText)
                         if always == None:
                             if edited:
