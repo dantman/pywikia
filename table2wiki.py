@@ -130,7 +130,7 @@ for article in articles:
     # bring every <tag> into one single line.
     num = 1
     while num != 0:
-        newText, num = re.subn("([^\r\n]{1})(\<[tT]{1}[dDhHrR]{1})",
+        newText, num = re.subn("([^\r\n]{1})(<[tT]{1}[dDhHrR]{1})",
                                "\\1\r\n\\2", newText, 0)
         
     ##################
@@ -139,19 +139,19 @@ for article in articles:
 
     ##################
     # <table> tag with parameters, with more text on the same line
-    newText = re.sub("[\r\n]*?\<(?i)(table) ([\w\W]*?)>([\w\W]*?)[\r\n ]*",
+    newText = re.sub("[\r\n]*?<(?i)(table) ([\w\W]*?)>([\w\W]*?)[\r\n ]*",
                      "\r\n{| \\2\r\n\\3", newText, 0)
     # <table> tag without parameters, with more text on the same line
-    newText = re.sub("[\r\n]*?\<(TABLE|table)>([\w\W]*?)[\r\n ]*",
+    newText = re.sub("[\r\n]*?<(TABLE|table)>([\w\W]*?)[\r\n ]*",
                      "\r\n{|\n\\2\r\n", newText, 0)
     # <table> tag with parameters, without more text on the same line
-    newText = re.sub("[\r\n]*?\<(TABLE|table) ([\w\W]*?)\>[\r\n ]*",
+    newText = re.sub("[\r\n]*?<(TABLE|table) ([\w\W]*?)>[\r\n ]*",
                      "\r\n{| \\2\r\n", newText, 0)
     # <table> tag without parameters, without more text on the same line
-    newText = re.sub("[\r\n]*?\<(TABLE|table)\>[\r\n ]*",
+    newText = re.sub("[\r\n]*?<(TABLE|table)>[\r\n ]*",
                      "\r\n{|\r\n", newText, 0)
     # end </table>
-    newText = re.sub("[\s]*<\/(TABLE|table)\>", "\r\n|}", newText, 0)
+    newText = re.sub("[\s]*<\/(TABLE|table)>", "\r\n|}", newText, 0)
     
     ##################
     # captions
@@ -162,64 +162,64 @@ for article in articles:
     
     ##################
     # <th> often people don't write them within <tr>, be warned!
-    newText = re.sub("[\r\n]+<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
+    newText = re.sub("[\r\n]+<(TH|th)([^>]*?)>([\w\W]*?)<\/(th|TH)>",
                      "\r\n!\\2 | \\3\r\n", newText, 0)
 
     # fail save. sometimes people forget </th>
-    newText, n = re.subn("[\r\n]+<(th|TH)\>([\w\W]*?)[\r\n]+",
+    newText, n = re.subn("[\r\n]+<(th|TH)>([\w\W]*?)[\r\n]+",
                          "\r\n! \\2\r\n", newText, 0)
     warnings = warnings + n
-    newText, n = re.subn("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)[\r\n]+",
+    newText, n = re.subn("[\r\n]+<(th|TH)([^>]*?)>([\w\W]*?)[\r\n]+",
                              "\r\n!\\2 | \\3\r\n", newText, 0)
     warnings = warnings + n
 
 
     ##################
     # very simple <tr>
-    newText = re.sub("[\r\n]*\<(tr|TR)([^>]*?)\>[\r\n]*", "\r\n|-----\\2\r\n", newText, 0)
-    newText = re.sub("[\r\n]*\<(tr|TR)\>[\r\n]*", "\r\n|-----\r\n", newText, 0)
+    newText = re.sub("[\r\n]*<(tr|TR)([^>]*?)>[\r\n]*", "\r\n|-----\\2\r\n", newText, 0)
+    newText = re.sub("[\r\n]*<(tr|TR)>[\r\n]*", "\r\n|-----\r\n", newText, 0)
     
     ##################
     # normal <td> without arguments
-    newText = re.sub("[\r\n]+\<(td|TD)\>([\w\W]*?)\<\/(TD|td)\>",
+    newText = re.sub("[\r\n]+<(td|TD)>([\w\W]*?)<\/(TD|td)>",
                      "\r\n| \\2\r\n", newText, 0)         
 
     ##################
     # normal <td> with arguments
-    newText = re.sub("[\r\n]+\<(td|TD)([^>]*?)\>([\w\W]*?)\<\/(TD|td)\>",
+    newText = re.sub("[\r\n]+<(td|TD)([^>]*?)>([\w\W]*?)<\/(TD|td)>",
                      "\r\n|\\2 | \\3", newText, 0)
 
     # WARNING: this sub might eat cells of bad HTML, but most likely it
     # will correct errors
-    newText, n = re.subn("[\r\n]+\<(td|TD)\>([^\r\n]*?)\<(td|TD)\>",
+    newText, n = re.subn("[\r\n]+<(td|TD)>([^\r\n]*?)<(td|TD)>",
                          "\r\n| \\2\r\n", newText, 0)
     warnings = warnings + n
     
     # fail save, sometimes it's a <td><td></tr>
-    #        newText, n = re.subn("[\r\n]+\<(td|TD)\>([^<]*?)\<(td|TD)\>\<\/(tr|TR)\>",
+    #        newText, n = re.subn("[\r\n]+<(td|TD)>([^<]*?)<(td|TD)><\/(tr|TR)>",
     #                             "\r\n| \\2\r\n", newText, 0)
-    #        newText, n = re.subn("[\r\n]+\<(td|TD)([^>]*?)\>([^<]*?)\<(td|TD)\>\<\/(tr|TR)\>",
+    #        newText, n = re.subn("[\r\n]+<(td|TD)([^>]*?)>([^<]*?)<(td|TD)><\/(tr|TR)>",
     #                             "\r\n|\\2| \\3\r\n", newText, 0)
     #
-    newText, n = re.subn("[\r\n]+\<(td|TD)([^>]+?)\>([^\r\n]*?)\<\/(td|TD)\>",
+    newText, n = re.subn("[\r\n]+<(td|TD)([^>]+?)>([^\r\n]*?)<\/(td|TD)>",
                          "\r\n|\\2 | \\3\r\n", newText, 0)
     warnings = warnings + n
     
     # fail save. sometimes people forget </td>
-    newText, n = re.subn("\<(td|TD)\>([^<]*?)[\r\n]+",
+    newText, n = re.subn("<(td|TD)>([^<]*?)[\r\n]+",
                          "\r\n| \\2\r\n", newText, 0)
     warnings = warnings + n
-    newText, n = re.subn("\<(td|TD)([^>]*?)\>([\w\W]*?)[\r\n]+",
+    newText, n = re.subn("<(td|TD)([^>]*?)>([\w\W]*?)[\r\n]+",
                          "\r\n|\\2 | \\3\r\n", newText, 0)
-    newText, n = re.subn("\<(td|TD)\>([\w\W]*?)[\r\n]+",
+    newText, n = re.subn("<(td|TD)>([\w\W]*?)[\r\n]+",
                          "\r\n| \\2\r\n", newText, 0)
     warnings = warnings + n
 
 
     ##################
     # Garbage collecting ;-)
-    newText = re.sub("\<td\>[\r\n]*\<\/tr\>", "", newText, 0)
-    newText = re.sub("[\r\n]*\<\/[Tt][rRdDhH]\>", "", newText, 0)
+    newText = re.sub("<td>[\r\n]*<\/tr>", "", newText, 0)
+    newText = re.sub("[\r\n]*<\/[Tt][rRdDhH]>", "", newText, 0)
     
     ##################
     # OK, that's only theory but works most times.
@@ -295,7 +295,7 @@ for article in articles:
     
     ##################
     # strip <center> from <th>
-    newText = re.sub("([\r\n]+\![^\r\n]+?)\<center\>([\w\W]+?)\<\/center\>",
+    newText = re.sub("([\r\n]+\![^\r\n]+?)<center>([\w\W]+?)<\/center>",
                      "\\1 \\2", newText, 0)
     # strip align="center" from <th> because the .css does it
     # if there are no other attributes than align, we don't need that | either
