@@ -7,62 +7,175 @@ import config, urllib
 class Family(object):
     # Note that if mylang is 'commons', it is automatically added.
     langs = {}
-
-    # MediaWiki default namespace titles
+        
+    # Translation used on all Wikipedias for the different namespaces.
+    # (Please sort languages alphabetically)
+    # You only need to enter translations that differ from _default.
     namespaces = {
         -2: {
             '_default': u'Media',
         },
         -1: {
             '_default': u'Special',
+            'af': u'Spesiaal',
+            'ar': u'خاص',
+            'bg': u'Специални',
+            'bn': u'বিশেষ',
+            'ca': u'Especial',
+            'cs': u'Speciální',
+            'csb': u'Specjalnô',
+            'cy': u'Arbennig',
+            'da': u'Speciel',
+            'de': u'Spezial',
+            'eo': u'Speciala',
+            'es': u'Especial',
+            'et': u'Eri',
+            'fa': u'ویژه',
+            'fi': u'Toiminnot',
+            'fy': u'Wiki',
+            'ga': u'Speisialta',
+            'he': u'מיוחד',
+            'hi': u'विशेष',
+            'hu': u'Speciális',
+            'id': u'Istimewa',
+            'it': u'Speciale',
+            'ja': u'特別',
+            'ko': u'특수기능',
+            'la': u'Specialis',
+            'ms': u'Istimewa',
+            'nb': u'Spesial',
+            'nl': u'Speciaal',
+            'no': u'Spesial',
+            'oc': u'Especial',
+            'pl': u'Specjalna',
+            'pt': u'Especial',
+            'ru': u'Специальные',
+            'sk': u'Špeciálne',
+            'sl': u'Posebno',
+            'sq': u'Speciale',
+            'sr': u'Посебно',
+            'uk': u'Спеціальні',
+            'ta': u'சிறப்பு',
+            'th': u'พิเศษ',
+            'wa': u'Sipeciås',
         },
         0: {
             '_default': None,
         },
         1: {
             '_default': 'Talk',
+            'de': u'Diskussion',
+            'nl': u'Overleg',
         },
         2: {
             '_default': u'User',
+            'de': u'Benutzer',
+            'nl': u'Gebruiker',
         },
         3: {
             '_default': u'User talk',
+            'de': u'Benutzer Diskussion',
         },
         4: {
-            '_default': u'Project',
+            '_default': u'Wikipedia',
         },
         5: {
-            '_default': u'Project talk',
+            '_default': u'Wikipedia talk',
+            'de': u'Wikipedia Diskussion',
         },
         6: {
+            # TODO: convert all percent-encoded titles to plaintext
             '_default': u'Image',
+            'af': u'Beeld',
+            'ar': u'صورة',
+            'bg': u'Картинка',
+            #'bn': To be checked,
+            'ca': u'Imatge',
+            'cs': u'Soubor',
+            'csb': u'Òbrôzk',
+            'cy': u'Delwedd',
+            'da': u'Billede',
+            'de': u'Bild',
+            'eo': u'Dosiero',
+            'es': u'Imagen',
+            'et': u'Pilt',
+            'fa': u'تصویر',
+            'fi': u'Kuva',
+            'fr': u'Image',
+            'fy': u'Ofbyld',
+            'ga': u'Íomhá',
+            'he': u'תמונה',
+            'hi': u'चित्र',
+            'hu': u'Kép',
+            'ia': u'Imagine',
+            'id': u'Imej',
+            'it': u'Immagine',
+            'ja': u'画像',
+            'ko': u'그림',
+            'la': u'Imago',
+            'ms': u'Imej',
+            'nb': u'Bilde',
+            'nl': u'Afbeelding',
+            'no': u'Bilde',
+            'oc': u'Image',
+            'pl': u'Grafika',
+            'pt': u'Imagem',
+            'ro': u'Imagine',
+            'ru': u'Изображение',
+            'sk': u'Obrázok',
+            'sl': u'Slika',
+            'sq': u'Figura',
+            'sr': u'Слика',
+            'sv': u'Bild',
+            'ta': u'படிமம்',
+            'th': u'ภาพ',
+            'wa': u'Imådje',
         },
         7: {
             '_default': u'Image talk',
+            'de': u'Bild Diskussion',        
         },
         8: {
             '_default': u'MediaWiki',
+            'bg': u'МедияУики',
         },
         9: {
             '_default': u'MediaWiki talk',
+            'de': u'MediaWiki Diskussion',
         },
         10: {
             '_default':u'Template',
+            'de':u'Vorlage',
+            'es':u'Plantilla',
+            'nl':u'Sjabloon'
         },
         11: {
             '_default': u'Template talk',
+            'de': u'Vorlage Diskussion',
         },
         12: {
             '_default': u'Help',
+            'de': u'Hilfe',
         },
         13: {
             '_default': u'Help talk',
+            'de': u'Hilfe Diskussion',
         },
         14: {
             '_default': u'Category',
+            'da': u'Kategori',
+            'de': u'Kategorie',
+            'es': u'Categoría',
+            'fr': u'Catégorie',
+            'hu': u'Kategória',
+            'is': u'Flokkur',
+            'nl': u'Categorie',
+            'no': u'Kategori',
+            'sv': u'Kategori',
         },
         15: {
             '_default': u'Category talk',
+            'de': u'Kategorie Diskussion',        
         },
     }
 
@@ -205,7 +318,7 @@ class Family(object):
         return ('/w/wiki.phtml?title=%s:Movepage&action=submit' %
                 self.special_namespace_url(code))
 
-    def delete_address(self, name):
+    def delete_address(self, code, name):
         return '/w/wiki.phtml?title=%s&action=delete' % name
 
     def export_address(self, code):

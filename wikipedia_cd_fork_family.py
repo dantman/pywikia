@@ -9,7 +9,8 @@ import urllib
 import family, config
 
 class Family(family.Family):
-   
+    name = 'wikipedia'
+    
     def __init__(self):
         global langs
         self.langs = {
