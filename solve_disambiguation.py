@@ -261,6 +261,9 @@ for arg in sys.argv[1:]:
 
 wrd = ' '.join(wrd)
 
+if wrd == '':
+    wrd=raw_input('Which pages to check: ')
+
 if msg.has_key(wikipedia.mylang):
     msglang = wikipedia.mylang
 else:
