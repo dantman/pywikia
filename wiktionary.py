@@ -13,6 +13,10 @@ wiktionaryformats = {
 						'adjective': u'{{-adj-}}',
 						},
 				'translationsheader': u"{{-trans-}}",
+				'transbefore': u'{|border=0 width=100%\n|-\n|bgcolor="{{bgclr}}" valign=top width=48%|\n{|\n',
+				'transinbetween': u'|}\n| width=1% |\n|bgcolor="{{bgclr}}" valign=top width=48%|\n{|\n',
+				'transafter': u'|}\n|}',
+				'transnoMtoZ': u'<-- Vertalingen van M tot Z komen hier>',
 				'synonymsheader': u"{{-syn-}}",
 				},
 			'en': {
@@ -26,6 +30,10 @@ wiktionaryformats = {
 						'adjective': u'=== Adjective ===',
 						},
 				'translationsheader': u"==== Translations ====",
+				'transbefore': u'{|border=0 width=100%\n|-\n|bgcolor="#FFFFE0" valign=top width=48%|\n{|\n',
+				'transinbetween': u'|}\n| width=1% |\n|bgcolor="#FFFFE0" valign=top width=48%|\n{|\n',
+				'transafter': u'|}\n|}',
+				'transnoMtoZ': u'<-- Translations from M tot Z go here>',
 				'synonymsheader': u"==== Synonyms ====",
 				}
 		            }
@@ -208,9 +216,13 @@ class Meaning:					# On one page, different terms in different languages can be 
 		# We want to output the translations in such a way that they end up sorted alphabetically on the language name in the language of the current Wiktionary
 		alllanguages=self.translations.keys()
 		alllanguages.sort(sortonname(langnames[wikilang]))
-		wrappedtranslations = ''
+		wrappedtranslations = wiktionaryformats[wikilang]['transbefore']
+		alreadydone = 0
 		for language in alllanguages:
 			# Indicating the language according to the wikiformats dictionary
+			if not alreadydone and langnames[wikilang][language][0:1].upper() > 'M':
+				wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transinbetween']
+				alreadydone = 1
 			wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
 			first = 1
 			for translation in self.translations[language]:
@@ -221,7 +233,10 @@ class Meaning:					# On one page, different terms in different languages can be 
 					first = 0
 				wrappedtranslations = wrappedtranslations + translation.wikiwrapastranslation(wikilang)
 			wrappedtranslations += '\n'
-		return wrappedtranslations + '\n'
+		if not alreadydone:
+			wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transinbetween'] + '\n' + wiktionaryformats[wikilang]['transnoMtoZ'] + '\n'
+			alreadydone = 1
+		return wrappedtranslations + wiktionaryformats[wikilang]['transafter'] + '\n'
 	
 class Term:
 	def __init__(self,lang,term):
@@ -243,24 +258,20 @@ class Term:
 	def getLang(self):
 		return self.lang
 
+	def wikiwrapgender(self,wikilang):
+		if self.gender:
+			return ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
+		else:
+			return ''
+		
 	def wikiwrapasexample(self,wikilang):
-		term=wiktionaryformats[wikilang]['beforeexampleterm'] + self.term + wiktionaryformats[wikilang]['afterexampleterm']
-		if self.gender:
-			term = term + ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
+		return wiktionaryformats[wikilang]['beforeexampleterm'] + self.term + wiktionaryformats[wikilang]['afterexampleterm'] + self.wikiwrapgender(wikilang)
 			
-		return term
-	
 	def wikiwrapforlist(self,wikilang):
-		term='[[' + self.term + ']]'
-		if self.gender:
-			term = term + ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
-		return term
+		return '[[' + self.term + ']]' + self.wikiwrapgender(wikilang)
 	
 	def wikiwrapastranslation(self,wikilang):
-		term='[[' + self.term + ']]'
-		if self.gender:
-			term = term + ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
-		return term
+		return '[[' + self.term + ']]' + self.wikiwrapgender(wikilang)
 
 class Noun(Term):
 	def __init__(self,lang,term,gender=''):
