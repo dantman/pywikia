@@ -81,10 +81,6 @@ msg = {
     'da':('Tilføjer','Fjerner','Ændrer'),
     'fr':('Ajoute','Retire','Modifie')
     }
-if msg.has_key(wikipedia.mylang):
-    msglang = wikipedia.mylang
-else:
-    msglang = 'en'
 
 class Logger:
     """A class that replaces a standard output file by a logfile PLUS the
@@ -331,6 +327,11 @@ for arg in sys.argv[1:]:
         log = 1
     else:
         inname.append(arg)
+
+if msg.has_key(wikipedia.mylang):
+    msglang = wikipedia.mylang
+else:
+    msglang = 'en'
 
 if log:
     sys.stdout = Logger(sys.stdout)
