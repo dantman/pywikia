@@ -73,5 +73,6 @@ for f in pages:
                             print >> fil, "%s does not link to %s but to %s"%(pl2,pl,pl3)
                             fil.flush()
                 if not found:
-                    print >> sys.stderr, "%s does not link to %s"%(pl2,pl)
+                    print >> fil, "%s does not link to %s"%(pl2,pl)
+                    fil.flush()
                     
