@@ -347,8 +347,6 @@ class Subject:
         return answer=='y'
     
     def assemble(self, returnonquestion = False, askall = False):
-        if globalvar.bell:
-            sys.stdout.write('\07')
         new = {}
         for pl in self.done.keys():
             code = pl.code()
@@ -368,6 +366,9 @@ class Subject:
                     self.problem("'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink()))
                     if globalvar.autonomous:
                         return None
+                    # beep before asking question
+                    if globalvar.bell:
+		        sys.stdout.write('\07')
                     while 1:
                         answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
                         if answer.startswith('f'):
