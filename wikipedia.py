@@ -21,25 +21,6 @@ debug = 0
 # The actual value will be set at the end of this module
 loggedin = False
 
-#
-# Import the user's family. If not changed in user_config, the family
-# is Wikipedia.
-#
-try:
-    exec("import %s_family as family" % config.family)
-except ImportError:
-    print "Error importing the family. This probably means the family"
-    print "name is mistyped in the configuration file"
-    sys.exit(1)
-
-#
-# The family module used to be used as-is. However, that gave maintenance
-# nightmares. Newer families are classes so that they can inherit. If a
-# family is a new-style family, we must instantiate the class.
-#
-if hasattr(family,'Family'):
-    family=family.Family()
-
 # Set needput to True if you want write-access to the Wiki. This can be set
 # to False if you want to protect yourself from programming mistakes during
 # debugging.
@@ -1552,6 +1533,32 @@ def html2unicode(name, language, altlanguage=None):
                 raise
     return result
 
+def setFamily(fam):
+    """
+    Import the user's family. If not changed in user_config, the family is
+    Wikipedia.
+    """
+    try:
+        global family
+        # This dictionary will serve as a variable namespace for the following
+        # exec statement. We will only need the variable called family_module
+        # from this dictionary.
+        namespace_dict = {}
+        exec "import %s_family as family_module" % fam in namespace_dict
+        family = namespace_dict['family_module']
+    except ImportError:
+        print "Error importing the family. This probably means the family"
+        print "name is mistyped in the configuration file"
+        sys.exit(1)
+    # The family module used to be used as-is. However, that gave maintenance
+    # nightmares. Newer families are classes so that they can inherit. If a
+    # family is a new-style family, we must instantiate the class.
+    # NOTE: All family files have been converted, except for wikitravel.
+    # As soon as wikitravel has been converted, we don't need the following
+    # check.
+    if hasattr(family,'Family'):
+        family=family.Family()
+
 def setMyLang(code):
     """Change the home language"""
     global mylang
@@ -1577,7 +1584,9 @@ def checkLogin():
     return loggedin
     
 def argHandler(arg):
-    if arg.startswith('-lang:'):
+    if arg.startswith('-family:'):
+        setFamily(arg[8:])
+    elif arg.startswith('-lang:'):
         setMyLang(arg[6:])
     elif arg.startswith('-throttle:'):
         get_throttle.setDelay(int(arg[10:]))
@@ -1602,6 +1611,7 @@ if not config.username:
     print "....filling in your real name and home wikipedia."
     print "for other possible configuration variables check config.py"
     sys.exit(1)
+setFamily(config.family)
 setMyLang(config.mylang)
 if not family.langs.has_key(mylang):
     print "Home-wikipedia from user-config.py does not exist"
