@@ -35,6 +35,7 @@ class EditBoxWindow:
         # add scrollbar to main frame, associate it with our editbox
         scrollbar.pack(side=RIGHT, fill=Y)
         scrollbar.config(command=self.editbox.yview)
+
         # put textfield into main frame, using all available space
         self.editbox.pack(anchor=CENTER, fill=BOTH)
 
@@ -60,6 +61,9 @@ class EditBoxWindow:
         self.text = text
         # put given text into our textfield
         self.editbox.insert(END, text)
+        # enable word wrap
+        self.editbox.tag_add('all', '1.0', END)
+        self.editbox.tag_config('all', wrap=WORD)
         # wait for user to push a button which will destroy (close) the window 
         self.myParent.mainloop()
         return self.text
