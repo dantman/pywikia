@@ -220,6 +220,14 @@ def removeLanguageLinks(text):
     m=re.search(r'\[\[([a-z][a-z]):([^\]]*)\]\]', text)
     if m:
         print "WARNING: Link to unknown language %s name %s"%(m.group(1), m.group(2))
+    # Remove white space at the beginning
+    while 1:
+        if text.startswith('\r\n'):
+            text=text[2:]
+        elif text.startswith(' '):
+            text=text[1:]
+        else:
+            break
     return text
     
 def interwikiFormat(links):
@@ -228,7 +236,7 @@ def interwikiFormat(links):
     ar.sort()
     for code in ar:
         s = s + '[[%s:%s]]'%(code, links[code])
-    return s
+    return s+'\r\n'
 
 def url2link(percentname,into='latin1'):
     """Convert a url-name of a page into a proper name for an interwiki link
