@@ -691,20 +691,31 @@ class Throttle:
 
     def setDelay(self, delay = config.throttle):
         self.delay = delay
+
+    def waittime(self):
+        """Calculate the time in seconds we will have to wait if a query
+           would be made right now"""
+        if self.ignore > 0:
+            return 0.0
+        # Take the previous requestsize in account calculating the desired
+        # delay this time
+        thisdelay = self.next_multiplicity * self.delay
+        now = time.time()
+        ago = now - self.now
+        if ago < thisdelay:
+            delta = thisdelay - ago
+            return delta
+        else:
+            return 0.0
         
     def __call__(self, requestsize = 1):
         """This is called from getPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
-           since the last time it was called before it returns.
-
-           A new delay can be set by calling this function with an argument
-           giving the desired delay in seconds."""
+           since the last time it was called before it returns."""
         if self.ignore > 0:
             self.ignore -= 1
         else:
-            # Take the previous requestsize in account calculating the desired
-            # delay this time
-            thisdelay = self.next_multiplicity * self.delay
+            waittime = self.waittime()
             # Calculate the multiplicity of the next delay based on how
             # big the request is that is being posted now.
             # We want to add "one delay" for each factor of two in the
@@ -712,16 +723,11 @@ class Throttle:
             # the delay time for the server.
             import math
             self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
-            # Calculate how long it has been since the last request
-            now = time.time()
-            ago = now - self.now
-            # Wait if we need to.
-            if ago < thisdelay:
-                delta = thisdelay - ago
-                if delta > config.noisysleep:
-                    print "Sleeping for %.1f seconds" % delta
-                time.sleep(delta)
-            self.now = time.time()
+            # Announce the delay if it exceeds a preset limit
+            if waittime > config.noisysleep:
+                print "Sleeping for %.1f seconds" % waittime
+            time.sleep(waittime)
+        self.now = time.time()
 
 get_throttle = Throttle()
 put_throttle = Throttle(config.put_throttle)
