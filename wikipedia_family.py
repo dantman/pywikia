@@ -1,4 +1,4 @@
-                                 # The wikimedia family that is known as wikipedia, the encyclopedia
+# The wikimedia family that is known as wikipedia, the encyclopedia
 
 # Known wikipedia languages, given as a dictionary mapping the language code
 # to the hostname of the site hosting that wikipedia. For human consumption,
@@ -214,6 +214,34 @@ image = {
 
 redirect = {
     'cy': 'ail-cyfeirio',
+    }
+
+
+# Which languages have a special order for putting interlanguage links,
+# and what order is it? If a language is not in interwiki_putfirst,
+# alphabetical order on language code is used. For languages that are in
+# interwiki_putfirst, interwiki_putfirst is checked first, and
+# languages are put in the order given there. All other languages are put
+# after those, in code-alphabetical order.
+
+alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
+              'ca','chr','co','cs','cy','da','de','als','et',
+              'el','en','es','eo','eu','fa','fr','fy','ga','gv',
+              'gd','gl','ko','hi','hr','io','id','ia','is','it',
+              'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
+              'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
+              'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
+              'sa','st','sq','si','simple','sk','sl','sr','su',
+              'fi','sv','ta','tt','th','tlh','ur','vi','tokipona',
+              'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
+              'zh-tw']
+
+interwiki_putfirst = {
+    'en': alphabetic,
+    'fr': alphabetic,
+    'hu': ['en'],
+    'pl': alphabetic,
+    'simple': alphabetic
     }
 
 # Defaults for Special: and Image: namespace names

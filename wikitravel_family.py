@@ -26,6 +26,8 @@ image = {
 
 redirect = {}
 
+interwiki_putfirst = {}
+
 # Defaults for Special: and Image: namespace names
 
 for lang in langs:

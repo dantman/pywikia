@@ -35,33 +35,6 @@ charsets = {}
 # Keep the modification time of all downloaded pages for an eventual put.
 edittime = {}
 
-# Which languages have a special order for putting interlanguage links,
-# and what order is it? If a language is not in interwiki_putfirst,
-# alphabetical order on language code is used. For languages that are in
-# interwiki_putfirst, interwiki_putfirst is checked first, and
-# languages are put in the order given there. All other languages are put
-# after those, in code-alphabetical order.
-
-alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
-              'ca','chr','co','cs','cy','da','de','als','et',
-              'el','en','es','eo','eu','fa','fr','fy','ga','gv',
-              'gd','gl','ko','hi','hr','io','id','ia','is','it',
-              'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
-              'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
-              'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
-              'sa','st','sq','si','simple','sk','sl','sr','su',
-              'fi','sv','ta','tt','th','tlh','ur','vi','tokipona',
-              'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
-              'zh-tw']
-
-interwiki_putfirst = {
-    'en': alphabetic,
-    'fr': alphabetic,
-    'hu': ['en'],
-    'pl': alphabetic,
-    'simple': alphabetic
-    }
-
 # Languages to use for comment text after the actual language but before
 # en:. For example, if for language 'xx', you want the preference of
 # languages to be:
@@ -1030,10 +1003,10 @@ def interwikiFormat(links):
     s = []
     ar = links.keys()
     ar.sort()
-    if mylang in interwiki_putfirst:
+    if mylang in family.interwiki_putfirst:
         #In this case I might have to change the order
         ar2 = []
-        for code in interwiki_putfirst[mylang]:
+        for code in family.interwiki_putfirst[mylang]:
             if code in ar:
                 del ar[ar.index(code)]
                 ar2 = ar2 + [code]
