@@ -89,24 +89,30 @@ for arg in sys.argv[1:]:
     else:
         page_list.append(arg)
 
-# this is a modified version of wikipedia.imagelinks(). Maybe we can
-# unify both.
-def imagelinks(lang, text):
-    result = []
+# returns the image namespace name for a given language, followed by a colon.
+# if the namespace name is unknown, "Image:" is default.
+def image_namespace(lang):
     # check if we know this wikipedia's image namespace name
     if lang in wikipedia.image:
-        im=wikipedia.image[lang] + ':'
+        return wikipedia.image[lang] + ':'
     else:
-        im='Image:'
-    im = '[' + im[0].upper() + im[0].lower() + ']' + im[1:]
+        return 'Image:'
+
+# this is a modified version of wikipedia.imagelinks().
+def imagelinks(lang, text):
+    image_ns = image_namespace(lang)    
+    # regular expression which matches e.g. "Image" as well as "image" (for en:)
+    im = '[' + image_ns[0].upper() + image_ns[0].lower() + ']' + image_ns[1:]
     w1=r'('+im+'[^\]\|]*)'
     w2=r'([^\]\|]*)'
     Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
+    result = []
     for l in Rlink.findall(text):
         result.append(l[0])
     return result
 
-
+# opens on a page, checks for an interwiki link, transfers and translates the first
+# table, copies all images in that table.
 def treat(to_pl):
     try:
         to_text = to_pl.get()
@@ -137,11 +143,16 @@ def treat(to_pl):
         # extract image links from original table
         images=imagelinks(from_lang, table)
         for image in images:
-            print image
-            old_filename = string.split(image, ":", 1)[1]
+            # Copy the image to the current wikipedia, copy the image description page as well.
+            # Prompt the user so that he can translate the filename.
             new_filename = lib_images.transfer_image(wikipedia.PageLink(from_lang, image), wikipedia.mylang, debug)
-            print "Replacing " + old_filename + " with " + new_filename
-            table = table.replace(old_filename, new_filename)
+            old_image_tag = wikipedia.PageLink(wikipedia.mylang, image).linkname()
+            new_image_tag = wikipedia.PageLink(wikipedia.mylang, image_namespace(wikipedia.mylang) + new_filename).linkname()
+            print_debug("Replacing " + old_image_tag + " with " + new_image_tag)
+            # We want to find "Image:my pic.jpg" as well as "Image:my_pic.jpg", so we need a regular expression.
+            old_image_tag = old_image_tag.replace(" ", "[ \_]")
+            rOld_image_tag = re.compile(old_image_tag)
+            table = re.sub(old_image_tag, new_image_tag, table)
 
 
     translated_table = translator.translate(table, type, from_lang, debug, wikipedia.mylang)

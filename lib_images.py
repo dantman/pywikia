@@ -116,11 +116,14 @@ def get_image(fn,target,description):
 # Returns the filename which was used to upload the image
 # This function is used by imagetransfer.py and by copy_table.py
 def transfer_image(imagelink, target, debug=False):
+    # convert HTML entities to encoding of the source wiki
+    image_linkname = wikipedia.html2unicode(imagelink.linkname(), imagelink.code())
+    image_linkname = image_linkname.encode('utf-8')
     if debug: print "--------------------------------------------------"
-    if debug: print "Found image: %s"% (imagelink.aslink())
+    if debug: print "Found image: %s"% image_linkname
     # need to strip off "Afbeelding:", "Image:" etc.
     # we only need the substring following the first colon
-    filename = string.split(imagelink.linkname(), ":", 1)[1]
+    filename = string.split(image_linkname, ":", 1)[1]
     if debug: print "Image filename is: %s " % filename
     # Spaces might occur, but internally they are represented by underscores.
     # Change the name now, because otherwise we get the wrong MD5 hash.
@@ -138,6 +141,8 @@ def transfer_image(imagelink, target, debug=False):
         msg_lang = "en"
     try:
         description = copy_message[msg_lang] % (imagelink.code(), imagelink.get())
+        # add interwiki link
+        description += "\r\n\r\n" + imagelink.aslink()
     except wikipedia.NoPage:
         description=''
         print "Image does not exist or description page is empty."
@@ -149,4 +154,5 @@ def transfer_image(imagelink, target, debug=False):
             return get_image(url,target,description)
     except wikipedia.NoPage:
         print "Page not found"
+        return filename
 
