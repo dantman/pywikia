@@ -41,6 +41,17 @@ treelang.py understands various command-line arguments:
 
      All other arguments are words that make up the page name.
 
+solve_disambiguation.py:
+     Can be used to disambiguate pages from the command line. Specify
+     the disambiguation page on the command line. The program will
+     pick up the page, and look for all alternative links, and show
+     them with a number adjacent to them. It will then automatically
+     loop over all pages referring to the disambiguation page, and
+     show 30 characters on each side of the reference to help you make
+     the decision between the alternatives. It will ask you to type
+     the number of the appropriate replacement, and perform the change
+     robotically.
+
 All of the programs have "nl:" as their default. It may take a little or 
 a lot to make them run on other wikipedias. Be especially careful if your
 wikipedia uses UTF-8, as that has not been tested at all.
