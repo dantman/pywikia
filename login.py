@@ -153,7 +153,6 @@ def main(args):
             print "Before actually using it!"
             
     cookiedata = login(mysite, username, password)
-    print cookiedata
     if cookiedata:
         storecookiedata(cookiedata, mysite, user)
         print "Should be logged in now"
