@@ -198,6 +198,8 @@ class Subject:
             self.done[pl] = pl.code()
             # Register this fact at the todo-counter.
             counter.minus(pl.code())
+	# Assume it's not a redirect
+            isredirect = 0
             # Now check whether any interwiki links should be added to the
             # todo list.
             if unequal.bigger(pl, self.inpl):
@@ -211,6 +213,7 @@ class Subject:
                     if len(self.done) == 1 and len(self.todo) == 0 and len(self.pending) == 1:
                         # This is a redirect page itself. We don't need to
                         # follow the redirection.
+                        isredirect = 1
                         pass
                     else:
                         self.conditionalAdd(pl3, counter)
@@ -224,7 +227,7 @@ class Subject:
         # These pages are no longer 'in progress'
         del self.pending
         # Check whether we need hints and the user offered to give them
-        if len(self.done) == 1 and len(self.todo) == 0:
+        if len(self.done) == 1 and len(self.todo) == 0 and isredirect == 0:
             print "NOTE: %s does not have any interwiki links" % self.inpl.asasciilink()
             if globalvar.untranslated:
                 if globalvar.bell:
@@ -652,3 +655,6 @@ if __name__ == "__main__":
     except:
         sa.dump('interwiki.dump')
         raise
+
+
+
