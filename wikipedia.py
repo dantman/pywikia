@@ -966,7 +966,10 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     except KeyError:
         print edittime
 	raise
-    output(url2unicode("Changing page %s"%site.linkto(name), site = site))
+    if newPage and newPage!= '0':
+        output(url2unicode("Creating page %s"%site.linkto(name), site = site))
+    else:
+        output(url2unicode("Changing page %s"%site.linkto(name), site = site))
     # Submit the prepared information
     conn = httplib.HTTPConnection(host)
 
