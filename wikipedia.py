@@ -1093,6 +1093,14 @@ def url2link(percentname,incode,code):
 def link2url(name, code, incode = None):
     """Convert a interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link"""
+    if code == 'eo':
+        name = name.replace('cx','&#265;')
+        name = name.replace('gx','&#285;')
+        name = name.replace('hx','&#293;')
+        name = name.replace('jx','&#309;')
+        name = name.replace('sx','&#349;')
+        name = name.replace('ux','&#365;')
+        name = name.replace('Cx','&#264;')
     if '%' in name:
         try:
             name = url2unicode(name, language = code)
@@ -1100,6 +1108,7 @@ def link2url(name, code, incode = None):
             name = html2unicode(name, language = code, altlanguage = incode)
     else:
         name = html2unicode(name, language = code, altlanguage = incode)
+
     #print "DBG>",repr(name)
     # Remove spaces from beginning and the end
     name = name.strip()
