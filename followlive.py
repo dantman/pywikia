@@ -2,9 +2,10 @@
 
 import sys
 import wikipedia
+import time
 
 def main():
-    for pageinfo in wikipedia.newpages():
+    for pageinfo in wikipedia.newpages(5):
         sys.stdout.flush()
         print pageinfo["date"]
         print pageinfo["title"]
@@ -13,9 +14,22 @@ def main():
         if pageinfo["length"] < 200 and pageinfo.get("user_anon"):
             print "SPAM SUSPECTED!"
             print
-            print pageinfo["title"].get()
+            try:
+                content = pageinfo["title"].get()
+                if '{{delete}}' in content or '{{speedy}}' in content:
+                    raise wikipedia.NoPage
+                print content
+            except wikipedia.NoPage:
+                print "Already gone (-:"
             print 
-            print "Is it, or is it not, spam?"
+            answer = raw_input("Is it, or is it not, spam [y/n]?\a")
+            if answer.lower().startswith('y'):
+##                print "going to add {{delete}}!"
+                time.sleep(10)
+                newcontent = "{{delete}}\n" + content
+                pageinfo["title"].put(newcontent, comment="user controlled bot declares: this is spam",
+                                              minorEdit=True,
+                                              watchArticle=False)
             # todo: ask response
             # if it is spam, add {{delete}}
         print
