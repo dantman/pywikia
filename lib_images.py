@@ -8,9 +8,9 @@ import httplib
 import wikipedia, config
 
 copy_message = {
-    "en":"This image was copied from the %s Wikipedia. The original description was:<p>%s",
+    "en":"This image was copied from the %s Wikipedia. The original description was:\r\n\r\n%s",
     "de":"Dieses Bild wurde von der %s-Wikipedia kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
-    "nl":"Afbeelding gekopieerd vanaf Wikipedia-%s. De beschrijving daar was:<p>%s",
+    "nl":"Afbeelding gekopieerd vanaf Wikipedia-%s. De beschrijving daar was:\r\n\r\n%s",
 }
 
 def post_multipart(host, selector, fields, files):
@@ -91,11 +91,23 @@ def get_image(fn, target, description, debug=False):
     fn = fn.replace(' ', '_')
     
     # A proper description for the submission.
-    # Only ask for a description if no one was found on the original image
-    # description page.
     if description=='':
-        description = raw_input('Description : ')
+        print ('Give a description for the image:')
+        description = raw_input('')
         description = unicode(description, config.console_encoding)
+    else:
+        print ("The suggested description is:")
+        print
+        print wikipedia.UnicodeToAsciiHtml(description)
+        print
+        print ("Enter return to use this description, enter a text to add something")
+        print ("at the end, or enter = followed by a text to replace the description.")
+        newtext = raw_input('Enter return, text or =text : ')
+        if newtext[0]=='=':
+            description=newtext[1:]
+        else:
+            description=description+' '+newtext
+
     # try to encode the description to the encoding used by the home Wikipedia.
     # if that's not possible (e.g. because there are non-Latin-1 characters and
     # the home Wikipedia uses Latin-1), convert all non-ASCII characters to
@@ -104,7 +116,6 @@ def get_image(fn, target, description, debug=False):
         description = description.encode(wikipedia.code2encoding(wikipedia.mylang))
     except UnicodeEncodeError:
         description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
-    print description
     # don't upload if we're in debug mode
     if not debug:
         data = post_multipart(wikipedia.langs[wikipedia.mylang],
@@ -152,6 +163,9 @@ def transfer_image(imagelink, target, debug=False):
     except wikipedia.NoPage:
         description=''
         print "Image does not exist or description page is empty."
+    except wikipedia.IsRedirectPage:
+        description=''
+        print "Image description page is redirect."
     try:
         return get_image(url, target, description, debug)    
     except wikipedia.NoPage:
