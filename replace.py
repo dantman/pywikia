@@ -9,9 +9,11 @@ You can run the bot with the following commandline parameters:
 -sql         - Retrieve information from a local SQL dump (cur table, see
                http://download.wikimedia.org).
                Argument can also be given as "-sql:filename".
--file        - Retrieve information from a local text file.
+-file        - Work on all pages given in a local text file.
                Will read any [[wiki link]] and use these articles.
                Argument can also be given as "-file:filename".
+-cat         - Work on all pages which are in a specific category.
+               Argument can also be given as "-cat:categoryname".
 -page        - Only edit a single page.
                Argument can also be given as "-page:pagename". You can give this
                parameter multiple times to edit multiple pages.
@@ -171,7 +173,7 @@ class ReplacePageGenerator:
         * pagenames    - a list of pages which will be used when source is
                          'userinput'.
     """
-    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, sqlfilename = None, pagenames = None):
+    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, sqlfilename = None, categoryname = None, pagenames = None):
         self.source = source
         self.replacements = replacements
         self.exceptions = exceptions
@@ -179,6 +181,7 @@ class ReplacePageGenerator:
         self.namespace = namespace
         self.textfilename = textfilename
         self.sqlfilename = sqlfilename
+        self.categoryname = categoryname
         self.pagenames = pagenames
     
     def read_pages_from_sql_dump(self):
@@ -226,6 +229,20 @@ class ReplacePageGenerator:
                             yield wikipedia.PageLink(mysite, entry.full_title())
                             break
     
+    def read_pages_from_category(self):
+        """
+        Generator which will yield pages that are listed in a text file created by
+        the bot operator. Will regard everything inside [[double brackets]] as a
+        page name, and yield PageLinks for these pages.
+    
+        Arguments:
+            * textfilename - the textfile's path, either absolute or relative
+        """
+        import catlib
+        category = catlib.CatLink(wikipedia.getSite(), self.categoryname)
+        for page in category.articles(recurse = False):
+            yield page
+
     def read_pages_from_text_file(self):
         """
         Generator which will yield pages that are listed in a text file created by
@@ -270,6 +287,9 @@ class ReplacePageGenerator:
                 yield pl
         elif self.source == 'textfile':
             for pl in self.read_pages_from_text_file():
+                yield pl
+        elif self.source == 'category':
+            for pl in self.read_pages_from_category():
                 yield pl
         elif self.source == 'userinput':
             for pagename in self.pagenames:
@@ -369,10 +389,12 @@ def main():
     fix = None
     # the dump's path, either absolute or relative, which will be used when source
     # is 'sqldump'.
-    sqlfilename = ''
+    sqlfilename = None
     # the textfile's path, either absolute or relative, which will be used when
     # source is 'textfile'.
-    textfilename = ''
+    textfilename = None
+    # the category name which will be used when source is 'category'.
+    categoryname = None
     # a list of pages which will be used when source is 'userinput'.
     pagenames = []
     # will become True when the user presses a ('yes to all') or uses the -always
@@ -396,6 +418,12 @@ def main():
                 else:
                     textfilename = arg[6:]
                 source = 'textfile'
+            elif arg.startswith('-cat'):
+                if len(arg) == 4:
+                    categoryname = wikipedia.input(u'Please enter the category name:')
+                else:
+                    categoryname = arg[5:]
+                source = 'category'
             elif arg.startswith('-sql'):
                 if len(arg) == 4:
                     sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
@@ -462,7 +490,7 @@ def main():
             exceptions = fix['exceptions']
         replacements = fix['replacements']
     
-    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace, textfilename, sqlfilename, pagenames)
+    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace, textfilename, sqlfilename, categoryname, pagenames)
     bot = ReplaceRobot(gen, replacements, exceptions, regex, acceptall)
     bot.run()
 
