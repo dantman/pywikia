@@ -32,6 +32,11 @@ This script understands various command-line arguments:
     -untranslated: untranslated pages are not skipped; instead in those
                    cases interactively a translation hint is asked of the user.
 
+    -untranslatedonly: same as -untranslated, but pages which already have a
+                   translation are skipped. Hint: do NOT use this in combination
+                   with -start without a -number limit, because you will go through
+                   the whole alphabet before any queries are performed!
+
     -file:         used as -file:filename, read a list of pages to treat
                    from the named file
                    
@@ -146,6 +151,7 @@ class Global:
     shownew = True
     skip = {}
     untranslated = False
+    untranslatedonly = False
     
 class Subject:
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -165,6 +171,8 @@ class Subject:
             self.confirm = 1
         else:
             self.confirm = 0
+        self.untranslated = None
+        self.hintsasked = False
 
     def pl(self):
         """Return the PageLink on the home wikipedia"""
@@ -244,7 +252,7 @@ class Subject:
                         # In this case we can also stop all hints!
                         for pl2 in self.todo:
                             counter.minus(pl2.code())
-                        self.todo = []
+                        self.todo = {}
                         pass
                     elif not globalvar.followredirect:
                         print "NOTE: not following redirects."
@@ -266,6 +274,11 @@ class Subject:
                 except wikipedia.SubpageError:
                     print "NOTE: %s subpage does not exist" % pl.asasciilink()
                 else:
+                    if self.inpl == pl:
+                        self.untranslated = (len(iw) == 0)
+                        if globalvar.untranslatedonly:
+                            # Ignore the interwiki links.
+                            iw = ()
                     for pl2 in iw:
                       if unequal.unequal(self.inpl, pl2):
                           print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
@@ -277,20 +290,30 @@ class Subject:
         # These pages are no longer 'in progress'
         del self.pending
         # Check whether we need hints and the user offered to give them
-        if len(self.done) == 1 and len(self.todo) == 0 and isredirect == 0 and self.inpl.exists():
+        if self.untranslated and not self.hintsasked:
             print "NOTE: %s does not have any interwiki links" % self.inpl.asasciilink()
+            # Only once! 
+            self.hintsasked = True
             if globalvar.untranslated:
                 if globalvar.bell:
                     sys.stdout.write('\07')
-                newhint = raw_input("Hint:")
-                if newhint:
-                    arr = {}
-                    import titletranslate
-                    titletranslate.translate(pl, arr, same = False,
-                                             hints = [newhint])
-                    for pl in arr.iterkeys():
-                        self.todo[pl] = pl.code()
-                        counter.plus(pl.code())
+                newhint = None
+                while 1:
+                    newhint = raw_input("Hint:")
+                    if newhint and not ':' in newhint:
+                        print "Please enter a hint like language:pagename"
+                        #print "or type 'q' to stop generating new pages"
+                        print "or type nothing if you do not have a hint"
+                    elif not newhint:
+                        break
+                    else:
+                        arr = {}
+                        import titletranslate
+                        titletranslate.translate(pl, arr, same = False,
+                                                 hints = [newhint])
+                        for pl in arr.iterkeys():
+                            self.todo[pl] = pl.code()
+                            counter.plus(pl.code())
 
     def isDone(self):
         """Return True if all the work for this subject has completed."""
@@ -369,12 +392,19 @@ class Subject:
 
         return new
     
-    def finish(self):
+    def finish(self, sa = None):
         """Round up the subject, making any necessary changes. This method
-           should be called exactly once after the todo list has gone empty."""
+           should be called exactly once after the todo list has gone empty.
+
+           This contains a shortcut: if a subject array is given in the argument
+           sa, just before submitting a page change to the live wikipedia it is
+           checked whether we will have to wait. If that is the case, the sa will
+           be told to make another get request first."""
         if not self.isDone():
             raise "Bugcheck: finish called before done"
         if self.inpl.isRedirectPage():
+            return
+        if not self.untranslated and globalvar.untranslatedonly:
             return
         if len(self.done) == 1:
             # No interwiki at all
@@ -429,6 +459,15 @@ class Subject:
                     else:
                         answer = 'y'
                     if answer == 'y':
+                        # Check whether we will have to wait for wikipedia. If so, make
+                        # another get-query first.
+                        if sa:
+                            while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
+                                print "NOTE: Performing a recursive query first to save time...."
+                                qdone = sa.oneQuery()
+                                if not qdone:
+                                    # Nothing more to do
+                                    break
                         print "NOTE: Updating live wikipedia..."
                         status, reason, data = self.inpl.put(newtext,
                                                              comment='robot '+mods)
@@ -527,6 +566,11 @@ class SubjectArray:
         max = 0
         maxlang = None
         oc = self.firstSubject().openCodes()
+        if not oc:
+            # The first subject is done. This might be a recursive call made because we
+            # have to wait before submitting another modification to go live. Select
+            # any language from counts.
+            oc = self.counts.keys()
         if wikipedia.mylang in oc:
             return wikipedia.mylang
         for lang in oc:
@@ -554,10 +598,13 @@ class SubjectArray:
         # foreign page queries we can find.
         return self.maxOpenCode()
     
-    def queryStep(self):
+    def oneQuery(self):
         """Perform one step in the solution process"""
         # First find the best language to work on
         code = self.selectQueryCode()
+        if code == None:
+            print "NOTE: Nothing left to do"
+            return False
         # Now assemble a reasonable list of pages to get
         group = []
         plgroup = []
@@ -579,13 +626,17 @@ class SubjectArray:
         # Tell all of the subjects that the promised work is done
         for subj in group:
             subj.workDone(self)
+        return True
+        
+    def queryStep(self):
+        self.oneQuery()
         # Delete the ones that are done now.
         for i in range(len(self.subjects)-1, -1, -1):
             subj = self.subjects[i]
             if subj.isDone():
-                subj.finish()
+                subj.finish(self)
                 del self.subjects[i]
-
+    
     def isDone(self):
         """Check whether there is still more work to do"""
         return len(self) == 0 and self.generator is None
@@ -697,6 +748,9 @@ if __name__ == "__main__":
             globalvar.same = True
         elif arg == '-untranslated':
             globalvar.untranslated = True
+        elif arg == '-untranslatedonly':
+            globalvar.untranslated = True
+            globalvar.untranslatedonly = True
         elif arg.startswith('-hint:'):
             hints.append(arg[6:])
         elif arg.startswith('-warnfile:'):
