@@ -226,7 +226,7 @@ for article in articles:
         while num != 0:
             newText, num = re.subn("[\r\n]+(\|[^\|\-\}]{1}[^\n\r]{0,35})" +
                                    "[\r\n]+(\|[^\|\-\}]{1}[^\r\n]{0,35})[\r\n]+",
-                                   "\r\n\\1 | \\2\r\n", newText, 0)
+                                   "\r\n\\1 |\\2\r\n", newText, 0)
 
         ##################
         # proper attributes
