@@ -36,6 +36,13 @@ yearADfmt={'ja':'%d&#24180;'} # Others default to '%d'
 yearBCfmt={'de':'%d v. Chr.','en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
            'es':'%d adC','eo':'-%d'} # No default
 
+def autonomous_problem(name):
+    if autonomous:
+        f=open('autonomous_problem.dat','a')
+        f.write("%s\n"%name)
+        f.close()
+        sys.exit(1)
+    
 def sametranslate(name,arr):
     for newcode in wikipedia.langs:
         # Put as suggestion into array
@@ -90,11 +97,13 @@ def autotranslate(name,arr,same=0):
         return
     
 def compareLanguages(old,new):
+    global confirm
     removing=[]
     adding=[]
     modifying=[]
     for code,name in old.iteritems():
         if not new.has_key(code):
+            confirm+=1
             removing.append(code)
         elif old[code]!=new[code]:
             oo=wikipedia.url2link(wikipedia.link2url(old[code]))
@@ -179,9 +188,12 @@ def treesearch(code,name):
 
 inname=[]
 
+bell=1
 ask=1
 same=0
 only_if_status=1
+confirm=0
+autonomous=0
 
 for arg in sys.argv[1:]:
     if arg=='-force':
@@ -192,6 +204,10 @@ for arg in sys.argv[1:]:
         same=1
     elif arg=='-name':
         same='name'
+    elif arg=='-confirm':
+        confirm=1
+    elif arg=='-autonomous':
+        autonomous=1
     else:
         inname.append(arg)
     
@@ -217,7 +233,11 @@ for code,cname in k:
         if new.has_key(code):
             print "ERROR: %s has '%s' as well as '%s'"%(code,new[code],wikipedia.url2link(cname))
             while 1:
-                answer=raw_input("Use former (f) or latter (l) or neither (n)?")
+                if bell:
+                    sys.stdout.write('\07')
+                confirm+=1
+                autonomous_problem(inname)
+                answer=raw_input("Use (f)ormer or (l)atter or (n)either or (q)uit?")
                 if answer.startswith('f'):
                     break
                 elif answer.startswith('l'):
@@ -226,6 +246,8 @@ for code,cname in k:
                 elif answer.startswith('n'):
                     del new[code]
                     break
+                elif answer.startswith('q'):
+                    sys.exit(1)
         else:
             new[code]=wikipedia.url2link(cname)
 print "==status=="
@@ -261,7 +283,13 @@ if newtext!=oldtext:
     print "NOTE: Replacing %s: %s"%(mylang,inname)
     if forreal:
         if ask:
-            answer=raw_input('submit y/n ?')
+            if confirm:
+                if bell:
+                    sys.stdout.write('\07')
+                autonomous_problem(inname)
+                answer=raw_input('submit y/n ?')
+            else:
+                answer='y'
         else:
             answer='y'
         if answer=='y':
