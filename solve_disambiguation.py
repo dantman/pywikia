@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -196,7 +196,8 @@ ignore={
           u'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
           u'Wikipedia:Kurze Artikel',
           u'Wikipedia:Liste mathematischer Themen/BKS',
-          u'Wikipedia:Liste mathematischer Themen/Redirects'
+          u'Wikipedia:Liste mathematischer Themen/Redirects',
+          u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
           u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
     'pt':{
           u'Categoria:Desambiguação',
