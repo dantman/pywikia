@@ -11,9 +11,11 @@ and the footer to a file like Hauptseite.txt.
 Options:
 
       -o:    Specifies the output-directory where to save the files   
+
+$Id$
 """
 
-import wikipedia,httplib,StringIO,re,sys
+import wikipedia,httplib,StringIO,re,sys,urllib
 
 def extractArticle(data):
     """ takes a string with the complete HTML-file
@@ -72,11 +74,18 @@ headers = {"Content-type": "application/x-www-form-urlencoded",
            "User-agent": "RobHooftWikiRobot/1.0"}
 conn = httplib.HTTPConnection(wikipedia.family.hostname(wikipedia.mylang))
 
+R = re.compile('.*/wiki/(.*)')
+data = ""
 for article in sa:
-    article = unicode(article, "utf-8")
-    conn.request("GET", '/wiki/'+article, "", headers)
-    response = conn.getresponse()
-    data = response.read()
+    ua = article
+    while len(data) < 2:
+        url = '/wiki/'+ua
+        conn.request("GET", url, "", headers)
+        response = conn.getresponse()
+        data = response.read()
+        if len(data) < 2:
+            result = R.match(response.getheader("Location", ))
+            ua = result.group(1)
     conn.close()
     data = extractArticle(data)
     f = open (output_directory + article + ".txt", 'w')
