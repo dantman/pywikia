@@ -334,6 +334,9 @@ def references_address(code, name):
 def upload_address(code):
     return '/wiki/%s:Upload'%special[code]
 
+def maintenance_address(code, maintenance_page):
+    return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special[code]) + maintenance_page
+
 def login_address(code):
     return '/w/wiki.phtml?title=%s:Userlogin&amp;action=submit'%special[code]
 
