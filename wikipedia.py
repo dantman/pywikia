@@ -719,6 +719,8 @@ class GetAll(object):
                 edittime[self.code, link2url(title, self.code)] = timestamp
 
     def getData(self):
+        if not self.pages:
+            return
         import httplib
         addr = family.export_address(self.code)
         # In the next line, we assume that what we got for eo: is NOT in x-convention
