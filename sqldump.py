@@ -9,6 +9,7 @@ object represents a page.
 # Distributed under the terms of the PSF license.
 # 
 
+from __future__ import generators
 import re, time
 import wikipedia, config
 

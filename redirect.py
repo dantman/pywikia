@@ -30,6 +30,7 @@ NOTE: For resolving redirects, please use solve_disambiguation.py -redir.
 #
 __version__='$Id$'
 #
+from __future__ import generators
 import wikipedia, config
 import re, sys
 

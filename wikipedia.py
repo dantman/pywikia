@@ -87,11 +87,11 @@ replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
 #
 __version__ = '$Id$'
 #
+from __future__ import generators
 import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
 
 import config, mediawiki_messages
-from __future__ import generators
 
 # Keep a record of whether we are logged in as a user or not
 # The actual value will be set at the end of this module
