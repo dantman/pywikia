@@ -1011,10 +1011,10 @@ def replaceLanguageLinks(oldtext, new):
     s = interwikiFormat(new)
     s2 = removeLanguageLinks(oldtext)
     if s:
-        if mylang in config.interwiki_atbottom:
-            newtext = s2 + config.interwiki_text_separator + s
-        else:
+        if mylang in config.interwiki_attop:
             newtext = s + config.interwiki_text_separator + s2
+        else:
+            newtext = s2 + config.interwiki_text_separator + s
     else:
         newtext = s2
     return newtext
@@ -1095,12 +1095,23 @@ def link2url(name, code, incode = None):
        in a URL for that page. code should specify the language for the link"""
     if code == 'eo':
         name = name.replace('cx','&#265;')
-        name = name.replace('gx','&#285;')
-        name = name.replace('hx','&#293;')
-        name = name.replace('jx','&#309;')
-        name = name.replace('sx','&#349;')
-        name = name.replace('ux','&#365;')
         name = name.replace('Cx','&#264;')
+        name = name.replace('CX','&#264;')
+        name = name.replace('gx','&#285;')
+        name = name.replace('Gx','&#284;')
+        name = name.replace('GX','&#284;')
+        name = name.replace('hx','&#293;')
+        name = name.replace('Hx','&#292;')
+        name = name.replace('HX','&#292;')
+        name = name.replace('jx','&#309;')
+        name = name.replace('Jx','&#308;')
+        name = name.replace('JX','&#308;')
+        name = name.replace('sx','&#349;')
+        name = name.replace('Sx','&#348;')
+        name = name.replace('SX','&#348;')
+        name = name.replace('ux','&#365;')
+        name = name.replace('Ux','&#364;')
+        name = name.replace('UX','&#364;')
     if '%' in name:
         try:
             name = url2unicode(name, language = code)
