@@ -10,7 +10,13 @@ __version__='$Id$'
 #
 import re,urllib,codecs,sys
 
-# known wikipedia languages
+# Are we debugging this module? 0 = No, 1 = Yes, 2 = Very much so.
+debug = 0
+
+# Known wikipedia languages, given as a dictionary mapping the language code
+# to the hostname of the site hosting that wikipedia. For human consumption,
+# the full name of the language is given behind each line as a comment
+
 langs = {'en':'en.wikipedia.org', # English
          'pl':'pl.wikipedia.org', # Polish
          'da':'da.wikipedia.org', # Danish
@@ -63,47 +69,22 @@ special = {'en':'Special',
            'fr':'Special',
            'fy':'Wiki',
            }
-           
-oldsoftware=['it','no','pt','af','fy','la','ca','fi','ia','et','eu','simple','nds','mr']
 
+# Wikipedia's out of the list that are not running the phase-III software,
+# given as a list of language codes.
+oldsoftware=['it','no','pt','af','la','ca','fi','ia','et','eu','simple',
+             'nds','mr']
+
+# A few selected big languages for things that we do not want to loop over
+# all languages.
 biglangs=['en','pl','da','sv','nl','de','fr','es']
 
-needput = True # Set to True if you want write-access to the Wikipedia.
+# Set needput to True if you want write-access to the Wikipedia.
+needput = True 
 
+# This is used during the run-time of the program to store all character
+# sets encountered for each of the wikipedia languages.
 charsets = {}
-
-# Get the name of the user for submit messages
-try:
-    f=open('username.dat')
-    username=f.readline()[:-1]
-    try:
-        mylang=f.readline()[:-1]
-    except IOError:
-        print "Defaulting to nl: wikipedia"
-        mylang='nl'
-    if not langs.has_key(mylang):
-        print "Defaulting to nl: wikipedia"
-        mylang='nl'
-    f.close()
-except IOError:
-    print >> sys.stderr, "Please make a file username.dat with your name in there"
-    sys.exit(1)
-
-try:
-    f=open('login.data')
-    cookies='; '.join([x.strip() for x in f.readlines()])
-    #print cookies
-    f.close()
-except IOError:
-    cookies=None
-
-# Default action
-if cookies:
-    action = 'Wikipedia python library'
-else:
-    action = username+' - Wikipedia python library'
-
-debug = 0
 
 # Keep the modification time of all downloaded pages for an eventual put.
 edittime = {}
@@ -120,7 +101,7 @@ class IsRedirectPage(Error):
     """Wikipedia page does not exist"""
 
 class LockedPage(Error):
-    """Wikipedia page does not exist"""
+    """Wikipedia page is locked"""
 
 class NoSuchEntity(ValueError):
     """No entity exist for this character"""
@@ -128,9 +109,14 @@ class NoSuchEntity(ValueError):
 class SubpageError(ValueError):
     """The subpage specified by # does not exist"""
     
-#
+# The most important thing in this whole module: The PageLink class
 class PageLink:
+    """A Wikipedia page link."""
     def __init__(self,code,name=None,urlname=None,linkname=None,incode=None):
+        """Constructor. Normally called with two arguments:
+             1) The language code on which the page resides
+             2) The name of the page as suitable for a URL
+        """     
         self._incode=incode
         self._code=code
         if linkname is None and urlname is None and name is not None:
@@ -148,12 +134,19 @@ class PageLink:
             self._linkname=url2link(urlname,code=self._code,incode=self._incode)
 
     def urlname(self):
+        """The name of the page this PageLink refers to, in a form suitable
+           for the URL of the page."""
         return self._urlname
 
     def linkname(self):
+        """The name of the page this PageLink refers to, in a form suitable
+           for a wiki-link"""
         return self._linkname
 
     def hashname(self):
+        """The name of the subpage this PageLink refers to. Subpages are
+           denominated by a # in the linkname(). If no subpage is referenced,
+           None is returned."""
         ln=self.linkname()
         ln=re.sub('&#','&hash;',ln)
         if not '#' in ln:
@@ -165,21 +158,40 @@ class PageLink:
             return hn
         
     def code(self):
+        """The code for the language of the page this PageLink refers to,
+           without :"""
         return self._code
     
     def __str__(self):
+        """A simple ASCII representation of the pagelink"""
         return "%s:%s"%(self._code,url2link(self._urlname,code=self._code,incode='ascii'))
 
     def __repr__(self):
+        """A more complete string representation"""
         return "PageLink{%s}"%str(self)
 
     def aslink(self):
+        """A string representation in the form of an interwiki link"""
         return "[[%s:%s]]"%(self.code(),self.linkname())
 
     def asselflink(self):
+        """A string representation in the form of a local link, but prefixed by
+           the language code"""
         return "%s:[[%s]]"%(self.code(),self.linkname())
     
     def get(self):
+        """The wiki-text of the page. This will retrieve the page if it has not
+           been retrieved yet. This can raise the following exceptions that
+           should be caught by the calling code:
+
+            NoPage: The page does not exist
+
+            IsRedirectPage: The page is a redirect. The argument of the
+                            exception is the page it redirects to.
+
+            LockedPage: The page is locked, and therefore its contents can
+                        not be retrieved.
+        """
         if not hasattr(self,'_contents'):
             self._contents=getPage(self.code(),self.urlname())
             hn=self.hashname()
@@ -191,9 +203,20 @@ class PageLink:
         return self._contents
 
     def put(self,newtext,comment=None):
+        """Replace the new page with the contents of the first argument.
+           The second argument is a string that is to be used as the
+           summary for the modification
+        """
         return putPage(self.code(),self.urlname(),newtext,comment)
 
     def interwiki(self):
+        """Return a list of inter-wiki links in the page. This will retrieve
+           the page text to do its work, so it can raise the same exceptions
+           that are raised by the get() method.
+
+           The return value is a list of PageLink objects for each of the
+           interwiki links in the page text.
+        """
         result=[]
         for newcode,newname in getLanguageLinks(self.get(),incode=self.code()).iteritems():
             try:
@@ -205,6 +228,8 @@ class PageLink:
         return result
 
     def __cmp__(self,other):
+        """Pseudo method to be able to use equality and inequality tests on
+           PageLink objects"""
         #print "__cmp__",self,other
         if not hasattr(other,'code'):
             return -1
@@ -216,10 +241,14 @@ class PageLink:
         return cmp(u1,u2)
 
     def __hash__(self):
+        """Pseudo method that makes it possible to store PageLink objects as
+           keys in hash-tables.
+        """
         return hash(str(self))
     
 # Library functions
 def unescape(s):
+    """Replace escaped HTML-special characters by their originals"""
     if '&' not in s:
         return s
     s = s.replace("&lt;", "<")
@@ -232,10 +261,10 @@ def unescape(s):
 def setAction(s):
     """Set a summary to use for changed page submissions"""
     global action
-    if cookies:
-        action = s
-    else:
-        action = username + ' - ' + s
+    action = s
+
+# Default action
+setAction('Wikipedia python library')
 
 def urlencode(query):
     l=[]
@@ -288,10 +317,12 @@ def putPage(code, name, text, comment=None):
     import httplib
     host = langs[code]
     if code in oldsoftware:
-        raise Error("Cannot put pages on a .com wikipedia")
+        raise Error("Cannot put pages on old wikipedia software")
     address = '/w/wiki.phtml?title=%s&action=submit'%space2underline(name)
     if comment is None:
         comment=action
+    if not loggedin or code != mylang:
+        comment = username + ' - ' + comment
     try:
         data = urlencode((
             ('wpSummary', comment),
@@ -313,7 +344,7 @@ def putPage(code, name, text, comment=None):
 
     conn.putheader('Content-Length', str(len(data)))
     conn.putheader("Content-type", "application/x-www-form-urlencoded")
-    if cookies and code==mylang:
+    if cookies and code == mylang:
         conn.putheader('Cookie',cookies)
     conn.endheaders()
     conn.send(data)
@@ -327,6 +358,7 @@ class MyURLopener(urllib.FancyURLopener):
     version="RobHooftWikiRobot/1.0"
     
 def getUrl(host,address):
+    """Low-level routine to get a URL from wikipedia"""
     #print host,address
     uo=MyURLopener()
     if cookies:
@@ -345,7 +377,8 @@ def getUrl(host,address):
     return text,charset
     
 def getPage(code, name, do_edit=1, do_quote=1):
-    """Get the contents of page 'name' from the 'code' language wikipedia"""
+    """Get the contents of page 'name' from the 'code' language wikipedia
+       Do not use this directly; use the PageLink object instead."""
     host = langs[code]
     if code in oldsoftware:
         # Old algorithm
@@ -444,7 +477,9 @@ def getPage(code, name, do_edit=1, do_quote=1):
     return x
 
 def languages(first=[]):
-    """Return a list of language codes for known wikipedia servers"""
+    """Return a list of language codes for known wikipedia servers. If a list
+       of language codes is given as argument, these will be put at the front
+       of the returned list."""
     result=[]
     for key in first:
         if key in langs.iterkeys():
@@ -454,20 +489,24 @@ def languages(first=[]):
             result.append(key)
     return result
 
-def allpages(start='%20%200'):
+def allpages(start='%21%200'):
+    """Iterate over all Wikipedia pages in the home language, starting
+       at the given page. This will raise an exception if the home language
+       does not have a translation of 'Special' listed above."""
     import sys
     start=link2url(start,code=mylang)
     m=0
     while 1:
-        text=getPage(mylang,'Speciaal:Allpages&printable=yes&from=%s'%start,do_quote=0,do_edit=0)
+        text=getPage(mylang,'%s:Allpages&printable=yes&from=%s'%(special[mylang],start),do_quote=0,do_edit=0)
         #print text
         R=re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         n=0
         for hit in R.findall(text):
             if not ':' in hit:
+                # Some dutch exceptions.
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
                     n=n+1
-                    yield url2link(hit,code=mylang,incode=mylang)
+                    yield PageLink(mylang,url2link(hit,code=mylang,incode=mylang))
                     start=hit+'%20%200'
         if n<100:
             break
@@ -478,7 +517,8 @@ def allpages(start='%20%200'):
 
 def getLanguageLinks(text,incode=None):
     """Returns a dictionary of other language links mentioned in the text
-       in the form {code:pagename}"""
+       in the form {code:pagename}. Do not call this routine directly, use
+       PageLink objects instead"""
     result = {}
     for code in langs:
         m=re.search(r'\[\['+code+':([^\]]*)\]\]', text)
@@ -511,6 +551,9 @@ def removeLanguageLinks(text):
     return text
     
 def interwikiFormat(links):
+    """Create a suitable string to start a wikipedia page consisting of
+       interwikilinks given as a dictionary of code:pagename in the argument.
+    """
     s=[]
     ar=links.keys()
     ar.sort()
@@ -522,6 +565,7 @@ def interwikiFormat(links):
     return ' '.join(s)+'\r\n'
             
 def code2encoding(code):
+    """Return the encoding for a specific language wikipedia"""
     if code == 'ascii':
         return code # Special case where we do not want special characters.
     if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl','ro','hr','tr','ar']:
@@ -529,6 +573,8 @@ def code2encoding(code):
     return 'iso-8859-1'
 
 def code2encodings(code):
+    """Return a list of historical encodings for a specific language
+       wikipedia"""
     # Historic compatibility
     if code=='pl':
         return 'utf-8','iso-8859-2'
@@ -684,3 +730,37 @@ def html2unicode(name,language,altlanguage=None):
                 print repr(name)
                 raise
     return result
+
+#########################
+# Read configuration files: username.dat and login.data
+#########################
+
+# Get the name of the user for submit messages
+try:
+    f = open('username.dat')
+    username = f.readline()[:-1]
+    try:
+        mylang = f.readline()[:-1]
+    except IOError:
+        print "No Home-wikipedia given in username.dat"
+        print "Defaulting to test: wikipedia"
+        mylang = 'test'
+        langs['test']='test.wikipedia.org'
+    if not langs.has_key(mylang):
+        print "Home-wikipedia from username.dat does not exist"
+        print "Defaulting to test: wikipedia"
+        mylang = 'test'
+        langs['test']='test.wikipedia.org'
+    f.close()
+except IOError:
+    print >> sys.stderr, "Please make a file username.dat with your name in there"
+    sys.exit(1)
+
+# Retrieve session cookies for login.
+try:
+    f = open('login.data')
+    cookies = '; '.join([x.strip() for x in f.readlines()])
+    #print cookies
+    f.close()
+except IOError:
+    cookies=None
