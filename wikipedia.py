@@ -29,7 +29,7 @@ langs = {
     'bg':'bg.wikipedia.org',   # Bulgarian, UTF-8
     'bs':'bs.wikipedia.org',   # Bosnian, UTF-8
     'ca':'ca.wikipedia.org',   # Catalan, UTF-8
-    'co':'co.wikipedia.org',   # Corsican
+    'co':'co.wikipedia.org',   # Corsican, UTF-8
     'cs':'cs.wikipedia.org',   # Czech, UTF-8
     'cy':'cy.wikipedia.org',   # Welsh, UTF-8
     'da':'da.wikipedia.org',   # Danish
@@ -63,7 +63,7 @@ langs = {
     'ms':'ms.wikipedia.org',   # Malay
     'na':'na.wikipedia.org',   # Nauruan
     'nah':'nah.wikipedia.org', # Nahuatl (UTF-8?)
-    'nds':'nds.wikipedia.org', # Lower Saxon
+    'nds':'nds.wikipedia.org', # Lower Saxon, UTF-8
     'nl':'nl.wikipedia.org',   # Dutch
     'no':'no.wikipedia.org',   # Norwegian, UTF-8
     'oc':'oc.wikipedia.org',   # Occitan, UTF-8
@@ -93,13 +93,13 @@ langs = {
     }
 
 # Languages that are coded in iso-8859-1
-latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'mr', 'id', 'is', 'lv', 'sw', 'co',
-          'tt', 'uk', 'vo', 'ga', 'da', 'na', 'test']
+latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'da']
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['et', 'ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy',
-             'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu']
+             'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
+             'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
+             'ga', 'na']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -110,7 +110,7 @@ special = {
     'bg': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D0%BD%D0%B8',
     'bs': 'Special',
     'ca': 'Especial',
-    #'co': '',
+    'co': 'Special',
     'cs': 'Speci%C3%A1ln%C3%AD',
     'cy': 'Special',
     'da': 'Speciel',
@@ -124,27 +124,27 @@ special = {
     'fi': 'Toiminnot',
     'fr': 'Special',
     'fy': 'Wiki',
-    #'ga': '',
+    'ga': 'Special',
     'gl': 'Special',
     'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
     'hi': '%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7',
     'hr': 'Special',
     'hu': 'Speci%C3%A1lis',
     'ia': 'Special',
-    #'id': '',
-    #'is': '',
+    'id': 'Special',
+    'is': 'Special',
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
     'la': 'Special',
     'lt': 'Special',
-    #'lv': '',
+    'lv': 'Special',
     'ml': 'Special',
-    #'mr': '',
+    'mr': 'Special',
     'ms': 'Special',
-    #'na': '',
+    'na': 'Special',
     'nah':'Special',
-    #'nds': '',
+    'nds': 'Special',
     'nl': 'Speciaal',
     'no': 'Spesial',
     'oc': 'Especial',
@@ -158,14 +158,14 @@ special = {
     'sq': 'Special',
     'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
     'sv': 'Special',
-    #'sw': '',
+    'sw': 'Special',
     'ta': '%E0%AE%9A%E0%AE%BF%E0%AE%B1%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81',
     'test': 'Special',
     'tr': 'Special',
-    #'tt': '',
-    #'uk': '',
+    'tt': 'Special',
+    'uk': 'Special',
     'vi': 'Special',
-    #'vo': '',
+    'vo': 'Special',
     'walon': 'Sipeci%C3%A5s',
     'zh': 'Special',
     'zh-cn': 'Special',
@@ -173,11 +173,6 @@ special = {
     }
 
 obsolete = ['sh']
-
-# Wikipedia's out of the list that are not running the phase-III software,
-# given as a list of language codes.
-oldsoftware = ['co', 'ga', 'id', 'is', 'lv', 'mr', 'nds', 'sw',
-               'tt', 'uk', 'vo', 'na']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
@@ -192,7 +187,7 @@ biglangs2 = ['ca', 'da', 'de', 'en', 'eo', 'es', 'fi', 'fr', 'ia',
 # really mean 'all'
 seriouslangs = ['af', 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
                 'es', 'et', 'fi', 'fr', 'fy', 'gl', 'he', 'hr', 'hu',
-                'ia', 'it', 'ja', 'ko', 'la', 'ms', 'nds', 'nl', 'no',
+                'ia', 'it', 'ja', 'ko', 'la', 'lv', 'ms', 'nds', 'nl', 'no',
                 'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'ta',
                 'tr', 'vi', 'zh', 'simple']
 
@@ -649,8 +644,6 @@ class GetAll:
         return data
     
 def getall(code, pages):
-    if code in oldsoftware:
-        return
     #print "DBG> getall", code, pages
     print "Getting %d pages from %s:"%(len(pages),code) 
     return GetAll(code, pages).run()
@@ -774,8 +767,6 @@ def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1
     import httplib
     put_throttle()
     host = langs[code]
-    if code in oldsoftware:
-        raise Error("Cannot put pages on old wikipedia software")
     address = '/w/wiki.phtml?title=%s&action=submit'%space2underline(name)
     if comment is None:
         comment=action
@@ -855,28 +846,14 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
        Do not use this directly; use the PageLink object instead."""
     print "Getting page %s:%s"%(code,name)
     host = langs[code]
-    if code in oldsoftware:
-        # Old algorithm
-        name = re.sub('_', ' ', name)
-        n = []
-        for x in name.split():
-            n.append(x[0].capitalize() + x[1:])
-        name = '_'.join(n)
-        #print name
-    else:
-        name = re.sub(' ', '_', name)
+    name = re.sub(' ', '_', name)
     if not '%' in name and do_quote: # It should not have been done yet
         if name != urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
-    if code not in oldsoftware:
-        address = '/w/wiki.phtml?title='+name+"&redirect=no"
-        if do_edit:
-            address += '&action=edit&printable=yes'
-    else:
-        if not do_edit:
-            raise Error("can not skip edit on old-software wikipedia")
-        address = '/wiki.cgi?action=edit&id='+name
+    address = '/w/wiki.phtml?title='+name+"&redirect=no"
+    if do_edit:
+        address += '&action=edit&printable=yes'
     if debug:
         print host, address
     # Make sure Brion doesn't get angry by slowing ourselves down.
@@ -924,7 +901,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
         if m:
             print "DBG> %s is redirect to %s"%(name,m.group(1))
             raise IsRedirectPage(m.group(1))
-        if edittime[code, name] == 0 and code not in oldsoftware:
+        if edittime[code, name] == 0:
             print "DBG> page may be locked?!"
             pass
             #raise LockedPage()
