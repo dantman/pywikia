@@ -666,6 +666,15 @@ def getLanguageLinks(text,incode=None):
                 result[code] = t
             else:
                 print "ERROR: empty link to %s:"%(code)
+    if incode in ['zh','zh-cn','zh-tw']:
+        m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7b80\\]\\]', text)
+        if m:
+            print "DBG> found link to traditional Chinese", repr(m.group(0))
+            result['zh-cn'] = m.group(1)
+        m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7e41\\]\\]', text)
+        if m:
+            print "DBG> found link to simplified Chinese", repr(m.group(0))
+            result['zh-tw'] = m.group(1)
     return result
 
 def removeLanguageLinks(text):
