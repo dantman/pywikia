@@ -2,6 +2,11 @@ This is a package to build robots for wikipedia. Some example robots are
 included. This is fairly nl:-centered, but if something doesn't work for your
 language wikipedia, just send a bug report and we'll take a look.
 
+=======================================================================
+PLEASE DO NOT PLAY WITH THIS PACKAGE. These programs can actually
+modify the live wikipedia on the net, and proper wiki-etiquette should
+be followed before running it on any of the wikipedia sites.
+=======================================================================
 The contents of the package are:
 
 LICENSE : a reference to the Python Software Foundation license
@@ -83,5 +88,4 @@ name; this will be used to identify you when the robot is making
 changes. The second line is normally 2 characters: the code of your
 home wikipedia. If the second line is missing, your home wikipedia is
 assumed to be 'nl'. It may take a little or a lot to make the programs
-run on non-nl: wikipedias. Be especially careful if your wikipedia uses
-UTF-8, as that has not been tested at all.
+run on non-nl: wikipedias. 
