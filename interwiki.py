@@ -291,7 +291,7 @@ class Subject:
                     else:
                         if self.conditionalAdd(pl3, counter, pl):
                             if globalvar.shownew:
-                                wikipedia.output("%s: %s gives new redirect %s" %  (self.inpl.asselflink(), pl.aslink(), pl3.aslink()))
+                                wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.asselflink(), pl.aslink(), pl3.aslink()))
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % pl.aslink())
                     #print "DBG> ",pl.urlname()
@@ -320,7 +320,7 @@ class Subject:
                       else:   
                           if self.conditionalAdd(pl2, counter, pl):
                               if globalvar.shownew:
-                                  wikipedia.output("%s: %s gives new interwiki %s"% (self.inpl.asselflink(), pl.aslink(), pl2.aslink()))
+                                  wikipedia.output(u"%s: %s gives new interwiki %s"% (self.inpl.asselflink(), pl.aslink(), pl2.aslink()))
                               
         # These pages are no longer 'in progress'
         del self.pending
@@ -359,7 +359,7 @@ class Subject:
 
     def problem(self, txt):
         """Report a problem with the resolution of this subject."""
-        wikipedia.output("ERROR: %s" % txt)
+        wikipedia.output(u"ERROR: %s" % txt)
         self.confirm += 1
         # beep at the first error
         if globalvar.bell and not self.problemfound and not globalvar.autonomous:
@@ -374,9 +374,9 @@ class Subject:
     def whereReport(self, pl, indent=4):
         for pl2 in self.foundin[pl]:
             if pl2 is None:
-                wikipedia.output(" "*indent + "Given as a hint.")
+                wikipedia.output(u" "*indent + "Given as a hint.")
             else:
-                wikipedia.output(" "*indent + pl2.aslink())
+                wikipedia.output(u" "*indent + pl2.aslink())
 
     def assemble(self):
         # No errors have been seen so far
@@ -525,7 +525,7 @@ class Subject:
                 self.reportBacklinks(new)
         else:
             if mods:
-                wikipedia.output("Changes to be made: %s" % mods)
+                wikipedia.output(u"Changes to be made: %s" % mods)
             oldtext = self.inpl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if globalvar.debug:
@@ -553,7 +553,7 @@ class Subject:
                         else:
                             if globalvar.bell:
                                 sys.stdout.write('\07')
-                            answer = wikipedia.input('Submit? [y|N]')
+                            answer = wikipedia.input(u'Submit? [y|N]')
                     else:
                         # If we do not need to ask, allow
                         answer = 'y'
@@ -643,7 +643,7 @@ class SubjectArray:
            generator"""
         fs = self.firstSubject()
         if fs:
-            wikipedia.output("NOTE: The first unfinished subject is " + fs.pl().aslink())
+            wikipedia.output(u"NOTE: The first unfinished subject is " + fs.pl().aslink())
         print "NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number)
         for i in range(number):
             try:
@@ -926,7 +926,7 @@ if __name__ == "__main__":
                 startmonth = 1
             fd = date.FormatDate(wikipedia.mylang)
             pl = wikipedia.PageLink(wikipedia.mylang, fd(startmonth, 1))
-            wikipedia.output("Starting with %s" % pl.aslink())
+            wikipedia.output(u"Starting with %s" % pl.aslink())
             for month in range(startmonth, 12+1):
                 for day in range(1, date.days_in_month[month]+1):
                     pl = wikipedia.PageLink(wikipedia.mylang, fd(month, day))
