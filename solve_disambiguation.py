@@ -417,22 +417,28 @@ for wrd in page_list:
         Otherwise, returns True.
         """
         try:
+            include = False
             text=refpl.get()
-            # make a backup of the original text so we can show the changes later
-            original_text = text
+            include = True
         except wikipedia.IsRedirectPage:
             wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), thispl.linkname()))
-            choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N]' % refpl.linkname())
-            if choice == 'y':
-                for ref_redir in getReferences(refpl):
-                    refpl_redir=wikipedia.PageLink(mysite, ref_redir)
-                    treat(refpl_redir, refpl)
-                if solve_redirect:
-                    choice2 = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
-                    if choice2 == 'y':
-                        redir_text = '#REDIRECT [[%s]]' % target
-                        refpl.put(redir_text)
-        else:
+            if solve_redirect:
+                choice = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
+                if choice2 == 'y':
+                    redir_text = '#REDIRECT [[%s]]' % target
+                    refpl.put(redir_text)
+            else:
+                choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N|c(hange redirect)]' % refpl.linkname())
+                if choice == 'y':
+                    for ref_redir in getReferences(refpl):
+                        refpl_redir=wikipedia.PageLink(mysite, ref_redir)
+                        treat(refpl_redir, refpl)
+                elif choice == 'c':
+                    text="#%s [[%s]]"%(mysite.redirect(), thispl.linkname())
+                    include = "redirect"
+        if include in [True,"redirect"]:
+            # make a backup of the original text so we can show the changes later
+            original_text=text
             n = 0
             curpos = 0
             edited = False
@@ -557,6 +563,8 @@ for wrd in page_list:
                     # we want to throw away the original link text
                         replaceit = 1
                         choice = choice[1:]
+                    elif include == "redirect":
+                        replaceit = 1
                     else:
                         replaceit = 0
 
