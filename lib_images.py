@@ -124,7 +124,7 @@ def get_content_type(filename):
 # Returns the filename which was used to upload the image
 # If the upload fails, the user is asked whether to try again or not.
 # If the user chooses not to retry, returns null.
-def get_image(original_url, source_wiki, original_description, debug=False):
+def get_image(original_url, source_wiki, original_description, keep=False, debug=False):
     # work with a copy of argument variables so we can reuse the
     # original ones if the upload fails
     fn = original_url
@@ -145,15 +145,16 @@ def get_image(original_url, source_wiki, original_description, debug=False):
     # convert ISO 8859-1 to Unicode, or parse UTF-8
     if source_wiki != None:
         fn = unicode(fn, wikipedia.code2encoding(source_wiki))
-    print "The filename on wikipedia will default to:",fn
-    newfn = raw_input("Better name : ")
-    if newfn:
-        fn = unicode(newfn, config.console_encoding)
+    if not keep:
+	print "The filename on wikipedia will default to:",fn
+	newfn = raw_input("Better name : ")
+	if newfn:
+	    fn = unicode(newfn, config.console_encoding)
     try:
-        fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
+	fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
     except UnicodeDecodeError:
-        print "This filename can't be displayed in " + wikipedia.code2encoding(wikipedia.mylang)
-        sys.exit(1)
+	print "This filename can't be displayed in " + wikipedia.code2encoding(wikipedia.mylang)
+	sys.exit(1)
     # Wikipedia doesn't allow spaces in the file name.
     # Replace them here to avoid an extra confirmation form
     fn = fn.replace(' ', '_')

@@ -5,6 +5,8 @@ Arguments:
 
   -lang:xx Log in to the given wikipedia language to upload to
 
+  -keep    Keep the filename as is
+
 If any other arguments are given, the first is the URL or filename
 to upload, and the rest is a proposed description to go with the
 upload. If none of these are given, the user is asked for the
@@ -25,10 +27,13 @@ import wikipedia, lib_images, config
 
 fn = ''
 desc = []
+keep = False
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
+    elif arg.startswith('-keep'):
+	keep = True
     elif fn=='':
         fn = arg
     else:
@@ -49,4 +54,4 @@ if fn=='':
 desc = unicode(desc, config.console_encoding)
 fn = unicode(fn, config.console_encoding)
 
-lib_images.get_image(fn, None, desc)
+lib_images.get_image(fn, None, desc, keep)
