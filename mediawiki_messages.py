@@ -30,8 +30,8 @@ def get(key):
     try:
         # find out how old our saved dump is (in seconds)
         file_age = time.time() - os.path.getmtime('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang)
-        # if it's older than 7 days, reload it
-        if file_age > 7 * 24 * 60 * 60:
+        # if it's older than 1 month, reload it
+        if file_age > 30 * 24 * 60 * 60:
             print 'Current MediaWiki message dump is outdated, reloading'
             refresh_messages()
     except OSError:
@@ -72,12 +72,12 @@ def makepath(path):
     
 def refresh_messages():
     host = wikipedia.family.hostname(wikipedia.mylang)
-    # broken redirect maintenance page's URL
+    # get 'all messages' special page's URL
     url = wikipedia.family.allmessages_address(wikipedia.mylang)
     print 'Retrieving MediaWiki messages' 
     allmessages, charset = wikipedia.getUrl(host,url)
 
-    #f=open('/home/daniel/allmessages.html', 'r')
+    #f=open('/home/daniel/mediawiki-messages/mediawiki-messages-nl.dat', 'r')
     #allmessages =  f.read()
     
     print 'Parsing MediaWiki messages'
@@ -85,7 +85,7 @@ def refresh_messages():
     itemR = re.compile("<tr bgcolor=\"#F0F0FF\">\n"
                      + "<td>\n"
                      + "<p><a href=\"\/wiki/MediaWiki:.+?\" title=\"MediaWiki:.+?\">(.+?)<\/a><br \/>\n"
-                     + "<a href=.+? title=.+?>.+?<\/a><\/p>\n"
+                     + ".*?<a href=.+? title=.+?>.+?<\/a><\/p>\n"
                      + "</td>\n"
                      + "<td>\n"
                      + "<p>.+?</p>\n"
@@ -111,6 +111,7 @@ if __name__ == "__main__":
         if wikipedia.argHandler(arg):
             pass
         elif arg == '-debug':
-            get('about')
+            debug = True
     refresh_messages()
-
+    if debug:
+        print get('successfulupload')
