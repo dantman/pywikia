@@ -765,11 +765,26 @@ def PageLinksFromFile(fn, site = None):
     if site is None:
         site = getSite()
     f=open(fn, 'r')
-    R=re.compile(r'\[\[([^:]*):([^\]]*)\]\]')
+    R=re.compile(r'\[\[(.*)]\]')
     for line in f.readlines():
         m=R.match(line)
         if m:
-            yield PageLink(site.getSite(code=m.group(1)), m.group(2))
+            part = m.group(1).split(':')
+            i = 0
+            try:
+                fam=Family(part[i], fatal = False)
+                i += 1
+            except ValueError:
+                fam=site.family
+            if part[i] in fam.langs:
+                code = part[i]
+                i += 1
+            else:
+                code = site.lang
+            pagename = ':'.join(part[i:])
+            thesite = getSite(code = code, fam = fam)
+            #print "DBG> Pagename", repr(thesite),pagename
+            yield PageLink(thesite, pagename)
         else:
             print "ERROR: Did not understand %s line:\n%s" % (fn, repr(line))
     f.close()
@@ -1635,7 +1650,7 @@ def html2unicode(name, site, altsite=None):
                 raise
     return result
 
-def Family(fam = None):
+def Family(fam = None, fatal = True):
     """
     Import the named family.
     """
@@ -1644,9 +1659,12 @@ def Family(fam = None):
     try:
         exec "import %s_family"%fam
     except ImportError:
-        print "Error importing the %s family. This probably means the family"%fam
-        print "does not exist. Also check your configuration file"
-        sys.exit(1)
+        if fatal:
+            print "Error importing the %s family. This probably means the family"%fam
+            print "does not exist. Also check your configuration file"
+            sys.exit(1)
+        else:
+            raise ValueError("Family does not exist")
     return sys.modules['%s_family'%fam].Family()
 
 class Site(object):

@@ -658,7 +658,7 @@ class SubjectArray(object):
         import codecs
         f = codecs.open(fn, 'w', 'utf-8')
         for subj in self.subjects:
-            f.write(subj.pl().aslink()+'\n')
+            f.write(subj.pl().aslink(None)+'\n')
         f.close()
         
     def generateMore(self, number):
