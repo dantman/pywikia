@@ -1254,6 +1254,7 @@ def isInterwikiLink(s):
 def getReferences(pl, follow_redirects = True):
     host = family.hostname(pl.code())
     url = family.references_address(mylang, pl.urlname())
+    output('Getting references to %s:%s' % (pl.code(), pl.linkname()))
     txt, charset = getUrl(host,url)
     # remove brackets which would disturb the regular expression cascadedListR 
     txt = txt.replace('<a', 'a')
