@@ -126,12 +126,16 @@ This script understands various command-line arguments:
     -noredirect    do not follow redirects (note: without ending columns).
 
     -noshownew:    don't show the source of every new pagelink found.
-    
+
+    -neverlink:    used as -neverlink:xx where xx is a language code:
+                   Disregard any links found to language xx. You can also
+                   specify a list of languages to disregard, separated by
+                   commas.
+
     Arguments that are interpreted by more bots:
 
     -lang:         specifies the language the bot is run on (e.g. -lang:de).
                    Overwrites the settings in username.dat
-
 
 Two configuration options can be used to change the workings of this robot:
 
@@ -204,6 +208,7 @@ class Global(object):
     untranslatedonly = False
     askhints = False
     auto = True
+    neverlink = []
     
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -345,7 +350,9 @@ class Subject(object):
                             # Ignore the interwiki links
                             iw = ()
                     for pl2 in iw:
-                      if unequal.unequal(self.inpl, pl2):
+                      if pl2.site().language() in globalvar.neverlink:
+                          print "Skipping link %s to an ignored language"% pl2
+                      elif unequal.unequal(self.inpl, pl2):
                           print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
                       elif globalvar.same=='wiktionary' and pl2.linkname().lower()!=self.inpl.linkname().lower():
                           print "NOTE: Ignoring %s for %s in wiktionary mode"% (pl2, self.inpl)
@@ -1030,6 +1037,8 @@ if __name__ == "__main__":
                 number = int(arg[8:])
             elif arg.startswith('-array:'):
                 globalvar.minarraysize = int(arg[7:])
+            elif arg.startswith('-neverlink:'):
+                globalvar.neverlink += arg[11:].split(",")
             else:
                 inname.append(arg)
 
