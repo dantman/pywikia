@@ -842,7 +842,9 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
     # Make sure Brion doesn't get angry by slowing ourselves down.
     get_throttle()
     # This loop will run until the page was successfully loaded (just in case
-    # the server is down)                                                                 
+    # the server is down)
+    # wait for retry_idle_time minutes before retrying.
+    retry_idle_time = 1
     while True:
         text, charset = getUrl(host,address)
         # Extract the actual text from the textedit field
@@ -873,8 +875,9 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
             except AttributeError:
-                print "WARNING: No text area found on %s %s. Maybe the server is down. Retrying in 2 minutes..." % (host,address)
-                time.sleep(2 * 60)
+                print "WARNING: No text area found on %s %s. Maybe the server is down. Retrying in %d minutes..." % (host, address, retry_idle_time)
+                time.sleep(retry_idle_time * 60)
+                retry_idle_time *= 2
                 #retry
                 continue
             i2 = re.search('</textarea>', text).start()
