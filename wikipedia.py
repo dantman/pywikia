@@ -46,7 +46,7 @@ langs = {
     'hi':'hi.wikipedia.org',   # Hindi, UTF-8
     'hr':'hr.wikipedia.org',   # Croatian, UTF-8
     'hu':'hu.wikipedia.org',   # Hungarian, UTF-8
-    'ia':'ia.wikipedia.org',   # Interlingua
+    'ia':'ia.wikipedia.org',   # Interlingua, UTF-8
     'id':'id.wikipedia.org',   # Indonesian
     'it':'it.wikipedia.org',   # Italian, UTF-8
     'ja':'ja.wikipedia.org',   # Japanese, UTF-8
@@ -85,12 +85,12 @@ langs = {
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'ia', 'et', 'eu',
+          'et', 'eu',
           'mr', 'id', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no', 'simple']
+latin1old = ['ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no', 'simple']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -118,7 +118,7 @@ special = {
     'hi': '%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7',
     'hr': 'Special',
     'hu': 'Speci%C3%A1lis',
-    #'ia': 'Special',
+    'ia': 'Special',
     #'id': '',
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
@@ -157,7 +157,7 @@ special = {
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['et', 'eu', 'ga', 'gl', 'ia', 'id', 'lv',
+oldsoftware = ['et', 'eu', 'ga', 'gl', 'id', 'lv',
                'mr', 'nds', 'sw', 'tt', 'uk', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
