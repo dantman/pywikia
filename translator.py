@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+﻿# -*- coding: iso-8859-1 -*-
 
 # Translation database. Non-ASCII characters must be encoded in hexadecimal
 # unicode and prefixed with a small u,
@@ -275,8 +275,8 @@ types = {
             # table header
             { "en":"Politics",                               "de":"Politik",                                   "nl":"Politiek",                  },
             # female mayor
-            { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeister]]in:",                  "nl":"[[Burgermeester]]:",               },
-            { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeisterin]]:",                  "nl":"[[Burgermeester]]:",          },
+            { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeister]]in:",                  "nl":"[[Burgemeester]]:",               },
+            { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeisterin]]:",                  "nl":"[[Burgemeester]]:",          },
             # male mayor
             { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeister]]:",                    "nl":"[[Burgemeester]]:",           },
             { "en":"Governing [[Political party|party]]:",   "de":"Regierende [[Politische Partei|Partei]]",   "nl":"Regerende partij",               },
@@ -309,10 +309,10 @@ types = {
             { "en":"[[Municipality key]]:",    "de":u"[[Amtlicher Gemeindeschl\xFCssel]]:",                                              },
             { "en":"urban districts",          "de":"[[Stadtbezirk]]e",                     "nl":"stadsdelen",                                             },
             # female first mayor, no exact translation in en:
-            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeisterin]]:",         "nl":"[[Burgermeester]]:"},
-            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]in:",         "nl":"[[Burgermeester]]:"},
+            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeisterin]]:",         "nl":"[[Burgemeester]]:"},
+            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]in:",         "nl":"[[Burgemeester]]:"},
             # male first mayor, no exact translation in en:
-            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]:",           "nl":"[[Burgermeester]]:"},
+            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]:",           "nl":"[[Burgemeester]]:"},
             # "bis" is used between postal codes
             { "en":" to ",                     "de":" bis ",                                "nl":"t/m"},          
             # some cities have demographic info which is titled "Bevölkerung" (population). The spaces are important
