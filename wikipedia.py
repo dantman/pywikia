@@ -67,11 +67,13 @@ langs = {
     'ro':'ro.wikipedia.org',   # Romanian, UTF-8
     'ru':'ru.wikipedia.org',   # Russian, UTF-8
     'simple':'simple.wikipedia.org', # Simple English, UTF-8
+    'sk':'sk.wikipedia.org',   # Slovakian, UTF-8
     'sl':'sl.wikipedia.org',   # Slovenian, UTF-8
     'sq':'sq.wikipedia.org',   # Albanian (UTF-8?)
     'sr':'sr.wikipedia.org',   # Serbian, UTF-8
     'sv':'sv.wikipedia.org',   # Swedish
     'sw':'sw.wikipedia.org',   # Swahili
+    'ta':'ta.wikipedia.org',   # Tamil, UTF-8
     'test':'test.wikipedia.org',
     'tr':'tr.wikipedia.org',   # Turkish, UTF-8
     'tt':'tt.wikipedia.org',   # Tatar
@@ -169,8 +171,8 @@ biglangs = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es']
 seriouslangs = ['af', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
                 'es', 'et', 'fi', 'fr', 'fy', 'gl', 'he', 'hr', 'hu',
                 'ia', 'it', 'ja', 'ko', 'la', 'ms', 'nds', 'nl', 'no',
-                'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'zh',
-                'simple']
+                'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'ta',
+                'vi', 'zh', 'simple']
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 
