@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
 
@@ -134,7 +134,9 @@ ignore={
           'Gebruiker:Gustar/aantekeningen denotatie annex connotatie',
           'Wikipedia:Protection log',
           'Gebruiker:Pven/Romeinse cijfers',
-          'Categorie:Doorverwijspagina'),
+          'Categorie:Doorverwijspagina',
+          'Wikipedia:Ongelijke redirects',
+          'Gebruiker:Cars en travel'),
      'en':('Wikipedia:Links to disambiguating pages',
           'Wikipedia:Disambiguation pages with links',
           'Wikipedia:Multiple-place names \([A-Z]\)',
@@ -169,7 +171,7 @@ ignore={
           u'Wikipédia:Prise de décision, noms des membres de dynasties/liste des dynastiens',
           u'Liste de toutes les combinaisons de deux lettres',
           u'STLs de [A-Z]AA à [A-Z]ZZ',
-          u'Wikipédia:Pages sans interwiki,.',
+          u'Wikipédia:Pages sans interwiki,.'
           ),
     'de':(
           u'100 Wörter des 21. Jahrhunderts',
