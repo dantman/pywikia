@@ -140,9 +140,9 @@ for arg in sys.argv[1:]:
         elif arg=='-nolog':
             log = False
         else:
-            todo.append(arg)
+            todo.append(wikipedia.PageLink(wikipedia.mylang,arg))
 
-if todo = []:
+if todo == []:
     # No pages have been given; if also no start is given, we start at
     # the beginning
     do_all = True
