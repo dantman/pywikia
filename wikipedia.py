@@ -783,7 +783,8 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
     response = conn.getresponse()
     data = response.read()
     conn.close()
-    output(data, decoder = myencoding())
+    if data != '':
+        output(data, decoder = myencoding())
     return response.status, response.reason, data
 
 def forCode(text, code):
