@@ -17,18 +17,19 @@ __version__='$Id$'
 
 
 import WdTXMLParser,wikipedia,re,datetime,xml.sax,fileinput
+import string
 
-DEBUG = 1
+DEBUG = 0
 host = "http://wortschatz.uni-leipzig.de/wort-des-tages/RDF/WdT/"
 
 localArticleList = "Stichwortliste_de_Wikipedia_2004-04-17_sortiert.txt"
 
 XMLfiles = {
     "ort.xml"           : "Orte",
-    "ereignis.xml"      : "Eregnisse",
+    "ereignis.xml"      : "Ereignisse",
     "kuenstler.xml"     : "Kunst, Kultur und Wissenschaft", 
     "organisation.xml"  : "Organisationen",
-    "politiker.xml"     : "Politker",
+    "politiker.xml"     : "Politiker",
     "schlagwort.xml"    : u"Schlagwörter",
     "sportler.xml"      : "Sportler",
     "sport.xml"         : "Sport",
@@ -56,8 +57,20 @@ for file in XMLfiles:
     skip = []
     if localArticleList != "":
         import string
+        add = {}
         for a in data:
             print "\nchecking: " + a,
+            userCommand = raw_input('[C]orrect, [S]kip or [K]eep?')
+            if userCommand == 'c':
+                b = raw_input('Correct it: ')
+                if b != a:
+                    add[b] = data[a]
+                    skip.append(a)
+                    a = b
+            if userCommand == 's':
+                print "...skipping ",
+                skip.append(a)
+                continue              
             for line in fileinput.input(localArticleList):
                 if unicode(string.strip(line),"iso-8859-1") == a:
                     skip.append(a)
@@ -75,11 +88,14 @@ for file in XMLfiles:
                     else:
                         print "...stub ",
                 except wikipedia.NoPage:
+                    print "...doesn't exist yet",
                     continue
                 except:
                     skip.append(a)
                     print "...skipping ",
                     break
+    for b in add:
+        data[b] = add[b]
     for a in skip:
         del data[a]
 
