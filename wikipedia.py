@@ -32,7 +32,7 @@ langs = {'en':'www.wikipedia.org',
          'fi':'fi.wikipedia.com',
          'ia':'ia.wikipedia.com',
          'et':'et.wikipedia.com',
-         'test':'test.wikipedia.org',
+         #'test':'test.wikipedia.org',
          }
 
 charsets = {}
@@ -82,6 +82,9 @@ def urlencode(query):
 
 def space2underline(name):
     return name.replace(' ','_')
+
+def underline2space(name):
+    return name.replace('_',' ')
 
 def putPage(code, name, text):
     """Upload 'text' on page 'name' to the 'code' language wikipedia."""
@@ -231,7 +234,8 @@ def url2link(percentname,into='latin1'):
     """Convert a url-name of a page into a proper name for an interwiki link
        the optional argument 'into' specifies the encoding of the target wikipedia
        """
-    x=url2unicode(percentname)
+    result=underline2space(percentname)
+    x=url2unicode(result)
     if into=='latin1':
         return unicode2latin1(x)
     else:
@@ -250,6 +254,7 @@ def link2url(name):
         result=str(name.encode('latin1'))
     except UnicodeError:
         result=str(name.encode('utf-8'))
+    result=space2underline(result)
     return urllib.quote(result)
 
 ######## Unicode library functions ########
