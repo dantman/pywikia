@@ -549,13 +549,18 @@ def compareLanguages(old, new):
     adding = []
     modifying = []
     for code in old.keys():
-        if code not in new.keys():
-            removing.append(code)
+        if code not in new:
+            # Zh is allowed to be removed if it is replaced by both zh-cn and
+            # zh-tw.  Do not call such a removal a removal but a modification.
+            if code == 'zh' and 'zh-cn' in new and 'zh-tw' in new:
+                modifying.append(code)
+            else:
+                removing.append(code)
         elif old[code] != new[code]:
             modifying.append(code)
 
     for code2 in new.keys():
-        if code2 not in old.keys():
+        if code2 not in old:
             adding.append(code2)
     s = ""
     if adding:
