@@ -1,117 +1,150 @@
+# -*- coding: utf-8  -*-
 """
-This bot parse articles and replace a text by another. This is a development
-script and should not be used on live wikipedia cause you will break things
-using it.
+-sql       - Retrieve information from a local dump (http://download.wikimedia.org).
+             Argument can also be given as "-sql:filename".
+-file      - Retrieve information from a local text file.
+             Will read any [[wiki link]] and use these articles
+             Argument can also be given as "-file:filename".
+-regex     - Make replacements using regular expressions. If this argument isn't
+             given, the bot will make simple text replacements.
+other:     - First argument is the old text, second argument is the new text.
+             if the -regex argument is given, the first argument will be
+             regarded as a regular expression, and the second argument might
+             contain expressions like \\1 or \g<name>.
 
-Author: Ashar Voultoiz 2004.
+NOTE: Use either -sql or -file, but don't use both.
 
-Parts of this code have been copied from the project:
+Examples:
 
-		Python Wikipedia Robot Framework
-		http://pywikipediabot.sf.net/
+If you want to change templates from the old syntax, e.g. {{msg:Stub}}, to the
+new syntax, e.g. {{Stub}}, download an SQL dump file from
+http://download.wikimedia.org, then use this command:
 
-which include code from (in no particular order):
-	Andre Engels
-	Christian List
-	Ashar Voultoiz
-	Rob W.W. Hooft
-	Thomas R. Koll
-------------------------------------------------------------------------------
-		
-Arguments:
-	-file   : file containing the articles to be fixed (using [[Article name]]
-	          format.
-	
-	-search : file name containing text we will search for
+    python replace.py -sql -regex "{{msg:(.*?)}}" "{{\\1}}"
 
-	-subst  : file name containing text using to replace
+If you want to fix typos, e.g. Errror -> Error, use this:
 
-    -maxchanges : number of occurences to replace. Default is 0 means the bot
-                  will replace all occurences of the "search" string in the
-                  given article.
-
-	The text file MUST be encoded using iso-8859-1 for now.
-	
-The others arguments are append to the list of articles.
-
-
-TODO:
--search and -subst should have default filename such as:
-	replace_search.txt
-	replace_subst.txt
-
+    python replace.py -sql "Errror" "Error"
 """
+#
+# (C) Daniel Herding, 2004
+#
+# Distributed under the terms of the PSF license.
+#
 
-import sys, re, wikipedia
+import sys, re
+import wikipedia, config
 
+# taken from interwiki.py
+def showDiff(oldtext, newtext):
+    import difflib
+    sep = '\r\n'
+    ol = oldtext.split(sep)
+    if len(ol) == 1:
+        sep = '\n'
+        ol = oldtext.split(sep)
+    nl = newtext.split(sep)
+    for line in difflib.ndiff(ol,nl):
+        if line[0] in ['+','-']:
+            wikipedia.output(line)
 
-maxchanges = 0
-articlelist = []
-textsearch=""
-textsubst=""
-comment = {"en":"bot replacing text"
-           }
+# Generator which will yield pages that might contain text to replace.
+# These pages will be retrieved from a local sql dump file.
+def read_pages_from_sql_dump(sqlfilename, old, regex):
+    import sqldump
+    dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
+    for entry in dump.entries():
+        if regex:
+            if old.search(entry.text):
+                yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+        else:
+            if entry.text.find(old) != -1:
+                yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
 
-""" functions """
+# Generator which will yield pages that might contain text to replace.
+# These pages might be retrieved from a text file.
+def read_pages_from_text_file(textfilename, old, regex):
+        f = open(textfilename, 'r')
+        # regular expression which will find [[wiki links]]
+        R = re.compile(r'.*\[\[([^\]]*)\]\].*')
+        m = False
+        for line in f.readlines():
+            m=R.match(line)
+            if m:
+                yield wikipedia.PageLink(wikipedia.mylang, m.group(1))
+        f.close()
 
-def parseFile(filename):
-# function used to parse the file and build the article list
-# that will be parsed
+# Generator which will yield pages that might contain text to replace.
+# These pages might be retrieved from a local sql dump file or a text file.
+# TODO: Make MediaWiki's search feature available.
+def generator(source, old, regex, textfilename = None, sqlfilename = None):
+    if source == 'sqldump':
+        for pl in read_pages_from_sql_dump(sqlfilename, old, regex):
+            yield pl
+    elif source == 'textfile':
+        for pl in read_pages_from_text_file(textfilename, old, regex):
+            yield pl
 
-	global articlelist
+# How we want to retrieve information on which pages need to be changed.
+# Can either be 'sqldump' or 'textfile'.
+source = None
+# First element is original text, second element is replacement text
+replacements = []
+# Should the elements elements of 'replacements' be interpreted as regular
+# expressions?
+regex = False
+sqlfilename = ''
+textfilename = ''
 
-	# open the file and prepare the line format
-	f=open(filename,'r')
-	R=re.compile(r'.*\[\[([^\]]*)\]\].*')
-	
-	# parse the file
-	for line in f.readlines():
-		# try to find an article
-		m = R.match(line)
-		if m:
-			# add it to the list for future use
-			articlelist.append(m.group(1))
-		else:
-			print "ERROR: Did not understand %s line:\n%s" % (arg[6:], repr(line))
-	
-	f.close()
-	
-	return True
-
-
-# parse arguments
 for arg in sys.argv[1:]:
-	# bot understand common arguments
-	if wikipedia.argHandler(arg):
-		pass
-	# file containing the list of articles
-	elif arg.startswith('-file:'):
-		parseFile(arg[6:])
-	elif arg.startswith('-search:'):
-		f=open(arg[8:])
-		textsearch = f.read()
-	elif arg.startswith('-subst:'):
-		f=open(arg[7:])
-		textsubst = f.read()
-	elif arg.startswith('-maxchanges:'):
-		maxchanges = arg[11:]
-	else:
-		articlelist.append(arg)
+    arg = unicode(arg, config.console_encoding)
+    if wikipedia.argHandler(arg):
+        pass
+    elif arg == '-regex':
+        regex = True
+    elif arg.startswith('-file'):
+        if len(arg) == 5:
+            textfilename = wikipedia.input(u'Please enter the filename:')
+        else:
+            textfilename = arg[6:]
+        source = 'textfile'
+    elif arg.startswith('-sql'):
+        if len(arg) == 4:
+            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
+        else:
+            sqlfilename = arg[5:]
+        source = 'sqldump'
+    else:
+        replacements.append(arg)
 
-msglang=wikipedia.chooselang(wikipedia.mylang,comment)
+if source == None or len(replacements) != 2:
+    print 'Please open replace.py with a text editor for syntax information and examples.'
+    sys.exit()
 
-# main loop passing through each articles		
-for article in articlelist:
-	text = ""
-	# new article object
-	pl = wikipedia.PageLink(wikipedia.mylang, article)
-	try:
-		text = pl.get()
-	except wikipedia.NoPage:
-		print "ERROR: couldn't find " + article
-	
-	newtext = re.sub(unicode(textsearch,'iso-8859-1'), unicode(textsubst,'iso-8859-1'), text, maxchanges)
-	
-	if newtext!=text:
-		print "Replacing matching text"
-		pl.put(newtext, comment[msglang])
+old = replacements[0]
+new = replacements[1]
+
+if regex:
+    old = re.compile(old)
+
+acceptall = False
+
+for pl in generator(source, old, regex, textfilename, sqlfilename):
+    # print pl.linkname()
+    original_text = pl.get()
+    if regex:
+        new_text = old.sub(new, original_text)
+    else:
+        new_text = original_text.replace(old, new)
+    if new_text == original_text:
+        print 'No changes were necessary in %s' % pl.linkname()
+    else:
+        showDiff(original_text, new_text)
+        if not acceptall:
+            choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
+        if choice in ['a', 'A']:
+            acceptall = True
+            choice = 'y'
+        if choice in ['y', 'Y']:
+            pl.put(new_text)
+
