@@ -85,7 +85,7 @@ langs = {
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'no', 'pt', 'af', 'la', 'ca', 'ia', 'et', 'eu',
+          'no', 'pt', 'af', 'la', 'ia', 'et', 'eu',
           'mr', 'id', 'simple', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
@@ -95,35 +95,61 @@ latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it']
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
 special = {
+    #'af': '',
     'ar': 'Special',
     'bs': 'Special',
+    'ca': 'Especial',
     'cs': 'Speci%C3%A1ln%C3%AD',
+    'cy': 'Special',
     'da': 'Speciel',
     'de': 'Spezial',
+    'el': 'Special',
     'en': 'Special',
     'eo': 'Speciala',
     'es': 'Especial',
+    #'et': '',
+    #'eu': '',
     'fi': 'Toiminnot',
     'fr': 'Special',
     'fy': 'Wiki',
+    #'ga': '',
+    #'gl': '',
     'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
+    'hi': '%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7',
     'hr': 'Special',
     'hu': 'Speci%C3%A1lis',
-    'el': 'Special',
-    'ia': 'Special',
+    #'ia': 'Special',
+    #'id': '',
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
+    #'la': '',
+    'lt': 'Special',
+    #'lv': '',
+    'ml': 'Special',
+    #'mr': '',
     'ms': 'Special',
+    'nah':'Special',
+    #'nds': '',
     'nl': 'Speciaal',
+    'no': 'Spesial',
+    'oc': 'Especial',
     'pl': 'Specjalna',
+    #'pt': '',
     'ro': 'Special',
     'ru': 'Special',
+    #'simple': '',
     'sl': 'Posebno',
-    'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
     'sq': 'Special',
+    'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
     'sv': 'Special',
+    #'sw': '',
     'test': 'Special',
+    'tr': 'Special',
+    #'tt': '',
+    #'uk': '',
+    'vi': 'Special',
+    #'vo': '',
     'zh': 'Special',
     'zh-cn': 'Special',
     'zh-tw': 'Special',
@@ -131,9 +157,8 @@ special = {
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['no', 'pt', 'af', 'la', 'ca', 'ia', 'et', 'eu',
-               'simple', 'nds', 'mr', 'id', 'gl', 'lv', 'sw',
-               'tt', 'uk', 'vo', 'ga']
+oldsoftware = ['af', 'et', 'eu', 'ga', 'gl', 'ia', 'id', 'la', 'lv',
+               'mr', 'nds', 'pt', 'simple', 'sw', 'tt', 'uk', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
@@ -513,9 +538,9 @@ class GetAll:
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
         else:
-            print title
-            print pl
-            print self.pages
+            print repr(title)
+            print repr(pl)
+            print repr(self.pages)
             raise "bug, page not found in list"
         if self.debug:
             xtext = pl2.get()
@@ -556,7 +581,11 @@ class GetAll:
 
     def getData(self):
         import httplib
-        addr = self.addr%special[self.code]
+        try:
+            addr = self.addr%special[self.code]
+        except KeyError:
+            print "BUG: Can not find name of Special in %s:" % self.code
+            raise
         pagenames = u'\r\n'.join([x.hashfreeLinkname() for x in self.pages])
         data = urlencode((
                     ('action', 'submit'),
@@ -1189,13 +1218,18 @@ def html2unicode(name, language, altlanguage=None):
     name = removeEntity(name)
 
     Runi = re.compile('&#(\d+);')
+    Runi2 = re.compile('&#x([0-9a-f]+);')
     result = u''
     i=0
     while i < len(name):
         m = Runi.match(name[i:])
+        m2 = Runi2.match(name[i:])
         if m:
             result += unichr(int(m.group(1)))
             i += m.end()
+        elif m2:
+            result += unichr(int(m2.group(1),16))
+            i += m2.end()
         else:
             try:
                 result += name[i]
