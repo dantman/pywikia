@@ -116,8 +116,8 @@ class NoSuchEntity(ValueError):
 class SubpageError(ValueError):
     """The subpage specified by # does not exist"""
 
-class NoCategoryPage(Error):
-    """Wikipedia page is not a Category"""
+class NoNamespace(Error):
+    """Wikipedia page is not in a special namespace"""
 
 SaxError = xml.sax._exceptions.SAXParseException
 
@@ -165,6 +165,16 @@ class PageLink:
         """The name of the page this PageLink refers to, in a form suitable
            for a wiki-link"""
         return self._linkname
+
+    def catname(self):
+        """The name of the page without the namespace part. Gives an error
+        if the page is from the main namespace."""
+        title=self.linkname()
+        parts=title.split(':')
+        parts=parts[1:]
+        if parts=[]:
+            raise NoNamespace(self)
+        return ':'.join(parts)
 
     def hashname(self):
         """The name of the subpage this PageLink refers to. Subpages are

@@ -41,12 +41,6 @@ def unique(l):
 class _CatLink(wikipedia.PageLink):
     """Subclass of PageLink that has some special tricks that only work for
        category: pages"""
-
-    def catname(self):
-        title=self.linkname()
-        parts=title.split(':')
-        parts=parts[1:]
-        return ':'.join(parts)
     
     def catlist(self, recurse = False):
         """Cache result of make_catlist for a second call
