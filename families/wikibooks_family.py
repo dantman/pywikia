@@ -32,7 +32,8 @@ class Family(family.Family):
         # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': u'Wikibooks',
-        },
+        }
+
         self.namespaces[5] = {
             '_default': u'Wikibooks talk',
             'pt': u'Wikibooks DiscussÃ£o',
