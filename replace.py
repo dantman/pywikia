@@ -55,6 +55,8 @@ msg = {
 
 # Predefinded fixes
 fixes = {
+    # These replacements will convert HTML to wiki syntax where possible, and
+    # make remaining tags XHTML compliant.
     'HTML': {
         'regex': True,
         'exceptions':  ['<nowiki>'],
@@ -64,16 +66,33 @@ fixes = {
               },
         'replacements': {
             # everything case-insensitive (?i)
-            r'(?i)<br>':                 r'<br />',
-            r'(?i)<b>':                  r"'''",
-            r'(?i)</b>':                 r"'''",
-            r'(?i)<strong>':             r"'''",
-            r'(?i)</strong>':            r"'''",
-            r'(?i)<em>':                 r"''",
-            r'(?i)</em>':                r"''",
-            r'(?i)<i>':                  r"''",
-            r'(?i)</i>':                 r"''",
-            r'(?i)([\r\n])<hr>([\r\n])': r'\1----\2'
+            # keep in mind that MediaWiki automatically converts <br> to <br />
+            # when rendering pages, so you might comment the next two lines out
+            # to save some time/edits.
+            r'(?i)<b>':                       r"'''",
+            r'(?i)</b>':                      r"'''",
+            r'(?i)<strong>':                  r"'''",
+            r'(?i)</strong>':                 r"'''",
+            r'(?i)<em>':                      r"''",
+            r'(?i)</em>':                     r"''",
+            r'(?i)<i>':                       r"''",
+            r'(?i)</i>':                      r"''",
+            r'(?i)<br>':                      r'<br />',
+            # linebreak with attributes
+            r'(?i)<br ([^>/]+?)>':            r'<br \1 />',
+            # horizontal line without attributes in a single line
+            r'(?i)([\r\n])<hr[ /]*>([\r\n])': r'\1----\2',
+            # horizontal line without attributes with more text in the same line
+            r'(?i) +<hr[ /]*> +':             r'\r\n----\r\n',
+            # horizontal line with attributes; can't be done with wiki syntax
+            r'(?i)<hr ([^>/]+?)>':            r'<hr \1 />',
+            # a header where only spaces are in the same line
+            r'(?i)([\r\n]) *<h1> *([^<]+?) *</h1> *([\r\n])':  r"\1= \2 =\3",
+            r'(?i)([\r\n]) *<h2> *([^<]+?) *</h2> *([\r\n])':  r"\1== \2 ==\3",
+            r'(?i)([\r\n]) *<h3> *([^<]+?) *</h3> *([\r\n])':  r"\1=== \2 ===\3",
+            r'(?i)([\r\n]) *<h4> *([^<]+?) *</h4> *([\r\n])':  r"\1==== \2 ====\3",
+            r'(?i)([\r\n]) *<h5> *([^<]+?) *</h5> *([\r\n])':  r"\1===== \2 =====\3",
+            r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])':  r"\1====== \2 ======\3",
         }
     }
 }
