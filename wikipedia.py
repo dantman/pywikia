@@ -696,7 +696,7 @@ def replaceLanguageLinks(oldtext, new):
        'new' should be a dictionary with the language names as keys, and
        either PageLink objects or the link-names of the pages as values.
     """   
-    s = interwikiFormat(new, incode = mylang)
+    s = interwikiFormat(new)
     s2 = removeLanguageLinks(oldtext)
     if s:
         if mylang in config.interwiki_atbottom:
@@ -707,15 +707,14 @@ def replaceLanguageLinks(oldtext, new):
         newtext = s2
     return newtext
     
-def interwikiFormat(links, incode):
+def interwikiFormat(links):
     """Create a suitable string encoding all interwiki links for a wikipedia
        page.
 
        'links' should be a dictionary with the language names as keys, and
        either PageLink objects or the link-names of the pages as values.
 
-       'incode' should be the name of the wikipedia language that is the
-       target of the string.
+       The string is formatted for inclusion in mylang.
     """
     if not links:
         return ''
@@ -736,7 +735,7 @@ def interwikiFormat(links, incode):
         except AttributeError:
             s.append('[[%s:%s]]' % (code, links[code]))
     s=config.interwiki_langs_separator.join(s) + '\r\n'
-    return unicodeName(s, language = incode)
+    return s 
             
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
@@ -764,10 +763,14 @@ def url2link(percentname,incode,code):
        """
     result = underline2space(percentname)
     x = url2unicode(result, language = code)
-    if code2encoding(incode) == code2encoding(code):
+    if code2encoding(incode) == 'utf-8':
+        # utf-8 can handle anything
+        return x
+    elif code2encoding(incode) == code2encoding(code):
         #print "url2link", repr(x), "same encoding",incode,code
         return unicode2html(x, encoding = code2encoding(code))
     else:
+        # In all other cases, replace difficult chars by &#; refs.
         #print "url2link", repr(x), "different encoding"
         return unicode2html(x, encoding = 'ascii')
     
@@ -825,6 +828,7 @@ def UnicodeToAsciiHtml(s):
 
 def url2unicode(percentname, language):
     x=urllib.unquote(str(percentname))
+    #print "DBG> ",language,repr(percentname),repr(x)
     for encoding in code2encodings(language):
         try:
             encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
