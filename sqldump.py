@@ -207,6 +207,9 @@ def query_findr(sqldump, regex):
             yield entry
 
 def query_unmountedcats(sqldump):
+    '''
+    yields categories which don't have any supercategory
+    '''
     for entry in sqldump.entries():
         if entry.namespace == 14:
             has_supercategory = False
