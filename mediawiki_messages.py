@@ -82,7 +82,7 @@ def refresh_messages(site):
     url = site.allmessages_address()
     print 'Retrieving MediaWiki messages for %s' % repr(site)
     wikipedia.put_throttle() # It actually is a get, but a heavy one.
-    allmessages, charset = wikipedia.getUrl(host,url)
+    allmessages, charset = wikipedia.getUrl(host, url, site)
 
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
