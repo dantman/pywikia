@@ -211,6 +211,19 @@ def read_pages_from_text_file(textfilename):
             yield wikipedia.PageLink(wikipedia.mylang, m.group(1))
     f.close()
 
+def read_pages_from_wiki_page(pagetitle):
+    '''
+    Generator which will yield pages that are listed in a wiki page. Will
+    regard everything inside [[double brackets]] as a page name, except for
+    interwiki and category links, and yield PageLinks for these pages.
+
+    Arguments:
+        * pagetitle - the title of a page on the "mylang" wiki
+    '''
+    listpage = wikipedia.PageLink(wikipedia.mylang, pagetitle)
+    list = wikipedia.get(listpage, read_only = True)
+    # TODO - UNFINISHED
+
 # TODO: Make MediaWiki's search feature available.
 def generator(source, replacements, exceptions, regex, namespace, textfilename = None, sqlfilename = None, pagenames = None):
     '''
@@ -318,7 +331,7 @@ if source == None or len(commandline_replacements) not in [0, 2]:
     sys.exit()
 if (len(commandline_replacements) == 2 and fix == None):
     replacements[commandline_replacements[0]] = commandline_replacements[1]
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg )+ ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
 elif fix == None:
     old = wikipedia.input(u'Please enter the text that should be replaced:')
     new = wikipedia.input(u'Please enter the new text:')
