@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import config, urllib
 
@@ -23,7 +23,7 @@ class Family(object):
             'bn': u'বিশেষ',
             'ca': u'Especial',
             'cs': u'Speciální',
-            'csb': u'Specjalnô',
+            #'csb': u'Specjalnô',
             'cy': u'Arbennig',
             'da': u'Speciel',
             'de': u'Spezial',
@@ -100,7 +100,7 @@ class Family(object):
             #'bn': To be checked,
             'ca': u'Imatge',
             'cs': u'Soubor',
-            'csb': u'Òbrôzk',
+            #'csb': u'Òbrôzk',
             'cy': u'Delwedd',
             'da': u'Billede',
             'de': u'Bild',
