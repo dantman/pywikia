@@ -208,7 +208,7 @@ class Subject:
             isredirect = 0
             # Now check whether any interwiki links should be added to the
             # todo list.
-            if unequal.bigger(pl, self.inpl):
+            if unequal.bigger(self.inpl, pl):
                 print "NOTE: %s is bigger than %s, not following references" % (pl, self.inpl)
             else:
                 try:
@@ -221,6 +221,8 @@ class Subject:
                         # follow the redirection.
                         isredirect = 1
                         pass
+                    elif unequal.unequal(self.inpl, pl3):
+                        print "NOTE: %s is unequal to %s, not adding it" % (pl3, self.inpl)
                     else:
                         self.conditionalAdd(pl3, counter)
                 except wikipedia.NoPage:
@@ -229,7 +231,10 @@ class Subject:
                     print "NOTE: %s subpage does not exist" % pl.asasciilink()
                 else:
                     for pl2 in iw:
-                        self.conditionalAdd(pl2, counter)
+                      if unequal.unequal(self.inpl, pl2):
+                          print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
+                      else:   
+                          self.conditionalAdd(pl2, counter)
         # These pages are no longer 'in progress'
         del self.pending
         # Check whether we need hints and the user offered to give them
