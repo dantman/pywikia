@@ -234,7 +234,7 @@ class PageLink:
            the language code"""
         return "%s:[[%s]]" % (self.code(), self.linkname())
     
-    def get(self):
+    def get(self, read_only = False):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -244,8 +244,9 @@ class PageLink:
             IsRedirectPage: The page is a redirect. The argument of the
                             exception is the page it redirects to.
 
-            LockedPage: The page is locked, and therefore its contents can
-                        not be retrieved.
+            LockedPage: The page is locked, and therefore it won't be possible
+                        to change the page. This exception won't be raised
+                        if the argument read_only is True.
 
             SubpageError: The subject does not exist on a page with a # link
         """
@@ -257,7 +258,7 @@ class PageLink:
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents = getPage(self.code(), self.urlname())
+                self._contents = getPage(self.code(), self.urlname(), read_only = read_only)
                 hn = self.hashname()
                 if hn:
                     hn = underline2space(hn)
@@ -272,7 +273,7 @@ class PageLink:
                 self._getexception = IsRedirectPage
                 self._redirarg = arg
                 raise
-            except LockedPage:
+            except LockedPage: # won't happen if read_only is True
                 self._getexception = LockedPage
                 raise
             except SubpageError:
@@ -829,13 +830,23 @@ def getUrl(host,address):
     #print text
     return text,charset
     
-def getPage(code, name, do_edit = 1, do_quote = 1):
+def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True):
     """Get the contents of page 'name' from the 'code' language wikipedia
        Do not use this directly; for 99% of the possible ideas you can
        use the PageLink object instead.
+       
+       Arguments:
+           code          - the wiki's language code
+           name          - the page name
+           get_edit_page - If true, gets the edit page, otherwise gets the
+                           normal page.
+           read_only     - If true, doesn't raise LockedPage exceptions.
+           do_quote      - ??? (TODO: what is this for?)
 
-       This routine returns a unicode string containing the wiki text.
-    """
+       This routine returns a unicode string containing the wiki text if
+       get_edit_page is True; otherwise it returns a unicode string containing
+       the entire page's HTML code.
+       """
     host = family.hostname(code)
     name = re.sub(' ', '_', name)
     output(url2unicode("Getting page %s:%s"%(code, name), language = code))
@@ -846,7 +857,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             print "DBG> quoting",name
         name = urllib.quote(name)
     address = family.get_address(code, name)
-    if do_edit:
+    if get_edit_page:
         address += '&action=edit&printable=yes'
     if debug:
         print host, address
@@ -860,7 +871,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
     while True:
         text, charset = getUrl(host,address)
         # Extract the actual text from the textedit field
-        if do_edit:
+        if get_edit_page:
             if debug:
                 print "Raw:", len(text), type(text), text.count('x')
             if charset is None:
@@ -901,9 +912,8 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             if m:
                 output(u"DBG> %s is redirect to %s" % (url2unicode(name, language = code), unicode(m.group(1), code2encoding(code))))
                 raise IsRedirectPage(m.group(1))
-            if edittime[code, link2url(name, code)] == "0":
+            if edittime[code, link2url(name, code)] == "0" and not read_only:
                 print "DBG> page may be locked?!"
-                #pass
                 raise LockedPage()
     
             x = text[i1:i2]
@@ -942,8 +952,7 @@ def allpages(start = '!'):
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
         start = link2url(start, code = mylang)
         # load a list which contains a series of article names (always 480?)
-        returned_html = getPage(mylang, family.allpagesname(mylang, start),
-                                do_quote=0, do_edit=0)
+        returned_html = getPage(mylang, family.allpagesname(mylang, start), do_quote = False, get_edit_page = False)
         # Try to find begin and end markers
         try:
             ibegin = returned_html.index('<!-- start content -->')
@@ -1600,7 +1609,7 @@ def setMyLang(code):
 
 def checkLogin():
     global loggedin
-    txt = getPage(mylang,'Non-existing page', do_edit = 0)
+    txt = getPage(mylang,'Non-existing page', get_edit_page = False)
     loggedin = 'Userlogin' not in txt
     return loggedin
     
