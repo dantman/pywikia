@@ -27,7 +27,8 @@ Features, not bugs:
 $Id$
 """
 
-import wikipedia,httplib,StringIO,re,sys,md5,os
+import wikipedia,httplib,StringIO,re,sys,md5,os, string
+from htmlentitydefs import *
 
 def extractArticle(data):
     """ takes a string with the complete HTML-file
@@ -38,22 +39,27 @@ def extractArticle(data):
     images = []
     s = StringIO.StringIO(data)
     rPagestats = re.compile('.*(\<span id\=(\"|\')pagestats(\"|\')\>.*\<\/span\>).*')
-    rBody = re.compile('.*<div id\=\"bodyContent\">.*')
+    rBody = re.compile('.*<div id\=\"content\">.*')
     rFooter = re.compile('.*<div id\=\"footer\">.*')
     rDivOpen = re.compile('.*<div ')
     rDivClose = re.compile('.*<\/div>.*')
-    divLevel = 0
+    divLevel = 1
     divLast = -1
     inArticle = 0
     inFooter  = 0
     result = {'article':"",
               'footer':""}
     for line in s:
+        if line == "<p><br /></p>":
+            continue
+        line = line.replace("&#160;", " ")
+        line = line.replace("&nbsp;", " ")
+
         if rDivOpen.match(line):
             divLevel = divLevel + 1
         if rBody.match(line):
             inArticle = 1
-            divLast = divLevel-1
+            divLast = divLevel-2
         elif rFooter.match(line):
             divLast = divLevel-1
             inFooter  = 1
@@ -67,7 +73,25 @@ def extractArticle(data):
                 inArticle = 0
                 inFooter = 0
                 divLast = -1
+
+
     return result
+
+def html2txt(str):
+    dict = {"%C3%A4": "ä",
+            "%C3%B6": "ö",
+            "%C3%BC": "ü",
+            "%C3%84": "Ä",
+            "%C3%96": "Ö",
+            "%C3%9C": "Ü",
+            "%C3%9F": "ß",
+            "%28": "(",
+            "%29": ")"
+            }
+            
+    for entry in dict:
+        str = re.sub(entry, dict[entry], str)
+    return str
 
 def extractImages(data):
     """ takes a string with the complete HTML-file
@@ -78,27 +102,32 @@ def extractImages(data):
     images = []
 
     s = StringIO.StringIO(data)
-    rImage = re.compile('.*?<a href=\"\/wiki\/[^:]*:([^"]*)" class="image"')
-    rThumb = re.compile('.*?<div class="magnify"[^>]*?><a href="\/wiki\/[^:]*?:([^"]*)"')
+    rImage = re.compile('.*<a href="/wiki/.*?:(.*?)".*?[\n]*?.*?class="internal"')
+    rThumb = re.compile('.*<a href="/wiki/.*?:(.*?)".*?class="image"')
+    last = ""
     for line in s:
         img = rImage.match(line)
         try:
-            path = md5.new(img.group(1)).hexdigest()
-            images.append( {'image':img.group(1),
-                            'path':  str(path[0])+"/"+str(path[0:2])+"/"})
-            img = True
+            
+            path = md5.new(html2txt(img.group(1))).hexdigest()
+            if path != last:
+                images.append( {'image':img.group(1),
+                                'path':  str(path[0])+"/"+str(path[0:2])+"/"})
+            last = path 
         except:
-            img = False
-
+            pass
 
         img = rThumb.match(line)
-        try: 
-            path = md5.new(img.group(1)).hexdigest()
-            images.append( {'image':img.group(1),
-                            'path':  str(path[0])+"/"+str(path[0:2])+"/"})
+        try:
+            path = md5.new(html2txt(img.group(1))).hexdigest()
+            if path != last:
+                images.append( {'image':img.group(1),
+                                'path':  str(path[0])+"/"+str(path[0:2])+"/"})
+            last = path
         except:
-            img = False
-
+            pass
+    
+    images.sort()
     return images
 
 
@@ -114,8 +143,17 @@ def main():
         if arg.startswith("-lang:"):
             lang = arg[6:]
         elif arg.startswith("-file:"):
-            for pl in wikipedia.PageLinksFromFile(arg[6:]):
-                sa.append(pl)
+            f=open(arg[6:], 'r')
+            R=re.compile(r'.*\[\[([^\]]*)\]\].*')
+            m = False
+            for line in f.readlines():
+                m=R.match(line)            
+                if m:
+                    sa.append(string.replace(m.group(1), " ", "_"))
+                else:
+                    print "ERROR: Did not understand %s line:\n%s" % (
+                        arg[6:], repr(line))
+            f.close()
         elif arg.startswith("-o:"):
             output_directory = arg[3:]
         elif arg.startswith("-images"):
@@ -129,17 +167,20 @@ def main():
                 overwrite_images = True
                 overwrite_articles = True                
         else:
-            sa.append(arg)
+
+            sa.append(arg.replace(" ", "_"))
 
     headers = {"Content-type": "application/x-www-form-urlencoded", 
                "User-agent": "RobHooftWikiRobot/1.0"}
+    print "opening connection to ",mysite.hostname(),
     conn = httplib.HTTPConnection(mysite.hostname())
-    
+    print " done"
 
     R = re.compile('.*/wiki/(.*)')
     data = ""
     for article in sa:
-        if os.path.isfile(output_directory + article + ".txt") and overwrite_articles == False:
+        filename = article.replace("/", "_")
+        if os.path.isfile(output_directory + filename + ".txt") and overwrite_articles == False:
             print "skipping " + article
             continue
         data = ""
@@ -153,9 +194,10 @@ def main():
                 print ua + " failed. reading",
                 result = R.match(response.getheader("Location", ))
                 ua = result.group(1)
-                print ua
+                print ua            
+
         data = extractArticle(data)
-        f = open (output_directory + article + ".txt", 'w')
+        f = open (output_directory + filename + ".txt", 'w')
         f.write (data['article'] + '\n' + data['footer'])
         f.close()
         print "saved " + article
@@ -171,11 +213,18 @@ def main():
                 file = uo.open( "http://upload.wikimedia.org/wikipedia/"
                                 +mysite.lang + '/' + i['path'] + i['image'])
                 content = file.read()
+                if (len(content) < 500):
+                    uo.close()
+                    print "downloading from commons",
+                    uo = wikipedia.MyURLopener()
+                    file = uo.open( "http://commons.wikimedia.org/upload/"
+                                    + i['path'] + i['image'])
+                    #print "http://commons.wikimedia.org/upload/", i['path'] , i['image'], file
+                    content = file.read()
                 f = open(output_directory + i['image'], "wb")
                 f.write(content)
                 f.close()
-                print 'done'
-
+                print "\t\t", (len(content)/1024), "KB done"
 if __name__ == "__main__":
     try:
         main()
