@@ -26,20 +26,16 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.5 2004/07/01 13:38:03 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.6 2004/07/13 12:26:00 wikipedian Exp $'
 #
 import wikipedia, config
-import re,sys
+import re, sys
 
 # Summary message
 msg={
     'en':'robot: changing Windows-1252 characters to HTML entities',
     'de':'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
     }
-
-def getReferences(pl):
-    x = wikipedia.getReferences(pl)
-    return x
 
 # if the -file argument is used, page titles are dumped in this array.
 # otherwise it will only contain one page.
@@ -53,8 +49,6 @@ for arg in sys.argv[1:]:
         pass
     elif arg.startswith('-file'):
         if len(arg) == 5:
-            # todo: check for console encoding to allow special characters
-            # in filenames, as done below with pagename
             file = wikipedia.input('Please enter the list\'s filename: ')
         else:
             file = arg[6:]
