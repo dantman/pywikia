@@ -1,3 +1,4 @@
+# -*- coding: utf-8  -*-
 """
 Script to log the robot in to a wikipedia account.
 
@@ -17,12 +18,13 @@ Arguments:
 
   -lang:xx Log in to the given wikipedia language
   
-To log out, throw away the XX-login.data file that is created.
+To log out, throw away the XX-login.data file that is created in the login-data
+subdirectory..
 """
 #
 # (C) Rob W.W. Hooft, 2003
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the PSF license.
 #
 __version__='$Id$'
 
@@ -58,11 +60,18 @@ for arg in sys.argv[1:]:
         print "Unknown argument: ",arg
         sys.exit(1)
     
-print "Logging in to ",wikipedia.family.hostname(wikipedia.mylang)
+wikipedia.output(u"Logging in to %s" % wikipedia.family.hostname(wikipedia.mylang))
 
-username=raw_input('username: ')
-password=getpass.getpass('password: ')
+username = wikipedia.input(u'username:', encode = True)
+# As we don't want the password to appear on the screen, we use getpass(). 
+password = getpass.getpass(u'password: ')
+# Convert the password from the encoding your shell uses to the one your wiki
+# uses, via Unicode. This is the same as wikipedia.input() does with the 
+# username, but input() uses raw_input() instead of getpass().
+password = unicode(password, config.console_encoding)
+password = password.encode(wikipedia.myencoding())
 
+# Ensure bot policy on the English Wikipedia
 if wikipedia.mylang=='en' and config.family=='wikipedia':
     pl=wikipedia.PageLink('en','Wikipedia:Bots')
     text=pl.get()
