@@ -215,7 +215,7 @@ def tidy_category():
             print
         # show subcategories as possible choices (with numbers)
         for i in range(len(subcatlist)):
-            print '%d - Move to %s' % (i, subcatlist[i])
+            print '%d - Move to %s' % (i, subcatlist[i].linkname())
         print 'j - Jump to another category'
         print 's - Skip this article'
         print 'r - Remove this category tag'
