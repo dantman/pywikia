@@ -36,6 +36,11 @@ else:
 
 lst=[]
 
+# if run without parameter, ask for the filename
+if file==[]:
+    file.append(raw_input('Please enter the list\'s filename: '))
+
+
 for fn in file:
     f=open(fn)
     for line in f.readlines():
