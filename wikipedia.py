@@ -175,7 +175,7 @@ biglangs = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es']
 # Similar, but larger group
 
 biglangs2 = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es', 'eo', 'ca',
-             'it', 'ja', 'zh', 'sl', 'he', 'fi', 'ro', 'cs']
+             'it', 'ja', 'zh', 'sl', 'fi', 'ro', 'cs']
 
 # And a much larger selection in case we say 'all languages' but don't
 # really mean 'all'
