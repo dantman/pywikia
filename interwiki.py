@@ -246,22 +246,23 @@ class Subject:
             elif pl.exists() and not pl.isRedirectPage():
                 if new.has_key(code) and new[code] != pl:
                     self.problem("'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink()))
-                    if not globalvar.autonomous:
-                        while 1:
-                            if globalvar.bell:
-                                sys.stdout.write('\07')
-                            answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
-                            if answer.startswith('f'):
-                                break
-                            elif answer.startswith('l'):
-                                new[pl.code()] = pl
-                                break
-                            elif answer.startswith('n'):
-                                new[pl.code()] = None
-                                break
-                            elif answer.startswith('g'):
-                                # Give up
-                                return
+                    if globalvar.autonomous:
+                        return
+                    while 1:
+                        if globalvar.bell:
+                            sys.stdout.write('\07')
+                        answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
+                        if answer.startswith('f'):
+                            break
+                        elif answer.startswith('l'):
+                            new[pl.code()] = pl
+                            break
+                        elif answer.startswith('n'):
+                            new[pl.code()] = None
+                            break
+                        elif answer.startswith('g'):
+                            # Give up
+                            return
                 elif code in ('zh-tw','zh-cn') and new.has_key('zh') and new['zh'] is not None:
                     print "NOTE: Ignoring %s, using %s"%(new['zh'].asasciilink(),pl.asasciilink())
                     new['zh'] = None # Remove the global zh link
@@ -378,6 +379,7 @@ class SubjectArray:
         """Generate more subjects. This is called internally when the
            list of subjects becomes to small, but only if there is a
            generator"""
+        print "NOTE: The first unfinished subject is:",self.firstSubject().pl().asasciilink()
         print "NOTE: Number of pages queued is %d, trying to add %d more."%(
             len(self.subjects), number)
         for i in range(number):
