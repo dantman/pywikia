@@ -179,16 +179,19 @@ ignore={
           u'Benutzer:Zwobot/Probleme',
           u'Benutzer:Katharina/Begriffsklärungen',
           u'Benutzer:Tsor/Begriffsklärungen',
+          u'Benutzer:SirJective/Klammerzusatz',
           u'Benutzer Diskussion:.+',
           u'Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
           u'GISLexikon \([A-Z]\)',
           u'Lehnwort',
           u'Liste aller 2-Buchstaben-Kombinationen',
           u'Wikipedia:Archiv:.+',
-          u'Wikipedia:Begriffsklärung.*',
           u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
+          u'Wikipedia:Begriffsklärung.*',
           u'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
+          u'Wikipedia:Kurze Artikel',
           u'Wikipedia:Liste mathematischer Themen/BKS',
+          u'Wikipedia:Liste mathematischer Themen/Redirects'
           u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
       )
     }
@@ -426,6 +429,7 @@ for wrd in (page_list):
                     continue
 
                 n += 1
+                # how many bytes should be displayed around the current link
                 context = 30
                 # This loop will run while the user doesn't choose an option
                 # that will actually change the page
@@ -531,6 +535,16 @@ for wrd in (page_list):
                         choice=int(choice)
                     except ValueError:
                         print '\nUnknown option'
+                        # step back to ask the user again what to do with the current link
+                        curpos -= 1
+                        continue
+                    if choice >= len(alternatives) or choice < 0:
+                        print '\nChoice out of range. Please select a number between 0 and %d.\n' % (len(alternatives) - 1)
+                        # show list of possible choices
+                        for i in range(len(alternatives)):
+                            wikipedia.output("%3d - %s" % (i, alternatives[i]))
+                        # step back to ask the user again what to do with the current link
+                        curpos -= 1
                         continue
                     new_page_title = alternatives[choice]
                     reppl = wikipedia.PageLink(thispl.code(), new_page_title)
@@ -585,8 +599,12 @@ for wrd in (page_list):
 
     active=True
 
-    for ref in getReferences(thispl):
-        refpl=wikipedia.PageLink(wikipedia.mylang, ref)
+    refs = getReferences(thispl)
+    refpls = []
+    for ref in refs:
+        refpls.append(wikipedia.PageLink(wikipedia.mylang, ref))
+    wikipedia.getall(wikipedia.mylang, refpls)
+    for refpl in refpls:
         if active and not refpl.urlname() in skip_primary:
             if not treat(refpl, thispl):
                 active=False
