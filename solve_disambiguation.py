@@ -101,7 +101,7 @@ ignore={
     'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie',
           'Wikip\xE9dia:Homonymie',
           'Liste de toutes les combinaisons de deux lettres'),
-    'de':{'Wikipedia:Begriffskl\xe4rung',
+    'de':('Wikipedia:Begriffskl\xe4rung',
           'Wikipedia:Liste mathematischer Themen/BKS')
     }
 
