@@ -52,7 +52,7 @@ def ReadWarnfile(fn):
         try:
            for pl2 in pl.interwiki():
               old[pl2.code()] = pl2
-        except IsRedirectPage:
+        except wikipedia.IsRedirectPage:
            print "%s is a redirect page; not changing" % pl.asasciilink()
            continue
         new={}
