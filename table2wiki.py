@@ -36,6 +36,7 @@ fixedSites = ''
 notFixedSites = ''
 
 deIndentTables = 0
+splitLongSentences = 1
 
 DEBUG=0
 
@@ -75,26 +76,30 @@ for arg in sys.argv[1:]:
         newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText, 0)
 
         #very simple <tr>
-        newText = re.sub("[\r\n]*<(tr|TR)([^>]*?)\>", "\n|-----\\2\r\n", newText, 0)
+        newText = re.sub("[\r\n]+<(tr|TR)([^>]*?)\>", "\r\n|-----\\2\r\n", newText, 0)
 
         #<th> often people don't write them within <tr>, be warned!
-        newText = re.sub("[\r\n]*<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
+        newText = re.sub("[\r\n]+<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
                          "\n!\\2 | \\3\r\n", newText, 0)
+        # fail save. sometimes people forget </th>
+        newText = re.sub("[\r\n]+<(th|TH)\>([\w\W]*?)\n",
+                         "\n| \\2\n", newText, 0)
+        newText = re.sub("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)\n",
+                         "\n|\\2 | \\3\n", newText, 0)
+
 
         # normal <td>
         newText = re.sub("[\r\n]+\<(td|TD)\>([\w\W]*?)\<\/(TD|td)\>",
                          "\n| \\2\n", newText, 0)         
         newText = re.sub("[\r\n]+\<(td|TD)([^>]*?)\>([\w\W]*?)\<\/(TD|td)\>",
                          "\n|\\2 | \\3\n", newText, 0)
+        # fail save. sometimes people forget </td>
         newText = re.sub("[\r\n]+<(td|TD)\>([\w\W]*?)\n",
                          "\n| \\2\n", newText, 0)
         newText = re.sub("[\r\n]+<(td|TD)([^>]*?)\>([\w\W]*?)\n",
                          "\n|\\2 | \\3\n", newText, 0)
 
 
-        # fail save. sometimes people forget </td>
-        newText = re.sub("[\r\n]+<(td|TD)([^<]*)\>([\t ]*)([\w\W]*?)\n",
-                         "\n|\\2 | \\4\n", newText, 0)
 
         # Garbage collecting ;-)
         newText = re.sub("[\r\n]*\<\/[Tt][rRdDhH]\>", "", newText, 0)
@@ -107,7 +112,7 @@ for arg in sys.argv[1:]:
         # most <th> come with '''title'''. Senseless in my eyes cuz
         # <th> should be bold anyways.
         newText = re.sub("[\r\n]+\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
-                         "\r\n!\\1\\3", newText, 0)
+                         "\n!\\1\\3", newText, 0)
 
         # kills indention within tables. Be warned, it might bring
         # bad results.
@@ -116,11 +121,10 @@ for arg in sys.argv[1:]:
                              "\\1\n\\2", newText, 0)
 
         # kills spaces after | or ! or {|
-        newText = re.sub("[\r\n]+\|[\s]*\n", "\r\n| ", newText, 0)
+        newText = re.sub("[\r\n]+\|[\t ]*\n", "\r\n| ", newText, 0)
         # kills trailing spaces and tabs
         newText = re.sub("[\t\ ]+([\r\n]){1}", "\\1", newText, 0)
 
-        
         # kill extra new-lines
         newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
         # shortening if <table> had no arguments/parameters
@@ -133,8 +137,10 @@ for arg in sys.argv[1:]:
         # merge two short <td>s (works only once :-(
         num = 1
         while num != 0:
-            newText, num = re.subn(r"[\r\n]+(\| [^\n\r]{1,35})[\r\n]+\| ([^\r\n]{1,35})[\r\n]+",
-                         "\r\n\\1 || \\2\r\n", newText, 0)
+            newText, num = re.subn("[\r\n]+(\|[^\|\-\}]{1}[^\n\r]{0,35})" +
+                                   "[\r\n]+\|[^\|\-\}]{1}([^\r\n]{0,35})[\r\n]+",
+                                   "\r\n\\1 || \\2\r\n", newText, 0)
+
 
         # proper attributes
         num = 1
@@ -147,7 +153,10 @@ for arg in sys.argv[1:]:
             newText, num = re.subn('(\s(\{\||\!|\||\|\-)([^\r\n\|]+))\=' +
                                    '([^\"\s]+?)([\W]{1})',
                                    '\\1="\\4"\\5', newText, 0)
-         
+
+        if splitLongSentences:
+            newText = re.sub("(\r\n[^\n\r]{300,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1})",
+                             "\\1\r\n\\2", newText, 0)
                 
         if newText!=text:
             import difflib
