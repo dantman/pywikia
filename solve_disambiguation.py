@@ -296,7 +296,7 @@ for arg in sys.argv[1:]:
         if len(arg) == 5:
             # todo: check for console encoding to allow special characters
             # in filenames, as done below with pagename
-            file = wikipedia.input('Please enter the list\'s filename: ')
+            file = wikipedia.input('Please enter the list\'s filename:')
         else:
             file = arg[6:]
         # open file and read page titles out of it
@@ -312,7 +312,7 @@ for arg in sys.argv[1:]:
                 alternatives.append(pl.linkname())
             else:
                 print "Possibility does not actually exist:",pl
-                answer = wikipedia.input('Use it anyway? [y|N] ')
+                answer = wikipedia.input('Use it anyway? [y|N]')
                 if answer in ('Y', 'y'):
                     alternatives.append(pl.linkname())
         else:
@@ -333,7 +333,7 @@ if page_title != []:
 # if no disambiguation pages was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
-    pagename = wikipedia.input('Which page to check: ', encode = True)
+    pagename = wikipedia.input('Which page to check:', encode = True)
     page_list.append(pagename)
 
 for wrd in (page_list):
@@ -369,7 +369,7 @@ for wrd in (page_list):
             alternatives.append(str(thispl.getRedirectTo()))
         except wikipedia.NoPage:
             print "The specified page was not found."
-            user_input = wikipedia.input("Please enter the name of the page where the redirect should have pointed at, or press enter to quit: ")
+            user_input = wikipedia.input("Please enter the name of the page where the redirect should have pointed at, or press enter to quit:")
             if user_input == "":
                 sys.exit(1)
             else:
@@ -399,7 +399,7 @@ for wrd in (page_list):
 
     # print choices on screen
     for i in range(len(alternatives)):
-        print "%3d" % i, repr(alternatives[i])
+        wikipedia.output("%3d - %s" % (i, alternatives[i]))
     
     def treat(refpl, thispl):
         try:
@@ -469,7 +469,7 @@ for wrd in (page_list):
                     elif choice=='l':
                         print '\n'
                         for i in range(len(alternatives)):
-                            print "%3d" % i,repr(alternatives[i])
+                            wikipedia.output("%3d - %s" % (i, alternatives[i]))
                     else:
                         if choice[0] == 'r':
                             replaceit = 1
