@@ -9,12 +9,13 @@ __version__ = '$Id$'
 #
 
 import wikipedia
+import codecs
 
 wikipedia.stopme() # No need to have me on the stack - I don't contact the wiki
 files={}
 count={}
 # TODO: Variable log filename
-for line in open('logs/interwiki.log'):
+for line in codecs.open('logs/interwiki.log', 'r', 'uft-8'):
     if line[:8] == 'WARNING:':
         code = line.split(':')[1]
         code = code.strip()
