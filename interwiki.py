@@ -561,13 +561,9 @@ class Subject(object):
         else:
             # Change no: to nb: in presence of nn:
             if wikipedia.getSite('no') in new.keys():
-                print "That's no!"
                 if wikipedia.getSite('nn') in new or self.inpl.language() == 'nn':
                     new[wikipedia.getSite('nb')] = wikipedia.PageLink(wikipedia.getSite('nb'),new[wikipedia.getSite('no')].linkname())
                     del new[wikipedia.getSite('no')]
-            else:
-                print "That's yes!"
-                print new
             if mods:
                 wikipedia.output(u"Changes to be made: %s" % mods)
             oldtext = self.inpl.get()
