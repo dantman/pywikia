@@ -104,7 +104,7 @@ def main(args):
         for i in range(len(imagelist)):
             imagelink = imagelist[i]
             print "-"*60
-            print "%s. Found image: %s"% (i,imagelink.aslink())
+            wikipedia.output(u"%s. Found image: %s"% (i,imagelink.aslink()))
             try:
                 # show the image description page's contents
                 wikipedia.output(imagelink.get(throttle=False))
