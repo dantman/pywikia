@@ -243,7 +243,8 @@ class Family(family.Family):
     obsolete = {'sh':'hr',
                 'dk':'da',
                 'tlh':'none',
-                'zh-min-nan':'minnan'}
+                'zh-min-nan':'minnan',
+                'nb':'no'}
         
     # A few selected big languages for things that we do not want to loop over
     # all languages. This is only needed by the titletranslate.py module, so
