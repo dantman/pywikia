@@ -610,7 +610,7 @@ def main():
                     wikipedia.output(text[max(0,m.start()-30):m.end()+30])
                 if not debug:
                     print '\nThe following changes have been made:\n'
-                    wikipedia.showDiff(original_text, text)
+                    wikipedia.showColorDiff(original_text, text)
                     print ''
                     # save the page
                     refpl.put(text)

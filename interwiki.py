@@ -599,7 +599,7 @@ class Subject(object):
             oldtext = self.inpl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if globalvar.debug:
-                wikipedia.showDiff(oldtext, newtext)
+                wikipedia.showColorDiff(oldtext, newtext)
             if newtext == oldtext:
                 if globalvar.backlink:
                     self.reportBacklinks(new)
