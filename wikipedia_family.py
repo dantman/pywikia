@@ -261,10 +261,7 @@ def hostname(code):
 
 # Which version of MediaWiki is used?
 def version(code):
-    if code=="en":
-        return "1.2"
-    else:
-        return "1.3"
+    return "1.3"
 
 def put_address(code, name):
     return '/w/wiki.phtml?title=%s&action=submit'%name
