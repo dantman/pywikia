@@ -58,7 +58,8 @@ To complete a move of a page, one can use:
 #
 __version__='$Id$'
 #
-import wikipedia,re,sys
+import wikipedia, config
+import re,sys
 
 # This is a purely interactive robot. We set the delays lower.
 wikipedia.get_throttle.setDelay(5)
@@ -334,6 +335,8 @@ for arg in sys.argv[1:]:
         primary = True
     elif arg.startswith('-file'):
         if len(arg) == 5:
+            # todo: check for console encoding to allow special characters
+            # in filenames, as done below with pagename
             file = raw_input('Please enter the list\'s filename: ')
         else:
             file = arg[6:]
@@ -371,7 +374,10 @@ if page_title != []:
 # if no disambiguation pages was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
-    page_list.append(raw_input('Which page to check: '))
+    pagename = raw_input('Which page to check: ')
+    pagename = unicode(pagename, config.console_encoding)
+    pagename = pagename.encode(wikipedia.code2encoding(wikipedia.mylang))
+    page_list.append(pagename)
 
 if msg.has_key(wikipedia.mylang):
     msglang = wikipedia.mylang

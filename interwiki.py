@@ -390,7 +390,7 @@ class Subject:
                         return None
                     # beep before asking question
                     if globalvar.bell:
-		        sys.stdout.write('\07')
+                      sys.stdout.write('\07')
                     while 1:
                         answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
                         if answer.startswith('f'):
@@ -905,7 +905,9 @@ if __name__ == "__main__":
 
     inname = '_'.join(inname)
     if sa.isDone() and not inname:
-        inname = raw_input('Which page to check:')
+        inname = raw_input('Which page to check: ')
+        inname = unicode(inname, config.console_encoding)
+        inname = inname.encode(wikipedia.code2encoding(wikipedia.mylang))
 
     if inname:
         inpl = wikipedia.PageLink(wikipedia.mylang, inname)
