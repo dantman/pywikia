@@ -234,10 +234,14 @@ class Subject:
                 except wikipedia.IsRedirectPage,arg:
                     pl3 = wikipedia.PageLink(pl.code(),arg.args[0])
                     print "NOTE: %s is redirect to %s" % (pl.asasciilink(), pl3.asasciilink())
-                    if len(self.done) == 1 and len(self.todo) == 0 and len(self.pending) == 1:
+                    if pl == self.inpl:
                         # This is a redirect page itself. We don't need to
                         # follow the redirection.
                         isredirect = 1
+                        # In this case we can also stop all hints!
+                        for pl2 in self.todo:
+                            counter.minus(pl2.code())
+                        self.todo = []
                         pass
                     elif not globalvar.followredirect:
                         print "NOTE: not following redirects."
