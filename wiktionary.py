@@ -8,7 +8,8 @@ wiktionaryformats = {
 				'gender': u"{{%%gender%%}}",
 				'posheader': {
 						'noun':	u'{{-noun-}}'
-						}
+						},
+				'translationsheader': u"{{-trans-}}",
 				},
 			'en': {
 				'langheader':	u'==%%langname%%==',
@@ -17,7 +18,8 @@ wiktionaryformats = {
 				'gender': u"''%%gender%%''",
 				'posheader': {
 						'noun': u'=== Noun ==='
-						}
+						},
+				'translationsheader': u"===Translations===",
 				}
 		            }
 #print wiktionaryformats['nl']['langheader']
@@ -26,22 +28,22 @@ wiktionaryformats = {
 #print wiktionaryformats['en']['posheader']['noun']
 			   
 langnames =	{'nl':	{
-			'nl' : 'Nederlands',
-			'en' : 'Engels',
-			'de' : 'Duits',
-			'fr' : 'Frans',
+			'nl' : u'Nederlands',
+			'en' : u'Engels',
+			'de' : u'Duits',
+			'fr' : u'Frans',
 			},
 		 'de':	{
-			'nl' : 'Niederländisch',
-			'en' : 'Englisch',
-			'de' : 'Deutsch',
-			'fr' : 'Französisch',
+			'nl' : u'Niederländisch',
+			'en' : u'Englisch',
+			'de' : u'Deutsch',
+			'fr' : u'Französisch',
 			},
 		 'en':	{
-			'nl' : 'Dutch',
-			'en' : 'English',
-			'de' : 'German',
-			'fr' : 'French',
+			'nl' : u'Dutch',
+			'en' : u'English',
+			'de' : u'German',
+			'fr' : u'French',
 			}
 		}
 print langnames
@@ -104,26 +106,31 @@ class SubEntry:					# On one page, different terms in different languages can be
 			subentry +='\n\n'
 			first = 1
 			for synonym in meaning.synonyms:
-				if not first:
+				if first==0:
 					subentry += ', '
+				else:
 					first = 0
 				subentry = subentry + synonym.term.wikiwrapforlist(wikilang)
-			first = 1
 			subentry +='\n'	
 
 			alllanguages=meaning.translations.keys()
-
 			alllanguages.sort(sortonname(langnames[wikilang]))
+
+			subentry = subentry + wiktionaryformats[wikilang]['translationsheader'] + '\n'
 			for language in alllanguages:
-				print meaning.translations[language]
-#			for translation in meaning.translations:
-#				term=translation.term
-#				print translation
-#				if not first:
-#					subentry += ', '
-#					first = 0
-#				subentry = subentry + translation.wikiwrapastranslation(wikilang)
-#			return subentry
+#				print meaning.translations[language]
+				subentry = subentry + langnames[wikilang][language] + ': '
+				first = 1
+				for translation in meaning.translations[language]:
+					term=translation.term
+					print term,first
+					if first==0:
+						subentry += ', '
+					else:					
+						first = 0
+					subentry = subentry + translation.wikiwrapastranslation(wikilang)
+				subentry += '\n'
+			return subentry
 			
 class Meaning:					# On one page, different terms in different languages can be described
 	def __init__(self,definition,term):
