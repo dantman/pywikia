@@ -188,6 +188,7 @@ class Subject:
         # Nothing has been done yet
         self.done = {}
         # Add the translations given in the hints.
+        self.foundin = {self.inpl:[]}
         self.translate(hints)
         if globalvar.confirm:
             self.confirm = 1
@@ -196,7 +197,6 @@ class Subject:
         self.problemfound = False
         self.untranslated = None
         self.hintsasked = False
-        self.foundin = {self.inpl:[]}
         
     def pl(self):
         """Return the PageLink on the home wikipedia"""
@@ -209,6 +209,7 @@ class Subject:
         titletranslate.translate(self.inpl, arr, same = globalvar.same, hints = hints)
         for pl in arr.iterkeys():
             self.todo[pl] = pl.code()
+            self.foundin[pl] = [None]
 
     def openCodes(self):
         """Return a list of language codes for all things we still need to do"""
@@ -373,7 +374,10 @@ class Subject:
                 if pl != self.inpl:
                     self.problem("Found link to %s"%pl.asasciilink())
                     for pl2 in self.foundin[pl]:
-                        print "    ",pl2.asasciilink()
+                        if pl2==None:
+                            print "    Given as a hint."
+                        else:
+                            print "    ",pl2.asasciilink()
                 nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
                 if code in new:
@@ -397,7 +401,10 @@ class Subject:
                     i += 1
                     print "  (%d) Found link to %s in:"%(i,pl2.asasciilink())
                     for pl3 in self.foundin[pl2]:
-                        print "        %s"%pl3.asasciilink()
+                        if pl3==None:
+                            print "        Given as a hint."
+                        else:
+                            print "        %s"%pl3.asasciilink()
                 if not globalvar.autonomous:
                     answer = raw_input("Which variant should be used [type number or (n)one, (g)ive up] :")
                     if answer in 'gG':
