@@ -329,7 +329,7 @@ class Family(object):
     # Which version of MediaWiki is used?
 
     def version(self, code):
-        return "1.3"
+        return "1.4"
 
     def put_address(self, code, name):
         return '/w/wiki.phtml?title=%s&action=submit'%name

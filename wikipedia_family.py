@@ -290,12 +290,6 @@ class Family(family.Family):
                  'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
                  'nds', 'co', 'mi', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
                  'ga', 'na', 'es', 'test']
-
-    def version(self, code):
-        if code=="test":
-            return "1.4"
-        else:
-            return "1.3"
         
     def code2encoding(self, code):
         """Return the encoding for a specific language wikipedia"""

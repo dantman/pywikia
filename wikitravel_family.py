@@ -49,3 +49,6 @@ class Family(family.Family):
 
     def export_address(self, code):
         return '/%s/%s:Export'%(langs[code],special[code])
+
+    def version(self, code):
+        return "1.3"
