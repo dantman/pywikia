@@ -10,7 +10,7 @@ import re
 import wikipedia, date
 
 def sametranslate(pl, arr, same):
-    for newcode in wikipedia.seriouslangs:
+    for newcode in wikipedia.family.seriouslangs:
         # Put as suggestion into array
         newname = pl.linkname()
         if newcode in ['eo','cs'] and same == 'name':
@@ -30,15 +30,15 @@ def translate(pl, arr, same = False, hints = None):
             if newname == '':
                 newname = pl.linkname()
             if codes == 'all':
-                codes = wikipedia.seriouslangs
+                codes = wikipedia.family.seriouslangs
             elif codes == '10' or codes == 'main': # names 'main' and 'more' kept for backward compatibility
-                codes = wikipedia.biglangs
+                codes = wikipedia.family.biglangs
             elif codes == '20' or codes == 'more':
-                codes = wikipedia.biglangs2
+                codes = wikipedia.family.biglangs2
             elif codes == '30':
-                codes = wikipedia.biglangs2
+                codes = wikipedia.family.biglangs3
             elif codes == 'cyril':
-                codes = wikipedia.cyrilliclangs
+                codes = wikipedia.family.cyrilliclangs
             else:
                 codes = codes.split(',')
             for newcode in codes:
@@ -64,7 +64,7 @@ def translate(pl, arr, same = False, hints = None):
     m = Ryear.match(pl.linkname())
     if m:
         i=int(m.group(0))
-        for newcode in wikipedia.seriouslangs:
+        for newcode in wikipedia.family.seriouslangs:
             if newcode in ['ja', 'zh']:
                 fmt = '%d&#24180;'
             else:
@@ -93,7 +93,7 @@ def translate(pl, arr, same = False, hints = None):
         Ryear = re.compile('^(\d+)_v._Chr.')
         m = Ryear.match(pl.linkname())
         if m:
-            for newcode in wikipedia.seriouslangs:
+            for newcode in wikipedia.family.seriouslangs:
                 fmt = date.yearBCfmt.get(newcode)
                 if fmt:
                     newname = fmt % int(m.group(1))

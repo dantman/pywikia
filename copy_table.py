@@ -102,8 +102,8 @@ if page_title != []:
 # if the namespace name is unknown, "Image:" is default.
 def image_namespace(lang):
     # check if we know this wikipedia's image namespace name
-    if lang in wikipedia.image:
-        return wikipedia.image[lang] + ':'
+    if lang in wikipedia.family.image:
+        return wikipedia.family.image[lang] + ':'
     else:
         return 'Image:'
 

@@ -36,17 +36,9 @@ for arg in sys.argv[1:]:
     else:
         print "Unknown argument: ",arg
         sys.exit(1)
-        
-if not wikipedia.special.has_key(wikipedia.mylang):
-    print "Please add the translation for the Special: namespace in"
-    print "Your home wikipedia to the wikipedia.py module"
-    import sys
-    sys.exit(1)
     
-# This needs to be translated for each wikipedia we want to use it on.
-loginaddr='/w/wiki.phtml?title=%s:Userlogin&amp;action=submit'
+print "Logging in to ",wikipedia.family.hostname(wikipedia.mylang)
 
-print "Logging in to ",wikipedia.langs[wikipedia.mylang]
 username=raw_input('username: ')
 password=raw_input('password: ')
 
@@ -69,7 +61,7 @@ data = wikipedia.urlencode((
 headers = {"Content-type": "application/x-www-form-urlencoded", 
            "User-agent": "RobHooftWikiRobot/1.0"}
 conn = httplib.HTTPConnection(wikipedia.langs[wikipedia.mylang])
-pagename = loginaddr%wikipedia.special[wikipedia.mylang]
+pagename = wikipedia.family.login_address(wikipedia.mylang)
 conn.request("POST", pagename, data, headers)
 response = conn.getresponse()
 data = response.read()

@@ -11,14 +11,20 @@ __version__ = '$Id$'
 # a file user-config.py, and overwrite values in there.
 #
 # PARAM=VALUE               
-# ===========               
+# ===========
+# The family of sites we are working on. wikipedia.py will import xxx_family.py
+# so if you want to change this variable, you need to write such a file.
+family = 'wikipedia'
+# The language
 mylang = 'test'
+# My user name
 username = ''
 # the encoding that's used in the user's console, i.e. how strings are encoded
 # when they are read by raw_input(). On Windows systems' DOS box, this should
 # be 'cp850' ('cp437' for older versions). Linux users might try 'iso-8859-1'
-# or 'utf-8'.
-console_encoding='cp850'
+# or 'utf-8'. If this variable is set to None, the default is 'cp850' on
+# windows, and iso-8859-1 on other systems
+console_encoding = None
 
 # atbottom is a list of languages that prefer to have the interwiki
 # links at the bottom of the page. You can use interwiki_atbottom.append('xx')
@@ -115,6 +121,15 @@ for _key in globals().keys():
     else:
         print "WARNING: Configuration variable %s not known. Misspelled?"%_key
 del _key,_tp
+
+# Fix up default console_encoding
+if console_encoding == None:
+    import sys as _sys
+    if _sys.platform=='win32':
+        console_encoding = 'cp850'
+    else:
+        console_encoding = 'iso-8859-1'
+    del _sys
 #
 # When called as main program, list all configuration variables
 #

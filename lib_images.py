@@ -69,7 +69,7 @@ def get_content_type(filename):
 # a description is asked.
 # Returns the filename which was used to upload the image
 def get_image(fn, target, description, debug=False):
-    uploadaddr='/wiki/%s:Upload'%wikipedia.special[wikipedia.mylang]
+    uploadaddr = wikipedia.family.upload_address(code)
     # Get file contents
     uo = wikipedia.MyURLopener()
     file = uo.open(fn)

@@ -18,250 +18,12 @@ import config
 debug = 0
 loggedin = False
 
-# Known wikipedia languages, given as a dictionary mapping the language code
-# to the hostname of the site hosting that wikipedia. For human consumption,
-# the full name of the language is given behind each line as a comment
+#
+# This looks configurable, but the only family supported right now
+# is the "wikipedia" family
+#
 
-langs = {
-    'af':'af.wikipedia.org',   # Afrikaans
-    'als':'als.wikipedia.org', # Alsatian
-    'ar':'ar.wikipedia.org',   # Arabic
-    'az':'az.wikipedia.org',   # Azerbaijan
-    'bg':'bg.wikipedia.org',   # Bulgarian
-    'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
-    'bn':'bn.wikipedia.org',   # Bengali
-    'bs':'bs.wikipedia.org',   # Bosnian
-    'ca':'ca.wikipedia.org',   # Catalan
-    'co':'co.wikipedia.org',   # Corsican
-    'cs':'cs.wikipedia.org',   # Czech
-    'csb':'csb.wikipedia.org', # Kashubian
-    'cy':'cy.wikipedia.org',   # Welsh
-    'da':'da.wikipedia.org',   # Danish
-    'de':'de.wikipedia.org',   # German
-    'dk':'da.wikipedia.org',   # Danish (wrong name)
-    'el':'el.wikipedia.org',   # Greek
-    'en':'en.wikipedia.org',   # English
-    'eo':'eo.wikipedia.org',   # Esperanto
-    'es':'es.wikipedia.org',   # Spanish
-    'et':'et.wikipedia.org',   # Estonian
-    'eu':'eu.wikipedia.org',   # Basque
-    'fa':'fa.wikipedia.org',   # Farsi
-    'fi':'fi.wikipedia.org',   # Finnish
-    'fr':'fr.wikipedia.org',   # French
-    'fy':'fy.wikipedia.org',   # Frisian
-    'ga':'ga.wikipedia.org',   # Irish Gaelic
-    'gd':'gd.wikipedia.org',   # Scottish Gaelic
-    'gl':'gl.wikipedia.org',   # Galician
-    'gn':'gn.wikipedia.org',   # Guarani
-    'gv':'gv.wikipedia.org',   # Manx
-    'he':'he.wikipedia.org',   # Hebrew
-    'hi':'hi.wikipedia.org',   # Hindi
-    'hr':'hr.wikipedia.org',   # Croatian
-    'hu':'hu.wikipedia.org',   # Hungarian
-    'ia':'ia.wikipedia.org',   # Interlingua
-    'id':'id.wikipedia.org',   # Indonesian
-    'is':'is.wikipedia.org',   # Icelandic
-    'it':'it.wikipedia.org',   # Italian
-    'ja':'ja.wikipedia.org',   # Japanese
-    'jv':'jv.wikipedia.org',   # Javanese
-    'ka':'ka.wikipedia.org',   # Georgian
-    'ko':'ko.wikipedia.org',   # Korean
-    'ks':'ks.wikipedia.org',   # Ekspreso, but should become Kashmiri
-    'ku':'ku.wikipedia.org',   # Kurdish
-    'la':'la.wikipedia.org',   # Latin
-    'lt':'lt.wikipedia.org',   # Latvian
-    'lv':'lv.wikipedia.org',   # Livonian
-    'mg':'mg.wikipedia.org',   # Malagasy
-    'mi':'mi.wikipedia.org',   # Maori
-    'mk':'mk.wikipedia.org',   # Macedonian
-    'ml':'ml.wikipedia.org',   # Malayalam
-    'mr':'mr.wikipedia.org',   # Marathi
-    'ms':'ms.wikipedia.org',   # Malay
-    'na':'na.wikipedia.org',   # Nauruan
-    'nah':'nah.wikipedia.org', # Nahuatl
-    'nb':'no.wikipedia.org',   # Norse - new code for Bokmal to distinguish from Nynorsk
-    'nds':'nds.wikipedia.org', # Lower Saxon
-    'nl':'nl.wikipedia.org',   # Dutch
-    'no':'no.wikipedia.org',   # Norwegian
-    'oc':'oc.wikipedia.org',   # Occitan
-    'om':'om.wikipedia.org',   # Oromo
-    'pl':'pl.wikipedia.org',   # Polish
-    'pt':'pt.wikipedia.org',   # Portuguese
-    'ro':'ro.wikipedia.org',   # Romanian
-    'ru':'ru.wikipedia.org',   # Russian
-    'sa':'sa.wikipedia.org',   # Sanskrit
-    'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
-    'simple':'simple.wikipedia.org', # Simple English
-    'sk':'sk.wikipedia.org',   # Slovakian
-    'sl':'sl.wikipedia.org',   # Slovenian
-    'sq':'sq.wikipedia.org',   # Albanian
-    'sr':'sr.wikipedia.org',   # Serbian
-    'st':'st.wikipedia.org',   # Sesotho
-    'su':'su.wikipedia.org',   # Sundanese
-    'sv':'sv.wikipedia.org',   # Swedish
-    'sw':'sw.wikipedia.org',   # Swahili
-    'ta':'ta.wikipedia.org',   # Tamil
-    'test':'test.wikipedia.org',
-    'th':'th.wikipedia.org',   # Thai
-    'tl':'tl.wikipedia.org',   # Tagalog
-    'tokipona':'tokipona.wikipedia.org', # Toki Pona
-    'tr':'tr.wikipedia.org',   # Turkish
-    'tt':'tt.wikipedia.org',   # Tatar
-    'uk':'uk.wikipedia.org',   # Ukrainian
-    'ur':'ur.wikipedia.org',   # Urdu
-    'vi':'vi.wikipedia.org',   # Vietnamese
-    'vo':'vo.wikipedia.org',   # Volapuk
-    'wa':'wikipedia.walon.org',   # Walon
-    'xh':'xh.wikipedia.org',   # isiXhosa
-    'yi':'yi.wikipedia.org',   # Yiddish
-    'zh':'zh.wikipedia.org',   # Chinese
-    'zh-cn':'zh.wikipedia.org', # Simplified Chinese
-    'zh-tw':'zh.wikipedia.org', # Traditional Chinese
-    }
-
-# Languages that are coded in iso-8859-1
-latin1 = ['en', 'sv', 'nl', 'de', 'es', 'da', 'dk', 'test']
-
-# Languages that used to be coded in iso-8859-1
-latin1old = ['et', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
-             'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
-             'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
-             'ga', 'na']
-
-# Translation used on all wikipedia's for the Special: namespace.
-# Only necessary when it is not 'Special'.
-special = {
-    'af': 'Spesiaal',
-    'ar': '%D8%AE%D8%A7%D8%B5',
-    'bg': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D0%BD%D0%B8',
-    'bn': '%E0%A6%AC%E0%A6%BF%E0%A6%B6%E0%A7%87%E0%A6%B7',
-    'ca': 'Especial',
-    'cs': 'Speci%C3%A1ln%C3%AD',
-    'csb': 'Specjalna',
-    'cy': 'Arbennig',
-    'da': 'Speciel',
-    'de': 'Spezial',
-    'en': 'Special',
-    'eo': 'Speciala',
-    'es': 'Especial',
-    'et': 'Eri',
-    'fa': '%D9%88%DB%8C%DA%98%D9%87',
-    'fi': 'Toiminnot',
-    'fr': 'Special',
-    'fy': 'Wiki',
-    'ga': 'Speisialta',
-    'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
-    'hi': '%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7',
-    'hu': 'Speci%C3%A1lis',
-    'ia': 'Special',
-    'id': 'Istimewa',
-    'it': 'Speciale',
-    'ja': '%E7%89%B9%E5%88%A5',
-    'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
-    'la': 'Specialis',
-    'ms': 'Istimewa',
-    'nb': 'Spesial',
-    'nl': 'Speciaal',
-    'no': 'Spesial',
-    'oc': 'Especial',
-    'pl': 'Specjalna',
-    'pt': 'Especial',
-    'ro': 'Special',
-    'ru': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5',
-    'sk': '%C5%A0peci%C3%A1lne',
-    'sl': 'Posebno',
-    'sq': 'Special',
-    'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
-    'sv': 'Special',
-    'ta': '%E0%AE%9A%E0%AE%BF%E0%AE%B1%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81',
-    'th': '%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9',
-    'wa': 'Sipeci%C3%A5s',
-    }
-
-# And the image namespace.
-
-image = {
-    'af': 'Beeld',
-    'ar': '%D8%B5%D9%88%D8%B1%D8%A9',
-    'bg': '%D0%9A%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%BA%D0%B0',
-    #'bn': To be checked,
-    'ca': 'Imatge',
-    'cs': 'Soubor',
-    'csb': 'Imagem',
-    'cy': 'Delwedd',
-    'da': 'Billede',
-    'de': 'Bild',
-    'en': 'Image',
-    'eo': 'Dosiero',
-    'es': 'Imagen',
-    'et': 'Pilt',
-    'fa': '%D8%AA%D8%B5%D9%88%DB%8C%D8%B1',
-    'fi': 'Kuva',
-    'fr': 'Image',
-    'fy': 'Ofbyld',
-    'ga': '%C3%8Domh%C3%A1',
-    'he': '%D7%AA%D7%9E%D7%95%D7%A0%D7%94',
-    'hi': '%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0',
-    'hu': 'K%C3%A9p',
-    'ia': 'Imagine',
-    'id': 'Imej',
-    'it': 'Immagine',
-    'ja': '%E7%94%BB%E5%83%8F',
-    'ko': '%EA%B7%B8%EB%A6%BC',
-    'la': 'Imago',
-    'ms': 'Imej',
-    'nb': 'Bilde',
-    'nl': 'Afbeelding',
-    'no': 'Bilde',
-    'oc': 'Image',
-    'pl': 'Grafika',
-    'pt': 'Imagem',
-    'ro': 'Imagine',
-    'ru': '%D0%98%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5',
-    'sk': 'Obr%C3%A1zok',
-    'sl': 'Slika',
-    'sq': 'Figura',
-    'sr': '%D0%A1%D0%BB%D0%B8%D0%BA%D0%B0',
-    'sv': 'Bild',
-    'ta': '%E0%AE%AA%E0%AE%9F%E0%AE%BF%E0%AE%AE%E0%AE%AE%E0%AF%8D',
-    'th': '%E0%B8%A0%E0%B8%B2%E0%B8%9E',
-    'wa': 'Im%C3%A5dje',
-    }
-
-redirect = {
-    'cy': 'ail-cyfeirio',
-    }
-
-# Defaults for Special: and Image: namespace names
-
-for lang in langs:
-    if not lang in special:
-        special[lang] = 'Special'
-    if not lang in image:
-        image[lang] = 'Image'
-
-obsolete = ['sh', 'dk', 'wa']
-
-# A few selected big languages for things that we do not want to loop over
-# all languages.
-biglangs = ['da', 'de', 'en', 'es', 'fr', 'ja', 'nl', 'pl', 'sv']
-
-biglangs2 = biglangs + [
-            'ca', 'eo', 'et', 'fi', 'he', 'it', 'no', 'pt', 'ro', 'sl',
-            'zh']
-
-biglangs3 = biglangs2 + [
-            'af', 'cs', 'eu', 'gl', 'hr', 'ia', 'id', 'la', 'ms', 'ru',
-            'simple']
-
-seriouslangs  = biglangs3 + [
-                'ar', 'bg', 'bs', 'cy', 'el', 'fa', 'fy', 'hi', 'hu', 'ko',
-                'is', 'ku', 'lt', 'lv', 'nds', 'oc', 'sr', 'ta', 'th', 'tr',
-                'uk', 'vi']
-
-# other groups of language that we might want to do at once
-
-cyrilliclangs = ['bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+exec("import %s_family as family"%config.family)
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 
@@ -574,7 +336,7 @@ class PageLink:
 
     def imagelinks(self):
         result = []
-        im=image[self._code] + ':'
+        im=family.image[self._code] + ':'
         w1=r'('+im+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
@@ -600,8 +362,8 @@ class PageLink:
 # Regular expression recognizing redirect pages
 
 def redirectRe(code):
-    if redirect.has_key(code):
-        txt = '(?:redirect|'+redirect[code]+')'
+    if family.redirect.has_key(code):
+        txt = '(?:redirect|'+family.redirect[code]+')'
     else:
         txt = 'redirect'
     return re.compile(r'\#'+txt+':? *\[\[(.*?)\]\]', re.I)
@@ -655,7 +417,6 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             
 class GetAll:
     debug = 0
-    addr = '/wiki/%s:Export'
     def __init__(self, code, pages):
         self.code = code
         self.pages = []
@@ -734,7 +495,7 @@ class GetAll:
 
     def getData(self):
         import httplib
-        addr = self.addr%special[self.code]
+        addr = family.export_address(self.code)
         pagenames = u'\r\n'.join([x.hashfreeLinkname() for x in self.pages])
         pagenames = forCode(pagenames, self.code)
         data = urlencode((
@@ -748,7 +509,7 @@ class GetAll:
         # Slow ourselves down
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
-        conn = httplib.HTTPConnection(langs[self.code])
+        conn = httplib.HTTPConnection(family.hostname(self.code))
         conn.request("POST", addr, data, headers)
         response = conn.getresponse()
         data = response.read()
@@ -878,8 +639,8 @@ def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1
     """
     import httplib
     put_throttle()
-    host = langs[code]
-    address = '/w/wiki.phtml?title=%s&action=submit'%space2underline(name)
+    host = family.hostname(code)
+    address = family.put_address(code, space2underline(name))
     if comment is None:
         comment=action
     if not loggedin or code != mylang:
@@ -957,13 +718,13 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
     """Get the contents of page 'name' from the 'code' language wikipedia
        Do not use this directly; use the PageLink object instead."""
     print "Getting page %s:%s"%(code,name)
-    host = langs[code]
+    host = family.hostname(code)
     name = re.sub(' ', '_', name)
     if not '%' in name and do_quote: # It should not have been done yet
         if name != urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
-    address = '/w/wiki.phtml?title='+name+"&redirect=no"
+    address = family.get_address(code, name)
     if do_edit:
         address += '&action=edit&printable=yes'
     if debug:
@@ -1039,9 +800,9 @@ def languages(first = []):
        of the returned list."""
     result = []
     for key in first:
-        if key in langs.iterkeys():
+        if key in family.langs.iterkeys():
             result.append(key)
-    for key in seriouslangs:
+    for key in family.seriouslangs:
         if key not in result:
             result.append(key)
     return result
@@ -1052,7 +813,8 @@ def allpages(start = '%21%200'):
     start = link2url(start, code = mylang)
     m=0
     while 1:
-        text = getPage(mylang, '%s:Allpages&printable=yes&from=%s'%(special[mylang],start),do_quote=0,do_edit=0)
+        text = getPage(mylang, family.allpagesname(mylang, start),
+                       do_quote=0, do_edit=0)
         #print text
         R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         n = 0
@@ -1077,7 +839,7 @@ def getLanguageLinks(text,incode=None):
        in the form {code:pagename}. Do not call this routine directly, use
        PageLink objects instead"""
     result = {}
-    for code in langs:
+    for code in family.langs:
         m=re.search(r'\[\['+code+':([^\]]*)\]\]', text)
         if m:
             if m.group(1):
@@ -1086,7 +848,7 @@ def getLanguageLinks(text,incode=None):
                     t=t[:t.index('|')]
                 if incode == 'eo':
                     t=t.replace('xx','x')
-                if code in obsolete:
+                if code in family.obsolete:
                     print "ERROR: ignoring link to obsolete language %s:%s"%(
                         code, repr(t))
                 elif not t:
@@ -1114,7 +876,7 @@ def removeLanguageLinks(text):
     """Given the wiki-text of a page, return that page with all interwiki
        links removed. If a link to an unknown language is encountered,
        a warning is printed."""
-    for code in langs:
+    for code in family.langs:
         text = re.sub(r'\[\['+code+':([^\]]*)\]\]', '', text)
     m=re.search(r'\[\[([a-z][a-z]):([^\]]*)\]\]', text)
     if m:
@@ -1189,26 +951,15 @@ def interwikiFormat(links):
         sep = '\r\n'
     s=sep.join(s) + '\r\n'
     return s 
-            
+
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
-    if code == 'ascii':
-        return code # Special case where we do not want special characters.
-    if code in latin1:
-        return 'iso-8859-1'
-    return 'utf-8'
+    return family.code2encoding(code)
 
 def code2encodings(code):
     """Return a list of historical encodings for a specific language
        wikipedia"""
-    # Historic compatibility
-    if code == 'pl':
-        return 'utf-8', 'iso-8859-2'
-    if code == 'ru':
-        return 'utf-8', 'iso-8859-5'
-    if code in latin1old:
-        return 'utf-8', 'iso-8859-1'
-    return code2encoding(code),
+    return family.code2encodings(code)
 
 def url2link(percentname,incode,code):
     """Convert a url-name of a page into a proper name for an interwiki link
@@ -1301,13 +1052,13 @@ def isInterwikiLink(s):
     if not ':' in s:
         return False
     l,k=s.split(':',1)
-    if l in langs:
+    if l in family.langs:
         return True
     return False
 
 def getReferences(pl):
-    host = langs[pl.code()]
-    url = "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(special[mylang], pl.urlname())
+    host = family.hostname(pl.code())
+    url = family.references_address(mylang, pl.urlname())
     txt, charset = getUrl(host,url)
     Rref = re.compile('<li><a href.*="([^"]*)"')
     x = Rref.findall(txt)
@@ -1346,7 +1097,7 @@ def url2unicode(percentname, language):
             pass
     raise UnicodeError("Could not decode %s" % repr(percentname))
 
-def unicode2html(x, encoding='latin1'):
+def unicode2html(x, encoding):
     # We have a unicode string. We can attempt to encode it into the desired
     # format, and if that doesn't work, we encode the unicode into html #
     # entities. If it does work, we return it unchanged.
@@ -1490,8 +1241,8 @@ if not config.username:
     print "for other possible configuration variables check config.py"
     sys.exit(1)
 setMyLang(config.mylang)
-if not langs.has_key(mylang):
+if not family.langs.has_key(mylang):
     print "Home-wikipedia from user-config.py does not exist"
     print "Defaulting to test: wikipedia"
     setMyLang('test')
-    langs['test']='test.wikipedia.org'
+    family.langs['test']='test.wikipedia.org'
