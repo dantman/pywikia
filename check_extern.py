@@ -22,17 +22,12 @@ file check_extern.txt
 # Distribute under the terms of the PSF license.
 #
 
-import wikipedia, urllib, re, sys
+import wikipedia, urllib, re, sys, httplib
 
 class URLerrorFinder(urllib.FancyURLopener):
     version="RobHooftWikiRobot/1.0"
-    def http_error(self, url, fp, errcode, errmsg, headers, data=None):
-        return errcode
-
-    def open_http(self, url, data=None):
+    def open_http(self, url):
         """Use HTTP protocol."""
-        import httplib
-        user_passwd = None
         if isinstance(url, str):
             host, selector = urllib.splithost(url)
             if host:
@@ -54,27 +49,13 @@ class URLerrorFinder(urllib.FancyURLopener):
                     selector = "%s://%s%s" % (urltype, realhost, rest)
                 if proxy_bypass(realhost):
                     host = realhost
-        if not host: raise IOError, ('http error', 'no host given')
-        if user_passwd:
-            import base64
-            auth = base64.encodestring(user_passwd).strip()
-        else:
-            auth = None
+        if not host: return -2
         h = httplib.HTTP(host)
-        if data is not None:
-            h.putrequest('POST', selector)
-            h.putheader('Content-type', 'application/x-www-form-urlencoded')
-            h.putheader('Content-length', '%d' % len(data))
-        else:
-            h.putrequest('GET', selector)
-        if auth: h.putheader('Authorization', 'Basic %s' % auth)
+        h.putrequest('GET', selector)
         if realhost: h.putheader('Host', realhost)
         for args in self.addheaders: h.putheader(*args)
         h.endheaders()
-        if data is not None:
-            h.send(data)
         errcode, errmsg, headers = h.getreply()
-        fp = h.getfile()
         return errcode
 
 # Which error codes do we not consider errors? 
@@ -82,6 +63,7 @@ allowederrorcodes = [100,101,200,201,202,203,205,304]
 
 errname = {
     -1:'No contact to server',
+    -2:'No host found',
     100:'Continue',
     101:'Switching Protocols',
     200:'OK',
@@ -193,6 +175,7 @@ while cont:
         R = re.compile(r'http://[\S]+[^\s.,:;)\?!\]]')
         try:
             for url in R.findall(pl.get()):
+                url = wikipedia.unicode2html(url,'latin_1')
                 try:
                     error = URLerrorFinder().open(url)
                 except IOError:
