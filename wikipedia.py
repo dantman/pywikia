@@ -758,6 +758,7 @@ def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1
     response = conn.getresponse()
     data = response.read()
     conn.close()
+    print data
     return response.status, response.reason, data
 
 def forCode(text, code):
@@ -1432,4 +1433,12 @@ def chooselang(code, choice):
         return 'en'
     return choice[1]
 
-    
+# works like raw_input(), but returns a unicode string instead of ASCII.
+# if encode is True, it will encode the string into a format suitable for
+# the local wiki (utf-8 or iso8859-1).
+def input(question, encode = False):
+    text = raw_input(question)
+    text = unicode(text, config.console_encoding)
+    if encode:
+        text = text.encode(code2encoding(mylang))
+    return text

@@ -27,8 +27,8 @@ import wikipedia, config, catlib, interwiki
 
 # Summary message
 msg={
-    'en':'Robot: Changing category: %s',
-    'de':'Bot: \xc4ndere Kategorie: %s',
+    'en':u'Robot: Changing category: %s',
+    'de':u'Bot: \xc4ndere Kategorie: %s',
     }
 
 """
@@ -43,17 +43,17 @@ def add_category():
     print "or you can add a category link to all pages that link to a"
     print "specific page. If you want the second, please give an empty"
     print "answer to the first question."
-    listpage = raw_input('Wikipedia page with list of pages to change: ')
+    listpage = wikipedia.input('Wikipedia page with list of pages to change: ')
     if listpage:
         pl = wikipedia.PageLink(wikipedia.mylang, listpage)
         pagenames = pl.links()
     else:
-        refpage = raw_input('Wikipedia page that is now linked to: ')
+        refpage = wikipedia.input('Wikipedia page that is now linked to: ')
         pl = wikipedia.PageLink(wikipedia.mylang, refpage)
         pagenames = wikipedia.getReferences(pl)
     print "  ==> %d pages to process"%len(pagenames)
     print
-    newcat = raw_input('Category to add (do not give namespace) : ')
+    newcat = wikipedia.input('Category to add (do not give namespace) : ')
     newcat = unicode(newcat, config.console_encoding)
     newcat = newcat.encode(wikipedia.code2encoding(wikipedia.mylang))
     newcat = newcat[:1].capitalize() + newcat[1:]
@@ -70,11 +70,11 @@ def add_category():
         if answer != 'a':
 	    answer = ''
         while answer not in ('y','n','a'):
-            answer = raw_input("%s [y/n/a(ll)] : "%(pl2.asasciilink()))
+            answer = wikipedia.input("%s [y/n/a(ll)] : "%(pl2.asasciilink()))
             if answer == 'a':
                 confirm = ''
 		while confirm not in ('y','n'):
-	            confirm = raw_input("This should be used if and only if you are sure that your links are correct !!! Are you sure ? [y/n] : ")
+	            confirm = wikipedia.input("This should be used if and only if you are sure that your links are correct !!! Are you sure ? [y/n] : ")
 	
 	if answer == 'y' or answer == 'a':
             try:
@@ -109,9 +109,9 @@ def rename_category():
         print "Changing page %s" %(article)
         article.put(text)
         
-    old_title = raw_input('Please enter the old name of the category: ')
+    old_title = wikipedia.input('Please enter the old name of the category: ')
     old_cat = catlib.CatLink(old_title)
-    new_title = raw_input('Please enter the new name of the category: ')
+    new_title = wikipedia.input('Please enter the new name of the category: ')
     new_cat = catlib.CatLink(new_title)
     
     # get edit summary message
@@ -193,7 +193,7 @@ def tidy_category():
             print '%d - Move to %s' % (i, subcatlist[i])
         print 'Enter - Save category as ' + current_cat.ascii_linkname()
         
-        choice=raw_input("Choice: ")
+        choice=wikipedia.input("Choice: ")
         if choice == '':
             print 'Saving category as ' + current_cat.ascii_linkname()
             if current_cat == original_cat:
@@ -216,7 +216,7 @@ def tidy_category():
             move_to_subcategory(article, original_cat, subcatlist[choice])
     
     # begin main part of tidy_category
-    cat_title = raw_input('Which category do you want to tidy up? ')
+    cat_title = wikipedia.input('Which category do you want to tidy up? ')
     catlink = catlib.CatLink(cat_title)
     
     # get edit summary message
