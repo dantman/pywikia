@@ -1,6 +1,5 @@
 This is a package to build robots for wikipedia. Some example robots are 
-included. This is a bit nl:-centered, but if something doesn't work for your
-language wikipedia, just send a bug report and we'll take a look.
+included. 
 
 =======================================================================
 PLEASE DO NOT PLAY WITH THIS PACKAGE. These programs can actually
@@ -8,10 +7,16 @@ modify the live wikipedia on the net, and proper wiki-etiquette should
 be followed before running it on any of the wikipedia sites.
 =======================================================================
 
+To get started on proper usage of the interwiki robot, please refer to:
+
+    http://meta.wikipedia.org/wiki/Interwiki_bot/Getting_started
+
+
+
 The contents of the package are:
 
-The library itself
-------------------
+Library routines
+----------------
 LICENSE                : a reference to the Python Software Foundation license
 wikipedia.py           : The wikipedia library
 config.py              : Configuration module containing all defaults
@@ -25,9 +30,14 @@ Utilities
 extract_names.py       : A program to make a list of 480 pagenames based on a 
                          html file that is the result of a Special:Allpages 
                          request.
-parsepopular.py        : Make statistics based on 2 html dumps of most popular
-                         pages.
 login.py               : Log in to an account on your "home" wikipedia. 
+xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
+                         created by interwiki.py), and if it contains an error,
+                         show a stacktrace with the location of the error.
+splitwarning.py        : split a treelang.log file into warning files for each
+                         separate language. suggestion: Zip the created files up, 
+                         put them somewhere on the internet, and send an 
+                         announcement of the location on the robot mailinglist.
 
 Robots
 ------
@@ -40,7 +50,6 @@ brackethttp.py         : a bot replacing a ()-bracketed http: link by an
                          explicit [ ] link to avoid a parser problem.
 disamb_all.py          : Run the robot solve_disambiguation.py (see below) over
                          articles listed in a file passed as argument.
-getlang.py             : Get interwiki links for years AD
 interwiki.py           : A robot to check interwiki links on all pages (or
                          a range of pages) of a wikipedia.
                          This uses a non-linear approach and is therefore
@@ -48,14 +57,6 @@ interwiki.py           : A robot to check interwiki links on all pages (or
                          treelang.py
 test.py                : Misc testing, now configured to test whether you are 
                          logged in.
-treelang_all.py        : An almost obsolete script that runs treelang.py for 
-                         each of the pages in your home wikipedia. The
-                         functionality still left here is to run over a
-                         list of warnings, the -warnfile option, which has
-                         not yet been implemented in interwiki.py
-treelang.py            : Recursive search for interwiki links that are 
-                         appropriate to a page. Obsolescent, use interwiki.py
-                         instead.
 yearlayout.py          : An old robot used to change the layout of all nl: year 
                          pages.
 solve_disambiguation.py: Disambiguate pages from the command line. 
