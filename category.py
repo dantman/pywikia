@@ -73,14 +73,19 @@ class CategoryDatabase:
         if rebuild:
             self.rebuild()
         else:
-            f = open(filename, 'r')
-            databases = pickle.load(f)
-            f.close()
-            # keys are categories, values are 2-tuples with lists as entries.
-            self.catContentDB = databases['catContentDB'] 
-            # like the above, but for supercategories
-            self.superclassDB = databases['superclassDB']
-            del databases
+            try:
+                f = open(filename, 'r')
+            except IOError:
+                # Apparently the file category.dump does not exist
+                self.rebuild()
+            else:
+                databases = pickle.load(f)
+                f.close()
+                # keys are categories, values are 2-tuples with lists as entries.
+                self.catContentDB = databases['catContentDB'] 
+                # like the above, but for supercategories
+                self.superclassDB = databases['superclassDB']
+                del databases
         
     def rebuild(self):
         self.catContentDB={}
