@@ -407,7 +407,7 @@ for wrd in (page_list):
 
     # print choices on screen
     for i in range(len(alternatives)):
-        wikipedia.output("%3d - %s" % (i, alternatives[i]))
+        wikipedia.output("%3d - %s" % (i, alternatives[i]), wikipedia.myencoding())
     def treat(refpl, thispl):
         try:
             reftxt=refpl.get()
