@@ -188,6 +188,9 @@ def getPage(code, name, do_edit=1, do_quote=1):
             if charsets.has_key(code):
                 assert charsets[code]==charset
             charsets[code]=charset
+            if code2encoding(code)!=charset:
+                raise ValueError("code2encodings has wrong charset for %s. It should be %s"%(code,charset))
+            
         if debug>1:
             print repr(text)
         m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
@@ -310,12 +313,12 @@ def interwikiFormat(links):
     return ' '.join(s)+'\r\n'
 
 def code2encoding(code):
-    if code in ['meta','ru','eo','ja','zh','hi','he','hu','pl']:
+    if code in ['meta','ru','eo','ja','zh','hi','he','hu','pl','ko']:
         return 'utf-8'
     return 'iso-8859-1'
 
 def code2encodings(code):
-    if code in ['meta','eo','ja','zh','hi','he','hu']:
+    if code in ['meta','eo','ja','zh','hi','he','hu','ko']:
         return 'utf-8',
     elif code=='pl':
         return 'utf-8','iso-8859-2'
