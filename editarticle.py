@@ -49,6 +49,22 @@ def options(args):
 ##    parser.add_option("-p", "--password", help="Password to login with")
     return parser.parse_args(args=args)
 
+def repair(content):
+    """Removes single newlines"""
+    lines = content.splitlines()
+    result = []
+    for i, line in enumerate(lines):
+        try:
+            nextline = lines[i+1]
+        except IndexError:
+            nextline = "last"
+        result.append(line)
+        if nextline.strip() == "" or line.strip() == "":
+            result.append('\n')
+        else:
+            result.append(" ")
+    return "".join(result)
+
 def editpage(pl, editor, redirect=False):
     """Edit a pagelink using an editor.
     
@@ -70,7 +86,8 @@ def editpage(pl, editor, redirect=False):
     ofp.close()
     os.system("%s %s" % (editor, ofn))
     newcontent = open(ofn).read().decode(config.console_encoding)
-    return oldcontent, newcontent
+    os.unlink(ofn)
+    return oldcontent, repair(newcontent)
 
 def main():
     args = []
@@ -84,13 +101,14 @@ def main():
     else:
         username = opts.username or wikipedia.input(u"Username: ", encode=True)
         site = wikipedia.getSite(user=opts.username)
-        password = getpass.getpass("Password: ")
-        cookie = login.login(site, username, password)
-        if cookie:
+        site._fill()
+        if not site._loggedin:
+            password = getpass.getpass("Password: ")
+            cookie = login.login(site, username, password)
+            if not cookie:
+                sys.exit("Login failed")
             login.storecookiedata(cookie, site, username)
             wikipedia.output(u"Login succesful")
-        else:
-            sys.exit("Login failed")
 
     page = opts.page or wikipedia.input(u"Page to edit: ", encode=True)
     editor = opts.editor or wikipedia.input(u"Editor to use: ", encode=True)
