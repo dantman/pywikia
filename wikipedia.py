@@ -35,7 +35,7 @@ langs = {
     'en':'en.wikipedia.org',   # English
     'eo':'eo.wikipedia.org',   # Esperanto, UTF-8
     'es':'es.wikipedia.org',   # Spanish
-    'et':'et.wikipedia.org',   # Estonian
+    'et':'et.wikipedia.org',   # Estonian, UTF-8
     'eu':'eu.wikipedia.org',   # Basque
     'fi':'fi.wikipedia.org',   # Finnish, UTF-8
     'fr':'fr.wikipedia.org',   # French
@@ -85,12 +85,11 @@ langs = {
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'et', 'eu',
-          'mr', 'id', 'gl', 'lv', 'sw',
+          'eu', 'mr', 'id', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no', 'simple']
+latin1old = ['et', 'ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no', 'simple']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -107,7 +106,7 @@ special = {
     'en': 'Special',
     'eo': 'Speciala',
     'es': 'Especial',
-    #'et': '',
+    'et': 'Eri',
     #'eu': '',
     'fi': 'Toiminnot',
     'fr': 'Special',
@@ -157,7 +156,7 @@ special = {
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['et', 'eu', 'ga', 'gl', 'id', 'lv',
+oldsoftware = ['eu', 'ga', 'gl', 'id', 'lv',
                'mr', 'nds', 'sw', 'tt', 'uk', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
