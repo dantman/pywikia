@@ -23,76 +23,77 @@ loggedin = False
 # the full name of the language is given behind each line as a comment
 
 langs = {
-    'af':'af.wikipedia.org',   # Afrikaans, UTF-8
-    'als':'als.wikipedia.org', # Alsassian, UTF-8?
-    'ar':'ar.wikipedia.org',   # Arabic, UTF-8
-    'bg':'bg.wikipedia.org',   # Bulgarian, UTF-8
-    'bs':'bs.wikipedia.org',   # Bosnian, UTF-8
-    'ca':'ca.wikipedia.org',   # Catalan, UTF-8
-    'co':'co.wikipedia.org',   # Corsican, UTF-8
-    'cs':'cs.wikipedia.org',   # Czech, UTF-8
-    'cy':'cy.wikipedia.org',   # Welsh, UTF-8
+    'af':'af.wikipedia.org',   # Afrikaans
+    'als':'als.wikipedia.org', # Alsassian
+    'ar':'ar.wikipedia.org',   # Arabic
+    'bg':'bg.wikipedia.org',   # Bulgarian
+    'bs':'bs.wikipedia.org',   # Bosnian
+    'ca':'ca.wikipedia.org',   # Catalan
+    'co':'co.wikipedia.org',   # Corsican
+    'cs':'cs.wikipedia.org',   # Czech
+    'cy':'cy.wikipedia.org',   # Welsh
     'da':'da.wikipedia.org',   # Danish
     'de':'de.wikipedia.org',   # German
     'dk':'da.wikipedia.org',   # Danish (wrong name)
-    'el':'el.wikipedia.org',   # Greek, UTF-8
+    'el':'el.wikipedia.org',   # Greek
     'en':'en.wikipedia.org',   # English
-    'eo':'eo.wikipedia.org',   # Esperanto, UTF-8
+    'eo':'eo.wikipedia.org',   # Esperanto
     'es':'es.wikipedia.org',   # Spanish
-    'et':'et.wikipedia.org',   # Estonian, UTF-8
-    'eu':'eu.wikipedia.org',   # Basque, UTF-8
-    'fi':'fi.wikipedia.org',   # Finnish, UTF-8
+    'et':'et.wikipedia.org',   # Estonian
+    'eu':'eu.wikipedia.org',   # Basque
+    'fi':'fi.wikipedia.org',   # Finnish
     'fr':'fr.wikipedia.org',   # French
-    'fy':'fy.wikipedia.org',   # Frisian, UTF-8
+    'fy':'fy.wikipedia.org',   # Frisian
     'ga':'ga.wikipedia.org',   # Irish Gaelic
-    'gl':'gl.wikipedia.org',   # Galician, UTF-8
-    'he':'he.wikipedia.org',   # Hebrew, UTF-8
-    'hi':'hi.wikipedia.org',   # Hindi, UTF-8
-    'hr':'hr.wikipedia.org',   # Croatian, UTF-8
-    'hu':'hu.wikipedia.org',   # Hungarian, UTF-8
-    'ia':'ia.wikipedia.org',   # Interlingua, UTF-8
+    'gl':'gl.wikipedia.org',   # Galician
+    'he':'he.wikipedia.org',   # Hebrew
+    'hi':'hi.wikipedia.org',   # Hindi
+    'hr':'hr.wikipedia.org',   # Croatian
+    'hu':'hu.wikipedia.org',   # Hungarian
+    'ia':'ia.wikipedia.org',   # Interlingua
     'id':'id.wikipedia.org',   # Indonesian
     'is':'is.wikipedia.org',   # Icelandic
-    'it':'it.wikipedia.org',   # Italian, UTF-8
-    'ja':'ja.wikipedia.org',   # Japanese, UTF-8
-    'ko':'ko.wikipedia.org',   # Korean, UTF-8
+    'it':'it.wikipedia.org',   # Italian
+    'ja':'ja.wikipedia.org',   # Japanese
+    'ko':'ko.wikipedia.org',   # Korean
     'ks':'ks.wikipedia.org',   # Ekspreso, but should become Kashmiri
-    'la':'la.wikipedia.org',   # Latin, UTF-8
+    'ku':'ku.wikipedia.org',   # Kurdish
+    'la':'la.wikipedia.org',   # Latin
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
-    'ml':'ml.wikipedia.org',   # Malayalam (UTF-8?)
+    'ml':'ml.wikipedia.org',   # Malayalam
     'mr':'mr.wikipedia.org',   # Marathi
     'ms':'ms.wikipedia.org',   # Malay
     'na':'na.wikipedia.org',   # Nauruan
-    'nah':'nah.wikipedia.org', # Nahuatl (UTF-8?)
-    'nds':'nds.wikipedia.org', # Lower Saxon, UTF-8
+    'nah':'nah.wikipedia.org', # Nahuatl
+    'nds':'nds.wikipedia.org', # Lower Saxon
     'nl':'nl.wikipedia.org',   # Dutch
-    'no':'no.wikipedia.org',   # Norwegian, UTF-8
-    'oc':'oc.wikipedia.org',   # Occitan, UTF-8
-    'pl':'pl.wikipedia.org',   # Polish, UTF-8
-    'pt':'pt.wikipedia.org',   # Portuguese, UTF-8
-    'ro':'ro.wikipedia.org',   # Romanian, UTF-8
-    'ru':'ru.wikipedia.org',   # Russian, UTF-8
+    'no':'no.wikipedia.org',   # Norwegian
+    'oc':'oc.wikipedia.org',   # Occitan
+    'pl':'pl.wikipedia.org',   # Polish
+    'pt':'pt.wikipedia.org',   # Portuguese
+    'ro':'ro.wikipedia.org',   # Romanian
+    'ru':'ru.wikipedia.org',   # Russian
     'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
-    'simple':'simple.wikipedia.org', # Simple English, UTF-8
-    'sk':'sk.wikipedia.org',   # Slovakian, UTF-8
-    'sl':'sl.wikipedia.org',   # Slovenian, UTF-8
-    'sq':'sq.wikipedia.org',   # Albanian (UTF-8?)
-    'sr':'sr.wikipedia.org',   # Serbian, UTF-8
+    'simple':'simple.wikipedia.org', # Simple English
+    'sk':'sk.wikipedia.org',   # Slovakian
+    'sl':'sl.wikipedia.org',   # Slovenian
+    'sq':'sq.wikipedia.org',   # Albanian
+    'sr':'sr.wikipedia.org',   # Serbian
     'sv':'sv.wikipedia.org',   # Swedish
     'sw':'sw.wikipedia.org',   # Swahili
-    'ta':'ta.wikipedia.org',   # Tamil, UTF-8
+    'ta':'ta.wikipedia.org',   # Tamil
     'test':'test.wikipedia.org',
-    'th':'th.wikipedia.org',   # Thai, UTF-8
-    'tr':'tr.wikipedia.org',   # Turkish, UTF-8
+    'th':'th.wikipedia.org',   # Thai
+    'tr':'tr.wikipedia.org',   # Turkish
     'tt':'tt.wikipedia.org',   # Tatar
-    'uk':'uk.wikipedia.org',   # Ukrainian (Latin-1?)
+    'uk':'uk.wikipedia.org',   # Ukrainian
     'vi':'vi.wikipedia.org',   # Vietnamese
     'vo':'vo.wikipedia.org',   # Volapuk
-    'walon':'wikipedia.walon.org', # Walon, UTF-8
-    'zh':'zh.wikipedia.org',   # Chinese, UTF-8
-    'zh-cn':'zh.wikipedia.org', # Simplified Chinese, UTF-8
-    'zh-tw':'zh.wikipedia.org', # Traditional Chinese, UTF-8
+    'walon':'wikipedia.walon.org', # Walon
+    'zh':'zh.wikipedia.org',   # Chinese
+    'zh-cn':'zh.wikipedia.org', # Simplified Chinese
+    'zh-tw':'zh.wikipedia.org', # Traditional Chinese
     }
 
 # Languages that are coded in iso-8859-1
@@ -140,6 +141,7 @@ special = {
     'ja': '%E7%89%B9%E5%88%A5',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
     'ks': 'Special',
+    'ku': 'Special',
     'la': 'Special',
     'lt': 'Special',
     'lv': 'Special',
