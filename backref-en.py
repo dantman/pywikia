@@ -1,12 +1,12 @@
 import os,wikipedia,sys
 
 codefrom='nl'
-codeto='de'
+codeto='eo'
 
-pages=open('nltode.dat').readlines()
-for ff in pages:
-    f=ff.strip()
-#for f in wikipedia.allnlpages(start=sys.argv[1]):
+#pages=open('nltode.dat').readlines()
+#for ff in pages:
+#    f=ff.strip()
+for f in wikipedia.allnlpages(start=sys.argv[1]):
     print f
     sys.stdout.flush()
     xf=wikipedia.link2url(f,code=codefrom)

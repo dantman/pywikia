@@ -303,7 +303,7 @@ def allnlpages(start='%20%200'):
         if n<100:
             break
         m=m+n
-        sys.stderr.write('AllNLPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl')))
+        sys.stderr.write('AllNLPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl',incode='ascii')))
 
 # Part of library dealing with interwiki links
 
