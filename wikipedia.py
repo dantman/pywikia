@@ -179,7 +179,10 @@ class NoPage(Error):
     """Wikipedia page does not exist"""
 
 class IsRedirectPage(Error):
-    """Wikipedia page does not exist"""
+    """Wikipedia page is a redirect page"""
+
+class IsNotRedirectPage(Error):
+    """Wikipedia page is not a redirect page"""
 
 class LockedPage(Error):
     """Wikipedia page is locked"""
@@ -189,7 +192,7 @@ class NoSuchEntity(ValueError):
 
 class SubpageError(ValueError):
     """The subpage specified by # does not exist"""
-    
+
 # The most important thing in this whole module: The PageLink class
 class PageLink:
     """A Wikipedia page link."""
@@ -354,6 +357,15 @@ class PageLink:
         """
         return hash(str(self))
     
+    def getRedirectTo(self):
+    #Given a redirect page, gives the page it redirects to
+        try:
+            self.get()
+        except IsRedirectPage,arg:
+            return arg
+        else:
+            raise IsNotRedirectPage(self)
+
 # Library functions
 def unescape(s):
     """Replace escaped HTML-special characters by their originals"""

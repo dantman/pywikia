@@ -23,6 +23,11 @@ Command line options:
    -just     only use the alternatives given on the command line, do not 
              read the page for other possibilities
 
+   -redir    if the page is a redirect page, use the page redirected to as
+             the (only) alternative; if not set, the pages linked to from
+             the page redirected to are used. If the page is not a redirect
+             page, this will raise an error
+
 Options that are accepted by more robots:
 
    -lang:XX  set your home wikipedia to XX instead of the one given in
@@ -113,6 +118,7 @@ wrd = []
 alternatives = []
 getalternatives = 1
 debug = 0
+solve_redirect = 0
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
@@ -128,6 +134,8 @@ for arg in sys.argv[1:]:
             alternatives.append(arg[5:])
     elif arg=='-just':
         getalternatives=0
+    elif arg=='-redir':
+        solve_redirect=1
     else:
         wrd.append(arg)
 
@@ -142,8 +150,13 @@ wikipedia.setAction(msg[msglang]+': '+wrd)
 
 thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
 
-if getalternatives:
-    thistxt = thispl.get()
+if solve_redirect:
+    alternatives.append(str(thispl.getRedirectTo()))
+elif getalternatives:
+    try:
+        thistxt = thispl.get()
+    except wikipedia.IsRedirectPage,arg:
+        thistxt = wikipedia.PageLink(wikipedia.mylang, str(arg)).get()    
     w=r'([^\]\|]*)'
     Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
     for a in Rlink.findall(thistxt):
