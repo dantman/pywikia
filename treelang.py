@@ -160,7 +160,7 @@ def treesearch(code,name):
                 modifications+=treestep(arr,newcode,newname)
     return arr
 
-name=[]
+inname=[]
 
 ask=1
 only_if_status=1
@@ -171,15 +171,15 @@ for arg in sys.argv[1:]:
     if arg=='-always':
         only_if_status=0
     else:
-        name.append(arg)
+        inname.append(arg)
     
-name='_'.join(name)
-if not name:
-    name=raw_input('Which page to check:')
+inname='_'.join(inname)
+if not inname:
+    inname=raw_input('Which page to check:')
 
-name=wikipedia.link2url(name)
+inname=wikipedia.link2url(inname)
 
-m=treesearch(mylang,name)
+m=treesearch(mylang,inname)
 if not m:
     print "No matrix"
     sys.exit(1)
@@ -187,12 +187,9 @@ print "==Result=="
 new={}
 k=m.keys()
 k.sort()
-old=None
 for code,cname in k:
     if code==mylang:
-        if m[code,cname]:
-            old=wikipedia.getLanguageLinks(m[code,cname])
-            oldtext=m[code,cname]
+        pass
     elif m[(code,cname)]:
         print "%s:%s"%(code,wikipedia.url2link(cname))
         if new.has_key(code):
@@ -207,16 +204,18 @@ for code,cname in k:
         else:
             new[code]=wikipedia.url2link(cname)
 print "==status=="
+old=wikipedia.getLanguageLinks(m[mylang,inname])
 if old is None:
     print "No old languages found. Does the dutch page not exist?"
     sys.exit(1)
-#print old
+####
 s=compareLanguages(old,new)
 if not s and only_if_status:
     print "No changes"
     sys.exit(1)
 print s
 print "==upload=="
+oldtext=m[mylang,inname]
 s=wikipedia.interwikiFormat(new)
 s2=wikipedia.removeLanguageLinks(oldtext)
 if s and not s2.startswith('\r\n'):
@@ -225,13 +224,13 @@ newtext=s+s2
 if debug:
     print s
 if newtext!=oldtext:
-    print "NOTE: Replacing %s: %s"%(mylang,name)
+    print "NOTE: Replacing %s: %s"%(mylang,inname)
     if forreal:
         if ask:
             answer=raw_input('submit y/n ?')
         else:
             answer='y'
         if answer=='y':
-            status,reason,data=wikipedia.putPage(mylang,name,newtext)
+            status,reason,data=wikipedia.putPage(mylang,inname,newtext)
             if str(status)!='302':
                 print status,reason
