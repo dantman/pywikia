@@ -126,6 +126,10 @@ def treestep(arr,code,name,abort_on_redirect=0):
         print "---> Does not actually exist"
         arr[code,name]=''
         return 0
+    except wikipedia.LockedPage:
+        print "---> Locked"
+        arr[code,name]=1
+        return 0
     except wikipedia.IsRedirectPage,arg:
         if abort_on_redirect and code==mylang:
             raise
@@ -213,11 +217,14 @@ for code,cname in k:
         if new.has_key(code):
             print "ERROR: %s has '%s' as well as '%s'"%(code,new[code],wikipedia.url2link(cname))
             while 1:
-                answer=raw_input("Use former (f) or latter (l)?")
+                answer=raw_input("Use former (f) or latter (l) or neither (n)?")
                 if answer.startswith('f'):
                     break
                 elif answer.startswith('l'):
                     new[code]=wikipedia.url2link(cname)
+                    break
+                elif answer.startswith('n'):
+                    del new[code]
                     break
         else:
             new[code]=wikipedia.url2link(cname)

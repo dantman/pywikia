@@ -5,11 +5,13 @@
 # Distribute under the terms of the GPL.
 
 import sys,wikipedia
+if 0:
+    wikipedia.langs={'test':'test.wikipedia.org'}
 
-wikipedia.langs={'test':'test.wikipedia.org'}
+    text=wikipedia.getPage('test','Robottest')
+    text=text+'\nrobot was here\n'
+    status,reason,data=wikipedia.putPage('test','Robottest',text)
+    print status,reason
 
-text=wikipedia.getPage('test','Robottest')
-text=text+'\nrobot was here\n'
-status,reason,data=wikipedia.putPage('test','Robottest',text)
-print status,reason
+wikipedia.getPage('it','Testimoni di Geova')
 

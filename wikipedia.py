@@ -59,6 +59,9 @@ class NoPage(Error):
 class IsRedirectPage(Error):
     """Wikipedia page does not exist"""
 
+class LockedPage(Error):
+    """Wikipedia page does not exist"""
+
 
 # Library functions
 def unescape(s):
@@ -182,8 +185,9 @@ def getPage(code, name):
     try:
         i1 = re.search('<textarea[^>]*>',text).end()
     except AttributeError:
-        print "No text area.",host,address
-        raise NoPage()
+        #print "No text area.",host,address
+        #print repr(text)
+        raise LockedPage()
     i2 = re.search('</textarea>',text).start()
     if i2-i1 < 2: # new software
         raise NoPage()
