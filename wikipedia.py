@@ -924,31 +924,38 @@ def languages(first = []):
             result.append(key)
     return result
 
+# generator
 def allpages(start = '%21%200'):
     """Iterate over all Wikipedia pages in the home language, starting
        at the given page."""
     start = link2url(start, code = mylang)
+    # what is this counter for? 
     m=0
     while 1:
-        text = getPage(mylang, family.allpagesname(mylang, start),
-                       do_quote=0, do_edit=0)
-        #print text
+        returned_html = getPage(mylang, family.allpagesname(mylang, start),
+                                do_quote=0, do_edit=0)
+        try:
+            ibegin = returned_html.index('<!-- start content -->')
+            iend = returned_html.index('<!-- end content -->')
+        except ValueError:
+            # if begin/end markers weren't found, raise exception
+            raise NoPage('Couldn\'t extract allpages special page')  
+        # remove the irrelevant sections
+        returned_html = returned_html[ibegin:iend]
         if family.version(mylang)=="1.2":
             R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         else:
-            R = re.compile('title =\"(.*?)\"')
+            R = re.compile('title ="(.*?)"')
+        # what is this counter for? 
         n = 0
-        for hit in R.findall(text):
-            if not ':' in hit:
-                # Some dutch exceptions.
-                if not hit in ['Hoofdpagina','In_het_nieuws']:
-                    n = n + 1
-                    if family.version(mylang)=="1.2":
-                        yield PageLink(mylang, url2link(hit, code = mylang,
-                                                    incode = mylang))
-                    else:
-                        yield PageLink(mylang, hit)
-                    start = hit + '%20%200'
+        for hit in R.findall(returned_html):
+            n = n + 1
+            if family.version(mylang)=="1.2":
+                yield PageLink(mylang, url2link(hit, code = mylang,
+                                            incode = mylang))
+            else:
+                yield PageLink(mylang, hit)
+            start = hit + '%20%200'
         if n < 100:
             break
         m += n
