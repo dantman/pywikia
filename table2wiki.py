@@ -39,7 +39,7 @@ warnings = 0
 deIndentTables = 1
 splitLongSentences = 1
 
-DEBUG=1
+DEBUG=0
 
 #be careful, some bad HTML-tables is still not recognized
 noControl = 0
@@ -66,7 +66,6 @@ for arg in sys.argv[1:]:
         newText = re.sub("(\<[tT]{1}[dDhH]{1}([^>]*?)\>[^<]*?)"
                          + "(\<\/[Tt]{1}[dDhH]{1}[^>]*?\>)",
                          "\r\n\\1\\3", newText, 0)
-        print newText
         newText = re.sub("(\<[tT]{1}[rR]{1})",
                          "\r\n\\1", newText, 0)
 
