@@ -5,3 +5,4 @@ autonomous_problem.dat
 treelang.log
 *.dump
 warning*.log
+*.txt
