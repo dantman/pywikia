@@ -666,6 +666,8 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             
 class GetAll(object):
     def __init__(self, site, pages):
+        """First argument is Site object.
+        Second argument is list (should have .append and be iterable)"""
         self.site = site
         self.pages = []
         for pl in pages:
@@ -676,7 +678,7 @@ class GetAll(object):
 
     def run(self):
         dt=15
-        while 1:
+        while True:
             try:
                 data = self.getData()
             except socket.error:
@@ -684,7 +686,10 @@ class GetAll(object):
                 print ''.join(traceback.format_exception(*sys.exc_info()))
                 output(u'DBG> got socket error in GetAll.run. Sleeping for %d seconds'%dt)
                 time.sleep(dt)
-                dt *= 2
+                if dt <= 60:
+                    dt += 15
+                elif dt < 360:
+                    dt += 60
             else:
                 break
         handler = WikimediaXmlHandler()
@@ -695,7 +700,7 @@ class GetAll(object):
             f=open('sax_parse_bug.dat','w')
             f.write(data)
             f.close()
-            print "Dumped invalid XML to sax_parse_bug.dat"
+            print >>sys.stderr, "Dumped invalid XML to sax_parse_bug.dat"
             raise
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
@@ -705,13 +710,7 @@ class GetAll(object):
                         # Maybe we have used x-convention when we should not?
                         try:
                             pl.get(force = True)
-                        except NoPage:
-                            pass
-                        except IsRedirectPage,arg:
-                            pass
-                        except LockedPage:
-                            pass
-                        except SectionError:
+                        except (NoPage, IsRedirectPage, LockedPage, SectionError):
                             pass
                     else:
                         pl._getexception = NoPage
@@ -721,9 +720,9 @@ class GetAll(object):
                 # Edit-pages on eo: use X-convention, XML export does not.
                 # Double X-es where necessary so that we can submit a changed
                 # page later.
-                for c in 'C','G','H','J','S','U':
+                for c in 'CGHJSU':
                     for c2 in c,c.lower():
-                        for x in 'X','x':
+                        for x in 'Xx':
                             pl._contents = pl._contents.replace(c2+x,c2+x+x)
 
     def oneDone(self, title, timestamp, text):
