@@ -1099,7 +1099,6 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
        Use of this routine can normally be avoided; use PageLink.put
        instead.
     """
-    print token
     # Check whether we are not too quickly after the previous putPage, and
     # wait a bit until the interval is acceptable
     put_throttle()
@@ -1316,6 +1315,8 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         tokenloc = R.search(text)
         if tokenloc:
             site.puttoken(tokenloc.group(1))
+        elif not site.gettoken:
+            site.puttoken('')
         return x
 
 def allpages(start = '!', site = None):
