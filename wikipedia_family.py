@@ -413,13 +413,13 @@ class Family(family.Family):
         # 
         
         # Languages that are coded in iso-8859-1
-        self.latin1 = ['en', 'sv', 'nl', 'da', 'dk', 'test']
+        self.latin1 = ['en', 'sv', 'nl', 'da', 'dk']
         
         # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
                      'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
                      'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
-                     'ga', 'na', 'es']
+                     'ga', 'na', 'es', 'test']
         
                 
     def code2encoding(self, code):
