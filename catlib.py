@@ -65,7 +65,7 @@ class _CatLink(wikipedia.PageLink):
            This should not be used outside of this module.
         """
         import re
-        Rtitle = re.compile('title=\"([^\"]*)\"')
+        Rtitle = re.compile('title=\n?\"([^\"]*)\"')
         ns = wikipedia.family.category_namespaces(wikipedia.mylang)
         catsdone = []
         catstodo = [self]
