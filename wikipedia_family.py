@@ -17,7 +17,8 @@ class Family(family.Family):
             'als':'als.wikipedia.org', # Alsatian
             'ar':'ar.wikipedia.org',   # Arabic
             'ast':'ast.wikipedia.org', # Asturian
-            'ay':'ay.wikipedia.org',   # Aymara            'az':'az.wikipedia.org',   # Azerbaijan
+            'ay':'ay.wikipedia.org',   # Aymara
+            'az':'az.wikipedia.org',   # Azerbaijan
             'be':'be.wikipedia.org',   # Belorussian
             'bg':'bg.wikipedia.org',   # Bulgarian
             'bh':'bh.wikipedia.org',   # Bhojpuri
@@ -387,7 +388,7 @@ class Family(family.Family):
                     'ca', 'eo', 'et', 'fi', 'he', 'no', 'pt', 'ro', 'sl', 'zh']
         
         self.biglangs3 = self.biglangs2 + [
-                    'af', 'bg', 'cs', 'cy', 'hr', 'hu', 'ia', 'id', 'la', 'ms'
+                    'af', 'bg', 'cs', 'cy', 'hr', 'hu', 'ia', 'id', 'la', 'ms',
                     'simple', 'wa']
         
         self.biglangs4 = self.biglangs3 + [
