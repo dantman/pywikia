@@ -87,8 +87,10 @@ class PageLink:
             self._urlname=link2url(name,self._code)
             self._linkname=url2link(self._urlname,code=self._code,incode=self._incode)
         elif linkname is not None:
-            self._linkname=linkname
-            self._urlname=link2url(linkname,self._code)
+            # We do not trust a linkname either....
+            name=linkname.strip()
+            self._urlname=link2url(name,self._code)
+            self._linkname=url2link(self._urlname,code=self._code,incode=self._incode)
         elif urlname is not None:
             self._urlname=urlname
             self._linkname=url2link(urlname,code=self._code,incode=self._incode)
@@ -126,6 +128,7 @@ class PageLink:
             return cmp(self.code(),other.code())
         u1=html2unicode(self.linkname(),language=self.code())
         u2=html2unicode(other.linkname(),language=other.code())
+        #print "__cmp__",repr(u1),repr(u2)
         return cmp(u1,u2)
 
     def __hash__(self):
