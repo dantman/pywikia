@@ -21,25 +21,31 @@ Command line options:
 
    -pos:XXXX adds XXXX as an alternative disambiguation
 
-   -just     only use the alternatives given on the command line, do not 
-             read the page for other possibilities
+   -just      only use the alternatives given on the command line, do not 
+              read the page for other possibilities
 
-   -redir    if the page is a redirect page, use the page redirected to as
-             the (only) alternative; if not set, the pages linked to from
-             the page redirected to are used. If the page is not a redirect
-             page, this will raise an error
+   -redir     if the page is a redirect page, use the page redirected to as
+              the (only) alternative; if not set, the pages linked to from
+              the page redirected to are used. If the page is not a redirect
+              page, this will raise an error
              
-   -primary  "primary topic" disambiguation (Begriffsklärung nach Modell 2).
-             That's titles where one topic is much more important, the
-             disambiguation page is saved somewhere else, and the important
-             topic gets the nice name.
+   -primary   "primary topic" disambiguation (Begriffsklärung nach Modell 2).
+              That's titles where one topic is much more important, the
+              disambiguation page is saved somewhere else, and the important
+              topic gets the nice name.
    
-   -file:XYZ reads a list of pages, which can for example be gotten through 
-             extract_names.py. XYZ is the name of the file from which the
-             list is taken. If XYZ is not given, the user is asked for a
-             filename.
-             Page titles should be saved one per line, without [[brackets]].
-             The -pos parameter won't work if -file is used.
+   -file:XYZ  reads a list of pages, which can for example be gotten through 
+              extract_names.py. XYZ is the name of the file from which the
+              list is taken. If XYZ is not given, the user is asked for a
+              filename.
+              Page titles should be saved one per line, without [[brackets]].
+              The -pos parameter won't work if -file is used.
+
+   -always:XY instead of asking the user what to do, always perform the same
+              action. For example, XY can be "r0", "u" or "2". Be careful with
+              this option, and check the changes made by the bot. Note that
+              some choices for XY don't make sense and will result in a loop,
+              e.g. "l" or "m".
 
 Options that are accepted by more robots:
 
@@ -255,6 +261,7 @@ ignore={
           'Abk\xfcrzungen/X',
           'Abk\xfcrzungen/Y',
           'Abk\xfcrzungen/Z',
+          'Benutzer:Katharina/Begriffsklärungen',
           'Dreibuchstabenkürzel von AAA bis DZZ',
           'Dreibuchstabenkürzel von EAA bis HZZ',
           'Dreibuchstabenkürzel von IAA bis LZZ',
@@ -317,6 +324,9 @@ def unique(list):
         result[i]=None
     return result.keys()
 
+# the option that's always selected when the bot wonders what to do with
+# a link. If it's None, the user is prompted (default behaviour).
+always = None
 alternatives = []
 getalternatives = 1
 debug = 0
@@ -333,6 +343,8 @@ for arg in sys.argv[1:]:
         pass
     elif arg == '-primary':
         primary = True
+    elif arg.startswith('-always:'):
+        always = arg[8:]
     elif arg.startswith('-file'):
         if len(arg) == 5:
             # todo: check for console encoding to allow special characters
@@ -457,8 +469,11 @@ for wrd in (page_list):
                     print '\n'
                     print "== %s =="%(refpl)
                     print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-context):m.end()+context])
-                    choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
-                                     "        m=more context,l=list,a=add new):")
+                    if always == None:
+                        choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
+                                         "        m=more context,l=list,a=add new):")
+                    else:
+                        choice=always
                     if choice=='n':
                         return True
                     elif choice=='s':
