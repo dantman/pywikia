@@ -185,8 +185,9 @@ msg = {
     'nl':(u'Erbij', u'Eraf', u'Anders'),
     'nn':(u'la til', u'fjerna', u'endra'),
     'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
+    'pl':(u'dodaje', u'usuwa', u'poprawia'),
     'pt':(u'Adicionando', u'Removendo',u'Modificando'),
-    'sv':(u'lägger till', u'ändrar', u'tar bort'),
+    'sv':(u'lägger till', u'tar bort', u'ändrar'),
     }
 
 class Global(object):
