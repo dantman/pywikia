@@ -96,6 +96,19 @@ primary_topic_format={
           'en':'%s_(disambiguation)'
           }
 
+# letters that can follow a link and are regarded as part of this link
+# This depends on the linktrail setting in LanguageXx.php.
+# See http://meta.wikipedia.org/wiki/Locales_for_the_Wikipedia_Software
+# to find out the setting for your Wikipedia.
+# Note: this is a regular expression.
+link_trail={
+   'de':'[ä|ö|ü|ß|a-z]*',
+   'da':'[a-z|æ|ø|å]*',
+   'en':'[a-z]*',
+   'fr':'[a-z|à|â|ç|é|è|ê|î|ô|û]*',
+   'nl':'[a-z]*'
+   }
+          
 # List pages that will be ignored if they got a link to a disambiguation
 # page. An example is a page listing disambiguations articles.
 # Special chars should be encoded with unicode (\x##) and space used
@@ -307,6 +320,7 @@ ignore={
     }
 
 
+
 def getReferences(pl):
     x = wikipedia.getReferences(pl)
     # Remove ignorables
@@ -514,13 +528,16 @@ for wrd in (page_list):
                 if choice==-1:
                     # Next link on this page
                     continue
-                g1 = m.group(1)
-                g2 = m.group(2)
-                if not g2:
-                    g2 = g1
+                page_title = m.group(1)
+                link_text = m.group(2)
+                if not link_text:
+                    link_text = page_title
+                trailing_chars = m.group(3)
+                if trailing_chars:
+                    link_text += trailing_chars
                 if choice==-2:
                     # unlink
-                    reftxt = reftxt[:m.start()] + g2 + reftxt[m.end():]
+                    reftxt = reftxt[:m.start()] + link_text + reftxt[m.end():]
                 else:
                     # Normal replacement
                     replacement = alternatives[choice]
@@ -534,20 +551,25 @@ for wrd in (page_list):
                     # know if other languages don't want this feature either.
                     # We might want to introduce a list of languages that don't want to use
                     # this feature.
-                    if wikipedia.mylang != 'de' and g2[0] in 'abcdefghijklmnopqrstuvwxyz':
+                    if wikipedia.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
                         replacement = replacement[0].lower() + replacement[1:]
-                    if replaceit or replacement == g2:
+                    if replaceit or replacement == link_text:
                         reptxt = replacement
                     else:
-                        reptxt = "%s|%s" % (replacement, g2)
-                    reftxt = reftxt[:m.start()+2] + reptxt + reftxt[m.end()-2:]
+                        reptxt = "%s|%s" % (replacement, link_text)
+                    reftxt = reftxt[:m.start()] + '[[' + reptxt + ']]' + reftxt[m.end():]
     
                 print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-30):m.end()+30])
             if not debug:
                 refpl.put(reftxt)
         return True
 
-    linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\]')
+    # The regular expression which finds links. Results consist of three groups:
+    # group(1) is the target page title, that is, everything before | or ].
+    # group(2) is the alternative link title, that's everything between | and ].
+    # group(3) is the link trail, that's letters after ]] which are part of the word.
+    # note that the definition of 'letter' varies from language to language.
+    linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + link_trail[wikipedia.mylang] + ')')
 
     def resafe(s):
         s=s.replace('(','\\(')
