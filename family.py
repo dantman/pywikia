@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import config, urllib
 
@@ -66,15 +66,18 @@ class Family(object):
             '_default': 'Talk',
             'de': u'Diskussion',
             'nl': u'Overleg',
+            'pt': u'Discussão',
         },
         2: {
             '_default': u'User',
             'de': u'Benutzer',
             'nl': u'Gebruiker',
+            'pt': u'Usuário',
         },
         3: {
             '_default': u'User talk',
             'de': u'Benutzer Diskussion',
+            'pt': u'Usuário_Discussão',
         },
         4: {
             '_default': u'Wikipedia',
@@ -82,6 +85,7 @@ class Family(object):
         5: {
             '_default': u'Wikipedia talk',
             'de': u'Wikipedia Diskussion',
+            'pt': u'Wikipedia_Discussão',
         },
         6: {
             # TODO: convert all percent-encoded titles to plaintext
@@ -133,7 +137,8 @@ class Family(object):
         },
         7: {
             '_default': u'Image talk',
-            'de': u'Bild Diskussion',        
+            'de': u'Bild Diskussion',
+            'pt': u'Imagem_Discussão',
         },
         8: {
             '_default': u'MediaWiki',
@@ -142,12 +147,13 @@ class Family(object):
         9: {
             '_default': u'MediaWiki talk',
             'de': u'MediaWiki Diskussion',
+            'pt': u'MediaWiki_Discussão',
         },
         10: {
             '_default':u'Template',
             'de':u'Vorlage',
             'es':u'Plantilla',
-            'nl':u'Sjabloon'
+            'nl':u'Sjabloon',
         },
         11: {
             '_default': u'Template talk',
