@@ -29,10 +29,14 @@ def translate(pl, arr, same = False, hints = None):
             codes, newname = h.split(':', 1)
             if codes == 'all':
                 codes = wikipedia.seriouslangs
-            elif codes == 'main':
+            elif codes == '10' or codes == 'main': # names 'main' and 'more' kept for backward compatibility
                 codes = wikipedia.biglangs
-            elif codes == 'more':
+            elif codes == '20' or codes == 'more':
                 codes = wikipedia.biglangs2
+            elif codes == '30':
+                codes = wikipedia.biglangs2
+            elif codes == 'cyril':
+                codes = wikipedia.cyrilliclangs
             else:
                 codes = codes.split(',')
             for newcode in codes:

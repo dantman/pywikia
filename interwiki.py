@@ -20,9 +20,13 @@ This script understands various command-line arguments:
     -hint:         used as -hint:de:Anweisung to give the robot a hint
                    where to start looking for translations. This is only
                    useful if you specify a single page to work on.
-                   Special hints: all gives a hint for all seriouslangs, main
-                   gives a hint for 8 of the largest languages, more for about
-                   20 larger ones.
+
+    There are some special hints:
+    all:    Provides the hint for all languages with at least ca. 100 pages
+    10:     Provides the hint for ca. 10 of the largest languages
+    20:     Provides the hint for ca. 20 of the largest languages
+    30:     Provides the hint for ca. 30 of the largest languages
+    cyril:  Provides the hint for all languages that use the cyrillic alphabet
                    
     -same:         try to translate the page to other languages by
                    testing whether a page with the same name exists on each of

@@ -24,13 +24,16 @@ loggedin = False
 
 langs = {
     'af':'af.wikipedia.org',   # Afrikaans
-    'als':'als.wikipedia.org', # Alsassian
+    'als':'als.wikipedia.org', # Alsatian
     'ar':'ar.wikipedia.org',   # Arabic
+    'az':'az.wikipedia.org',   # Azerbaijan
     'bg':'bg.wikipedia.org',   # Bulgarian
+    'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
     'bs':'bs.wikipedia.org',   # Bosnian
     'ca':'ca.wikipedia.org',   # Catalan
     'co':'co.wikipedia.org',   # Corsican
     'cs':'cs.wikipedia.org',   # Czech
+    'csb':'csb.wikipedia.org', # Kashubian
     'cy':'cy.wikipedia.org',   # Welsh
     'da':'da.wikipedia.org',   # Danish
     'de':'de.wikipedia.org',   # German
@@ -46,7 +49,9 @@ langs = {
     'fr':'fr.wikipedia.org',   # French
     'fy':'fy.wikipedia.org',   # Frisian
     'ga':'ga.wikipedia.org',   # Irish Gaelic
+    'gd':'gd.wikipedia.org',   # Scottish Gaelic
     'gl':'gl.wikipedia.org',   # Galician
+    'gn':'gn.wikipedia.org',   # Guarani
     'he':'he.wikipedia.org',   # Hebrew
     'hi':'hi.wikipedia.org',   # Hindi
     'hr':'hr.wikipedia.org',   # Croatian
@@ -56,12 +61,16 @@ langs = {
     'is':'is.wikipedia.org',   # Icelandic
     'it':'it.wikipedia.org',   # Italian
     'ja':'ja.wikipedia.org',   # Japanese
+    'jv':'jv.wikipedia.org',   # Javanese
+    'ka':'ka.wikipedia.org',   # Georgian
     'ko':'ko.wikipedia.org',   # Korean
     'ks':'ks.wikipedia.org',   # Ekspreso, but should become Kashmiri
     'ku':'ku.wikipedia.org',   # Kurdish
     'la':'la.wikipedia.org',   # Latin
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
+    'mi':'mi.wikipedia.org',   # Maori
+    'mk':'mk.wikipedia.org',   # Macedonian
     'ml':'ml.wikipedia.org',   # Malayalam
     'mr':'mr.wikipedia.org',   # Marathi
     'ms':'ms.wikipedia.org',   # Malay
@@ -71,6 +80,7 @@ langs = {
     'nl':'nl.wikipedia.org',   # Dutch
     'no':'no.wikipedia.org',   # Norwegian
     'oc':'oc.wikipedia.org',   # Occitan
+    'om':'om.wikipedia.org',   # Oromo
     'pl':'pl.wikipedia.org',   # Polish
     'pt':'pt.wikipedia.org',   # Portuguese
     'ro':'ro.wikipedia.org',   # Romanian
@@ -81,18 +91,24 @@ langs = {
     'sl':'sl.wikipedia.org',   # Slovenian
     'sq':'sq.wikipedia.org',   # Albanian
     'sr':'sr.wikipedia.org',   # Serbian
+    'st':'st.wikipedia.org',   # Sesotho
+    'su':'su.wikipedia.org',   # Sundanese
     'sv':'sv.wikipedia.org',   # Swedish
     'sw':'sw.wikipedia.org',   # Swahili
     'ta':'ta.wikipedia.org',   # Tamil
     'test':'test.wikipedia.org',
     'th':'th.wikipedia.org',   # Thai
+    'tl':'tl.wikipedia.org',   # Tagalog
     'tr':'tr.wikipedia.org',   # Turkish
     'tt':'tt.wikipedia.org',   # Tatar
     'uk':'uk.wikipedia.org',   # Ukrainian
+    'ur':'ur.wikipedia.org',   # Urdu
     'vi':'vi.wikipedia.org',   # Vietnamese
     'vo':'vo.wikipedia.org',   # Volapuk
+    'wa':'wa.wikipedia.org',   # Walon - not yet in use, but this is going to be the code
     'walon':'wikipedia.walon.org', # Walon
-    'xh':'xh.wikipedia.org',   #isiXhosa
+    'xh':'xh.wikipedia.org',   # isiXhosa
+    'yi':'yi.wikipedia.org',   # Yiddish
     'zh':'zh.wikipedia.org',   # Chinese
     'zh-cn':'zh.wikipedia.org', # Simplified Chinese
     'zh-tw':'zh.wikipedia.org', # Traditional Chinese
@@ -113,11 +129,13 @@ special = {
     'af': 'Spesiaal',
     'als':'Special',
     'ar': 'Special',
+    'az': 'Special',
     'bg': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D0%BD%D0%B8',
     'bs': 'Special',
     'ca': 'Especial',
     'co': 'Special',
     'cs': 'Speci%C3%A1ln%C3%AD',
+    'csb': 'Specjalna',
     'cy': 'Arbennig',
     'da': 'Speciel',
     'de': 'Spezial',
@@ -131,8 +149,10 @@ special = {
     'fi': 'Toiminnot',
     'fr': 'Special',
     'fy': 'Wiki',
-    'ga': 'Special',
+    'ga': 'Speisialta',
+    'gd': 'Special',
     'gl': 'Special',
+    'gn': 'Special',
     'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
     'hi': '%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7',
     'hr': 'Special',
@@ -142,12 +162,16 @@ special = {
     'is': 'Special',
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
+    'jv': 'Special',
+    'ka': 'Special',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
     'ks': 'Special',
     'ku': 'Special',
     'la': 'Specialis',
     'lt': 'Special',
     'lv': 'Special',
+    'mi': 'Special',
+    'mk': 'Special',
     'ml': 'Special',
     'mr': 'Special',
     'ms': 'Istimewa',
@@ -166,41 +190,50 @@ special = {
     'sl': 'Posebno',
     'sq': 'Special',
     'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
+    'st': 'Special',
+    'su': 'Special',
     'sv': 'Special',
     'sw': 'Special',
     'ta': '%E0%AE%9A%E0%AE%BF%E0%AE%B1%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81',
     'test': 'Special',
     'th': '%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9',
+    'tl': 'Special',
     'tr': 'Special',
     'tt': 'Special',
     'uk': 'Special',
+    'ur': 'Special',
     'vi': 'Special',
     'vo': 'Special',
     'walon': 'Sipeci%C3%A5s',
     'xh': 'Special',
+    'yi': 'Yiddish',
     'zh': 'Special',
     'zh-cn': 'Special',
     'zh-tw': 'Special',
     }
 
-obsolete = ['sh', 'dk']
+obsolete = ['sh', 'dk', 'wa']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
-biglangs = ['da', 'de', 'en', 'es', 'fr', 'nl', 'pl', 'sv']
+biglangs = ['da', 'de', 'en', 'es', 'fr', 'ja', 'nl', 'pl', 'sv']
 
-# Similar, but larger group
+biglangs2 = biglangs + [
+            'ca', 'eo', 'et', 'fi', 'he', 'it', 'no', 'pt', 'ro', 'sl',
+            'zh']
 
-biglangs2 = ['ca', 'da', 'de', 'en', 'eo', 'es', 'fi', 'fr', 'ia',
-             'it', 'ja', 'nl', 'no', 'pl', 'ro', 'sl', 'sv', 'zh']
+biglangs3 = biglangs2 + [
+            'af', 'cs', 'eu', 'gl', 'hr', 'ia', 'id', 'la', 'ms', 'ru',
+            'simple']
 
-# And a much larger selection in case we say 'all languages' but don't
-# really mean 'all'
-seriouslangs = ['af', 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
-                'es', 'et', 'fi', 'fr', 'fy', 'gl', 'he', 'hr', 'hu',
-                'ia', 'it', 'ja', 'ko', 'la', 'lv', 'ms', 'nds', 'nl', 'no',
-                'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'ta', 'th',
-                'tr', 'vi', 'zh', 'simple']
+seriouslangs  = biglangs3 + [
+                'ar', 'bg', 'bs', 'cy', 'el', 'fa', 'fy', 'hi', 'hu', 'ko',
+                'is', 'ku', 'lt', 'lv', 'nds', 'oc', 'sr', 'ta', 'th', 'tr',
+                'uk', 'vi']
+
+# other groups of language that we might want to do at once
+
+cyrilliclangs = ['bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 
@@ -218,29 +251,33 @@ edittime = {}
 # interwiki_putfirst, interwiki_putfirst is checked first, and
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
+
 interwiki_putfirst = {
-    'en':['af','ar','ms','bs','ca','co','cs','cy','da','de',
-          'als','et','el','en','es','eo','eu','fa','fr','fy','ga',
-          'gl','ko','hi','hr','id','is','it','ia','he','ks',
-          'sw','la','lv','lt','hu','ml','mr','nah','na','nl',
-          'ja','no','oc','nds','pl','pt','ro','ru','sq',
-          'simple','sk','sl','sr','fi','sv','ta','tt','th',
-          'vi','tr','uk','vo','zh','zh-cn','zh-tw'],
-    'fr':['af','ar','ms','bs','ca','co','cs','cy','da','de',
-          'als','et','el','en','es','eo','eu','fa','fr','fy','ga',
-          'gl','ko','hi','hr','id','is','it','ia','he','ks',
-          'sw','la','lv','lt','hu','ml','mr','nah','na','nl',
-          'ja','no','oc','nds','pl','pt','ro','ru','sq',
-          'simple','sk','sl','sr','fi','sv','ta','tt','th',
-          'vi','tr','uk','vo','zh','zh-cn','zh-tw'],
+    'en':['af','ar','om','bs','ca','co','cs','cy','da','de',
+          'als','et','el','en','es','eo','eu','fa','fr','fy',
+          'ga','gd','gl','ko','hi','hr','id','is','it','ia',
+          'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
+          'mk','ml','mi','mr','ms','nah','na','nl','ja','no',
+          'oc','nds','pl','pt','ro','ru','st','sq','simple',
+          'sk','sl','sr','su','fi','sv','ta','tt','th','ur',
+          'vi','tr','uk','vo','yi','zh','zh-cn','zh-tw'],
+    'fr':['af','ar','om','bs','ca','co','cs','cy','da','de',
+          'als','et','el','en','es','eo','eu','fa','fr','fy',
+          'ga','gd','gl','ko','hi','hr','id','is','it','ia',
+          'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
+          'mk','ml','mi','mr','ms','nah','na','nl','ja','no',
+          'oc','nds','pl','pt','ro','ru','st','sq','simple',
+          'sk','sl','sr','su','fi','sv','ta','tt','th','ur',
+          'vi','tr','uk','vo','yi','zh','zh-cn','zh-tw'],
     'hu':['en'],
-    'pl':['af','ar','ms','bs','ca','co','cs','cy','da','de',
-          'als','et','el','en','es','eo','eu','fa','fr','fy','ga',
-          'gl','ko','hi','hr','id','is','it','ia','he','ks',
-          'sw','la','lv','lt','hu','ml','mr','nah','na','nl',
-          'ja','no','oc','nds','pl','pt','ro','ru','sq',
-          'simple','sk','sl','sr','fi','sv','ta','tt','th',
-          'vi','tr','uk','vo','zh','zh-cn','zh-tw']
+    'pl':['af','ar','om','bs','ca','co','cs','cy','da','de',
+          'als','et','el','en','es','eo','eu','fa','fr','fy',
+          'ga','gd','gl','ko','hi','hr','id','is','it','ia',
+          'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
+          'mk','ml','mi','mr','ms','nah','na','nl','ja','no',
+          'oc','nds','pl','pt','ro','ru','st','sq','simple',
+          'sk','sl','sr','su','fi','sv','ta','tt','th','ur',
+          'vi','tr','uk','vo','yi','zh','zh-cn','zh-tw'],
     }
 
 # Local exceptions
