@@ -58,7 +58,8 @@ data = wikipedia.urlencode((
             ('wpRemember', '1'),
             ))
 
-headers = {"Content-type": "application/x-www-form-urlencoded"}
+headers = {"Content-type": "application/x-www-form-urlencoded", 
+           "User-agent": "RobHooftWikiRobot/1.0"}
 conn = httplib.HTTPConnection(wikipedia.langs[wikipedia.mylang])
 pagename = loginaddr%wikipedia.special[wikipedia.mylang]
 conn.request("POST", pagename, data, headers)
