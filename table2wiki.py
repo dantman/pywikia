@@ -5,7 +5,13 @@ Nifty script to convert HTML-tables to Wikipedia's syntax.
 
 
 -file:filename
-    will read any [[wikipedia link]] and use these articles
+      will read any [[wikipedia link]] and use these articles
+
+-sql:XYZ
+      reads a local SQL cur dump, available at http://download.wikimedia.org/.
+      Searches for pages with HTML tables, and tries to convert them on the live
+      wiki. Example:
+      python table2wiki.py -sql:20040711_cur_table.sql.sql -lang:de
 
 SQL-Query
 
@@ -66,6 +72,12 @@ for arg in sys.argv[1:]:
                 print "ERROR: Did not understand %s line:\n%s" % (
                     arg[6:], repr(line))
         f.close()
+    elif arg.startswith('-sql'):
+        if len(arg) == 4:
+            sqlfilename = wikipedia.input('Please enter the SQL dump\'s filename: ')
+        else:
+            sqlfilename = arg[5:]
+        action = 'parse_sqldump'
     elif arg.startswith('-skip:'):
         articles = articles[articles.index(arg[6:]):]
     elif wikipedia.argHandler(arg):
@@ -88,6 +100,12 @@ if page_title != []:
      page_title = ' '.join(page_title)
      articles.append(page_title)
         
+if action == 'parse_sqldump':
+    import sqldump
+    sqldump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
+    for page in sqldump.pages():
+        if page.text.find('<table') != -1:
+            articles.append(page.title)
         
 for article in articles:
     if config.DEBUG:
