@@ -64,7 +64,7 @@ wikipedia.output(u"Logging in to %s" % wikipedia.family.hostname(wikipedia.mylan
 
 username = wikipedia.input(u'username:', encode = True)
 # As we don't want the password to appear on the screen, we use getpass(). 
-password = getpass.getpass(u'password: ')
+password = getpass.getpass('password: ')
 # Convert the password from the encoding your shell uses to the one your wiki
 # uses, via Unicode. This is the same as wikipedia.input() does with the 
 # username, but input() uses raw_input() instead of getpass().
