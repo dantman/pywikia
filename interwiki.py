@@ -56,7 +56,7 @@ __version__ = '$Id$'
 #
 import sys, copy, re
 
-import wikipedia, config
+import wikipedia, config, unequal
 
 msg = {
     'en':('Adding','Removing','Modifying'),
@@ -68,17 +68,19 @@ msg = {
 
 class Global:
     # Container class for global settings
+    always = False
+    autonomous = False
+    backlink = True
+    bell = True
+    confirm = False
+    debug = True
+    force = False
+    forreal = False
     log = True
-    same = False
-    untranslated = False
     minquerysize = 5
     maxquerysize = 25
-    confirm = False
-    backlink = True
-    debug = True
-    always = False
-    forreal = False
-    force = False
+    same = False
+    untranslated = False
     
 class Subject:
     def __init__(self, pl, hints = None):
@@ -100,7 +102,7 @@ class Subject:
 
     def willWorkOn(self, code):
         if hasattr(self,'pending'):
-            raise 'Oops'
+            raise 'Cant start on %s; still working on %s'%(code,self.pending) 
         self.pending=[]
         for pl in self.todo.keys():
             if pl.code() == code:
@@ -109,6 +111,7 @@ class Subject:
         if self.pending:
             return self.pending
         else:
+            del self.pending
             return None
 
     def conditionalAdd(self, pl, counter):
@@ -117,21 +120,26 @@ class Subject:
             pl not in self.pending):
             self.todo[pl] = pl.code()
             counter.plus(pl.code())
-            print "DBG> Found new to do:",pl.asasciilink()
+            #print "DBG> Found new to do:",pl.asasciilink()
         
     def workDone(self, counter):
         for pl in self.pending:
             self.done[pl] = pl.code()
             counter.minus(pl.code())
-            try:
-                for pl2 in pl.interwiki():
-                    self.conditionalAdd(pl2, counter)
-            except wikipedia.IsRedirectPage,arg:
-                pl3 = wikipedia.PageLink(pl2.code(),arg)
-                print "DBG> %s is redirect to %s"% (pl2.asasciilink(), pl3.asasciilink())
-                self.conditionalAdd(pl3)
-            except wikipedia.NoPage:
-                pass
+            if unequal.bigger(pl, self.inpl):
+                print "NOTE: %s is bigger than %s, not following references" % (pl, self.inpl)
+            else:
+                try:
+                    iw = pl.interwiki()
+                except wikipedia.IsRedirectPage,arg:
+                    pl3 = wikipedia.PageLink(pl.code(),arg.args[0])
+                    print "DBG> %s is redirect to %s"% (pl.asasciilink(), pl3.asasciilink())
+                    self.conditionalAdd(pl3, counter)
+                except wikipedia.NoPage:
+                    pass
+                else:
+                    for pl2 in iw:
+                        self.conditionalAdd(pl2, counter)
         del self.pending
 
     def isDone(self):
@@ -146,6 +154,7 @@ class Subject:
             f.close()
             
     def finish(self):
+        print "======Post-processing %s======"%(self.inpl.asasciilink())
         # Assemble list of accepted interwiki links
         new = {}
         for pl in self.done.keys():
@@ -153,7 +162,7 @@ class Subject:
             if code == wikipedia.mylang and self.done[pl] is not None:
                 if pl != self.inpl:
                     self.problem('Someone refers to %s with us' % pl.asasciilink())
-            elif pl.exists():
+            elif pl.exists() and not pl.isRedirectPage():
                 if new.has_key(code) and new[code] != pl:
                     self.problem("'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink()))
                     if not globalvar.autonomous:
@@ -191,7 +200,7 @@ class Subject:
 
         print "==status=="
         old={}
-        for pl in inpl.interwiki():
+        for pl in self.inpl.interwiki():
             old[pl.code()] = pl
         ####
         mods, removing = compareLanguages(old, new)
@@ -208,7 +217,7 @@ class Subject:
                     if line[0] in ['+','-']:
                         print repr(line)[2:-1]
             if newtext != oldtext:
-                print "NOTE: Replace %s: %s" % (wikipedia.mylang, inname)
+                print "NOTE: Replace %s" % self.inpl.asasciilink()
                 if globalvar.forreal:
                     if removing:
                         self.problem('removing: %s'%(",".join(removing)))
@@ -233,7 +242,7 @@ class Subject:
     def reportBacklinks(self, new):
         for code in new.keys():
             pl = new[code]
-            if not bigger(pl):
+            if not unequal.bigger(inpl, pl):
                 shouldlink = new.values() + [inpl]
                 linked = pl.interwiki()
                 for xpl in shouldlink:
@@ -330,14 +339,6 @@ class SubjectArray:
     def run(self):
         while self.subjects:
             self.queryStep()
-
-        
-def autonomous_problem(pl, reason = ''):
-    if autonomous:
-        f=open('autonomous_problem.dat', 'a')
-        f.write("%s {%s}\n" % (pl, reason))
-        f.close()
-        sys.exit(1)
     
 def compareLanguages(old, new):
     global confirm
@@ -363,30 +364,6 @@ def compareLanguages(old, new):
     return s,removing
 
 #===========
-exceptions = []
-
-Re = re.compile(r'\[\[(.*)\]\] *< *\[\[(.*)\]\]')
-try:
-    f = open('%s-exceptions.dat' % wikipedia.mylang)
-except IOError:
-    pass
-else:
-    for line in f:
-        m = Re.match(line)
-        if not m:
-            raise ValueError("Do not understand %s"%line)
-        exceptions.append((m.group(1),m.group(2)))
-
-def bigger(pl):
-    if pl.hashname():
-        # If we refer to part of the page, it is bigger
-        return True
-    x1 = str(inpl)
-    x2 = str(pl)
-    for small,big in exceptions:
-        if small == x1 and big == x2:
-            return True
-    return False
         
 globalvar=Global()
     
@@ -415,6 +392,8 @@ if __name__ == "__main__":
             globalvar.autonomous = True
         elif arg == '-nolog':
             globalvar.log = False
+        elif arg == '-nobell':
+            globalvar.bell = False
         elif arg == '-test':
             mode = 2
         else:
@@ -429,6 +408,8 @@ if __name__ == "__main__":
         import logger
         sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
 
+    unequal.read_exceptions()
+    
     sa=SubjectArray()
 
     if mode == 1:

@@ -32,7 +32,7 @@ langs = {
     'da':'da.wikipedia.org',   # Danish
     'de':'de.wikipedia.org',   # German
     'el':'el.wikipedia.org',   # Greek, UTF-8
-    'en':'en2.wikipedia.org',  # English
+    'en':'en.wikipedia.org',   # English
     'eo':'eo.wikipedia.org',   # Esperanto, UTF-8
     'es':'es.wikipedia.org',   # Spanish
     'et':'et.wikipedia.org',   # Estonian
@@ -96,6 +96,8 @@ latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it']
 # This is e.g. used by the login script.
 special = {
     'ar': 'Special',
+    'bs': 'Special',
+    'cs': 'Speci%C3%A1ln%C3%AD',
     'da': 'Speciel',
     'de': 'Spezial',
     'en': 'Special',
@@ -105,20 +107,26 @@ special = {
     'fr': 'Special',
     'fy': 'Wiki',
     'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
+    'hr': 'Special',
     'hu': 'Speci%C3%A1lis',
     'el': 'Special',
     'ia': 'Special',
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
+    'ms': 'Special',
     'nl': 'Speciaal',
     'pl': 'Specjalna',
     'ro': 'Special',
     'ru': 'Special',
+    'sl': 'Posebno',
+    'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
     'sq': 'Special',
     'sv': 'Special',
     'test': 'Special',
     'zh': 'Special',
+    'zh-cn': 'Special',
+    'zh-tw': 'Special',
     }
 
 # Wikipedia's out of the list that are not running the phase-III software,
@@ -178,6 +186,8 @@ interwiki_putfirst = {
           'pt','oc','ru','ro','sl','sr','sw','sv','tt',
           'tr','uk','simple','vo','cy','hu','vi','it'],
     }
+
+noexport = ['es']
 
 # Local exceptions
 
@@ -348,7 +358,18 @@ class PageLink:
             self.get()
         except NoPage:
             return False
+        except IsRedirectPage:
+            return True
         return True
+
+    def isRedirectPage(self):
+        try:
+            self.get()
+        except NoPage:
+            return False
+        except IsRedirectPage:
+            return True
+        return False
     
     def put(self, newtext, comment=None):
         """Replace the new page with the contents of the first argument.
@@ -425,7 +446,7 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
     def endElement(self, name):
         if name == 'revision':
             # All done for this.
-            print "DBG> ",repr(self.title), self.timestamp, len(self.text)
+            # print "DBG> ",repr(self.title), self.timestamp, len(self.text)
             # Uncode the text
             text = unescape(self.text)
             # Remove trailing newlines and spaces
@@ -452,7 +473,7 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             self.timestamp += data
             
 class GetAll:
-    debug = 1
+    debug = 0
     addr = '/wiki/%s:Export'
     def __init__(self, code, pages):
         self.code = code
@@ -462,14 +483,18 @@ class GetAll:
         data = self.getData()
         handler = WikimediaXmlHandler()
         handler.setCallback(self.oneDone)
-        xml.sax.parseString(data, handler)
+        try:
+            xml.sax.parseString(data, handler)
+        except xml.sax._exceptions.SAXParseException:
+            print data
+            raise
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 pl._getexception = NoPage
 
     def oneDone(self, title, timestamp, text):
-        print "DBG>", repr(title), timestamp, len(text)
+        #print "DBG>", repr(title), timestamp, len(text)
         pl = PageLink(self.code, title)
         for pl2 in self.pages:
             if pl2 == pl:
@@ -489,25 +514,34 @@ class GetAll:
                 print "-",edittime[self.code, link2url(title, self.code)]
                 print "+",timestamp
         else:
-            m=Rredirect.match(xtext)
+            m=Rredirect.match(text)
             if m:
-                pl2._getexception = IsRedirectPage, m.group(1)
+                print "DBG> ",pl2.asasciilink(),"is a redirect page"
+                pl2._getexception = IsRedirectPage(m.group(1))
             else:
+                if len(text)<100:
+                    print "DBG> short text in",pl2.asasciilink()
+                    print repr(text)
                 hn = pl2.hashname()
                 if hn:
-                    m = re.search("== *%s *==" % hn, xtext)
+                    m = re.search("== *%s *==" % hn, text)
                     if not m:
                         pl2._getexception = SubpageError("Hashname does not exist: %s" % self)
                     else:
                         # Store the content
-                        pl2._contents = xtext
+                        pl2._contents = text
                         # Store the time stamp
                         edittime[self.code, link2url(title, self.code)] = timestamp
+                else:
+                    # Store the content
+                    pl2._contents = text
+                    # Store the time stamp
+                    edittime[self.code, link2url(title, self.code)] = timestamp
 
     def getData(self):
         import httplib
         addr = self.addr%special[self.code]
-        pagenames = '\r\n'.join([x.hashfreeLinkname() for x in self.pages])
+        pagenames = u'\r\n'.join([x.hashfreeLinkname() for x in self.pages])
         data = urlencode((
                     ('action', 'submit'),
                     ('pages', pagenames),
@@ -526,7 +560,10 @@ class GetAll:
         return data
     
 def getall(code, pages):
-    print "DBG> getall", code, pages
+    if code in oldsoftware or code in noexport:
+        return
+    #print "DBG> getall", code, pages
+    print "Getting %d pages from %s:"%(len(pages),code) 
     return GetAll(code, pages).run()
     
 # Library functions
@@ -554,8 +591,8 @@ def urlencode(query):
        a http POST request"""
     l=[]
     for k, v in query:
-        k = urllib.quote(str(k))
-        v = urllib.quote(str(v))
+        k = urllib.quote(k)
+        v = urllib.quote(v)
         l.append(k + '=' + v)
     return '&'.join(l)
 
@@ -690,6 +727,7 @@ def getUrl(host,address):
 def getPage(code, name, do_edit = 1, do_quote = 1):
     """Get the contents of page 'name' from the 'code' language wikipedia
        Do not use this directly; use the PageLink object instead."""
+    print "Getting page %s:%s"%(code,name)
     host = langs[code]
     if code in oldsoftware:
         # Old algorithm
@@ -765,6 +803,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             raise NoPage(code, name)
         m=Rredirect.match(text[i1:i2])
         if m:
+            print "DBG> %s is redirect to %s"%(name,m.group(1))
             raise IsRedirectPage(m.group(1))
         if edittime[code, name] == 0 and code not in oldsoftware:
             print "DBG> page may be locked?!"
@@ -847,11 +886,11 @@ def getLanguageLinks(text,incode=None):
     if incode in ['zh','zh-cn','zh-tw']:
         m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7b80\\]\\]', text)
         if m:
-            print "DBG> found link to traditional Chinese", repr(m.group(0))
+            #print "DBG> found link to traditional Chinese", repr(m.group(0))
             result['zh-cn'] = m.group(1)
         m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7e41\\]\\]', text)
         if m:
-            print "DBG> found link to simplified Chinese", repr(m.group(0))
+            #print "DBG> found link to simplified Chinese", repr(m.group(0))
             result['zh-tw'] = m.group(1)
     return result
 
