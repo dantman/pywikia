@@ -71,6 +71,7 @@ msg = {
        'es':u'Robot: Reemplazo automático de texto %s',
        'fr':u'Bot : Remplacement de texte automatisé %s',
        'hu':u'Robot: Automatikus szövegcsere %s',
+       'is':u'Vélmenni: breyti texta %s',
        }
 
 # Predefined replacements tasks.
