@@ -29,51 +29,67 @@ __version__='$Id$'
 import os, sys, re
 import wikipedia, lib_images, config
 
+class UploadRobot:
+    def __init__(self, filename, description, wiki, keep):
+        self.filename = filename
+        self.description = description
+        self.wiki = wiki
+        #print wiki
+        self.keep = keep
+        
+        mysite = wikipedia.getSite()
+        if not mysite.loggedin():
+            print "You must be logged in to upload images"
+            sys.exit(1)
+    
+    def filenameOK(self):
+        '''
+        Returns true iff the filename references an online site or to an
+        existing local file.
+        '''
+        return self.filename != '' and ('://' in self.filename or os.path.exists(self.filename))
+        
+    def run(self):
+        if self.wiki:
+            mysite = wikipedia.getSite()
+            othersite = mysite.getSite(self.wiki)
+            while not self.filename:
+                wikipedia.output(u'No input filename given.')
+                self.filename = wikipedia.input(u'Give filename:')
+            full_image_name = "%s:%s" % (othersite.image_namespace(), self.filename)
+            pl = wikipedia.PageLink(othersite, full_image_name)
+            lib_images.transfer_image(pl)
+        else:
+            while not self.filenameOK():
+                if not self.filename:
+                    wikipedia.output(u'No input filename given')
+                else:
+                    wikipedia.output(u'Invalid input filename given. Try again.')
+                self.filename = wikipedia.input(u'File or URL where image is now:')
+         
+            lib_images.get_image(self.filename, None, self.description, self.keep)
+
 def main(args):
-    fn = ''
-    desc = []
+    filename = ''
+    description = []
     keep = False
     wiki = ''
 
     for arg in args:
         arg = wikipedia.argHandler(arg)
         if arg:
+            print arg
             if arg.startswith('-keep'):
                 keep = True
             elif arg.startswith('-wiki:'):
                 wiki=arg[6:]
-            elif fn=='':
-                fn = arg
+            elif filename == '':
+                filename = arg
             else:
-                desc.append(arg)
-
-    mysite = wikipedia.getSite()
-    if not mysite.loggedin():
-        print "You must be logged in to upload images"
-        import sys
-        sys.exit(1)
-
-    desc=' '.join(desc)
-
-    if wiki:
-        othersite = mysite.getSite(wiki)
-        while not fn:
-            wikipedia.output(u'No input filename given')
-            fn = wikipedia.input(u'Give filename:')
-        full_image_name = "%s:%s"%(othersite.image_namespace(),fn)
-        pl = wikipedia.PageLink(othersite, full_image_name)
-        lib_images.transfer_image(pl)
-    else:
-        ok = (fn!='') and ( ('://') in fn or os.path.exists(fn))
-        while not ok:
-            if not fn:
-                wikipedia.output(u'No input filename given')
-            else:
-                wikipedia.output(u'Invalid input filename given. Try again.')
-            fn = wikipedia.input(u'File or URL where image is now:')
-            ok = (fn!='') and ( ('://') in fn or os.path.exists(fn))
-     
-        lib_images.get_image(fn, None, desc, keep)
+                description.append(arg)
+        description = ' '.join(description)
+        bot = UploadRobot(filename, description, wiki, keep)
+        bot.run()
 
 try:
     main(sys.argv[1:])
