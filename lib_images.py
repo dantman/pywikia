@@ -14,58 +14,6 @@ copy_message = {
     "nl":u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
 }
 
-'''
-# a string which appears on the HTML page which says that the upload was successful,
-# and which doesn't appear on a page which says that the upload failed.
-success_message = {
-    "af":"Laai suksesvol",
-    "als":"Successful upload",
-    "ar":"%D8%AA%D8%AD%D9%85%D9%8A%D9%84 %D8%A7%D9%84%D9%85%D9%84%D9%81 %D8%A8%D9%86%D8%AC%D8%A7%D8%AD",
-    "ca":"L'arxiu s'ha carregat amb %C3%A8xit",
-    "co":"Successful upload",
-    "cs":"Nacten%C3%AD_%C3%BAspe%C5%A1ne_provedeno%21",
-    "cy":"Uwchlwyth llwyddiannus",
-    "da":"Opl%E6gning er gennemf%F8rt med success",
-    "de":"Erfolgreich hochgeladen",
-    "en":"Succesful upload",
-    "eo":"uto sukcesis!",
-    "es":"Subida exitosa",
-    "et":"%C3%9Cleslaadimine %C3%B5nnestus",
-    "eu":"Succesful upload",
-    "fi":"Tallennus onnistui",
-    "fy":"Oanbieden slagge",
-    "gl":"Successful upload",
-    "he":"%D7%94%D7%A2%D7%9C%D7%90%D7%AA %D7%94%D7%A7%D7%95%D7%91%D7%A5 %D7%94%D7%A6%D7%9C%D7%99%D7%97%D7%94",
-    "hr":"Successful upload",
-    "hu":"Sikeresen felk",
-    "ia":"Carga complete",
-    "id":"Berjaya dimuaturun",
-    "is":"Successful upload",
-    "it":"Caricamento completato",
-    "ja":"%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E6%88%90%E5%8A%9F",
-    "ko":"%EC%98%AC%EB%A6%AC%EA%B8%B0 %EC%84%B1%EA%B3%B5",
-    "ku":"Successful upload",
-    "la":"Oneratum perfectum",
-    "lt":"Successful upload",
-    "lv":"Successful upload",
-    "ms":"Berjaya dimuaturun",
-    "nds":"Successful upload",
-    "nl":"De upload was succesvol",
-    "no":"Opplastingen er gjennomf%C3%B8rt",
-    "oc":"Copie r%C3%A9ussie",
-    "pl":"Przes%C5%82anie pliku powiod%C5%82o si%C4%99",
-    "pt":"Carregamento efetuado com sucesso",
-    "ro":"Fi%C5%9Fierul a fost trimis",
-    "ru":"%D0%AF%D0%BF%D0%BE%D0%BD%D1%81%D0%BA%D0%BE%D0%B5_%D0%BC%D0%BE%D1%80%D0%B5",
-    "simple":"Succesful upload",
-    "sl":"Nalaganje uspe%C5%A1no",
-    "sv":"Uppladdningen lyckades",
-    "uk":"%D0%97%D0%B0%D0%B2%D0%B0%D0%BD%D1%82%D0%B0%D0%B6%D0%B5%D0%BD%D0%BD%D1%8F_%D1%83%D1%81%D0%BF%D1%96%D1%88%D0%BD%D0%BE_%D0%B7%D0%B0%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%BE",
-    "wa":"L%27_eberwetaedje_a_st%C3%AE_comif%C3%A5",
-    "zh":"%E4%B8%8A%E8%BD%BD%E6%88%90%E5%8A%9F"
-}
-'''
-
 def post_multipart(host, selector, fields, files):
     """
     Post fields and files to an http host as multipart/form-data.
