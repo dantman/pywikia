@@ -42,15 +42,20 @@ def main():
         while answer not in ('y','n'):
             answer = raw_input("%s [y/n] : "%(pl2.asasciilink()))
         if answer == 'y':
-            cats = pl2.categories()
-            print "Current categories: ",cats
-            if catpl in cats:
-                print "%s already has %s"%(pl.aslocallink(),catpl.aslocallink())
+            try:
+	        cats = pl2.categories()
+            except wikipedia.NoPage:
+	    	print "%s doesn't exit yet. Ignoring."%(pl2.aslocallink())
+		pass
             else:
-                cats.append(catpl)
-                text = pl2.get()
-                text = wikipedia.replaceCategoryLinks(text, cats)
-                pl2.put(text, comment = catpl.aslocallink())
+                print "Current categories: ",cats
+                if catpl in cats:
+                    print "%s already has %s"%(pl.aslocallink(),catpl.aslocallink())
+                else:
+                    cats.append(catpl)
+                    text = pl2.get()
+                    text = wikipedia.replaceCategoryLinks(text, cats)
+                    pl2.put(text, comment = catpl.aslocallink())
 
 if __name__ == "__main__":
     for arg in sys.argv[1:]:
