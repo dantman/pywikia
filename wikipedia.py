@@ -107,7 +107,7 @@ special = {'en':'Special',
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
 oldsoftware = ['it', 'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-               'simple', 'nds', 'mr', 'id', 'gl', 'lt', 'lv', 'oc', sw',
+               'simple', 'nds', 'mr', 'id', 'gl', 'lt', 'lv', 'oc', 'sw',
                'tt', 'uk', 'vi', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
