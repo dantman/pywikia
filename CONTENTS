@@ -10,32 +10,48 @@ be followed before running it on any of the wikipedia sites.
 
 The contents of the package are:
 
+The library itself
+------------------
 LICENSE                : a reference to the Python Software Foundation license
+wikipedia.py           : The wikipedia library
+config.py              : Configuration module containing all defaults
+
+Utilities
+---------
+extract_names.py       : A program to make a list of 480 pagenames based on a 
+                         html file that is the result of a Special:Allpages 
+                         request.
+parsepopular.py        : Make statistics based on 2 html dumps of most popular
+                         pages.
+login.py               : Log in to an account on your "home" wikipedia. 
+
+Robots
+------
 autoredir.py           : Make redirect pages for capitalized months like 
                          [[1 Januari]]; a one-time robot for the nl: Wikipedia 
 backref.py             : List all pages for which nl:->xx: does not correspond 
                          to xx:->nl:. This is obsolescent now that treelang has
                          a "-backref" command line parameter.
-extract_names.py       : A program to make a list of 480 pagenames based on a 
-                         html file that is the result of a Special:Allpages 
-                         request.
 getlang.py             : Get interwiki links for years AD
-parsepopular.py        : Make statistics based on 2 html dumps of most popular
-                         pages.
 test.py                : Misc testing, now configured to test whether you are 
                          logged in.
 treelang_all.py        : A script that runs treelang.py for each of the
                          pages in your home wikipedia. 
 treelang.py            : Recursive search for interwiki links that are 
                          appropriate to a page.
-wikipedia.py           : The wikipedia library
 yearlayout.py          : An old robot used to change the layout of all nl: year 
                          pages.
-login.py               : Log in to an account on your "home" wikipedia. 
 solve_disambiguation.py: Disambiguate pages from the command line. 
+upload.py              : A new robot that can currently only simply upload
+                         an image to wikipedia, but it will in the future
+                         be able to insert the image in a wiki page as well.
+standardize_interwiki.py:A robot that downloads a page, and reformats the 
+                         interwiki links in a standard way (i.e. move all
+                         of them to the bottom or the top, with the same
+                         separator, in the right order).
 
 More precise information, and a list of the options that are available for
-the various programs, are given with the programs.
+the various programs, are given inside the programs' source code files.
 
 You need to have at least python version 2.3 installed on your computer
 to be able to run any of the code in this package. Support for older
