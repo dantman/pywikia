@@ -2391,6 +2391,13 @@ def showColorDiff(oldtext, newtext, replacements, regex):
             output('\x1b[92;1m+\x1b[0m' + newline[1:])
 """
 
+def colorize(text, color):
+    if sys.platform=='win32':
+        return text
+    else:
+        return '\x1b[' + color + ';1m' + text + '\x1b[0m'
+
+
 def showColorDiff(oldtext, newtext):
     """
     Returns a string showing the differences between oldtext and newtext.
@@ -2433,7 +2440,7 @@ def showColorDiff(oldtext, newtext):
                 # longer than the +/- line, causing an out of bounds exception,
                 # so we check if i<len(line)-1.
                 if line[i] != ' ' and i<len(line)-1:
-                    lastline = lastline[:i] + '\x1b[' + lastcolor + ';1m' + lastline[i] + '\x1b[0m' + lastline[i+1:]
+                    lastline = lastline[:i] + colorize(lastline[i], lastcolor) + lastline[i+1:]
             output(lastline)
             lastline = None
     printLastLine(lastline, lastcolor)

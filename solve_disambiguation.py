@@ -473,7 +473,7 @@ def main():
                         wikipedia.output(u">>> %s <<<" % refpl.linkname())
                         # at the beginning of the link, start red color.
                         # at the end of the link, reset the color to default
-                        displayedText = text[max(0, m.start() - context):m.start()] + '\x1b[91;1m' + text[m.start():m.end()] + '\x1b[0m' + text[m.end():m.end()+context]
+                        displayedText = text[max(0, m.start() - context):m.start()] + wikipedia.colorize(text[m.start():m.end()], '91') + text[m.end():m.end()+context]
                         wikipedia.output(displayedText)
                         if always == None:
                             if edited:
