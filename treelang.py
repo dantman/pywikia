@@ -28,7 +28,7 @@ This script understands various command-line arguments:
     -autonomous: run automatically, do not ask any questions. If a question
                  to an operator is needed, write the name of the page
                  to autonomous_problems.dat and terminate.
-    -backref: check for references between the foreign pages as well, list 
+    -backlink: check for references between the foreign pages as well, list 
               all those that are missing as WARNINGs.
 
      All other arguments are words that make up the page name.
@@ -426,4 +426,5 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:",pl.asselflink(),"links to incorrect",xpl.aslink()
+
 
