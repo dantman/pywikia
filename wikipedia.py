@@ -151,13 +151,21 @@ edittime = {}
 # interwiki_special_order, interwiki_putfirst is checked first, and
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
-interwiki_putfirst = {'hu':['en'],
-                      'pl':['af','sq','en','ar','eu','bs','zh','zh-tw','zh-cn',
-                            'hr','cs','da','eo','et','fi','fr','fy','gl',
-                            'el','he','hi','es','nl','id','ia','ga','ja',
-                            'ca','ko','la','lv','ml','ms','mr','de','no',
-                            'pt','oc','ru','ro','sl','sr','sw','sv','tt',
-                            'tr','uk','simple','vo','cy','hu','vi','it']}
+interwiki_putfirst = {
+    'fr':['af','ar','ms','bs','ca','cs','cy','da','de',
+          'et','el','en','eo','es','eu','fr','fy','ga',
+          'gl','ko','hi','hr','id','it','ia','he','sw',
+          'la','lv','hu','ml','mr','nl','ja','no','oc',
+          'pt','ro','ru','sq','simple','sl','sr','fi',
+          'sv','tt','vi','tr','uk','vo','zh','zh-cn','zh-tw'],
+    'hu':['en'],
+    'pl':['af','sq','en','ar','eu','bs','zh','zh-tw','zh-cn',
+          'hr','cs','da','eo','et','fi','fr','fy','gl',
+          'el','he','hi','es','nl','id','ia','ga','ja',
+          'ca','ko','la','lv','ml','ms','mr','de','no',
+          'pt','oc','ru','ro','sl','sr','sw','sv','tt',
+          'tr','uk','simple','vo','cy','hu','vi','it'],
+    }
 
 # Local exceptions
 
