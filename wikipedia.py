@@ -924,56 +924,49 @@ def languages(first = []):
             result.append(key)
     return result
 
-# generator
-def allpages(start = '%21%200'):
-    """Iterate over all Wikipedia pages in the home language, starting
-       at the given page."""
-    start = link2url(start, code = mylang)
-    # what is this counter for? 
-    m=0
+# Generator which yields all articles in the home language in alphanumerical 
+# order, starting at a given page. By default, it starts at '!', so it should
+# yield all pages.
+def allpages(start = '!'):
     while 1:
+        # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
+        start = link2url(start, code = mylang)
+        # load a list which contains 100 article names
         returned_html = getPage(mylang, family.allpagesname(mylang, start),
                                 do_quote=0, do_edit=0)
-        # Try to find begin markers
+        # Try to find begin and end markers
         try:
             ibegin = returned_html.index('<!-- start content -->')
         except ValueError:
-            # Then maybe this one works
-            try:
-                ibegin = returned_html.index('<table border="0" width="100%">')
-            except ValueError:
-                # And otherwise raise an error
-                raise NoPage('Couldn\'t extract allpages special page')
+            raise NoPage('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
         try:
             iend = returned_html.index('<!-- end content -->')
         except ValueError:
-            try:
-                iend = returned_html.index('<div class="printfooter">')
-            except ValueError:
-                raise NoPage('Couldn\'t extract allpages special page')
+            raise NoPage('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
         # remove the irrelevant sections
         returned_html = returned_html[ibegin:iend]
         if family.version(mylang)=="1.2":
             R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         else:
             R = re.compile('title ="(.*?)"')
-        # what is this counter for? 
         n = 0
         for hit in R.findall(returned_html):
+            # count how many articles we found on the current page
             n = n + 1
             if family.version(mylang)=="1.2":
                 yield PageLink(mylang, url2link(hit, code = mylang,
                                             incode = mylang))
             else:
                 yield PageLink(mylang, hit)
+            # save the last hit, so that we know where to continue when we
+            # finished all articles on the current page. Append a '_0' so that
+            # we don't yield a page twice.
             start = hit + '%20%200'
+        # why 100? There are more articles on each page
         if n < 100:
+            # this seems to be the last page
             break
-        m += n
-        ####
-        # This line has been disabled because it caused bug #992575.
-        ####
-        #sys.stderr.write('AllPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl',incode='ascii')))
+        
 
 
 # Part of library dealing with interwiki links
