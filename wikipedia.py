@@ -1650,21 +1650,22 @@ def argHandler(arg):
 #########################
 
 # Get the name of the user for submit messages
-username = config.username
-if not config.username:
-    print "Please make a file user-config.py, and put in there:"
-    print "One line saying \"username='yy'\""
-    print "One line saying \"mylang='xx'\""
-    print "....filling in your real name and home wikipedia."
-    print "for other possible configuration variables check config.py"
-    sys.exit(1)
-setFamily(config.family)
-setMyLang(config.mylang)
-if not family.langs.has_key(mylang):
-    print "Home-wikipedia from user-config.py does not exist"
-    print "Defaulting to test: wikipedia"
-    setMyLang('test')
-    family.langs['test']='test.wikipedia.org'
+if __name__ == '__main__':
+    username = config.username
+    if not config.username:
+        print "Please make a file user-config.py, and put in there:"
+        print "One line saying \"username='yy'\""
+        print "One line saying \"mylang='xx'\""
+        print "....filling in your real name and home wikipedia."
+        print "for other possible configuration variables check config.py"
+        sys.exit(1)
+    setFamily(config.family)
+    setMyLang(config.mylang)
+    if not family.langs.has_key(mylang):
+        print "Home-wikipedia from user-config.py does not exist"
+        print "Defaulting to test: wikipedia"
+        setMyLang('test')
+        family.langs['test']='test.wikipedia.org'
 
 
 # Languages to use for comment text after the actual language but before

@@ -401,7 +401,7 @@ types = {
 
 import wikipedia, string, re
 
-class Global:
+class Global(object):
     debug = False
 
 # Prints text on the screen only if in debug mode.

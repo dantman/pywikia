@@ -4,7 +4,7 @@ import config, urllib
 
 # Parent class for all wiki families
 
-class Family:
+class Family(object):
     # Note that if mylang is 'commons', it is automatically added.
     langs = {}
 

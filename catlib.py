@@ -10,7 +10,7 @@ __version__ = '$Id$'
 #
 import wikipedia, re
 
-class CatTitleRecognition:
+class CatTitleRecognition(object):
     """Special object to recognize categories in a certain language.
 
        Purpose is to construct an object using a language code, and

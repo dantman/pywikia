@@ -171,7 +171,7 @@ date_format = {
 	},
 }
 
-class FormatDate:
+class FormatDate(object):
     def __init__(self, code):
         self.code = code
 

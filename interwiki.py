@@ -155,7 +155,7 @@ msg = {
     'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
     }
 
-class Global:
+class Global(object):
     """Container class for global settings.
        Use of globals outside of this is to be avoided."""
     always = False
@@ -608,7 +608,7 @@ class Subject(object):
                             # New warning
                             wikipedia.output(u"WARNING: %s links to incorrect %s" % (pl.asselflink(), xpl.aslink()))
     
-class SubjectArray:
+class SubjectArray(object):
     """A class keeping track of a list of subjects, controlling which pages
        are queried from which languages when."""
     
