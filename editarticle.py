@@ -83,6 +83,7 @@ class EditArticle(object):
         parser.add_option("-e", "--editor", help="Editor to use")
         parser.add_option("-j", "--join_lines", action="store_true", default=False, help="Join consecutive lines if possible")
         parser.add_option("-w", "--watch", action="store_true", default=False, help="Watch article after edit")
+        parser.add_option("-n", "--new_data", default="", help="Automatically generated content")
         self.options = parser.parse_args(args=my_args)[0]
 
     def setpage(self):
@@ -128,7 +129,11 @@ class EditArticle(object):
                 oldcontent = self.pagelink.get(force=True, get_redirect=redirect)
             else:
                 raise
-        ofp.write(oldcontent.encode(config.console_encoding)) # FIXME: encoding of wiki
+        if self.options.new_data == '':
+            ofp.write(oldcontent.encode(config.console_encoding)) # FIXME: encoding of wiki
+        else:		
+#            ofp.write(oldcontent.encode('utf-8')+'\n===========\n'+self.options.new_data) # FIXME: encoding of wiki
+            ofp.write(oldcontent.encode(config.console_encoding)+'\n===========\n'+self.options.new_data) # FIXME: encoding of wiki
         ofp.close()
         os.system("%s %s" % (self.options.editor, ofn))
         newcontent = open(ofn).read().decode(config.console_encoding)
