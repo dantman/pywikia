@@ -74,7 +74,7 @@ class _CatLink(wikipedia.PageLink):
         while catstodo:
             cat = catstodo.pop()
             catsdone.append(cat)
-            txt = wikipedia.getPage(cat.code(), cat.urlname(), do_edit = 0)
+            txt = wikipedia.getPage(cat.code(), cat.urlname(), get_edit_page = False)
             # save a copy of this text to find out self's supercategory.
             # if recurse is true, this function should only return self's
             # supercategory, not the ones of its subcats.
