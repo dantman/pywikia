@@ -337,17 +337,13 @@ def category_namespace(code, fallback = 'en'):
 # TODO: rewrite (?)
 def category_namespaces(code):
     namespaces = []
-    if not namespace[14].has_key(code):
-        # retrieve namespace title from Allmessages special page
-        import mediawiki_messages
-        namespace_title = mediawiki_messages.get('nstab-category', lang = code)
-    else:
-        namespace_title = namespace[14][code]
+    namespace_title = namespace(code, 14)
     namespaces.append(namespace_title)
     namespaces.append(namespace_title.lower())
-    if namespace_title != namespace[14]['en']:
-        namespaces.append(namespace[14]['en'])
-        namespaces.append(namespace[14]['en'].lower())
+    english_namespace_title = namespace('en', 14)
+    if namespace_title != english_namespace_title:
+        namespaces.append(english_namespace_title)
+        namespaces.append(english_namespace_title.lower())
     return namespaces
 
 # Redirect code can be translated, but is only in one language now.
