@@ -75,6 +75,14 @@ def translate(pl, arr, same = False, hints = None, auto = True):
     m = Ryear.match(pl.linkname())
     if m and auto:
         i=int(m.group(0))
+        if i==0:
+            return
+        if mylang in ['ja','zh','ko','la']:
+            return
+        if mylang=='ia' and i<1400:
+            return
+        if mylang=='simple' and i<200:
+            return
         for newcode in wikipedia.family.seriouslangs:
             if newcode in ['ja', 'zh']:
                 fmt = '%d&#24180;'
