@@ -1,5 +1,15 @@
 """
 Loop over all pages in the home wikipedia, calling treelang for each
+
+This script accepts all options that treelang.py accepts. Command line options
+that do not start with -, or that consist of only a - are taken as words of the
+first page name that should be checked.
+
+If no first page is specified, it starts at A (and therefore skips everything
+that starts with e.g. a digits).
+
+If no options are specified at all, treelang is run with the options
+-backlink -autonomous.
 """
 #
 # (C) Rob W.W. Hooft, 2003
