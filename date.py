@@ -1,4 +1,4 @@
-﻿#coding: utf-8
+#coding: utf-8
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -28,7 +28,8 @@ date_format = {
 		'fo':'%d. januar',
                 'eo':'%d-a de januaro',
                 'pt':'%d de Janeiro',
-                'ast':'%d de xineru'
+                'ast':'%d de xineru',
+                'es':'%d de enero'
 	},
 	2: {
 		'sl':'%d. februar',
@@ -45,7 +46,8 @@ date_format = {
 		'fo':'%d. februar',
                 'eo':'%d-a de februaro',
                 'pt':'%d de Fevereiro',
-                'ast':'%d de febreru'
+                'ast':'%d de febreru',
+                'es':'%d de febrero'
 	},
 	3: {
 		'sl':'%d. marec',
@@ -62,7 +64,8 @@ date_format = {
 		'fo':'%d. mars',
                 'eo':'%d-a de marto',
                 'pt':'%d de Março',
-                'ast':'%d de marzu'
+                'ast':'%d de marzu',
+                'es':'%d de marzo'
 	},
 	4: {
 		'sl':'%d. april',
@@ -79,7 +82,8 @@ date_format = {
 		'fo':'%d. apríl',
                 'eo':'%d-a de aprilo',
                 'pt':'%d de Abril',
-                'ast':"%d d'abril"
+                'ast':"%d d'abril",
+                'es':'%d de abril'
 	},
 	5: {
 		'sl':'%d. maj',
@@ -96,7 +100,8 @@ date_format = {
 		'fo':'%d. mai',
                 'eo':'%d-a de majo',
                 'pt':'%d de Maio',
-                'ast':'%d de mayu'
+                'ast':'%d de mayu',
+                'es':'%d de mayo'
 	},
 	6: {
 		'sl':'%d. junij',
@@ -113,7 +118,8 @@ date_format = {
 		'fo':'%d. juni',
                 'eo':'%d-a de junio',
                 'pt':'%d de Junho',
-                'ast':'%d de xunu'
+                'ast':'%d de xunu',
+                'es':'%d de junio'
 	},
 	7: {
 		'sl':'%d. julij',
@@ -130,7 +136,8 @@ date_format = {
 		'fo':'%d. juli',
                 'eo':'%d-a de julio',
                 'pt':'%d de Julho',
-                'ast':'%d de xunetu'
+                'ast':'%d de xunetu',
+                'es':'%d de julio'
 	},
 	8: {
 		'sl':'%d. avgust',
@@ -147,7 +154,8 @@ date_format = {
 		'fo':'%d. august',
                 'eo':'%d-a de aŭgusto',
                 'pt':'%d de Agosto',
-                'ast':"%d d'agostu"
+                'ast':"%d d'agostu",
+                'es':'%d de agosto'
 	},
 	9: {
 		'sl':'%d. september',
@@ -164,7 +172,8 @@ date_format = {
 		'fo':'%d. september',
                 'eo':'%d-a de septembro',
                 'pt':'%d de Setembro',
-                'ast':'%d de setiembre'
+                'ast':'%d de setiembre',
+                'es':'%d de septiembre'
 	},
 	10:{
 		'sl':'%d. oktober',
@@ -181,7 +190,8 @@ date_format = {
 		'fo':'%d. oktober',
                 'eo':'%d-a de oktobro',
                 'pt':'%d de Outubro',
-                'ast':"%d d'ochobre"
+                'ast':"%d d'ochobre",
+                'es':'%d de octubre'
 	},
 	11:{
 		'sl':'%d. november',
@@ -198,7 +208,8 @@ date_format = {
 		'fo':'%d. november',
                 'eo':'%d-a de novembro',
                 'pt':'%d de Novembro',
-                'ast':'%d de payares'
+                'ast':'%d de payares',
+                'es':'%d de noviembre'
 	},
 	12:{
 		'sl':'%d. december',
@@ -215,7 +226,8 @@ date_format = {
 		'fo':'%d. desember',
                 'eo':'%d-a de decembro',
                 'pt':'%d de Dezembro',
-                'ast':"%d d'avientu"
+                'ast':"%d d'avientu",
+                'es':'%d de diciembre'
 	}
 }
 
