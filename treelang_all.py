@@ -87,6 +87,7 @@ elif hints:
     lst=[]
     for key in hints.iterkeys():
         lst.append(wikipedia.PageLink(wikipedia.mylang,linkname=key))
+    lst.sort()
 else:
     lst=wikipedia.allpages(start = start)
         
