@@ -1000,23 +1000,28 @@ def getLanguageLinks(text,incode=None):
        in the form {code:pagename}. Do not call this routine directly, use
        PageLink objects instead"""
     result = {}
-    for code in family.langs:
-        m=re.search(r'\[\['+code+':([^\]]*)\]\]', text)
-        if m:
-            if m.group(1):
-                t=m.group(1)
-                if '|' in t:
-                    t=t[:t.index('|')]
-                if incode == 'eo':
-                    t=t.replace('xx','x')
-                if code in family.obsolete:
-                    output(u"ERROR: ignoring link to obsolete language %s:%s" % (code, repr(t)))
-                elif not t:
-                    output(u"ERROR: ignoring impossible link to %s:%s" % (code, m.group(1)))
-                else:
-                    result[code] = t
+    # This regular expression will find every link that is possibly an
+    # interwiki link.
+    # NOTE: This assumes that language codes only consist of non-capital
+    # ASCII letters and hyphens.
+    interwikiR = re.compile(r'\[\[([a-z\-]+):([^\]]*)\]\]')
+    for code, pagetitle in interwikiR.findall(text):
+        if code in family.obsolete:
+            output(u"ERROR: ignoring link to obsolete language %s" % code)
+        elif not pagetitle:
+            print "ERROR: empty link to %s:" % code
+        # Check if it really is in fact an interwiki link to a known
+        # language, or if it's e.g. a category tag or an internal link
+        elif code in family.langs:
+            if '|' in pagetitle:
+                # ignore text after the pipe
+                pagetitle = pagetitle[:pagetitle.index('|')]
+            if incode == 'eo':
+                pagetitle=pagetitle.replace('xx','x')
+            if not pagetitle:
+                output(u"ERROR: ignoring impossible link to %s:%s" % (code, pagetitle))
             else:
-                print "ERROR: empty link to %s:"%(code)
+                result[code] = pagetitle
     if incode in ['zh','zh-cn','zh-tw']:
         m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7b80\\]\\]', text)
         if m:
