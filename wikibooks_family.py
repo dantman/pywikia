@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -24,7 +24,7 @@ class Family(family.Family):
             'ca':'ca.wikibooks.org',   # Catalan
             'chr':'chr.wikibooks.org', # Cherokee
             'co':'co.wikibooks.org',   # Corsican
-            'cs':'cs.wikibooks.or7g',   # Czech
+            'cs':'cs.wikibooks.org',   # Czech
             'csb':'csb.wikibooks.org', # Kashubian
             'cy':'cy.wikibooks.org',   # Welsh
             'da':'da.wikibooks.org',   # Danish
