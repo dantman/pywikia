@@ -59,7 +59,9 @@ class Family(family.Family):
             'nn': ['no','nb','sv','da']
             }
 
-        self.interwiki_putfirst_doubled = ['nn']
+        self.interwiki_putfirst_doubled = {
+            'nn': 7
+            }
 
         self.obsolete = {'sh':'hr',
                     'dk':'da',
