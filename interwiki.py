@@ -1,4 +1,4 @@
-#coding: iso-8859-1
+#coding: utf-8
 """
 Script to check language links for general pages. This works by downloading the
 page, and using existing translations plus hints from the command line to
@@ -146,12 +146,12 @@ import sys, copy, re
 import wikipedia, config, unequal, date
 
 msg = {
-    'da':('Tilføjer','Fjerner','Ændrer'),
-    'de':('Ergänze','Entferne','Ändere'),
-    'en':('Adding','Removing','Modifying'),
-    'fr':('Ajoute','Retire','Modifie'),
-    'nl':('Erbij','Eraf','Anders'),
-    'no':('Tilfoeyer','Fjerner','Endrer'),
+    'da':(u'TilfÃ¸jer', u'Fjerner',u'Ã†ndrer'),
+    'de':(u'ErgÃ¤nze', u'Entferne', u'Ã„ndere'),
+    'en':(u'Adding', u'Removing', u'Modifying'),
+    'fr':(u'Ajoute', u'Retire', u'Modifie'),
+    'nl':(u'Erbij', u'Eraf', u'Anders'),
+    'no':(u'Tilfoeyer', u'Fjerner', u'Endrer'),
     }
 
 class Global:
@@ -291,7 +291,7 @@ class Subject:
                     else:
                         if self.conditionalAdd(pl3, counter, pl):
                             if globalvar.shownew:
-                                print "%s: %s gives new redirect %s"% (self.inpl.asasciiselflink(), pl.asasciilink(), pl3.asasciilink())
+                                wikipedia.output("%s: %s gives new redirect %s" %  (self.inpl.asselflink(), pl.aslink(), pl3.aslink()))
                 except wikipedia.NoPage:
                     print "NOTE: %s does not exist" % pl.asasciilink()
                     #print "DBG> ",pl.urlname()
@@ -320,7 +320,7 @@ class Subject:
                       else:   
                           if self.conditionalAdd(pl2, counter, pl):
                               if globalvar.shownew:
-                                  print "%s: %s gives new interwiki %s"% (self.inpl.asasciiselflink(), pl.asasciilink(), pl2.asasciilink())
+                                  wikipedia.output("%s: %s gives new interwiki %s"% (self.inpl.asselflink(), pl.aslink(), pl2.aslink()))
                               
         # These pages are no longer 'in progress'
         del self.pending
@@ -498,7 +498,7 @@ class Subject:
         if len(self.done) == 1:
             # No interwiki at all
             return
-        print "======Post-processing %s======"%(self.inpl.asasciilink())
+        wikipedia.output(u"======Post-processing %s======"%(self.inpl.aslink()))
         # Assemble list of accepted interwiki links
         new = self.assemble()
         if new == None: # User said give up or autonomous with problem
@@ -582,10 +582,10 @@ class Subject:
                     if xpl != pl and not xpl in linked:
                         for l in linked:
                             if l.code() == xpl.code():
-                                print "WARNING:", pl.asasciiselflink(), "does not link to", xpl.asasciilink(), "but to", l.asasciilink()
+                                wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (pl.asselflink(), xpl.aslink(), l.aslink()))
                                 break
                         else:
-                            print "WARNING:", pl.asasciiselflink(), "does not link to", xpl.asasciilink()
+                            wikipedia.output(u"WARNING: %s does not link to %s" % (pl.asselflink(), xpl.aslink()))
                 # Check for superfluous links
                 for xpl in linked:
                     # Chinese internal links are ok.
@@ -599,7 +599,7 @@ class Subject:
                                 break
                         else:
                             # New warning
-                            print "WARNING:", pl.asasciiselflink(), "links to incorrect", xpl.asasciilink()
+                            wikipedia.output(u"WARNING: %s links to incorrect %s" % (pl.asselflink(), xpl.aslink()))
     
 class SubjectArray:
     """A class keeping track of a list of subjects, controlling which pages

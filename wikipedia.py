@@ -218,7 +218,7 @@ class PageLink:
 
     def aslink(self):
         """A string representation in the form of an interwiki link"""
-        return "[[%s:%s]]" % (self.code(), self.linkname())
+        return "[[%s:%s]]" % (self.code(), self.name())
 
     def aslocallink(self):
         """A string representation in the form of a local link"""
@@ -233,10 +233,10 @@ class PageLink:
         """A string representation in the form of an interwiki link"""
         return "[[%s:%s]]" % (self.code(), self.ascii_linkname())
 
-    def asasciiselflink(self):
-        """A string representation in the form of a local link, but prefixed by
-           the language code"""
-        return "%s:[[%s]]" % (self.code(), self.ascii_linkname())
+    #def asasciiselflink(self):
+    #    """A string representation in the form of a local link, but prefixed by
+    #       the language code"""
+    #    return "%s:[[%s]]" % (self.code(), self.name())
     
     def get(self):
         """The wiki-text of the page. This will retrieve the page if it has not
@@ -322,7 +322,7 @@ class PageLink:
         return putPage(self.code(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage)
 
     def interwiki(self):
-        """Return a list of inter-wiki links in the page. This will retrieve
+        """Return a list of interwiki links in the page. This will retrieve
            the page text to do its work, so it can raise the same exceptions
            that are raised by the get() method.
 
