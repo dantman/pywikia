@@ -441,7 +441,7 @@ def translate(text, type, from_lang, debug_mode=False, to_lang=wikipedia.mylang)
                         replacement = regexes.get(from_lang).get(item).get(wikipedia.mylang)
                         regex = re.compile(item)
                         # if the regular expression doesn't match anyway, we don't want it to print a debug message
-                        if re.search(regex, text):
+                        while re.search(regex, text):
                             print_debug(item + " => " + replacement)
                             text = re.sub(regex, replacement, text)
         # recursively use translation lists which are included in the current list

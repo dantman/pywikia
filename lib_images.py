@@ -102,6 +102,7 @@ def get_image(fn, target, description, debug=False):
         print ("Enter return to use this description, enter a text to add something")
         print ("at the end, or enter = followed by a text to replace the description.")
         newtext = raw_input('Enter return, text or =text : ')
+        newtext = unicode(newtext, config.console_encoding)
         if newtext=='':
             pass
         elif newtext[0]=='=':
@@ -120,7 +121,7 @@ def get_image(fn, target, description, debug=False):
     # don't upload if we're in debug mode
     if not debug:
         data = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
-                              wikipedia.family.upload_address(code),
+                              wikipedia.family.upload_address(target),
                               (('wpUploadDescription', description),
                                ('wpUploadAffirm', '1'),
                                ('wpIgnoreWarning', '1'),
