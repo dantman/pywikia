@@ -27,7 +27,7 @@ langs = {'en':'www.wikipedia.org', # English
          'bs':'bs.wikipedia.org', # Bosnisch
 	 'he':'he.wikipedia.org', # Hebrew
          'hi':'hi.wikipedia.org', # Hindi
-         'nds':'nds.wikipedia.org', # Nedersaksisch
+         #'nds':'nds.wikipedia.org', # Nedersaksisch
          'it':'it.wikipedia.com', # Italian
          'no':'no.wikipedia.com', # Norwegian
          'pt':'pt.wikipedia.com', # Portuguese
@@ -428,7 +428,9 @@ def link2url(name,code,incode=None):
         result=str(name.encode(code2encoding(code)))
     except UnicodeError:
         print "Cannot convert %s into a URL for %s"%(repr(name),code)
-        raise
+        # Put entities in there.
+        result=addEntity(name)
+        #raise
     result=space2underline(result)
     return urllib.quote(result)
 
@@ -487,6 +489,23 @@ def removeEntity(name):
         else:
             result=result+name[i]
             i=i+1
+    return result
+
+def addEntity(name):
+    """Convert a unicode name into ascii name with entities"""
+    import htmlentitydefs
+    result=''
+    for c in name:
+        if ord(c)<128:
+            result+=str(c)
+        else:
+            for k,v in htmlentitydefs.entitydefs.iteritems():
+                if (len(v)==1 and ord(c)==ord(v)) or v=='&#%d;'%ord(c):
+                    result+='&%s;'%k;
+                    break
+            else:
+                raise ValueError("Cannot locate entity for character %s"%repr(c))
+    print "DBG> addEntity:",repr(name),repr(result)
     return result
 
 def unicodeName(name,language,altlanguage=None):

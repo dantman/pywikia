@@ -48,9 +48,9 @@ def sametranslate(pl,arr):
         # Put as suggestion into array
         newname=pl.linkname()
         if newcode in ['eo','cs'] and same=='name':
-            newname=newname.split('_')
+            newname=newname.split(' ')
             newname[-1]=newname[-1].upper()
-            newname='_'.join(newname)
+            newname=' '.join(newname)
         x=wikipedia.PageLink(newcode,newname)
         if x not in arr:
             arr[x]=None
