@@ -45,14 +45,15 @@ def autonomous_problem(name):
     
 def sametranslate(name,arr):
     for newcode in wikipedia.langs:
+        newname=wikipedia.link2url(wikipedia.url2link(name),code=newcode)
         # Put as suggestion into array
         if newcode=='eo' and same=='name':
-            newname=name.split('_')
+            newname=newname.split('_')
             newname[-1]=newname[-1].upper()
             newname='_'.join(newname)
             arr[newcode,newname]=None
         else:
-            arr[newcode,name]=None
+            arr[newcode,newname]=None
     
 def autotranslate(name,arr,same=0):
     if same:
@@ -262,7 +263,10 @@ k=m.keys()
 k.sort()
 for code,cname in k:
     if code==mylang:
-        pass
+        if cname!=inname:
+            print "ERROR: %s refers back to %s"%(inname,cname)
+            confirm+=1
+            autonomous_problem(inname)
     elif m[(code,cname)]:
         print "%s:%s"%(code,wikipedia.url2link(cname))
         if new.has_key(code) and repr(new[code])!=repr(wikipedia.url2link(cname)):
@@ -303,7 +307,7 @@ s=wikipedia.interwikiFormat(new)
 s2=wikipedia.removeLanguageLinks(oldtext)
 newtext=s+s2
 if debug:
-    if not autonomous:
+    if not autonomous and not sys.platform=='win32':
         f=open('/tmp/wik.in','w')
         f.write(oldtext)
         f.close()
