@@ -13,6 +13,7 @@ mylangs = ('nl', )
 # selection of years to check
 years = range(1,2040+1)
 years=[496]
+years = range(2010,1000,-1)
 
 # Set to 1 to actually change the pages
 forreal = 1
@@ -30,7 +31,10 @@ def findlangs(year):
     for code in wikipedia.languages(mylangs):
         print code+":", ; sys.stdout.flush()
         try:
-            t=wikipedia.getPage(code,year)
+            if code=='ja':
+                t=wikipedia.getPage(code,year+'%E5%B9%B4')
+            else:
+                t=wikipedia.getPage(code,year)
         except wikipedia.NoPage:
             if code in mylangs:
                 missing+=1
@@ -38,11 +42,20 @@ def findlangs(year):
                     # None of the mylangs has this page. Doesn't make sense.
                     print
                     return None,None
-            pass
+        except wikipedia.IsRedirectPage,arg:
+            if code in mylangs:
+                missing+=1
+                if missing==len(mylangs):
+                    # None of the mylangs has this page. Doesn't make sense.
+                    print
+                    return None,None
         else:
             text[code]=t
             l=wikipedia.getLanguageLinks(t)
-            l[code]=year # Add self-reference
+            if code=='ja':
+                l[code]=year+'&#24180;' # Add self-reference
+            else:
+                l[code]=year # Add self-reference
             matrix[code]=l
     print
     return text,matrix
