@@ -84,12 +84,12 @@ class PageLink:
         if linkname is None and urlname is None and name is not None:
             # Clean up the name, it can come from anywhere.
             name=name.strip()
-            self._urlname=link2url(name,self._code)
+            self._urlname=link2url(name,self._code,incode=self._incode)
             self._linkname=url2link(self._urlname,code=self._code,incode=self._incode)
         elif linkname is not None:
             # We do not trust a linkname either....
             name=linkname.strip()
-            self._urlname=link2url(name,self._code)
+            self._urlname=link2url(name,self._code,incode=self._incode)
             self._linkname=url2link(self._urlname,code=self._code,incode=self._incode)
         elif urlname is not None:
             self._urlname=urlname
@@ -119,7 +119,7 @@ class PageLink:
     def interwiki(self):
         result=[]
         for newcode,newname in getLanguageLinks(self.get(),incode=self.code()).iteritems():
-            result.append(self.__class__(newcode,linkname=newname))
+            result.append(self.__class__(newcode,linkname=newname,incode=self.code()))
         return result
 
     def __cmp__(self,other):
@@ -401,13 +401,13 @@ def url2link(percentname,incode,code):
         #print "url2link",repr(x),"different encoding"
         return unicode2html(x,encoding='ascii')
     
-def link2url(name,code):
+def link2url(name,code,incode=None):
     """Convert a interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link"""
     if '%' in name:
         name=url2unicode(name,language=code)
     else:
-        name=html2unicode(name,language=code)
+        name=html2unicode(name,language=code,altlanguage=incode)
     # Remove spaces from beginning and the end
     name=name.strip()
     # Standardize capitalization
@@ -478,19 +478,25 @@ def removeEntity(name):
             i=i+1
     return result
 
-def unicodeName(name,language):
+def unicodeName(name,language,altlanguage=None):
     for encoding in code2encodings(language):
         try:
             return unicode(name,encoding)
         except UnicodeError:
             continue
-    print language,name
-    raise "Would be encoding into local, probably a bug"
+    if altlanguage is not None:
+        print "DBG> Using local encoding!",altlanguage,"to",language,name
+        for encoding in code2encodings(altlanguage):
+            try:
+                return unicode(name,encoding)
+            except UnicodeError:
+                continue
+    raise "Cannot decode"
     #return unicode(name,code2encoding(inlanguage))
     
-def html2unicode(name,language):
+def html2unicode(name,language,altlanguage=None):
     name=removeEntity(name)
-    name=unicodeName(name,language)
+    name=unicodeName(name,language,altlanguage)
 
     import re
     Runi=re.compile('&#(\d+);')
