@@ -154,7 +154,7 @@ if getalternatives:
 for i in range(len(alternatives)):
     print "%3d"%i,alternatives[i]
 
-def treat(refpl):
+def treat(refpl, thispl):
     try:
         reftxt=refpl.get()
     except wikipedia.IsRedirectPage:
@@ -163,11 +163,8 @@ def treat(refpl):
         n = 0
         curpos = 0
         while 1:
-            for Rthis in exps:
-                m=Rthis.search(reftxt, pos = curpos)
-                if m:
-                    break
-            else:
+            m=linkR.search(reftxt, pos = curpos)
+            if not m:
                 if n == 0:
                     print "Not found in %s"%refpl
                 elif not debug:
@@ -175,6 +172,12 @@ def treat(refpl):
                 return
             # Make sure that next time around we will not find this same hit.
             curpos = m.start() + 1 
+            linkpl=wikipedia.PageLink(thispl.code(), m.group(1),
+                                      incode = refpl.code())
+            # Check whether the link found is to thispl.
+            if linkpl!=thispl:
+                continue
+
             n += 1
             context = 30
             while 1:
@@ -209,17 +212,20 @@ def treat(refpl):
                         break
             if choice<0:
                 continue
-            g1=m.group(1)
-            g2=m.group(2)
-            if g2:
-                g2=g2[1:]
+            g1 = m.group(1)
+            g2 = m.group(2)
+            if not g2:
+                g2 = g1
+            replacement = alternatives[choice]
+            reppl = wikipedia.PageLink(thispl.code(), replacement,
+                                       incode = refpl.code())
+            replacement = reppl.linkname()
+            if replaceit or replacement == g2:
+                reptxt = replacement
             else:
-                g2=g1
-            if replaceit or alternatives[choice] == g2:
-                reptxt = alternatives[choice]
-            else:
-                reptxt = "%s|%s" % (alternatives[choice],g2)
-            reftxt = reftxt[:m.start()+2]+reptxt+reftxt[m.end()-2:]
+                reptxt = "%s|%s" % (replacement, g2)
+                print "DBG> ",repr(reptxt)
+            reftxt = reftxt[:m.start()+2] + reptxt + reftxt[m.end()-2:]
             print reftxt[max(0,m.start()-30):m.end()+30]
         if not debug:
             refpl.put(reftxt)
@@ -229,19 +235,8 @@ def resafe(s):
     s=s.replace(')','\\)')
     return s
 
-exps=[]
-zz='\[\[(%s)(\|[^\]]*)?\]\]'
-Rthis=re.compile(zz%resafe(thispl.linkname()))
-exps.append(Rthis)
-uln=wikipedia.html2unicode(thispl.linkname(),language = wikipedia.mylang)
-aln=wikipedia.addEntity(uln)
-Rthis=re.compile(zz%resafe(aln))
-exps.append(Rthis)
-Rthis=re.compile(zz%resafe(thispl.linkname()).lower())
-exps.append(Rthis)
-Rthis=re.compile(zz%resafe(aln.lower()))
-exps.append(Rthis)
+linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\]')
 
 for ref in getReferences(thispl):
     refpl=wikipedia.PageLink(wikipedia.mylang, ref)
-    treat(refpl)
+    treat(refpl, thispl)
