@@ -387,20 +387,27 @@ class Subject:
         result = {}
         for k,v in new.items():
             if len(v) > 1:
+                nerr += 1
                 self.problem("Found more than one link for %s"%k)
+        for k,v in new.items():
+            if len(v) > 1 or nerr > 0:
+                print "Links to %s"%k
                 i = 0
                 for pl2 in v:
                     i += 1
                     print "  (%d) Found link to %s in:"%(i,pl2.asasciilink())
                     for pl3 in self.foundin[pl2]:
                         print "        %s"%pl3.asasciilink()
-                nerr += 1
                 if not globalvar.autonomous:
-                    answer = raw_input("Which variant should be used [type number or (g)ive up] :")
+                    answer = raw_input("Which variant should be used [type number or (n)one, (g)ive up] :")
                     if answer in 'gG':
                         return None
-                    answer = int(answer)
-                    result[k] = v[answer-1]
+                    elif answer in 'nN':
+                        # None acceptable
+                        pass
+                    else:
+                        answer = int(answer)
+                        result[k] = v[answer-1]
             else:
                 result[k] = v[0]
         if globalvar.autonomous and nerr>0:
