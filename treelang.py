@@ -406,7 +406,6 @@ else:
     oldtext = m[inpl]
     s = wikipedia.interwikiFormat(new, incode = wikipedia.mylang)
     s2 = wikipedia.removeLanguageLinks(oldtext)
-    print repr(s),repr(s2[:100])
     if bottom:
         newtext = s2 + s
     else:
