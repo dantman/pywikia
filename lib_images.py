@@ -4,6 +4,7 @@ Library with functions needed for image treatment
 """
 
 import re, sys, string, md5
+import os
 import httplib
 import wikipedia, config, mediawiki_messages
 
@@ -155,14 +156,21 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         print "The filename on wikipedia will default to:", fn
         # ask newfn until it's valid
         ok = False
-        forbidden = '/.' # to be extended
+        forbidden = '/' # to be extended
         while not ok:
             newfn = wikipedia.input(u'Better name:')
+            ext = os.path.splitext(newfn)[1].lower().strip('.')
+            if ext not in (u'jpg', u'png'):
+                ans = wikipedia.input(u"File is not jpg or png but %s. Continue [y/N]? " % ext)
+                if not ans.lower().startswith('y'):
+                    continue
             for c in forbidden:
                 if c in newfn:
                     print "Invalid character: %s. Please try again" % c
-                else:
-                    ok = True
+                    ok = False
+                    break
+            else:
+                ok = True
         if newfn != '':
             fn = newfn
     # Wikipedia doesn't allow spaces in the file name.
