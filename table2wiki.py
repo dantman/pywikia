@@ -9,10 +9,15 @@ SELECT CONCAT('"', cur_title, '"')
        ORDER BY cur_title
 
 
+FEATURES
+Save against missing </td>
+Corrects attributes of tags
+
 KNOW BUGS
 Broken HTML-tables will most likely result in broken wiki-tables!
 Please check every article you change.
 
+WARNINGS
 Indented HTML-tables will result in ugly wiki-tables.
 You can kill indentions but it's switched off by default.
 
@@ -77,18 +82,18 @@ for arg in sys.argv[1:]:
                          "\n!\\2 | \\3\r\n", newText, 0)
 
         # normal <td>
-        newText = re.sub("[\r\n]*\<(td|TD)\>([\w\W]*?)\<\/(TD|td)\>",
+        newText = re.sub("[\r\n]+\<(td|TD)\>([\w\W]*?)\<\/(TD|td)\>",
                          "\n| \\2\n", newText, 0)         
-        newText = re.sub("[\r\n]*\<(td|TD)([^>]*?)\>([\w\W]*?)\<\/(TD|td)\>",
+        newText = re.sub("[\r\n]+\<(td|TD)([^>]*?)\>([\w\W]*?)\<\/(TD|td)\>",
                          "\n|\\2 | \\3\n", newText, 0)
-        newText = re.sub("[\r\n]*<(td|TD)\>([\w\W]*?)\n",
+        newText = re.sub("[\r\n]+<(td|TD)\>([\w\W]*?)\n",
                          "\n| \\2\n", newText, 0)
-        newText = re.sub("[\r\n]*<(td|TD)([^>]*?)\>([\w\W]*?)\n",
+        newText = re.sub("[\r\n]+<(td|TD)([^>]*?)\>([\w\W]*?)\n",
                          "\n|\\2 | \\3\n", newText, 0)
 
 
         # fail save. sometimes people forget </td>
-        newText = re.sub("[\r\n]*<(td|TD)([^<]*)\>([\t ]*)([\w\W]*?)\n",
+        newText = re.sub("[\r\n]+<(td|TD)([^<]*)\>([\t ]*)([\w\W]*?)\n",
                          "\n|\\2 | \\4\n", newText, 0)
 
         # Garbage collecting ;-)
@@ -101,7 +106,7 @@ for arg in sys.argv[1:]:
 
         # most <th> come with '''title'''. Senseless in my eyes cuz
         # <th> should be bold anyways.
-        newText = re.sub("[\r\n]*\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
+        newText = re.sub("[\r\n]+\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
                          "\r\n!\\1\\3", newText, 0)
 
         # kills indention within tables. Be warned, it might bring
@@ -117,20 +122,32 @@ for arg in sys.argv[1:]:
 
         
         # kill extra new-lines
-        newText = re.sub(r"[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
+        newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
         # shortening if <table> had no arguments/parameters
         newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\[| ", newText, 0)
         # shortening if <td> had no args
         newText = re.sub("[\r\n]+\|[\ ]+\| ", "\r\n| ", newText, 0)
         # shortening if <th> had no args
         newText = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newText, 0)
-        # merge two short <td>s (works only once :-(
-        newText = re.sub("[\r\n]+(\| [^\n\r]{1,35})[\r\n]+\| ([^\r\n]{1,35})[\r\n]+",
-                         "\r\n\\1 || \\2\r\n", newText, 0)
-        # ain't working, yet
-#        newText = re.sub('(\{\|[\w\W]*?\=)([^"][^ >]*)(.*?\|\})',
-#                         '\\1"\\2"\\3', newText, 0)
 
+        # merge two short <td>s (works only once :-(
+        num = 1
+        while num != 0:
+            newText, num = re.subn(r"[\r\n]+(\| [^\n\r]{1,35})[\r\n]+\| ([^\r\n]{1,35})[\r\n]+",
+                         "\r\n\\1 || \\2\r\n", newText, 0)
+
+        # proper attributes
+        num = 1
+        while num != 0:
+            newText, num = re.subn(r'([\r\n]+(\!|\|)[^\n\|]+) \= ([^\s>]+)(\s)',
+                                   '\\1="\\3"\\4', newText, 0)
+        # again proper attributes
+        num = 1
+        while num != 0:
+            newText, num = re.subn('(\s(\{\||\!|\||\|\-)([^\r\n\|]+))\=' +
+                                   '([^\"\s]+?)([\W]{1})',
+                                   '\\1="\\4"\\5', newText, 0)
+         
                 
         if newText!=text:
             import difflib
