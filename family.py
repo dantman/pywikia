@@ -425,9 +425,12 @@ class Family:
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
+        # Languages in interwiki_putfirst_doubled get their languages that are put
+        # first will be given again in the 'normal' list.
     
         self.interwiki_putfirst = {}
-    
+        self.interwiki_putfirst_doubled = []
+
         # Which language codes do no longer exist and by which language code should
         # they be replaced. If for example the language with code xx: now should get
         # code yy:, add {'xx':'yy'} to obsolete.

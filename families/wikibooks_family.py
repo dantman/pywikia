@@ -23,7 +23,7 @@ class Family(family.Family):
             self.langs[lang] = lang+'.wiktionary.org'
 
         self.obsolete = {'nb':'no',
-                    'zh-min-nan':'minnan',
+                    'minnan':'zh-min-nan',
                     'zh-tw':'zh',
                     'zh-cn':'zh'}
 

@@ -1720,7 +1720,8 @@ def interwikiFormat(links, insite = None):
             if code in getSite().family.langs:
                 site = insite.getSite(code = code)
                 if site in ar:
-                    del ar[ar.index(site)]
+                    if not insite.interwiki_putfirst_doubled():
+                        del ar[ar.index(site)]
                     ar2 = ar2 + [site]
         ar = ar2 + ar
     for site in ar:
@@ -2272,6 +2273,9 @@ class Site(object):
                 
     def interwiki_putfirst(self):
         return self.family.interwiki_putfirst.get(self.lang,None)
+
+    def interwiki_putfirst_doubled(self):
+        return self.lang in self.family.interwiki_putfirst_doubled
 
     def login_address(self):
         return self.family.login_address(self.lang)
