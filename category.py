@@ -7,8 +7,9 @@ This bot has the following functions, which must be given as command line
 arguments:
 
     add  - mass-add a category to a list of pages
-    tidy - tidy up a category by moving its articles into subcategories
+    remove - remove category tag from all pages in a category
     rename - move all pages in a category to another category
+    tidy - tidy up a category by moving its articles into subcategories
 
 For example, to add a new category, 
 
@@ -96,19 +97,23 @@ def add_category():
                     pl2.put(text, comment = catpl.aslocallink().encode(wikipedia.code2encoding(wikipedia.mylang)))
 
 
-def rename_category():
-    # given an article which is in category old_cat, moves it to
-    # category new_cat. Moves subcategories of old_cat to new_cat
-    # as well.
-    def move_to_category(article, old_cat, new_cat):
-        cats = article.categories()
-        cats.remove(old_cat)
+# Given an article which is in category old_cat, moves it to
+# category new_cat. Moves subcategories of old_cat to new_cat
+# as well.
+# If new_cat is None, the category will be removed.
+def change_category(article, old_cat, new_cat):
+    cats = article.categories()
+    cats.remove(old_cat)
+    if new_cat != None:
+        print "appending"
         cats.append(new_cat)
-        text = article.get()
-        text = wikipedia.replaceCategoryLinks(text, cats)
-        print "Changing page %s" %(article)
-        article.put(text)
-        
+    text = article.get()
+    text = wikipedia.replaceCategoryLinks(text, cats)
+    print "Changing page %s" %(article)
+    article.put(text)
+
+
+def rename_category():
     old_title = wikipedia.input('Please enter the old name of the category: ')
     old_cat = catlib.CatLink(old_title)
     new_title = wikipedia.input('Please enter the new name of the category: ')
@@ -122,14 +127,37 @@ def rename_category():
         print 'There are no articles in category ' + old_title
     else:
         for article in articles:
-            move_to_category(article, old_cat, new_cat)
+            change_category(article, old_cat, new_cat)
     
     subcategories = old_cat.subcategories(recurse = 0)
     if len(subcategories) == 0:
         print 'There are no subcategories in category ' + old_title
     else:
         for subcategory in subcategories:
-            move_to_category(subcategory, old_cat, new_cat)
+            change_category(subcategory, old_cat, new_cat)
+
+# asks for a category, and removes the category tag from all pages 
+# in that category, without prompting.
+def remove_category():
+    old_title = wikipedia.input('Please enter the name of the category that should be removed: ')
+    old_cat = catlib.CatLink(old_title)
+    # get edit summary message
+    wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)] % old_title)
+    
+    articles = old_cat.articles(recurse = 0)
+    if len(articles) == 0:
+        print 'There are no articles in category ' + old_title
+    else:
+        for article in articles:
+            change_category(article, old_cat, None)
+    
+    subcategories = old_cat.subcategories(recurse = 0)
+    if len(subcategories) == 0:
+        print 'There are no subcategories in category ' + old_title
+    else:
+        for subcategory in subcategories:
+            change_category(subcategory, old_cat, None)
+
 
 """
 Script to help a human to tidy up a category by moving its articles into
@@ -240,6 +268,8 @@ if __name__ == "__main__":
             pass
         elif arg == "add":
             add_category()
+        elif arg == "remove":
+            remove_category()
         elif arg == "rename":
             rename_category()
         elif arg == "tidy":
