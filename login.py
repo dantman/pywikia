@@ -121,6 +121,7 @@ def main(args):
     username = password = None
     for arg in args:#sys.argv[1:]:
         arg = wikipedia.argHandler(arg)
+        if arg is None: continue
         if arg.startswith("-user:"):
             username = arg[6:]
         elif arg.startswith("-pass:"): # not recommended
