@@ -363,11 +363,8 @@ class PageLink:
         try:
             thistxt = removeLanguageLinks(self.get())
         except IsRedirectPage:
-            pass
-        try:
-            thistxt = removeCategoryLinks(self.get(), self.code())
-        except IsRedirectPage:
-            pass
+            return
+        thistxt = removeCategoryLinks(thistxt, self.code())
         w=r'([^\]\|]*)'
         Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
         for l in Rlink.findall(thistxt):
