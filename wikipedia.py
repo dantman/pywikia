@@ -13,7 +13,7 @@ import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
 
 import config
-
+    
 # Are we debugging this module? 0 = No, 1 = Yes, 2 = Very much so.
 debug = 0
 loggedin = False
@@ -70,6 +70,7 @@ langs = {
     'pt':'pt.wikipedia.org',   # Portuguese, UTF-8
     'ro':'ro.wikipedia.org',   # Romanian, UTF-8
     'ru':'ru.wikipedia.org',   # Russian, UTF-8
+    'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
     'simple':'simple.wikipedia.org', # Simple English, UTF-8
     'sk':'sk.wikipedia.org',   # Slovakian, UTF-8
     'sl':'sl.wikipedia.org',   # Slovenian, UTF-8
@@ -168,6 +169,8 @@ special = {
     'zh-cn': 'Special',
     'zh-tw': 'Special',
     }
+
+obsolete = ['sh']
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
@@ -991,7 +994,11 @@ def getLanguageLinks(text,incode=None):
                     t=t[:t.index('|')]
                 if incode == 'eo':
                     t=t.replace('xx','x')
-                result[code] = t
+                if code in obsolete:
+                    print "ERROR: ignoring link to obsolete language %s:%s"%(
+                        code, repr(t))
+                else:
+                    result[code] = t
             else:
                 print "ERROR: empty link to %s:"%(code)
     if incode in ['zh','zh-cn','zh-tw']:
@@ -1014,7 +1021,7 @@ def removeLanguageLinks(text):
        links removed. If a link to an unknown language is encountered,
        a warning is printed."""
     for code in langs:
-        text=re.sub(r'\[\['+code+':([^\]]*)\]\]', '', text)
+        text = re.sub(r'\[\['+code+':([^\]]*)\]\]', '', text)
     m=re.search(r'\[\[([a-z][a-z]):([^\]]*)\]\]', text)
     if m:
         print "WARNING: Link to unknown language %s name %s"%(m.group(1), repr(m.group(2)))
