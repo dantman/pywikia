@@ -54,7 +54,7 @@ splitLongParagraphs = False
 # That can do very ugly results.
 deIndentTables = True
 # table2wiki.py works quite stable, so you might switch to True
-table2wikiAskOnlyWarnings = False
+table2wikiAskOnlyWarnings = True
 table2wikiSkipWarnings = False
 # guess what. Very useful in table2wiki.py
 DEBUG = False
