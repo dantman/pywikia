@@ -983,16 +983,16 @@ def removeLanguageLinks(text):
         print "WARNING: Link to unknown language %s name %s"%(m.group(1), m.group(2))
     # Remove white space at the beginning
     while 1:
-        if text.startswith('\r\n'):
+        if text and text.startswith('\r\n'):
             text=text[2:]
-        elif text.startswith(' '):
+        elif text and text.startswith(' '):
             # This assumes that the first line NEVER starts with a space!
             text=text[1:]
         else:
             break
     # Remove white space at the end
     while 1:
-        if text[-1:] in '\r\n \t':
+        if text and text[-1:] in '\r\n \t':
             text=text[:-1]
         else:
             break
