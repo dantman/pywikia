@@ -52,6 +52,9 @@ if fn=='':
 #convert arguments from encoding used by user's console
 #to unicode
 desc = unicode(desc, config.console_encoding)
-fn = unicode(fn, config.console_encoding)
+try:
+    fn = unicode(fn, config.console_encoding)
+except TypeError:
+    pass
 
 lib_images.get_image(fn, None, desc, keep)
