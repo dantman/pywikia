@@ -67,6 +67,8 @@ brackethttp.py         : a bot replacing a ()-bracketed http: link by an
                          explicit [ ] link to avoid a parser problem.
 category.py            : add a category link to all pages mentioned on a page,
                          change or remove category tags
+check_extern.py        : check external links to see whether they still exist,
+                         have been moved etcetera.
 copy_table.py          : copy a table from one wikipedia to another, making
                          automatic translations
 imagetransfer.py       : Given a Wikipedia page, check the interwiki links

@@ -5,3 +5,4 @@ treelang.log
 *.dump
 warning*.log
 *.txt
+check_extern.log

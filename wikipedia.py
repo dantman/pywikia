@@ -1375,11 +1375,11 @@ def link2url(name, code, incode = None):
     try:
         result = str(name.encode(code2encoding(code)))
     except UnicodeError:
-        print "Cannot convert %s into a URL for %s" % (repr(name), code)
+        #print "Cannot convert %s into a URL for %s" % (repr(name), code)
         # Put entities in there. The URL will not be found.
         result = addEntity(name)
-        print "Using entities instead",result
-        print "BUG> This is probably a bug in the robot that did not recognize an interwiki link!"
+        #print "Using entities instead",result
+        #print "BUG> This is probably a bug in the robot that did not recognize an interwiki link!"
         #raise
     result = space2underline(result)
     return urllib.quote(result)

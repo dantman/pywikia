@@ -1,0 +1,221 @@
+# -*- coding: utf-8  -*-
+"""
+This bot is used for checking external links from Wikipedia. It checks
+all external links in groups of 480 pages, gives the error code for each
+that causes problems, and counts the number of links with and without
+problems.
+
+It accepts all general Wikipediabot arguments as well as:
+-start:xxx  Start checking from page 'xxx' rather than in the beginning
+            of the alphabet (at '0').
+-nolog      Do not log to a file, only give output to a screen.
+
+The bot returns all links that have some problem, with the errorcode
+provided by the server, or the artificial errorcode -1 if the server
+could not be reached at all. Output is sent both to the screen and the
+file check_extern.txt
+"""
+
+#
+# (C) Andre Engels, 2004
+#
+# Distribute under the terms of the PSF license.
+#
+
+import wikipedia, urllib, re, sys
+
+class URLerrorFinder(urllib.FancyURLopener):
+    version="RobHooftWikiRobot/1.0"
+    def http_error(self, url, fp, errcode, errmsg, headers, data=None):
+        return errcode
+
+    def open_http(self, url, data=None):
+        """Use HTTP protocol."""
+        import httplib
+        user_passwd = None
+        if isinstance(url, str):
+            host, selector = urllib.splithost(url)
+            if host:
+                user_passwd, host = urllib.splituser(host)
+                host = urllib.unquote(host)
+            realhost = host
+        else:
+            host, selector = url
+            urltype, rest = urllib.splittype(selector)
+            url = rest
+            user_passwd = None
+            if urltype.lower() != 'http':
+                realhost = None
+            else:
+                realhost, rest = splithost(rest)
+                if realhost:
+                    user_passwd, realhost = splituser(realhost)
+                if user_passwd:
+                    selector = "%s://%s%s" % (urltype, realhost, rest)
+                if proxy_bypass(realhost):
+                    host = realhost
+        if not host: raise IOError, ('http error', 'no host given')
+        if user_passwd:
+            import base64
+            auth = base64.encodestring(user_passwd).strip()
+        else:
+            auth = None
+        h = httplib.HTTP(host)
+        if data is not None:
+            h.putrequest('POST', selector)
+            h.putheader('Content-type', 'application/x-www-form-urlencoded')
+            h.putheader('Content-length', '%d' % len(data))
+        else:
+            h.putrequest('GET', selector)
+        if auth: h.putheader('Authorization', 'Basic %s' % auth)
+        if realhost: h.putheader('Host', realhost)
+        for args in self.addheaders: h.putheader(*args)
+        h.endheaders()
+        if data is not None:
+            h.send(data)
+        errcode, errmsg, headers = h.getreply()
+        fp = h.getfile()
+        return errcode
+
+# Which error codes do we not consider errors? 
+allowederrorcodes = [100,101,200,201,202,203,205,304]
+
+errname = {
+    -1:'No contact to server',
+    100:'Continue',
+    101:'Switching Protocols',
+    200:'OK',
+    201:'Created',
+    202:'Accepted',
+    203:'Non-Authorative Information',
+    204:'No Content',
+    205:'Reset Content',
+    206:'Partial Content',
+    300:'Multiple Choices',
+    301:'Moved Permanently',
+    302:'Moved Temporarily',
+    303:'See Other',
+    304:'Not Modified',
+    305:'Use Proxy',
+    307:'Temporary Redirect',
+    400:'Bad Request',
+    401:'Unauthorized',
+    402:'Payment Required',
+    403:'Forbidden',
+    404:'Not Found',
+    405:'Method Not Allowed',
+    406:'None Acceptable',
+    407:'Proxy Authentication Required',
+    408:'Request Timeout',
+    409:'Conflict',
+    410:'Gone',
+    411:'Authorization Refused',
+    412:'Precondition Failed',
+    413:'Request Entity Too Large',
+    414:'Request-URI Too Large',
+    415:'Unsupported Media Type',
+    416:'Requested Range not satisfiable',
+    417:'Expectation Failed',
+    500:'Internal Server Error',
+    501:'Not Implemented',
+    502:'Bad Gateway',
+    503:'Service Unavailable',
+    504:'Gateway Timeout',
+    505:'HTTP Version not supported',
+    8181:'Certificate Expired',
+    12002:'Timeout',
+    12007:'No such host',
+    12029:'No connection',
+    12031:'Connection Reset'
+ }
+
+def errorname(error):
+    # Given a numerical HTML error, give its actual identity
+    if error in errname:
+        return errname[error]
+    elif (error > 300) and (error < 400):
+        return 'Unknown Redirection Response'
+    else:
+        return 'Unknown Error'
+    
+start = '!'
+log = True
+
+for arg in sys.argv[1:]:
+    url=sys.argv[1]
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg.startswith('-start:'):
+            start=arg[7:]
+        elif arg=='-nolog':
+            log = False
+        else:
+            print('Argument %s unknown; ignoring')%arg
+
+if log:
+    import logger
+    sys.stdout = logger.Logger(sys.stdout, filename = 'check_extern.log')
+
+todo = []
+cont = True
+checked = 0
+working = 0
+nonworking = 0
+totalchecked = 0
+
+while cont:
+    print
+    i = 0
+    if len(todo)<61:
+        for pl in wikipedia.allpages(start = start):
+            todo.append(pl)
+            i += 1
+            if i==480:
+                break
+        start = todo[len(todo)-1].linkname() + '_0'
+    # todo is a list of pages to do, donow are the pages we will be doing in this run.
+    if len(todo)>60:
+        # Take the first 60.
+        donow = todo[0:60]
+        todo = todo[60:]
+    else:
+        donow = todo
+        # If there was more to do, the 'if len(todo)<61' part would have extended
+        # todo beyond this size.
+        cont = False
+    try:
+        wikipedia.getall(wikipedia.mylang, donow)
+    except wikipedia.SaxError:
+        # Ignore this error, and get the pages the traditional way.
+        pass
+    checked +=len(donow)
+    for pl in donow:
+        R = re.compile(r'http://[\S]+[^\s.,:;)\?!\]]')
+        try:
+            for url in R.findall(pl.get()):
+                try:
+                    error = URLerrorFinder().open(url)
+                except IOError:
+                    error = -1
+                if error in allowederrorcodes:
+                    working += 1
+                else:
+                    nonworking += 1
+                    print
+                    print 'Page "%s" links to:'%pl.linkname()
+                    print url
+                    print 'Which gave error: %s %s'%(error,errorname(error))
+        # If anything is wrong with the Wikipedia page, just ignore
+        except wikipedia.NoPage:
+            pass
+        except wikipedia.IsRedirectPage:
+            pass
+        except wikipedia.LockedPage:
+            pass
+    if checked>499 or not cont:
+        totalchecked += 500
+        checked -= 500
+        print
+        print '======================================================================'
+        print '%s pages checked, last was [[%s]]'%(totalchecked+checked,donow[len(donow)-1])
+        print 'In those pages there were %s correct and %s problematic external links.'%(working,nonworking)
