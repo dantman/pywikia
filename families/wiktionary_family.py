@@ -74,7 +74,7 @@ class Family(family.Family):
         
         self.biglangs4 = self.biglangs3
                     
-        self.seriouslangs = biglangs4
+        self.seriouslangs = self.biglangs4
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
        
