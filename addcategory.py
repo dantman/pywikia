@@ -36,12 +36,19 @@ def main():
     catpl = wikipedia.PageLink(wikipedia.mylang, ns[0]+':'+newcat.capitalize())
     print "Will add %s"%catpl.aslocallink()
 
+    answer = ''
     for nm in pagenames:
         pl2 = wikipedia.PageLink(wikipedia.mylang, nm)
-        answer = ''
-        while answer not in ('y','n'):
-            answer = raw_input("%s [y/n] : "%(pl2.asasciilink()))
-        if answer == 'y':
+        if answer != 'a':
+	    answer = ''
+        while answer not in ('y','n','a'):
+            answer = raw_input("%s [y/n/a(ll)] : "%(pl2.asasciilink()))
+            if answer == 'a':
+                confirm = ''
+		while confirm not in ('y','n'):
+	            confirm = raw_input("This should be used if and only if you are sure that your links are correct !!! Are you sure ? [y/n] : ")
+	
+	if answer == 'y' or answer == 'a':
             try:
 	        cats = pl2.categories()
             except wikipedia.NoPage:
