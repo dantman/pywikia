@@ -134,7 +134,7 @@ __version__ = '$Id$'
 #
 import sys, copy, re
 
-import wikipedia, config, unequal, titletranslate
+import wikipedia, config, unequal, titletranslate, date
 
 msg = {
     'da':('Tilføjer','Fjerner','Ændrer'),
@@ -143,38 +143,6 @@ msg = {
     'fr':('Ajoute','Retire','Modifie'),
     'nl':('Erbij','Eraf','Anders'),
     'no':('Tilfoeyer','Fjerner','Endrer'),
-    }
-
-# date formats for various languages, required for -days argument
-date = {
-    1: { 'sl':'%d. januar',    'it':'%d gennaio',   'en':'January %d',   'de':'%d. Januar',    'fr':'%d janvier',   'af':'01-%02d', 'ca':'%d de gener',       'oc':'%d de geni%%C3%%A8r',  },
-    2: { 'sl':'%d. februar',   'it':'%d febbraio',  'en':'February %d',  'de':'%d. Februar',   'fr':'%d fevrier',   'af':'02-%02d', 'ca':'%d de febrer',      'oc':'%d de febri%%C3%%A8r', },
-    3: { 'sl':'%d. marec',     'it':'%d marzo',     'en':'March %d',     'de':'%d. M&auml;rz', 'fr':'%d mars',      'af':'03-%02d', 'ca':'%d de_mar%%C3%%A7', 'oc':'%d de_mar%%C3%%A7',    },
-    4: { 'sl':'%d. april',     'it':'%d aprile',    'en':'April %d',     'de':'%d. April',     'fr':'%d avril',     'af':'04-%02d', 'ca':'%d d\'abril',       'oc':'%d d\'abril',          },
-    5: { 'sl':'%d. maj',       'it':'%d maggio',    'en':'May %d',       'de':'%d. Mai',       'fr':'%d mai',       'af':'05-%02d', 'ca':'%d de maig',        'oc':'%d de mai',            },
-    6: { 'sl':'%d. junij',     'it':'%d giugno',    'en':'June %d',      'de':'%d. Juni',      'fr':'%d juin',      'af':'06-%02d', 'ca':'%d de juny',        'oc':'%d de junh',           },
-    7: { 'sl':'%d. julij',     'it':'%d luglio',    'en':'July %d',      'de':'%d. Juli',      'fr':'%d juillet',   'af':'07-%02d', 'ca':'%d de juliol',      'oc':'%d de julhet',         },
-    8: { 'sl':'%d. avgust',    'it':'%d agosto',    'en':'August %d',    'de':'%d. August',    'fr':'%d aout',      'af':'08-%02d', 'ca':'%d d\'agost',       'oc':'%d d\'agost',          },
-    9: { 'sl':'%d. september', 'it':'%d settembre', 'en':'September %d', 'de':'%d. September', 'fr':'%d septembre', 'af':'09-%02d', 'ca':'%d de setembre',    'oc':'%d de setembre',       },
-    10:{ 'sl':'%d. oktober',   'it':'%d ottobre',   'en':'October %d',   'de':'%d. Oktober',   'fr':'%d octobre',   'af':'10-%02d', 'ca':'%d d\'octubre',     'oc':'%d d\'octobre',        },
-    11:{ 'sl':'%d. november',  'it':'%d novembre',  'en':'November %d',  'de':'%d. November',  'fr':'%d novembre',  'af':'11-%02d', 'ca':'%d de novembre',    'oc':'%d de novembre',       },
-    12:{ 'sl':'%d. december',  'it':'%d dicembre',  'en':'December %d',  'de':'%d. Dezember',  'fr':'%d decembre',  'af':'12-%02d', 'ca':'%d de desembre',    'oc':'%d de decembre',       },
-    }
-
-# number of days in each month, required for -days argument
-days_in_month = {
-    1:  31,
-    2:  29,
-    3:  31,
-    4:  30,
-    5:  31,
-    6:  30,
-    7:  31,
-    8:  31,
-    9:  30,
-    10: 31,
-    11: 30,
-    12: 31
     }
 
 class Global:
@@ -880,10 +848,10 @@ if __name__ == "__main__":
                 startmonth = int(arg[6:])
             else:
                 startmonth = 1
-            print "Starting with day %s" % (date[startmonth][wikipedia.mylang]) % 1
+            print "Starting with day %s" % (date.date_format[startmonth][wikipedia.mylang]) % 1
             for month in range(startmonth, 12+1):
-                for day in range(1, days_in_month[month]+1):
-                    sa.add(wikipedia.PageLink(wikipedia.mylang, (date[month][wikipedia.mylang]) % day))
+                for day in range(1, date.days_in_month[month]+1):
+                    sa.add(wikipedia.PageLink(wikipedia.mylang, (date.date_format[startmonth][wikipedia.mylang]) % day))
         elif arg == '-nobell':
             globalvar.bell = False
         elif arg == '-test':
