@@ -49,7 +49,7 @@ msg_change={
     'de':u'Bot: Ändere Kategorie %s',
     'en':u'Robot: Changing category %s',
     'es':u'Bot: Cambiada categoría %s',
-    'is':u'Vélmenni: Breyti flokknum %s',
+    'is':u'Vélmenni: Breyti flokknum [[Flokkur:%s]]',
     'nl':u'Bot: Wijziging Categorie %s',
     'pt':u'Bot: Modificando [[Categoria:%s]]',
     }
@@ -59,7 +59,7 @@ msg_remove={
     'de':u'Bot: Entferne aus Kategorie %s',
     'en':u'Robot: Removing from category %s',
     'es':u'Bot: Eliminada de la categoría %s',
-    'is':u'Vélmenni: Breyti flokknum %s',
+    'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
     'nl':u'Bot: Verwijderd uit Categorie %s',
     'pt':u'Bot: Removendo [[Categoria:%s]]',
     }
