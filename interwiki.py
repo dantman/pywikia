@@ -1026,8 +1026,11 @@ if __name__ == "__main__":
             elif arg == '-continue':
                 for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
                     sa.add(pl,hints=hints)
-                    last = pl
-                start = str(pl.linkname().encode(pl.encoding()))
+                try:
+                    start = str(pl.linkname().encode(pl.encoding()))
+                except NameError:
+                    print "Dump file is empty?! Starting at the beginning."
+                    start = "!"
             elif arg.startswith('-file:'):
                 for pl in wikipedia.PageLinksFromFile(arg[6:]):
                     sa.add(pl,hints=hints)
