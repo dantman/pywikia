@@ -912,12 +912,10 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             print repr(text)
             raise NoPage(code, name)
         i2 = re.search('</textarea>', text).start()
-        if i2-i1 < 2: # new software
+        if i2-i1 < 2:
             raise NoPage(code, name)
         if debug:
             print text[i1:i2]
-        if text[i1:i2] == 'Describe the new page here.\n': # old software
-            raise NoPage(code, name)
         m=Rredirect.match(text[i1:i2])
         if m:
             print "DBG> %s is redirect to %s"%(name,m.group(1))
