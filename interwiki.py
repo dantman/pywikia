@@ -628,5 +628,8 @@ if __name__ == "__main__":
         
     try:
         sa.run()
+    except KeyboardInterrupt:
+        sa.dump('interwiki.dump')
     except:
         sa.dump('interwiki.dump')
+        raise
