@@ -53,7 +53,7 @@ while cont:
             text = pl.get()
             pl.put(text)
         except wikipedia.NoPage:
-            print "Page [[%s:%s]] non-existing"%(wikipedia.mylang,p.urlname())
+            print "Page [[%s:%s]] non-existing"%(wikipedia.mylang,pl.linkname())
         except wikipedia.IsRedirectPage:
             pass
         except wikipedia.LockedPage:
