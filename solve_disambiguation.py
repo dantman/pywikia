@@ -1,9 +1,14 @@
+# Script to solve disambiguations
+#
+# $Id$
+#
+# (C) Rob W.W. Hooft, 2003
+# Distribute under the terms of the GPL.
 import wikipedia,re,sys
 
 wikipedia.action = wikipedia.username+': Robot-assisted disambiguation '
 
-mylang='nl'
-
+mylang = wikipedia.mylang
 
 def getreferences(pl):
     host = wikipedia.langs[pl.code()]
@@ -13,22 +18,31 @@ def getreferences(pl):
     return Rref.findall(txt)
 
 wrd=[]
+alternatives=[]
+getalternatives=1
+
 for arg in sys.argv[1:]:
-    wrd.append(arg)
+    if arg.startswith('-pos:'):
+        alternatives.append(arg[5:])
+    elif arg=='-just':
+        getalternatives=0
+    else:
+        wrd.append(arg)
 
 wrd=' '.join(wrd)
 
+wikipedia.action += wrd
+
 thispl=wikipedia.PageLink(mylang,wrd)
 
-thistxt=thispl.get()
+if getalternatives:
+    thistxt=thispl.get()
 
-w=r'([^\]\|]*)'
-Rlink=re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
+    w=r'([^\]\|]*)'
+    Rlink=re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
 
-alternatives=[]
-
-for a in Rlink.findall(thistxt):
-    alternatives.append(a[0])
+    for a in Rlink.findall(thistxt):
+        alternatives.append(a[0])
 
 for i in range(len(alternatives)):
     print "%3d"%i,alternatives[i]
@@ -64,10 +78,13 @@ for ref in getreferences(thispl):
         while 1:
             print "== %s =="%(refpl),m.start(),m.end()
             print reftxt[max(0,m.start()-context):m.end()+context]
-            choice=raw_input("Which replacement (n=none,q=quit,m=more context,l=list):")
+            choice=raw_input("Which replacement (n=none,q=quit,m=more context,l=list,a=add new):")
             if choice=='n':
                 choice=-1
                 break
+            elif choice=='a':
+                ns=raw_input('New alternative:')
+                alternatives.append(ns)
             elif choice=='q':
                 sys.exit(0)
                 break
