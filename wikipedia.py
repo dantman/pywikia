@@ -2129,6 +2129,9 @@ class Site(object):
 
     def get_address(self, s):
         return self.family.get_address(self.lang, s)
+
+    def edit_address(self, s):
+        return self.family.edit_address(self.lang, s)
     
     def checkCharset(self, charset):
         if not hasattr(self,'charset'):
