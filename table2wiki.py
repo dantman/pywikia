@@ -34,11 +34,15 @@ mylang = 'de'
 myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
+warnings = 0
 
-deIndentTables = 1
-splitLongSentences = 1
+deIndentTables = 0
+splitLongSentences = 0
 
 DEBUG=0
+
+#be careful, some bad HTML-tables is still not recognized
+noControl = 0
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
@@ -58,14 +62,16 @@ for arg in sys.argv[1:]:
         newText = text
 
         # every open-tag gets a new line.
-        newText = re.sub("(\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
+        newText = re.sub("(\<[tT]{1}[dDhH]{1}([^>]*?)\>[^<]*?)"
+                         + "(\<\/[Tt]{1}[dDhH]{1}[^>]*?\>)",
+                         "\n\\1\\2", newText, 0)
+        newText = re.sub("(\<[tT]{1}[rR]{1}[^>]*?\>)",
                          "\n\\1", newText, 0)
         # bring every tag into one single line.
         num = 1
         while num != 0:
             newText, num = re.subn("(\<[^>\n\r]+?)[\r\n]+(\>)",
                                    "\\1 \\2", newText, 0)
-
 
         ##################
         # the <table> tag
@@ -98,10 +104,13 @@ for arg in sys.argv[1:]:
         newText = re.sub("[\r\n]+<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
                          "\n!\\2 | \\3\r\n", newText, 0)
         # fail save. sometimes people forget </th>
-        newText = re.sub("[\r\n]+<(th|TH)\>([\w\W]*?)\n",
-                         "\n! \\2\n", newText, 0)
-        newText = re.sub("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)\n",
-                         "\n!\\2 | \\3\n", newText, 0)
+        newText, n = re.subn("[\r\n]+<(th|TH)\>([\w\W]*?)\n",
+                             "\n! \\2\n", newText, 0)
+        warnings = warnings + n
+        newText, n = re.subn("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)\n",
+                             "\n!\\2 | \\3\n", newText, 0)
+        warnings = warnings + n
+        
 
         ##################
         # normal <td>
@@ -109,11 +118,22 @@ for arg in sys.argv[1:]:
                          "\n| \\2\n", newText, 0)         
         newText = re.sub("[\r\n]+\<(td|TD)([^>]*?)\>([\w\W]*?)\<\/(TD|td)\>",
                          "\n|\\2 | \\3\n", newText, 0)
+        # WARNING: this sub might eat cells of bad HTML, but most likely it
+        # will correct errors
+        newText, n = re.subn("[\r\n]+\<(td|TD)\>([^\r\n]*?)\<(td|TD)\>",
+                             "\n| \\2\n", newText, 0)
+        warnings = warnings + n
+        newText, n = re.subn("[\r\n]+\<(td|TD)([^>]+?)\>([^\r\n]*?)\<(td|TD)\>",
+                             "\n|\\2 | \\3\n", newText, 0)
+        warnings = warnings + n
         # fail save. sometimes people forget </td>
-        newText = re.sub("[\r\n]+<(td|TD)\>([\w\W]*?)\n",
+        newText, n = re.subn("[\r\n]+<(td|TD)\>([\w\W]*?)\n",
                          "\n| \\2\n", newText, 0)
-        newText = re.sub("[\r\n]+<(td|TD)([^>]*?)\>([\w\W]*?)\n",
+        warnings = warnings + n
+        newText, n = re.subn("[\r\n]+<(td|TD)([^>]*?)\>([\w\W]*?)\n",
                          "\n|\\2 | \\3\n", newText, 0)
+        warnings = warnings + n
+
 
 
         ##################
@@ -123,11 +143,13 @@ for arg in sys.argv[1:]:
         ##################
         # OK, that's only theory but works most times.
         # Most browsers assume that <th> gets a new row and we do the same
-        newText = re.sub("([\r\n]+\|\ [^\r\n]*?)([\r\n]+\!)",
-                         "\\1\r\n|-----\\2", newText, 0)
+        newText, n = re.subn("([\r\n]+\|\ [^\r\n]*?)([\r\n]+\!)",
+                             "\\1\r\n|-----\\2", newText, 0)
+        warnings = warnings + n
         # adds a |---- below for the case the new <tr> is missing
-        newText = re.sub("([\r\n]+\!\ [^\r\n]*?[\r\n]+)(\|\ )",
-                         "\\1|-----\r\n\\2", newText, 0)
+        newText, n = re.subn("([\r\n]+\!\ [^\r\n]*?[\r\n]+)(\|\ )",
+                             "\\1|-----\r\n\\2", newText, 0)
+        warnings = warnings + n
         
 
         ##################
@@ -144,6 +166,7 @@ for arg in sys.argv[1:]:
             while num != 0:
                 newText, num = re.subn("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
                                        "\\1\n\\2", newText, 0)
+                warnings = warnings + num
 
         ##################
         # kills additional spaces after | or ! or {|
@@ -186,7 +209,7 @@ for arg in sys.argv[1:]:
 
         ##################
         # strip <center> from <th>
-        newText = re.sub("(\n\![\w\W]+?)\<center\>([\w\W]+?)\<\/center\>",
+        newText = re.sub("(\n\![^\r\n]+?)\<center\>([\w\W]+?)\<\/center\>",
                          "\\1 \\2", newText, 0)
         # strip align="center" from <th> because the .css does it
         newText = re.sub("(\n\![^\r\n\|]+?)align\=\"center\"([^\n\r\|]+?\|)",
@@ -222,7 +245,12 @@ for arg in sys.argv[1:]:
             #print "\nOriginal text\n" + text
             #print "\nModified text\n" + newText
 
-            doUpload=raw_input('Is it correct? [y|N]')
+            if noControl and warnings == 0:
+                doUpload="y"
+            else:
+                print "There were " + str(warnings) + " replacement(s) that\
+ might result bad output"
+                doUpload=raw_input('Is it correct? [y|N]')
 
 
             if doUpload == 'y':
@@ -235,7 +263,8 @@ for arg in sys.argv[1:]:
         else:
             print "No changes were necessary in " + arg
             notFixedSites = notFixedSites + " " + arg
-        print "\n\n"
+        print "\n"
+        warnings = 0
         
 print "\tFollowing pages were corrected\n" + fixedSites
 print "\n\tFollowing pages had errors and were not corrected\n" + notFixedSites
