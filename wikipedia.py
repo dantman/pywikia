@@ -39,6 +39,18 @@ PageLink: A MediaWiki page
 
     (*): This loads the page if it has not been loaded before
 
+PageGroup: A group of PageLinks (internally ordered)
+    __init__(list): Create a PageGroup of the list of PageLinks in list,
+        which does not need to be ordered.
+    contains(pl): Boolean, true iff pl in the PageGroup
+    merge(pg): Combine 2 groups
+    add(pl): Add the page pl to the PageGroup; give an error if it already
+        is in the group
+    addforce(pl): Add the page pl to the PageGroup even if it is already in
+    remove(pl): Remove all occurences of the page pl from the PageGroup    remforce(pl): Remove the page pl from the PageGroup if it is in the group
+    aslist(): Use the PageGroup as an ordinary list
+    show(): Write down the contents of the PageGroup on the screen
+
 Other functions:
 getall(xx,Pages): Get all pages in Pages (where Pages is a list of PageLinks,
     and xx: the language the pages are on)
@@ -148,6 +160,9 @@ class NoNamespace(Error):
 
 class EditConflict(Error):
     """There has been an edit conflict while uploading the page"""
+
+class PageInList(Error):
+    """Trying to page to list that is already included"""
 
 SaxError = xml.sax._exceptions.SAXParseException
 
@@ -609,9 +624,149 @@ class PageLink(object):
                     # otherwise, remove the irrelevant sections
                     returned_html = returned_html[ibegin:iend]
                 output(returned_html, myencoding())
-        
-# Regular expression recognizing redirect pages
 
+class PageGroup(object):
+    # A PageGroup is an ordered set of PageLink objects
+
+    def __init__(self,list):
+        self._list=list
+        self._list=self._sorted(self._list)
+
+    def _sorted(self,list):
+        # Sorting a list of PageLinks. We're using mergesort        
+        if len(list) <= 1:
+            return list
+        else:
+            i = len(list) // 2
+            return self._merge(list[:i],list[i:])
+
+    def _quickmerge(self,l1,l2):
+        # Merge two lists by normal means or by repeated inclusion
+        # depending on the size of the lists.
+        i1 = len(l1)
+        i2 = len(l2)
+        if i1*i1 < i2:
+            l = l2
+            for p in l1:
+                l = self._add(l,p,force=True)
+            return l
+        elif i2*i2 < i1:
+            l = l1
+            for p in l2:
+                l = self._add(l,p,force=True)
+            return l
+        else:
+            return self._merge(l1,l2)
+
+    def _merge(self,l1,l2):
+        if len(l1) == 0:
+            return l2
+        elif len(l2) == 0:
+            return l1
+        elif self._compare(l1[0],l2[0]):
+            return [l1[0]] + self._merge(l1[1:],l2)
+        else:
+            return [l2[0]] + self._merge(l1,l2[1:])
+
+    def _compare(self,p1,p2):
+        # Compare two pagelinks. True iff p1 <= p2
+        if p1.linkname() < p2.linkname():
+            return True
+        elif p2.linkname() < p1.linkname():
+            return False
+        elif p1.site().sitename() <= p2.site().sitename():
+            return True
+        return False
+
+    def _find(self,list,pl):
+        # Where in the list could pl be inserted? Returns a pair of numbers
+        # [x,y] with x<=y, such that pl[:x] are smaller, pl[y:] are larger
+        # and pl[x:y] are equal.
+        if len(list) == 1:
+            if list[0] == pl:
+                return [0,1]
+            elif self._compare(list[0],pl):
+                return [1,1]
+            else:
+                return [0,0]
+        else:
+            i = len(list) // 2
+            if list[i] == pl:
+                return [self._findleft(list[:i],pl),i + self._findright(list[i:],pl)]
+            elif self._compare(list[i],pl):
+                res = self._find(list[i:],pl)
+                return [i+res[0], i+res[1]]
+            else:
+                return self._find(list[:i],pl)
+
+    def _findleft(self,list,pl):
+        if len(list) == 1:
+            if self._compare(pl,list[0]):
+                return 0
+            else:
+                return 1
+        else:
+            i = len(list) // 2
+            if self._compare(pl,list[i]):
+                return self._findleft(list[:i],pl)
+            else:
+                return self._findleft(list[i:],pl)+i
+
+    def _findright(self,list,pl):
+        if len(list) == 1:
+            if self._compare(list[0],pl):
+                return 1
+            else:
+                return 0
+        else:
+            i = len(list) // 2
+            if self._compare(list[i],pl):
+                return self._findright(list[i:],pl)+i
+            else:
+                return self._findright(list[:i],pl)
+
+
+    def _add(self,list,pl,force=False):
+        res = self._find(list,pl)
+        x = res[0]
+        y = res[1]
+        if not force:
+            if x != y:
+                raise PageInList()
+        return(list[:y]+[pl]+list[y:])
+
+    def contains(self,pl):
+        res = self._find(self._list,pl)
+        x = res[0]
+        y = res[1]
+        if x == y:
+            return False
+        else:
+            return True
+
+    def merge(self,pg):
+        self._list = self._quickmerge(self._list,pg._list)
+
+    def add(self,pl):
+        self._list = self._add(self._list,pl)
+
+    def addforce(self,pl):
+        self._list = self._add(self._list,pl,force=True)
+
+    def remove(self,pl):
+        res = self._find(self._list,pl)
+        x = res[0]
+        y = res[1]
+        self._list = self._list[:x] + self._list[y:]
+
+    def aslist(self):
+        return self._list
+
+    def show(self):
+        for pl in self._list:
+            print(pl.linkname())
+
+# Regular expression recognizing redirect pages
 def redirectRe(site):
     if site.redirect():
         txt = '(?:redirect|'+site.redirect()+')'
@@ -1884,6 +2039,12 @@ class Site(object):
 
     def language(self):
         return self.lang
+
+    def family(self):
+        return self.family
+
+    def sitename(self):
+        return self.family.name+':'+self.lang
 
     def languages(self):
         return self.family.langs.keys()
