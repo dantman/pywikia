@@ -213,7 +213,7 @@ for lang in langs:
     if not lang in image:
         image[lang] = 'Image'
 
-obsolete = ['sh', 'dk', 'wa']
+obsolete = ['sh', 'dk']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages. This is only needed by the titletranslate.py module, so
