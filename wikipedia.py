@@ -1094,7 +1094,10 @@ def link2url(name, code, incode = None):
     """Convert a interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link"""
     if '%' in name:
-        name = url2unicode(name, language = code)
+        try:
+            name = url2unicode(name, language = code)
+        except UnicodeEncodeError:
+            name = html2unicode(name, language = code, altlanguage = incode)
     else:
         name = html2unicode(name, language = code, altlanguage = incode)
     #print "DBG>",repr(name)
