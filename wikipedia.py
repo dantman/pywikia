@@ -34,6 +34,7 @@ langs = {'en':'www.wikipedia.org',
          'fi':'fi.wikipedia.com',
          'ia':'ia.wikipedia.com',
          'et':'et.wikipedia.com',
+         'eu':'eu.wikipedia.com',
          'simple':'simple.wikipedia.com',
          #'test':'test.wikipedia.org',
          }
@@ -144,7 +145,7 @@ def getPage(code, name):
         for x in name.split():
             n.append(x.capitalize())
         name='_'.join(n)
-        print name
+        #print name
     else:
         name = re.sub(' ', '_', name)
     if not '%' in name: # It should not have been done yet
