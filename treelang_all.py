@@ -15,7 +15,8 @@ if sys.platform=='win32':
 else:
     normalstatus=0,256
     
-for f in wikipedia.allpages(start=sys.argv[1]):
+for pl in wikipedia.allpages(start=sys.argv[1]):
+    f=pl.urlname()
     wikipedia.throttle()
     f=f.replace("'",r"'\''")
     if os.isatty(1):

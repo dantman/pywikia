@@ -64,8 +64,7 @@ elif mode==3:
 else:
     raise "Please specify one of -one -file or -start"
 
-for f in pages:
-    pl=wikipedia.PageLink(codefrom,name=f)
+for pl in pages:
     print pl
     sys.stdout.flush()
     try:
