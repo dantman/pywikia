@@ -75,7 +75,7 @@ def add_category(sort_by_last_name = False):
             answer = ''
             
         while answer not in ('y','n','a'):
-            answer = wikipedia.input("%s [y/n/a(ll)]:"%(pl2.aslink()), decoder = pl.encoding())
+            answer = wikipedia.input("%s [y/n/a(ll)]:"%(pl2.aslink()))
             if answer == 'a':
                 confirm = ''
 		while confirm not in ('y','n'):
