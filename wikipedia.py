@@ -1885,7 +1885,7 @@ def getSite(code = None, fam = None, user=None):
     if code == None:
         code = default_code
     if fam == None:
-        fam == default_family
+        fam = default_family
     key = '%s:%s'%(fam,code)
     if not _sites.has_key(key):
         _sites[key] = Site(code=code, fam=fam, user=user)
