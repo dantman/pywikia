@@ -10,6 +10,8 @@ spellcheck.py Title
     check another page
 spellcheck.py -start:Title
     Go through the wiki, starting at title 'Title'.
+spellcheck.py -newpages
+    Go through the pages on [[Special:Newpages]]
 
 For each unknown word, you get a couple of options:
     numbered options: replace by known alternatives
@@ -237,11 +239,14 @@ try:
     title = []
     knownwords = {}
     start = None
+    newpages = False
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg)
         if arg:
             if arg.startswith("-start:"):
-                start=arg[7:]
+                start = arg[7:]
+            if arg.startswith("-newpages"):
+                newpages = True
             title.append(arg)
     mysite = wikipedia.getSite()
     wikipedia.setAction(wikipedia.translate(mysite,msg))
@@ -274,7 +279,20 @@ except:
     wikipedia.stopme()
     raise
 try:
-    if start:
+    if newpages:
+        newpages = wikipedia.getPage(mysite, mysite.newpagesname(500), do_quote=False, get_edit_page=False, throttle = True)
+        R = re.compile("<li.*?>.*?title=(.*?)&")
+        for hit in R.findall(newpages):
+            page = wikipedia.PageLink(mysite,hit)
+            try:
+                text = page.get()
+            except wikipedia.Error:
+                pass
+            else:
+                text = spellcheck(text)
+                if text != page.get():
+                    page.put(text)
+    elif start:
         for page in wikipedia.allpages(start = start, site = mysite):
             try:
                 text = page.get()
