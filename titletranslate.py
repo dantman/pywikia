@@ -11,18 +11,18 @@ import wikipedia
 
 datetable = {'nl':
              {
-    'januari':{'en':'January %d','de':'%d. Januar','fr':'%d janvier','af':'01-%02d'},
-    'februari':{'en':'February %d','de':'%d. Februar','fr':'%d fevrier','af':'02-%02d'},
-    'maart':{'en':'March %d','de':'%d. M&auml;rz','fr':'%d mars','af':'03-%02d'},
-    'april':{'en':'April %d','de':'%d. April','fr':'%d avril','af':'04-%02d'},
-    'mei':{'en':'May %d','de':'%d. Mai','fr':'%d mai','af':'05-%02d'},
-    'juni':{'en':'June %d','de':'%d. Juni','fr':'%d juin','af':'06-%02d'},
-    'juli':{'en':'July %d','de':'%d. Juli','fr':'%d juillet','af':'07-%02d'},
-    'augustus':{'en':'August %d','de':'%d. August','fr':'%d aout','af':'08-%02d'},
-    'september':{'en':'September %d','de':'%d. September','fr':'%d septembre','af':'09-%02d'},
-    'oktober':{'en':'October %d','de':'%d. Oktober','fr':'%d octobre','af':'10-%02d'},
-    'november':{'en':'November %d','de':'%d. November','fr':'%d novembre','af':'11-%02d'},
-    'december':{'en':'December %d','de':'%d. Dezember','fr':'%d decembre','af':'12-%02d'},
+    'januari':{  'sl':'%d. januar',    'it':'%d gennaio',   'en':'January %d',   'de':'%d. Januar',    'fr':'%d janvier',   'af':'01-%02d', 'ca':'%d de gener',       'oc':'%d de geni%%C3%%A8r',  },
+    'februari':{ 'sl':'%d. februar',   'it':'%d febbraio',  'en':'February %d',  'de':'%d. Februar',   'fr':'%d fevrier',   'af':'02-%02d', 'ca':'%d de febrer',      'oc':'%d de febri%%C3%%A8r', },
+    'maart':{    'sl':'%d. marec',     'it':'%d marzo',     'en':'March %d',     'de':'%d. M&auml;rz', 'fr':'%d mars',      'af':'03-%02d', 'ca':'%d de_mar%%C3%%A7', 'oc':'%d de_mar%%C3%%A7',    },
+    'april':{    'sl':'%d. april',     'it':'%d aprile',    'en':'April %d',     'de':'%d. April',     'fr':'%d avril',     'af':'04-%02d', 'ca':'%d d\'abril',       'oc':'%d d\'abril',          },
+    'mei':{      'sl':'%d. maj',       'it':'%d maggio',    'en':'May %d',       'de':'%d. Mai',       'fr':'%d mai',       'af':'05-%02d', 'ca':'%d de maig',        'oc':'%d de mai',            },
+    'juni':{     'sl':'%d. junij',     'it':'%d giugno',    'en':'June %d',      'de':'%d. Juni',      'fr':'%d juin',      'af':'06-%02d', 'ca':'%d de juny',        'oc':'%d de junh',           },
+    'juli':{     'sl':'%d. julij',     'it':'%d luglio',    'en':'July %d',      'de':'%d. Juli',      'fr':'%d juillet',   'af':'07-%02d', 'ca':'%d de juliol',      'oc':'%d de julhet',         },
+    'augustus':{ 'sl':'%d. avgust',    'it':'%d agosto',    'en':'August %d',    'de':'%d. August',    'fr':'%d aout',      'af':'08-%02d', 'ca':'%d d\'agost',       'oc':'%d d\'agost',          },
+    'september':{'sl':'%d. september', 'it':'%d settembre', 'en':'September %d', 'de':'%d. September', 'fr':'%d septembre', 'af':'09-%02d', 'ca':'%d de setembre',    'oc':'%d de setembre',       },
+    'oktober':{  'sl':'%d. oktober',   'it':'%d ottobre',   'en':'October %d',   'de':'%d. Oktober',   'fr':'%d octobre',   'af':'10-%02d', 'ca':'%d d\'octubre',     'oc':'%d d\'octobre',        },
+    'november':{ 'sl':'%d. november',  'it':'%d novembre',  'en':'November %d',  'de':'%d. November',  'fr':'%d novembre',  'af':'11-%02d', 'ca':'%d de novembre',    'oc':'%d de novembre',       },
+    'december':{ 'sl':'%d. december',  'it':'%d dicembre',  'en':'December %d',  'de':'%d. Dezember',  'fr':'%d decembre',  'af':'12-%02d', 'ca':'%d de desembre',    'oc':'%d de decembre',       },
     }}
 
 yearBCfmt = {'da':'%d f.Kr.','de':'%d v. Chr.',
@@ -60,10 +60,11 @@ def translate(pl, arr, same = False, hints = None):
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
     if datetable.has_key(wikipedia.mylang):
-        Rdate = re.compile('(\d+)_(%s)' % ('|'.join(datetable[wikipedia.mylang].keys())))
+        dt='(\d+) (%s)' % ('|'.join(datetable[wikipedia.mylang].keys()))
+        Rdate = re.compile(dt)
         m = Rdate.match(pl.linkname())
         if m:
-            for newcode, fmt in datetable[m.group(2)].items():
+            for newcode, fmt in datetable[wikipedia.mylang][m.group(2)].items():
                 newname = fmt % int(m.group(1))
                 x = wikipedia.PageLink(newcode,newname)
                 if x not in arr:
@@ -91,6 +92,9 @@ def translate(pl, arr, same = False, hints = None):
                 pass
             elif newcode == 'gl':
                 # gl years do not exist
+                pass
+            elif newcode in ['eu', 'mr', 'id', 'lv', 'sw', 'tt']:
+                # years do not exist
                 pass
             elif newcode == 'nds' and i<2000 or i>2010:
                 # nds years do not exist except for 2003
