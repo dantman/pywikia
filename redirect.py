@@ -53,16 +53,27 @@ def get_redirects_from_dump(sqlfilename):
                 print 'WARNING: can\'t extract the target of redirect %s, ignoring' % (entry.full_title())
             else:
                 target = m.group(1)
-                target = target.replace(' ', '_')
-                # capitalize the first letter
-                if not wikipedia.mylang in wikipedia.family.nocapitalize:
-                    target = target[0].upper() + target[1:]
-                if target.find('#') != -1:
-                    target = target[:target.index('#')]
-                if target.find('|') != -1:
-                    wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.full_title())  
-                    target = target[:target.index('|')]
-                dict[entry.full_title()] = target
+                # There might be redirects to another wiki. Ignore these.
+                for code in wikipedia.family.langs.keys():
+                    if target.startswith(code + ':'):
+                        # TODO: doesn't seem to work
+                        wikipedia.output(u'NOTE: Ignoring %s which is a redirect to %s:' % (entry.full_title(), code))
+                        target = None
+                        break
+                # if the redirect does not link to another wiki
+                if target:
+                    target = target.replace(' ', '_')
+                    # remove leading and trailing whitespace
+                    target = target.strip()
+                    # capitalize the first letter
+                    if not wikipedia.mylang in wikipedia.family.nocapitalize:
+                        target = target[0].upper() + target[1:]
+                    if target.find('#') != -1:
+                        target = target[:target.index('#')]
+                    if target.find('|') != -1:
+                        wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.full_title())  
+                        target = target[:target.index('|')]
+                    dict[entry.full_title()] = target
     return dict
     
 def retrieve_broken_redirects(source):
@@ -106,18 +117,19 @@ def delete_broken_redirects(source):
     for redir_name in retrieve_broken_redirects(source):
         redir_page = wikipedia.PageLink(wikipedia.mylang, redir_name)
         try:
-            target_page = redir_page.getRedirectTo()
+            target_name = redir_page.getRedirectTo(read_only = True)
         except wikipedia.IsNotRedirectPage:
             wikipedia.output(u'%s is not a redirect.' % redir_page.linkname())
         except wikipedia.NoPage:
             wikipedia.output(u'%s doesn\'t exist.' % redir_page.linkname())
+        except wikipedia.LockedPage:
+            wikipedia.output(u'%s is locked.' % redir_page.linkname())
         else:
             try:
-                target_name = str(redir_page.getRedirectTo())
                 target_page = wikipedia.PageLink(wikipedia.mylang, target_name)
-                target_page.get()
+                target_page.get(read_only = True)
             except wikipedia.NoPage:
-                #wikipedia.output('Deleting %s...' % redir_page.linkname())
+                wikipedia.output('Deleting %s...' % redir_page.linkname())
                 wikipedia.deletePage(redir_page, reason, prompt = False)
             except wikipedia.IsRedirectPage:
                 wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
@@ -156,7 +168,7 @@ def fix_double_redirects(source):
         print ''
         redir = wikipedia.PageLink(wikipedia.mylang, redir_name)
         try:
-            target = str(redir.getRedirectTo())
+            target = redir.getRedirectTo()
         except wikipedia.IsNotRedirectPage:
             wikipedia.output(u'%s is not a redirect.' % redir.linkname())
         except wikipedia.NoPage:
@@ -166,7 +178,7 @@ def fix_double_redirects(source):
         else:
             try:
                 second_redir = wikipedia.PageLink(wikipedia.mylang, target)
-                second_target = str(second_redir.getRedirectTo())
+                second_target = second_redir.getRedirectTo(read_only = True)
             except wikipedia.IsNotRedirectPage:
                 wikipedia.output(u'%s is not a redirect.' % second_redir.linkname())
             except wikipedia.NoPage:
