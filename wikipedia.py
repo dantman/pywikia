@@ -1064,7 +1064,7 @@ def allpages(start = '!'):
         if family.version(mylang)=="1.2":
             R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         else:
-            R = re.compile('title ="(.*?)"')
+            R = re.compile('title ?="(.*?)"')
         # Count the number of useful links on this page
         n = 0
         for hit in R.findall(returned_html):
