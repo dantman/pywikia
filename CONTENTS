@@ -51,7 +51,7 @@ If the second line is missing, your home wikipedia is assumed to be
 home wikipedia from the default.
 
 It may take a little or a lot to make the programs run on non-nl:
-wikipedias. It has been used on en:, da: and fy: so far. We're working
+wikipedias. It has been used on en:, da:, fr: and fy: so far. We're working
 on making sure it will run on UTF-8 wikipedia's without converting
 them to plain ASCII.....
 
