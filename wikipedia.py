@@ -71,6 +71,8 @@ def altlang(code):
         return ['ro']
     if code in ['be','lt','lv','uk']:
         return ['ru']
+    if code=='uz':
+        return ['ru','tr']
     if code in ['ja','ko','minnan','za','zh','zh-cn','zh-tw']:
         return ['zh','zh-cn','zh-tw']
     if code=='da':

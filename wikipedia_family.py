@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -19,6 +19,7 @@ class Family(family.Family):
             'az':'az.wikipedia.org',   # Azerbaijan
             'be':'be.wikipedia.org',   # Belorussian
             'bg':'bg.wikipedia.org',   # Bulgarian
+            'bh':'bh.wikipedia.org',   # Bhojpuri
             'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
             'bn':'bn.wikipedia.org',   # Bengali
             'br':'br.wikipedia.org',   # Breton
@@ -105,6 +106,7 @@ class Family(family.Family):
             'sv':'sv.wikipedia.org',   # Swedish
             'sw':'sw.wikipedia.org',   # Swahili
             'ta':'ta.wikipedia.org',   # Tamil
+            'te':'te.wikipedia.org',   # Telugu
             'test':'test.wikipedia.org',
             'th':'th.wikipedia.org',   # Thai
             'tl':'tl.wikipedia.org',   # Tagalog
@@ -116,6 +118,7 @@ class Family(family.Family):
             'tt':'tt.wikipedia.org',   # Tatar
             'uk':'uk.wikipedia.org',   # Ukrainian
             'ur':'ur.wikipedia.org',   # Urdu
+            'uz':'uz.wikipedia.org',   # Uzbek
             'vi':'vi.wikipedia.org',   # Vietnamese
             'vo':'vo.wikipedia.org',   # Volapuk
             'wa':'wa.wikipedia.org',   # Walon
@@ -126,6 +129,7 @@ class Family(family.Family):
             'zh':'zh.wikipedia.org',   # Chinese
             'zh-cn':'zh.wikipedia.org', # Simplified Chinese
             'zh-tw':'zh.wikipedia.org', # Traditional Chinese
+            'zu':'zu.wikipedia.org',   # Zulu
             }
         
         # Translation used on all Wikipedias for the different namespaces.
