@@ -42,7 +42,6 @@ msg_double={
     'de':u'Bot: Korrigiere doppelten Redirect',
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     'pt':u'Bot: Corrigido duplo redirecionamento',
-    'es':u'',
     }
 
 # Reason for deleting broken redirects
@@ -50,7 +49,6 @@ reason_broken={
     'en':u'Robot: Redirect target doesn\'t exist',
     'de':u'Bot: Weiterleitungsziel existiert nicht',
     'pt':u'Bot: Redirecionamento não existe',
-    'es':u'',
     }
 
 
