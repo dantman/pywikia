@@ -39,7 +39,7 @@ TODO:
 
 import sys, re, wikipedia
 
-articlelist = ["ReplaceBot"]
+articlelist = []
 textsearch=""
 textsubst=""
 comment = "bot replacing text"
@@ -88,9 +88,6 @@ for arg in sys.argv[1:]:
 	else:
 		articlelist.append(arg)
 	
-print "Search string is:\n",textsearch
-print "Replace string is:\n",textsubst
-
 # main loop passing through each articles		
 for article in articlelist:
 	text = ""
@@ -102,8 +99,6 @@ for article in articlelist:
 		print "ERROR: couldn't find " + article
 	
 	newtext = re.sub(unicode(textsearch,'iso-8859-1'), unicode(textsubst,'iso-8859-1'), text, 1)
-	# debug:
-	print newtext
 	
 	if newtext!=text:
 		pl.put(newtext, comment)
