@@ -69,6 +69,9 @@ fixes = {
             # keep in mind that MediaWiki automatically converts <br> to <br />
             # when rendering pages, so you might comment the next two lines out
             # to save some time/edits.
+            r'(?i)<br>':                      r'<br />',
+            # linebreak with attributes
+            r'(?i)<br ([^>/]+?)>':            r'<br \1 />',
             r'(?i)<b>':                       r"'''",
             r'(?i)</b>':                      r"'''",
             r'(?i)<strong>':                  r"'''",
@@ -77,9 +80,6 @@ fixes = {
             r'(?i)</em>':                     r"''",
             r'(?i)<i>':                       r"''",
             r'(?i)</i>':                      r"''",
-            r'(?i)<br>':                      r'<br />',
-            # linebreak with attributes
-            r'(?i)<br ([^>/]+?)>':            r'<br \1 />',
             # horizontal line without attributes in a single line
             r'(?i)([\r\n])<hr[ /]*>([\r\n])': r'\1----\2',
             # horizontal line without attributes with more text in the same line
@@ -245,7 +245,15 @@ acceptall = False
 
 for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfilename, pagename):
     # print pl.linkname()
-    original_text = pl.get()
+    try:
+        original_text = pl.get()
+    except wikipedia.NoPage:
+        wikipedia.output('Page %s not found' % pl.linkname())
+        continue
+    except wikipedia.LockedPage:
+        wikipedia.output('Skipping locked page %s' % pl.linkname())
+        continue
+    
     skip_page = False
     for exception in exceptions:
         if regex:
