@@ -2155,11 +2155,12 @@ class Site(object):
 
     def _fill(self):
         """Retrieve session cookies for login"""
-        if self.user is None:
-            u = ""
-        else:
-            u = self.user + "-"
-        fn = 'login-data/%s-%s-%slogin.data' % (self.family.name, self.lang, u)
+        #if self.user is None:
+        #    u = ""
+        #else:
+        #    u = self.user + "-"
+        #fn = 'login-data/%s-%s-%slogin.data' % (self.family.name, self.lang, u)
+        fn = 'login-data/%s-%s-login.data' % (self.family.name, self.lang)
         if not os.path.exists(fn):
             fn = 'login-data/%s-login.data' % self.lang
         if not os.path.exists(fn):
