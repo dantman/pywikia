@@ -621,7 +621,11 @@ for wrd in page_list:
         refpls = []
         for ref in refs:
             refpls.append(wikipedia.PageLink(mysite, ref))
-        wikipedia.getall(mysite, refpls)
+        try:
+            wikipedia.getall(mysite, refpls)
+        except wikipedia.SaxError:
+            # Ignore this error, and get the pages the traditional way.
+            pass
         for refpl in refpls:
             if active and not refpl.urlname() in skip_primary:
                 if not treat(refpl, thispl):
