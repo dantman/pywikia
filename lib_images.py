@@ -68,7 +68,7 @@ def get_content_type(filename):
 # Description is the proposed description; if description is empty (''),
 # a description is asked.
 # Returns the filename which was used to upload the image
-def get_image(fn, target, description, debug=False):
+def get_image(fn, source_wiki, description, debug=False):
     # Get file contents
     uo = wikipedia.MyURLopener()
     file = uo.open(fn)
@@ -79,12 +79,12 @@ def get_image(fn, target, description, debug=False):
         fn = fn.split('/')[-1]
     if '\\' in fn:
         fn = fn.split('\\')[-1]
+    # convert ISO 8859-1 to Unicode, or parse UTF-8 
+    fn = unicode(fn, wikipedia.code2encoding(source_wiki))
     print "The filename on wikipedia will default to:",fn
     newfn = raw_input("Better name : ")
     if newfn:
         fn = unicode(newfn, config.console_encoding)
-    else:
-        fn = unicode(fn, config.console_encoding)
     try:
         fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
     except UnicodeDecodeError:
@@ -125,8 +125,8 @@ def get_image(fn, target, description, debug=False):
         description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
     # don't upload if we're in debug mode
     if not debug:
-        data = post_multipart(wikipedia.family.hostname(target),
-                              wikipedia.family.upload_address(target),
+        data = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
+                              wikipedia.family.upload_address(wikipedia.mylang),
                               (('wpUploadDescription', description),
                                ('wpUploadAffirm', '1'),
                                ('wpIgnoreWarning', '1'),
@@ -140,7 +140,7 @@ def get_image(fn, target, description, debug=False):
 # and uploads it to another wikipedia
 # Returns the filename which was used to upload the image
 # This function is used by imagetransfer.py and by copy_table.py
-def transfer_image(imagelink, target, debug=False):
+def transfer_image(imagelink, debug=False):
     # convert HTML entities to encoding of the source wiki
     image_linkname = wikipedia.html2unicode(imagelink.linkname(), imagelink.code())
     image_linkname = image_linkname.encode('utf-8')
@@ -177,7 +177,7 @@ def transfer_image(imagelink, target, debug=False):
         description=''
         print "Image description page is redirect."
     try:
-        return get_image(url, target, description, debug)    
+        return get_image(url, imagelink.code(), description, debug)    
     except wikipedia.NoPage:
         print "Page not found"
         return filename

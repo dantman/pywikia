@@ -81,6 +81,6 @@ while len(imagelist)>0:
         break
     todo=int(todo)
     if todo in range(len(imagelist)):
-        lib_images.transfer_image(imagelist[todo], wikipedia.mylang)
+        lib_images.transfer_image(imagelist[todo])
     else:
         print("No such image number.")

@@ -154,7 +154,7 @@ def treat(to_pl):
         for image in images:
             # Copy the image to the current wikipedia, copy the image description page as well.
             # Prompt the user so that he can translate the filename.
-            new_filename = lib_images.transfer_image(wikipedia.PageLink(from_lang, image), wikipedia.mylang, debug)
+            new_filename = lib_images.transfer_image(wikipedia.PageLink(from_lang, image), debug)
             old_image_tag = wikipedia.PageLink(wikipedia.mylang, image).linkname()
             new_image_tag = wikipedia.PageLink(wikipedia.mylang, image_namespace(wikipedia.mylang) + new_filename).linkname()
             print_debug("Replacing " + old_image_tag + " with " + new_image_tag)
