@@ -143,9 +143,10 @@ def treat(refpl):
         pass
     else:
         n = 0
+        curpos = 0
         while 1:
             for Rthis in exps:
-                m=Rthis.search(reftxt)
+                m=Rthis.search(reftxt, pos = curpos)
                 if m:
                     break
             else:
@@ -154,6 +155,8 @@ def treat(refpl):
                 elif not debug:
                     refpl.put(reftxt)
                 return
+            # Make sure that next time around we will not find this same hit.
+            curpos = m.start() + 1 
             n += 1
             context = 30
             while 1:
