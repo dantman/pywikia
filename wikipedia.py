@@ -1,4 +1,4 @@
-#coding: iso-8859-1
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on Wikipedia
 """
@@ -993,10 +993,9 @@ def getLanguageLinks(text,incode=None):
                 if incode == 'eo':
                     t=t.replace('xx','x')
                 if code in family.obsolete:
-                    print "ERROR: ignoring link to obsolete language %s:%s"%(
-                        code, repr(t))
+                    output(u"ERROR: ignoring link to obsolete language %s:%s" % (code, repr(t)))
                 elif not t:
-                    print "ERROR: ignoring impossible link to %s:%s"%(code,m.group(1))
+                    output(u"ERROR: ignoring impossible link to %s:%s" % (code, m.group(1)))
                 else:
                     result[code] = t
             else:
