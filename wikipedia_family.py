@@ -15,6 +15,7 @@ langs = {
     'bg':'bg.wikipedia.org',   # Bulgarian
     'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
     'bn':'bn.wikipedia.org',   # Bengali
+    'br':'br.wikipedia.org',   # Breton
     'bs':'bs.wikipedia.org',   # Bosnian
     'ca':'ca.wikipedia.org',   # Catalan
     'chr':'chr.wikipedia.org', # Cherokee
@@ -41,6 +42,7 @@ langs = {
     'gl':'gl.wikipedia.org',   # Galician
     'gn':'gn.wikipedia.org',   # Guarani
     'gv':'gv.wikipedia.org',   # Manx
+    'ha':'ha.wikipedia.org',   # Hausa
     'he':'he.wikipedia.org',   # Hebrew
     'hi':'hi.wikipedia.org',   # Hindi
     'hr':'hr.wikipedia.org',   # Croatian
@@ -99,6 +101,7 @@ langs = {
     'th':'th.wikipedia.org',   # Thai
     'tl':'tl.wikipedia.org',   # Tagalog
     'tlh':'tlh.wikipedia.org', # Klingon
+    'tn':'tn.wikipedia.org',   # Tswana
     'tokipona':'tokipona.wikipedia.org', # Toki Pona
     'tpi':'tpi.wikipedia.org', # Tok Pisin
     'tr':'tr.wikipedia.org',   # Turkish
@@ -265,15 +268,15 @@ nocapitalize = ['tlh','tokipona']
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
 
-alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
+alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs','br',
               'ca','chr','co','cs','cy','da','de','als','et',
               'el','en','es','eo','eu','fa','fr','fy','ga','gv',
-              'gd','gl','ko','hi','hr','io','id','ia','is','it',
+              'gd','gl','ko','ha','hi','hr','io','id','ia','is','it',
               'he','jv','ka','csb','ks','kw','sw','la','lv','lt','hu',
               'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
               'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
               'sa','st','sq','si','simple','sk','sl','sr','su',
-              'fi','sv','ta','tt','th','tlh','ur','vi','tokipona',
+              'fi','sv','ta','tt','th','tlh','tw','ur','vi','tokipona',
               'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
               'zh-tw']
 

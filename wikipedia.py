@@ -55,7 +55,7 @@ def altlang(code):
         return ['es','fr']
     if code=='gl':
         return ['es','pt']
-    if code in ['oc','th','vi','wa']:
+    if code in ['br','oc','th','vi','wa']:
         return ['fr']
     if code=='als':
         return ['fr','de']
