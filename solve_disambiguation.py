@@ -390,9 +390,9 @@ class DisambiguationRobot:
                 if choice == 'y':
                     gen = ReferringPageGenerator(refpl)
                     for refpl2 in gen.generate():
-                        if self.primaryIgnoreManager.isIgnored(refpl2):
+                        if not self.primaryIgnoreManager.isIgnored(refpl2):
                             # run until the user selected 'quit'
-                            if not self.treat(refpl2, disambPl):
+                            if not self.treat(refpl2, refpl):
                                 break
                 elif choice == 'c':
                     text="#%s [[%s]]"%(self.mysite.redirect(default=True), disambPl.linkname())
