@@ -391,10 +391,11 @@ def treeview(cat, max_depth, current_depth = 0, parent = None):
     also_in_cats = {
         'de': u'(auch in %s)',
         'en': u'(also in %s)',
+        'da': u'(også i %s)',
         }
         
-    result = ''
-    result += ('#' * current_depth)
+    result = u''
+    result += '#' * current_depth
     result += '[[:%s|%s]]' % (cat.linkname(), cat.linkname().split(':', 1)[1])
     result += ' (%d)' % len(get_articles(cat))
     # We will remove an element of this array, but will need the original array
