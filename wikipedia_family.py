@@ -99,6 +99,7 @@ langs = {
     'wa':'wa.wikipedia.org',   # Walon
     'xh':'xh.wikipedia.org',   # isiXhosa
     'yi':'yi.wikipedia.org',   # Yiddish
+    'yo':'yo.wikipedia.org',   # Yoruba
     'zh':'zh.wikipedia.org',   # Chinese
     'zh-cn':'zh.wikipedia.org', # Simplified Chinese
     'zh-tw':'zh.wikipedia.org', # Traditional Chinese

@@ -49,7 +49,7 @@ alphabetic = ['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
           'lt','hu','mk','mg','ml','mi','mr','ms','mn','nah','na',
           'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
           'st','sq','si','simple','sk','sl','sr','su','fi','sv','ta',
-          'tt','th','ur','vi','tokipona','tr','uk','vo','yi',
+          'tt','th','ur','vi','tokipona','tr','uk','vo','yi','yo'
           'zh','zh-cn','zh-tw']
 
 interwiki_putfirst = {
