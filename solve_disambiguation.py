@@ -558,7 +558,9 @@ for wrd in (page_list):
                     # this feature.
                     if wikipedia.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
                         new_page_title = new_page_title[0].lower() + new_page_title[1:]
-                    if replaceit or new_page_title == link_text:
+                    if replaceit and trailing_chars: 
+                        newlink = "[[%s]]%s" % (new_page_title, trailing_chars)
+                    elif new_page_title == link_text or replaceit:
                         newlink = "[[%s]]" % new_page_title
                     # check if we can create a link with trailing characters instead of a pipelink
                     elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(trailR, '', link_text[len(new_page_title):]) == '':
