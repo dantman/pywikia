@@ -891,6 +891,10 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
                 
             if debug>1:
                 print repr(text)
+            if not read_only:
+                # check if we're logged in
+                if text.find('Userlogin') != -1:
+                    output(u'Warning: You\'re probably not logged in on %s:' % code)
             m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
             if m:
                 edittime[code, link2url(name, code)] = m.group(1)
@@ -906,7 +910,6 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
                 print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %d minutes..." % (host, address, retry_idle_time)
                 time.sleep(retry_idle_time * 60)
                 retry_idle_time *= 2
-                #retry
                 continue
             i2 = re.search('</textarea>', text).start()
             if i2-i1 < 2:
