@@ -1056,7 +1056,7 @@ def getCategoryLinks(text, code):
             if t:
                 if code == 'eo':
                     t = t.replace('xx','x')
-                t = t.capitalize()
+                t = t[:1].capitalize() + t[1:]
                 result.append(ns[0]+':'+t)
             else:
                 print "ERROR: empty category link"
