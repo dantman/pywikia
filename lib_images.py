@@ -112,6 +112,9 @@ def transfer_image(imagelink, target, debug=False):
     # we only need the substring following the first colon
     filename = string.split(imagelink.linkname(), ":", 1)[1]
     if debug: print "Image filename is: %s " % filename
+    # Spaces might occur, but internally they are represented by underscores.
+    # Change the name now, because otherwise we get the wrong MD5 hash.
+    filename = filename.replace(' ', '_')
     md5sum = md5.new(filename).hexdigest()
     if debug: print "MD5 hash is: %s" % md5sum
     url = "http://" + imagelink.code() + ".wikipedia.org/upload/" + md5sum[0] + "/" + md5sum[:2] + "/" + filename
