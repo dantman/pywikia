@@ -198,8 +198,9 @@ ignore={
           u'Wikipedia:Liste mathematischer Themen/BKS',
           u'Wikipedia:Liste mathematischer Themen/Redirects',
           u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
-          u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
-    'pt':{
+          u'Wikipedia:WikiProjekt Altertumswissenschaft/.+'
+          ),
+    'pt':(
           u'Categoria:Desambiguação',
           u'Wikipedia:Links para desambiguar páginas',
           u'Wikipedia:Desambiguação',
