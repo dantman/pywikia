@@ -37,9 +37,9 @@ langs = {'en':'en.wikipedia.org', # English
          'bs':'bs.wikipedia.org', # Bosnisch, UTF-8
 	 'he':'he.wikipedia.org', # Hebrew, UTF-8
          'hi':'hi.wikipedia.org', # Hindi, UTF-8
-         'nds':'nds.wikipedia.org', # Nedersaksisch
+         'nds':'nds.wikipedia.org', # Lower Saxon
          'ro':'ro.wikipedia.org', # Romanian, UTF-8
-         'fy':'fy.wikipedia.org', # Frysk, UTF-8
+         'fy':'fy.wikipedia.org', # Frisian, UTF-8
          'ar':'ar.wikipedia.org', # Arabic, UTF-8
          'zh-tw':'zh.wikipedia.org', # Traditional Chinese, UTF-8
          'zh-cn':'zh.wikipedia.org', # Simplified Chinese, UTF-8
@@ -56,6 +56,7 @@ langs = {'en':'en.wikipedia.org', # English
          'hr':'hr.wikipedia.org', # Croatian, UTF-8
          'tr':'tr.wikipedia.org', # Turkish, UTF-8
          'mr':'mr.wikipedia.org', # ?
+         'cy':'cy.wikipedia.org', # Welsh, UTF-8
          'simple':'simple.wikipedia.org', # Simplified english
          #'test':'test.wikipedia.org',
          }
