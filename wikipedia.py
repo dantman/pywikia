@@ -270,12 +270,12 @@ class PageLink:
         else:
             return 0
         
-    def put(self, newtext, comment=None, watchArticle = '0', minorEdit = '1'):
+    def put(self, newtext, comment=None, watchArticle = '0', minorEdit = '1', newPage = '0'):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
         """
-        return putPage(self.code(), self.urlname(), newtext, comment, watchArticle, minorEdit)
+        return putPage(self.code(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage)
 
     def interwiki(self):
         """Return a list of inter-wiki links in the page. This will retrieve
@@ -632,7 +632,7 @@ class Throttle:
 get_throttle = Throttle()
 put_throttle = Throttle(config.put_throttle)
 
-def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1'):
+def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1', newPage = '0'):
     """Upload 'text' on page 'name' to the 'code' language wikipedia.
        Use of this routine can normally be avoided; use PageLink.put
        instead.
@@ -647,13 +647,22 @@ def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1
         comment = username + ' - ' + comment
     try:
         text = forCode(text, code)
-        data = urlencode((
-            ('wpMinoredit', minorEdit),
-            ('wpSave', '1'),
-            ('wpWatchthis', watchArticle),
-            ('wpEdittime', edittime[code, link2url(name, code)]),
-            ('wpSummary', comment),
-            ('wpTextbox1', text)))
+        if newPage:
+            data = urlencode((
+                ('wpMinoredit', minorEdit),
+                ('wpSave', '1'),
+                ('wpWatchthis', watchArticle),
+                ('wpEdittime', ''),
+                ('wpSummary', comment),
+                ('wpTextbox1', text)))
+        else:
+            data = urlencode((
+                ('wpMinoredit', minorEdit),
+                ('wpSave', '1'),
+                ('wpWatchthis', watchArticle),
+                ('wpEdittime', edittime[code, link2url(name, code)]),
+                ('wpSummary', comment),
+                ('wpTextbox1', text)))
     except KeyError:
         print edittime
 	raise
