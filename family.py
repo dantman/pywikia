@@ -154,18 +154,22 @@ class Family(object):
             'de':u'Vorlage',
             'es':u'Plantilla',
             'nl':u'Sjabloon',
+            'pt':u'Predefinição',
         },
         11: {
             '_default': u'Template talk',
             'de': u'Vorlage Diskussion',
+            'pt': u'Predefinição_Discussão',
         },
         12: {
             '_default': u'Help',
             'de': u'Hilfe',
+            'pt': u'Ajuda',
         },
         13: {
             '_default': u'Help talk',
             'de': u'Hilfe Diskussion',
+            'pt': u'Ajuda_Discussão',
         },
         14: {
             '_default': u'Category',
