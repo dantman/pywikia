@@ -731,7 +731,7 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
         else:
             predata.append(('wpEdittime', edittime[code, link2url(name, code)]))
         if minorEdit and minorEdit != '0':
-            predata.append(('wpMinorEdit', '1'))
+            predata.append(('wpMinoredit', '1'))
         if watchArticle and watchArticle != '0':
             predata.append(('wpWatchthis', '1'))
         data = urlencode(tuple(predata))
