@@ -77,7 +77,8 @@ ignore={
           'Wikipedia:Multiple-place names (X)',
           'Wikipedia:Multiple-place names (Y)',
           'Wikipedia:Multiple-place names (Z)',
-          'Wikipedia:Non-unique personal name')
+          'Wikipedia:Non-unique personal name'),
+    'da':('Wikipedia:Links til sider med flertydige titler')
     }
 
 def getreferences(pl):
