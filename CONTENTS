@@ -15,8 +15,8 @@ To get started on proper usage of the interwiki robot, please refer to:
 
 The contents of the package are:
 
-Library routines
-----------------
+===  Library routines ===
+
 LICENSE                : a reference to the Python Software Foundation license
 wikipedia.py           : The wikipedia library
 wikipedia_family.py    : The description of the wikipedia family of wikis.
@@ -25,20 +25,26 @@ wikipedia_family.py    : The description of the wikipedia family of wikis.
                          such a family.
 config.py              : Configuration module containing all defaults. Do not
                          change these! See below how to change values.
-date.py                : Date formats in various languages
 lib_images.py          : Part of the Wikipedia library special for the uploading
 logger.py              : A support library logging screen output to a file
 titletranslate.py      : rules and tricks to auto-translate wikipage titles
+date.py                : Date formats in various languages
 translator.py          : various translations (for copy_table.py)
-unequal.py             : A few routines coordinating exceptions to the 
-                         rule that interwiki-linked pages are equal.
 catlib.py              : Library routines written especially to handle
                          category pages and recurse over category contents.
-nl-exceptions.dat      : Some more specific exceptions
+unequal.py             : A few routines coordinating exceptions to the 
+                         rule that interwiki-linked pages are equal.
+nl-exceptions.dat      : Some more specific exceptions used by unequal.py
+gui.py                 : Some GUI elements for solve_disambiguation.py
+mediawiki_messages.py  : Access to the various translations of the MediaWiki
+                         software interface
+sqldump.py             : Routines to extract information from local SQL dump
+                         files, like the ones at http://download.wikimedia.org
+WdTXMLParser.py        : Used by WdT.py
 
-Utilities
----------
-extract_names.py       
+=== Utilities ===
+
+extract_names.py,      
 extract_wikilinks.py   : Two bots to get all linked-to Wikipedia pages from an
                          HTML-file. They differ in their output: extract_names
                          gives bare names (can be used for solve_disambiguation.py,
@@ -55,13 +61,14 @@ xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
                          created by interwiki.py), and if it contains an error,
                          show a stacktrace with the location of the error.
 
-Robots
-------
-addcategory.py         : add a category link to all pages mentioned on a page.
-boilerplate.py         : change one boilerplate (that is {{msg:...}}) into
+=== Robots ===
+
+boilerplate.py         : change one template (that is {{...}}) into
                          another
 brackethttp.py         : a bot replacing a ()-bracketed http: link by an
                          explicit [ ] link to avoid a parser problem.
+category.py            : add a category link to all pages mentioned on a page,
+                         change or remove category tags
 copy_table.py          : copy a table from one wikipedia to another, making
                          automatic translations
 imagetransfer.py       : Given a Wikipedia page, check the interwiki links
@@ -69,19 +76,24 @@ imagetransfer.py       : Given a Wikipedia page, check the interwiki links
                          images to upload
 interwiki.py           : A robot to check interwiki links on all pages (or
                          a range of pages) of a wikipedia.
-pagelist.py            : Starting with one or more pages, spiders the wiki forward
-                         as well as backward, and thus can be used to get a list
-                         of Wikipedia pages connected to a certain subject.
+pagelist.py            : Starting with one or more pages, spiders the wiki
+                         forward as well as backward, and thus can be used to
+                         get a list of Wikipedia pages connected to a certain
+                         subject.
+redirect.py            : Fix double redirects and broken redirects. Note:
+                         solve_disambiguation also has functions which treat
+                         redirects.
 replace.py             : Search an article or a provided collection of 
-		         articles for a text and replace it by another
-		         text. Both text are set in two configurable
-		         text files.
+                         articles for a text and replace it by another
+                         text. Both text are set in two configurable
+                         text files.
+saveHTML.py            : ?                       
 solve_disambiguation.py: Interactive robot doing disambiguation.
 standardize_interwiki.py:A robot that downloads a page, and reformats the 
                          interwiki links in a standard way (i.e. move all
                          of them to the bottom or the top, with the same
                          separator, in the right order).
-table2wiki.py	       : Semi-automatic converting HTML-tables to wiki-tables.
+table2wiki.py          : Semi-automatic converting HTML-tables to wiki-tables.
 upload.py              : upload an image to Wikipedia
 us-states.py           : A robot to add redirects to cities for US state 
                          abbreviations.
@@ -92,6 +104,16 @@ warnfile.py            : A robot that parses a warning file created by
 windows_chars.py       : change characters that are not part of Latin-1 into
                          something harmless. It is advisable to do this on
                          Latin-1 Wikipedias before switching to UTF-8.
+WdT.py                 : something to retrieve the German 'word of the day'
+
+=== Directories ===
+
+disambiguations        : If you run solve_disambiguation.py with the -primary
+                         argument, the bot will save information here
+mediawiki-messages     : Information retrieved by mediawiki_messages.py will
+                         be stored here.
+login-data             : login.py stores your cookies here (Your password won't
+                         be stored as plaintext).
 
 More precise information, and a list of the options that are available for
 the various programs, are given at the start of the programs' source code files.
@@ -103,7 +125,7 @@ versions of python is not planned.
 Before you run any of the programs, you need to create a file named
 user-config.py in your current directory. It needs at least two lines: 
 The first line should set your real name; this will be used to identify you
-when the robot is making changes, unless you are logged in. The
+when the robot is making changes, in case you are not logged in. The
 second line sets the code of your home language. The file should look like:
 
 ===========
