@@ -48,9 +48,10 @@ if not wikipedia.special.has_key(wikipedia.mylang):
     sys.exit(1)
 
 msg={
-    'en':'Robot-assisted disambiguation ',
-    'da':'Retter flertydigt link til ',
-    'nl':'Robot-geholpen doorverwijzing ',
+    'en':'Robot-assisted disambiguation',
+    'da':'Retter flertydigt link til',
+    'nl':'Robot-geholpen doorverwijzing',
+    'fr':'Homonymie r\xE9solue \xE0 l\'aide du robot'
     }
 
 ignore={
@@ -85,7 +86,8 @@ ignore={
           'Wikipedia:Multiple-place names (Y)',
           'Wikipedia:Multiple-place names (Z)',
           'Wikipedia:Non-unique personal name'),
-    'da':('Wikipedia:Links til sider med flertydige titler')
+    'da':('Wikipedia:Links til sider med flertydige titler'),
+    'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie ')
     }
 
 def getReferences(pl):
@@ -120,7 +122,7 @@ if msg.has_key(wikipedia.mylang):
 else:
     msglang = 'en'
 
-wikipedia.setAction(msg[msglang]+wrd)
+wikipedia.setAction(msg[msglang]+': '+wrd)
 
 thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
 
