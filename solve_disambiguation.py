@@ -48,7 +48,36 @@ msg={
 
 ignore={
     'nl':('Wikipedia:Onderhoudspagina',
-          'Wikipedia:Doorverwijspagina')
+          'Wikipedia:Doorverwijspagina'),
+    'en':('Wikipedia:Links to disambiguating pages',
+          'Wikipedia:Disambiguation pages with links',
+          'Wikipedia:Multiple-place names (A)',
+          'Wikipedia:Multiple-place names (B)',
+          'Wikipedia:Multiple-place names (C)',
+          'Wikipedia:Multiple-place names (D)',
+          'Wikipedia:Multiple-place names (E)',
+          'Wikipedia:Multiple-place names (F)',
+          'Wikipedia:Multiple-place names (G)',
+          'Wikipedia:Multiple-place names (H)',
+          'Wikipedia:Multiple-place names (I)',
+          'Wikipedia:Multiple-place names (J)',
+          'Wikipedia:Multiple-place names (K)',
+          'Wikipedia:Multiple-place names (L)',
+          'Wikipedia:Multiple-place names (M)',
+          'Wikipedia:Multiple-place names (N)',
+          'Wikipedia:Multiple-place names (O)',
+          'Wikipedia:Multiple-place names (P)',
+          'Wikipedia:Multiple-place names (Q)',
+          'Wikipedia:Multiple-place names (R)',
+          'Wikipedia:Multiple-place names (S)',
+          'Wikipedia:Multiple-place names (T)',
+          'Wikipedia:Multiple-place names (U)',
+          'Wikipedia:Multiple-place names (V)',
+          'Wikipedia:Multiple-place names (W)',
+          'Wikipedia:Multiple-place names (X)',
+          'Wikipedia:Multiple-place names (Y)',
+          'Wikipedia:Multiple-place names (Z)',
+          'Wikipedia:Non-unique personal name')
     }
 
 def getreferences(pl):
