@@ -160,7 +160,16 @@ ignore={
           'List of acronyms and initialisms',
           'Wikipedia:Usemod article histories',
           'User:Pizza Puzzle/stuff',
-          'List of generic names of political parties'
+          'List of generic names of political parties',
+          'Talk:List of initialisms/marked',
+          'Talk:List of initialisms/sorted',
+          'Talk:Programming language',
+          'Talk:SAMPA/To do',
+          "Wikipedia:Outline of Roget's Thesaurus",
+          'User:Wik/Articles',
+          'User:Egil/Sandbox',
+          'Wikipedia talk:Make only links relevant to the context',
+          'Wikipedia:Common words, searching for which is not possible'
           ),
     'da':('Wikipedia:Links til sider med flertydige titler'),
     'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie',
