@@ -653,7 +653,19 @@ class GetAll(object):
                 output(u"BUGWARNING: %s already done!" % pl.aslink())
 
     def run(self):
-        data = self.getData()
+        dt=15
+        while 1:
+            try:
+                data = self.getData()
+            except socket.error:
+                # Print the traceback of the caught exception
+                import traceback
+                print ''.join(traceback.format_exception(*sys.exc_info()))
+                output(u'DBG> got socket error in GetAll.run. Sleeping for %d seconds'%dt)
+                time.sleep(dt)
+                dt *= 2
+            else:
+                break
         handler = WikimediaXmlHandler()
         handler.setCallback(self.oneDone)
         try:
