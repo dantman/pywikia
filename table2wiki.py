@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: iso8859-1  -*-
+# -*- coding: iso-8859-1  -*-
 """
 Nifty script to convert HTML-tables to Wikipedia's syntax.
 
@@ -38,12 +38,13 @@ You can kill indentions but it's switched off by default.
 # Distribute under the terms of the PSF license.
 __version__='$Id$'
 
-import re,sys,wikipedia,config
+import re,sys,wikipedia,config,time
 
 myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
 notFoundSites = ''
+quietMode = False # use -quiet to get less output
 
 articles = []    
 for arg in sys.argv[1:]:
@@ -68,6 +69,8 @@ for arg in sys.argv[1:]:
         config.table2wikiAskOnlyWarnings = True
         config.table2wikiSkipWarnings = True
         print "Automatic mode!\n"
+    elif arg.startswith('-quiet'):
+        quietMode = True
     else:
         articles.append(arg)
 for article in articles:
@@ -81,6 +84,10 @@ for article in articles:
         except wikipedia.NoPage:
             print "ERROR: couldn't find " + article
             notFoundSites = notFoundSites + " " + article
+            continue
+        except:
+            print "Couldn't connect, sleeping for one minute"
+            time.sleep(60)
             continue
         warnings = 0
         newText = text
@@ -102,7 +109,7 @@ for article in articles:
 
         ##################
         # the <table> tag
-        newText = re.sub("[\r\n]*?\<(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
+        newText = re.sub("[\r\n]*?\<(?i)(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
                          "\r\n{| \\2\n\\3", newText, 0)
         newText = re.sub("[\r\n]*?\<(TABLE|table)>([\w\W]*?)<(tr|TR)>",
                          "\r\n{|\n\\2", newText, 0)
@@ -162,9 +169,9 @@ for article in articles:
         warnings = warnings + n
 
 
-
         ##################
         # Garbage collecting ;-)
+        newText = re.sub("\<td\>[\r\n]*\<\/tr\>", "", newText, 0)
         newText = re.sub("[\r\n]*\<\/[Tt][rRdDhH]\>", "", newText, 0)
 
         ##################
@@ -194,19 +201,18 @@ for article in articles:
             while num != 0:
                 newText, num = re.subn("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
                                        "\\1\n\\2", newText, 0)
-                warnings = warnings + num
 
         ##################
         # kills additional spaces after | or ! or {|
         newText = re.sub("[\r\n]+\|[\t ]+?\n", "\r\n| ", newText, 0)
         # kills trailing spaces and tabs
-        newText = re.sub("([^\|])[\t\ ]+[\r\n]+", "\\1\r\n", newText, 0)
+        newText = re.sub("([^\|])[\t\ ]+([\r\n]+)", "\\1\\2", newText, 0)
         # kill extra new-lines
         newText = re.sub("[\r\n]{4,}(\!|\|)", "\r\n\\1", newText, 0);
 
         ##################        
         # shortening if <table> had no arguments/parameters
-        newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\[| ", newText, 0)
+        newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\{| ", newText, 0)
         # shortening if <td> had no articles
         newText = re.sub("[\r\n]+\|[\ ]+\| ", "\r\n| ", newText, 0)
         # shortening if <th> had no articles
@@ -219,8 +225,8 @@ for article in articles:
         num = 1
         while num != 0:
             newText, num = re.subn("[\r\n]+(\|[^\|\-\}]{1}[^\n\r]{0,35})" +
-                                   "[\r\n]+\|[^\|\-\}]{1}([^\r\n]{0,35})[\r\n]+",
-                                   "\r\n\\1 || \\2\r\n", newText, 0)
+                                   "[\r\n]+(\|[^\|\-\}]{1}[^\r\n]{0,35})[\r\n]+",
+                                   "\r\n\\1 | \\2\r\n", newText, 0)
 
         ##################
         # proper attributes
@@ -265,7 +271,7 @@ for article in articles:
             if config.DEBUG:
                 print text
                 print newText
-            else:
+            elif not quietMode:
                 for line in difflib.ndiff(text.split('\n'),
                                           newText.split('\n')):
                     if line[0] in ['+','-']:
