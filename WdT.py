@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1  -*-
+# -*- coding: utf-8  -*-
 """
 (C) 2003 Thomas R. Koll, <tomk32@tomk32.de>
  Distribute under the terms of the PSF license.
@@ -7,59 +7,63 @@
 __version__='$Id$'
 
 
-import WdTXMLParser,httplib,wikipedia,re,datetime
+import WdTXMLParser,httplib,wikipedia,re,datetime,xml.sax,fileinput
 
-DEBUG = 0
-host = "wortschatz.uni-leipzig.de"
-baseDir = "/wort-des-tages/RDF/WdT/"
+DEBUG = 1
+host = "http://wortschatz.uni-leipzig.de/wort-des-tages/RDF/WdT/"
+
+localArticleList = "Stichwortliste_de_Wikipedia_2004-04-17_sortiert.txt"
+
 XMLfiles = {"ereignis.xml"      : "Eregnisse",
             "kuenstler.xml"     : "Kunst, Kultur und Wissenschaft", 
             "organisation.xml"  : "Organisationen",
             "ort.xml"           : "Orte",
             "politiker.xml"     : "Politker",
-            "schlagwort.xml"    : "Schlagwörter",
+            "schlagwort.xml"    : u"Schlagwörter",
             "sportler.xml"      : "Sportler",
             "sport.xml"         : "Sport",
-            "person.xml"        : "sonstige Personen"
+            "person.xml"        : "sonstige"
             }
-           
 article = "Wikipedia:Wort_des_Tages"
 
-newText = str(datetime.date.today())
+newText = "\n== " + str(datetime.date.today()) + " =="
+
+#start the xml parser
+ch = WdTXMLParser.WdTXMLParser()
+parser = xml.sax.make_parser()
+parser.setContentHandler(ch)
 
 # first we get the XML-File
-headers = {"Accept": "text/xml",
-           "User-agent": "RobHooftWikiRobot/1.0"}
-conn = httplib.HTTPConnection(host)
 for file in XMLfiles:
     print "getting: " + file,
-    conn.request("GET", baseDir + file, "", headers)
-    response = conn.getresponse()
-    XMLdata = unicode(response.read(), "iso-8859-1")
-    # bad hack, I know
-    XMLdata = re.sub("<\?.*?\?>[\r\n]*", "", XMLdata)
+    parser.parse(host + file)
+    data = ch.result
     print " parsing..."
     # now we parse the file
-    p = WdTXMLParser.WdTXMLParser()
-    try:
-        p.feed(XMLdata)
-        p.close()
-    except:
-        print p
+
 
     # and make a result text for wikipedia
-    newText = newText + "\r\n* '''" +  XMLfiles[file] + ":''' "
-    for a in p.results:
-        newText = newText + "[[" + a + "]] ([" + \
-                  p.results[a]['link'] + ' ' + p.results[a]['count'] + ']) \r\n'
+    newText = newText + "\n* '''" +  XMLfiles[file] + ":''' \n"
+    for a in data:
+        if localArticleList != "":
+            import string
+            for line in fileinput.input(localArticleList):
+                if string.strip(line) == a:
+                    skip = 1
+                    break
+        if skip == 0:
+            newText = newText + "[[" + a + "]] ([" + \
+                      data[a]['link'] + ' ' + data[a]['count'] + ']) \n'
     if DEBUG:
         print newText
-conn.close()
 
 pl = wikipedia.PageLink(wikipedia.mylang, article)
 text = pl.get()
-newText = text + unicode(newText, "iso-8859-1")
-print newText
+newText = text + newText
 
-status, reason, data = pl.put(newText, "WdT: updated")
-print status, reason
+
+if DEBUG:
+    print newText
+else:
+    status, reason, data = pl.put(newText, "WdT: updated")
+    print status, reason

@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+# -*- coding: iso-8859-1  -*-
 """
 (C) 2003 Thomas R. Koll, <tomk32@tomk32.de>
  Distribute under the terms of the PSF license.
@@ -7,74 +7,68 @@
 __version__='$Id$'
 
 DEBUG = 0
-import xmllib, re
-class WdTXMLParser(xmllib.XMLParser):
-    def __init__(self):
-        self.elements={
-            'item':(self.start_item, self.end_item),
-            'title':(self.start_title, self.end_title),
-            'link':(self.start_link, self.end_link),
-            'description':(self.start_description, self.end_description)
-            }
-        self.expecting_title = 0
-        self.expecting_item = 0
-        self.expecting_link = 0
-        self.expecting_description = 0
-        self.results = {}
-        self.rLink  = re.compile ('.*[\r\n]*(http://.*)', re.UNICODE)
-        self.rCount = re.compile ('.*: (\d*)', re.UNICODE)
-        self.rTitle = re.compile ('(.*): (.*)', re.UNICODE)
-        xmllib.XMLParser.__init__(self)
+import re
+from xml.sax.handler import ContentHandler
 
-    def start_item(self, attrs):
-        self.expecting_item = 1
-        
-    def end_item(self):
-        if self.date and self.link and self.count:
-            self.results[self.title] = {
-                'date' : self.date,
-                'link' : self.link,
-                'count' : self.count
-                }
-        self.expecting_item = 0
+class WdTXMLParser(ContentHandler):
 
-    def start_title(self,attrs):
-        self.expecting_title = 1
-        self.title = u""
+        def __init__(self):
+                self.rTitle = re.compile ('(.*): (.*)')
+                self.rLink  = re.compile ('.*[\r\n]*(http://.*)')
+                self.rCount = re.compile ('.*: (\d*)')
+                self.inItem = 0
+                self.inITitle = 0
+                self.inILink = 0
+                self.inIDescription = 0
+                self.tmp = {}
+                self.result = {}
 
-    def end_title(self):
-        self.expecting_title = 0
-        
-    def start_link(self,attrs):
-        self.expecting_link = 1
-        self.link = u""
+        def startDocument(self):
+                self.result = {}
+                self.tmp = {}
+        def endDocument(self):
+                return self.result
 
-    def end_link(self):
-        self.expecting_link = 0
+        def startElement(self, name, attrs):
+                if name == 'item':
+                        self.inItem = 1
+                if self.inItem == 1:
+                        if name == 'title':
+                                self.inTitle = 1
+                        if name == 'link':
+                                self.inLink = 1
+                        if name == 'description':
+                                self.inDescription = 1
 
-    def start_description(self,attrs):
-        self.expecting_description = 1
-        self.count = u""
-
-    def end_description(self):
-        self.expecting_description = 0
-        
-    def handle_data(self,data):
-
-        if DEBUG:
-            print data
-        if self.expecting_item == 0:
-            return
-        if self.expecting_title:
-            data = self.rTitle.match(data)
-            if data: 
-                self.date = data.group(1)
-                self.title = data.group(2)
-        if self.expecting_link:
-            data = self.rLink.match(data)
-            if data:
-                self.link = data.group(1)
-        if self.expecting_description:
-            data = self.rCount.match(data)
-            if data:
-                self.count = data.group(1)
+        def characters(self, characters):
+                if self.inItem:
+                        if self.inTitle:
+                                self.tmp['title'] = self.rTitle.match(characters).group(2)
+                        if self.inLink:
+                                self.tmp['link'] = self.rLink.match(characters).group(1)
+                        if self.inDescription:
+                                self.tmp['count'] = self.rCount.match(characters).group(1)
+                                
+        def endElement(self, name):
+                if name == 'item':
+                        self.inItem = 0
+                        self.result[self.tmp['title']] = {
+                                'link' : self.tmp['link'],
+                                'count' : self.tmp['count']
+                                }
+                        self.tmp = {}
+                if name == 'title':
+                        self.inTitle = 0
+                if name == 'link':
+                        self.inLink = 0
+                if name == 'description':
+                        self.inDescription = 0
+                
+"""
+if self.date and self.link and self.count:
+                        self.results[self.title] = {
+                                'date' : self.date,
+                                'link' : self.link,
+                                'count' : self.count
+                                }
+"""
