@@ -596,7 +596,7 @@ class GetAll:
         pagenames = u'\r\n'.join([x.hashfreeLinkname() for x in self.pages])
         data = urlencode((
                     ('action', 'submit'),
-                    ('pages', pagenames),
+                    ('pages', UnicodeToAsciiHtml(pagenames)),
                     ('curonly', 'True'),
                     ))
         headers = {"Content-type": "application/x-www-form-urlencoded", 
