@@ -112,11 +112,25 @@ def add_category(sort_by_last_name = False):
 # Given an article which is in category old_cat, moves it to
 # category new_cat. Moves subcategories of old_cat to new_cat
 # as well.
-# If new_cat is None, the category will be removed.
-def change_category(article, old_cat, new_cat):
+# If new_cat_title is None, the category will be removed.
+def change_category(article, old_cat_title, new_cat_title):
     cats = article.categories()
-    cats.remove(old_cat)
-    if new_cat != None:
+    sort_key = ''
+    for cat in cats:
+        ns = wikipedia.family.category_namespaces(wikipedia.mylang)[0].encode(wikipedia.code2encoding(wikipedia.mylang))
+        if cat.linkname() == ns + ':' + old_cat_title:
+            # because a lits element is removed, the iteration will skip the 
+            # next element. this might lead to forgotten categories, but
+            # usually each category should only appear once per article.
+            cats.remove(cat)
+        elif cat.linkname().startswith(ns + ':' + old_cat_title + '|'):
+            sort_key = cat.linkname().split('|', 1)[1]
+            cats.remove(cat)
+    if new_cat_title != None:
+        if sort_key == '':
+            new_cat = catlib.CatLink(new_cat_title)
+        else:
+            new_cat = catlib.CatLink(new_cat_title + '|' + sort_key)
         cats.append(new_cat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
@@ -124,49 +138,48 @@ def change_category(article, old_cat, new_cat):
 
 
 def rename_category():
-    old_title = wikipedia.input('Please enter the old name of the category: ')
-    old_cat = catlib.CatLink(old_title)
-    new_title = wikipedia.input('Please enter the new name of the category: ')
-    new_cat = catlib.CatLink(new_title)
+    old_cat_title = wikipedia.input('Please enter the old name of the category: ')
+    old_cat = catlib.CatLink(old_cat_title)
+    new_cat_title = wikipedia.input('Please enter the new name of the category: ')
     
     # get edit summary message
-    wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % old_title)
+    wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % old_cat_title)
     
     articles = old_cat.articles(recurse = 0)
     if len(articles) == 0:
-        print 'There are no articles in category ' + old_title
+        print 'There are no articles in category ' + old_cat_title
     else:
         for article in articles:
-            change_category(article, old_cat, new_cat)
+            change_category(article, old_cat_title, new_cat_title)
     
     subcategories = old_cat.subcategories(recurse = 0)
     if len(subcategories) == 0:
-        print 'There are no subcategories in category ' + old_title
+        print 'There are no subcategories in category ' + old_cat_title
     else:
         for subcategory in subcategories:
-            change_category(subcategory, old_cat, new_cat)
+            change_category(subcategory, old_cat_title, new_cat_title)
 
 # asks for a category, and removes the category tag from all pages 
 # in that category, without prompting.
 def remove_category():
-    old_title = wikipedia.input('Please enter the name of the category that should be removed: ')
-    old_cat = catlib.CatLink(old_title)
+    old_cat_title = wikipedia.input('Please enter the name of the category that should be removed: ')
+    old_cat = catlib.CatLink(old_cat_title)
     # get edit summary message
-    wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang,msg_remove)] % old_title)
+    wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang,msg_remove)] % old_cat_title)
     
     articles = old_cat.articles(recurse = 0)
     if len(articles) == 0:
-        print 'There are no articles in category ' + old_title
+        print 'There are no articles in category ' + old_cat_title
     else:
         for article in articles:
-            change_category(article, old_cat, None)
+            change_category(article, old_cat_title, None)
     
     subcategories = old_cat.subcategories(recurse = 0)
     if len(subcategories) == 0:
-        print 'There are no subcategories in category ' + old_title
+        print 'There are no subcategories in category ' + old_cat_title
     else:
         for subcategory in subcategories:
-            change_category(subcategory, old_cat, None)
+            change_category(subcategory, old_cat_title, None)
 
 
 """
@@ -185,8 +198,6 @@ category, you can use the 'j' (jump) command.
 Typing 's' will leave the complete page unchanged.
 
 Important:
- * every category page must contain some text; otherwise an edit box will be
-   displayed instead of an article list, and the bot won't work
  * this bot is written to work with the MonoBook skin, so make sure your bot
    account uses this skin
 """
