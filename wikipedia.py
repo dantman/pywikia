@@ -81,7 +81,7 @@ langs = {'en':'en.wikipedia.org', # English
 latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
           'mr', 'id', 'simple', 'gl', 'lt', 'lv', 'oc', 'sw',
-          'tt', 'uk', 'vi', 'vo']
+          'tt', 'uk', 'vi', 'vo', 'ga']
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['cs', 'sl', 'bs', 'fy']
@@ -108,7 +108,7 @@ special = {'en':'Special',
 # given as a list of language codes.
 oldsoftware = ['it', 'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
                'simple', 'nds', 'mr', 'id', 'gl', 'lt', 'lv', 'oc', 'sw',
-               'tt', 'uk', 'vi', 'vo']
+               'tt', 'uk', 'vi', 'vo', 'ga']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
