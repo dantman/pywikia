@@ -934,12 +934,23 @@ def allpages(start = '%21%200'):
     while 1:
         returned_html = getPage(mylang, family.allpagesname(mylang, start),
                                 do_quote=0, do_edit=0)
+        # Try to find begin markers
         try:
             ibegin = returned_html.index('<!-- start content -->')
+        except ValueError:
+            # Then maybe this one works
+            try:
+                ibegin = returned_html.index('<table border="0" width="100%">')
+            except ValueError:
+                # And otherwise raise an error
+                raise NoPage('Couldn\'t extract allpages special page')
+        try:
             iend = returned_html.index('<!-- end content -->')
         except ValueError:
-            # if begin/end markers weren't found, raise exception
-            raise NoPage('Couldn\'t extract allpages special page')  
+            try:
+                iend = returned_html.index('<div class="printfooter">')
+            except ValueError:
+                raise NoPage('Couldn\'t extract allpages special page')
         # remove the irrelevant sections
         returned_html = returned_html[ibegin:iend]
         if family.version(mylang)=="1.2":
