@@ -56,6 +56,7 @@ langs = {
     'it':'it.wikipedia.org',   # Italian, UTF-8
     'ja':'ja.wikipedia.org',   # Japanese, UTF-8
     'ko':'ko.wikipedia.org',   # Korean, UTF-8
+    'ks':'ks.wikipedia.org',   # Ekspreso, but should become Kashmiri
     'la':'la.wikipedia.org',   # Latin, UTF-8
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
@@ -138,12 +139,13 @@ special = {
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
+    'ks': 'Special',
     'la': 'Special',
     'lt': 'Special',
     'lv': 'Special',
     'ml': 'Special',
     'mr': 'Special',
-    'ms': 'Special',
+    'ms': 'Istimewa',
     'na': 'Special',
     'nah':'Special',
     'nds': 'Special',
@@ -213,18 +215,18 @@ edittime = {}
 interwiki_putfirst = {
     'en':['af','ar','ms','bs','ca','co','cs','cy','da','de',
           'als','et','el','en','es','eo','eu','fr','fy','ga',
-          'gl','ko','hi','hr','id','is','it','ia','he','sw',
-          'la','lv','lt','hu','ml','mr','nah','na','nl','ja',
-          'no','oc','nds','pl','pt','ro','ru','sq','simple',
-          'sk','sl','sr','fi','sv','ta','tt','vi','tr',
-          'uk','vo','zh','zh-cn','zh-tw'],
+          'gl','ko','hi','hr','id','is','it','ia','he','ks',
+          'sw','la','lv','lt','hu','ml','mr','nah','na','nl',
+          'ja','no','oc','nds','pl','pt','ro','ru','sq',
+          'simple','sk','sl','sr','fi','sv','ta','tt','th',
+          'vi','tr','uk','vo','zh','zh-cn','zh-tw'],
     'fr':['af','ar','ms','bs','ca','co','cs','cy','da','de',
           'als','et','el','en','es','eo','eu','fr','fy','ga',
-          'gl','ko','hi','hr','id','is','it','ia','he','sw',
-          'la','lv','lt','hu','ml','mr','nah','na','nl','ja',
-          'no','oc','nds','pl','pt','ro','ru','sq','simple',
-          'sk','sl','sr','fi','sv','ta','tt','vi','tr',
-          'uk','vo','zh','zh-cn','zh-tw'],
+          'gl','ko','hi','hr','id','is','it','ia','he','ks',
+          'sw','la','lv','lt','hu','ml','mr','nah','na','nl',
+          'ja','no','oc','nds','pl','pt','ro','ru','sq',
+          'simple','sk','sl','sr','fi','sv','ta','tt','th',
+          'vi','tr','uk','vo','zh','zh-cn','zh-tw'],
     'hu':['en'],
     'pl':['af','sq','en','ar','eu','bs','zh','zh-tw',
           'zh-cn','hr','cs','da','eo','et','eu','fi','fr',
