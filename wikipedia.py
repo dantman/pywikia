@@ -1143,7 +1143,6 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
             predata.append(('wpEditToken', token))
         # Encode all of this into a HTTP request
         data = urlencode(tuple(predata))
-        print data
     
     except KeyError:
         print edittime
@@ -1315,7 +1314,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         tokenloc = R.search(text)
         if tokenloc:
             site.puttoken(tokenloc.group(1))
-        elif not site.gettoken:
+        elif not site.gettoken():
             site.puttoken('')
         return x
 
