@@ -31,13 +31,6 @@ login.py : Log in to an account on your "home" wikipedia. THIS WILL SHOW
            file that is created. You can only log in to one wikipedia at a time,
            and it should be the one mentioned in username.dat.
 
-backref.py understands various command-line arguments:
-    xx: (including the colon) check links to and from xx: instead of 
-        all languages.
-    -one : check named page only
-    -file : check pages in named file
-    -start : check all pages starting from named page
-
 treelang.py understands various command-line arguments:
     -force: do not ask permission to make changes
     -always: make changes even when a single byte is changed in the page,

@@ -1,8 +1,30 @@
 """
+This is a wikipedia robot
+
 Script to check pages referred to via interwiki links for the reverse link
+All reverse links that are missing or other anomalities are listed.
 
 This is now obsolete, please use the "backlink" option to treelang.py for a more
 powerful way to do the same thing.
+
+This script understands various command-line arguments:
+
+    xx: (including the colon) check links to and from xx: instead of 
+        all languages.
+
+    -one Page_Name : check named page only
+
+    -file filename : check pages in named file
+
+    -start Page_Name : check all pages starting from named page
+                        (often "A" or "0")
+
+One of the three last options MUST be given.
+
+If a single language is checked, the error output goes to stderr (normally the
+screen). If "all" languages are checked for back-links, a file xx-backref.log
+is made for each language xx for which a problem was seen.
+
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -50,7 +72,7 @@ for f in pages:
         ll=pl.interwiki()
     except wikipedia.IsRedirectPage:
         continue
-    except wikipedia.LockedPage: # Can't do anythinh with a locked page
+    except wikipedia.LockedPage: # Can't do anything with a locked page
         continue
     except wikipedia.NoPage:
 	print "ERROR: Yikes, does not exist"
