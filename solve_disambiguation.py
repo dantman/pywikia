@@ -408,6 +408,13 @@ for wrd in (page_list):
     if solve_redirect:
         try:
             alternatives.append(str(thispl.getRedirectTo()))
+        except wikipedia.NoPage:
+            print "The specified page was not found."
+            user_input = raw_input("Please enter the name of the page where the redirect should have pointed at, or press enter to quit: ")
+            if user_input == "":
+                sys.exit(1)
+            else:
+                alternatives.append(user_input)
         except wikipedia.IsNotRedirectPage:
             print "The specified page is not a redirect."
             sys.exit(1)
