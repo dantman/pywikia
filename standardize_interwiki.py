@@ -26,7 +26,7 @@ for arg in sys.argv[1:]:
 if start:
     start='_'.join(start)
 else:
-    start='A'
+    start='0'
 
 for pl in wikipedia.allpages(start = start):
     print pl
