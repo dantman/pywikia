@@ -184,9 +184,9 @@ if __name__=="__main__":
 def change_category(article, old_cat_title, new_cat_title):
     cats = article.categories()
     sort_key = ''
+    removed = False
     for cat in cats:
-        cattext=':'.join(cat.linkname().split(':')[1:])
-        removed = False
+        cattext = cat.linkname().split(':', 1)[1]
         if cattext == old_cat_title:
             # because a list element is removed, the iteration will skip the 
             # next element. this might lead to forgotten categories, but
