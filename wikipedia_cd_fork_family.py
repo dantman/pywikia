@@ -19,7 +19,8 @@ class Family(family.Family):
             'als':'als.wikipedia.org', # Alsatian
             'ar':'ar.wikipedia.org',   # Arabic
             'ast':'ast.wikipedia.org', # Asturian
-            'ay':'ay.wikipedia.org',   # Aymara            'az':'az.wikipedia.org',   # Azerbaijan
+            'ay':'ay.wikipedia.org',   # Aymara
+            'az':'az.wikipedia.org',   # Azerbaijan
             'be':'be.wikipedia.org',   # Belorussian
             'bg':'bg.wikipedia.org',   # Bulgarian
             'bh':'bh.wikipedia.org',   # Bhojpuri
@@ -80,7 +81,7 @@ class Family(family.Family):
             'lv':'lv.wikipedia.org',   # Livonian
             'mg':'mg.wikipedia.org',   # Malagasy
             'mi':'mi.wikipedia.org',   # Maori
-            'minnan':'minnan.wikipedia.org', # Min-Nan
+            'minnan':'zh-min-nan.wikipedia.org', # Min-Nan
             'mk':'mk.wikipedia.org',   # Macedonian
             'ml':'ml.wikipedia.org',   # Malayalam
             'mn':'mn.wikipedia.org',   # Mongolian
@@ -91,6 +92,7 @@ class Family(family.Family):
             'nb':'no.wikipedia.org',   # Norse - new code for Bokmal to distinguish from Nynorsk
             'nds':'nds.wikipedia.org', # Lower Saxon
             'nl':'nl.wikipedia.org',   # Dutch
+            'nn':'nn.wikipedia.org',   # Nynorsk
             'no':'no.wikipedia.org',   # Norwegian
             'oc':'oc.wikipedia.org',   # Occitan
             'om':'om.wikipedia.org',   # Oromo
@@ -140,7 +142,7 @@ class Family(family.Family):
             'zh-cn':'zh.wikipedia.org', # Simplified Chinese
             'zh-tw':'zh.wikipedia.org', # Traditional Chinese
             'zu':'zu.wikipedia.org',   # Zulu
-        }
+            }
         
         # Translation used on all Wikipedias for the different namespaces.
         # (Please sort languages alphabetically)
@@ -151,7 +153,47 @@ class Family(family.Family):
             },
             -1: {
                 '_default': u'Special',
+                'af': u'Spesiaal',
+                'ar': u'خاص',
+                'bg': u'Специални',
+                'bn': u'বিশেষ',
+                'ca': u'Especial',
+                'cs': u'Speciální',
+                'csb': u'Specjalnô',
+                'cy': u'Arbennig',
+                'da': u'Speciel',
                 'de': u'Spezial',
+                'eo': u'Speciala',
+                'es': u'Especial',
+                'et': u'Eri',
+                'fa': u'ویژه',
+                'fi': u'Toiminnot',
+                'fy': u'Wiki',
+                'ga': u'Speisialta',
+                'he': u'מיוחד',
+                'hi': u'विशेष',
+                'hu': u'Speciális',
+                'id': u'Istimewa',
+                'it': u'Speciale',
+                'ja': u'特別',
+                'ko': u'특수기능',
+                'la': u'Specialis',
+                'ms': u'Istimewa',
+                'nb': u'Spesial',
+                'nl': u'Speciaal',
+                'no': u'Spesial',
+                'oc': u'Especial',
+                'pl': u'Specjalna',
+                'pt': u'Especial',
+                'ru': u'Специальные',
+                'sk': u'Špeciálne',
+                'sl': u'Posebno',
+                'sq': u'Speciale',
+                'sr': u'Посебно',
+                'uk': u'Спеціальні',
+                'ta': u'சிறப்பு',
+                'th': u'พิเศษ',
+                'wa': u'Sipeciås',
             },
             0: {
                 '_default': None,
@@ -159,10 +201,12 @@ class Family(family.Family):
             1: {
                 '_default': 'Talk',
                 'de': u'Diskussion',
+                'nl': u'Overleg',
             },
             2: {
                 '_default': u'User',
                 'de': u'Benutzer',
+                'nl': u'Gebruiker',
             },
             3: {
                 '_default': u'User talk',
@@ -176,8 +220,52 @@ class Family(family.Family):
                 'de': u'Wikipedia Diskussion',
             },
             6: {
+                # TODO: convert all percent-encoded titles to plaintext
                 '_default': u'Image',
+                'af': u'Beeld',
+                'ar': u'صورة',
+                'bg': u'Картинка',
+                #'bn': To be checked,
+                'ca': u'Imatge',
+                'cs': u'Soubor',
+                'csb': u'Òbrôzk',
+                'cy': u'Delwedd',
+                'da': u'Billede',
                 'de': u'Bild',
+                'eo': u'Dosiero',
+                'es': u'Imagen',
+                'et': u'Pilt',
+                'fa': u'تصویر',
+                'fi': u'Kuva',
+                'fr': u'Image',
+                'fy': u'Ofbyld',
+                'ga': u'Íomhá',
+                'he': u'תמונה',
+                'hi': u'चित्र',
+                'hu': u'Kép',
+                'ia': u'Imagine',
+                'id': u'Imej',
+                'it': u'Immagine',
+                'ja': u'画像',
+                'ko': u'그림',
+                'la': u'Imago',
+                'ms': u'Imej',
+                'nb': u'Bilde',
+                'nl': u'Afbeelding',
+                'no': u'Bilde',
+                'oc': u'Image',
+                'pl': u'Grafika',
+                'pt': u'Imagem',
+                'ro': u'Imagine',
+                'ru': u'Изображение',
+                'sk': u'Obrázok',
+                'sl': u'Slika',
+                'sq': u'Figura',
+                'sr': u'Слика',
+                'sv': u'Bild',
+                'ta': u'படிமம்',
+                'th': u'ภาพ',
+                'wa': u'Imådje',
             },
             7: {
                 '_default': u'Image talk',
@@ -185,6 +273,7 @@ class Family(family.Family):
             },
             8: {
                 '_default': u'MediaWiki',
+                'bg': u'МедияУики',
             },
             9: {
                 '_default': u'MediaWiki talk',
@@ -193,6 +282,8 @@ class Family(family.Family):
             10: {
                 '_default':u'Template',
                 'de':u'Vorlage',
+                'es':u'Plantilla',
+                'nl':u'Sjabloon'
             },
             11: {
                 '_default': u'Template talk',
@@ -209,14 +300,74 @@ class Family(family.Family):
             14: {
                 '_default': u'Category',
                 'da': u'Kategori',
-           },
+                'de': u'Kategorie',
+                'es': u'Categoría',
+                'fr': u'Catégorie',
+                'hu': u'Kategória',
+                'is': u'Flokkur',
+                'nl': u'Categorie',
+                'no': u'Kategori',
+                'sv': u'Kategori',
+            },
             15: {
                 '_default': u'Category talk',
                 'de': u'Kategorie Diskussion',        
             },
         }
         
+        
+        # Redirect code can be translated, but is only in one language now.
+        
+        self.redirect = {
+            'cy': 'ail-cyfeirio',
+            }
+        
+        # On most Wikipedias page names must start with a capital letter, but some
+        # languages don't use this.
+        
+        self.nocapitalize = ['tlh','tokipona']
+        
         self.obsolete = ['sh', 'dk']
+        
+        # A few selected big languages for things that we do not want to loop over
+        # all languages. This is only needed by the titletranslate.py module, so
+        # if you carefully avoid the options, you could get away without these
+        # for another wikimedia family.
+        
+        self.biglangs = ['da', 'de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'sv']
+        
+        self.biglangs2 = self.biglangs + [
+                    'ca', 'eo', 'et', 'fi', 'he', 'no', 'pt', 'ro', 'sl', 'zh']
+        
+        self.biglangs3 = self.biglangs2 + [
+                    'af', 'bg', 'cs', 'cy', 'hr', 'hu', 'ia', 'id', 'la', 'ms',
+                    'simple', 'wa']
+        
+        self.biglangs4 = self.biglangs3 + [
+                        'ast', 'eu', 'fy', 'gl', 'io', 'is', 'ko', 'ku', 'lt', 'nds',
+                        'oc', 'sk', 'sr', 'su', 'tr', 'ru', 'uk']
+        
+        self.seriouslangs = self.biglangs4 + [
+                        'ar', 'be', 'bs', 'csb', 'el', 'fa', 'ga', 'hi', 'jv', 'lb', 'lv',
+                        'mi', 'minnan', 'sa', 'ta', 'th', 'tokipona', 'tt', 'ur', 'vi']
+        
+        # other groups of language that we might want to do at once
+        
+        self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+        
+        #
+        # Two functions to figure out the encoding of different languages
+        # This may be a lot simpler for other families!
+        # 
+        
+        # Languages that are coded in iso-8859-1
+        self.latin1 = ['en', 'sv', 'nl', 'da', 'dk', 'test']
+        
+        # Languages that used to be coded in iso-8859-1
+        self.latin1old = ['de', 'et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
+                     'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
+                     'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
+                     'ga', 'na', 'es']
         
     def put_address(self, code, name):
         return '/%s?action=submit' % name
@@ -260,3 +411,20 @@ class Family(family.Family):
         else:
             return '/%s:Allpages?from=%s' % (self.special_namespace_url(code), start)
 
+    def code2encoding(self, code):
+        """Return the encoding for a specific language wikipedia"""
+        if code in self.latin1:
+            return 'iso-8859-1'
+        return 'utf-8'
+    
+    def code2encodings(self, code):
+        """Return a list of historical encodings for a specific language
+           wikipedia"""
+        # Historic compatibility
+        if code == 'pl':
+            return 'utf-8', 'iso-8859-2'
+        if code == 'ru':
+            return 'utf-8', 'iso-8859-5'
+        if code in self.latin1old:
+            return 'utf-8', 'iso-8859-1'
+        return self.code2encoding(code),
