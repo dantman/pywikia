@@ -172,7 +172,7 @@ while cont:
         pass
     checked +=len(donow)
     for pl in donow:
-        R = re.compile(r'http://[\S]+[^\s.,:;)\?!\]]')
+        R = re.compile(r'http://[^\s}]+[^\s.,:;)\?!\]}]')
         try:
             for url in R.findall(pl.get()):
                 url = wikipedia.unicode2html(url,'latin_1')
