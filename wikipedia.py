@@ -600,7 +600,7 @@ class GetAll:
                     ('pages', pagenames),
                     ('curonly', 'True'),
                     ))
-        print repr(data)
+        #print repr(data)
         headers = {"Content-type": "application/x-www-form-urlencoded", 
                    "User-agent": "RobHooftWikiRobot/1.0"}
         # Slow ourselves down
