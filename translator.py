@@ -1,4 +1,4 @@
-# -*- coding: iso8859-1 -*-
+# -*- coding: iso-8859-1 -*-
 
 # Translation database. Non-ASCII characters must be encoded in hexadecimal
 # unicode and prefixed with a small u,
@@ -16,6 +16,8 @@
 # Distribute under the terms of the PSF license.
 #
 #
+
+import codecs
 
 types = {
     # translations for images (inside other tables)
@@ -223,19 +225,19 @@ types = {
     "geography": {
         "translations": [
             # header
-            { "en":"Base data",                     "de":"Basisdaten",                     "nl":"Basisgegevens",               "fr":"Informations",       },
-            { "en":"[[Area]]:",                     "de":u"[[Fl\xE4che]]:",                "nl":"Oppervlakte:",                       "fr":"[[Superficie]]:",  },
-            { "en":"[[Population]]:",               "de":"[[Einwohner]]:",                 "nl":"Inwoneraantal:",                },
-            { "en":"[[Population density]]:",       "de":u"[[Bev\xF6lkerungsdichte]]:",    "nl":"[[Bevolkingsdichtheid]]:",   },
-            { "en":"inh./km&sup2;",                 "de":"Einw./km&sup2;",                 "nl":"inw./km&sup2;",                        "fr":"hab/km&sup2;", },
-            { "en":u"inh./km\xB2",                  "de":u"Einw./km\xB2",                  "nl":u"inw./km\xB2",                                  "fr":u"hab/km\xB2",  },
+            { "en":"Base data",                     "de":"Basisdaten",                     "nl":"Basisgegevens",                       "fr":"Informations",       },
+            { "en":"[[Area]]:",                     "de":u"[[Fl\xE4che]]:",                "nl":"Oppervlakte:",                        "fr":"[[Superficie]]:",       "eo":"Areo:",},
+            { "en":"[[Population]]:",               "de":"[[Einwohner]]:",                 "nl":"Inwoneraantal:",                      "fr":u"[[Population]]:",       "eo":u"Logantaro:",   },
+            { "en":"[[Population density]]:",       "de":u"[[Bev\xF6lkerungsdichte]]:",    "nl":"[[Bevolkingsdichtheid]]:",              },
+            { "en":"inh./km&sup2;",                 "de":"Einw./km&sup2;",                 "nl":"inw./km&sup2;",                       "fr":"hab/km&sup2;", },
+            { "en":u"inh./km\xB2",                  "de":u"Einw./km\xB2",                  "nl":u"inw./km\xB2",                        "fr":u"hab/km\xB2",  },
             { "en":"inhabitants/km&sup2;",          "de":"Einwohner/km&sup2;",             "nl":"inwoners / km&sup2;",                },
             { "en":u"inhabitants/km\xB2",           "de":u"Einwohner/km\xB2",              "nl":u"inwoners / km\xB2",               },
             { "en":"inhabitants per km&sup2;",      "de":"Einwohner pro km&sup2;",         "nl":"inwoners per km&sup2;",               }, 
             { "en":u"inhabitants per km\xB2",       "de":u"Einwohner pro km\xB2",          "nl":u"inwoners per km\xB2",                    },
-            { "en":"inh.",                          "de":"Einw.",                          "nl":"inw.",                               "fr":"hab.", },
+            { "en":"inh.",                          "de":"Einw.",                          "nl":"inw.",                                 "fr":"hab.", },
             { "en":"above [[sea level]]",           "de":u"\xFC. [[Normalnull|NN]]",       "nl":"boven [[Normaal Amsterdams Peil|NAP]]",                           },
-            { "en":"location",                      "de":"Geografische Lage",              "nl":"Ligging",                            "fr":"Localisation",                              },
+            { "en":"location",                      "de":"Geografische Lage",              "nl":"Ligging",                              "fr":"Localisation",                              },
             # longitude, latitude
             { "en":"' north",                       "de":u"' n\xF6rdlicher Breite",        "nl":"' NB" },
             { "en":"' north",                       "de":u"' n\xF6rdl. Breite",            "nl":"' NB" },
@@ -313,8 +315,8 @@ types = {
             { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]:",           "nl":"[[Burgermeester]]:"},
             # "bis" is used between postal codes
             { "en":" to ",                     "de":" bis ",                                "nl":"t/m"},          
-            # some cities have demographic info which is titled "Bevölkerung" (population). The spaces are important
-            # because "Bevölkerung" is also a substring of "Bevölkerungsdichte (population density).
+            # some cities have demographic info which is titled "BevÃ¶lkerung" (population). The spaces are important
+            # because "BevÃ¶lkerung" is also a substring of "BevÃ¶lkerungsdichte (population density).
             {                                  "de":u" Bev\xF6lkerung ",                      "nl":" Demografie ", },
 
             # parties
@@ -351,23 +353,23 @@ types = {
         
     },
     
-    # French départements
+    # French dÃ©partements
     "dep": {
         "translations": [
             # some entries on fr: lack colons, others have spaces before the colons.
-            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]] :", },
-            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]]:",  },
-            { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]] :",                      },
-            { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]]:",                       },
+            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]] :", "eo":"[[Francaj regionoj|Regiono]]:", },
+            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]]:",  "eo":"[[Francaj regionoj|Regiono]]:", },
+            { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]] :",                      "eo":"[[Prefektejo]]:" },
+            { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]]:",                       "eo":"[[Prefektejo]]:"},
             { "de":u"[[Unterpr\xE4fektur]]en:",                    "fr":u"[[Sous-pr\xE9fecture]]s :",                },
             { "de":u"[[Unterpr\xE4fektur]]en:",                    "fr":u"[[Sous-pr\xE9fecture]]s:",                 },
             { "de":u"[[Unterpr\xE4fektur]]:",                      "fr":u"[[Sous-pr\xE9fecture]] :",                },
             { "de":u"[[Unterpr\xE4fektur]]:",                      "fr":u"[[Sous-pr\xE9fecture]]:",                 },
             { "de":"insgesamt",                                    "fr":"Totale",                                    },
             # the next three items are already in the list "geography", but someone forgot the colons on fr:
-            { "de":u"[[Einwohner]]:",                              "fr":u"[[Population]]",  },
+            { "de":u"[[Einwohner]]:",                              "fr":u"[[Population]]",                           "eo":u"Lo\u011dantaro:",          },
             { "de":u"[[Bev\xF6lkerungsdichte|Dichte]]:",           "fr":u"[[Densit\xE9 de population|Densit\xE9]]",  },
-            { "de":u"[[Fl\xE4che]]:",                              "fr":"[[Superficie]]",                            },
+            { "de":u"[[Fl\xE4che]]:",                              "fr":"[[Superficie]]",                            "eo":"Areo:",             },
             # another workaround for a forgotten colon
             { "de":"''</small>:",                                  "fr":"''</small>",                           },
             { "de":"[[Arrondissement]]s:",                         "fr":"[[Arrondissement]]s",                       },
@@ -398,6 +400,15 @@ class Global:
 # prints text on the screen only if in -debug mode
 def print_debug(text):
     if Global.debug:
+        # try to encode the description to the encoding used for python output.
+        # if that's not possible (e.g. because there are non-ISO 8859-15
+        # characters and the console uses ISO 8859-15), convert all non-ASCII
+        # characters to HTML entities.
+        try:
+            text.encode("iso8859-15")
+        except UnicodeEncodeError:
+            print "(Cannot print debug information because it includes Unicode characters, converting all non-ASCII characters to HTML entities)"
+            text = wikipedia.UnicodeToAsciiHtml(text).encode("iso8859-15")
         print text
 
 # Translate the string given as argument 'text' from language 'from_lang' to 

@@ -54,6 +54,15 @@ else:
 # prints text on the screen only if in -debug mode
 def print_debug(text):
     if debug:
+        # try to encode the description to the encoding used for python output.
+        # if that's not possible (e.g. because there are non-ISO 8859-15
+        # characters and the console uses ISO 8859-15), convert all non-ASCII
+        # characters to HTML entities.
+        try:
+            text.encode("iso8859-15")
+        except UnicodeEncodeError:
+            print "(Cannot print debug information because it includes Unicode characters, converting all non-ASCII characters to HTML entities)"
+            text = wikipedia.UnicodeToAsciiHtml(text).encode("iso8859-15")
         print text
     
 # if the -file argument is used, page titles are dumped in this array.
