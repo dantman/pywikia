@@ -1149,10 +1149,10 @@ def replaceCategoryLinks(oldtext, new, code = None):
     s = categoryFormat(new)
     s2 = removeCategoryLinks(oldtext, code)
     if s:
-        if mylang in config.category_atbottom:
-            newtext = s2 + config.category_text_separator + s
-        else:
+        if mylang in config.category_attop:
             newtext = s + config.category_text_separator + s2
+        else:
+            newtext = s2 + config.category_text_separator + s
     else:
         newtext = s2
     # now re-add interwiki links
