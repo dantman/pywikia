@@ -101,7 +101,11 @@ This script understands various command-line arguments:
 
     -restore:      restore a set of "dumped" pages the robot was working on
                    when it terminated.
-                   
+
+    -continue:     as restore, but after having gone through the dumped pages,
+                   continue alphabetically starting at the last of the dumped
+                   pages.
+
     -warnfile:     used as -warnfile:filename, reads all warnings from the
                    given file that apply to the home wikipedia language,
                    and read the rest of the warning as a hint. Then
@@ -132,10 +136,10 @@ the user-config.py configuration file.
 
 If interwiki.py is terminated before it is finished, it will write a file
 "interwiki.dump"; the program will read it if invoked with the
-"-restore". option, and finish all the subjects in that list. Please check what
-the last subject in the list is (say it is "Brilliant"), and to continue the
-run, do: "python interwiki.py -autonomous -restore -start:Brilliant_0"
-
+"-restore" or "-continue" option, and finish all the subjects in that list.
+To run the interwiki-bot on all pages on a language, run it with option
+"-start:!", and if it takes so long you have to break it off, use "-continue"
+next time.
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -1004,6 +1008,11 @@ if __name__ == "__main__":
             elif arg == '-restore':
                 for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
                     sa.add(pl,hints=hints)
+            elif arg == '-continue':
+                for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
+                    sa.add(pl,hints=hints)
+                    last = pl
+                start = pl.linkname()
             elif arg.startswith('-file:'):
                 for pl in wikipedia.PageLinksFromFile(arg[6:]):
                     sa.add(pl,hints=hints)
