@@ -42,35 +42,22 @@ edittime = {}
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
 
+alphabetic = ['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
+          'de','als','et','el','en','es','eo','eu','fa','fr',
+          'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
+          'it','ia','he','jv','ka','csb','ks','sw','la','lv',
+          'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
+          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
+          'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
+          'tt','th','ur','vi','tokipona','tr','uk','vo','yi',
+          'zh','zh-cn','zh-tw']
+
 interwiki_putfirst = {
-    'en':['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
-          'de','als','et','el','en','es','eo','eu','fa','fr',
-          'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
-          'it','ia','he','jv','ka','csb','ks','sw','la','lv',
-          'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
-          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
-          'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
-          'tt','th','ur','vi','tokipona','tr','uk','vo','yi',
-          'zh','zh-cn','zh-tw'],
-    'fr':['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
-          'de','als','et','el','en','es','eo','eu','fa','fr',
-          'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
-          'it','ia','he','jv','ka','csb','ks','sw','la','lv',
-          'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
-          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
-          'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
-          'tt','th','ur','vi','tokipona','tr','uk','vo','yi',
-          'zh','zh-cn','zh-tw'],
-    'hu':['en'],
-    'pl':['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
-          'de','als','et','el','en','es','eo','eu','fa','fr',
-          'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
-          'it','ia','he','jv','ka','csb','ks','sw','la','lv',
-          'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
-          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
-          'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
-          'tt','th','ur','vi','tokipona','tr','uk','vo','yi',
-          'zh','zh-cn','zh-tw'],
+    'en': alphabetic,
+    'fr': alphabetic,
+    'hu': ['en'],
+    'pl': alphabetic,
+    'simple': alphabetic
     }
 
 # Local exceptions
