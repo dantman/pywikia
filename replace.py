@@ -135,7 +135,7 @@ def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, names
     dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
     for entry in dump.entries():
         skip_page = False
-        if namespace == -1 or namespace != entry.namespace :
+        if namespace != -1 and namespace != entry.namespace:
             continue
         else:
             for exception in exceptions:
