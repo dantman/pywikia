@@ -1055,10 +1055,10 @@ def interwikiFormat(links):
             s.append(links[code].aslink())
         except AttributeError:
             s.append('[[%s:%s]]' % (code, links[code]))
-    if mylang in config.interwiki_on_separate_lines:
-        sep = '\r\n'
-    else:
+    if mylang in config.interwiki_on_one_line:
         sep = ' '
+    else:
+        sep = '\r\n'
     s=sep.join(s) + '\r\n'
     return s 
             

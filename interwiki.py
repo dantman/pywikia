@@ -409,10 +409,7 @@ class Subject:
             oldtext = self.inpl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if globalvar.debug:
-                import difflib
-                for line in difflib.ndiff(oldtext.split('\r\n'),newtext.split('\r\n')):
-                    if line[0] in ['+','-']:
-                        print repr(line)[2:-1]
+                showDiff(oldtext, newtext)
             if newtext == oldtext:
                 if globalvar.backlink:
                     self.reportBacklinks(new)
@@ -609,6 +606,18 @@ class SubjectArray:
 
     def __len__(self):
         return len(self.subjects)
+
+def showDiff(oldtext, newtext):
+    import difflib
+    sep = '\r\n'
+    ol = oldtext.split(sep)
+    if len(ol) == 1:
+        sep = '\n'
+        ol = oldtext.split(sep)
+    nl = newtext.split(sep)
+    for line in difflib.ndiff(ol,nl):
+        if line[0] in ['+','-']:
+            print repr(line)[2:-1]
     
 def compareLanguages(old, new):
     removing = []
