@@ -202,7 +202,7 @@ def compareLanguages(old, new):
         s = s + " %s:" % (msg[msglang][1]) + ",".join(removing)
     if modifying:
         s = s + " %s:" % (msg[msglang][2]) + ",".join(modifying)
-    return s
+    return s,removing
 
 #===========
 exceptions = []
@@ -395,7 +395,7 @@ old={}
 for pl in inpl.interwiki():
     old[pl.code()] = pl
 ####
-mods=compareLanguages(old, new)
+mods, removing = compareLanguages(old, new)
 if not mods and only_if_status:
     print "No changes"
 else:
@@ -415,7 +415,7 @@ else:
                 if confirm:
                     if bell:
                         sys.stdout.write('\07')
-                    autonomous_problem(inpl, 'removing a language')
+                    autonomous_problem(inpl, 'removing: %s'%(",".join(removing)))
                     answer = raw_input('submit y/n ?')
                 else:
                     answer = 'y'
