@@ -26,10 +26,12 @@ import re, sys, pickle
 import os.path
 import time
 
-def get(key):
+def get(key, lang = None):
+    if lang == None:
+        lang = wikipedia.mylang
     try:
         # find out how old our saved dump is (in seconds)
-        file_age = time.time() - os.path.getmtime('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang)
+        file_age = time.time() - os.path.getmtime('mediawiki-messages/mediawiki-messages-%s.dat' % lang)
         # if it's older than 1 month, reload it
         if file_age > 30 * 24 * 60 * 60:
             print 'Current MediaWiki message dump is outdated, reloading'
@@ -40,7 +42,7 @@ def get(key):
     # TODO: It's quite inefficient to reload the file every time this function
     # is used. Maybe we can save its content the first time the function is
     # called.
-    f = open('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang, 'r')
+    f = open('mediawiki-messages/mediawiki-messages-%s.dat' % lang, 'r')
     dictionary = pickle.load(f)
     f.close()
     key = key[0].lower() + key[1:]
@@ -70,10 +72,12 @@ def makepath(path):
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
     
-def refresh_messages():
-    host = wikipedia.family.hostname(wikipedia.mylang)
+def refresh_messages(lang = None):
+    if lang == None:
+        lang = wikipedia.mylang
+    host = wikipedia.family.hostname(lang)
     # get 'all messages' special page's URL
-    url = wikipedia.family.allmessages_address(wikipedia.mylang)
+    url = wikipedia.family.allmessages_address(lang)
     print 'Retrieving MediaWiki messages' 
     allmessages, charset = wikipedia.getUrl(host,url)
 
@@ -102,7 +106,7 @@ def refresh_messages():
         dictionary[item[0]] = unicode(item[1], wikipedia.myencoding())
         # Save the dictionary to disk
         # The file is stored in the mediawiki_messages subdir. Create if necessary. 
-        f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang), 'w')
+        f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % lang), 'w')
         pickle.dump(dictionary, f)
         f.close()
     
