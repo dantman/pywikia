@@ -34,6 +34,7 @@ langs = {
     'cy':'cy.wikipedia.org',   # Welsh, UTF-8
     'da':'da.wikipedia.org',   # Danish
     'de':'de.wikipedia.org',   # German
+    'dk':'da.wikipedia.org',   # Danish (wrong name)
     'el':'el.wikipedia.org',   # Greek, UTF-8
     'en':'en.wikipedia.org',   # English
     'eo':'eo.wikipedia.org',   # Esperanto, UTF-8
@@ -81,6 +82,7 @@ langs = {
     'sw':'sw.wikipedia.org',   # Swahili
     'ta':'ta.wikipedia.org',   # Tamil, UTF-8
     'test':'test.wikipedia.org',
+    'th':'th.wikipedia.org',   # Thai, UTF-8
     'tr':'tr.wikipedia.org',   # Turkish, UTF-8
     'tt':'tt.wikipedia.org',   # Tatar
     'uk':'uk.wikipedia.org',   # Ukrainian (Latin-1?)
@@ -93,7 +95,7 @@ langs = {
     }
 
 # Languages that are coded in iso-8859-1
-latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'da']
+latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'da', 'dk']
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['et', 'ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy',
@@ -161,6 +163,7 @@ special = {
     'sw': 'Special',
     'ta': '%E0%AE%9A%E0%AE%BF%E0%AE%B1%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81',
     'test': 'Special',
+    'th': '%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9',
     'tr': 'Special',
     'tt': 'Special',
     'uk': 'Special',
@@ -172,7 +175,7 @@ special = {
     'zh-tw': 'Special',
     }
 
-obsolete = ['sh']
+obsolete = ['sh', 'dk']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
@@ -188,7 +191,7 @@ biglangs2 = ['ca', 'da', 'de', 'en', 'eo', 'es', 'fi', 'fr', 'ia',
 seriouslangs = ['af', 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
                 'es', 'et', 'fi', 'fr', 'fy', 'gl', 'he', 'hr', 'hu',
                 'ia', 'it', 'ja', 'ko', 'la', 'lv', 'ms', 'nds', 'nl', 'no',
-                'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'ta',
+                'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'ta', 'th',
                 'tr', 'vi', 'zh', 'simple']
 
 # Set needput to True if you want write-access to the Wikipedia.
