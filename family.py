@@ -442,6 +442,9 @@ class Family(object):
             return '%s:Allpages&from=%s' % (
                 self.special_namespace_url(code), start)
 
+    def newpagesname(self, code):
+        return "%s:Newpages" % (self.special_namespace_url(code))
+
     def code2encoding(self, code):
         """Return the encoding for a specific language wikipedia"""
         return 'utf-8'
