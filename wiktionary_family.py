@@ -191,11 +191,12 @@ class Family(family.Family):
 
 
     interwiki_putfirst = {
-        'en': self.alphabetic,
-        'fr': self.alphabetic,
+        'en': alphabetic,
+        'fi': alphabetic,
+        'fr': alphabetic,
         'hu': ['en'],
-        'pl': self.alphabetic,
-        'simple': self.alphabetic
+        'pl': alphabetic,
+        'simple': alphabetic
         }
         
     # group of languages that we might want to do at once

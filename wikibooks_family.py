@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -24,7 +24,7 @@ class Family(family.Family):
             'ca':'ca.wikibooks.org',   # Catalan
             'chr':'chr.wikibooks.org', # Cherokee
             'co':'co.wikibooks.org',   # Corsican
-            'cs':'cs.wikibooks.org',   # Czech
+            'cs':'cs.wikibooks.or7g',   # Czech
             'csb':'csb.wikibooks.org', # Kashubian
             'cy':'cy.wikibooks.org',   # Welsh
             'da':'da.wikibooks.org',   # Danish
@@ -309,7 +309,7 @@ class Family(family.Family):
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
 
-        self.alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
+        alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
                       'ca','chr','co','cs','cy','da','de','als','et',
                       'el','en','es','eo','eu','fa','fr','fy','ga','gv',
                       'gd','gl','ko','hi','hr','io','id','ia','is','it',
@@ -322,11 +322,12 @@ class Family(family.Family):
                       'zh-tw']
 
         self.interwiki_putfirst = {
-            'en': self.alphabetic,
-            'fr': self.alphabetic,
+            'en': alphabetic,
+            'fi': alphabetic,
+            'fr': alphabetic,
             'hu': ['en'],
-            'pl': self.alphabetic,
-            'simple': self.alphabetic
+            'pl': alphabetic,
+            'simple': alphabetic
             }
         
         # group of languages that we might want to do at once

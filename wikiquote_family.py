@@ -144,11 +144,13 @@ class Family(family.Family):
                   'zh-tw']
         
     interwiki_putfirst = {
-        'en': self.alphabetic,
-        'fr': self.alphabetic,
+        'en': alphabetic,
+        'fi': alphabetic,
+        'fr': alphabetic,
+        'he': ['en'],
         'hu': ['en'],
-        'pl': self.alphabetic,
-        'simple': self.alphabetic
+        'pl': alphabetic,
+        'simple': alphabetic
         }
         
     # group of languages that we might want to do at once
