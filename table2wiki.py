@@ -85,20 +85,21 @@ for article in articles:
         newText = text
         
         ##################
-        # every open-tag gets a new line.
-        newText = re.sub("(\<[tT]{1}[dDhH]{1}([^>]*?)\>[^<]*?)"
-                         + "(\<\/[Tt]{1}[dDhH]{1}[^>]*?\>)",
-                         "\r\n\\1\\3", newText, 0)
-        newText = re.sub("(\<[tT]{1}[rR]{1})",
-                         "\r\n\\1", newText, 0)
-        
-        ##################
         # bring every <tag> into one single line.
         num = 1
         while num != 0:
             newText, num = re.subn("(\<[^!]{1}[^>\n\r]*?)[\r\n]+",
                                    "\\1 ", newText, 0)
             warnings = warnings + num
+
+        ##################
+        # every open-tag gets a new line.
+        newText = re.sub("(\<[tT]{1}[dDhH]{1}([^>]*?)\>[\w\W]*?)"
+                         + "(\<\/[Tt]{1}[dDhH]{1}[^>]*?\>)",
+                         "\r\n\\1\\3", newText, 0)
+        newText = re.sub("(\<[tT]{1}[rR]{1})",
+                         "\r\n\\1", newText, 0)
+        
 
             
         ##################
