@@ -3,7 +3,7 @@ This is a wikipedia robot.
 
 Script to check language links for years A.D.
 
-This uses the fact that almost all wikipedia's have the years as plain number
+This uses the fact that almost all wikipedias have the years as plain number
 page names and can be trivially translated to check if the equivalent exists in
 another language. The exception for the Japanese wikipedia is hard-coded.
 
