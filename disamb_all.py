@@ -14,9 +14,18 @@ import os, sys
 import wikipedia
 
 file=[]
+options=[]
 
 for arg in sys.argv[1:]:
-    file.append(arg)
+    if arg[0] == '-' and len(arg)>1:
+        # Options are both for us and for the treelang robot itself
+        wikipedia.argHandler(arg)
+        options.append(arg)
+    else:
+        file.append(arg)
+
+if options:
+    options=' '.join(options)
 
 if sys.platform == 'win32':
     normalstatus = 0, 1
@@ -26,6 +35,7 @@ else:
 lst=[]
 
 for fn in file:
+    print fn
     f=open(fn)
     for line in f.readlines():
         lst.append(wikipedia.PageLink(wikipedia.mylang,line))
@@ -39,9 +49,9 @@ for pl in lst:
         print repr(f)
     hintstr=''
     if sys.platform=='win32':
-        status = os.system("solve_disambiguation.py %s" % (f))
+        status = os.system("solve_disambiguation.py %s %s" % (options, f))
     else:
-        status = os.system("solve_disambiguation.py '%s'" % (f))
+        status = os.system("solve_disambiguation.py %s '%s'" % (options, f))
     if status not in normalstatus:
         print "Exit status ", status
         sys.exit(1)
