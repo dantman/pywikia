@@ -23,6 +23,8 @@ Command line options:
                Page titles should be saved one per line, without [[brackets]].
                The -pos parameter won't work if -file is used.                              
 
+-image         Copy all images within the found table to the target Wikipedia
+
 Article_Name:  Name of the article where a table should be inserted
 
 """
@@ -65,6 +67,7 @@ page_list = []
 from_lang = ""
 type = ""
 debug = False
+copy_images = False
 
 # read command line parameters
 for arg in sys.argv[1:]:
@@ -76,6 +79,8 @@ for arg in sys.argv[1:]:
         type = arg[6:]
     elif arg == "-debug":
         debug = True
+    elif arg == "-image":
+        copy_images = True
     elif arg.startswith('-file'):
         if len(arg) == 5:
             file = raw_input('Please enter the list\'s filename: ')
@@ -89,6 +94,23 @@ for arg in sys.argv[1:]:
         f.close()
     else:
         page_list.append(arg)
+
+# this is a modified version of wikipedia.imagelinks(). Maybe we can
+# unify both.
+def imagelinks(lang, text):
+    result = []
+    # check if we know this wikipedia's image namespace name
+    if lang in wikipedia.image:
+        im=wikipedia.image[lang] + ':'
+    else:
+        im='Image:'
+    w1=r'('+im+'[^\]\|]*)'
+    w2=r'([^\]\|]*)'
+    Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
+    for l in Rlink.findall(text):
+        result.append(wikipedia.PageLink(lang, l[0]))
+    return result
+
 
 def treat(to_pl):
     try:
@@ -114,16 +136,27 @@ def treat(to_pl):
     if not table:
         print "No table found in %s." % from_lang + ":" + from_pl.linkname()
         return
-    table = translator.translate(table, type, from_lang, debug, wikipedia.mylang)
-    if not table:
+    translated_table = translator.translate(table, type, from_lang, debug, wikipedia.mylang)
+    if not translated_table:
         print "Could not translate table."
         return
-    print_debug("\n" + table)
+    print_debug("\n" + translated_table)
     # add table to top of the article, seperated by a blank lines
-    to_text = table + "\n\n" + to_text
+    to_text = translated_table + "\n\n" + to_text
     if not debug:
         print "Changing page %s" % (to_pl)
+        # save changes on Wikipedia
         to_pl.put(to_text, minorEdit='0')
+
+    print_debug("Copying images")
+    if copy_images:
+        # extract image links from original table
+        images=imagelinks(from_lang, table)
+        import lib_images
+        for i in images:
+            lib_images.transfer_image(i, wikipedia.mylang, debug)
+            
+        
 
 # Regular expression that will match both <table and {|
 startR = re.compile(r"<table|\{\|")

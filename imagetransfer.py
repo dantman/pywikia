@@ -18,9 +18,9 @@ It will then send the image to wikipedia.
 #
 __version__='$Id$'
 
-import re,sys
-import httplib,md5
-import wikipedia
+import re,sys,string
+import httplib
+import wikipedia, lib_images
 
 inname = []
 imagelist = []
@@ -54,28 +54,8 @@ for page in ilinks:
     for i in page.imagelinks():
         imagelist.append(i)
 
-# gets a wikilink to an image, downloads it and its description,
-# and uploads it to another wikipedia
-def treat(imagelink, target):
-    print "--------------------------------------------------"
-    print "Found image: %s"% (imagelink.aslink())
-    # todo: need to strip of "Afbeelding:"
-    filename = imagelink.linkname()
-    print "Image filename is: %s " % filename
-    md5sum = md5.new(filename).hexdigest()
-    print "MD5 hash is: %s" % md5sum
-    url = "http://" + imagelink.code() + ".wikipedia.org/upload/" + md5sum[0] + "/" + md5sum[:2] + "/" + filename
-    print "URL should be: %s" % url
-    
-    print
-    try:
-        print imagelink.get()
-    except wikipedia.NoPage:
-        print "Page not found"
-
-
 for i in range(len(imagelist)):
-    treat (imagelist[i], wikipedia.mylang)
+    lib_images.transfer_image(imagelist[i], wikipedia.mylang, debug=True)
 
 print "=================================================="
 
