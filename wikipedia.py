@@ -25,6 +25,7 @@ langs = {'en':'www.wikipedia.org',
          'hu':'hu.wikipedia.org',
          'el':'el.wikipedia.org',
          'bs':'bs.wikipedia.org',
+         'hi':'hi.wikipedia.org',
          'it':'it.wikipedia.com',
          'no':'no.wikipedia.com',
          'pt':'pt.wikipedia.com',
@@ -298,7 +299,7 @@ def code2encoding(code):
         return 'iso-8859-5'
     if code=='pl':
         return 'iso-8859-2'
-    if code in ['meta','eo','ja','zh']:
+    if code in ['meta','eo','ja','zh','hi']:
         return 'utf-8'
     return 'iso-8859-1'
     
