@@ -85,7 +85,7 @@ def askAlternative(word,context=None):
         wikipedia.output(u"-"*60)
     while not correct:
         for i in xrange(len(Word(word).getAlternatives())):
-            wikipedia.output(u"%s: Replace by '%s'"%(i+1,Word(word).getAlternatives()[i]))
+            wikipedia.output(u"%s: Replace by '%s'"%(i+1,Word(word).getAlternatives()[i].replace('_',' ')))
         wikipedia.output(u"a: Add '%s' as correct"%word)
         if word[0].isupper():
             wikipedia.output(u"c: Add '%s' as correct"%(uncap(word)))
@@ -94,19 +94,19 @@ def askAlternative(word,context=None):
         wikipedia.output(u"s: Replace text, but do not save as alternative")
         wikipedia.output(u"*: Edit by hand")
         answer = wikipedia.input(u":")
-        if answer in "rRsS":
+        if answer in "aAiI":
+            correct = word
+            if not answer in "iI":
+                knownwords[word] = word
+        elif answer in "rRsS":
             correct = wikipedia.input(u"What should I replace it by?")
             if answer in "rR":
                 if correct != cap(word) and correct != uncap(word) and correct != word:
                     try:
-                        knownwords[word] += [correct]
+                        knownwords[word] += [correct.replace(' ','_')]
                     except KeyError:
-                        knownwords[word] = [correct]
+                        knownwords[word] = [correct.replace(' ','_')]
                 knownwords[correct] = correct
-        elif answer in "aAiI":
-            correct = word
-            if answer in "aA":
-                knownwords[word] = word
         elif answer in "cC" and word[0].isupper():
             correct = word
             knownwords[uncap(word)] = uncap(word)
@@ -122,7 +122,7 @@ def spellcheck(page):
     text = page
     loc = 0
     while True:
-        wordsearch = re.compile(r'([\s\=]*)([^\s\=]+)')
+        wordsearch = re.compile(r'([\s\=\<\>]*)([^\s\=\<\>]+)')
         match = wordsearch.search(text,loc)
         if not match:
             # No more words on this page
@@ -165,24 +165,8 @@ class Word(object):
                 shortword = shortword[:shortword.rfind('[[')] + shortword[shortword.rfind('|')+1:]
             else:
                 shortword = shortword[shortword.rfind('|')+1:]
-        # Remove some HTML-entities
         shortword = shortword.replace('[','')
         shortword = shortword.replace(']','')
-        shortword = shortword.replace('<tr>','')
-        shortword = shortword.replace('</tr>','')
-        shortword = shortword.replace('<td>','')
-        shortword = shortword.replace('</td>','')
-        shortword = shortword.replace('<TR>','')
-        shortword = shortword.replace('</TR>','')
-        shortword = shortword.replace('<TD>','')
-        shortword = shortword.replace('</TD>','')
-        shortword = shortword.replace('<br>','')
-        shortword = shortword.replace('<BR>','')
-        # Remove some Wiki-entities
-        shortword = shortword.replace('<nowiki>','')
-        shortword = shortword.replace('</nowiki>','')
-        shortword = shortword.replace('<math>','')
-        shortword = shortword.replace('</math>','')
         # Remove non-alphanumerical characters at the start
         try:
             while shortword[0] in string.punctuation:
