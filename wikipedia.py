@@ -23,8 +23,8 @@ langs = {'en':'www.wikipedia.org', # English
          'sl':'sl.wikipedia.org', # Slovenian
          'ko':'ko.wikipedia.org', # Korean
          'hu':'hu.wikipedia.org', # Hungarian
-         'el':'el.wikipedia.org',
-         'bs':'bs.wikipedia.org',
+         'el':'el.wikipedia.org', # Grieks
+         'bs':'bs.wikipedia.org', # Bosnisch
 	 'he':'he.wikipedia.org', # Hebrew
          'hi':'hi.wikipedia.org', # Hindi
          'nds':'nds.wikipedia.org', # Nedersaksisch
@@ -37,7 +37,7 @@ langs = {'en':'www.wikipedia.org', # English
          'ca':'ca.wikipedia.com', # Catalan
          'fi':'fi.wikipedia.com', # Finnish
          'ia':'ia.wikipedia.com', # Interlingua
-         'et':'et.wikipedia.com', 
+         'et':'et.wikipedia.com', # Ests
          'eu':'eu.wikipedia.com',
          #'simple':'simple.wikipedia.com', # Simplified english
          #'test':'test.wikipedia.org',
@@ -385,7 +385,7 @@ def interwikiFormat(links):
     return ' '.join(s)+'\r\n'
             
 def code2encoding(code):
-    if code in ['meta','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl']:
+    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl']:
         return 'utf-8'
     return 'iso-8859-1'
 
@@ -395,7 +395,7 @@ def code2encodings(code):
         return 'utf-8','iso-8859-2'
     if code=='ru':
         return 'utf-8','iso-8859-5'
-    if code in ['cs','sl']:
+    if code in ['cs','sl','bs']:
         return 'utf-8','iso-8859-1'
     return code2encoding(code),
     

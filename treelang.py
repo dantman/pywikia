@@ -265,9 +265,6 @@ print "==status=="
 old={}
 for pl in inpl.interwiki():
     old[pl.code()]=pl
-if not old:
-    print "No old languages found. Does the dutch page not exist?"
-    sys.exit(1)
 ####
 mods=compareLanguages(old,new)
 if not mods and only_if_status:
