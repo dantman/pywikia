@@ -55,6 +55,8 @@ interwiki.py           : A robot to check interwiki links on all pages (or
 warnfile.py            : A robot that parses a warning file created by interwiki.py
                          on another wikipedia language, and implements the
                          suggested changes without verifying them.
+table2wiki.py	       : Semi-automatic converting HTML-tables to wiki-tables.
+		         A GUI for better control will be written soon.
 test.py                : Misc testing, now configured to test whether you are 
                          logged in.
 yearlayout.py          : An old robot used to change the layout of all nl: year 
