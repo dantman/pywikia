@@ -59,6 +59,7 @@ wikipedia.put_throttle.setDelay(10)
 msg={
     'en':'Robot-assisted disambiguation',
     'da':'Retter flertydigt link til',
+    'de':'Bot-unterst\xfctzte Begriffskl\xe4rung',
     'nl':'Robot-geholpen doorverwijzing',
     'fr':'Homonymie r\xE9solue \xE0 l\'aide du robot'
     }
