@@ -253,7 +253,7 @@ def getPage(code, name, do_edit=1, do_quote=1):
         else:
             # Store character set for later reference
             if charsets.has_key(code):
-                assert charsets[code]==charset,"charset for %s changed from %s to %s"%(code,charsets(code),charset)
+                assert charsets[code].lower()==charset.lower(),"charset for %s changed from %s to %s"%(code,charsets[code],charset)
             charsets[code]=charset
             if code2encoding(code).lower()!=charset.lower():
                 raise ValueError("code2encodings has wrong charset for %s. It should be %s"%(code,charset))
