@@ -13,7 +13,8 @@ import wikipedia
 wikipedia.stopme() # No need to have me on the stack - I don't contact the wiki
 files={}
 count={}
-for line in open('treelang.log'):
+# TODO: Variable log filename
+for line in open('logs/interwiki.log'):
     if line[:8] == 'WARNING:':
         code = line.split(':')[1]
         code = code.strip()

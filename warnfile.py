@@ -26,9 +26,8 @@ class WarnfileReader:
     def getHints(self):
         print "Parsing warnfile..."
         R=re.compile(r'WARNING: (?P<locallang>[^\[]*):\[\[(?P<localtitle>[^\[]+)\]\](?P<warningtype>[^\[]+)\[\[(?P<targetsite>[^:]+:[^:]+):(?P<targettitle>[^\[]+)\]\]')
-        #f = open(filename, 'r')
         import codecs
-        f = codecs.open(self.filename, 'r', 'latin-1')
+        f = codecs.open(self.filename, 'r', 'utf-8')
         hints={}
         removeHints={}
         mysite=wikipedia.getSite()
