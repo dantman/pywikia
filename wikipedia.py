@@ -100,6 +100,7 @@ special = {
     'en': 'Special',
     'eo': 'Speciala',
     'es': 'Especial',
+    'fi': 'Toiminnot',
     'fr': 'Special',
     'fy': 'Wiki',
     'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
