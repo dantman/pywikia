@@ -771,7 +771,11 @@ def interwikiFormat(links):
             s.append(links[code].aslink())
         except AttributeError:
             s.append('[[%s:%s]]' % (code, links[code]))
-    s=config.interwiki_langs_separator.join(s) + '\r\n'
+    if mylang in config.interwiki_on_separate_lines:
+        sep = '\r\n'
+    else:
+        sep = ' '
+    s=sep.join(s) + '\r\n'
     return s 
             
 def code2encoding(code):

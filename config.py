@@ -17,9 +17,10 @@ username=''
 # atbottom is a list of languages that prefer to have the interwiki
 # links at the bottom of the page. You can use interwiki_atbottom.append('xx')
 # in user-config.py to add more.
-interwiki_atbottom = ['en','es','hu','hr']
-# String used as separator between pairs of interwiki links
-interwiki_langs_separator = ' '
+interwiki_atbottom = ['en','es','hu','hr','nl']
+# on_separate_lines is a list of languages that want the interwiki links
+# each on a separate line
+interwiki_on_separate_lines = ['nl']
 
 # String used as separator between interwiki links and the text
 interwiki_text_separator = '\r\n'
