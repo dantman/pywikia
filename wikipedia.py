@@ -411,7 +411,7 @@ class PageLink:
         """Gives the wiki-images the page shows, as a list of strings
         """
         result = []
-        im=family.image[self._code] + ':'
+        im=family.image_namespace(self._code) + ':'
         w1=r'('+im+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')

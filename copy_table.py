@@ -97,21 +97,12 @@ if page_title != []:
      page_title = ' '.join(page_title)
      page_list.append(page_title)
 
-# returns the image namespace name for a given language, followed by a colon.
-# if the namespace name is unknown, "Image:" is default.
-def image_namespace(lang):
-    # check if we know this wikipedia's image namespace name
-    if lang in wikipedia.family.image:
-        return wikipedia.family.image[lang] + ':'
-    else:
-        return 'Image:'
-
 # this is a modified version of wikipedia.imagelinks().
 def imagelinks(lang, text):
-    image_ns = image_namespace(lang)    
+    image_ns = wikipedia.family.image_namespace(lang)    
     # regular expression which matches e.g. "Image" as well as "image" (for en:)
     im = '[' + image_ns[0].upper() + image_ns[0].lower() + ']' + image_ns[1:]
-    w1=r'('+im+'[^\]\|]*)'
+    w1=r'('+im+':[^\]\|]*)'
     w2=r'([^\]]*)'
     Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
     result = []
@@ -157,7 +148,7 @@ def treat(to_pl):
             # if the upload succeeded
             if new_filename:
                 old_image_tag = wikipedia.PageLink(wikipedia.mylang, image).linkname()
-                new_image_tag = wikipedia.PageLink(wikipedia.mylang, image_namespace(wikipedia.mylang) + new_filename).linkname()
+                new_image_tag = wikipedia.PageLink(wikipedia.mylang, wikipedia.family.image_namespace(wikipedia.mylang) + new_filename).linkname()
                 print_debug("Replacing " + old_image_tag + " with " + new_image_tag)
                 # We want to replace "Image:My pic.jpg" as well as "image:my_pic.jpg", so we need a regular expression.
                 old_image_tag = old_image_tag.replace(" ", "[ \_]")

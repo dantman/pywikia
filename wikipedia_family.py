@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 
-import config
+import config, urllib
 
 # The wikimedia family that is known as wikipedia, the encyclopedia
 
@@ -124,158 +124,227 @@ langs = {
     'zh-tw':'zh.wikipedia.org', # Traditional Chinese
     }
 
-# Translation used on all wikipedia's for the Special: namespace.
-# Only necessary when it is not 'Special'.
-special = {
-    'af': 'Spesiaal',
-    'ar': '%D8%AE%D8%A7%D8%B5',
-    'bg': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D0%BD%D0%B8',
-    'bn': '%E0%A6%AC%E0%A6%BF%E0%A6%B6%E0%A7%87%E0%A6%B7',
-    'ca': 'Especial',
-    'cs': 'Speci%C3%A1ln%C3%AD',
-    'csb': 'Specjaln%C3%B4',
-    'cy': 'Arbennig',
-    'da': 'Speciel',
-    'de': 'Spezial',
-    'en': 'Special',
-    'eo': 'Speciala',
-    'es': 'Especial',
-    'et': 'Eri',
-    'fa': '%D9%88%DB%8C%DA%98%D9%87',
-    'fi': 'Toiminnot',
-    'fr': 'Special',
-    'fy': 'Wiki',
-    'ga': 'Speisialta',
-    'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
-    'hi': '%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7',
-    'hu': 'Speci%C3%A1lis',
-    'ia': 'Special',
-    'id': 'Istimewa',
-    'it': 'Speciale',
-    'ja': '%E7%89%B9%E5%88%A5',
-    'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
-    'la': 'Specialis',
-    'ms': 'Istimewa',
-    'nb': 'Spesial',
-    'nl': 'Speciaal',
-    'no': 'Spesial',
-    'oc': 'Especial',
-    'pl': 'Specjalna',
-    'pt': 'Especial',
-    'ro': 'Special',
-    'ru': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5',
-    'sk': '%C5%A0peci%C3%A1lne',
-    'sl': 'Posebno',
-    'sq': 'Speciale',
-    'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
-    'sv': 'Special',
-    'uk': '%D0%A1%D0%BF%D0%B5%D1%86%D1%96%D0%B0%D0%BB%D1%8C%D0%BD%D1%96',
-    'ta': '%E0%AE%9A%E0%AE%BF%E0%AE%B1%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81',
-    'th': '%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9',
-    'wa': 'Sipeci%C3%A5s',
-    }
-
-# Translation used on all wikipedias for the MediaWiki: namespace.
-# Only necessary when it is not 'MediaWiki'.
-# Access this dictionary via the mediawiki_namespace() function.
-mediawiki = {
-    'en': u'MediaWiki',
-    'bg': u'МедияУики',
-    }
-    
-# And the image namespace.
-
-image = {
-    'af': 'Beeld',
-    'ar': '%D8%B5%D9%88%D8%B1%D8%A9',
-    'bg': '%D0%9A%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%BA%D0%B0',
-    #'bn': To be checked,
-    'ca': 'Imatge',
-    'cs': 'Soubor',
-    'csb': 'Mal%C3%ABnk',
-    'cy': 'Delwedd',
-    'da': 'Billede',
-    'de': 'Bild',
-    'en': 'Image',
-    'eo': 'Dosiero',
-    'es': 'Imagen',
-    'et': 'Pilt',
-    'fa': '%D8%AA%D8%B5%D9%88%DB%8C%D8%B1',
-    'fi': 'Kuva',
-    'fr': 'Image',
-    'fy': 'Ofbyld',
-    'ga': '%C3%8Domh%C3%A1',
-    'he': '%D7%AA%D7%9E%D7%95%D7%A0%D7%94',
-    'hi': '%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0',
-    'hu': 'K%C3%A9p',
-    'ia': 'Imagine',
-    'id': 'Imej',
-    'it': 'Immagine',
-    'ja': '%E7%94%BB%E5%83%8F',
-    'ko': '%EA%B7%B8%EB%A6%BC',
-    'la': 'Imago',
-    'ms': 'Imej',
-    'nb': 'Bilde',
-    'nl': 'Afbeelding',
-    'no': 'Bilde',
-    'oc': 'Image',
-    'pl': 'Grafika',
-    'pt': 'Imagem',
-    'ro': 'Imagine',
-    'ru': '%D0%98%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5',
-    'sk': 'Obr%C3%A1zok',
-    'sl': 'Slika',
-    'sq': 'Figura',
-    'sr': '%D0%A1%D0%BB%D0%B8%D0%BA%D0%B0',
-    'sv': 'Bild',
-    'ta': '%E0%AE%AA%E0%AE%9F%E0%AE%BF%E0%AE%AE%E0%AE%AE%E0%AF%8D',
-    'th': '%E0%B8%A0%E0%B8%B2%E0%B8%9E',
-    'wa': 'Im%C3%A5dje',
-    }
-
-# Template namespace
-template = {
-    'de':u'Vorlage',
-    'en':u'Template',
-    'nl':'Sjabloon'
-    }
-
-# Category namespace. 'Category' works on all languages?!?!?....
-
-category = {
-    'da': u'Kategori',
-    'de': u'Kategorie',
-    'en': u'Category',
-    'es': u'Categoría',
-    'fr': u'Catégorie',
-    'hu': u'Kategória',
-    'is': u'Flokkur',
-    'nl': u'Categorie',
-    'no': u'Kategori',
-    'sl': u'Category',
-    'sv': u'Kategori',
-    'test': u'Category'
+# Translation used on all Wikipedias for the different namespaces.
+# (Please sort languages alphabetically)
+namespaces = {
+    -2: {
+        'en':u'Media',
+    },
+    -1: {
+        'af': u'Spesiaal',
+        'ar': u'خاص',
+        'bg': u'Специални',
+        'bn': u'বিশেষ',
+        'ca': u'Especial',
+        'cs': u'Speciální',
+        'csb': u'Specjalnô',
+        'cy': u'Arbennig',
+        'da': u'Speciel',
+        'de': u'Spezial',
+        'en': u'Special',
+        'eo': u'Speciala',
+        'es': u'Especial',
+        'et': u'Eri',
+        'fa': u'ویژه',
+        'fi': u'Toiminnot',
+        'fr': u'Special',
+        'fy': u'Wiki',
+        'ga': u'Speisialta',
+        'he': u'מיוחד',
+        'hi': u'%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7', # TODO: convert to Unicode
+        'hu': u'Speciális',
+        'ia': u'Special',
+        'id': u'Istimewa',
+        'it': u'Speciale',
+        'ja': u'特別',
+        'ko': u'특수기능',
+        'la': u'Specialis',
+        'ms': u'Istimewa',
+        'nb': u'Spesial',
+        'nl': u'Speciaal',
+        'no': u'Spesial',
+        'oc': u'Especial',
+        'pl': u'Specjalna',
+        'pt': u'Especial',
+        'ro': u'Special',
+        'ru': u'Специальные',
+        'sk': u'Špeciálne',
+        'sl': u'Posebno',
+        'sq': u'Speciale',
+        'sr': u'Посебно',
+        'sv': u'Special',
+        'uk': u'Спеціальні',
+        'ta': u'சிறப்பு',
+        'th': u'%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9', # TODO: convert to Unicode
+        'wa': u'Sipeciås',
+    },
+    0: {
+        'en': None,
+    },
+    1: {
+        'en': u'Talk',
+        'de': u'Diskussion',
+    },
+    2: {
+        'en': u'User',
+    },
+    3: {
+        'en': u'User talk',
+    },
+    4: {
+        'en': u'Wikipedia',
+    },
+    5: {
+        'en': u'Wikipedia talk',
+    },
+    6: {
+        # TODO: convert all percent-encoded titles to plaintext
+        'af': u'Beeld',
+        'ar': u'Image', # everybody seems to use the English word at the moment
+        'bg': u'Картинка',
+        #'bn': To be checked,
+        'ca': u'Imatge',
+        'cs': u'Soubor',
+        'csb': u'Òbrôzk',
+        'cy': u'Delwedd',
+        'da': u'Billede',
+        'de': u'Bild',
+        'en': u'Image',
+        'eo': u'Dosiero',
+        'es': u'Imagen',
+        'et': u'Pilt',
+        'fa': u'%D8%AA%D8%B5%D9%88%DB%8C%D8%B1',
+        'fi': u'Kuva',
+        'fr': u'Image',
+        'fy': u'Ofbyld',
+        'ga': u'Íomhá',
+        'he': u'%D7%AA%D7%9E%D7%95%D7%A0%D7%94',
+        'hi': u'%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0',
+        'hu': u'K%C3%A9p',
+        'ia': u'Imagine',
+        'id': u'Imej',
+        'it': u'Immagine',
+        'ja': u'%E7%94%BB%E5%83%8F',
+        'ko': u'%EA%B7%B8%EB%A6%BC',
+        'la': u'Imago',
+        'ms': u'Imej',
+        'nb': u'Bilde',
+        'nl': u'Afbeelding',
+        'no': u'Bilde',
+        'oc': u'Image',
+        'pl': u'Grafika',
+        'pt': u'Imagem',
+        'ro': u'Imagine',
+        'ru': u'%D0%98%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5',
+        'sk': u'Obr%C3%A1zok',
+        'sl': u'Slika',
+        'sq': u'Figura',
+        'sr': u'%D0%A1%D0%BB%D0%B8%D0%BA%D0%B0',
+        'sv': u'Bild',
+        'ta': u'%E0%AE%AA%E0%AE%9F%E0%AE%BF%E0%AE%AE%E0%AE%AE%E0%AF%8D',
+        'th': u'%E0%B8%A0%E0%B8%B2%E0%B8%9E',
+        'wa': u'Im%C3%A5dje',
+    },
+    7: {
+        'en': u'Image talk',
+    },
+    8: {
+        'en': u'MediaWiki',
+        'bg': u'МедияУики',
+    },
+    9: {
+        'de': u'MediaWiki Diskussion',
+        'en': u'MediaWiki talk',
+    },
+    10: {
+        'de':u'Vorlage',
+        'en':u'Template',
+        'nl':u'Sjabloon'
+    },
+    11: {
+        'en': u'Template talk',
+    },
+    12: {
+        'en': u'Help',
+    },
+    13: {
+        'en': u'Help talk',
+    },
+    14: {
+        'da': u'Kategori',
+        'de': u'Kategorie',
+        'en': u'Category',
+        'es': u'Categoría',
+        'fr': u'Catégorie',
+        'hu': u'Kategória',
+        'is': u'Flokkur',
+        'nl': u'Categorie',
+        'no': u'Kategori',
+        'sl': u'Category',
+        'sv': u'Kategori',
+        'test': u'Category'
+    },
+    15: {
+        'en': u'Category talk'
+    },
 }
 
-def mediawiki_namespace(code):
-    if mediawiki.has_key(code):
-        return mediawiki[code]
+
+   
+# Template namespace
+template = {
+    }
+
+def namespace(code, namespace_number, fallback = 'en'):
+    #print namespace_number
+    #print namespaces[namespace_number]
+    if namespaces[namespace_number].has_key(code):
+        return namespaces[namespace_number][code]
+    elif fallback:
+        return namespaces[namespace_number][fallback]
     else:
-        return mediawiki['en']
-    
+        raise KeyError('ERROR: title for namespace %d in language %s unknown' % (namespace_number, code))  
+
+# Returns the title of the special namespace in language 'code', taken from
+# dictionary above.
+# If the dictionary doesn't contain a translation, it will use language
+# 'fallback' (English by default).
+# If you want the bot to crash in case of an unknown namespace name, use
+# fallback = None.
+def special_namespace(code, fallback = 'en'):
+    return namespace(code, -1, fallback)
+
+def special_namespace_url(code, fallback = 'en'):
+    encoded_title = namespace(code, -1, fallback).encode(code2encoding(code))
+    return urllib.quote(encoded_title)
+
+def image_namespace(code, fallback = 'en'):
+    return namespace(code, 6, fallback)
+
+def image_namespace_url(code, fallback = 'en'):
+    encoded_title = namespace(code, 6, fallback).encode(code2encoding(code))
+    return urllib.quote(encoded_title)
+
+def mediawiki_namespace(code, fallback = 'en'):
+    return namespace(code, 8, fallback)
+
+def category_namespace(code, fallback = 'en'):
+    return namespace(code, 14, fallback)
+
+# TODO: rewrite (?)
 def category_namespaces(code):
     namespaces = []
-    if not category.has_key(code):
+    if not namespace[14].has_key(code):
         # retrieve namespace title from Allmessages special page
         import mediawiki_messages
         namespace_title = mediawiki_messages.get('nstab-category', lang = code)
     else:
-        namespace_title = category[code]
+        namespace_title = namespace[14][code]
     namespaces.append(namespace_title)
     namespaces.append(namespace_title.lower())
-    if namespace_title != category['en']:
-        namespaces.append(category['en'])
-        namespaces.append(category['en'].lower())
+    if namespace_title != namespace[14]['en']:
+        namespaces.append(namespace[14]['en'])
+        namespaces.append(namespace[14]['en'].lower())
     return namespaces
 
 # Redirect code can be translated, but is only in one language now.
@@ -318,11 +387,11 @@ interwiki_putfirst = {
 
 # Defaults for Special: and Image: namespace names
 
-for lang in langs:
-    if not lang in special:
-        special[lang] = 'Special'
-    if not lang in image:
-        image[lang] = 'Image'
+#for lang in langs:
+#    if not lang in special:
+#        special[lang] = 'Special'
+#    if not lang in image:
+#        image[lang] = 'Image'
 
 obsolete = ['sh', 'dk']
 
@@ -372,40 +441,40 @@ def get_address(code, name):
     return '/w/wiki.phtml?title='+name+"&redirect=no"
 
 def references_address(code, name):
-    return "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s&limit=%d"%(special[code], name, config.special_page_limit)
+    return "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s&limit=%d" % (special_namespace_url(code), name, config.special_page_limit)
 
 def upload_address(code):
-    return '/wiki/%s:Upload'%special[code]
+    return '/wiki/%s:Upload'%special_namespace_url(code)
 
 def maintenance_address(code, maintenance_page, default_limit = True):
     if default_limit:
-        return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special[code]) + maintenance_page
+        return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special_namespace_url(code)) + maintenance_page
     else:
-        return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special[code]) + maintenance_page + '&limit=' + str(config.special_page_limit)
+        return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special_namespace_url(code)) + maintenance_page + '&limit=' + str(config.special_page_limit)
 
 def allmessages_address(code):
-    return "/w/wiki.phtml?title=%s:Allmessages&ot=html" % special[code]
+    return "/w/wiki.phtml?title=%s:Allmessages&ot=html" % special_namespace_url(code)
                         
 def login_address(code):
-    return '/w/wiki.phtml?title=%s:Userlogin&amp;action=submit'%special[code]
+    return '/w/wiki.phtml?title=%s:Userlogin&amp;action=submit' % special_namespace_url(code)
 
 def move_address(code):
-    return '/w/wiki.phtml?title=%s:Movepage&action=submit'%special[code]
+    return '/w/wiki.phtml?title=%s:Movepage&action=submit' % special_namespace_url(code)
 
 def delete_address(name):
     return '/w/wiki.phtml?title=%s&action=delete' % name
 
 def export_address(code):
-    return '/wiki/%s:Export'%special[code]
+    return '/wiki/%s:Export'%special_namespace_url(code)
 
 def allpagesname(code, start):
     # This is very ugly: to get all pages, the wikipedia code
     # 'fakes' getting a page with the returned name.
     # This will need to be fixed someday.
     if version(code)=="1.2":
-        return '%s:Allpages&printable=yes&from=%s'%(special[code], start)
+        return '%s:Allpages&printable=yes&from=%s'%(special_namespace_url(code), start)
     else:
-        return '%s:Allpages&from=%s'%(special[code], start)
+        return '%s:Allpages&from=%s'%(special_namespace_url(code), start)
 
 #
 # Two functions to figure out the encoding of different languages

@@ -13,25 +13,6 @@ import re
 import wikipedia, config
 
     
-default_namespaces = {
-    '0':  None,
-    '1':  'Talk',
-    '2':  'User',
-    '3':  'User_talk',
-    '4':  'Project',
-    '5':  'Project_talk',
-    '6':  'Image',
-    '7':  'Image_talk',
-    '8':  'MediaWiki',
-    '9':  'MediaWiki_talk',
-    '10': 'Template',
-    '11': 'Template_talk',
-    '12': 'Help',
-    '13': 'Help_talk',
-    '14': 'Category',
-    '15': 'Category_talk'
-    }
-
 # Represents a wiki page, read from an SQL dump. See
 # http://meta.wikimedia.org/wiki/Cur_table for details.
 class SQLentry:
@@ -64,10 +45,11 @@ class SQLentry:
     # text, you should somehow change this function to make it return the
     # localized namespace identifiers. 
     def full_title(self):
-        if default_namespaces[self.namespace] == None:
+        namespace_title = wikipedia.family.namespace(wikipedia.mylang, int(self.namespace))
+        if namespace_title == None:
             return self.title
         else:
-            return default_namespaces[self.namespace] + ':' + self.title
+            return namespace_title + ':' + self.title
 
 # Represents one parsed SQL dump file. Reads the local file at initialization,
 # parses it with a regular expression, and offers access to the resulting
@@ -127,7 +109,9 @@ if __name__=="__main__":
             else:
                 filename = arg[5:]
     sqldump = SQLdump(filename, wikipedia.myencoding())
+    Rpercentlink = re.compile('\[\[[^\]]*?%[A-F1-6][A-F1-6][^\]]*?\]\]')
     for page in sqldump.entries():
-        if page.namespace == '0' and page.redirect == '0' and len(page.text) < 200 and page.text.find(u'Begriffsklärung') == -1:
-            print '*[[%s]]' % page.full_title() + ' - ' + str(len(page.text))
+        #wikipedia.output(page.full_title())
+        if Rpercentlink.search(page.text):
+            wikipedia.output('*[[%s]]' % page.full_title())
  
