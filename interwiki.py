@@ -342,6 +342,8 @@ class Subject:
         return answer=='y'
     
     def assemble(self, returnonquestion = False, askall = False):
+        if globalvar.bell:
+            sys.stdout.write('\07')
         new = {}
         for pl in self.done.keys():
             code = pl.code()
@@ -362,8 +364,6 @@ class Subject:
                     if globalvar.autonomous:
                         return None
                     while 1:
-                        if globalvar.bell:
-                            sys.stdout.write('\07')
                         answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
                         if answer.startswith('f'):
                             break
