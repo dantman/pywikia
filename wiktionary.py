@@ -43,7 +43,7 @@ wiktionaryformats = {
 		'relatedheader': u'=== Related words ===',
 		}
 }
-			   
+
 langnames = {
 	'nl':	{
 		'nl' : u'Nederlands',
@@ -118,31 +118,31 @@ class sortonname:
 	def __call__(self, one, two):
 		return cmp(self.lang[one], self.lang[two])
 
-			   
 class WiktionaryEntry:
-	"""	This class contains all that can appear on one Wiktionary page
-	"""
+	"""	This class contains all that can appear on one Wiktionary page """
 	def __init__(self,wikilang,term):	# wikilang here refers to the language of the Wiktionary
-	  """	Constructor
-		Called with two parameters:
-		- the language of the Wiktionary it belongs to
-		- the term that is described on this page
-	  """
+		"""	Constructor
+			Called with two parameters:
+			- the language of the Wiktionary it belongs to
+			- the term that is described on this page
+		"""
 		self.wikilang=wikilang
 		self.term=term
 		self.subentries = {}		# subentries is a dictionary of subentry objects indexed by subentrylang
 		self.sortedsubentries = []
 		
 	def addSubEntry(self,subentry):
-	  """	Add a subentry object to this entry  """
+		"""	Add a subentry object to this entry  """
 		self.subentries.setdefault(subentry.subentrylang, []).append(subentry)
 	
 	def listSubentries(self):
-	  """	Returns a dictionary of subentry objects for this entry  """
+		"""	Returns a dictionary of subentry objects for this entry  """
 		return self.subentries
 
 	def sortSubentries(self):
-	  """	Sorts the sortedsubentries list containing the keys of the subentry objects dictionary for this entry  """
+		"""	Sorts the sortedsubentries list containing the keys of the subentry objects dictionary
+			for this entry
+		"""
 		
 		if not self.subentries == {}:
 			self.sortedsubentries = self.subentries.keys()
@@ -161,7 +161,7 @@ class WiktionaryEntry:
 				i+=1
 
 	def wikiwrap(self):
-	  """	Returns a string that is ready to be submitted to Wiktionary for this entry  """
+		"""	Returns a string that is ready to be submitted to Wiktionary for this entry  """
 		entry = ''
 		self.sortSubentries()
 #		print "sorted: %s",self.sortedsubentries
@@ -179,10 +179,10 @@ class WiktionaryEntry:
 		return entry
 	
 	def showcontents(self):
-	  """	Prints the contents of all the subobjects contained in this entry.
+		"""	Prints the contents of all the subobjects contained in this entry.
 		Every subobject is indented a little further on the screen.
 		The primary purpose is to help keep your sanity while debugging.
-	  """
+		"""
 		indentation = 0
 		print ' ' * indentation + 'wikilang = %s'% self.wikilang
 
@@ -199,27 +199,28 @@ class SubEntry:
 		Terms in different languages can be described. Each of these subentries probably represents another language.
 	"""
 	def __init__(self,subentrylang):
-	  """	Constructor
+		"""	Constructor
 		Called with one parameter:
 		- the language of this subentry
-	  """
+		"""
 		self.subentrylang=subentrylang
 		self.meanings = {} # a dictionary containing the meanings for this term grouped by part of speech
 		self.posorder = [] # we don't want to shuffle the order of the parts of speech, so we keep a list to keep the order they were encountered
 		
 	def addMeaning(self,meaning):
-	  """	Lets you add another meaning to this subentry  """
-		term = meaning.termi # fetch the term, in order to be able to determine its part of speech in the next step
+		"""	Lets you add another meaning to this subentry  """
+		term = meaning.term # fetch the term, in order to be able to determine its part of speech in the next step
+		print term
 		self.meanings.setdefault( term.pos, [] ).append(meaning)
 		if not term.pos in self.posorder:	# we only need each part of speech once in our list where we keep track of the order
 			self.posorder.append(term.pos)
 	
 	def getMeanings(self):
-	  """	Returns a dictionary containing all the meaning objects for this subentry  """
+		"""	Returns a dictionary containing all the meaning objects for this subentry  """
 		return self.meanings
 
 	def wikiwrap(self,wikilang):
-	  """	Returns a string for this subentry in a format ready for Wiktionary  """
+		"""	Returns a string for this subentry in a format ready for Wiktionary  """
 		subentry = wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][self.subentrylang]).replace('%%ISOLangcode%%',self.subentrylang) + '\n'
 
 		for pos in self.posorder:
@@ -231,7 +232,7 @@ class SubEntry:
 			for meaning in meanings:
 				term=meaning.term
 			
-				subentry = subentry + term.wikiwrapasexample(wikilang) + '; ' + meaning.definition
+				subentry = subentry + term.wikiwrapasexample(wikilang) + ' - [[' +  meaning.getTranslations()[wikilang][0].term+ ']]; ' + meaning.definition
 			
 				subentry +='\n'	
 			subentry +='\n'	
@@ -249,10 +250,10 @@ class SubEntry:
 		return subentry
 
 	def showcontents(self,indentation):
-	  """	Prints the contents of all the subobjects contained in this entry.
+		"""	Prints the contents of all the subobjects contained in this entry.
 		Every subobject is indented a little further on the screen.
 		The primary purpose is to help keep your sanity while debugging.
-	  """
+		"""
 		print ' ' * indentation + 'subentrylang = %s'% self.subentrylang
 
 		print ' ' * indentation + 'posorder:' + repr(self.posorder)
@@ -268,7 +269,7 @@ class Meaning:
 	"""	This class contains one meaning for a word or an expression.
 	"""
 	def __init__(self,term,definition='',etymology='',synonyms=[],translations={}):
-	  """	Constructor
+		"""	Constructor
 		Generally called with one parameter:
 		- The Term object we are describing
 
@@ -276,7 +277,7 @@ class Meaning:
 		- etymology (string) is optional
 		- synonyms (list of Term objects) is optional
 		- translations (dictionary of Term objects, ISO639 is the key) is optional
-	  """
+		"""
 		self.term=term
 		self.definition=definition
 		self.etymology=etymology
@@ -284,63 +285,65 @@ class Meaning:
 		self.translations= translations
 		
 	def setDefinition(self,definition):
-	  """	Provide a definition  """
+		"""	Provide a definition  """
 		self.definition=definition
 	
 	def getDefinition(self):
-	  """	Returns the definition  """
+		"""	Returns the definition  """
 		return self.definition
 	
 	def setEtymology(self,etymology):
-	  """	Provide the etymology  """
+		"""	Provide the etymology  """
 		self.etymology=etymology
 	
 	def getEtymology(self):
-	  """	Returns the etymology  """
+		"""	Returns the etymology  """
 		return self.etymology
 	
 	def setSynonyms(self,synonyms):
-	  """	Provide the synonyms  """
+		"""	Provide the synonyms  """
 		self.synonyms=synonyms
 	
 	def getSynonyms(self):
-	  """	Returns the list of synonym Term objects  """
+		"""	Returns the list of synonym Term objects  """
 		return self.synonyms
 
 	def hasSynonyms(self):
-	  """	Returns True if there are synonyms
-	  	Returns False if there are no synonyms
-	  """
+		"""	Returns True if there are synonyms
+			Returns False if there are no synonyms
+		"""
 		if self.synonyms == []:
 			return False
 		else:
 			return True
 	
 	def setTranslations(self,translations):
-	  """	Provide the translations  """
+		"""	Provide the translations  """
 		self.translations=translations
 	
 	def getTranslations(self):
-	  """	Returns the translations dictionary containing translation Term objects for this meaning   """
+		"""	Returns the translations dictionary containing translation Term objects for this meaning
+		"""
 		return self.translations
 
 	def addTranslation(self,translation):
-	  """	Add a translation Term object to the dictionary for this meaning
-	  	The lang property of the Term object will be used as the key of the dictionary
-	  """
-	    	self.translations.setdefault( translation.lang, [] ).append( translation )
+		"""	Add a translation Term object to the dictionary for this meaning
+			The lang property of the Term object will be used as the key of the dictionary
+		"""
+		self.translations.setdefault( translation.lang, [] ).append( translation )
 
 	def hasTranslations(self):
-	  """	Returns True if there are translations
-	  	Returns False if there are no translations
-	  """
+		"""	Returns True if there are translations
+			Returns False if there are no translations
+		"""
 		if self.translations == {}:
 			return 0
 		else:
 			return 1
 	
 	def wikiwrapSynonyms(self,wikilang):
-	  """	Returns a string with all the synonyms in a format ready for Wiktionary  """
+		"""	Returns a string with all the synonyms in a format ready for Wiktionary
+		"""
 		first = 1
 		wrappedsynonyms = ''
 		for synonym in self.synonyms:
@@ -352,14 +355,14 @@ class Meaning:
 		return wrappedsynonyms + '\n'
 		
 	def wikiwrapTranslations(self,wikilang,subentrylang):
-	  """	Returns a string with all the translations in a format ready for Wiktionary
-	  	The behavior changes with the circumstances.
+		"""	Returns a string with all the translations in a format ready for Wiktionary
+			The behavior changes with the circumstances.
 		For a subentry in the same language as the Wiktionary the full list of translations is output, excluding the local language itself
 		- This list of translations has to end up in a table with two columns
 		- The first column of this table contains language with names from A to M, the second contains N to Z
 		- If a column in this list remains empty a html comment is put in that column
 		For a subentry in a foreign language only the translation towards the local language is output.
-	  """
+		"""
 		if wikilang == subentrylang:
 			# When treating a subentry of the same lang as the Wiktionary, we want to output the translations in such a way that they end up sorted alphabetically on the language name in the language of the current Wiktionary
 			alllanguages=self.translations.keys()
@@ -374,7 +377,7 @@ class Meaning:
 					alreadydone = 1
 				# Indicating the language according to the wikiformats dictionary
 				wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
-				rst = 1
+				first = 1
 				for translation in self.translations[language]:
 					term=translation.term
 					if first==0:
@@ -401,10 +404,10 @@ class Meaning:
 		return wrappedtranslations			
 			
 	def showcontents(self,indentation):
-	  """	Prints the contents of this meaning.
+		"""	Prints the contents of this meaning.
 		Every subobject is indented a little further on the screen.
 		The primary purpose is to help keep your sanity while debugging.
-	  """
+		"""
 		print ' ' * indentation + 'term: '
 		self.term.showcontents(indentation+2)
 		print ' ' * indentation + 'definition = %s'% self.definition
@@ -423,24 +426,23 @@ class Meaning:
 			
 		
 class Term:
-	"""	This is a superclass for terms.
-	"""
+	"""	This is a superclass for terms.  """
 	def __init__(self,lang,term,relatedwords=[]):
-	  """	Constructor
+		"""	Constructor
 		Generally called with two parameters:
 		- The language of the term
 		- The term (string)
 
 		- relatedwords (list of Term objects) is optional
-	  """
+		"""
 		self.lang=lang	
 		self.term=term
 		self.relatedwords=relatedwords
 	
 	def __getitem__(self):
-	  """	Documenting as an afterthought is a bad idea
-	  	I don't know anymore why I added this, but I'm pretty sure it was in response to an error message
-	  """
+		"""	Documenting as an afterthought is a bad idea
+			I don't know anymore why I added this, but I'm pretty sure it was in response to an error message
+		"""
 		return self
 
 	def setTerm(self,term):
@@ -456,33 +458,33 @@ class Term:
 		return self.lang
 
 	def wikiwrapgender(self,wikilang):
-	  """	Returns a string with the gender in a format ready for Wiktionary, if it is applicable
-	  """
+		"""	Returns a string with the gender in a format ready for Wiktionary, if it is applicable
+		"""
 		if self.gender:
 			return ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
 		else:
 			return ''
 		
 	def wikiwrapasexample(self,wikilang):
-	  """	Returns a string with the gender in a format ready for Wiktionary, if it is applicable
-	  """
+		"""	Returns a string with the gender in a format ready for Wiktionary, if it is applicable
+		"""
 		return wiktionaryformats[wikilang]['beforeexampleterm'] + self.term + wiktionaryformats[wikilang]['afterexampleterm'] + self.wikiwrapgender(wikilang)
 			
 	def wikiwrapforlist(self,wikilang):
-	  """	Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
-	  """
+		"""	Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
+		"""
 		return '[[' + self.term + ']]' + self.wikiwrapgender(wikilang)
 	
 	def wikiwrapastranslation(self,wikilang):
-	  """	Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
-	  """
+		"""	Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
+		"""
 		return '[[' + self.term + ']]' + self.wikiwrapgender(wikilang)
 	
 	def showcontents(self,indentation):
-	  """	Prints the contents of this Term.
+		"""	Prints the contents of this Term.
 		Every subobject is indented a little further on the screen.
 		The primary purpose is to help keep your sanity while debugging.
-	  """
+		"""
 		print ' ' * indentation + 'lang = %s'% self.lang
 		print ' ' * indentation + 'pos = %s'% self.pos
 		print ' ' * indentation + 'term = %s'% self.term
@@ -493,13 +495,13 @@ class Noun(Term):
 		It adds properties and methods specific to nouns
 	"""
 	def __init__(self,lang,term,gender=''):
-	  """	Constructor
+		"""	Constructor
 		Generally called with two parameters:
 		- The language of the term
 		- The term (string)
 
 		- gender is optional
-	  """
+		"""
 		self.pos='noun'		# part of speech
 		self.gender=gender
 		Term.__init__(self,lang,term)
@@ -545,7 +547,7 @@ if __name__ == '__main__':
 	entrans2 = Noun('en',u'someone')
 #	print 'frtrans: %s'%frtrans
 
-	ameaning = Meaning(u'een persoon',aword)
+	ameaning = Meaning(aword, definition=u'een persoon')
 	ameaning.addTranslation(frtrans)
 #	print ameaning.translations
 	ameaning.addTranslation(entrans1)
@@ -569,7 +571,7 @@ if __name__ == '__main__':
 
 	apage = WiktionaryEntry('nl',u'Italiaanse')
 	aword = Noun('nl',u'Italiaanse','f')
-	ameaning = Meaning(u'vrouwelijke persoon die uit [[Italië]] komt',aword)
+	ameaning = Meaning(aword,definition = u'vrouwelijke persoon die uit [[Italië]] komt')
 
 #	{{-rel-}}
 #	* [[Italiaan]]
@@ -589,8 +591,8 @@ if __name__ == '__main__':
 	apage.addSubEntry(asubentry)
 
 	aword = Adjective('nl',u'Italiaanse')
-	ameaning = Meaning(u'uit Italië afkomstig',aword)
-	anothermeaning = Meaning(u'gerelateerd aan de Italiaanse taal',aword)
+	ameaning = Meaning(aword, definition = u'uit Italië afkomstig')
+	anothermeaning = Meaning(aword, definition = u'gerelateerd aan de Italiaanse taal')
 
 	detrans = Noun('de',u'italienisch')
 	entrans = Noun('en',u'Italian')
