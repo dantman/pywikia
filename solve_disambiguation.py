@@ -556,7 +556,7 @@ for wrd in (page_list):
                     if replaceit or new_page_title == link_text:
                         reptxt = new_page_title
                     # check if we can create a link with trailing characters instead of a pipelink
-                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title:
+                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(trailR, '', link_text[len(new_page_title):]) == '':
                         newlink = "[[%s]]%s" % (new_page_title, link_text[len(new_page_title):])
                     else:
                         newlink = "[[%s|%s]]" % (new_page_title, link_text)
@@ -567,6 +567,7 @@ for wrd in (page_list):
                 refpl.put(reftxt)
         return True
 
+    trailR=re.compile(link_trail[wikipedia.mylang])
     # The regular expression which finds links. Results consist of three groups:
     # group(1) is the target page title, that is, everything before | or ].
     # group(2) is the alternative link title, that's everything between | and ].
