@@ -491,7 +491,7 @@ class DisambiguationRobot:
                     elif choice=='e':
                         import gui
                         edit_window = gui.EditBoxWindow()
-                        newtxt = edit_window.edit(text)
+                        newtxt = edit_window.edit(text, search=disambPl.linkname())
                         # if user didn't press Cancel
                         if newtxt:
                             text = newtxt

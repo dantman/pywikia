@@ -137,7 +137,7 @@ def spellcheck(page):
             if replacement == edit:
                 import gui
                 edit_window = gui.EditBoxWindow()
-                newtxt = edit_window.edit(text)
+                newtxt = edit_window.edit(text,search=smallword)
                 if newtxt:
                     text = newtxt
             else:

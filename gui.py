@@ -75,10 +75,14 @@ class EditBoxWindow:
         # root.config(menu=menubar)
 
 
-    def edit(self, text):
+    def edit(self, text, search = None):
         self.text = None
         # put given text into our textarea
         self.editbox.insert(END, text)
+        # start search if asked
+        if search:
+            self.textfield.insert(END, search)
+            self.find()
         # wait for user to push a button which will destroy (close) the window
         # enable word wrap
         self.editbox.tag_add('all', '1.0', END)
