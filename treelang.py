@@ -403,18 +403,10 @@ else:
     oldtext = m[inpl]
     newtext = wikipedia.replaceLanguageLinks(oldtext, new)
     if debug:
-        if not autonomous and not sys.platform == 'win32':
-            f = open('/tmp/wik.in', 'w')
-            f.write(wikipedia.forCode(oldtext, 'ascii'))
-            f.close()
-            f = open('/tmp/wik.out', 'w')
-            f.write(wikipedia.forCode(newtext, 'ascii'))
-            f.close()
-            import os
-            f=os.popen('diff -u /tmp/wik.in /tmp/wik.out', 'r')
-            print f.read()
-        else:
-            print s
+        import difflib
+        for line in difflib.ndiff(oldtext.split('\r\n'),newtext.split('\r\n')):
+            if line[0] in ['+','-']:
+                print repr(line)[2:-1]
     if newtext != oldtext:
         print "NOTE: Replace %s: %s" % (wikipedia.mylang, inname)
         if forreal:
