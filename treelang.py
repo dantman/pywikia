@@ -56,33 +56,13 @@ __version__ = '$Id$'
 #
 import sys, copy, re
 
-import wikipedia, config
+import wikipedia, config, titletranslate
 
 # Summary used in the modification request
 wikipedia.setAction('semi-automatic interwiki script')
 
 debug = 1
 forreal = 1
-
-datetablelang = 'nl'
-datetable = {
-    'januari':{'en':'January %d','de':'%d. Januar','fr':'%d janvier','af':'01-%02d'},
-    'februari':{'en':'February %d','de':'%d. Februar','fr':'%d fevrier','af':'02-%02d'},
-    'maart':{'en':'March %d','de':'%d. M&auml;rz','fr':'%d mars','af':'03-%02d'},
-    'april':{'en':'April %d','de':'%d. April','fr':'%d avril','af':'04-%02d'},
-    'mei':{'en':'May %d','de':'%d. Mai','fr':'%d mai','af':'05-%02d'},
-    'juni':{'en':'June %d','de':'%d. Juni','fr':'%d juin','af':'06-%02d'},
-    'juli':{'en':'July %d','de':'%d. Juli','fr':'%d juillet','af':'07-%02d'},
-    'augustus':{'en':'August %d','de':'%d. August','fr':'%d aout','af':'08-%02d'},
-    'september':{'en':'September %d','de':'%d. September','fr':'%d septembre','af':'09-%02d'},
-    'oktober':{'en':'October %d','de':'%d. Oktober','fr':'%d octobre','af':'10-%02d'},
-    'november':{'en':'November %d','de':'%d. November','fr':'%d novembre','af':'11-%02d'},
-    'december':{'en':'December %d','de':'%d. Dezember','fr':'%d decembre','af':'12-%02d'},
-}
-
-yearBCfmt = {'da':'%d f.Kr.','de':'%d v. Chr.',
-             'en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
-             'es':'%d adC','eo':'-%d','nl':'%d v. Chr.'} # No default
 
 msg = {
     'en':('Adding','Removing','Modifying'),
@@ -91,22 +71,6 @@ msg = {
     'fr':('Ajoute','Retire','Modifie'),
     'de':('Ergänze','Entferne','Ändere'),
     }
-
-class Logger:
-    """A class that replaces a standard output file by a logfile PLUS the
-       standard output. This is used by the "log" option."""
-    def __init__(self, original, filename='treelang.log'):
-        self.original = original
-        self.f = open(filename, 'a')
-
-    def write(self, s):
-        self.f.write(s)
-        self.original.write(s)
-        self.flush()
-        
-    def flush(self):
-        self.f.flush()
-        self.original.flush()
         
 def autonomous_problem(pl, reason = ''):
     if autonomous:
@@ -114,72 +78,6 @@ def autonomous_problem(pl, reason = ''):
         f.write("%s {%s}\n" % (pl, reason))
         f.close()
         sys.exit(1)
-    
-def sametranslate(pl, arr):
-    for newcode in wikipedia.seriouslangs:
-        # Put as suggestion into array
-        newname = pl.linkname()
-        if newcode in ['eo','cs'] and same == 'name':
-            newname = newname.split(' ')
-            newname[-1] = newname[-1].upper()
-            newname = ' '.join(newname)
-        x=wikipedia.PageLink(newcode, newname)
-        if x not in arr:
-            arr[x] = None
-    
-def autotranslate(pl, arr, same=0):
-    if same:
-        return sametranslate(pl, arr)
-    if hints:
-        for h in hints:
-            codes, newname = h.split(':', 1)
-            if codes == 'all':
-                codes = wikipedia.biglangs
-            else:
-                codes = codes.split(',')
-            for newcode in codes:
-                x = wikipedia.PageLink(newcode, newname)
-                if x not in arr:
-                    arr[x] = None
-    # Autotranslate dates into some other languages, the rest will come from
-    # existing interwiki links.
-    if wikipedia.mylang == datetablelang:
-        Rdate = re.compile('(\d+)_(%s)' % ('|'.join(datetable.keys())))
-        m = Rdate.match(pl.linkname())
-        if m:
-            for newcode, fmt in datetable[m.group(2)].items():
-                newname = fmt % int(m.group(1))
-                x = wikipedia.PageLink(newcode,newname)
-                if x not in arr:
-                    arr[x] = None
-            return
-
-    # Autotranslate years A.D.
-    Ryear = re.compile('^\d+$')
-    m = Ryear.match(pl.linkname())
-    if m:
-        for newcode in wikipedia.seriouslangs:
-            if newcode!='ja':
-                fmt = '%d'
-                newname = fmt%int(m.group(0)) 
-                x=wikipedia.PageLink(newcode, newname)
-                if x not in arr:
-                    arr[x] = None
-        return
-
-    # Autotranslate years B.C.
-    if wikipedia.mylang == 'nl':
-        Ryear = re.compile('^(\d+)_v._Chr.')
-        m = Ryear.match(pl.linkname())
-        if m:
-            for newcode in wikipedia.seriouslangs:
-                fmt = yearBCfmt.get(newcode)
-                if fmt:
-                    newname = fmt % int(m.group(1))
-                    x=wikipedia.PageLink(newcode, newname)
-                    if x not in arr:
-                        arr[x] = None
-            return
     
 def compareLanguages(old, new):
     global confirm
@@ -290,7 +188,7 @@ def treesearch(pl):
                 return
             hints.append(newhint)
     # Then add translations if we survived.
-    autotranslate(pl, arr, same = same)
+    titletranslate.translate(pl, arr, same = same, hints = hints)
     modifications = 1
     while modifications:
         modifications = 0
@@ -341,7 +239,8 @@ else:
     msglang = 'en'
 
 if log:
-    sys.stdout = Logger(sys.stdout)
+    import logger
+    sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
     
 inname = '_'.join(inname)
 if not inname:
@@ -383,11 +282,13 @@ for pl in k:
                     break
                 elif answer.startswith('q'):
                     sys.exit(1)
-        elif pl.code() in ('zh-tw','zh-cn') and new.has_key('zh'):
+        elif pl.code() in ('zh-tw','zh-cn') and new.has_key('zh') and new['zh'] is not None:
             print "NOTE: Ignoring %s, using %s"%(new['zh'].asasciilink(),pl.asasciilink())
             new['zh'] = None # Remove the global zh link
             new[pl.code()] = pl # Add the more precise one
-        elif pl.code() == 'zh' and (new.has_key('zh-tw') or new.has_key('zh-cn')):
+        elif pl.code() == 'zh' and (
+            (new.has_key('zh-tw') and new['zh-tw'] is not None) or
+            (new.has_key('zh-cn') and new['zh-cn'] is not None)):
             print "NOTE: Ignoring %s"%(pl.asasciilink())
             pass # do not add global zh if there is a specific zh-tw or zh-cn
         elif pl.code() not in new or new[pl.code()] != None:
