@@ -38,9 +38,10 @@ def findlangs(year):
         print code + ":", ; sys.stdout.flush()
         try:
             if code == 'ja':
-                t = wikipedia.getPage(code, year + '%E5%B9%B4')
+                pl = wikipedia.PageLink(code, year + '%E5%B9%B4')
             else:
-                t = wikipedia.getPage(code, year)
+                pl = wikipedia.PageLink(code, year)
+            t = pl.get()
         except wikipedia.NoPage:
             if code == wikipedia.mylang:
                 missing += 1
@@ -57,43 +58,46 @@ def findlangs(year):
                     return None, None
         else:
             text[code] = t
-            l=wikipedia.getLanguageLinks(t, incode = code)
-            if code == 'ja':
-                l[code] = year + '&#24180;' # Add self-reference
-            else:
-                l[code] = year # Add self-reference
+            l = pl.interwiki()
+            l.append(pl)
             matrix[code] = l
     print
     return text, matrix
 
 def assemblelangmatrix(m):
-    result = {}
-    for dum, line in m.iteritems():
-        for code, name in line.iteritems():
+    result = []
+    for dum, arpl in m.iteritems():
+        for pl in arpl:
+            code = pl.code()
+            name = pl.linkname()
             if not code in m:
                 pass
                 #print "WARNING: Ignore %s from %s; did not see actual page there"%(code,dum)
             elif code in result:
                 if result[code] != name:
-                    print "WARNING: Name %s is either %s or (in %s) %s"%(code,result[code],dum,name)
+                    print "WARNING: Name %s is either %s or (in %s) %s"%(repr(code),repr(result[code]),repr(dum),repr(name))
             else:
-                result[code] = name
+                result.append(pl)
     return result
 
 def missingLanguages(m, line, thiscode):
     # Figure out whether any references in the assembled references mentioned in
     # line are missing from the language page referred by thiscode.
     result = {}
-    for code, name in line.iteritems():
+    for pl in line:
+        code = pl.code()
+        name = pl.linkname()
         if code == thiscode:
             pass
-        elif code in m[thiscode]:
+        elif pl in m[thiscode]:
             pass
         else:
             result[code] = name
-    for code, name in m[thiscode].iteritems():
-        if not code in line:
-            print "WARNING: %s contains reference to unknown %s:%s"%(thiscode, code, name)
+    for pl in m[thiscode]:
+        code = pl.code()
+        name = pl.linkname()
+        if not pl in line:
+            print "WARNING: %s contains reference to unknown %s"%(thiscode, pl)
         elif line[code] != name:
             print "WARNING: %s reference to %s is %s and not %s"%(thiscode, code, name, line[code])
     return result
@@ -107,19 +111,20 @@ msg = {
     }
     
 def compareLanguages(old, new):
-    """This is a copy of a routine from treelang.py"""
     removing = []
     adding = []
     modifying = []
-    for code in old.keys():
-        if code not in new.keys():
-            removing.append(code)
-        elif old[code] != new[code]:
-            modifying.append(code)
-
-    for code2 in new.keys():
-        if code2 not in old.keys():
-            adding.append(code2)
+    for pl in old:
+        if pl not in new:
+            for pl2 in new:
+                if pl2.code() == pl.code():
+                    modifying.append(pl.code())
+                    break
+            else:
+                removing.append(pl.code())
+    for pl in new:
+        if pl not in old:
+            adding.append(pl.code())
     s = ""
     if adding:
         s = s + " %s:" % (msg[msglang][0]) + ",".join(adding)
@@ -155,12 +160,18 @@ for year in range(starty, endy + 1):
         continue
     proper = assemblelangmatrix(m)
     for mycode in (wikipedia.mylang,):
+        for pl in proper:
+            if pl.code == mycode:
+                mypl = pl
+                break
+        else:
+            break
         if mycode in m: # Page must be present in this language
             ml = copy.copy(proper)
             status = compareLanguages(m[mycode], ml)
             if status:
                 print mycode,str(year), ":", status
-            del ml[mycode]
+            del ml[ml.index(mycode)]
             s = wikipedia.interwikiFormat(ml, incode = wikipedia.mylang)
             newtext = s + wikipedia.removeLanguageLinks(text[mycode])
             if debug:
