@@ -102,6 +102,13 @@ def getReferences(pl):
                 del x[i]
     return x
 
+def unique(list):
+    # remove duplicate entries
+    result={}
+    for i in list:
+        result[i]=None
+    return result.keys()
+
 wrd = []
 alternatives = []
 getalternatives = 1
@@ -136,15 +143,8 @@ if getalternatives:
 
     for a in Rlink.findall(thistxt):
         alternatives.append(a[0])
-
-    # remove duplicates entries
-    ialternatives=[]
-    for i in alternatives:
-        if i not in ialternatives:
-            ialternatives.append(i)
     
-    alternatives = ialternatives
-    #ialternatives variable should be destroyed there
+    alternatives = unique(alternatives)
     
     # sort possible choices
     alternatives.sort()
