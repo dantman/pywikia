@@ -26,11 +26,17 @@ import re, sys
 import wikipedia, config, catlib, interwiki
 
 
-# Summary message
-msg={
-    'en':u'Robot: Changing category: %s',
-    'de':u'Bot: \xc4ndere Kategorie: %s',
+# Summary messages
+msg_change={
+    'en':u'Robot: Changing [[Category:%s]]',
+    'de':u'Bot: \xc4ndere [[Kategorie:%s]]',
     }
+
+msg_remove={
+    'en':u'Robot: Removing from category %s',
+    'de':u'Bot: Entferne aus Kategorie %s',
+    }
+
 
 """
 A robot to mass-add a category to a list of pages.
@@ -105,7 +111,6 @@ def change_category(article, old_cat, new_cat):
     cats = article.categories()
     cats.remove(old_cat)
     if new_cat != None:
-        print "appending"
         cats.append(new_cat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
@@ -120,7 +125,7 @@ def rename_category():
     new_cat = catlib.CatLink(new_title)
     
     # get edit summary message
-    wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)] % old_title)
+    wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % old_title)
     
     articles = old_cat.articles(recurse = 0)
     if len(articles) == 0:
@@ -142,7 +147,7 @@ def remove_category():
     old_title = wikipedia.input('Please enter the name of the category that should be removed: ')
     old_cat = catlib.CatLink(old_title)
     # get edit summary message
-    wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)] % old_title)
+    wikipedia.setAction(msg_delete[wikipedia.chooselang(wikipedia.mylang,msg_delete)] % old_title)
     
     articles = old_cat.articles(recurse = 0)
     if len(articles) == 0:
@@ -248,7 +253,7 @@ def tidy_category():
     catlink = catlib.CatLink(cat_title)
     
     # get edit summary message
-    wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)] % cat_title)
+    wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % cat_title)
     
     
     articles = catlink.articles(recurse = 0)
