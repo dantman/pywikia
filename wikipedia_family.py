@@ -266,6 +266,7 @@ class Family(family.Family):
             10: {
                 '_default':u'Template',
                 'de':u'Vorlage',
+                'es':u'Plantilla',
                 'nl':u'Sjabloon'
             },
             11: {

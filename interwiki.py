@@ -1,4 +1,4 @@
-﻿#coding: utf-8
+﻿# -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
 page, and using existing translations plus hints from the command line to
@@ -149,6 +149,7 @@ msg = {
     'da':(u'Tilføjer', u'Fjerner',u'Ændrer'),
     'de':(u'Ergänze', u'Entferne', u'Ändere'),
     'en':(u'Adding', u'Removing', u'Modifying'),
+    'es':(u'Añadido', u'Eliminado', u'Modificado'),
     'fr':(u'Ajoute', u'Retire', u'Modifie'),
     'nl':(u'Erbij', u'Eraf', u'Anders'),
     'no':(u'Tilføyer', u'Fjerner', u'Endrer'),

@@ -19,19 +19,22 @@ import wikipedia, config, interwiki
 
 # Summary messages
 msg_add={
-    'en':u'Robot: Adding [[Category:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
+    'en':u'Robot: Adding [[Category:%s]]',
+    'es':u'Bot: Añadida [[Categoría:%s]]',
     }
 
 msg_change={
-    'en':u'Robot: Changing [[Category:%s]]',
     'de':u'Bot: Ändere [[Kategorie:%s]]',
+    'en':u'Robot: Changing [[Category:%s]]',
+    'es':u'Bot: Cambiada [[Categoría:%s]]',
     'nl':u'Bot: Wijziging [[Categorie:%s]]',
     }
 
 msg_remove={
-    'en':u'Robot: Removing from category %s',
     'de':u'Bot: Entferne aus Kategorie %s',
+    'en':u'Robot: Removing from category %s',
+    'es':u'Bot: Eliminada de la categoría %s',
     'nl':u'Bot: Verwijderd uit Categorie %s',
     }
 

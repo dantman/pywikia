@@ -64,9 +64,10 @@ import wikipedia, config
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
 # below.
 msg = {
-       'en':u'Robot: Automated text replacement',
        'de':u'Bot: Automatisierte Textersetzung',
-      }
+       'en':u'Robot: Automated text replacement',
+       'es':u'Robot: Reemplazo automático de texto',
+       }
 
 # Predefined replacements tasks.
 fixes = {
