@@ -636,6 +636,9 @@ class DisambiguationRobot:
                         thistxt = disambPl.get(throttle=False)
                 except wikipedia.IsRedirectPage,arg:
                     thistxt = wikipedia.PageLink(self.mysite, str(arg)).get(throttle=False)
+                except wikipedia.NoPage:
+                    print "Page does not exist?!"
+                    thistxt = ""
                 thistxt = wikipedia.removeLanguageLinks(thistxt)
                 thistxt = wikipedia.removeCategoryLinks(thistxt, self.mysite)
                 # regular expression matching a wikilink
