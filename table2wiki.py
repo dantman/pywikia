@@ -42,8 +42,8 @@ for arg in sys.argv[1:]:
             continue
         
         newText = text
-        newText = re.sub("([^\n\r]+\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
-                         "\n\\1", newText, 0)
+        newText = re.sub("([\S]+)(\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
+                         "\\1\n\\2", newText, 0)
         newText = re.sub("\n[ ]*\<", "\n<", newText, 0)
 
         #the <table> tag
@@ -65,17 +65,17 @@ for arg in sys.argv[1:]:
         newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText, 0)
 
         #very simple <tr>
-        newText = re.sub("\n\<(tr|TR)([^>]*?)\>", "\n|-----\\2\r\n", newText, 0)
+        newText = re.sub("[\r\n]*<(tr|TR)([^>]*?)\>", "\n|-----\\2\r\n", newText, 0)
 
         #<th> often people don't write them within <tr>, be warned!
-        newText = re.sub("[\s]*<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
+        newText = re.sub("[\r\n]*<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
                          "\n!\\2 | \\3\r\n", newText, 0)
 
         # sorry for the mess, but there are too many variants
-        newText = re.sub("\n\<(td|TD)([^>]*)\>([\w\W]*?)\<\/(TD|td)\>",
+        newText = re.sub("[\r\n]*\<(td|TD)([^>]*)\>([\w\W]*?)\<\/(TD|td)\>",
                          "\n|\\2 | \\3\n", newText, 0)
         # fail save. sometimes people forget </td>
-        newText = re.sub("<(td|TD)([^<]*)\>([\w\W]*?)\n",
+        newText = re.sub("[\r\n]*<(td|TD)([^<]*)\>([\w\W]*?)\n",
                          "\n|\\2 | \\3\n", newText, 0)
 
         # Garbage collecting ;-)
@@ -86,7 +86,8 @@ for arg in sys.argv[1:]:
         newText = re.sub("\n\|([^-][^|]+?)[\r\n]+\!", "|\\1\r\n|-----\r\n!",
                          newText, 0)
 
-        # most <th> come with '''title'''. Senseless in my eyes
+        # most <th> come with '''title'''. Senseless in my eyes cuz
+        # <th> should be bold anyways.
         newText = re.sub("[\r\n]+\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
                          "\r\n!\\1\\3", newText, 0)
 
