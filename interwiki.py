@@ -398,10 +398,23 @@ class Subject(object):
                 else:
                     new[code] = [pl]
         # Clean up the Chinese links
-        if 'zh-cn' in new or 'zh-tw' in new:
+        if 'zh-cn' in new and 'zh-tw' in new:
+            if len(new['zh-cn']) == 1 and len(new['zh-tw']) == 1:
+                if new['zh-cn'][0].linkname() == new['zh-tw'][0].linkname():
+                    new['zh'] = [wikipedia.PageLink('zh',new['zh-cn'][0].linkname())]
+                    del new['zh-cn']
+                    del new['zh-tw']
+                    print "Changing equivalent zh-cn and zh-tw links into a single zh link"
+                elif 'zh' in new:
+                    del new['zh']
+                    print "Ignoring links to zh in presence of zh-cn and zh-tw"
+            elif 'zh' in new:
+                del new['zh']
+                print "Ignoring links to zh in presence of zh-cn and zh-tw"
+        elif 'zh-cn' in new or 'zh-tw' in new:
             if 'zh' in new:
                 del new['zh']
-                print "Ignoring links to zh in presence of zh-cn or zh-tw"
+                print "Ignoring links to zh in presence of zh-cn and zh-tw"
         # Remove Chinese internal links
         if wikipedia.mylang=='zh' or wikipedia.mylang=='zh-cn':
             if 'zh-tw' in new:
@@ -415,6 +428,9 @@ class Subject(object):
                     nerr +=1
                     self.problem("Found more than one link for simplified Chinese")
                 del new['zh-cn']
+        if wikipedia.mylang=='zh-cn' or wikipedia.mylang=='zh-tw':
+            if 'zh' in new:
+                del new['zh']
         # See if new{} contains any problematic values
         result = {}
         for k, v in new.items():
@@ -790,7 +806,10 @@ def compareLanguages(old, new):
                 pass
             # Zh is allowed to be removed if it is replaced by zh-cn or
             # zh-tw. Do not call such a modification a removal but a change
+            # Same for the reverse change.
             elif code == 'zh' and 'zh-cn' in new or 'zh-tw' in new:
+                modifying.append(code)
+            elif code == 'zh-cn' or code == 'zh-tw' and 'zh' in new:
                 modifying.append(code)
             else:
                 removing.append(code)
