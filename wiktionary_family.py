@@ -201,7 +201,7 @@ class Family(family.Family):
         
     # group of languages that we might want to do at once
     
-    cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+    cyrilliclangs = ['be', 'bg', 'ja', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
        
     # Function to figure out the encoding of different languages
     # Languages that are coded in iso-8859-1
