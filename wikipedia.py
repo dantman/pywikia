@@ -1375,9 +1375,10 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         if name != urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
-    address = site.get_address(name)
     if get_edit_page:
-        address += '&action=edit&printable=yes'
+        address = site.edit_address(name)
+    else:
+        address = site.get_address(name)
     # Make sure Brion doesn't get angry by waiting if the last time a page
     # was retrieved was not long enough ago.
     if throttle:
