@@ -206,11 +206,17 @@ for article in articles:
     warnings = warnings + n
     
     # fail save. sometimes people forget </td>
+    # <td> without arguments, with missing </td> 
     newText, n = re.subn("<(td|TD)>([^<]*?)[\r\n]+",
                          "\r\n| \\2\r\n", newText, 0)
     warnings = warnings + n
-    newText, n = re.subn("<(td|TD)([^>]*?)>([\w\W]*?)[\r\n]+",
+
+    # <td> with arguments, with missing </td> 
+    newText, n = re.subn("[\r\n]*<(td|TD)([^>]*?)>([\w\W]*?)[\r\n]+",
                          "\r\n|\\2 | \\3\r\n", newText, 0)
+    if n > 0:
+        print 'Found <td> without </td>. This shouldn\'t cause problems.'
+
     newText, n = re.subn("<(td|TD)>([\w\W]*?)[\r\n]+",
                          "\r\n| \\2\r\n", newText, 0)
     warnings = warnings + n
@@ -328,13 +334,12 @@ for article in articles:
             print text
             print newText
         elif not quietMode:
-
-            pass
-            print newText
-            #for line in difflib.ndiff(text.split('\n'),
-            #                          newText.split('\n')):
-            #    if line[0] in ['+','-']:
-            #        print unicode(repr(line)[2:-1])
+            for line in difflib.ndiff(text.split('\n'), newText.split('\n')):
+                if line[0] == '-':
+                    wikipedia.output(line)
+            for line in difflib.ndiff(text.split('\n'), newText.split('\n')):
+                if line[0] == '+':
+                    wikipedia.output(line)
 
         if config.table2wikiAskOnlyWarnings and warnings == 0:
             doUpload="y"
