@@ -869,7 +869,8 @@ if __name__ == "__main__":
 
         sa=SubjectArray()
         
-        wikipedia.activateLog('interwiki.log')
+        if not config.never_log:
+            wikipedia.activateLog('interwiki.log')
 
         for arg in sys.argv[1:]:
             arg = wikipedia.argHandler(arg, logname='interwiki.log')

@@ -60,8 +60,11 @@ deIndentTables = True
 table2wikiAskOnlyWarnings = True
 table2wikiSkipWarnings = False
 
-# Should treelang keep a logfile?
-treelang_log = True
+# Should all bots keep a logfile?
+# TODO: Not used yet
+always_log = False
+# Should no bot, not even interwiki.py, keep a logfile?
+never_log = False
 
 # Slow down the robot such that it never requests a second page within
 # 'minthrottle' seconds. This can be lengthened if the server is slow,
