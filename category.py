@@ -15,7 +15,7 @@ See comments below for details.
 # Distribute under the terms of the PSF license.
 # 
 import re, sys, string
-import wikipedia, config, catlib, interwiki
+import wikipedia, config, interwiki
 
 # Summary messages
 msg_add={
@@ -354,6 +354,7 @@ if __name__ == "__main__":
             action = 'tidy'
         elif arg == '-person':
             sort_by_last_name = True
+    import catlib
     if action == 'add':
         add_category(sort_by_last_name)
     elif action == 'remove':
