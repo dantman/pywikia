@@ -6,7 +6,7 @@ Library to get and put pages on Wikipedia
 # (C) Rob W.W. Hooft, Andre Engels, 2003-2004
 #
 # Distribute under the terms of the PSF license.
-# 
+#
 __version__ = '$Id$'
 #
 import re, urllib, codecs, sys
@@ -100,9 +100,6 @@ class Error(Exception):
 
 class NoPage(Error):
     """Wikipedia page does not exist"""
-
-class NoEditBox(Error):
-    """Wikipedia page does not provide an edit box. This probably means the server is down."""
 
 class IsRedirectPage(Error):
     """Wikipedia page is a redirect page"""
@@ -246,7 +243,7 @@ class PageLink:
     #       the language code"""
     #    return "%s:[[%s]]" % (self.code(), self.linkname())
     
-    def get(self, trynumber=1):
+    def get(self):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -279,13 +276,6 @@ class PageLink:
             except NoPage:
                 self._getexception = NoPage
                 raise
-            except NoEditBox:
-                if trynumber==3:
-                    self._getexception = NoEditBox
-                    raise
-                else:
-                    time.sleep(30)
-                    self.get(trynumber=trynumber+1)
             except IsRedirectPage,arg:
                 self._getexception = IsRedirectPage
                 self._redirarg = arg
@@ -298,7 +288,7 @@ class PageLink:
                 raise
         return self._contents
 
-    def exists(self,trynumber=1):
+    def exists(self):
         try:
             self.get()
         except NoPage:
@@ -307,19 +297,15 @@ class PageLink:
             return True
         except SubpageError:
             return False
-        except NoEditBox:
-            raise
         return True
 
-    def isRedirectPage(self,trynumber=1):
+    def isRedirectPage(self):
         try:
             self.get()
         except NoPage:
             return False
         except IsRedirectPage:
             return True
-        except NoEditBox:
-            raise
         return False
     
     def isEmpty(self):
@@ -421,7 +407,7 @@ class PageLink:
             result.append(PageLink(self._code,l[0]))
         return result
 
-    def getRedirectTo(self,trynumber=1):
+    def getRedirectTo(self):
         # Given a redirect page, gives the page it redirects to
         try:
             self.get()
@@ -429,8 +415,6 @@ class PageLink:
             raise NoPage(self)
         except IsRedirectPage, arg:
             return arg
-        except NoEditBox:
-            raise
         else:
             raise IsNotRedirectPage(self)
         
@@ -857,68 +841,72 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
         print host, address
     # Make sure Brion doesn't get angry by slowing ourselves down.
     get_throttle()
-    text, charset = getUrl(host,address)
-    # Extract the actual text from the textedit field
-    if do_edit:
-        if debug:
-            print "Raw:", len(text), type(text), text.count('x')
-        if charset is None:
-            print "WARNING: No character set found"
-        else:
-            # Store character set for later reference
-            if charsets.has_key(code):
-                assert charsets[code].lower() == charset.lower(), "charset for %s changed from %s to %s"%(code,charsets[code],charset)
-            charsets[code] = charset
-            if code2encoding(code).lower() != charset.lower():
-                raise ValueError("code2encodings has wrong charset for %s. It should be %s"%(code,charset))
-            
-        if debug>1:
-            print repr(text)
-        m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
-        if m:
-            edittime[code, link2url(name, code)] = m.group(1)
-        else:
-            m = re.search('value="(\d+)" name="wpEdittime"',text)
+    # This loop will run until the page was successfully loaded (just in case
+    # the server is down)                                                                 
+    while True:
+        text, charset = getUrl(host,address)
+        # Extract the actual text from the textedit field
+        if do_edit:
+            if debug:
+                print "Raw:", len(text), type(text), text.count('x')
+            if charset is None:
+                print "WARNING: No character set found"
+            else:
+                # Store character set for later reference
+                if charsets.has_key(code):
+                    assert charsets[code].lower() == charset.lower(), "charset for %s changed from %s to %s"%(code,charsets[code],charset)
+                charsets[code] = charset
+                if code2encoding(code).lower() != charset.lower():
+                    raise ValueError("code2encodings has wrong charset for %s. It should be %s"%(code,charset))
+                
+            if debug>1:
+                print repr(text)
+            m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
             if m:
                 edittime[code, link2url(name, code)] = m.group(1)
             else:
-                edittime[code, link2url(name, code)] = "0"
+                m = re.search('value="(\d+)" name="wpEdittime"',text)
+                if m:
+                    edittime[code, link2url(name, code)] = m.group(1)
+                else:
+                    edittime[code, link2url(name, code)] = "0"
+            try:
+                i1 = re.search('<textarea[^>]*>', text).end()
+            except AttributeError:
+                print "WARNING: No text area found on %s %s. Maybe the server is down. Retrying in 2 minutes..." % (host,address)
+                time.sleep(2 * 60)
+                #retry
+                continue
+            i2 = re.search('</textarea>', text).start()
+            if i2-i1 < 2:
+                raise NoPage(code, name)
+            if debug:
+                print text[i1:i2]
+            m = redirectRe(code).match(text[i1:i2])
+            if m:
+                output(u"DBG> %s is redirect to %s" % (url2unicode(name, language = code), unicode(m.group(1), code2encoding(code))))
+                raise IsRedirectPage(m.group(1))
+            if edittime[code, link2url(name, code)] == "0":
+                print "DBG> page may be locked?!"
+                #pass
+                #raise LockedPage()
+    
+            x = text[i1:i2]
+            x = unescape(x)
+            while x and x[-1] in '\n ':
+                x = x[:-1]
+        else:
+            x = text # If not editing
+            
+        # Convert to a unicode string
+        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(charset)
         try:
-            i1 = re.search('<textarea[^>]*>', text).end()
-        except AttributeError:
-            print "BUG: Yikes: No text area.",host,address
-            print repr(text)
-            raise NoEditBox(code, name)
-        i2 = re.search('</textarea>', text).start()
-        if i2-i1 < 2:
-            raise NoPage(code, name)
-        if debug:
-            print text[i1:i2]
-        m = redirectRe(code).match(text[i1:i2])
-        if m:
-            output(u"DBG> %s is redirect to %s" % (url2unicode(name, language = code), unicode(m.group(1), code2encoding(code))))
-            raise IsRedirectPage(m.group(1))
-        if edittime[code, link2url(name, code)] == "0":
-            print "DBG> page may be locked?!"
-            #pass
-            #raise LockedPage()
-
-        x = text[i1:i2]
-        x = unescape(x)
-        while x and x[-1] in '\n ':
-            x = x[:-1]
-    else:
-        x = text # If not editing
-        
-    # Convert to a unicode string
-    encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(charset)
-    try:
-        x,l = decode_func(x)
-    except UnicodeError:
-        print code,name
-        print repr(x)
-        raise 
-    return x
+            x,l = decode_func(x)
+        except UnicodeError:
+            print code,name
+            print repr(x)
+            raise 
+        return x
 
 def languages(first = []):
     """Return a list of language codes for known wikipedia servers. If a list
