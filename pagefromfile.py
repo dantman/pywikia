@@ -52,7 +52,6 @@ def findpage(t):
         if pl.exists():
             print "Page %s already exists, not adding!"%title
         else:
-            print "Creating page %s"%title
             pl.put(page, comment = commenttext, minorEdit = False)
     except AttributeError:
         print "No title found - skipping a page."
@@ -82,7 +81,7 @@ f=open(filename)
 for line in f.readlines():
     text.append(line)
 
-text='\n'.join(text)
+text=''.join(text)
 
 findpage(text)
     
