@@ -85,7 +85,7 @@ def compareLanguages(old,new):
             removing.append(code)
         elif old[code]!=new[code]:
             oo=wikipedia.url2link(wikipedia.link2url(old[code]))
-            nn=wikipedia.url2link(wikipedia.link2url(old[code]))
+            nn=wikipedia.url2link(wikipedia.link2url(new[code]))
             if oo!=nn:
                 modifying.append(code)
     for code,name in new.iteritems():
@@ -209,11 +209,11 @@ if old is None:
     print "No old languages found. Does the dutch page not exist?"
     sys.exit(1)
 ####
-s=compareLanguages(old,new)
-if not s and only_if_status:
+mods=compareLanguages(old,new)
+if not mods and only_if_status:
     print "No changes"
     sys.exit(1)
-print s
+print mods
 print "==upload=="
 oldtext=m[mylang,inname]
 s=wikipedia.interwikiFormat(new)
@@ -240,6 +240,6 @@ if newtext!=oldtext:
         else:
             answer='y'
         if answer=='y':
-            status,reason,data=wikipedia.putPage(mylang,inname,newtext)
+            status,reason,data=wikipedia.putPage(mylang,inname,newtext,comment='Rob Hooft: robot '+mods)
             if str(status)!='302':
                 print status,reason
