@@ -1116,13 +1116,11 @@ class Throttle(object):
         if self.pid: # If self.pid, we're checking for multiple processes
             if time.time() > self.checktime + self.checkdelay:
                 self.checkMultiplicity()
-            if self.delay < self.mindelay * self.next_multiplicity:
-                self.delay = self.mindelay * self.next_multiplicity
-            elif self.delay > self.maxdelay:
-                self.delay = self.maxdelay
-            if time.time() > self.checktime + self.checkdelay:
-                self.check_multiplicity()
-            self.delay *= self.process_multiplicity
+            if thisdelay < (self.mindelay * self.next_multiplicity):
+                thisdelay = self.mindelay * self.next_multiplicity
+            elif thisdelay > self.maxdelay:
+                thisdelay = self.maxdelay
+            thisdelay *= self.process_multiplicity
         return thisdelay
 
     def waittime(self):

@@ -70,7 +70,7 @@ treelang_log = True
 # 'minthrottle' seconds. This can be lengthened if the server is slow,
 # but never more than 'maxthrottle' seconds. However - if you are running
 # more than one bot in parallel the times are lengthened.
-minthrottle = 2
+minthrottle = 1
 maxthrottle = 60
 
 # Slow down the robot such that it never makes a second change within
