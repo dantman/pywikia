@@ -144,18 +144,14 @@ thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
 
 if getalternatives:
     thistxt = thispl.get()
-
     w=r'([^\]\|]*)'
     Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
-
     for a in Rlink.findall(thistxt):
         alternatives.append(a[0])
-    
-    alternatives = unique(alternatives)
-    
-    # sort possible choices
-    alternatives.sort()
-    
+
+alternatives = unique(alternatives)
+# sort possible choices
+alternatives.sort()
 
 # print choices on screen
 for i in range(len(alternatives)):
@@ -248,7 +244,6 @@ def treat(refpl, thispl):
                     reptxt = replacement
                 else:
                     reptxt = "%s|%s" % (replacement, g2)
-                    print "DBG> ",repr(reptxt)
                 reftxt = reftxt[:m.start()+2] + reptxt + reftxt[m.end()-2:]
 
             print reftxt[max(0,m.start()-30):m.end()+30]
