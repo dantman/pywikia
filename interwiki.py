@@ -157,6 +157,7 @@ msg = {
     'fr':(u'Ajoute', u'Retire', u'Modifie'),
     'is':(u'Bæti við', u'Fjarlægi', u'Breyti'),
     'nl':(u'Erbij', u'Eraf', u'Anders'),
+    'nn':(u'la til', u'fjerna', u'endra'),
     'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
     }
 
