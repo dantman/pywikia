@@ -39,7 +39,7 @@ langs = {
     'eo':'eo.wikipedia.org',   # Esperanto, UTF-8
     'es':'es.wikipedia.org',   # Spanish
     'et':'et.wikipedia.org',   # Estonian, UTF-8
-    'eu':'eu.wikipedia.org',   # Basque
+    'eu':'eu.wikipedia.org',   # Basque, UTF-8
     'fi':'fi.wikipedia.org',   # Finnish, UTF-8
     'fr':'fr.wikipedia.org',   # French
     'fy':'fy.wikipedia.org',   # Frisian, UTF-8
@@ -94,12 +94,12 @@ langs = {
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'eu', 'mr', 'id', 'is', 'lv', 'sw', 'co',
+          'mr', 'id', 'is', 'lv', 'sw', 'co',
           'tt', 'uk', 'vo', 'ga', 'da', 'na', 'test']
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['et', 'ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy',
-             'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl']
+             'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -120,7 +120,7 @@ special = {
     'eo': 'Speciala',
     'es': 'Especial',
     'et': 'Eri',
-    #'eu': '',
+    'eu': 'Special',
     'fi': 'Toiminnot',
     'fr': 'Special',
     'fy': 'Wiki',
@@ -176,7 +176,7 @@ obsolete = ['sh']
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['co', 'eu', 'ga', 'id', 'is', 'lv', 'mr', 'nds', 'sw',
+oldsoftware = ['co', 'ga', 'id', 'is', 'lv', 'mr', 'nds', 'sw',
                'tt', 'uk', 'vo', 'na']
 
 # A few selected big languages for things that we do not want to loop over
@@ -229,7 +229,7 @@ interwiki_putfirst = {
           'uk','vo','zh','zh-cn','zh-tw'],
     'hu':['en'],
     'pl':['af','sq','en','ar','eu','bs','zh','zh-tw',
-          'zh-cn','hr','cs','da','eo','et','fi','fr',
+          'zh-cn','hr','cs','da','eo','et','eu','fi','fr',
           'fy','gl','el','he','hi','es','nl','id','ia','is',
           'ga','ja','ca','ko','co','la','lt','lv','ml','ms',
           'mr','na','de','no','pt','oc','ru','ro','sk','sl',
