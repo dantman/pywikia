@@ -14,12 +14,15 @@
 # TODO: - non existing pages
 #       - correct encoding
 #       - use cookies to remember login
-#       - redirect pages
+#       - edit conflict
+#       - difflib
+#       - minor edits
 #
 #       - ...
 #
 
 __version__ = "$Id$"
+sig = " (edited with editarticle.py 0.2)"
 
 import sys
 import os
@@ -35,6 +38,7 @@ import login
 def options(args):
     parser = optparse.OptionParser()
     parser.add_option("-a", "--anonymous", action="store_true", default=False, help="Login anonymously")
+    parser.add_option("-r", "--edit_redirect", action="store_true", default=False, help="Ignore (edit) redirects")
     parser.add_option("-u", "--username", help="Username to login with (ignored with -a)")
     parser.add_option("-p", "--page", help="Page to edit")
     parser.add_option("-e", "--editor", help="Editor to use")
@@ -49,36 +53,15 @@ def editpage(pl, editor):
     It returns two strings: the old version and the new version."""
     ofn = tempfile.mktemp()
     ofp = open(ofn, 'w')
-    oldcontent = pl.get()
+    try:
+        oldcontent = pl.get()
+    except wikipedia.NoPage:
+        oldcontent = ""
     ofp.write(oldcontent.encode('utf-8')) # FIXME: encoding of wiki
     ofp.close()
     os.system("%s %s" % (editor, ofn))
     newcontent = open(ofn).read().decode('utf-8')
     return oldcontent, newcontent
-
-## def login(username, password):
-##     """Login with username and password.
-##     
-##     Return cookie object on success, False otherwise"""
-## 
-##     data = {"wpName": username,
-##             "wpPassword": password,
-##             "wpLoginattempt": "Aanmelden & inschrijven",
-##             "wpRemember": "0"} # FIXME: cookies
-##     data = wikipedia.urlencode(data.items())
-##     headers = {"Content-type": "application/x-www-form-urlencoded",
-##                "User-agent": "editarticle.py $Revision$"}
-##     mysite = wikipedia.getSite()
-##     pagename = mysite.login_address()
-##     conn = httplib.HTTPConnection(mysite.hostname())
-##     conn.request("POST", pagename, data, headers, )
-##     response = conn.getresponse()
-##     cookie = response.getheader("set-cookie")
-##     print cookie
-##     if response.status == 302: # Moved temporarily
-##         return cookie
-##     else:
-##         return False
 
 def main():
     args = []
@@ -103,9 +86,14 @@ def main():
     page = opts.page or raw_input("Page to edit: ")
     editor = opts.editor or raw_input("Editor to use: ")
     pl = wikipedia.PageLink(site, page)
-    old, new = editpage(pl, editor)
+    if not opts.edit_redirect and pl.isRedirectPage():
+        pl = wikipedia.PageLink(site, pl.getRedirectTo())
+    try:
+        old, new = editpage(pl, editor)
+    except wikipedia.LockedPage:
+        sys.exit("You do not have permission to edit %s" % pl.hashfreeLinkname())
     if old != new:
-        pl.put(new, comment=raw_input("What did you change? "), anon=opts.anonymous)
+        pl.put(new, comment=raw_input("What did you change? ") + sig, minorEdit=False, anon=opts.anonymous) # code
     else:
         print "Nothing changed"
 
