@@ -65,7 +65,7 @@ class EditArticle(object):
                 cookie = login.login(self.site, self.username, password)
                 if not cookie:
                     sys.exit("Login failed")
-                login.storecookiedata(cookie, self.site, username)
+                login.storecookiedata(cookie, self.site, self.username)
                 wikipedia.output(u"Login succesful")
 
     def set_options(self):
@@ -147,7 +147,6 @@ class EditArticle(object):
         fp.close()
         wikipedia.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
     
-    @staticmethod
     def showdiff(old, new):
         diff = difflib.context_diff(old.splitlines(), new.splitlines())
         wikipedia.output(u"\n".join(diff))
