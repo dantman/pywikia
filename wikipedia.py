@@ -368,6 +368,7 @@ def putPage(code, name, text, comment = None):
 
     conn.putheader('Content-Length', str(len(data)))
     conn.putheader("Content-type", "application/x-www-form-urlencoded")
+    conn.putheader("User-agent", "RobHooftWikiRobot/1.0")
     if cookies and code == mylang:
         conn.putheader('Cookie',cookies)
     conn.endheaders()
