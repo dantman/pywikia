@@ -103,7 +103,9 @@ def get_image(fn, target, description, debug=False):
         print ("Enter return to use this description, enter a text to add something")
         print ("at the end, or enter = followed by a text to replace the description.")
         newtext = raw_input('Enter return, text or =text : ')
-        if newtext[0]=='=':
+        if newtext=='':
+            pass
+        elif newtext[0]=='=':
             description=newtext[1:]
         else:
             description=description+' '+newtext
