@@ -209,8 +209,8 @@ class PageLink:
         else:
             return self.linkname()
             
-    #def ascii_linkname(self):
-    #    return url2link(self._urlname, code = self._code, incode = 'ascii')
+    def ascii_linkname(self):
+        return url2link(self._urlname, code = self._code, incode = 'ascii')
     
     def __str__(self):
         """A simple ASCII representation of the pagelink"""
