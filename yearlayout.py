@@ -4,7 +4,7 @@
 # (C) Rob W.W. Hooft, 2003
 # Distribute under the terms of the GPL.
 
-import sys,re,wikipedia
+import os,sys,re,wikipedia
 
 # Summary used in the modification request
 wikipedia.setAction('Rob Hooft: automatic year reformatting')
@@ -16,6 +16,21 @@ if debug:
 else:
     mylang='nl'
 
+def ystr(y):
+    if y<0:
+        return "%d v. Chr."%(-y)
+    else:
+        return "%d"%y
+    
+def ymap(ys):
+    result=[]
+    for i in range(len(ys)):
+        if i==6 or ys[i]>=0:
+            result.append(ystr(ys[i]))
+        else:
+            result.append(ystr(ys[i])+"|%d"%abs(ys[i]))
+    return tuple(result)
+
 def header(year):
     s=[]
     cent=(int(year)-1)/100+1
@@ -23,7 +38,7 @@ def header(year):
     s.append('<table align=center><tr><td align=center>')
     s.append("[[Eeuwen]]: [[%de eeuw]] -- '''[[%de eeuw]]''' -- [[%de eeuw]]"%tuple(range(cent-1,cent+2)))
     s.append('</td></tr><tr><td align=center>')
-    s.append(('Jaren: '+'[[%d]] -- '*5+"'''%d'''"+' -- [[%d]]'*5)%tuple(range(year-5,year+6)))
+    s.append(('Jaren: '+'[[%s]] -- '*5+"'''%s'''"+' -- [[%s]]'*5)%ymap(range(year-5,year+6)))
     s.append('</td></tr></table>')
     s.append('<!-- /robot -->')
     s.append("----")
@@ -47,9 +62,9 @@ post=' *(\\<[Bb][Rr]\\>)? *(\r?\n)+'
 R6=re.compile(pre+'(Jaren)?:? *[-\\[\\]\\<\\>\'\| 0-9]{10,150}'+post,re.MULTILINE)
 R7=re.compile(pre+'[Dd]ecennia:? *\\[\\[Jaaroverzichten\\]\\]'+post,re.MULTILINE)
 R8=re.compile(pre+'\[\[[Ee]euwen\]\]:? *[-\\[\\]\\<\\>\'\| 0-9euw]{14,60}'+post,re.MULTILINE)
-pre='(\r?\n)+'
-post='(\r?\n)+'
-R9=re.compile(pre+'\\<!-- robot --\\>.*\\<!-- /robot --\\>'+post)
+pre='(\r?\n)+ *'
+post=' *(\r?\n)+'
+R9=re.compile(pre+'<!-- robot -->(.|\n)+?<!-- /robot -->'+post,re.MULTILINE)
 
 def do(year):
     page=str(year)
@@ -57,7 +72,8 @@ def do(year):
         page='Robottest'
         
     text=wikipedia.getPage(mylang,page)
-
+    orgtext=text
+    
     # Replace all of these by the standardized formulae
 
     text=R4.sub("\r\n",text)
@@ -66,9 +82,9 @@ def do(year):
     text=R10.sub("\r\n",text)
     text=R10.sub("\r\n",text)
     text=R11.sub("\r\n",text)
-    if R6.search(text):
-        m=R6.search(text).group(0)
-        print "MATCH:", len(m),repr(m)
+    #if R6.search(text):
+        #m=R6.search(text).group(0)
+        #print "MATCH:", len(m),repr(m)
     text=R6.sub("\r\n",text)
     text=R7.sub("\r\n",text)
     text=R8.sub("\r\n",text)
@@ -82,11 +98,18 @@ def do(year):
         print text
     else:
         print "="*70
-        print text
+        f=open('/tmp/wik.in','w')
+        f.write(orgtext)
+        f.close()
+        f=open('/tmp/wik.out','w')
+        f.write(text)
+        f.close()
+        f=os.popen('diff -u /tmp/wik.in /tmp/wik.out','r')
+        print f.read()
         print "="*70
         answer=raw_input('submit y/n ?')
         if answer=='y':
-            status,reason,data=wikipedia.putPage('test','Robottest',text)
+            status,reason,data=wikipedia.putPage(mylang,page,text)
             print status,reason
         else:
             print "===Not changed==="
