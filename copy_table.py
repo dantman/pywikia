@@ -17,7 +17,7 @@ Command line options:
                When the -type argument is not used, the bot will simply
                copy the table as-is.
 
--file:abc.txt  Reads article names from a file. abc.txt is the name of the 
+-file:XYZ      Reads article names from a file. XYZ is the name of the 
                file from which the list is taken. If XYZ is not given, the
                user is asked for a filename.
                Page titles should be saved one per line, without [[brackets]].
@@ -38,20 +38,26 @@ import wikipedia,re,sys,string
 # Translation database. Non-ASCII characters must be encoded in hexadecimal
 # unicode and prefixed with a small u,
 # e.g. u"[[Dom\xE4ne (Biologie)|Dom\xE4ne]]"
-# Order is not important, but try to order the items anyway so that others 
-# can change them more easily.
+
+# For each table type, there can be three lists:
+#  * "translations" - direct replacements. Work in either direction.
+#  * "regexes" - regular expression replacements. These are more powerful tthan
+#     direct replacements, but only work in one direction.
+#  * "includes" - items from another table type are included.
+
 types = {
     # translations for images (inside other tables)
-    "image": {
+    "images": {
          "translations": [
-             { "en":"[[image:",     "de":"[[bild:",                "nl":"[[afbeelding:", "fr":"[[image:",     },
-             { "en":"[[Image:",     "de":"[[Bild:",                "nl":"[[Afbeelding:", "fr":"[[Image:",     },
-             { "en":"larger image", "de":u"Bild vergr\xF6\xDFern", "nl":"groter",        "fr":"En d\xE9tail"  },
+             { "en":"[[image:",     "de":"[[bild:",                "nl":"[[afbeelding:", "fr":"[[image:",      },
+             { "en":"[[Image:",     "de":"[[Bild:",                "nl":"[[Afbeelding:", "fr":"[[Image:",      },
+             { "en":"larger image", "de":u"Bild vergr\xF6\xDFern", "nl":"groter",        "fr":u"En d\xE9tail"  },
+             # usually used as link description for articles about flags, coats of arms etc.
+             { "en":"Details",      "de":u"Details",               "nl":"details",       "fr":u"D\xE9tails"    },
          ],
     },
     # translations for taxoboxes (for biology articles)
     "taxo": {
-        "includes": ["image"],
         "translations": [
             # Background colors for table headers, with or without quotation marks (taxoboxes on de: all have quotation marks)
             { "en":"bgcolor=pink",                         "de":"bgcolor=\"#ffc0c0\"",                       "nl":"bgcolor=#EEEEEE",                                "fr":"bgcolor=pink"                               },
@@ -85,7 +91,8 @@ types = {
             { "en":"[[Family (biology)|Family]]",          "de":"[[Familie (Biologie)|Familie]]",            "nl":"[[Familie (biologie)|Familie]]",                 "fr":"[[Famille (biologie)|Famille]]",            },
             { "en":"[[Genus]]",                            "de":"[[Gattung (Biologie)|Gattung]]",            "nl":"[[Geslacht (biologie)|Geslacht]]",               "fr":"[[Genre]]"                                  },
             { "en":"[[Species]]",                          "de":"[[Art (Biologie)|Art]]",                    "nl":"[[Soort]]",                                      "fr":u"[[Esp\xE8ce]]"                             },
-        ]
+        ],
+        "includes": ["images"],
     },
 
     # not sure if this requires an extra list
@@ -95,38 +102,64 @@ types = {
 #        "include": ["taxo"],
 #        },
 
+    # regular expressions for number formats
+    "numbers": {
+        "regexes": {
+            "fr": {
+                # fr uses &nbsp; or space to separate thousands, de uses dots
+                "(?P<pre>\d+)\&nbsp;(?P<block>\d\d\d)": {"de":"\g<pre>.\g<block>", },
+                "(?P<pre>\d+) (?P<block>\d\d\d)": {"de":"\g<pre>.\g<block>", },
+            },
+            "de": {
+                # de uses dots to separate thousands, en uses commas
+                # de uses commas to indicate floating point numbers, en uses dots
+                # no solution for this at the moment
+            },
+        },
+    },
+   
     # units of measurement etc.
+    # only for internal use
     "units": {
         "translations": [
-            { "en":"[[Square kilometre|km&sup2;]]",        "de":"[[Quadratkilometer|km&sup2;]]",   },
-            { "en":u"[[Square kilometre|km\xB2]]",         "de":u"[[Quadratkilometer|km\xB2]]",    },
-            { "en":"inhabitants/km&sup2;",                 "de":"Einwohner/km&sup2;"               },
-            { "en":u"inhabitants/km\xB2",                  "de":u"Einwohner/km\xB2"                },
+            { "en":"[[Square kilometre|km&sup2;]]",  "de":"[[Quadratkilometer|km&sup2;]]",   },
+            { "en":u"[[Square kilometre|km\xB2]]",   "de":u"[[Quadratkilometer|km\xB2]]",    },
+            # million
+            { "en":"mill.",                          "de":"Mio.",                            },
+            { "en":"as of ",                         "de":"Stand: ",                         },
+            { "en":"years",                          "de":"Jahre",                           },
+        ]
+    },
+    
+    # general geographical terms etc.
+    # only for internal use
+    "geography": {
+        "translations": [
+            { "en":"[[Area]]:",                            "de":u"[[Fl\xE4che]]:",                "nl":"[[Oppervlakte]]:",         "fr":"[[Superficie]]:",  },
+            { "en":"[[Population]]:",                      "de":"[[Einwohner]]:",                 "nl":"inwoners",                   },
+            { "en":"[[Population density]]:",              "de":u"[[Bev\xF6lkerungsdichte]]:",    "nl":"[[Bevolkingsdichtheid]]:",   },
+            { "en":"inh./km&sup2;",                        "de":"Einw./km&sup2;",                                                  "fr":"hab/km&sup2;", },
+            { "en":u"inh./km\xB2",                         "de":u"Einw./km\xB2",                                                   "fr":u"hab/km\xB2",  },
+            { "en":"inhabitants/km&sup2;",                 "de":"Einwohner/km&sup2;",               },
+            { "en":u"inhabitants/km\xB2",                  "de":u"Einwohner/km\xB2",                },
             { "en":"inhabitants per km&sup2;",             "de":"Einwohner pro km&sup2;"           },
             { "en":u"inhabitants per km\xB2",              "de":u"Einwohner pro km\xB2"            },
+            { "en":"inh.",                                 "de":"Einw.",                                                            "fr":"hab.", },
             { "en":"m above sea level",                    "de":u"m \xFC. [[Normalnull|NN]]",      },
             # longitude, latitude
             { "en":"' north",                              "de":u"' n\xF6rdl. Breite",             },
             { "en":"' north",                              "de":"' n. Br.",                        },
             { "en":"' east",                               "de":u"' \xF6stl. L\xE4nge",            },
             { "en":"' east",                               "de":u"' \xF6. L.",                     },
-            # million
-            { "en":"mill.",                                "de":"Mio.",                            },
-            { "en":"as of ",                               "de":"Stand: ",                         },
-            { "en":"years",                                "de":"Jahre",                           },
-        ]
-    },
-    
-    "city": {
-        "includes": ["image", "units"],
-        "translations": [
-            # ordered by appearance in template for German cities on de:
-            { "en":"Coat of Arms",                         "de":"Wappen",                                  },
             { "en":"Map",                                  "de":"Karte",                                   },
+            { "en":"Coat of Arms",                         "de":"Wappen",                                                            "fr":"Blason"      },
+        ],
+        "includes": ["units"],
+    },
+            
+    "city": {
+        "translations": [
             { "en":"Base data",                            "de":"Basisdaten"                               },
-            { "en":"[[Area]]:",                            "de":u"[[Fl\xE4che]]:",                         },
-            { "en":"[[Population]]:",                      "de":"[[Einwohner]]:",                          },
-            { "en":"[[Population density]]:",              "de":u"[[Bev\xF6lkerungsdichte]]:",             },
             { "en":"[[Location]]:",                        "de":"[[Geografische Lage]]:",                  },
             { "en":"[[Altitude]]:",                        "de":u"[[H\xF6he]]:",                           },
             { "en":"Highest point:",                       "de":u"H\xF6chster Punkt:",                     },
@@ -139,8 +172,8 @@ types = {
             { "en":"City structure:",                      "de":"Gliederung des Stadtgebiets:"             },
             { "en":"Municipality's address:",              "de":"Adresse der Stadtverwaltung:"             },
             { "en":"Website:",                             "de":"Website:",                                },
-            { "en":"E-Mail adress:",                       "de":"[[E-Mail]]-Adresse:",                     },
-            { "en":"E-Mail adress:",                       "de":"E-Mail-Adresse:",                         },
+            { "en":"E-Mail adress:",                       "de":"[[E-Mail]]-Adresse:",                       "nl":"E-mail adres",               },
+            { "en":"E-Mail adress:",                       "de":"E-Mail-Adresse:",                           "nl":"E-mail adres",               },
             # table header
             { "en":"Politics",                             "de":"Politik",                                 },
             # female mayor
@@ -152,19 +185,19 @@ types = {
             { "en":"Debts:",                               "de":"Schulden:",                               },
             { "en":"[[Unemployment]]:",                    "de":"[[Arbeitslosenquote]]:",                  },
             { "en":"Age distribution:",                    "de":"Altersstruktur:",                         },
-        ]
+        ],
+        "includes": ["images", "geography"],
     },
     
     # translations for cities in Germany
     "city-de": {
-        "includes": ["city"],
         "translations": [
-            { "en":"[Bundesland]]:",           "de":"[Bundesland]]:",                       },
-            { "en":"[[Regierungsbezirk]]:",    "de":"[[Regierungsbezirk]]:",                },
-            { "en":"[District]]:",             "de":"[Landkreis|Kreis]]:",                  },
-            { "en":"[District]]:",             "de":"[Landkreis]]:",                        },
-            { "en":"district-free town",       "de":"[[kreisfreie Stadt]]",                 },
-            { "en":"District-free town",       "de":"[[Kreisfreie Stadt]]",                 },
+            { "en":"[Bundesland]]:",           "de":"[Bundesland]]:",                       "nl":"[[Deelstaat (Duitsland)|Deelstaat]]",     },
+            { "en":"[[Regierungsbezirk]]:",    "de":"[[Regierungsbezirk]]:",                "nl":"[[Regierungsbezirk]]:",                   },
+            { "en":"[District]]:",             "de":"[Landkreis|Kreis]]:",                  "nl":"[[District]]",                            },
+            { "en":"[District]]:",             "de":"[Landkreis]]:",                        "nl":"[[District]]",                            },
+            { "en":"district-free town",       "de":"[[kreisfreie Stadt]]",                 "nl":"[[Stadsdistrict]]",                       },
+            { "en":"District-free town",       "de":"[[Kreisfreie Stadt]]",                 "nl":"[[stadsdistrict]]",                       },
             { "en":"[[Municipality key]]:",    "de":"[[Amtliche Gemeindekennzahl]]:", },
             { "en":"[[Municipality key]]:",    "de":u"[[Amtlicher Gemeindeschl\xFCssel]]:", },
             { "en":"urban district",           "de":"[[Stadtbezirk]]e",                     },
@@ -178,8 +211,53 @@ types = {
             # Image alt text
             { "en":"Map of Germany, ",         "de":"Deutschlandkarte, ",                   },
             { "en":" marked",                  "de":" markiert",                            },
-        ]
-    }
+        ],
+        "includes": ["city"],
+    },
+    
+    # French départements
+    "dep": {
+        "translations": [
+            # some entries on fr: lack colons, others have spaces before the colons.
+            { "de":"Basisdaten",                                   "fr":"Informations",                              },
+            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]] :", },
+            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]]:",  },
+            { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]] :",                      },
+            { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]]:",                       },
+            { "de":u"[[Unterpr\xE4fektur]]en:",                    "fr":u"[[Sous-pr\xE9fecture]]s :",                },
+            { "de":u"[[Unterpr\xE4fektur]]en:",                    "fr":u"[[Sous-pr\xE9fecture]]s:",                 },
+            { "de":u"[[Unterpr\xE4fektur]]:",                      "fr":u"[[Sous-pr\xE9fecture]] :",                },
+            { "de":u"[[Unterpr\xE4fektur]]:",                      "fr":u"[[Sous-pr\xE9fecture]]:",                 },
+            { "de":"insgesamt",                                    "fr":"Totale",                                    },
+            # the next three items are already in the list "geography", but someone forgot the colons on fr:
+            { "de":u"[[Einwohner]]:",                              "fr":u"[[Population]]",  },
+            { "de":u"[[Bev\xF6lkerungsdichte|Dichte]]:",           "fr":u"[[Densit\xE9 de population|Densit\xE9]]",  },
+            { "de":u"[[Fl\xE4che]]:",                              "fr":"[[Superficie]]",                            },
+            # another workaround for a forgotten colon
+            { "de":"''</small>:",                                  "fr":"''</small>",                           },
+            { "de":"[[Arrondissement]]s:",                         "fr":"[[Arrondissement]]s",                       },
+            { "de":"[[Kanton (Frankreich)|Kantone]]:",             "fr":u"[[Cantons fran\xE7ais|Cantons]]",          },
+            { "de":"[[Kommune (Frankreich)|Kommunen]]:",           "fr":"[[Communes de France|Communes]]",           },
+            { "de":u"Pr\xE4sident des<br>[[Allgemeiner Rat|Allgemeinen Rates]]:",
+                                                                   "fr":u"[[Pr\xE9sident du Conseil g\xE9n\xE9ral|Pr\xE9sident du Conseil<br> g\xE9n\xE9ral]]", },
+            # image alt text
+            { "de":"Lage von ",                                    "fr":"Localisation de la ",                       },
+            { "de":"Lage von ",                                    "fr":"Localisation des ",                       },
+            { "de":"Lage von ",                                    "fr":"Localisation de ",                       },
+            { "de":" in Frankreich",                               "fr":" en France",                                },
+            # table header for image
+            { "de":"Geografische Lage",                            "fr":"Localisation",                              },
+        ],
+        "regexes":
+            { "fr": {
+                "\[\[[aA]rrondissements (des |du |de la |de l\'|d\'|de )":  {"de":u"[[Arrondissemens im D\xE9partement ", },
+                "\[\[[cC]ommunes (des |du |de la |de l\'|d\'|de )":         {"de":u"[[Kommunen im D\xE9partement ",       },
+                "\[\[[cC]antons (des |du |de la|de l\'|d\'|de )":           {"de":u"[[Kantone im D\xE9partement ",        },
+                "Blason (des |du |de la |de l\'|d\'|de )":                 {"de":"Wappen von ",                          },
+            },  
+        },
+        "includes": ["numbers", "images", "geography"],
+    },          
 }
 
 if not wikipedia.special.has_key(wikipedia.mylang):
@@ -243,6 +321,9 @@ def treat(to_pl):
     except wikipedia.IsRedirectPage:
         print "Can't work on redirect page."
         return
+    except wikipedia.NoPage:
+        print "Page not found."
+        return
     from_pl = ""
     for interwiki in interwikis:
         if interwiki.code() == from_lang:
@@ -258,10 +339,10 @@ def treat(to_pl):
         print "No table found in %s." % from_lang + ":" + from_pl.linkname()
         return
     table = translate(table, type)
-    print_debug("\n" + table)
     if not table:
         print "Could not translate table."
         return
+    print_debug("\n" + table)
     # add table to top of the article, seperated by a blank lines
     to_text = table + "\n\n" + to_text
     if not debug:
@@ -283,26 +364,30 @@ def get_table(text):
     else:
         print_debug("First start tag found at " + str(first_start_tag.start()))
         pos = first_start_tag.end()
+        # number of start tags minus numer of end tags
         table_level = 1
         remaining_text = text
+    # until an end tag has been found for each start tag:
     while table_level != 0:
+        # continue search after the last found tag
         remaining_text = text[pos:]
         next_start_tag = re.search(startR, remaining_text, pos)
         next_end_tag = re.search(endR, remaining_text, pos)
         if not next_end_tag:
-            print_debug( "Error: missing end tag")
+            print_debug("Error: missing end tag")
             pass
-        if next_start_tag and next_start_tag.start() < next_end_tag.start():
+        # if another cascaded table is opened before the current one is closed    
+        elif next_start_tag and next_start_tag.start() < next_end_tag.start():
             print_debug( "Next start tag found at " + str(pos + next_start_tag.start()))
             pos += next_start_tag.end()
             table_level += 1
-            print_debug( "Table level is " + str(table_level))
+            print_debug("Table level is " + str(table_level))
         else:
             print_debug( "Next end tag found at " + str(pos + next_end_tag.start()))
             pos += next_end_tag.end()
             table_level -= 1
             print_debug("Table level is " + str(table_level))
-    print_debug("Table starts at " + str(first_start_tag.start()) + " and ends at " + str(pos))
+    print_debug("Table starts at " + str(first_start_tag.start()) + " and ends at " + str(pos) +"\n")
     print_debug(text[first_start_tag.start():pos])
     return text[first_start_tag.start():pos]
 
@@ -314,23 +399,34 @@ def translate(text, type):
         # check if the translation database knows this type of table
         if not types.has_key(type):
             print "Unknown table type: " + type
-            pass
-        else:
-            translations = types.get(type).get("translations")
-        for item in translations:
-            # check if the translation database includes the source language
-            if not item.has_key(from_lang):
-                print "Can't translate. Please make sure that there is are entries for " + from_lang + " for type " + type + " in copy_table.py."
-                return
-            # if it's necessary to replace a substring
-            if string.find(text, item.get(from_lang)) > -1:
-                 # check if the translation database includes the target language
-                 if not item.has_key(wikipedia.mylang):
-                     print "Can't translate \"" + item.get(from_lang) + "\". Please make sure that there is a translation in copy_table.py."
-                 else:
-                     print_debug(item.get(from_lang) + " => " + item.get(wikipedia.mylang))
-                     # translate a substring
-                     text = string.replace(text, item.get(from_lang), item.get(wikipedia.mylang))
+            return
+        if types.get(type).has_key("translations"):
+            print_debug("direct translations for type " + type + "\n")
+            for item in types.get(type).get("translations"):
+                # check if the translation database includes the source language
+                if not item.has_key(from_lang):
+                    print_debug(from_lang + " translation for item not found in translation table, skipping item")
+                    continue
+                # if it's necessary to replace a substring
+                if string.find(text, item.get(from_lang)) > -1:
+                     # check if the translation database includes the target language
+                     if not item.has_key(wikipedia.mylang):
+                         print "Can't translate \"" + item.get(from_lang) + "\". Please make sure that there is a translation in copy_table.py."
+                     else:
+                         print_debug(item.get(from_lang) + " => " + item.get(wikipedia.mylang))
+                         # translate a substring
+                         text = string.replace(text, item.get(from_lang), item.get(wikipedia.mylang))
+        if types.get(type).has_key("regexes"):
+            # work on regular expressions
+            print_debug("\n Working on regular expressions for type " + type + "\n")
+            regexes = types.get(type).get("regexes")
+            if regexes.has_key(from_lang):
+                for item in regexes.get(from_lang):
+                    if regexes.get(from_lang).get(item).has_key(wikipedia.mylang):
+                        replacement = regexes.get(from_lang).get(item).get(wikipedia.mylang)
+                        print_debug(item + " => " + replacement)
+                        regex = re.compile(item)
+                        text = re.sub(regex, replacement, text)
         # recursively use translation lists which are included in the current list
         if types.get(type).has_key("includes"):
             for inc in types.get(type).get("includes"):
