@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an SQL dump or a text file, or only
@@ -72,6 +72,7 @@ msg = {
        'fr':u'Bot : Remplacement de texte automatisé %s',
        'hu':u'Robot: Automatikus szövegcsere %s',
        'is':u'Vélmenni: breyti texta %s',
+       'pt':u'Bot: Mudança automática %s',
        }
 
 # Predefined replacements tasks.
