@@ -925,7 +925,13 @@ class GetAll(object):
         m = redirectRe(self.site).match(text)
         if m:
             edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
-            pl2._getexception = IsRedirectPage(m.group(1))
+            redirectto=m.group(1)
+            if pl.site().lang=="eo":
+                for c in 'CGHJSU':
+                    for c2 in c,c.lower():
+                        for x in 'Xx':
+                            redirectto = redirectto.replace(c2+x,c2+x+x+x+x)
+            pl2._getexception = IsRedirectPage(redirectto)
         else:
             if len(text)<50:
                 output(u"DBG> short text in %s:" % pl2.aslink())
@@ -953,7 +959,7 @@ class GetAll(object):
         # In the next line, we assume that what we got for eo: is NOT in x-convention
         # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
         # find nothing, we will retry the normal way with an unadapted form.
-        pagenames = u'\r\n'.join([x.hashfreeLinkname(doublex = (self.site.lang=='eo')) for x in self.pages])
+        pagenames = u'\r\n'.join([x.hashfreeLinkname(doublex = False) for x in self.pages])
         pagenames = forSite(pagenames, self.site)
         data = urlencode((
                     ('action', 'submit'),
