@@ -145,7 +145,10 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         fn = fn.split('\\')[-1]
     # convert ISO 8859-1 to Unicode, or parse UTF-8
     if source_wiki != None:
-        fn = unicode(fn, wikipedia.code2encoding(source_wiki))
+        try:
+            fn = unicode(fn, wikipedia.code2encoding(source_wiki))
+        except TypeError:
+            pass
     if not keep:
         print "The filename on wikipedia will default to:",fn
         newfn = wikipedia.input(u'Better name : ', encode = wikipedia.myencoding())
