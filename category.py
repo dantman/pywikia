@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -178,7 +178,7 @@ def add_category(sort_by_last_name = False):
     # get edit summary message
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_add) % newcat)
     
-    cat_namespace = wikipedia.getSite().category_namespace()
+    cat_namespace = wikipedia.getSite().category_namespaces()[0]
 
     answer = ''
     for nm in pagenames:
@@ -203,7 +203,9 @@ def add_category(sort_by_last_name = False):
                 pl3 = wikipedia.PageLink(wikipedia.getSite(),arg.args[0])
                 wikipedia.output(u"WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink()))
             else:
-                wikipedia.output(u"Current categories: %s" % cats)
+                wikipedia.output(u"Current categories:")
+                for curpl in cats:
+                    wikipedia.output(u"* %s" % cat.aslink())
                 catpl = wikipedia.PageLink(wikipedia.getSite(), cat_namespace + ':' + newcat)
                 if sort_by_last_name:
                     catpl = sorted_by_last_name(catpl, pl2) 
@@ -434,7 +436,7 @@ def treeview(cat, max_depth, current_depth = 0, parent = None):
         for i in range(len(supercats)):
             # create a list of wiki links to the supercategories
             supercat_names.append('[[:%s|%s]]' % (supercats[i].linkname(), supercats[i].linkname().split(':', 1)[1]))
-            # print this list, seperated with commas, using translations given in also_in_cats
+            # print this list, separated with commas, using translations given in also_in_cats
         result += ' ' + wikipedia.translate(wikipedia.getSite(), also_in_cats) % ', '.join(supercat_names)
     result += '\n'
     if current_depth < max_depth:
