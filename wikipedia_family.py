@@ -63,6 +63,7 @@ langs = {
     'ku':'ku.wikipedia.org',   # Kurdish
     'kw':'kw.wikipedia.org',   # Cornish
     'la':'la.wikipedia.org',   # Latin
+    'lb':'lb.wikipedia.org',   # Luxembourgish
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
     'mg':'mg.wikipedia.org',   # Malagasy
