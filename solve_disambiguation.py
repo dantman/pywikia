@@ -72,7 +72,7 @@ msg_redir={
           'da':'Retter flertydigt link til',
           'de':'Bot-unterst\xfctzte Redirectaufl\xf6sung',
           'nl':'Robot-geholpen doorverwijzing',
-          'fr':'Homonymie r\xE9solue \xE0 l\'aide du robot'
+          'fr':'Correction de lien vers redirect'
           }
 
 # List pages that will be ignored if they got a link to a disambiguation
