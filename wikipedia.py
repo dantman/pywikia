@@ -1282,7 +1282,6 @@ def getReferences(pl, follow_redirects = True):
         # current index in txt string
         pos = 0
         while cascadedListR.search(txt):
-            print 'match'
             m = cascadedListR.search(txt)
             txt = m.group(1) + m.group(2)
     Rref = re.compile('li>a href.*="([^"]*)"')
