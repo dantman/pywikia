@@ -6,7 +6,7 @@ Library to get and put pages on Wikipedia
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id$'
+__version__ = '$Id$'
 #
 import re,urllib,codecs,sys
 
@@ -18,47 +18,55 @@ debug = 0
 # the full name of the language is given behind each line as a comment
 
 langs = {'en':'en.wikipedia.org', # English
-         'pl':'pl.wikipedia.org', # Polish
+         'pl':'pl.wikipedia.org', # Polish, UTF-8
          'da':'da.wikipedia.org', # Danish
          'sv':'sv.wikipedia.org', # Swedish
-         'zh':'zh.wikipedia.org', # Chinese
-         'eo':'eo.wikipedia.org', # Esperanto
+         'zh':'zh.wikipedia.org', # Chinese, UTF-8
+         'eo':'eo.wikipedia.org', # Esperanto, UTF-8
          'nl':'nl.wikipedia.org', # Dutch
          'de':'de.wikipedia.org', # German
          'fr':'fr.wikipedia.org', # French
          'es':'es.wikipedia.org', # Spanish
-         'cs':'cs.wikipedia.org', # Czech
-         'ru':'ru.wikipedia.org', # Russian
-         'ja':'ja.wikipedia.org', # Japanese
-         'sl':'sl.wikipedia.org', # Slovenian
-         'ko':'ko.wikipedia.org', # Korean
-         'hu':'hu.wikipedia.org', # Hungarian
-         'el':'el.wikipedia.org', # Grieks
-         'bs':'bs.wikipedia.org', # Bosnisch
-	 'he':'he.wikipedia.org', # Hebrew
-         'hi':'hi.wikipedia.org', # Hindi
+         'cs':'cs.wikipedia.org', # Czech, UTF-8
+         'ru':'ru.wikipedia.org', # Russian, UTF-8
+         'ja':'ja.wikipedia.org', # Japanese, UTF-8
+         'sl':'sl.wikipedia.org', # Slovenian, UTF-8
+         'ko':'ko.wikipedia.org', # Korean, UTF-8
+         'hu':'hu.wikipedia.org', # Hungarian, UTF-8
+         'el':'el.wikipedia.org', # Grieks, UTF-8
+         'bs':'bs.wikipedia.org', # Bosnisch, UTF-8
+	 'he':'he.wikipedia.org', # Hebrew, UTF-8
+         'hi':'hi.wikipedia.org', # Hindi, UTF-8
          'nds':'nds.wikipedia.org', # Nedersaksisch
-         'ro':'ro.wikipedia.org', # Romanian
+         'ro':'ro.wikipedia.org', # Romanian, UTF-8
+         'fy':'fy.wikipedia.org', # Frysk, UTF-8
+         'ar':'ar.wikipedia.org', # Arabic, UTF-8
+         'zh-tw':'zh.wikipedia.org', # Traditional Chinese, UTF-8
+         'zh-cn':'zh.wikipedia.org', # Simplified Chinese, UTF-8
          'it':'it.wikipedia.org', # Italian
          'no':'no.wikipedia.org', # Norwegian
          'pt':'pt.wikipedia.org', # Portuguese
          'af':'af.wikipedia.org', # Afrikaans
-         'fy':'fy.wikipedia.org', # Frysk
          'la':'la.wikipedia.org', # Latin
          'ca':'ca.wikipedia.org', # Catalan
          'fi':'fi.wikipedia.org', # Finnish
          'ia':'ia.wikipedia.org', # Interlingua
          'et':'et.wikipedia.org', # Estonian
          'eu':'eu.wikipedia.org', # Basque
-         'hr':'hr.wikipedia.org', # Croatian
-         'tr':'tr.wikipedia.org', # Turkish
+         'hr':'hr.wikipedia.org', # Croatian, UTF-8
+         'tr':'tr.wikipedia.org', # Turkish, UTF-8
          'mr':'mr.wikipedia.org', # ?
-         'ar':'ar.wikipedia.org', # Arabic
-         'zh-tw':'zh.wikipedia.org', # Traditional Chinese
-         'zh-cn':'zh.wikipedia.org', # Simplified Chinese
          'simple':'simple.wikipedia.org', # Simplified english
          #'test':'test.wikipedia.org',
          }
+
+# Languages that are coded in iso-8859-1
+latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
+          'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
+          'mr', 'simple' ]
+
+# Languages that used to be coded in iso-8859-1
+latin1old = ['cs', 'sl', 'bs', 'fy']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -72,12 +80,12 @@ special = {'en':'Special',
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware=['it','no','pt','af','la','ca','fi','ia','et','eu','simple',
-             'nds','mr']
+oldsoftware = ['it', 'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
+               'simple', 'nds', 'mr']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
-biglangs=['en','pl','da','sv','nl','de','fr','es']
+biglangs = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es']
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 
@@ -112,26 +120,30 @@ class SubpageError(ValueError):
 # The most important thing in this whole module: The PageLink class
 class PageLink:
     """A Wikipedia page link."""
-    def __init__(self,code,name=None,urlname=None,linkname=None,incode=None):
+    def __init__(self, code, name = None, urlname = None,
+                 linkname = None, incode = None):
         """Constructor. Normally called with two arguments:
              1) The language code on which the page resides
              2) The name of the page as suitable for a URL
         """     
-        self._incode=incode
-        self._code=code
+        self._incode = incode
+        self._code = code
         if linkname is None and urlname is None and name is not None:
             # Clean up the name, it can come from anywhere.
-            name=name.strip()
-            self._urlname=link2url(name,self._code,incode=self._incode)
-            self._linkname=url2link(self._urlname,code=self._code,incode=self._incode)
+            name = name.strip()
+            self._urlname = link2url(name, self._code, incode = self._incode)
+            self._linkname = url2link(self._urlname, code = self._code,
+                                      incode = self._incode)
         elif linkname is not None:
             # We do not trust a linkname either....
-            name=linkname.strip()
-            self._urlname=link2url(name,self._code,incode=self._incode)
-            self._linkname=url2link(self._urlname,code=self._code,incode=self._incode)
+            name = linkname.strip()
+            self._urlname = link2url(name, self._code, incode=self._incode)
+            self._linkname = url2link(self._urlname, code = self._code,
+                                      incode = self._incode)
         elif urlname is not None:
-            self._urlname=urlname
-            self._linkname=url2link(urlname,code=self._code,incode=self._incode)
+            self._urlname = urlname
+            self._linkname = url2link(urlname, code = self._code,
+                                      incode = self._incode)
 
     def urlname(self):
         """The name of the page this PageLink refers to, in a form suitable
@@ -147,14 +159,14 @@ class PageLink:
         """The name of the subpage this PageLink refers to. Subpages are
            denominated by a # in the linkname(). If no subpage is referenced,
            None is returned."""
-        ln=self.linkname()
-        ln=re.sub('&#','&hash;',ln)
+        ln = self.linkname()
+        ln = re.sub('&#', '&hash;', ln)
         if not '#' in ln:
             return None
         else:
-            hn=ln[ln.find('#')+1:]
-            hn=re.sub('&hash;','&#',hn)
-            #print "hn=",hn
+            hn = ln[ln.find('#') + 1:]
+            hn = re.sub('&hash;', '&#', hn)
+            #print "hn=", hn
             return hn
         
     def code(self):
@@ -164,20 +176,21 @@ class PageLink:
     
     def __str__(self):
         """A simple ASCII representation of the pagelink"""
-        return "%s:%s"%(self._code,url2link(self._urlname,code=self._code,incode='ascii'))
+        nm = url2link(self._urlname, code = self._code, incode = 'ascii')
+        return "%s:%s" % (self._code, nm)
 
     def __repr__(self):
         """A more complete string representation"""
-        return "PageLink{%s}"%str(self)
+        return "PageLink{%s}" % str(self)
 
     def aslink(self):
         """A string representation in the form of an interwiki link"""
-        return "[[%s:%s]]"%(self.code(),self.linkname())
+        return "[[%s:%s]]" % (self.code(), self.linkname())
 
     def asselflink(self):
         """A string representation in the form of a local link, but prefixed by
            the language code"""
-        return "%s:[[%s]]"%(self.code(),self.linkname())
+        return "%s:[[%s]]" % (self.code(), self.linkname())
     
     def get(self):
         """The wiki-text of the page. This will retrieve the page if it has not
@@ -192,13 +205,13 @@ class PageLink:
             LockedPage: The page is locked, and therefore its contents can
                         not be retrieved.
         """
-        if not hasattr(self,'_contents'):
-            self._contents=getPage(self.code(),self.urlname())
-            hn=self.hashname()
+        if not hasattr(self, '_contents'):
+            self._contents = getPage(self.code(), self.urlname())
+            hn = self.hashname()
             if hn:
-                m=re.search("== *%s *=="%hn,self._contents)
+                m = re.search("== *%s *==" % hn, self._contents)
                 if not m:
-                    raise SubpageError("Hashname does not exist: %s"%self)
+                    raise SubpageError("Hashname does not exist: %s" % self)
                 
         return self._contents
 
@@ -207,7 +220,7 @@ class PageLink:
            The second argument is a string that is to be used as the
            summary for the modification
         """
-        return putPage(self.code(),self.urlname(),newtext,comment)
+        return putPage(self.code(), self.urlname(), newtext, comment)
 
     def interwiki(self):
         """Return a list of inter-wiki links in the page. This will retrieve
@@ -217,26 +230,28 @@ class PageLink:
            The return value is a list of PageLink objects for each of the
            interwiki links in the page text.
         """
-        result=[]
-        for newcode,newname in getLanguageLinks(self.get(),incode=self.code()).iteritems():
+        result = []
+        ll = getLanguageLinks(self.get(), incode = self.code())
+        for newcode,newname in ll.iteritems():
             try:
-                result.append(self.__class__(newcode,linkname=newname,incode=self.code()))
+                result.append(self.__class__(newcode, linkname=newname,
+                                             incode = self.code()))
             except UnicodeEncodeError:
                 print "ERROR> link from %s to %s:%s is invalid encoding?!"%(self,newcode,repr(newname))
             except NoSuchEntity:
                 print "ERROR> link from %s to %s:%s contains invalid character?!"%(self,newcode,repr(newname))
         return result
 
-    def __cmp__(self,other):
+    def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            PageLink objects"""
-        #print "__cmp__",self,other
-        if not hasattr(other,'code'):
+        #print "__cmp__", self, other
+        if not hasattr(other, 'code'):
             return -1
-        if not self.code()==other.code():
-            return cmp(self.code(),other.code())
-        u1=html2unicode(self.linkname(),language=self.code())
-        u2=html2unicode(other.linkname(),language=other.code())
+        if not self.code() == other.code():
+            return cmp(self.code(), other.code())
+        u1=html2unicode(self.linkname(), language = self.code())
+        u2=html2unicode(other.linkname(), language = other.code())
         #print "__cmp__",repr(u1),repr(u2)
         return cmp(u1,u2)
 
@@ -275,17 +290,17 @@ def urlencode(query):
     return '&'.join(l)
 
 def space2underline(name):
-    return name.replace(' ','_')
+    return name.replace(' ', '_')
 
 def underline2space(name):
-    return name.replace('_',' ')
+    return name.replace('_', ' ')
 
 # Mechanics to slow down page download rate.
 
 import time
 
 class Throttle:
-    def __init__(self, delay=6, ignore=0):
+    def __init__(self, delay = 6, ignore = 0):
         """Make sure there are at least 'delay' seconds between page-gets
            after 'ignore' initial page-gets"""
         self.delay = delay
@@ -300,7 +315,7 @@ class Throttle:
            A new delay can be set by calling this function with an argument
            giving the desired delay in seconds."""
         if newdelay is not None:
-            self.delay=newdelay
+            self.delay = newdelay
         elif self.ignore > 0:
             self.ignore -= 1
         else:
@@ -312,7 +327,7 @@ class Throttle:
 
 throttle=Throttle()
 
-def putPage(code, name, text, comment=None):
+def putPage(code, name, text, comment = None):
     """Upload 'text' on page 'name' to the 'code' language wikipedia."""
     import httplib
     host = langs[code]
@@ -328,7 +343,7 @@ def putPage(code, name, text, comment=None):
             ('wpSummary', comment),
             ('wpMinoredit', '1'),
             ('wpSave', '1'),
-            ('wpEdittime', edittime[code,link2url(name,code)]),
+            ('wpEdittime', edittime[code, link2url(name, code)]),
             ('wpTextbox1', text)))
     except KeyError:
         print edittime
@@ -360,38 +375,38 @@ class MyURLopener(urllib.FancyURLopener):
 def getUrl(host,address):
     """Low-level routine to get a URL from wikipedia"""
     #print host,address
-    uo=MyURLopener()
+    uo = MyURLopener()
     if cookies:
-        uo.addheader('Cookie',cookies)
-    f=uo.open('http://%s%s'%(host,address))
-    text=f.read()
+        uo.addheader('Cookie', cookies)
+    f = uo.open('http://%s%s'%(host, address))
+    text = f.read()
     #print f.info()
-    ct=f.info()['Content-Type']
-    R=re.compile('charset=([^\'\"]+)')
-    m=R.search(ct)
+    ct = f.info()['Content-Type']
+    R = re.compile('charset=([^\'\"]+)')
+    m = R.search(ct)
     if m:
-        charset=m.group(1)
+        charset = m.group(1)
     else:
-        charset=None
+        charset = None
     #print text
     return text,charset
     
-def getPage(code, name, do_edit=1, do_quote=1):
+def getPage(code, name, do_edit = 1, do_quote = 1):
     """Get the contents of page 'name' from the 'code' language wikipedia
        Do not use this directly; use the PageLink object instead."""
     host = langs[code]
     if code in oldsoftware:
         # Old algorithm
         name = re.sub('_', ' ', name)
-        n=[]
+        n = []
         for x in name.split():
-            n.append(x[0].capitalize()+x[1:])
-        name='_'.join(n)
+            n.append(x[0].capitalize() + x[1:])
+        name = '_'.join(n)
         #print name
     else:
         name = re.sub(' ', '_', name)
     if not '%' in name and do_quote: # It should not have been done yet
-        if name!=urllib.quote(name):
+        if name != urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
     if code not in oldsoftware:
@@ -403,10 +418,10 @@ def getPage(code, name, do_edit=1, do_quote=1):
             raise "can not skip edit on old-software wikipedia"
         address = '/wiki.cgi?action=edit&id='+name
     if debug:
-        print host,address
+        print host, address
     # Make sure Brion doesn't get angry by slowing ourselves down.
     throttle()
-    text,charset = getUrl(host,address)
+    text, charset = getUrl(host,address)
     # Keep login status for external use
     global loggedin
     if "Userlogin" in text:
@@ -416,71 +431,71 @@ def getPage(code, name, do_edit=1, do_quote=1):
     # Extract the actual text from the textedit field
     if do_edit:
         if debug:
-            print "Raw:",len(text),type(text),text.count('x')
+            print "Raw:", len(text), type(text), text.count('x')
         if charset is None:
             print "WARNING: No character set found"
         else:
             # Store character set for later reference
             if charsets.has_key(code):
-                assert charsets[code].lower()==charset.lower(),"charset for %s changed from %s to %s"%(code,charsets[code],charset)
-            charsets[code]=charset
-            if code2encoding(code).lower()!=charset.lower():
+                assert charsets[code].lower() == charset.lower(), "charset for %s changed from %s to %s"%(code,charsets[code],charset)
+            charsets[code] = charset
+            if code2encoding(code).lower() != charset.lower():
                 raise ValueError("code2encodings has wrong charset for %s. It should be %s"%(code,charset))
             
         if debug>1:
             print repr(text)
         m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
         if m:
-            edittime[code,link2url(name,code)]=m.group(1)
+            edittime[code, link2url(name, code)] = m.group(1)
         else:
             m = re.search('value="(\d+)" name="wpEdittime"',text)
             if m:
-                edittime[code,link2url(name,code)]=m.group(1)
+                edittime[code, link2url(name, code)] = m.group(1)
             else:
-                edittime[code,link2url(name,code)]=0
+                edittime[code, link2url(name, code)] = 0
         try:
-            i1 = re.search('<textarea[^>]*>',text).end()
+            i1 = re.search('<textarea[^>]*>', text).end()
         except AttributeError:
             #print "No text area.",host,address
             #print repr(text)
             raise LockedPage(text)
-        i2 = re.search('</textarea>',text).start()
+        i2 = re.search('</textarea>', text).start()
         if i2-i1 < 2: # new software
             raise NoPage()
         if debug:
             print text[i1:i2]
         if text[i1:i2] == 'Describe the new page here.\n': # old software
             raise NoPage()
-        Rredirect=re.compile(r'\#redirect:? *\[\[(.*?)\]\]',re.I)
+        Rredirect = re.compile(r'\#redirect:? *\[\[(.*?)\]\]', re.I)
         m=Rredirect.match(text[i1:i2])
         if m:
             raise IsRedirectPage(m.group(1))
         if needput:
-            assert edittime[code,name]!=0 or code in oldsoftware, "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
+            assert edittime[code, name] != 0 or code in oldsoftware, "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
 
-        x=text[i1:i2]
-        x=unescape(x)
+        x = text[i1:i2]
+        x = unescape(x)
     else:
-        x=text # If not editing
+        x = text # If not editing
         
-    if charset=='utf-8':
+    if charset == 'utf-8':
         # Make it to a unicode string
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
         try:
-            x,l=decode_func(x)
+            x,l = decode_func(x)
         except UnicodeError:
             print code,name
             print repr(x)
             raise 
         # Convert the unicode characters to &# references, and make it ascii.
-        x=str(UnicodeToAsciiHtml(x))
+        x = str(UnicodeToAsciiHtml(x))
     return x
 
-def languages(first=[]):
+def languages(first = []):
     """Return a list of language codes for known wikipedia servers. If a list
        of language codes is given as argument, these will be put at the front
        of the returned list."""
-    result=[]
+    result = []
     for key in first:
         if key in langs.iterkeys():
             result.append(key)
@@ -489,28 +504,29 @@ def languages(first=[]):
             result.append(key)
     return result
 
-def allpages(start='%21%200'):
+def allpages(start = '%21%200'):
     """Iterate over all Wikipedia pages in the home language, starting
        at the given page. This will raise an exception if the home language
        does not have a translation of 'Special' listed above."""
     import sys
-    start=link2url(start,code=mylang)
+    start = link2url(start, code = mylang)
     m=0
     while 1:
-        text=getPage(mylang,'%s:Allpages&printable=yes&from=%s'%(special[mylang],start),do_quote=0,do_edit=0)
+        text = getPage(mylang, '%s:Allpages&printable=yes&from=%s'%(special[mylang],start),do_quote=0,do_edit=0)
         #print text
-        R=re.compile('/wiki/(.*?)" *class=[\'\"]printable')
-        n=0
+        R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
+        n = 0
         for hit in R.findall(text):
             if not ':' in hit:
                 # Some dutch exceptions.
                 if not hit in ['Hoofdpagina','In_het_nieuws']:
-                    n=n+1
-                    yield PageLink(mylang,url2link(hit,code=mylang,incode=mylang))
-                    start=hit+'%20%200'
-        if n<100:
+                    n = n + 1
+                    yield PageLink(mylang, url2link(hit, code = mylang,
+                                                    incode = mylang))
+                    start = hit + '%20%200'
+        if n < 100:
             break
-        m=m+n
+        m += n
         sys.stderr.write('AllPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl',incode='ascii')))
 
 # Part of library dealing with interwiki links
@@ -527,7 +543,7 @@ def getLanguageLinks(text,incode=None):
                 t=m.group(1)
                 if '|' in t:
                     t=t[:t.index('|')]
-                if incode=='eo':
+                if incode == 'eo':
                     t=t.replace('xx','x')
                 result[code] = t
             else:
@@ -554,34 +570,33 @@ def interwikiFormat(links):
     """Create a suitable string to start a wikipedia page consisting of
        interwikilinks given as a dictionary of code:pagename in the argument.
     """
-    s=[]
-    ar=links.keys()
+    s = []
+    ar = links.keys()
     ar.sort()
     for code in ar:
         try:
             s.append(links[code].aslink())
         except AttributeError:
-            s.append('[[%s:%s]]'%(code, links[code]))
-    return ' '.join(s)+'\r\n'
+            s.append('[[%s:%s]]' % (code, links[code]))
+    return ' '.join(s) + '\r\n'
             
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
     if code == 'ascii':
         return code # Special case where we do not want special characters.
-    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs',
-                'el','sl','ro','hr','tr','ar','zh-cn','zh-tw','fy']:
-        return 'utf-8'
-    return 'iso-8859-1'
+    if code in latin1:
+        return 'iso-8859-1'
+    return 'utf-8'
 
 def code2encodings(code):
     """Return a list of historical encodings for a specific language
        wikipedia"""
     # Historic compatibility
-    if code=='pl':
+    if code == 'pl':
         return 'utf-8','iso-8859-2'
-    if code=='ru':
+    if code == 'ru':
         return 'utf-8','iso-8859-5'
-    if code in ['cs','sl','bs']:
+    if code in latin1old:
         return 'utf-8','iso-8859-1'
     return code2encoding(code),
     
@@ -589,44 +604,44 @@ def url2link(percentname,incode,code):
     """Convert a url-name of a page into a proper name for an interwiki link
        the argument 'incode' specifies the encoding of the target wikipedia
        """
-    result=underline2space(percentname)
-    x=url2unicode(result,language=code)
-    if code2encoding(incode)==code2encoding(code):
-        #print "url2link",repr(x),"same encoding"
-        return unicode2html(x,encoding=code2encoding(code))
+    result = underline2space(percentname)
+    x = url2unicode(result, language = code)
+    if code2encoding(incode) == code2encoding(code):
+        #print "url2link", repr(x), "same encoding"
+        return unicode2html(x, encoding = code2encoding(code))
     else:
-        #print "url2link",repr(x),"different encoding"
-        return unicode2html(x,encoding='ascii')
+        #print "url2link", repr(x), "different encoding"
+        return unicode2html(x, encoding = 'ascii')
     
-def link2url(name,code,incode=None):
+def link2url(name, code, incode = None):
     """Convert a interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link"""
     if '%' in name:
-        name=url2unicode(name,language=code)
+        name = url2unicode(name, language = code)
     else:
-        name=html2unicode(name,language=code,altlanguage=incode)
+        name = html2unicode(name, language = code, altlanguage = incode)
     # Remove spaces from beginning and the end
-    name=name.strip()
+    name = name.strip()
     # Standardize capitalization
     if name:
-        name=name[0].upper()+name[1:]
+        name = name[0].upper()+name[1:]
     try:
-        result=str(name.encode(code2encoding(code)))
+        result = str(name.encode(code2encoding(code)))
     except UnicodeError:
-        print "Cannot convert %s into a URL for %s"%(repr(name),code)
+        print "Cannot convert %s into a URL for %s" % (repr(name), code)
         # Put entities in there.
-        result=addEntity(name)
+        result = addEntity(name)
         #raise
-    result=space2underline(result)
+    result = space2underline(result)
     return urllib.quote(result)
 
 ######## Unicode library functions ########
 
 def UnicodeToAsciiHtml(s):
-    html=[]
+    html = []
     i=0
     for c in s:
-        cord=ord(c)
+        cord = ord(c)
         #print cord,
         if cord < 128:
             html.append(c)
@@ -635,98 +650,98 @@ def UnicodeToAsciiHtml(s):
     #print
     return ''.join(html)
 
-def url2unicode(percentname,language):
+def url2unicode(percentname, language):
     x=urllib.unquote(percentname)
     for encoding in code2encodings(language):
         try:
             encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
-            x,l=decode_func(x)
+            x,l = decode_func(x)
             return x
         except UnicodeError:
             pass
-    raise UnicodeError("Could not decode %s"%repr(percentname))
+    raise UnicodeError("Could not decode %s" % repr(percentname))
 
-def unicode2html(x,encoding='latin1'):
+def unicode2html(x, encoding='latin1'):
     # We have a unicode string. We can attempt to encode it into the desired
     # format, and if that doesn't work, we encode the unicode into html #
     # entities.
     try:
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
-        x,l=encode_func(x)
+        x,l = encode_func(x)
         #print "unicode2html",x
     except UnicodeError:
-        x=UnicodeToAsciiHtml(x)
+        x = UnicodeToAsciiHtml(x)
     return str(x)
     
 def removeEntity(name):
-    import re,htmlentitydefs
-    Rentity=re.compile(r'&([A-Za-z]+);')
-    result=''
-    i=0
-    while i<len(name):
-        m=Rentity.match(name[i:])
+    import re, htmlentitydefs
+    Rentity = re.compile(r'&([A-Za-z]+);')
+    result = ''
+    i = 0
+    while i < len(name):
+        m = Rentity.match(name[i:])
         if m:
             if htmlentitydefs.entitydefs.has_key(m.group(1)):
-                result=result+htmlentitydefs.entitydefs[m.group(1)]
-                i=i+m.end()
+                result = result + htmlentitydefs.entitydefs[m.group(1)]
+                i += m.end()
             else:
-                result=result+name[i]
-                i=i+1
+                result += name[i]
+                i += 1
         else:
-            result=result+name[i]
-            i=i+1
+            result += name[i]
+            i += 1
     return result
 
 def addEntity(name):
     """Convert a unicode name into ascii name with entities"""
     import htmlentitydefs
-    result=''
+    result = ''
     for c in name:
-        if ord(c)<128:
-            result+=str(c)
+        if ord(c) < 128:
+            result += str(c)
         else:
-            for k,v in htmlentitydefs.entitydefs.iteritems():
-                if (len(v)==1 and ord(c)==ord(v)) or v=='&#%d;'%ord(c):
-                    result+='&%s;'%k;
+            for k, v in htmlentitydefs.entitydefs.iteritems():
+                if (len(v) == 1 and ord(c) == ord(v)) or v == '&#%d;'%ord(c):
+                    result += '&%s;' % k
                     break
             else:
                 raise NoSuchEntity("Cannot locate entity for character %s"%repr(c))
-    print "DBG> addEntity:",repr(name),repr(result)
+    print "DBG> addEntity:", repr(name), repr(result)
     return result
 
-def unicodeName(name,language,altlanguage=None):
+def unicodeName(name, language, altlanguage = None):
     for encoding in code2encodings(language):
         try:
-            return unicode(name,encoding)
+            return unicode(name, encoding)
         except UnicodeError:
             continue
     if altlanguage is not None:
-        print "DBG> Using local encoding!",altlanguage,"to",language,name
+        print "DBG> Using local encoding!", altlanguage, "to", language, name
         for encoding in code2encodings(altlanguage):
             try:
-                return unicode(name,encoding)
+                return unicode(name, encoding)
             except UnicodeError:
                 continue
     raise "Cannot decode"
     #return unicode(name,code2encoding(inlanguage))
     
-def html2unicode(name,language,altlanguage=None):
-    name=removeEntity(name)
-    name=unicodeName(name,language,altlanguage)
+def html2unicode(name, language, altlanguage=None):
+    name = removeEntity(name)
+    name = unicodeName(name, language, altlanguage)
 
     import re
-    Runi=re.compile('&#(\d+);')
-    result=u''
+    Runi = re.compile('&#(\d+);')
+    result = u''
     i=0
-    while i<len(name):
-        m=Runi.match(name[i:])
+    while i < len(name):
+        m = Runi.match(name[i:])
         if m:
-            result=result+unichr(int(m.group(1)))
-            i=i+m.end()
+            result += unichr(int(m.group(1)))
+            i += m.end()
         else:
             try:
-                result=result+name[i]
-                i=i+1
+                result += name[i]
+                i += 1
             except UnicodeDecodeError:
                 print repr(name)
                 raise
@@ -764,4 +779,4 @@ try:
     #print cookies
     f.close()
 except IOError:
-    cookies=None
+    cookies = None
