@@ -78,7 +78,9 @@ This script understands various command-line arguments:
     -noredirect:   do not follow redirects. This option can be useful when
                    running years AD, because ja: redirects many years to
                    decennia or centuries.
-                   
+
+    -shownew:      show the source of every new pagelink found anywhere.
+    
     Arguments that are interpreted by more bots:
 
     -lang:         specifies the language the bot is run on (e.g. -lang:de).
@@ -130,14 +132,15 @@ class Global:
     bell = True
     confirm = False
     debug = True
+    followredirect = True
     force = False
     forreal = True
     log = config.treelang_log
     minarraysize = 100
     maxquerysize = 60
     msglang = 'en'
-    followredirect = True
     same = False
+    shownew = False
     skip = {}
     untranslated = False
     
@@ -205,6 +208,8 @@ class Subject:
             self.todo[pl] = pl.code()
             counter.plus(pl.code())
             #print "DBG> Found new to do:",pl.asasciilink()
+            return True
+        return False
         
     def workDone(self, counter):
         """This is called by a worker to tell us that the promised work
@@ -239,7 +244,9 @@ class Subject:
                     elif unequal.unequal(self.inpl, pl3):
                         print "NOTE: %s is unequal to %s, not adding it" % (pl3, self.inpl)
                     else:
-                        self.conditionalAdd(pl3, counter)
+                        if self.conditionalAdd(pl3, counter):
+                            if globalvar.shownew:
+                                print "%s: %s gives new redirect %s"% (self.inpl.asasciiselflink(), pl.asasciilink(), pl3.asasciilink())
                 except wikipedia.NoPage:
                     print "NOTE: %s does not exist" % pl.asasciilink()
                 except wikipedia.SubpageError:
@@ -249,7 +256,10 @@ class Subject:
                       if unequal.unequal(self.inpl, pl2):
                           print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
                       else:   
-                          self.conditionalAdd(pl2, counter)
+                          if self.conditionalAdd(pl2, counter):
+                              if globalvar.shownew:
+                                  print "%s: %s gives new interwiki %s"% (self.inpl.asasciiselflink(), pl.asasciilink(), pl2.asasciilink())
+                              
         # These pages are no longer 'in progress'
         del self.pending
         # Check whether we need hints and the user offered to give them
@@ -645,6 +655,8 @@ if __name__ == "__main__":
             globalvar.confirm = True
         elif arg == '-autonomous':
             globalvar.autonomous = True
+        elif arg == '-shownew':
+            globalvar.shownew = True
         elif arg == '-nolog':
             globalvar.log = False
         elif arg == '-nobacklink':
