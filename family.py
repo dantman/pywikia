@@ -520,25 +520,23 @@ class Family:
         'cy': ['ail-cyfeirio'],
         'et': ['suuna'],
         'ga': ['athsheoladh'],
-        # is has some redirect code
         'nn': ['omdiriger'],
-        # ru has two redirect codes
-        # sr has a redirect code
-        # tt has a redirect code
+        'ru': [u'перенаправление', u'перенапр'],
+        'sr': [u'преусмери'],
+        'tt': [u'yünältü']
         }
 
     # So can be pagename code
     pagename = {
-        # bg has a pagename code
-        # is has a pagename code
-        'nn': ['SIDENAMN','SIDENAVN']
-        # ru has a pagename code
-        # tt has a pagename code
+        'bg': [u'СТРАНИЦА'],
+        'nn': ['SIDENAMN','SIDENAVN'],
+        'ru': [u'НАЗВАНИЕСТРАНИЦЫ'],
+        'tt': [u'BİTİSEME']
         }
 
     pagenamee = {
-        'nn': ['SIDENAMNE','SIDENAVNE']
-        # ru has some pagenamee code
+        'nn': ['SIDENAMNE','SIDENAVNE'],
+        'ru': [u'НАЗВАНИЕСТРАНИЦЫ2']
         }
 
     def pagenamecodes(self,code):
