@@ -1562,7 +1562,10 @@ def UnicodeToAsciiHtml(s):
         if cord < 128:
             html.append(c)
         else:
-            html.append('&#%d;'%cord)
+            if cord in htmlentitydefs.codepoint2name:
+                html.append("&%s;" % htmlentitydefs.codepoint2name[cord])
+            else:
+                html.append('&#%d;'%cord)
     #print
     return ''.join(html)
 
