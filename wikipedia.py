@@ -261,10 +261,6 @@ class PageLink(object):
         else:
             return ln
             
-    def console_linkname(self):
-        """Make a link-name that contains only console characters"""
-        return self.linkname()
-    
     def __str__(self):
         """A console representation of the pagelink"""
         return self.aslink().encode(config.console_encoding, 'replace')
