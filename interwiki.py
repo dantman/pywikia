@@ -763,6 +763,9 @@ if __name__ == "__main__":
     sa=SubjectArray()
 
     for arg in sys.argv[1:]:
+        wikipedia.argHandler(arg)
+
+    for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
             pass
         elif arg == '-force':
@@ -866,6 +869,7 @@ if __name__ == "__main__":
     except:
         sa.dump('interwiki.dump')
         raise
+
 
 
 
