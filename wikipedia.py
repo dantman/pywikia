@@ -1062,6 +1062,7 @@ class Throttle(object):
         self.next_multiplicity = 1.0
         self.checkdelay = 240 # Check the file with processes again after this many seconds
         self.dropdelay = 360 # Drop processes from the list that have not made a check in this many seconds
+        self.releasepid = 100000 # Free the process id
         self.lastwait = 0.0
         self.delay = 0
         if multiplydelay:
@@ -1070,6 +1071,7 @@ class Throttle(object):
     def checkMultiplicity(self):
         processes = {}
         my_pid = 1
+        count = 0
         try:
             f = open('throttle.log','r')
         except IOError:
@@ -1083,7 +1085,9 @@ class Throttle(object):
                 line = line.split(' ')
                 pid = int(line[0])
                 ptime = int(line[1].split('.')[0])
-                if now - ptime <= self.dropdelay:
+                if now - ptime <= self.releasepid:
+                    if now - ptime <= self.dropdelay and pid != self.pid:
+                        count += 1
                     processes[pid] = ptime
                     if pid >= my_pid:
                         my_pid = pid+1
@@ -1109,12 +1113,11 @@ class Throttle(object):
 
     def getDelay(self):
         thisdelay = self.delay
-        thisdelay *= self.next_multiplicity
         if self.pid: # If self.pid, we're checking for multiple processes
             if time.time() > self.checktime + self.checkdelay:
                 self.checkMultiplicity()
-            if self.delay < self.mindelay:
-                self.delay = self.mindelay
+            if self.delay < self.mindelay * self.next_multiplicity:
+                self.delay = self.mindelay * self.next_multiplicity
             elif self.delay > self.maxdelay:
                 self.delay = self.maxdelay
             if time.time() > self.checktime + self.checkdelay:
