@@ -89,7 +89,6 @@ for arg in sys.argv[1:]:
         print('Warning: argument "%s" not understood; ignoring.')%arg
 
 for p in wikipedia.allpages(start = start):
-    
     for sn in abbrev:
         R=re.compile('[^[]]*' + '\%2C_' + sn)
         for res in R.findall(p.urlname()):
@@ -106,6 +105,11 @@ for p in wikipedia.allpages(start = start):
                 print("WARNING!!! Page %s already exists and is not a redirect. Please check page!")%str(goal)
             except wikipedia.NoPage:
                 change=''
+                if p.isRedirectPage():
+                    p2 = wikipedia.PageLink(wikipedia.mylang,str(p.getRedirectTo()))
+                    print ('Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.')%p2.urlname().replace("%2C",",").replace("_"," ")
+                else:
+                    p2 = p
                 if force:
                     change='y'
                 else:
@@ -113,5 +117,5 @@ for p in wikipedia.allpages(start = start):
                         print ("Create redirect %s")%pl.urlname().replace("%2C",",").replace("_"," ")
                         change = raw_input("(y/n)? ")
                 if change=='y':
-                    text = '#REDIRECT [['+p.urlname().replace("%2C",",").replace("_"," ")+']]'
+                    text = '#REDIRECT [['+p2.urlname().replace("%2C",",").replace("_"," ")+']]'
                     pl.put(text, comment=msg, minorEdit = '0')
