@@ -25,6 +25,7 @@ loggedin = False
 langs = {
     'af':'af.wikipedia.org',   # Afrikaans, UTF-8
     'ar':'ar.wikipedia.org',   # Arabic, UTF-8
+    'bg':'bg.wikipedia.org',   # Bulgarian, UTF-8
     'bs':'bs.wikipedia.org',   # Bosnian, UTF-8
     'ca':'ca.wikipedia.org',   # Catalan, UTF-8
     'co':'co.wikipedia.org',   # Corsican
@@ -83,6 +84,7 @@ langs = {
     'uk':'uk.wikipedia.org',   # Ukrainian (Latin-1?)
     'vi':'vi.wikipedia.org',   # Vietnamese
     'vo':'vo.wikipedia.org',   # Volapuk
+    'walon':'walon.wikipedia.org', # Walloon, UTF-8
     'zh':'zh.wikipedia.org',   # Chinese, UTF-8
     'zh-cn':'zh.wikipedia.org', # Simplified Chinese, UTF-8
     'zh-tw':'zh.wikipedia.org', # Traditional Chinese, UTF-8
@@ -102,6 +104,7 @@ latin1old = ['et', 'ia', 'la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy',
 special = {
     'af': 'Spesiaal',
     'ar': 'Special',
+    'bg': '%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D0%BD%D0%B8',
     'bs': 'Special',
     'ca': 'Especial',
     #'co': '',
@@ -160,6 +163,7 @@ special = {
     #'uk': '',
     'vi': 'Special',
     #'vo': '',
+    'walon': 'Sipeci%C3%A5s',
     'zh': 'Special',
     'zh-cn': 'Special',
     'zh-tw': 'Special',
@@ -172,20 +176,20 @@ oldsoftware = ['co', 'eu', 'ga', 'id', 'is', 'lv', 'mr', 'nds', 'sw',
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
-biglangs = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es']
+biglangs = ['da', 'de', 'en', 'es', 'fr', 'nl', 'pl', 'sv']
 
 # Similar, but larger group
 
-biglangs2 = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es', 'eo', 'ca',
-             'it', 'ja', 'zh', 'sl', 'fi', 'ro', 'cs']
+biglangs2 = ['ca', 'da', 'de', 'en', 'eo', 'es', 'fi', 'fr', 'ia',
+             'it', 'ja', 'nl', 'no', 'pl', 'ro', 'sl', 'sv', 'zh']
 
 # And a much larger selection in case we say 'all languages' but don't
 # really mean 'all'
-seriouslangs = ['af', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
+seriouslangs = ['af', 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
                 'es', 'et', 'fi', 'fr', 'fy', 'gl', 'he', 'hr', 'hu',
                 'ia', 'it', 'ja', 'ko', 'la', 'ms', 'nds', 'nl', 'no',
                 'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'ta',
-                'vi', 'zh', 'simple']
+                'tr', 'vi', 'walon', 'zh', 'simple']
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 
