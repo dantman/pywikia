@@ -1089,6 +1089,8 @@ def getLanguageLinks(text,incode=None):
                 if code in obsolete:
                     print "ERROR: ignoring link to obsolete language %s:%s"%(
                         code, repr(t))
+                elif not t:
+                    print "ERROR: ignoring impossible link to %s:%s"%(code,m.group(1))
                 else:
                     result[code] = t
             else:
