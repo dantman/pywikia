@@ -28,20 +28,22 @@ langs = {'en':'www.wikipedia.org', # English
 	 'he':'he.wikipedia.org', # Hebrew
          'hi':'hi.wikipedia.org', # Hindi
          #'nds':'nds.wikipedia.org', # Nedersaksisch
-         'it':'it.wikipedia.com', # Italian
-         'no':'no.wikipedia.com', # Norwegian
-         'pt':'pt.wikipedia.com', # Portuguese
-         'af':'af.wikipedia.com', # Afrikaans
-         'fy':'fy.wikipedia.com', # Frysk
-         'la':'la.wikipedia.com', # Latin
-         'ca':'ca.wikipedia.com', # Catalan
-         'fi':'fi.wikipedia.com', # Finnish
-         'ia':'ia.wikipedia.com', # Interlingua
-         'et':'et.wikipedia.com', # Ests
-         'eu':'eu.wikipedia.com',
-         #'simple':'simple.wikipedia.com', # Simplified english
+         'it':'it.wikipedia.org', # Italian
+         'no':'no.wikipedia.org', # Norwegian
+         'pt':'pt.wikipedia.org', # Portuguese
+         'af':'af.wikipedia.org', # Afrikaans
+         'fy':'fy.wikipedia.org', # Frysk
+         'la':'la.wikipedia.org', # Latin
+         'ca':'ca.wikipedia.org', # Catalan
+         'fi':'fi.wikipedia.org', # Finnish
+         'ia':'ia.wikipedia.org', # Interlingua
+         'et':'et.wikipedia.org', # Ests
+         'eu':'eu.wikipedia.org',
+         #'simple':'simple.wikipedia.org', # Simplified english
          #'test':'test.wikipedia.org',
          }
+
+oldsoftware=['it','no','pt','af','fy','la','ca','fi','ia','et','eu','simple']
 
 charsets = {}
 
@@ -178,7 +180,7 @@ def putPage(code, name, text, comment=None):
     """Upload 'text' on page 'name' to the 'code' language wikipedia."""
     import httplib
     host = langs[code]
-    if host[-4:] == '.com':
+    if code in oldsoftware:
         raise Error("Cannot put pages on a .com wikipedia")
     address = '/w/wiki.phtml?title=%s&action=submit'%space2underline(name)
     if comment is None:
@@ -225,7 +227,7 @@ def getUrl(host,address):
 def getPage(code, name, do_edit=1, do_quote=1):
     """Get the contents of page 'name' from the 'code' language wikipedia"""
     host = langs[code]
-    if host[-4:]=='.com':
+    if code in oldsoftware:
         # Old algorithm
         name = re.sub('_', ' ', name)
         n=[]
@@ -239,11 +241,11 @@ def getPage(code, name, do_edit=1, do_quote=1):
         if name!=urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
-    if host[-4:] == '.org': # New software
+    if code not in oldsoftware:
         address = '/w/wiki.phtml?title='+name
         if do_edit:
             address += '&action=edit'
-    elif host[-4:]=='.com': # Old software
+    else:
         if not do_edit:
             raise "can not skip edit on old-software wikipedia"
         address = '/wiki.cgi?action=edit&id='+name
@@ -291,7 +293,7 @@ def getPage(code, name, do_edit=1, do_quote=1):
         m=Rredirect.match(text[i1:i2])
         if m:
             raise IsRedirectPage(m.group(1))
-        assert edittime[code,name]!=0 or host[-4:]=='.com', "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
+        assert edittime[code,name]!=0 or code in oldsoftware, "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
 
         x=text[i1:i2]
         x=unescape(x)
