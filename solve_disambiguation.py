@@ -212,8 +212,10 @@ ignore_title = {
     }
 
 class ReferringPageGenerator:
-    def __init__(self, disambPl):
+    def __init__(self, disambPl, primary = False):
         self.disambPl = disambPl
+        # if run with the -primary argument, enable the ignore manager
+        self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl, enabled = primary)
         
     def getReferences(self):
         refs = wikipedia.getReferences(self.disambPl, follow_redirects = False)
@@ -230,13 +232,15 @@ class ReferringPageGenerator:
                     if Rignore.match(refs[i]):
                         wikipedia.output('Ignoring page ' + refs[i], wikipedia.myencoding())
                         del refs[i]
-        return refs
-    
-    def generate(self):
-        refs = self.getReferences()
         refpls = []
         for ref in refs:
-            refpls.append(wikipedia.PageLink(self.disambPl.site(), ref))
+            refpl = wikipedia.PageLink(self.disambPl.site(), ref)
+            if not self.primaryIgnoreManager.isIgnored(refpl):
+                refpls.append(refpl)
+        return refpls
+    
+    def generate(self):
+        refpls = self.getReferences()
         while refpls:
             # We don't want to load too many pages at once using XML export.
             # We only get 20 at a time.
@@ -419,12 +423,11 @@ class DisambiguationRobot:
             else:
                 choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N|c(hange redirect)]' % refpl.linkname())
                 if choice == 'y':
-                    gen = ReferringPageGenerator(refpl)
+                    gen = ReferringPageGenerator(refpl, self.primary)
                     for refpl2 in gen.generate():
-                        if not self.primaryIgnoreManager.isIgnored(refpl2):
-                            # run until the user selected 'quit'
-                            if not self.treat(refpl2, refpl):
-                                break
+                        # run until the user selected 'quit'
+                        if not self.treat(refpl2, refpl):
+                            break
                 elif choice == 'c':
                     text="#%s [[%s]]"%(self.mysite.redirect(default=True), disambPl.linkname())
                     include = "redirect"
@@ -646,7 +649,7 @@ class DisambiguationRobot:
             self.alternatives.sort()
             self.listAlternatives()
     
-            gen = ReferringPageGenerator(disambPl)
+            gen = ReferringPageGenerator(disambPl, self.primary)
             for refpl in gen.generate():
                 if not self.primaryIgnoreManager.isIgnored(refpl):
                     # run until the user selected 'quit'
