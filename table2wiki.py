@@ -73,7 +73,7 @@ for article in articles:
         f = open("table2wiki.testTable")
         text = f.read()
     else:
-        pl = wikipedia.PageLink(mylang, article)
+        pl = wikipedia.PageLink(wikipedia.mylang, article)
         try:
             text = pl.get()
         except wikipedia.NoPage:
@@ -297,4 +297,5 @@ for article in articles:
 print "\tFollowing pages were corrected\n" + fixedSites
 print "\n\tFollowing pages had errors and were not corrected\n" + notFixedSites
                   
+
 
