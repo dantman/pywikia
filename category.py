@@ -29,9 +29,8 @@ and follow the on-screen instructions.
 #
 # Distribute under the terms of the PSF license.
 # 
-import re, sys, string
+import re, sys, string, pickle
 import wikipedia, config, interwiki
-import catlib
 
 # Summary messages
 msg_add={
@@ -108,7 +107,6 @@ def dump(filename):
     '''
     # this is currently only used by print_treeview(). We might want to add it
     # for others like the tidy bot.
-    import pickle
     f = open(filename, 'w')
     databases = {
         'catContentDB': catContentDB,
@@ -480,7 +478,6 @@ if __name__ == "__main__":
             elif arg == '-person':
                 sort_by_last_name = True
             elif arg == '-restore':
-                import pickle
                 f = open('cattree.dump', 'r')
                 databases = pickle.load(f)
                 f.close()
@@ -488,6 +485,8 @@ if __name__ == "__main__":
                 superclassDB = databases['superclassDB']
                 del databases
                 
+    # catlib needs to be imported at this position because its constructor uses
+    # wikipedia.mylang which might have been changed by wikipedia.argHandler().
     import catlib
     if action == 'add':
         add_category(sort_by_last_name)
