@@ -53,7 +53,7 @@ def ReadWarnfile(fn):
            for pl2 in pl.interwiki():
               old[pl2.code()] = pl2
         except wikipedia.IsRedirectPage:
-           print "%s is a redirect page; not changing" % pl.asasciilink()
+           wikipedia.output("%s is a redirect page; not changing" % pl.aslink())
            continue
         new={}
         new.update(old)
@@ -70,7 +70,7 @@ def ReadWarnfile(fn):
                 raise "Bug"
         mods, removing = interwiki.compareLanguages(old, new)
         if mods:
-            print pl.asasciilink(),mods
+            wikipedia.output(pl.aslink() + mods)
             oldtext = pl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if 1:
