@@ -1,4 +1,4 @@
-import family
+import family, config
     
 # The wikimedia family that is known as wikitravel
 
@@ -46,6 +46,9 @@ class Family(family.Family):
 
     def move_address(self, code):
         return '/%s/wiki/wiki.phtml?title=%s:Movepage&action=submit'%(code,special[code])
+
+    def version_history_address(self, code, name):
+        return '/w/wiki.phtml?title=%s&action=history&limit=%d' % (name, config.special_page_limit)
 
     def export_address(self, code):
         return '/%s/%s:Export'%(langs[code],special[code])

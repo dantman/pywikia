@@ -537,7 +537,7 @@ class PageLink(object):
             raise IsNotRedirectPage(self)
             
             
-    def getVersionHistory(self):
+    def getVersionHistory(self, force = False):
         """
         Loads the version history page and returns a list of tuples, where each
         tuple represents one edit and is built of edit date/time, user name, and edit
@@ -545,11 +545,13 @@ class PageLink(object):
         """
         site = self.site()
         host = site.hostname()
-        url = site.family.version_history_address('de', 'Test')#self.urlname())
-        
-        output(u'Getting version history of %s' % self.linkname())
-        txt, charset = getUrl(host, url, site)
-        
+        url = site.family.version_history_address(site, self.urlname())
+
+        if not hasattr(self, '_versionhistory') or force = True:
+            output(u'Getting version history of %s' % self.linkname())
+            txt, charset = getUrl(host, url, site)
+            self._versionhistory = txt
+            
         # regular expression matching one edit in the version history.
         # results will have 3 groups: edit date/time, user name, and edit
         # summary.
