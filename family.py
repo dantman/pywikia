@@ -400,9 +400,11 @@ class Family(object):
     def edit_address(self, code, name):
         return '%s?title=%s&action=edit' % (self.path(code), name)
 
+    def purge_address(self, code, name):
+        return '%s?title=%s&redirect=no&action=purge' % (self.path(code), name)
+
     def references_address(self, code, name):
         return '%s?title=%s:Whatlinkshere&target=%s&limit=%d' % (self.path(code), self.special_namespace_url(code), name, config.special_page_limit)
-        #return "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s&limit=%d" % (self.special_namespace_url(code), name, config.special_page_limit)
 
     def upload_address(self, code):
         return '%s?title=%s:Upload' % (self.path(code), self.special_namespace_url(code))

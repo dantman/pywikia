@@ -2056,7 +2056,7 @@ def Family(fam = None, fatal = True):
     if fam == None:
         fam = config.family
     try:
-        exec "import %s_family"%fam
+        exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
             print "Error importing the %s family. This probably means the family"%fam
@@ -2064,7 +2064,7 @@ def Family(fam = None, fatal = True):
             sys.exit(1)
         else:
             raise ValueError("Family does not exist")
-    return sys.modules['%s_family'%fam].Family()
+    return myfamily.Family()
 
 class Site(object):
     def __init__(self, code, fam=None, user=None):
@@ -2167,6 +2167,9 @@ class Site(object):
 
     def edit_address(self, s):
         return self.family.edit_address(self.lang, s)
+    
+    def purge_address(self, s):
+        return self.family.purge_address(self.lang, s)
     
     def checkCharset(self, charset):
         if not hasattr(self,'charset'):
