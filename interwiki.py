@@ -617,6 +617,9 @@ class SubjectArray:
                 group.append(subj)
                 if len(plgroup)>=globalvar.maxquerysize:
                     break
+        if len(plgroup) == 0:
+            print "NOTE: Nothing left to do 2"
+            return False
         # Get the content of the assembled list in one blow
         try:
             wikipedia.getall(code, plgroup)
