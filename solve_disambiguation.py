@@ -254,6 +254,69 @@ class ReferringPageGenerator:
             for refpl in someRefPls:
                 yield refpl
 
+class PrimaryIgnoreManager:
+    '''
+    If run with the -primary argument, reads from a file which pages should
+    not be worked on; these are the ones where the user pressed n last time.
+    If run without the -primary argument, doesn't ignore any pages.
+    '''
+    def __init__(self, disambPl, enabled = False):
+        self.disambPl = disambPl
+        self.enabled = enabled
+        
+        self.ignorelist = []
+        filename = 'disambiguations/' + self.disambPl.urlname() + '.txt'
+        try:
+            # The file is stored in the disambiguation/ subdir. Create if necessary.
+            f = open(self.makepath(filename), 'r')
+            for line in f.readlines():
+                # remove trailing newlines and carriage returns
+                while line[-1] in ['\n', '\r']:
+                    line = line[:-1]
+                #skip empty lines
+                if line != '':
+                    self.ignorelist.append(line)
+            f.close()
+        except IOError:
+            pass
+
+    def isIgnored(self, refpl):
+        return self.enabled and refpl.urlname() in self.ignorelist
+        
+    def ignore(self, refpl):
+        if self.enabled:
+            # Skip this occurence next time.
+            filename = 'disambiguations/' + self.disambPl.urlname() + '.txt'
+            try:
+                # Open file for appending. If none exists yet, create a new one.
+                # The file is stored in the disambiguation/ subdir. Create if necessary.
+                f = open(self.makepath(filename), 'a')
+                f.write(refpl.urlname() + '\n')
+                f.close()
+            except IOError:
+                pass
+
+    def makepath(self, path):
+        """ creates missing directories for the given path and
+            returns a normalized absolute version of the path.
+    
+        - if the given path already exists in the filesystem
+          the filesystem is not modified.
+    
+        - otherwise makepath creates directories along the given path
+          using the dirname() of the path. You may append
+          a '/' to the path if you want it to be a directory path.
+    
+        from holger@trillke.net 2002/03/18
+        """
+        from os import makedirs
+        from os.path import normpath,dirname,exists,abspath
+    
+        dpath = normpath(dirname(path))
+        if not exists(dpath): makedirs(dpath)
+        return normpath(abspath(path))
+    
+
 class DisambiguationRobot:
     def __init__(self, always, alternatives, getAlternatives, solve_redirect, page_list, primary, main_only):
         self.always = always
@@ -275,26 +338,6 @@ class DisambiguationRobot:
         self.alternatives = result.keys()
     
     
-    def makepath(self, path):
-        """ creates missing directories for the given path and
-            returns a normalized absolute version of the path.
-    
-        - if the given path already exists in the filesystem
-          the filesystem is not modified.
-    
-        - otherwise makepath creates directories along the given path
-          using the dirname() of the path. You may append
-          a '/' to the path if you want it to be a directory path.
-    
-        from holger@trillke.net 2002/03/18
-        """
-        from os import makedirs
-        from os.path import normpath,dirname,exists,abspath
-    
-        dpath = normpath(dirname(path))
-        if not exists(dpath): makedirs(dpath)
-        return normpath(abspath(path))
-    
     def listAlternatives(self):
             #########
         # The GUI for the list is disabled because it doesn't
@@ -310,12 +353,12 @@ class DisambiguationRobot:
         for i in range(len(self.alternatives)):
             wikipedia.output(u"%3d - %s" % (i, self.alternatives[i]))
     
-    def treat(self, refpl, thispl):
+    def treat(self, refpl, disambPl):
         """
         Parameters:
-            thispl - The disambiguation page or redirect we don't want anything
+            disambPl - The disambiguation page or redirect we don't want anything
                      to link on
-            refpl - A page linking to thispl
+            refpl - A page linking to disambPl
         Returns False if the user pressed q to completely quit the program.
         Otherwise, returns True.
         """
@@ -336,7 +379,7 @@ class DisambiguationRobot:
             text=refpl.get(throttle=False)
             include = True
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), thispl.linkname()))
+            wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), disambPl.linkname()))
             if self.solve_redirect:
                 choice = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
                 if choice2 == 'y':
@@ -347,12 +390,12 @@ class DisambiguationRobot:
                 if choice == 'y':
                     gen = ReferringPageGenerator(refpl)
                     for refpl2 in gen.generate():
-                        if not refpl2.urlname() in skip_primary:
+                        if self.primaryIgnoreManager.isIgnored(refpl2):
                             # run until the user selected 'quit'
-                            if not self.treat(refpl2, thispl):
+                            if not self.treat(refpl2, disambPl):
                                 break
                 elif choice == 'c':
-                    text="#%s [[%s]]"%(self.mysite.redirect(default=True), thispl.linkname())
+                    text="#%s [[%s]]"%(self.mysite.redirect(default=True), disambPl.linkname())
                     include = "redirect"
         if include in [True,"redirect"]:
             # make a backup of the original text so we can show the changes later
@@ -376,9 +419,9 @@ class DisambiguationRobot:
                 if wikipedia.isInterwikiLink(m.group(1)):
                     continue
                 else:
-                    linkpl=wikipedia.PageLink(thispl.site(), m.group(1))
-                # Check whether the link found is to thispl.
-                if linkpl != thispl:
+                    linkpl=wikipedia.PageLink(disambPl.site(), m.group(1))
+                # Check whether the link found is to disambPl.
+                if linkpl != disambPl:
                     continue
     
                 n += 1
@@ -431,15 +474,7 @@ class DisambiguationRobot:
                     # skip this page
                     if self.primary:
                         # If run with the -primary argument, skip this occurence next time.
-                        filename = 'disambiguations/' + thispl.urlname() + '.txt'
-                        try:
-                            # Open file for appending. If none exists yet, create a new one.
-                            # The file is stored in the disambiguation/ subdir. Create if necessary.
-                            f = open(self.makepath(filename), 'a')
-                            f.write(refpl.urlname() + '\n')
-                            f.close()
-                        except IOError:
-                            pass
+                        self.primaryIgnoreManager.ignore(refpl)
                     return True
                 elif choice=='q':
                     # quit the program
@@ -493,7 +528,7 @@ class DisambiguationRobot:
                         curpos -= 1
                         continue
                     new_page_title = self.alternatives[choice]
-                    reppl = wikipedia.PageLink(thispl.site(), new_page_title)
+                    reppl = wikipedia.PageLink(disambPl.site(), new_page_title)
                     new_page_title = reppl.linkname()
                     # There is a function that uncapitalizes the link target's first letter
                     # if the link description starts with a small letter. This is useful on
@@ -524,6 +559,7 @@ class DisambiguationRobot:
             refpl.put(text)
         return True
     
+    
     def run(self):
         if self.main_only:
             if ignore.has_key(self.mylang):
@@ -531,37 +567,20 @@ class DisambiguationRobot:
             else:
                 ignore[self.mylang] = self.mysite.namespaces()
     
-        for wrd in self.page_list:
+        for disambTitle in self.page_list:
             # when run with -redir argument, there's another summary message
             if self.solve_redirect:
-                wikipedia.setAction(wikipedia.translate(self.mysite,msg_redir) % wrd)
+                wikipedia.setAction(wikipedia.translate(self.mysite,msg_redir) % disambTitle)
             else:
-                wikipedia.setAction(wikipedia.translate(self.mysite,msg) % wrd)
+                wikipedia.setAction(wikipedia.translate(self.mysite,msg) % disambTitle)
     
-            thispl = wikipedia.PageLink(self.mysite, wrd)
-    
-            # If run with the -primary argument, read from a file which pages should
-            # not be worked on; these are the ones where the user pressed n last time.
-            # If run without the -primary argument, don't ignore any pages.
-            skip_primary = []
-            filename = 'disambiguations/' + thispl.urlname() + '.txt'
-            try:
-                # The file is stored in the disambiguation/ subdir. Create if necessary.
-                f = open(self.makepath(filename), 'r')
-                for line in f.readlines():
-                    # remove trailing newlines and carriage returns
-                    while line[-1] in ['\n', '\r']:
-                        line = line[:-1]
-                    #skip empty lines
-                    if line != '':
-                        skip_primary.append(line)
-                f.close()
-            except IOError:
-                pass
+            disambPl = wikipedia.PageLink(self.mysite, disambTitle)
+            
+            self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl, enabled = self.primary)
     
             if self.solve_redirect:
                 try:
-                    target = thispl.getRedirectTo()
+                    target = disambPl.getRedirectTo()
                     target = unicode(target, wikipedia.myencoding()) 
                     self.alternatives.append(target)
                 except wikipedia.NoPage:
@@ -577,10 +596,10 @@ class DisambiguationRobot:
             elif self.getAlternatives:
                 try:
                     if self.primary:
-                        disamb_pl = wikipedia.PageLink(self.mysite, primary_topic_format[self.mylang] % wrd)
+                        disamb_pl = wikipedia.PageLink(self.mysite, primary_topic_format[self.mylang] % disambTitle)
                         thistxt = disamb_pl.get(throttle=False)
                     else:
-                        thistxt = thispl.get(throttle=False)
+                        thistxt = disambPl.get(throttle=False)
                 except wikipedia.IsRedirectPage,arg:
                     thistxt = wikipedia.PageLink(self.mysite, str(arg)).get(throttle=False)
                 thistxt = wikipedia.removeLanguageLinks(thistxt)
@@ -596,11 +615,11 @@ class DisambiguationRobot:
             self.alternatives.sort()
             self.listAlternatives()
     
-            gen = ReferringPageGenerator(thispl)
+            gen = ReferringPageGenerator(disambPl)
             for refpl in gen.generate():
-                if not refpl.urlname() in skip_primary:
+                if not self.primaryIgnoreManager.isIgnored(refpl):
                     # run until the user selected 'quit'
-                    if not self.treat(refpl, thispl):
+                    if not self.treat(refpl, disambPl):
                         break
     
             # clear alternatives before working on next disambiguation page
