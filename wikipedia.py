@@ -344,6 +344,9 @@ class Throttle:
         self.ignore = ignore
         self.now = 0
 
+    def setDelay(self, delay = 6):
+        self.delay = delay
+        
     def __call__(self,newdelay=None):
         """This is called from getPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
@@ -538,7 +541,7 @@ def languages(first = []):
     for key in first:
         if key in langs.iterkeys():
             result.append(key)
-    for key in langs.iterkeys():
+    for key in seriouslangs:
         if key not in result:
             result.append(key)
     return result
@@ -805,6 +808,8 @@ def setMyLang(code):
 def argHandler(arg):
     if arg.startswith('-lang:'):
         setMyLang(arg[6:])
+    elif arg.startswith('-throttle:'):
+        throttle.setDelay(int(arg[10:]))
     else:
         return 0
     return 1
