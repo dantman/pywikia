@@ -432,7 +432,7 @@ class Subject:
         askit = askall
         for pl in self.done.keys():
             code = pl.code()
-            if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
+            if code == wikipedia.mylang:
                 pass
             elif pl.exists() and not pl.isRedirectPage():
                 if new.has_key(code):
