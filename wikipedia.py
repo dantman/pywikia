@@ -116,6 +116,7 @@ import difflib
 import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
 import warnings
+import datetime
 
 import config, mediawiki_messages
 import htmlentitydefs
@@ -1459,19 +1460,25 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         x = unicode(x, charset, errors = 'replace')
         return x
 
-def newpages(number=10, onlyonce=False, site=None, throttle=True):
+def newpages(number=10, onlyonce=False, site=None):
     """Generator which yields new articles subsequently.
        It starts with the article created 'number' articles
-       ago (first argument). When these are all yielded (as
-       PageLinks) it fetches NewPages again. If there is no
-       new page, it blocks until there is one, sleeping between
-       subsequent fetches of NewPages.
+       ago (first argument). When these are all yielded
+       it fetches NewPages again. If there is no new page,
+       it blocks until there is one, sleeping between subsequent
+       fetches of NewPages.
 
-       NOT FINISHED
+       The objects yielded are dictionairies. The keys are
+       date (datetime object), title (pagelink), length (int)
+       user_login (only if user is logged in, string), comment
+       (string) and user_anon (if user is not logged in, string).
+
+       The throttling is important here, so always enabled.
     """
-    raise NotImplementedError, "this function is not finished yet, do not use"
+    throttle = True
     if site is None:
         site = getSite()
+    seen = set()
     while True:
         returned_html = getPage(site, site.newpagesname(number), do_quote=False, get_edit_page=False, throttle=throttle)
         start = "<ol start='1' class='special'>"
@@ -1480,15 +1487,49 @@ def newpages(number=10, onlyonce=False, site=None, throttle=True):
         endpos = startpos + returned_html[startpos:].index(end)
         relevant = returned_html[startpos:endpos]
         lines = [line.strip() for line in relevant.strip().split('\n')][::-1]
+
+        ds = {
+            "date": ("<li>", "<a href="),
+            "title": ('title="', '">'),
+            "length": ("</a> (", " bytes"),
+            "user_login": ('">', "</a>"),
+            "comment": ("em>","</em>"),
+            "user_anon": (" . . ", " <", "</li>"),
+            }
+
+        all = [["date"], ["title"], ["length"], ["user_login", "user_anon"], ["comment"]]
         for line in lines:
-            # get date, pagelink, size, user, comment
-            print line
+            d = {}
+
+            start = 0
+            for info in all:
+                for subinfo in info:
+                    try:
+                        start = start + line[start:].index(ds[subinfo][0]) + len(ds[subinfo][0])
+                    except ValueError:
+                        continue
+                    try:
+                        end = start + line[start:].index(ds[subinfo][1])
+                    except ValueError:
+                        end = start + line[start:].index(ds[subinfo][2]) # ugly, IndexError thus means ValueError
+                    d[subinfo] = line[start:end]
+                    break
+            if d["title"] in seen:
+##                print "DEBUG: already seen %r" % d["title"]
+                continue
+            else:
+                seen.add(d["title"])
+                dtt = time.strptime(d["date"].strip(), "%H:%M, %d %b %Y")
+                d["date"] = datetime.datetime.fromtimestamp(time.mktime(dtt))
+                d["length"] = int(d["length"])
+                d["title"] = PageLink(site, d["title"])
+                yield d
         if onlyonce:
             break
-        # get new batch: make sure they overlap and start with the newest
-        # if they don't overlap, refetch with more articles
-        # if the overlay = 100%: wait a while and try again
-        return
+        else:
+##            print "DEBUG: seen'm all, restart..."
+            pass
+        # FIXME: if they don't overlap, refetch with more articles
 
 def allpages(start = '!', site = None, throttle = True):
     """Generator which yields all articles in the home language in
