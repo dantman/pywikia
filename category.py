@@ -53,8 +53,8 @@ def add_category():
         pagenames = wikipedia.getReferences(pl)
     print "  ==> %d pages to process"%len(pagenames)
     print
-    newcat = wikipedia.input('Category to add (do not give namespace) : ')
-    newcat = unicode(newcat, config.console_encoding)
+    newcat = wikipedia.input('Category to add (do not give namespace) : ', encode = True)
+    newcat = newcat
     newcat = newcat.encode(wikipedia.code2encoding(wikipedia.mylang))
     newcat = newcat[:1].capitalize() + newcat[1:]
 
