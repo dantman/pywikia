@@ -24,6 +24,7 @@ langs = {'en':'www.wikipedia.org',
          'ko':'ko.wikipedia.org',
          'hu':'hu.wikipedia.org',
          'el':'el.wikipedia.org',
+         'bs':'bs.wikipedia.org',
          'it':'it.wikipedia.com',
          'no':'no.wikipedia.com',
          'pt':'pt.wikipedia.com',
@@ -146,7 +147,7 @@ def getPage(code, name, do_edit=1, do_quote=1):
         name = re.sub('_', ' ', name)
         n=[]
         for x in name.split():
-            n.append(x.capitalize())
+            n.append(x[0].capitalize()+x[1:])
         name='_'.join(n)
         #print name
     else:
@@ -216,7 +217,7 @@ def getPage(code, name, do_edit=1, do_quote=1):
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
         x,l=decode_func(x)
         # Convert the unicode characters to &# references, and make it ascii.
-        x=str(UnicodeToHtml(x))
+        x=str(UnicodeToAsciiHtml(x))
     return x
 
 def languages(first=[]):
@@ -231,6 +232,7 @@ def languages(first=[]):
     return result
 
 def allnlpages(start='%20%200'):
+    import sys
     start=link2url(start)
     m=0
     while 1:
@@ -291,30 +293,40 @@ def interwikiFormat(links):
         s = s + '[[%s:%s]]'%(code, links[code])
     return s+'\r\n'
 
-def url2link(percentname,into='latin1'):
+def code2encoding(code):
+    if code=='ru':
+        return 'iso-8859-5'
+    if code=='pl':
+        return 'iso-8859-2'
+    if code in ['meta','eo','ja','zh']:
+        return 'utf-8'
+    return 'iso-8859-1'
+    
+def url2link(percentname,into='latin1',code='nl'):
     """Convert a url-name of a page into a proper name for an interwiki link
        the optional argument 'into' specifies the encoding of the target wikipedia
        """
     result=underline2space(percentname)
-    x=url2unicode(result)
-    if into=='latin1':
-        return unicode2latin1(x)
-    else:
-        raise "Unknown encoding"
+    x=url2unicode(result,encoding=code2encoding(code))
+    return unicode2html(x,encoding=into)
     
-def link2url(name):
+def link2url(name,code='nl',incode='nl'):
     """Convert a interwiki link name of a page to the proper name to be used
-       in a URL for that page"""
+       in a URL for that page. code should specify the language for the link,
+       incode the language of the page the link is in."""
     import urllib
     name=name[0].upper()+name[1:]
     name=name.strip()
     if '%' in name:
-        name=url2unicode(name)
+        name=url2unicode(name,encoding=code2encoding(code))
     else:
         import urllib
-        name=html2unicode(name)
+        name=html2unicode(name,encoding=code2encoding(code),
+                          inencoding=code2encoding(incode))
     try:
+        #print "Trying to encode into latin1"
         result=str(name.encode('latin1'))
+        #print "Result=",result
     except UnicodeError:
         result=str(name.encode('utf-8'))
     result=space2underline(result)
@@ -322,7 +334,7 @@ def link2url(name):
 
 ######## Unicode library functions ########
 
-def UnicodeToHtml(s):
+def UnicodeToAsciiHtml(s):
     html=[]
     i=0
     for c in s:
@@ -335,26 +347,28 @@ def UnicodeToHtml(s):
     #print
     return ''.join(html)
 
-def url2unicode(percentname):
+def url2unicode(percentname,encoding='iso-8859-1'):
     x=urllib.unquote(percentname)
     try:
         # Try to interpret the result as utf-8?
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('utf-8')
         x,l=decode_func(x)
     except UnicodeError:
-        # Apparently it was latin1?
-        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('latin1')
+        # Apparently it was another encoding?
+        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
         x,l=decode_func(x)
     return x
 
-def unicode2latin1(x):
-    # We have a unicode string. We can attempt to make it latin1, and
-    # if that doesn't work, we encode the unicode into html # entities.
+def unicode2html(x,encoding='latin1'):
+    # We have a unicode string. We can attempt to encode it into the desired
+    # format, and if that doesn't work, we encode the unicode into html #
+    # entities.
     try:
-        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('latin1')
+        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
         x,l=encode_func(x)
+        #print "unicode2html",x
     except UnicodeError:
-        x=UnicodeToHtml(x)
+        x=UnicodeToAsciiHtml(x)
     return str(x)
     
 def removeEntity(name):
@@ -376,11 +390,14 @@ def removeEntity(name):
             i=i+1
     return result
 
-def html2unicode(name):
+def html2unicode(name,encoding='latin1',inencoding='latin1'):
     name=removeEntity(name)
     import re
     if not '&#' in name:
-        return unicode(name,'latin1')
+        try:
+            return unicode(name,encoding)
+        except UnicodeError:
+            return unicode(name,inencoding)
     Runi=re.compile('&#(\d+);')
     result=u''
     i=0

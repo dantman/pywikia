@@ -157,7 +157,32 @@ def treestep(arr,code,name,abort_on_redirect=0):
         # Recognize and standardize for Wikipedia
         newname=newname[0].upper()+newname[1:]
         newname=newname.strip()
-        newname=wikipedia.link2url(newname)
+        newname=wikipedia.link2url(newname,code=newcode,incode=code)
+        #if newcode=='pl':
+            #print "PL!!!!!"
+            #print newname
+            #newname=newname.replace('%B1','%C4%85')
+            #newname=newname.replace('%B3','%C5%82')
+            #newname=newname.replace('%BF','%C5%BC')
+            #newname=newname.replace('%F1','%C5%84')
+            #newname=newname.replace('%F3','%C3%B3')
+        if newcode=='eo':
+            #print "EO!!!!!"
+            #print newname
+            newname=newname.replace('%C5%AD','ux')
+            newname=newname.replace('%C4%88','cx')
+            newname=newname.replace('%C4%9D','gx')
+        #if newcode=='ru':
+            #print "RU!!!!!"
+            #print newname
+            #newname=newname.replace('%CF','%D0%9F')
+            #newname=newname.replace('%F0','%D1%80')
+            #newname=newname.replace('%E8','%D0%B8')
+            #newname=newname.replace('%EA','%D0%BA')
+            #newname=newname.replace('%E1','%D0%B1')
+            #newname=newname.replace('%E0','%D0%B0')
+            #newname=newname.replace('%EB','%D0%BB')
+            #newname=newname.replace('%F2','%D1%82')
         if not (newcode,newname) in arr:
             lname=wikipedia.url2link(newname)
             print "NOTE: from %s:%s we got the new %s:%s"%(code,name,newcode,lname)
@@ -208,6 +233,7 @@ for arg in sys.argv[1:]:
         confirm=1
     elif arg=='-autonomous':
         autonomous=1
+        bell=0
     else:
         inname.append(arg)
     
@@ -230,7 +256,8 @@ for code,cname in k:
         pass
     elif m[(code,cname)]:
         print "%s:%s"%(code,wikipedia.url2link(cname))
-        if new.has_key(code):
+        if new.has_key(code) and repr(new[code])!=repr(wikipedia.url2link(cname)):
+            print repr(new[code]),repr(wikipedia.url2link(cname))
             print "ERROR: %s has '%s' as well as '%s'"%(code,new[code],wikipedia.url2link(cname))
             while 1:
                 if bell:
@@ -267,7 +294,7 @@ s=wikipedia.interwikiFormat(new)
 s2=wikipedia.removeLanguageLinks(oldtext)
 newtext=s+s2
 if debug:
-    if 1:
+    if not autonomous:
         f=open('/tmp/wik.in','w')
         f.write(oldtext)
         f.close()

@@ -4,7 +4,7 @@
 # (C) Rob W.W. Hooft, 2003
 # Distribute under the terms of the GPL.
 
-import sys,wikipedia
+import re,sys,wikipedia
 if 0:
     wikipedia.langs={'test':'test.wikipedia.org'}
 
@@ -13,5 +13,14 @@ if 0:
     status,reason,data=wikipedia.putPage('test','Robottest',text)
     print status,reason
 
-wikipedia.getPage('it','Testimoni di Geova')
+if 0:
+    wikipedia.getPage('pt','HTTP')
 
+x1='\xb1\xb3\xbf'
+import codecs
+encode_func, decode_func, stream_reader, stream_writer = codecs.lookup('iso-8859-2')
+x2,l=decode_func(x1)
+print repr(x2)
+
+u2=wikipedia.link2url(x1,'pl')
+print u2
