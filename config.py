@@ -56,8 +56,6 @@ deIndentTables = True
 # table2wiki.py works quite stable, so you might switch to True
 table2wikiAskOnlyWarnings = True
 table2wikiSkipWarnings = False
-# guess what. Very useful in table2wiki.py
-DEBUG = False
 
 # Should treelang report warnings for missing links between foreign
 # languages?

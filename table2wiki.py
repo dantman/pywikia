@@ -91,7 +91,7 @@ for arg in sys.argv[1:]:
         quietMode = True
     elif arg.startswith('-debug'):
         articles = "test"
-        config.DEBUG = True
+        debug = True
     else:
         page_title.append(arg)
 
@@ -109,7 +109,7 @@ if action == 'parse_sqldump':
             articles.append(page.title)
         
 for article in articles:
-    if config.DEBUG:
+    if debug:
         f = open("table2wiki.testTable")
         text = f.read()
     else:
@@ -330,7 +330,7 @@ for article in articles:
     ##################
     if newText!=text:
         import difflib
-        if config.DEBUG:
+        if debug:
             print text
             print newText
         elif not quietMode:
