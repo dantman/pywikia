@@ -167,9 +167,9 @@ class Family(family.Family):
     # On most Wikipedias page names must start with a capital letter, but some
     # languages don't use this.
         
-    nocapitalize = ['cs', 'de', 'es', 'fa', 'fr', 'gu', 'hi',
-                    'it', 'ja', 'ka', 'kn', 'ku', 'nl', 'sa',
-                    'sq', 'sv', 'tlh','tokipona', 'tr']
+    nocapitalize = ['cs', 'de', 'es', 'fa', 'fr', 'gu', 'hi', 'hr',
+                    'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl', 'sa',
+                    'sq', 'sv', 'sw', 'tlh','tokipona', 'tr']
 
     # Which languages have a special order for putting interlanguage links,
     # and what order is it? If a language is not in interwiki_putfirst,
