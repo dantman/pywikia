@@ -48,6 +48,8 @@ def translate(pl, arr, same = False, hints = None):
         for h in hints:
             codes, newname = h.split(':', 1)
             if codes == 'all':
+                codes = wikipedia.seriouslangs
+            elif codes == 'main':
                 codes = wikipedia.biglangs
             else:
                 codes = codes.split(',')
