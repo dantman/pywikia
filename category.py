@@ -8,7 +8,7 @@ Syntax: python category.py action [-option]
 where action can be one of these:
  * add    - mass-add a category to a list of pages
  * remove - remove category tag from all pages in a category
- * rename - move all pages in a category to another category
+ * move - move all pages in a category to another category
  * tidy   - tidy up a category by moving its articles into subcategories
  * tree   - show a tree of subcategories of a given category
 
@@ -58,7 +58,7 @@ msg_change={
     'pt':u'Bot: Modificando [[Categoria:%s]]',
     }
 
-deletion_reason_rename = {
+deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach %s verschoben',
     'en':u'Robot: Category was moved to %s',
     }
@@ -241,30 +241,36 @@ def add_category(sort_by_last_name = False):
                     text = wikipedia.replaceCategoryLinks(text, cats)
                     pl2.put(text)
 
-def rename_category(old_cat_title, new_cat_title):
-    old_cat = catlib.CatLink(wikipedia.getSite(), old_cat_title)
-    
-    # get edit summary message
-    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % old_cat_title)
-    
-    articles = old_cat.articles(recurse = 0)
-    if len(articles) == 0:
-        wikipedia.output(u'There are no articles in category ' + old_cat_title)
-    else:
-        for article in articles:
-            catlib.change_category(article, old_cat_title, new_cat_title)
-    
-    subcategories = old_cat.subcategories(recurse = 0)
-    if len(subcategories) == 0:
-        wikipedia.output(u'There are no subcategories in category ' + old_cat_title)
-    else:
-        for subcategory in subcategories:
-            catlib.change_category(subcategory, old_cat_title, new_cat_title)
-    # TODO: only try to delete if bot has admin status
-    if old_cat.copyTo(new_cat_title):
-        if old_cat.isEmpty():
-            reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_rename) % new_cat_title
-            old_cat.delete(reason)
+class CategoryMoveRobot:
+    def __init__(self, oldCatTitle, newCatTitle):
+        self.oldCatTitle = oldCatTitle
+        self.newCatTitle = newCatTitle
+        # get edit summary message
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % oldCatTitle)
+
+    def run(self):
+        old_cat = catlib.CatLink(wikipedia.getSite(), self.oldCatTitle)
+        articles = old_cat.articles(recurse = 0)
+        if len(articles) == 0:
+            wikipedia.output(u'There are no articles in category ' + self.oldCatTitle)
+        else:
+            for article in articles:
+                catlib.change_category(article, self.oldCatTitle, self.newCatTitle)
+        
+        subcategories = old_cat.subcategories(recurse = 0)
+        if len(subcategories) == 0:
+            wikipedia.output(u'There are no subcategories in category ' + self.oldCatTitle)
+        else:
+            for subcategory in subcategories:
+                catlib.change_category(subcategory, self.oldCatTitle, self.newCatTitle)
+        # try to copy page contents to new cat page
+        if old_cat.copyTo(newCatTitle):
+            if old_cat.isEmpty():
+                reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % newCatTitle
+                # TODO: only try to delete if bot has admin status
+                old_cat.delete(reason)
+            else:
+                wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCatTitle, self.newCatTitle))
 
 class CategoryRemoveRobot:
     '''
@@ -552,8 +558,8 @@ if __name__ == "__main__":
                     action = 'add'
                 elif arg == 'remove':
                     action = 'remove'
-                elif arg == 'rename':
-                    action = 'rename'
+                elif arg == 'move':
+                    action = 'move'
                 elif arg == 'tidy':
                     action = 'tidy'
                 elif arg == 'tree':
@@ -573,10 +579,11 @@ if __name__ == "__main__":
             catTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
             bot = CategoryRemoveRobot(catTitle)
             bot.run()
-        elif action == 'rename':
-            old_cat_title = wikipedia.input(u'Please enter the old name of the category:')
-            new_cat_title = wikipedia.input(u'Please enter the new name of the category:')
-            rename_category(old_cat_title, new_cat_title)
+        elif action == 'move':
+            oldCatTitle = wikipedia.input(u'Please enter the old name of the category:')
+            newCatTitle = wikipedia.input(u'Please enter the new name of the category:')
+            bot = CategoryMoveRobot(oldCatTitle, newCatTitle)
+            bot.run()
         elif action == 'tidy':
             cat_title = wikipedia.input(u'Which category do you want to tidy up?')
             tidy_category(catTitle)
