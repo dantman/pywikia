@@ -243,7 +243,7 @@ def getReferences(pl):
         for Rignore in ignore_regexes:
             for i in range(len(x)-1, -1, -1):
                 if Rignore.match(x[i]):
-                    wikipedia.output('Ignoring page ' + x[i], wikipedia.myencoding())
+                    wikipedia.output(u'Ignoring page ' + x[i], wikipedia.myencoding())
                     del x[i]
     return x
 
@@ -305,7 +305,7 @@ for arg in sys.argv[1:]:
         if len(arg) == 5:
             # todo: check for console encoding to allow special characters
             # in filenames, as done below with pagename
-            file = wikipedia.input('Please enter the list\'s filename:')
+            file = wikipedia.input(u'Please enter the list\'s filename:')
         else:
             file = arg[6:]
         # open file and read page titles out of it
@@ -321,7 +321,7 @@ for arg in sys.argv[1:]:
                 alternatives.append(pl.linkname())
             else:
                 print "Possibility does not actually exist:",pl
-                answer = wikipedia.input('Use it anyway? [y|N]')
+                answer = wikipedia.input(u'Use it anyway? [y|N]')
                 if answer in ('Y', 'y'):
                     alternatives.append(pl.linkname())
         else:
@@ -342,7 +342,7 @@ if page_title != []:
 # if no disambiguation pages was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
-    pagename = wikipedia.input('Which page to check:')
+    pagename = wikipedia.input(u'Which page to check:')
     page_list.append(pagename)
 
 for wrd in (page_list):
@@ -380,7 +380,7 @@ for wrd in (page_list):
             alternatives.append(target)
         except wikipedia.NoPage:
             print "The specified page was not found."
-            user_input = wikipedia.input("Please enter the name of the page where the redirect should have pointed at, or press enter to quit:")
+            user_input = wikipedia.input(u"Please enter the name of the page where the redirect should have pointed at, or press enter to quit:")
             if user_input == "":
                 sys.exit(1)
             else:
@@ -410,13 +410,13 @@ for wrd in (page_list):
 
     # print choices on screen
     for i in range(len(alternatives)):
-        wikipedia.output("%3d - %s" % (i, alternatives[i]))
+        wikipedia.output(u"%3d - %s" % (i, alternatives[i]))
     def treat(refpl, thispl):
         try:
             reftxt=refpl.get()
         except wikipedia.IsRedirectPage:
-            wikipedia.output('%s is a redirect to %s' % (refpl.linkname(), thispl.linkname()))
-            choice = wikipedia.input('Do you want to work on pages linking to %s? [y|N]' % refpl.linkname())
+            wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), thispl.linkname()))
+            choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N]' % refpl.linkname())
             if choice == 'y':
                 for ref_redir in getReferences(refpl):
                     refpl_redir=wikipedia.PageLink(wikipedia.mylang, ref_redir)
@@ -429,7 +429,7 @@ for wrd in (page_list):
                 m=linkR.search(reftxt, pos = curpos)
                 if not m:
                     if n == 0:
-                        wikipedia.output("Not found in %s:%s" % (refpl.code(), refpl.linkname()))
+                        wikipedia.output(u"Not found in %s:%s" % (refpl.code(), refpl.linkname()))
                     elif not debug:
                         refpl.put(reftxt)
                     return True
@@ -450,14 +450,14 @@ for wrd in (page_list):
                 context = 30
                 while 1:
                     print '\n'
-                    wikipedia.output("== %s ==" % refpl.linkname())
+                    wikipedia.output(u"== %s ==" % refpl.linkname())
                     wikipedia.output(reftxt[max(0,m.start()-context):m.end()+context])
                     if always == None:
                         if edited:
-                            choice=wikipedia.input("Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                            choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
                                                "        q=quit, m=more context, l=list, a=add new, x=save in this form):")
                         else:
-                            choice=wikipedia.input("Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                            choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
                                                "        q=quit, m=more context, l=list, a=add new):")
                     else:
                         choice=always
@@ -481,7 +481,7 @@ for wrd in (page_list):
                         choice=-2
                         break
                     elif choice=='a':
-                        ns=wikipedia.input('New alternative:')
+                        ns=wikipedia.input(u'New alternative:')
                         alternatives.append(ns)
                     elif choice=='q':
                         return False
