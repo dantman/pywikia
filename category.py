@@ -420,6 +420,7 @@ def treeview(cat, max_depth, current_depth = 0, parent = None):
         'de': u'(auch in %s)',
         'en': u'(also in %s)',
         'is': u'(einnig í %s)',
+        'pt': u'(também em %s)',
         }
         
     result = u''
