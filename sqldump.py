@@ -90,15 +90,15 @@ class SQLdump:
                          + "'(\d+)',"    # cur_timestamp
                          + "'(.*?)',"    # cur_restrictions   (protected page?)
                          + "(\d+),"      # cur_counter        (view counter, disabled on WP)
-                         + "(\d+),"      # cur_is_redirect
-                         + "(\d+),"      # cur_minor_edit
-                         + "(\d+),"      # cur_is_new
+                         + "(\d),"      # cur_is_redirect
+                         + "(\d),"      # cur_minor_edit
+                         + "(\d),"      # cur_is_new
                          + "([\d\.]+?)," # cur_random         (for random page function)
                          + "'(\d+)',"    # inverse_timestamp  (obsolete)
                          + "'(\d+)'\)")  # cur_touched        (cache update timestamp)
         print 'Reading SQL dump'
         import codecs
-        f=codecs.open(self.filename, 'r', encoding = self.encoding)
+        f=codecs.open(self.filename, 'r', encoding = self.encoding, errors='replace')
         while True:
             # read only one (very long) line because we would risk out of memory
             # errors if we read the entire file at once
