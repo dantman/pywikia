@@ -382,9 +382,7 @@ def putPage(code, name, text, comment = None):
     if not loggedin or code != mylang:
         comment = username + ' - ' + comment
     try:
-        if type(text) == type(u''):
-            encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(code2encoding(code))
-            text,l = encode_func(text)
+        text = forCode(text, code)
         data = urlencode((
             ('wpSummary', comment),
             ('wpMinoredit', '1'),
@@ -415,6 +413,17 @@ def putPage(code, name, text, comment = None):
     data = response.read()
     conn.close()
     return response.status, response.reason, data
+
+def forCode(text, code):
+    """Prepare the unicode string 'text' for inclusion into a page for
+       language 'code'. All of the characters in the text should be encodable,
+       otherwise this will fail! This condition is normally met, except if
+       you would copy text verbatim from an UTF-8 language into a iso-8859-1
+       language, and none of the robots in the package should do such things"""
+    if type(text) == type(u''):
+        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(code2encoding(code))
+        text,l = encode_func(text)
+    return text
 
 class MyURLopener(urllib.FancyURLopener):
     version="RobHooftWikiRobot/1.0"
