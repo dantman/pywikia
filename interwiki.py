@@ -366,16 +366,17 @@ class Subject:
             sys.stdout.write('\07')
         self.problemfound = True
         if globalvar.autonomous:
-            f=open('autonomous_problem.dat', 'a')
-            f.write("%s {%s}\n" % (self.inpl.asasciilink(), txt))
+            import codecs
+            f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
+            f.write("%s {%s}\n" % (self.inpl.aslink(), txt))
             f.close()
 
     def whereReport(self, pl, indent=4):
         for pl2 in self.foundin[pl]:
             if pl2 is None:
-                print " "*indent, "Given as a hint."
+                wikipedia.output(" "*indent + "Given as a hint.")
             else:
-                print " "*indent, pl2.asasciilink()
+                wikipedia.output(" "*indent + pl2.aslink())
 
     def assemble(self):
         # No errors have been seen so far
@@ -627,7 +628,7 @@ class SubjectArray:
     def dump(self, fn):
         f = open(fn, 'w')
         for subj in self.subjects:
-            f.write(subj.pl().asasciilink()+'\n')
+            f.write(subj.pl().aslink()+'\n')
         f.close()
         
     def generateMore(self, number):
