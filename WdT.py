@@ -1,7 +1,16 @@
 # -*- coding: utf-8  -*-
 """
-(C) 2003 Thomas R. Koll, <tomk32@tomk32.de>
+(C) 2004 Thomas R. Koll, <tomk32@tomk32.de>
  Distribute under the terms of the PSF license.
+
+This bot consists of WdT.py and WdTXMLpaser.py and
+imports XML-files into Wikipedia.
+The XML-file contains the an automatic generated list
+of the most significant word in current events
+which the bot use as article-links and compare to
+a local list of all articles. Only the not-yet-written
+articles will be saved on wikipedia.
+
 """
 
 __version__='$Id$'
@@ -36,7 +45,7 @@ parser.setContentHandler(ch)
 
 # first we get the XML-File
 for file in XMLfiles:
-    print "getting: " + file,
+    print "\ngetting: " + file,
     parser.parse(host + file)
     data = ch.result
     print " parsing..."
@@ -45,30 +54,27 @@ for file in XMLfiles:
 
     # and make a result text for wikipedia
     skip = []
-    for a in data:
-        if localArticleList != "":
-            import string
+    if localArticleList != "":
+        import string
+        for a in data:
+            print "\nchecking: " + a,
             for line in fileinput.input(localArticleList):
-                try:
-                    if unicode(string.strip(line)) == a:
-                        skip.append(a)
-                        print "skipping: " + a
-                        break
-                except:
-                    pass
+                if unicode(string.strip(line),"iso-8859-1") == a:
+                    skip.append(a)
+                    print "..,skipping ",
+                    break
             fileinput.close()
     for a in skip:
         del data[a]
-    print data
+    if DEBUG >= 2:
+        print data
 
     if data:
         newText = newText + "\n* '''" +  XMLfiles[file] + ":''' \n"
     for a in data:
-        if DEBUG:
-            print "checking: " + a
         newText = newText + "[[" + a + "]] ([" + \
                   data[a]['link'] + ' ' + data[a]['count'] + ']) \n'
-    if DEBUG:
+    if DEBUG >= 2:
         print newText
 
 pl = wikipedia.PageLink(wikipedia.mylang, article)
