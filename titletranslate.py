@@ -42,9 +42,10 @@ def translate(pl, arr, same = False, hints = None):
             else:
                 codes = codes.split(',')
             for newcode in codes:
-                x = wikipedia.PageLink(newcode, newname)
-                if x not in arr:
-                    arr[x] = None
+                if newcode <> wikipedia.mylang:
+                    x = wikipedia.PageLink(newcode, newname)
+                    if x not in arr:
+                        arr[x] = None
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
     if date.datetable.has_key(wikipedia.mylang):
