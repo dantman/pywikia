@@ -42,13 +42,15 @@ langs = {'en':'www.wikipedia.org', # English
          'eu':'eu.wikipedia.org', # Basque
          'hr':'hr.wikipedia.org', # Croatian
          'tr':'tr.wikipedia.org', # Turkish
+         'mr':'mr.wikipedia.org', # ?
+         'ar':'ar.wikipedia.org', # Arabic
          'zh-tw':'zh.wikipedia.org', # Traditional Chinese
          'zh-cn':'zh.wikipedia.org', # Simplified Chinese
-         #'simple':'simple.wikipedia.org', # Simplified english
+         'simple':'simple.wikipedia.org', # Simplified english
          #'test':'test.wikipedia.org',
          }
 
-oldsoftware=['it','no','pt','af','fy','la','ca','fi','ia','et','eu','simple','nds']
+oldsoftware=['it','no','pt','af','fy','la','ca','fi','ia','et','eu','simple','nds','mr']
 
 biglangs=['en','pl','da','sv','nl','de','fr','es']
 
@@ -60,6 +62,14 @@ charsets = {}
 try:
     f=open('username.dat')
     username=f.readline()[:-1]
+    try:
+        mylang=f.readline()[:-1]
+    except IOError:
+        print "Defaulting to nl: wikipedia"
+        mylang='nl'
+    if not langs.has_key(mylang):
+        print "Defaulting to nl: wikipedia"
+        mylang='nl'
     f.close()
 except IOError:
     print >> sys.stderr, "Please make a file username.dat with your name in there"
