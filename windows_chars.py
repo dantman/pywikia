@@ -26,14 +26,15 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.3 2004/05/23 18:13:52 a_engels Exp $'
+__version__='$Id: windows_chars.py,v 1.4 2004/06/13 00:37:45 wikipedian Exp $'
 #
-import wikipedia,re,sys,string
+import wikipedia, config
+import re,sys
 
 # Summary message
 msg={
     'en':'robot: changing Windows-1252 characters to HTML entities',
-    'de':'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
+    'de':'Bot: Wandle Windows-1252-Zeichen in HTML-Entitï¿½ten um',
     }
 
 def getReferences(pl):
@@ -47,6 +48,7 @@ page_list = []
 page_title = []
 
 for arg in sys.argv[1:]:
+    arg = unicode(arg, config.console_encoding)
     if wikipedia.argHandler(arg):
         pass
     elif arg.startswith('-file'):
@@ -95,7 +97,7 @@ def treat(pl):
         count = 0
         for char in [u"\x80",         u"\x82", u"\x83", u"\x84", u"\x85", u"\x86", u"\x87", u"\x88", u"\x89", u"\x8A", u"\x8B", u"\x8C",      u"\x8E",
                              u"\x91", u"\x92", u"\x93", u"\x94", u"\x95", u"\x96", u"\x97", u"\x98", u"\x99", u"\x9A", u"\x9B", u"\x9C",      u"\x9E", u"\x9F"]:
-            count += string.count(reftxt, char)
+            count += reftxt.count(char)
         
         print str(count) + " Windows-1252 characters were found."
         if count == 0:

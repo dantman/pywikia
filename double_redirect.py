@@ -42,7 +42,7 @@ def fixDoubleRedirects():
             target = str(redir.getRedirectTo())
             second_redir = wikipedia.PageLink(wikipedia.mylang, target)
             second_target = str(second_redir.getRedirectTo())
-        except wikipedia.IsNotRedirectPage, wikipedia.NoPage:
+        except (wikipedia.IsNotRedirectPage, wikipedia.NoPage):
             print 'The specified page is not a double redirect.\n'
             continue
         txt = "#REDIRECT [[%s]]" % second_target

@@ -44,12 +44,12 @@ boilerplate_names = []
 resolve = False
 # read command line parameters
 for arg in sys.argv[1:]:
+    arg = unicode(arg, config.console_encoding)
     if wikipedia.argHandler(arg):
         pass
     elif arg == '-oldformat':
         oldformat = True
     else:
-        arg = unicode(arg, config.console_encoding)
         boilerplate_names.append(arg)
 
 if boilerplate_names == []:
