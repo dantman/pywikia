@@ -98,6 +98,7 @@ stopme(): Put this on a bot when it is not or not any more communicating
     and thus not slow down other bot threads any more.
 
 """
+from __future__ import generators
 #
 # (C) Rob W.W. Hooft, Andre Engels, 2003-2004
 #
@@ -105,7 +106,6 @@ stopme(): Put this on a bot when it is not or not any more communicating
 #
 __version__ = '$Id$'
 #
-from __future__ import generators
 import os
 import httplib
 import socket
