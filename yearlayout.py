@@ -7,7 +7,7 @@
 import os,sys,re,wikipedia
 
 # Summary used in the modification request
-wikipedia.setAction('Rob Hooft: automatic year reformatting')
+wikipedia.setAction('%s: automatic year reformatting'%wikipedia.username)
 
 debug=0
 if debug:
