@@ -1,4 +1,4 @@
-# The wikimedia family that is known as wikipedia, the encyclopedia
+                                 # The wikimedia family that is known as wikipedia, the encyclopedia
 
 # Known wikipedia languages, given as a dictionary mapping the language code
 # to the hostname of the site hosting that wikipedia. For human consumption,
@@ -9,11 +9,13 @@ langs = {
     'als':'als.wikipedia.org', # Alsatian
     'ar':'ar.wikipedia.org',   # Arabic
     'az':'az.wikipedia.org',   # Azerbaijan
+    'be':'be.wikipedia.org',   # Belorussian
     'bg':'bg.wikipedia.org',   # Bulgarian
     'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
     'bn':'bn.wikipedia.org',   # Bengali
     'bs':'bs.wikipedia.org',   # Bosnian
     'ca':'ca.wikipedia.org',   # Catalan
+    'chr':'chr.wikipedia.org'  # Cherokee
     'co':'co.wikipedia.org',   # Corsican
     'cs':'cs.wikipedia.org',   # Czech
     'csb':'csb.wikipedia.org', # Kashubian
@@ -72,6 +74,7 @@ langs = {
     'pl':'pl.wikipedia.org',   # Polish
     'pt':'pt.wikipedia.org',   # Portuguese
     'ro':'ro.wikipedia.org',   # Romanian
+    'roa-rup':'roa-rup.wikipedia.org' # Aromanian
     'ru':'ru.wikipedia.org',   # Russian
     'sa':'sa.wikipedia.org',   # Sanskrit
     'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
@@ -89,6 +92,7 @@ langs = {
     'test':'test.wikipedia.org',
     'th':'th.wikipedia.org',   # Thai
     'tl':'tl.wikipedia.org',   # Tagalog
+    'tlh':'tlh.wikipedia.org', # Klingon
     'tokipona':'tokipona.wikipedia.org', # Toki Pona
     'tpi':'tpi.wikipedia.org', # Tok Pisin
     'tr':'tr.wikipedia.org',   # Turkish
@@ -101,7 +105,9 @@ langs = {
     'xh':'xh.wikipedia.org',   # isiXhosa
     'yi':'yi.wikipedia.org',   # Yiddish
     'yo':'yo.wikipedia.org',   # Yoruba
+    'za':'za.wikipedia.org',   # Zhuang
     'zh':'zh.wikipedia.org',   # Chinese
+    'zh-cfr':'zh-cfr.wikipedia.org' # Min-Nan
     'zh-cn':'zh.wikipedia.org', # Simplified Chinese
     'zh-tw':'zh.wikipedia.org', # Traditional Chinese
     }
@@ -242,7 +248,7 @@ seriouslangs  = biglangs3 + [
 
 # other groups of language that we might want to do at once
 
-cyrilliclangs = ['bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
 
 
 #

@@ -42,15 +42,17 @@ edittime = {}
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
 
-alphabetic = ['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
-          'de','als','et','el','en','es','eo','eu','fa','fr',
-          'fy','ga','gv','gd','gl','ko','hi','hr','io','id','ia',
-          'is','it','he','jv','ka','csb','ks','sw','la','lv',
-          'lt','hu','mk','mg','ml','mi','mr','ms','mn','nah','na',
-          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
-          'st','sq','si','simple','sk','sl','sr','su','fi','sv','ta',
-          'tt','th','ur','vi','tokipona','tpi','tr','uk','vo','yi','yo'
-          'zh','zh-cn','zh-tw']
+alphabetic = ['af','ar','roa-rup','om','bg','bn','be','bs',
+              'ca','chr','co','cs','cy','da','de','als','et',
+              'el','en','es','eo','eu','fa','fr','fy','ga','gv',
+              'gd','gl','ko','hi','hr','io','id','ia','is','it',
+              'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
+              'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
+              'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
+              'sa','st','sq','si','simple','sk','sl','sr','su',
+              'fi','sv','ta','tt','th','tlh','ur','vi','tokipona',
+              'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
+              'zh-tw']
 
 interwiki_putfirst = {
     'en': alphabetic,
@@ -90,9 +92,11 @@ def altlang(code):
         return ['nl']
     if code=='csb':
         return ['pl']
-    if code in ['lt','lv','uk']:
+    if code in ['mo','roa-rup']:
+        return ['ro']
+    if code in ['be','lt','lv','uk']:
         return ['ru']
-    if code in ['ja','ko','zh','zh-cn','zh-tw']:
+    if code in ['ja','ko','za','zh','zh-cfr','zh-cn','zh-tw']:
         return ['zh','zh-cn','zh-tw']
     if code=='da':
         return ['nb','no']
