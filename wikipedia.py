@@ -419,7 +419,7 @@ class PageLink(object):
             newPage="0"
         else:
             newPage="1"
-        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().token)
+        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().gettoken())
 
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
@@ -1235,16 +1235,15 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
        Use of this routine can normally be avoided; use PageLink.put
        instead.
     """
-    print "putPage with token %s"%token
     safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
     if site.version() >= "1.4":
         if not token:
             output(u"Getting page to get a token.")
             try:
-                PageLink(site,url2link(name,site,site)).get(force = True)
-                token = site.gettoken()
+                PageLink(site,url2link("Non-existing page",site,site)).get(force = True)
             except Error:
                 pass
+            token = site.gettoken()
         else:
             safetuple = (site,name,text,comment,watchArticle,minorEdit,newPage)
     # Check whether we are not too quickly after the previous putPage, and
@@ -2142,7 +2141,7 @@ class Site(object):
 
         self.nocapitalize = self.lang in self.family.nocapitalize
         self.user = user
-        self.token = None
+        self._token = None
         
     def cookies(self):
         if not hasattr(self,'_cookies'):
@@ -2316,10 +2315,10 @@ class Site(object):
         return self.family.langs.keys()
 
     def gettoken(self):
-        return self.token
+        return self._token
 
     def puttoken(self,value):
-        self.token = value
+        self._token = value
         return
     
 _sites = {}
