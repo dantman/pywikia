@@ -335,9 +335,9 @@ class Subject:
                         import titletranslate
                         titletranslate.translate(pl, arr, same = False,
                                                  hints = [newhint])
-                        for pl in arr.iterkeys():
-                            self.todo[pl] = pl.code()
-                            counter.plus(pl.code())
+                        for pl2 in arr.iterkeys():
+                            self.todo[pl2] = pl2.code()
+                            counter.plus(pl2.code())
 
     def isDone(self):
         """Return True if all the work for this subject has completed."""
