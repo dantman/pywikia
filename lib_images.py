@@ -154,12 +154,15 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
     if not keep:
         print "The filename on wikipedia will default to:", fn
         # ask newfn until it's valid
-        while True:
+        ok = False
+        forbidden = '/.' # to be extended
+        while not ok:
             newfn = wikipedia.input(u'Better name:')
-            if '/' in newfn:
-                print "Invalid character: '/'. Please try again"
-            else:
-                break
+            for c in forbidden:
+                if c in newfn:
+                    print "Invalid character: %s. Please try again" % c
+                else:
+                    ok = True
         if newfn != '':
             fn = newfn
     # Wikipedia doesn't allow spaces in the file name.
@@ -222,6 +225,7 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         else:
              # dump the HTML page
              print returned_html + "\n\n"
+             # BUG: fn is str, not unicode, so this coercion fails if fn is not ASCII
              answer = raw_input(u"Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
              if answer in ["y", "Y"]:
                  return get_image(original_url, source_wiki, original_description, debug)
