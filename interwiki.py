@@ -359,7 +359,7 @@ class Subject:
 
     def problem(self, txt):
         """Report a problem with the resolution of this subject."""
-        print "ERROR: %s"%txt
+        wikipedia.output("ERROR: %s" % txt)
         self.confirm += 1
         # beep at the first error
         if globalvar.bell and not self.problemfound and not globalvar.autonomous:
@@ -626,7 +626,8 @@ class SubjectArray:
         self.generator = generator
 
     def dump(self, fn):
-        f = open(fn, 'w')
+        import codecs
+        f = codecs.open(fn, 'w', 'utf-8')
         for subj in self.subjects:
             f.write(subj.pl().aslink()+'\n')
         f.close()
