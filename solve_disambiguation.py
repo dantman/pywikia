@@ -1,20 +1,45 @@
 """
 Script to help a human solve disambiguations by presenting a set of options.
+
+Specify the disambiguation page on the command line. The program will
+pick up the page, and look for all alternative links, and show them with
+a number adjacent to them. It will then automatically loop over all pages
+referring to the disambiguation page, and show 30 characters on each side
+of the reference to help you make the decision between the
+alternatives. It will ask you to type the number of the appropriate
+replacement, and perform the change robotically.
+
+Command line options:
+
+   -pos:XXXX adds XXXX as an alternative disambiguation
+
+   -just     only use the alternatives given on the command line, do not 
+             read the page for other possibilities
+
+To complete a move of a page, one can use:
+
+    python solve_disambiguation.py -just -pos:New_Name Old_Name
 """
 #
 # (C) Rob W.W. Hooft, 2003
 #
-# Distribute under the terms of the PSF license
+# Distribute under the terms of the PSF license.
 #
 __version__='$Id$'
 #
 import wikipedia,re,sys
 
+if not wikipedia.special.has_key(wikipedia.mylang):
+    print "Please add the translation for the Special: namespace in"
+    print "Your home wikipedia to the wikipedia.py module"
+    import sys
+    sys.exit(1)
+
 mylang = wikipedia.mylang
 
 def getreferences(pl):
     host = wikipedia.langs[pl.code()]
-    url="/w/wiki.phtml?title=Speciaal:Whatlinkshere&target=%s"%(pl.urlname())
+    url="/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(wikipedia.special[mylang],pl.urlname())
     txt,charset=wikipedia.getUrl(host,url)
     Rref=re.compile('<li><a href.* title="([^"]*)"')
     return Rref.findall(txt)
