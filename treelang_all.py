@@ -13,9 +13,11 @@ else:
     normalstatus=0,256
     
 for f in wikipedia.allpages(start=sys.argv[1]):
+    wikipedia.throttle()
     f=f.replace("'",r"'\''")
-    print
-    print repr(f)
+    if os.isatty(1):
+        print
+        print repr(f)
     if sys.platform=='win32':
         status=os.system("python treelang.py -backlink -autonomous %s"%f)
     else:
