@@ -1,8 +1,9 @@
 # -*- coding: cp1252 -*-
 """
-Very simple script to replace a MediaWiki boilerplate text with another one.
+Very simple script to replace a MediaWiki boilerplate text with another one,
+and to convert the old boilerplate format to the new one.
 
-Syntax: python boilerplate.py oldBoilerplate newBoilerplate
+Syntax: python boilerplate.py [-newformat] oldBoilerplate [newBoilerplate]
 
 Specify the MediaWiki boilerplate on the command line. The program will
 pick up the boilerplate page, and look for all pages using it. It will
@@ -10,8 +11,12 @@ then automatically loop over them, and replace the boilerplate text.
 
 Command line options:
 
-none yet, except for the boilerplates
-             
+-newformat:   Use the new format {{stub}} instead of {{msg:stub}}.
+              Note: we might want to change this to -oldformat and make the
+              new format the default later.
+other:        First argument is the old boilerplate name, second one is the new
+              name. If only one argument is given, the bot simply converts the
+              boilerplate to the new format: {{msg:stub}} -> {{stub}}.
 """
 #
 # (C) Daniel Herding, 2004
@@ -35,14 +40,32 @@ msg={
     'de':'Bot: \xc4ndere Textbaustein',
     }
 
-
 def getReferences(pl):
     x = wikipedia.getReferences(pl)
     return x
 
 # read command line parameters
-old = sys.argv[1]
-new = sys.argv[2]
+oldformat = True
+boilerplate_names = []
+for arg in sys.argv[1:]:
+    if wikipedia.argHandler(arg):
+        pass
+    elif arg == '-msg':
+        oldformat = False
+    else:
+        boilerplate_names.append(arg)
+
+if boilerplate_names == []:
+    print "Syntax: python boilerplate.py [-newformat] oldBoilerplate [newBoilerplate]"
+    # Bug: this exit thingy doesn't work.
+    sys.exit
+old = boilerplate_names[0]
+if len(boilerplate_names) >= 2:
+    new = boilerplate_names[1]
+else:
+    # if only one argument is given, don't change the boilerplate, but only convert the
+    # format.
+    new = old
 
 # get edit summary message
 if msg.has_key(wikipedia.mylang):
@@ -68,17 +91,20 @@ def treat(refpl):
             return
         
         # Replace all occurences of the boilerplate in this article
-        reftxt = re.sub(boilerplateR, '{{msg:' + unicode(new, 'iso-8859-1') + '}}', reftxt)
+        if oldformat:
+            reftxt = re.sub(boilerplateR, '{{msg:' + unicode(new, 'iso-8859-1') + '}}', reftxt)
+        else:
+            reftxt = re.sub(boilerplateR, '{{' + unicode(new, 'iso-8859-1') + '}}', reftxt)
 
         print "Changing page %s" %(refpl)
         refpl.put(reftxt)
-    
+
 # regular expression to find the original boilerplate text.
 # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
-boilerplateR=re.compile(r'\{\{[mM][sS][gG]:[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
+# The new syntax, {{vfd}}, will also be found.
+boilerplateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
 
 # loop over all pages using the boilerplate
 for ref in getReferences(thispl):
     refpl=wikipedia.PageLink(wikipedia.mylang, ref)
     treat(refpl)
-
