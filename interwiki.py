@@ -973,9 +973,7 @@ if __name__ == "__main__":
 
     inname = '_'.join(inname)
     if sa.isDone() and not inname:
-        inname = wikipedia.input(u'Which page to check: ')
-        inname = unicode(inname, config.console_encoding)
-        inname = inname.encode(wikipedia.myencoding())
+        inname = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
 
     if inname:
         inpl = wikipedia.PageLink(wikipedia.mylang, inname)
