@@ -31,7 +31,7 @@ class Family:
             'csb','ks','kw','km','ky','rn','sw','ku','lo','la','lv','lt','lb','li',
             'ln','jbo','hu','mk','mg','ml','mt','mi','mr','ms','minnan','zh-min-nan',
             'mn','mo','mus','my','nah','na','nv','cr','ng','nl','ne','nds','ja',
-            'no','nb','nn','oc','or','os','om','ug','pi','ps','nds','pl','pt','pa',
+            'no','nb','nn','oc','or','om','os','ug','pi','ps','nds','pl','pt','pa',
             'ro','rm','qu','ru','se','sm','sa','sg','sc','st','tn','sq','scn',
             'si','simple','sd','ss','sk','sl','sr','su','fi','sv','tl','tg','ta',
             'tt','te','th','ti','tlh','vi','tokipona','tpi','to','tk','tum','tr',
