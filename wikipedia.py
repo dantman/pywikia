@@ -1419,7 +1419,16 @@ def UnicodeToAsciiHtml(s):
     return ''.join(html)
 
 def url2unicode(percentname, language):
-    x=urllib.unquote(percentname)
+    # Does the input string contain non-ascii characters? In that case,
+    # it is not really an url, and we do not have to unquote it....
+    for c in percentname:
+        if ord(c)>128:
+            x=percentname
+            break
+    else:
+        # Before removing the % encoding, make sure it is an ASCII string.
+        # unquote doesn't work on unicode strings.
+        x=urllib.unquote(str(percentname))
     #print "DBG> ",language,repr(percentname),repr(x)
     # Try utf-8 first. It almost cannot succeed by accident!
     for encoding in ('utf-8',)+code2encodings(language):
