@@ -327,7 +327,7 @@ class Family(family.Family):
         
         self.nocapitalize = ['tlh','tokipona']
         
-        self.obsolete = ['sh', 'dk']
+        self.obsolete = ['sh', 'dk', 'tlh']
         
         # A few selected big languages for things that we do not want to loop over
         # all languages. This is only needed by the titletranslate.py module, so

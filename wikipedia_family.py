@@ -376,7 +376,7 @@ class Family(family.Family):
         #    if not lang in image:
         #        image[lang] = 'Image'
         
-        self.obsolete = ['sh', 'dk']
+        self.obsolete = ['sh', 'dk', 'tlh']
         
         # A few selected big languages for things that we do not want to loop over
         # all languages. This is only needed by the titletranslate.py module, so
