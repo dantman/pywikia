@@ -54,5 +54,6 @@ for image in wikipedia.PageLinksFromFile(filename):
         except wikipedia.IsRedirectPage:
             print "Description page is redirect?!"
         answer=wikipedia.input(u"Copy this image (y/N)?")
-        if answer[0] in ["y","Y"]:
-            lib_images.transfer_image(image)
+        if answer != "":
+            if answer[0] in ["y","Y"]:
+                lib_images.transfer_image(image)
