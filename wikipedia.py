@@ -1397,13 +1397,13 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         text, charset = getUrl(host, address, site)
         get_throttle.setDelay(time.time() - starttime)\
         # Extract the actual text from the textedit field
-        if get_edit_page:
-            if charset is None:
-                print "WARNING: No character set found"
-            else:
-                # Store character set for later reference
-                site.checkCharset(charset)
+        if charset is None:
+            print "WARNING: No character set found"
+        else:
+            # Store character set for later reference
+            site.checkCharset(charset)
 
+        if get_edit_page:
             # Looking for the token
             R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
             tokenloc = R.search(text)
