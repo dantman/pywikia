@@ -114,6 +114,7 @@ import time
 import math
 import difflib
 import re, urllib, codecs, sys
+import sets
 import xml.sax, xml.sax.handler
 import warnings
 
@@ -558,14 +559,13 @@ class PageLink(object):
         
     def contributingUsers(self):
         """
-        Returns a list of all user names (including anonymous IPs) of those who
+        Returns a set of all user names (including anonymous IPs) of those who
         edited the page.
         """
         edits = self.getVersionHistory()
-        users = []
+        users = sets.Set()
         for edit in edits:
-            users.append(edit[1])
-        # TODO: make unique, sort (like in catlib)
+            users.add(edit[1])
         return users
                           
     def delete(pl, reason = None, prompt = True):
