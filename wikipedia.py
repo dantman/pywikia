@@ -31,7 +31,7 @@ langs = {
     'da':'da.wikipedia.org',   # Danish
     'de':'de.wikipedia.org',   # German
     'el':'el.wikipedia.org',   # Greek, UTF-8
-    'en':'en.wikipedia.org',   # English
+    'en':'en2.wikipedia.org',  # English
     'eo':'eo.wikipedia.org',   # Esperanto, UTF-8
     'es':'es.wikipedia.org',   # Spanish
     'et':'et.wikipedia.org',   # Estonian
@@ -779,11 +779,13 @@ def link2url(name, code, incode = None):
         name = url2unicode(name, language = code)
     else:
         name = html2unicode(name, language = code, altlanguage = incode)
+    #print "DBG>",repr(name)
     # Remove spaces from beginning and the end
     name = name.strip()
     # Standardize capitalization
     if name:
         name = name[0].upper()+name[1:]
+    #print "DBG>",repr(name)
     try:
         result = str(name.encode(code2encoding(code)))
     except UnicodeError:
@@ -824,11 +826,12 @@ def UnicodeToAsciiHtml(s):
     return ''.join(html)
 
 def url2unicode(percentname, language):
-    x=urllib.unquote(percentname)
+    x=urllib.unquote(str(percentname))
     for encoding in code2encodings(language):
         try:
             encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
             x,l = decode_func(x)
+            #print "DBG> ",encoding,repr(x)
             return x
         except UnicodeError:
             pass
@@ -837,13 +840,13 @@ def url2unicode(percentname, language):
 def unicode2html(x, encoding='latin1'):
     # We have a unicode string. We can attempt to encode it into the desired
     # format, and if that doesn't work, we encode the unicode into html #
-    # entities.
+    # entities. If it does work, we return it unchanged.
     try:
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
-        x,l = encode_func(x)
+        y,l = encode_func(x)
     except UnicodeError:
         x = UnicodeToAsciiHtml(x)
-    return str(x)
+    return x
     
 def removeEntity(name):
     import re, htmlentitydefs
