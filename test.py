@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 Script to perform some tests.
 """

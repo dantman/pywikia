@@ -1,4 +1,5 @@
-﻿# -*- coding: utf-8 -*-
+﻿#!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
 
