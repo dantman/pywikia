@@ -719,6 +719,7 @@ class GetAll(object):
             print "BUG> bug, page not found in list"
         m = redirectRe(self.site).match(text)
         if m:
+            edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
             pl2._getexception = IsRedirectPage(m.group(1))
         else:
             if len(text)<50:
