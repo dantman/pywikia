@@ -246,22 +246,22 @@ class Family(family.Family):
     # if you carefully avoid the options, you could get away without these
     # for another wikimedia family.
     
-    biglangs = ['da', 'de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'sv']
+    biglangs = ['de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'pt', 'sv']
     
     biglangs2 = biglangs + [
-        'ca', 'eo', 'et', 'fi', 'he', 'no', 'pt', 'ro', 'sl', 'zh']
+        'ca', 'da', 'eo', 'et', 'fi', 'no', 'ro', 'sl', 'zh']
     
     biglangs3 = biglangs2 + [
-        'af', 'bg', 'cs', 'cy', 'hr', 'hu', 'ia', 'id', 'la', 'ms',
-        'simple', 'wa']
+        'af', 'bg', 'cs', 'he', 'hr', 'hu', 'id', 'la', 'ms', 'ru', 'uk', 'wa']
     
     biglangs4 = biglangs3 + [
-        'ast', 'eu', 'fy', 'gl', 'io', 'is', 'ko', 'ku', 'lt', 'nds',
-        'oc', 'sk', 'sr', 'su', 'tr', 'ru', 'uk']
+        'ast', 'bs', 'cy', 'el', 'eu', 'fy', 'gl', 'ia', 'io', 'is',
+        'ko', 'ku', 'lb', 'lt', 'nn', 'simple', 'sk', 'sr', 'tr', 'tt']
     
     seriouslangs = biglangs4 + [
-        'ar', 'be', 'bs', 'csb', 'el', 'fa', 'ga', 'hi', 'jv', 'lb', 'lv',
-        'mi', 'minnan', 'sa', 'ta', 'th', 'tokipona', 'tt', 'ur', 'vi']
+        'als', 'an', 'ang', 'ar', 'be', 'csb', 'fa', 'fo', 'ga', 'gd',
+        'hi', 'ie', 'jv', 'kn', 'ks', 'kw', 'lv', 'mi', 'minnan', 'nds',
+        'oc', 'sa', 'su', 'ta', 'th', 'tl', 'tokipona', 'ur', 'vi']
     
     # other groups of language that we might want to do at once
         
