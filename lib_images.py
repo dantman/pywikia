@@ -8,11 +8,10 @@ import httplib
 import wikipedia, config
 
 copy_message = {
-    "en":"This image was copied from the %s Wikipedia. The original description was:<br>%s",
+    "en":"This image was copied from the %s Wikipedia. The original description was:<p>%s",
     "de":"Dieses Bild wurde von der %s-Wikipedia kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
+    "nl":"Afbeelding gekopieerd vanaf Wikipedia-%s. De beschrijving daar was:<p>%s",
 }
-
-uploadaddr='/wiki/%s:Upload'%wikipedia.special[wikipedia.mylang]
 
 def post_multipart(host, selector, fields, files):
     """
@@ -70,6 +69,7 @@ def get_content_type(filename):
 # a description is asked.
 # Returns the filename which was used to upload the image
 def get_image(fn,target,description):
+    uploadaddr='/wiki/%s:Upload'%wikipedia.special[wikipedia.mylang]
     # Get file contents
     uo = wikipedia.MyURLopener()
     file = uo.open(fn)
