@@ -50,6 +50,9 @@ for f in pages:
             except wikipedia.IsRedirectPage:
                 print >> sys.stderr, "%s is redirect, referred from %s"%(pl2,pl)
                 sys.stderr.flush()
+            except wikipedia.LockedPage:
+                print >> sys.stderr, "%s is locked, can't check whether it links %s"%(pl2,pl)
+                sys.stderr.flush()
             else:
                 found=0
                 for pl3 in ll2:
