@@ -11,5 +11,5 @@ import config, urllib, family
 class Family(family.Family):
     def __init__(self):
         self.langs = {'meta': 'meta.wikimedia.org'}
-        self.namespaces[4] = 'Meta'
-        self.namespaces[5] = 'Meta talk'
+        self.namespaces[4] = {'_default': u'Meta'}
+        self.namespaces[5] = {'_default': u'Meta talk'}
