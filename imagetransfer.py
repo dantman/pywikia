@@ -60,7 +60,9 @@ for i in range(len(imagelist)):
     try:
         print wikipedia.UnicodeToAsciiHtml(imagelink.get())
     except wikipedia.NoPage:
-        print "Description empty."        
+        print "Description empty."
+    except wikipedia.IsRedirectPage:
+        print "Description page is redirect?!"
 
 print "=================================================="
 
@@ -71,6 +73,9 @@ while len(imagelist)>0:
         break
     todo=int(todo)
     if todo in range(len(imagelist)):
-        lib_images.transfer_image(imagelist[todo], wikipedia.mylang)
+        if imagelist[todo].isRedirectPage:
+            print("Cannot upload redirects.")
+        else:
+            lib_images.transfer_image(imagelist[todo], wikipedia.mylang)
     else:
         print("No such image number.")
