@@ -157,6 +157,8 @@ def transfer_image(imagelink, target, debug=False):
     # localize the text that should be printed on the image description page
     if copy_message.has_key(wikipedia.mylang):
         msg_lang = wikipedia.mylang
+    elif mylang == "fy"
+        msg_lang = "nl"
     else:
         msg_lang = "en"
     try:
