@@ -15,6 +15,7 @@ Specific arguments:
 -include    The beginning and end text should be included in the
             page.
 -utf        The input file is UTF-8
+-log        Add logging to file "pagefromfile.log"
 
 Note the '-utf' option is necessary on older versions of Windows;
 whether it's necessary or useful on Windows XP and/or other
@@ -79,6 +80,9 @@ for arg in sys.argv[1:]:
         elif arg=="-utf":
             import codecs
             utf = True
+        elif arg=="-log":
+            import logger
+            sys.stdout = logger.Logger(sys.stdout, filename = 'pagefromfile.log')
         else:
             print "Disregarding unknown argument %s."%arg
 
@@ -88,7 +92,7 @@ commenttext = wikipedia.translate(mysite,msg)
 text = []
 
 if utf:
-    f=codecs.open(filename,'r',encoding='utf-8')
+    f=codecs.open(filename,'rb',encoding='utf-8')
 else:
     f=open(filename,'r')
 for line in f.readlines():
