@@ -3,7 +3,7 @@
 Library to get and put pages on Wikipedia
 """
 #
-# (C) Rob W.W. Hooft, 2003
+# (C) Rob W.W. Hooft, Andre Engels, 2003-2004
 #
 # Distribute under the terms of the PSF license.
 # 
@@ -206,10 +206,16 @@ special = {
     'vo': 'Special',
     'walon': 'Sipeci%C3%A5s',
     'xh': 'Special',
-    'yi': 'Yiddish',
+    'yi': 'Special',
     'zh': 'Special',
     'zh-cn': 'Special',
     'zh-tw': 'Special',
+    }
+
+# And the image namespace. Only necessary when it is not 'Image'.
+image = {
+    'nl': 'Afbeelding',
+    'de': 'Bild',
     }
 
 obsolete = ['sh', 'dk', 'wa']
@@ -543,6 +549,19 @@ class PageLink:
         Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
         for l in Rlink.findall(thistxt):
             result.append(l[0])
+        return result
+
+    def imagelinks(self):
+        result = []
+        if self._code in image:
+            im=image[self._code] + ':'
+        else:
+            im='Image:'
+        w1=r'('+im+'[^\]\|]*)'
+        w2=r'([^\]\|]*)'
+        Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
+        for l in Rlink.findall(self.get()):
+            result.append(PageLink(self._code,l[0]))
         return result
 
     def getRedirectTo(self):
