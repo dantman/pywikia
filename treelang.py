@@ -12,7 +12,7 @@ import sys,copy,wikipedia,re
 mylang = wikipedia.mylang
 
 # Summary used in the modification request
-wikipedia.setAction('%s: semi-automatic interwiki script'%wikipedia.username)
+wikipedia.setAction('semi-automatic interwiki script')
 
 debug = 1
 forreal = 1
