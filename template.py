@@ -111,7 +111,9 @@ class TemplateRobot:
         # regular expression to find the original template.
         # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
         # The new syntax, {{vfd}}, will also be found.
-        templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '(?P<sortkey>\|[^}]+)?}}')
+        # The group 'sortkey' will either match a sortkey led by a pipe, or an
+        # empty string.
+        templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '(?P<sortkey>\|[^}]+|)}}')
         replacements = {}
         if self.remove:
             replacements[templateR] = ''
