@@ -12,7 +12,7 @@ mylangs = ('nl', )
 
 # selection of years to check
 years = range(1,2040+1)
-years=[388]
+years=[496]
 
 # Set to 1 to actually change the pages
 forreal = 1
