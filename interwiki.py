@@ -232,6 +232,7 @@ class Subject:
                 newhint = raw_input("Hint:")
                 if newhint:
                     arr = {}
+                    import titletranslate
                     titletranslate.translate(pl, arr, same = False,
                                              hints = [newhint])
                     for pl in arr.iterkeys():
