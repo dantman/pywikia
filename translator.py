@@ -413,7 +413,9 @@ def print_debug(text):
 # Translate the string given as argument 'text' from language 'from_lang' to 
 # language 'to_lang', using translation list 'type' in above dictionary.
 # if debug_mode=True, status messages are displayed.
-def translate(text, type, from_lang, debug_mode=False, to_lang=wikipedia.mylang):
+def translate(text, type, from_lang, debug_mode=False, to_lang=None):
+    if to_lang is None:
+        to_lang = wikipedia.getSite().lang        
     if debug_mode:
         Global.debug = True
     if type == "":
@@ -434,12 +436,12 @@ def translate(text, type, from_lang, debug_mode=False, to_lang=wikipedia.mylang)
                 # if it's necessary to replace a substring
                 if string.find(text, item.get(from_lang)) > -1:
                      # check if the translation database includes the target language
-                     if not item.has_key(wikipedia.mylang):
+                     if not item.has_key(to_lang):
                          print_debug("Can't translate \"" + item.get(from_lang) + "\". Please make sure that there is a translation in copy_table.py.")
                      else:
-                         print_debug(item.get(from_lang) + " => " + item.get(wikipedia.mylang))
+                         print_debug(item.get(from_lang) + " => " + item.get(to_lang))
                          # translate a substring
-                         text = string.replace(text, item.get(from_lang), item.get(wikipedia.mylang))
+                         text = string.replace(text, item.get(from_lang), item.get(to_lang))
         if types.get(type).has_key("regexes"):
             # work on regular expressions
             print_debug("\nWorking on regular expressions for type " + type + "\n")
@@ -447,8 +449,8 @@ def translate(text, type, from_lang, debug_mode=False, to_lang=wikipedia.mylang)
             if regexes.has_key(from_lang):
                 for item in regexes.get(from_lang):
                     # only work on regular expressions that have a replacement for the target language
-                    if regexes.get(from_lang).get(item).has_key(wikipedia.mylang):
-                        replacement = regexes.get(from_lang).get(item).get(wikipedia.mylang)
+                    if regexes.get(from_lang).get(item).has_key(to_lang):
+                        replacement = regexes.get(from_lang).get(item).get(to_lang)
                         regex = re.compile(item)
                         # if the regular expression doesn't match anyway, we don't want it to print a debug message
                         while re.search(regex, text):

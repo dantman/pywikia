@@ -47,7 +47,9 @@ for arg in sys.argv[1:]:
         else:
             desc += [arg]
 
-if not wikipedia.cookies:
+mysite = wikipedia.getSite()
+
+if not mysite.loggedin():
     print "You must be logged in to upload images"
     import sys
     sys.exit(1)

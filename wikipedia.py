@@ -18,7 +18,7 @@ PageLink: A MediaWiki page
     aslocallink: The name of the page in the form [[Title]]
     asselflink: The name of the page in the form xx:[[Title]]
     
-    code: The language code of the page
+    site: The wikimedia site of the page
     encoding: The encoding the page is in
 
     get (*): The text of the page
@@ -46,7 +46,7 @@ PageLinksFromFile(fn): Get from fn a list of PageLinks in the form
     [[xx:Title]]
 setAction(text): Use 'text' instead of "Wikipedia python library" in
     summaries
-forCode(text,xx): Change 'text' such that it is usable on language xx:
+forSite(text,xx): Change 'text' such that it is usable on the given site xx
 allpages(): Get all page titles in one's home language as PageLinks (or all
     pages from 'Start' if allpages(start='Start') is used).
 getReferences(Pagelink): The pages linking to the Pagelink object, as a
@@ -58,9 +58,6 @@ argHandler(text): Checks whether text is an argument defined on wikipedia.py
 translate(xx, dict): dict is a dictionary, giving text depending on language,
     xx is a language. Returns the text in the most applicable language for
     the xx: wikipedia
-
-myencoding(): The coding used in the home wiki
-code2encoding(xx): The code used in language xx:
 
 output(text): Prints the text 'text' in the encoding of the user's console.
 input(text): Asks input from the user, printing the text 'text' first.
@@ -145,41 +142,45 @@ SaxError = xml.sax._exceptions.SAXParseException
 # The most important thing in this whole module: The PageLink class
 class PageLink(object):
     """A Wikipedia page link."""
-    def __init__(self, code, title = None, incode = None):
+    def __init__(self, site, title = None, insite = None, tosite = None):
         """
         Constructor. Normally called with two arguments:
         Parameters:
-         1) The language code of the wiki on which the page resides
+         1) The wikimedia site on which the page resides
          2) The title of the page as a unicode string
              
-        The argument incode can be specified to help decode
-        the name; it is the language where this link was found.
+        The argument insite can be specified to help decode
+        the name; it is the wikimedia site where this link was found.
         """     
-        self._code = code
+        self._site = site
+        if tosite:
+            self._tosite = tosite
+        else:
+            self._tosite = getSite() # Default to home wiki
         # Clean up the name, it can come from anywhere.
         title = title.strip()
         if title and title[0]==':':
             title = title[1:]
-        self._urlname = link2url(title, self._code, incode = incode)
-        self._linkname = url2link(self._urlname, code = self._code, incode = mylang)
+        self._urlname = link2url(title, site = self._site, insite = insite)
+        self._linkname = url2link(self._urlname, site = self._site, insite = self._tosite)
 
-    def code(self):
-        """The code for the language of the page this PageLink refers to,
+    def site(self):
+        """The site of the page this PageLink refers to,
            without :"""
-        return self._code
+        return self._site
     
     def encoding(self):
         """
         Returns the character encoding used on this page's wiki.
         """
-        return code2encoding(self._code)
+        return self._site.encoding()
     
     def urlname(self):
         """The name of the page this PageLink refers to, in a form suitable
            for the URL of the page."""
         return self._urlname
 
-    def linkname(self,doublex = False):
+    def linkname(self, doublex = False):
         """The name of the page this PageLink refers to, in a form suitable
            for a wiki-link"""
         if doublex:
@@ -203,7 +204,7 @@ class PageLink(object):
         else:
             return self._linkname
 
-    def catname(self,doublex = False):
+    def catname(self, doublex = False):
         """The name of the page without the namespace part. Gives an error
         if the page is from the main namespace. Note that this is a raw way
         of doing things - it simply looks for a : in the name."""
@@ -235,23 +236,22 @@ class PageLink(object):
         else:
             return ln
             
-    def ascii_linkname(self):
-        """Make a link-name that contains only ascii characters"""
-        # This uses a feature of code2encoding: the 'special' language
-        # ascii will return the coding 'ascii'
-        return url2link(self._urlname, code = self._code, incode = 'ascii')
+    def console_linkname(self):
+        """Make a link-name that contains only console characters"""
+        return self.linkname()
     
     def __str__(self):
-        """A simple ASCII representation of the pagelink"""
-        return "%s:%s" % (self._code, self.ascii_linkname())
+        """A console representation of the pagelink"""
+        return self.aslink().encode(config.console_encoding, 'replace')
 
     def __repr__(self):
         """A more complete string representation"""
         return "%s{%s}" % (self.__class__.__name__, str(self))
 
     def aslink(self):
-        """A string representation in the form of an interwiki link"""
-        return "[[%s:%s]]" % (self.code(), self.linkname())
+        """A string representation in the form of a link. The link will
+           be an interwiki link if needed"""
+        return self._site.linkto(self.linkname(), othersite = self._tosite)
 
     def aslocallink(self):
         """A string representation in the form of a local link"""
@@ -259,8 +259,8 @@ class PageLink(object):
 
     def asselflink(self):
         """A string representation in the form of a local link, but prefixed by
-           the language code"""
-        return "%s:[[%s]]" % (self.code(), self.linkname())
+           the language"""
+        return "%s:[[%s]]" % (self._site.lang, self.linkname())
     
     def get(self, read_only = False, force = False):
         """The wiki-text of the page. This will retrieve the page if it has not
@@ -293,7 +293,7 @@ class PageLink(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents = getPage(self.code(), self.urlname(), read_only = read_only)
+                self._contents = getPage(self.site(), self.urlname(), read_only = read_only)
                 hn = self.hashname()
                 if hn:
                     hn = underline2space(hn)
@@ -345,7 +345,7 @@ class PageLink(object):
         """
         txt = self.get(read_only = True)
         txt = removeLanguageLinks(txt)
-        txt = removeCategoryLinks(txt, self.code())
+        txt = removeCategoryLinks(txt, site = self.site())
         if len(txt) < 4:
             return True
         else:
@@ -358,7 +358,7 @@ class PageLink(object):
         p=t.split(':')
         if p[1:]==[]:
             return False
-        if p[0] in family.category_namespaces(self._code):
+        if p[0] in self.site().category_namespaces():
             return True
         return False
 
@@ -369,7 +369,7 @@ class PageLink(object):
         p=t.split(':')
         if p[1:]==[]:
             return False
-        if p[0]==family.image_namespace(self._code):
+        if p[0]==self.site().image_namespace():
             return True
         return False
 
@@ -383,7 +383,7 @@ class PageLink(object):
             newPage="0"
         else:
             newPage="1"
-        return putPage(self.code(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage)
+        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage)
 
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
@@ -394,20 +394,20 @@ class PageLink(object):
            interwiki links in the page text.
         """
         result = []
-        ll = getLanguageLinks(self.get(read_only = True), incode = self.code())
-        for newcode,newname in ll.iteritems():
+        ll = getLanguageLinks(self.get(read_only = True), insite = self.site())
+        for newsite,newname in ll.iteritems():
             if newname[0] == ':':
-                print "ERROR> link from %s to %s:%s has leading :?!"%(self,newcode,repr(newname))
+                print "ERROR> link from %s to %s:%s has leading :?!"%(self,repr(newsite),repr(newname))
             if newname[0] == ' ':
-                print "ERROR> link from %s to %s:%s has leading space?!"%(self,newcode,repr(newname))
+                print "ERROR> link from %s to %s:%s has leading space?!"%(self,repr(newsite),repr(newname))
             try:
-                result.append(self.__class__(newcode, newname, incode = self.code()))
+                result.append(self.__class__(newsite, newname, insite = self.site()))
             except UnicodeEncodeError:
-                print "ERROR> link from %s to %s:%s is invalid encoding?!"%(self,newcode,repr(newname))
+                print "ERROR> link from %s to %s:%s is invalid encoding?!"%(self,repr(newsite),repr(newname))
             except NoSuchEntity:
-                print "ERROR> link from %s to %s:%s contains invalid character?!"%(self,newcode,repr(newname))
+                print "ERROR> link from %s to %s:%s contains invalid character?!"%(self,repr(newsite),repr(newname))
             except ValueError:
-                print "ERROR> link from %s to %s:%s contains invalid unicode reference?!"%(self,newcode,repr(newname))
+                print "ERROR> link from %s to %s:%s contains invalid unicode reference?!"%(self,repr(newsite),repr(newname))
         return result
 
     def categories(self):
@@ -418,20 +418,20 @@ class PageLink(object):
            The return value is a list of PageLink objects for each of the
            category links in the page text."""
         result = []
-        ll = getCategoryLinks(self.get(read_only = True), self.code())
+        ll = getCategoryLinks(self.get(read_only = True), self.site())
         for catname in ll:
-            result.append(self.__class__(self.code(), title = catname))
+            result.append(self.__class__(self.site(), title = catname))
         return result
             
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            PageLink objects"""
-        if not hasattr(other, 'code'):
+        if not hasattr(other, 'site'):
             return -1
-        if not self.code() == other.code():
-            return cmp(self.code(), other.code())
-        u1=html2unicode(self.linkname(), language = self.code())
-        u2=html2unicode(other.linkname(), language = other.code())
+        if not self.site() == other.site():
+            return cmp(self.site(), other.site())
+        u1=html2unicode(self.linkname(), site = self.site())
+        u2=html2unicode(other.linkname(), site = other.site())
         return cmp(u1,u2)
 
     def __hash__(self):
@@ -450,7 +450,7 @@ class PageLink(object):
             thistxt = removeLanguageLinks(self.get(read_only = True))
         except IsRedirectPage:
             return
-        thistxt = removeCategoryLinks(thistxt, self.code())
+        thistxt = removeCategoryLinks(thistxt, self.site())
         w=r'([^\]\|]*)'
         Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
         for l in Rlink.findall(thistxt):
@@ -458,20 +458,20 @@ class PageLink(object):
         return result
 
     def imagelinks(self):
-        """Gives the wiki-images the page shows, as a list of strings
+        """Gives the wiki-images the page shows, as a list of pagelink objects
         """
         result = []
-        im=family.image_namespace(self._code) + ':'
+        im=self.site().image_namespace() + ':'
         w1=r'('+im+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
         for l in Rlink.findall(self.get(read_only = True)):
-            result.append(PageLink(self._code,l[0]))
+            result.append(PageLink(self._site,l[0]))
         w1=r'('+im.lower()+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
         for l in Rlink.findall(self.get(read_only = True)):
-            result.append(PageLink(self._code,l[0]))
+            result.append(PageLink(self._site,l[0]))
         return result
 
     def getRedirectTo(self, read_only = False):
@@ -504,8 +504,8 @@ class PageLink(object):
         # TODO: Find out if deletion was successful or e.g. if file has already been
         # deleted by someone else
     
-        # taken from lib_images.py and modified
-        def post_multipart(host, selector, fields):
+        # taken from lib_images.py and modified UGLY COPY
+        def post_multipart(host, selector, fields, cookies):
             """
             Post fields and files to an http host as multipart/form-data.
             fields is a sequence of (name, value) elements for regular form
@@ -520,13 +520,14 @@ class PageLink(object):
             h.putheader('content-length', str(len(body)))
             h.putheader("User-agent", "RobHooftWikiRobot/1.0")
             h.putheader('Host', host)
-            h.putheader('Cookie', cookies)
+            if cookies:
+                h.putheader('Cookie', cookies)
             h.endheaders()
             h.send(body)
             errcode, errmsg, headers = h.getreply()
             return h.file.read()
         
-        # taken from lib_images.py and modified
+        # taken from lib_images.py and modified UGLY COPY
         def encode_multipart_formdata(fields):
             """
             fields is a sequence of (name, value) elements for regular form fields.
@@ -554,10 +555,11 @@ class PageLink(object):
             answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
         if answer in ['y', 'Y']:
             output(u'Deleting page %s...' % pl.linkname())
-            returned_html = post_multipart(family.hostname(mylang),
-                                           family.delete_address(pl.urlname()),
+            returned_html = post_multipart(pl.site().hostname(),
+                                           pl.site().delete_address(pl.urlname()),
                                            (('wpReason', reason),
-                                            ('wpConfirm', '1')))
+                                            ('wpConfirm', '1')),
+                                           pl.site().cookies())
             # check if deletion was successful
             # therefore, we need to know what the MediaWiki software says after
             # a successful deletion
@@ -581,9 +583,9 @@ class PageLink(object):
         
 # Regular expression recognizing redirect pages
 
-def redirectRe(code):
-    if family.redirect.has_key(code):
-        txt = '(?:redirect|'+family.redirect[code]+')'
+def redirectRe(site):
+    if site.redirect():
+        txt = '(?:redirect|'+site.redirect()+')'
     else:
         txt = 'redirect'
     return re.compile(r'\#'+txt+':? *\[\[(.*?)\]\]', re.I)
@@ -634,8 +636,8 @@ class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
             self.timestamp += data
             
 class GetAll(object):
-    def __init__(self, code, pages):
-        self.code = code
+    def __init__(self, site, pages):
+        self.site = site
         self.pages = []
         for pl in pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
@@ -658,8 +660,8 @@ class GetAll(object):
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
-                if self.code == 'eo':
-                    if pl.hashfreeLinkname() <> pl.hashfreeLinkname(doublex = True):
+                if self.site.lang == 'eo':
+                    if pl.hashfreeLinkname() != pl.hashfreeLinkname(doublex = True):
                         # Maybe we have used x-convention when we should not?
                         try:
                             pl.get(force = True)
@@ -675,7 +677,7 @@ class GetAll(object):
                         pl._getexception = NoPage
                 else:
                     pl._getexception = NoPage
-            if hasattr(pl,'_contents') and pl.code()=="eo":
+            if hasattr(pl,'_contents') and pl.site().lang=="eo":
                 # Edit-pages on eo: use X-convention, XML export does not.
                 # Double X-es where necessary so that we can submit a changed
                 # page later.
@@ -685,9 +687,9 @@ class GetAll(object):
                             pl._contents = pl._contents.replace(c2+x,c2+x+x)
 
     def oneDone(self, title, timestamp, text):
-        pl = PageLink(self.code, title)
+        pl = PageLink(self.site, title)
         for pl2 in self.pages:
-            if PageLink(self.code, pl2.hashfreeLinkname()) == pl:
+            if PageLink(self.site, pl2.hashfreeLinkname()) == pl:
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
         else:
@@ -695,7 +697,7 @@ class GetAll(object):
             print repr(pl)
             print repr(self.pages)
             print "BUG> bug, page not found in list"
-        m = redirectRe(self.code).match(text)
+        m = redirectRe(self.site).match(text)
         if m:
             pl2._getexception = IsRedirectPage(m.group(1))
         else:
@@ -711,23 +713,23 @@ class GetAll(object):
                     # Store the content
                     pl2._contents = text
                     # Store the time stamp
-                    edittime[self.code, link2url(title, self.code)] = timestamp
+                    edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
             else:
                 # Store the content
                 pl2._contents = text
                 # Store the time stamp
-                edittime[self.code, link2url(title, self.code)] = timestamp
+                edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
 
     def getData(self):
         if not self.pages:
             return
         import httplib
-        addr = family.export_address(self.code)
+        addr = self.site.export_address()
         # In the next line, we assume that what we got for eo: is NOT in x-convention
         # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
         # find nothing, we will retry the normal way with an unadapted form.
-        pagenames = u'\r\n'.join([x.hashfreeLinkname(doublex = (self.code=='eo')) for x in self.pages])
-        pagenames = forCode(pagenames, self.code)
+        pagenames = u'\r\n'.join([x.hashfreeLinkname(doublex = (self.site.lang=='eo')) for x in self.pages])
+        pagenames = forSite(pagenames, self.site)
         data = urlencode((
                     ('action', 'submit'),
                     ('pages', pagenames),
@@ -739,29 +741,31 @@ class GetAll(object):
         # Slow ourselves down
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
-        conn = httplib.HTTPConnection(family.hostname(self.code))
+        conn = httplib.HTTPConnection(self.site.hostname())
         conn.request("POST", addr, data, headers)
         response = conn.getresponse()
         data = response.read()
         conn.close()
         return data
     
-def getall(code, pages):
-    print u'Getting %d pages from %s:' % (len(pages), code)
-    return GetAll(code, pages).run()
+def getall(site, pages):
+    print u'Getting %d pages from %s:' % (len(pages), repr(site))
+    return GetAll(site, pages).run()
     
 # Library functions
 
-def PageLinksFromFile(fn):
+def PageLinksFromFile(fn, site = None):
     """Read a file of page links between double-square-brackets, and return
        them as a list of PageLink objects. 'fn' is the name of the file that
        should be read."""
+    if site is None:
+        site = getSite()
     f=open(fn, 'r')
     R=re.compile(r'\[\[([^:]*):([^\]]*)\]\]')
     for line in f.readlines():
         m=R.match(line)
         if m:
-            yield PageLink(m.group(1), m.group(2))
+            yield PageLink(site.getSite(code=m.group(1)), m.group(2))
         else:
             print "ERROR: Did not understand %s line:\n%s" % (fn, repr(line))
     f.close()
@@ -863,8 +867,8 @@ class Throttle(object):
 get_throttle = Throttle()
 put_throttle = Throttle(config.put_throttle)
 
-def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False):
-    """Upload 'text' on page 'name' to the 'code' language wikipedia.
+def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False):
+    """Upload 'text' on page 'name' to the 'site' wiki.
        Use of this routine can normally be avoided; use PageLink.put
        instead.
     """
@@ -873,20 +877,20 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
     # wait a bit until the interval is acceptable
     put_throttle()
     # Which web-site host are we submitting to?
-    host = family.hostname(code)
+    host = site.hostname()
     # Get the address of the page on that host.
-    address = family.put_address(code, space2underline(name))
+    address = site.put_address(space2underline(name))
     # If no comment is given for the change, use the default
     if comment is None:
         comment=action
     # Prefix the comment with the user name if the user is not logged in.
-    if not loggedin or code != mylang:
+    if not site.loggedin():
         comment = username + ' - ' + comment
     # Use the proper encoding for the comment
-    comment = comment.encode(code2encoding(code))
+    comment = comment.encode(site.encoding())
     try:
         # Encode the text into the right encoding for the wiki
-        text = forCode(text, code)
+        text = forSite(text, site)
         predata = [
             ('wpSave', '1'),
             ('wpSummary', comment),
@@ -896,7 +900,7 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
         if newPage and newPage != '0':
             predata.append(('wpEdittime', ''))
         else:
-            predata.append(('wpEdittime', edittime[code, link2url(name, code)]))
+            predata.append(('wpEdittime', edittime[repr(site), link2url(name, site = site)]))
         # Pass the minorEdit and watchArticle arguments to the Wiki.
         if minorEdit and minorEdit != '0':
             predata.append(('wpMinoredit', '1'))
@@ -908,7 +912,7 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
     except KeyError:
         print edittime
 	raise
-    output(url2unicode("Changing page %s:%s"%(code,name), language = code))
+    output(url2unicode("Changing page %s"%site.linkto(name), site = site))
     # Submit the prepared information
     conn = httplib.HTTPConnection(host)
 
@@ -917,8 +921,8 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
     conn.putheader('Content-Length', str(len(data)))
     conn.putheader("Content-type", "application/x-www-form-urlencoded")
     conn.putheader("User-agent", "RobHooftWikiRobot/1.0")
-    if cookies and code == mylang:
-        conn.putheader('Cookie',cookies)
+    if site.cookies():
+        conn.putheader('Cookie',site.cookies())
     conn.endheaders()
     conn.send(data)
 
@@ -930,20 +934,20 @@ def putPage(code, name, text, comment = None, watchArticle = False, minorEdit = 
         output(data, decoder = myencoding())
     return response.status, response.reason, data
 
-def forCode(text, code):
+def forSite(text, site):
     """Prepare the unicode string 'text' for inclusion into a page for
-       language 'code'. All of the characters in the text should be encodable,
+       wiki 'site'. All of the characters in the text should be encodable,
        otherwise this will fail! This condition is normally met, except if
        you would copy text verbatim from an UTF-8 language into a iso-8859-1
        language, and none of the robots in the package should do such things"""
     if type(text) == type(u''):
-        text = text.encode(code2encoding(code))
+        text = text.encode(site.encoding())
     return text
 
 class MyURLopener(urllib.FancyURLopener):
     version="RobHooftWikiRobot/1.0"
     
-def getUrl(host,address):
+def getUrl(host, address, site = None):
     """Low-level routine to get a URL from wikipedia.
 
        host and address are the host and address part of a http url.
@@ -953,8 +957,8 @@ def getUrl(host,address):
     """
     #print host,address
     uo = MyURLopener()
-    if cookies:
-        uo.addheader('Cookie', cookies)
+    if site and site.cookies():
+        uo.addheader('Cookie', site.cookies())
     #print ('Opening: http://%s%s'%(host, address))
     f = uo.open('http://%s%s'%(host, address))
     text = f.read()
@@ -969,14 +973,14 @@ def getUrl(host,address):
     #print text
     return text,charset
     
-def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True):
+def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True):
     """
-    Get the contents of page 'name' from the 'code' language wikipedia
+    Get the contents of page 'name' from the 'site' wiki
     Do not use this directly; for 99% of the possible ideas you can
     use the PageLink object instead.
    
     Arguments:
-        code          - the wiki's language code
+        site          - the wiki site
         name          - the page name
         get_edit_page - If true, gets the edit page, otherwise gets the
                        normal page.
@@ -987,16 +991,16 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
     get_edit_page is True; otherwise it returns a unicode string containing
     the entire page's HTML code.
     """
-    host = family.hostname(code)
+    host = site.hostname()
     name = re.sub(' ', '_', name)
-    output(url2unicode(u'Getting page %s:%s' % (code, name), language = code))
+    output(url2unicode(u'Getting page %s' % site.linkto(name), site = site))
     # A heuristic to encode the URL into %XX for characters that are not
     # allowed in a URL.
     if not '%' in name and do_quote: # It should not have been done yet
         if name != urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
-    address = family.get_address(code, name)
+    address = site.get_address(name)
     if get_edit_page:
         address += '&action=edit&printable=yes'
     # Make sure Brion doesn't get angry by waiting if the last time a page
@@ -1007,34 +1011,29 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
     # wait for retry_idle_time minutes (growing!) between retries.
     retry_idle_time = 1
     while True:
-        text, charset = getUrl(host,address)
+        text, charset = getUrl(host, address, site)
         # Extract the actual text from the textedit field
         if get_edit_page:
             if charset is None:
                 print "WARNING: No character set found"
             else:
                 # Store character set for later reference
-                if charsets.has_key(code):
-                    assert charsets[code].lower() == charset.lower(), "charset for %s changed from %s to %s"%(code,charsets[code],charset)
-                charsets[code] = charset
-                c2e_charset = code2encoding(code).lower()
-                if c2e_charset != charset.lower():
-                    raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s"%(code,charset, c2e_charset))
+                site.checkCharset(charset)
                 
             if not read_only:
                 # check if we're logged in
                 p=re.compile('userlogin')
                 if p.search(text) != None:
-                    output(u'Warning: You\'re probably not logged in on %s:' % code)
+                    output(u'Warning: You\'re probably not logged in on %s:' % repr(site))
             m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
             if m:
-                edittime[code, link2url(name, code)] = m.group(1)
+                edittime[repr(site), link2url(name, site = site)] = m.group(1)
             else:
                 m = re.search('value="(\d+)" name="wpEdittime"',text)
                 if m:
-                    edittime[code, link2url(name, code)] = m.group(1)
+                    edittime[repr(site), link2url(name, site = site)] = m.group(1)
                 else:
-                    edittime[code, link2url(name, code)] = "0"
+                    edittime[repr(site), link2url(name, site = site)] = "0"
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
             except AttributeError:
@@ -1048,12 +1047,12 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
                 continue
             i2 = re.search('</textarea>', text).start()
             if i2-i1 < 2:
-                raise NoPage(code, name)
-            m = redirectRe(code).match(text[i1:i2])
+                raise NoPage(site, name)
+            m = redirectRe(site).match(text[i1:i2])
             if m:
-                output(u"DBG> %s is redirect to %s" % (url2unicode(name, language = code), unicode(m.group(1), code2encoding(code))))
+                output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), unicode(m.group(1), site.encoding())))
                 raise IsRedirectPage(m.group(1))
-            if edittime[code, link2url(name, code)] == "0" and not read_only:
+            if edittime[repr(site), link2url(name, site = site)] == "0" and not read_only:
                 print "DBG> page may be locked?!"
                 raise LockedPage()
     
@@ -1069,35 +1068,24 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
         x = unicode(x, charset, errors = 'replace')
         return x
 
-def languages(first = []):
-    """Return a list of language codes for known wikipedia servers. If a list
-       of language codes is given as an argument, these will be put at the front
-       of the returned list."""
-    result = []
-    for key in first:
-        if key in family.langs.iterkeys():
-            result.append(key)
-    for key in family.seriouslangs:
-        if key not in result:
-            result.append(key)
-    return result
-
-def allpages(start = '!'):
+def allpages(start = '!', site = None):
     """Generator which yields all articles in the home language in
        alphanumerical order, starting at a given page. By default,
        it starts at '!', so it should yield all pages.
 
        The objects returned by this generator are all PageLink()s.
     """
+    if site == None:
+        site = getSite()
     while True:
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
-        start = link2url(start, code = mylang)
+        start = link2url(start, site = site)
         # load a list which contains a series of article names (always 480?)
-        returned_html = getPage(mylang, family.allpagesname(mylang, start), do_quote = False, get_edit_page = False)
+        returned_html = getPage(site, site.allpagesname(start), do_quote = False, get_edit_page = False)
         # Try to find begin and end markers
         try:
             # In 1.4, another table was added above the navigational links
-            if family.version(mylang) < "1.4":
+            if site.version() < "1.4":
                 begin_s = '<table'
                 end_s = '</table'
             else:
@@ -1109,7 +1097,7 @@ def allpages(start = '!'):
             raise NoPage('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
         # remove the irrelevant sections
         returned_html = returned_html[ibegin:iend]
-        if family.version(mylang)=="1.2":
+        if site.version()=="1.2":
             R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
         else:
             R = re.compile('title ?="(.*?)"')
@@ -1118,11 +1106,10 @@ def allpages(start = '!'):
         for hit in R.findall(returned_html):
             # count how many articles we found on the current page
             n = n + 1
-            if family.version(mylang)=="1.2":
-                yield PageLink(mylang, url2link(hit, code = mylang,
-                                            incode = mylang))
+            if site.version()=="1.2":
+                yield PageLink(site, url2link(hit, site = site, insite = site))
             else:
-                yield PageLink(mylang, hit)
+                yield PageLink(site, hit)
             # save the last hit, so that we know where to continue when we
             # finished all articles on the current page. Append a '_0' so that
             # we don't yield a page twice.
@@ -1135,52 +1122,56 @@ def allpages(start = '!'):
         
 # Part of library dealing with interwiki links
 
-def getLanguageLinks(text,incode=None):
+def getLanguageLinks(text, insite = None):
     """Returns a dictionary of other language links mentioned in the text
        in the form {code:pagename}. Do not call this routine directly, use
        PageLink objects instead"""
+    if insite == None:
+        insite = getSite()
     result = {}
     # This regular expression will find every link that is possibly an
     # interwiki link.
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
     interwikiR = re.compile(r'\[\[([a-z\-]+):([^\]]*)\]\]')
-    for code, pagetitle in interwikiR.findall(text):
-        if code in family.obsolete:
-            output(u"ERROR: ignoring link to obsolete language %s" % code)
+    for lang, pagetitle in interwikiR.findall(text):
+        if lang in insite.family.obsolete:
+            output(u"ERROR: ignoring link to obsolete language %s" % lang)
         elif not pagetitle:
-            print "ERROR: empty link to %s:" % code
+            print "ERROR: empty link to %s:" % lang
         # Check if it really is in fact an interwiki link to a known
         # language, or if it's e.g. a category tag or an internal link
-        elif code in family.langs:
+        elif lang in insite.family.langs:
             if '|' in pagetitle:
                 # ignore text after the pipe
                 pagetitle = pagetitle[:pagetitle.index('|')]
-            if incode == 'eo':
+            if insite.lang == 'eo':
                 pagetitle=pagetitle.replace('xx','x')
             if not pagetitle:
-                output(u"ERROR: ignoring impossible link to %s:%s" % (code, pagetitle))
+                output(u"ERROR: ignoring impossible link to %s:%s" % (lang, pagetitle))
             else:
-                result[code] = pagetitle
-    if incode in ['zh','zh-cn','zh-tw']:
+                result[insite.getSite(code=lang)] = pagetitle
+    if insite.lang in ['zh','zh-cn','zh-tw']:
         m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7b80\\]\\]', text)
         if m:
             #print "DBG> found link to traditional Chinese", repr(m.group(0))
-            result['zh-cn'] = m.group(1)
+            result[insite.getSite(code='zh-cn')] = m.group(1)
         m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7c21\\]\\]', text)
         if m:
             #print "DBG> found link to traditional Chinese", repr(m.group(0))
-            result['zh-cn'] = m.group(1)
+            result[insite.getSite(code='zh-cn')] = m.group(1)
         m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7e41\\]\\]', text)
         if m:
             #print "DBG> found link to simplified Chinese", repr(m.group(0))
-            result['zh-tw'] = m.group(1)
+            result[insite.getSite(code='zh-tw')] = m.group(1)
     return result
 
-def removeLanguageLinks(text):
+def removeLanguageLinks(text, site = None):
     """Given the wiki-text of a page, return that page with all interwiki
        links removed. If a link to an unknown language is encountered,
        a warning is printed."""
+    if site == None:
+        site = getSite()
     # This regular expression will find every link that is possibly an
     # interwiki link, plus trailing whitespace. The language code is grouped.
     # NOTE: This assumes that language codes only consist of non-capital
@@ -1197,7 +1188,7 @@ def removeLanguageLinks(text):
         else:
             # Extract what would be the language code
             code = match.group(1)
-            if code in family.langs:
+            if code in site.family.langs:
                 # We found a valid interwiki link. Remove it.
                 text = text[:match.start()] + text[match.end():]
                 # continue the search on the remaining text
@@ -1208,61 +1199,69 @@ def removeLanguageLinks(text):
                     print "WARNING: Link to unknown language %s" % (match.group(1))
     return normalWhitespace(text)
 
-def replaceLanguageLinks(oldtext, new, code=None):
+def replaceLanguageLinks(oldtext, new, site = None):
     """Replace the interwiki language links given in the wikitext given
        in oldtext by the new links given in new.
 
        'new' should be a dictionary with the language names as keys, and
        either PageLink objects or the link-names of the pages as values.
     """
-    if code == None:
-        code = mylang
-    s = interwikiFormat(new)
-    s2 = removeLanguageLinks(oldtext)
+    if site == None:
+        site = getSite()
+    s = interwikiFormat(new, insite = site)
+    s2 = removeLanguageLinks(oldtext, site = site)
     if s:
-        if mylang in config.interwiki_attop:
+        if site.lang in config.interwiki_attop:
             newtext = s + config.interwiki_text_separator + s2
-        elif code in config.categories_last:
-            cats = getCategoryLinks(s2,code)
+        elif site.lang in config.categories_last:
+            cats = getCategoryLinks(s2, site = site)
             s3 = []
             for catname in cats:
-                s3.append(PageLink(code,catname))
-            s2 = removeCategoryLinks(s2,code) + config.interwiki_text_separator + s
-            newtext = replaceCategoryLinks(s2, s3, code=code)
+                s3.append(PageLink(site, catname))
+            s2 = removeCategoryLinks(s2, site) + config.interwiki_text_separator + s
+            newtext = replaceCategoryLinks(s2, s3, site=site)
         else:
             newtext = s2 + config.interwiki_text_separator + s
     else:
         newtext = s2
     return newtext
     
-def interwikiFormat(links):
+def interwikiFormat(links, insite = None):
     """Create a suitable string encoding all interwiki links for a wikipedia
        page.
 
        'links' should be a dictionary with the language names as keys, and
        either PageLink objects or the link-names of the pages as values.
 
-       The string is formatted for inclusion in mylang.
+       The string is formatted for inclusion in insite (defaulting to your own).
     """
+    if insite is None:
+        insite = getSite()
     if not links:
         return ''
+    # Security check: site may not refer to itself.
+    for pl in links.values():
+        if pl.site()==insite:
+            raise ValueError("Trying to add interwiki link to self")
     s = []
     ar = links.keys()
     ar.sort()
-    if mylang in family.interwiki_putfirst:
+    putfirst = insite.interwiki_putfirst()
+    if putfirst:
         #In this case I might have to change the order
         ar2 = []
-        for code in family.interwiki_putfirst[mylang]:
-            if code in ar:
-                del ar[ar.index(code)]
-                ar2 = ar2 + [code]
+        for code in putfirst:
+            site = insite.getSite(code = code)
+            if site in ar:
+                del ar[ar.index(site)]
+                ar2 = ar2 + [site]
         ar = ar2 + ar
-    for code in ar:
+    for site in ar:
         try:
-            s.append(links[code].aslink())
+            s.append(links[site].aslink())
         except AttributeError:
-            s.append('[[%s:%s]]' % (code, links[code]))
-    if mylang in config.interwiki_on_one_line:
+            s.append('[[%s:%s]]' % (site.linkto(links[site],othersite=insite)))
+    if insite.lang in config.interwiki_on_one_line:
         sep = ' '
     else:
         sep = '\r\n'
@@ -1291,19 +1290,19 @@ def normalWhitespace(text):
 
 # Categories
 
-def getCategoryLinks(text, code):
+def getCategoryLinks(text, site):
     """Returns a list of category links.
        in the form {code:pagename}. Do not call this routine directly, use
        PageLink objects instead"""
     result = []
-    ns = family.category_namespaces(code)
+    ns = site.category_namespaces()
     for prefix in ns:
         R = re.compile(r'\[\['+prefix+':([^\]]*)\]\]')
         for t in R.findall(text):
             if t:
                 # remove leading / trailing spaces
                 t = t.strip()
-                if code == 'eo':
+                if site.lang == 'eo':
                     t = t.replace('xx','x')
                 t = t[:1].capitalize() + t[1:]
                 result.append(ns[0]+':'+t)
@@ -1311,56 +1310,58 @@ def getCategoryLinks(text, code):
                 print "ERROR: empty category link"
     return result
 
-def removeCategoryLinks(text, code):
+def removeCategoryLinks(text, site):
     """Given the wiki-text of a page, return that page with all category
        links removed. """
-    ns = family.category_namespaces(code)
+    ns = site.category_namespaces()
     for prefix in ns:
         text = re.sub(r'\[\['+prefix+':([^\]]*)\]\]', '', text)
     return normalWhitespace(text)
 
-def replaceCategoryLinks(oldtext, new, code = None):
+def replaceCategoryLinks(oldtext, new, site = None):
     """Replace the category links given in the wikitext given
        in oldtext by the new links given in new.
 
        'new' should be a list of category pagelink objects.
     """
-    if code is None:
-        code = mylang
+    if site is None:
+        site = getSite()
     # first remove interwiki links and add them later, so that
     # interwiki tags appear below category tags if both are set
     # to appear at the bottom of the article
-    if not code in config.categories_last:
-        interwiki_links = getLanguageLinks(oldtext)
-        oldtext = removeLanguageLinks(oldtext)
-    s = categoryFormat(new)
-    s2 = removeCategoryLinks(oldtext, code)
+    if not site.lang in config.categories_last:
+        interwiki_links = getLanguageLinks(oldtext, insite = site)
+        oldtext = removeLanguageLinks(oldtext, site = site)
+    s = categoryFormat(new, site = site)
+    s2 = removeCategoryLinks(oldtext, site = site)
     if s:
-        if mylang in config.category_attop:
+        if site.lang in config.category_attop:
             newtext = s + config.category_text_separator + s2
         else:
             newtext = s2 + config.category_text_separator + s
     else:
         newtext = s2
     # now re-add interwiki links
-    if not code in config.categories_last:
+    if not site.lang in config.categories_last:
         newtext = replaceLanguageLinks(newtext, interwiki_links)
     return newtext
     
-def categoryFormat(links):
+def categoryFormat(links, insite = None):
     """Create a suitable string encoding all category links for a wikipedia
        page.
 
        'links' should be a list of category pagelink objects.
 
-       The string is formatted for inclusion in mylang.
+       The string is formatted for inclusion in insite.
     """
     if not links:
         return ''
+    if insite is None:
+        insite.getSite()
     s = []
     for pl in links:
-        s.append(pl.aslocallink())
-    if mylang in config.category_on_one_line:
+        s.append(pl.aslink())
+    if site.category_on_one_line():
         sep = ' '
     else:
         sep = '\r\n'
@@ -1372,31 +1373,20 @@ def categoryFormat(links):
 
 def myencoding():
     """The character encoding used by the home wiki"""
-    return code2encoding(mylang)
+    return getSite().encoding()
 
-def code2encoding(code):
-    """Return the encoding for a specific language wikipedia"""
-    if code == 'ascii':
-        return code # Special case where we do not want special characters.
-    return family.code2encoding(code)
-
-def code2encodings(code):
-    """Return a list of historical encodings for a specific language
-       wikipedia"""
-    return family.code2encodings(code)
-
-def url2link(percentname, incode, code):
+def url2link(percentname, insite, site):
     """Convert a url-name of a page into a proper name for an interwiki link
-       the argument 'incode' specifies the encoding of the target wikipedia
+       the argument 'insite' specifies the target wiki
        """
     result = underline2space(percentname)
-    x = url2unicode(result, language = code)
-    return unicode2html(x, encoding = code2encoding(incode))
+    x = url2unicode(result, site = site)
+    return unicode2html(x, insite.encoding())
     
-def link2url(name, code, incode = None):
+def link2url(name, site, insite = None):
     """Convert an interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link"""
-    if code == 'eo':
+    if site.lang == 'eo':
         name = name.replace('cx','&#265;')
         name = name.replace('Cx','&#264;')
         name = name.replace('CX','&#264;')
@@ -1440,22 +1430,22 @@ def link2url(name, code, incode = None):
         # There might be %XX encoding. Just try to decode, if that fails
         # we must ignore the % sign and it is apparently in the title.
         try:
-            name = url2unicode(name, language = code)
+            name = url2unicode(name, site = site)
         except UnicodeError:
-            name = html2unicode(name, language = code, altlanguage = incode)
+            name = html2unicode(name, site = site, altsite = insite)
     else:
-        name = html2unicode(name, language = code, altlanguage = incode)
+        name = html2unicode(name, site = site, altsite = insite)
 
     #print "DBG>",repr(name)
     # Remove spaces from beginning and the end
     name = name.strip()
     # Standardize capitalization
     if name:
-        if not code in family.nocapitalize:
+        if not site.nocapitalize:
             name = name[0].upper()+name[1:]
     #print "DBG>",repr(name)
     try:
-        result = str(name.encode(code2encoding(code)))
+        result = str(name.encode(site.encoding()))
     except UnicodeError:
         #print "Cannot convert %s into a URL for %s" % (repr(name), code)
         # Put entities in there. The URL will not be found.
@@ -1466,21 +1456,25 @@ def link2url(name, code, incode = None):
     result = space2underline(result)
     return urllib.quote(result)
 
-def isInterwikiLink(s):
+def isInterwikiLink(s, site = None):
     """Try to check whether s is in the form "xx:link" where xx: is a
        known language. In such a case we are dealing with an interwiki link."""
     if not ':' in s:
         return False
+    if site is None:
+        site = getSite()
     l,k=s.split(':',1)
-    if l in family.langs:
+    if l in site.family.langs:
         return True
     return False
 
 def getReferences(pl, follow_redirects = True):
-    host = family.hostname(pl.code())
-    url = family.references_address(mylang, pl.urlname())
-    output(u'Getting references to %s:%s' % (pl.code(), pl.linkname()))
-    txt, charset = getUrl(host,url)
+    site = pl.site()
+    host = site.hostname()
+    url = site.references_address(pl.urlname())
+    
+    output(u'Getting references to %s' % (site.linkto(pl.linkname())))
+    txt, charset = getUrl(host, url, site)
     # remove brackets which would disturb the regular expression cascadedListR 
     txt = txt.replace('<a', 'a')
     txt = txt.replace('</a', '/a')
@@ -1520,7 +1514,7 @@ def UnicodeToAsciiHtml(s):
     #print
     return ''.join(html)
 
-def url2unicode(percentname, language):
+def url2unicode(percentname, site):
     # Does the input string contain non-ascii characters? In that case,
     # it is not really an url, and we do not have to unquote it....
     for c in percentname:
@@ -1533,7 +1527,7 @@ def url2unicode(percentname, language):
         x=urllib.unquote(str(percentname))
     #print "DBG> ",language,repr(percentname),repr(x)
     # Try utf-8 first. It almost cannot succeed by accident!
-    for encoding in ('utf-8',)+code2encodings(language):
+    for encoding in ('utf-8',)+site.encodings():
         try:
             encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
             x,l = decode_func(x)
@@ -1591,8 +1585,9 @@ def addEntity(name):
     #print "DBG> addEntity:", repr(name), repr(result)
     return result
 
-def unicodeName(name, language, altlanguage = None):
-    for encoding in code2encodings(language):
+def unicodeName(name, site, altsite = None):
+    #print "DBG> ", repr(site), site.encodings()
+    for encoding in site.encodings():
         try:
             if type(name)==type(u''):
                 return name
@@ -1600,9 +1595,9 @@ def unicodeName(name, language, altlanguage = None):
                 return unicode(name, encoding)
         except UnicodeError:
             continue
-    if altlanguage is not None:
-        print "DBG> Using local encoding!", altlanguage, "to", language, name
-        for encoding in code2encodings(altlanguage):
+    if altsite is not None:
+        print "DBG> Using local encoding!", repr(altsite), "to", repr(site), repr(name)
+        for encoding in altsite.encodings():
             try:
                 return unicode(name, encoding)
             except UnicodeError:
@@ -1610,8 +1605,8 @@ def unicodeName(name, language, altlanguage = None):
     raise Error("Cannot decode")
     #return unicode(name,code2encoding(inlanguage))
     
-def html2unicode(name, language, altlanguage=None):
-    name = unicodeName(name, language, altlanguage)
+def html2unicode(name, site, altsite=None):
+    name = unicodeName(name, site, altsite)
     name = removeEntity(name)
 
     Runi = re.compile('&#(\d+);')
@@ -1636,57 +1631,176 @@ def html2unicode(name, language, altlanguage=None):
                 raise
     return result
 
-def setFamily(fam):
+def Family(fam = None):
     """
-    Import the user's family. If not changed in user_config, the family is
-    Wikipedia.
+    Import the named family.
     """
+    if fam == None:
+        fam = config.family
     try:
-        global family
-        # This dictionary will serve as a variable namespace for the following
-        # exec statement. We will only need the variable called family_module
-        # from this dictionary.
-        namespace_dict = {}
-        exec "import %s_family as family_module" % fam in namespace_dict
-        family = namespace_dict['family_module']
+        exec "import %s_family"%fam
     except ImportError:
-        print "Error importing the family. This probably means the family"
-        print "name is mistyped in the configuration file"
+        print "Error importing the %s family. This probably means the family"%fam
+        print "does not exist. Also check your configuration file"
         sys.exit(1)
-    # The family module used to be used as-is. However, that gave maintenance
-    # nightmares. Newer families are classes so that they can inherit. If a
-    # family is a new-style family, we must instantiate the class.
-    # NOTE: All family files have been converted, except for wikitravel.
-    # As soon as wikitravel has been converted, we don't need the following
-    # check.
-    if hasattr(family,'Family'):
-        family=family.Family()
+    return sys.modules['%s_family'%fam].Family()
 
-def setMyLang(code):
-    """Change the home language"""
-    global mylang
-    global cookies
+class Site(object):
+    def __init__(self, code, fam = None):
+        self.lang = code.lower()
+        if type(fam)==type('') or fam is None:
+            self.family = Family(fam)
+        else:
+            self.family = fam
+        if self.lang == 'commons':
+            family._addlang(self.lang,'commons.wikimedia.org',{4:'Commons', 5:'Commons talk'})
+        if self.lang not in self.family.langs:
+            raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
-    mylang = code
-    # Retrieve session cookies for login.
-    try:
-        f = open('login-data/%s-login.data' % mylang)
-        cookies = '; '.join([x.strip() for x in f.readlines()])
-        loggedin = True
-        #print cookies
-        f.close()
-    except IOError:
-        #print "Not logged in"
-        cookies = None
-        loggedin = False
-    if mylang.lower() == 'commons':
-        family._addlang(mylang,'commons.wikimedia.org',{4:'Commons', 5:'Commons talk'})
+        self.nocapitalize = self.lang in self.family.nocapitalize
         
-def checkLogin():
-    global loggedin
-    txt = getPage(mylang,'Non-existing page', get_edit_page = False)
-    loggedin = 'Userlogin' not in txt
-    return loggedin
+    def cookies(self):
+        if not hasattr(self,'_cookies'):
+            self._fill()
+        return self._cookies
+
+    def loggedin(self, check = False):
+        if not hasattr(self,'_loggedin'):
+            self._fill()
+        if check:
+            txt = getPage(self, 'Non-existing page', get_edit_page = False)
+            self.loggedin = 'Userlogin' not in txt
+        return self._loggedin
+
+    def _fill(self):
+        import os
+        # Retrieve session cookies for login.
+        fn = 'login-data/%s-%s-login.data' % (self.family.name,self.lang)
+        if not os.path.exists(fn):
+            fn = 'login-data/%s-login.data' % self.lang
+        if not os.path.exists(fn):
+            #print "Not logged in"
+            self._cookies = None
+            self._loggedin = False
+        else:
+            f = open(fn)
+            self._cookies = '; '.join([x.strip() for x in f.readlines()])
+            self._loggedin = True
+            f.close()
+
+    def __repr__(self):
+        return self.family.name+":"+self.lang
+    
+    def linkto(self, linkname, othersite = None):
+        if not othersite or othersite.family != self.family:
+            s = self.family.name+":"
+        else:
+            s = ""
+        if s or othersite.lang!=self.lang:
+            s += self.lang+":"
+        return "[[" + s + linkname + "]]"
+
+    def encoding(self):
+        return self.family.code2encoding(self.lang)
+
+    def encodings(self):
+        return self.family.code2encodings(self.lang)
+
+    def category_namespaces(self):
+        return self.family.category_namespaces(self.lang)
+
+    def image_namespace(self, fallback = '_default'):
+        return self.family.image_namespace(self.lang, fallback)
+
+    def template_namespace(self, fallback = '_default'):
+        return self.family.template_namespace(self.lang, fallback)
+
+    def export_address(self):
+        return self.family.export_address(self.lang)
+    
+    def hostname(self):
+        return self.family.hostname(self.lang)
+
+    def delete_address(self, s):
+        return self.family.delete_address(self.lang, s)
+
+    def put_address(self, s):
+        return self.family.put_address(self.lang, s)
+
+    def get_address(self, s):
+        return self.family.get_address(self.lang, s)
+    
+    def checkCharset(self, charset):
+        if not hasattr(self,'charset'):
+            self.charset = charset
+        assert self.charset.lower() == charset.lower(), "charset for %s changed from %s to %s"%(repr(self),self.charset,charset)
+        if self.encoding().lower() != charset.lower():
+            raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s"%(repr(self),charset, self.encoding()))
+
+    def allpagesname(self, s):
+        return self.family.allpagesname(self.lang, s)
+
+    def references_address(self, s):
+        return self.family.references_address(self.lang, s)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def version(self):
+        return self.family.version(self.lang)
+
+    def __cmp__(self, other):
+        """Pseudo method to be able to use equality and inequality tests on
+           Site objects"""
+        if not isinstance(other,Site):
+            return 1
+        if self.family==other.family:
+            return cmp(self.lang,other.lang)
+        return cmp(self.family,other.family)
+
+    def category_on_one_line(self):
+        return self.lang in self.family.category_on_one_line
+
+    def redirect(self):
+        return self.family.redirect.get(self.lang,None)
+    
+    def interwiki_putfirst(self):
+        return self.family.interwiki_putfirst.get(self.lang,None)
+
+    def login_address(self):
+        return self.family.login_address(self.lang)
+    
+    def getSite(self, code):
+        return getSite(code = code, fam = self.family)
+
+    def namespace(self, num):
+        return self.family.namespace(self.lang, num)
+
+    def allmessages_address(self):
+        return self.family.allmessages_address(self.lang)
+
+    def upload_address(self):
+        return self.family.upload_address(self.lang)
+
+    def maintenance_address(self, sub, default_limit = True):
+        return self.family.maintenance_address(self.lang, sub, default_limit)
+    
+_sites = {}
+
+def getSite(code = None, fam = None):
+    if code == None:
+        code = default_code
+    if fam == None:
+        fam == default_family
+    key = '%s:%s'%(fam,code)
+    if not _sites.has_key(key):
+        _sites[key] = Site(code=code, fam=fam)
+    return _sites[key]
+    
+def checkLogin(site = None):
+    if not site:
+        site = getSite()
+    return site.loggedin(check=True)
     
 def argHandler(arg):
     '''
@@ -1694,6 +1808,7 @@ def argHandler(arg):
     it is one of the global parameters as -lang or -throttle. If it is a global
     parameter, processes it and returns None.
     '''
+    global default_code, default_family
     if sys.platform=='win32':
         # stupid Windows gives parameters encoded as windows-1252, but input
         # encoded as cp850
@@ -1702,9 +1817,9 @@ def argHandler(arg):
         # Linux uses the same encoding for both
         arg = unicode(arg, config.console_encoding)
     if arg.startswith('-family:'):
-        setFamily(arg[8:])
+        default_family = arg[8:]
     elif arg.startswith('-lang:'):
-        setMyLang(arg[6:])
+        default_code = arg[6:]
     elif arg.startswith('-throttle:'):
         get_throttle.setDelay(int(arg[10:]))
     elif arg.startswith('-putthrottle:'):
@@ -1726,14 +1841,11 @@ if not config.username:
     print "....filling in your real name and home wikipedia."
     print "for other possible configuration variables check config.py"
     sys.exit(1)
-setFamily(config.family)
-setMyLang(config.mylang)
-if not family.langs.has_key(mylang):
-    print "Home-wikipedia from user-config.py does not exist"
-    print "Defaulting to test: wikipedia"
-    setMyLang('test')
-    family.langs['test']='test.wikipedia.org'
+default_family = config.family
+default_code = config.mylang
 
+# Check
+getSite()
 
 # Languages to use for comment text after the actual language but before
 # en:. For example, if for language 'xx', you want the preference of
@@ -1817,6 +1929,10 @@ def translate(code, dict):
     the options gives result, we just take the first language in the
     list.
     """
+    # If a site is given instead of a code, use its language
+    if hasattr(code,'lang'):
+        code = code.lang
+        
     if dict.has_key(code):
         return dict[code]
     for alt in altlang(code):
@@ -1826,7 +1942,7 @@ def translate(code, dict):
         return dict['en']
     return dict.values()[0]
 
-# Taken from interwiki.py. TODO: move to wikipedia.py.
+# Taken from interwiki.py. 
 def showDiff(oldtext, newtext):
     import difflib
     sep = '\r\n'

@@ -188,7 +188,7 @@ class Subject(object):
         # Remember the "origin page"
         self.inpl = pl
         # Mark the origin page as todo.
-        self.todo = {pl:pl.code()}
+        self.todo = {pl:pl.site()}
         # Nothing has been done yet
         self.done = {}
         # Add the translations given in the hints.
@@ -212,24 +212,24 @@ class Subject(object):
         arr = {}
         titletranslate.translate(self.inpl, arr, same = globalvar.same, hints = hints, auto = globalvar.auto)
         for pl in arr.iterkeys():
-            self.todo[pl] = pl.code()
+            self.todo[pl] = pl.site()
             self.foundin[pl] = [None]
 
-    def openCodes(self):
-        """Return a list of language codes for all things we still need to do"""
+    def openSites(self):
+        """Return a list of sites for all things we still need to do"""
         return self.todo.values()
 
-    def willWorkOn(self, code):
+    def willWorkOn(self, site):
         """By calling this method, you 'promise' this instance that you will
-           work on any todo items in the language given by 'code'. This routine
+           work on any todo items for the wiki indicated by 'site'. This routine
            will return a list of pages that can be treated."""
         # Bug-check: Isn't there any work still in progress?
         if hasattr(self,'pending'):
-            raise 'Cant start on %s; still working on %s'%(code,self.pending)
+            raise 'Cant start on %s; still working on %s'%(repr(site),self.pending)
         # Prepare a list of suitable pages
         self.pending=[]
         for pl in self.todo.keys():
-            if pl.code() == code:
+            if pl.site() == site:
                 self.pending.append(pl)
                 del self.todo[pl]
         # If there are any, return them. Otherwise, nothing is in progress.
@@ -248,8 +248,8 @@ class Subject(object):
             return False
         else:
             self.foundin[pl]=[foundin]
-            self.todo[pl] = pl.code()
-            counter.plus(pl.code())
+            self.todo[pl] = pl.site()
+            counter.plus(pl.site())
             # wikipedia.output("DBG> Found new to do: %s" % pl.aslink())
             return True
         
@@ -261,9 +261,9 @@ class Subject(object):
         # Loop over all the pages that should have been taken care of
         for pl in self.pending:
             # Mark the page as done
-            self.done[pl] = pl.code()
+            self.done[pl] = pl.site()
             # Register this fact at the todo-counter.
-            counter.minus(pl.code())
+            counter.minus(pl.site())
             # Assume it's not a redirect
             isredirect = 0
             # Now check whether any interwiki links should be added to the
@@ -274,7 +274,7 @@ class Subject(object):
                 try:
                     iw = pl.interwiki()
                 except wikipedia.IsRedirectPage,arg:
-                    pl3 = wikipedia.PageLink(pl.code(),arg.args[0])
+                    pl3 = wikipedia.PageLink(pl.site(),arg.args[0])
                     wikipedia.output(u"NOTE: %s is redirect to %s" % (pl.aslink(), pl3.aslink()))
                     if pl == self.inpl:
                         # This is a redirect page itself. We don't need to
@@ -282,7 +282,7 @@ class Subject(object):
                         isredirect = 1
                         # In this case we can also stop all hints!
                         for pl2 in self.todo:
-                            counter.minus(pl2.code())
+                            counter.minus(pl2.site())
                         self.todo = {}
                         pass
                     elif not globalvar.followredirect:
@@ -300,7 +300,7 @@ class Subject(object):
                         # This is the home subject page.
                         # In this case we can stop all hints!
                         for pl2 in self.todo:
-                            counter.minus(pl2.code())
+                            counter.minus(pl2.site())
                         self.todo = {}
                         pass
                 #except wikipedia.SectionError:
@@ -350,8 +350,8 @@ class Subject(object):
                         titletranslate.translate(pl, arr, same = False,
                                                  hints = [newhint], auto = globalvar.auto)
                         for pl2 in arr.iterkeys():
-                            self.todo[pl2] = pl2.code()
-                            counter.plus(pl2.code())
+                            self.todo[pl2] = pl2.site()
+                            counter.plus(pl2.site())
                             self.foundin[pl2] = [None]
                             
 
@@ -383,55 +383,61 @@ class Subject(object):
     def assemble(self):
         # No errors have been seen so far
         nerr = 0
-        # Build up a dictionary of all links found, with the code as key.
+        # Build up a dictionary of all links found, with the site as key.
         # Each value will be a list.
+        mysite = wikipedia.getSite()
+        
         new = {}
         for pl in self.done.keys():
-            code = pl.code()
-            if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
+            site = pl.site()
+            if site == mysite and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
                 if pl != self.inpl:
                     self.problem("Found link to %s"%pl.aslink())
                     self.whereReport(pl)
                     nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
-                if code in new:
-                    new[code].append(pl)
+                if site in new:
+                    new[site].append(pl)
                 else:
-                    new[code] = [pl]
+                    new[site] = [pl]
         # Clean up the Chinese links
-        if 'zh-cn' in new and 'zh-tw' in new:
-            if len(new['zh-cn']) == 1 and len(new['zh-tw']) == 1:
-                if new['zh-cn'][0].linkname() == new['zh-tw'][0].linkname():
-                    new['zh'] = [wikipedia.PageLink('zh',new['zh-cn'][0].linkname())]
-                    del new['zh-cn']
-                    del new['zh-tw']
+        zhcnsite = mysite.getSite(code='zh-cn')
+        zhtwsite = mysite.getSite(code='zh-tw')
+        zhsite = mysite.getSite(code='zh')
+        if zhtwsite in new and zhcnsite in new:
+            if len(new[zhcnsite]) == 1 and len(new[zhtwsite]) == 1:
+                if new[zhcnsite][0].linkname() == new[zhtwsite][0].linkname():
+                    new[zhsite] = [wikipedia.PageLink(zhsite,new[zhcnsite][0].linkname())]
+                    del new[zhcnsite]
+                    del new[zhtwsite]
                     print "Changing equivalent zh-cn and zh-tw links into a single zh link"
-                elif 'zh' in new:
-                    del new['zh']
+                elif zhsite in new:
+                    del new[zhsite]
                     print "Ignoring links to zh in presence of zh-cn and zh-tw"
-            elif 'zh' in new:
-                del new['zh']
+            elif zhsite in new:
+                del new[zhsite]
                 print "Ignoring links to zh in presence of zh-cn and zh-tw"
-        elif 'zh-cn' in new or 'zh-tw' in new:
-            if 'zh' in new:
-                del new['zh']
+        elif zhcnsite in new or zhtwsite in new:
+            if zhsite in new:
+                del new[zhsite]
                 print "Ignoring links to zh in presence of zh-cn and zh-tw"
         # Remove Chinese internal links
-        if wikipedia.mylang=='zh' or wikipedia.mylang=='zh-cn':
-            if 'zh-tw' in new:
-                if len(new['zh-tw']) > 1:
+        if mysite==zhsite or mysite==zhtwsite:
+            if zhtwsite in new:
+                if len(new[zhtwsite]) > 1:
                     nerr +=1
                     self.problem("Found more than one link for traditional Chinese")
-                del new['zh-tw']
-        if wikipedia.mylang=='zh' or wikipedia.mylang=='zh-tw':
-            if 'zh-cn' in new:
-                if len(new['zh-cn']) > 1:
+                del new[zhtwsite]
+        if mysite==zhsite or mysite==zhtwsite:
+            if zhcnsite in new:
+                if len(new[zhcnsite]) > 1:
                     nerr +=1
                     self.problem("Found more than one link for simplified Chinese")
-                del new['zh-cn']
-        if wikipedia.mylang=='zh-cn' or wikipedia.mylang=='zh-tw':
-            if 'zh' in new:
-                del new['zh']
+                del new[zhcnsite]
+        if mysite==zhcnsite or mysite==zhtwsite:
+            if zhsite in new:
+                # Do not complain about more than one value. One may be cn, the other tw!
+                del new[zhsite]
         # See if new{} contains any problematic values
         result = {}
         for k, v in new.items():
@@ -532,7 +538,7 @@ class Subject(object):
         old={}
         try:
             for pl in self.inpl.interwiki():
-                old[pl.code()] = pl
+                old[pl.site()] = pl
         except wikipedia.NoPage:
             wikipedia.output(u"BUG: %s no longer exists?" % self.inpl.aslink())
         ####
@@ -547,7 +553,7 @@ class Subject(object):
             oldtext = self.inpl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if globalvar.debug:
-                showDiff(oldtext, newtext)
+                wikipedia.showDiff(oldtext, newtext)
             if newtext == oldtext:
                 if globalvar.backlink:
                     self.reportBacklinks(new)
@@ -557,7 +563,7 @@ class Subject(object):
                     # Determine whether we need permission to submit
                     ask = False
                     if removing:
-                        self.problem('removing: %s'%(",".join(removing)))
+                        self.problem('removing: %s'%(",".join([x.lang for x in removing])))
                         ask = True
                     if globalvar.force:
                         ask = False
@@ -597,15 +603,15 @@ class Subject(object):
     def reportBacklinks(self, new):
         """Report missing back links. This will be called from finish() if
            needed."""
-        for code in new.keys():
-            pl = new[code]
+        for site in new.keys():
+            pl = new[site]
             if not unequal.bigger(self.inpl, pl):
                 shouldlink = new.values() + [self.inpl]
                 linked = pl.interwiki()
                 for xpl in shouldlink:
                     if xpl != pl and not xpl in linked:
                         for l in linked:
-                            if l.code() == xpl.code():
+                            if l.site() == xpl.site():
                                 wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (pl.asselflink(), xpl.aslink(), l.aslink()))
                                 break
                         else:
@@ -613,12 +619,12 @@ class Subject(object):
                 # Check for superfluous links
                 for xpl in linked:
                     # Chinese internal links are ok.
-                    if pl.code() in ['zh-cn','zh-tw','zh'] and xpl.code() in ['zh-cn','zh-tw']:
+                    if pl.site().lang in ['zh-cn','zh-tw','zh'] and xpl.site().lang in ['zh-cn','zh-tw']:
                         pass
                     elif not xpl in shouldlink:
                         # Check whether there is an alternative page on that language.
                         for l in shouldlink:
-                            if l.code() == xpl.code():
+                            if l.site() == xpl.site():
                                 # Already reported above.
                                 break
                         else:
@@ -639,9 +645,9 @@ class SubjectArray(object):
         """Add a single subject to the list"""
         subj = Subject(pl, hints = hints)
         self.subjects.append(subj)
-        for code in subj.openCodes():
+        for site in subj.openSites():
             # Keep correct counters
-            self.plus(code)
+            self.plus(site)
 
     def setGenerator(self, generator):
         """Add a generator of subjects. Once the list of subjects gets
@@ -678,21 +684,21 @@ class SubjectArray(object):
         if self.subjects:
             return self.subjects[0]
         
-    def maxOpenCode(self):
-        """Return the code of the foreign language that has the most
+    def maxOpenSite(self):
+        """Return the site that has the most
            open queries plus the number. If there is nothing left, return
            None, 0. Only languages that are TODO for the first Subject
            are returned."""
         max = 0
         maxlang = None
-        oc = self.firstSubject().openCodes()
+        oc = self.firstSubject().openSites()
         if not oc:
             # The first subject is done. This might be a recursive call made because we
             # have to wait before submitting another modification to go live. Select
             # any language from counts.
             oc = self.counts.keys()
-        if wikipedia.mylang in oc:
-            return wikipedia.mylang
+        if wikipedia.getSite() in oc:
+            return wikipedia.getSite()
         for lang in oc:
             count = self.counts[lang]
             if count > max:
@@ -700,10 +706,10 @@ class SubjectArray(object):
                 maxlang = lang
         return maxlang
 
-    def selectQueryCode(self):
-        """Select the language code the next query should go out for."""
+    def selectQuerySite(self):
+        """Select the site the next query should go out for."""
         # How many home-language queries we still have?
-        mycount = self.counts.get(wikipedia.mylang,0)
+        mycount = self.counts.get(wikipedia.getSite(),0)
         # Do we still have enough subjects to work on for which the
         # home language has been retrieved? This is rough, because
         # some subjects may need to retrieve a second home-language page!
@@ -712,26 +718,26 @@ class SubjectArray(object):
             if self.generator and mycount < globalvar.maxquerysize:
                 self.generateMore(globalvar.maxquerysize - mycount)
             # If we have a few, getting the home language is a good thing.
-            if self.counts[wikipedia.mylang] > 4:
-                return wikipedia.mylang
+            if self.counts[wikipedia.getSite()] > 4:
+                return wikipedia.getSite()
         # If getting the home language doesn't make sense, see how many 
         # foreign page queries we can find.
-        return self.maxOpenCode()
+        return self.maxOpenSite()
     
     def oneQuery(self):
         """Perform one step in the solution process"""
         # First find the best language to work on
-        code = self.selectQueryCode()
-        if code == None:
+        site = self.selectQuerySite()
+        if site == None:
             print "NOTE: Nothing left to do"
             return False
         # Now assemble a reasonable list of pages to get
         group = []
         plgroup = []
         for subj in self.subjects:
-            # Promise the subject that we will work on the code language
+            # Promise the subject that we will work on the site
             # We will get a list of pages we can do.
-            x = subj.willWorkOn(code)
+            x = subj.willWorkOn(site)
             if x:
                 plgroup.extend(x)
                 group.append(subj)
@@ -742,7 +748,7 @@ class SubjectArray(object):
             return False
         # Get the content of the assembled list in one blow
         try:
-            wikipedia.getall(code, plgroup)
+            wikipedia.getall(site, plgroup)
         except wikipedia.SaxError:
             # Ignore this error, and get the pages the traditional way.
             pass
@@ -764,16 +770,16 @@ class SubjectArray(object):
         """Check whether there is still more work to do"""
         return len(self) == 0 and self.generator is None
 
-    def plus(self, code): 
+    def plus(self, site): 
         """This is a routine that the Subject class expects in a counter"""
         try:
-            self.counts[code] += 1
+            self.counts[site] += 1
         except KeyError:
-            self.counts[code] = 1
+            self.counts[site] = 1
 
-    def minus(self, code):
+    def minus(self, site):
         """This is a routine that the Subject class expects in a counter"""
-        self.counts[code] -= 1
+        self.counts[site] -= 1
         
     def run(self):
         """Start the process until finished"""
@@ -782,51 +788,43 @@ class SubjectArray(object):
 
     def __len__(self):
         return len(self.subjects)
-
-def showDiff(oldtext, newtext):
-    import difflib
-    sep = '\r\n'
-    ol = oldtext.split(sep)
-    if len(ol) == 1:
-        sep = '\n'
-        ol = oldtext.split(sep)
-    nl = newtext.split(sep)
-    for line in difflib.ndiff(ol,nl):
-        if line[0] in ['+','-']:
-            wikipedia.output(line)
     
 def compareLanguages(old, new):
     removing = []
     adding = []
     modifying = []
-    for code in old.keys():
-        if code not in new:
+    mysite = wikipedia.getSite()
+    for site in old.keys():
+        if site not in new:
+            zhcnsite = mysite.getSite(code='zh-cn')
+            zhtwsite = mysite.getSite(code='zh-tw')
+            zhsite = mysite.getSite(code='zh')
             # zh internal links should not be present (as interwiki-links)
             # in the first place
-            if wikipedia.mylang in ['zh','zh-cn','zh-tw'] and code in ['zh','zh-cn','zh-tw']:
+            if mysite.lang in ['zh','zh-cn','zh-tw'] and site.lang in ['zh','zh-cn','zh-tw']:
                 pass
             # Zh is allowed to be removed if it is replaced by zh-cn or
             # zh-tw. Do not call such a modification a removal but a change
             # Same for the reverse change.
-            elif code == 'zh' and 'zh-cn' in new or 'zh-tw' in new:
-                modifying.append(code)
-            elif code == 'zh-cn' or code == 'zh-tw' and 'zh' in new:
-                modifying.append(code)
+            elif site == zhsite and (zhcnsite in new or zhtwsite in new):
+                modifying.append(site)
+            elif (site == zhcnsite or site == zhtwsite) and zhsite in new:
+                modifying.append(site)
             else:
-                removing.append(code)
-        elif old[code] != new[code]:
-            modifying.append(code)
+                removing.append(site)
+        elif old[site] != new[site]:
+            modifying.append(site)
 
-    for code2 in new.keys():
-        if code2 not in old:
-            adding.append(code2)
+    for site2 in new.keys():
+        if site2 not in old:
+            adding.append(site2)
     s = ""
     if adding:
-        s = s + " %s:" % (wikipedia.translate(wikipedia.mylang, msg)[0]) + ",".join(adding)
+        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[0]) + ",".join([x.lang for x in adding])
     if removing: 
-        s = s + " %s:" % (wikipedia.translate(wikipedia.mylang, msg)[1]) + ",".join(removing)
+        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[1]) + ",".join([x.lang for x in removing])
     if modifying:
-        s = s + " %s:" % (wikipedia.translate(wikipedia.mylang, msg)[2]) + ",".join(modifying)
+        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[2]) + ",".join([x.lang for x in modifying])
     return s,removing
 
 def ReadWarnfile(fn, sa):
@@ -838,7 +836,7 @@ def ReadWarnfile(fn, sa):
         m=R.search(line)
         if m:
             #print "DBG>",line
-            if m.group(1)==wikipedia.mylang:
+            if m.group(1)==wikipedia.getSite():
                 #print m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
                 if not hints.has_key(m.group(2)):
                     hints[m.group(2)]=[]
@@ -851,7 +849,7 @@ def ReadWarnfile(fn, sa):
                 #print "DBG> %s : %s" % (m.group(2), hints[m.group(2)])
     f.close()
     for pagename in hints:
-        pl = wikipedia.PageLink(wikipedia.mylang, pagename)
+        pl = wikipedia.PageLink(wikipedia.getSite(), pagename)
         sa.add(pl, hints = hints[pagename])
 
 #===========
@@ -927,17 +925,17 @@ if __name__ == "__main__":
                     # For years BC, append language-dependent text, e.g. "v. Chr."
                     # This text is read from date.py
                     if i < 0:
-                        current_year = (date.yearBCfmt[wikipedia.mylang]) % (-i)
+                        current_year = (date.yearBCfmt[wikipedia.getSite().lang]) % (-i)
                     else:
                         # For years AD, some languages need special formats
                         # This format is read from date.py
-                        if date.yearADfmt.has_key(wikipedia.mylang):
-                            current_year = (date.yearADfmt[wikipedia.mylang]) % i
+                        if date.yearADfmt.has_key(wikipedia.getSite().lang):
+                            current_year = (date.yearADfmt[wikipedia.getSite().lang]) % i
                         else:
                             current_year = '%d' % i
                     # There is no year 0
                     if i != 0:
-                        sa.add(wikipedia.PageLink(wikipedia.mylang, current_year),hints=hints)
+                        sa.add(wikipedia.PageLink(wikipedia.getSite(), current_year),hints=hints)
                 globalvar.followredirect = False
             elif arg.startswith('-days'):
                 if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
@@ -946,12 +944,12 @@ if __name__ == "__main__":
                     startmonth = int(arg[6:])
                 else:
                     startmonth = 1
-                fd = date.FormatDate(wikipedia.mylang)
-                pl = wikipedia.PageLink(wikipedia.mylang, fd(startmonth, 1))
+                fd = date.FormatDate(wikipedia.getSite())
+                pl = wikipedia.PageLink(wikipedia.getSite(), fd(startmonth, 1))
                 wikipedia.output(u"Starting with %s" % pl.aslink())
                 for month in range(startmonth, 12+1):
                     for day in range(1, date.days_in_month[month]+1):
-                        pl = wikipedia.PageLink(wikipedia.mylang, fd(month, day))
+                        pl = wikipedia.PageLink(wikipedia.getSite(), fd(month, day))
                         sa.add(pl,hints=hints)
             elif arg == '-nobell':
                 globalvar.bell = False
@@ -998,7 +996,7 @@ if __name__ == "__main__":
         inname = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
 
     if inname:
-        inpl = wikipedia.PageLink(wikipedia.mylang, inname)
+        inpl = wikipedia.PageLink(wikipedia.getSite(), inname)
         sa.add(inpl, hints = hints)
 
     try:

@@ -1,5 +1,5 @@
 """
-Loop over all pages in the home wikipedia, standardizing the interwiki links.
+Loop over all pages in the home wiki, standardizing the interwiki links.
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -41,15 +41,12 @@ for pl in wikipedia.allpages(start = start):
     old = pl.interwiki()
     new = {}
     for pl2 in old:
-        new[pl2.code()] = pl2
+        new[pl2.site()] = pl2
     newtext = wikipedia.replaceLanguageLinks(oldtext, new)
     if new:
         if newtext != oldtext:
             # Display the difference
-            import difflib
-            for line in difflib.ndiff(oldtext.split('\r\n'),newtext.split('\r\n')):
-                if line[0] in ['+','-']:
-                    print repr(line)[2:-1]
+            wikipedia.showDiff(oldtext, newtext)
             # Submit changes
             if forreal:
                 status, reason, data = pl.put(newtext,

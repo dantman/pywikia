@@ -60,7 +60,7 @@ def get_redirects_from_dump(sqlfilename):
     dict = {}
     # open sql dump and read page titles out of it
     dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
-    redirR = wikipedia.redirectRe(wikipedia.mylang)
+    redirR = wikipedia.redirectRe(wikipedia.getSite())
     for entry in dump.entries():
         if entry.redirect:
             m = redirR.search(entry.text)
@@ -72,7 +72,7 @@ def get_redirects_from_dump(sqlfilename):
             else:
                 target = m.group(1)
                 # There might be redirects to another wiki. Ignore these.
-                for code in wikipedia.family.langs.keys():
+                for code in wikipedia.getSite().family.langs.keys():
                     if target.startswith(code + ':'):
                         # TODO: doesn't seem to work
                         wikipedia.output(u'NOTE: Ignoring %s which is a redirect to %s:' % (entry.full_title(), code))
@@ -84,7 +84,7 @@ def get_redirects_from_dump(sqlfilename):
                     # remove leading and trailing whitespace
                     target = target.strip()
                     # capitalize the first letter
-                    if not wikipedia.mylang in wikipedia.family.nocapitalize:
+                    if not wikipedia.getSite().nocapitalize:
                         target = target[0].upper() + target[1:]
                     if target.find('#') != -1:
                         target = target[:target.index('#')]
@@ -96,10 +96,11 @@ def get_redirects_from_dump(sqlfilename):
     
 def retrieve_broken_redirects(source):
     if source == None:
+        mysite = wikipedia.getSite()
         # retrieve information from the live wiki's maintenance page
-        host = wikipedia.family.hostname(wikipedia.mylang)
+        host = mysite.hostname()
         # broken redirect maintenance page's URL
-        url = wikipedia.family.maintenance_address(wikipedia.mylang, 'brokenredirects', default_limit = False)
+        url = mysite.maintenance_address('brokenredirects', default_limit = False)
         print 'Retrieving maintenance page...' 
         maintenance_txt, charset = wikipedia.getUrl(host,url)
         
@@ -130,10 +131,10 @@ def retrieve_broken_redirects(source):
 
 def delete_broken_redirects(source):
     # get reason for deletion text
-    reason = wikipedia.translate(wikipedia.mylang, reason_broken)
+    reason = wikipedia.translate(wikipedia.getSite(), reason_broken)
 
     for redir_name in retrieve_broken_redirects(source):
-        redir_page = wikipedia.PageLink(wikipedia.mylang, redir_name)
+        redir_page = wikipedia.PageLink(wikipedia.getSite(), redir_name)
         try:
             target_name = redir_page.getRedirectTo(read_only = True)
         except wikipedia.IsNotRedirectPage:
@@ -144,7 +145,7 @@ def delete_broken_redirects(source):
             wikipedia.output(u'%s is locked.' % redir_page.linkname())
         else:
             try:
-                target_page = wikipedia.PageLink(wikipedia.mylang, target_name)
+                target_page = wikipedia.PageLink(wikipedia.getSite(), target_name)
                 target_page.get(read_only = True)
             except wikipedia.NoPage:
                 redir_page.delete(reason, prompt = False)
@@ -158,10 +159,11 @@ def delete_broken_redirects(source):
         
 def retrieve_double_redirects(source):
     if source == None:
+        mysite = wikipedia.getSite()
         # retrieve information from the live wiki's maintenance page
-        host = wikipedia.family.hostname(wikipedia.mylang)
+        host = mysite.hostname()
         # double redirect maintenance page's URL
-        url = wikipedia.family.maintenance_address(wikipedia.mylang, 'doubleredirects', default_limit = False)
+        url = mysite.maintenance_address('doubleredirects', default_limit = False)
         
         print 'Retrieving maintenance page...' 
         maintenance_txt, charset = wikipedia.getUrl(host,url)
@@ -181,9 +183,10 @@ def retrieve_double_redirects(source):
                 yield key
                 
 def fix_double_redirects(source):
+    mysite = wikipedia.getSite()
     for redir_name in retrieve_double_redirects(source):
         print ''
-        redir = wikipedia.PageLink(wikipedia.mylang, redir_name)
+        redir = wikipedia.PageLink(mysite, redir_name)
         try:
             target = redir.getRedirectTo()
         except wikipedia.IsNotRedirectPage:
@@ -194,7 +197,7 @@ def fix_double_redirects(source):
             wikipedia.output(u'%s is locked, skipping.' % redir.linkname())
         else:
             try:
-                second_redir = wikipedia.PageLink(wikipedia.mylang, target)
+                second_redir = wikipedia.PageLink(mysite, target)
                 second_target = second_redir.getRedirectTo(read_only = True)
             except wikipedia.IsNotRedirectPage:
                 wikipedia.output(u'%s is not a redirect.' % second_redir.linkname())
@@ -229,7 +232,7 @@ for arg in sys.argv[1:]:
 
 if action == 'double':
     # get summary text
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_double))
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_double))
     fix_double_redirects(source)
 elif action == 'broken':
     delete_broken_redirects(source)

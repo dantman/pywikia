@@ -37,9 +37,11 @@ if not filename:
     print "No file specified to get the image links from"
     sys.exit(1)
 
+mysite = wikipedia.getSite()
+
 # We want to be able to get our pictures from WikiCommons, so we
-# add it to the list of languages.
-wikipedia.family._addlang('commons','commons.wikimedia.org')
+# add it to the list of languages. UGLY.
+mysite.family._addlang('commons','commons.wikimedia.org')
 
 for image in wikipedia.PageLinksFromFile(filename):
     if image.isImage():
@@ -55,9 +57,8 @@ for image in wikipedia.PageLinksFromFile(filename):
             except wikipedia.IsRedirectPage:
                 print "Description page is redirect?!"
             answer=wikipedia.input(u"Copy this image (y/N)?")
-            if answer != "":
-                if answer[0] in ["y","Y"]:
-                    lib_images.transfer_image(image)
+            if answer.lower().startswith('y'):
+                lib_images.transfer_image(image)
         # If we can't get the image description page, just go on with
         # the next one.
         except wikipedia.NoPage:

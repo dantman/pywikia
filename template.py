@@ -127,17 +127,19 @@ else:
     # article.
     resolve = True
 
+mysite = wikipedia.getSite()
+
 # get edit summary message
 if remove:
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_remove) % old)
+    wikipedia.setAction(wikipedia.translate(mysite, msg_remove) % old)
 else:
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_change) % old)
+    wikipedia.setAction(wikipedia.translate(mysite, msg_change) % old)
     
 
 # get template namespace
-ns = wikipedia.family.template_namespace(wikipedia.mylang, fallback = None)
+ns = mysite.template_namespace(fallback = None)
 # Download 'What links here' of the template page
-thispl = wikipedia.PageLink(wikipedia.mylang, ns + ':' + old)
+thispl = wikipedia.PageLink(mysite, ns + ':' + old)
 
 
 # regular expression to find the original template.
@@ -148,14 +150,14 @@ templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + old[0].upper() + old[0].lower() 
 # loop over all pages using the template
 if sqlfilename == None:
     for ref in getReferences(thispl):
-        refpl=wikipedia.PageLink(wikipedia.mylang, ref)
+        refpl=wikipedia.PageLink(mysite, ref)
         treat(refpl)
         print ''
 else:
     import sqldump
-    dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
+    dump = sqldump.SQLdump(sqlfilename, mysite.encoding())
     for entry in dump.entries():
         if templateR.search(entry.text):
-            pl=wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+            pl=wikipedia.PageLink(mysite, entry.full_title())
             treat(pl)
             print ''

@@ -46,7 +46,8 @@ for arg in sys.argv[1:]:
         else:
             desc.append(arg)
 
-if not wikipedia.cookies:
+mysite = wikipedia.getSite()
+if not mysite.loggedin():
     print "You must be logged in to upload images"
     import sys
     sys.exit(1)
@@ -54,11 +55,12 @@ if not wikipedia.cookies:
 desc=' '.join(desc)
 
 if wiki:
+    othersite = mysite.getSite(wiki)
     while not fn:
         wikipedia.output(u'No input filename given')
         fn = wikipedia.input(u'Give filename:')
-    full_image_name = "%s:%s"%(wikipedia.family.image_namespace(wiki),fn)
-    pl = wikipedia.PageLink(wiki,full_image_name)
+    full_image_name = "%s:%s"%(othersite.image_namespace(),fn)
+    pl = wikipedia.PageLink(othersite, full_image_name)
     lib_images.transfer_image(pl)
 else:
     ok = (fn!='') and ( ('://') in fn or os.path.exists(fn))

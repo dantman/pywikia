@@ -24,11 +24,12 @@ def ReadWarnfile(fn):
     R=re.compile(r'WARNING: ([^\[]*):\[\[([^\[]+)\]\]([^\[]+)\[\[([^\[]+):([^\[]+)\]\]')
     f=open(fn)
     hints={}
+    mysite=wikipedia.getSite()
     for line in f.readlines():
         m=R.search(line)
         if m:
             #print "DBG>",line
-            if m.group(1)==wikipedia.mylang:
+            if m.group(1)==mysite.lang:
                 #print m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
                 if not hints.has_key(m.group(2)):
                     hints[m.group(2)]=[]
@@ -38,7 +39,8 @@ def ReadWarnfile(fn):
                 else:
                     sign='+'
                 try:
-                    hints[m.group(2)].append((sign,wikipedia.PageLink(m.group(4),wikipedia.link2url(m.group(5),m.group(4)))))
+                    thesite = mysite.getSite(code = m.group(4))
+                    hints[m.group(2)].append((sign,wikipedia.PageLink(thesite,wikipedia.link2url(m.group(5),site = thesite))))
                 except wikipedia.Error:
                     print "DBG> Failed to add", line
                 #print "DBG> %s : %s" % (m.group(2), hints[m.group(2)])
@@ -47,11 +49,11 @@ def ReadWarnfile(fn):
     k.sort()
     print "Fixing... %d pages" % len(k)
     for pagename in k:
-        pl = wikipedia.PageLink(wikipedia.mylang, pagename)
+        pl = wikipedia.PageLink(mysite, pagename)
         old={}
         try:
            for pl2 in pl.interwiki():
-              old[pl2.code()] = pl2
+              old[pl2.site()] = pl2
         except wikipedia.IsRedirectPage:
            wikipedia.output("%s is a redirect page; not changing" % pl.aslink())
            continue
@@ -61,12 +63,12 @@ def ReadWarnfile(fn):
         new={}
         new.update(old)
         for sign,pl2 in hints[pagename]:
-            code = pl2.code()
+            site = pl2.site()
             if sign == '+':
-                new[code] = pl2
+                new[site] = pl2
             elif sign == '-':
                 try:
-                    del new[code]
+                    del new[site]
                 except KeyError:
                     pass
             else:
@@ -77,7 +79,7 @@ def ReadWarnfile(fn):
             oldtext = pl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if 1:
-                interwiki.showDiff(oldtext, newtext)
+                wikipedia.showDiff(oldtext, newtext)
                 status, reason, data = pl.put(newtext, comment='warnfile '+mods)
                 if str(status) != '302':
                     print status, reason
@@ -85,8 +87,6 @@ def ReadWarnfile(fn):
 
 if __name__ == "__main__":
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg):
         if arg:
-            if interwiki.msg.has_key(wikipedia.mylang):
-                interwiki.globalvar.msglang = wikipedia.mylang
             ReadWarnfile(arg)

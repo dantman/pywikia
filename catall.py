@@ -35,7 +35,7 @@ def choosecats(pagetext):
     print ("Empty line: if the first, don't change. Otherwise: Ready.")
     print ("-: I made a mistake, let me start over.")
     print ("?: Give (more of) the text of the page.")
-    print ("xx: if the first, remove all categories and add no nwe.")
+    print ("xx: if the first, remove all categories and add no new.")
     while flag == False:
         choice=raw_input("? ")
         if choice=="":
@@ -53,12 +53,14 @@ def choosecats(pagetext):
             chosen.append(choice)
     return chosen
 
-def make_categories(page,list):
+def make_categories(page, list, site = None):
+    if site is None:
+        site = wikipedia.getSite()
     pllist=[]
     for p in list:
-        cattitle="%s:%s" % (wikipedia.family.category_namespace(wikipedia.mylang), p)
-        pllist.append(wikipedia.PageLink(wikipedia.mylang,cattitle))
-    page.put(wikipedia.replaceCategoryLinks(page.get(), pllist), comment = wikipedia.translate(wikipedia.mylang, msg))
+        cattitle="%s:%s" % (site.category_namespace(), p)
+        pllist.append(wikipedia.PageLink(site,cattitle))
+    page.put(wikipedia.replaceCategoryLinks(page.get(), pllist), comment = wikipedia.translate(site.lang, msg))
 
 docorrections=True
 start=[]
@@ -76,7 +78,9 @@ if start == []:
 else:
     start=' '.join(start)
 
-for p in wikipedia.allpages(start = start):
+mysite = wikipedia.getSite()
+
+for p in wikipedia.allpages(start = start, site = mysite):
     try:
         text=p.get()
         cats=p.categories()
@@ -85,8 +89,8 @@ for p in wikipedia.allpages(start = start):
             print "No categories"
             print "----------------------------------------"
             newcats=choosecats(text)
-            if newcats <> [] and newcats <> None:
-                make_categories(p,newcats)
+            if newcats != [] and newcats != None:
+                make_categories(p, newcats, mysite)
         else:
             if docorrections:
                 wikipedia.output("========== %s ==========" % p.linkname())
@@ -95,8 +99,8 @@ for p in wikipedia.allpages(start = start):
                 print "----------------------------------------"
                 newcats=choosecats(text)
                 if newcats == None:
-                    make_categories(p,[])
-                elif newcats <> []:
-                    make_categories(p,newcats)
+                    make_categories(p, [], mysite)
+                elif newcats != []:
+                    make_categories(p, newcats, mysite)
     except wikipedia.IsRedirectPage:
         pass

@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.15 2004/08/09 16:12:36 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.16 2004/08/20 10:40:32 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -52,7 +52,7 @@ windows_1252 = [u"\x80",         u"\x82", u"\x83", u"\x84", u"\x85", u"\x86", u"
 # HTML entities, and saves it
 def treat(page):
     print
-    pl=wikipedia.PageLink(wikipedia.mylang, page)
+    pl=wikipedia.PageLink(wikipedia.getSite(), page)
     try:
         reftxt=pl.get()
     except wikipedia.IsRedirectPage:
@@ -153,9 +153,9 @@ if page_list == [] and action != 'parse_sqldump':
     page_list.append(pagename)
 
 # get edit summary message
-wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg))
+wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
-if wikipedia.myencoding() == "utf-8":
+if wikipedia.getSite().encoding() == "utf-8":
     print "There is no need to run this robot on UTF-8 wikis."
 else:
     if action == 'parse_sqldump':

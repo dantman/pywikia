@@ -30,8 +30,10 @@ if not fn:
     print "No file specified to get the links from"
     sys.exit(1)
 
+mysite = wikipedia.getSite()
+
 f=open(fn)
 text=f.read()
 f.close()
 for hit in R.findall(text):
-    print "[[%s:%s]]" %(wikipedia.mylang,hit)
+    print mysite.linkto(hit)

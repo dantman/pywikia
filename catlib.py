@@ -18,8 +18,8 @@ class CatTitleRecognition(object):
        to call the object as a function to see whether a title represents
        a category page.
     """
-    def __init__(self, lang):
-        self.ns = wikipedia.family.category_namespaces(lang)
+    def __init__(self, site):
+        self.ns = site.category_namespaces()
 
     def __call__(self, s):
         """True if s points to a category page."""
@@ -30,7 +30,7 @@ class CatTitleRecognition(object):
                 return True
         return False
         
-iscattitle = CatTitleRecognition(wikipedia.mylang)
+iscattitle = CatTitleRecognition(wikipedia.getSite())
 
 def unique(l):
     """Given a list of hashable object, return an alphabetized unique list.
@@ -57,7 +57,7 @@ class _CatLink(wikipedia.PageLink):
                 self._catlistF = self._make_catlist(False)
             return self._catlistF
             
-    def _make_catlist(self, recurse = False):
+    def _make_catlist(self, recurse = False, site = None):
         """Make a list of all articles and categories that are in this
            category. If recurse is set to True, articles and categories
            of any subcategories are also retrieved.
@@ -66,9 +66,11 @@ class _CatLink(wikipedia.PageLink):
 
            This should not be used outside of this module.
         """
+        if site is None:
+            site = wikipedia.getSite()
         import re
         Rtitle = re.compile('title=\n?\"([^\"]*)\"')
-        ns = wikipedia.family.category_namespaces(wikipedia.mylang)
+        ns = wikipedia.family.category_namespaces(site)
         catsdone = []
         catstodo = [self]
         pages = []
@@ -178,23 +180,6 @@ def CatLink(code, name):
     # Prepend it
     return _CatLink(code, "%s:%s" % (ns, name))
 
-def test():
-    pl=CatLink(wikipedia.mylang, 'Software')
-    
-    print pl.catlist(recurse = False)
-
-    print pl.subcategories(recurse = False)
-
-    print pl.articles(recurse = False)
-
-if __name__=="__main__":
-    import sys
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
-        if arg:
-            print "Ignored argument", arg
-    test()
-
 # Given an article which is in category old_cat, moves it to
 # category new_cat. Moves subcategories of old_cat to new_cat
 # as well.
@@ -202,6 +187,7 @@ if __name__=="__main__":
 def change_category(article, old_cat_title, new_cat_title):
     print ''
     cats = article.categories()
+    site = article.site()
     sort_key = ''
     removed = False
     for cat in cats:
@@ -217,14 +203,34 @@ def change_category(article, old_cat_title, new_cat_title):
             cats.remove(cat)
             removed = True
     if not removed:
-        wikipedia.output(u'ERROR: %s is not in category %s!' % (article.linkname(), old_cat_title))
+        wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), old_cat_title))
         return
     if new_cat_title != None:
         if sort_key == '':
-            new_cat = CatLink(wikipedia.mylang, new_cat_title)
+            new_cat = CatLink(site, new_cat_title)
         else:
-            new_cat = CatLink(wikipedia.mylang, new_cat_title + '|' + sort_key)
+            new_cat = CatLink(site, new_cat_title + '|' + sort_key)
         cats.append(new_cat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
     article.put(text)
+
+
+def test():
+    site = wikipedia.getSite()
+    
+    pl=CatLink(site, 'Software')
+    
+    print pl.catlist(recurse = False)
+
+    print pl.subcategories(recurse = False)
+
+    print pl.articles(recurse = False)
+
+if __name__=="__main__":
+    import sys
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            print "Ignored argument", arg
+    test()

@@ -18,18 +18,16 @@ myComment = {'en':'Bot: URL fixed'
              }
 
 for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
-    if arg:
-        pl = wikipedia.PageLink(wikipedia.mylang, arg)
+    if wikipedia.argHandler(arg):
+        pass
+    else:
+        pl = wikipedia.PageLink(wikipedia.getSite(), arg)
         text = pl.get()
         
         newText = re.sub("(http:\/\/([^ ]*[^\] ]))\)", "[\\1 \\2])", text)
 
         if newText != text:
-            import difflib
-            for line in difflib.ndiff(text.split('\r\n'),newText.split('\r\n')):
-                if line[0] in ['+','-']:
-                    print repr(line)[2:-1]
+            wikipedia.showDiff(text, newText)
             status, reason, data = pl.put(newText, wikipedia.translate(wikipedia.mylang,myComment))
             print status, reason
         else:

@@ -129,6 +129,7 @@ def sorted_by_last_name(catlink, pagelink):
         [[Category:Author|Dumas, Alexandre]]
         '''
         page_name = pagelink.linkname()
+        site = pagelink.site()
         # regular expression that matches a name followed by a space and
         # disambiguation brackets. Group 1 is the name without the rest.
         bracketsR = re.compile('(.*) \(.+?\)')
@@ -141,9 +142,9 @@ def sorted_by_last_name(catlink, pagelink):
             # e.g. "John von Neumann" becomes "Neumann, John von"
             sorted_key = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
             # give explicit sort key
-            return wikipedia.PageLink(wikipedia.mylang, catlink.linkname() + '|' + sorted_key)
+            return wikipedia.PageLink(site, catlink.linkname() + '|' + sorted_key)
         else:
-            return wikipedia.PageLink(wikipedia.mylang, catlink.linkname())
+            return wikipedia.PageLink(site, catlink.linkname())
 
 def add_category(sort_by_last_name = False):
     '''
@@ -157,14 +158,14 @@ def add_category(sort_by_last_name = False):
     listpage = wikipedia.input(u'Wikipedia page with list of pages to change:')
     if listpage:
         try:
-            pl = wikipedia.PageLink(wikipedia.mylang, listpage)
+            pl = wikipedia.PageLink(wikipedia.getSite(), listpage)
         except NoPage:
             wikipedia.output(u'The page ' + listpage + ' could not be loaded from the server.')
             sys.exit()
         pagenames = pl.links()
     else:
         refpage = wikipedia.input(u'Wikipedia page that is now linked to:')
-        pl = wikipedia.PageLink(wikipedia.mylang, refpage)
+        pl = wikipedia.PageLink(wikipedia.getSit(), refpage)
         pagenames = wikipedia.getReferences(pl)
     print "  ==> %d pages to process"%len(pagenames)
     print
@@ -172,13 +173,13 @@ def add_category(sort_by_last_name = False):
     newcat = newcat[:1].capitalize() + newcat[1:]
 
     # get edit summary message
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_add) % newcat)
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_add) % newcat)
     
-    cat_namespace = wikipedia.family.category_namespace(wikipedia.mylang)
+    cat_namespace = wikipedia.getSite().category_namespace()
 
     answer = ''
     for nm in pagenames:
-        pl2 = wikipedia.PageLink(wikipedia.mylang, nm)
+        pl2 = wikipedia.PageLink(wikipedia.getSite(), nm)
         if answer != 'a':
             answer = ''
             
@@ -196,11 +197,11 @@ def add_category(sort_by_last_name = False):
                 wikipedia.output(u"%s doesn't exist yet. Ignoring."%(pl2.aslocallink()))
                 pass
             except wikipedia.IsRedirectPage,arg:
-                pl3 = wikipedia.PageLink(wikipedia.mylang,arg.args[0])
+                pl3 = wikipedia.PageLink(wikipedia.getSite(),arg.args[0])
                 wikipedia.output(u"WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink()))
             else:
                 wikipedia.output(u"Current categories: %s" % cats)
-                catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
+                catpl = wikipedia.PageLink(wikipedia.getSite(), cat_namespace + ':' + newcat)
                 if sort_by_last_name:
                     catpl = sorted_by_last_name(catpl, pl2) 
                 if catpl in cats:
@@ -213,10 +214,10 @@ def add_category(sort_by_last_name = False):
                     pl2.put(text)
 
 def rename_category(old_cat_title, new_cat_title):
-    old_cat = catlib.CatLink(wikipedia.mylang, old_cat_title)
+    old_cat = catlib.CatLink(wikipedia.getSite(), old_cat_title)
     
     # get edit summary message
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg_change) % old_cat_title)
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % old_cat_title)
     
     articles = old_cat.articles(recurse = 0)
     if len(articles) == 0:
@@ -240,9 +241,9 @@ def remove_category(cat_title):
     Doesn't remove category tags pointing at subcategories. Doesn't delete the
     category page.
     '''
-    cat = catlib.CatLink(wikipedia.mylang, cat_title)
+    cat = catlib.CatLink(wikipedia.getSite(), cat_title)
     # get edit summary message
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg_remove) % cat_title)
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_remove) % cat_title)
     
     articles = cat.articles(recurse = 0)
     if len(articles) == 0:
@@ -336,7 +337,7 @@ def tidy_category(cat_title):
                 flag = True
             elif choice == 'j':
                 new_cat_title = wikipedia.input(u'Please enter the category the article should be moved to:')
-                new_cat = catlib.CatLink(wikipedia.mylang, new_cat_title)
+                new_cat = catlib.CatLink(wikipedia.getSite(), new_cat_title)
                 # recurse into chosen category
                 move_to_category(article, original_cat, new_cat)
                 flag = True
@@ -378,10 +379,10 @@ def tidy_category(cat_title):
                 flag = True
     
     # begin main part of tidy_category
-    catlink = catlib.CatLink(wikipedia.mylang, cat_title)
+    catlink = catlib.CatLink(wikipedia.getSite(), cat_title)
     
     # get edit summary message
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_change) % cat_title)
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_change) % cat_title)
     
     
     articles = catlink.articles(recurse = 0)
@@ -431,7 +432,7 @@ def treeview(cat, max_depth, current_depth = 0, parent = None):
             # create a list of wiki links to the supercategories
             supercat_names.append('[[:%s|%s]]' % (supercats[i].linkname(), supercats[i].linkname().split(':', 1)[1]))
             # print this list, seperated with commas, using translations given in also_in_cats
-        result += ' ' + wikipedia.translate(wikipedia.mylang, also_in_cats) % ', '.join(supercat_names)
+        result += ' ' + wikipedia.translate(wikipedia.getSite(), also_in_cats) % ', '.join(supercat_names)
     result += '\n'
     if current_depth < max_depth:
         for subcat in get_subcats(cat):
@@ -444,16 +445,16 @@ def treeview(cat, max_depth, current_depth = 0, parent = None):
     return result
 
 def print_treeview(catname, max_depth = 10):
-    '''
+    """
     Prints the multi-line string generated by treeview or saves it to a file.
 
     Parameters:
         * catname - the title of the category which will be the tree's root
         * max_depth - the limit beyond which no subcategories will be listed
-    '''
+    """
     # TODO: make max_depth changeable with a parameter or config file entry 
     filename = wikipedia.input(u'Please enter the name of the file where the tree should be saved, or press enter to simply show the tree:')
-    cat = catlib.CatLink(wikipedia.mylang, catname)
+    cat = catlib.CatLink(wikipedia.getSite(), catname)
     tree = treeview(cat, max_depth, 0)
     if filename:
         wikipedia.output(u'Saving results in %s' % filename)
@@ -491,7 +492,7 @@ if __name__ == "__main__":
                 del databases
                 
     # catlib needs to be imported at this position because its constructor uses
-    # wikipedia.mylang which might have been changed by wikipedia.argHandler().
+    # mylang which might have been changed by wikipedia.argHandler().
     import catlib
     if action == 'add':
         add_category(sort_by_last_name)

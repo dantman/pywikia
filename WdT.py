@@ -79,7 +79,7 @@ for file in XMLfiles:
             fileinput.close()
             if skip.count(a) == 0:
                 try:
-                    pl = wikipedia.PageLink(wikipedia.mylang, a)
+                    pl = wikipedia.PageLink(wikipedia.getSite(), a)
                     text = pl.get()
                     if len(text) > 500:
                         skip.append(a)
@@ -110,7 +110,7 @@ for file in XMLfiles:
     if DEBUG >= 2:
         print newText
 
-pl = wikipedia.PageLink(wikipedia.mylang, article)
+pl = wikipedia.PageLink(wikipedia.getSite(), article)
 text = pl.get()
 newText = text + newText
 

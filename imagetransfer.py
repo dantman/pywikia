@@ -63,33 +63,36 @@ if page_title != []:
      page_title = ' '.join(page_title)
      page_list.append(page_title)
 
+
+mysite = wikipedia.getSite()
+
 # if no page title was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
     pagename = wikipedia.input(u'Which page to check: ')
-    pagename = wikipedia.url2unicode(pagename, wikipedia.mylang)
+    pagename = wikipedia.url2unicode(pagename, mysite)
     pagename = pagename.encode(wikipedia.myencoding())
     page_list.append(pagename)
-    
-if not wikipedia.cookies:
+
+if not mysite.loggedin():
     print "You must be logged in to upload images"
     import sys
     sys.exit(1)
     
 for page_list_item in page_list:
-    inpl = wikipedia.PageLink(wikipedia.mylang, page_list_item)
+    inpl = wikipedia.PageLink(mysite, page_list_item)
     ilinks = inpl.interwiki()
     
     for page in ilinks:
         if page.code() in source_wikis or source_wikis==[]:
-            lang=page.code()
+            site=page.site()
             try:
                 for i in page.imagelinks():
                     imagelist.append(i)
             except wikipedia.NoPage:
                 pass
             except wikipedia.IsRedirectPage,arg:
-                page2=wikipedia.PageLink(page.code(),arg.args[0])
+                page2=wikipedia.PageLink(page.site(),arg.args[0])
                 try:
                     for i in page2.imagelinks():
                         imagelist.append(i)
@@ -100,7 +103,7 @@ for page_list_item in page_list:
     
     for i in range(len(imagelist)):
         imagelink = imagelist[i]
-        print "--------------------------------------------------"
+        print "-"*60
         print "%s. Found image: %s"% (i,imagelink.aslink())
         try:
             # show the image description page's contents
@@ -110,7 +113,7 @@ for page_list_item in page_list:
         except wikipedia.IsRedirectPage:
             print "Description page is redirect?!"
     
-    print "=================================================="
+    print "="*60
     
     while len(imagelist)>0:
         print("Give the number of the image to upload.")

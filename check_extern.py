@@ -140,7 +140,11 @@ for arg in sys.argv[1:]:
         elif arg=='-nolog':
             log = False
         else:
-            todo.append(wikipedia.PageLink(wikipedia.mylang,arg))
+            mysite = wikipedia.getSite()
+            todo.append(wikipedia.PageLink(mysite,arg))
+
+# Make sure we have the final site
+mysite = wikipedia.getSite()
 
 if todo == []:
     # No pages have been given; if also no start is given, we start at
@@ -178,7 +182,7 @@ while cont:
         # todo beyond this size.
         cont = False
     try:
-        wikipedia.getall(wikipedia.mylang, donow)
+        wikipedia.getall(mysite, donow)
     except wikipedia.SaxError:
         # Ignore this error, and get the pages the traditional way.
         pass

@@ -9,7 +9,7 @@
 #
 __version__ = '$Id$'
 #
-import re
+import re, os
 
 import wikipedia
 
@@ -34,8 +34,11 @@ _unequal = Exceptions()
 
 def read_exceptions():
     Re = re.compile(r' *\[\[(.*)\]\] *([^ ]+) *\[\[(.*)\]\]')
+    fn = '%s-exceptions.dat' % repr(wikipedia.getSite())
+    if not os.path.exists(fn):
+        fn = '%s-exceptions.dat' % wikipedia.getSite().lang
     try:
-        f = open('%s-exceptions.dat' % wikipedia.mylang)
+        f = open(fn)
     except IOError:
         pass
     else:
@@ -44,9 +47,9 @@ def read_exceptions():
             if not m:
                 raise ValueError("Do not understand %s"%line)
             code, name = m.group(1).split(':',1)
-            pl1 = wikipedia.PageLink(code, name)
+            pl1 = wikipedia.PageLink(wikipedia.getSite(code=code), name)
             code, name = m.group(3).split(':',1)
-            pl2 = wikipedia.PageLink(code, name)
+            pl2 = wikipedia.PageLink(wikipedia.getSite(code=code), name)
             if m.group(2) == '<':
                 _bigger.add(pl1, pl2)
             elif m.group(2) == '!=':

@@ -103,7 +103,7 @@ class SQLentry(object):
             title = self.title.replace('_', ' ')
         else:
             title = self.title
-        namespace_title = wikipedia.family.namespace(wikipedia.mylang, self.namespace)
+        namespace_title = wikipedia.getSite().namespace(self.namespace)
         if namespace_title == None:
             return self.title
         else:
@@ -202,7 +202,7 @@ def query_unmountedcats(sqldump):
     for entry in sqldump.entries():
         if entry.namespace == 14:
             has_supercategory = False
-            for ns in wikipedia.family.category_namespaces(wikipedia.mylang):
+            for ns in wikipedia.getSite().category_namespaces():
                 if entry.text.find('[[%s:' % ns) != -1:
                     has_supercategory = True
                     break

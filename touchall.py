@@ -24,10 +24,12 @@ for arg in sys.argv[1:]:
 cont = True
 todo = []
 
+mysite = wikipedia.getSite()
+
 while cont:
     i = 0
     if len(todo)<61:
-        for pl in wikipedia.allpages(start = start):
+        for pl in wikipedia.allpages(start = start, site = mysite):
             todo.append(pl)
             i += 1
             if i==480:
@@ -44,7 +46,7 @@ while cont:
         # todo beyond this size.
         cont = False
     try:
-        wikipedia.getall(wikipedia.mylang, donow)
+        wikipedia.getall(mysite, donow)
     except wikipedia.SaxError:
         # Ignore this error, and get the pages the traditional way.
         pass
@@ -53,7 +55,7 @@ while cont:
             text = pl.get()
             pl.put(text)
         except wikipedia.NoPage:
-            print "Page [[%s:%s]] non-existing"%(wikipedia.mylang,pl.linkname())
+            print "Page %s does not exist?!?!"%pl.aslink()
         except wikipedia.IsRedirectPage:
             pass
         except wikipedia.LockedPage:

@@ -61,13 +61,15 @@ msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
                          'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d warnings!'
                         }
                  
-def convert(text):
+def convert(text, site = None):
     '''
     Converts all HTML tables in text to wiki syntax. If text contains wiki
     tables, tries to beautify them.
     Returns converted text if page was successfully changed, otherwise returns
     None.
     '''
+    if site is None:
+        site = wikipedia.getSite()
     warnings = 0
     # this array will contain strings that will be shown in case of possible
     # errors, before the user is asked if he wants to accept the changes.
@@ -331,11 +333,11 @@ def convert(text):
             warn = ""
             if warnings == 0:
                 # get edit summary message
-                wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_no_warnings))
+                wikipedia.setAction(wikipedia.translate(site.lang, msg_no_warnings))
             elif warnings == 1:
-                wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_one_warning) % warnings)
+                wikipedia.setAction(wikipedia.translate(site.lang, msg_one_warning) % warnings)
             else:
-                wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_multiple_warnings) % warnings)
+                wikipedia.setAction(wikipedia.translate(site.lang, msg_multiple_warnings) % warnings)
             return newText
         else:
             return None
@@ -390,14 +392,16 @@ for arg in sys.argv[1:]:
         else:
             page_title.append(arg)
 
-def treat(page_title):
+def treat(page_title, site = None):
     '''
     Loads a page, converts all HTML tables in its text to wiki syntax,
     and saves the converted text.
     Returns True if the converted table was successfully saved, otherwise
     returns False.
     '''
-    pl = wikipedia.PageLink(wikipedia.mylang, page_title)
+    if site is None:
+        site = wikipedia.getSite()
+    pl = wikipedia.PageLink(site, page_title)
     try:
         text = pl.get()
     except wikipedia.NoPage:

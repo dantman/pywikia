@@ -202,9 +202,9 @@ def getReferences(pl):
     refs = wikipedia.getReferences(pl, follow_redirects = False)
     print "Found %d references" % len(refs)
     # Remove ignorables
-    if ignore.has_key(pl.code()):
+    if ignore.has_key(pl.site().lang):
         ignore_regexes =[]
-        for ig in ignore[pl.code()]:
+        for ig in ignore[pl.site().lang]:
             ig = ig.encode(wikipedia.myencoding())
             ignore_regexes.append(re.compile(ig))
         for Rignore in ignore_regexes:
@@ -282,7 +282,8 @@ for arg in sys.argv[1:]:
             f.close()
         elif arg.startswith('-pos:'):
             if arg[5]!=':':
-                pl=wikipedia.PageLink(wikipedia.mylang,arg[5:])
+                mysite = wikipedia.getSite()
+                pl=wikipedia.PageLink(mysite,arg[5:])
                 if pl.exists():
                     alternatives.append(pl.linkname())
                 else:
@@ -299,6 +300,9 @@ for arg in sys.argv[1:]:
         else:
             page_title.append(arg)
 
+# Make sure to have the last one
+mysite = wikipedia.getSite()
+
 # if the disambiguation page is given as a command line argument,
 # connect the title's parts with spaces
 if page_title != []:
@@ -314,11 +318,11 @@ if page_list == []:
 for wrd in page_list:
     # when run with -redir argument, there's another summary message
     if solve_redirect:
-        wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg_redir) % wrd)
+        wikipedia.setAction(wikipedia.translate(mysite,msg_redir) % wrd)
     else:
-        wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg) % wrd)
+        wikipedia.setAction(wikipedia.translate(mysite,msg) % wrd)
 
-    thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
+    thispl = wikipedia.PageLink(mysite, wrd)
 
     # If run with the -primary argument, read from a file which pages should
     # not be worked on; these are the ones where the user pressed n last time.
@@ -357,14 +361,14 @@ for wrd in page_list:
     elif getalternatives:
         try:
             if primary:
-                disamb_pl = wikipedia.PageLink(wikipedia.mylang, primary_topic_format[wikipedia.mylang] % wrd)
+                disamb_pl = wikipedia.PageLink(mysite, primary_topic_format[mysite.lang] % wrd)
                 thistxt = disamb_pl.get()
             else:
                 thistxt = thispl.get()
         except wikipedia.IsRedirectPage,arg:
-            thistxt = wikipedia.PageLink(wikipedia.mylang, str(arg)).get()
+            thistxt = wikipedia.PageLink(mysite, str(arg)).get()
         thistxt = wikipedia.removeLanguageLinks(thistxt)
-        thistxt = wikipedia.removeCategoryLinks(thistxt, wikipedia.mylang)
+        thistxt = wikipedia.removeCategoryLinks(thistxt, mysite)
         w=r'([^\]\|]*)'
         Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
         for a in Rlink.findall(thistxt):
@@ -396,7 +400,7 @@ for wrd in page_list:
             choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N]' % refpl.linkname())
             if choice == 'y':
                 for ref_redir in getReferences(refpl):
-                    refpl_redir=wikipedia.PageLink(wikipedia.mylang, ref_redir)
+                    refpl_redir=wikipedia.PageLink(mysite, ref_redir)
                     treat(refpl_redir, refpl)
                 if solve_redirect:
                     choice2 = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
@@ -423,7 +427,7 @@ for wrd in page_list:
                 if wikipedia.isInterwikiLink(m.group(1)):
                     continue
                 else:
-                    linkpl=wikipedia.PageLink(thispl.code(), m.group(1))
+                    linkpl=wikipedia.PageLink(thispl.site(), m.group(1))
                 # Check whether the link found is to thispl.
                 if linkpl != thispl:
                     continue
@@ -547,7 +551,7 @@ for wrd in page_list:
                         curpos -= 1
                         continue
                     new_page_title = alternatives[choice]
-                    reppl = wikipedia.PageLink(thispl.code(), new_page_title)
+                    reppl = wikipedia.PageLink(thispl.site(), new_page_title)
                     new_page_title = reppl.linkname()
                     # There is a function that uncapitalizes the link target's first letter
                     # if the link description starts with a small letter. This is useful on
@@ -556,7 +560,7 @@ for wrd in page_list:
                     # know if other languages don't want this feature either.
                     # We might want to introduce a list of languages that don't want to use
                     # this feature.
-                    if wikipedia.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
+                    if mysite.lang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
                         new_page_title = new_page_title[0].lower() + new_page_title[1:]
                     if replaceit and trailing_chars: 
                         newlink = "[[%s]]%s" % (new_page_title, trailing_chars)
@@ -579,8 +583,8 @@ for wrd in page_list:
                 refpl.put(text)
         return True
 
-    if wikipedia.mylang in link_trail:
-        linktrail=link_trail[wikipedia.mylang]
+    if mysite.lang in link_trail:
+        linktrail=link_trail[mysite.lang]
     else:
         linktrail='[a-z]*'
     trailR=re.compile(linktrail)
@@ -604,8 +608,8 @@ for wrd in page_list:
 
         refpls = []
         for ref in refs:
-            refpls.append(wikipedia.PageLink(wikipedia.mylang, ref))
-        wikipedia.getall(wikipedia.mylang, refpls)
+            refpls.append(wikipedia.PageLink(mysite, ref))
+        wikipedia.getall(mysite, refpls)
         for refpl in refpls:
             if active and not refpl.urlname() in skip_primary:
                 if not treat(refpl, thispl):

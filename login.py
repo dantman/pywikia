@@ -58,8 +58,9 @@ for arg in sys.argv[1:]:
     if arg:
         print "Unknown argument: ",arg
         sys.exit(1)
-    
-wikipedia.output(u"Logging in to %s" % wikipedia.family.hostname(wikipedia.mylang))
+
+mysite = wikipedia.getSite()
+wikipedia.output(u"Logging in to %s" % repr(mysite))
 
 username = wikipedia.input(u'username:', encode = True)
 # As we don't want the password to appear on the screen, we use getpass(). 
@@ -71,15 +72,15 @@ password = unicode(password, config.console_encoding)
 password = password.encode(wikipedia.myencoding())
 
 # Ensure bot policy on the English Wikipedia
-if wikipedia.mylang=='en' and config.family=='wikipedia':
-    pl=wikipedia.PageLink('en','Wikipedia:Bots')
+ensite=wikipedia.getSite(code='en',fam='wikipedia')
+if mysite == ensite:
+    pl=wikipedia.PageLink(ensite,'Wikipedia:Bots')
     text=pl.get()
     if not '[[User:%s'%username in text:
         print "Your username is not listed on [[Wikipedia:Bots]]"
         print "Please make sure you are allowed to use the robot"
         print "Before actually using it!"
         
-# I hope this doesn't need translation
 data = wikipedia.urlencode((
             ('wpName', username),
             ('wpPassword', password),
@@ -89,8 +90,8 @@ data = wikipedia.urlencode((
 
 headers = {"Content-type": "application/x-www-form-urlencoded", 
            "User-agent": "RobHooftWikiRobot/1.0"}
-conn = httplib.HTTPConnection(wikipedia.family.hostname(wikipedia.mylang))
-pagename = wikipedia.family.login_address(wikipedia.mylang)
+conn = httplib.HTTPConnection(mysite.hostname())
+pagename = mysite.login_address()
 conn.request("POST", pagename, data, headers)
 response = conn.getresponse()
 data = response.read()
@@ -98,7 +99,7 @@ conn.close()
 #print response.status, response.reason
 #print data
 #print dir(response)
-f=open(makepath('login-data/%s-login.data' % wikipedia.mylang), 'w')
+f=open(makepath('login-data/%s-%s-login.data' % (mysite.family.name, mysite.lang)), 'w')
 n=0
 msg=response.msg
 Reat=re.compile(': (.*?);')

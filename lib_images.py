@@ -14,7 +14,7 @@ copy_message = {
     "nl":u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
 }
 
-def post_multipart(host, selector, fields, files):
+def post_multipart(host, selector, fields, files, cookies): # UGLY COPY
     """
     Post fields and files to an http host as multipart/form-data.
     fields is a sequence of (name, value) elements for regular form fields.
@@ -28,7 +28,8 @@ def post_multipart(host, selector, fields, files):
     h.putheader('content-length', str(len(body)))
     h.putheader("User-agent", "RobHooftWikiRobot/1.0")
     h.putheader('Host', host)
-    h.putheader('Cookie',wikipedia.cookies)
+    if cookies:
+        h.putheader('Cookie',cookies)
     h.endheaders()
     print "Uploading file..."
     h.send(body)
@@ -65,16 +66,17 @@ def get_content_type(filename):
     import mimetypes
     return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 
-# Gets the image at URL original_url, and uploads it to the home Wikipedia.
-# original_description is the proposed description; if description is
-# empty (''), asks for a description.
-# source_wiki is the language code for the Wikipedia the image is loaded from.
-# if source_wiki is None, it indicates that the image is uploaded directly
-# from the user's harddisk (via upload.py).
-# Returns the filename which was used to upload the image
-# If the upload fails, the user is asked whether to try again or not.
-# If the user chooses not to retry, returns null.
-def get_image(original_url, source_wiki, original_description, keep=False, debug=False):
+def get_image(original_url, source_site, original_description, keep=False, debug=False):
+    """Gets the image at URL original_url, and uploads it to the home Wikipedia.
+       original_description is the proposed description; if description is
+       empty (''), asks for a description.
+       source_site is the site the image is loaded from.
+       if source_site is None, it indicates that the image is uploaded directly
+       from the user's harddisk (via upload.py).
+       Returns the filename which was used to upload the image
+       If the upload fails, the user is asked whether to try again or not.
+       If the user chooses not to retry, returns null.
+    """
     # work with a copy of argument variables so we can reuse the
     # original ones if the upload fails
     fn = original_url
@@ -92,11 +94,11 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         fn = fn.split('/')[-1]
     if '\\' in fn:
         fn = fn.split('\\')[-1]
-    # convert ISO 8859-1 to Unicode, or parse UTF-8. If source_wiki is None,
+    # convert ISO 8859-1 to Unicode, or parse UTF-8. If source_site is None,
     # the filename is already in Unicode.
-    if source_wiki != None:
+    if source_sitr != None:
         try:
-            fn = unicode(fn, wikipedia.code2encoding(source_wiki))
+            fn = unicode(fn, source_site.encoding())
         except TypeError:
             print 'Type error in lib_images.py. This should not happen. Please report this problem.'
             pass
@@ -169,10 +171,11 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
 
     # don't upload if we're in debug mode
     if not debug:
-        returned_html = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
-                              wikipedia.family.upload_address(wikipedia.mylang),
+        returned_html = post_multipart(mysite.hostname(),
+                              mysite.upload_address(),
                               formdata.items(),
-                              (('wpUploadFile',fn,contents),)
+                              (('wpUploadFile',fn,contents),),
+                              cookies = mysite.cookies()         
                               )
         # do we know how the "success!" HTML page should look like?
         success_msg = mediawiki_messages.get('successfulupload')
@@ -185,7 +188,7 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
              # BUG: fn is str, not unicode, so this coercion fails if fn is not ASCII
              answer = raw_input(u"Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
              if answer in ["y", "Y"]:
-                 return get_image(original_url, source_wiki, original_description, debug)
+                 return get_image(original_url, source_site, original_description, debug)
              else:
                  return
     return fn
@@ -197,7 +200,7 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
 # This function is used by imagetransfer.py and by copy_table.py
 def transfer_image(imagelink, debug=False):
     # convert HTML entities to encoding of the source wiki
-    image_linkname = wikipedia.html2unicode(imagelink.linkname(), imagelink.code())
+    image_linkname = wikipedia.html2unicode(imagelink.linkname(), imagelink.site())
     image_linkname = image_linkname.encode('utf-8')
     if debug: print "--------------------------------------------------"
     if debug: print "Found image: %s"% image_linkname
@@ -212,12 +215,13 @@ def transfer_image(imagelink, debug=False):
     filename = filename[0].upper()+filename[1:]
     md5sum = md5.new(filename).hexdigest()
     if debug: print "MD5 hash is: %s" % md5sum
-    url = "http://" + imagelink.code() + ".wikipedia.org/upload/" + md5sum[0] + "/" + md5sum[:2] + "/" + filename
+    # UGLY BUG: this assumes that the family is wikipedia!
+    url = "http://" + imagelink.site().lang + ".wikipedia.org/upload/" + md5sum[0] + "/" + md5sum[:2] + "/" + filename
     if debug: print "URL should be: %s" % url
     # localize the text that should be printed on the image description page
     try:
         original_description = imagelink.get(read_only = True)
-        description = wikipedia.translate(wikipedia.mylang, copy_message) % (wikipedia.family.langs[imagelink.code()], original_description)
+        description = wikipedia.translate(imagelink.site(), copy_message) % (repr(imagelink.site()), original_description)
         # add interwiki link
         description += "\r\n\r\n" + imagelink.aslink()
     except wikipedia.NoPage:
@@ -227,7 +231,7 @@ def transfer_image(imagelink, debug=False):
         description=''
         print "Image description page is redirect."
     try:
-        return get_image(url, imagelink.code(), description, debug)    
+        return get_image(url, imagelink.site(), description, debug)    
     except wikipedia.NoPage:
         print "Page not found"
         return filename

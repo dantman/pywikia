@@ -26,31 +26,35 @@ import re, sys, pickle
 import os.path
 import time
 
-def get(key, lang = None):
-    if lang == None:
-        lang = wikipedia.mylang
-    try:
-        # find out how old our saved dump is (in seconds)
-        file_age = time.time() - os.path.getmtime('mediawiki-messages/mediawiki-messages-%s.dat' % lang)
-        # if it's older than 1 month, reload it
-        if file_age > 30 * 24 * 60 * 60:
-            print 'Current MediaWiki message dump is one month old, reloading'
-            refresh_messages(lang)
-    except OSError:
-        # no saved dumped exists yet
-        refresh_messages(lang)
-    # TODO: It's quite inefficient to reload the file every time this function
-    # is used. Maybe we can save its content the first time the function is
-    # called.
-    f = open('mediawiki-messages/mediawiki-messages-%s.dat' % lang, 'r')
-    dictionary = pickle.load(f)
-    f.close()
+loaded = {}
+
+def get(key, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    if loaded.has_key(site):
+        # Use cached copy if it exists.
+        dictionary = loaded[site]
+    else:
+        fn = 'mediawiki-messages/mediawiki-messages-%s.dat' % repr(site)
+        try:
+            # find out how old our saved dump is (in seconds)
+            file_age = time.time() - os.path.getmtime(fn)
+            # if it's older than 1 month, reload it
+            if file_age > 30 * 24 * 60 * 60:
+                print 'Current MediaWiki message dump is one month old, reloading'
+                refresh_messages(site)
+        except OSError:
+            # no saved dumped exists yet
+            refresh_messages(site)
+        f = open(fn, 'r')
+        dictionary = pickle.load(f)
+        f.close()
+        loaded[site] = dictionary
     key = key[0].lower() + key[1:]
     if dictionary.has_key(key):
         return dictionary[key]
     else:
-        # TODO: Throw exception instead?
-        print 'ERROR: MediaWiki Key %s not found' % key 
+        raise KeyError('MediaWiki Key %s not found' % key)
 
 def makepath(path):
     """ creates missing directories for the given path and
@@ -72,11 +76,12 @@ def makepath(path):
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
     
-def refresh_messages(lang):
-    host = wikipedia.family.hostname(lang)
+def refresh_messages(site):
+    host = site.hostname()
     # get 'all messages' special page's URL
-    url = wikipedia.family.allmessages_address(lang)
-    print 'Retrieving MediaWiki messages for %s' % lang 
+    url = site.allmessages_address()
+    print 'Retrieving MediaWiki messages for %s' % repr(site)
+    wikipedia.put_throttle() # It actually is a get, but a heavy one.
     allmessages, charset = wikipedia.getUrl(host,url)
 
     print 'Parsing MediaWiki messages'
@@ -98,23 +103,26 @@ def refresh_messages(lang):
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
     if dictionary == {}:
-        print 'Error extracting MediaWiki messages for language %s.' % lang
+        print 'Error extracting MediaWiki messages for %s.' % repr(site)
         sys.exit()
     else:
-        f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % lang), 'w')
+        f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % repr(site)), 'w')
         pickle.dump(dictionary, f)
         f.close()
 
 def refresh_all_messages():
     import dircache, time
     filenames = dircache.listdir('mediawiki-messages')
-    message_filenameR = re.compile('mediawiki-messages-([a-z\-]+).dat')
+    message_filenameR = re.compile('mediawiki-messages-([a-z\-:]+).dat')
     for filename in filenames:
         match = message_filenameR.match(filename)
         if match:
-            refresh_messages(match.group(1))
-            print 'Sleeping for 60 seconds'
-            time.sleep(60)
+            if not ':' in match.group(1):
+                family, lang = 'wikipedia', match.group(1)
+            else:
+                family, lang = match.group(1).split(':')
+            site = wikipedia.getSite(code = lang, fam = family)
+            refresh_messages(site)
 
 if __name__ == "__main__":
     debug = False
@@ -130,6 +138,6 @@ if __name__ == "__main__":
     if refresh_all:
         refresh_all_messages()
     else:
-        refresh_messages(wikipedia.mylang)
+        refresh_messages(wikipedia.getSite())
     if debug:
-        print get('successfulupload')
+        print "DBG> successfulupload contains %s" % get('successfulupload')

@@ -147,7 +147,7 @@ fixes = {
 }
 
 def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, namespace):
-    '''
+    """
     Generator which will yield PageLinks to pages that might contain text to
     replace. These pages will be retrieved from a local sql dump file
     (cur table).
@@ -160,7 +160,8 @@ def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, names
                          won't be changed.
         * regex        - if the entries of replacements and exceptions should
                          be interpreted as regular expressions
-    '''
+    """
+    mysite = wikipedia.getSite()
     import sqldump
     dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
     for entry in dump.entries():
@@ -183,22 +184,22 @@ def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, names
                 if regex:
                     old = re.compile(old)
                     if old.search(entry.text):
-                        yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+                        yield wikipedia.PageLink(mysite, entry.full_title())
                         break
                 else:
                     if entry.text.find(old) != -1:
-                        yield wikipedia.PageLink(wikipedia.mylang, entry.full_title())
+                        yield wikipedia.PageLink(mysite, entry.full_title())
                         break
 
 def read_pages_from_text_file(textfilename):
-    '''
+    """
     Generator which will yield pages that are listed in a text file created by
     the bot operator. Will regard everything inside [[double brackets]] as a
     page name, and yield PageLinks for these pages.
 
     Arguments:
         * textfilename - the textfile's path, either absolute or relative
-    '''
+    """
     f = open(textfilename, 'r')
     # regular expression which will find [[wiki links]]
     R = re.compile(r'.*\[\[([^\]]*)\]\].*')
@@ -208,7 +209,7 @@ def read_pages_from_text_file(textfilename):
         # TODO: use findall() instead.
         m=R.match(line)
         if m:
-            yield wikipedia.PageLink(wikipedia.mylang, m.group(1))
+            yield wikipedia.PageLink(wikipedia.getSite(), m.group(1))
     f.close()
 
 def read_pages_from_wiki_page(pagetitle):
@@ -218,15 +219,15 @@ def read_pages_from_wiki_page(pagetitle):
     interwiki and category links, and yield PageLinks for these pages.
 
     Arguments:
-        * pagetitle - the title of a page on the "mylang" wiki
+        * pagetitle - the title of a page on the home wiki
     '''
-    listpage = wikipedia.PageLink(wikipedia.mylang, pagetitle)
+    listpage = wikipedia.PageLink(wikipedia.getSite(), pagetitle)
     list = wikipedia.get(listpage, read_only = True)
     # TODO - UNFINISHED
 
 # TODO: Make MediaWiki's search feature available.
 def generator(source, replacements, exceptions, regex, namespace, textfilename = None, sqlfilename = None, pagenames = None):
-    '''
+    """
     Generator which will yield PageLinks for pages that might contain text to
     replace. These pages might be retrieved from a local SQL dump file or a
     text file, or as a list of pages entered by the user.
@@ -247,7 +248,7 @@ def generator(source, replacements, exceptions, regex, namespace, textfilename =
                          will be used when source is 'sqldump'.
         * pagenames    - a list of pages which will be used when source is
                          'userinput'.
-    '''
+    """
     if source == 'sqldump':
         for pl in read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, namespace):
             yield pl
@@ -256,7 +257,7 @@ def generator(source, replacements, exceptions, regex, namespace, textfilename =
             yield pl
     elif source == 'userinput':
         for pagename in pagenames:
-            yield wikipedia.PageLink(wikipedia.mylang, pagename)
+            yield wikipedia.PageLink(wikipedia.getSite(), pagename)
 
 # How we want to retrieve information on which pages need to be changed.
 # Can either be 'sqldump', 'textfile' or 'userinput'.
@@ -288,7 +289,7 @@ acceptall = False
 # default to -1 which means all namespaces will be processed
 namespace = -1
 # Load default summary message.
-wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg))
+wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
 # Read commandline parameters.
 for arg in sys.argv[1:]:
@@ -331,7 +332,7 @@ if source == None or len(commandline_replacements) not in [0, 2]:
     sys.exit()
 if (len(commandline_replacements) == 2 and fix == None):
     replacements[commandline_replacements[0]] = commandline_replacements[1]
-    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
 elif fix == None:
     old = wikipedia.input(u'Please enter the text that should be replaced:')
     new = wikipedia.input(u'Please enter the new text:')
@@ -345,7 +346,7 @@ elif fix == None:
         new = wikipedia.input(u'Please enter the new text:')
         change = change + ' & -' + old + ' +' + new
         replacements[old] = new
-    default_summary_message =  wikipedia.translate(wikipedia.mylang, msg) % change
+    default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
     wikipedia.output(u'The summary message will default to: %s' % default_summary_message)
     summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
     if summary_message == '':
@@ -361,7 +362,7 @@ else:
     if fix.has_key('regex'):
         regex = fix['regex']
     if fix.has_key('msg'):
-        wikipedia.setAction(wikipedia.translate(wikipedia.mylang, fix['msg']))
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), fix['msg']))
     if fix.has_key('exceptions'):
         exceptions = fix['exceptions']
     replacements = fix['replacements']

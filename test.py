@@ -15,8 +15,9 @@ for arg in sys.argv[1:]:
     if arg:
         print "Unknown argument",arg
         sys.exit(1)
-                
-if wikipedia.checkLogin():
-    print "Logged in ("+wikipedia.mylang+".wikipedia.org)"
+
+mysite = wikipedia.getSite()
+if mysite.loggedin(check=1):
+    print "Logged in (%s)" % repr(mysite)
 else:
-    print "Not logged in ("+wikipedia.mylang+".wikipedia.org)"
+    print "Not logged in (%s)" % repr(mysite)

@@ -184,13 +184,13 @@ date_format = {
 }
 
 class FormatDate(object):
-    def __init__(self, code):
-        self.code = code
+    def __init__(self, site):
+        self.site = site
 
     def __call__(self, m, d):
         import wikipedia
-        return wikipedia.html2unicode((date_format[m][self.code]) % d,
-                                      language = self.code)
+        return wikipedia.html2unicode((date_format[m][self.site.lang]) % d,
+                                      site = self.site)
     
 # number of days in each month, required for interwiki.py with the -days argument
 days_in_month = {

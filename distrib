@@ -1,0 +1,8 @@
+#!/bin/sh
+/bin/rm -rf temp
+mkdir temp
+cd temp
+cvs -d `cat ../CVS/Root` export -D now -d pywikipediabot pywikipedia
+/bin/rm -f $HOME/robot.zip
+zip -rv $HOME/robot.zip pywikipediabot/*
+tar -cvzf $HOME/robot.tar.gz pywikipediabot/*

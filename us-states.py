@@ -89,16 +89,17 @@ for arg in sys.argv[1:]:
         else:
             print('Warning: argument "%s" not understood; ignoring.')%arg
 
-for p in wikipedia.allpages(start = start):
+mysite = wikipedia.getSite()
+for p in wikipedia.allpages(start = start, site = mysite):
     for sn in abbrev:
         R=re.compile('[^[]]*' + '\%2C_' + sn)
         for res in R.findall(p.urlname()):
-            pl=wikipedia.PageLink(wikipedia.mylang,p.urlname().replace(sn,abbrev[sn]))
+            pl=wikipedia.PageLink(mysite, p.urlname().replace(sn,abbrev[sn]))
             # A bit hacking here - the real work is done in the 'except wikipedia.NoPage'
             # part rather than the 'try'.
             try:
                 goal = pl.getRedirectTo()
-                if wikipedia.PageLink(wikipedia.mylang, goal):
+                if wikipedia.PageLink(mysite, goal):
                     print("Not creating %s - redirect already exists.") % goal
                 else:
                     print("WARNING!!! %s already exists but redirects elsewhere!") % goal
@@ -107,7 +108,7 @@ for p in wikipedia.allpages(start = start):
             except wikipedia.NoPage:
                 change=''
                 if p.isRedirectPage():
-                    p2 = wikipedia.PageLink(wikipedia.mylang, p.getRedirectTo())
+                    p2 = wikipedia.PageLink(mysite, p.getRedirectTo())
                     print ('Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.')%p2.urlname().replace("%2C",",").replace("_"," ")
                 else:
                     p2 = p
@@ -119,4 +120,4 @@ for p in wikipedia.allpages(start = start):
                         change = raw_input("(y/n)? ")
                 if change=='y':
                     text = '#REDIRECT [['+p2.urlname().replace("%2C",",").replace("_"," ")+']]'
-                    pl.put(text, comment = wikipedia.translate(wikipedia.mylang,msg), minorEdit = '0')
+                    pl.put(text, comment = wikipedia.translate(mysite, msg), minorEdit = '0')

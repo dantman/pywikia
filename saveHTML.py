@@ -105,7 +105,7 @@ def extractImages(data):
 if __name__ == "__main__":
 
 
-    lang = wikipedia.mylang
+    mysite = wikipedia.getSite()
     sa = []
     output_directory = ""
     save_images = False
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
     headers = {"Content-type": "application/x-www-form-urlencoded", 
                "User-agent": "RobHooftWikiRobot/1.0"}
-    conn = httplib.HTTPConnection(wikipedia.family.hostname(lang))
+    conn = httplib.HTTPConnection(mysite.hostname())
     
 
     R = re.compile('.*/wiki/(.*)')
@@ -171,7 +171,7 @@ if __name__ == "__main__":
                 print 'downloading ' + i['image'],
                 uo = wikipedia.MyURLopener()
                 file = uo.open( "http://upload.wikimedia.org/wikipedia/"
-                                +lang + '/' + i['path'] + i['image'])
+                                +mysite.lang + '/' + i['path'] + i['image'])
                 content = file.read()
                 f = open(output_directory + i['image'], "wb")
                 f.write(content)
