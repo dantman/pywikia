@@ -16,6 +16,7 @@ wikipedia.setAction('%s: semi-automatic interwiki script'%wikipedia.username)
 debug = 1
 forreal = 1
 
+datetablelang='nl'
 datetable={
     'januari':{'en':'January %d','de':'%d. Januar','fr':'%d janvier','af':'01-%02d'},
     'februari':{'en':'February %d','de':'%d. Februar','fr':'%d fevrier','af':'02-%02d'},
@@ -36,10 +37,10 @@ yearADfmt={'ja':'%d&#24180;'} # Others default to '%d'
 yearBCfmt={'de':'%d v. Chr.','en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
            'es':'%d adC','eo':'-%d'} # No default
 
-def autonomous_problem(pl):
+def autonomous_problem(pl,reason=''):
     if autonomous:
         f=open('autonomous_problem.dat','a')
-        f.write("%s\n"%pl)
+        f.write("%s {%s}\n"%(pl,reason))
         f.close()
         sys.exit(1)
     
@@ -60,21 +61,27 @@ def autotranslate(pl,arr,same=0):
         return sametranslate(pl,arr)
     if hints:
         for h in hints:
-            newcode,newname=h.split(':')
-            x=wikipedia.PageLink(newcode,newname)
-            if x not in arr:
-                arr[x]=None
+            codes,newname=h.split(':')
+            if codes=='all':
+                codes=wikipedia.biglangs
+            else:
+                codes=codes.split(',')
+            for newcode in codes:
+                x=wikipedia.PageLink(newcode,newname)
+                if x not in arr:
+                    arr[x]=None
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
-    Rdate=re.compile('(\d+)_(%s)'%('|'.join(datetable.keys())))
-    m=Rdate.match(pl.linkname())
-    if m:
-        for newcode,fmt in datetable[m.group(2)].items():
-            newname=fmt%int(m.group(1))
-            x=wikipedia.PageLink(newcode,newname)
-            if x not in arr:
-                arr[x]=None
-        return
+    if mylang==datetablelang:
+        Rdate=re.compile('(\d+)_(%s)'%('|'.join(datetable.keys())))
+        m=Rdate.match(pl.linkname())
+        if m:
+            for newcode,fmt in datetable[m.group(2)].items():
+                newname=fmt%int(m.group(1))
+                x=wikipedia.PageLink(newcode,newname)
+                if x not in arr:
+                    arr[x]=None
+            return
 
     # Autotranslate years A.D.
     Ryear=re.compile('^\d+$')
@@ -89,17 +96,18 @@ def autotranslate(pl,arr,same=0):
         return
 
     # Autotranslate years B.C.
-    Ryear=re.compile('^(\d+)_v._Chr.')
-    m=Ryear.match(pl.linkname())
-    if m:
-        for newcode in wikipedia.langs:
-            fmt = yearBCfmt.get(newcode)
-            if fmt:
-                newname = fmt%int(m.group(1))
-                x=wikipedia.PageLink(newcode,newname)
-                if x not in arr:
-                    arr[x]=None
-        return
+    if mylang=='nl':
+        Ryear=re.compile('^(\d+)_v._Chr.')
+        m=Ryear.match(pl.linkname())
+        if m:
+            for newcode in wikipedia.langs:
+                fmt = yearBCfmt.get(newcode)
+                if fmt:
+                    newname = fmt%int(m.group(1))
+                    x=wikipedia.PageLink(newcode,newname)
+                    if x not in arr:
+                        arr[x]=None
+            return
     
 def compareLanguages(old,new):
     global confirm
@@ -124,6 +132,31 @@ def compareLanguages(old,new):
     if modifying:
         s=s+" Modifying:"+",".join(modifying)
     return s
+
+#===========
+exceptions=[]
+
+Re=re.compile(r'\[\[(.*)\]\] *< *\[\[(.*)\]\]')
+try:
+    f=open('%s-exceptions.dat'%mylang)
+except IOError:
+    pass
+else:
+    for line in f:
+        m=Re.match(line)
+        if not m:
+            raise ValueError("Do not understand %s"%line)
+        exceptions.append((m.group(1),m.group(2)))
+
+def bigger(pl):
+    x1 = str(inpl)
+    x2 = str(pl)
+    for small,big in exceptions:
+        if small==x1 and big==x2:
+            return True
+    return False
+        
+#===========
     
 def treestep(arr,pl,abort_on_redirect=0):
     assert arr[pl] is None
@@ -150,11 +183,14 @@ def treestep(arr,pl,abort_on_redirect=0):
             return 1
         return 0
     arr[pl]=text
-    for newpl in pl.interwiki():
-        if newpl not in arr:
-            print "NOTE: from %s we got the new %s"%(pl,newpl)
-            arr[newpl]=None
-            n+=1
+    if bigger(pl):
+        print "NOTE: %s is bigger than %s, not following references"%(pl,inpl)
+    else:
+        for newpl in pl.interwiki():
+            if newpl not in arr:
+                print "NOTE: from %s we got the new %s"%(pl,newpl)
+                arr[newpl]=None
+                n+=1
     return n
     
 def treesearch(pl):
@@ -234,11 +270,11 @@ new={}
 k=m.keys()
 k.sort()
 for pl in k:
-    if pl.code()==mylang:
+    if pl.code()==mylang and m[pl]:
         if pl!=inpl:
             print "ERROR: %s refers back to %s"%(inpl,pl)
             confirm+=1
-            autonomous_problem(inpl)
+            autonomous_problem(inpl,'Someone refers to another page with us')
     elif m[pl]:
         print pl
         if new.has_key(pl.code()) and new[pl.code()]!=None and new[pl.code()]!=pl:
@@ -247,7 +283,7 @@ for pl in k:
                 if bell:
                     sys.stdout.write('\07')
                 confirm+=1
-                autonomous_problem(inpl)
+                autonomous_problem(inpl,'There are alternatives in %s'%pl.code())
                 answer=raw_input("Use (f)ormer or (l)atter or (n)either or (q)uit?")
                 if answer.startswith('f'):
                     break
@@ -261,6 +297,12 @@ for pl in k:
                     sys.exit(1)
         elif pl.code() not in new or new[pl.code()]!=None:
             new[pl.code()]=pl
+
+# Remove the neithers
+for k,v in new.items():
+    if v is None:
+        del new[k]
+        
 print "==status=="
 old={}
 for pl in inpl.interwiki():
@@ -296,7 +338,7 @@ if newtext!=oldtext:
             if confirm:
                 if bell:
                     sys.stdout.write('\07')
-                autonomous_problem(inname)
+                autonomous_problem(inpl,'removing a language')
                 answer=raw_input('submit y/n ?')
             else:
                 answer='y'
