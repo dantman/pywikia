@@ -23,6 +23,7 @@ langs = {'en':'www.wikipedia.org',
          'sl':'sl.wikipedia.org',
          'ko':'ko.wikipedia.org',
          'hu':'hu.wikipedia.org',
+         'el':'el.wikipedia.org',
          'it':'it.wikipedia.com',
          'no':'no.wikipedia.com',
          'pt':'pt.wikipedia.com',
@@ -136,7 +137,16 @@ def getUrl(host,address):
 def getPage(code, name):
     """Get the contents of page 'name' from the 'code' language wikipedia"""
     host = langs[code]
-    name = re.sub(' ', '_', name)
+    if host[-4:]=='.com':
+        # Old algorithm
+        name = re.sub('_', ' ', name)
+        n=[]
+        for x in name.split():
+            n.append(x.capitalize())
+        name='_'.join(n)
+        print name
+    else:
+        name = re.sub(' ', '_', name)
     if not '%' in name: # It should not have been done yet
         if name!=urllib.quote(name):
             print "DBG> quoting",name
@@ -176,6 +186,8 @@ def getPage(code, name):
     i2 = re.search('</textarea>',text).start()
     if i2-i1 < 2: # new software
         raise NoPage()
+    if debug:
+        print text[i1:i2]
     if text[i1:i2] == 'Describe the new page here.\n': # old software
         raise NoPage()
     Rredirect=re.compile(r'\#redirect:? *\[\[(.*?)\]\]',re.I)
