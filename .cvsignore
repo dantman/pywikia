@@ -1,6 +1,9 @@
 *.pyc
+family/*.pyc
+logs/*
 user-config.py
 autonomous_problem.dat
+sax_parse_bug.dat
 treelang.log
 *.dump
 warning*.log
