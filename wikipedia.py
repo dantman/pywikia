@@ -187,8 +187,6 @@ interwiki_putfirst = {
           'tr','uk','simple','vo','cy','hu','vi','it'],
     }
 
-noexport = ['es']
-
 # Local exceptions
 
 class Error(Exception):
@@ -334,7 +332,7 @@ class PageLink:
         if not hasattr(self, '_contents'):
             try:
                 self._contents = getPage(self.code(), self.urlname())
-                hn = self.hashname()
+                hn = underline2space(self.hashname())
                 if hn:
                     m = re.search("== *%s *==" % hn, self._contents)
                     if not m:
@@ -572,7 +570,7 @@ class GetAll:
         return data
     
 def getall(code, pages):
-    if code in oldsoftware or code in noexport:
+    if code in oldsoftware:
         return
     #print "DBG> getall", code, pages
     print "Getting %d pages from %s:"%(len(pages),code) 
