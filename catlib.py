@@ -8,7 +8,8 @@ Library to work with category pages on Wikipedia
 # 
 __version__ = '$Id$'
 #
-import wikipedia, re
+import re, time
+import wikipedia
 
 class CatTitleRecognition(object):
     """Special object to recognize categories in a certain language.
@@ -74,7 +75,25 @@ class _CatLink(wikipedia.PageLink):
         while catstodo:
             cat = catstodo.pop()
             catsdone.append(cat)
-            txt = wikipedia.getPage(cat.code(), cat.urlname(), get_edit_page = False)
+            # this loop will run until the page could be retrieved
+            # Try to retrieve the page until it was successfully loaded (just in case
+            # the server is down or overloaded)
+            # wait for retry_idle_time minutes (growing!) between retries.
+            retry_idle_time = 1
+            while True:
+                try:
+                    txt = wikipedia.getPage(cat.code(), cat.urlname(), get_edit_page = False)
+                except:
+                    # We assume that the server is down. Wait some time, then try again.
+                    print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (cat.linkname(), retry_idle_time)
+                    time.sleep(retry_idle_time * 60)
+                    # Next time wait longer, but not longer than half an hour
+                    retry_idle_time *= 2
+                    if retry_idle_time > 30:
+                        retry_idle_time = 30
+                    continue
+                break
+            
             # save a copy of this text to find out self's supercategory.
             # if recurse is true, this function should only return self's
             # supercategory, not the ones of its subcats.
