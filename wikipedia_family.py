@@ -237,12 +237,16 @@ category = {
     'no': u'Kategori',
     'fr': u'Cat\xe9gorie',
     'ru': u'Category',
+    'sl': u'Category',
     'sv': u'Kategori',
     'test': u'Category'
 }
 
 def category_namespaces(code):
     ns = []
+    if not category.has_key(code):
+        print "DBG> No category namespace known for %s"%code
+        code = 'en'
     ns.append(category[code])
     ns.append(category[code].lower())
     if category[code] != category['en']:
@@ -396,8 +400,6 @@ latin1old = ['et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
             
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
-    if code == 'ascii':
-        return code # Special case where we do not want special characters.
     if code in latin1:
         return 'iso-8859-1'
     return 'utf-8'

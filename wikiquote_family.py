@@ -378,23 +378,9 @@ def allpagesname(code, start):
 # Two functions to figure out the encoding of different languages
 # This may be a lot simpler for other families!
 # 
-
-# Languages that are coded in iso-8859-1
-latin1 = []
-
-# Languages that used to be coded in iso-8859-1
-latin1old = ['et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
-             'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
-             'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
-             'ga', 'na']
-
             
 def code2encoding(code):
     """Return the encoding for a specific language wikiquote"""
-    if code == 'ascii':
-        return code # Special case where we do not want special characters.
-    if code in latin1:
-        return 'iso-8859-1'
     return 'utf-8'
 
 def code2encodings(code):

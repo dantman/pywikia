@@ -93,13 +93,9 @@ def allpagesname(code, start):
         return '%s:Allpages&from=%s'%(special[code], start)
 
 # Two functions to figure out the encoding of different languages
-# This may be a lot simpler for other families!
-
             
 def code2encoding(code):
     """Return the encoding for a specific language wikipedia"""
-    if code == 'ascii':
-        return code # Special case where we do not want special characters.
     return 'utf-8'
 
 def code2encodings(code):
