@@ -139,6 +139,22 @@ charsets = {}
 # Keep the modification time of all downloaded pages for an eventual put.
 edittime = {}
 
+# Which languages have a special order for putting interlanguage links,
+# and what order is it? If a language is not in interwiki_special_order,
+# alphabetical order on language code is used. For languages that are in
+# interwiki_special_order, interwiki_putfirst is checked first, and
+# languages are put in the order given there. All other languages are put
+# after those, in code-alphabetical order.
+interwiki_special_order = ['hu','pl']
+
+interwiki_putfirst = {'hu':['en'],
+                      'pl':['af','sq','en','ar','eu','bs','zh','zh-tw','zh-cn',
+                            'hr','cs','da','eo','et','fi','fr','fy','gl',
+                            'el','he','hi','es','nl','id','ia','ga','ja',
+                            'ca','ko','la','lv','ml','ms','mr','de','no',
+                            'pt','oc','ru','ro','sl','sr','sw','sv','tt',
+                            'tr','uk','simple','vo','cy','hu','vi','it']}
+
 # Local exceptions
 
 class Error(Exception):
@@ -644,10 +660,14 @@ def interwikiFormat(links, incode):
     s = []
     ar = links.keys()
     ar.sort()
-    if mylang in config.interwiki_englishfirst:
-        if 'en' in ar:
-            del ar[ar.index('en')]
-            ar[:0]=['en']
+    if mylang in interwiki_special_order:
+        #In this case I might have to change the order
+        ar2 = []
+        for code in interwiki_putfirst[mylang]:
+            if code in ar:
+                del ar[ar.index(code)]
+                ar2 = ar2 + [code]
+        ar = ar2 + ar
     for code in ar:
         try:
             s.append(links[code].aslink())
