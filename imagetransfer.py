@@ -1,8 +1,6 @@
 """
 Script to find images on a subject on another wikipedia and copy them
-to one's own Wikipedia. Script is still in development; the image
-searching part has been finished, but the uploading has not. Look for
-the image through its description page and upload with upload.py.
+to one's own Wikipedia.
 
 Arguments:
 
