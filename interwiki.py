@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -194,6 +194,7 @@ class Global(object):
        Use of globals outside of this is to be avoided."""
     always = False
     autonomous = False
+    backlink = True
     bell = True
     confirm = False
     debug = True
