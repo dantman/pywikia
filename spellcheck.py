@@ -165,9 +165,24 @@ class Word(object):
                 shortword = shortword[:shortword.rfind('[[')] + shortword[shortword.rfind('|')+1:]
             else:
                 shortword = shortword[shortword.rfind('|')+1:]
-        # Remove square brackets
+        # Remove some HTML-entities
         shortword = shortword.replace('[','')
         shortword = shortword.replace(']','')
+        shortword = shortword.replace('<tr>','')
+        shortword = shortword.replace('</tr>','')
+        shortword = shortword.replace('<td>','')
+        shortword = shortword.replace('</td>','')
+        shortword = shortword.replace('<TR>','')
+        shortword = shortword.replace('</TR>','')
+        shortword = shortword.replace('<TD>','')
+        shortword = shortword.replace('</TD>','')
+        shortword = shortword.replace('<br>','')
+        shortword = shortword.replace('<BR>','')
+        # Remove some Wiki-entities
+        shortword = shortword.replace('<nowiki>','')
+        shortword = shortword.replace('</nowiki>','')
+        shortword = shortword.replace('<math>','')
+        shortword = shortword.replace('</math>','')
         # Remove non-alphanumerical characters at the start
         try:
             while shortword[0] in string.punctuation:
