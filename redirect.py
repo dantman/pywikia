@@ -38,6 +38,7 @@ import re, sys
 msg_double={
     'en':u'Robot: Fixing double redirect',
     'de':u'Bot: Korrigiere doppelten Redirect',
+    'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     }
 
 # Reason for deleting broken redirects
