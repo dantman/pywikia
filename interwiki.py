@@ -828,7 +828,9 @@ def compareLanguages(old, new):
     modifying = []
     mysite = wikipedia.getSite()
     for site in old.keys():
-        if old[site] != new[site]:
+        if site not in new:
+            removing.append(site)
+        elif old[site] != new[site]:
             modifying.append(site)
 
     for site2 in new.keys():
