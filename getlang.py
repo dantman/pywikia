@@ -159,26 +159,24 @@ for year in range(starty, endy + 1):
         # None of the mylangs has this page
         continue
     proper = assemblelangmatrix(m)
-    for mycode in (wikipedia.mylang,):
-        for pl in proper:
-            if pl.code == mycode:
-                mypl = pl
-                break
-        else:
+    for pl in proper:
+        if pl.code == wikipedia.mylang:
+            mypl = pl
             break
-        if mycode in m: # Page must be present in this language
-            ml = copy.copy(proper)
-            status = compareLanguages(m[mycode], ml)
-            if status:
-                print mycode,str(year), ":", status
-            del ml[ml.index(mycode)]
-            s = wikipedia.interwikiFormat(ml, incode = wikipedia.mylang)
-            newtext = s + wikipedia.removeLanguageLinks(text[mycode])
-            if debug:
-                print newtext
-            if newtext != text[mycode]:
-                print "NOTE: Replacing %s: %s"%(mycode,s)
-                if forreal:
-                    status, reason, data = wikipedia.putPage(mycode, str(year), newtext, "Robot"+status)
-                    if str(status) != '302':
-                        print status, reason
+    else:
+        break
+    if wikipedia.mylang in m: # Page must be present in this language
+        ml = copy.copy(proper)
+        status = compareLanguages(m[wikipedia.mylang], ml)
+        if status:
+            print wikipedia.mylang,str(year), ":", status
+        del ml[ml.index(wikipedia.mylang)]
+        newtext = wikipedia.replaceLanguageLinks(text[wikipedia.mylang],ml)
+        if debug:
+            print newtext
+        if newtext != text[wikipedia.mylang]:
+            print "NOTE: Replacing %s: %s"%(wikipedia.mylang,s)
+            if forreal:
+                status, reason, data = wikipedia.putPage(wikipedia.mylang, str(year), newtext, "Robot"+status)
+                if str(status) != '302':
+                    print status, reason
