@@ -1,0 +1,8 @@
+#!/bin/zsh
+for m in januari februari maart april mei juni juli augustus september oktober november december
+do
+  for f in {1..31}
+  do
+    python2.3 treelang.py -force $f $m
+  done
+done
