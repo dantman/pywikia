@@ -211,17 +211,19 @@ ignore={
     'de':(
           u'100 Wörter des 21. Jahrhunderts',
           u'Abkürzungen/[A-Z]',
-          u'Benutzer\:Katharina/Begriffsklärungen',
-          u'Benutzer\:Tsor/Begriffsklärungen',
-          u'Benutzer Diskussion\:.+',
+          u'Benutzer:Katharina/Begriffsklärungen',
+          u'Benutzer:Tsor/Begriffsklärungen',
+          u'Benutzer Diskussion:.+',
           u'Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
           u'GISLexikon \([A-Z]\)',
           u'Lehnwort',
           u'Liste aller 2-Buchstaben-Kombinationen',
+          u'Wikipedia:Archiv:.+',
           u'Wikipedia:Begriffsklärung.*',
-          u'Wikipedia\:Geographisch mehrdeutige Bezeichnungen',
-          u'Wikipedia\:Liste mathematischer Themen\/BKS',
-          u'Wikipedia\:WikiProjekt Altertumswissenschaft\/.+',
+          u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
+          u'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
+          u'Wikipedia:Liste mathematischer Themen/BKS',
+          u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
       )
     }
 
@@ -229,6 +231,7 @@ ignore={
 
 def getReferences(pl):
     x = wikipedia.getReferences(pl, follow_redirects = False)
+    print "Found %d references" % len(x)
     # Remove ignorables
     if ignore.has_key(pl.code()):
         ignore_regexes =[]
@@ -478,7 +481,7 @@ for wrd in (page_list):
                         for i in range(len(alternatives)):
                             wikipedia.output("%3d - %s" % (i, alternatives[i]))
                     else:
-                        if choice[0] == 'r':
+                        if len(choice)>0 and choice[0] == 'r':
                             replaceit = 1
                             choice = choice[1:]
                         else:
