@@ -1698,9 +1698,15 @@ def Family(fam = None, fatal = True):
     return sys.modules['%s_family'%fam].Family()
 
 class Site(object):
-    def __init__(self, code, fam = None):
+    def __init__(self, code, fam=None, user=None):
+        """Constructor takes three arguments:
+
+        code    language code for Site
+        fam     Wikimedia family (optional: defaults to configured)
+        user    User to use (optional: defaults to configured)"""
+
         self.lang = code.lower()
-        if type(fam)==type('') or fam is None:
+        if isinstance(fam, basestring) or fam is None:
             self.family = Family(fam)
         else:
             self.family = fam
@@ -1710,6 +1716,7 @@ class Site(object):
             raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
         self.nocapitalize = self.lang in self.family.nocapitalize
+        self.user = user
         
     def cookies(self):
         if not hasattr(self,'_cookies'):
@@ -1726,7 +1733,11 @@ class Site(object):
 
     def _fill(self):
         """Retrieve session cookies for login"""
-        fn = 'login-data/%s-%s-login.data' % (self.family.name,self.lang)
+        if self.user is None:
+            u = ""
+        else:
+            u = self.user + "-"
+        fn = 'login-data/%s-%s-%slogin.data' % (self.family.name, self.lang, u)
         if not os.path.exists(fn):
             fn = 'login-data/%s-login.data' % self.lang
         if not os.path.exists(fn):
@@ -1822,7 +1833,7 @@ class Site(object):
         return self.family.login_address(self.lang)
     
     def getSite(self, code):
-        return getSite(code = code, fam = self.family)
+        return getSite(code = code, fam = self.family, user=self.user)
 
     def namespace(self, num):
         return self.family.namespace(self.lang, num)
@@ -1841,14 +1852,14 @@ class Site(object):
     
 _sites = {}
 
-def getSite(code = None, fam = None):
+def getSite(code = None, fam = None, user=None):
     if code == None:
         code = default_code
     if fam == None:
         fam == default_family
     key = '%s:%s'%(fam,code)
     if not _sites.has_key(key):
-        _sites[key] = Site(code=code, fam=fam)
+        _sites[key] = Site(code=code, fam=fam, user=user)
     return _sites[key]
     
 def checkLogin(site = None):
