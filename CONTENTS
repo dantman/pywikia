@@ -19,16 +19,18 @@ The contents of the package are:
 
 LICENSE                : a reference to the Python Software Foundation license
 wikipedia.py           : The wikipedia library
-wikipedia_family.py    : The description of the wikipedia family of wikis.
-                         wikipedia.py can work for other families like 
-                         wikitravel if this module is copied and adapted for
-                         such a family.
+wiktionary.py          : The wiktionary library
+wikipedia_family.py    : The description of the wikipedia family of wikis
+wikibooks_family.py    : The description of the wikibooks family of wikis
+wiktionary_family.py   : The description of the wiktionary family of wikis
+wikiquote_family.py    : The description of the wikiquote family of wikis
 config.py              : Configuration module containing all defaults. Do not
                          change these! See below how to change values.
 lib_images.py          : Part of the Wikipedia library special for the uploading
 logger.py              : A support library logging screen output to a file
 titletranslate.py      : rules and tricks to auto-translate wikipage titles
 date.py                : Date formats in various languages
+family.py              : All wiki families
 translator.py          : various translations (for copy_table.py)
 catlib.py              : Library routines written especially to handle
                          category pages and recurse over category contents.
@@ -63,22 +65,28 @@ xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
 editarticle.py         : Edit an article with your favourite editor. Run
                          the script with the "--help" option to get
                          detailed infortion on possiblities.
+find.py		       : Search information.
+wikipedia_cd_fork_family.py :A fork of the German Wikipedia which will be used to create a 'stable' version
+                             which can be distributed on CDs.
 
 === Robots ===
 
-brackethttp.py         : a bot replacing a ()-bracketed http: link by an
+brackethttp.py         : Bot replacing a ()-bracketed http: link by an
                          explicit [ ] link to avoid a parser problem.
 category.py            : add a category link to all pages mentioned on a page,
                          change or remove category tags
+catall.py              : Add or change categories on a number of pages.
 check_extern.py        : check external links to see whether they still exist,
                          have been moved etcetera.
 copy_table.py          : copy a table from one wikipedia to another, making
                          automatic translations
+getimages.py           : Script to transfer many images from one wiki to another.
 imagetransfer.py       : Given a Wikipedia page, check the interwiki links
                          for images, and let the user choose among them for
                          images to upload
 interwiki.py           : A robot to check interwiki links on all pages (or
                          a range of pages) of a wikipedia.
+imageharvest.py        : Bot for getting multiple images from an external site.
 pagelist.py            : Starting with one or more pages, spiders the wiki
                          forward as well as backward, and thus can be used to
                          get a list of Wikipedia pages connected to a certain
@@ -99,6 +107,8 @@ standardize_interwiki.py:A robot that downloads a page, and reformats the
 table2wiki.py          : Semi-automatic converting HTML-tables to wiki-tables.
 template.py            : change one template (that is {{...}}) into
                          another
+touchall.py            : Bot goes over all pages of the home wiki, and edits them without
+changing.
 upload.py              : upload an image to Wikipedia
 us-states.py           : A robot to add redirects to cities for US state 
                          abbreviations.
@@ -149,5 +159,3 @@ checking Recentchanges.
 You do not need to "install" this package to be able to make use of
 it. You can actually just run it from the directory where you unpacked
 it or where you have your copy of the CVS sources.
-
-
