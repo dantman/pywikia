@@ -56,7 +56,7 @@ __version__ = '$Id$'
 #
 import sys, copy, re
 
-import wikipedia, config, titletranslate
+import wikipedia, config, titletranslate, unequal
 
 # Summary used in the modification request
 wikipedia.setAction('semi-automatic interwiki script')
@@ -104,32 +104,6 @@ def compareLanguages(old, new):
     return s,removing
 
 #===========
-exceptions = []
-
-Re = re.compile(r'\[\[(.*)\]\] *< *\[\[(.*)\]\]')
-try:
-    f = open('%s-exceptions.dat' % wikipedia.mylang)
-except IOError:
-    pass
-else:
-    for line in f:
-        m = Re.match(line)
-        if not m:
-            raise ValueError("Do not understand %s"%line)
-        exceptions.append((m.group(1),m.group(2)))
-
-def bigger(pl):
-    if pl.hashname():
-        # If we refer to part of the page, it is bigger
-        return True
-    x1 = str(inpl)
-    x2 = str(pl)
-    for small,big in exceptions:
-        if small == x1 and big == x2:
-            return True
-    return False
-        
-#===========
     
 def treestep(arr, pl, abort_on_redirect = 0):
     assert arr[pl] is None
@@ -152,18 +126,24 @@ def treestep(arr, pl, abort_on_redirect = 0):
         arr[pl] = ''
         print "NOTE: %s is a redirect to %s" % (pl, newpl)
         if not newpl in arr:
-            arr[newpl] = None
+            if unequal.unequal(inpl, newpl):
+                print "NOTE: %s is unequal to %s, not adding it" % (newpl, inpl)
+            else:
+                arr[newpl] = None
             return 1
         return 0
     arr[pl] = text
-    if bigger(pl):
+    if unequal.bigger(inpl,pl):
         print "NOTE: %s is bigger than %s, not following references" % (pl, inpl)
     else:
         for newpl in pl.interwiki():
             if newpl not in arr:
                 print "NOTE: from %s we got the new %s"%(pl,newpl)
-                arr[newpl] = None
-                n += 1
+                if unequal.unequal(inpl, newpl):
+                    print "NOTE: %s is unequal to %s, not adding it" % (newpl, inpl)
+                else:
+                    arr[newpl] = None
+                    n += 1
     return n
     
 def treesearch(pl):
@@ -241,7 +221,9 @@ else:
 if log:
     import logger
     sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
-    
+
+unequal.read_exceptions()
+
 inname = '_'.join(inname)
 if not inname:
     inname = raw_input('Which page to check:')
@@ -341,7 +323,7 @@ else:
 if backlink:
     for code in new.keys():
         pl = new[code]
-        if not bigger(pl):
+        if not unequal.bigger(inpl,pl):
             shouldlink = new.values() + [inpl]
             linked = pl.interwiki()
             for xpl in shouldlink:
