@@ -81,51 +81,72 @@ class _CatLink(wikipedia.PageLink):
         articles = []
         subcats = []
         supercats=[]
+        # regular expression matching the "(next 200)" link
+        RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
         
         while catstodo:
             cat = catstodo.pop()
             catsdone.append(cat)
-            # this loop will run until the page could be retrieved
-            # Try to retrieve the page until it was successfully loaded (just in case
-            # the server is down or overloaded)
-            # wait for retry_idle_time minutes (growing!) between retries.
-            retry_idle_time = 1
-            while True:
+            # if category list is split up into several pages, this variable
+            # stores where the next list page should start
+            startFromPage = None
+            thisCatDone = False
+            # This loop will run until all list pages of the current category
+            # have been read. Note: supercategories are displayed equally on
+            # each of the list pages, so we will care about them after this
+            # loop.
+            while not thisCatDone:
+                # this loop will run until the page could be retrieved
+                # Try to retrieve the page until it was successfully loaded (just in case
+                # the server is down or overloaded)
+                # wait for retry_idle_time minutes (growing!) between retries.
+                retry_idle_time = 1
+                while True:
+                    try:
+                        if startFromPage:
+                            txt = wikipedia.getPage(site, cat.urlname() + '&from=' + startFromPage, get_edit_page = False)
+                        else:
+                            txt = wikipedia.getPage(site, cat.urlname(), get_edit_page = False)
+                    except:
+                        # We assume that the server is down. Wait some time, then try again.
+                        raise
+                        print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (cat.linkname(), retry_idle_time)
+                        time.sleep(retry_idle_time * 60)
+                        # Next time wait longer, but not longer than half an hour
+                        retry_idle_time *= 2
+                        if retry_idle_time > 30:
+                            retry_idle_time = 30
+                        continue
+                    break
+                
+                # save a copy of this text to find out self's supercategory.
+                # if recurse is true, this function should only return self's
+                # supercategory, not the ones of its subcats.
+                self_txt = txt
+                # index where subcategory listing begins
+                # this only works for the current version of the MonoBook skin
+                ibegin = txt.index('"clear:both;"')
+                # index where article listing ends
                 try:
-                    txt = wikipedia.getPage(site, cat.urlname(), get_edit_page = False)
-                except:
-                    # We assume that the server is down. Wait some time, then try again.
-                    raise
-                    print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (cat.linkname(), retry_idle_time)
-                    time.sleep(retry_idle_time * 60)
-                    # Next time wait longer, but not longer than half an hour
-                    retry_idle_time *= 2
-                    if retry_idle_time > 30:
-                        retry_idle_time = 30
-                    continue
-                break
-            
-            # save a copy of this text to find out self's supercategory.
-            # if recurse is true, this function should only return self's
-            # supercategory, not the ones of its subcats.
-            self_txt = txt
-            # index where subcategory listing begins
-            # this only works for the current version of the MonoBook skin
-            ibegin = txt.index('"clear:both;"')
-            # index where article listing ends
-            try:
-                iend = txt.index('<div id="catlinks">')
-            except ValueError:
-                iend = txt.index('<!-- end content -->')
-            txt = txt[ibegin:iend]
-            for title in Rtitle.findall(txt):
-                if iscattitle(title):
-                    ncat = _CatLink(self.site(), title)
-                    if recurse and ncat not in catsdone:
-                        catstodo.append(ncat)
-                    subcats.append(title)
+                    iend = txt.index('<div id="catlinks">')
+                except ValueError:
+                    iend = txt.index('<!-- end content -->')
+                txt = txt[ibegin:iend]
+                for title in Rtitle.findall(txt):
+                    if iscattitle(title):
+                        ncat = _CatLink(self.site(), title)
+                        if recurse and ncat not in catsdone:
+                            catstodo.append(ncat)
+                        subcats.append(title)
+                    else:
+                        articles.append(title)
+                # try to find a link to the next list page
+                matchObj = RLinkToNextPage.search(txt)
+                if matchObj:
+                    startFromPage = matchObj.group(1)
+                    wikipedia.output('There are more articles in %s.' % cat.linkname())
                 else:
-                    articles.append(title)
+                    thisCatDone = True
         # get supercategories
         try:
             ibegin = self_txt.index('<div id="catlinks">')
