@@ -649,7 +649,7 @@ class Subject(object):
                             wikipedia.output(u"WARNING: %s does not link to %s" % (pl.asselflink(), xpl.aslink(None)))
                 # Check for superfluous links
                 for xpl in linked:
-                    elif not xpl in shouldlink:
+                    if not xpl in shouldlink:
                         # Check whether there is an alternative page on that language.
                         for l in shouldlink:
                             if l.site() == xpl.site():
