@@ -200,8 +200,8 @@ def treat(refpl):
                 reptxt = "%s|%s" % (alternatives[choice],g2)
             reftxt = reftxt[:m.start()+2]+reptxt+reftxt[m.end()-2:]
             print reftxt[max(0,m.start()-30):m.end()+30]
-    if not debug:
-        refpl.put(reftxt)
+        if not debug:
+            refpl.put(reftxt)
     
 def resafe(s):
     s=s.replace('(','\\(')
