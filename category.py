@@ -196,7 +196,7 @@ def add_category(sort_by_last_name = False):
                 pl3 = wikipedia.PageLink(wikipedia.mylang,arg.args[0])
                 wikipedia.output(u"WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink()))
             else:
-                wikipedia.output(u"Current categories: ", cats)
+                wikipedia.output(u"Current categories: %s" % cats)
                 catpl = wikipedia.PageLink(wikipedia.mylang, cat_namespace + ':' + newcat)
                 if sort_by_last_name:
                     catpl = sorted_by_last_name(catpl, pl2) 
