@@ -127,11 +127,13 @@ langs = {
 
 # Translation used on all Wikipedias for the different namespaces.
 # (Please sort languages alphabetically)
+# You only need to enter translations that differ from _default.
 namespaces = {
     -2: {
-        'en':u'Media',
+        '_default': u'Media',
     },
     -1: {
+        '_default': u'Special',
         'af': u'Spesiaal',
         'ar': u'خاص',
         'bg': u'Специални',
@@ -142,19 +144,16 @@ namespaces = {
         'cy': u'Arbennig',
         'da': u'Speciel',
         'de': u'Spezial',
-        'en': u'Special',
         'eo': u'Speciala',
         'es': u'Especial',
         'et': u'Eri',
         'fa': u'ویژه',
         'fi': u'Toiminnot',
-        'fr': u'Special',
         'fy': u'Wiki',
         'ga': u'Speisialta',
         'he': u'מיוחד',
-        'hi': u'%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7', # TODO: convert to Unicode
+        'hi': u'विशेष',
         'hu': u'Speciális',
-        'ia': u'Special',
         'id': u'Istimewa',
         'it': u'Speciale',
         'ja': u'特別',
@@ -167,39 +166,41 @@ namespaces = {
         'oc': u'Especial',
         'pl': u'Specjalna',
         'pt': u'Especial',
-        'ro': u'Special',
         'ru': u'Специальные',
         'sk': u'Špeciálne',
         'sl': u'Posebno',
         'sq': u'Speciale',
         'sr': u'Посебно',
-        'sv': u'Special',
         'uk': u'Спеціальні',
         'ta': u'சிறப்பு',
-        'th': u'%E0%B8%9E%E0%B8%B4%E0%B9%80%E0%B8%A8%E0%B8%A9', # TODO: convert to Unicode
+        'th': u'พิเศษ',
         'wa': u'Sipeciås',
     },
     0: {
-        'en': None,
+        '_default': None,
     },
     1: {
-        'en': u'Talk',
+        '_default': 'Talk',
         'de': u'Diskussion',
     },
     2: {
-        'en': u'User',
+        '_default': u'User',
+        'de': u'Benutzer',
     },
     3: {
-        'en': u'User talk',
+        '_default': u'User talk',
+        'de': u'Benutzer Diskussion',
     },
     4: {
-        'en': u'Wikipedia',
+        '_default': u'Wikipedia',
     },
     5: {
-        'en': u'Wikipedia talk',
+        '_default': u'Wikipedia talk',
+        'de': u'Wikipedia Diskussion',        
     },
     6: {
         # TODO: convert all percent-encoded titles to plaintext
+        '_default': u'Image',
         'af': u'Beeld',
         'ar': u'Image', # everybody seems to use the English word at the moment
         'bg': u'Картинка',
@@ -247,56 +248,53 @@ namespaces = {
         'wa': u'Im%C3%A5dje',
     },
     7: {
-        'en': u'Image talk',
+        '_default': u'Image talk',
+        'de': u'Bild Diskussion',        
     },
     8: {
-        'en': u'MediaWiki',
+        '_default': u'MediaWiki',
         'bg': u'МедияУики',
     },
     9: {
+        '_default': u'MediaWiki talk',
         'de': u'MediaWiki Diskussion',
-        'en': u'MediaWiki talk',
     },
     10: {
+        '_default':u'Template',
         'de':u'Vorlage',
-        'en':u'Template',
         'nl':u'Sjabloon'
     },
     11: {
-        'en': u'Template talk',
+        '_default': u'Template talk',
+        'de': u'Vorlage Diskussion',
     },
     12: {
-        'en': u'Help',
+        '_default': u'Help',
+        'de': u'Hilfe',
     },
     13: {
-        'en': u'Help talk',
+        '_default': u'Help talk',
+        'de': u'Hilfe Diskussion',
     },
     14: {
+        '_default': u'Category',
         'da': u'Kategori',
         'de': u'Kategorie',
-        'en': u'Category',
         'es': u'Categoría',
         'fr': u'Catégorie',
         'hu': u'Kategória',
         'is': u'Flokkur',
         'nl': u'Categorie',
         'no': u'Kategori',
-        'sl': u'Category',
         'sv': u'Kategori',
-        'test': u'Category'
     },
     15: {
-        'en': u'Category talk'
+        '_default': u'Category talk',
+        'de': u'Kategorie Diskussion',        
     },
 }
 
-
-   
-# Template namespace
-template = {
-    }
-
-def namespace(code, namespace_number, fallback = 'en'):
+def namespace(code, namespace_number, fallback = '_default'):
     #print namespace_number
     #print namespaces[namespace_number]
     if namespaces[namespace_number].has_key(code):
@@ -312,39 +310,38 @@ def namespace(code, namespace_number, fallback = 'en'):
 # 'fallback' (English by default).
 # If you want the bot to crash in case of an unknown namespace name, use
 # fallback = None.
-def special_namespace(code, fallback = 'en'):
+def special_namespace(code, fallback = '_default'):
     return namespace(code, -1, fallback)
 
-def special_namespace_url(code, fallback = 'en'):
+def special_namespace_url(code, fallback = '_default'):
     encoded_title = namespace(code, -1, fallback).encode(code2encoding(code))
     return urllib.quote(encoded_title)
 
-def image_namespace(code, fallback = 'en'):
+def image_namespace(code, fallback = '_default'):
     return namespace(code, 6, fallback)
 
-def image_namespace_url(code, fallback = 'en'):
+def image_namespace_url(code, fallback = '_default'):
     encoded_title = namespace(code, 6, fallback).encode(code2encoding(code))
     return urllib.quote(encoded_title)
 
-def mediawiki_namespace(code, fallback = 'en'):
+def mediawiki_namespace(code, fallback = '_default'):
     return namespace(code, 8, fallback)
 
-def template_namespace(code, fallback = 'en'):
+def template_namespace(code, fallback = '_default'):
     return namespace(code, 10, fallback)
  
-def category_namespace(code, fallback = 'en'):
+def category_namespace(code, fallback = '_default'):
     return namespace(code, 14, fallback)
 
-# TODO: rewrite (?)
 def category_namespaces(code):
     namespaces = []
     namespace_title = namespace(code, 14)
     namespaces.append(namespace_title)
     namespaces.append(namespace_title.lower())
-    english_namespace_title = namespace('en', 14)
-    if namespace_title != english_namespace_title:
-        namespaces.append(english_namespace_title)
-        namespaces.append(english_namespace_title.lower())
+    default_namespace_title = namespace('_default', 14)
+    if namespace_title != default_namespace_title:
+        namespaces.append(default_namespace_title)
+        namespaces.append(default_namespace_title.lower())
     return namespaces
 
 # Redirect code can be translated, but is only in one language now.

@@ -12,68 +12,62 @@ class Family:
     for i in range(-2,16):
         namespaces[i]={}
 
-    def namespace(code, namespace_number, fallback = 'en'):
-        """Give the name of the name space number namespace_number
-           in the language given by code. If no such namespace is known,
-           use the name in the fallback language (default en:)"""
-        if namespaces[namespace_number].has_key(code):
-            return namespaces[namespace_number][code]
-        elif fallback:
-            return namespaces[namespace_number][fallback]
-        else:
-            raise KeyError('ERROR: title for namespace %d in language %s unknown' % (namespace_number, code))  
+def namespace(code, namespace_number, fallback = '_default'):
+    if namespaces[namespace_number].has_key(code):
+        return namespaces[namespace_number][code]
+    elif fallback:
+        return namespaces[namespace_number][fallback]
+    else:
+        raise KeyError('ERROR: title for namespace %d in language %s unknown' % (namespace_number, code))  
 
-    def special_namespace(code, fallback = 'en'):
-        # Returns the title of the special namespace in language 'code', taken from
-        # dictionary above.
-        # If the dictionary doesn't contain a translation, it will use language
-        # 'fallback' (English by default).
-        # If you want the bot to crash in case of an unknown namespace name, use
-        # fallback = None.
-        return namespace(code, -1, fallback)
+# Returns the title of the special namespace in language 'code', taken from
+# dictionary above.
+# If the dictionary doesn't contain a translation, it will use language
+# 'fallback' (or, if fallback isn't given, MediaWiki default).
+# If you want the bot to crash in case of an unknown namespace name, use
+# fallback = None.
+def special_namespace(code, fallback = '_default'):
+    return namespace(code, -1, fallback)
 
-    def special_namespace_url(code, fallback = 'en'):
-        encoded_title = namespace(code, -1, fallback).encode(code2encoding(code))
-        return urllib.quote(encoded_title)
+def special_namespace_url(code, fallback = '_default'):
+    encoded_title = namespace(code, -1, fallback).encode(code2encoding(code))
+    return urllib.quote(encoded_title)
 
-    def image_namespace(code, fallback = 'en'):
-        return namespace(code, 6, fallback)
+def image_namespace(code, fallback = '_default'):
+    return namespace(code, 6, fallback)
 
-    def image_namespace_url(code, fallback = 'en'):
-        encoded_title = namespace(code, 6, fallback).encode(code2encoding(code))
-        return urllib.quote(encoded_title)
+def image_namespace_url(code, fallback = '_default'):
+    encoded_title = namespace(code, 6, fallback).encode(code2encoding(code))
+    return urllib.quote(encoded_title)
 
-    def mediawiki_namespace(code, fallback = 'en'):
-        return namespace(code, 8, fallback)
+def mediawiki_namespace(code, fallback = '_default'):
+    return namespace(code, 8, fallback)
 
-    def template_namespace(code, fallback = 'en'):
-        return namespace(code, 10, fallback)
+def template_namespace(code, fallback = '_default'):
+    return namespace(code, 10, fallback)
+ 
+def category_namespace(code, fallback = '_default'):
+    return namespace(code, 14, fallback)
 
-    def category_namespace(code, fallback = 'en'):
-        return namespace(code, 14, fallback)
-
-    # TODO: rewrite (?)
-    def category_namespaces(code):
-        namespaces = []
-        namespace_title = namespace(code, 14)
-        namespaces.append(namespace_title)
-        namespaces.append(namespace_title.lower())
-        english_namespace_title = namespace('en', 14)
-        if namespace_title != english_namespace_title:
-            namespaces.append(english_namespace_title)
-            namespaces.append(english_namespace_title.lower())
-        return namespaces
+def category_namespaces(code):
+    namespaces = []
+    namespace_title = namespace(code, 14)
+    namespaces.append(namespace_title)
+    namespaces.append(namespace_title.lower())
+    default_namespace_title = namespace('_default', 14)
+    if namespace_title != default_namespace_title:
+        namespaces.append(default_namespace_title)
+        namespaces.append(default_namespace_title.lower())
+    return namespaces
 
     # Redirect code can be translated, but is only in one language now.
 
-    redirect = {
-        'cy': 'ail-cyfeirio',
-        }
+    redirect = {}
 
     # On most Wikipedias page names must start with a capital letter, but some
     # languages don't use this.
 
-    nocapitalize = ['tlh','tokipona']
+    nocapitalize = []
 
     # Which languages have a special order for putting interlanguage links,
     # and what order is it? If a language is not in interwiki_putfirst,
