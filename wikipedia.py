@@ -1459,7 +1459,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         x = unicode(x, charset, errors = 'replace')
         return x
 
-def newpages(number=10, onlyonce=False site=None, throttle=True):
+def newpages(number=10, onlyonce=False, site=None, throttle=True):
     """Generator which yields new articles subsequently.
        It starts with the article created 'number' articles
        ago (first argument). When these are all yielded (as
