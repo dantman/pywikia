@@ -172,7 +172,7 @@ class PageLink:
         title=self.linkname()
         parts=title.split(':')
         parts=parts[1:]
-        if parts=[]:
+        if parts==[]:
             raise NoNamespace(self)
         return ':'.join(parts)
 
