@@ -24,7 +24,7 @@ def sametranslate(pl, arr, same):
                 if site.language() in site.family.nocapitalize:
                     if newcode in site.family.nocapitalize:
                         arr[x] = None
-                    elif pl.linkname().lower() == pl.linkname():
+                    elif pl.linkname()[0].upper() == pl.linkname()[0]:
                         arr[x] = None
             else:
                 arr[x] = None
