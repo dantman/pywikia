@@ -762,6 +762,20 @@ def link2url(name, code, incode = None):
     result = space2underline(result)
     return urllib.quote(result)
 
+
+def getReferences(pl):
+    host = langs[pl.code()]
+    url = "/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(special[mylang], pl.urlname())
+    txt, charset = getUrl(host,url)
+    Rref = re.compile('<li><a href.* title="([^"]*)"')
+    x = Rref.findall(txt)
+    x.sort()
+    # Remove duplicates
+    for i in range(len(x)-1, 0, -1):
+        if x[i] == x[i-1]:
+            del x[i]
+    return x
+
 ######## Unicode library functions ########
 
 def UnicodeToAsciiHtml(s):

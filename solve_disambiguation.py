@@ -81,17 +81,8 @@ ignore={
     'da':('Wikipedia:Links til sider med flertydige titler')
     }
 
-def getreferences(pl):
-    host = wikipedia.langs[pl.code()]
-    url="/w/wiki.phtml?title=%s:Whatlinkshere&target=%s"%(wikipedia.special[wikipedia.mylang], pl.urlname())
-    txt,charset=wikipedia.getUrl(host,url)
-    Rref=re.compile('<li><a href.* title="([^"]*)"')
-    x=Rref.findall(txt)
-    x.sort()
-    # Remove duplicates
-    for i in range(len(x)-1, 0, -1):
-        if x[i] == x[i-1]:
-            del x[i]
+def getReferences(pl):
+    x = wikipedia.getReferences(pl)
     # Remove ignorables
     if ignore.has_key(pl.code()):
         ig=ignore[pl.code()]
@@ -100,9 +91,10 @@ def getreferences(pl):
                 del x[i]
     return x
 
-wrd=[]
-alternatives=[]
-getalternatives=1
+wrd = []
+alternatives = []
+getalternatives = 1
+debug = 0
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
@@ -114,22 +106,22 @@ for arg in sys.argv[1:]:
     else:
         wrd.append(arg)
 
-wrd=' '.join(wrd)
+wrd = ' '.join(wrd)
 
 if msg.has_key(wikipedia.mylang):
-    msglang=wikipedia.mylang
+    msglang = wikipedia.mylang
 else:
-    msglang='en'
+    msglang = 'en'
 
 wikipedia.setAction(msg[msglang]+wrd)
 
-thispl=wikipedia.PageLink(wikipedia.mylang, wrd)
+thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
 
 if getalternatives:
-    thistxt=thispl.get()
+    thistxt = thispl.get()
 
     w=r'([^\]\|]*)'
-    Rlink=re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
+    Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
 
     for a in Rlink.findall(thistxt):
         alternatives.append(a[0])
@@ -137,11 +129,78 @@ if getalternatives:
 for i in range(len(alternatives)):
     print "%3d"%i,alternatives[i]
 
+def treat(refpl):
+    try:
+        reftxt=refpl.get()
+    except wikipedia.IsRedirectPage:
+        pass
+    else:
+        n = 0
+        while 1:
+            for Rthis in exps:
+                m=Rthis.search(reftxt)
+                if m:
+                    break
+            else:
+                if n == 0:
+                    print "Not found in %s"%refpl
+                elif not debug:
+                    refpl.put(reftxt)
+                return
+            n += 1
+            context = 30
+            while 1:
+                print "== %s =="%(refpl)
+                print reftxt[max(0,m.start()-context):m.end()+context]
+                choice=raw_input("Which replacement (#,r#,n=none,q=quit,m=more context,l=list,a=add new):")
+                if choice=='n':
+                    choice=-1
+                    return
+                elif choice=='a':
+                    ns=raw_input('New alternative:')
+                    alternatives.append(ns)
+                elif choice=='q':
+                    sys.exit(0)
+                    break
+                elif choice=='m':
+                    context*=2
+                elif choice=='l':
+                    for i in range(len(alternatives)):
+                        print "%3d" % i,alternatives[i]
+                else:
+                    if choice[0] == 'r':
+                        replaceit = 1
+                        choice = choice[1:]
+                    else:
+                        replaceit = 0
+                    try:
+                        choice=int(choice)
+                    except ValueError:
+                        pass
+                    else:
+                        break
+            if choice<0:
+                continue
+            g1=m.group(1)
+            g2=m.group(2)
+            if g2:
+                g2=g2[1:]
+            else:
+                g2=g1
+            if replaceit or alternatives[choice] == g2:
+                reptxt = alternatives[choice]
+            else:
+                reptxt = "%s|%s" % (alternatives[choice],g2)
+            reftxt = reftxt[:m.start()+2]+reptxt+reftxt[m.end()-2:]
+            print reftxt[max(0,m.start()-30):m.end()+30]
+    if not debug:
+        refpl.put(reftxt)
+    
 def resafe(s):
     s=s.replace('(','\\(')
     s=s.replace(')','\\)')
     return s
-    
+
 exps=[]
 zz='\[\[(%s)(\|[^\]]*)?\]\]'
 Rthis=re.compile(zz%resafe(thispl.linkname()))
@@ -155,55 +214,6 @@ exps.append(Rthis)
 Rthis=re.compile(zz%resafe(aln.lower()))
 exps.append(Rthis)
 
-for ref in getreferences(thispl):
+for ref in getReferences(thispl):
     refpl=wikipedia.PageLink(wikipedia.mylang, ref)
-    try:
-        reftxt=refpl.get()
-    except wikipedia.IsRedirectPage:
-        pass
-    else:
-        for Rthis in exps:
-            m=Rthis.search(reftxt)
-            if m:
-                break
-        else:
-            print "Not found in %s"%refpl
-            continue
-        context=30
-        while 1:
-            print "== %s =="%(refpl)
-            print reftxt[max(0,m.start()-context):m.end()+context]
-            choice=raw_input("Which replacement (n=none,q=quit,m=more context,l=list,a=add new):")
-            if choice=='n':
-                choice=-1
-                break
-            elif choice=='a':
-                ns=raw_input('New alternative:')
-                alternatives.append(ns)
-            elif choice=='q':
-                sys.exit(0)
-                break
-            elif choice=='m':
-                context*=2
-            elif choice=='l':
-                for i in range(len(alternatives)):
-                    print "%3d"%i,alternatives[i]
-            else:
-                try:
-                    choice=int(choice)
-                except ValueError:
-                    pass
-                else:
-                    break
-        if choice<0:
-            continue
-        g1=m.group(1)
-        g2=m.group(2)
-        if g2:
-            g2=g2[1:]
-        else:
-            g2=g1
-        reptxt="%s|%s"%(alternatives[choice],g2)
-        newtxt=reftxt[:m.start()+2]+reptxt+reftxt[m.end()-2:]
-        print newtxt[max(0,m.start()-30):m.end()+30]
-        refpl.put(newtxt)
+    treat(refpl)
