@@ -27,6 +27,9 @@ import re,sys,string
 import httplib
 import wikipedia, lib_images
 
+# This is a purely interactive robot. We set the delay lower.
+wikipedia.get_throttle.setDelay(0)
+
 # if the -file argument is used, page titles are dumped in this array.
 # otherwise it will only contain one page.
 page_list = []
