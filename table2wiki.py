@@ -115,7 +115,6 @@ for article in articles:
     while num != 0:
         newText, num = re.subn("([^\r\n]{1})(\<[tT]{1}[dDhHrR]{1})",
                                "\\1\r\n\\2", newText, 0)
-        warnings = warnings + num
         
     ##################
     # every open-tag gets a new line.
@@ -295,7 +294,7 @@ for article in articles:
     if config.splitLongParagraphs:
         num = 1
         while num != 0:
-            newText, num = re.subn("(\r\n[A-Z]{1}[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{200,})",
+            newText, num = re.subn("(\r\n[A-Z]{1}[^\n\r]{200,}?[a-zï¿½ï¿½ï¿½ï¿½]\.)\ ([A-Zï¿½ï¿½ï¿½]{1}[^\n\r]{200,})",
                                    "\\1\r\n\\2", newText, 0)
             
     ##################
