@@ -167,7 +167,8 @@ class Family(family.Family):
     # On most Wikipedias page names must start with a capital letter, but some
     # languages don't use this.
         
-    nocapitalize = ['cs','de','fr','hi','it','nl','sv','tlh','tokipona']
+    nocapitalize = ['cs','de','es','fr','gu','hi','it','kn','nl','sq',
+                    'sv','tlh','tokipona','tr']
 
     # Which languages have a special order for putting interlanguage links,
     # and what order is it? If a language is not in interwiki_putfirst,
@@ -203,7 +204,7 @@ class Family(family.Family):
        
     # Function to figure out the encoding of different languages
     # Languages that are coded in iso-8859-1
-    latin1 = ['es']
+    latin1 = []
     
     def code2encoding(self, code):
         """Return the encoding for a specific language wiktionary"""
