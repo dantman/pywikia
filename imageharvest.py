@@ -10,6 +10,10 @@ A second use is to get a number of images that have URLs only differing in
 numbers. To do this, use the command line option "-pattern", and give the URL
 with the variable part replaced by '$' (if that character occurs in the URL
 itself, you will have to change the bot code, my apologies).
+
+Other options:
+-shown      Choose images shown on the page as well as linked from it
+-justshown  Choose _only_ images shown on the page, not those linked
 """
 
 import re, sys, os
@@ -30,7 +34,12 @@ def get_imagelinks(url):
     text = file.read()
     file.close()
     text = text.lower()
-    R=re.compile("[\"'](.*?)[\"']")
+    if not shown:
+        R=re.compile("href\s*=\s*[\"'](.*?)[\"']")
+    elif shown == "just":
+        R=re.compile("src\s*=s*[\"'](.*?)[\"']")
+    else:
+        R=re.compile("[\"'](.*?)[\"']")
     for link in R.findall(text):
         ext = os.path.splitext(link)[1].lower().strip('.')
         if ext in fileformats:
@@ -88,21 +97,24 @@ def main(give_url,image_url):
             lib_images.get_image(image, None, desc)
         elif answer in ["s","S"]:
             break
-
-
-
-url = ''
-image_url = False
-  
-for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        if arg == "-pattern":
-            image_url = True
-        elif url == '':
-            url = arg
-        else:
-            desc += [arg]
 try:
+    url = ''
+    image_url = False
+    shown = False
+
+    for arg in sys.argv[1:]:
+        if wikipedia.argHandler(arg):
+            if arg == "-pattern":
+                image_url = True
+            elif arg == "-shown":
+                shown = True
+            elif arg == "-justshown":
+                shown = "just"
+            elif url == '':
+                url = arg
+            else:
+                desc += [arg]
+
     fileformats = ('jpg', 'jpeg', 'png', 'gif', 'svg', 'ogg')
     mysite = wikipedia.getSite()
     main(url,image_url)
