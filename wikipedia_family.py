@@ -216,6 +216,7 @@ image = {
 
 category = {
     'da': u'Kategori',
+    'de': u'Kategorie',
     'en': u'Category',
     'nl': u'Categorie',
     'no': u'Kategori',
