@@ -154,6 +154,13 @@ edittime = {}
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
 interwiki_putfirst = {
+    'en':['af','ar','ms','bs','ca','cs','cy','da','de',
+          'et','el','en','es','eo','eu','fr','fy','ga',
+          'gl','ko','hi','hr','id','it','ia','he','sw',
+          'la','lv','lt','hu','ml','mr','nah','nl','ja',
+          'no','oc','nds','pl','pt','ro','ru','sq','simple',
+          'sl','sr','fi','sv','tt','vi','tr','uk','vo',
+          'zh','zh-cn','zh-tw'],
     'fr':['af','ar','ms','bs','ca','cs','cy','da','de',
           'et','el','en','es','eo','eu','fr','fy','ga',
           'gl','ko','hi','hr','id','it','ia','he','sw',
