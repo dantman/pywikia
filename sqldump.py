@@ -139,7 +139,7 @@ class SQLdump:
                          + "([01]),"       # cur_is_redirect
                          + "([01]),"       # cur_minor_edit
                          + "([01]),"       # cur_is_new
-                         + "(0.[\d\.]+?)," # cur_random         (for random page function)
+                         + "([\d\.]+?)," # cur_random         (for random page function)
                          + "'(\d{14})',"   # inverse_timestamp  (obsolete)
                          + "'(\d{14})'\)") # cur_touched        (cache update timestamp)
         print 'Reading SQL dump'
