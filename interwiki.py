@@ -26,8 +26,7 @@ This script understands various command-line arguments:
     There are some special hints, trying a number of languages at once:
     all:    Provides the hint for all languages with at least ca. 100 pages
     10:     Provides the hint for ca. 10 of the largest languages
-    20:     Provides the hint for ca. 20 of the largest languages
-    30:     Provides the hint for ca. 30 of the largest languages
+    20:, 30:, 50: Analogous to 10: with ca. 20, 30 and 50 languages 
     cyril:  Provides the hint for all languages that use the cyrillic alphabet
                    
     -same:         looks over all 'serious' languages for the same title.

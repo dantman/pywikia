@@ -69,7 +69,7 @@ def altlang(code):
         return ['ro']
     if code in ['be','lt','lv','uk']:
         return ['ru']
-    if code in ['ja','ko','za','zh','zh-cfr','zh-cn','zh-tw']:
+    if code in ['ja','ko','minnan','za','zh','zh-cn','zh-tw']:
         return ['zh','zh-cn','zh-tw']
     if code=='da':
         return ['nb','no']
@@ -115,6 +115,9 @@ class NoSuchEntity(ValueError):
 
 class SubpageError(ValueError):
     """The subpage specified by # does not exist"""
+
+class NoCategoryPage(Error):
+    """Wikipedia page is not a Category"""
 
 SaxError = xml.sax._exceptions.SAXParseException
 
@@ -1147,7 +1150,7 @@ def url2link(percentname,incode,code):
         return unicode2html(x, encoding = 'ascii')
     
 def link2url(name, code, incode = None):
-    """Convert a interwiki link name of a page to the proper name to be used
+    """Convert an interwiki link name of a page to the proper name to be used
        in a URL for that page. code should specify the language for the link"""
     if code == 'eo':
         name = name.replace('cx','&#265;')
@@ -1168,6 +1171,9 @@ def link2url(name, code, incode = None):
         name = name.replace('ux','&#365;')
         name = name.replace('Ux','&#364;')
         name = name.replace('UX','&#364;')
+        name = name.replace('XX','X')
+        name = name.replace('Xx','X')
+        name = name.replace('xx','x')
         name = name.replace('&#265;x','cx')
         name = name.replace('&#264;x','Cx')
         name = name.replace('&#264;X','CX')

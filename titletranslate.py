@@ -37,6 +37,8 @@ def translate(pl, arr, same = False, hints = None):
                 codes = wikipedia.family.biglangs2
             elif codes == '30':
                 codes = wikipedia.family.biglangs3
+            elif codes == '50':
+                codes = wikipedia.family.biglangs4
             elif codes == 'cyril':
                 codes = wikipedia.family.cyrilliclangs
             else:

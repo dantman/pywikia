@@ -1,118 +1,115 @@
-# The wikimedia family that is known as wikipedia, the encyclopedia
+# The wikimedia family that is known as wiktionary
 
-# Known wikipedia languages, given as a dictionary mapping the language code
-# to the hostname of the site hosting that wikipedia. For human consumption,
+# Known wiktionary languages, given as a dictionary mapping the language code
+# to the hostname of the site hosting that wiktionary. For human consumption,
 # the full name of the language is given behind each line as a comment
 
 langs = {
-    'af':'af.wikipedia.org',   # Afrikaans
-    'als':'als.wikipedia.org', # Alsatian
-    'ar':'ar.wikipedia.org',   # Arabic
-    'az':'az.wikipedia.org',   # Azerbaijan
-    'be':'be.wikipedia.org',   # Belorussian
-    'bg':'bg.wikipedia.org',   # Bulgarian
-    'bi':'bi.wikipedia.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
-    'bn':'bn.wikipedia.org',   # Bengali
-    'bs':'bs.wikipedia.org',   # Bosnian
-    'ca':'ca.wikipedia.org',   # Catalan
-    'chr':'chr.wikipedia.org', # Cherokee
-    'co':'co.wikipedia.org',   # Corsican
-    'cs':'cs.wikipedia.org',   # Czech
-    'csb':'csb.wikipedia.org', # Kashubian
-    'cy':'cy.wikipedia.org',   # Welsh
-    'da':'da.wikipedia.org',   # Danish
-    'de':'de.wikipedia.org',   # German
-    'dk':'da.wikipedia.org',   # Danish (wrong name)
-    'el':'el.wikipedia.org',   # Greek
-    'en':'en.wikipedia.org',   # English
-    'eo':'eo.wikipedia.org',   # Esperanto
-    'es':'es.wikipedia.org',   # Spanish
-    'et':'et.wikipedia.org',   # Estonian
-    'eu':'eu.wikipedia.org',   # Basque
-    'fa':'fa.wikipedia.org',   # Farsi
-    'fi':'fi.wikipedia.org',   # Finnish
-    'fr':'fr.wikipedia.org',   # French
-    'fy':'fy.wikipedia.org',   # Frisian
-    'ga':'ga.wikipedia.org',   # Irish Gaelic
-    'gd':'gd.wikipedia.org',   # Scottish Gaelic
-    'gl':'gl.wikipedia.org',   # Galician
-    'gn':'gn.wikipedia.org',   # Guarani
-    'gv':'gv.wikipedia.org',   # Manx
-    'he':'he.wikipedia.org',   # Hebrew
-    'hi':'hi.wikipedia.org',   # Hindi
-    'hr':'hr.wikipedia.org',   # Croatian
-    'hu':'hu.wikipedia.org',   # Hungarian
-    'ia':'ia.wikipedia.org',   # Interlingua
-    'id':'id.wikipedia.org',   # Indonesian
-    'io':'io.wikipedia.org',   # Ido
-    'is':'is.wikipedia.org',   # Icelandic
-    'it':'it.wikipedia.org',   # Italian
-    'ja':'ja.wikipedia.org',   # Japanese
-    'jv':'jv.wikipedia.org',   # Javanese
-    'ka':'ka.wikipedia.org',   # Georgian
-    'ko':'ko.wikipedia.org',   # Korean
-    'ks':'ks.wikipedia.org',   # Ekspreso, but should become Kashmiri
-    'ku':'ku.wikipedia.org',   # Kurdish
-    'la':'la.wikipedia.org',   # Latin
-    'lt':'lt.wikipedia.org',   # Latvian
-    'lv':'lv.wikipedia.org',   # Livonian
-    'mg':'mg.wikipedia.org',   # Malagasy
-    'mi':'mi.wikipedia.org',   # Maori
-    'minnan':'minnan.wikipedia.org', # Min-Nan
-    'mk':'mk.wikipedia.org',   # Macedonian
-    'ml':'ml.wikipedia.org',   # Malayalam
-    'mn':'mn.wikipedia.org',   # Mongolian
-    'mr':'mr.wikipedia.org',   # Marathi
-    'ms':'ms.wikipedia.org',   # Malay
-    'na':'na.wikipedia.org',   # Nauruan
-    'nah':'nah.wikipedia.org', # Nahuatl
-    'nb':'no.wikipedia.org',   # Norse - new code for Bokmal to distinguish from Nynorsk
-    'nds':'nds.wikipedia.org', # Lower Saxon
-    'nl':'nl.wikipedia.org',   # Dutch
-    'no':'no.wikipedia.org',   # Norwegian
-    'oc':'oc.wikipedia.org',   # Occitan
-    'om':'om.wikipedia.org',   # Oromo
-    'pl':'pl.wikipedia.org',   # Polish
-    'pt':'pt.wikipedia.org',   # Portuguese
-    'ro':'ro.wikipedia.org',   # Romanian
-    'roa-rup':'roa-rup.wikipedia.org', # Aromanian
-    'ru':'ru.wikipedia.org',   # Russian
-    'sa':'sa.wikipedia.org',   # Sanskrit
-    'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
-    'si':'si.wikipedia.org',   # Sinhalese
-    'simple':'simple.wikipedia.org', # Simple English
-    'sk':'sk.wikipedia.org',   # Slovakian
-    'sl':'sl.wikipedia.org',   # Slovenian
-    'sq':'sq.wikipedia.org',   # Albanian
-    'sr':'sr.wikipedia.org',   # Serbian
-    'st':'st.wikipedia.org',   # Sesotho
-    'su':'su.wikipedia.org',   # Sundanese
-    'sv':'sv.wikipedia.org',   # Swedish
-    'sw':'sw.wikipedia.org',   # Swahili
-    'ta':'ta.wikipedia.org',   # Tamil
-    'test':'test.wikipedia.org',
-    'th':'th.wikipedia.org',   # Thai
-    'tl':'tl.wikipedia.org',   # Tagalog
-    'tlh':'tlh.wikipedia.org', # Klingon
-    'tokipona':'tokipona.wikipedia.org', # Toki Pona
-    'tpi':'tpi.wikipedia.org', # Tok Pisin
-    'tr':'tr.wikipedia.org',   # Turkish
-    'tt':'tt.wikipedia.org',   # Tatar
-    'uk':'uk.wikipedia.org',   # Ukrainian
-    'ur':'ur.wikipedia.org',   # Urdu
-    'vi':'vi.wikipedia.org',   # Vietnamese
-    'vo':'vo.wikipedia.org',   # Volapuk
-    'wa':'wa.wikipedia.org',   # Walon
-    'xh':'xh.wikipedia.org',   # isiXhosa
-    'yi':'yi.wikipedia.org',   # Yiddish
-    'yo':'yo.wikipedia.org',   # Yoruba
-    'za':'za.wikipedia.org',   # Zhuang
-    'zh':'zh.wikipedia.org',   # Chinese
-    'zh-cn':'zh.wikipedia.org', # Simplified Chinese
-    'zh-tw':'zh.wikipedia.org', # Traditional Chinese
+    'af':'af.wiktionary.org',   # Afrikaans
+    'als':'als.wiktionary.org', # Alsatian
+    'ar':'ar.wiktionary.org',   # Arabic
+    'az':'az.wiktionary.org',   # Azerbaijan
+    'be':'be.wiktionary.org',   # Belorussian
+    'bg':'bg.wiktionary.org',   # Bulgarian
+    'bi':'bi.wiktionary.org',   # Bislama (currently also used by Bitruscan and Tok Pisin)
+    'bn':'bn.wiktionary.org',   # Bengali
+    'bs':'bs.wiktionary.org',   # Bosnian
+    'ca':'ca.wiktionary.org',   # Catalan
+    'chr':'chr.wiktionary.org', # Cherokee
+    'co':'co.wiktionary.org',   # Corsican
+    'cs':'cs.wiktionary.org',   # Czech
+    'csb':'csb.wiktionary.org', # Kashubian
+    'cy':'cy.wiktionary.org',   # Welsh
+    'da':'da.wiktionary.org',   # Danish
+    'de':'de.wiktionary.org',   # German
+    'el':'el.wiktionary.org',   # Greek
+    'en':'en.wiktionary.org',   # English
+    'eo':'eo.wiktionary.org',   # Esperanto
+    'es':'es.wiktionary.org',   # Spanish
+    'et':'et.wiktionary.org',   # Estonian
+    'eu':'eu.wiktionary.org',   # Basque
+    'fa':'fa.wiktionary.org',   # Farsi
+    'fi':'fi.wiktionary.org',   # Finnish
+    'fr':'fr.wiktionary.org',   # French
+    'fy':'fy.wiktionary.org',   # Frisian
+    'ga':'ga.wiktionary.org',   # Irish Gaelic
+    'gd':'gd.wiktionary.org',   # Scottish Gaelic
+    'gl':'gl.wiktionary.org',   # Galician
+    'gn':'gn.wiktionary.org',   # Guarani
+    'gv':'gv.wiktionary.org',   # Manx
+    'he':'he.wiktionary.org',   # Hebrew
+    'hi':'hi.wiktionary.org',   # Hindi
+    'hr':'hr.wiktionary.org',   # Croatian
+    'hu':'hu.wiktionary.org',   # Hungarian
+    'ia':'ia.wiktionary.org',   # Interlingua
+    'id':'id.wiktionary.org',   # Indonesian
+    'io':'io.wiktionary.org',   # Ido
+    'is':'is.wiktionary.org',   # Icelandic
+    'it':'it.wiktionary.org',   # Italian
+    'ja':'ja.wiktionary.org',   # Japanese
+    'jv':'jv.wiktionary.org',   # Javanese
+    'ka':'ka.wiktionary.org',   # Georgian
+    'ko':'ko.wiktionary.org',   # Korean
+    'ks':'ks.wiktionary.org',   # Ekspreso, but should become Kashmiri
+    'ku':'ku.wiktionary.org',   # Kurdish
+    'la':'la.wiktionary.org',   # Latin
+    'lt':'lt.wiktionary.org',   # Latvian
+    'lv':'lv.wiktionary.org',   # Livonian
+    'mg':'mg.wiktionary.org',   # Malagasy
+    'mi':'mi.wiktionary.org',   # Maori
+    'minnan':'minnan.wiktionary.org', # Min-Nan
+    'mk':'mk.wiktionary.org',   # Macedonian
+    'ml':'ml.wiktionary.org',   # Malayalam
+    'mn':'mn.wiktionary.org',   # Mongolian
+    'mr':'mr.wiktionary.org',   # Marathi
+    'ms':'ms.wiktionary.org',   # Malay
+    'na':'na.wiktionary.org',   # Nauruan
+    'nah':'nah.wiktionary.org', # Nahuatl
+    'nb':'no.wiktionary.org',   # Norse - new code for Bokmal to distinguish from Nynorsk
+    'nds':'nds.wiktionary.org', # Lower Saxon
+    'nl':'nl.wiktionary.org',   # Dutch
+    'no':'no.wiktionary.org',   # Norwegian
+    'oc':'oc.wiktionary.org',   # Occitan
+    'om':'om.wiktionary.org',   # Oromo
+    'pl':'pl.wiktionary.org',   # Polish
+    'pt':'pt.wiktionary.org',   # Portuguese
+    'ro':'ro.wiktionary.org',   # Romanian
+    'roa-rup':'roa-rup.wiktionary.org', # Aromanian
+    'ru':'ru.wiktionary.org',   # Russian
+    'sa':'sa.wiktionary.org',   # Sanskrit
+    'si':'si.wiktionary.org',   # Sinhalese
+    'simple':'simple.wiktionary.org', # Simple English
+    'sk':'sk.wiktionary.org',   # Slovakian
+    'sl':'sl.wiktionary.org',   # Slovenian
+    'sq':'sq.wiktionary.org',   # Albanian
+    'sr':'sr.wiktionary.org',   # Serbian
+    'st':'st.wiktionary.org',   # Sesotho
+    'su':'su.wiktionary.org',   # Sundanese
+    'sv':'sv.wiktionary.org',   # Swedish
+    'sw':'sw.wiktionary.org',   # Swahili
+    'ta':'ta.wiktionary.org',   # Tamil
+    'th':'th.wiktionary.org',   # Thai
+    'tl':'tl.wiktionary.org',   # Tagalog
+    'tlh':'tlh.wiktionary.org', # Klingon
+    'tokipona':'tokipona.wiktionary.org', # Toki Pona
+    'tpi':'tpi.wiktionary.org', # Tok Pisin
+    'tr':'tr.wiktionary.org',   # Turkish
+    'tt':'tt.wiktionary.org',   # Tatar
+    'uk':'uk.wiktionary.org',   # Ukrainian
+    'ur':'ur.wiktionary.org',   # Urdu
+    'vi':'vi.wiktionary.org',   # Vietnamese
+    'vo':'vo.wiktionary.org',   # Volapuk
+    'wa':'wa.wiktionary.org',   # Walon
+    'xh':'xh.wiktionary.org',   # isiXhosa
+    'yi':'yi.wiktionary.org',   # Yiddish
+    'yo':'yo.wiktionary.org',   # Yoruba
+    'za':'za.wiktionary.org',   # Zhuang
+    'zh':'zh.wiktionary.org',   # Chinese
+    'zh-cn':'zh.wiktionary.org', # Simplified Chinese
+    'zh-tw':'zh.wiktionary.org', # Traditional Chinese
     }
 
-# Translation used on all wikipedia's for the Special: namespace.
+# Translation used on all wiktionary's for the Special: namespace.
 # Only necessary when it is not 'Special'.
 special = {
     'af': 'Spesiaal',
@@ -274,29 +271,27 @@ for lang in langs:
     if not lang in image:
         image[lang] = 'Image'
 
-obsolete = ['sh', 'dk']
+obsolete = []
 
 # A few selected big languages for things that we do not want to loop over
 # all languages. This is only needed by the titletranslate.py module, so
 # if you carefully avoid the options, you could get away without these
 # for another wikimedia family.
 
-biglangs = ['de', 'en', 'es', 'fr', 'ja', 'nl', 'pl', 'sv']
+biglangs = ['de', 'en', 'eo', 'es', 'fi', 'fr', 'hu', 'ja', 'nl', 'pl',
+            'ro', 'sv']
 
 biglangs2 = biglangs + [
-            'ca', 'da', 'eo', 'et', 'fi', 'he', 'it', 'no', 'pt', 'ro',
-            'sl', 'zh']
+            'ca', 'et', 'eu', 'it', 'ko', 'ru', 'zh'
+            ]
 
 biglangs3 = biglangs2 + [
-            'af', 'bg', 'cs', 'cy', 'hr', 'ia', 'id', 'la', 'ms', 'simple',
-            'wa']
+            'ar', 'bg', 'da', 'ia', 'tr', 'vi'
+            ]
 
-biglangs4 = biglangs3 + [
-                'ar', 'bs', 'el', 'eu', 'fy', 'gl', 'hu', 'is', 'ko', 'ku',
-                'lt', 'nds', 'oc', 'ru', 'sr', 'tr', 'uk']
+biglangs4 = biglangs3
 
-seriouslang = biglangs4 + [
-                'fa', 'hi', 'lv', 'ta', 'th', 'tt', 'ur', 'vi']
+seriouslangs = biglangs4
 
 # other groups of language that we might want to do at once
 
@@ -304,7 +299,7 @@ cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
 
 
 #
-# Some functionality that is simple for the wikipedia family, but more
+# Some functionality that is simple for the wiktionary family, but more
 # difficult for e.g. wikitravel
 #
 
@@ -337,7 +332,7 @@ def export_address(code):
     return '/wiki/%s:Export'%special[code]
 
 def allpagesname(code, start):
-    # This is very ugly: to get all pages, the wikipedia code
+    # This is very ugly: to get all pages, the wiktionary code
     # 'fakes' getting a page with the returned name.
     # This will need to be fixed someday.
     if version(code)=="1.2":
@@ -351,17 +346,14 @@ def allpagesname(code, start):
 # 
 
 # Languages that are coded in iso-8859-1
-latin1 = ['en', 'sv', 'nl', 'de', 'es', 'da', 'dk', 'test']
+latin1 = []
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['et', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
-             'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
-             'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
-             'ga', 'na']
+latin1old = []
 
             
 def code2encoding(code):
-    """Return the encoding for a specific language wikipedia"""
+    """Return the encoding for a specific language wiktionary"""
     if code == 'ascii':
         return code # Special case where we do not want special characters.
     if code in latin1:
@@ -370,12 +362,5 @@ def code2encoding(code):
 
 def code2encodings(code):
     """Return a list of historical encodings for a specific language
-       wikipedia"""
-    # Historic compatibility
-    if code == 'pl':
-        return 'utf-8', 'iso-8859-2'
-    if code == 'ru':
-        return 'utf-8', 'iso-8859-5'
-    if code in latin1old:
-        return 'utf-8', 'iso-8859-1'
+       wiktionary"""
     return code2encoding(code),
