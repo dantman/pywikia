@@ -34,8 +34,8 @@ def get(key, lang = None):
         file_age = time.time() - os.path.getmtime('mediawiki-messages/mediawiki-messages-%s.dat' % lang)
         # if it's older than 1 month, reload it
         if file_age > 30 * 24 * 60 * 60:
-            print 'Current MediaWiki message dump is outdated, reloading'
-            refresh_messages()
+            print 'Current MediaWiki message dump is one month old, reloading'
+            refresh_messages(lang)
     except OSError:
         # no saved dumped exists yet
         refresh_messages(lang)
@@ -72,13 +72,11 @@ def makepath(path):
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
     
-def refresh_messages(lang = None):
-    if lang == None:
-        lang = wikipedia.mylang
+def refresh_messages(lang):
     host = wikipedia.family.hostname(lang)
     # get 'all messages' special page's URL
     url = wikipedia.family.allmessages_address(lang)
-    print 'Retrieving MediaWiki messages' 
+    print 'Retrieving MediaWiki messages for %s' % lang 
     allmessages, charset = wikipedia.getUrl(host,url)
 
     print 'Parsing MediaWiki messages'
@@ -110,14 +108,31 @@ def refresh_messages(lang = None):
         f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % lang), 'w')
         pickle.dump(dictionary, f)
         f.close()
-    
+
+def refresh_all_messages():
+    import dircache, time
+    filenames = dircache.listdir('mediawiki-messages')
+    message_filenameR = re.compile('mediawiki-messages-([a-z\-]+).dat')
+    for filename in filenames:
+        match = message_filenameR.match(filename)
+        if match:
+            refresh_messages(match.group(1))
+            print 'Sleeping for 60 seconds'
+            time.sleep(60)
+
 if __name__ == "__main__":
     debug = False
+    refresh_all = False
     for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
             pass
         elif arg == '-debug':
             debug = True
-    refresh_messages()
+        elif arg == '-all':
+            refresh_all = True
+    if refresh_all:
+        refresh_all_messages()
+    else:
+        refresh_messages(wikipedia.mylang)
     if debug:
         print get('successfulupload')
