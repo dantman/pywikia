@@ -35,8 +35,10 @@ class Family(family.Family):
         'bs':'bs.wikipedia.org',   # Bosnian
         'ca':'ca.wikipedia.org',   # Catalan
         'ch':'ch.wikipedia.org',   # Schweizerdeutsch
+        'cho':'cho.wikipedia.org', # Choctaw
         'chr':'chr.wikipedia.org', # Cherokee
         'co':'co.wikipedia.org',   # Corsican
+        'cr':'cr.wikipedia.org',   # Cree?
         'cs':'cs.wikipedia.org',   # Czech
         'csb':'csb.wikipedia.org', # Kashubian
         'cv':'cv.wikipedia.org',   # Chuvash
@@ -44,6 +46,7 @@ class Family(family.Family):
         'da':'da.wikipedia.org',   # Danish
         'de':'de.wikipedia.org',   # German
         'dk':'da.wikipedia.org',   # Danish (wrong name)
+        'dv':'dv.wikipedia.org',   # Dhihevi
         'dz':'dz.wikipedia.org',   # Dzongkha
         'ee':'ee.wikipedia.org',   # Ewe
         'el':'el.wikipedia.org',   # Greek
@@ -62,6 +65,7 @@ class Family(family.Family):
         'gd':'gd.wikipedia.org',   # Scottish Gaelic
         'gl':'gl.wikipedia.org',   # Galician
         'gn':'gn.wikipedia.org',   # Guarani
+        'got':'got.wikipedia.org', # Gothic
         'gu':'gu.wikipedia.org',   # Gujarati
         'gv':'gv.wikipedia.org',   # Manx
         'ha':'ha.wikipedia.org',   # Hausa
@@ -111,6 +115,7 @@ class Family(family.Family):
         'mr':'mr.wikipedia.org',   # Marathi
         'ms':'ms.wikipedia.org',   # Malay
         'mt':'mt.wikipedia.org',   # Maltese
+        'mus':'mus.wikipedia.org', # Muscogee
         'my':'my.wikipedia.org',   # Burmese
         'na':'na.wikipedia.org',   # Nauruan
         'nah':'nah.wikipedia.org', # Nahuatl
@@ -210,14 +215,14 @@ class Family(family.Family):
     # after those, in code-alphabetical order.
     
     alphabetic = ['aa','af','ar','an','roa-rup','as','ast','ay','az','bg',
-                  'be','bn','bh','bi','bo','bs','br','ca','chr','co','cs',
-                  'cy','da','de','als','et','el','en','es','eo','eu','ee',
-                  'fa','fo','fr','fy','ga','gv','gd','gl','gn','gu','ko',
+                  'be','bn','bh','bi','bo','bs','br','ca','chr','cho','co','cs',
+                  'cy','da','de','dv','als','et','el','en','es','eo','eu','ee',
+                  'fa','fo','fr','fy','ga','gv','gd','gl','got','gn','gu','ko',
                   'ha','hy','hi','hr','io','id','ia','xh','is','zu','it',
                   'he','jv','kn','ka','csb','ks','kk','kw','km','ky','sw',
                   'ku','lo','la','lv','lt','lb','ln','jbo','hu','mk','mg',
-                  'ml','mt','mi','mr','ms','minnan','mn','my','nah','na',
-                  'nv','nl','ne','ja','no','nb','nn','oc','om','ug','pi',
+                  'ml','mt','mi','mr','ms','minnan','mn','mus','my','nah','na',
+                  'nv','cr','nl','ne','ja','no','nb','nn','oc','om','ug','pi',
                   'ps','nds','pl','pt','pa','ro','rm','qu','ru','se','sa',
                   'st','sq','scn','si','simple','sd','sk','sl','sr','su','fi',
                   'sv','tl','tg','ta','tt','te','th','tlh','tk','tw','vi',
@@ -231,21 +236,7 @@ class Family(family.Family):
         'hu': ['en'],
         'pl': alphabetic,
         'simple': alphabetic,
-        'fi': ['ab','aa','af','am','ar','an','roa-rup','as','ast','gn','ay',
-               'az','id','jv','ms','su','bn','ba','be','mr','bh',
-               'bi','bo','nb','bs','br','bg','ca','chr','cs','ch',
-               'sn','co','za','cy','da','de','dz','et','el','en','als',
-               'es','eo','eu','fa','fo','fr','fy','ga','gv','sm','gd','gl',
-               'gu','ko','ha','hy','hi','hr','io','ia','iu','ik',
-               'xh','zu','is','it','he','kl','kn','ka','csb','ks','kw',
-               'kk','rw','ky','rn','sw','ku','lo','la','lv','lt','li','ln',
-               'jbo','hu','mk','ml','mg','mt','mi','minnan',
-               'mo','mn','my','nah','na','nv','fj','ng','nl','ne','ja','no','nn',
-               'oc','or','om','ug','pi','pa','ps','km','lo','nds','pl','pt','ro',
-               'rm','qu','ru','se','sa','sg','st','tn','sq','scn','si','simple','sd','ss',
-               'sk','sl','sr','fi','sv','tl','ta','tt','te','th','ti','tlh',
-               'vi','tg','tokipona','tpi','to','tr','tk','tw','ur','uk','uz',
-               'vo','wa','wo','ts','yi','yo','zh','zh-tw','zh-cn']
+        'fi': alphabetic
         }
         
     obsolete = {'sh':'hr',

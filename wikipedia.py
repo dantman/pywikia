@@ -1981,12 +1981,16 @@ def altlang(code):
         return ['it','de','fr']
     if code=='fy':
         return ['nl']
+    if code=='li':
+        return ['nl','de']
     if code=='csb':
         return ['pl']
     if code in ['mo','roa-rup']:
         return ['ro']
     if code in ['av','be','cv','hy','lt','lv','tt','uk']:
         return ['ru']
+    if code=='got':
+        return ['ru','uk']
     if code in ['kk','ky','tk','ug','uz']:
         return ['tr','ru']
     if code in ['bo','ja','ko','minnan','za','zh','zh-cn','zh-tw']:
