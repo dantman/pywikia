@@ -540,10 +540,10 @@ for wrd in (page_list):
                     reftxt = reftxt[:m.start()] + link_text + reftxt[m.end():]
                 else:
                     # Normal replacement
-                    replacement = alternatives[choice]
-                    reppl = wikipedia.PageLink(thispl.code(), replacement,
+                    new_page_title = alternatives[choice]
+                    reppl = wikipedia.PageLink(thispl.code(), new_page_title,
                                                incode = refpl.code())
-                    replacement = reppl.linkname()
+                    new_page_title = reppl.linkname()
                     # There is a function that uncapitalizes the link target's first letter
                     # if the link description starts with a small letter. This is useful on
                     # nl: but annoying on de:.
@@ -552,12 +552,15 @@ for wrd in (page_list):
                     # We might want to introduce a list of languages that don't want to use
                     # this feature.
                     if wikipedia.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
-                        replacement = replacement[0].lower() + replacement[1:]
-                    if replaceit or replacement == link_text:
-                        reptxt = replacement
+                        new_page_title = new_page_title[0].lower() + new_page_title[1:]
+                    if replaceit or new_page_title == link_text:
+                        reptxt = new_page_title
+                    # check if we can create a link with trailing characters instead of a pipelink
+                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title:
+                        newlink = "[[%s]]%s" % (new_page_title, link_text[len(new_page_title):])
                     else:
-                        reptxt = "%s|%s" % (replacement, link_text)
-                    reftxt = reftxt[:m.start()] + '[[' + reptxt + ']]' + reftxt[m.end():]
+                        newlink = "[[%s|%s]]" % (new_page_title, link_text)
+                    reftxt = reftxt[:m.start()] + newlink + reftxt[m.end():]
     
                 print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-30):m.end()+30])
             if not debug:
