@@ -26,7 +26,8 @@ other:        First argument is the old boilerplate name, second one is the new
 #
 __version__='$Id$'
 #
-import wikipedia,re,sys,string
+import wikipedia, config
+import re, sys, string
 
 # Summary message
 msg={
@@ -48,6 +49,8 @@ for arg in sys.argv[1:]:
     elif arg == '-oldformat':
         oldformat = True
     else:
+        arg = unicode(arg, config.console_encoding)
+        arg = arg.encode(wikipedia.code2encoding(wikipedia.mylang))
         boilerplate_names.append(arg)
 
 if boilerplate_names == []:
