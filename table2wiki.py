@@ -106,7 +106,7 @@ for arg in sys.argv[1:]:
 
         # OK, that's only theory but works most times.
         # Most browsers assume that <th> gets a new row and we do the same
-        newText = re.sub("\n\|([^-][^|]+?)[\r\n]+\!", "|\\1\r\n|-----\r\n!",
+        newText = re.sub("([\r\n]+\|[^-][^\n\r]*)([\r\n]+\!)", "\\1\r\n|-----\\2",
                          newText, 0)
 
         # most <th> come with '''title'''. Senseless in my eyes cuz
