@@ -49,8 +49,12 @@ def ReadWarnfile(fn):
     for pagename in k:
         pl = wikipedia.PageLink(wikipedia.mylang, pagename)
         old={}
-        for pl2 in pl.interwiki():
-            old[pl2.code()] = pl2
+        try:
+           for pl2 in pl.interwiki():
+              old[pl2.code()] = pl2
+        except IsRedirectPage:
+           print "%s is a redirect page; not changing" % pl.asasciilink()
+           continue
         new={}
         new.update(old)
         for sign,pl2 in hints[pagename]:
