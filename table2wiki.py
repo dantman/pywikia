@@ -215,13 +215,13 @@ for article in articles:
         # proper attributes
         num = 1
         while num != 0:
-            newText, num = re.subn(r'([\r\n]+(\!|\||\{\|)[^\r\n\|]+)[ ]+\=[ ]+([^\s>]+)(\s)',
+            newText, num = re.subn(r'([\r\n]+(\!|\||\{\|)[^\r\n\|]+)[ ]+\=[ ]+([a-zA-Z0-9%]>]+)(\s)',
                                    '\\1="\\3"\\4', newText, 0)
         # again proper attributes
         num = 1
         while num != 0:
             newText, num = re.subn('([\r\n]+(\{\||\!|\|)([^\r\n\|]+))\=' +
-                                   '([^\"\s]+?)([\W]{1})',
+                                   '([a-zA-Z0-9%]+?)([\W]{1})',
                                    '\\1="\\4"\\5', newText, 0)
 
         ##################
