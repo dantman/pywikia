@@ -79,23 +79,20 @@ def translate(pl, arr, same = False, hints = None):
     if m:
         i=int(m.group(0))
         for newcode in wikipedia.seriouslangs:
-            if newcode=='ja':
+            if newcode in ['ja', 'zh']:
                 fmt = '%d&#24180;'
             else:
                 fmt = '%d'
-            if newcode == 'ja' and i<1800:
-                # ja pages before 1800 are redirects
+            if newcode == 'ja' and i<1900:
+                # ja pages before 1900 are redirects
                 pass
-            elif newcode == 'ia' and i<1980:
+            elif newcode == 'ia' and i<1400:
                 # some ia pages are numbers
                 pass
             elif newcode == 'la':
                 # la pages are not years but numbers
                 pass
-            elif newcode == 'gl':
-                # gl years do not exist
-                pass
-            elif newcode in ['eu', 'mr', 'id', 'lv', 'sw', 'tt']:
+            elif newcode in ['eu', 'gl', 'mr', 'id', 'lv', 'sw', 'tt', 'zh']:
                 # years do not exist
                 pass
             elif newcode == 'nds' and i<2000 or i>2010:
