@@ -16,25 +16,26 @@ Command line options:
          username.dat
 
 """
-#
+
 # (C) Daniel Herding, 2004
 #
 # Distributed under the terms of the PSF license.
-#
-#
+
 import wikipedia
 import re, sys, pickle, codecs
 import os.path
 import time
 
 def get(key):
-    # find out how old our saved dump is (in seconds)
-    file_age = time.time() - os.path.getmtime('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang)
-    # if it's older than 7 days, reload it
-    if file_age > 7 * 24 * 60 * 60:
-        print 'Current MediaWiki message dump is outdated, reloading'
-        refresh_messages()
-    if not os.path.exists('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang):
+    try:
+        # find out how old our saved dump is (in seconds)
+        file_age = time.time() - os.path.getmtime('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang)
+        # if it's older than 7 days, reload it
+        if file_age > 7 * 24 * 60 * 60:
+            print 'Current MediaWiki message dump is outdated, reloading'
+            refresh_messages()
+    except OSError:
+        # no saved dumped exists yet
         refresh_messages()
     # TODO: It's quite inefficient to reload the file every time this function
     # is used. Maybe we can save its content the first time the function is
