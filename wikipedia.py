@@ -1658,6 +1658,9 @@ def unicodeName(name, site, altsite = None):
             else:
                 return unicode(name, encoding)
         except UnicodeError:
+            print "UnicodeError"
+            print name
+            print encoding
             continue
     if altsite is not None:
         print "DBG> Using local encoding!", repr(altsite), "to", repr(site), repr(name)
