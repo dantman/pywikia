@@ -42,7 +42,7 @@ for arg in sys.argv[1:]:
             continue
         
         newText = text
-        newText = re.sub("(\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
+        newText = re.sub("([^\n\r]+\<[Tt]{1}[dDHhRr]{1}([^>]*)\>)",
                          "\n\\1", newText, 0)
         newText = re.sub("\n[ ]*\<", "\n<", newText, 0)
 
@@ -69,7 +69,7 @@ for arg in sys.argv[1:]:
 
         #<th> often people don't write them within <tr>, be warned!
         newText = re.sub("[\s]*<(TH|th)([^>]*?)\>([\w\W]*?)\<\/(th|TH)\>",
-                         "\n! \\2 | \\3\r\n", newText, 0)
+                         "\n!\\2 | \\3\r\n", newText, 0)
 
         # sorry for the mess, but there are too many variants
         newText = re.sub("\n\<(td|TD)([^>]*)\>([\w\W]*?)\<\/(TD|td)\>",
@@ -85,6 +85,10 @@ for arg in sys.argv[1:]:
         # Most browsers assume that <th> gets a new row and we do the same
         newText = re.sub("\n\|([^-][^|]+?)[\r\n]+\!", "|\\1\r\n|-----\r\n!",
                          newText, 0)
+
+        # most <th> come with '''title'''. Senseless in my eyes
+        newText = re.sub("[\r\n]+\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
+                         "\r\n!\\1\\3", newText, 0)
 
         # kills spaces after | or ! or {|
         newText = re.sub("[\r\n]+\|[\s]*\n", "\r\n| ", newText, 0)
