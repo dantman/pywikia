@@ -23,13 +23,14 @@
 #
 
 __version__ = "$Id$"
-sig = " (edited with editarticle.py 0.2)"
+sig = u" (edited with editarticle.py 0.2)"
 
 import sys
 import os
 import httplib
-## import cookielib
+import urllib
 import getpass
+import difflib
 import optparse
 import tempfile
 
@@ -81,18 +82,18 @@ def main():
     if opts.anonymous:
         site = wikipedia.getSite()
     else:
-        username = opts.username or raw_input("Username: ")
+        username = opts.username or wikipedia.input(u"Username: ", encode=True)
         site = wikipedia.getSite(user=opts.username)
         password = getpass.getpass("Password: ")
         cookie = login.login(site, username, password)
         if cookie:
             login.storecookiedata(cookie, site, username)
-            print "Login succesful"
+            wikipedia.output(u"Login succesful")
         else:
             sys.exit("Login failed")
 
-    page = opts.page or raw_input("Page to edit: ")
-    editor = opts.editor or raw_input("Editor to use: ")
+    page = opts.page or wikipedia.input(u"Page to edit: ", encode=True)
+    editor = opts.editor or wikipedia.input(u"Editor to use: ", encode=True)
     pl = wikipedia.PageLink(site, page)
     if not opts.edit_redirect and pl.isRedirectPage():
         pl = wikipedia.PageLink(site, pl.getRedirectTo())
@@ -101,9 +102,16 @@ def main():
     except wikipedia.LockedPage:
         sys.exit("You do not have permission to edit %s" % pl.hashfreeLinkname())
     if old != new:
-        pl.put(new, comment=raw_input("What did you change? ") + sig, minorEdit=False, watchArticle=opts.watch, anon=opts.anonymous) # code
+        diff = difflib.context_diff(old.splitlines(), new.splitlines())
+        wikipedia.output("\n".join(diff))
+        print "watching:", opts.watch
+        comment = wikipedia.input(u"What did you change? ") + sig
+        print repr(comment)
+        comment = wikipedia.unicode2html(comment, site.encoding())
+        new = wikipedia.unicode2html(new, site.encoding())
+        pl.put(new, comment=wikipedia.unicode2html(comment, site.encoding()), minorEdit=False, watchArticle=opts.watch, anon=opts.anonymous)
     else:
-        print "Nothing changed"
+        wikipedia.output(u"Nothing changed")
 
 
 if __name__ == "__main__":
