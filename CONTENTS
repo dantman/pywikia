@@ -52,9 +52,9 @@ disamb_all.py          : Run the robot solve_disambiguation.py (see below) over
                          articles listed in a file passed as argument.
 interwiki.py           : A robot to check interwiki links on all pages (or
                          a range of pages) of a wikipedia.
-                         This uses a non-linear approach and is therefore
-                         less demanding on the wikipedia servers than 
-                         treelang.py
+warnfile.py            : A robot that parses a warning file created by interwiki.py
+                         on another wikipedia language, and implements the
+                         suggested changes without verifying them.
 test.py                : Misc testing, now configured to test whether you are 
                          logged in.
 yearlayout.py          : An old robot used to change the layout of all nl: year 

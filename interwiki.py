@@ -73,7 +73,9 @@ This script understands various command-line arguments:
     -warnfile:     used as -warnfile:filename, reads all warnings from the
                    given file that apply to the home wikipedia language, and
                    read the rest of the warning as a hint. Then treats all the
-                   mentioned pages.
+                   mentioned pages. A quicker way to implement warnfile
+                   suggestions without verifying them against the live wikipedia
+                   is using the warnfile.py robot.
 
     -noredirect:   do not follow redirects. This option can be useful when
                    running years AD, because ja: redirects many years to
