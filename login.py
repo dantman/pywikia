@@ -108,10 +108,10 @@ def storecookiedata(data, site, user=None):
     
     Returns nothing."""
 
-    if user is None:
-        user = ""
-    else:
-        user += "-"
+    #if user is None:
+    user = ""
+    #else:
+    #    user += "-"
     f = open(makepath('login-data/%s-%s-%slogin.data' % (site.family.name, site.lang, user)), 'w')
     f.write(data)
     f.close()
@@ -130,9 +130,7 @@ def main(args):
             sys.exit("Unknown argument: %s" % arg)
 
     mysite = wikipedia.getSite()
-    wikipedia.output(u"Logging in to %s" % repr(mysite))
 
-    user = username
     if username is None:
         username = config.username # wikipedia.input(u'username:', encode = True)
     if not password:
@@ -144,6 +142,7 @@ def main(args):
     password = unicode(password, config.console_encoding)
     password = password.encode(wikipedia.myencoding())
 
+    wikipedia.output(u"Logging in to %s as %s" % (repr(mysite), username))
     # Ensure bot policy on the English Wikipedia
     ensite=wikipedia.getSite(code='en',fam='wikipedia')
     if mysite == ensite:
@@ -154,7 +153,7 @@ def main(args):
             
     cookiedata = login(mysite, username, password)
     if cookiedata:
-        storecookiedata(cookiedata, mysite, user)
+        storecookiedata(cookiedata, mysite, username)
         print "Should be logged in now"
     else:
         print "Login failed. Wrong password?"
