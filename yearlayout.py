@@ -1,8 +1,8 @@
 #
-# Script to check language links for years A.D.
+# Script to reformat year pages in a consistent manner
 #
 # (C) Rob W.W. Hooft, 2003
-# Distribute under the terms of the GPL.
+# Distribute under the terms of the PSF license
 
 import os,sys,re,wikipedia
 

@@ -1,3 +1,9 @@
+# Script to log the robot in to a wikipedia account
+#
+# $Id$
+#
+# (C) Rob W.W. Hooft, 2003
+# Distribute under the terms of the PSF license.
 import re
 import httplib
 import wikipedia

@@ -1,3 +1,10 @@
+This is a package to build robots for wikipedia. Some example robots are 
+included. This is fairly nl:-centered, but if something doesn't work for your
+language wikipedia, just send a bug report and we'll take a look.
+
+The contents of the package are:
+
+LICENSE : a reference to the Python Software Foundation license
 autoredir.py : Make redirect pages for capitalized months like [[1 Januari]]
 backref.py : List all pages for which nl:->xx: does not correspond to
                    xx:->nl:. This is obsolescent now that treelang has a 

@@ -2,7 +2,7 @@
 # Automatically make redirect pages for months with capital letters
 #
 # (C) Rob W.W. Hooft, 2003
-# Distribute under the terms of the GPL.
+# Distribute under the terms of the PSF license
 
 import os,sys,re,wikipedia
 

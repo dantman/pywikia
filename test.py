@@ -1,8 +1,8 @@
 #
-# Script to check language links for years A.D.
+# Script to perform some tests.
 #
 # (C) Rob W.W. Hooft, 2003
-# Distribute under the terms of the GPL.
+# Distribute under the terms of the PSF license
 
 import re,sys,wikipedia
 if 0:

@@ -3,7 +3,7 @@
 # $Id$
 #
 # (C) Rob W.W. Hooft, 2003
-# Distribute under the terms of the GPL.
+# Distribute under the terms of the PSF license.
 
 import sys,copy,wikipedia
 
