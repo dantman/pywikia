@@ -51,7 +51,7 @@ langs = {
     'it':'it.wikipedia.org',   # Italian, UTF-8
     'ja':'ja.wikipedia.org',   # Japanese, UTF-8
     'ko':'ko.wikipedia.org',   # Korean, UTF-8
-    'la':'la.wikipedia.org',   # Latin
+    'la':'la.wikipedia.org',   # Latin, UTF-8
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
     'ml':'ml.wikipedia.org',   # Malayalam (UTF-8?)
@@ -63,7 +63,7 @@ langs = {
     'no':'no.wikipedia.org',   # Norwegian, UTF-8
     'oc':'oc.wikipedia.org',   # Occitan, UTF-8
     'pl':'pl.wikipedia.org',   # Polish, UTF-8
-    'pt':'pt.wikipedia.org',   # Portuguese
+    'pt':'pt.wikipedia.org',   # Portuguese, UTF-8
     'ro':'ro.wikipedia.org',   # Romanian, UTF-8
     'ru':'ru.wikipedia.org',   # Russian, UTF-8
     'simple':'simple.wikipedia.org', # Simple English
@@ -85,12 +85,12 @@ langs = {
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
-          'pt', 'la', 'ia', 'et', 'eu',
+          'ia', 'et', 'eu',
           'mr', 'id', 'simple', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['af', 'cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no']
+latin1old = ['la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -123,7 +123,7 @@ special = {
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
     'ko': '%ED%8A%B9%EC%88%98%EA%B8%B0%EB%8A%A5',
-    #'la': '',
+    'la': 'Special',
     'lt': 'Special',
     #'lv': '',
     'ml': 'Special',
@@ -135,7 +135,7 @@ special = {
     'no': 'Spesial',
     'oc': 'Especial',
     'pl': 'Specjalna',
-    #'pt': '',
+    'pt': 'Especial',
     'ro': 'Special',
     'ru': 'Special',
     #'simple': '',
@@ -157,8 +157,8 @@ special = {
 
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
-oldsoftware = ['et', 'eu', 'ga', 'gl', 'ia', 'id', 'la', 'lv',
-               'mr', 'nds', 'pt', 'simple', 'sw', 'tt', 'uk', 'vo']
+oldsoftware = ['et', 'eu', 'ga', 'gl', 'ia', 'id', 'lv',
+               'mr', 'nds', 'simple', 'sw', 'tt', 'uk', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
