@@ -110,7 +110,7 @@ class Global:
     force = False
     forreal = True
     log = config.treelang_log
-    minquerysize = 1
+    minarraysize = 100
     maxquerysize = 60
     same = False
     skip = {}
@@ -434,11 +434,16 @@ class SubjectArray:
     def maxOpenCode(self):
         """Return the code of the foreign language that has the most
            open queries plus the number. If there is nothing left, return
-           None, 0"""
+           None, 0. Only languages that are TODO for the first Subject
+           are returned."""
         max = 0
         maxlang = None
-        for lang, count in self.counts.iteritems():
+	# Next line used to be:
+        #for lang, count in self.counts.iteritems():
+	# But that keeps some subjects around for VERY long
+        for lang in self.subjects[0].openCodes():
             if lang != wikipedia.mylang:
+                count = self.counts[lang]
                 if count > max:
                     max = count
                     maxlang = lang
@@ -446,20 +451,21 @@ class SubjectArray:
 
     def selectQueryCode(self):
         """Select the language code the next query should go out for."""
-        # First see how many foreign page queries we can find.
-        maxlang, max = self.maxOpenCode()
-        # If that number is too small, we need drastic measures.
-        if max >= globalvar.minquerysize:
-            return maxlang
         # How many home-language queries we still have?
         mycount = self.counts.get(wikipedia.mylang,0)
-        # Can we make more home-language queries by adding subjects?
-        if self.generator and mycount < globalvar.maxquerysize:
-            self.generateMore(globalvar.maxquerysize - mycount)
-        # If we have any, getting the home language is a good thing.
-        if self.counts[wikipedia.mylang] > 0:
-            return wikipedia.mylang
-        # Otherwise go for the foreign language anyway
+        # Do we still have enough subjects to work on for which the
+        # home language has been retrieved? This is rough, because
+        # some subjects may need to retrieve a second home-language page!
+        if len(self.subjects) - mycount < globalvar.minarraysize:
+            # Can we make more home-language queries by adding subjects?
+            if self.generator and mycount < globalvar.maxquerysize:
+                self.generateMore(globalvar.maxquerysize - mycount)
+            # If we have any, getting the home language is a good thing.
+            if self.counts[wikipedia.mylang] > 0:
+                return wikipedia.mylang
+        # If getting the home language doesn't make sense, see how many 
+        # foreign page queries we can find.
+        maxlang, max = self.maxOpenCode()
         return maxlang
     
     def queryStep(self):
@@ -514,24 +520,6 @@ class SubjectArray:
         while not self.isDone():
             self.queryStep()
 
-class OrderedSubjectArray(SubjectArray):
-    """A different algorithm that will always try to complete the first
-       subject in the list"""
-    def maxOpenCode(self):
-        """Return the code of the foreign language that has the most
-           open queries plus the number. If there is nothing left, return
-           None, 0. Only languages that are TODO for the first Subject
-           are returned."""
-        max = 0
-        maxlang = None
-        for lang in self.subjects[0].openCodes():
-            if lang != wikipedia.mylang:
-                count = self.counts[lang]
-                if count > max:
-                    max = count
-                    maxlang = lang
-        return maxlang, max
-    
 def compareLanguages(old, new):
     removing = []
     adding = []
@@ -615,9 +603,9 @@ if __name__ == "__main__":
         sys.stdout = logger.Logger(sys.stdout, filename = 'treelang.log')
 
     unequal.read_exceptions()
-    
-    sa=OrderedSubjectArray()
 
+    sa=SubjectArray()
+    
     if skipfile:
         for pl in wikipedia.PageLinksFromFile(skipfile):
             globalvar.skip[pl] = None
