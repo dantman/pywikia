@@ -10,6 +10,7 @@ Library to get and put pages on Wikipedia
 __version__ = '$Id$'
 #
 import re, urllib, codecs, sys
+import xml.sax, xml.sax.handler
 
 import config
 
@@ -105,6 +106,7 @@ special = {
     'fy': 'Wiki',
     'he': '%D7%9E%D7%99%D7%95%D7%97%D7%93',
     'hu': 'Speci%C3%A1lis',
+    'el': 'Special',
     'ia': 'Special',
     'it': 'Speciale',
     'ja': '%E7%89%B9%E5%88%A5',
@@ -200,6 +202,10 @@ class NoSuchEntity(ValueError):
 class SubpageError(ValueError):
     """The subpage specified by # does not exist"""
 
+# Regular expression recognizing redirect pages
+
+Rredirect = re.compile(r'\#redirect:? *\[\[(.*?)\]\]', re.I)
+
 # The most important thing in this whole module: The PageLink class
 class PageLink:
     """A Wikipedia page link."""
@@ -254,7 +260,14 @@ class PageLink:
             hn = re.sub('&hash;', '&#', hn)
             #print "hn=", hn
             return hn
-        
+
+    def hashfreeLinkname(self):
+        hn=self.hashname()
+        if hn:
+            return self.linkname()[:-len(hn)+1]
+        else:
+            return self.linkname()
+            
     def code(self):
         """The code for the language of the page this PageLink refers to,
            without :"""
@@ -383,18 +396,138 @@ class PageLink:
         return hash(str(self))
     
     def getRedirectTo(self):
-    #Given a redirect page, gives the page it redirects to
+        # Given a redirect page, gives the page it redirects to
         try:
             self.get()
-        except IsRedirectPage,arg:
+        except IsRedirectPage, arg:
             return arg
         else:
             raise IsNotRedirectPage(self)
 
 # Shortcut get to get multiple pages at once
+class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
+    def setCallback(self, callback):
+        self.callback = callback
+        
+    def startElement(self, name, attrs):
+        self.destination = None
+        if name == 'page':
+            self.text=u''
+            self.title=u''
+            self.timestamp=u''
+        elif name == 'text':
+            self.destination = 'text'
+        elif name == 'title':
+            self.destination = 'title'
+        elif name == 'timestamp':
+            self.destination = 'timestamp'
 
+    def endElement(self, name):
+        if name == 'revision':
+            # All done for this.
+            print "DBG> ",repr(self.title), self.timestamp, len(self.text)
+            # Uncode the text
+            text = unescape(self.text)
+            # Remove trailing newlines and spaces
+            while text[-1] in '\n ':
+                text = text[:-1]
+            # Replace newline by cr/nl
+            text = u'\r\n'.join(text.split('\n'))
+            # Decode the timestamp
+            timestamp = (self.timestamp[0:4]+
+                         self.timestamp[5:7]+
+                         self.timestamp[8:10]+
+                         self.timestamp[11:13]+
+                         self.timestamp[14:16]+
+                         self.timestamp[17:19])
+            # Report back to the caller
+            self.callback(self.title.strip(), timestamp, text)
+            
+    def characters(self, data):
+        if self.destination == 'text':
+            self.text += data
+        elif self.destination == 'title':
+            self.title += data
+        elif self.destination == 'timestamp':
+            self.timestamp += data
+            
+class GetAll:
+    debug = 1
+    addr = '/wiki/%s:Export'
+    def __init__(self, code, pages):
+        self.code = code
+        self.pages = pages
+
+    def run(self):
+        data = self.getData()
+        handler = WikimediaXmlHandler()
+        handler.setCallback(self.oneDone)
+        xml.sax.parseString(data, handler)
+        # All of the ones that have not been found apparently do not exist
+        for pl in self.pages:
+            if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
+                pl._getexception = NoPage
+
+    def oneDone(self, title, timestamp, text):
+        print "DBG>", repr(title), timestamp, len(text)
+        pl = PageLink(self.code, title)
+        for pl2 in self.pages:
+            if pl2 == pl:
+                break
+        else:
+            raise "bug, page not found in list"
+        if self.debug:
+            xtext = pl2.get()
+            if text != xtext:
+                print "################Text differs"
+                import difflib
+                for line in difflib.ndiff(xtext.split('\r\n'), text.split('\r\n')):
+                    if line[0] in ['+', '-']:
+                        print repr(line)[2:-1]
+            if edittime[self.code, link2url(title, self.code)] != timestamp:
+                print "################Timestamp differs"
+                print "-",edittime[self.code, link2url(title, self.code)]
+                print "+",timestamp
+        else:
+            m=Rredirect.match(xtext)
+            if m:
+                pl2._getexception = IsRedirectPage, m.group(1)
+            else:
+                hn = pl2.hashname()
+                if hn:
+                    m = re.search("== *%s *==" % hn, xtext)
+                    if not m:
+                        pl2._getexception = SubpageError("Hashname does not exist: %s" % self)
+                    else:
+                        # Store the content
+                        pl2._contents = xtext
+                        # Store the time stamp
+                        edittime[self.code, link2url(title, self.code)] = timestamp
+
+    def getData(self):
+        import httplib
+        addr = self.addr%special[self.code]
+        pagenames = '\r\n'.join([x.hashfreeLinkname() for x in self.pages])
+        data = urlencode((
+                    ('action', 'submit'),
+                    ('pages', pagenames),
+                    ('curonly', 'True'),
+                    ))
+        headers = {"Content-type": "application/x-www-form-urlencoded", 
+                   "User-agent": "RobHooftWikiRobot/1.0"}
+        # Slow ourselves down
+        get_throttle()
+        # Now make the actual request to the server
+        conn = httplib.HTTPConnection(langs[self.code])
+        conn.request("POST", addr, data, headers)
+        response = conn.getresponse()
+        data = response.read()
+        conn.close()
+        return data
+    
 def getall(code, pages):
     print "DBG> getall", code, pages
+    return GetAll(code, pages).run()
     
 # Library functions
 def unescape(s):
@@ -630,7 +763,6 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             print text[i1:i2]
         if text[i1:i2] == 'Describe the new page here.\n': # old software
             raise NoPage(code, name)
-        Rredirect = re.compile(r'\#redirect:? *\[\[(.*?)\]\]', re.I)
         m=Rredirect.match(text[i1:i2])
         if m:
             raise IsRedirectPage(m.group(1))
@@ -641,6 +773,8 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
 
         x = text[i1:i2]
         x = unescape(x)
+        while x[-1] in '\n ':
+            x = x[:-1]
     else:
         x = text # If not editing
         
