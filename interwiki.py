@@ -584,7 +584,7 @@ class Subject:
                 # Check for superfluous links
                 for xpl in linked:
                     # Chinese internal links are ok.
-                    if l.code() in ['zh-cn','zh-tw','zh'] and xpl.code() in ['zh-cn','zh-tw']:
+                    if pl.code() in ['zh-cn','zh-tw','zh'] and xpl.code() in ['zh-cn','zh-tw']:
                         pass
                     elif not xpl in shouldlink:
                         # Check whether there is an alternative page on that language.
