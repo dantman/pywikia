@@ -232,13 +232,13 @@ interwiki_putfirst = {
           'simple','sk','sl','sr','fi','sv','ta','tt','th',
           'vi','tr','uk','vo','zh','zh-cn','zh-tw'],
     'hu':['en'],
-    'pl':['af','sq','en','ar','eu','bs','zh','zh-tw',
-          'zh-cn','hr','cs','da','eo','et','eu','fa','fi','fr',
-          'fy','gl','el','he','hi','es','nl','id','ia','is',
-          'ga','ja','ca','ko','co','la','lt','lv','ml','ms',
-          'mr','na','de','no','pt','oc','ru','ro','sk','sl',
-          'sr','sw','sv','ta','tt','tr','uk','simple',
-          'vo','cy','hu','vi','it'],
+    'pl':['af','ar','ms','bs','ca','co','cs','cy','da','de',
+          'als','et','el','en','es','eo','eu','fa','fr','fy','ga',
+          'gl','ko','hi','hr','id','is','it','ia','he','ks',
+          'sw','la','lv','lt','hu','ml','mr','nah','na','nl',
+          'ja','no','oc','nds','pl','pt','ro','ru','sq',
+          'simple','sk','sl','sr','fi','sv','ta','tt','th',
+          'vi','tr','uk','vo','zh','zh-cn','zh-tw']
     }
 
 # Local exceptions
