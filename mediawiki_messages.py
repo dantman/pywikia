@@ -24,9 +24,16 @@ Command line options:
 #
 import wikipedia
 import re, sys, pickle, codecs
+import os.path
+import time
 
 def get(key):
-    import os.path
+    # find out how old our saved dump is (in seconds)
+    file_age = time.time() - os.path.getmtime('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang)
+    # if it's older than 7 days, reload it
+    if file_age > 7 * 24 * 60 * 60:
+        print 'Current MediaWiki message dump is outdated, reloading'
+        refresh_messages()
     if not os.path.exists('mediawiki-messages/mediawiki-messages-%s.dat' % wikipedia.mylang):
         refresh_messages()
     # TODO: It's quite inefficient to reload the file every time this function
@@ -66,13 +73,13 @@ def refresh_messages():
     host = wikipedia.family.hostname(wikipedia.mylang)
     # broken redirect maintenance page's URL
     url = wikipedia.family.allmessages_address(wikipedia.mylang)
-    print 'Retrieving MediaWiki messages...' 
+    print 'Retrieving MediaWiki messages' 
     allmessages, charset = wikipedia.getUrl(host,url)
 
     #f=open('/home/daniel/allmessages.html', 'r')
     #allmessages =  f.read()
     
-    print 'Parsing MediaWiki messages...'
+    print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
     itemR = re.compile("<tr bgcolor=\"#F0F0FF\">\n"
                      + "<td>\n"
@@ -102,5 +109,7 @@ if __name__ == "__main__":
     for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
             pass
+        elif arg == '-debug':
+            get('about')
     refresh_messages()
 
