@@ -19,32 +19,32 @@ import re, sys
 
 # Summary message for fixing double redirects
 msg_double={
-    'en':'Robot: Fixing double redirect',
-    'de':'Bot: Korrigiere doppelten Redirect',
+    'en':u'Robot: Fixing double redirect',
+    'de':u'Bot: Korrigiere doppelten Redirect',
     }
 
 # Reason for deleting broken redirects
 reason_broken={
-    'en':'Robot: Redirect target doesn\'t exist',
-    'de':'Bot: Weiterleitungsziel existiert nicht',
+    'en':u'Robot: Redirect target doesn\'t exist',
+    'de':u'Bot: Weiterleitungsziel existiert nicht',
     }
 
 
-# Loads a local sql dump file, looks at all pages which have the redirect flag
-# set, and finds out where they're pointing at.
-# Returns a dictionary where the redirect names are the keys and the redirect
-# targets are the values.
-# NOTE: if the redirect isn't in the main namespace, the returned key will be
-# prefixed by the default namespace identifiers. See full_title() in dump.py.
 def get_redirects_from_dump(sqlfilename):
+    '''
+    Loads a local sql dump file, looks at all pages which have the redirect flag
+    set, and finds out where they're pointing at.
+    Returns a dictionary where the redirect names are the keys and the redirect
+    targets are the values.
+    NOTE: if the redirect isn't in the main namespace, the returned key will be
+    prefixed by the default namespace identifiers. See full_title() in dump.py.
+    '''
     dict = {}
     # open sql dump and read page titles out of it
     dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
-    # case-insensitive regular expression which takes a redirect's text
-    # (that is: '#REDIRECT [[bla]]') and extracts its target (that is: bla).
-    redirR = re.compile('#REDIRECT[^\[]*\[\[([^\]]+)\]\]', re.IGNORECASE)
+    redirR = wikipedia.redirectRe(wikipedia.mylang)
     for entry in dump.entries():
-        if entry.redirect == '1':
+        if entry.redirect:
             m = redirR.search(entry.text)
             if m == None:
                 # NOTE: due to a MediaWiki bug, many articles are falsely marked with the
@@ -54,6 +54,14 @@ def get_redirects_from_dump(sqlfilename):
             else:
                 target = m.group(1)
                 target = target.replace(' ', '_')
+                # capitalize the first letter
+                if not wikipedia.mylang in wikipedia.family.nocapitalize:
+                    target = target[0].upper() + target[1:]
+                if target.find('#') != -1:
+                    target = target[:target.index('#')]
+                if target.find('|') != -1:
+                    wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.full_title())  
+                    target = target[:target.index('|')]
                 dict[entry.full_title()] = target
     return dict
     
@@ -74,23 +82,22 @@ def retrieve_broken_redirects(source):
         for redir_name in redir_names:
             yield redir_name
     else:
-        print 'NOTE: This function is not working yet. Press Enter to continue.'
-        raw_input()
         print 'Step 1: Getting a list of all redirects'
         redirs = get_redirects_from_dump(sqlfilename)
         print 'Step 2: Getting a list of all page titles'
         dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
-        pagetitles = []
+        # We save page titles in a dictionary where all values are None, so we
+        # use it as a list. "dict.has_key(x)" is much faster than "x in list"
+        # because "dict.has_key(x)" uses a hashtable while "x in list" compares
+        # x with each list element
+        pagetitles = {}
         for entry in dump.entries():
-            print entry.full_title()
-            pagetitles.append(entry.full_title())
-        print 'Step 3: Comparing. This might take a while (or two).'
+            pagetitles[entry.full_title()] = None
+        print 'Step 3: Comparing.'
         brokenredirs = []
-        for (key, value) in redirs.popitem():
-            print key
-            if not value in pagetitles:
-                brokenredirs.append(key)
-        print brokenredirs
+        for (key, value) in redirs.iteritems():
+            if not pagetitles.has_key(value):
+                yield key
 
 def delete_broken_redirects(source):
     # get reason for deletion text
@@ -100,8 +107,10 @@ def delete_broken_redirects(source):
         redir_page = wikipedia.PageLink(wikipedia.mylang, redir_name)
         try:
             target_page = redir_page.getRedirectTo()
-        except (wikipedia.IsNotRedirectPage, wikipedia.NoPage):
-            wikipedia.output('%s doesn\'t exist or is not a redirect.')
+        except wikipedia.IsNotRedirectPage:
+            wikipedia.output(u'%s is not a redirect.' % redir_page.linkname())
+        except wikipedia.NoPage:
+            wikipedia.output(u'%s doesn\'t exist.' % redir_page.linkname())
         else:
             try:
                 target_name = str(redir_page.getRedirectTo())
@@ -110,10 +119,10 @@ def delete_broken_redirects(source):
             except wikipedia.NoPage:
                 #wikipedia.output('Deleting %s...' % redir_page.linkname())
                 wikipedia.deletePage(redir_page, reason, prompt = False)
-            except wikipedia.IsRedirectPage():
-                wikipedia.output('Redirect target is also a redirect! Won\'t delete anything.')
+            except wikipedia.IsRedirectPage:
+                wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
             else:
-                wikipedia.output('Redirect target does exist! Won\'t delete anything.')
+                wikipedia.output(u'Redirect target does exist! Won\'t delete anything.')
             # idle for 1 minute
         print ''
         wikipedia.put_throttle()
@@ -144,17 +153,27 @@ def retrieve_double_redirects(source):
                 
 def fix_double_redirects(source):
     for redir_name in retrieve_double_redirects(source):
+        print ''
         redir = wikipedia.PageLink(wikipedia.mylang, redir_name)
         try:
             target = str(redir.getRedirectTo())
-            second_redir = wikipedia.PageLink(wikipedia.mylang, target)
-            second_target = str(second_redir.getRedirectTo())
-        except (wikipedia.IsNotRedirectPage, wikipedia.NoPage):
-            print 'The specified page is not a double redirect.\n'
-            continue
-        txt = "#REDIRECT [[%s]]" % second_target
-        redir.put(txt)
-        print ''
+        except wikipedia.IsNotRedirectPage:
+            wikipedia.output(u'%s is not a redirect.' % redir.linkname())
+        except wikipedia.NoPage:
+            wikipedia.output(u'%s doesn\'t exist.' % redir.linkname())
+        except wikipedia.LockedPage:
+            wikipedia.output(u'%s is locked, skipping.' % redir.linkname())
+        else:
+            try:
+                second_redir = wikipedia.PageLink(wikipedia.mylang, target)
+                second_target = str(second_redir.getRedirectTo())
+            except wikipedia.IsNotRedirectPage:
+                wikipedia.output(u'%s is not a redirect.' % second_redir.linkname())
+            except wikipedia.NoPage:
+                wikipedia.output(u'%s doesn\'t exist.' % second_redir.linkname())
+            else:
+                txt = "#REDIRECT [[%s]]" % second_target
+                redir.put(txt)
 
 # read command line parameters
 # what the bot should do (either resolve double redirs, or delete broken redirs)
@@ -172,7 +191,7 @@ for arg in sys.argv[1:]:
         action = 'broken'
     elif arg.startswith('-sql'):
         if len(arg) == 4:
-            sqlfilename = wikipedia.input('Please enter the SQL dump\'s filename: ')
+            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
         else:
             sqlfilename = arg[5:]
         import sqldump
