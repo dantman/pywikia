@@ -1332,7 +1332,6 @@ def replaceCategoryLinks(oldtext, new, code = None):
     # to appear at the bottom of the article
     if not code in config.categories_last:
         interwiki_links = getLanguageLinks(oldtext)
-        print interwiki_links
         oldtext = removeLanguageLinks(oldtext)
     s = categoryFormat(new)
     s2 = removeCategoryLinks(oldtext, code)
