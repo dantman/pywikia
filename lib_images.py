@@ -5,7 +5,7 @@ Library with functions needed for image treatment
 
 import re, sys, string, md5
 import httplib
-import wikipedia, config
+import wikipedia, config, mediawiki_messages
 
 copy_message = {
     "en":"This image was copied from the %s Wikipedia. The original description was:\r\n\r\n%s",
@@ -13,7 +13,7 @@ copy_message = {
     "nl":"Afbeelding gekopieerd vanaf Wikipedia-%s. De beschrijving daar was:\r\n\r\n%s",
 }
 
-
+'''
 # a string which appears on the HTML page which says that the upload was successful,
 # and which doesn't appear on a page which says that the upload failed.
 success_message = {
@@ -63,6 +63,7 @@ success_message = {
     "wa":"L%27_eberwetaedje_a_st%C3%AE_comif%C3%A5",
     "zh":"%E4%B8%8A%E8%BD%BD%E6%88%90%E5%8A%9F"
 }
+'''
 
 def post_multipart(host, selector, fields, files):
     """
@@ -193,21 +194,18 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
                               (('wpUploadFile',fn,contents),)
                               )
         # do we know how the "success!" HTML page should look like?
-        if not success_message.has_key(wikipedia.mylang):
-            print "Please edit lib_images.py and add a string to success_message for your language."
-            print "Otherwise it will be impossible to find out if the upload was successful."
+        success_msg = mediawiki_messages.get('successfulupload')
+        success_msgR = re.compile(re.escape(success_msg))
+        if success_msgR.search(returned_html):
+             print "Upload successful."
         else:
-            # did the upload succeed?
-            if returned_html.find(success_message[wikipedia.mylang]) != -1:
-                 print "Upload successful."
-            else:
-                 # dump the HTML page
-                 print returned_html + "\n\n"
-                 answer = raw_input("Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
-                 if answer in ["y", "Y"]:
-                     return get_image(original_url, source_wiki, original_description, debug)
-                 else:
-                     return
+             # dump the HTML page
+             print returned_html + "\n\n"
+             answer = raw_input("Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
+             if answer in ["y", "Y"]:
+                 return get_image(original_url, source_wiki, original_description, debug)
+             else:
+                 return
     return fn
 
 
