@@ -12,10 +12,20 @@ Arguments understood by all bots:
 Any other argument is taken as a page that at least has to be in the set.
 Note that if a page has spaces in the title, you need to specify them
 with _'s. A collection of pages about World War II would thus be gotten
-with pagelist.py World_War_II
+with pagelist.py World_War_II.
+
+When running the bot, you will get one by one a number by pages. You can
+choose:
+Y(es) - include the page
+N(o) - do not include the page or
+I(gnore) - do not include the page, but if you meet it again, ask again.
+Other possiblities:
+A(dd) - add another page, which may have been one that was included before
+R(emove) - remove a page that is already in the list
+L(ist) - show current list of pages to include or to check
 """
 #
-# (C) Andre Engels, 2003
+# (C) Andre Engels, 2004
 #
 # Distribute under the terms of the PSF license.
 #
@@ -26,12 +36,44 @@ import wikipedia
 
 def asktoadd(pl):
     if not (pl in tocheck or pl in include or pl in exclude):
-        print("%s")%pl
-        answer = raw_input("(y/n)? ")
-        if answer=='y':
-            tocheck.append(pl)
-        elif answer=='n':
-            exclude.append(pl)
+        while 1:
+            print("%s")%pl
+            answer = raw_input("y(es)/n(o)/i(gnore)/(o)ther options? ")
+            if answer=='y':
+                tocheck.append(pl)
+                break
+            elif answer=='n':
+                exclude.append(pl)
+                break
+            elif answer=='i':
+                break
+            elif answer=='o':
+                print("a: Add another page")
+                print("r: Remove a page already in the list")
+                print("l: Give a list of the pages to check or to include")
+            elif answer=='s':
+                save()
+            elif answer=='a':
+                page = raw_input("Specify page to add:")
+                if not (page in tocheck or page in include):
+                    tocheck.append(page)
+            elif answer=='r':
+                page = raw_input("Specify page to remove:")
+                exclude.append(wikipedia.PageLink(wikipedia.mylang,page).linkname())
+                for i in range(len(tocheck)-1, -1, -1):
+                    if tocheck[i] == wikipedia.PageLink(wikipedia.mylang,page).linkname():
+                        del tocheck[i]
+                for i in range(len(include)-1, -1, -1):
+                    if include[i] == wikipedia.PageLink(wikipedia.mylang,page).linkname():
+                        del include[i]
+            elif answer=='l':
+                print('Number of pages still to check: %s')%len(tocheck)
+                print('Number of pages checked and to be included: %s')%len(include)
+                print('Number of pages not to include: %s')%len(exclude)
+                print('Pages to be included:')
+                print include
+                print('Pages to be checked:')
+                print tocheck
 
 tocheck = []
 include = []
@@ -42,6 +84,10 @@ for arg in sys.argv[1:]:
         pass
     else:
         tocheck.append(arg)
+
+if tocheck == []:
+    answer = raw_input("Which page to start with? ")
+    tocheck.appen(answer)
 
 while tocheck <> []:
     pg = wikipedia.PageLink(wikipedia.mylang,tocheck[0])
