@@ -60,7 +60,8 @@ def main():
 	    	print "%s doesn't exit yet. Ignoring."%(pl2.aslocallink())
 		pass
             except wikipedia.IsRedirectPage,arg:
-	    	print "WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),arg)
+	    	pl3 = wikipedia.PageLink(wikipedia.mylang,arg.args[0])
+		print "WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink())
 	    else:
                 print "Current categories: ",cats
                 if catpl in cats:
