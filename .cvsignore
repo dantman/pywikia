@@ -1,4 +1,5 @@
 *.pyc
 username.dat
-login.data
+*-login.data
 autonomous_problem.dat
+treelang.log
