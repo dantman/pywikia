@@ -85,7 +85,7 @@ langs = {
     'uk':'uk.wikipedia.org',   # Ukrainian (Latin-1?)
     'vi':'vi.wikipedia.org',   # Vietnamese
     'vo':'vo.wikipedia.org',   # Volapuk
-    'walon':'walon.wikipedia.org', # Walloon, UTF-8
+    'walon':'wikipedia.walon.org', # Walon, UTF-8
     'zh':'zh.wikipedia.org',   # Chinese, UTF-8
     'zh-cn':'zh.wikipedia.org', # Simplified Chinese, UTF-8
     'zh-tw':'zh.wikipedia.org', # Traditional Chinese, UTF-8
@@ -192,7 +192,7 @@ seriouslangs = ['af', 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'eo',
                 'es', 'et', 'fi', 'fr', 'fy', 'gl', 'he', 'hr', 'hu',
                 'ia', 'it', 'ja', 'ko', 'la', 'ms', 'nds', 'nl', 'no',
                 'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sr', 'sv', 'ta',
-                'tr', 'vi', 'walon', 'zh', 'simple']
+                'tr', 'vi', 'zh', 'simple']
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 
