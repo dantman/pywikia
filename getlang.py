@@ -1,5 +1,6 @@
-#
 # Script to check language links for years A.D.
+#
+# $Id$
 #
 # (C) Rob W.W. Hooft, 2003
 # Distribute under the terms of the GPL.
@@ -10,8 +11,8 @@ import sys,copy,wikipedia
 mylangs = ('nl', )
 
 # selection of years to check
-years = range(900,999+1)
-#years=[879]
+years = range(1,2040+1)
+years=[388]
 
 # Set to 1 to actually change the pages
 forreal = 1
@@ -55,7 +56,7 @@ def assemblelangmatrix(m):
                 #print "WARNING: Ignore %s from %s; did not see actual page there"%(code,dum)
             elif code in result:
                 if result[code]!=name:
-                    print "WARNING: Name %s is either %s or %s"%(code,result[code],name)
+                    print "WARNING: Name %s is either %s or (in %s) %s"%(code,result[code],dum,name)
             else:
                 result[code]=name
     return result

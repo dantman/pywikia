@@ -1,4 +1,9 @@
 # Library to get and put pages on Wikipedia
+#
+# $Id$
+#
+# (C) Rob W.W. Hooft, 2003
+# Distribute under the terms of the GPL.
 import urllib,re
 
 # known wikipedia languages
@@ -118,9 +123,12 @@ def getPage(code, name):
     elif text[i1:i2] == 'Describe the new page here.\n':
         raise NoPage()
     else:
-        return unescape(text[i1:i2])
+        if code=='eo':
+            return unescape(text[i1:i2]).decode('utf-8')
+        else:
+            return unescape(text[i1:i2])
 
-def languages(first):
+def languages(first=[]):
     """Return a list of language codes for known wikipedia servers"""
     result=[]
     for key in first:
