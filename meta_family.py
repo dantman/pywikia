@@ -10,6 +10,7 @@ import config, urllib, family
 
 class Family(family.Family):
     def __init__(self):
-        self.langs = {'meta': 'meta.wikimedia.org'}
-        self.namespaces[4] = {'_default': u'Meta'}
-        self.namespaces[5] = {'_default': u'Meta talk'}
+    	self._addlang('meta',
+			location = 'meta.wikimedia.org',
+			namespaces = { 4: u'Meta',
+			              5: u'Meta talk' })
