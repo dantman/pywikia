@@ -13,7 +13,8 @@ where action can be one of these:
  * tree   - show a tree of subcategories of a given category
 
 and  option can be one of these:
- * person - sort persons by their last name (for action 'add')
+ * person  - sort persons by their last name (for action 'add')
+ * restore - if the bot didn't finish last time, resume work (for action 'tree') 
 
 For example, to create a new category from a list of persons, type:
     
@@ -30,6 +31,7 @@ and follow the on-screen instructions.
 # 
 import re, sys, string
 import wikipedia, config, interwiki
+import catlib
 
 # Summary messages
 msg_add={
@@ -100,6 +102,21 @@ def get_supercats(subcat):
         superclassDB[subcat] = supercatlist
         return supercatlist
 
+def dump(filename):
+    '''
+    Saves the contents of the dictionaries superclassDB and catContentDB to disk.
+    '''
+    # this is currently only used by print_treeview(). We might want to add it
+    # for others like the tidy bot.
+    import pickle
+    f = open(filename, 'w')
+    databases = {
+        'catContentDB': catContentDB,
+        'superclassDB': superclassDB
+    }
+    pickle.dump(databases, f)
+    f.close()
+    
 def sorted_by_last_name(catlink, pagelink):
         '''
         given a CatLink, returns a CatLink which has an explicit sort key which
@@ -462,6 +479,14 @@ if __name__ == "__main__":
                 action = 'tree'
             elif arg == '-person':
                 sort_by_last_name = True
+            elif arg == '-restore':
+                import pickle
+                f = open('cattree.dump', 'r')
+                databases = pickle.load(f)
+                f.close()
+                catContentDB = databases['catContentDB'] 
+                superclassDB = databases['superclassDB']
+                del databases
                 
     import catlib
     if action == 'add':
@@ -478,7 +503,11 @@ if __name__ == "__main__":
         tidy_category(cat_title)
     elif action == 'tree':
         cat_title = wikipedia.input(u'For which category do you want to create a tree view?')
-        print_treeview(cat_title)
+        try:
+            print_treeview(cat_title)
+        except:
+            dump('cattree.dump')
+            raise
     else:
         wikipedia.output(__doc__, 'utf-8')
 
