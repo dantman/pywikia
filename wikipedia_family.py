@@ -91,6 +91,7 @@ class Family(family.Family):
             'nb':'no.wikipedia.org',   # Norse - new code for Bokmal to distinguish from Nynorsk
             'nds':'nds.wikipedia.org', # Lower Saxon
             'nl':'nl.wikipedia.org',   # Dutch
+            'nn':'nn.wikipedia.org',   # Nynorsk
             'no':'no.wikipedia.org',   # Norwegian
             'oc':'oc.wikipedia.org',   # Occitan
             'om':'om.wikipedia.org',   # Oromo
@@ -338,7 +339,7 @@ class Family(family.Family):
                       'gd','gl','ko','ha','hi','hr','io','id','ia','is','it',
                       'he','jv','kn','ka','csb','ks','kw','ky','sw','la','lv',
                       'lt','jbo','hu','mk','mg','ml','mi','mr','ms','minnan',
-                      'mn','nah','na','nl','ja','no','nb','oc','om','ug','nds',
+                      'mn','nah','na','nl','ja','no','nb','nn','oc','om','ug','nds',
                       'pl','pt','ro','rm','qu','ru','sa','st','sq','si','simple',
                       'sk','sl','sr','su','fi','sv','ta','tt','th','tlh','tk',
                       'tw','vi','tokipona','tpi','tr','ur','uk','vo','wa','yi',

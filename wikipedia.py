@@ -1695,7 +1695,7 @@ def altlang(code):
         return ['zh','zh-cn','zh-tw']
     if code=='da':
         return ['nb','no']
-    if code in ['is','no','nb']:
+    if code in ['is','no','nb','nn']:
         return ['no','nb','nn','da']
     if code=='sv':
         return ['da','no','nb']
