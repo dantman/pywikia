@@ -9,7 +9,7 @@ Library to get and put pages on Wikipedia
 # 
 __version__ = '$Id$'
 #
-import re,urllib,codecs,sys
+import re, urllib, codecs, sys
 
 import config
 
@@ -529,7 +529,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             address += '&action=edit'
     else:
         if not do_edit:
-            raise "can not skip edit on old-software wikipedia"
+            raise Error("can not skip edit on old-software wikipedia")
         address = '/wiki.cgi?action=edit&id='+name
     if debug:
         print host, address
@@ -620,7 +620,6 @@ def allpages(start = '%21%200'):
     """Iterate over all Wikipedia pages in the home language, starting
        at the given page. This will raise an exception if the home language
        does not have a translation of 'Special' listed above."""
-    import sys
     start = link2url(start, code = mylang)
     m=0
     while 1:
@@ -752,11 +751,11 @@ def code2encodings(code):
        wikipedia"""
     # Historic compatibility
     if code == 'pl':
-        return 'utf-8','iso-8859-2'
+        return 'utf-8', 'iso-8859-2'
     if code == 'ru':
-        return 'utf-8','iso-8859-5'
+        return 'utf-8', 'iso-8859-5'
     if code in latin1old:
-        return 'utf-8','iso-8859-1'
+        return 'utf-8', 'iso-8859-1'
     return code2encoding(code),
     
 def url2link(percentname,incode,code):
@@ -814,7 +813,6 @@ def getReferences(pl):
 
 def UnicodeToAsciiHtml(s):
     html = []
-    i=0
     for c in s:
         cord = ord(c)
         #print cord,
@@ -849,7 +847,7 @@ def unicode2html(x, encoding='latin1'):
     return x
     
 def removeEntity(name):
-    import re, htmlentitydefs
+    import htmlentitydefs
     Rentity = re.compile(r'&([A-Za-z]+);')
     result = u''
     i = 0
@@ -901,14 +899,13 @@ def unicodeName(name, language, altlanguage = None):
                 return unicode(name, encoding)
             except UnicodeError:
                 continue
-    raise "Cannot decode"
+    raise Error("Cannot decode")
     #return unicode(name,code2encoding(inlanguage))
     
 def html2unicode(name, language, altlanguage=None):
     name = unicodeName(name, language, altlanguage)
     name = removeEntity(name)
 
-    import re
     Runi = re.compile('&#(\d+);')
     result = u''
     i=0
