@@ -268,7 +268,7 @@ class Family(object):
 
     redirect = {
         'cy': 'ail-cyfeirio',
-        'ga': 'athsheaoladh'
+        'ga': 'athsheoladh'
         }
 
     # On most Wikipedias page names must start with a capital letter, but some
