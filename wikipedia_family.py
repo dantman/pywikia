@@ -270,7 +270,7 @@ class Family(family.Family):
     seriouslangs = biglangs4 + [
         'als', 'an', 'ang', 'ar', 'be', 'csb', 'fa', 'fo', 'ga', 'gd',
         'hi', 'ie', 'jv', 'kn', 'ks', 'kw', 'lv', 'mi', 'minnan', 'ml', 'nds',
-        'oc', 'sa', 'scn', 'su', 'ta', 'th', 'tl', 'ur', 'vi']
+        'oc', 'sa', 'scn', 'sq', 'su', 'ta', 'th', 'tl', 'ur', 'vi']
     
     # other groups of language that we might want to do at once
         
