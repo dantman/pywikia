@@ -98,7 +98,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                 fmt = '%d&#24180;'
             elif newcode == 'ko':
                 fmt = '%d&#45380;'
-            elif newcode in ['minnan','zh-min-nan']:
+            elif newcode =='minnan':
                 fmt = '%d n&icirc;'
             elif newcode == 'ur':
                 fmt = '%d&#1587;&#1576;&#1605;'
@@ -113,6 +113,15 @@ def translate(pl, arr, same = False, hints = None, auto = True):
             elif newcode in ['simple','lt'] and i<200:
                 # some simple pages are numbers
                 # lt:69 has yet another meaning
+                pass
+            elif newcode=='es' and i>2005:
+                # es: redirects future years to a single page
+                pass
+            elif newcode=='no' and i>2010:
+                # no: redirects far future years to the century
+                pass
+            elif newcode=='pl' and i>2019:
+                # pl: redirects far future years to decades
                 pass
             else:
                 newname = fmt%i 
