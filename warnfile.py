@@ -1,4 +1,22 @@
-import sys,wikipedia,interwiki
+"""
+A robot to implement backlinks from a treelang.log file without checking them
+against the live wikipedia.
+
+Just run this robot with the warnfile names as arguments:
+
+Example:
+
+   python warnfile.py -lang:es nl/warning_es.dat
+
+"""
+#
+# (C) Rob W.W. Hooft, 2003
+#
+# Distribute under the terms of the PSF license.
+# 
+__version__ = '$Id$'
+#
+import sys, wikipedia, interwiki
 
 def ReadWarnfile(fn):
     import re
