@@ -50,7 +50,7 @@ while tocheck <> []:
     if pg.exists():
         if pg.isRedirectPage():
             exclude.append(pname)
-            new = wikipedia.PageLink(wikipedia.mylang,pg.getRedirectTo()).linkname()
+            new = wikipedia.PageLink(wikipedia.mylang,str(pg.getRedirectTo())).linkname()
             if not (new in tocheck or new in include or new in exclude):
                 tocheck.append(new)
         else:

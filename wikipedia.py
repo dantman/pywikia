@@ -384,6 +384,8 @@ class PageLink:
             SubpageError: The subject does not exist on a page with a # link
         """
         # Make sure we re-raise an exception we got on an earlier attempt
+        if hasattr(self, '_redirarg'):
+            raise IsRedirectPage,self._redirarg
         if hasattr(self, '_getexception'):
             raise self._getexception
         # Make sure we did try to get the contents once
@@ -400,7 +402,8 @@ class PageLink:
                 self._getexception = NoPage
                 raise
             except IsRedirectPage,arg:
-                self._getexception = IsRedirectPage,arg
+                self._getexception = IsRedirectPage
+                self._redirarg = arg
                 raise
             except LockedPage:
                 self._getexception = LockedPage
