@@ -533,7 +533,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
     if code not in oldsoftware:
         address = '/w/wiki.phtml?title='+name+"&redirect=no"
         if do_edit:
-            address += '&action=edit'
+            address += '&action=edit&printable=yes'
     else:
         if not do_edit:
             raise Error("can not skip edit on old-software wikipedia")
@@ -592,8 +592,10 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
         m=Rredirect.match(text[i1:i2])
         if m:
             raise IsRedirectPage(m.group(1))
-        if needput:
-            assert edittime[code, name] != 0 or code in oldsoftware, "No edittime on non-empty page?! %s:%s\n%s"%(code,name,text)
+        if edittime[code, name] == 0 and code not in oldsoftware:
+            print "DBG> page may be locked?!"
+            pass
+            #raise LockedPage()
 
         x = text[i1:i2]
         x = unescape(x)
