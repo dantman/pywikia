@@ -355,40 +355,40 @@ page_title = []
 debug = False
 action = None
 for arg in sys.argv[1:]:
-    if arg.startswith('-file:'):
-
-        f=open(arg[6:], 'r')
-        R=re.compile(r'.*\[\[([^\]]*)\]\].*')
-        m = False
-        for line in f.readlines():
-            m=R.match(line)            
-            if m:
-                articles.append(m.group(1))
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg.startswith('-file:'):
+    
+            f=open(arg[6:], 'r')
+            R=re.compile(r'.*\[\[([^\]]*)\]\].*')
+            m = False
+            for line in f.readlines():
+                m=R.match(line)            
+                if m:
+                    articles.append(m.group(1))
+                else:
+                    print "ERROR: Did not understand %s line:\n%s" % (
+                        arg[6:], repr(line))
+            f.close()
+        elif arg.startswith('-sql'):
+            if len(arg) == 4:
+                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
             else:
-                print "ERROR: Did not understand %s line:\n%s" % (
-                    arg[6:], repr(line))
-        f.close()
-    elif arg.startswith('-sql'):
-        if len(arg) == 4:
-            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                sqlfilename = arg[5:]
+            action = 'parse_sqldump'
+        elif arg.startswith('-skip:'):
+            articles = articles[articles.index(arg[6:]):]
+        elif arg.startswith('-auto'):
+            config.table2wikiAskOnlyWarnings = True
+            config.table2wikiSkipWarnings = True
+            print "Automatic mode!\n"
+        elif arg.startswith('-quiet'):
+            quietMode = True
+        elif arg.startswith('-debug'):
+            articles = "test"
+            debug = True
         else:
-            sqlfilename = arg[5:]
-        action = 'parse_sqldump'
-    elif arg.startswith('-skip:'):
-        articles = articles[articles.index(arg[6:]):]
-    elif wikipedia.argHandler(arg):
-        pass
-    elif arg.startswith('-auto'):
-        config.table2wikiAskOnlyWarnings = True
-        config.table2wikiSkipWarnings = True
-        print "Automatic mode!\n"
-    elif arg.startswith('-quiet'):
-        quietMode = True
-    elif arg.startswith('-debug'):
-        articles = "test"
-        debug = True
-    else:
-        page_title.append(arg)
+            page_title.append(arg)
 
 def treat(page_title):
     '''

@@ -80,14 +80,14 @@ abbrev = {
     }
 
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg.startswith('-start:'):
-        start = arg[7:]
-    elif arg == '-force':
-        force = True
-    else:
-        print('Warning: argument "%s" not understood; ignoring.')%arg
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg.startswith('-start:'):
+            start = arg[7:]
+        elif arg == '-force':
+            force = True
+        else:
+            print('Warning: argument "%s" not understood; ignoring.')%arg
 
 for p in wikipedia.allpages(start = start):
     for sn in abbrev:

@@ -124,12 +124,13 @@ if __name__ == "__main__":
     debug = False
     refresh_all = False
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
-            pass
-        elif arg == '-debug':
-            debug = True
-        elif arg == '-all':
-            refresh_all = True
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg == '-debug':
+                debug = True
+            elif arg == '-all':
+                refresh_all = True
+                
     if refresh_all:
         refresh_all_messages()
     else:

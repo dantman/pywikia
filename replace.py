@@ -241,38 +241,36 @@ wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg))
 
 # Read commandline parameters.
 for arg in sys.argv[1:]:
-    # Convert argument from the encoding the user's shell uses to Unicode
-    arg = unicode(arg, config.console_encoding)
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg == '-regex':
-        regex = True
-    elif arg.startswith('-file'):
-        if len(arg) == 5:
-            textfilename = wikipedia.input(u'Please enter the filename:')
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg == '-regex':
+            regex = True
+        elif arg.startswith('-file'):
+            if len(arg) == 5:
+                textfilename = wikipedia.input(u'Please enter the filename:')
+            else:
+                textfilename = arg[6:]
+            source = 'textfile'
+        elif arg.startswith('-sql'):
+            if len(arg) == 4:
+                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
+            else:
+                sqlfilename = arg[5:]
+            source = 'sqldump'
+        elif arg.startswith('-page'):
+            if len(arg) == 5:
+                pagenames.append(wikipedia.input(u'Which page do you want to chage?'))
+            else:
+                pagenames.append(arg[6:])
+            source = 'userinput'
+        elif arg.startswith('-except:'):
+            exceptions.append(arg[8:])
+        elif arg.startswith('-fix:'):
+            fix = arg[5:]
+        elif arg == '-always':
+            acceptall = True
         else:
-            textfilename = arg[6:]
-        source = 'textfile'
-    elif arg.startswith('-sql'):
-        if len(arg) == 4:
-            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
-        else:
-            sqlfilename = arg[5:]
-        source = 'sqldump'
-    elif arg.startswith('-page'):
-        if len(arg) == 5:
-            pagenames.append(wikipedia.input(u'Which page do you want to chage?'))
-        else:
-            pagenames.append(arg[6:])
-        source = 'userinput'
-    elif arg.startswith('-except:'):
-        exceptions.append(arg[8:])
-    elif arg.startswith('-fix:'):
-        fix = arg[5:]
-    elif arg == '-always':
-        acceptall = True
-    else:
-        commandline_replacements.append(arg)
+            commandline_replacements.append(arg)
 
 if source == None or len(commandline_replacements) not in [0, 2]:
     # syntax error, show help text from the top of this file

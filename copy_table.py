@@ -63,29 +63,29 @@ copy_images = False
 
 # read command line parameters
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg.startswith("-from"):
-        from_lang = arg[6:]
-    elif arg.startswith("-type:"):
-        type = arg[6:]
-    elif arg == "-debug":
-        debug = True
-    elif arg == "-image":
-        copy_images = True
-    elif arg.startswith('-file'):
-        if len(arg) == 5:
-            file = wikipedia.input(u'Please enter the list\'s filename: ')
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg.startswith("-from"):
+            from_lang = arg[6:]
+        elif arg.startswith("-type:"):
+            type = arg[6:]
+        elif arg == "-debug":
+            debug = True
+        elif arg == "-image":
+            copy_images = True
+        elif arg.startswith('-file'):
+            if len(arg) == 5:
+                file = wikipedia.input(u'Please enter the list\'s filename: ')
+            else:
+                file = arg[6:]
+            # open file and read page titles out of it
+            f=open(file)
+            for line in f.readlines():
+                if line != '\n':           
+                    page_list.append(line)
+            f.close()
         else:
-            file = arg[6:]
-        # open file and read page titles out of it
-        f=open(file)
-        for line in f.readlines():
-            if line != '\n':           
-                page_list.append(line)
-        f.close()
-    else:
-        page_title.append(arg)
+            page_title.append(arg)
 
 # if the page name is given as a command line argument,
 # connect the title's parts with spaces

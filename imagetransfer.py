@@ -39,25 +39,25 @@ imagelist = []
 source_wikis = []
 
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg.startswith('-from:'):
-        source_wikis.append(arg[6:])
-    elif arg.startswith('-file'):
-        if len(arg) == 5:
-            # todo: check for console encoding to allow special characters
-            # in filenames, as done below with pagename
-            file = wikipedia.input(u'Please enter the list\'s filename: ')
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg.startswith('-from:'):
+            source_wikis.append(arg[6:])
+        elif arg.startswith('-file'):
+            if len(arg) == 5:
+                # todo: check for console encoding to allow special characters
+                # in filenames, as done below with pagename
+                file = wikipedia.input(u'Please enter the list\'s filename: ')
+            else:
+                file = arg[6:]
+            # open file and read page titles out of it
+            f=open(file)
+            for line in f.readlines():
+                if line != '\n':           
+                    page_list.append(line)
+            f.close()
         else:
-            file = arg[6:]
-        # open file and read page titles out of it
-        f=open(file)
-        for line in f.readlines():
-            if line != '\n':           
-                page_list.append(line)
-        f.close()
-    else:
-        page_title.append(arg)
+            page_title.append(arg)
 
 # if the disambiguation page is given as a command line argument,
 # connect the title's parts with spaces

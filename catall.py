@@ -64,12 +64,12 @@ docorrections=True
 start=[]
 
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg == '-onlynew':
-        docorrections=False
-    else:
-        start.append(arg)
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg == '-onlynew':
+            docorrections=False
+        else:
+            start.append(arg)
 
 if start == []:
     start='A'

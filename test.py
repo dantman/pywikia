@@ -22,11 +22,11 @@ elif 0:
     print status,reason
 elif 1:
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
-            pass
-        else:
+        arg = wikipedia.argHandler(arg)
+        if arg:
             print "Unknown argument",arg
-            sys.exit(1)
+                sys.exit(1)
+                
     if wikipedia.checkLogin():
         print "Logged in ("+wikipedia.mylang+".wikipedia.org)"
     else:

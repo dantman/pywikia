@@ -171,9 +171,8 @@ def test():
 if __name__=="__main__":
     import sys
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
-            pass
-        else:
+        arg = wikipedia.argHandler(arg)
+        if arg:
             print "Ignored argument", arg
     test()
 

@@ -85,9 +85,8 @@ def ReadWarnfile(fn):
 
 if __name__ == "__main__":
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
-            pass
-        else:
+        arg = wikipedia.argHandler(arg)
+        if arg:
             if interwiki.msg.has_key(wikipedia.mylang):
                 interwiki.globalvar.msglang = wikipedia.mylang
             ReadWarnfile(arg)

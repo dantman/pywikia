@@ -18,9 +18,8 @@ myComment = {'en':'Bot: URL fixed'
              }
 
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    else:
+    arg = wikipedia.argHandler(arg)
+    if arg:
         pl = wikipedia.PageLink(wikipedia.mylang, arg)
         text = pl.get()
         

@@ -30,14 +30,14 @@ desc = []
 keep = False
 
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg.startswith('-keep'):
-        keep = True
-    elif fn=='':
-        fn = arg
-    else:
-        desc.append(arg)
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg.startswith('-keep'):
+            keep = True
+        elif fn=='':
+            fn = arg
+        else:
+            desc.append(arg)
 
 if not wikipedia.cookies:
     print "You must be logged in to upload images"

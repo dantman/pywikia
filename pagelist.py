@@ -144,12 +144,12 @@ exclude = []
 skipdates = False
 
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg=='-nodate':
-        skipdates=True
-    else:
-        tocheck.append(wikipedia.PageLink(wikipedia.mylang,arg))
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg=='-nodate':
+            skipdates=True
+        else:
+            tocheck.append(wikipedia.PageLink(wikipedia.mylang,arg))
 
 if tocheck == []:
     answer = raw_input("Which page to start with? ")

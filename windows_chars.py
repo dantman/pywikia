@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.14 2004/08/03 19:55:36 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.15 2004/08/09 16:12:36 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -118,28 +118,27 @@ page_title = []
 
 action = None 
 for arg in sys.argv[1:]:
-    arg = unicode(arg, config.console_encoding)
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg.startswith('-file'):
-        if len(arg) == 5:
-            filename = wikipedia.input(u'Please enter the list\'s filename: ')
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg.startswith('-file'):
+            if len(arg) == 5:
+                filename = wikipedia.input(u'Please enter the list\'s filename: ')
+            else:
+                filename = arg[6:]
+            # open file and read page titles out of it
+            f=open(filename)
+            for line in f.readlines():
+                if line != '\n':           
+                    page_list.append(line)
+            f.close()
+        elif arg.startswith('-sql'):
+            if len(arg) == 4:
+                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+            else:
+                sqlfilename = arg[5:]
+            action = 'parse_sqldump'
         else:
-            filename = arg[6:]
-        # open file and read page titles out of it
-        f=open(filename)
-        for line in f.readlines():
-            if line != '\n':           
-                page_list.append(line)
-        f.close()
-    elif arg.startswith('-sql'):
-        if len(arg) == 4:
-            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
-        else:
-            sqlfilename = arg[5:]
-        action = 'parse_sqldump'
-    else:
-        page_title.append(arg)
+            page_title.append(arg)
 
 # if a single page is given as a command line argument,
 # reconnect the title's parts with spaces

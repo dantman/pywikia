@@ -847,106 +847,107 @@ if __name__ == "__main__":
     sa=SubjectArray()
 
     for arg in sys.argv[1:]:
-        wikipedia.argHandler(arg)
-        if arg == '-noauto':
-            globalvar.auto = False
-        elif arg.startswith('-hint:'):
-            hints.append(arg[6:])
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg == '-noauto':
+                globalvar.auto = False
+            elif arg.startswith('-hint:'):
+                hints.append(arg[6:])
 
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
-            pass
-        elif arg == '-force':
-            globalvar.force = True
-        elif arg == '-always':
-            globalvar.always = True
-        elif arg == '-same':
-            globalvar.same = True
-        elif arg == '-untranslated':
-            globalvar.untranslated = True
-        elif arg == '-untranslatedonly':
-            globalvar.untranslated = True
-            globalvar.untranslatedonly = True
-        elif arg == '-askhints':
-            globalvar.untranslated = True
-            globalvar.untranslatedonly = False
-            globalvar.askhints = True
-        elif arg == '-noauto':
-            pass
-        elif arg.startswith('-hint:'):
-            pass
-        elif arg.startswith('-warnfile:'):
-            ReadWarnfile(arg[10:], sa)
-        elif arg == '-name':
-            globalvar.same = 'name'
-        elif arg == '-confirm':
-            globalvar.confirm = True
-        elif arg == '-autonomous':
-            globalvar.autonomous = True
-        elif arg == '-noshownew':
-            globalvar.shownew = False
-        elif arg == '-nolog':
-            globalvar.log = False
-        elif arg == '-nobacklink':
-            globalvar.backlink = False
-        elif arg == '-noredirect':
-            globalvar.followredirect = False
-        elif arg.startswith('-years'):
-            # Look if user gave a specific year at which to start
-            # Must be a natural number or negative integer.
-            if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
-                startyear = int(arg[7:])
-            else:
-                startyear = 1
-            print "Starting with year %d" %startyear
-            for i in range(startyear,2050):
-                if i % 100 == 0:
-                    print "Preparing %d..." % i
-                # For years BC, append language-dependent text, e.g. "v. Chr."
-                # This text is read from date.py
-                if i < 0:
-                    current_year = (date.yearBCfmt[wikipedia.mylang]) % (-i)
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg == '-force':
+                globalvar.force = True
+            elif arg == '-always':
+                globalvar.always = True
+            elif arg == '-same':
+                globalvar.same = True
+            elif arg == '-untranslated':
+                globalvar.untranslated = True
+            elif arg == '-untranslatedonly':
+                globalvar.untranslated = True
+                globalvar.untranslatedonly = True
+            elif arg == '-askhints':
+                globalvar.untranslated = True
+                globalvar.untranslatedonly = False
+                globalvar.askhints = True
+            elif arg == '-noauto':
+                pass
+            elif arg.startswith('-hint:'):
+                pass
+            elif arg.startswith('-warnfile:'):
+                ReadWarnfile(arg[10:], sa)
+            elif arg == '-name':
+                globalvar.same = 'name'
+            elif arg == '-confirm':
+                globalvar.confirm = True
+            elif arg == '-autonomous':
+                globalvar.autonomous = True
+            elif arg == '-noshownew':
+                globalvar.shownew = False
+            elif arg == '-nolog':
+                globalvar.log = False
+            elif arg == '-nobacklink':
+                globalvar.backlink = False
+            elif arg == '-noredirect':
+                globalvar.followredirect = False
+            elif arg.startswith('-years'):
+                # Look if user gave a specific year at which to start
+                # Must be a natural number or negative integer.
+                if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
+                    startyear = int(arg[7:])
                 else:
-                    # For years AD, some languages need special formats
-                    # This format is read from date.py
-                    if date.yearADfmt.has_key(wikipedia.mylang):
-                        current_year = (date.yearADfmt[wikipedia.mylang]) % i
+                    startyear = 1
+                print "Starting with year %d" %startyear
+                for i in range(startyear,2050):
+                    if i % 100 == 0:
+                        print "Preparing %d..." % i
+                    # For years BC, append language-dependent text, e.g. "v. Chr."
+                    # This text is read from date.py
+                    if i < 0:
+                        current_year = (date.yearBCfmt[wikipedia.mylang]) % (-i)
                     else:
-                        current_year = '%d' % i
-                # There is no year 0
-                if i != 0:
-                    sa.add(wikipedia.PageLink(wikipedia.mylang, current_year),hints=hints)
-            globalvar.followredirect = False
-        elif arg.startswith('-days'):
-            if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
-                # Looks as if the user gave a specific month at which to start
-                # Must be a natural number.
-                startmonth = int(arg[6:])
-            else:
-                startmonth = 1
-            fd = date.FormatDate(wikipedia.mylang)
-            pl = wikipedia.PageLink(wikipedia.mylang, fd(startmonth, 1))
-            wikipedia.output(u"Starting with %s" % pl.aslink())
-            for month in range(startmonth, 12+1):
-                for day in range(1, date.days_in_month[month]+1):
-                    pl = wikipedia.PageLink(wikipedia.mylang, fd(month, day))
+                        # For years AD, some languages need special formats
+                        # This format is read from date.py
+                        if date.yearADfmt.has_key(wikipedia.mylang):
+                            current_year = (date.yearADfmt[wikipedia.mylang]) % i
+                        else:
+                            current_year = '%d' % i
+                    # There is no year 0
+                    if i != 0:
+                        sa.add(wikipedia.PageLink(wikipedia.mylang, current_year),hints=hints)
+                globalvar.followredirect = False
+            elif arg.startswith('-days'):
+                if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
+                    # Looks as if the user gave a specific month at which to start
+                    # Must be a natural number.
+                    startmonth = int(arg[6:])
+                else:
+                    startmonth = 1
+                fd = date.FormatDate(wikipedia.mylang)
+                pl = wikipedia.PageLink(wikipedia.mylang, fd(startmonth, 1))
+                wikipedia.output(u"Starting with %s" % pl.aslink())
+                for month in range(startmonth, 12+1):
+                    for day in range(1, date.days_in_month[month]+1):
+                        pl = wikipedia.PageLink(wikipedia.mylang, fd(month, day))
+                        sa.add(pl,hints=hints)
+            elif arg == '-nobell':
+                globalvar.bell = False
+            elif arg.startswith('-skipfile:'):
+                skipfile = arg[10:]
+            elif arg == '-restore':
+                for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
                     sa.add(pl,hints=hints)
-        elif arg == '-nobell':
-            globalvar.bell = False
-        elif arg.startswith('-skipfile:'):
-            skipfile = arg[10:]
-        elif arg == '-restore':
-            for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
-                sa.add(pl,hints=hints)
-        elif arg.startswith('-file:'):
-            for pl in wikipedia.PageLinksFromFile(arg[6:]):
-                sa.add(pl,hints=hints)
-        elif arg.startswith('-start:'):
-            start = arg[7:]
-        elif arg.startswith('-number:'):
-            number = int(arg[8:])
-        else:
-            inname.append(arg)
+            elif arg.startswith('-file:'):
+                for pl in wikipedia.PageLinksFromFile(arg[6:]):
+                    sa.add(pl,hints=hints)
+            elif arg.startswith('-start:'):
+                start = arg[7:]
+            elif arg.startswith('-number:'):
+                number = int(arg[8:])
+            else:
+                inname.append(arg)
 
     if globalvar.log:
         import logger

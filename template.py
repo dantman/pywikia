@@ -101,20 +101,19 @@ remove = False
 sqlfilename = None
 # read command line parameters
 for arg in sys.argv[1:]:
-    arg = unicode(arg, config.console_encoding)
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg == '-remove':
-        remove = True
-    elif arg == '-oldformat':
-        oldformat = True
-    elif arg.startswith('-sql'):
-        if len(arg) == 4:
-            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg == '-remove':
+            remove = True
+        elif arg == '-oldformat':
+            oldformat = True
+        elif arg.startswith('-sql'):
+            if len(arg) == 4:
+                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+            else:
+                sqlfilename = arg[5:]
         else:
-            sqlfilename = arg[5:]
-    else:
-        template_names.append(arg)
+            template_names.append(arg)
 
 if template_names == []:
     print "Syntax: python template.py [-oldformat] [-remove] oldTemplate [newTemplate]"

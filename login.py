@@ -54,9 +54,8 @@ def makepath(path):
 
 
 for arg in sys.argv[1:]:
-    if wikipedia.argHandler(arg):
-        pass
-    else:
+    arg = wikipedia.argHandler(arg)
+    if arg:
         print "Unknown argument: ",arg
         sys.exit(1)
     

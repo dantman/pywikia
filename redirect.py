@@ -209,22 +209,21 @@ action = None
 # special page from the live wiki, the filename of a local sql dump file)
 source = None
 for arg in sys.argv[1:]:
-    arg = unicode(arg, config.console_encoding)
-    if wikipedia.argHandler(arg):
-        pass
-    elif arg == 'double':
-        action = 'double'
-    elif arg == 'broken':
-        action = 'broken'
-    elif arg.startswith('-sql'):
-        if len(arg) == 4:
-            sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if arg == 'double':
+            action = 'double'
+        elif arg == 'broken':
+            action = 'broken'
+        elif arg.startswith('-sql'):
+            if len(arg) == 4:
+                sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+            else:
+                sqlfilename = arg[5:]
+            import sqldump
+            source = sqlfilename
         else:
-            sqlfilename = arg[5:]
-        import sqldump
-        source = sqlfilename
-    else:
-        print 'Unknown argument: %s' % arg
+            print 'Unknown argument: %s' % arg
 
 if action == 'double':
     # get summary text

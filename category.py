@@ -449,20 +449,21 @@ if __name__ == "__main__":
     action = None
     sort_by_last_name = False
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
-            pass
-        elif arg == 'add':
-            action = 'add'
-        elif arg == 'remove':
-            action = 'remove'
-        elif arg == 'rename':
-            action = 'rename'
-        elif arg == 'tidy':
-            action = 'tidy'
-        elif arg == 'tree':
-            action = 'tree'
-        elif arg == '-person':
-            sort_by_last_name = True
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg == 'add':
+                action = 'add'
+            elif arg == 'remove':
+                action = 'remove'
+            elif arg == 'rename':
+                action = 'rename'
+            elif arg == 'tidy':
+                action = 'tidy'
+            elif arg == 'tree':
+                action = 'tree'
+            elif arg == '-person':
+                sort_by_last_name = True
+                
     import catlib
     if action == 'add':
         add_category(sort_by_last_name)

@@ -228,16 +228,16 @@ if __name__=="__main__":
     import sys
     action = None
     for arg in sys.argv[1:]:
-        arg = unicode(arg, config.console_encoding)
-        if wikipedia.argHandler(arg):
-            pass
-        elif arg.startswith('-sql'):
-            if len(arg) == 4:
-                filename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+        arg = wikipedia.argHandler(arg)
+        if arg:
+            if arg.startswith('-sql'):
+                if len(arg) == 4:
+                    filename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                else:
+                    filename = arg[5:]
             else:
-                filename = arg[5:]
-        else:
-            action = arg
+                action = arg
+                
     sqldump = SQLdump(filename, wikipedia.myencoding())
     for entry in query(sqldump, action):
         wikipedia.output(u'*[[%s]]' % entry.full_title())
