@@ -1115,6 +1115,8 @@ def getCategoryLinks(text, code):
         R = re.compile(r'\[\['+prefix+':([^\]]*)\]\]')
         for t in R.findall(text):
             if t:
+                # remove leading / trailing spaces
+                t = t.strip()
                 if code == 'eo':
                     t = t.replace('xx','x')
                 t = t[:1].capitalize() + t[1:]
