@@ -600,7 +600,7 @@ class PageLink:
 
 def redirectRe(code):
     if redirect.has_key(code):
-        txt = '(redirect|'+redirect[code]+')'
+        txt = '(?:redirect|'+redirect[code]+')'
     else:
         txt = 'redirect'
     return re.compile(r'\#'+txt+':? *\[\[(.*?)\]\]', re.I)
