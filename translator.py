@@ -26,8 +26,6 @@ For each table type, there can be three lists:
 #
 #
 
-import codecs
-
 types = {
     # translations for images (inside other tables)
     "images": {
