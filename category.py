@@ -37,12 +37,14 @@ msg_add={
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
     'en':u'Robot: Adding [[Category:%s]]',
     'es':u'Bot: Añadida [[Categoría:%s]]',
+    'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
     }
 
 msg_change={
     'de':u'Bot: Ändere Kategorie %s',
     'en':u'Robot: Changing category %s',
     'es':u'Bot: Cambiada categoría %s',
+    'is':u'Vélmenni: Breyti flokknum %s',
     'nl':u'Bot: Wijziging Categorie %s',
     }
 
@@ -50,6 +52,7 @@ msg_remove={
     'de':u'Bot: Entferne aus Kategorie %s',
     'en':u'Robot: Removing from category %s',
     'es':u'Bot: Eliminada de la categoría %s',
+    'is':u'Vélmenni: Breyti flokknum %s',
     'nl':u'Bot: Verwijderd uit Categorie %s',
     }
 
@@ -404,9 +407,10 @@ def treeview(cat, max_depth, current_depth = 0, parent = None):
     # Translations to say that the current category is in more categories than
     # the one we're coming from
     also_in_cats = {
+        'da': u'(også i %s)',
         'de': u'(auch in %s)',
         'en': u'(also in %s)',
-        'da': u'(også i %s)',
+        'is': u'(einnig í %s)',
         }
         
     result = u''
