@@ -19,6 +19,7 @@ def sametranslate(pl, arr, same):
             newname[-1] = newname[-1].upper()
             newname = ' '.join(newname)
         x=wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family), newname)
+        x2=wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family), newname.lower())
         if x not in arr:
             if same == "wiktionary":
                 if site.language() in site.family.nocapitalize:
@@ -26,6 +27,9 @@ def sametranslate(pl, arr, same):
                         arr[x] = None
                     elif pl.linkname()[0].upper() == pl.linkname()[0]:
                         arr[x] = None
+                else:
+                    arr[x] = None
+                    arr[x2] = None
             else:
                 arr[x] = None
 
