@@ -140,13 +140,11 @@ charsets = {}
 edittime = {}
 
 # Which languages have a special order for putting interlanguage links,
-# and what order is it? If a language is not in interwiki_special_order,
+# and what order is it? If a language is not in interwiki_putfirst,
 # alphabetical order on language code is used. For languages that are in
 # interwiki_special_order, interwiki_putfirst is checked first, and
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
-interwiki_special_order = ['hu','pl']
-
 interwiki_putfirst = {'hu':['en'],
                       'pl':['af','sq','en','ar','eu','bs','zh','zh-tw','zh-cn',
                             'hr','cs','da','eo','et','fi','fr','fy','gl',
@@ -660,7 +658,7 @@ def interwikiFormat(links, incode):
     s = []
     ar = links.keys()
     ar.sort()
-    if mylang in interwiki_special_order:
+    if mylang in interwiki_putfirst:
         #In this case I might have to change the order
         ar2 = []
         for code in interwiki_putfirst[mylang]:
