@@ -116,28 +116,9 @@ import warnings
 import config, mediawiki_messages
 import htmlentitydefs
 
-# Keep a record of whether we are logged in as a user or not
-# The actual value will be set at the end of this module
-loggedin = False
-
-# Set needput to True if you want write-access to the Wiki. This can be set
-# to False if you want to protect yourself from programming mistakes during
-# debugging.
-needput = True 
-
-# This is used during the run-time of the program to store all character
-# sets encountered for each of the wikipedia languages. This allows us to
-# cross-check the stored character sets in the family. Unfortunately, the
-# Export feature makes this cross-check useless, so it is only used for the
-# individual get-page pages.
-charsets = {}
-
 # Keep the modification time of all downloaded pages for an eventual put.
 # We are not going to be worried about the memory this can take.
 edittime = {}
-
-# Our EditToken. Is checked at least once each session.
-token = None
 
 # Local exceptions
 
@@ -423,10 +404,11 @@ class PageLink(object):
             newPage="0"
         else:
             newPage="1"
-        while not token:
-            output(u"Getting page to get a token.")
-            self.get()
-        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, anon, token)
+        if self.site().version() >= "1.4":
+            if not self.site().gettoken():
+                output(u"Getting page to get a token.")
+                self.get(force = True)
+        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, anon, self.site().token)
 
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
@@ -1117,6 +1099,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
        Use of this routine can normally be avoided; use PageLink.put
        instead.
     """
+    print token
     # Check whether we are not too quickly after the previous putPage, and
     # wait a bit until the interval is acceptable
     put_throttle()
@@ -1140,8 +1123,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
             ('wpPreview', '0'),
             ('wpSummary', comment),
             ('wpTextbox1', text),
-            ('wpSection', ''),
-            ('wpEditToken', token)]
+            ('wpSection', '')]
         # Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions
         if newPage and newPage != '0':
@@ -1157,8 +1139,12 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
             predata.append(('wpWatchthis', '1'))
         else:
             predata.append(('wpWatchthis', '0'))
+        # Give the token, but only if one is supplied.
+        if token:
+            predata.append(('wpEditToken', token))
         # Encode all of this into a HTTP request
         data = urlencode(tuple(predata))
+        print data
     
     except KeyError:
         print edittime
@@ -1329,7 +1315,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
         tokenloc = R.search(text)
         if tokenloc:
-            token = tokenloc.group(1)
+            site.puttoken(tokenloc.group(1))
         return x
 
 def allpages(start = '!', site = None):
@@ -1941,6 +1927,7 @@ class Site(object):
 
         self.nocapitalize = self.lang in self.family.nocapitalize
         self.user = user
+        self.token = None
         
     def cookies(self):
         if not hasattr(self,'_cookies'):
@@ -2096,6 +2083,13 @@ class Site(object):
 
     def languages(self):
         return self.family.langs.keys()
+
+    def gettoken(self):
+        return self.token
+
+    def puttoken(self,value):
+        self.token = value
+        return
     
 _sites = {}
 
