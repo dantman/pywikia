@@ -418,20 +418,22 @@ class PageLink:
             result.append(PageLink(self._code,l[0]))
         return result
 
-    def getRedirectTo(self):
-        """If the page is a redirect page, gives the page it redirects to
-           (as a string).
-
-           Otherwise it will raise an IsNotRedirectPage exception
+    def getRedirectTo(self, read_only = False):
+        """
+        If the page is a redirect page, gives the title of the page it
+        redirects to. Otherwise it will raise an IsNotRedirectPage exception.
+        
+        This function can raise a NoPage exception, and unless the argument 
+        read_only is True, a LockedPage exception as well.
         """
         try:
-            self.get()
+            self.get(read_only = True)
         except NoPage:
             raise NoPage(self)
         except LockedPage:
             raise LockedPage(self)
         except IsRedirectPage, arg:
-            return arg
+            return str(arg)
         else:
             raise IsNotRedirectPage(self)
         

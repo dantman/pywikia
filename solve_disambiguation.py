@@ -375,7 +375,7 @@ for wrd in (page_list):
 
     if solve_redirect:
         try:
-            target = str(thispl.getRedirectTo())
+            target = thispl.getRedirectTo()
             target = unicode(target, wikipedia.myencoding()) 
             alternatives.append(target)
         except wikipedia.NoPage:

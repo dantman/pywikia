@@ -98,16 +98,16 @@ for p in wikipedia.allpages(start = start):
             # part rather than the 'try'.
             try:
                 goal = pl.getRedirectTo()
-                if wikipedia.PageLink(wikipedia.mylang,str(goal)):
-                    print("Not creating %s - redirect already exists.")%str(goal)
+                if wikipedia.PageLink(wikipedia.mylang, goal):
+                    print("Not creating %s - redirect already exists.") % goal
                 else:
-                    print("WARNING!!! %s already exists but redirects elsewhere!")%str(goal)
+                    print("WARNING!!! %s already exists but redirects elsewhere!") % goal
             except wikipedia.IsNotRedirectPage:
-                print("WARNING!!! Page %s already exists and is not a redirect. Please check page!")%str(goal)
+                print("WARNING!!! Page %s already exists and is not a redirect. Please check page!") % goal
             except wikipedia.NoPage:
                 change=''
                 if p.isRedirectPage():
-                    p2 = wikipedia.PageLink(wikipedia.mylang,str(p.getRedirectTo()))
+                    p2 = wikipedia.PageLink(wikipedia.mylang, p.getRedirectTo())
                     print ('Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.')%p2.urlname().replace("%2C",",").replace("_"," ")
                 else:
                     p2 = p
