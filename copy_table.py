@@ -143,7 +143,7 @@ def treat(to_pl):
     # search start of table
     table = get_table(from_text)
     if not table:
-        print "No table found in %s." % from_lang + ":" + from_pl.linkname()
+        wikipedia.output("No table found in %s:%s" % (from_lang, from_pl.linkname()))
         return
 
     print_debug("Copying images")

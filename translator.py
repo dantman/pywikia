@@ -1,8 +1,8 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 # Translation database. Non-ASCII characters must be encoded in hexadecimal
 # unicode and prefixed with a small u,
-# e.g. u"[[Dom\xE4ne (Biologie)|Dom\xE4ne]]"
+# e.g. u"[[Domäne (Biologie)|Domäne]]"
 
 # For each table type, there can be three lists:
 #  * "translations" - direct replacements. Work in either direction.
@@ -25,10 +25,10 @@ types = {
          "translations": [
              { "en":"[[image:",     "de":"[[bild:",                "nl":"[[afbeelding:",    "fr":"[[image:",      },
              { "en":"[[Image:",     "de":"[[Bild:",                "nl":"[[Afbeelding:",    "fr":"[[Image:",      },
-             { "en":"larger image", "de":u"Bild vergr\xF6\xDFern", "nl":"grotere versie",   "fr":u"En d\xE9tail"  },
-             { "en":"larger image", "de":u"Bild vergr\xF6\xDFern", "nl":"groter",           "fr":u"En d\xE9tail"  },
+             { "en":"larger image", "de":u"Bild vergrößern", "nl":"grotere versie",   "fr":u"En détail"  },
+             { "en":"larger image", "de":u"Bild vergrößern", "nl":"groter",           "fr":u"En détail"  },
              # usually used as link description for articles about flags, coats of arms etc.
-             { "en":"Details",      "de":u"Details",               "nl":"details",          "fr":u"D\xE9tails"    },
+             { "en":"Details",      "de":u"Details",               "nl":"details",          "fr":u"Détails"    },
          ],
     },
     
@@ -39,25 +39,25 @@ types = {
             { "en":"bgcolor=pink",                         "de":"bgcolor=\"#ffc0c0\"",                       "nl":"bgcolor=#EEEEEE",                                "fr":"bgcolor=pink"                               },
             { "en":"bgcolor=\"pink\"",                     "de":"bgcolor=\"#ffc0c0\"",                       "nl":"bgcolor=\"#EEEEEE\"",                            "fr":"bgcolor=\"pink\""                           },
             # second table header (below the image)
-            { "en":"[[Scientific classification]]",        "de":"[[Systematik (Biologie)|Systematik]]",      "nl":"[[Taxonomie|Wetenschappelijke  classificatie]]", "fr":u"Classification [[syst\xE9matique]]"        },
+            { "en":"[[Scientific classification]]",        "de":"[[Systematik (Biologie)|Systematik]]",      "nl":"[[Taxonomie|Wetenschappelijke  classificatie]]", "fr":u"Classification [[systématique]]"        },
             # main taxobox content
-            { "en":"[[Domain (biology)|Domain]]:",         "de":u"''[[Dom\xE4ne (Biologie)|Dom\xE4ne]]:''",  "nl":"[[Domain (biologie)|Domain]]:",                  "fr":"??? (domain)"                               },
-            { "en":"Domain:",                              "de":u"''[[Dom\xE4ne (Biologie)|Dom\xE4ne]]:''",  "nl":"[[Domain (biologie)|Domain]]:",                  "fr":"??? (domain)"                               },
-            { "en":"[[Kingdom (biology)|Kingdom]]:",       "de":"''[[Reich (Biologie)|Reich]]:''",           "nl":"[[Rijk (biologie)|Rijk]]:",                      "fr":u"[[R\xE8gne (biologie)|R\xE8gne]]:",        },
-            { "en":"Kingdom:",       "de":"''[[Reich (Biologie)|Reich]]:''",           "nl":"[[Rijk (biologie)|Rijk]]:",                      "fr":u"[[R\xE8gne (biologie)|R\xE8gne]]:",        },
+            { "en":"[[Domain (biology)|Domain]]:",         "de":u"''[[Domäne (Biologie)|Domäne]]:''",  "nl":"[[Domain (biologie)|Domain]]:",                  "fr":"??? (domain)"                               },
+            { "en":"Domain:",                              "de":u"''[[Domäne (Biologie)|Domäne]]:''",  "nl":"[[Domain (biologie)|Domain]]:",                  "fr":"??? (domain)"                               },
+            { "en":"[[Kingdom (biology)|Kingdom]]:",       "de":"''[[Reich (Biologie)|Reich]]:''",           "nl":"[[Rijk (biologie)|Rijk]]:",                      "fr":u"[[Règne (biologie)|Règne]]:",        },
+            { "en":"Kingdom:",       "de":"''[[Reich (Biologie)|Reich]]:''",           "nl":"[[Rijk (biologie)|Rijk]]:",                      "fr":u"[[Règne (biologie)|Règne]]:",        },
             { "en":"[[Division (biology)|Division]]:",      "de":"''[[Abteilung (Biologie)|Abteilung]]:''",                      },
             { "en":"Division:",                            "de":"''[[Abteilung (Biologie)|Abteilung]]:''",                                        },
             { "en":"[[Phylum (biology)|Phylum]]:",         "de":"''[[Stamm (Biologie)|Stamm]]:''",           "nl":"[[Stam (biologie)|Stam]]:",                      "fr":"[[Embranchement]]:",                        },
             { "en":"Phylum:",                              "de":"''[[Stamm (Biologie)|Stamm]]:''",           "nl":"[[Stam (biologie)|Stam]]:",                      "fr":"[[Embranchement]]:",                        },
             { "en":"[[Subphylum]]:",                       "de":"''[[Unterstamm]]:''",                       "nl":"[[Substam (biologie)|Substam]]:",                "fr":"[[Sous-embranchement]]:",                   },
             { "en":"Phylum:",                              "de":"''[[Unterstamm]]:''",                       "nl":"[[Substam (biologie)|Substam]]:",                "fr":"[[Sous-embranchement]]:",                   },
-            { "en":"[[Superclass (biology)|Superclass]]:", "de":u"''[[Klasse (Biologie)|\xDCberklasse]]:''", "nl":"[[Superklasse (biologie)|Superklasse]]:",        "fr":"[[Super-classe (biologie)|Super-classe]]:", },
-            { "en":"Superclass:",                          "de":u"''[[Klasse (Biologie)|\xDCberklasse]]:''", "nl":"[[Superklasse (biologie)|Superklasse]]:",        "fr":"[[Super-classe (biologie)|Super-classe]]:", },
+            { "en":"[[Superclass (biology)|Superclass]]:", "de":u"''[[Klasse (Biologie)|Überklasse]]:''", "nl":"[[Superklasse (biologie)|Superklasse]]:",        "fr":"[[Super-classe (biologie)|Super-classe]]:", },
+            { "en":"Superclass:",                          "de":u"''[[Klasse (Biologie)|Überklasse]]:''", "nl":"[[Superklasse (biologie)|Superklasse]]:",        "fr":"[[Super-classe (biologie)|Super-classe]]:", },
             { "en":"[[Class (biology)|Class]]:",           "de":"''[[Klasse (Biologie)|Klasse]]:''",         "nl":"[[Klasse (biologie)|Klasse]]:",                  "fr":"[[Classe (biologie)|Classe]]:",             },
             { "en":"Class:",                               "de":"''[[Klasse (Biologie)|Klasse]]:''",         "nl":"[[Klasse (biologie)|Klasse]]:",                  "fr":"[[Classe (biologie)|Classe]]:",             },
             { "en":"[[Subclass]]:",                        "de":"''[[Klasse (Biologie)|Unterklasse]]:''",    "nl":"[[Onderklasse]]:",                               "fr":"[[Sous-classe (biologie)|Sous-classe]]:",   },
             { "en":"Subclass:",                            "de":"''[[Klasse (Biologie)|Unterklasse]]:''",    "nl":"[[Onderklasse]]:",                               "fr":"[[Sous-classe (biologie)|Sous-classe]]:",   },
-            { "en":"[[Order (biology)|Superorder]]:",      "de":u"''[[Ordnung (Biologie)|\xDCberordnung]]:''",  "nl":"[[Superorde]]:",       },
+            { "en":"[[Order (biology)|Superorder]]:",      "de":u"''[[Ordnung (Biologie)|Überordnung]]:''",  "nl":"[[Superorde]]:",       },
             { "en":"[[Order (biology)|Order]]:",           "de":"''[[Ordnung (Biologie)|Ordnung]]:''",       "nl":"[[Orde (biologie)|Orde]]:",                      "fr":"[[Ordre (biologie)|Ordre]]:"                },
             { "en":"Order:",                               "de":"''[[Ordnung (Biologie)|Ordnung]]:''",       "nl":"[[Orde (biologie)|Orde]]:",                      "fr":"[[Ordre (biologie)|Ordre]]:"                },
             { "en":"[[Suborder]]:",                        "de":"''[[Ordnung (Biologie)|Unterordnung]]:''",  "nl":"[[Infraorde (biologie)|Infraorde]]:",            "fr":"[[Sous-ordre (biologie)|Sous-ordre]]:",     },
@@ -72,21 +72,21 @@ types = {
             { "en":"Genus:",                               "de":"''[[Gattung (Biologie)|Gattung]]:''",       "nl":"[[Geslacht (biologie)|Geslacht]]:",              "fr":"[[Genre]]:"                                 },
             { "en":"[[Subgenus]]:",                        "de":"''[[Gattung (Biologie)|Untergattung]]:''",  "nl":"[[Ondergeslacht]]:",                             "fr":"??? (Sous-genre)"                           },
             { "en":"Subgenus:",                            "de":"''[[Gattung (Biologie)|Untergattung]]:''",  "nl":"[[Ondergeslacht]]:",                             "fr":"??? (Sous-genre)"                           },
-            { "en":"[[Species]]:",                         "de":"''[[Art (Biologie)|Art]]:''",               "nl":"[[Soort]]:",                                     "fr":u"[[Esp\xE8ce]]:"                            },
-            { "en":"Species:",                             "de":"''[[Art (Biologie)|Art]]:''",               "nl":"[[Soort]]:",                                     "fr":u"[[Esp\xE8ce]]:"                            },
+            { "en":"[[Species]]:",                         "de":"''[[Art (Biologie)|Art]]:''",               "nl":"[[Soort]]:",                                     "fr":u"[[Espèce]]:"                            },
+            { "en":"Species:",                             "de":"''[[Art (Biologie)|Art]]:''",               "nl":"[[Soort]]:",                                     "fr":u"[[Espèce]]:"                            },
             # table headers for subdivisions of the current group
             { "en":"[[Class (biology)|Classes]]",           "de":"[[Klasse (Biologie)|Klassen]]",            "nl":"[[Klasse (biologie)|Klassen]]",                              },
             { "en":"[[Order (biology)|Orders]]",           "de":"[[Ordnung (Biologie)|Ordnungen]]",          "nl":"[[Orde (biologie)|Orden]]",                      "fr":"[[Ordre (biologie)|Ordres]]"                },
             { "en":"[[Suborder]]s",                        "de":"[[Ordnung (Biologie)|Unterordnungen]]",     "nl":"[[Infraorde (biologie)|Infraorden]]:",           "fr":"[[Sous-ordre (biologie)|Sous-ordres]]",     },
             { "en":"[[Family (biology)|Families]]",        "de":"[[Familie (Biologie)|Familien]]",         "nl":"[[Familie (biologie)|Families]]",                "fr":"[[Famille (biologie)|Familles]]",           },
             { "en":"[[Genus|Genera]]",                     "de":"[[Gattung (Biologie)|Gattungen]]",          "nl":"[[Geslacht (biologie)|Geslachten]]",             "fr":"[[Genre (biologie)|Genre]]"                 },
-            { "en":"[[Species]]",                          "de":"[[Art (Biologie)|Arten]]",                  "nl":"[[Soort]]en",                                    "fr":u"??? (Esp\xE8ces)"                          },
-            { "en":"[[Species]] (incomplete)",             "de":"[[Art (Biologie)|Arten (Auswahl)]]",        "nl":"[[Soort]]en (incompleet)",                       "fr":u"??? (Esp\xE8ces (s\xE9lection))"           },
+            { "en":"[[Species]]",                          "de":"[[Art (Biologie)|Arten]]",                  "nl":"[[Soort]]en",                                    "fr":u"??? (Espèces)"                          },
+            { "en":"[[Species]] (incomplete)",             "de":"[[Art (Biologie)|Arten (Auswahl)]]",        "nl":"[[Soort]]en (incompleet)",                       "fr":u"??? (Espèces (sélection))"           },
             # table headers for nl: style taxoboxes (current group is listed in a special section at the bottom)
             { "en":"[[Order (biology)|Order]]",            "de":"[[Ordnung (Biologie)|Ordnung]]",            "nl":"[[Orde (biologie)|Orde]]",                       "fr":"[[Ordre (biologie)|Ordre]]"                 },
             { "en":"[[Family (biology)|Family]]",          "de":"[[Familie (Biologie)|Familie]]",            "nl":"[[Familie (biologie)|Familie]]",                 "fr":"[[Famille (biologie)|Famille]]",            },
             { "en":"[[Genus]]",                            "de":"[[Gattung (Biologie)|Gattung]]",            "nl":"[[Geslacht (biologie)|Geslacht]]",               "fr":"[[Genre]]"                                  },
-            { "en":"[[Species]]",                          "de":"[[Art (Biologie)|Art]]",                    "nl":"[[Soort]]",                                      "fr":u"[[Esp\xE8ce]]"                             },
+            { "en":"[[Species]]",                          "de":"[[Art (Biologie)|Art]]",                    "nl":"[[Soort]]",                                      "fr":u"[[Espèce]]"                             },
         ],
         "regexes": {
             "en": {
@@ -104,20 +104,20 @@ types = {
             { "en":"[[Animal]]ia",                      "de":"[[Tiere]] (Animalia)",                  "nl":"Dieren (''[[Animalia]]'')",      },
             { "en":"[[Plant]]ae",                       "de":"[[Pflanzen]] (Plantae)",                },
             # divisions
-            { "en":"[[flowering plant|Magnoliophyta]]", "de":u"[[Bl\xFCtenpflanzen]] (Magnoliophyta)", },
+            { "en":"[[flowering plant|Magnoliophyta]]", "de":u"[[Blütenpflanzen]] (Magnoliophyta)", },
             # phylums
-            { "en":"[[Anthropod]]a",                    "de":u"[[Gliederf\xFC\xDFler]] (Anthropoda)",               },
+            { "en":"[[Anthropod]]a",                    "de":u"[[Gliederfüßler]] (Anthropoda)",               },
             { "en":"[[Chordata]]",                      "de":"[[Chordatiere]] (Chordata)",            "nl":"Chordadieren (''[[Chordata]]'')",                   },
             { "en":"[[Chordate|Chordata]]",             "de":"[[Chordatiere]] (Chordata)",            "nl":"Chordadieren (''[[Chordata]]'')",                   },
             # subphylums
             { "en":"[[Vertebrata]]",                    "de":"[[Wirbeltiere]] (Vertebrata)",          "nl":"Gewervelden (''[[Vertebrata]]'')", },
             # superclasses
             # classes
-            { "en":"[[Aves]]",                          "de":u"[[V\xF6gel]] (Aves)",                  "nl":"Vogels (''[[Aves]]'')",               },
+            { "en":"[[Aves]]",                          "de":u"[[Vögel]] (Aves)",                  "nl":"Vogels (''[[Aves]]'')",               },
             { "en":"[[Insect]]a",                       "de":"[[Insekten]] (Insecta)",             },
-            { "en":"[[Mammal]]ia",                      "de":u"[[S\xE4ugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
-            { "en":"[[Mammalia]]",                      "de":u"[[S\xE4ugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
-            { "en":"[[dicotyledon|Magnoliopsida]]",     "de":u"Zweikeimbl\xE4ttrige (Magnoliopsida)", },
+            { "en":"[[Mammal]]ia",                      "de":u"[[Säugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
+            { "en":"[[Mammalia]]",                      "de":u"[[Säugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
+            { "en":"[[dicotyledon|Magnoliopsida]]",     "de":u"Zweikeimblättrige (Magnoliopsida)", },
             {                                           "de":"Reptilien (Reptilia)",                  "nl":"Reptielen (''[[Reptilia]]'')",  },
         ],
         "regexes": {
@@ -183,17 +183,17 @@ types = {
     "months": {
         "translations": [
             { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",      "nl":"januari", },
-            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":u"f\xE9vrier",  "nl":"februari", },
-            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":u"M\xE4rz",  "fr":"mars",         "nl":"maart", },
+            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":u"février",  "nl":"februari", },
+            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":u"März",  "fr":"mars",         "nl":"maart", },
             { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",        "nl":"april", },
             { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",          "nl":"mei", },
             { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",         "nl":"juni", },
             { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",      "nl":"juli", },
-            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":u"ao\xFBt",     "nl":"augustus", },
+            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":u"août",     "nl":"augustus", },
             { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre",    "nl":"september", },
             { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",      "nl":"oktober", },
             { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",     "nl":"november", },
-            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":u"d\xE9cembre", "nl":"december", },
+            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":u"décembre", "nl":"december", },
         ]
     },
     
@@ -214,7 +214,7 @@ types = {
     "units": {
         "translations": [
             { "en":"[[Square kilometre|km&sup2;]]",  "de":"[[Quadratkilometer|km&sup2;]]",  "nl":"[[Vierkante kilometer|km&sup2;]]", },
-            { "en":u"[[Square kilometre|km\xB2]]",   "de":u"[[Quadratkilometer|km\xB2]]",   "nl":u"[[Vierkante kilometer|km\xB2]]",     },
+            { "en":u"[[Square kilometre|km²]]",   "de":u"[[Quadratkilometer|km²]]",   "nl":u"[[Vierkante kilometer|km²]]",     },
             { "en":"as of ",                         "de":"Stand: ",                         },
             { "en":"years",                          "de":"Jahre",                           "nl":"jaar"},
         ]
@@ -226,25 +226,25 @@ types = {
         "translations": [
             # header
             { "en":"Base data",                     "de":"Basisdaten",                     "nl":"Basisgegevens",                       "fr":"Informations",       },
-            { "en":"[[Area]]:",                     "de":u"[[Fl\xE4che]]:",                "nl":"Oppervlakte:",                        "fr":"[[Superficie]]:",       "eo":"Areo:",},
+            { "en":"[[Area]]:",                     "de":u"[[Fläche]]:",                "nl":"Oppervlakte:",                        "fr":"[[Superficie]]:",       "eo":"Areo:",},
             { "en":"[[Population]]:",               "de":"[[Einwohner]]:",                 "nl":"Inwoneraantal:",                      "fr":u"[[Population]]:",       "eo":u"Logantaro:",   },
-            { "en":"[[Population density]]:",       "de":u"[[Bev\xF6lkerungsdichte]]:",    "nl":"[[Bevolkingsdichtheid]]:",              },
+            { "en":"[[Population density]]:",       "de":u"[[Bevölkerungsdichte]]:",    "nl":"[[Bevolkingsdichtheid]]:",              },
             { "en":"inh./km&sup2;",                 "de":"Einw./km&sup2;",                 "nl":"inw./km&sup2;",                       "fr":"hab/km&sup2;", },
-            { "en":u"inh./km\xB2",                  "de":u"Einw./km\xB2",                  "nl":u"inw./km\xB2",                        "fr":u"hab/km\xB2",  },
+            { "en":u"inh./km²",                  "de":u"Einw./km²",                  "nl":u"inw./km²",                        "fr":u"hab/km²",  },
             { "en":"inhabitants/km&sup2;",          "de":"Einwohner/km&sup2;",             "nl":"inwoners / km&sup2;",                },
-            { "en":u"inhabitants/km\xB2",           "de":u"Einwohner/km\xB2",              "nl":u"inwoners / km\xB2",               },
+            { "en":u"inhabitants/km²",           "de":u"Einwohner/km²",              "nl":u"inwoners / km²",               },
             { "en":"inhabitants per km&sup2;",      "de":"Einwohner pro km&sup2;",         "nl":"inwoners per km&sup2;",               }, 
-            { "en":u"inhabitants per km\xB2",       "de":u"Einwohner pro km\xB2",          "nl":u"inwoners per km\xB2",                    },
+            { "en":u"inhabitants per km²",       "de":u"Einwohner pro km²",          "nl":u"inwoners per km²",                    },
             { "en":"inh.",                          "de":"Einw.",                          "nl":"inw.",                                 "fr":"hab.", },
-            { "en":"above [[sea level]]",           "de":u"\xFC. [[Normalnull|NN]]",       "nl":"boven [[Normaal Amsterdams Peil|NAP]]",                           },
+            { "en":"above [[sea level]]",           "de":u"ü. [[Normalnull|NN]]",       "nl":"boven [[Normaal Amsterdams Peil|NAP]]",                           },
             { "en":"location",                      "de":"Geografische Lage",              "nl":"Ligging",                              "fr":"Localisation",                              },
             # longitude, latitude
-            { "en":"' north",                       "de":u"' n\xF6rdlicher Breite",        "nl":"' NB" },
-            { "en":"' north",                       "de":u"' n\xF6rdl. Breite",            "nl":"' NB" },
+            { "en":"' north",                       "de":u"' nördlicher Breite",        "nl":"' NB" },
+            { "en":"' north",                       "de":u"' nördl. Breite",            "nl":"' NB" },
             { "en":"' north",                       "de":"' n. Br.",                       "nl":"' NB" },
-            { "en":"' east",                        "de":u"' \xF6stlicher L\xE4nge",       "nl":"' OL" },
-            { "en":"' east",                        "de":u"' \xF6stl. L\xE4nge",           "nl":"' OL" },
-            { "en":"' east",                        "de":u"' \xF6. L.",                    "nl":"' OL" },
+            { "en":"' east",                        "de":u"' östlicher Länge",       "nl":"' OL" },
+            { "en":"' east",                        "de":u"' östl. Länge",           "nl":"' OL" },
+            { "en":"' east",                        "de":u"' ö. L.",                    "nl":"' OL" },
             { "en":"Map",                           "de":"Karte",                          "nl":"Kaart",                        },
             { "en":"Coat of Arms",                  "de":"Wappen",                         "nl":"Wapen",                                 "fr":"Blason"      },
         ],
@@ -254,8 +254,8 @@ types = {
     "city": {
         "translations": [
             { "en":"[[Location]]:",                          "de":"[[Geografische Lage]]:",                    "nl":"Ligging", },
-            { "en":"[[Altitude]]:",                          "de":u"[[H\xF6he]]:",                             "nl":"Hoogte:", },
-            { "en":"Highest point:",                         "de":u"H\xF6chster Punkt:",                       "nl":"Hoogste punt:",},
+            { "en":"[[Altitude]]:",                          "de":u"[[Höhe]]:",                             "nl":"Hoogte:", },
+            { "en":"Highest point:",                         "de":u"Höchster Punkt:",                       "nl":"Hoogste punt:",},
             { "en":"Lowest point:",                          "de":"Niedrigster Punkt:",                        "nl":"Laagste punt:"},
             { "en":"[[Postal code]]:",                       "de":"[[Postleitzahl]]:",                         "nl":"[[Postcode]]:",                 },
             { "en":"[[Postal code]]s:",                      "de":"[[Postleitzahl]]en:",                       "nl":"[[Postcode]]s:",                 },
@@ -275,16 +275,16 @@ types = {
             # table header
             { "en":"Politics",                               "de":"Politik",                                   "nl":"Politiek",                  },
             # female mayor
-            { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeister]]in:",                  "nl":"[[Burgemeester]]:",               },
-            { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeisterin]]:",                  "nl":"[[Burgemeester]]:",          },
+            { "en":"[[Mayor]]:",                             "de":u"[[Bürgermeister]]in:",                  "nl":"[[Burgemeester]]:",               },
+            { "en":"[[Mayor]]:",                             "de":u"[[Bürgermeisterin]]:",                  "nl":"[[Burgemeester]]:",          },
             # male mayor
-            { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeister]]:",                    "nl":"[[Burgemeester]]:",           },
+            { "en":"[[Mayor]]:",                             "de":u"[[Bürgermeister]]:",                    "nl":"[[Burgemeester]]:",           },
             { "en":"Governing [[Political party|party]]:",   "de":"Regierende [[Politische Partei|Partei]]",   "nl":"Regerende partij",               },
             { "en":"Governing [[Political party|parties]]:", "de":"Regierende [[Politische Partei|Parteien]]", "nl":"Regerende partijen",             },
             { "en":"Majority [[Political party|party]]:",    "de":"[[Politische Partei|Mehrheitspartei]]",     "nl":"Meerderheidspartij"},
             { "en":"Debts:",                                 "de":"Schulden:",                                     },
             { "en":"[[Unemployment]]:",                      "de":"[[Arbeitslosenquote]]:",                    "nl":"Werkloosheidspercentage:", },
-            {                                                "de":u"[[Ausl\xE4nderanteil]]:",                  "nl":"Percentage buitenlanders",            },
+            {                                                "de":u"[[Ausländeranteil]]:",                  "nl":"Percentage buitenlanders",            },
             { "en":"Age distribution:",                      "de":"Altersstruktur:",                           "nl":"Leeftijdsopbouw:",          },
             {                                                "de":"Stadtteile",                                "nl":"wijken"},
             {                                                "de":"[[Stadtbezirk]]e",                          "nl":"deelgemeenten"                 },
@@ -306,25 +306,25 @@ types = {
             { "en":"District-free town",       "de":"[[Kreisfreie Stadt]]",                 "nl":"[[Stadsdistrict]]",                       },
             { "en":"District-free town",       "de":"[[Stadtkreis]]",                       "nl":"[[Stadsdistrict]]",                       },
             { "en":"[[Municipality key]]:",    "de":"[[Amtliche Gemeindekennzahl]]:", },
-            { "en":"[[Municipality key]]:",    "de":u"[[Amtlicher Gemeindeschl\xFCssel]]:",                                              },
+            { "en":"[[Municipality key]]:",    "de":u"[[Amtlicher Gemeindeschlüssel]]:",                                              },
             { "en":"urban districts",          "de":"[[Stadtbezirk]]e",                     "nl":"stadsdelen",                                             },
             # female first mayor, no exact translation in en:
-            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeisterin]]:",         "nl":"[[Burgemeester]]:"},
-            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]in:",         "nl":"[[Burgemeester]]:"},
+            { "en":"[[Mayor]]:",               "de":u"[[Oberbürgermeisterin]]:",         "nl":"[[Burgemeester]]:"},
+            { "en":"[[Mayor]]:",               "de":u"[[Oberbürgermeister]]in:",         "nl":"[[Burgemeester]]:"},
             # male first mayor, no exact translation in en:
-            { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]:",           "nl":"[[Burgemeester]]:"},
+            { "en":"[[Mayor]]:",               "de":u"[[Oberbürgermeister]]:",           "nl":"[[Burgemeester]]:"},
             # "bis" is used between postal codes
             { "en":" to ",                     "de":" bis ",                                "nl":"t/m"},          
             # some cities have demographic info which is titled "Bevölkerung" (population). The spaces are important
             # because "Bevölkerung" is also a substring of "Bevölkerungsdichte (population density).
-            {                                  "de":u" Bev\xF6lkerung ",                      "nl":" Demografie ", },
+            {                                  "de":u" Bevölkerung ",                      "nl":" Demografie ", },
 
             # parties
             { "en":"[[Christian Democratic Union of Germany|CDU]]",       "de":"[[CDU]]",                            "nl":"[[Christlich Demokratische Union|CDU]]"},
             { "en":"[[Social Democratic Party of Germany|SPD]]",          "de":"[[SPD]]",                            "nl":"[[Sozialdemokratische Partei Deutschlands|SPD]]"},
             { "en":"[[Christian Social Union in Bavaria|CSU]]",           "de":"[[CSU]]",                            "nl":"[[CSU]]"},
             { "en":"[[Free Democratic Party of Germany|FDP]]",            "de":"[[FDP (Deutschland)|FDP]]",          "nl":"[[FDP]]"},
-            { "en":u"[[German Green Party|B\xFCndnis 90/Die Gr\xFCnen]]", "de":u"[[B\xFCndnis 90/Die Gr\xFCnen]]",   "nl":u"[[Die Gr\xFCnen]]"},
+            { "en":u"[[German Green Party|Bündnis 90/Die Grünen]]", "de":u"[[Bündnis 90/Die Grünen]]",   "nl":u"[[Die Grünen]]"},
             { "en":"[[Party of Democratic Socialism|PDS]]",               "de":"[[PDS]]",                            "nl":"[[PDS]]"},
             # Bundeslaender
             { "en":"[[Bavaria]]",                                         "de":"[[Bayern]]",                         "nl":"[[Beieren]]"},
@@ -337,7 +337,7 @@ types = {
             { "en":"[[Saxony]]",                                          "de":"[[Sachsen (Bundesland)|Sachsen]]",   "nl":"[[Saksen (deelstaat)|Saksen]]"},
             { "en":"[[Saxony-Anhalt]]",                                   "de":"[[Sachsen-Anhalt]]",                 "nl":"[[Saksen-Anhalt]]"},
             { "en":"[[Schleswig-Holstein]]",                              "de":"[[Schleswig-Holstein]]",             "nl":"[[Sleeswijk-Holstein]]"},
-            { "en":"[[Thuringia]]",                                       "de":u"[[Th\xFCringen]]",                  "nl":u"[[Th\xFCringen]]",},
+            { "en":"[[Thuringia]]",                                       "de":u"[[Thüringen]]",                  "nl":u"[[Thüringen]]",},
         ],
         "regexes": {
             "de": {
@@ -346,7 +346,7 @@ types = {
                 "Karte Deutschlands, (?P<city>.+) markiert":                                                         {"en":"Map of Germany, \g<city> marked", "nl":"Kaart van Duitsland met de locatie van \g<city>", },
                 "Karte (?P<city>.+) in Deutschland":                                                                 {"en":"Map of Germany, \g<city> marked", "nl":"Kaart van Duitsland met de locatie van \g<city>", },
                 # nl: doesn't want Municipality Number
-                u"\|[-]+ bgcolor=\"#FFFFFF\"[\r\n]+\| *\[\[Amtliche( Gemeindekennzahl|r Gemeindeschl\xFCssel)\]\]\:[ \|\r\n]+[\d -]+[\r\n]+": {                                        "nl":"", },
+                u"\|[-]+ bgcolor=\"#FFFFFF\"[\r\n]+\| *\[\[Amtliche( Gemeindekennzahl|r Gemeindeschlüssel)\]\]\:[ \|\r\n]+[\d -]+[\r\n]+": {                                        "nl":"", },
             },
         },
         "includes": ["city", "dates"],
@@ -357,32 +357,32 @@ types = {
     "dep": {
         "translations": [
             # some entries on fr: lack colons, others have spaces before the colons.
-            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]] :", "eo":"[[Francaj regionoj|Regiono]]:", },
-            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[R\xE9gions fran\xE7aises|R\xE9gion]]:",  "eo":"[[Francaj regionoj|Regiono]]:", },
-            { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]] :",                      "eo":"[[Prefektejo]]:" },
-            { "de":u"[[Pr\xE4fektur (Frankreich)|Pr\xE4fektur]]:", "fr":u"[[Pr\xE9fecture]]:",                       "eo":"[[Prefektejo]]:"},
-            { "de":u"[[Unterpr\xE4fektur]]en:",                    "fr":u"[[Sous-pr\xE9fecture]]s :",                },
-            { "de":u"[[Unterpr\xE4fektur]]en:",                    "fr":u"[[Sous-pr\xE9fecture]]s:",                 },
-            { "de":u"[[Unterpr\xE4fektur]]:",                      "fr":u"[[Sous-pr\xE9fecture]] :",                },
-            { "de":u"[[Unterpr\xE4fektur]]:",                      "fr":u"[[Sous-pr\xE9fecture]]:",                 },
+            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[Régions françaises|Région]] :", "eo":"[[Francaj regionoj|Regiono]]:", },
+            { "de":"[[Region (Frankreich)|Region]]:",              "fr":u"[[Régions françaises|Région]]:",  "eo":"[[Francaj regionoj|Regiono]]:", },
+            { "de":u"[[Präfektur (Frankreich)|Präfektur]]:", "fr":u"[[Préfecture]] :",                      "eo":"[[Prefektejo]]:" },
+            { "de":u"[[Präfektur (Frankreich)|Präfektur]]:", "fr":u"[[Préfecture]]:",                       "eo":"[[Prefektejo]]:"},
+            { "de":u"[[Unterpräfektur]]en:",                    "fr":u"[[Sous-préfecture]]s :",                },
+            { "de":u"[[Unterpräfektur]]en:",                    "fr":u"[[Sous-préfecture]]s:",                 },
+            { "de":u"[[Unterpräfektur]]:",                      "fr":u"[[Sous-préfecture]] :",                },
+            { "de":u"[[Unterpräfektur]]:",                      "fr":u"[[Sous-préfecture]]:",                 },
             { "de":"insgesamt",                                    "fr":"Totale",                                    },
             # the next three items are already in the list "geography", but someone forgot the colons on fr:
             { "de":u"[[Einwohner]]:",                              "fr":u"[[Population]]",                           "eo":u"Lo\u011dantaro:",          },
-            { "de":u"[[Bev\xF6lkerungsdichte|Dichte]]:",           "fr":u"[[Densit\xE9 de population|Densit\xE9]]",  },
-            { "de":u"[[Fl\xE4che]]:",                              "fr":"[[Superficie]]",                            "eo":"Areo:",             },
+            { "de":u"[[Bevölkerungsdichte|Dichte]]:",           "fr":u"[[Densité de population|Densité]]",  },
+            { "de":u"[[Fläche]]:",                              "fr":"[[Superficie]]",                            "eo":"Areo:",             },
             # another workaround for a forgotten colon
             { "de":"''</small>:",                                  "fr":"''</small>",                           },
             { "de":"[[Arrondissement]]s:",                         "fr":"[[Arrondissement]]s",                       },
-            { "de":"[[Kanton (Frankreich)|Kantone]]:",             "fr":u"[[Cantons fran\xE7ais|Cantons]]",          },
+            { "de":"[[Kanton (Frankreich)|Kantone]]:",             "fr":u"[[Cantons français|Cantons]]",          },
             { "de":"[[Kommune (Frankreich)|Kommunen]]:",           "fr":"[[Communes de France|Communes]]",           },
-            { "de":u"Pr\xE4sident des<br>[[Generalrat (Frankreich)|Generalrats]]:",
-                                                                   "fr":u"[[Pr\xE9sident du Conseil g\xE9n\xE9ral|Pr\xE9sident du Conseil<br> g\xE9n\xE9ral]]", },
+            { "de":u"Präsident des<br>[[Generalrat (Frankreich)|Generalrats]]:",
+                                                                   "fr":u"[[Président du Conseil général|Président du Conseil<br> général]]", },
         ],
         "regexes": {
             "fr": {
-                "\[\[[aA]rrondissements (des |du |de la |de l\'|d\'|de )":           {"de":u"[[Arrondissements im D\xE9partement ", },
-                "\[\[[cC]ommunes (des |du |de la |de l\'|d\'|de )":                  {"de":u"[[Kommunen im D\xE9partement ",       },
-                "\[\[[cC]antons (des |du |de la|de l\'|d\'|de )":                    {"de":u"[[Kantone im D\xE9partement ",        },
+                "\[\[[aA]rrondissements (des |du |de la |de l\'|d\'|de )":           {"de":u"[[Arrondissements im Département ", },
+                "\[\[[cC]ommunes (des |du |de la |de l\'|d\'|de )":                  {"de":u"[[Kommunen im Département ",       },
+                "\[\[[cC]antons (des |du |de la|de l\'|d\'|de )":                    {"de":u"[[Kantone im Département ",        },
                 "Blason (des |du |de la |de l\'|d\'|de )":                           {"de":"Wappen von ",                          },
                 # image alt text
                 "Localisation (des |du |de la |de l\'|d\'|de )(?P<dep>.+?) en France": {"de":"Lage von \g<dep> in Frankreich",       },
