@@ -42,7 +42,8 @@ if not wikipedia.special.has_key(wikipedia.mylang):
 
 msg={
     'en':'Robot-assisted disambiguation ',
-    'da':'Retter flertydigt link til '
+    'da':'Retter flertydigt link til ',
+    'nl':'Robot-geholpen doorverwijzing ',
     }
 
 def getreferences(pl):
