@@ -22,17 +22,29 @@ thispl=wikipedia.PageLink(mylang,wrd)
 
 thistxt=thispl.get()
 
-Rlink=re.compile('\[\[([^\]]*)\]\]')
+w=r'([^\]\|]*)'
+Rlink=re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
 
-alternatives=Rlink.findall(thistxt)
+alternatives=[]
+
+for a in Rlink.findall(thistxt):
+    alternatives.append(a[0])
 
 for i in range(len(alternatives)):
     print "%3d"%i,alternatives[i]
 
-Rthis=re.compile('\[\[%s(\|[^\]]*)?\]\]'%thispl.linkname())
+exps=[]
+zz='\[\[(%s)(\|[^\]]*)?\]\]'
+Rthis=re.compile(zz%thispl.linkname())
+exps.append(Rthis)
 uln=wikipedia.html2unicode(thispl.linkname(),language=mylang)
 aln=wikipedia.addEntity(uln)
-Rthis2=re.compile('\[\[%s(\|[^\]]*)?\]\]'%aln)
+Rthis=re.compile(zz%aln)
+exps.append(Rthis)
+Rthis=re.compile(zz%thispl.linkname().lower())
+exps.append(Rthis)
+Rthis=re.compile(zz%aln.lower())
+exps.append(Rthis)
 
 for ref in getreferences(thispl):
     refpl=wikipedia.PageLink(mylang,ref)
@@ -41,18 +53,20 @@ for ref in getreferences(thispl):
     except wikipedia.IsRedirectPage:
         pass
     else:
-        m=Rthis.search(reftxt)
-        if not m:
-            m=Rthis2.search(reftxt)
-        if not m:
+        for Rthis in exps:
+            m=Rthis.search(reftxt)
+            if m:
+                break
+        else:
             print "Not found in %s"%refpl
             continue
         context=30
         while 1:
-            print "== %s =="%(refpl)
-            print reftxt[m.start()-context:m.end()+context]
+            print "== %s =="%(refpl),m.start(),m.end()
+            print reftxt[max(0,m.start()-context):m.end()+context]
             choice=raw_input("Which replacement (n=none,q=quit,m=more context,l=list):")
             if choice=='n':
+                choice=-1
                 break
             elif choice=='q':
                 sys.exit(0)
@@ -72,9 +86,12 @@ for ref in getreferences(thispl):
         if choice<0:
             continue
         g1=m.group(1)
-        if not g1:
-            g1=thispl.linkname()
-        reptxt="%s|%s"%(alternatives[choice],g1)
+        g2=m.group(2)
+        if g2:
+            g2=g2[1:]
+        else:
+            g2=g1
+        reptxt="%s|%s"%(alternatives[choice],g2)
         newtxt=reftxt[:m.start()+2]+reptxt+reftxt[m.end()-2:]
-        print newtxt[m.start()-30:m.end()+30]
+        print newtxt[max(0,m.start()-30):m.end()+30]
         refpl.put(newtxt)
