@@ -6,9 +6,14 @@ that causes problems, and counts the number of links with and without
 problems.
 
 It accepts all general Wikipediabot arguments as well as:
--start:xxx  Start checking from page 'xxx' rather than in the beginning
-            of the alphabet (at '0').
+-start:xxx  Check starting at 'xxx'.
 -nolog      Do not log to a file, only give output to a screen.
+
+Anything else is assumed to be a page that is to be checked. Spaces in
+page titles have to be replaced by underscores, otherwise the bot assumes
+the parts are separate pages. If no page has been specified and also no
+-start argument has been provided, the bot acts as if -start:! had been
+specified, starting at the beginning.
 
 The bot returns all links that have some problem, with the errorcode
 provided by the server, or the artificial errorcode -1 if the server
@@ -122,6 +127,8 @@ def errorname(error):
     
 start = '!'
 log = True
+todo = []
+do_all = False
 
 for arg in sys.argv[1:]:
     url=sys.argv[1]
@@ -129,16 +136,21 @@ for arg in sys.argv[1:]:
     if arg:
         if arg.startswith('-start:'):
             start=arg[7:]
+            do_all=True
         elif arg=='-nolog':
             log = False
         else:
-            print 'Argument %s unknown; ignoring'%arg
+            todo.append(arg)
+
+if todo = []:
+    # No pages have been given; if also no start is given, we start at
+    # the beginning
+    do_all = True
 
 if log:
     import logger
     sys.stdout = logger.Logger(sys.stdout, filename = 'check_extern.log')
 
-todo = []
 cont = True
 checked = 0
 working = 0
@@ -148,7 +160,7 @@ totalchecked = 0
 while cont:
     print
     i = 0
-    if len(todo)<61:
+    if len(todo)<61 and do_all:
         for pl in wikipedia.allpages(start = start):
             todo.append(pl)
             i += 1
