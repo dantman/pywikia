@@ -222,7 +222,7 @@ class Subject:
             self.done[pl] = pl.code()
             # Register this fact at the todo-counter.
             counter.minus(pl.code())
-	# Assume it's not a redirect
+            # Assume it's not a redirect
             isredirect = 0
             # Now check whether any interwiki links should be added to the
             # todo list.
@@ -253,6 +253,13 @@ class Subject:
                                 print "%s: %s gives new redirect %s"% (self.inpl.asasciiselflink(), pl.asasciilink(), pl3.asasciilink())
                 except wikipedia.NoPage:
                     print "NOTE: %s does not exist" % pl.asasciilink()
+                    if pl == self.inpl:
+                        # This is the home subject page.
+                        # In this case we can stop all hints!
+                        for pl2 in self.todo:
+                            counter.minus(pl2.code())
+                        self.todo = []
+                        pass
                 except wikipedia.SubpageError:
                     print "NOTE: %s subpage does not exist" % pl.asasciilink()
                 else:
@@ -267,7 +274,7 @@ class Subject:
         # These pages are no longer 'in progress'
         del self.pending
         # Check whether we need hints and the user offered to give them
-        if len(self.done) == 1 and len(self.todo) == 0 and isredirect == 0:
+        if len(self.done) == 1 and len(self.todo) == 0 and isredirect == 0 and self.inpl.exists():
             print "NOTE: %s does not have any interwiki links" % self.inpl.asasciilink()
             if globalvar.untranslated:
                 if globalvar.bell:
@@ -519,15 +526,15 @@ class SubjectArray:
            are returned."""
         max = 0
         maxlang = None
-	# Next line used to be:
-        #for lang, count in self.counts.iteritems():
-	# But that keeps some subjects around for VERY long
-        for lang in self.firstSubject().openCodes():
+        oc = self.firstSubject().openCodes()
+        if wikipedia.mylang in oc:
+            return wikipedia.mylang
+        for lang in oc:
             count = self.counts[lang]
             if count > max:
                 max = count
                 maxlang = lang
-        return maxlang, max
+        return maxlang
 
     def selectQueryCode(self):
         """Select the language code the next query should go out for."""
@@ -545,8 +552,7 @@ class SubjectArray:
                 return wikipedia.mylang
         # If getting the home language doesn't make sense, see how many 
         # foreign page queries we can find.
-        maxlang, max = self.maxOpenCode()
-        return maxlang
+        return self.maxOpenCode()
     
     def queryStep(self):
         """Perform one step in the solution process"""
