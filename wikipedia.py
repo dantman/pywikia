@@ -148,12 +148,12 @@ edittime = {}
 # Which languages have a special order for putting interlanguage links,
 # and what order is it? If a language is not in interwiki_putfirst,
 # alphabetical order on language code is used. For languages that are in
-# interwiki_special_order, interwiki_putfirst is checked first, and
+# interwiki_putfirst, interwiki_putfirst is checked first, and
 # languages are put in the order given there. All other languages are put
 # after those, in code-alphabetical order.
 interwiki_putfirst = {
     'fr':['af','ar','ms','bs','ca','cs','cy','da','de',
-          'et','el','en','eo','es','eu','fr','fy','ga',
+          'et','el','en','es','eo','eu','fr','fy','ga',
           'gl','ko','hi','hr','id','it','ia','he','sw',
           'la','lv','hu','ml','mr','nl','ja','no','oc',
           'pt','ro','ru','sq','simple','sl','sr','fi',
