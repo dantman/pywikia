@@ -106,6 +106,5 @@ try:
                         make_categories(p, newcats, mysite)
         except wikipedia.IsRedirectPage:
             pass
-except:
+finally:
     wikipedia.stopme()
-    raise
