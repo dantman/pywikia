@@ -972,6 +972,10 @@ def getLanguageLinks(text,incode=None):
         if m:
             #print "DBG> found link to traditional Chinese", repr(m.group(0))
             result['zh-cn'] = m.group(1)
+        m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7c21\\]\\]', text)
+        if m:
+            #print "DBG> found link to traditional Chinese", repr(m.group(0))
+            result['zh-cn'] = m.group(1)
         m=re.search(u'\\[\\[([^\\]\\|]*)\\|\u7e41\\]\\]', text)
         if m:
             #print "DBG> found link to simplified Chinese", repr(m.group(0))
