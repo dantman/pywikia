@@ -9,7 +9,7 @@ Classes:
 PageLink: A MediaWiki page
     __init__: PageLink(xx,Title) - the page with title Title on language xx:
     linkname: The name of the page, in a form suitable for an interwiki link
-    urlname: The name of the page, in a form suitable for a URL
+    urlname: TheNopage name of the page, in a form suitable for a URL
     catname: The name of the page, with the namespace part removed
     hashname: The section of the page (the part of the name after '#')
     hashfreeLinkname: The name without the section part
@@ -179,16 +179,35 @@ class PageLink(object):
            for the URL of the page."""
         return self._urlname
 
-    def linkname(self):
+    def linkname(self,doublex = False):
         """The name of the page this PageLink refers to, in a form suitable
            for a wiki-link"""
-        return self._linkname
+        if doublex:
+            ln=self._linkname
+            # Double all x-es just to be sure...
+            ln = ln.replace('&#265;','cx')
+            ln = ln.replace('&#264;','Cx')
+            ln = ln.replace('&#285;','gx')
+            ln = ln.replace('&#284;','Gx')
+            ln = ln.replace('&#293;','hx')
+            ln = ln.replace('&#292;','Hx')
+            ln = ln.replace('&#309;','jx')
+            ln = ln.replace('&#308;','Jx')
+            ln = ln.replace('&#349;','sx')
+            ln = ln.replace('&#348;','Sx')
+            ln = ln.replace('&#365;','ux')
+            ln = ln.replace('&#364;','Ux')
+            ln = ln.replace('x','xx')
+            ln = ln.replace('X','Xx')
+            return ln
+        else:
+            return self._linkname
 
-    def catname(self):
+    def catname(self,doublex = False):
         """The name of the page without the namespace part. Gives an error
         if the page is from the main namespace. Note that this is a raw way
         of doing things - it simply looks for a : in the name."""
-        t=self.hashfreeLinkname()
+        t=self.hashfreeLinkname(doublex = doublex)
         p=t.split(':')
         p=p[1:]
         if p==[]:
@@ -208,12 +227,13 @@ class PageLink(object):
             hn = re.sub('&hash;', '&#', hn)
             return hn
 
-    def hashfreeLinkname(self):
+    def hashfreeLinkname(self, doublex=False):
         hn=self.hashname()
+        ln=self.linkname(doublex=doublex)
         if hn:
-            return self.linkname()[:-len(hn)-1]
+            return ln[:-len(hn)-1]
         else:
-            return self.linkname()
+            return ln
             
     def ascii_linkname(self):
         """Make a link-name that contains only ascii characters"""
@@ -242,7 +262,7 @@ class PageLink(object):
            the language code"""
         return "%s:[[%s]]" % (self.code(), self.linkname())
     
-    def get(self, read_only = False):
+    def get(self, read_only = False, force = False):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -258,11 +278,18 @@ class PageLink(object):
 
             SectionError: The subject does not exist on a page with a # link
         """
-        # Make sure we re-raise an exception we got on an earlier attempt
-        if hasattr(self, '_redirarg'):
-            raise IsRedirectPage,self._redirarg
-        if hasattr(self, '_getexception'):
-            raise self._getexception
+        if force:
+            # When forcing, we retry the page no matter what. Old exceptions
+            # and contents do not apply any more.
+            for attr in ['_redirarg','_getexception','_contents']:
+                if hasattr(self, attr):
+                    delattr(self, attr)
+        else:
+            # Make sure we re-raise an exception we got on an earlier attempt
+            if hasattr(self, '_redirarg'):
+                raise IsRedirectPage,self._redirarg
+            if hasattr(self, '_getexception'):
+                raise self._getexception
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
@@ -631,8 +658,15 @@ class GetAll(object):
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
-                pl._getexception = NoPage
-            elif hasattr(pl,'_contents') and pl.code()=="eo":
+                if self.code == 'eo':
+                    if pl.hashfreeLinkname() <> pl.hashfreeLinkname(doublex = True):
+                        # Maybe we have used x-convention when we should not?
+                        pl.get(force = True)
+                    else:
+                        pl._getexception = NoPage
+                else:
+                    pl._getexception = NoPage
+            if hasattr(pl,'_contents') and pl.code()=="eo":
                 # Edit-pages on eo: use X-convention, XML export does not.
                 # Double X-es where necessary so that we can submit a changed
                 # page later.
@@ -678,7 +712,10 @@ class GetAll(object):
     def getData(self):
         import httplib
         addr = family.export_address(self.code)
-        pagenames = u'\r\n'.join([x.hashfreeLinkname() for x in self.pages])
+        # In the next line, we assume that what we got for eo: is NOT in x-convention
+        # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
+        # find nothing, we will retry the normal way with an unadapted form.
+        pagenames = u'\r\n'.join([x.hashfreeLinkname(doublex = (self.code=='eo')) for x in self.pages])
         pagenames = forCode(pagenames, self.code)
         data = urlencode((
                     ('action', 'submit'),
