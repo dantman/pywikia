@@ -613,7 +613,7 @@ class GetAll:
     
 def getall(code, pages):
     #print "DBG> getall", code, pages
-    print "Getting %d pages from %s:"%(len(pages),code) 
+    print "Getting %d pages from %s:"%(len(pages),code)
     return GetAll(code, pages).run()
     
 # Library functions
