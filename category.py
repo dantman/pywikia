@@ -34,6 +34,7 @@ import wikipedia, config, interwiki
 
 # Summary messages
 msg_add={
+    'da':u'Robot: Tilføjer [[Kategori:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
     'en':u'Robot: Adding [[Category:%s]]',
     'es':u'Bot: Añadida [[Categoría:%s]]',
@@ -41,6 +42,7 @@ msg_add={
     }
 
 msg_change={
+    'da':u'Robot: Ændrer kategori %s',
     'de':u'Bot: Ändere Kategorie %s',
     'en':u'Robot: Changing category %s',
     'es':u'Bot: Cambiada categoría %s',
@@ -49,6 +51,7 @@ msg_change={
     }
 
 msg_remove={
+    'da':u'Robot: Fjerner fra kategori %s',
     'de':u'Bot: Entferne aus Kategorie %s',
     'en':u'Robot: Removing from category %s',
     'es':u'Bot: Eliminada de la categoría %s',
