@@ -340,6 +340,7 @@ class Subject(object):
                         for pl2 in self.todo:
                             counter.minus(pl2.site())
                         self.todo = {}
+                        self.done = {} # In some rare cases it might be we already did check some 'automatic' links
                         pass
                 #except wikipedia.SectionError:
                 #    wikipedia.output(u"NOTE: section %s does not exist" % pl.aslink())
