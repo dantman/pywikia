@@ -437,12 +437,13 @@ class Subject:
             for k,v in new.items():
                 if len(v) == 1:
                     print "="*30
+                    pl2 = v[0]
                     print "Found link to %s in:"%pl2.asasciilink()
                     self.whereReport(pl2, indent=4)
                     while 1:
                         if acceptall: 
                             answer = 'a'
-                        else: # accept
+                        else: 
                             answer = raw_input("What should be done [(a)ccept, (r)eject, (g)ive up, accept a(l)l] :")
                             if not answer:
                                 answer = 'a'
