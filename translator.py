@@ -21,13 +21,15 @@ types = {
     # translations for images (inside other tables)
     "images": {
          "translations": [
-             { "en":"[[image:",     "de":"[[bild:",                "nl":"[[afbeelding:", "fr":"[[image:",      },
-             { "en":"[[Image:",     "de":"[[Bild:",                "nl":"[[Afbeelding:", "fr":"[[Image:",      },
-             { "en":"larger image", "de":u"Bild vergr\xF6\xDFern", "nl":"groter",        "fr":u"En d\xE9tail"  },
+             { "en":"[[image:",     "de":"[[bild:",                "nl":"[[afbeelding:",    "fr":"[[image:",      },
+             { "en":"[[Image:",     "de":"[[Bild:",                "nl":"[[Afbeelding:",    "fr":"[[Image:",      },
+             { "en":"larger image", "de":u"Bild vergr\xF6\xDFern", "nl":"grotere versie",   "fr":u"En d\xE9tail"  },
+             { "en":"larger image", "de":u"Bild vergr\xF6\xDFern", "nl":"groter",           "fr":u"En d\xE9tail"  },
              # usually used as link description for articles about flags, coats of arms etc.
-             { "en":"Details",      "de":u"Details",               "nl":"details",       "fr":u"D\xE9tails"    },
+             { "en":"Details",      "de":u"Details",               "nl":"details",          "fr":u"D\xE9tails"    },
          ],
     },
+    
     # translations for taxoboxes (for biology articles)
     "taxo": {
         "translations": [
@@ -39,11 +41,13 @@ types = {
             # main taxobox content
             { "en":"[[Domain (biology)|Domain]]:",         "de":u"''[[Dom\xE4ne (Biologie)|Dom\xE4ne]]:''",  "nl":"[[Domain (biologie)|Domain]]:",                  "fr":"??? (domain)"                               },
             { "en":"[[Kingdom (biology)|Kingdom]]:",       "de":"''[[Reich (Biologie)|Reich]]:''",           "nl":"[[Rijk (biologie)|Rijk]]:",                      "fr":u"[[R\xE8gne (biologie)|R\xE8gne]]:",        },
+            { "en":"[[Division (biology)|Division]]",      "de":"''[[Abteilung (Biologie)|Abteilung]]''",                      },
             { "en":"[[Phylum (biology)|Phylum]]:",         "de":"''[[Stamm (Biologie)|Stamm]]:''",           "nl":"[[Stam (biologie)|Stam]]:",                      "fr":"[[Embranchement]]:",                        },
             { "en":"[[Subphylum]]:",                       "de":"''[[Unterstamm]]:''",                       "nl":"[[Substam (biologie)|Substam]]:",                "fr":"[[Sous-embranchement]]:",                   },
             { "en":"[[Superclass (biology)|Superclass]]:", "de":u"''[[Klasse (Biologie)|\xDCberklasse]]:''", "nl":"[[Superklasse (biologie)|Superklasse]]:",        "fr":"[[Super-classe (biologie)|Super-classe]]:", },
             { "en":"[[Class (biology)|Class]]:",           "de":"''[[Klasse (Biologie)|Klasse]]:''",         "nl":"[[Klasse (biologie)|Klasse]]:",                  "fr":"[[Classe (biologie)|Classe]]:",             },
             { "en":"[[Subclass]]:",                        "de":"''[[Klasse (Biologie)|Unterklasse]]:''",    "nl":"[[Onderklasse]]:",                               "fr":"[[Sous-classe (biologie)|Sous-classe]]:",   },
+            { "en":"[[Order (biology)|Order]]:",           "de":u"''[[Ordnung (Biologie)|\xDCberordnung]]:''",  "nl":"[[Superorde]]:",       },
             { "en":"[[Order (biology)|Order]]:",           "de":"''[[Ordnung (Biologie)|Ordnung]]:''",       "nl":"[[Orde (biologie)|Orde]]:",                      "fr":"[[Ordre (biologie)|Ordre]]:"                },
             { "en":"[[Suborder]]:",                        "de":"''[[Ordnung (Biologie)|Unterordnung]]:''",  "nl":"[[Infraorde (biologie)|Infraorde]]:",            "fr":"[[Sous-ordre (biologie)|Sous-ordre]]:",     },
             { "en":"[[Family (biology)|Family]]:",         "de":"''[[Familie (Biologie)|Familie]]:''",       "nl":"[[Familie (biologie)|Familie]]:",                "fr":"[[Famille (biologie)|Famille]]:",           },
@@ -53,9 +57,10 @@ types = {
             { "en":"[[Subgenus]]:",                        "de":"''[[Gattung (Biologie)|Untergattung]]:''",  "nl":"[[Ondergeslacht]]:",                             "fr":"??? (Sous-genre)"                           },
             { "en":"[[Species]]:",                         "de":"''[[Art (Biologie)|Art]]:''",               "nl":"[[Soort]]:",                                     "fr":u"[[Esp\xE8ce]]:"                            },
             # table headers for subdivisions of the current group
+            { "en":"[[Class (biology)|Classes]]",           "de":"[[Klasse (Biologie)|Klassen]]",            "nl":"[[Klasse (biologie)|Klassen]]",                              },
             { "en":"[[Order (biology)|Orders]]",           "de":"[[Ordnung (Biologie)|Ordnungen]]",          "nl":"[[Orde (biologie)|Orden]]",                      "fr":"[[Ordre (biologie)|Ordres]]"                },
             { "en":"[[Suborder]]s",                        "de":"[[Ordnung (Biologie)|Unterordnungen]]",     "nl":"[[Infraorde (biologie)|Infraorden]]:",           "fr":"[[Sous-ordre (biologie)|Sous-ordres]]",     },
-            { "en":"[[Family (biology)|Families]]",          "de":"[[Familie (Biologie)|Familien]]",         "nl":"[[Familie (biologie)|Families]]",                "fr":"[[Famille (biologie)|Familles]]",           },
+            { "en":"[[Family (biology)|Families]]",        "de":"[[Familie (Biologie)|Familien]]",         "nl":"[[Familie (biologie)|Families]]",                "fr":"[[Famille (biologie)|Familles]]",           },
             { "en":"[[Genus|Genera]]",                     "de":"[[Gattung (Biologie)|Gattungen]]",          "nl":"[[Geslacht (biologie)|Geslachten]]",             "fr":"[[Genre (biologie)|Genre]]"                 },
             { "en":"[[Species]]",                          "de":"[[Art (Biologie)|Arten]]",                  "nl":"[[Soort]]en",                                    "fr":u"??? (Esp\xE8ces)"                          },
             { "en":"[[Species]] (incomplete)",             "de":"[[Art (Biologie)|Arten (Auswahl)]]",        "nl":"[[Soort]]en (incompleet)",                       "fr":u"??? (Esp\xE8ces (s\xE9lection))"           },
@@ -65,15 +70,56 @@ types = {
             { "en":"[[Genus]]",                            "de":"[[Gattung (Biologie)|Gattung]]",            "nl":"[[Geslacht (biologie)|Geslacht]]",               "fr":"[[Genre]]"                                  },
             { "en":"[[Species]]",                          "de":"[[Art (Biologie)|Art]]",                    "nl":"[[Soort]]",                                      "fr":u"[[Esp\xE8ce]]"                             },
         ],
-        "includes": ["images"],
+        "includes": ["images", "taxo_categories"],
     },
 
-    # not sure if this requires an extra list
-#    "plant": {
-#        0: { "en":"bgcolor=lightgreen",               "de":"bgcolor=lightgreen",                     }, 
-#        1: { "en":"[[Division (biology)|Division]]",  "de":"''[[Abteilung (Biologie)|Abteilung]]''", },
-#        "include": ["taxo"],
-#        },
+    # this should only include classes etc. which appear very often, not every species!
+    "taxo_categories": {
+        "translations": [
+            # kingdoms
+            { "en":"[[Animal]]ia",                      "de":"[[Tiere]] (Animalia)",                  "nl":"Dieren (''[[Animalia]]'')",      },
+            { "en":"[[Plant]]ae",                       "de":"[[Pflanzen]] (Plantae)",                },
+            # divisions
+            { "en":"[[flowering plant|Magnoliophyta]]", "de":u"[[Bl\xFCtenpflanzen]] (Magnoliophyta)", },
+            # phylums
+            { "en":"[[Anthropod]]a",                    "de":u"[[Gliederf\xFC\xDFler]] (Anthropoda)",               },
+            { "en":"[[Chordata]]",                      "de":"[[Chordatiere]] (Chordata)",            "nl":"Chordadieren (''[[Chordata]]'')",                   },
+            { "en":"[[Chordate|Chordata]]",             "de":"[[Chordatiere]] (Chordata)",            "nl":"Chordadieren (''[[Chordata]]'')",                   },
+            # subphylums
+            { "en":"[[Vertebrata]]",                    "de":"[[Wirbeltiere]] (Vertebrata)",          "nl":"Gewervelden (''[[Vertebrata]]'')", },
+            # superclasses
+            # classes
+            { "en":"[[Aves]]",                          "de":u"[[V\xF6gel]] (Aves)",                  "nl":"Vogels (''[[Aves]]'')",               },
+            { "en":"[[Insect]]a",                       "de":"[[Insekten]] (Insecta)",             },
+            { "en":"[[Mammalia]]",                      "de":u"[[S\xE4ugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
+            { "en":"[[dicotyledon|Magnoliopsida]]",     "de":u"Zweikeimbl\xE4ttrige (Magnoliopsida)", },
+            {                                           "de":"Reptilien (Reptilia)",                  "nl":"Reptielen (''[[Reptilia]]'')",  },
+        ],
+        "regexes": {
+            "de": {
+                # change [[Hunde]] (Canidae) to Hunde (''[[Canidae]]'')
+                "\[\[(?P<german>[^\[]+)\]\] \((?P<latin>.+)\)": {"nl":"\g<german> (\'\'[[\g<latin>]]\'\')", },
+            },
+            "nl": {
+                # change Knaagdieren (''[[Rodentia]]'') to [[Knaagdieren]] (Rodentia)
+                "(?P<dutch>[a-zA-Z ]+) \(\[\[\'\'(?P<latin>[^\[]+)\'\'\]\]\)": {"de":"[[\g<dutch>]] (\g<latin>)", },
+                "(?P<dutch>[a-zA-Z ]+) \(\'\'\[\[(?P<latin>[^\[]+)\]\]\'\'\)": {"de":"[[\g<dutch>]] (\g<latin>)", },
+                "(?P<dutch>[a-zA-Z ]+) \(\[\[\<i\>(?P<latin>[^\[]+)\<\/i\>\]\]\)": {"de":"[[\g<dutch>]] (\g<latin>)", },
+                "(?P<dutch>[a-zA-Z ]+) \(\<i\>\[\[(?P<latin>[^\[]+)\]\]\<\/i\>\)": {"de":"[[\g<dutch>]] (\g<latin>)", },
+            },
+        },
+                
+    },
+            
+
+    # plants get the same table color as animals on de:, but on en: they are green instead of pink
+    "plant": {
+        "translations": [
+            { "en":"bgcolor=lightgreen",               "de":"bgcolor=\"#ffc0c0\"",                     }, 
+            { "en":"bgcolor=\"lightgreen\"",           "de":"bgcolor=\"#ffc0c0\"",                     }, 
+        ],
+        "includes": ["taxo"],
+    },
 
     # regular expressions for number formats
     "numbers": {
@@ -138,8 +184,10 @@ types = {
             { "en":"inh.",                                 "de":"Einw.",                          "nl":"inw.",                      "fr":"hab.", },
             { "en":"above [[sea level]]",                  "de":u"\xFC. [[Normalnull|NN]]",       "nl":"boven [[Normaal Amsterdams Peil|NAP]]",                           },
             # longitude, latitude
+            { "en":"' north",                              "de":u"' n\xF6rdlicher Breite",        "nl":"' NB" },
             { "en":"' north",                              "de":u"' n\xF6rdl. Breite",            "nl":"' NB" },
             { "en":"' north",                              "de":"' n. Br.",                       "nl":"' NB" },
+            { "en":"' east",                               "de":u"' \xF6stlicher L\xE4nge",           "nl":"' OL" },
             { "en":"' east",                               "de":u"' \xF6stl. L\xE4nge",           "nl":"' OL" },
             { "en":"' east",                               "de":u"' \xF6. L.",                    "nl":"' OL" },
             { "en":"Map",                                  "de":"Karte",                          "nl":"Kaart",                        },
@@ -166,6 +214,7 @@ types = {
             { "en":"Municipality's address:",                "de":"Adresse der Gemeindeverwaltung:",           "nl":"Adres gemeentehuis:",       },
             # city hall snail mail address
             { "en":"Municipality's address:",                "de":"Adresse der Stadtverwaltung:",              "nl":"Adres stadhuis:",       },
+            { "en":"Website:",                               "de":"Webseite:",                                 "nl":"Website:"     },
             { "en":"Website:",                               "de":"Website:",                                  "nl":"Website:"     },
             { "en":"E-Mail adress:",                         "de":"[[E-Mail]]-Adresse:",                       "nl":"Email-adres:",               },
             { "en":"E-Mail adress:",                         "de":"E-Mail-Adresse:",                           "nl":"Email-adres:",               },
@@ -178,7 +227,7 @@ types = {
             { "en":"[[Mayor]]:",                             "de":u"[[B\xFCrgermeister]]:",                    "nl":"[[Burgemeester]]:",           },
             { "en":"Governing [[Political party|party]]:",   "de":"Regierende [[Politische Partei|Partei]]",   "nl":"Regerende partij",               },
             { "en":"Governing [[Political party|parties]]:", "de":"Regierende [[Politische Partei|Parteien]]", "nl":"Regerende partijen",             },
-            { "en":"Majority [[Political party|party]]:",   "de":"[[Politische Partei|Mehrheitspartei]]",      "nl":"Meerderheidspartij"},
+            { "en":"Majority [[Political party|party]]:",    "de":"[[Politische Partei|Mehrheitspartei]]",     "nl":"Meerderheidspartij"},
             { "en":"Debts:",                                 "de":"Schulden:",                                     },
             { "en":"[[Unemployment]]:",                      "de":"[[Arbeitslosenquote]]:",                    "nl":"Werkloosheidspercentage:", },
             {                                                "de":u"[[Ausl\xE4nderanteil]]:",                  "nl":"Percentage buitenlanders",            },
@@ -202,6 +251,7 @@ types = {
             { "en":"[[District]]:",            "de":"[[Landkreis]]:",                       "nl":"[[District]]",                            },
             { "en":"district-free town",       "de":"[[kreisfreie Stadt]]",                 "nl":"[[stadsdistrict]]",                       },
             { "en":"District-free town",       "de":"[[Kreisfreie Stadt]]",                 "nl":"[[Stadsdistrict]]",                       },
+            { "en":"District-free town",       "de":"[[Stadtkreis]]",                       "nl":"[[Stadsdistrict]]",                       },
             { "en":"[[Municipality key]]:",    "de":"[[Amtliche Gemeindekennzahl]]:", },
             { "en":"[[Municipality key]]:",    "de":u"[[Amtlicher Gemeindeschl\xFCssel]]:",                                              },
             { "en":"urban districts",          "de":"[[Stadtbezirk]]e",                     "nl":"stadsdelen",                                             },
@@ -217,13 +267,13 @@ types = {
             { "en":"[[Social Democratic Party of Germany|SPD]]", "de":"[[SPD]]",                               "nl":"[[Sozialdemokratische Partei Deutschlands|SPD]]"},
             { "en":"[[Christian Social Union in Bavaria|CSU]]", "de":"[[CSU]]",                                "nl":"[[CSU]]"},
             { "en":"[[Free Democratic Party of Germany|FDP]]", "de":"[[FDP (Deutschland)|FDP]]",               "nl":"[[FDP]]"},
-            { "en":u"[[German Green Party|Bündnis 90/Die Gr\xFCnen]]", "de":u"[[Bündnis 90/Die Gr\xFCnen]]",   "nl":u"[[Die Gr\xFCnen]]"},
-            # Bundeslaender
+            { "en":u"[[German Green Party|B\xFCndnis 90/Die Gr\xFCnen]]", "de":u"[[B\xFCndnis 90/Die Gr\xFCnen]]",   "nl":u"[[Die Gr\xFCnen]]"},
             { "en":"[[Party of Democratic Socialism|PDS]]",  "de":"[[PDS]]",                                   "nl":"[[PDS]]"},
+            # Bundeslaender
             { "en":"[[Bavaria]]",               "de":"[[Bayern]]",                          "nl":"[[Beieren]]"},
             { "en":"[[Bremen (state)|Bremen]]", "de":"[[Bremen (Land)|Bremen]]",            "nl":"[[Bremen]]"},
             { "en":"[[Hesse]]",                 "de":"[[Hessen]]",                          "nl":"[[Hessen]]"},
-            { "en":"[[Mecklenburg-Western Pomerania]]", "de":"[[Mecklenburg-Vorpommern]]"   "nl":"[[Mecklenburg-Voorpommeren]]"},
+            { "en":"[[Mecklenburg-Western Pomerania]]", "de":"[[Mecklenburg-Vorpommern]]",  "nl":"[[Mecklenburg-Voorpommeren]]"},
             { "en":"[[Lower Saxony]]",          "de":"[[Niedersachsen]]",                   "nl":"[[Nedersaksen]]"},
             { "en":"[[North Rhine-Westphalia]]", "de":"[[Nordrhein-Westfalen]]",            "nl":"[[Noordrijn-Westfalen]]"},
             { "en":"[[Rhineland-Palatinate]]",  "de":"[[Rheinland-Pfalz]]",                 "nl":"[[Rijnland-Palts]]"},
@@ -239,13 +289,11 @@ types = {
                 "Deutschlandkarte, (?P<city>.+) markiert":                                                           {"en":"Map of Germany, \g<city> marked", "nl":"Kaart van Duitsland met de locatie van \g<city>", },
                 "Karte Deutschlands, (?P<city>.+) markiert":                                                         {"en":"Map of Germany, \g<city> marked", "nl":"Kaart van Duitsland met de locatie van \g<city>", },
                 "Karte (?P<city>.+) in Deutschland":                                                                 {"en":"Map of Germany, \g<city> marked", "nl":"Kaart van Duitsland met de locatie van \g<city>", },
-                # nl: doesn't want Municipality Number and city council's address
+                # nl: doesn't want Municipality Number
                 u"\| +\[\[Amtliche Gemeindekennzahl\]\]\:[ \|\r\n]+[\d -]+[\r\n]+\|[-]+ bgcolor=\"#FFFFFF\"[\r\n]+": {                                        "nl":"", },
-                # maybe you don't want the town hall's postal address
-                # u"\| +\[\[Adresse der (Stadt|Gemeinde)verwaltung\: \|\| [\d -]+[\r\n]+\|-+ bgcolor=\"#FFFFFF\"[\r\n]+":      },
             },
         },
-        "includes": ["city", "months"],
+        "includes": ["city"],
         
     },
     
@@ -340,11 +388,14 @@ def translate(text, type, from_lang, debug_mode=False, to_lang=wikipedia.mylang)
             regexes = types.get(type).get("regexes")
             if regexes.has_key(from_lang):
                 for item in regexes.get(from_lang):
+                    # only work on regular expressions that have a replacement for the target language
                     if regexes.get(from_lang).get(item).has_key(wikipedia.mylang):
                         replacement = regexes.get(from_lang).get(item).get(wikipedia.mylang)
-                        print_debug(item + " => " + replacement)
                         regex = re.compile(item)
-                        text = re.sub(regex, replacement, text)
+                        # if the regular expression doesn't match anyway, we don't want it to print a debug message
+                        if re.search(regex, text):
+                            print_debug(item + " => " + replacement)
+                            text = re.sub(regex, replacement, text)
         # recursively use translation lists which are included in the current list
         if types.get(type).has_key("includes"):
             for inc in types.get(type).get("includes"):
