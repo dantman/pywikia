@@ -311,9 +311,10 @@ class Subject:
                             # Ignore the interwiki links.
                             iw = ()
                     elif pl.isEmpty():
-                        wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % pl.aslink())
-                        # Ignore the interwiki links
-                        iw = ()
+                        if not pl.isCategory():
+                            wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % pl.aslink())
+                            # Ignore the interwiki links
+                            iw = ()
                     for pl2 in iw:
                       if unequal.unequal(self.inpl, pl2):
                           print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
