@@ -36,7 +36,20 @@ yearADfmt={'ja':'%d&#24180;'} # Others default to '%d'
 yearBCfmt={'de':'%d v. Chr.','en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
            'es':'%d adC','eo':'-%d'} # No default
 
-def autotranslate(name,arr):
+def sametranslate(name,arr):
+    for newcode in wikipedia.langs:
+        # Put as suggestion into array
+        if newcode=='eo' and same=='name':
+            newname=name.split('_')
+            newname[-1]=newname[-1].upper()
+            newname='_'.join(newname)
+            arr[newcode,newname]=None
+        else:
+            arr[newcode,name]=None
+    
+def autotranslate(name,arr,same=0):
+    if same:
+        return sametranslate(name,arr)
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
     Rdate=re.compile('(\d+)_(%s)'%('|'.join(datetable.keys())))
@@ -151,7 +164,7 @@ def treesearch(code,name):
         print "Mother doesn't exist"
         return
     # Then add translations if we survived.
-    autotranslate(name,arr)
+    autotranslate(name,arr,same=same)
     modifications=1
     while modifications:
         modifications=0
@@ -163,13 +176,18 @@ def treesearch(code,name):
 inname=[]
 
 ask=1
+same=0
 only_if_status=1
 
 for arg in sys.argv[1:]:
     if arg=='-force':
         ask=0
-    if arg=='-always':
+    elif arg=='-always':
         only_if_status=0
+    elif arg=='-same':
+        same=1
+    elif arg=='-name':
+        same='name'
     else:
         inname.append(arg)
     
