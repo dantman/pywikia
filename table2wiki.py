@@ -35,7 +35,6 @@ __version__='$Id$'
 
 import re,sys,wikipedia
 
-mylang = 'de'
 myComment = 'User-controlled Bot: table syntax updated'
 fixedSites = ''
 notFixedSites = ''
@@ -298,3 +297,4 @@ for article in articles:
 print "\tFollowing pages were corrected\n" + fixedSites
 print "\n\tFollowing pages had errors and were not corrected\n" + notFixedSites
                   
+
