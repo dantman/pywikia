@@ -1590,9 +1590,11 @@ def url2unicode(percentname, site):
     raise UnicodeError("Could not decode %s" % repr(percentname))
 
 def unicode2html(x, encoding):
-    # We have a unicode string. We can attempt to encode it into the desired
-    # format, and if that doesn't work, we encode the unicode into html #
-    # entities. If it does work, we return it unchanged.
+    """
+    We have a unicode string. We can attempt to encode it into the desired
+    format, and if that doesn't work, we encode the unicode into html #
+    entities. If it does work, we return it unchanged.
+    """
     try:
         encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
         y,l = encode_func(x)
