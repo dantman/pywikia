@@ -57,6 +57,7 @@ langs = {
     'ko':'ko.wikipedia.org',   # Korean
     'ks':'ks.wikipedia.org',   # Ekspreso, but should become Kashmiri
     'ku':'ku.wikipedia.org',   # Kurdish
+    'kw':'kw.wikipedia.org',   # Cornish
     'la':'la.wikipedia.org',   # Latin
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
@@ -219,7 +220,8 @@ image = {
 # Template namespace
 template = {
     'de':u'Vorlage',
-    'en':u'Template'
+    'en':u'Template',
+    'nl':'Sjabloon'
     }
 
 # Category namespace. 'Category' works on all languages?!?!?....
@@ -240,7 +242,7 @@ def category_namespaces(code):
     ns = []
     ns.append(category[code])
     ns.append(category[code].lower())
-    if code!='en' and category[code] != category['en']:
+    if category[code] != category['en']:
     	ns.append(category['en'])
     	ns.append(category['en'].lower())
     return ns
@@ -254,7 +256,7 @@ redirect = {
 # On most Wikipedias page names must start with a capital letter, but some
 # languages don't use this.
 
-nocapitalize = ['tokipona']
+nocapitalize = ['tlh','tokipona']
 
 # Which languages have a special order for putting interlanguage links,
 # and what order is it? If a language is not in interwiki_putfirst,
@@ -267,7 +269,7 @@ alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs',
               'ca','chr','co','cs','cy','da','de','als','et',
               'el','en','es','eo','eu','fa','fr','fy','ga','gv',
               'gd','gl','ko','hi','hr','io','id','ia','is','it',
-              'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
+              'he','jv','ka','csb','ks','kw','sw','la','lv','lt','hu',
               'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
               'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
               'sa','st','sq','si','simple','sk','sl','sr','su',
@@ -386,7 +388,7 @@ latin1 = ['en', 'sv', 'nl', 'de', 'da', 'dk', 'test']
 latin1old = ['et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
              'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
              'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
-             'ga', 'na']
+             'ga', 'na', 'es']
 
             
 def code2encoding(code):
