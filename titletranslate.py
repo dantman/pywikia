@@ -79,7 +79,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         i=int(m.group(0))
         if i==0:
             return
-        if site.lang in ['ja','zh','ko','la']:
+        if site.lang in ['ja','zh','ko']:
             return
         if site.lang=='ia' and i<1400:
             return
@@ -101,9 +101,6 @@ def translate(pl, arr, same = False, hints = None, auto = True):
             elif newcode in ['simple','lt'] and i<200:
                 # some simple pages are numbers
                 # lt:69 has yet another meaning
-                pass
-            elif newcode == 'la':
-                # la pages are not years but numbers
                 pass
             elif newcode in ['mr', 'id', 'lv', 'sw', 'tt']:
                 # years do not exist
