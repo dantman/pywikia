@@ -2410,7 +2410,7 @@ def showColorDiff(oldtext, newtext):
     def printLastLine(lastline, lastcolor):
         # highlight the minus red or the plus green
         if lastline != None:
-            lastline = '\x1b[' + lastcolor + ';1m' + lastline[0] + '\x1b[0m' + lastline[1:]
+            lastline = colorize(lastline[0], lastcolor) + lastline[1:]
             output(lastline)
         
     # This will store the last line beginning with + or -.
