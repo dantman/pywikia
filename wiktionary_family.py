@@ -17,6 +17,7 @@ class Family(family.Family):
             'af':'af.wiktionary.org',   # Afrikaans
             'als':'als.wiktionary.org', # Alsatian
             'an':'an.wiktionary.org',   # Aragonese
+            'ang':'ang.wiktionary.org', # Anglo-Saxon
             'ar':'ar.wiktionary.org',   # Arabic
             'as':'as.wiktionary.org',   # Assamese
             'ast':'ast.wiktionary.org', # Asturian
