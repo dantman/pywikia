@@ -302,6 +302,13 @@ class PageLink:
                 
         return self._contents
 
+    def exists(self):
+        try:
+            self.get()
+        except NoPage:
+            return False
+        return True
+    
     def put(self,newtext,comment=None):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the

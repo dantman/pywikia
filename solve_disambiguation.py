@@ -118,7 +118,11 @@ for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
     elif arg.startswith('-pos:'):
-        alternatives.append(arg[5:])
+        pl=wikipedia.PageLink(wikipedia.mylang,arg[5:])
+        if pl.exists():
+            alternatives.append(pl.linkname())
+        else:
+            print "Possibility does not actually exist:",pl
     elif arg=='-just':
         getalternatives=0
     else:
