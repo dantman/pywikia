@@ -175,7 +175,7 @@ while cont:
         R = re.compile(r'http://[^\s}<\]]+[^\s.,:;)\?!\]}<]')
         try:
             for url in R.findall(pl.get()):
-                url = wikipedia.unicode2html(url,'latin_1')
+                url = wikipedia.unicode2html(url,'ascii')
                 try:
                     error = URLerrorFinder().open(url)
                 except IOError:
