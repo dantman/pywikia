@@ -56,13 +56,14 @@ def delete_broken_redirects():
                 target_page = wikipedia.PageLink(wikipedia.mylang, target_name)
                 target_page.get()
             except wikipedia.NoPage:
-                wikipedia.output('Deleting %s...' % redir_page.linkname())
+                #wikipedia.output('Deleting %s...' % redir_page.linkname())
                 wikipedia.deletePage(redir_page, reason, prompt = False)
             except wikipedia.IsRedirectPage():
                 wikipedia.output('Redirect target is also a redirect! Won\'t delete anything.')
             else:
                 wikipedia.output('Redirect target does exist! Won\'t delete anything.')
             # idle for 1 minute
+        print
         wikipedia.put_throttle()
         
 def fix_double_redirects():

@@ -12,7 +12,7 @@ __version__ = '$Id$'
 import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
 
-import config
+import config, mediawiki_messages
     
 # Are we debugging this module? 0 = No, 1 = Yes, 2 = Very much so.
 debug = 0
@@ -1306,7 +1306,6 @@ def deletePage(pl, reason = None, prompt = True):
         h.putheader('Host', host)
         h.putheader('Cookie', cookies)
         h.endheaders()
-        print "Deleting page..."
         h.send(body)
         errcode, errmsg, headers = h.getreply()
         return h.file.read()
@@ -1338,13 +1337,27 @@ def deletePage(pl, reason = None, prompt = True):
     if prompt:
         answer = input('Do you want to delete %s? [y|N]' % pl.linkname())
     if answer in ['y', 'Y']:
+        output('Deleting page %s...' % pl.linkname())
         returned_html = post_multipart(family.hostname(mylang),
                                        family.delete_address(pl.urlname()),
                                        (('wpReason', reason),
                                         ('wpConfirm', '1')))
-        ibegin = returned_html.index('<!-- start content -->')
-        iend = returned_html.index('<!-- end content -->')
-        output(returned_html[ibegin:iend], code2encoding(mylang))
+        # check if deletion was successful
+        # therefore, we need to know what the MediaWiki software says after
+        # a successful deletion
+        deleted_msg = mediawiki_messages.get('actioncomplete')
+        deleted_msg = re.escape(deleted_msg)
+        deleted_msgR = re.compile(deleted_msg)
+        if deleted_msgR.search(returned_html):
+            output('Deletion successful.')
+        else:
+            output('Deletion failed:.')
+            # remove the irrelevant sections
+            ibegin = returned_html.index('<!-- start content -->') + 22
+            iend = returned_html.index('<!-- end content -->')
+            returned_html = returned_html[ibegin:iend]
+            # show debug information
+            output(returned_html, code2encoding(mylang))
                                     
     
 ######## Unicode library functions ########

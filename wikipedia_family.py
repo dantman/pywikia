@@ -345,6 +345,9 @@ def maintenance_address(code, maintenance_page, default_limit = True):
     else:
         return ('/w/wiki.phtml?title=%s:Maintenance&subfunction=' % special[code]) + maintenance_page + '&limit=' + str(config.special_page_limit)
 
+def allmessages_address(code):
+    return "/w/wiki.phtml?title=%s:Allmessages&ot=html" % special[code]
+                        
 def login_address(code):
     return '/w/wiki.phtml?title=%s:Userlogin&amp;action=submit'%special[code]
 
