@@ -65,6 +65,11 @@ msg={
     'fr':'Homonymie r\xE9solue \xE0 l\'aide du robot'
     }
 
+# List pages that will be ignored if they got a link to a disambiguation
+# page. An example is a page listing disambiguations articles.
+# Special chars should be encoded with unicode (\x##) and space used
+# instead of _ 
+
 ignore={
     'nl':('Wikipedia:Onderhoudspagina',
           'Wikipedia:Doorverwijspagina'),
@@ -100,10 +105,46 @@ ignore={
     'da':('Wikipedia:Links til sider med flertydige titler'),
     'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie',
           'Wikip\xE9dia:Homonymie',
-          'Liste de toutes les combinaisons de deux lettres'),
+          'Liste de toutes les combinaisons de deux lettres',
+		  'STLs de AAA \xE0 DZZ',
+          'STLs de EAA \xE0 HZZ',
+          'STLs de IAA \xE0 LZZ',
+          'STLs de MAA \xE0 PZZ',
+          'STLs de QAA \xE0 TZZ',
+		  'STLs de UAA \xE0 XZZ',
+		  'STLs de YAA \xE0 ZZZ',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Ca',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cb',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cc',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cd',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Ce',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cf',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cg',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Ch',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Ci',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cj',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Ck',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cl',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cm',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cn',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Co',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cp',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cq',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cr',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cs',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Ct',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cu',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cv',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cw',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cx',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cy',
+		  'Wikip\xE9dia\x3APages sans interwiki\x2Cz'
+		  ),
     'de':('Wikipedia:Begriffskl\xe4rung',
           'Wikipedia:Liste mathematischer Themen/BKS')
     }
+
+
 
 def getReferences(pl):
     x = wikipedia.getReferences(pl)
