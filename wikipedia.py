@@ -190,8 +190,12 @@ class PageLink(object):
             self._tosite = getSite() # Default to home wiki
         # Clean up the name, it can come from anywhere.
         title = title.strip()
-        if title[0]==':':
-            title = title[1:]
+        try:
+            if title[0]==':':
+                title = title[1:]
+        except IndexError:
+            # title is empty
+            pass
         title = link2url(title, site = self._site, insite = insite)
         title = title.split('%3A')
         # translate a default namespace name into the local namespace name
