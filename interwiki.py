@@ -904,16 +904,19 @@ if __name__ == "__main__":
                     sa.add(wikipedia.PageLink(wikipedia.mylang, current_year))
             globalvar.followredirect = False
         elif arg.startswith('-days'):
-            # Look if user gave a specific month at which to start
-            # Must be a natural number.
-            if len(arg) > 6 and arg[6:].isdigit():
+            if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
+                # Looks as if the user gave a specific month at which to start
+                # Must be a natural number.
                 startmonth = int(arg[6:])
             else:
                 startmonth = 1
-            print "Starting with day %s" % (date.date_format[startmonth][wikipedia.mylang]) % 1
+            fd = date.FormatDate(wikipedia.mylang)
+            pl = wikipedia.PageLink(wikipedia.mylang, fd(startmonth, 1))
+            print "Starting with %s" % pl.asasciilink()
             for month in range(startmonth, 12+1):
                 for day in range(1, date.days_in_month[month]+1):
-                    sa.add(wikipedia.PageLink(wikipedia.mylang, (date.date_format[month][wikipedia.mylang]) % day))
+                    pl = wikipedia.PageLink(wikipedia.mylang, fd(month, day))
+                    sa.add(pl)
         elif arg == '-nobell':
             globalvar.bell = False
         elif arg.startswith('-skipfile:'):
