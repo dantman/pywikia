@@ -57,6 +57,7 @@ langs = {'en':'en.wikipedia.org', # English
          'tr':'tr.wikipedia.org', # Turkish, UTF-8
          'mr':'mr.wikipedia.org', # ?
          'cy':'cy.wikipedia.org', # Welsh, UTF-8
+         'id':'id.wikipedia.org', # Indonesian
          'simple':'simple.wikipedia.org', # Simplified english
          'test':'test.wikipedia.org',
          }
@@ -64,7 +65,7 @@ langs = {'en':'en.wikipedia.org', # English
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-          'mr', 'simple' ]
+          'mr', 'id', 'simple' ]
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['cs', 'sl', 'bs', 'fy']
@@ -90,7 +91,7 @@ special = {'en':'Special',
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
 oldsoftware = ['it', 'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-               'simple', 'nds', 'mr']
+               'simple', 'nds', 'mr', 'id']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
