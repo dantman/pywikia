@@ -113,7 +113,22 @@ fixes = {
             r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])':  r"\1====== \2 ======\3",
             # TODO: maybe we can make the bot replace <p> tags with \r\n's.
         }
-    }
+    },
+    # Grammar fixes for German language
+    'grammar-de': {
+        'regex': True,
+        'exceptions':  ['sic!'],
+        'msg': {
+               'de':u'Bot: korrigiere Grammatik',
+              },
+        'replacements': {
+            u'([Ss]owohl) ([^,\.]+?), als auch':              r'\1 \2 als auch',
+            #u'([Ww]eder) ([^,\.]+?), noch':                   r'\1 \2 noch',
+            u'(?=\W)(\d[\d\.\,]*\d|\d)($|€|DM|mg|g|kg|l|t|ms|s|min|h|µm|mm|cm|dm|m|km|°C|K|kB|MB|TB)(?=\W)': r'\1 \2',
+            u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)':   r'\1. \2',
+        }
+    },
+    
 }
 
 def read_pages_from_sql_dump(sqlfilename, replacements, exceptions, regex, namespace):
@@ -305,7 +320,11 @@ elif fix == None:
     wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg)+change)
 else:
     # Perform one of the predefined actions.
-    fix = fixes[fix]
+    try:
+        fix = fixes[fix]
+    except KeyError:
+        wikipedia.output(u'Available predefined fixes are: %s' % fixes.keys())
+        sys.exit()
     if fix.has_key('regex'):
         regex = fix['regex']
     if fix.has_key('msg'):
