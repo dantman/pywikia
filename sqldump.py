@@ -193,9 +193,17 @@ def query_find(sqldump, keyword):
     '''
     yields pages which contain keyword
     '''
-    # TODO: same for regex
     for entry in sqldump.entries():
         if entry.text.find(keyword) != -1:
+            yield entry
+
+def query_findr(sqldump, regex):
+    '''
+    yields pages which contain a string matching the given regular expression
+    '''
+    r = re.compile(regex)
+    for entry in sqldump.entries():
+        if entry.namespace == 0 and r.search(entry.text):
             yield entry
 
 def query_unmountedcats(sqldump):
@@ -221,10 +229,18 @@ def query(sqldump, action):
         keyword = wikipedia.input(u'Search for:')
         for entry in query_find(sqldump, keyword):
             yield entry
-    if action == 'unmountedcats':
+    elif action == 'findr':
+        keyword = wikipedia.input(u'Search for:')
+        for entry in query_findr(sqldump, keyword):
+            yield entry
+    elif action == 'unmountedcats':
         for entry in query_unmountedcats(sqldump):
             yield entry
- 
+    elif action == 'baddisambiguation':
+        for entry in sqldump.entries():
+            if entry.namespace == 0 and entry.title.endswith(')') and entry.text.startswith("''") and not entry.text.startswith("'''"):
+                yield entry
+
 if __name__=="__main__":
     wikipedia.stopme() # No need to have me on the stack, as I'm not contacting the wiki
     import sys
@@ -241,6 +257,7 @@ if __name__=="__main__":
                 action = arg
                 
     sqldump = SQLdump(filename, wikipedia.myencoding())
+    
     for entry in query(sqldump, action):
         wikipedia.output(u'*[[%s]]' % entry.full_title())
 
