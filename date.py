@@ -25,6 +25,7 @@ date_format = {
 		'nl':'%d januari',
 		'bg':'%d януари',
 		'is':'%d. janúar',
+		'fo':'%d. januar',
 	},
 	2: {
 		'sl':'%d. februar',
@@ -38,6 +39,7 @@ date_format = {
 		'nl':'%d februari',
 		'bg':'%d Февруари',
 		'is':'%d. febrúar',
+		'fo':'%d. februar',
 	},
 	3: {
 		'sl':'%d. marec',
@@ -50,7 +52,8 @@ date_format = {
 		'oc':'%d de_mar%%C3%%A7',
 		'nl':'%d maart',
 		'bg':'%d Март',
-		'is':'%d. mars'
+		'is':'%d. mars',
+		'fo':'%d. mars',
 	},
 	4: {
 		'sl':'%d. april',
@@ -64,6 +67,7 @@ date_format = {
 		'nl':'%d april',
 		'bg':'%d Април',
 		'is':'%d. apríl',
+		'fo':'%d. apríl',
 	},
 	5: {
 		'sl':'%d. maj',
@@ -77,6 +81,7 @@ date_format = {
 		'nl':'%d mei',
 		'bg':'%d Май',
 		'is':'%d. maí',
+		'fo':'%d. mai',
 	},
 	6: {
 		'sl':'%d. junij',
@@ -90,6 +95,7 @@ date_format = {
 		'nl':'%d juni',
 		'bg':'%d Юни',
 		'is':'%d. júní',
+		'fo':'%d. juni',
 	},
 	7: {
 		'sl':'%d. julij',
@@ -103,6 +109,7 @@ date_format = {
 		'nl':'%d juli',
 		'bg':'%d Юли',
 		'is':'%d. júlí',
+		'fo':'%d. juli',
 	},
 	8: {
 		'sl':'%d. avgust',
@@ -116,6 +123,7 @@ date_format = {
 		'nl':'%d augustus',
 		'bg':'%d Август',
 		'is':'%d. ágúst',
+		'fo':'%d. august',
 	},
 	9: {
 		'sl':'%d. september',
@@ -129,6 +137,7 @@ date_format = {
 		'nl':'%d september',
 		'bg':'%d Септември',
 		'is':'%d. september',
+		'fo':'%d. september',
 	},
 	10:{
 		'sl':'%d. oktober',
@@ -142,6 +151,7 @@ date_format = {
 		'nl':'%d oktober',
 		'bg':'%d Октомври',
 		'is':'%d. október',
+		'fo':'%d. oktober',
 	},
 	11:{
 		'sl':'%d. november',
@@ -155,6 +165,7 @@ date_format = {
 		'nl':'%d november',
 		'bg':'%d Ноември',
 		'is':'%d. nóvember',
+		'fo':'%d. november',
 	},
 	12:{
 		'sl':'%d. december',
@@ -168,6 +179,7 @@ date_format = {
 		'nl':'%d december',
 		'bg':'%d Декември',
 		'is':'%d. desember',
+		'fo':'%d. desember',
 	},
 }
 
@@ -209,6 +221,7 @@ yearBCfmt = {
 		'es':'%d adC',
                 'et':'%d eKr',
                 'fi':'%d eaa',
+		'fo':'%d f. Kr.',
 		'fr':'-%d',
                 'he':'%d &#1500;&#1508;&#1504;&#1492;"&#1505;',
                 'hr':'%d p.n.e.',
@@ -259,6 +272,7 @@ datetable = {
 			'ca':'%d de gener',
 			'oc':'%d de geni%%C3%%A8r',
 			'is':'%d. janúar',
+			'fo':'%d. januar',
 		},
 		'februari':{
 			'sl':'%d. februar',
@@ -270,6 +284,7 @@ datetable = {
 			'ca':'%d de febrer',
 			'oc':'%d de febri%%C3%%A8r',
 			'is':'%d. febrúar',
+			'fo':'%d. februar',
 		},
 		'maart':{
 			'sl':'%d. marec',
@@ -281,6 +296,7 @@ datetable = {
 			'ca':'%d de_mar%%C3%%A7',
 			'oc':'%d de_mar%%C3%%A7',
 			'is':'%d. mars',
+			'fo':'%d. mars',
 		},
 		'april':{
 			'sl':'%d. april',
@@ -292,6 +308,7 @@ datetable = {
 			'ca':'%d d\'abril',
 			'oc':'%d d\'abril',
 			'is':'%d. apríl',
+			'fo':'%d. apríl',
 		},
 		'mei':{
 			'sl':'%d. maj',
@@ -303,6 +320,7 @@ datetable = {
 			'ca':'%d de maig',
 			'oc':'%d de mai',
 			'is':'%d. maí',
+			'fo':'%d. mai',
 		},
 		'juni':{
 			'sl':'%d. junij',
@@ -313,7 +331,8 @@ datetable = {
 			'af':'06-%02d',
 			'ca':'%d de juny',
 			'oc':'%d de junh',
-			'is':'%d. júní',	
+			'is':'%d. júní',
+			'fo':'%d. juni',
 		},
 		'juli':{
 			'sl':'%d. julij',
@@ -325,6 +344,7 @@ datetable = {
 			'ca':'%d de juliol',
 			'oc':'%d de julhet',
 			'is':'%d. júlí',
+			'fo':'%d. juli',
 		},
 		'augustus':{
 			'sl':'%d. avgust',
@@ -336,6 +356,7 @@ datetable = {
 			'ca':'%d d\'agost',
 			'oc':'%d d\'agost',
 			'is':'%d. ágúst',
+			'fo':'%d. august',
 		},
 		'september':{
 			'sl':'%d. september',
@@ -347,6 +368,7 @@ datetable = {
 			'ca':'%d de setembre',
 			'oc':'%d de setembre',
 			'is':'%d. september',
+			'fo':'%d. september',
 		},
 		'oktober':{
 			'sl':'%d. oktober',
@@ -358,6 +380,7 @@ datetable = {
 			'ca':'%d d\'octubre',
 			'oc':'%d d\'octobre',
 			'is':'%d. október',
+			'fo':'%d. oktober',
 		},
 		'november':{
 			'sl':'%d. november',
@@ -369,6 +392,7 @@ datetable = {
 			'ca':'%d de novembre',
 			'oc':'%d de novembre',
 			'is':'%d. nóvember',
+			'fo':'%d. november',
 		},
 		'december':{
 			'sl':'%d. december',
@@ -380,6 +404,7 @@ datetable = {
 			'ca':'%d de desembre',
 			'oc':'%d de decembre',
 			'is':'%d. desember',
+			'fo':'%d. desember',
 		},
 	}
 }
