@@ -33,8 +33,8 @@ langs = {'en':'en.wikipedia.org', # English
          'sl':'sl.wikipedia.org', # Slovenian, UTF-8
          'ko':'ko.wikipedia.org', # Korean, UTF-8
          'hu':'hu.wikipedia.org', # Hungarian, UTF-8
-         'el':'el.wikipedia.org', # Grieks, UTF-8
-         'bs':'bs.wikipedia.org', # Bosnisch, UTF-8
+         'el':'el.wikipedia.org', # Greek, UTF-8
+         'bs':'bs.wikipedia.org', # Bosnian, UTF-8
 	 'he':'he.wikipedia.org', # Hebrew, UTF-8
          'hi':'hi.wikipedia.org', # Hindi, UTF-8
          'nds':'nds.wikipedia.org', # Lower Saxon
@@ -55,17 +55,33 @@ langs = {'en':'en.wikipedia.org', # English
          'eu':'eu.wikipedia.org', # Basque
          'hr':'hr.wikipedia.org', # Croatian, UTF-8
          'tr':'tr.wikipedia.org', # Turkish, UTF-8
-         'mr':'mr.wikipedia.org', # ?
+         'mr':'mr.wikipedia.org', # Marathi
          'cy':'cy.wikipedia.org', # Welsh, UTF-8
          'id':'id.wikipedia.org', # Indonesian
-         'simple':'simple.wikipedia.org', # Simplified english
+         'ms':'ms.wikipedia.org', # Malaysian
+         'gl':'gl.wikipedia.org', # Galician
+         'lv':'lv.wikipedia.org', # Livonian
+         'lt':'lt.wikipedia.org', # Latvian
+         'ml':'ml.wikipedia.org', # Malayalam (UTF-8?)
+         'nah':'nah.wikipedia.org', # Nahuatl (UTF-8?)
+         'oc':'oc.wikipedia.org', # Occitan
+         'sq':'sq.wikipedia.org', # Albanian (UTF-8?)
+         'sr':'sr.wikipedia.org', # Serbian, UTF-8
+         'sw':'sw.wikipedia.org', # Swahili
+         'tt':'tt.wikipedia.org', # Tatar
+         'uk':'uk.wikipedia.org', # Ukrainian (Latin-1?)
+         'vi':'vi.wikipedia.org', # Vietnamese
+         'vo':'vo.wikipedia.org', # Volapuk
+         'ga':'ga.wikipedia.org', # Irish Gaelic
+         'simple':'simple.wikipedia.org', # Simple English
          'test':'test.wikipedia.org',
          }
 
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-          'mr', 'id', 'simple' ]
+          'mr', 'id', 'simple', 'gl', 'lt', 'lv', 'oc', 'sw',
+          'tt', 'uk', 'vi', 'vo']
 
 # Languages that used to be coded in iso-8859-1
 latin1old = ['cs', 'sl', 'bs', 'fy']
@@ -91,11 +107,19 @@ special = {'en':'Special',
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
 oldsoftware = ['it', 'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
-               'simple', 'nds', 'mr', 'id']
+               'simple', 'nds', 'mr', 'id', 'gl', 'lt', 'lv', 'oc', sw',
+               'tt', 'uk', 'vi', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
 biglangs = ['en', 'pl', 'da', 'sv', 'nl', 'de', 'fr', 'es']
+
+# And a larger selection in case we say 'all languages' but don't really
+# mean 'all'
+seriouslangs = ['en', 'de', 'fr', 'nl', 'pl', 'ja', 'sv', 'es', 'eo', 'da',
+                'zh', 'sl', 'cs', 'he', 'ro', 'ko', 'ru', 'ms', 'hu', 'fy',
+                'bs', 'hr', 'sr', 'el', 'ca', 'et', 'fi', 'gl', 'ia', 'it',
+                'la', 'no', 'nds', 'pt', 'simple']
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 

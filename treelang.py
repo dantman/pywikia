@@ -91,17 +91,16 @@ def autonomous_problem(pl,reason=''):
         sys.exit(1)
     
 def sametranslate(pl,arr):
-    for newcode in wikipedia.langs:
+    for newcode in wikipedia.seriouslangs:
         # Put as suggestion into array
         newname=pl.linkname()
         if newcode in ['eo','cs'] and same=='name':
             newname=newname.split(' ')
             newname[-1]=newname[-1].upper()
             newname=' '.join(newname)
-        if not newcode in ['zh-cn','zh-tw','test']:
-            x=wikipedia.PageLink(newcode,newname)
-            if x not in arr:
-                arr[x]=None
+        x=wikipedia.PageLink(newcode,newname)
+        if x not in arr:
+            arr[x]=None
     
 def autotranslate(pl,arr,same=0):
     if same:
