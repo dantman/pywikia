@@ -474,8 +474,8 @@ def print_treeview(catname, max_depth = 10):
     else:
         wikipedia.output(tree)
 
-def main():
-    if __name__ == "__main__":
+if __name__ == "__main__":
+    try:
         action = None
         sort_by_last_name = False
         for arg in sys.argv[1:]:
@@ -526,10 +526,5 @@ def main():
         else:
             # show help
             wikipedia.output(__doc__, 'utf-8')
-
-try:
-    main()
-except:
-    wikipedia.stopme()
-    raise
-wikipedia.stopme()
+    finally:
+        wikipedia.stopme()
