@@ -341,6 +341,9 @@ for arg in sys.argv[1:]:
                 alternatives.append(pl.linkname())
             else:
                 print "Possibility does not actually exist:",pl
+                answer = raw_input('Use it anyway? [y|N] ')
+                if answer in ('Y', 'y'):
+                    alternatives.append(pl.linkname())
         else:
             alternatives.append(arg[5:])
     elif arg=='-just':
