@@ -43,21 +43,19 @@ class _CatLink(wikipedia.PageLink):
     """Subclass of PageLink that has some special tricks that only work for
        category: pages"""
     
-    def catlist(self, recurse = False):
+    def catlist(self, recurse = False, purge = False):
         """Cache result of make_catlist for a second call
 
            This should not be used outside of this module.
         """
-        if recurse:
-            if not hasattr(self,'_catlistT'):
-                self._catlistT = self._make_catlist(True)
-            return self._catlistT
-        else:
-            if not hasattr(self,'_catlistF'):
-                self._catlistF = self._make_catlist(False)
-            return self._catlistF
+        if purge:
+            self._catlistT = self._make_catlist(recurse = recurse, purge = True)
+        # if we don't have a cached version
+        elif not hasattr(self, '_catlistT'):
+            self._catlistT = self._make_catlist(recurse = recurse)
+        return self._catlistT
             
-    def _make_catlist(self, recurse = False, site = None):
+    def _make_catlist(self, recurse = False, purge = False, site = None):
         """Make a list of all articles and categories that are in this
            category. If recurse is set to True, articles and subcategories
            of any subcategories are also retrieved.
@@ -96,6 +94,11 @@ class _CatLink(wikipedia.PageLink):
             # each of the list pages, so we will care about them after this
             # loop.
             while not thisCatDone:
+                target = cat.urlname()
+                if startFromPage:
+                    target += '&from=' + startFromPage
+                if purge:
+                    target += '&action=purge'
                 # this loop will run until the page could be retrieved
                 # Try to retrieve the page until it was successfully loaded (just in case
                 # the server is down or overloaded)
@@ -103,10 +106,7 @@ class _CatLink(wikipedia.PageLink):
                 retry_idle_time = 1
                 while True:
                     try:
-                        if startFromPage:
-                            txt = wikipedia.getPage(site, cat.urlname() + '&from=' + startFromPage, get_edit_page = False)
-                        else:
-                            txt = wikipedia.getPage(site, cat.urlname(), get_edit_page = False)
+                        txt = wikipedia.getPage(site, target, get_edit_page = False)
                     except:
                         # We assume that the server is down. Wait some time, then try again.
                         raise
@@ -203,6 +203,9 @@ class _CatLink(wikipedia.PageLink):
             supercats.append(ncat)
         return unique(supercats)
     
+    def isEmpty(self):
+        (articles, subcats, supercats) = self.catlist(purge = True)
+        return (articles == [] and subcats == [])
     
 def CatLink(code, name):
     """Factory method to create category link objects from the category name"""

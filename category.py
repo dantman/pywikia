@@ -64,6 +64,17 @@ msg_remove={
     'pt':u'Bot: Removendo [[Categoria:%s]]',
     }
 
+deletion_reason_remove = {
+    'de':u'Bot: Kategorie wurde aufgelöst',
+    'en':u'Robot: Category was disbanded',
+    }
+
+deletion_reason_rename = {
+    'de':u'Bot: Kategorie wurde nach %s verschoben',
+    'en':u'Robot: Category was moved to %s',
+    }
+
+
 catContentDB={}
 def get_subcats(supercat):
     '''
@@ -266,6 +277,10 @@ def remove_category(cat_title):
     else:
         for subcategory in subcategories:
             catlib.change_category(subcategory, cat_title, None)
+    # TODO: only try to delete if bot has admin status
+    if cat.isEmpty():
+        reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_remove)
+        cat.delete(reason)
 
 def tidy_category(cat_title):
     """
