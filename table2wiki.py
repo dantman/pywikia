@@ -58,6 +58,7 @@ articles = []
 # if -file is not used, this temporary array is used to read the page title.
 page_title = []
 
+action = None
 for arg in sys.argv[1:]:
     if arg.startswith('-file:'):
 
@@ -136,20 +137,21 @@ for article in articles:
     # every open-tag gets a new line.
 
 
-
     ##################
-    # the <table> tag
-    newText = re.sub("[\r\n]*?\<(?i)(table) ([\w\W]*?)>([\w\W]*?)",
+    # <table> tag with parameters, with more text on the same line
+    newText = re.sub("[\r\n]*?\<(?i)(table) ([\w\W]*?)>([\w\W]*?)[\r\n ]*",
                      "\r\n{| \\2\r\n\\3", newText, 0)
-    newText = re.sub("[\r\n]*?\<(TABLE|table)>([\w\W]*?)",
+    # <table> tag without parameters, with more text on the same line
+    newText = re.sub("[\r\n]*?\<(TABLE|table)>([\w\W]*?)[\r\n ]*",
                      "\r\n{|\n\\2\r\n", newText, 0)
-    newText = re.sub("[\r\n]*?\<(TABLE|table) ([\w\W]*?)\>[\n ]*",
+    # <table> tag with parameters, without more text on the same line
+    newText = re.sub("[\r\n]*?\<(TABLE|table) ([\w\W]*?)\>[\r\n ]*",
                      "\r\n{| \\2\r\n", newText, 0)
-    newText = re.sub("[\r\n]*?\<(TABLE|table)\>[\n ]*",
+    # <table> tag without parameters, without more text on the same line
+    newText = re.sub("[\r\n]*?\<(TABLE|table)\>[\r\n ]*",
                      "\r\n{|\r\n", newText, 0)
     # end </table>
     newText = re.sub("[\s]*<\/(TABLE|table)\>", "\r\n|}", newText, 0)
-    
     
     ##################
     # captions
@@ -174,20 +176,25 @@ for article in articles:
 
     ##################
     # very simple <tr>
-    newText = re.sub("\<(tr|TR)([^>]*?)\>", "\r\n|-----\\2\r\n", newText, 0)
-    newText = re.sub("\<(tr|TR)\>", "\r\n|-----\r\n", newText, 0)
-
+    newText = re.sub("[\r\n]*\<(tr|TR)([^>]*?)\>[\r\n]*", "\r\n|-----\\2\r\n", newText, 0)
+    newText = re.sub("[\r\n]*\<(tr|TR)\>[\r\n]*", "\r\n|-----\r\n", newText, 0)
+    
     ##################
-    # normal <td>
+    # normal <td> without arguments
     newText = re.sub("[\r\n]+\<(td|TD)\>([\w\W]*?)\<\/(TD|td)\>",
                      "\r\n| \\2\r\n", newText, 0)         
+
+    ##################
+    # normal <td> with arguments
     newText = re.sub("[\r\n]+\<(td|TD)([^>]*?)\>([\w\W]*?)\<\/(TD|td)\>",
-                     "\r\n|\\2 | \\3\r\n", newText, 0)
+                     "\r\n|\\2 | \\3", newText, 0)
+
     # WARNING: this sub might eat cells of bad HTML, but most likely it
     # will correct errors
     newText, n = re.subn("[\r\n]+\<(td|TD)\>([^\r\n]*?)\<(td|TD)\>",
                          "\r\n| \\2\r\n", newText, 0)
     warnings = warnings + n
+    
     # fail save, sometimes it's a <td><td></tr>
     #        newText, n = re.subn("[\r\n]+\<(td|TD)\>([^<]*?)\<(td|TD)\>\<\/(tr|TR)\>",
     #                             "\r\n| \\2\r\n", newText, 0)
@@ -197,6 +204,7 @@ for article in articles:
     newText, n = re.subn("[\r\n]+\<(td|TD)([^>]+?)\>([^\r\n]*?)\<\/(td|TD)\>",
                          "\r\n|\\2 | \\3\r\n", newText, 0)
     warnings = warnings + n
+    
     # fail save. sometimes people forget </td>
     newText, n = re.subn("\<(td|TD)\>([^<]*?)[\r\n]+",
                          "\r\n| \\2\r\n", newText, 0)
@@ -320,10 +328,13 @@ for article in articles:
             print text
             print newText
         elif not quietMode:
-            for line in difflib.ndiff(text.split('\n'),
-                                      newText.split('\n')):
-                if line[0] in ['+','-']:
-                    print unicode(repr(line)[2:-1])
+
+            pass
+            print newText
+            #for line in difflib.ndiff(text.split('\n'),
+            #                          newText.split('\n')):
+            #    if line[0] in ['+','-']:
+            #        print unicode(repr(line)[2:-1])
 
         if config.table2wikiAskOnlyWarnings and warnings == 0:
             doUpload="y"
