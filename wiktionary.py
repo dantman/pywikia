@@ -126,7 +126,7 @@ class WiktionaryEntry:				# This refers to an entire page
 		
 	def addSubEntry(self,subentry):
 #	    	self.translations.setdefault( translation.lang, [] ).append( translation )
-		print "already available subentries: %s"%self.subentries
+#		print "already available subentries: %s"%self.subentries
 		self.subentries.setdefault(subentry.subentrylang, []).append(subentry)
 	
 	def listSubentries(self):
@@ -134,12 +134,12 @@ class WiktionaryEntry:				# This refers to an entire page
 
 	def sortSubentries(self):
 		
-		print self.subentries
+#		print self.subentries
 		if not self.subentries == {}:
 			self.sortedsubentries = self.subentries.keys()
 			self.sortedsubentries.sort(sortonname(langnames[self.wikilang]))
 			
-			print "should now be sorted: %s"%self.sortedsubentries
+#			print "should now be sorted: %s"%self.sortedsubentries
 			i = 0
 			while i< len(self.sortedsubentries):
 				x = self.sortedsubentries[i]
@@ -155,10 +155,15 @@ class WiktionaryEntry:				# This refers to an entire page
 	def wikiwrap(self):
 		entry = ''
 		self.sortSubentries()
-		print "sorted: %s",self.sortedsubentries
+#		print "sorted: %s",self.sortedsubentries
+		first = 1
 		for index in self.sortedsubentries:
 			for subentry in self.subentries[index]:
-				entry= entry + subentry.wikiwrap(self.wikilang) + '\n----\n'
+				if first==0:
+					entry = entry + '\n----\n'
+				else:
+					first = 0
+				entry= entry + subentry.wikiwrap(self.wikilang)
 
 		# TODO Here something needs to be inserted for treating interwiktionary links
 			
@@ -196,7 +201,7 @@ class SubEntry:		# On one page, terms with the same spelling in different langua
 		return self.meanings
 
 	def wikiwrap(self,wikilang):
-		print "wikilang: %s"%wikilang
+#		print "wikilang: %s"%wikilang
 		subentry = wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][self.subentrylang]).replace('%%ISOLangcode%%',self.subentrylang) + '\n'
 
 		for pos in self.posorder:
@@ -221,7 +226,7 @@ class SubEntry:		# On one page, terms with the same spelling in different langua
 			if meaning.hasTranslations():
 				subentry = subentry + wiktionaryformats[wikilang]['translationsheader'] + '\n'
 				for meaning in meanings:
-					subentry += meaning.wikiwrapTranslations(wikilang)
+					subentry += meaning.wikiwrapTranslations(wikilang,self.subentrylang)
 				subentry +='\n'	
 		return subentry
 
@@ -295,32 +300,47 @@ class Meaning:					# On one page, different terms in different languages can be 
 			wrappedsynonyms = wrappedsynonyms + synonym.wikiwrapforlist(wikilang)
 		return wrappedsynonyms + '\n'
 		
-	def wikiwrapTranslations(self,wikilang):
-		# We want to output the translations in such a way that they end up sorted alphabetically on the language name in the language of the current Wiktionary
-		alllanguages=self.translations.keys()
-		alllanguages.sort(sortonname(langnames[wikilang]))
-		wrappedtranslations = wiktionaryformats[wikilang]['transbefore']
-		alreadydone = 0
-		for language in alllanguages:
-			# Indicating the language according to the wikiformats dictionary
-			if not alreadydone and langnames[wikilang][language][0:1].upper() > 'M':
-				wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transinbetween']
+	def wikiwrapTranslations(self,wikilang,subentrylang):
+		if wikilang == subentrylang:
+			# When treating a subentry of the same lang as the Wiktionary, we want to output the translations in such a way that they end up sorted alphabetically on the language name in the language of the current Wiktionary
+			alllanguages=self.translations.keys()
+			alllanguages.sort(sortonname(langnames[wikilang]))
+			wrappedtranslations = wiktionaryformats[wikilang]['transbefore']
+			alreadydone = 0
+			for language in alllanguages:
+				if language == wikilang: continue # don't output translation for the wikilang itself
+				# split translations into two column table
+				if not alreadydone and langnames[wikilang][language][0:1].upper() > 'M':
+					wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transinbetween']
+					alreadydone = 1
+				# Indicating the language according to the wikiformats dictionary
+				wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
+				first = 1
+				for translation in self.translations[language]:
+					term=translation.term
+					if first==0:
+						wrappedtranslations += ', '
+					else:					
+						first = 0
+					wrappedtranslations = wrappedtranslations + translation.wikiwrapastranslation(wikilang)
+				wrappedtranslations += '\n'
+			if not alreadydone:
+				wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transinbetween'] + '\n' + wiktionaryformats[wikilang]['transnoMtoZ'] + '\n'
 				alreadydone = 1
-			wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
+			wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transafter'] + '\n'
+		else:
+			# For the other subentries we want to output the translation in the language of the Wiktionaryi
+			wrappedtranslations = wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][wikilang]).replace('%%ISOLangcode%%',wikilang) + ': '
 			first = 1
-			for translation in self.translations[language]:
+			for translation in self.translations[wikilang]:
 				term=translation.term
 				if first==0:
 					wrappedtranslations += ', '
 				else:					
 					first = 0
 				wrappedtranslations = wrappedtranslations + translation.wikiwrapastranslation(wikilang)
-			wrappedtranslations += '\n'
-		if not alreadydone:
-			wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transinbetween'] + '\n' + wiktionaryformats[wikilang]['transnoMtoZ'] + '\n'
-			alreadydone = 1
-		return wrappedtranslations + wiktionaryformats[wikilang]['transafter'] + '\n'
-	
+		return wrappedtranslations			
+			
 	def showcontents(self,indentation):
 		print ' ' * indentation + 'term: '
 		self.term.showcontents(indentation+2)
