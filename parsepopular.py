@@ -2,6 +2,8 @@
 import sys,re
 import wikipedia
 
+mylang='nl'
+
 def scanfile(fn):
     f=open(fn)
     txt=f.read()
@@ -15,7 +17,8 @@ def scanfile(fn):
         if not m:
             break
         pos=m.end()
-        label=wikipedia.url2link(wikipedia.link2url(m.group(1)))
+        xlabel=wikipedia.link2url(m.group(1),code=mylang,incode=mylang)
+        label=wikipedia.url2link(xlabel,code=mylang,incode=mylang)
         num=int(m.group(2))
         result[label]=num
     return result
@@ -46,9 +49,9 @@ for k in disappeared.keys():
 # Look up whether the other ones disappeared as redirects
 for k in disappeared.keys():
     try:
-        wikipedia.getPage('nl',wikipedia.link2url(k))
+        wikipedia.getPage(mylang,wikipedia.link2url(k,code=mylang,incode=mylang))
     except wikipedia.IsRedirectPage,arg:
-        disappeared[k]=wikipedia.url2link(str(arg))
+        disappeared[k]=wikipedia.url2link(str(arg),code=mylang,incode=mylang)
     except wikipedia.NoPage:
         print "Deleted: %s (was %d) "%(k,map1[k])
     else:

@@ -6,7 +6,8 @@ codeto='de'
 for f in wikipedia.allnlpages(start=sys.argv[1]):
     print f,wikipedia.link2url(f,incode=codefrom,code=codefrom)
     sys.stdout.flush()
-    stdf=wikipedia.url2link(wikipedia.link2url(f,incode=codefrom,code=codefrom),code=codefrom,incode=codefrom)
+    xf=wikipedia.link2url(f,incode=codefrom,code=codefrom)
+    stdf=wikipedia.url2link(xf,code=codefrom,incode=codefrom)
     try:
         ll=wikipedia.getLanguageLinks(wikipedia.getPage(codefrom,wikipedia.link2url(f,code=codefrom,incode=codefrom)))
     except wikipedia.IsRedirectPage:
@@ -29,7 +30,8 @@ for f in wikipedia.allnlpages(start=sys.argv[1]):
                 for code2,name2 in enll.iteritems():
                     if code2==codefrom:
                         found+=1
-                        stdname2=wikipedia.url2link(wikipedia.link2url(name2))
+                        xf=wikipedia.link2url(name2,code=code2,incode=code)
+                        stdname2=wikipedia.url2link(xf,code=code2,incode=code)
                         if stdname2!=stdf:
                             print >> sys.stderr, "%s:%s does not link to %s:%s but to %s:%s"%(codeto,name,codefrom,f,codefrom,name2)
                             sys.stderr.flush()
