@@ -798,7 +798,7 @@ def forCode(text, code):
         #    return UnicodeToAsciiHtml(text)
         #encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(code2encoding(code))
         #text,l = encode_func(text)
-        text = text.encode(myencoding())
+        text = text.encode(code2encoding(code))
     return text
 
 class MyURLopener(urllib.FancyURLopener):
