@@ -198,6 +198,7 @@ class PageLink(object):
             for ns in site.family.namespaces.keys():
                 if title[0] == site.family.namespace('_default', ns):
                     title[0] = site.namespace(ns)
+        title = ':'.join(title)
         self._urlname = link2url(title, site = self._site, insite = insite)
         self._linkname = url2link(self._urlname, site = self._site, insite = self._tosite)
 
