@@ -412,7 +412,16 @@ for wrd in (page_list):
     # print choices on screen
     for i in range(len(alternatives)):
         wikipedia.output(u"%3d - %s" % (i, alternatives[i]))
+    
     def treat(refpl, thispl):
+        '''
+        Parameters:
+            thispl - The disambiguation page or redirect we don't want anything
+                     to link on
+            refpl - A page linking to thispl
+        Returns False if the user pressed q to completely quit the program.
+        Otherwise, returns True.
+        '''
         try:
             reftxt=refpl.get()
         except wikipedia.IsRedirectPage:
@@ -430,19 +439,22 @@ for wrd in (page_list):
         else:
             n = 0
             curpos = 0
-            while 1:
+            edited = False
+            # This loop will run until we have finished the current page
+            while True:
                 m=linkR.search(reftxt, pos = curpos)
                 if not m:
                     if n == 0:
-                        wikipedia.output(u"Not found in %s:%s" % (refpl.code(), refpl.linkname()))
-                    elif not debug:
-                        refpl.put(reftxt)
-                    return True
+                        wikipedia.output(u"No changes necessary in %s" % refpl.linkname())
+                        return True
+                    else:
+                        # stop loop and save page
+                        break
                 # Make sure that next time around we will not find this same hit.
                 curpos = m.start() + 1
                 # Try to standardize the page.
                 if wikipedia.isInterwikiLink(m.group(1)):
-                    linkpl = None
+                    continue
                 else:
                     linkpl=wikipedia.PageLink(thispl.code(), m.group(1),
                                               incode = refpl.code())
@@ -451,12 +463,13 @@ for wrd in (page_list):
                     continue
 
                 n += 1
-                edited = False
                 context = 30
-                while 1:
+                # This loop will run while the user doesn't choose an option
+                # that will actually change the page
+                while True:
                     print '\n'
                     wikipedia.output(u"== %s ==" % refpl.linkname())
-                    wikipedia.output(reftxt[max(0,m.start()-context):m.end()+context])
+                    wikipedia.output(reftxt[max(0, m.start() - context):m.end()+context])
                     if always == None:
                         if edited:
                             choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
@@ -466,32 +479,9 @@ for wrd in (page_list):
                                                "        q=quit, m=more context, l=list, a=add new):")
                     else:
                         choice=always
-                    if choice=='n':
-                        if primary:
-                            # If run with the -primary argument, skip this occurence next time.
-                            filename = 'disambiguations/' + thispl.urlname() + '.txt'
-                            try:
-                                # Open file for appending. If none exists yet, create a new one.
-                                # The file is stored in the disambiguation/ subdir. Create if necessary.
-                                f = open(makepath(filename), 'a')
-                                f.write(refpl.urlname() + '\n')
-                                f.close()
-                            except IOError:
-                                pass
-                        return True
-                    elif choice=='s':
-                        choice=-1
-                        break
-                    elif choice=='u':
-                        choice=-2
-                        break
-                    elif choice=='a':
+                    if choice=='a':
                         ns=wikipedia.input(u'New alternative:')
                         alternatives.append(ns)
-                    elif choice=='q':
-                        return False
-                    elif choice=='m':
-                        context*=2
                     elif choice=='e':
                         import gui
                         edit_window = gui.EditBoxWindow()
@@ -499,7 +489,10 @@ for wrd in (page_list):
                         # if user didn't press Cancel
                         if newtxt:
                             reftxt = newtxt
-                            edited = True
+                            break
+                    elif choice=='m':
+                        # show more text around the link we're working on
+                        context*=2
                     elif choice=='l':
                         #########
                         # The GUI for the list is disabled because it doesn't
@@ -514,39 +507,68 @@ for wrd in (page_list):
                         print '\n'
                         for i in range(len(alternatives)):
                             wikipedia.output("%3d - %s" % (i, alternatives[i]))
-                    elif choice=='x' and edited:
-                        choice=-3
-                        break
                     else:
-                        if len(choice)>0 and choice[0] == 'r':
-                            replaceit = 1
-                            choice = choice[1:]
-                        else:
-                            replaceit = 0
-                        try:
-                            choice=int(choice)
-                        except ValueError:
-                            pass
-                        else:
-                            break
-                if choice==-1:
-                    # Next link on this page
+                        break
+                
+                if choice == 'e':
+                    # user has edited the page and then pressed 'OK'
+                    edited = True
+                    curpos = 0
                     continue
+                elif choice == 'n':
+                    # skip this page
+                    if primary:
+                        # If run with the -primary argument, skip this occurence next time.
+                        filename = 'disambiguations/' + thispl.urlname() + '.txt'
+                        try:
+                            # Open file for appending. If none exists yet, create a new one.
+                            # The file is stored in the disambiguation/ subdir. Create if necessary.
+                            f = open(makepath(filename), 'a')
+                            f.write(refpl.urlname() + '\n')
+                            f.close()
+                        except IOError:
+                            pass
+                    return True
+                elif choice=='q':
+                    # quit the program
+                    return False
+                elif choice=='s':
+                    # Next link on this page
+                    n -= 1
+                    continue
+                elif choice=='x' and edited:
+                    # Save the page as is
+                    break
+
+                # The link looks like this:
+                # [[page_title|link_text]]trailing_chars
                 page_title = m.group(1)
                 link_text = m.group(2)
+
                 if not link_text:
+                    # or like this: [[page_title]]trailing_chars
                     link_text = page_title
                 trailing_chars = m.group(3)
                 if trailing_chars:
                     link_text += trailing_chars
-                if choice==-2:
+
+                if choice=='u':
                     # unlink
                     reftxt = reftxt[:m.start()] + link_text + reftxt[m.end():]
-                elif choice==-3:
-                    # user has edited page
-                    pass
+                    continue
                 else:
-                    # Normal replacement
+                    if len(choice)>0 and choice[0] == 'r':
+                    # we want to throw away the original link text
+                        replaceit = 1
+                        choice = choice[1:]
+                    else:
+                        replaceit = 0
+
+                    try:
+                        choice=int(choice)
+                    except ValueError:
+                        print '\nUnknown option'
+                        continue
                     new_page_title = alternatives[choice]
                     reppl = wikipedia.PageLink(thispl.code(), new_page_title,
                                                incode = refpl.code())
@@ -570,6 +592,7 @@ for wrd in (page_list):
                     else:
                         newlink = "[[%s|%s]]" % (new_page_title, link_text)
                     reftxt = reftxt[:m.start()] + newlink + reftxt[m.end():]
+                    continue
 
                 wikipedia.output(reftxt[max(0,m.start()-30):m.end()+30])
             if not debug:
