@@ -263,7 +263,9 @@ class Subject:
                 if pl != self.inpl:
                     self.problem('Someone refers to %s with us' % pl.asasciilink())
             elif pl.exists() and not pl.isRedirectPage():
-                if new.has_key(code) and new[code] != pl:
+                if new.has_key(code) and new[code] is None:
+                    print "NOTE: Ignoring %s"%(pl.asasciilink())
+                elif new.has_key(code) and new[code] != pl:
                     self.problem("'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink()))
                     if globalvar.autonomous:
                         return
@@ -320,7 +322,10 @@ class Subject:
                 for line in difflib.ndiff(oldtext.split('\r\n'),newtext.split('\r\n')):
                     if line[0] in ['+','-']:
                         print repr(line)[2:-1]
-            if newtext != oldtext:
+            if newtext == oldtext:
+                if globalvar.backlink:
+                    self.reportBacklinks(new)
+            else:
                 print "NOTE: Replace %s" % self.inpl.asasciilink()
                 if globalvar.forreal:
                     if removing and not globalvar.force:
@@ -603,12 +608,12 @@ if __name__ == "__main__":
         
     if mode == 1:
         inname = '_'.join(inname)
-        if not inname:
+        if not inname and not restore:
             inname = raw_input('Which page to check:')
 
-        inpl = wikipedia.PageLink(wikipedia.mylang, inname)
-
-        sa.add(inpl, hints = hints)
+        if inname:
+            inpl = wikipedia.PageLink(wikipedia.mylang, inname)
+            sa.add(inpl, hints = hints)
     elif mode == 2:
         sa.add(wikipedia.PageLink(wikipedia.mylang, 'Scheikunde'))
         sa.add(wikipedia.PageLink(wikipedia.mylang, 'Wiskunde'))

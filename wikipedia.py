@@ -861,9 +861,9 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
         try:
             i1 = re.search('<textarea[^>]*>', text).end()
         except AttributeError:
-            #print "No text area.",host,address
-            #print repr(text)
-            raise LockedPage(text)
+            print "BUG: Yikes: No text area.",host,address
+            print repr(text)
+            raise NoPage(code, name)
         i2 = re.search('</textarea>', text).start()
         if i2-i1 < 2: # new software
             raise NoPage(code, name)
