@@ -1,3 +1,5 @@
+# -*- coding: utf-8  -*-
+
 import config
 
 # The wikimedia family that is known as wikipedia, the encyclopedia
@@ -233,9 +235,10 @@ category = {
     'da': u'Kategori',
     'de': u'Kategorie',
     'en': u'Category',
+    'hu': u'Kategória',
     'nl': u'Categorie',
     'no': u'Kategori',
-    'fr': u'Cat\xe9gorie',
+    'fr': u'Catégorie',
     'ru': u'Category',
     'sl': u'Category',
     'sv': u'Kategori',
