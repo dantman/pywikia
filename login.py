@@ -30,6 +30,27 @@ import re, sys, getpass
 import httplib
 import wikipedia, config
 
+def makepath(path):
+    """ creates missing directories for the given path and
+        returns a normalized absolute version of the path.
+
+    - if the given path already exists in the filesystem
+      the filesystem is not modified.
+
+    - otherwise makepath creates directories along the given path
+      using the dirname() of the path. You may append
+      a '/' to the path if you want it to be a directory path.
+
+    from holger@trillke.net 2002/03/18
+    """
+    from os import makedirs
+    from os.path import normpath,dirname,exists,abspath
+
+    dpath = normpath(dirname(path))
+    if not exists(dpath): makedirs(dpath)
+    return normpath(abspath(path))
+
+
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
@@ -69,7 +90,7 @@ conn.close()
 #print response.status, response.reason
 #print data
 #print dir(response)
-f=open('%s-login.data' % wikipedia.mylang, 'w')
+f=open(makepath('login-data/%s-login.data' % wikipedia.mylang), 'w')
 n=0
 msg=response.msg
 Reat=re.compile(': (.*?);')
