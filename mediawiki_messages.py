@@ -46,7 +46,6 @@ def get(key, lang = None):
     dictionary = pickle.load(f)
     f.close()
     key = key[0].lower() + key[1:]
-    print dictionary
     if dictionary.has_key(key):
         return dictionary[key]
     else:
