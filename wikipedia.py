@@ -114,7 +114,9 @@ class PageLink:
         return "[[%s:%s]]"%(self.code(),self.linkname())
     
     def get(self):
-        return getPage(self.code(),self.urlname())
+        if not hasattr(self,'_contents'):
+            self._contents=getPage(self.code(),self.urlname())
+        return self._contents
 
     def put(self,newtext,comment=None):
         return putPage(self.code(),self.urlname(),newtext,comment)
@@ -186,7 +188,7 @@ def putPage(code, name, text, comment=None):
             ('wpSummary', comment),
             ('wpMinoredit', '1'),
             ('wpSave', '1'),
-            ('wpEdittime', edittime[code,space2underline(name)]),
+            ('wpEdittime', edittime[code,link2url(name,code)]),
             ('wpTextbox1', text)))
     except KeyError:
         print edittime
@@ -204,8 +206,11 @@ def putPage(code, name, text, comment=None):
     conn.close()
     return response.status, response.reason, data
 
+class MyURLopener(urllib.FancyURLopener):
+    version="RobHooftWikiRobot/1.0"
+    
 def getUrl(host,address):
-    uo=urllib.FancyURLopener()
+    uo=MyURLopener()
     f=uo.open('http://%s%s'%(host,address))
     text=f.read()
     ct=f.info()['Content-Type']
@@ -262,13 +267,13 @@ def getPage(code, name, do_edit=1, do_quote=1):
             print repr(text)
         m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
         if m:
-            edittime[code,space2underline(name)]=m.group(1)
+            edittime[code,link2url(name,code)]=m.group(1)
         else:
             m = re.search('value="(\d+)" name="wpEdittime"',text)
             if m:
-                edittime[code,name]=m.group(1)
+                edittime[code,link2url(name,code)]=m.group(1)
             else:
-                edittime[code,name]=0
+                edittime[code,link2url(name,code)]=0
         try:
             i1 = re.search('<textarea[^>]*>',text).end()
         except AttributeError:
