@@ -276,8 +276,8 @@ def tidy_category():
                 if len(full_text) > length:
                     print ''
                     print 'Original categories: '
-                    for original_cat in article.categories(): 
-                        wikipedia.output('* %s' % original_cat.linkname()) 
+                    for cat in article.categories(): 
+                        wikipedia.output('* %s' % cat.linkname()) 
                     # show more text if the user uses this function again
                     length = length+500
             elif choice[0] == 'u':
