@@ -331,7 +331,8 @@ for arg in sys.argv[1:]:
         # open file and read page titles out of it
         f=open(file)
         for line in f.readlines():
-            page_list.append(line)
+            if line != '\n':           
+                page_list.append(line)
         f.close()
     elif arg.startswith('-pos:'):
         if arg[5]!=':':
@@ -349,14 +350,16 @@ for arg in sys.argv[1:]:
     else:
         page_title.append(arg)
 
-page_title = ' '.join(page_title)
-if page_title != '':
+# if the disambiguation page is given as a command line argument,
+# connect the title's parts with spaces
+if page_title != []:
+     page_title = ' '.join(page_title)
      page_list.append(page_title)
 
+# if no disambiguation pages was given as an argument, and none was
+# read from a file, query the user
 if page_list == []:
-    page_list.append(raw_input('Which pages to check: '))
-
-
+    page_list.append(raw_input('Which page to check: '))
 
 if msg.has_key(wikipedia.mylang):
     msglang = wikipedia.mylang
