@@ -16,7 +16,7 @@ articles will be saved on wikipedia.
 __version__='$Id$'
 
 
-import WdTXMLParser,httplib,wikipedia,re,datetime,xml.sax,fileinput
+import WdTXMLParser,wikipedia,re,datetime,xml.sax,fileinput
 
 DEBUG = 1
 host = "http://wortschatz.uni-leipzig.de/wort-des-tages/RDF/WdT/"
@@ -61,19 +61,36 @@ for file in XMLfiles:
             for line in fileinput.input(localArticleList):
                 if unicode(string.strip(line),"iso-8859-1") == a:
                     skip.append(a)
-                    print "..,skipping ",
+                    print "...skipping ",
                     break
             fileinput.close()
+            if skip.count(a) == 0:
+                try:
+                    pl = wikipedia.PageLink(wikipedia.mylang, a)
+                    text = pl.get()
+                    if len(text) > 500:
+                        skip.append(a)
+                        print "...skipping ",
+                        break
+                    else:
+                        print "...stub ",
+                except wikipedia.NoPage:
+                    continue
+                except:
+                    skip.append(a)
+                    print "...skipping ",
+                    break
     for a in skip:
         del data[a]
+
     if DEBUG >= 2:
         print data
 
     if data:
-        newText = newText + "\n* '''" +  XMLfiles[file] + ":''' \n"
+        newText = newText + "\n* '''" +  XMLfiles[file] + ":''' "
     for a in data:
         newText = newText + "[[" + a + "]] ([" + \
-                  data[a]['link'] + ' ' + data[a]['count'] + ']) \n'
+                  data[a]['link'] + ' ' + data[a]['count'] + ']) '
     if DEBUG >= 2:
         print newText
 
