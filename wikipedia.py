@@ -1286,6 +1286,7 @@ def interwikiFormat(links, insite = None):
         #In this case I might have to change the order
         ar2 = []
         for code in putfirst:
+            # The code may not exist in this family?
             if code in getSite().family.langs:
                 site = insite.getSite(code = code)
                 if site in ar:
@@ -1393,11 +1394,11 @@ def categoryFormat(links, insite = None):
     if not links:
         return ''
     if insite is None:
-        insite.getSite()
+        insite = getSite()
     s = []
     for pl in links:
         s.append(pl.aslink())
-    if Site(default_code).category_on_one_line():
+    if insite.category_on_one_line():
         sep = ' '
     else:
         sep = '\r\n'
