@@ -31,8 +31,6 @@ This script understands various command-line arguments:
     -backlink: check for references between the foreign pages as well, list 
               all those that are missing as WARNINGs.
     -log: log to the file treelang.log as well as printing to the screen.
-    -top: place interwiki links at the top (default)
-    -bottom: place interwiki links at the bottom
 
     Arguments that are interpreted by more bot:
 
@@ -302,7 +300,6 @@ confirm = 0
 autonomous = 0
 untranslated = 0
 backlink = 0
-bottom = 0
 hints = []
 
 for arg in sys.argv[1:]:
@@ -329,10 +326,6 @@ for arg in sys.argv[1:]:
         bell = 0
     elif arg=='-log':
         log = 1
-    elif arg=='-top':
-        bottom = 0
-    elif arg=='-bottom':
-        bottom = 1
     else:
         inname.append(arg)
 
