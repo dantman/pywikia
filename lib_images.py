@@ -192,6 +192,7 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.myencoding()) 	
     # don't upload if we're in debug mode
     if not debug:
+        # WARNING: broken for Wikipedia 1.4 (test.wikipedia.org)
         returned_html = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
                               wikipedia.family.upload_address(wikipedia.mylang),
                               (('wpUploadDescription', description),

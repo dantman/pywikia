@@ -1048,6 +1048,7 @@ def allpages(start = '!'):
         returned_html = getPage(mylang, family.allpagesname(mylang, start), do_quote = False, get_edit_page = False)
         # Try to find begin and end markers
         try:
+            # WARNING: broken for 1.4 (test.wikipedia.org)
             ibegin = returned_html.index('<table')
             iend = returned_html.index('</table')
         except ValueError:
