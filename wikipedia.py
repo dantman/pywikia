@@ -66,7 +66,7 @@ langs = {
     'pt':'pt.wikipedia.org',   # Portuguese, UTF-8
     'ro':'ro.wikipedia.org',   # Romanian, UTF-8
     'ru':'ru.wikipedia.org',   # Russian, UTF-8
-    'simple':'simple.wikipedia.org', # Simple English
+    'simple':'simple.wikipedia.org', # Simple English, UTF-8
     'sl':'sl.wikipedia.org',   # Slovenian, UTF-8
     'sq':'sq.wikipedia.org',   # Albanian (UTF-8?)
     'sr':'sr.wikipedia.org',   # Serbian, UTF-8
@@ -86,11 +86,11 @@ langs = {
 # Languages that are coded in iso-8859-1
 latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
           'ia', 'et', 'eu',
-          'mr', 'id', 'simple', 'gl', 'lv', 'sw',
+          'mr', 'id', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no']
+latin1old = ['la', 'af', 'cs', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no', 'simple']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -138,7 +138,7 @@ special = {
     'pt': 'Especial',
     'ro': 'Special',
     'ru': 'Special',
-    #'simple': '',
+    'simple': 'Special',
     'sl': 'Posebno',
     'sq': 'Special',
     'sr': '%D0%9F%D0%BE%D1%81%D0%B5%D0%B1%D0%BD%D0%BE',
@@ -158,7 +158,7 @@ special = {
 # Wikipedia's out of the list that are not running the phase-III software,
 # given as a list of language codes.
 oldsoftware = ['et', 'eu', 'ga', 'gl', 'ia', 'id', 'lv',
-               'mr', 'nds', 'simple', 'sw', 'tt', 'uk', 'vo']
+               'mr', 'nds', 'sw', 'tt', 'uk', 'vo']
 
 # A few selected big languages for things that we do not want to loop over
 # all languages.
