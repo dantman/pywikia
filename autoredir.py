@@ -1,5 +1,5 @@
 #
-# Script to check language links for years A.D.
+# Automatically make redirect pages for months with capital letters
 #
 # (C) Rob W.W. Hooft, 2003
 # Distribute under the terms of the GPL.
