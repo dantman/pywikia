@@ -22,6 +22,7 @@ langs = {'en':'www.wikipedia.org',
          'ja':'ja.wikipedia.org',
          'sl':'sl.wikipedia.org',
          'ko':'ko.wikipedia.org',
+         'hu':'hu.wikipedia.org',
          'it':'it.wikipedia.com',
          'no':'no.wikipedia.com',
          'pt':'pt.wikipedia.com',
@@ -86,16 +87,18 @@ def space2underline(name):
 def underline2space(name):
     return name.replace('_',' ')
 
-def putPage(code, name, text):
+def putPage(code, name, text, comment=None):
     """Upload 'text' on page 'name' to the 'code' language wikipedia."""
     import httplib
     host = langs[code]
     if host[-4:] == '.com':
         raise Error("Cannot put pages on a .com wikipedia")
     address = '/w/wiki.phtml?title=%s&action=submit'%space2underline(name)
+    if comment is None:
+        comment=action
     try:
         data = urlencode((
-            ('wpSummary', action),
+            ('wpSummary', comment),
             ('wpMinoredit', '1'),
             ('wpSave', '1'),
             ('wpEdittime', edittime[code,space2underline(name)]),
@@ -174,7 +177,7 @@ def getPage(code, name):
         raise NoPage()
     if text[i1:i2] == 'Describe the new page here.\n': # old software
         raise NoPage()
-    Rredirect=re.compile(r'\#redirect +\[\[(.*?)\]\]',re.I)
+    Rredirect=re.compile(r'\#redirect:? +\[\[(.*?)\]\]',re.I)
     m=Rredirect.match(text[i1:i2])
     if m:
         raise IsRedirectPage(m.group(1))
