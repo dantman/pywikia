@@ -26,6 +26,10 @@ Arguments:
 
 	-subst  : file name containing text using to replace
 
+    -maxchanges : number of occurences to replace. Default is 0 means the bot
+                  will replace all occurences of the "search" string in the
+                  given article.
+
 	The text file MUST be encoded using iso-8859-1 for now.
 	
 The others arguments are append to the list of articles.
@@ -40,6 +44,8 @@ TODO:
 
 import sys, re, wikipedia
 
+
+maxchanges = 0
 articlelist = []
 textsearch=""
 textsubst=""
@@ -86,6 +92,8 @@ for arg in sys.argv[1:]:
 	elif arg.startswith('-subst:'):
 		f=open(arg[7:])
 		textsubst = f.read()
+	elif arg.startswith('-maxchanges:'):
+		maxchanges = arg[11:]
 	else:
 		articlelist.append(arg)
 	
@@ -99,7 +107,7 @@ for article in articlelist:
 	except wikipedia.NoPage:
 		print "ERROR: couldn't find " + article
 	
-	newtext = re.sub(unicode(textsearch,'iso-8859-1'), unicode(textsubst,'iso-8859-1'), text, 1)
+	newtext = re.sub(unicode(textsearch,'iso-8859-1'), unicode(textsubst,'iso-8859-1'), text, maxchanges)
 	
 	if newtext!=text:
 		print "Replacing matching text"
