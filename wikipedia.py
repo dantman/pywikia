@@ -354,7 +354,7 @@ class PageLink:
         result = []
         ll = getCategoryLinks(self.get(read_only = True), self.code())
         for catname in ll:
-            result.append(self.__class__(self.code(), linkname=catname))
+            result.append(self.__class__(self.code(), title = catname))
         return result
             
     def __cmp__(self, other):
