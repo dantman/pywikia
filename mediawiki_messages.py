@@ -38,7 +38,7 @@ def get(key, lang = None):
             refresh_messages()
     except OSError:
         # no saved dumped exists yet
-        refresh_messages()
+        refresh_messages(lang)
     # TODO: It's quite inefficient to reload the file every time this function
     # is used. Maybe we can save its content the first time the function is
     # called.
