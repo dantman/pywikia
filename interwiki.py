@@ -379,6 +379,7 @@ class Subject:
                     while 1:
                         answer = raw_input("Use (f)ormer or (l)atter or (n)either or (g)ive up?")
                         if answer.startswith('f'):
+                            new[pl.code()] = temp[pl.code()]
                             break
                         elif answer.startswith('l'):
                             temp[pl.code()] = pl
@@ -414,7 +415,7 @@ class Subject:
             answer = raw_input('%s y(es)/n(o)/a(ll yes)/g(ive up)? '%pl.asasciilink())
         return answer
 
-    def assemblesecondrun(self, previous, askall):
+    def assemblesecondrun(self, previous, askall=False):
         new = previous
         askit = askall
         for pl in self.done.keys():
