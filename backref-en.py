@@ -1,46 +1,64 @@
 import os,wikipedia,sys
 
 codefrom='nl'
-codeto='eo'
+codeto='en'
+mode=3
+word=[]
 
-#pages=open('nltode.dat').readlines()
-#for ff in pages:
-#    f=ff.strip()
-for f in wikipedia.allnlpages(start=sys.argv[1]):
-    print f
+for arg in sys.argv[1:]:
+    if len(arg)==3 and arg[2]==':':
+        codeto=arg[:2]
+    elif arg=='-one':
+        mode=1
+    elif arg=='-file':
+        mode=2
+    elif mode=='-start':
+        mode=3
+    else:
+        word.append(arg)
+
+word=' '.join(word)
+if mode==1:
+    pages=[word]
+elif mode==2:
+    pages=open(word).readlines()
+elif mode==3:
+    pages=wikipedia.allnlpages(start=word)
+else:
+    raise "Please specify one of -one -file or -start"
+
+for f in pages:
+    pl=wikipedia.PageLink(codefrom,name=f)
+    print pl
     sys.stdout.flush()
-    xf=wikipedia.link2url(f,code=codefrom)
-    stdf=wikipedia.url2link(xf,code=codefrom,incode=codefrom)
     try:
-        urlname=wikipedia.link2url(f,code=codefrom)
-        txt=wikipedia.getPage(codefrom,urlname)
-        ll=wikipedia.getLanguageLinks(txt,incode=codefrom)
+        ll=pl.interwiki()
     except wikipedia.IsRedirectPage:
         continue
     except wikipedia.NoPage:
 	print "ERROR: Yikes, does not exist"
         continue
-    for code,name in ll.iteritems():
-        if code==codeto:
+    #print "ll",ll
+    for pl2 in ll:
+        #print "pl2=",pl2
+        if pl2.code()==codeto:
             try:
-                ftxt=wikipedia.getPage(codeto,name)
-                enll=wikipedia.getLanguageLinks(ftxt,incode=codeto)
+                ll2=pl2.interwiki()
             except wikipedia.NoPage:
-                print >> sys.stderr, "%s:%s does not exist, referred from %s:%s"%(codeto,name,codefrom,f)
+                print >> sys.stderr, "%s does not exist, referred from %s"%(pl2,pl)
                 sys.stderr.flush()
             except wikipedia.IsRedirectPage:
-                print >> sys.stderr, "%s:%s is redirect, referred from %s:%s"%(codeto,name,codefrom,f)
+                print >> sys.stderr, "%s is redirect, referred from %s"%(pl2,pl)
                 sys.stderr.flush()
             else:
                 found=0
-                for code2,name2 in enll.iteritems():
-                    if code2==codefrom:
+                for pl3 in ll2:
+                    if pl3.code()==codefrom:
                         found+=1
-                        xf=wikipedia.link2url(name2,code=code2)
-                        stdname2=wikipedia.url2link(xf,code=code2,incode=code)
-                        if stdname2!=stdf:
-                            print >> sys.stderr, "%s:%s does not link to %s:%s but to %s:%s"%(codeto,name,codefrom,f,codefrom,name2)
+                        #print "compare",pl,pl3
+                        if pl3!=pl:
+                            print >> sys.stderr, "%s does not link to %s but to %s"%(pl2,pl,pl3)
                             sys.stderr.flush()
                 if not found:
-                    print >> sys.stderr, "%s:%s does not link to %s:%s"%(codeto,name,codefrom,f)
+                    print >> sys.stderr, "%s does not link to %s"%(pl2,pl)
                     

@@ -83,14 +83,15 @@ class PageLink:
         self._code=code
         if linkname is None and urlname is None and name is not None:
             # Clean up the name, it can come from anywhere.
+            name=name.strip()
             self._urlname=link2url(name,self._code)
             self._linkname=url2link(self._urlname,code=self._code,incode=self._incode)
         elif linkname is not None:
             self._linkname=linkname
             self._urlname=link2url(linkname,self._code)
         elif urlname is not None:
-            self.urlname=urlname
-            self.linkname=url2link(urlname,code=self._code,incode=self._incode)
+            self._urlname=urlname
+            self._linkname=url2link(urlname,code=self._code,incode=self._incode)
 
     def urlname(self):
         return self._urlname
@@ -101,15 +102,35 @@ class PageLink:
     def code(self):
         return self._code
     
-    def str(self):
+    def __str__(self):
         return "%s:%s"%(self._code,url2link(self._urlname,code=self._code,incode='ascii'))
 
+    def __repr__(self):
+        return "PageLink{%s}"%str(self)
+    
     def get(self):
         return getPage(self.code(),self.urlname())
 
     def put(self,newtext,comment=None):
         return putPage(self.code(),self.urlname(),newtext,comment)
-                        
+
+    def interwiki(self):
+        result=[]
+        for newcode,newname in getLanguageLinks(self.get(),incode=self.code()).iteritems():
+            result.append(self.__class__(newcode,linkname=newname))
+        return result
+
+    def __cmp__(self,other):
+        #print "__cmp__",self,other
+        if not self.code()==other.code():
+            return cmp(self.code(),other.code())
+        u1=html2unicode(self.linkname(),language=self.code())
+        u2=html2unicode(other.linkname(),language=other.code())
+        return cmp(u1,u2)
+
+    def __hash__(self):
+        return hash(str(self))
+    
 # Library functions
 def unescape(s):
     if '&' not in s:
@@ -317,9 +338,9 @@ def getLanguageLinks(text,incode=None):
             if m.group(1):
                 t=m.group(1)
                 if '|' in t:
-                    t.replace('|','')
+                    t=t[:t.index('|')]
                 if incode=='eo':
-                    t.replace('xx','x')
+                    t=t.replace('xx','x')
                 result[code] = t
             else:
                 print "ERROR: empty link to %s:"%(code)
