@@ -9,6 +9,13 @@ of the reference to help you make the decision between the
 alternatives. It will ask you to type the number of the appropriate
 replacement, and perform the change robotically.
 
+It is possible to choose to replace only the link (just type the number) or
+replace both link and link-text (type 'r' followed by the number).
+
+Multiple references in one page will be scanned in order, but typing 'n' on
+any one of them will leave the complete page unchanged; it is not possible to
+leave only one reference unchanged.
+
 Command line options:
 
    -pos:XXXX adds XXXX as an alternative disambiguation
