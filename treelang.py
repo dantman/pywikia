@@ -31,6 +31,11 @@ datetable={
     'december':{'en':'December %d','de':'%d. Dezember','fr':'%d decembre','af':'12-%02d'},
 }
 
+yearADfmt={'ja':'%d&#24180;'} # Others default to '%d'
+
+yearBCfmt={'de':'%d v. Chr.','en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
+           'es':'%d adC','eo':'-%d'} # No default
+
 def autotranslate(name,arr):
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
@@ -44,13 +49,45 @@ def autotranslate(name,arr):
             newname=wikipedia.link2url(newname)
             # Put as suggestion into array
             arr[newcode,newname]=None
-            
+        return
+
+    # Autotranslate years A.D.
+    Ryear=re.compile('^\d+$')
+    m=Ryear.match(name)
+    if m:
+        for newcode in wikipedia.langs:
+            fmt = yearADfmt.get(newcode,'%d')
+            newname = fmt%int(m.group(0))
+            newname=wikipedia.link2url(newname)
+            # Put as suggestion into array
+            arr[newcode,newname]=None
+        return
+
+    # Autotranslate years B.C.
+    Ryear=re.compile('^(\d+)_v._Chr.')
+    m=Ryear.match(name)
+    if m:
+        for newcode in wikipedia.langs:
+            fmt = yearBCfmt.get(newcode)
+            if fmt:
+                newname = fmt%int(m.group(1))
+                newname=wikipedia.link2url(newname)
+                # Put as suggestion into array
+                arr[newcode,newname]=None
+        return
+    
 def compareLanguages(old,new):
     removing=[]
     adding=[]
+    modifying=[]
     for code,name in old.iteritems():
         if not new.has_key(code):
             removing.append(code)
+        elif old[code]!=new[code]:
+            oo=wikipedia.url2link(wikipedia.link2url(old[code]))
+            nn=wikipedia.url2link(wikipedia.link2url(old[code]))
+            if oo!=nn:
+                modifying.append(code)
     for code,name in new.iteritems():
         if not old.has_key(code):
             adding.append(code)
@@ -59,9 +96,11 @@ def compareLanguages(old,new):
         s=s+" Adding:"+",".join(adding)
     if removing:
         s=s+" Removing:"+",".join(removing)
+    if modifying:
+        s=s+" Modifying:"+",".join(modifying)
     return s
     
-def treestep(arr,code,name):
+def treestep(arr,code,name,abort_on_redirect=0):
     assert arr[code,name] is None
     try:
         print "Getting %s:%s"%(code,name)
@@ -75,6 +114,8 @@ def treestep(arr,code,name):
         arr[code,name]=''
         return 0
     except wikipedia.IsRedirectPage,arg:
+        if abort_on_redirect and code==mylang:
+            raise
         arg=str(arg)
         newname=arg[0].upper()+arg[1:]
         newname=newname.strip()
@@ -100,6 +141,16 @@ def treestep(arr,code,name):
     
 def treesearch(code,name):
     arr={(code,name):None}
+    # First make one step based on the language itself
+    try:
+        n=treestep(arr,code,name,abort_on_redirect=1)
+    except wikipedia.IsRedirectPage:
+        print "Is redirect page"
+        return
+    if n==0 and not arr[code,name]:
+        print "Mother doesn't exist"
+        return
+    # Then add translations if we survived.
     autotranslate(name,arr)
     modifications=1
     while modifications:
@@ -112,9 +163,13 @@ def treesearch(code,name):
 name=[]
 
 ask=1
+only_if_status=1
+
 for arg in sys.argv[1:]:
     if arg=='-force':
         ask=0
+    if arg=='-always':
+        only_if_status=0
     else:
         name.append(arg)
     
@@ -125,6 +180,9 @@ if not name:
 name=wikipedia.link2url(name)
 
 m=treesearch(mylang,name)
+if not m:
+    print "No matrix"
+    sys.exit(1)
 print "==Result=="
 new={}
 k=m.keys()
@@ -150,13 +208,18 @@ for code,cname in k:
             new[code]=wikipedia.url2link(cname)
 print "==status=="
 if old is None:
+    print "No old languages found. Does the dutch page not exist?"
     sys.exit(1)
 #print old
-print compareLanguages(old,new)
+s=compareLanguages(old,new)
+if not s and only_if_status:
+    print "No changes"
+    sys.exit(1)
+print s
 print "==upload=="
 s=wikipedia.interwikiFormat(new)
 s2=wikipedia.removeLanguageLinks(oldtext)
-if not s2.startswith('\r\n'):
+if s and not s2.startswith('\r\n'):
     s2='\r\n'+s2
 newtext=s+s2
 if debug:
