@@ -3,10 +3,12 @@ Script to upload images to wikipedia.
 
 Arguments:
 
-  -lang:xx Log in to the given wikipedia language
+  -lang:xx Log in to the given wikipedia language to upload to
 
-Any other arguments given are filenames or URLs to get the pictures
-from.
+If any other arguments are given, the first is the URL or filename
+to upload, and the rest is a proposed description to go with the
+upload. If none of these are given, the user is asked for the
+file or URL to upload.
   
 The script will ask for the location of an image, and for a description.
 It will then send the image to wikipedia.
@@ -21,24 +23,25 @@ __version__='$Id$'
 import re,sys
 import wikipedia, lib_images
 
-flist = []
+fn = ''
+desc = []
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
+    elif fn=='':
+        fn = arg
     else:
-        flist.append(arg)
+        desc.append(arg)
 
 if not wikipedia.cookies:
     print "You must be logged in to upload images"
     import sys
     sys.exit(1)
 
-if flist==[]:
+desc=' '.join(desc)
+
+if fn=='':
     fn = raw_input('File or URL where image is now : ')
-    lib_images.get_image(fn, wikipedia.mylang,"")
-else:
-    for fn in flist:
-        print('')
-        print('Uploading: %s')%fn
-        lib_images.get_image(fn, wikipedia.mylang,"")
+
+lib_images.get_image(fn, wikipedia.mylang, desc)
