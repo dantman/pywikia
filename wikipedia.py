@@ -1077,17 +1077,18 @@ def code2encodings(code):
     if code in latin1old:
         return 'utf-8', 'iso-8859-1'
     return code2encoding(code),
-    
+
 def url2link(percentname,incode,code):
     """Convert a url-name of a page into a proper name for an interwiki link
        the argument 'incode' specifies the encoding of the target wikipedia
        """
     result = underline2space(percentname)
     x = url2unicode(result, language = code)
-    if code2encoding(incode) == 'utf-8':
+    e = code2encoding(incode)
+    if e == 'utf-8':
         # utf-8 can handle anything
         return x
-    elif code2encoding(incode) == code2encoding(code):
+    elif e == code2encoding(code):
         #print "url2link", repr(x), "same encoding",incode,code
         return unicode2html(x, encoding = code2encoding(code))
     else:
@@ -1136,7 +1137,7 @@ def link2url(name, code, incode = None):
         result = str(name.encode(code2encoding(code)))
     except UnicodeError:
         print "Cannot convert %s into a URL for %s" % (repr(name), code)
-        # Put entities in there.
+        # Put entities in there. The URL will not be found.
         result = addEntity(name)
         #raise
     result = space2underline(result)
@@ -1227,7 +1228,7 @@ def addEntity(name):
                     result += '&%s;' % k
                     break
             else:
-                raise NoSuchEntity("Cannot locate entity for character %s"%repr(c))
+                result += '&#%d;' % ord(c)
     #print "DBG> addEntity:", repr(name), repr(result)
     return result
 
