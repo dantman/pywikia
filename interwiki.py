@@ -441,11 +441,11 @@ class Subject:
                     self.whereReport(pl2, indent=4)
                     while 1:
                         if acceptall: 
+                            answer = 'a'
+                        else: # accept
                             answer = raw_input("What should be done [(a)ccept, (r)eject, (g)ive up, accept a(l)l] :")
                             if not answer:
                                 answer = 'a'
-                        else: # accept
-                            answer = 'a'
                         if answer in 'lL': # accept all
                             acceptall = True
                             answer = 'a'
