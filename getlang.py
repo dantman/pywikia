@@ -1,9 +1,11 @@
 """
+This is a wikipedia robot.
+
 Script to check language links for years A.D.
 
 This uses the fact that almost all wikipedia's have the years as plain number
 page names and can be trivially translated to check if the equivalent exists in
-another language.
+another language. The exception for the Japanese wikipedia is hard-coded.
 
 The range of years that is checked is given inside the script; there are no
 command line arguments.
