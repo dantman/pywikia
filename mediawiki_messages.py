@@ -35,7 +35,7 @@ def get(key, site = None):
         # Use cached copy if it exists.
         dictionary = loaded[site]
     else:
-        fn = 'mediawiki-messages/mediawiki-messages-%s.dat' % repr(site)
+        fn = 'mediawiki-messages/mediawiki-messages-%s-%s.dat' % (site.family.name, site.lang)
         try:
             # find out how old our saved dump is (in seconds)
             file_age = time.time() - os.path.getmtime(fn)
@@ -106,7 +106,7 @@ def refresh_messages(site):
         print 'Error extracting MediaWiki messages for %s.' % repr(site)
         sys.exit()
     else:
-        f = open(makepath('mediawiki-messages/mediawiki-messages-%s.dat' % repr(site)), 'w')
+        f = open(makepath('mediawiki-messages/mediawiki-messages-%s-%s.dat' % (site.family.name, site.lang)), 'w')
         pickle.dump(dictionary, f)
         f.close()
 
@@ -117,10 +117,7 @@ def refresh_all_messages():
     for filename in filenames:
         match = message_filenameR.match(filename)
         if match:
-            if not ':' in match.group(1):
-                family, lang = 'wikipedia', match.group(1)
-            else:
-                family, lang = match.group(1).split(':')
+            family, lang = match.group(1).split('-')
             site = wikipedia.getSite(code = lang, fam = family)
             refresh_messages(site)
 def main():
