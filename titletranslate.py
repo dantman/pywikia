@@ -29,7 +29,7 @@ yearBCfmt = {'da':'%d f.Kr.','de':'%d v. Chr.',
              'en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
              'es':'%d adC','eo':'-%d','nl':'%d v. Chr.'} # No default
     
-def sametranslate(pl, arr):
+def sametranslate(pl, arr, same):
     for newcode in wikipedia.seriouslangs:
         # Put as suggestion into array
         newname = pl.linkname()
@@ -43,7 +43,7 @@ def sametranslate(pl, arr):
 
 def translate(pl, arr, same = False, hints = None):
     if same:
-        return sametranslate(pl, arr)
+        return sametranslate(pl, arr, same)
     if hints:
         for h in hints:
             codes, newname = h.split(':', 1)

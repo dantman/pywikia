@@ -1009,7 +1009,7 @@ def removeLanguageLinks(text):
         text=re.sub(r'\[\['+code+':([^\]]*)\]\]', '', text)
     m=re.search(r'\[\[([a-z][a-z]):([^\]]*)\]\]', text)
     if m:
-        print "WARNING: Link to unknown language %s name %s"%(m.group(1), m.group(2))
+        print "WARNING: Link to unknown language %s name %s"%(m.group(1), repr(m.group(2)))
     # Remove white space at the beginning
     while 1:
         if text and text.startswith('\r\n'):
