@@ -1652,7 +1652,7 @@ def altlang(code):
         return ['cs']
     if code=='nds':
         return ['de','nl']
-    if code in ['ca','gn','nah']:
+    if code in ['ay','ca','gn','nah','qu']:
         return ['es']
     if code=='eu':
         return ['es','fr']
@@ -1664,6 +1664,8 @@ def altlang(code):
         return ['fr','de']
     if code=='co':
         return ['fr','it']
+    if code=='rm':
+        return ['it','de','fr']
     if code=='fy':
         return ['nl']
     if code=='csb':
@@ -1672,8 +1674,8 @@ def altlang(code):
         return ['ro']
     if code in ['be','lt','lv','uk']:
         return ['ru']
-    if code=='uz':
-        return ['ru','tr']
+    if code in ['ky','tk','ug','uz']:
+        return ['tr','ru']
     if code in ['ja','ko','minnan','za','zh','zh-cn','zh-tw']:
         return ['zh','zh-cn','zh-tw']
     if code=='da':

@@ -16,7 +16,7 @@ class Family(family.Family):
             'af':'af.wikipedia.org',   # Afrikaans
             'als':'als.wikipedia.org', # Alsatian
             'ar':'ar.wikipedia.org',   # Arabic
-            'az':'az.wikipedia.org',   # Azerbaijan
+            'ay':'ay.wikipedia.org',   # Aymara            'az':'az.wikipedia.org',   # Azerbaijan
             'be':'be.wikipedia.org',   # Belorussian
             'bg':'bg.wikipedia.org',   # Bulgarian
             'bh':'bh.wikipedia.org',   # Bhojpuri
@@ -62,13 +62,16 @@ class Family(family.Family):
             'is':'is.wikipedia.org',   # Icelandic
             'it':'it.wikipedia.org',   # Italian
             'ja':'ja.wikipedia.org',   # Japanese
+            'jbo':'jbo.wikipedia.org', # Lojban
             'jv':'jv.wikipedia.org',   # Javanese
             'ka':'ka.wikipedia.org',   # Georgian
             'km':'km.wikipedia.org',   # Khmer
+            'kn':'kn.wikipedia.org',   # Kannada
             'ko':'ko.wikipedia.org',   # Korean
             'ks':'ks.wikipedia.org',   # Ekspreso, but should become Kashmiri
             'ku':'ku.wikipedia.org',   # Kurdish
             'kw':'kw.wikipedia.org',   # Cornish
+            'ky':'ky.wikipedia.org',   # Kirghiz
             'la':'la.wikipedia.org',   # Latin
             'lb':'lb.wikipedia.org',   # Luxembourgish
             'lt':'lt.wikipedia.org',   # Latvian
@@ -91,6 +94,8 @@ class Family(family.Family):
             'om':'om.wikipedia.org',   # Oromo
             'pl':'pl.wikipedia.org',   # Polish
             'pt':'pt.wikipedia.org',   # Portuguese
+            'qu':'qu.wikipedia.org',   # Quechua
+            'rm':'rm.wikipedia.org',   # Romansch
             'ro':'ro.wikipedia.org',   # Romanian
             'roa-rup':'roa-rup.wikipedia.org', # Aromanian
             'ru':'ru.wikipedia.org',   # Russian
@@ -110,6 +115,7 @@ class Family(family.Family):
             'te':'te.wikipedia.org',   # Telugu
             'test':'test.wikipedia.org',
             'th':'th.wikipedia.org',   # Thai
+            'tk':'tk.wikipedia.org',   # Turkmen
             'tl':'tl.wikipedia.org',   # Tagalog
             'tlh':'tlh.wikipedia.org', # Klingon
             'tn':'tn.wikipedia.org',   # Tswana
@@ -117,6 +123,7 @@ class Family(family.Family):
             'tpi':'tpi.wikipedia.org', # Tok Pisin
             'tr':'tr.wikipedia.org',   # Turkish
             'tt':'tt.wikipedia.org',   # Tatar
+            'ug':'ug.wikipedia.org',   # Uyghur
             'uk':'uk.wikipedia.org',   # Ukrainian
             'ur':'ur.wikipedia.org',   # Urdu
             'uz':'uz.wikipedia.org',   # Uzbek
@@ -322,25 +329,42 @@ class Family(family.Family):
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
-        
-        self.alphabetic = ['af','ar','roa-rup','om','bg','be','bn','bs','br',
+
+rm tk ug 
+
+        self.alphabetic = ['af','ar','roa-rup','ay','bg','be','bn','bs','br',
                       'ca','chr','co','cs','cy','da','de','als','et',
                       'el','en','es','eo','eu','fa','fr','fy','ga','gv',
                       'gd','gl','ko','ha','hi','hr','io','id','ia','is','it',
-                      'he','jv','ka','csb','ks','kw','sw','la','lv','lt','hu',
-                      'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
-                      'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
-                      'sa','st','sq','si','simple','sk','sl','sr','su',
-                      'fi','sv','ta','tt','th','tlh','tw','ur','vi','tokipona',
-                      'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
-                      'zh-tw']
+                      'he','jv','kn','ka','csb','ks','kw','ky','sw','la','lv',
+                      'lt','jbo','hu','mk','mg','ml','mi','mr','ms','minnan',
+                      'mn','nah','na','nl','ja','no','nb','oc','om','ug','nds',
+                      'pl','pt','ro','rm','qu','ru','sa','st','sq','si','simple',
+                      'sk','sl','sr','su','fi','sv','ta','tt','th','tlh','tk',
+                      'tw','vi','tokipona','tpi','tr','ur','uk','vo','wa','yi',
+                      'yo','za','zh','zh-cn','zh-tw']
         
         self.interwiki_putfirst = {
             'en': self.alphabetic,
             'fr': self.alphabetic,
             'hu': ['en'],
             'pl': self.alphabetic,
-            'simple': self.alphabetic
+            'simple': self.alphabetic,
+            'fi': ['ab','aa','af','am','ar','an','roa-rup','as','ast','gn','ay',
+                   'az','id','jv','ms','su','ban','bal','bn','ba','be','mr','bh',
+                   'bi','bo','nb','bs','br','bug','bg','ca','chr','cs','ch','che',
+                   'sn','co','za','cy','da','de','di','dz','et','el','en','als',
+                   'es','eo','eu','fa','fo','fr','fy','ga','gv','sm','gd','gl',
+                   'gay','gu','ko','ha','hy','hi','hr','iba','io','ia','iu','ik',
+                   'xh','zu','is','it','he','kl','kn','ka','csb','ks','kaw','kw',
+                   'kk','rw','ky','rn','sw','ku','la','ls','lv','lt','li','ln',
+                   'jbo','mad','hu','mak','mk','ml','mg','mt','mi','min','minnan',
+                   'mo','mn','my','nah','na','fj','ng','nl','ne','ja','no','nn',
+                   'oc','or','om','ug','pa','ps','km','lo','nds','pl','pt','ro',
+                   'rm','qu','ru','sa','sg','st','tn','sq','si','simple','sd','ss',
+                   'sk','sl','sr','fi','sv','tl','ta','tt','te','th','ti','tlh',
+                   'vi','tg','tokipona','tpi','to','tr','tk','tw','ur','uk','uz',
+                   'vo','wa','wo','ts','yi','yo','zh','zh-tw','zh-cn']
             }
         
         # Defaults for Special: and Image: namespace names
