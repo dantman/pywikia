@@ -274,7 +274,7 @@ class PageLink:
     def hashfreeLinkname(self):
         hn=self.hashname()
         if hn:
-            return self.linkname()[:-len(hn)+1]
+            return self.linkname()[:-len(hn)-1]
         else:
             return self.linkname()
             
@@ -504,10 +504,14 @@ class GetAll:
         #print "DBG>", repr(title), timestamp, len(text)
         pl = PageLink(self.code, title)
         for pl2 in self.pages:
+            #print "DBG>", pl, pl2, pl2.hashfreeLinkname()
             if PageLink(self.code, pl2.hashfreeLinkname()) == pl:
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
         else:
+            print title
+            print pl
+            print self.pages
             raise "bug, page not found in list"
         if self.debug:
             xtext = pl2.get()

@@ -101,7 +101,7 @@ class Global:
     confirm = False
     debug = True
     force = False
-    forreal = False
+    forreal = True
     log = config.treelang_log
     minquerysize = 10
     maxquerysize = 60
@@ -361,9 +361,9 @@ class SubjectArray:
         self.counts = {}
         self.generator = None
 
-    def add(self, pl):
+    def add(self, pl, hints = None):
         """Add a single subject to the list"""
-        subj = Subject(pl)
+        subj = Subject(pl, hints = hints)
         self.subjects.append(subj)
         for code in subj.openCodes():
             # Keep correct counters
