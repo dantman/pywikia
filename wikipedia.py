@@ -38,13 +38,19 @@ langs = {'en':'www.wikipedia.org', # English
          'ca':'ca.wikipedia.org', # Catalan
          'fi':'fi.wikipedia.org', # Finnish
          'ia':'ia.wikipedia.org', # Interlingua
-         'et':'et.wikipedia.org', # Ests
+         'et':'et.wikipedia.org', # Estonian
          'eu':'eu.wikipedia.org', # Basque
+         'hr':'hr.wikipedia.org', # Croatian
+         'tr':'tr.wikipedia.org', # Turkish
+         'zh-tw':'zh.wikipedia.org', # Traditional Chinese
+         'zh-cn':'zh.wikipedia.org', # Simplified Chinese
          #'simple':'simple.wikipedia.org', # Simplified english
          #'test':'test.wikipedia.org',
          }
 
-oldsoftware=['it','no','pt','af','fy','la','ca','fi','ia','et','eu','simple']
+oldsoftware=['it','no','pt','af','fy','la','ca','fi','ia','et','eu','simple','nds']
+
+biglangs=['en','pl','da','sv','nl','de','fr','es']
 
 needput = True # Set to True if you want write-access to the Wikipedia.
 
@@ -401,7 +407,7 @@ def interwikiFormat(links):
     return ' '.join(s)+'\r\n'
             
 def code2encoding(code):
-    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl','ro']:
+    if code in ['meta','bs','ru','eo','ja','zh','hi','he','hu','pl','ko','cs','el','sl','ro','hr','tr']:
         return 'utf-8'
     return 'iso-8859-1'
 
