@@ -123,7 +123,7 @@ def treat(to_pl):
     to_text = table + "\n\n" + to_text
     if not debug:
         print "Changing page %s" % (to_pl)
-        to_pl.put(to_text)
+        to_pl.put(to_text, minorEdit='0')
 
 # Regular expression that will match both <table and {|
 startR = re.compile(r"<table|\{\|")

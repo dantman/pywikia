@@ -40,22 +40,38 @@ types = {
             { "en":"[[Scientific classification]]",        "de":"[[Systematik (Biologie)|Systematik]]",      "nl":"[[Taxonomie|Wetenschappelijke  classificatie]]", "fr":u"Classification [[syst\xE9matique]]"        },
             # main taxobox content
             { "en":"[[Domain (biology)|Domain]]:",         "de":u"''[[Dom\xE4ne (Biologie)|Dom\xE4ne]]:''",  "nl":"[[Domain (biologie)|Domain]]:",                  "fr":"??? (domain)"                               },
+            { "en":"Domain:",                              "de":u"''[[Dom\xE4ne (Biologie)|Dom\xE4ne]]:''",  "nl":"[[Domain (biologie)|Domain]]:",                  "fr":"??? (domain)"                               },
             { "en":"[[Kingdom (biology)|Kingdom]]:",       "de":"''[[Reich (Biologie)|Reich]]:''",           "nl":"[[Rijk (biologie)|Rijk]]:",                      "fr":u"[[R\xE8gne (biologie)|R\xE8gne]]:",        },
-            { "en":"[[Division (biology)|Division]]",      "de":"''[[Abteilung (Biologie)|Abteilung]]''",                      },
+            { "en":"Kingdom:",       "de":"''[[Reich (Biologie)|Reich]]:''",           "nl":"[[Rijk (biologie)|Rijk]]:",                      "fr":u"[[R\xE8gne (biologie)|R\xE8gne]]:",        },
+            { "en":"[[Division (biology)|Division]]:",      "de":"''[[Abteilung (Biologie)|Abteilung]]:''",                      },
+            { "en":"Division:",                            "de":"''[[Abteilung (Biologie)|Abteilung]]:''",                                        },
             { "en":"[[Phylum (biology)|Phylum]]:",         "de":"''[[Stamm (Biologie)|Stamm]]:''",           "nl":"[[Stam (biologie)|Stam]]:",                      "fr":"[[Embranchement]]:",                        },
+            { "en":"Phylum:",                              "de":"''[[Stamm (Biologie)|Stamm]]:''",           "nl":"[[Stam (biologie)|Stam]]:",                      "fr":"[[Embranchement]]:",                        },
             { "en":"[[Subphylum]]:",                       "de":"''[[Unterstamm]]:''",                       "nl":"[[Substam (biologie)|Substam]]:",                "fr":"[[Sous-embranchement]]:",                   },
+            { "en":"Phylum:",                              "de":"''[[Unterstamm]]:''",                       "nl":"[[Substam (biologie)|Substam]]:",                "fr":"[[Sous-embranchement]]:",                   },
             { "en":"[[Superclass (biology)|Superclass]]:", "de":u"''[[Klasse (Biologie)|\xDCberklasse]]:''", "nl":"[[Superklasse (biologie)|Superklasse]]:",        "fr":"[[Super-classe (biologie)|Super-classe]]:", },
+            { "en":"Superclass:",                          "de":u"''[[Klasse (Biologie)|\xDCberklasse]]:''", "nl":"[[Superklasse (biologie)|Superklasse]]:",        "fr":"[[Super-classe (biologie)|Super-classe]]:", },
             { "en":"[[Class (biology)|Class]]:",           "de":"''[[Klasse (Biologie)|Klasse]]:''",         "nl":"[[Klasse (biologie)|Klasse]]:",                  "fr":"[[Classe (biologie)|Classe]]:",             },
+            { "en":"Class:",                               "de":"''[[Klasse (Biologie)|Klasse]]:''",         "nl":"[[Klasse (biologie)|Klasse]]:",                  "fr":"[[Classe (biologie)|Classe]]:",             },
             { "en":"[[Subclass]]:",                        "de":"''[[Klasse (Biologie)|Unterklasse]]:''",    "nl":"[[Onderklasse]]:",                               "fr":"[[Sous-classe (biologie)|Sous-classe]]:",   },
-            { "en":"[[Order (biology)|Order]]:",           "de":u"''[[Ordnung (Biologie)|\xDCberordnung]]:''",  "nl":"[[Superorde]]:",       },
+            { "en":"Subclass:",                            "de":"''[[Klasse (Biologie)|Unterklasse]]:''",    "nl":"[[Onderklasse]]:",                               "fr":"[[Sous-classe (biologie)|Sous-classe]]:",   },
+            { "en":"[[Order (biology)|Superorder]]:",      "de":u"''[[Ordnung (Biologie)|\xDCberordnung]]:''",  "nl":"[[Superorde]]:",       },
             { "en":"[[Order (biology)|Order]]:",           "de":"''[[Ordnung (Biologie)|Ordnung]]:''",       "nl":"[[Orde (biologie)|Orde]]:",                      "fr":"[[Ordre (biologie)|Ordre]]:"                },
+            { "en":"Order:",                               "de":"''[[Ordnung (Biologie)|Ordnung]]:''",       "nl":"[[Orde (biologie)|Orde]]:",                      "fr":"[[Ordre (biologie)|Ordre]]:"                },
             { "en":"[[Suborder]]:",                        "de":"''[[Ordnung (Biologie)|Unterordnung]]:''",  "nl":"[[Infraorde (biologie)|Infraorde]]:",            "fr":"[[Sous-ordre (biologie)|Sous-ordre]]:",     },
+            { "en":"Suborder:",                            "de":"''[[Ordnung (Biologie)|Unterordnung]]:''",  "nl":"[[Infraorde (biologie)|Infraorde]]:",            "fr":"[[Sous-ordre (biologie)|Sous-ordre]]:",     },
             { "en":"[[Family (biology)|Family]]:",         "de":"''[[Familie (Biologie)|Familie]]:''",       "nl":"[[Familie (biologie)|Familie]]:",                "fr":"[[Famille (biologie)|Famille]]:",           },
+            { "en":"Family:",                              "de":"''[[Familie (Biologie)|Familie]]:''",       "nl":"[[Familie (biologie)|Familie]]:",                "fr":"[[Famille (biologie)|Famille]]:",           },
             { "en":"[[Subfamily (biology)|Subfamily]]:",   "de":"''[[Familie (Biologie)|Unterfamilie]]:''",  "nl":"[[Onderfamilie]]:",                              "fr":"[[Sous-famille (biologie)|Sous-famille]]:", },
+            { "en":"Subfamily:",                           "de":"''[[Familie (Biologie)|Unterfamilie]]:''",  "nl":"[[Onderfamilie]]:",                              "fr":"[[Sous-famille (biologie)|Sous-famille]]:", },
             { "en":"[[Tribe (biology)|Tribe]]:",           "de":"''[[Tribus (Biologie)|Tribus]]:''",         "nl":"[[Tak (biologie)|Tak]]:",                        "fr":"??? (Tribus)"                               },
+            { "en":"Tribe:",                               "de":"''[[Tribus (Biologie)|Tribus]]:''",         "nl":"[[Tak (biologie)|Tak]]:",                        "fr":"??? (Tribus)"                               },
             { "en":"[[Genus]]:",                           "de":"''[[Gattung (Biologie)|Gattung]]:''",       "nl":"[[Geslacht (biologie)|Geslacht]]:",              "fr":"[[Genre]]:"                                 },
+            { "en":"Genus:",                               "de":"''[[Gattung (Biologie)|Gattung]]:''",       "nl":"[[Geslacht (biologie)|Geslacht]]:",              "fr":"[[Genre]]:"                                 },
             { "en":"[[Subgenus]]:",                        "de":"''[[Gattung (Biologie)|Untergattung]]:''",  "nl":"[[Ondergeslacht]]:",                             "fr":"??? (Sous-genre)"                           },
+            { "en":"Subgenus:",                            "de":"''[[Gattung (Biologie)|Untergattung]]:''",  "nl":"[[Ondergeslacht]]:",                             "fr":"??? (Sous-genre)"                           },
             { "en":"[[Species]]:",                         "de":"''[[Art (Biologie)|Art]]:''",               "nl":"[[Soort]]:",                                     "fr":u"[[Esp\xE8ce]]:"                            },
+            { "en":"Species:",                             "de":"''[[Art (Biologie)|Art]]:''",               "nl":"[[Soort]]:",                                     "fr":u"[[Esp\xE8ce]]:"                            },
             # table headers for subdivisions of the current group
             { "en":"[[Class (biology)|Classes]]",           "de":"[[Klasse (Biologie)|Klassen]]",            "nl":"[[Klasse (biologie)|Klassen]]",                              },
             { "en":"[[Order (biology)|Orders]]",           "de":"[[Ordnung (Biologie)|Ordnungen]]",          "nl":"[[Orde (biologie)|Orden]]",                      "fr":"[[Ordre (biologie)|Ordres]]"                },
@@ -70,6 +86,12 @@ types = {
             { "en":"[[Genus]]",                            "de":"[[Gattung (Biologie)|Gattung]]",            "nl":"[[Geslacht (biologie)|Geslacht]]",               "fr":"[[Genre]]"                                  },
             { "en":"[[Species]]",                          "de":"[[Art (Biologie)|Art]]",                    "nl":"[[Soort]]",                                      "fr":u"[[Esp\xE8ce]]"                             },
         ],
+        "regexes": {
+            "en": {
+                # de: doesn't have conservation status infos
+                "\{\{msg\:Status[^\}]+\}\}": {"de":"", },
+            },
+        },
         "includes": ["images", "taxo_categories"],
     },
 
@@ -91,14 +113,16 @@ types = {
             # classes
             { "en":"[[Aves]]",                          "de":u"[[V\xF6gel]] (Aves)",                  "nl":"Vogels (''[[Aves]]'')",               },
             { "en":"[[Insect]]a",                       "de":"[[Insekten]] (Insecta)",             },
+            { "en":"[[Mammal]]ia",                      "de":u"[[S\xE4ugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
             { "en":"[[Mammalia]]",                      "de":u"[[S\xE4ugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
             { "en":"[[dicotyledon|Magnoliopsida]]",     "de":u"Zweikeimbl\xE4ttrige (Magnoliopsida)", },
             {                                           "de":"Reptilien (Reptilia)",                  "nl":"Reptielen (''[[Reptilia]]'')",  },
         ],
         "regexes": {
             "de": {
-                # change [[Hunde]] (Canidae) to Hunde (''[[Canidae]]'')
-                "\[\[(?P<german>[^\[]+)\]\] \((?P<latin>.+)\)": {"nl":"\g<german> (\'\'[[\g<latin>]]\'\')", },
+                # change [[Hunde]] (Canidae) to Hunde (''[[Canidae]]'') for nl:
+                # and to [[Canidae]] for en:
+                "\[\[(?P<german>[^\[]+)\]\] \((?P<latin>.+)\)": {"en":"[[\g<latin>]]", "nl":"\g<german> (\'\'[[\g<latin>]]\'\')", },
             },
             "nl": {
                 # change Knaagdieren (''[[Rodentia]]'') to [[Knaagdieren]] (Rodentia)
@@ -123,16 +147,21 @@ types = {
 
     # regular expressions for number formats
     "numbers": {
+        "translations": {
+            # miljoen shouldn't be abbreviated on nl:
+            { "en":"Mill.",      "de":"Mio.",    "nl":"miljoen", },
         "regexes": {
             "fr": {
                 # fr uses &nbsp; or space to separate thousands, de uses dots
                 "(?P<pre>\d+)\&nbsp;(?P<block>\d\d\d)": {"de":"\g<pre>.\g<block>", },
                 "(?P<pre>\d+) (?P<block>\d\d\d)": {"de":"\g<pre>.\g<block>", },
             },
-            "de": {
+            "en": {
                 # de uses dots to separate thousands, en uses commas
                 # de uses commas to indicate floating point numbers, en uses dots
-                # no solution for this at the moment
+                # switch both - temporary placeholder required
+#                "(?P<pre>\d+)\,(?P<block>\d\d\d)": {"de":"\g<pre>(TEMP_DOT)\g<block>", },
+#                "(?P<pre>\d+)\.(?P<block>\d\d\d)": {"de":"\g<pre>(TEMP_DOT)\g<block>", },
             },
         },
     },
@@ -154,17 +183,28 @@ types = {
         ]
     },
     
+    # conversion between number formats
+    "dates": {
+        "regexes": {
+            "de": {
+                # dd.mm.yy and dd.mm.yyyy format
+                "(?P<day>\d\d).(?P<month>\d\d).(?P<year>(\d\d)+)": {"nl":"\g<day>-\g<month>-\g<year>", },
+            },
+        },
+    },
+           
+    
    
     # units of measurement etc.
     # only for internal use
     "units": {
         "translations": [
             { "en":"[[Square kilometre|km&sup2;]]",  "de":"[[Quadratkilometer|km&sup2;]]",  "nl":"[[Vierkante kilometer|km&sup2;]]", },
-            { "en":u"[[Square kilometre|km\xB2]]",   "de":u"[[Quadratkilometer|km\xB2]]",   "de":u"[[Vierkante kilometer|km\xB2]]",     },
+            { "en":u"[[Square kilometre|km\xB2]]",   "de":u"[[Quadratkilometer|km\xB2]]",   "nl":u"[[Vierkante kilometer|km\xB2]]",     },
             # million
             { "en":"mill.",                          "de":"Mio.",                            },
             { "en":"as of ",                         "de":"Stand: ",                         },
-            { "en":"years",                          "de":"Jahre",                           "nl":"Jaar"},
+            { "en":"years",                          "de":"Jahre",                           "nl":"jaar"},
         ]
     },
     
@@ -187,7 +227,7 @@ types = {
             { "en":"' north",                              "de":u"' n\xF6rdlicher Breite",        "nl":"' NB" },
             { "en":"' north",                              "de":u"' n\xF6rdl. Breite",            "nl":"' NB" },
             { "en":"' north",                              "de":"' n. Br.",                       "nl":"' NB" },
-            { "en":"' east",                               "de":u"' \xF6stlicher L\xE4nge",           "nl":"' OL" },
+            { "en":"' east",                               "de":u"' \xF6stlicher L\xE4nge",       "nl":"' OL" },
             { "en":"' east",                               "de":u"' \xF6stl. L\xE4nge",           "nl":"' OL" },
             { "en":"' east",                               "de":u"' \xF6. L.",                    "nl":"' OL" },
             { "en":"Map",                                  "de":"Karte",                          "nl":"Kaart",                        },
@@ -198,7 +238,7 @@ types = {
             
     "city": {
         "translations": [
-            { "en":"Base data",                              "de":"Basisdaten"                                                              },
+            { "en":"Base data",                              "de":"Basisdaten",                                "nl":"Basisgegevens",                              },
             { "en":"[[Location]]:",                          "de":"[[Geografische Lage]]:",                    "nl":"Ligging", },
             { "en":"[[Altitude]]:",                          "de":u"[[H\xF6he]]:",                             "nl":"Hoogte:", },
             { "en":"Highest point:",                         "de":u"H\xF6chster Punkt:",                       "nl":"Hoogste punt:",},
@@ -233,11 +273,10 @@ types = {
             {                                                "de":u"[[Ausl\xE4nderanteil]]:",                  "nl":"Percentage buitenlanders",            },
             { "en":"Age distribution:",                      "de":"Altersstruktur:",                           "nl":"Leeftijdsopbouw:",          },
             {                                                "de":"Stadtteile",                                "nl":"wijken"},
-            {                                                "de":"[[Stadtbezirk]]e",                          "nl":"deelgemeenten"},
-            { "en":"Independent",                            "de":"Parteilos",                                 "nl":"geen partij"},
-            { "en":"Region",                                 "de":"[[Region]]",                                "nl":"Landstreek"},
-            
-
+            {                                                "de":"[[Stadtbezirk]]e",                          "nl":"deelgemeenten"                 },
+            {                                                "de":"Stadtbezirke",                              "nl":"deelgemeenten"                 },
+            { "en":"Independent",                            "de":"Parteilos",                                 "nl":"geen partij"             },
+            { "en":"Region",                                 "de":"[[Region]]",                                "nl":"Landstreek"                },
         ],
         "includes": ["images", "geography"],
     },
@@ -262,26 +301,29 @@ types = {
             { "en":"[[Mayor]]:",               "de":u"[[Oberb\xFCrgermeister]]:",           "nl":"[[Burgermeester]]:"},
             # "bis" is used between postal codes
             { "en":" to ",                     "de":" bis ",                                "nl":"t/m"},          
-            # parties
-            { "en":"[[Christian Democratic Union of Germany|CDU]]", "de":"[[CDU]]",                            "nl":"[[Christlich Demokratische Union|CDU]]"},
-            { "en":"[[Social Democratic Party of Germany|SPD]]", "de":"[[SPD]]",                               "nl":"[[Sozialdemokratische Partei Deutschlands|SPD]]"},
-            { "en":"[[Christian Social Union in Bavaria|CSU]]", "de":"[[CSU]]",                                "nl":"[[CSU]]"},
-            { "en":"[[Free Democratic Party of Germany|FDP]]", "de":"[[FDP (Deutschland)|FDP]]",               "nl":"[[FDP]]"},
-            { "en":u"[[German Green Party|B\xFCndnis 90/Die Gr\xFCnen]]", "de":u"[[B\xFCndnis 90/Die Gr\xFCnen]]",   "nl":u"[[Die Gr\xFCnen]]"},
-            { "en":"[[Party of Democratic Socialism|PDS]]",  "de":"[[PDS]]",                                   "nl":"[[PDS]]"},
-            # Bundeslaender
-            { "en":"[[Bavaria]]",               "de":"[[Bayern]]",                          "nl":"[[Beieren]]"},
-            { "en":"[[Bremen (state)|Bremen]]", "de":"[[Bremen (Land)|Bremen]]",            "nl":"[[Bremen]]"},
-            { "en":"[[Hesse]]",                 "de":"[[Hessen]]",                          "nl":"[[Hessen]]"},
-            { "en":"[[Mecklenburg-Western Pomerania]]", "de":"[[Mecklenburg-Vorpommern]]",  "nl":"[[Mecklenburg-Voorpommeren]]"},
-            { "en":"[[Lower Saxony]]",          "de":"[[Niedersachsen]]",                   "nl":"[[Nedersaksen]]"},
-            { "en":"[[North Rhine-Westphalia]]", "de":"[[Nordrhein-Westfalen]]",            "nl":"[[Noordrijn-Westfalen]]"},
-            { "en":"[[Rhineland-Palatinate]]",  "de":"[[Rheinland-Pfalz]]",                 "nl":"[[Rijnland-Palts]]"},
-            { "en":"[[Saxony]]",                "de":"[[Sachsen (Bundesland)|Sachsen]]",    "nl":"[[Saksen (deelstaat)|Saksen]]"},
-            { "en":"[[Saxony-Anhalt]]",         "de":"[[Sachsen-Anhalt]]",                  "nl":"[[Saksen-Anhalt]]"},
-            { "en":"[[Schleswig-Holstein]]",    "de":"[[Schleswig-Holstein]]",              "nl":"[[Sleeswijk-Holstein]]"},
-            { "en":"[[Thuringia]]",             "de":u"[[Th\xFCringen]]",                   "nl":u"[[Th\xFCringen]]",},
+            # some cities have demographic info which is titled "Bevölkerung" (population). The spaces are important
+            # because "Bevölkerung" is also a substring of "Bevölkerungsdichte (population density).
+            {                                  "de":u" Bev\xF6lkerung ",                      "nl":" Demografie ", },
 
+            # parties
+            { "en":"[[Christian Democratic Union of Germany|CDU]]",       "de":"[[CDU]]",                            "nl":"[[Christlich Demokratische Union|CDU]]"},
+            { "en":"[[Social Democratic Party of Germany|SPD]]",          "de":"[[SPD]]",                            "nl":"[[Sozialdemokratische Partei Deutschlands|SPD]]"},
+            { "en":"[[Christian Social Union in Bavaria|CSU]]",           "de":"[[CSU]]",                            "nl":"[[CSU]]"},
+            { "en":"[[Free Democratic Party of Germany|FDP]]",            "de":"[[FDP (Deutschland)|FDP]]",          "nl":"[[FDP]]"},
+            { "en":u"[[German Green Party|B\xFCndnis 90/Die Gr\xFCnen]]", "de":u"[[B\xFCndnis 90/Die Gr\xFCnen]]",   "nl":u"[[Die Gr\xFCnen]]"},
+            { "en":"[[Party of Democratic Socialism|PDS]]",               "de":"[[PDS]]",                            "nl":"[[PDS]]"},
+            # Bundeslaender
+            { "en":"[[Bavaria]]",                                         "de":"[[Bayern]]",                         "nl":"[[Beieren]]"},
+            { "en":"[[Bremen (state)|Bremen]]",                           "de":"[[Bremen (Land)|Bremen]]",           "nl":"[[Bremen]]"},
+            { "en":"[[Hesse]]",                                           "de":"[[Hessen]]",                         "nl":"[[Hessen]]"},
+            { "en":"[[Mecklenburg-Western Pomerania]]",                   "de":"[[Mecklenburg-Vorpommern]]",         "nl":"[[Mecklenburg-Voorpommeren]]"},
+            { "en":"[[Lower Saxony]]",                                    "de":"[[Niedersachsen]]",                  "nl":"[[Nedersaksen]]"},
+            { "en":"[[North Rhine-Westphalia]]",                          "de":"[[Nordrhein-Westfalen]]",            "nl":"[[Noordrijn-Westfalen]]"},
+            { "en":"[[Rhineland-Palatinate]]",                            "de":"[[Rheinland-Pfalz]]",                "nl":"[[Rijnland-Palts]]"},
+            { "en":"[[Saxony]]",                                          "de":"[[Sachsen (Bundesland)|Sachsen]]",   "nl":"[[Saksen (deelstaat)|Saksen]]"},
+            { "en":"[[Saxony-Anhalt]]",                                   "de":"[[Sachsen-Anhalt]]",                 "nl":"[[Saksen-Anhalt]]"},
+            { "en":"[[Schleswig-Holstein]]",                              "de":"[[Schleswig-Holstein]]",             "nl":"[[Sleeswijk-Holstein]]"},
+            { "en":"[[Thuringia]]",                                       "de":u"[[Th\xFCringen]]",                  "nl":u"[[Th\xFCringen]]",},
         ],
         "regexes": {
             "de": {
@@ -290,10 +332,10 @@ types = {
                 "Karte Deutschlands, (?P<city>.+) markiert":                                                         {"en":"Map of Germany, \g<city> marked", "nl":"Kaart van Duitsland met de locatie van \g<city>", },
                 "Karte (?P<city>.+) in Deutschland":                                                                 {"en":"Map of Germany, \g<city> marked", "nl":"Kaart van Duitsland met de locatie van \g<city>", },
                 # nl: doesn't want Municipality Number
-                u"\| +\[\[Amtliche Gemeindekennzahl\]\]\:[ \|\r\n]+[\d -]+[\r\n]+\|[-]+ bgcolor=\"#FFFFFF\"[\r\n]+": {                                        "nl":"", },
+                u"\|[-]+ bgcolor=\"#FFFFFF\"[\r\n]+\| *\[\[Amtliche( Gemeindekennzahl|r Gemeindeschl\xFCssel)\]\]\:[ \|\r\n]+[\d -]+[\r\n]+": {                                        "nl":"", },
             },
         },
-        "includes": ["city"],
+        "includes": ["city", "dates"],
         
     },
     
