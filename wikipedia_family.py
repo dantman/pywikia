@@ -90,6 +90,7 @@ langs = {
     'th':'th.wikipedia.org',   # Thai
     'tl':'tl.wikipedia.org',   # Tagalog
     'tokipona':'tokipona.wikipedia.org', # Toki Pona
+    'tpi':'tpi.wikipedia.org', # Tok Pisin
     'tr':'tr.wikipedia.org',   # Turkish
     'tt':'tt.wikipedia.org',   # Tatar
     'uk':'uk.wikipedia.org',   # Ukrainian
