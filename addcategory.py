@@ -31,9 +31,11 @@ def main():
     print "  ==> %d pages to process"%len(pagenames)
     print
     newcat = raw_input('Category to add (do not give namespace) : ')
+    newcat = newcat[:1].capitalize() + newcat[1:]
+    print newcat
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
     
-    catpl = wikipedia.PageLink(wikipedia.mylang, ns[0]+':'+newcat.capitalize())
+    catpl = wikipedia.PageLink(wikipedia.mylang, ns[0]+':'+newcat)
     print "Will add %s"%catpl.aslocallink()
 
     answer = ''
