@@ -63,6 +63,13 @@ def treat(refpl):
     try:
         reftxt=refpl.get()
     except wikipedia.IsRedirectPage:
+        wikipedia.output('Skipping redirect %s' % refpl.linkname())
+        pass
+    except wikipedia.LockedPage:
+        wikipedia.output('Skipping locked page %s' % refpl.linkname())
+        pass
+    except wikipedia.NoPage:
+        wikipedia.output('Page %s not found' % refpl.linkname())
         pass
     else:
         # Check if template is really used in this article
