@@ -335,7 +335,7 @@ class ReplaceRobot:
                     if not self.acceptall:
                         choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
                         if choice in ['a', 'A']:
-                            acceptall = True
+                            self.acceptall = True
                     if self.acceptall or choice in ['y', 'Y']:
                         pl.put(new_text)
     
