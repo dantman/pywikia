@@ -396,6 +396,8 @@ class PageLink:
                 print "ERROR> link from %s to %s:%s is invalid encoding?!"%(self,newcode,repr(newname))
             except NoSuchEntity:
                 print "ERROR> link from %s to %s:%s contains invalid character?!"%(self,newcode,repr(newname))
+            except ValueError:
+                print "ERROR> link from %s to %s:%s contains invalid unicode reference?!"%(self,newcode,repr(newname))
         return result
 
     def __cmp__(self, other):
@@ -477,7 +479,12 @@ class GetAll:
     addr = '/wiki/%s:Export'
     def __init__(self, code, pages):
         self.code = code
-        self.pages = pages
+        self.pages = []
+        for pl in pages:
+            if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
+                self.pages.append(pl)
+            else:
+                print "BUGWARNING: %s already done!"%pl.asasciilink()
 
     def run(self):
         data = self.getData()
@@ -497,8 +504,9 @@ class GetAll:
         #print "DBG>", repr(title), timestamp, len(text)
         pl = PageLink(self.code, title)
         for pl2 in self.pages:
-            if pl2 == pl:
-                break
+            if PageLink(self.code, pl2.hashfreeLinkname()) == pl:
+                if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
+                    break
         else:
             raise "bug, page not found in list"
         if self.debug:
@@ -516,10 +524,10 @@ class GetAll:
         else:
             m=Rredirect.match(text)
             if m:
-                print "DBG> ",pl2.asasciilink(),"is a redirect page"
+                #print "DBG> ",pl2.asasciilink(),"is a redirect page"
                 pl2._getexception = IsRedirectPage(m.group(1))
             else:
-                if len(text)<100:
+                if len(text)<50:
                     print "DBG> short text in",pl2.asasciilink()
                     print repr(text)
                 hn = pl2.hashname()
@@ -550,7 +558,7 @@ class GetAll:
         headers = {"Content-type": "application/x-www-form-urlencoded", 
                    "User-agent": "RobHooftWikiRobot/1.0"}
         # Slow ourselves down
-        get_throttle()
+        get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
         conn = httplib.HTTPConnection(langs[self.code])
         conn.request("POST", addr, data, headers)
@@ -613,26 +621,37 @@ class Throttle:
         self.delay = delay
         self.ignore = ignore
         self.now = 0
+        self.next_multiplicity = 1.0
 
     def setDelay(self, delay = config.throttle):
         self.delay = delay
         
-    def __call__(self, newdelay = None):
+    def __call__(self, requestsize = 1):
         """This is called from getPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
            since the last time it was called before it returns.
 
            A new delay can be set by calling this function with an argument
            giving the desired delay in seconds."""
-        if newdelay is not None:
-            self.delay = newdelay
-        elif self.ignore > 0:
+        if self.ignore > 0:
             self.ignore -= 1
         else:
+            # Take the previous requestsize in account calculating the desired
+            # delay this time
+            thisdelay = self.next_multiplicity * self.delay
+            # Calculate the multiplicity of the next delay based on how
+            # big the request is that is being posted now.
+            # We want to add "one delay" for each factor of two in the
+            # size of the request. Getting 64 pages at once allows 6 times
+            # the delay time for the server.
+            import math
+            self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
+            # Calculate how long it has been since the last request
             now = time.time()
             ago = now - self.now
-            if ago < self.delay:
-                delta = self.delay - ago
+            # Wait if we need to.
+            if ago < thisdelay:
+                delta = thisdelay - ago
                 if delta > config.noisysleep:
                     print "Sleeping for %.1f seconds" % delta
                 time.sleep(delta)
