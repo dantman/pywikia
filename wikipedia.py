@@ -1,3 +1,4 @@
+#coding: iso-8859-1
 """
 Library to get and put pages on Wikipedia
 """
@@ -89,20 +90,21 @@ latin1old = ['cs', 'sl', 'bs', 'fy', 'vi']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
-special = {'en':'Special',
-           'nl':'Speciaal',
-           'da':'Speciel',
-           'de':'Spezial',
-           'fr':'Special',
-           'fy':'Wiki',
-           'eo':'Speciala',
-           'es':'Especial',
-           'ia':'Special',
-           'it':'Speciale',
-           'pl':'Specjalna',
-           'ro':'Special',
-           'sv':'Special',
-           'test':'Special'
+special = {'en': 'Special',
+           'nl': 'Speciaal',
+           'da': 'Speciel',
+           'de': 'Spezial',
+           'fr': 'Special',
+           'fy': 'Wiki',
+           'hu': 'Speciális',
+           'eo': 'Speciala',
+           'es': 'Especial',
+           'ia': 'Special',
+           'it': 'Speciale',
+           'pl': 'Specjalna',
+           'ro': 'Special',
+           'sv': 'Special',
+           'test': 'Special'
            }
 
 # Wikipedia's out of the list that are not running the phase-III software,
