@@ -6,5 +6,5 @@ text=f.read()
 f.close()
 for hit in R.findall(text):
     if not ':' in hit:
-        if not hit in ['Hoofdpagina','In_het_niews']:
+        if not hit in ['Hoofdpagina','In_het_nieuws']:
             print hit
