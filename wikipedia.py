@@ -576,11 +576,11 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             raise LockedPage(text)
         i2 = re.search('</textarea>', text).start()
         if i2-i1 < 2: # new software
-            raise NoPage()
+            raise NoPage(code, name)
         if debug:
             print text[i1:i2]
         if text[i1:i2] == 'Describe the new page here.\n': # old software
-            raise NoPage()
+            raise NoPage(code, name)
         Rredirect = re.compile(r'\#redirect:? *\[\[(.*?)\]\]', re.I)
         m=Rredirect.match(text[i1:i2])
         if m:
