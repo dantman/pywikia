@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.16 2004/08/20 10:40:32 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.17 2004/10/16 11:37:34 hooft Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -58,7 +58,10 @@ def treat(page):
     except wikipedia.IsRedirectPage:
         pass
     except wikipedia.NoPage:
-        print "Page not found: " + pl.linkname()
+        wikipedia.output(u"Page not found: %s" % pl.aslink())
+        pass
+    except wikipedia.LockedPage:
+        wikipedia.output(u"Page protected: %s" % pl.aslink())
         pass
     else:
         count = 0
