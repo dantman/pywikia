@@ -68,7 +68,7 @@ def get_content_type(filename):
 # Description is the proposed description; if description is empty (''),
 # a description is asked.
 # Returns the filename which was used to upload the image
-def get_image(fn,target,description):
+def get_image(fn, target, description, debug=False):
     uploadaddr='/wiki/%s:Upload'%wikipedia.special[wikipedia.mylang]
     # Get file contents
     uo = wikipedia.MyURLopener()
@@ -97,15 +97,16 @@ def get_image(fn,target,description):
         description = raw_input('Description : ')
         description = unicode(description, config.console_encoding)
     description = description.encode(wikipedia.code2encoding(wikipedia.mylang))
-    print description
 
-    data = post_multipart(wikipedia.langs[wikipedia.mylang],
-                          uploadaddr,
-                          (('wpUploadDescription', description),
-                           ('wpUploadAffirm', '1'),
-                           ('wpUpload','upload bestand')),
-                          (('wpUploadFile',fn,contents),)
-                          )
+    # don't upload if we're in debug mode
+    if not debug:
+        data = post_multipart(wikipedia.langs[wikipedia.mylang],
+                              uploadaddr,
+                              (('wpUploadDescription', description),
+                               ('wpUploadAffirm', '1'),
+                               ('wpUpload','upload bestand')),
+                              (('wpUploadFile',fn,contents),)
+                              )
     return fn
 
 
@@ -145,11 +146,7 @@ def transfer_image(imagelink, target, debug=False):
         description=''
         print "Image does not exist or description page is empty."
     try:
-        if debug:
-            print imagelink.get()
-            return filename
-        else:
-            return get_image(url,target,description)
+        return get_image(url, target, description, debug)    
     except wikipedia.NoPage:
         print "Page not found"
         return filename
