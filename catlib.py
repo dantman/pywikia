@@ -182,6 +182,7 @@ if __name__=="__main__":
 # as well.
 # If new_cat_title is None, the category will be removed.
 def change_category(article, old_cat_title, new_cat_title):
+    print ''
     cats = article.categories()
     sort_key = ''
     removed = False
