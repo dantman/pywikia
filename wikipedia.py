@@ -33,6 +33,7 @@ langs = {'en':'www.wikipedia.org',
          'fi':'fi.wikipedia.com',
          'ia':'ia.wikipedia.com',
          'et':'et.wikipedia.com',
+         'simple':'simple.wikipedia.com',
          #'test':'test.wikipedia.org',
          }
 
@@ -177,7 +178,7 @@ def getPage(code, name):
         raise NoPage()
     if text[i1:i2] == 'Describe the new page here.\n': # old software
         raise NoPage()
-    Rredirect=re.compile(r'\#redirect:? +\[\[(.*?)\]\]',re.I)
+    Rredirect=re.compile(r'\#redirect:? *\[\[(.*?)\]\]',re.I)
     m=Rredirect.match(text[i1:i2])
     if m:
         raise IsRedirectPage(m.group(1))
@@ -214,7 +215,10 @@ def getLanguageLinks(text):
     for code in langs:
         m=re.search(r'\[\['+code+':([^\]]*)\]\]', text)
         if m:
-            result[code] = m.group(1)
+            if m.group(1):
+                result[code] = m.group(1)
+            else:
+                print "ERROR: empty link to %s:"%(code)
     return result
 
 def removeLanguageLinks(text):
@@ -256,6 +260,8 @@ def link2url(name):
     """Convert a interwiki link name of a page to the proper name to be used
        in a URL for that page"""
     import urllib
+    name=name[0].upper()+name[1:]
+    name=name.strip()
     if '%' in name:
         name=url2unicode(name)
     else:
