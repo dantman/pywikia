@@ -32,9 +32,9 @@ elif 1:
     except wikipedia.NoPage:
         pass
     if wikipedia.loggedin:
-        print "Logged in"
+        print "Logged in ("+wikipedia.mylang+".wikipedia.org)"
     else:
-        print "not logged in"        
+        print "Not logged in ("+wikipedia.mylang+".wikipedia.org)"
 elif 0:
     x1='\xb1\xb3\xbf'
     import codecs
