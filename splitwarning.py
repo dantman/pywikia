@@ -15,13 +15,13 @@ wikipedia.stopme() # No need to have me on the stack - I don't contact the wiki
 files={}
 count={}
 # TODO: Variable log filename
-for line in codecs.open('logs/interwiki.log', 'r', 'uft-8'):
+for line in codecs.open('logs/interwiki.log', 'r', 'utf-8'):
     if line[:8] == 'WARNING:':
         code = line.split(':')[1]
         code = code.strip()
         if code in wikipedia.getSite().languages():
             if not files.has_key(code):
-                files[code] = open('warning_%s.log' % code, 'w')
+                files[code] = codecs.open('logs/warning_%s.log' % code, 'w', 'utf-8')
                 count[code] = 0
             files[code].write(line)
             count[code] += 1
