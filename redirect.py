@@ -15,8 +15,9 @@ where action can be one of these:
 
 and argument can be:
 
-* namespace:n - Namespace to process. Works only with a sql dump
 * sql - retrieve information from a local dump (http://download.wikimedia.org).
+* namespace:n - Namespace to process. Works only with a sql dump
+* restart:n - Number of redirect to restart with (see progress). Works only with a sql dump
 
 if this argument isn't given, info will be loaded from the maintenance page of
 the live wiki.
@@ -64,7 +65,7 @@ def get_redirects_from_dump(sqlfilename):
     redirR = wikipedia.redirectRe(wikipedia.getSite())
     for entry in dump.entries():
         if (entry.id % 10000) == 0:
-            print 'Checking entry %s' % (entry.id)
+            print 'Checking page %s' % (entry.id)
         if namespace != -1 and namespace != entry.namespace:
             continue
         if entry.redirect:
@@ -181,10 +182,13 @@ def retrieve_double_redirects(source):
             yield redir_name
     else:
         dict = get_redirects_from_dump(sqlfilename)
+        num = 0
         for (key, value) in dict.iteritems():
+            num = num + 1
             # check if the value - that is, the redirect target - is a
             # redirect as well
-            if dict.has_key(value):
+            if num>restart and dict.has_key(value):
+                print 'Checking redirect %s/%s' % (num, len(dict))
                 yield key
                 
 def fix_double_redirects(source):
@@ -222,6 +226,9 @@ source = None
 # Which namespace should be processed when using a SQL dump
 # default to -1 which means all namespaces will be processed
 namespace = -1
+# at which redirect shall we start searching double redirects again (only with dump)
+# default to -1 which means all redirects are checked
+restart = -1
 for arg in sys.argv[1:]:
     arg = wikipedia.argHandler(arg)
     if arg:
@@ -238,6 +245,8 @@ for arg in sys.argv[1:]:
             source = sqlfilename
         elif arg.startswith('-namespace:'):
             namespace = int(arg[11:])
+        elif arg.startswith('-restart:'):
+            restart = int(arg[9:])
         else:
             print 'Unknown argument: %s' % arg
 
