@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 """
-Library to get and put pages on Wikipedia
+Library to get and put pages on a MediaWiki.
 """
 #
 # (C) Rob W.W. Hooft, Andre Engels, 2003-2004
@@ -23,7 +23,7 @@ loggedin = False
 # is Wikipedia.
 #
 
-exec("import %s_family as family"%config.family)
+exec("import %s_family as family" % config.family)
 
 # Set needput to True if you want write-access to the Wikipedia.
 needput = True 
@@ -902,13 +902,7 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
             x = text # If not editing
             
         # Convert to a unicode string
-        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(charset)
-        try:
-            x,l = decode_func(x)
-        except UnicodeError:
-            print code,name
-            print repr(x)
-            raise 
+        x = unicode(x, charset)
         return x
 
 def languages(first = []):
