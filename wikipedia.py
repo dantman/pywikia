@@ -870,13 +870,6 @@ def getPage(code, name, do_edit = 1, do_quote = 1):
     # Make sure Brion doesn't get angry by slowing ourselves down.
     get_throttle()
     text, charset = getUrl(host,address)
-    # Keep login status for external use
-    if code == mylang:
-        global loggedin
-        if "Userlogin" in text:
-            loggedin = False
-        else:
-            loggedin = True
     # Extract the actual text from the textedit field
     if do_edit:
         if debug:
@@ -1322,12 +1315,20 @@ def setMyLang(code):
     try:
         f = open('%s-login.data' % mylang)
         cookies = '; '.join([x.strip() for x in f.readlines()])
+        loggedin = True
         #print cookies
         f.close()
     except IOError:
         #print "Not logged in"
         cookies = None
+        loggedin = False
 
+def checkLogin():
+    global loggedin
+    txt = getPage(mylang,'Non-existing page', do_edit = 0)
+    loggedin = 'Userlogin' not in txt
+    return loggedin
+    
 def argHandler(arg):
     if arg.startswith('-lang:'):
         setMyLang(arg[6:])
