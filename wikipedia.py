@@ -371,7 +371,7 @@ def interwikiFormat(links):
     return ' '.join(s)+'\r\n'
 
 def code2encoding(code):
-    if code in ['meta','ru','eo','ja','zh','hi','he','hu','pl','ko']:
+    if code in ['meta','ru','eo','ja','zh','hi','he','hu','pl','ko','cs']:
         return 'utf-8'
     return 'iso-8859-1'
 
