@@ -21,7 +21,8 @@ class Family(family.Family):
             }
         
         for lang in self.knownlanguages:
-            self.langs[lang] = lang+'.wiktionary.org'
+            if lang != 'ee':
+                self.langs[lang] = lang+'.wiktionary.org'
         
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
