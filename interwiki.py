@@ -37,6 +37,9 @@ This script understands various command-line arguments:
                    with -start without a -number limit, because you will go through
                    the whole alphabet before any queries are performed!
 
+    -askhints: same as -untranslated, but translations are also asked for pages
+                   that already have translations.
+
     -file:         used as -file:filename, read a list of pages to treat
                    from the named file
                    
@@ -152,6 +155,7 @@ class Global:
     skip = {}
     untranslated = False
     untranslatedonly = False
+    askhints = False
     
 class Subject:
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -292,6 +296,7 @@ class Subject:
         # Check whether we need hints and the user offered to give them
         if self.untranslated and not self.hintsasked:
             print "NOTE: %s does not have any interwiki links" % self.inpl.asasciilink()
+        if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isredirect:
             # Only once! 
             self.hintsasked = True
             if globalvar.untranslated:
@@ -754,6 +759,10 @@ if __name__ == "__main__":
         elif arg == '-untranslatedonly':
             globalvar.untranslated = True
             globalvar.untranslatedonly = True
+        elif arg == '-askhints':
+            globalvar.untranslated = True
+            globalvar.untranslatedonly = False
+            globalvar.askhints = True
         elif arg.startswith('-hint:'):
             hints.append(arg[6:])
         elif arg.startswith('-warnfile:'):
@@ -840,6 +849,7 @@ if __name__ == "__main__":
     except:
         sa.dump('interwiki.dump')
         raise
+
 
 
 
