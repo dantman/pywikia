@@ -17,8 +17,12 @@ See comments below for details.
 import re, sys, string
 import wikipedia, config, catlib, interwiki
 
-
 # Summary messages
+msg_add={
+    'en':u'Robot: Adding [[Category:%s]]',
+    'de':u'Bot: Ergänze [[Kategorie:%s]]',
+    }
+
 msg_change={
     'en':u'Robot: Changing [[Category:%s]]',
     'de':u'Bot: Ändere [[Kategorie:%s]]',
@@ -86,6 +90,9 @@ def add_category(sort_by_last_name = False):
     newcat = wikipedia.input(u'Category to add (do not give namespace):')
     newcat = newcat[:1].capitalize() + newcat[1:]
 
+    # get edit summary message
+    wikipedia.setAction(msg_add[wikipedia.chooselang(wikipedia.mylang, msg_change)] % newcat)
+    
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
     cat_namespace = ns[0].encode(wikipedia.myencoding())
 
@@ -123,7 +130,7 @@ def add_category(sort_by_last_name = False):
                     cats.append(catpl)
                     text = pl2.get()
                     text = wikipedia.replaceCategoryLinks(text, cats)
-                    pl2.put(text, comment = catpl.aslocallink().encode(wikipedia.myencoding()))
+                    pl2.put(text)
 
 def rename_category():
     old_cat_title = wikipedia.input(u'Please enter the old name of the category:')
