@@ -10,7 +10,7 @@ If no first page is specified nor a file of pagenames is given, the procedure
 starts at A (and therefore skips everything that starts with e.g. digits).
 
 If no options are specified at all, treelang is run with the options
--backlink -autonomous.
+-autonomous.
 
 A complete alternative is to run on a file of warnings that are coming from a
 treelang_all run on another wikipedia. Just select the lines from the backlink
@@ -29,7 +29,9 @@ warnings.
 #
 __version__='$Id$'
 #
-import os,wikipedia,sys
+import os,sys
+
+import wikipedia
 
 options=[]
 start=[]
@@ -62,7 +64,7 @@ for arg in sys.argv[1:]:
 if options:
     options=' '.join(options)
 else:
-    options='-backlink -autonomous'
+    options='-autonomous'
 
 if start:
     start='_'.join(start)

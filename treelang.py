@@ -28,9 +28,6 @@ This script understands various command-line arguments:
     -autonomous: run automatically, do not ask any questions. If a question
                  to an operator is needed, write the name of the page
                  to autonomous_problems.dat and terminate.
-    -backlink: check for references between the foreign pages as well, list 
-              all those that are missing as WARNINGs.
-    -log: log to the file treelang.log as well as printing to the screen.
 
     Arguments that are interpreted by more bot:
 
@@ -38,6 +35,15 @@ This script understands various command-line arguments:
            Overwrites the settings in username.dat
     
      All other arguments are words that make up the page name.
+
+Two configuration options can be used to change the workings of this robot:
+
+treelang_backlink: if set to True, all problems in foreign wikipedias will
+                   be reported
+treelang_log:      if set to True, all messages will be logged to a file
+                   as well as being displayed to the screen.
+
+Both these options are set to True by default.
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -46,7 +52,9 @@ This script understands various command-line arguments:
 #
 __version__ = '$Id$'
 #
-import sys, copy, wikipedia, re
+import sys, copy, re
+
+import wikipedia, config
 
 # Summary used in the modification request
 wikipedia.setAction('semi-automatic interwiki script')
@@ -294,12 +302,12 @@ inname = []
 bell = 1
 ask = 1
 same = 0
-log = 0
+log = config.treelang_log
 only_if_status = 1
 confirm = 0
 autonomous = 0
 untranslated = 0
-backlink = 0
+backlink = config.treelang_backlink
 hints = []
 
 for arg in sys.argv[1:]:
@@ -309,8 +317,6 @@ for arg in sys.argv[1:]:
         ask = False
     elif arg == '-always':
         only_if_status = False
-    elif arg == '-backlink':
-        backlink = True
     elif arg == '-same':
         same = True
     elif arg == '-untranslated':
@@ -324,8 +330,6 @@ for arg in sys.argv[1:]:
     elif arg == '-autonomous':
         autonomous = True
         bell = 0
-    elif arg=='-log':
-        log = 1
     else:
         inname.append(arg)
 
