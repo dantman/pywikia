@@ -186,14 +186,20 @@ def change_category(article, old_cat_title, new_cat_title):
     sort_key = ''
     for cat in cats:
         cattext=':'.join(cat.linkname().split(':')[1:])
+        removed = False
         if cattext == old_cat_title:
             # because a list element is removed, the iteration will skip the 
             # next element. this might lead to forgotten categories, but
             # usually each category should only appear once per article.
             cats.remove(cat)
+            removed = True
         elif cattext.startswith(old_cat_title + '|'):
             sort_key = cat.catname().split('|', 1)[1]
             cats.remove(cat)
+            removed = True
+    if not removed:
+        wikipedia.output('ERROR: %s is not in category %s!' % (article.linkname(), old_cat_title))
+        return
     if new_cat_title != None:
         if sort_key == '':
             new_cat = CatLink(new_cat_title)
