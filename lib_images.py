@@ -153,7 +153,13 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
             pass
     if not keep:
         print "The filename on wikipedia will default to:", fn
-        newfn = wikipedia.input(u'Better name:')
+        # ask newfn until it's valid
+        while True:
+            newfn = wikipedia.input(u'Better name:')
+            if '/' in newfn:
+                print "Invalid character: '/'. Please try again"
+            else:
+                break
         if newfn != '':
             fn = newfn
     # Wikipedia doesn't allow spaces in the file name.
@@ -168,7 +174,7 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
     else:
         print ("The suggested description is:")
         print
-        print wikipedia.output(description)
+        wikipedia.output(description)
         print
         print ("Enter return to use this description, enter a text to add something")
         print ("at the end, or enter = followed by a text to replace the description.")
@@ -180,25 +186,32 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         else:
             description=description+' '+newtext
 
-    # try to encode the description to the encoding used by the home Wikipedia.
+    formdata = {}
+    formdata["wpUploadDescription"] = description
+    if wikipedia.version() >= '1.4':
+        formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
+        formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
+    else:
+        formdata["wpUploadAffirm"] = "1"
+    formdata["wpUpload"] = "upload bestand"
+    formdata["wpIgnoreWarning"] = "1"
+
+    # try to encode the strings to the encoding used by the home Wikipedia.
     # if that's not possible (e.g. because there are non-Latin-1 characters and
     # the home Wikipedia uses Latin-1), convert all non-ASCII characters to
     # HTML entities.
-    try:
-        description = description.encode(wikipedia.myencoding())
-    except UnicodeEncodeError:
-        description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.myencoding())
-    except UnicodeDecodeError:
-        description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.myencoding()) 	
+    for key in formdata:
+        assert isinstance(key, basestring), "ERROR: %s is not a string but %s" % (key, type(key))
+        try:
+            formdata[key] = formdata[key].encode(wikipedia.myencoding())
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            formdata[key] = wikipedia.UnicodeToAsciiHtml(formdata[key]).encode(wikipedia.myencoding())
+
     # don't upload if we're in debug mode
     if not debug:
-        # WARNING: broken for Wikipedia 1.4 (test.wikipedia.org)
         returned_html = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
                               wikipedia.family.upload_address(wikipedia.mylang),
-                              (('wpUploadDescription', description),
-                               ('wpUploadAffirm', '1'),
-                               ('wpIgnoreWarning', '1'),
-                               ('wpUpload','upload bestand')),
+                              formdata.items(),
                               (('wpUploadFile',fn,contents),)
                               )
         # do we know how the "success!" HTML page should look like?
