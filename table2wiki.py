@@ -7,11 +7,16 @@ Nifty script to convert HTML-tables to Wikipedia's syntax.
 -file:filename
     will read any [[wikipedia link]] and use these articles
 
-SQL-Querie
-SELECT CONCAT('"', cur_title, '"')
+SQL-Query
+
+SELECT CONCAT('[[', cur_title, ']]')
        FROM cur
-       WHERE cur_text LIKE '%<table%'
+       WHERE (cur_text LIKE '%<table%'
+         OR cur_text LIKE '%<TABLE%')
+         AND cur_title REGEXP "^[A-N]"
+         AND cur_namespace=0
        ORDER BY cur_title
+       LIMIT 500
 
 
 FEATURES
@@ -55,8 +60,14 @@ for arg in sys.argv[1:]:
                 print "ERROR: Did not understand %s line:\n%s" % (
                     arg[6:], repr(line))
         f.close()
+    elif arg.startswith('-skip:'):
+        articles = articles[articles.index(arg[6:]):]
     elif wikipedia.argHandler(arg):
         pass
+    elif arg.startswith('-auto'):
+        config.table2wikiAskOnlyWarnings = True
+        config.table2wikiSkipWarnings = True
+        print "Automatic mode!\n"
     else:
         articles.append(arg)
 for article in articles:
@@ -73,7 +84,7 @@ for article in articles:
             continue
         warnings = 0
         newText = text
-        
+
         ##################
         # bring every <tag> into one single line.
         num = 1
@@ -84,11 +95,11 @@ for article in articles:
 
         ##################
         # every open-tag gets a new line.
-        newText = re.sub("(\<[tT]{1}[dDhHrR]{1}([\w\W]*?)\>[\w\W]*?)",
+        newText = re.sub("(\<[tT]{1}[dDhHrR]{1}([\w\W]*?)\>)",
                          "\r\n\\1", newText, 0)
-        
 
-            
+
+
         ##################
         # the <table> tag
         newText = re.sub("[\r\n]*?\<(TABLE|table) ([\w\W]*?)>([\w\W]*?)<(tr|TR)>",
@@ -102,7 +113,7 @@ for article in articles:
         # end </table>
         newText = re.sub("[\s]*<\/(TABLE|table)\>", "\r\n|}", newText, 0)
 
-        
+
         ##################
         # captions
         newText = re.sub("<caption ([\w\W]*?)>([\w\W]*?)<\/caption>",
@@ -126,7 +137,7 @@ for article in articles:
         newText, n = re.subn("[\r\n]+<(th|TH)([^>]*?)\>([\w\W]*?)\n",
                              "\n!\\2 | \\3\n", newText, 0)
         warnings = warnings + n
-        
+
 
         ##################
         # normal <td>
@@ -166,7 +177,7 @@ for article in articles:
         newText, n = re.subn("([\r\n]+\!\ [^\r\n]*?[\r\n]+)(\|\ )",
                              "\\1|-----\r\n\\2", newText, 0)
         warnings = warnings + n
-        
+
 
         ##################
         # most <th> come with '''title'''. Senseless in my eyes cuz
@@ -191,10 +202,10 @@ for article in articles:
         # kills trailing spaces and tabs
         newText = re.sub("([^\|])[\t\ ]+[\r\n]+", "\\1\r\n", newText, 0)
         # kill extra new-lines
-        newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
+        newText = re.sub("[\r\n]{4,}(\!|\|)", "\r\n\\1", newText, 0);
 
         ##################        
-        # shortening if <table> had no articleuments/parameters
+        # shortening if <table> had no arguments/parameters
         newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\[| ", newText, 0)
         # shortening if <td> had no articles
         newText = re.sub("[\r\n]+\|[\ ]+\| ", "\r\n| ", newText, 0)
@@ -215,7 +226,7 @@ for article in articles:
         # proper attributes
         num = 1
         while num != 0:
-            newText, num = re.subn(r'([\r\n]+(\!|\||\{\|)[^\r\n\|]+)[ ]+\=[ ]+([a-zA-Z0-9%]>]+)(\s)',
+            newText, num = re.subn(r'([\r\n]+(\!|\||\{\|)[^\r\n\|]+)[ ]+\=[ ]+([a-zA-Z0-9%]+)(\s)',
                                    '\\1="\\3"\\4', newText, 0)
         # again proper attributes
         num = 1
@@ -233,7 +244,7 @@ for article in articles:
                          "\\1 \\2", newText, 0)
 
         ##################
-        # kill additional spaces within articleuments
+        # kill additional spaces within arguments
         num = 1
         while num != 0:
             newText, num = re.subn("\n(\||\!)([^|\r\n]*?)[ \t]{2,}([^\r\n]+?)",
@@ -245,9 +256,9 @@ for article in articles:
         if config.splitLongParagraphs:
             num = 1
             while num != 0:
-                newText, num = re.subn("(\r\n[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{100,})",
+                newText, num = re.subn("(\r\n[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{200,})",
                                        "\\1\r\n\\2", newText, 0)
-                
+
         ##################
         if newText!=text:
             import difflib
@@ -259,17 +270,17 @@ for article in articles:
                                           newText.split('\n')):
                     if line[0] in ['+','-']:
                         print unicode(repr(line)[2:-1])
-                    
-            #print "\nOriginal text\n" + text
-            #print "\nModified text\n" + newText
 
             if config.table2wikiAskOnlyWarnings and warnings == 0:
                 doUpload="y"
             else:
-                print "There were " + str(warnings) + " replacement(s) that\
- might result bad output"
-                doUpload=raw_input('Is it correct? [y|N]')
-
+                if config.table2wikiSkipWarnings:
+                    doUpload="n"
+                else:
+                    print "There were " + str(warnings) + " replacement(s) that"
+                    print " might result bad output"
+                    doUpload=raw_input('Is it correct? [y|N]')
+                    
 
             if doUpload == 'y':
                 warn = ""
