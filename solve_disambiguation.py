@@ -87,7 +87,9 @@ ignore={
           'Wikipedia:Multiple-place names (Z)',
           'Wikipedia:Non-unique personal name'),
     'da':('Wikipedia:Links til sider med flertydige titler'),
-    'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie ')
+    'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie',
+          'Wikip\xE9dia:Homonymie',
+          'Liste de toutes les combinaisons de deux lettres')
     }
 
 def getReferences(pl):
