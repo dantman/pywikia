@@ -8,9 +8,9 @@ import httplib
 import wikipedia, config, mediawiki_messages
 
 copy_message = {
-    "en":u"This image was copied from the %s Wikipedia. The original description was:\r\n\r\n%s",
-    "de":u"Dieses Bild wurde von der %s-Wikipedia kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
-    "nl":u"Afbeelding gekopieerd vanaf Wikipedia-%s. De beschrijving daar was:\r\n\r\n%s",
+    "en":u"This image was copied from %s. The original description was:\r\n\r\n%s",
+    "de":u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
+    "nl":u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
 }
 
 '''
@@ -241,7 +241,8 @@ def transfer_image(imagelink, debug=False):
     if debug: print "URL should be: %s" % url
     # localize the text that should be printed on the image description page
     try:
-        description = wikipedia.translate(wikipedia.mylang, copy_message) % (imagelink.code(), imagelink.get())
+        original_description = imagelink.get(read_only = True)
+        description = wikipedia.translate(wikipedia.mylang, copy_message) % (wikipedia.family.langs[imagelink.code()], original_description)
         # add interwiki link
         description += "\r\n\r\n" + imagelink.aslink()
     except wikipedia.NoPage:
