@@ -1613,6 +1613,18 @@ def checkLogin():
     return loggedin
     
 def argHandler(arg):
+    '''
+    Takes a commandline parameter, converts it to unicode, and returns it unless
+    it is one of the global parameters as -lang or -throttle. If it is a global
+    parameter, processes it and returns None.
+    '''
+    if sys.platform=='win32':
+        # stupid Windows gives parameters encoded as windows-1252, but input
+        # encoded as cp850
+        arg = unicode(arg, 'windows-1252')
+    else:
+        # Linux uses the same encoding for both
+        arg = unicode(arg, config.console_encoding)
     if arg.startswith('-family:'):
         setFamily(arg[8:])
     elif arg.startswith('-lang:'):
@@ -1621,11 +1633,9 @@ def argHandler(arg):
         get_throttle.setDelay(int(arg[10:]))
     elif arg.startswith('-putthrottle:'):
         put_throttle.setDelay(int(arg[13:]))
-    elif arg == '-nil':
-        return 1
     else:
-        return 0
-    return 1
+        return arg
+    return None
 
 #########################
 # Interpret configuration 
