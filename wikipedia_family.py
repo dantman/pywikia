@@ -245,10 +245,11 @@ category = {
     'da': u'Kategori',
     'de': u'Kategorie',
     'en': u'Category',
+    'fr': u'Catégorie',
     'hu': u'Kategória',
+    'is': u'Flokkur',
     'nl': u'Categorie',
     'no': u'Kategori',
-    'fr': u'Catégorie',
     'sl': u'Category',
     'sv': u'Kategori',
     'test': u'Category'
