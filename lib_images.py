@@ -12,7 +12,7 @@ copy_message = {
     'en':u"This image was copied from %s. The original description was:\r\n\r\n%s",
     'de':u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
     'nl':u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
-    'pt':u"Esta imagem foi copiada de %s. A descrição original foi:\r\n\r\n%s",
+    'pt':u"Esta imagem foi copiada de %s. A descriï¿½ï¿½o original foi:\r\n\r\n%s",
 }
 
 def post_multipart(host, selector, fields, files, cookies): # UGLY COPY
@@ -223,7 +223,7 @@ def transfer_image(imagelink, debug=False):
     # localize the text that should be printed on the image description page
     try:
         original_description = imagelink.get(read_only = True)
-        description = wikipedia.translate(imagelink.site(), copy_message) % (repr(imagelink.site()), original_description)
+        description = wikipedia.translate(wikipedia.getSite(), copy_message) % (repr(imagelink.site()), original_description)
         # add interwiki link
         description += "\r\n\r\n" + imagelink.aslink()
     except wikipedia.NoPage:
