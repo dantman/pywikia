@@ -93,7 +93,7 @@ langs = {
     'ur':'ur.wikipedia.org',   # Urdu
     'vi':'vi.wikipedia.org',   # Vietnamese
     'vo':'vo.wikipedia.org',   # Volapuk
-    'wa':'wikipedia.walon.org',   # Walon
+    'wa':'wa.wikipedia.org',   # Walon
     'xh':'xh.wikipedia.org',   # isiXhosa
     'yi':'yi.wikipedia.org',   # Yiddish
     'zh':'zh.wikipedia.org',   # Chinese
