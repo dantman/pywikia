@@ -78,11 +78,8 @@ def translate(pl, arr, same = False, hints = None):
             elif newcode == 'la':
                 # la pages are not years but numbers
                 pass
-            elif newcode in ['eu', 'gl', 'mr', 'id', 'lv', 'sw', 'tt', 'zh']:
+            elif newcode in ['mr', 'id', 'lv', 'sw', 'tt']:
                 # years do not exist
-                pass
-            elif newcode == 'nds' and i<2000 or i>2010:
-                # nds years do not exist except for 2003
                 pass
             else:
                 newname = fmt%i 
