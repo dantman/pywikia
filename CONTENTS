@@ -1,0 +1,40 @@
+autoredir.py : Make redirect pages for capitalized months like [[1 Januari]]
+backref-en.py : List all pages for which nl:->xx: does not correspond to
+                   xx:->nl: Which language it checks is given in the script. 
+extract_names.py : A program to make a list of 480 pagenames based on a html 
+                   file that is the result of a Special:Allpages request.
+getlang.py : Get interwiki links for years AD
+parsepopular.py : Make statistics based on 2 html dumps of most popular
+                  pages.
+test.py : Misc testing
+treelang_all.py : A script that runs treelang.py for each of 
+                  the pages in the NL: wikipedia. Might need minor changes
+                  to work in your environment
+treelang.py : The core of the general interwiki robot.
+wikipedia.py : The wikipedia library
+yearlayout.py : An old robot used to change the layout of all nl: year pages.
+
+treelang.py understands various command-line arguments:
+    -force: do not ask permission to make changes
+    -always: make changes even when a single byte is changed in the page,
+             not only when one of the links has a significant change.
+    -same: try to translate the page to other languages by testing whether
+           a page with the same name exists on each of the other known 
+           wikipedias
+    -hint: used as -hint:de:Anweisung to give the robot a hint where to
+           start looking for translations
+    -name: similar to -same, but UPPERCASE the last name for eo:
+    -untranslated: only run on untranslated pages, and interactively ask
+                   for a translation hints on such pages.
+    -confirm: ask for confirmation in all cases. Without this argument, 
+              additions and unambiguous modifications are made without
+              confirmation.
+    -autonomous: run automatically, do not ask any questions. If a question
+                 to an operator is needed, write the name of the page
+                 to autonomous_problems.dat and terminate.
+
+     All other arguments are words that make up the page name.
+
+All of the programs have "nl:" as their default. It may take a little or 
+a lot to make them run on other wikipedias. Be especially careful if your
+wikipedia uses UTF-8, as that has not been tested at all.
