@@ -397,7 +397,9 @@ def treeview(cat, max_depth, current_depth = 0, supercat = None):
     result += ('#' * current_depth)
     result += '[[:%s|%s]]' % (cat.linkname(), cat.linkname().split(':', 1)[1])
     result += ' (%d)' % len(get_articles(cat))
-    supercats = get_supercats(cat)
+    # We will remove an element of this array, but will need the original array
+    # later, so we create a shallow copy with [:]
+    supercats = get_supercats(cat)[:]
     # If the current cat is not our tree's root
     if supercat != None:
         # Find out which other cats are supercats of the current cat
@@ -418,7 +420,7 @@ def treeview(cat, max_depth, current_depth = 0, supercat = None):
             result += treeview(subcat, max_depth, current_depth + 1, supercat = cat)
     else:
         if get_subcats(cat) != []:
-            result += '#' * (current_depth + 1) + '[...]'
+            result += '#' * (current_depth + 1) + '[...]\n'
     return result
 
 def print_treeview(catname, max_depth = 10):
