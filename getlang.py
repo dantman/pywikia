@@ -1,3 +1,4 @@
+#coding: iso-8859-1
 """
 This is a wikipedia robot.
 
@@ -7,8 +8,9 @@ This uses the fact that almost all wikipedias have the years as plain number
 page names and can be trivially translated to check if the equivalent exists in
 another language. The exception for the Japanese wikipedia is hard-coded.
 
-The range of years that is checked is given inside the script; there are no
-command line arguments.
+The range of years that is checked defaults to 1 through 2040. It can be changed
+using the command line arguments -start:X and -end:Y. Like many other robots, the
+home wikipedia can be changed using the -lang:XX argument.
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -18,12 +20,6 @@ command line arguments.
 __version__='$Id$'
 #
 import sys,copy,wikipedia
-
-# languages to check for missing links and modify
-mylangs = (wikipedia.mylang, )
-
-# selection of years to check
-years = range(1,2040+1)
 
 # Set to 1 to actually change the pages
 forreal = 1
@@ -38,7 +34,7 @@ def findlangs(year):
     text={}
     print year,"=",
     missing=0
-    for code in wikipedia.languages(mylangs):
+    for code in wikipedia.languages((wikipedia.mylang,)):
         print code+":", ; sys.stdout.flush()
         try:
             if code=='ja':
@@ -46,16 +42,16 @@ def findlangs(year):
             else:
                 t=wikipedia.getPage(code,year)
         except wikipedia.NoPage:
-            if code in mylangs:
+            if code==wikipedia.mylang:
                 missing+=1
-                if missing==len(mylangs):
+                if missing==1:  #len(mylangs):
                     # None of the mylangs has this page. Doesn't make sense.
                     print
                     return None,None
         except wikipedia.IsRedirectPage,arg:
-            if code in mylangs:
+            if code==wikipedia.mylang:
                 missing+=1
-                if missing==len(mylangs):
+                if missing==1: #len(mylangs):
                     # None of the mylangs has this page. Doesn't make sense.
                     print
                     return None,None
@@ -102,29 +98,65 @@ def missingLanguages(m,line,thiscode):
             print "WARNING: %s reference to %s is %s and not %s"%(thiscode,code,name,line[code])
     return result
 
-def compareLanguages(old,new):
-    removing=[]
-    adding=[]
-    for code,name in old.iteritems():
-        if not new.has_key(code):
+
+msg = {
+    'en':('Adding','Removing','Modifying'),
+    'nl':('Erbij','Eraf','Anders'),
+    'da':('Tilføjer','Fjerner','Ændrer'),
+    'fr':('Ajoute','Retire','Modifie')
+    }
+    
+def compareLanguages(old, new):
+    """This is a copy of a routine from treelang.py"""
+    global confirm
+    removing = []
+    adding = []
+    modifying = []
+    for code in old.keys():
+        if code not in new.keys():
+            confirm += 1
             removing.append(code)
-    for code,name in new.iteritems():
-        if not old.has_key(code):
-            adding.append(code)
-    s=""
+        elif old[code] != new[code]:
+            modifying.append(code)
+
+    for code2 in new.keys():
+        if code2 not in old.keys():
+            adding.append(code2)
+    s = ""
     if adding:
-        s=s+" Adding:"+",".join(adding)
-    if removing:
-        s=s+" Removing:"+",".join(removing)
+        s = s + " %s:" % (msg[msglang][0]) + ",".join(adding)
+    if removing: 
+        s = s + " %s:" % (msg[msglang][1]) + ",".join(removing)
+    if modifying:
+        s = s + " %s:" % (msg[msglang][2]) + ",".join(modifying)
     return s
 
-for year in years:
+starty = 1
+endy = 2040
+
+for arg in sys.argv[1:]:
+    if wikipedia.argHandler(arg):
+        pass
+    elif arg.startswith('-start:'):
+        starty = int(arg[7:])
+    elif arg.startswith('-end:'):
+        endy = int(arg[5:])
+    else:
+        print "Unknown argument",arg
+        sys.exit(1)
+
+if msg.has_key(wikipedia.mylang):
+    msglang = wikipedia.mylang
+else:
+    msglang = 'en'
+
+for year in range(starty, endy + 1):
     text,m=findlangs(str(year))
     if m is None:
         # None of the mylangs has this page
         continue
     proper=assemblelangmatrix(m)
-    for mycode in mylangs:
+    for mycode in (wikipedia.mylang,):
         if mycode in m: # Page must be present in this language
             ml=copy.copy(proper)
             status=compareLanguages(m[mycode],ml)
@@ -138,6 +170,6 @@ for year in years:
             if newtext!=text[mycode]:
                 print "NOTE: Replacing %s: %s"%(mycode,s)
                 if forreal:
-                    status,reason,data=wikipedia.putPage(mycode,str(year),newtext)
+                    status,reason,data=wikipedia.putPage(mycode,str(year),newtext,"Robot"+status)
                     if str(status)!='302':
                         print status,reason
