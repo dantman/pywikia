@@ -55,18 +55,17 @@ class _CatLink(wikipedia.PageLink):
     
     #returns a list of all articles in this category
     def articles(self, recurse = 0):
-        ns = wikipedia.family.category_namespaces(wikipedia.mylang)
         articles = []
         titles = self.catlist(recurse)
         for title in titles:
-            for ins in ns:
+            is_category = False
+            for namespace in wikipedia.family.category_namespaces(wikipedia.mylang):
                 # if the current link points to a subcategory
-                if title.startswith(ins + ':'):
-                    # don't return this link
-                    titles.remove(title)
-        for title in titles:
-            npage = wikipedia.PageLink(self.code(), title)
-            articles.append(npage)
+                if title.startswith(namespace + ':'):
+                    is_category = True
+            if not is_category:
+                npage = wikipedia.PageLink(self.code(), title)
+                articles.append(npage)
         return articles
 
      #TODO: create supercategories() function
