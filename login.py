@@ -28,7 +28,7 @@ __version__='$Id$'
 
 import re,sys
 import httplib
-import wikipedia
+import wikipedia,config
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
@@ -42,7 +42,7 @@ print "Logging in to ",wikipedia.family.hostname(wikipedia.mylang)
 username=raw_input('username: ')
 password=raw_input('password: ')
 
-if wikipedia.mylang=='en':
+if wikipedia.mylang=='en' and config.family=='wikipedia':
     pl=wikipedia.PageLink('en','Wikipedia:Bots')
     text=pl.get()
     if not '[[User:%s'%username in text:

@@ -19,8 +19,8 @@ debug = 0
 loggedin = False
 
 #
-# This looks configurable, but the only family supported right now
-# is the "wikipedia" family
+# Import the user's family. If not changed in user_config, the family
+# is Wikipedia.
 #
 
 exec("import %s_family as family"%config.family)

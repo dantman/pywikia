@@ -14,6 +14,7 @@ __version__ = '$Id$'
 # ===========
 # The family of sites we are working on. wikipedia.py will import xxx_family.py
 # so if you want to change this variable, you need to write such a file.
+# There exists a file for wikitravel.
 family = 'wikipedia'
 # The language
 mylang = 'test'
@@ -57,7 +58,7 @@ treelang_log = True
 
 # Slow down the robot such that it never requests a second page within
 # 'throttle' seconds.
-throttle = 10
+throttle = 5
 # Slow down the robot such that it never makes a second change within
 # 'put_throttle' seconds.
 put_throttle = 60
