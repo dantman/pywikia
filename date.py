@@ -1,4 +1,4 @@
-#coding: utf-8
+﻿#coding: utf-8
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -198,16 +198,44 @@ days_in_month = {
 
 # format for dates B.C., required for interwiki.py with the -years argument and for titletranslate.py
 yearBCfmt = {
+                'af':'%d VAE',
+                'bg':'%d &#1075;. &#1087;&#1088;.&#1085;.&#1077;.',
+                'bs':'%d p.ne.',
+                'ca':'%d aC',
 		'da':'%d f.Kr.',
 		'de':'%d v. Chr.',
 		'en':'%d BC',
-		'fr':'-%d',
-		'pl':'%d p.n.e.',
-		'es':'%d adC',
 		'eo':'-%d',
+		'es':'%d adC',
+                'et':'%d eKr',
+                'fi':'%d eaa',
+		'fr':'-%d',
+                'he':'%d &#1500;&#1508;&#1504;&#1492;"&#1505;',
+                'hr':'%d p.n.e.',
+		'is':'%d f. Kr.',
+                'it':'%d AC',
+                'ko':'%d&#45380;',
+                'la':'%d a.C.n',
+                'lb':'-%d',
+                'nds':'%d v. Chr.',
 		'nl':'%d v. Chr.',
-		'is':'%d f. Kr.'
+                'no':'%d f.Kr.',
+		'pl':'%d p.n.e.',
+                'pt':'%d a.C.',
+                'ru':'%d &#1076;&#1086; &#1085;.&#1101;.',
+                'sv':'%d f.Kr.',
+                'zh':'&#21069;%d&#24180;'
 } # No default
+
+# For all languages the maximal value a year BC can have; before this date the
+# language switches to decades or centuries
+maxyearBC = {
+                'ca':500,
+		'de':400,
+		'en':499,
+		'nl':1000,
+		'pl':776
+            }
 
 # format for dates A.D., required for interwiki.py with the -years argument
 # if a language is not listed here, interwiki.py assumes '%d' as the date format.

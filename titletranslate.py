@@ -113,15 +113,23 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         return
 
     # Autotranslate years B.C.
-    if wikipedia.mylang == 'nl' and auto:
-        Ryear = re.compile('^(\d+)_v._Chr.')
+    if date.yearBCfmt.has_key(wikipedia.mylang) and auto:
+        dt=date.yearBCfmt[wikipedia.mylang]
+        dt = re.compile('%d').sub('(\d+)',dt)
+        Ryear = re.compile(dt)
         m = Ryear.match(pl.linkname())
         if m:
+            m = int(m.group(1))
             for newcode in wikipedia.family.seriouslangs:
-                fmt = date.yearBCfmt.get(newcode)
-                if fmt:
-                    newname = fmt % int(m.group(1))
-                    x=wikipedia.PageLink(newcode, newname)
-                    if x not in arr:
-                        arr[x] = None
+                include = True
+                if date.maxyearBC.has_key(newcode):
+                    if m > date.maxyearBC[newcode]:
+                        include = False
+                if include:
+                    fmt = date.yearBCfmt.get(newcode)
+                    if fmt:
+                        newname = fmt % m
+                        x=wikipedia.PageLink(newcode, newname)
+                        if x not in arr:
+                            arr[x] = None
             return
