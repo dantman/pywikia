@@ -2327,7 +2327,7 @@ def checkLogin(site = None):
         site = getSite()
     return site.loggedin(check=True)
     
-def argHandler(arg, botname = 'bot'):
+def argHandler(arg, logname = 'default.log'):
     '''
     Takes a commandline parameter, converts it to unicode, and returns it unless
     it is one of the global parameters as -lang or -throttle. If it is a global
@@ -2350,11 +2350,12 @@ def argHandler(arg, botname = 'bot'):
     elif arg.startswith('-putthrottle:'):
         put_throttle.setDelay(int(arg[13:]),absolute = True)
     elif arg == '-log':
+        activateLog(logname)
+    elif arg.startswith('-log:'):
+        activateLog(arg[5:])
+    elif arg == '-nolog':
         global logfile
-        try:
-            logfile = codecs.open('logs/%s.log' % botname, 'a', 'utf-8')
-        except IOError:
-            logfile = codecs.open('logs/%s.log' % botname, 'w', 'utf-8')
+        logfile = None
     else:
         return arg
     return None
@@ -2546,6 +2547,13 @@ def showColorDiff(oldtext, newtext):
             output(lastline)
             lastline = None
     printLastLine(lastline, lastcolor)
+    
+def activateLog(logname):
+    global logfile
+    try:
+        logfile = codecs.open('logs/%s' % logname, 'a', 'utf-8')
+    except IOError:
+        logfile = codecs.open('logs/%s' % logname, 'w', 'utf-8')
     
 def output(text, decoder = None, newline = True):
     """Works like print, but uses the encoding used by the user's console
