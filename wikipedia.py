@@ -104,6 +104,7 @@ langs = {
     'test':'test.wikipedia.org',
     'th':'th.wikipedia.org',   # Thai
     'tl':'tl.wikipedia.org',   # Tagalog
+    'tokipona':'tokipona.wikipedia.org', # Toki Pona
     'tr':'tr.wikipedia.org',   # Turkish
     'tt':'tt.wikipedia.org',   # Tatar
     'uk':'uk.wikipedia.org',   # Ukrainian
@@ -287,8 +288,8 @@ interwiki_putfirst = {
           'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
           'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
           'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
-          'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
-          'zh-tw'],
+          'tt','th','ur','vi','tokipona','tr','uk','vo','yi',
+          'zh','zh-cn','zh-tw'],
     'fr':['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
           'de','als','et','el','en','es','eo','eu','fa','fr',
           'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
@@ -296,8 +297,8 @@ interwiki_putfirst = {
           'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
           'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
           'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
-          'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
-          'zh-tw'],
+          'tt','th','ur','vi','tokipona','tr','uk','vo','yi',
+          'zh','zh-cn','zh-tw'],
     'hu':['en'],
     'pl':['af','ar','om','bg','bn','bs','ca','co','cs','cy','da',
           'de','als','et','el','en','es','eo','eu','fa','fr',
@@ -306,8 +307,8 @@ interwiki_putfirst = {
           'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
           'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
           'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
-          'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
-          'zh-tw'],
+          'tt','th','ur','vi','tokipona','tr','uk','vo','yi',
+          'zh','zh-cn','zh-tw'],
     }
 
 # Local exceptions
