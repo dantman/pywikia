@@ -11,6 +11,7 @@ SELECT CONCAT('"', cur_title, '"')
 
 KNOW BUGS
 Broken HTML-tables will most likely result in broken wiki-tables!
+Please check every article you change.
 
 """
 
@@ -19,7 +20,7 @@ Broken HTML-tables will most likely result in broken wiki-tables!
 # Distribute under the terms of the PSF license.
 __version__='$Id$'
 
-import re,sys,wikipedi
+import re,sys,wikipedia
 
 mylang = 'de'
 myComment = 'User-controlled Bot: table syntax updated'
@@ -79,18 +80,24 @@ for arg in sys.argv[1:]:
         # Garbage collecting ;-)
         newText = re.sub("[\r\n]*\<\/[Tt][rRdDhH]\>", "", newText, 0)
 
+        # OK, that's only theory but works most times.
+        # Most browsers assume that <th> gets a new row and we do the same
+        newText = re.sub("\n\|([\S\s]*?)\n\!", "|\\1\r\n|-----\r\n!",
+                         newText, 0)
+
         # kills spaces after | or ! or {|
-        newText = re.sub("\n\|[\s]*\n", "\r\n| ", newText, 0)
+
+        newText = re.sub("[\r\n]+\|[\s]*\n", "\r\n| ", newText, 0)
         # kill extra new-lines
-        newText = re.sub("[\r\n]*\n(\!|\|)", "\r\n\\1", newText, 0);
+        newText = re.sub("[\r\n]+(\!|\|)", "\r\n\\1", newText, 0);
         # shortening if <table> had no arguments/parameters
-        newText = re.sub("\n\{\|\ \| ", "\r\n\[| ", newText, 0)
+        newText = re.sub("[\r\n]+\{\|\ \| ", "\r\n\[| ", newText, 0)
         # shortening if <td> had no args
-        newText = re.sub("\n\|\ \| ", "\r\n| ", newText, 0)
+        newText = re.sub("[\r\n]+\|\ \| ", "\r\n| ", newText, 0)
         # shortening if <th> had no args
         newText = re.sub("[\r\n]+\!\ \| ", "\r\n! ", newText, 0)
         # merge two short <td>s (works only once :-(
-        newText = re.sub("\n(\| [^\n\r]{1,30})[\r\n]+\| ([^\r\n]{1,30})[\r\n]+",
+        newText = re.sub("[\r\n]+(\| [^\n\r]{1,30})[\r\n]+\| ([^\r\n]{1,30})[\r\n]+",
                          "\r\n\\1 || \\2\r\n", newText, 0)
         # ain't working, yet
 #        newText = re.sub('(\{\|[\w\W]*?\=)([^"][^ >]*)(.*?\|\})',
