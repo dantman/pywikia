@@ -1,8 +1,10 @@
 """
 Script to extract all wiki page names a certain HTML file points to
 
-This can be used to run another script over a series of wikipedia pages
-that is mentioned in a list.
+The output can be used as input to some robot that takes a list of pages as input.
+
+This script takes a single file name argument, the file should be a HTML file
+as captured from one of the wikipedia servers.
 """
 #
 # (C) Rob W.W. Hooft, 2003

@@ -1,4 +1,6 @@
 """
+This is a wikipedia robot.
+
 Automatically make redirect pages for months with capital letters
 
 This is a specialized one-time only robot that is tailored for the Dutch
