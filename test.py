@@ -19,6 +19,12 @@ if 0:
     print status,reason
 
 if 1:
+    for arg in sys.argv[1:]:
+        if wikipedia.argHandler(arg):
+            pass
+        else:
+            print "Unknown argument",arg
+            sys.exit(1)
     try:
         wikipedia.getPage(wikipedia.mylang,'Non-existing page')
     except wikipedia.NoPage:
