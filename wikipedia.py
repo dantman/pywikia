@@ -661,7 +661,16 @@ class GetAll(object):
                 if self.code == 'eo':
                     if pl.hashfreeLinkname() <> pl.hashfreeLinkname(doublex = True):
                         # Maybe we have used x-convention when we should not?
-                        pl.get(force = True)
+                        try:
+                            pl.get(force = True)
+                        except NoPage:
+                            pass
+                        except IsRedirectPage,arg:
+                            pass
+                        except LockedPage:
+                            pass
+                        except SectionError:
+                            pass
                     else:
                         pl._getexception = NoPage
                 else:
