@@ -4,22 +4,25 @@ import family, config
 # SouthernApproachWiki, a wiki about Zürich Airport.
 
 class Family(family.Family):
-    name = 'southernapproach'
-    
-    langs = {
-        'de':'www.southernapproach.ch',
+    def __init__(self):
+        family.Family.__init__(self)
+        self.name = 'southernapproach'
+        
+        self.langs = {
+            'de':'www.southernapproach.ch',
         }
-
-    # A few selected big languages for things that we do not want to loop over
-    # all languages. This is only needed by the titletranslate.py module, so
-    # if you carefully avoid the options, you could get away without these
-    # for another wikimedia family.
-
-    biglangs = ['de']
+            
+        # Most namespaces are inherited from family.Family.
+        
+        self.namespaces[4] = {
+            '_default': u'SouthernApproachWiki',
+        }
+        self.namespaces[5] = {
+            '_default': u'SouthernApproachWiki Diskussion',
+        }
 
     def version(self, code):
         return "1.4"
 
     def path(self, code):
         return '/wiki/index.php'
-

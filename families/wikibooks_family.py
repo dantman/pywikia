@@ -1,14 +1,14 @@
 # -*- coding: utf-8  -*-
-
 import urllib
 import family, config
 
 # The wikimedia family that is known as Wikibooks
 
 class Family(family.Family):
-    name = 'wikibooks'
 
     def __init__(self):
+        family.Family.__init__(self)
+        self.name = 'wikibooks'
         # Known wikibooks languages, given as a dictionary mapping the language code
         # to the hostname of the site hosting that wiktibooks. For human consumption,
         # the full name of the language is given behind each line as a comment
@@ -122,185 +122,15 @@ class Family(family.Family):
             'zh-tw':'zh.wikibooks.org', # Traditional Chinese
             }
 
-        # Translation used on all Wikipedias for the different namespaces.
+        # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
-        self.namespaces = {
-            -2: {
-                '_default': u'Media',
-            },
-            -1: {
-                '_default': u'Special',
-                'af': u'Spesiaal',
-                'ar': u'Ø®Ø§Øµ',
-                'bg': u'Ð¡Ð¿ÐµÑ†Ð¸Ð°Ð»Ð½Ð¸',
-                'bn': u'à¦¬à¦¿à¦¶à§‡à¦·',
-                'ca': u'Especial',
-                'cs': u'SpeciÃ¡lnÃ­',
-                'csb': u'SpecjalnÃ´',
-                'cy': u'Arbennig',
-                'da': u'Speciel',
-                'de': u'Spezial',
-                'eo': u'Speciala',
-                'es': u'Especial',
-                'et': u'Eri',
-                'fa': u'ÙˆÛŒÚ˜Ù‡',
-                'fi': u'Toiminnot',
-                'fy': u'Wiki',
-                'ga': u'Speisialta',
-                'he': u'×ž×™×•×—×“',
-                'hi': u'à¤µà¤¿à¤¶à¥‡à¤·',
-                'hu': u'SpeciÃ¡lis',
-                'id': u'Istimewa',
-                'it': u'Speciale',
-                'ja': u'ç‰¹åˆ¥',
-                'ko': u'íŠ¹ìˆ˜ê¸°ëŠ¥',
-                'la': u'Specialis',
-                'ms': u'Istimewa',
-                'nb': u'Spesial',
-                'nl': u'Speciaal',
-                'no': u'Spesial',
-                'oc': u'Especial',
-                'pl': u'Specjalna',
-                'pt': u'Especial',
-                'ru': u'Ð¡Ð¿ÐµÑ†Ð¸Ð°Ð»ÑŒÐ½Ñ‹Ðµ',
-                'sk': u'Å peciÃ¡lne',
-                'sl': u'Posebno',
-                'sq': u'Speciale',
-                'sr': u'ÐŸÐ¾Ñ�ÐµÐ±Ð½Ð¾',
-                'uk': u'Ð¡Ð¿ÐµÑ†Ñ–Ð°Ð»ÑŒÐ½Ñ–',
-                'ta': u'à®šà®¿à®±à®ªà¯�à®ªà¯�',
-                'th': u'à¸žà¸´à¹€à¸¨à¸©',
-                'wa': u'SipeciÃ¥s',
-            },
-            0: {
-                '_default': None,
-            },
-            1: {
-                '_default': 'Talk',
-                'de': u'Diskussion',
-                'nl': u'Overleg',
-                'pt': u'DiscussÃ£o'
-            },
-            2: {
-                '_default': u'User',
-                'de': u'Benutzer',
-                'nl': u'Gebruiker',
-                'pt': u'UsuÃ¡rio'
-            },
-            3: {
-                '_default': u'User talk',
-                'de': u'Benutzer Diskussion',
-                'pt': u'UsuÃ¡rio DiscussÃ£o'
-            },
-            4: {
-                '_default': u'Wikibooks'
-            },
-            5: {
-                '_default': u'Wikibooks talk',
-                'pt': u'Wikibooks DiscussÃ£o'
-            },
-            6: {
-                # TODO: convert all percent-encoded titles to plaintext
-                '_default': u'Image',
-                'af': u'Beeld',
-                'ar': u'ØµÙˆØ±Ø©',
-                'bg': u'ÐšÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ°',
-                #'bn': To be checked,
-                'ca': u'Imatge',
-                'cs': u'Soubor',
-                'csb': u'Ã’brÃ´zk',
-                'cy': u'Delwedd',
-                'da': u'Billede',
-                'de': u'Bild',
-                'eo': u'Dosiero',
-                'es': u'Imagen',
-                'et': u'Pilt',
-                'fa': u'ØªØµÙˆÛŒØ±',
-                'fi': u'Kuva',
-                'fr': u'Image',
-                'fy': u'Ofbyld',
-                'ga': u'Ã�omhÃ¡',
-                'he': u'×ª×ž×•× ×”',
-                'hi': u'à¤šà¤¿à¤¤à¥�à¤°',
-                'hu': u'KÃ©p',
-                'ia': u'Imagine',
-                'id': u'Imej',
-                'it': u'Immagine',
-                'ja': u'ç”»åƒ�',
-                'ko': u'ê·¸ë¦¼',
-                'la': u'Imago',
-                'ms': u'Imej',
-                'nb': u'Bilde',
-                'nl': u'Afbeelding',
-                'no': u'Bilde',
-                'oc': u'Image',
-                'pl': u'Grafika',
-                'pt': u'Imagem',
-                'ro': u'Imagine',
-                'ru': u'Ð˜Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ',
-                'sk': u'ObrÃ¡zok',
-                'sl': u'Slika',
-                'sq': u'Figura',
-                'sr': u'Ð¡Ð»Ð¸ÐºÐ°',
-                'sv': u'Bild',
-                'ta': u'à®ªà®Ÿà®¿à®®à®®à¯�',
-                'th': u'à¸ à¸²à¸ž',
-                'wa': u'ImÃ¥dje',
-            },
-            7: {
-                '_default': u'Image talk',
-                'de': u'Bild Diskussion',
-                'pt': u'Imagem DiscussÃ£o'
-            },
-            8: {
-                '_default': u'MediaWiki',
-                'bg': u'ÐœÐµÐ´Ð¸Ñ�Ð£Ð¸ÐºÐ¸',
-            },
-            9: {
-                '_default': u'MediaWiki talk',
-                'de': u'MediaWiki Diskussion',
-                'pt': u'MediaWiki DiscussÃ£o'
-            },
-            10: {
-                '_default':u'Template',
-                'de':u'Vorlage',
-                'nl':u'Sjabloon',
-                'pt':u'PredefiniÃ§Ã£o'
-            },
-            11: {
-                '_default': u'Template talk',
-                'de': u'Vorlage Diskussion',
-                'pt': u'PredefiniÃ§Ã£o DiscussÃ£o'
-            },
-            12: {
-                '_default': u'Help',
-                'de': u'Hilfe',
-                'pt': u'Ajuda',
-            },
-            13: {
-                '_default': u'Help talk',
-                'de': u'Hilfe Diskussion',
-                'pt': u'Ajuda DiscussÃ£o',
-            },
-            14: {
-                '_default': u'Category',
-                'da': u'Kategori',
-                'de': u'Kategorie',
-                'es': u'CategorÃ­a',
-                'fr': u'CatÃ©gorie',
-                'hu': u'KategÃ³ria',
-                'is': u'Flokkur',
-                'nl': u'Categorie',
-                'no': u'Kategori',
-                'pt': u'Categoria',
-                'sv': u'Kategori'
-            },
-            15: {
-                '_default': u'Category talk',
-                'de': u'Kategorie Diskussion',
-                'pt': u'Categoria DiscussÃ£o'
-            },
+        self.namespaces[4] = {
+            '_default': u'Wikibooks',
+        },
+        self.namespaces[5] = {
+            '_default': u'Wikibooks talk',
+            'pt': u'Wikibooks DiscussÃ£o',
         }
 
         # Which languages have a special order for putting interlanguage links,

@@ -7,7 +7,13 @@ import family
 class Family(family.Family):
     name = 'meta'
     def __init__(self):
-    	self._addlang('meta',
-			location = 'meta.wikimedia.org',
-			namespaces = { 4: u'Meta',
-			              5: u'Meta talk' })
+        self.langs = {
+            'meta': 'meta.wikimedia.org',
+        }
+        
+        self.namespaces[4] = {
+            '_default': 'Meta',
+        }
+        self.namespaces[5] = {
+            '_default': 'Meta talk',
+        }

@@ -8,12 +8,21 @@ import family, config
 class Family(family.Family):
     name = 'wikitravel'
     
-    langs = {
-        'de':'de',
-        'en':'en',
-        'fr':'fr',
-        'ro':'ro',
-        'sv':'sv',
+    def __init__(self):
+        family.Family.__init__(self)
+        self.langs = {
+            'de':'de',
+            'en':'en',
+            'fr':'fr',
+            'ro':'ro',
+            'sv':'sv',
+        }
+        self.namespaces[4] = {
+            '_default': 'Wikitravel',
+        }
+        self.namespaces[5] = {
+            '_default': 'Wikitravel talk',
+            'de': 'Wikitravel Diskussion',
         }
 
     # A few selected big languages for things that we do not want to loop over

@@ -2,12 +2,18 @@
 
 import family
 
-# The commons family
+# The Wikimedia Commons family
 
 class Family(family.Family):
     name = 'commons'
     def __init__(self):
-    	self._addlang('commons',
-                      location = 'commons.wikimedia.org',
-                      namespaces = { 4: u'Commons',
-                                     5: u'Commons talk' })
+        self.langs = {
+            'commons': 'commons.wikimedia.org',
+        }
+        
+        self.namespaces[4] = {
+            '_default': 'Commons',
+        }
+        self.namespaces[5] = {
+            '_default': 'Commons talk',
+        }    def __init__(self):

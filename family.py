@@ -1,232 +1,270 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import config, urllib
 
 # Parent class for all wiki families
 
-class Family(object):
-    # Note that if mylang is 'commons', it is automatically added.
-    langs = {}
+class Family:
+    def __init__(self):
+        # Note that if mylang is 'commons', it is automatically added.
+        self.langs = {}
         
-    # Translation used on all Wikipedias for the different namespaces.
-    # (Please sort languages alphabetically)
-    # You only need to enter translations that differ from _default.
-    namespaces = {
-        -2: {
-            '_default': u'Media',
-        },
-        -1: {
-            '_default': u'Special',
-            'af': u'Spesiaal',
-            'ar': u'خاص',
-            'bg': u'Специални',
-            'bn': u'বিশেষ',
-            'ca': u'Especial',
-            'cs': u'Speciální',
-            #'csb': u'Specjalnô',
-            'cy': u'Arbennig',
-            'da': u'Speciel',
-            'de': u'Spezial',
-            'eo': u'Speciala',
-            'es': u'Especial',
-            'et': u'Eri',
-            'fa': u'ویژه',
-            'fi': u'Toiminnot',
-            'fy': u'Wiki',
-            'ga': u'Speisialta',
-            'he': u'מיוחד',
-            'hi': u'विशेष',
-            'hu': u'Speciális',
-            'id': u'Istimewa',
-            'it': u'Speciale',
-            'ja': u'特別',
-            'ko': u'특수기능',
-            'la': u'Specialis',
-            'ms': u'Istimewa',
-            'nb': u'Spesial',
-            'nl': u'Speciaal',
-            'no': u'Spesial',
-            'oc': u'Especial',
-            'pl': u'Specjalna',
-            'pt': u'Especial',
-            'ru': u'Специальные',
-            'sk': u'Špeciálne',
-            'sl': u'Posebno',
-            'sq': u'Speciale',
-            'sr': u'Посебно',
-            'uk': u'Спеціальні',
-            'ta': u'சிறப்பு',
-            'th': u'พิเศษ',
-            'wa': u'Sipeciås',
-        },
-        0: {
-            '_default': None,
-        },
-        1: {
-            '_default': 'Talk',
-            'de': u'Diskussion',
-            'nl': u'Overleg',
-            'pt': u'Discussão',
-            'es': u'Discusión',
-        },
-        2: {
-            '_default': u'User',
-            'de': u'Benutzer',
-            'nl': u'Gebruiker',
-            'pt': u'Usuário',
-            'es': u'Usuario',
-        },
-        3: {
-            '_default': u'User talk',
-            'de': u'Benutzer Diskussion',
-            'pt': u'Usuário_Discussão',
-            'es': u'Usuario Discusión',
-        },
-        4: {
-            '_default': u'Wikipedia',
-        },
-        5: {
-            '_default': u'Wikipedia talk',
-            'de': u'Wikipedia Diskussion',
-            'pt': u'Wikipedia_Discussão',
-            'es': u'Wikipedia Discusión',
-        },
-        6: {
-            # TODO: convert all percent-encoded titles to plaintext
-            '_default': u'Image',
-            'af': u'Beeld',
-            'ar': u'صورة',
-            'bg': u'Картинка',
-            #'bn': To be checked,
-            'ca': u'Imatge',
-            'cs': u'Soubor',
-            #'csb': u'Òbrôzk',
-            'cy': u'Delwedd',
-            'da': u'Billede',
-            'de': u'Bild',
-            'eo': u'Dosiero',
-            'es': u'Imagen',
-            'et': u'Pilt',
-            'fa': u'تصویر',
-            'fi': u'Kuva',
-            'fr': u'Image',
-            'fy': u'Ofbyld',
-            'ga': u'Íomhá',
-            'he': u'תמונה',
-            'hi': u'चित्र',
-            'hu': u'Kép',
-            'ia': u'Imagine',
-            'id': u'Imej',
-            'it': u'Immagine',
-            'ja': u'画像',
-            'ko': u'그림',
-            'la': u'Imago',
-            'ms': u'Imej',
-            'nb': u'Bilde',
-            'nl': u'Afbeelding',
-            'no': u'Bilde',
-            'oc': u'Image',
-            'pl': u'Grafika',
-            'pt': u'Imagem',
-            'ro': u'Imagine',
-            'ru': u'Изображение',
-            'sk': u'Obrázok',
-            'sl': u'Slika',
-            'sq': u'Figura',
-            'sr': u'Слика',
-            'sv': u'Bild',
-            'ta': u'படிமம்',
-            'th': u'ภาพ',
-            'wa': u'Imådje',
-        },
-        7: {
-            '_default': u'Image talk',
-            'de': u'Bild Diskussion',
-            'pt': u'Imagem_Discussão',
-            'es': u'Imagen_Discusión',
-        },
-        8: {
-            '_default': u'MediaWiki',
-            'bg': u'МедияУики',
-        },
-        9: {
-            '_default': u'MediaWiki talk',
-            'de': u'MediaWiki Diskussion',
-            'pt': u'MediaWiki_Discussão',
-            'es': u'MediaWiki Discusión',
-        },
-        10: {
-            '_default':u'Template',
-            'de':u'Vorlage',
-            'es':u'Plantilla',
-            'nl':u'Sjabloon',
-            'pt':u'Predefinição',
-            'es':u'Plantilla',
-        },
-        11: {
-            '_default': u'Template talk',
-            'de': u'Vorlage Diskussion',
-            'pt': u'Predefinição_Discussão',
-            'es': u'Plantilla Discusión',
-        },
-        12: {
-            '_default': u'Help',
-            'de': u'Hilfe',
-            'pt': u'Ajuda',
-            'es': u'Ayuda',
-        },
-        13: {
-            '_default': u'Help talk',
-            'de': u'Hilfe Diskussion',
-            'pt': u'Ajuda_Discussão',
-            'es': u'Ayuda Discusión',
-        },
-        14: {
-            '_default': u'Category',
-            'bg': u'Категория',
-            'ca': u'Categoria',
-            'cs': u'Kategorie',
-            'da': u'Kategori',
-            'de': u'Kategorie',
-            'eo': u'Kategorio',
-            'es': u'Categoría',
-            'fr': u'Catégorie',
-            'hu': u'Kategória',
-            'is': u'Flokkur',
-            'it': u'Categoria',
-            'nl': u'Categorie',
-            'no': u'Kategori',
-            'pl': u'Kategoria',
-            'pt': u'Categoria',
-            'sv': u'Kategori',
-            'tlh':u'Segh',
-            'tt': u'Törkem',
-            'wa': u'Categoreye',
+        # Translation used on all Wikipedias for the different namespaces.
+        # (Please sort languages alphabetically)
+        # You only need to enter translations that differ from _default.
+        self.namespaces = {
+            -2: {
+                '_default': u'Media',
             },
-
+            -1: {
+                '_default': u'Special',
+                'af': u'Spesiaal',
+                'ar': u'خاص',
+                'bg': u'Специални',
+                'bn': u'বিশেষ',
+                'ca': u'Especial',
+                'cs': u'Speciální',
+                #'csb': u'Specjalnô',
+                'cy': u'Arbennig',
+                'da': u'Speciel',
+                'de': u'Spezial',
+                'eo': u'Speciala',
+                'es': u'Especial',
+                'et': u'Eri',
+                'fa': u'ویژه',
+                'fi': u'Toiminnot',
+                'fy': u'Wiki',
+                'ga': u'Speisialta',
+                'he': u'מיוחד',
+                'hi': u'विशेष',
+                'hu': u'Speciális',
+                'id': u'Istimewa',
+                'it': u'Speciale',
+                'ja': u'特別',
+                'ko': u'특수기능',
+                'la': u'Specialis',
+                'ms': u'Istimewa',
+                'nb': u'Spesial',
+                'nl': u'Speciaal',
+                'no': u'Spesial',
+                'oc': u'Especial',
+                'pl': u'Specjalna',
+                'pt': u'Especial',
+                'ru': u'Специальные',
+                'sk': u'Špeciálne',
+                'sl': u'Posebno',
+                'sq': u'Speciale',
+                'sr': u'Посебно',
+                'uk': u'Спеціальні',
+                'ta': u'சிறப்பு',
+                'th': u'พิเศษ',
+                'wa': u'Sipeciås',
+            },
+            0: {
+                '_default': None,
+            },
+            1: {
+                '_default': 'Talk',
+                'de': u'Diskussion',
+                'nl': u'Overleg',
+                'pt': u'Discussão',
+                'es': u'Discusión',
+            },
+            2: {
+                '_default': u'User',
+                'de': u'Benutzer',
+                'nl': u'Gebruiker',
+                'pt': u'Usuário',
+                'es': u'Usuario',
+            },
+            3: {
+                '_default': u'User talk',
+                'de': u'Benutzer Diskussion',
+                'pt': u'Usuário_Discussão',
+                'es': u'Usuario Discusión',
+            },
+            4: {
+                '_default': u'Project',
+            },
+            5: {
+                '_default': u'Project talk',
+            },
+            6: {
+                # TODO: convert all percent-encoded titles to plaintext
+                '_default': u'Image',
+                'af': u'Beeld',
+                'ar': u'صورة',
+                'bg': u'Картинка',
+                #'bn': To be checked,
+                'ca': u'Imatge',
+                'cs': u'Soubor',
+                #'csb': u'Òbrôzk',
+                'cy': u'Delwedd',
+                'da': u'Billede',
+                'de': u'Bild',
+                'eo': u'Dosiero',
+                'es': u'Imagen',
+                'et': u'Pilt',
+                'fa': u'تصویر',
+                'fi': u'Kuva',
+                'fr': u'Image',
+                'fy': u'Ofbyld',
+                'ga': u'Íomhá',
+                'he': u'תמונה',
+                'hi': u'चित्र',
+                'hu': u'Kép',
+                'ia': u'Imagine',
+                'id': u'Imej',
+                'it': u'Immagine',
+                'ja': u'画像',
+                'ko': u'그림',
+                'la': u'Imago',
+                'ms': u'Imej',
+                'nb': u'Bilde',
+                'nl': u'Afbeelding',
+                'no': u'Bilde',
+                'oc': u'Image',
+                'pl': u'Grafika',
+                'pt': u'Imagem',
+                'ro': u'Imagine',
+                'ru': u'Изображение',
+                'sk': u'Obrázok',
+                'sl': u'Slika',
+                'sq': u'Figura',
+                'sr': u'Слика',
+                'sv': u'Bild',
+                'ta': u'படிமம்',
+                'th': u'ภาพ',
+                'wa': u'Imådje',
+            },
+            7: {
+                '_default': u'Image talk',
+                'de': u'Bild Diskussion',
+                'pt': u'Imagem_Discussão',
+                'es': u'Imagen_Discusión',
+            },
+            8: {
+                '_default': u'MediaWiki',
+                'bg': u'МедияУики',
+            },
+            9: {
+                '_default': u'MediaWiki talk',
+                'de': u'MediaWiki Diskussion',
+                'pt': u'MediaWiki_Discussão',
+                'es': u'MediaWiki Discusión',
+            },
+            10: {
+                '_default':u'Template',
+                'de':u'Vorlage',
+                'es':u'Plantilla',
+                'nl':u'Sjabloon',
+                'pt':u'Predefinição',
+                'es':u'Plantilla',
+            },
+            11: {
+                '_default': u'Template talk',
+                'de': u'Vorlage Diskussion',
+                'pt': u'Predefinição_Discussão',
+                'es': u'Plantilla Discusión',
+            },
+            12: {
+                '_default': u'Help',
+                'de': u'Hilfe',
+                'pt': u'Ajuda',
+                'es': u'Ayuda',
+            },
+            13: {
+                '_default': u'Help talk',
+                'de': u'Hilfe Diskussion',
+                'pt': u'Ajuda_Discussão',
+                'es': u'Ayuda Discusión',
+            },
+            14: {
+                '_default': u'Category',
+                'bg': u'Категория',
+                'ca': u'Categoria',
+                'cs': u'Kategorie',
+                'da': u'Kategori',
+                'de': u'Kategorie',
+                'eo': u'Kategorio',
+                'es': u'Categoría',
+                'fr': u'Catégorie',
+                'hu': u'Kategória',
+                'is': u'Flokkur',
+                'it': u'Categoria',
+                'nl': u'Categorie',
+                'no': u'Kategori',
+                'pl': u'Kategoria',
+                'pt': u'Categoria',
+                'sv': u'Kategori',
+                'tlh':u'Segh',
+                'tt': u'Törkem',
+                'wa': u'Categoreye',
+                },
         
-        15: {
-            '_default': u'Category talk',
-            'bg'  :     u'Категория беседа',
-            'ca'  :     u'Categoria Discussió',
-            'cs'  :     u'Kategorie diskuse',
-            'de'  :     u'Kategorie Diskussion',
-            'eo'  :     u'Kategoria diskuto',
-            'es'  :     u'Categoría Discusión',
-            'fr'  :     u'Discussion Catégorie',
-            'hu'  :     u'Kategória vita',
-            'is'  :     u'Flokkaspjall',
-            'it'  :     u'Discussioni categoria',
-            'nl'  :     u'Overleg categorie',
-            'no'  :     u'Kategoridiskusjon',
-            'pl'  :     u'Dyskusja kategorii',
-            'pt'  :     u'Categoria Discussão',
-            'sv'  :     u'Kategoridiskussion',
-            'tlh' :     u'Segh ja\'chuq',
-            'tt'  :     u'Törkem bäxäse',
-            'wa'  :     u'Categoreye copene',
-        },
-    }
+            
+            15: {
+                '_default': u'Category talk',
+                'bg'  :     u'Категория беседа',
+                'ca'  :     u'Categoria Discussió',
+                'cs'  :     u'Kategorie diskuse',
+                'de'  :     u'Kategorie Diskussion',
+                'eo'  :     u'Kategoria diskuto',
+                'es'  :     u'Categoría Discusión',
+                'fr'  :     u'Discussion Catégorie',
+                'hu'  :     u'Kategória vita',
+                'is'  :     u'Flokkaspjall',
+                'it'  :     u'Discussioni categoria',
+                'nl'  :     u'Overleg categorie',
+                'no'  :     u'Kategoridiskusjon',
+                'pl'  :     u'Dyskusja kategorii',
+                'pt'  :     u'Categoria Discussão',
+                'sv'  :     u'Kategoridiskussion',
+                'tlh' :     u'Segh ja\'chuq',
+                'tt'  :     u'Törkem bäxäse',
+                'wa'  :     u'Categoreye copene',
+            },
+        }
+        
+        # On most Wikipedias page names must start with a capital letter, but some
+        # languages don't use this.
+    
+        self.nocapitalize = []
+    
+        # Which languages have a special order for putting interlanguage links,
+        # and what order is it? If a language is not in interwiki_putfirst,
+        # alphabetical order on language code is used. For languages that are in
+        # interwiki_putfirst, interwiki_putfirst is checked first, and
+        # languages are put in the order given there. All other languages are put
+        # after those, in code-alphabetical order.
+    
+        self.interwiki_putfirst = {}
+    
+        # Which language codes do no longer exist and by which language code should
+        # they be replaced. If for example the language with code xx: now should get
+        # code yy:, add {'xx':'yy'} to obsolete.
+    
+        self.obsolete = {}
+    
+        # A few selected big languages for things that we do not want to loop over
+        # all languages. This is only needed by the titletranslate.py module, so
+        # if you carefully avoid the options, you could get away without these
+        # for another wikimedia family.
+    
+        self.biglangs = []
+    
+        self.biglangs2 = self.biglangs + []
+    
+        self.biglangs3 = self.biglangs2 + []
+    
+        self.biglangs4 = self.biglangs3 + []
+    
+        self.seriouslangs = self.biglangs4 + []
+    
+        # other groups of language that we might want to do at once
+    
+        # languages in Cyrillic
+        self.cyrilliclangs = []
 
     def _addlang(self, code, location, namespaces = {}):
         """Add a new language to the langs and namespaces of the family.
@@ -338,45 +376,6 @@ class Family(object):
             pos2 += [p,p.lower()]
         return pos2
 
-    # On most Wikipedias page names must start with a capital letter, but some
-    # languages don't use this.
-
-    nocapitalize = []
-
-    # Which languages have a special order for putting interlanguage links,
-    # and what order is it? If a language is not in interwiki_putfirst,
-    # alphabetical order on language code is used. For languages that are in
-    # interwiki_putfirst, interwiki_putfirst is checked first, and
-    # languages are put in the order given there. All other languages are put
-    # after those, in code-alphabetical order.
-
-    interwiki_putfirst = {}
-
-    # Which language codes do no longer exist and by which language code should
-    # they be replaced. If for example the language with code xx: now should get
-    # code yy:, add {'xx':'yy'} to obsolete.
-
-    obsolete = {}
-
-    # A few selected big languages for things that we do not want to loop over
-    # all languages. This is only needed by the titletranslate.py module, so
-    # if you carefully avoid the options, you could get away without these
-    # for another wikimedia family.
-
-    biglangs = []
-
-    biglangs2 = biglangs + []
-
-    biglangs3 = biglangs2 + []
-
-    biglangs4 = biglangs3 + []
-
-    seriouslangs = biglangs4 + []
-
-    # other groups of language that we might want to do at once
-
-    # languages in Cyrillic
-    cyrilliclangs = []
 
     # Methods
     
