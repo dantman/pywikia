@@ -409,10 +409,10 @@ def allpagesname(code, start):
 # 
 
 # Languages that are coded in iso-8859-1
-latin1 = ['en', 'sv', 'nl', 'de', 'da', 'dk', 'test']
+latin1 = ['en', 'sv', 'nl', 'da', 'dk', 'test']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
+latin1old = ['de', 'et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
              'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
              'nds', 'co', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
              'ga', 'na', 'es']
