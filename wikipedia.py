@@ -159,6 +159,9 @@ class PageLink:
         """Constructor. Normally called with two arguments:
              1) The language code on which the page resides
              2) The name of the page as suitable for a URL
+
+             The argument incode can be specified to help decode
+             the name; it is the language where this link was found.
         """     
         self._incode = incode
         self._code = code
@@ -167,17 +170,17 @@ class PageLink:
             name = name.strip()
             self._urlname = link2url(name, self._code, incode = self._incode)
             self._linkname = url2link(self._urlname, code = self._code,
-                                      incode = self._incode)
+                                      incode = mylang)
         elif linkname is not None:
             # We do not trust a linkname either....
             name = linkname.strip()
             self._urlname = link2url(name, self._code, incode=self._incode)
             self._linkname = url2link(self._urlname, code = self._code,
-                                      incode = self._incode)
+                                      incode = mylang)
         elif urlname is not None:
             self._urlname = urlname
             self._linkname = url2link(urlname, code = self._code,
-                                      incode = self._incode)
+                                      incode = mylang)
 
     def urlname(self):
         """The name of the page this PageLink refers to, in a form suitable
