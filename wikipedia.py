@@ -823,9 +823,9 @@ def getUrl(host,address):
 def getPage(code, name, do_edit = 1, do_quote = 1):
     """Get the contents of page 'name' from the 'code' language wikipedia
        Do not use this directly; use the PageLink object instead."""
-    output(url2unicode("Getting page %s:%s"%(code,name), language = code))
     host = family.hostname(code)
     name = re.sub(' ', '_', name)
+    output(url2unicode("Getting page %s:%s"%(code, name), language = code))
     if not '%' in name and do_quote: # It should not have been done yet
         if name != urllib.quote(name):
             print "DBG> quoting",name

@@ -413,7 +413,7 @@ for wrd in (page_list):
                 m=linkR.search(reftxt, pos = curpos)
                 if not m:
                     if n == 0:
-                        print "Not found in %s"%refpl
+                        wikipedia.output("Not found in %s:%s" % (refpl.code(), refpl.linkname()))
                     elif not debug:
                         refpl.put(reftxt)
                     return True
