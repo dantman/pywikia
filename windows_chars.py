@@ -26,7 +26,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.2 2004/04/22 20:34:55 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.3 2004/05/23 18:13:52 a_engels Exp $'
 #
 import wikipedia,re,sys,string
 
@@ -128,7 +128,6 @@ def treat(pl):
             reftxt = reftxt.replace(u"\x9C", "&oelig;")  # latin small ligature oe
             reftxt = reftxt.replace(u"\x9E", "&#382;")   # latin small letter z with caron
             reftxt = reftxt.replace(u"\x9F", "&Yuml;")   # latin capital letter Y with diaeresis
-            print "Changing page %s" %(pl)
             pl.put(reftxt)
 
 if wikipedia.code2encoding(wikipedia.mylang) == "utf-8":

@@ -184,7 +184,6 @@ def treat(to_pl):
     # add table to top of the article, seperated by a blank lines
     to_text = translated_table + "\n\n" + to_text
     if not debug:
-        print "Changing page %s" % (to_pl)
         # save changes on Wikipedia
         to_pl.put(to_text, minorEdit='0')
 

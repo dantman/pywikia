@@ -743,6 +743,7 @@ def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1
         print address
         print data
         return None, None, None
+    print "Changing page %s:%s" % (code, name)
     conn = httplib.HTTPConnection(host)
 
     conn.putrequest("POST", address)

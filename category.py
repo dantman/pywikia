@@ -120,7 +120,6 @@ def change_category(article, old_cat, new_cat):
         cats.append(new_cat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
-    print "Changing page %s" %(article)
     article.put(text)
 
 

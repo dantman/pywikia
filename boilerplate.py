@@ -90,7 +90,6 @@ def treat(refpl):
         else:
             reftxt = re.sub(boilerplateR, '{{' + unicode(new, 'iso-8859-1') + '}}', reftxt)
 
-        print "Changing page %s" %(refpl)
         refpl.put(reftxt)
 
 # regular expression to find the original boilerplate text.
