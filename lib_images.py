@@ -13,6 +13,13 @@ copy_message = {
     "nl":"Afbeelding gekopieerd vanaf Wikipedia-%s. De beschrijving daar was:\r\n\r\n%s",
 }
 
+
+# a string which appears on the HTML page which says that the upload was successful,
+# and which doesn't appear on a page which says that the upload failed.
+success_message = {
+    "de":"Erfolgreich hochgeladen",
+}
+
 def post_multipart(host, selector, fields, files):
     """
     Post fields and files to an http host as multipart/form-data.
@@ -29,7 +36,7 @@ def post_multipart(host, selector, fields, files):
     h.putheader('Host', host)
     h.putheader('Cookie',wikipedia.cookies)
     h.endheaders()
-    print "Uploading file"
+    print "Uploading file..."
     h.send(body)
     errcode, errmsg, headers = h.getreply()
     return h.file.read()
@@ -64,11 +71,17 @@ def get_content_type(filename):
     import mimetypes
     return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 
-# Gets the image at URL fn, and uploads it to Wikipedia 'target'.
-# Description is the proposed description; if description is empty (''),
-# a description is asked.
+# Gets the image at URL original_url, and uploads it to the home Wikipedia.
+# original_description is the proposed description; if description is
+# empty (''), asks for a description.
 # Returns the filename which was used to upload the image
-def get_image(fn, source_wiki, description, debug=False):
+# If the upload fails, the user is asked whether to try again or not.
+# If the user chooses not to retry, returns null.
+def get_image(original_url, source_wiki, original_description, debug=False):
+    # work with a copy of argument variables so we can reuse the
+    # original ones if the upload fails
+    fn = original_url
+    description = original_description
     # Get file contents
     uo = wikipedia.MyURLopener()
     file = uo.open(fn)
@@ -125,7 +138,7 @@ def get_image(fn, source_wiki, description, debug=False):
         description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
     # don't upload if we're in debug mode
     if not debug:
-        data = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
+        returned_html = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
                               wikipedia.family.upload_address(wikipedia.mylang),
                               (('wpUploadDescription', description),
                                ('wpUploadAffirm', '1'),
@@ -133,6 +146,22 @@ def get_image(fn, source_wiki, description, debug=False):
                                ('wpUpload','upload bestand')),
                               (('wpUploadFile',fn,contents),)
                               )
+        # do we know how the "success!" HTML page should look like?
+        if not success_message.has_key(wikipedia.mylang):
+            print "Please edit lib_images.py and add a string to success_message for your language."
+            print "Otherwise it will be impossible to find out if the upload was successful."
+        else:
+            # did the upload succeed?
+            if returned_html.find(success_message[wikipedia.mylang]) != -1:
+                 print "Upload successful."
+            else:
+                 # dump the HTML page
+                 print returned_html + "\n\n"
+                 answer = raw_input("Upload of " + fn + " failed. Above you see the HTML page which was returned by MediaWiki. Try again? [y|N]")
+                 if answer in ["y", "Y"]:
+                     return get_image(original_url, source_wiki, original_description, debug)
+                 else:
+                     return
     return fn
 
 

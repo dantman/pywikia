@@ -155,15 +155,17 @@ def treat(to_pl):
             # Copy the image to the current wikipedia, copy the image description page as well.
             # Prompt the user so that he can translate the filename.
             new_filename = lib_images.transfer_image(wikipedia.PageLink(from_lang, image), debug)
-            old_image_tag = wikipedia.PageLink(wikipedia.mylang, image).linkname()
-            new_image_tag = wikipedia.PageLink(wikipedia.mylang, image_namespace(wikipedia.mylang) + new_filename).linkname()
-            print_debug("Replacing " + old_image_tag + " with " + new_image_tag)
-            # We want to replace "Image:My pic.jpg" as well as "image:my_pic.jpg", so we need a regular expression.
-            old_image_tag = old_image_tag.replace(" ", "[ \_]")
-            old_image_tag = "[" + old_image_tag[0].upper() + old_image_tag[0].lower() + "]" + old_image_tag[1:]
-            #todo: regex for first letter of filename, i.e. first letter after the colon
-            rOld_image_tag = re.compile(old_image_tag)
-            table = re.sub(old_image_tag, new_image_tag, table)
+            # if the upload succeeded
+            if new_filename:
+                old_image_tag = wikipedia.PageLink(wikipedia.mylang, image).linkname()
+                new_image_tag = wikipedia.PageLink(wikipedia.mylang, image_namespace(wikipedia.mylang) + new_filename).linkname()
+                print_debug("Replacing " + old_image_tag + " with " + new_image_tag)
+                # We want to replace "Image:My pic.jpg" as well as "image:my_pic.jpg", so we need a regular expression.
+                old_image_tag = old_image_tag.replace(" ", "[ \_]")
+                old_image_tag = "[" + old_image_tag[0].upper() + old_image_tag[0].lower() + "]" + old_image_tag[1:]
+                #todo: regex for first letter of filename, i.e. first letter after the colon
+                rOld_image_tag = re.compile(old_image_tag)
+                table = re.sub(old_image_tag, new_image_tag, table)
 
 
     translated_table = translator.translate(table, type, from_lang, debug, wikipedia.mylang)
