@@ -1,4 +1,4 @@
-#coding: utf-8
+﻿#coding: utf-8
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -28,6 +28,7 @@ date_format = {
 		'fo':'%d. januar',
                 'eo':'%d-a de januaro',
                 'pt':'%d de Janeiro',
+                'ast':'%d de xineru'
 	},
 	2: {
 		'sl':'%d. februar',
@@ -44,6 +45,7 @@ date_format = {
 		'fo':'%d. februar',
                 'eo':'%d-a de februaro',
                 'pt':'%d de Fevereiro',
+                'ast':'%d de febreru'
 	},
 	3: {
 		'sl':'%d. marec',
@@ -60,6 +62,7 @@ date_format = {
 		'fo':'%d. mars',
                 'eo':'%d-a de marto',
                 'pt':'%d de Março',
+                'ast':'%d de marzu'
 	},
 	4: {
 		'sl':'%d. april',
@@ -76,6 +79,7 @@ date_format = {
 		'fo':'%d. apríl',
                 'eo':'%d-a de aprilo',
                 'pt':'%d de Abril',
+                'ast':"%d d'abril"
 	},
 	5: {
 		'sl':'%d. maj',
@@ -92,6 +96,7 @@ date_format = {
 		'fo':'%d. mai',
                 'eo':'%d-a de majo',
                 'pt':'%d de Maio',
+                'ast':'%d de mayu'
 	},
 	6: {
 		'sl':'%d. junij',
@@ -108,6 +113,7 @@ date_format = {
 		'fo':'%d. juni',
                 'eo':'%d-a de junio',
                 'pt':'%d de Junho',
+                'ast':'%d de xunu'
 	},
 	7: {
 		'sl':'%d. julij',
@@ -124,6 +130,7 @@ date_format = {
 		'fo':'%d. juli',
                 'eo':'%d-a de julio',
                 'pt':'%d de Julho',
+                'ast':'%d de xunetu'
 	},
 	8: {
 		'sl':'%d. avgust',
@@ -140,6 +147,7 @@ date_format = {
 		'fo':'%d. august',
                 'eo':'%d-a de aŭgusto',
                 'pt':'%d de Agosto',
+                'ast':"%d d'agostu"
 	},
 	9: {
 		'sl':'%d. september',
@@ -156,6 +164,7 @@ date_format = {
 		'fo':'%d. september',
                 'eo':'%d-a de septembro',
                 'pt':'%d de Setembro',
+                'ast':'%d de setiembre'
 	},
 	10:{
 		'sl':'%d. oktober',
@@ -172,6 +181,7 @@ date_format = {
 		'fo':'%d. oktober',
                 'eo':'%d-a de oktobro',
                 'pt':'%d de Outubro',
+                'ast':"%d d'ochobre"
 	},
 	11:{
 		'sl':'%d. november',
@@ -188,6 +198,7 @@ date_format = {
 		'fo':'%d. november',
                 'eo':'%d-a de novembro',
                 'pt':'%d de Novembro',
+                'ast':'%d de payares'
 	},
 	12:{
 		'sl':'%d. december',
@@ -204,7 +215,8 @@ date_format = {
 		'fo':'%d. desember',
                 'eo':'%d-a de decembro',
                 'pt':'%d de Dezembro',
-	},
+                'ast':"%d d'avientu"
+	}
 }
 
 class FormatDate(object):
@@ -286,149 +298,18 @@ yearADfmt = {
 # date format translation list required for titletranslate.py and for pagelist.py
 datetable = {
 	'nl':{
-		'januari':{
-			'sl':'%d. januar',
-			'it':'%d gennaio',
-			'en':'January %d',
-			'de':'%d. Januar',
-			'fr':'%d janvier',
-			'af':'01-%02d',
-			'ca':'%d de gener',
-			'oc':'%d de geni%%C3%%A8r',
-			'is':'%d. janúar',
-			'fo':'%d. januar',
-		},
-		'februari':{
-			'sl':'%d. februar',
-			'it':'%d febbraio',
-			'en':'February %d',
-			'de':'%d. Februar',
-			'fr':'%d fevrier',
-			'af':'02-%02d',
-			'ca':'%d de febrer',
-			'oc':'%d de febri%%C3%%A8r',
-			'is':'%d. febrúar',
-			'fo':'%d. februar',
-		},
-		'maart':{
-			'sl':'%d. marec',
-			'it':'%d marzo',
-			'en':'March %d',
-			'de':'%d. M&auml;rz',
-			'fr':'%d mars',
-			'af':'03-%02d',
-			'ca':'%d de_mar%%C3%%A7',
-			'oc':'%d de_mar%%C3%%A7',
-			'is':'%d. mars',
-			'fo':'%d. mars',
-		},
-		'april':{
-			'sl':'%d. april',
-			'it':'%d aprile',
-			'en':'April %d',
-			'de':'%d. April',
-			'fr':'%d avril',
-			'af':'04-%02d',
-			'ca':'%d d\'abril',
-			'oc':'%d d\'abril',
-			'is':'%d. apríl',
-			'fo':'%d. apríl',
-		},
-		'mei':{
-			'sl':'%d. maj',
-			'it':'%d maggio',
-			'en':'May %d',
-			'de':'%d. Mai',
-			'fr':'%d mai',
-			'af':'05-%02d',
-			'ca':'%d de maig',
-			'oc':'%d de mai',
-			'is':'%d. maí',
-			'fo':'%d. mai',
-		},
-		'juni':{
-			'sl':'%d. junij',
-			'it':'%d giugno',
-			'en':'June %d',
-			'de':'%d. Juni',
-			'fr':'%d juin',
-			'af':'06-%02d',
-			'ca':'%d de juny',
-			'oc':'%d de junh',
-			'is':'%d. júní',
-			'fo':'%d. juni',
-		},
-		'juli':{
-			'sl':'%d. julij',
-			'it':'%d luglio',
-			'en':'July %d',
-			'de':'%d. Juli',
-			'fr':'%d juillet',
-			'af':'07-%02d',	
-			'ca':'%d de juliol',
-			'oc':'%d de julhet',
-			'is':'%d. júlí',
-			'fo':'%d. juli',
-		},
-		'augustus':{
-			'sl':'%d. avgust',
-			'it':'%d agosto',
-			'en':'August %d',
-			'de':'%d. August',
-			'fr':'%d aout',
-			'af':'08-%02d',
-			'ca':'%d d\'agost',
-			'oc':'%d d\'agost',
-			'is':'%d. ágúst',
-			'fo':'%d. august',
-		},
-		'september':{
-			'sl':'%d. september',
-			'it':'%d settembre',
-			'en':'September %d',
-			'de':'%d. September',
-			'fr':'%d septembre',
-			'af':'09-%02d',
-			'ca':'%d de setembre',
-			'oc':'%d de setembre',
-			'is':'%d. september',
-			'fo':'%d. september',
-		},
-		'oktober':{
-			'sl':'%d. oktober',
-			'it':'%d ottobre',
-			'en':'October %d',
-			'de':'%d. Oktober',
-			'fr':'%d octobre',
-			'af':'10-%02d',
-			'ca':'%d d\'octubre',
-			'oc':'%d d\'octobre',
-			'is':'%d. október',
-			'fo':'%d. oktober',
-		},
-		'november':{
-			'sl':'%d. november',
-			'it':'%d novembre',
-			'en':'November %d',
-			'de':'%d. November',
-			'fr':'%d novembre',
-			'af':'11-%02d',
-			'ca':'%d de novembre',
-			'oc':'%d de novembre',
-			'is':'%d. nóvember',
-			'fo':'%d. november',
-		},
-		'december':{
-			'sl':'%d. december',
-			'it':'%d dicembre',
-			'en':'December %d',
-			'de':'%d. Dezember',
-			'fr':'%d decembre',
-			'af':'12-%02d',
-			'ca':'%d de desembre',
-			'oc':'%d de decembre',
-			'is':'%d. desember',
-			'fo':'%d. desember',
-		},
-	}
+		'januari':1,
+                'februari':2,
+		'maart':3,
+		'april':4,
+		'mei':5,
+		'juni':6,
+		'juli':7,
+		'augustus':8,
+		'september':9,
+		'oktober':10,
+		'november':11,
+		'december':12
+        },
 }
+

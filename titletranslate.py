@@ -65,7 +65,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         Rdate = re.compile(dt)
         m = Rdate.match(pl.linkname())
         if m:
-            for newcode, fmt in date.datetable[site.lang][m.group(2)].items():
+            for newcode, fmt in date.date_format[date.datetable[site.lang][m.group(2)]].items():
                 newname = fmt % int(m.group(1))
                 x = wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family),newname)
                 if x not in arr:
