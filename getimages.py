@@ -62,8 +62,8 @@ for image in wikipedia.PageLinksFromFile(filename):
         # If we can't get the image description page, just go on with
         # the next one.
         except wikipedia.NoPage:
-            pass
+            print >>sys.stderr, "%s could not be found" % image
         except wikipedia.IsRedirectPage:
-            pass
+            print >>sys.stderr, "%s is a redirect page" % image
         except wikipedia.LockedPage:
-            pass
+            print "%s is locked" % image
