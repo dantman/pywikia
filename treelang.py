@@ -384,7 +384,7 @@ for pl in k:
                 elif answer.startswith('q'):
                     sys.exit(1)
         elif pl.code() in ('zh-tw','zh-cn') and new.has_key('zh'):
-            print "NOTE: Ignoring %s, using %s"%(new[zh].asasciilink(),pl.asasciilink())
+            print "NOTE: Ignoring %s, using %s"%(new['zh'].asasciilink(),pl.asasciilink())
             new['zh'] = None # Remove the global zh link
             new[pl.code()] = pl # Add the more precise one
         elif pl.code() == 'zh' and (new.has_key('zh-tw') or new.has_key('zh-cn')):
