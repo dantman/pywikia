@@ -103,7 +103,7 @@ for pl in lst:
         for hint in hints[pl.linkname()]:
             hintstr += ' -hint:%s'%hint
     if sys.platform=='win32':
-        status = os.system("python treelang.py %s %s %s" % (options, hintstr, f))
+        status = os.system("treelang.py %s %s %s" % (options, hintstr, f))
     else:
         if debug:
             print ("python treelang.py %s %s '%s'" % (options, hintstr, f))
