@@ -51,7 +51,15 @@ for page in ilinks:
             imagelist.append(i)
     except wikipedia.NoPage:
         pass
-        
+    except wikipedia.IsRedirectPage,arg:
+        page2=wikipedia.PageLink(page.code(),arg.args[0])
+        try:
+            for i in page2.imagelinks():
+                imagelist.append(i)
+        except wikipedia.NoPage:
+            pass
+        except wikipedia.IsRedirectPage:
+            pass
 
 for i in range(len(imagelist)):
     imagelink = imagelist[i]
