@@ -110,6 +110,8 @@ def askAlternative(word,context=None):
         elif answer in "rRsS":
             correct = wikipedia.input(u"What should I replace it by?")
             if answer in "rR":
+                if correct_html_codes:
+                    correct = removeHTML(correct)
                 if correct != cap(word) and correct != uncap(word) and correct != word:
                     try:
                         knownwords[word] += [correct.replace(' ','_')]
