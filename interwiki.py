@@ -382,7 +382,7 @@ class Subject:
                     new[code] = [pl]
         if 'zh-cn' in new or 'zh-tw' in new:
             if 'zh' in new:
-                del new[zh]
+                del new['zh']
                 print "Ignoring links to zh in presence of zh-cn or zh-tw"
         result = {}
         for k,v in new.items():
