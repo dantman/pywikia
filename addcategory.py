@@ -11,7 +11,7 @@ Just run this robot without any arguments
 # 
 __version__ = '$Id$'
 #
-import sys, wikipedia, interwiki
+import sys, wikipedia, interwiki, config
 
 def main():
     import re
@@ -31,7 +31,10 @@ def main():
     print "  ==> %d pages to process"%len(pagenames)
     print
     newcat = raw_input('Category to add (do not give namespace) : ')
+    newcat = unicode(newcat, config.console_encoding)
+    newcat = newcat.encode(wikipedia.code2encoding(wikipedia.mylang))
     newcat = newcat[:1].capitalize() + newcat[1:]
+
     print newcat
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
     
