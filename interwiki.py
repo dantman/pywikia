@@ -1,4 +1,4 @@
-#coding: utf-8
+﻿#coding: utf-8
 """
 Script to check language links for general pages. This works by downloading the
 page, and using existing translations plus hints from the command line to
@@ -151,7 +151,7 @@ msg = {
     'en':(u'Adding', u'Removing', u'Modifying'),
     'fr':(u'Ajoute', u'Retire', u'Modifie'),
     'nl':(u'Erbij', u'Eraf', u'Anders'),
-    'no':(u'Tilfoeyer', u'Fjerner', u'Endrer'),
+    'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
     }
 
 class Global:
