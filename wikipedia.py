@@ -28,7 +28,7 @@ langs = {
     'ca':'ca.wikipedia.org',   # Catalan
     'cs':'cs.wikipedia.org',   # Czech, UTF-8
     'cy':'cy.wikipedia.org',   # Welsh, UTF-8
-    'da':'da.wikipedia.org',   # Danish
+    'da':'da.wikipedia.org',   # Danish, UTF-8
     'de':'de.wikipedia.org',   # German
     'el':'el.wikipedia.org',   # Greek, UTF-8
     'en':'en.wikipedia.org',   # English
@@ -83,13 +83,13 @@ langs = {
     }
 
 # Languages that are coded in iso-8859-1
-latin1 = ['en', 'da', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
+latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds', 'it',
           'no', 'pt', 'af', 'la', 'ca', 'fi', 'ia', 'et', 'eu',
           'mr', 'id', 'simple', 'gl', 'lv', 'sw',
           'tt', 'uk', 'vo', 'ga']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt']
+latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'da']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
