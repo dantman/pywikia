@@ -351,6 +351,9 @@ def login_address(code):
 def move_address(code):
     return '/w/wiki.phtml?title=%s:Movepage&action=submit'%special[code]
 
+def delete_address(name):
+    return '/w/wiki.phtml?title=%s&action=delete' % name
+
 def export_address(code):
     return '/wiki/%s:Export'%special[code]
 
