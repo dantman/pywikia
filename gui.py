@@ -59,7 +59,7 @@ class EditBoxWindow:
 
 
     def edit(self, text):
-        self.text = text
+        self.text = None
         # put given text into our textfield
         self.editbox.insert(END, text)
         # wait for user to push a button which will destroy (close) the window

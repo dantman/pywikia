@@ -490,8 +490,11 @@ for wrd in (page_list):
                     elif choice=='e':
                         import gui
                         edit_window = gui.EditBoxWindow()
-                        reftxt = edit_window.edit(reftxt)
-                        edited = True
+                        newtxt = edit_window.edit(reftxt)
+                        # if user didn't press Cancel
+                        if newtxt:
+                            reftxt = newtxt
+                            edited = True
                     elif choice=='l':
                         #########
                         # The GUI for the list is disabled because it doesn't
