@@ -21,7 +21,7 @@ It will then send the image to wikipedia.
 __version__='$Id$'
 
 import re,sys
-import wikipedia, lib_images
+import wikipedia, lib_images, config
 
 fn = ''
 desc = []
@@ -43,5 +43,10 @@ desc=' '.join(desc)
 
 if fn=='':
     fn = raw_input('File or URL where image is now : ')
+
+#convert arguments from encoding used by user's console
+#to unicode
+desc = unicode(desc, config.console_encoding)
+fn = unicode(fn, config.console_encoding)
 
 lib_images.get_image(fn, wikipedia.mylang, desc)
