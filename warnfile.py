@@ -59,10 +59,10 @@ def ReadWarnfile(fn):
            for pl2 in pl.interwiki():
               old[pl2.site()] = pl2
         except wikipedia.IsRedirectPage:
-           wikipedia.output("%s is a redirect page; not changing" % pl.aslink())
+           wikipedia.output(u"%s is a redirect page; not changing" % pl.aslink())
            continue
         except wikipedia.NoPage:
-           wikipedia.output("Page %s not found; skipping" % pl.aslink())
+           wikipedia.output(u"Page %s not found; skipping" % pl.aslink())
            continue
         new={}
         new.update(old)

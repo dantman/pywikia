@@ -571,7 +571,7 @@ class Subject(object):
                 self.reportBacklinks(new)
         else:
             if mods:
-                wikipedia.output("Changes to be made: %s" % mods)
+                wikipedia.output(u"Changes to be made: %s" % mods)
             oldtext = self.inpl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if globalvar.debug:
@@ -754,7 +754,7 @@ class SubjectArray(object):
                         self.generateMore(globalvar.maxquerysize - mycount)
                     except wikipedia.NoPage:
                         # Could not extract allpages special page?
-                        wikipedia.output('ERROR: could not retrieve more pages. Will try again in %d seconds'%timeout)
+                        wikipedia.output(u'ERROR: could not retrieve more pages. Will try again in %d seconds'%timeout)
                         time.sleep(timeout)
                         timeout *= 2
                     else:

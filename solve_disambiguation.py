@@ -221,7 +221,7 @@ def getReferences(pl):
         for Rignore in ignore_regexes:
             for i in range(len(refs)-1, -1, -1):
                 if Rignore.match(refs[i]):
-                    wikipedia.output('Ignoring page ' + refs[i], wikipedia.myencoding())
+                    wikipedia.output(u'Ignoring page ' + refs[i], wikipedia.myencoding())
                     del refs[i]
     return refs
 
@@ -488,7 +488,7 @@ for wrd in page_list:
                         ##########
                         print '\n'
                         for i in range(len(alternatives)):
-                            wikipedia.output("%3d - %s" % (i, alternatives[i]))
+                            wikipedia.output(u"%3d - %s" % (i, alternatives[i]))
                     else:
                         break
                 
@@ -557,7 +557,7 @@ for wrd in page_list:
                         print '\nChoice out of range. Please select a number between 0 and %d.\n' % (len(alternatives) - 1)
                         # show list of possible choices
                         for i in range(len(alternatives)):
-                            wikipedia.output("%3d - %s" % (i, alternatives[i]))
+                            wikipedia.output(u"%3d - %s" % (i, alternatives[i]))
                         # step back to ask the user again what to do with the current link
                         curpos -= 1
                         continue

@@ -85,7 +85,7 @@ for p in wikipedia.allpages(start = start, site = mysite):
         text=p.get()
         cats=p.categories()
         if cats == []:
-            wikipedia.output("========== %s ==========" % p.linkname())
+            wikipedia.output(u"========== %s ==========" % p.linkname())
             print "No categories"
             print "----------------------------------------"
             newcats=choosecats(text)
@@ -93,7 +93,7 @@ for p in wikipedia.allpages(start = start, site = mysite):
                 make_categories(p, newcats, mysite)
         else:
             if docorrections:
-                wikipedia.output("========== %s ==========" % p.linkname())
+                wikipedia.output(u"========== %s ==========" % p.linkname())
                 for c in cats:
                     print c.linkname()
                 print "----------------------------------------"
