@@ -767,7 +767,7 @@ def addEntity(name):
                     break
             else:
                 raise NoSuchEntity("Cannot locate entity for character %s"%repr(c))
-    print "DBG> addEntity:", repr(name), repr(result)
+    #print "DBG> addEntity:", repr(name), repr(result)
     return result
 
 def unicodeName(name, language, altlanguage = None):
