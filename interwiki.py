@@ -844,6 +844,8 @@ if __name__ == "__main__":
         wikipedia.argHandler(arg)
         if arg == '-noauto':
             globalvar.auto = False
+        elif arg.startswith('-hint:'):
+            hints.append(arg[6:])
 
     for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
@@ -866,7 +868,7 @@ if __name__ == "__main__":
         elif arg == '-noauto':
             pass
         elif arg.startswith('-hint:'):
-            hints.append(arg[6:])
+            pass
         elif arg.startswith('-warnfile:'):
             ReadWarnfile(arg[10:], sa)
         elif arg == '-name':
@@ -907,7 +909,7 @@ if __name__ == "__main__":
                         current_year = '%d' % i
                 # There is no year 0
                 if i != 0:
-                    sa.add(wikipedia.PageLink(wikipedia.mylang, current_year))
+                    sa.add(wikipedia.PageLink(wikipedia.mylang, current_year),hints=hints)
             globalvar.followredirect = False
         elif arg.startswith('-days'):
             if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
@@ -922,17 +924,17 @@ if __name__ == "__main__":
             for month in range(startmonth, 12+1):
                 for day in range(1, date.days_in_month[month]+1):
                     pl = wikipedia.PageLink(wikipedia.mylang, fd(month, day))
-                    sa.add(pl)
+                    sa.add(pl,hints=hints)
         elif arg == '-nobell':
             globalvar.bell = False
         elif arg.startswith('-skipfile:'):
             skipfile = arg[10:]
         elif arg == '-restore':
             for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
-                sa.add(pl)
+                sa.add(pl,hints=hints)
         elif arg.startswith('-file:'):
             for pl in wikipedia.PageLinksFromFile(arg[6:]):
-                sa.add(pl)
+                sa.add(pl,hints=hints)
         elif arg.startswith('-start:'):
             start = arg[7:]
         elif arg.startswith('-number:'):
@@ -957,7 +959,7 @@ if __name__ == "__main__":
             print "Treating %d pages starting at %s" % (number, start)
             i = 0
             for pl in wikipedia.allpages(start = start):
-                sa.add(pl)
+                sa.add(pl,hints=hints)
                 i += 1
                 if i >= number:
                     break
