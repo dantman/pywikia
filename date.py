@@ -1,4 +1,4 @@
-﻿#coding: utf-8
+#coding: utf-8
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -26,6 +26,8 @@ date_format = {
 		'bg':'%d януари',
 		'is':'%d. janúar',
 		'fo':'%d. januar',
+                'eo':'%d-a de januaro',
+                'pt':'%d de Janeiro',
 	},
 	2: {
 		'sl':'%d. februar',
@@ -40,6 +42,8 @@ date_format = {
 		'bg':'%d Февруари',
 		'is':'%d. febrúar',
 		'fo':'%d. februar',
+                'eo':'%d-a de februaro',
+                'pt':'%d de Fevereiro',
 	},
 	3: {
 		'sl':'%d. marec',
@@ -54,6 +58,8 @@ date_format = {
 		'bg':'%d Март',
 		'is':'%d. mars',
 		'fo':'%d. mars',
+                'eo':'%d-a de marto',
+                'pt':'%d de Março',
 	},
 	4: {
 		'sl':'%d. april',
@@ -68,6 +74,8 @@ date_format = {
 		'bg':'%d Април',
 		'is':'%d. apríl',
 		'fo':'%d. apríl',
+                'eo':'%d-a de aprilo',
+                'pt':'%d de Abril',
 	},
 	5: {
 		'sl':'%d. maj',
@@ -82,6 +90,8 @@ date_format = {
 		'bg':'%d Май',
 		'is':'%d. maí',
 		'fo':'%d. mai',
+                'eo':'%d-a de majo',
+                'pt':'%d de Maio',
 	},
 	6: {
 		'sl':'%d. junij',
@@ -96,6 +106,8 @@ date_format = {
 		'bg':'%d Юни',
 		'is':'%d. júní',
 		'fo':'%d. juni',
+                'eo':'%d-a de junio',
+                'pt':'%d de Junho',
 	},
 	7: {
 		'sl':'%d. julij',
@@ -110,6 +122,8 @@ date_format = {
 		'bg':'%d Юли',
 		'is':'%d. júlí',
 		'fo':'%d. juli',
+                'eo':'%d-a de julio',
+                'pt':'%d de Julho',
 	},
 	8: {
 		'sl':'%d. avgust',
@@ -124,6 +138,8 @@ date_format = {
 		'bg':'%d Август',
 		'is':'%d. ágúst',
 		'fo':'%d. august',
+                'eo':'%d-a de aŭgusto',
+                'pt':'%d de Agosto',
 	},
 	9: {
 		'sl':'%d. september',
@@ -138,6 +154,8 @@ date_format = {
 		'bg':'%d Септември',
 		'is':'%d. september',
 		'fo':'%d. september',
+                'eo':'%d-a de septembro',
+                'pt':'%d de Setembro',
 	},
 	10:{
 		'sl':'%d. oktober',
@@ -152,6 +170,8 @@ date_format = {
 		'bg':'%d Октомври',
 		'is':'%d. október',
 		'fo':'%d. oktober',
+                'eo':'%d-a de oktobro',
+                'pt':'%d de Outubro',
 	},
 	11:{
 		'sl':'%d. november',
@@ -166,6 +186,8 @@ date_format = {
 		'bg':'%d Ноември',
 		'is':'%d. nóvember',
 		'fo':'%d. november',
+                'eo':'%d-a de novembro',
+                'pt':'%d de Novembro',
 	},
 	12:{
 		'sl':'%d. december',
@@ -180,6 +202,8 @@ date_format = {
 		'bg':'%d Декември',
 		'is':'%d. desember',
 		'fo':'%d. desember',
+                'eo':'%d-a de decembro',
+                'pt':'%d de Dezembro',
 	},
 }
 
