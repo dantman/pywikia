@@ -28,6 +28,13 @@ Command line options:
              the (only) alternative; if not set, the pages linked to from
              the page redirected to are used. If the page is not a redirect
              page, this will raise an error
+   
+   -file:XYZ reads a list of pages, which can for example be gotten through 
+             extract_names.py. XYZ is the name of the file from which the
+             list is taken. If XYZ is not given, the user is asked for a
+             filename.
+             Page titles should be saved one per line, without [[brackets]].
+             The -pos parameter won't work if -file is used.
 
 Options that are accepted by more robots:
 
@@ -40,6 +47,7 @@ To complete a move of a page, one can use:
 """
 #
 # (C) Rob W.W. Hooft, 2003
+# (C) Daniel Herding, 2004
 #
 # Distribute under the terms of the PSF license.
 #
@@ -175,42 +183,42 @@ ignore={
     'fr':('Wikip\xE9dia:Liens aux pages d\'homonymie',
           'Wikip\xE9dia:Homonymie',
           'Wikip\xE9dia:Homonymie/Homonymes dynastiques',
-		  'Wikip\xE9dia:Prise de d\xE9cision\x2C noms des membres de dynasties/liste des dynastiens',
-		  'Liste de toutes les combinaisons de deux lettres',
-		  'STLs de AAA \xE0 DZZ',
+  'Wikip\xE9dia:Prise de d\xE9cision\x2C noms des membres de dynasties/liste des dynastiens',
+  'Liste de toutes les combinaisons de deux lettres',
+  'STLs de AAA \xE0 DZZ',
           'STLs de EAA \xE0 HZZ',
           'STLs de IAA \xE0 LZZ',
           'STLs de MAA \xE0 PZZ',
           'STLs de QAA \xE0 TZZ',
-		  'STLs de UAA \xE0 XZZ',
-		  'STLs de YAA \xE0 ZZZ',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Ca',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cb',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cc',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cd',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Ce',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cf',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cg',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Ch',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Ci',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cj',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Ck',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cl',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cm',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cn',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Co',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cp',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cq',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cr',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cs',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Ct',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cu',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cv',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cw',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cx',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cy',
-		  'Wikip\xE9dia\x3APages sans interwiki\x2Cz'
-		  ),
+  'STLs de UAA \xE0 XZZ',
+  'STLs de YAA \xE0 ZZZ',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Ca',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cb',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cc',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cd',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Ce',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cf',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cg',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Ch',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Ci',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cj',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Ck',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cl',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cm',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cn',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Co',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cp',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cq',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cr',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cs',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Ct',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cu',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cv',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cw',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cx',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cy',
+  'Wikip\xE9dia\x3APages sans interwiki\x2Cz'
+  ),
     'de':(
           '100 W\xf6rter des 21. Jahrhunderts',
           'Abk\xfcrzungen/A',
@@ -284,7 +292,6 @@ ignore={
     }
 
 
-
 def getReferences(pl):
     x = wikipedia.getReferences(pl)
     # Remove ignorables
@@ -302,15 +309,30 @@ def unique(list):
         result[i]=None
     return result.keys()
 
-wrd = []
 alternatives = []
 getalternatives = 1
 debug = 0
 solve_redirect = 0
+# if the -file argument is used, page titles are dumped in this array.
+# otherwise it will only contain one page.
+page_list = []
+# if -file is not used, this temporary array is used to read the page title.
+page_title = []
+
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
+    elif arg.startswith('-file'):
+        if len(arg) == 5:
+            file = raw_input('Please enter the list\'s filename: ')
+        else:
+            file = arg[6:]
+        # open file and read page titles out of it
+        f=open(file)
+        for line in f.readlines():
+            page_list.append(line)
+        f.close()
     elif arg.startswith('-pos:'):
         if arg[5]!=':':
             pl=wikipedia.PageLink(wikipedia.mylang,arg[5:])
@@ -325,160 +347,168 @@ for arg in sys.argv[1:]:
     elif arg=='-redir':
         solve_redirect=1
     else:
-        wrd.append(arg)
+        page_title.append(arg)
 
-wrd = ' '.join(wrd)
+page_title = ' '.join(page_title)
+if page_title != '':
+     page_list.append(page_title)
 
-if wrd == '':
-    wrd=raw_input('Which pages to check: ')
+if page_list == []:
+    page_list.append(raw_input('Which pages to check: '))
+
+
 
 if msg.has_key(wikipedia.mylang):
     msglang = wikipedia.mylang
 else:
     msglang = 'en'
 
-if solve_redirect:
-  wikipedia.setAction(msg_redir[msglang]+': '+wrd)
-else: 
-  wikipedia.setAction(msg[msglang]+': '+wrd)
-
-thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
-
-if solve_redirect:
-    try:
-        alternatives.append(str(thispl.getRedirectTo()))
-    except wikipedia.IsNotRedirectPage:
-        print "The specified page is not a redirect."
-        sys.exit(1)
-elif getalternatives:
-    try:
-        thistxt = thispl.get()
-    except wikipedia.IsRedirectPage,arg:
-        thistxt = wikipedia.PageLink(wikipedia.mylang, str(arg)).get()
-    thistxt = wikipedia.removeLanguageLinks(thistxt)
-    w=r'([^\]\|]*)'
-    Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
-    for a in Rlink.findall(thistxt):
-        alternatives.append(a[0])
-
-alternatives = unique(alternatives)
-# sort possible choices
-alternatives.sort()
-
-# print choices on screen
-for i in range(len(alternatives)):
-    print "%3d" % i, repr(alternatives[i])
-
-def treat(refpl, thispl):
-    try:
-        reftxt=refpl.get()
-    except wikipedia.IsRedirectPage:
-        pass
-    else:
-        n = 0
-        curpos = 0
-        while 1:
-            m=linkR.search(reftxt, pos = curpos)
-            if not m:
-                if n == 0:
-                    print "Not found in %s"%refpl
-                elif not debug:
-                    refpl.put(reftxt)
-                return
-            # Make sure that next time around we will not find this same hit.
-            curpos = m.start() + 1 
-            # Try to standardize the page.
-            try:
-                linkpl=wikipedia.PageLink(thispl.code(), m.group(1),
-                                          incode = refpl.code())
-            except wikipedia.NoSuchEntity:
-                # Probably this is an interwiki link....
-                linkpl = None
-            # Check whether the link found is to thispl.
-            if linkpl != thispl:
-                continue
-
-            n += 1
-            context = 30
-            while 1:
-                print "== %s =="%(refpl)
-                print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-context):m.end()+context])
-                choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
-                                 "        m=more context,l=list,a=add new):")
-                if choice=='n':
-                    return
-                elif choice=='s':
-                    choice=-1
-                    break
-                elif choice=='u':
-                    choice=-2
-                    break
-                elif choice=='a':
-                    ns=raw_input('New alternative:')
-                    alternatives.append(ns)
-                elif choice=='q':
-                    sys.exit(0)
-                    break
-                elif choice=='m':
-                    context*=2
-                elif choice=='l':
-                    for i in range(len(alternatives)):
-                        print "%3d" % i,repr(alternatives[i])
-                else:
-                    if choice[0] == 'r':
-                        replaceit = 1
-                        choice = choice[1:]
-                    else:
-                        replaceit = 0
-                    try:
-                        choice=int(choice)
-                    except ValueError:
-                        pass
-                    else:
-                        break
-            if choice==-1:
-                # Next link on this page
-                continue
-            g1 = m.group(1)
-            g2 = m.group(2)
-            if not g2:
-                g2 = g1
-            if choice==-2:
-                # unlink
-                reftxt = reftxt[:m.start()] + g2 + reftxt[m.end():]
-            else:
-                # Normal replacement
-                replacement = alternatives[choice]
-                reppl = wikipedia.PageLink(thispl.code(), replacement,
-                                           incode = refpl.code())
-                replacement = reppl.linkname()
-                # There is a function that uncapitalizes the link target's first letter
-                # if the link description starts with a small letter. This is useful on
-                # nl: but annoying on de:.
-                # At the moment the de: exclusion is only a workaround because I don't
-                # know if other languages don't want this feature either.
-                # We might want to introduce a list of languages that don't want to use
-                # this feature.
-                if wikipedia.mylang != 'de' and g2[0] in 'abcdefghijklmnopqrstuvwxyz':
-                    replacement = replacement[0].lower() + replacement[1:]
-                if replaceit or replacement == g2:
-                    reptxt = replacement
-                else:
-                    reptxt = "%s|%s" % (replacement, g2)
-                reftxt = reftxt[:m.start()+2] + reptxt + reftxt[m.end()-2:]
-
-            print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-30):m.end()+30])
-        if not debug:
-            refpl.put(reftxt)
+for wrd in (page_list):
+    # when run with -redir argument, there's another summary message
+    if solve_redirect:
+      wikipedia.setAction(msg_redir[msglang]+': '+wrd)
+    else: 
+      wikipedia.setAction(msg[msglang]+': '+wrd)
     
-def resafe(s):
-    s=s.replace('(','\\(')
-    s=s.replace(')','\\)')
-    return s
+    thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
+    
+    if solve_redirect:
+        try:
+            alternatives.append(str(thispl.getRedirectTo()))
+        except wikipedia.IsNotRedirectPage:
+            print "The specified page is not a redirect."
+            sys.exit(1)
+    elif getalternatives:
+        try:
+            thistxt = thispl.get()
+        except wikipedia.IsRedirectPage,arg:
+            thistxt = wikipedia.PageLink(wikipedia.mylang, str(arg)).get()
+        thistxt = wikipedia.removeLanguageLinks(thistxt)
+        w=r'([^\]\|]*)'
+        Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
+        for a in Rlink.findall(thistxt):
+            alternatives.append(a[0])
+    
+    alternatives = unique(alternatives)
+    # sort possible choices
+    alternatives.sort()
 
-linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\]')
+    # print choices on screen
+    for i in range(len(alternatives)):
+        print "%3d" % i, repr(alternatives[i])
+    
+    def treat(refpl, thispl):
+        try:
+            reftxt=refpl.get()
+        except wikipedia.IsRedirectPage:
+            pass
+        else:
+            n = 0
+            curpos = 0
+            while 1:
+                m=linkR.search(reftxt, pos = curpos)
+                if not m:
+                    if n == 0:
+                        print "Not found in %s"%refpl
+                    elif not debug:
+                        refpl.put(reftxt)
+                    return
+                # Make sure that next time around we will not find this same hit.
+                curpos = m.start() + 1 
+                # Try to standardize the page.
+                try:
+                    linkpl=wikipedia.PageLink(thispl.code(), m.group(1),
+                                              incode = refpl.code())
+                except wikipedia.NoSuchEntity:
+                    # Probably this is an interwiki link....
+                    linkpl = None
+                # Check whether the link found is to thispl.
+                if linkpl != thispl:
+                    continue
+    
+                n += 1
+                context = 30
+                while 1:
+                    print "== %s =="%(refpl)
+                    print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-context):m.end()+context])
+                    choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
+                                     "        m=more context,l=list,a=add new):")
+                    if choice=='n':
+                        return
+                    elif choice=='s':
+                        choice=-1
+                        break
+                    elif choice=='u':
+                        choice=-2
+                        break
+                    elif choice=='a':
+                        ns=raw_input('New alternative:')
+                        alternatives.append(ns)
+                    elif choice=='q':
+                        sys.exit(0)
+                        break
+                    elif choice=='m':
+                        context*=2
+                    elif choice=='l':
+                        for i in range(len(alternatives)):
+                            print "%3d" % i,repr(alternatives[i])
+                    else:
+                        if choice[0] == 'r':
+                            replaceit = 1
+                            choice = choice[1:]
+                        else:
+                            replaceit = 0
+                        try:
+                            choice=int(choice)
+                        except ValueError:
+                            pass
+                        else:
+                            break
+                if choice==-1:
+                    # Next link on this page
+                    continue
+                g1 = m.group(1)
+                g2 = m.group(2)
+                if not g2:
+                    g2 = g1
+                if choice==-2:
+                    # unlink
+                    reftxt = reftxt[:m.start()] + g2 + reftxt[m.end():]
+                else:
+                    # Normal replacement
+                    replacement = alternatives[choice]
+                    reppl = wikipedia.PageLink(thispl.code(), replacement,
+                                               incode = refpl.code())
+                    replacement = reppl.linkname()
+                    # There is a function that uncapitalizes the link target's first letter
+                    # if the link description starts with a small letter. This is useful on
+                    # nl: but annoying on de:.
+                    # At the moment the de: exclusion is only a workaround because I don't
+                    # know if other languages don't want this feature either.
+                    # We might want to introduce a list of languages that don't want to use
+                    # this feature.
+                    if wikipedia.mylang != 'de' and g2[0] in 'abcdefghijklmnopqrstuvwxyz':
+                        replacement = replacement[0].lower() + replacement[1:]
+                    if replaceit or replacement == g2:
+                        reptxt = replacement
+                    else:
+                        reptxt = "%s|%s" % (replacement, g2)
+                    reftxt = reftxt[:m.start()+2] + reptxt + reftxt[m.end()-2:]
+    
+                print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-30):m.end()+30])
+            if not debug:
+                refpl.put(reftxt)
 
-for ref in getReferences(thispl):
-    refpl=wikipedia.PageLink(wikipedia.mylang, ref)
-    treat(refpl, thispl)
+    linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\]')
 
+    def resafe(s):
+        s=s.replace('(','\\(')
+        s=s.replace(')','\\)')
+        return s
+    
+    for ref in getReferences(thispl):
+        refpl=wikipedia.PageLink(wikipedia.mylang, ref)
+        treat(refpl, thispl)
+    
+    # clear alternatives before working on next disambiguation page
+    alternatives = []
