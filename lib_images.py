@@ -69,7 +69,6 @@ def get_content_type(filename):
 # a description is asked.
 # Returns the filename which was used to upload the image
 def get_image(fn, target, description, debug=False):
-    uploadaddr = wikipedia.family.upload_address(code)
     # Get file contents
     uo = wikipedia.MyURLopener()
     file = uo.open(fn)
@@ -120,8 +119,8 @@ def get_image(fn, target, description, debug=False):
         description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
     # don't upload if we're in debug mode
     if not debug:
-        data = post_multipart(wikipedia.langs[wikipedia.mylang],
-                              uploadaddr,
+        data = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
+                              wikipedia.family.upload_address(code),
                               (('wpUploadDescription', description),
                                ('wpUploadAffirm', '1'),
                                ('wpIgnoreWarning', '1'),

@@ -60,7 +60,7 @@ data = wikipedia.urlencode((
 
 headers = {"Content-type": "application/x-www-form-urlencoded", 
            "User-agent": "RobHooftWikiRobot/1.0"}
-conn = httplib.HTTPConnection(wikipedia.langs[wikipedia.mylang])
+conn = httplib.HTTPConnection(wikipedia.family.hostname(wikipedia.mylang))
 pagename = wikipedia.family.login_address(wikipedia.mylang)
 conn.request("POST", pagename, data, headers)
 response = conn.getresponse()

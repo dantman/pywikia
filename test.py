@@ -14,7 +14,7 @@ if 0:
     pl=wikipedia.PageLink('af','1832')
     print pl.get()
 elif 0:
-    wikipedia.langs={'test':'test.wikipedia.org'}
+    wikipedia.family.langs={'test':'test.wikipedia.org'}
 
     text=wikipedia.getPage('test','Robottest')
     text=text+'\nrobot was here\n'
