@@ -1,12 +1,30 @@
 #!/usr/bin/python
 
-langheader = {	'nl': '{{-nl-}}',
-		'en': '==English=='
-            }
-
-posheader = {	'nl': '{{-noun-}}',
-		'en': '=== Noun ==='
-            }
+wiktionaryformats = {
+			'nl': {
+				'langheader':	u'{{-%%ISOLangcode%%-}}',
+				'beforeexampleterm': u"'''",
+				'afterexampleterm': u"'''",
+				'gender': u"{{%%gender%%}}",
+				'posheader': {
+						'noun':	u'{{-noun-}}'
+						}
+				},
+			'en': {
+				'langheader':	u'==%%langname%%==',
+				'beforeexampleterm': u"'''",
+				'afterexampleterm': u"'''",
+				'gender': u"''%%gender%%''",
+				'posheader': {
+						'noun': u'=== Noun ==='
+						}
+				}
+		            }
+#print wiktionaryformats['nl']['langheader']
+#print wiktionaryformats['en']['langheader']
+#print wiktionaryformats['nl']['posheader']['noun']
+#print wiktionaryformats['en']['posheader']['noun']
+			    
 class WiktionaryEntry:				# This refers to an entire page
 	def __init__(self,wikilang,term):	# wikilang here refers to the language of the Wiktionary
 		self.wikilang=wikilang
@@ -20,8 +38,9 @@ class WiktionaryEntry:				# This refers to an entire page
 		return self.subentries
 
 	def wikiwrap(self):
+		entry = ''
 		for subentry in self.subentries:
-			entry=subentry.wikiwrap(self.wikilang) + '\n\n'
+			entry= entry + subentry.wikiwrap(self.wikilang) + '\n\n'
 
 		# Here something needs to be inserted for treating interwiktionary links
 		# that will have to wait for the moment
@@ -31,7 +50,6 @@ class WiktionaryEntry:				# This refers to an entire page
 class SubEntry:					# On one page, different terms in different languages can be described
 	def __init__(self,subentrylang):
 		self.subentrylang=subentrylang
-#		self.pos=pos			# part of speech
 		self.meanings = []
 		
 	def addMeaning(self,meaning):
@@ -42,12 +60,13 @@ class SubEntry:					# On one page, different terms in different languages can be
 
 	def wikiwrap(self,wikilang):
 		for meaning in self.meanings:
-			subentry=langheader[wikilang] + '\n'	# langheader is a dictionary that has the proper way to create a header indicating the language of a subentry for this Wiktionary
+			subentry=wiktionaryformats[wikilang]['langheader'] + '\n'
 			term=meaning.term
-			subentry+=posheader[wikilang] # ,term.pos)	# posheader is a dictionary that has the proper way to create headers indicating part of speech
+
+			subentry+=wiktionaryformats[wikilang]['posheader'][term.pos]
 			subentry+='\n'	
-			subentry= subentry + term.getTerm() + ' ' + term.getGender() + ' ' + meaning.definition()
-			subentry+='\n\n'
+			subentry= subentry + term.wikiwrapasexample(wikilang) + '; ' + meaning.definition
+			subentry+='\n'
 			return subentry
 			
 class Meaning:					# On one page, different terms in different languages can be described
@@ -103,8 +122,16 @@ class Term:
 	def getLang(self):
 		return self.lang
 
+	def wikiwrapasexample(self,wikilang):
+		term=wiktionaryformats[wikilang]['beforeexampleterm'] + self.term + wiktionaryformats[wikilang]['afterexampleterm']
+		if self.gender:
+			term = term + ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
+			
+		return term
+
 class Noun(Term):
 	def __init__(self,lang,term):
+		self.pos='noun'		# part of speech
 		self.gender=''
 		Term.__init__(self,lang,term)
 
@@ -123,12 +150,12 @@ if __name__ == '__main__':
 	print 'Wiktionary language: %s'%apage.wikilang
 	print 'Wiktionary apage: %s'%apage.term
 	print
-	aword = Noun('nl',u'iets')
+	aword = Noun('nl',u'iemand')
 	print 'Noun: %s'%aword.term
-	aword.setGender('o')
+	aword.setGender('m')
 	print 'Gender: %s'%aword.gender
         frtrans = Noun('fr',u"quelqu'un")
-	frtrans.setGender('f')
+	frtrans.setGender('m')
 	entrans = Noun('en',u'somebody')
 	
 	ameaning = Meaning(u'een persoon',aword)
