@@ -67,6 +67,7 @@ msg = {
        'de':u'Bot: Automatisierte Textersetzung',
        'en':u'Robot: Automated text replacement',
        'es':u'Robot: Reemplazo automático de texto',
+       'hu':u'Robot: Automatikus szövegcsere',
        }
 
 # Predefined replacements tasks.
