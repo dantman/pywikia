@@ -190,6 +190,7 @@ msg = {
     'nn':(u'la til', u'fjerna', u'endra'),
     'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
     'pt':(u'Adicionando', u'Removendo',u'Modificando'),
+    'sv':(u'lägger till', u'ändrar', u'tar bort'),
     }
 
 class Global(object):
