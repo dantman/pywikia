@@ -56,7 +56,7 @@ def choosecats(pagetext):
 def make_categories(page,list):
     pllist=[]
     for p in list:
-        cattitle="%s:%s" % (wikipedia.family.category_namespace(wikipedia.mylang, fallback = None), p)
+        cattitle="%s:%s" % (wikipedia.family.category_namespace(wikipedia.mylang), p)
         pllist.append(wikipedia.PageLink(wikipedia.mylang,cattitle))
     page.put(wikipedia.replaceCategoryLinks(page.get(), pllist), comment = wikipedia.translate(wikipedia.mylang, msg))
 
