@@ -232,8 +232,8 @@ biglangs3 = biglangs2 + [
 
 seriouslangs  = biglangs3 + [
                 'ar', 'bg', 'bs', 'cy', 'el', 'fa', 'fy', 'hi', 'hu', 'ko',
-                'is', 'ku', 'lt', 'lv', 'nds', 'oc', 'sr', 'ta', 'th', 'tr',
-                'uk', 'vi']
+                'is', 'ku', 'lt', 'nds', 'oc', 'sr', 'ta', 'th', 'tr', 'uk',
+                'ur', 'vi']
 
 # other groups of language that we might want to do at once
 
