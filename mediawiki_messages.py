@@ -111,6 +111,7 @@ def refresh_messages(lang = None):
     f.close()
     
 if __name__ == "__main__":
+    debug = False
     for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
             pass
