@@ -1454,8 +1454,10 @@ def chooselang(code, choice):
 # Works like raw_input(), but returns a unicode string instead of ASCII.
 # if encode is True, it will encode the string into a format suitable for
 # the local wiki (utf-8 or iso8859-1).
+# Argument question should be encoded in raw unicode.
 def input(question, encode = False):
-    text = raw_input(question)
+    # print 
+    text = raw_input(question.encode(config.console_encoding, 'replace'))
     text = unicode(text, config.console_encoding)
     if encode:
         text = text.encode(code2encoding(mylang))

@@ -21,7 +21,7 @@ import wikipedia, config, catlib, interwiki
 # Summary messages
 msg_change={
     'en':u'Robot: Changing [[Category:%s]]',
-    'de':u'Bot: \xc4ndere [[Kategorie:%s]]',
+    'de':u'Bot: Ändere [[Kategorie:%s]]',
     'nl':u'Bot: Wijziging [[Categorie:%s]]',
     }
 
@@ -74,7 +74,7 @@ def add_category(sort_by_last_name = False):
         if answer != 'a':
             answer = ''
         while answer not in ('y','n','a'):
-            answer = wikipedia.input("%s [y/n/a(ll)] : "%(pl2.asasciilink()))
+            answer = wikipedia.input("%s [y/n/a(ll)] : "%(pl2.aslink()))
             if answer == 'a':
                 confirm = ''
 		while confirm not in ('y','n'):
