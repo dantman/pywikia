@@ -97,7 +97,8 @@ msg_redir={
 # (Begriffsklärungen nach Modell 2)
 primary_topic_format={
           'de':'%s_(Begriffskl\xe4rung)',
-          'en':'%s_(disambiguation)'
+          'en':'%s_(disambiguation)',
+          'nl':'%s_(doorverwijspagina)'
           }
 
 # letters that can follow a link and are regarded as part of this link
@@ -106,11 +107,11 @@ primary_topic_format={
 # to find out the setting for your Wikipedia.
 # Note: this is a regular expression.
 link_trail={
-   'de':'[ä|ö|ü|ß|a-z]*',
+   'de':'[a-z|ä|ö|ü|ß]*',
    'da':'[a-z|æ|ø|å]*',
    'en':'[a-z]*',
    'fr':'[a-z|à|â|ç|é|è|ê|î|ô|û]*',
-   'nl':'[a-z]*'
+   'nl':'[a-z|ä|ö|ü|ï|ë|é|è|é|à|ç]*'
    }
           
 # List pages that will be ignored if they got a link to a disambiguation
@@ -126,7 +127,8 @@ ignore={
           'Wikipedia:Woorden die niet als zoekterm gebruikt kunnen worden',
           'Gebruiker:Puckly/Bijdragen',
           'Gebruiker:Waerth/bijdragen',
-          "Wikipedia:Project aanmelding bij startpagina's"),
+          "Wikipedia:Project aanmelding bij startpagina's",
+          'Gebruiker:Gustar/aantekeningen denotatie annex connotatie'),
     'en':('Wikipedia:Links to disambiguating pages',
           'Wikipedia:Disambiguation pages with links',
           'Wikipedia:Multiple-place names (A)',
@@ -434,17 +436,12 @@ if page_list == []:
     pagename = pagename.encode(wikipedia.code2encoding(wikipedia.mylang))
     page_list.append(pagename)
 
-if msg.has_key(wikipedia.mylang):
-    msglang = wikipedia.mylang
-else:
-    msglang = 'en'
-
 for wrd in (page_list):
     # when run with -redir argument, there's another summary message
     if solve_redirect:
-        wikipedia.setAction(msg_redir[msglang]+': '+wrd)
+        wikipedia.setAction(msg_redir[wikipedia.chooselang(wikipedia.mylang,msg_redir)]+': '+wrd)
     else: 
-        wikipedia.setAction(msg[msglang]+': '+wrd)
+        wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)]+': '+wrd)
     
     thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
     
@@ -626,13 +623,18 @@ for wrd in (page_list):
                 refpl.put(reftxt)
         return True
 
-    trailR=re.compile(link_trail[wikipedia.mylang])
+    if wikipedia.mylang in link_trail:
+        linktrail=link_trail[wikipedia.mylang]
+    else:
+        linktrail='[a-z]*'
+    trailR=re.compile(linktrail)
+        
     # The regular expression which finds links. Results consist of three groups:
     # group(1) is the target page title, that is, everything before | or ].
     # group(2) is the alternative link title, that's everything between | and ].
     # group(3) is the link trail, that's letters after ]] which are part of the word.
     # note that the definition of 'letter' varies from language to language.
-    linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + link_trail[wikipedia.mylang] + ')')
+    linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + linktrail + ')')
 
     def resafe(s):
         s=s.replace('(','\\(')

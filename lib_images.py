@@ -243,12 +243,7 @@ def transfer_image(imagelink, debug=False):
     url = "http://" + imagelink.code() + ".wikipedia.org/upload/" + md5sum[0] + "/" + md5sum[:2] + "/" + filename
     if debug: print "URL should be: %s" % url
     # localize the text that should be printed on the image description page
-    if copy_message.has_key(wikipedia.mylang):
-        msg_lang = wikipedia.mylang
-    elif wikipedia.mylang == "fy":
-        msg_lang = "nl"
-    else:
-        msg_lang = "en"
+    msg_lang = wikipedia.chooselang(wikipedia.mylang,copy_message)
     try:
         description = copy_message[msg_lang] % (imagelink.code(), imagelink.get())
         # add interwiki link

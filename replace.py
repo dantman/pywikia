@@ -49,7 +49,8 @@ maxchanges = 0
 articlelist = []
 textsearch=""
 textsubst=""
-comment = "bot replacing text"
+comment = {"en":"bot replacing text"
+           }
 
 """ functions """
 
@@ -96,7 +97,9 @@ for arg in sys.argv[1:]:
 		maxchanges = arg[11:]
 	else:
 		articlelist.append(arg)
-	
+
+msglang=wikipedia.chooselang(wikipedia.mylang,comment)
+
 # main loop passing through each articles		
 for article in articlelist:
 	text = ""
@@ -111,4 +114,4 @@ for article in articlelist:
 	
 	if newtext!=text:
 		print "Replacing matching text"
-		pl.put(newtext, comment)
+		pl.put(newtext, comment[msglang])

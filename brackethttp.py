@@ -14,7 +14,8 @@ import re, sys
 
 import wikipedia
 
-myComment = 'Bot: URL fixed'
+myComment = {'en':'Bot: URL fixed'
+             }
 
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
@@ -30,7 +31,7 @@ for arg in sys.argv[1:]:
             for line in difflib.ndiff(text.split('\r\n'),newText.split('\r\n')):
                 if line[0] in ['+','-']:
                     print repr(line)[2:-1]
-            status, reason, data = pl.put(newText, myComment)
+            status, reason, data = pl.put(newText, myComment[wikipedia.chooselang(wikipedia.mylang,myComment)])
             print status, reason
         else:
             print "No bad link found"

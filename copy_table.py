@@ -45,12 +45,6 @@ msg={
     "de":"Bot: Kopiere Tabelle von ",
     }
 
-# get edit summary message
-if msg.has_key(wikipedia.mylang):
-    msglang = wikipedia.mylang
-else:
-    msglang = "en"
-
 # prints text on the screen only if in -debug mode
 def print_debug(text):
     if debug:
@@ -100,6 +94,10 @@ for arg in sys.argv[1:]:
         f.close()
     else:
         page_title.append(arg)
+
+# get edit summary message
+msglang = wikipedia.chooselang(wikipedia.mylang,msg)
+print msglang
 
 # if the page name is given as a command line argument,
 # connect the title's parts with spaces

@@ -40,7 +40,9 @@ __version__='$Id$'
 
 import re,sys,wikipedia,config,time
 
-myComment = 'User-controlled Bot: table syntax updated'
+myComment = {'en':'User-controlled Bot: table syntax updated',
+             'nl':'Tabel gewijzigd van HTML- naar Wikisyntax'
+             }
 fixedSites = ''
 notFixedSites = ''
 notFoundSites = ''
@@ -323,7 +325,7 @@ for article in articles:
             warn = ""
             if warnings > 0:
                 warn = " - " + str(warnings) + " warnings!"
-            status, reason, data = pl.put(newText, myComment + warn)
+            status, reason, data = pl.put(newText, myComment[wikipedia.chooselang(wikipedia.mylang,myComment)] + warn)
             print status,reason
             fixedSites = fixedSites + " " + article
         else:

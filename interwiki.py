@@ -933,8 +933,7 @@ if __name__ == "__main__":
         else:
             inname.append(arg)
 
-    if msg.has_key(wikipedia.mylang):
-        globalvar.msglang = wikipedia.mylang
+    globalvar.msglang = wikipedia.chooselang(wikipedia.mylang,msg)
 
     if globalvar.log:
         import logger

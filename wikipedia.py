@@ -60,6 +60,62 @@ interwiki_putfirst = {
     'simple': alphabetic
     }
 
+# Languages to use for comment text after the actual language but before
+# en:. For example, if for language 'xx', you want the preference of
+# languages to be:
+# xx:, then fr:, then ru:, then en:
+# you let altlang return ['fr','ru'].
+# This code is used by chooselang below.
+
+def altlang(code):
+    if code in ['fa','ku']:
+        return ['ar']
+    if code=='sk':
+        return ['cs']
+    if code=='nds':
+        return ['de','nl']
+    if code in ['ca','gn','nah']:
+        return ['es']
+    if code=='eu':
+        return ['es','fr']
+    if code=='gl':
+        return ['es','pt']
+    if code in ['oc','th','vi','wa']:
+        return ['fr']
+    if code=='als':
+        return ['fr','de']
+    if code=='co':
+        return ['fr','it']
+    if code=='fy':
+        return ['nl']
+    if code=='csb':
+        return ['pl']
+    if code in ['lt','lv','uk']:
+        return ['ru']
+    if code in ['ja','ko','zh','zh-cn','zh-tw']:
+        return ['zh','zh-cn','zh-tw']
+    if code=='da':
+        return ['nb','no']
+    if code in ['is','no','nb']:
+        return ['no','nb','nn','da']
+    if code=='sv':
+        return ['da','no','nb']
+    if code in ['id','jv','ms','su']:
+        return ['id','ms','jv','su']
+    if code in ['bs','hr','mk','sh','sr']:
+        return ['hr','sr','bs']
+    if code=='ia':
+        return ['la','es','fr','it']
+    if code=='sa':
+        return ['hi']
+    if code=='yi':
+        return ['he']
+    if code=='bi':
+        return ['tpi']
+    if code=='tpi':
+        return ['bi']
+    return []
+
 # Local exceptions
 
 class Error(Exception):
@@ -1281,3 +1337,23 @@ if not family.langs.has_key(mylang):
     print "Defaulting to test: wikipedia"
     setMyLang('test')
     family.langs['test']='test.wikipedia.org'
+
+# Selecting the language for a text. 'Code' is a language, 'choice'
+# is a list of languages. Choose from 'choice' the language that is
+# most applicable to use on the Wikipedia in language 'code'.
+# The language itself is always checked first, then languages that
+# have been defined to be alternatives, and finally English. If none of
+# the options gives result, we just take the first language in the
+# list.
+
+def chooselang(code, choice):
+    if code in choice:
+        return code
+    for alternative in altlang(code):
+        if alternative in choice:
+            return alternative
+    if 'en' in choice:
+        return 'en'
+    return choice[1]
+
+    

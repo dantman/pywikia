@@ -26,7 +26,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.1 2004/04/14 11:31:07 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.2 2004/04/22 20:34:55 wikipedian Exp $'
 #
 import wikipedia,re,sys,string
 
@@ -80,11 +80,7 @@ if page_list == []:
     page_list.append(pagename)
 
 # get edit summary message
-if msg.has_key(wikipedia.mylang):
-    msglang = wikipedia.mylang
-else:
-    msglang = 'en'
-
+msglang = wikipedia.chooselang(wikipedia.mylang,msg)
 wikipedia.setAction(msg[msglang])
 
 def treat(pl):

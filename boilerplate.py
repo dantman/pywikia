@@ -65,12 +65,7 @@ else:
     resolve = True
 
 # get edit summary message
-if msg.has_key(wikipedia.mylang):
-    msglang = wikipedia.mylang
-else:
-    msglang = 'en'
-
-wikipedia.setAction(msg[msglang]+': '+old)
+wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)]+': '+old)
 
 # Download 'What links here' of the boilerplate
 thispl = wikipedia.PageLink(wikipedia.mylang, 'MediaWiki:' + old)
