@@ -212,7 +212,7 @@ def treat(refpl, thispl):
             context = 30
             while 1:
                 print "== %s =="%(refpl)
-                print reftxt[max(0,m.start()-context):m.end()+context]
+                print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-context):m.end()+context])
                 choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
                                  "        m=more context,l=list,a=add new):")
                 if choice=='n':
@@ -270,7 +270,7 @@ def treat(refpl, thispl):
                     reptxt = "%s|%s" % (replacement, g2)
                 reftxt = reftxt[:m.start()+2] + reptxt + reftxt[m.end()-2:]
 
-            print reftxt[max(0,m.start()-30):m.end()+30]
+            print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-30):m.end()+30])
         if not debug:
             refpl.put(reftxt)
     
