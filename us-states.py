@@ -114,4 +114,4 @@ for p in wikipedia.allpages(start = start):
                         change = raw_input("(y/n)? ")
                 if change=='y':
                     text = '#REDIRECT [['+p.urlname().replace("%2C",",").replace("_"," ")+']]'
-                    pl.put(text, comment=msg, minorEdit = '0', newPage = '1')
+                    pl.put(text, comment=msg, minorEdit = '0')

@@ -270,11 +270,15 @@ class PageLink:
         else:
             return 0
         
-    def put(self, newtext, comment=None, watchArticle = '0', minorEdit = '1', newPage = '0'):
+    def put(self, newtext, comment=None, watchArticle = '0', minorEdit = '1'):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
         """
+        if self.exists():
+            newPage="0"
+        else:
+            newPage="1"
         return putPage(self.code(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage)
 
     def interwiki(self):
