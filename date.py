@@ -805,8 +805,8 @@ days_in_month = {
 
 # format for dates B.C., required for interwiki.py with the -years argument and for titletranslate.py
 yearBCfmt = {
-        'af':'%d V.C.',
-        'bg':'%d &#1075;. &#1087;&#1088;.&#1085;.&#1077;.',
+        'af':'%d v.Chr.',
+        #'bg':'%d &#1075;. &#1087;&#1088;.&#1085;.&#1077;.', # All years BC redirect to centuries for bg:
         'bs':'%d p.ne.',
         'ca':'%d aC',
         'da':'%d f.Kr.',
