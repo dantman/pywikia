@@ -454,15 +454,3 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:", pl.asasciiselflink(), "links to incorrect", xpl.asasciilink()
-
-
-
-
-
-
-
-
-
-
-
-

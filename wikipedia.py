@@ -676,9 +676,18 @@ def removeLanguageLinks(text):
         if text.startswith('\r\n'):
             text=text[2:]
         elif text.startswith(' '):
+            # This assumes that the first line NEVER starts with a space!
             text=text[1:]
         else:
             break
+    # Remove white space at the end
+    while 1:
+        if text[-1:] in '\r\n \t':
+            text=text[:-1]
+        else:
+            break
+    # Add final newline back in
+    text += '\n'
     return text
 
 def replaceLanguageLinks(oldtext, new):
@@ -690,10 +699,13 @@ def replaceLanguageLinks(oldtext, new):
     """   
     s = interwikiFormat(new, incode = mylang)
     s2 = removeLanguageLinks(oldtext)
-    if mylang in config.interwiki_atbottom:
-        newtext = s2 + config.interwiki_text_separator + s
+    if s:
+        if mylang in config.interwiki_atbottom:
+            newtext = s2 + config.interwiki_text_separator + s
+        else:
+            newtext = s + config.interwiki_text_separator + s2
     else:
-        newtext = s + config.interwiki_text_separator + s2
+        newtext = s2
     return newtext
     
 def interwikiFormat(links, incode):
@@ -706,6 +718,8 @@ def interwikiFormat(links, incode):
        'incode' should be the name of the wikipedia language that is the
        target of the string.
     """
+    if not links:
+        return ''
     s = []
     ar = links.keys()
     ar.sort()
