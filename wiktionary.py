@@ -8,7 +8,8 @@ wiktionaryformats = {
 				'afterexampleterm': u"'''",
 				'gender': u"{{%%gender%%}}",
 				'posheader': {
-						'noun':	u'{{-noun-}}'
+						'noun':	u'{{-noun-}}',
+						'adjective': u'{{-adj-}}',
 						},
 				'translationsheader': u"{{-trans-}}",
 				'synonymsheader': u"{{-syn-}}",
@@ -20,7 +21,8 @@ wiktionaryformats = {
 				'afterexampleterm': u"'''",
 				'gender': u"''%%gender%%''",
 				'posheader': {
-						'noun': u'=== Noun ==='
+						'noun': u'=== Noun ===',
+						'adjective': u'=== Adjective ===',
 						},
 				'translationsheader': u"==== Translations ====",
 				'synonymsheader': u"==== Synonyms ====",
@@ -36,18 +38,21 @@ langnames =	{'nl':	{
 			'en' : u'Engels',
 			'de' : u'Duits',
 			'fr' : u'Frans',
+			'it' : u'Italiaans',
 			},
 		 'de':	{
-			'nl' : u'Niederl�ndisch',
+			'nl' : u'Niederländisch',
 			'en' : u'Englisch',
 			'de' : u'Deutsch',
-			'fr' : u'Franz�sisch',
+			'fr' : u'Französisch',
+			'it' : u'Italienisch',
 			},
 		 'en':	{
 			'nl' : u'Dutch',
 			'en' : u'English',
 			'de' : u'German',
 			'fr' : u'French',
+			'it' : u'Italian',
 			}
 		}
 #print langnames
@@ -81,7 +86,7 @@ class WiktionaryEntry:				# This refers to an entire page
 	def wikiwrap(self):
 		entry = ''
 		for subentry in self.subentries:
-			entry= entry + subentry.wikiwrap(self.wikilang) + '\n\n'
+			entry= entry + subentry.wikiwrap(self.wikilang) + '\n'
 
 		# Here something needs to be inserted for treating interwiktionary links
 		# that will have to wait for the moment
@@ -100,10 +105,10 @@ class SubEntry:					# On one page, different terms in different languages can be
 		return self.meanings
 
 	def wikiwrap(self,wikilang):
+		subentry = wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][self.subentrylang]).replace('%%ISOLangcode%%',self.subentrylang) + '\n'
 		for meaning in self.meanings:
 			term=meaning.term
-			subentry=wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][term.lang]).replace('%%ISOLangcode%%',term.lang) + '\n'
-
+			
 			subentry += wiktionaryformats[wikilang]['posheader'][term.pos]
 			subentry +='\n'	
 			
@@ -115,7 +120,7 @@ class SubEntry:					# On one page, different terms in different languages can be
 			
 			subentry += meaning.wikiwrapTranslations(wikilang)
 			
-			return subentry
+		return subentry
 			
 class Meaning:					# On one page, different terms in different languages can be described
 	def __init__(self,definition,term):
@@ -222,9 +227,9 @@ class Term:
 		return term
 
 class Noun(Term):
-	def __init__(self,lang,term):
+	def __init__(self,lang,term,gender=''):
 		self.pos='noun'		# part of speech
-		self.gender=''
+		self.gender=gender
 		Term.__init__(self,lang,term)
 
 	def setGender(self,gender):
@@ -233,9 +238,19 @@ class Noun(Term):
 	def getGender(self):
 		return(self.gender)
 
-	def wikiwrap(self,wikilang):
-		return()
+
+class Adjective(Term):
+	def __init__(self,lang,term,gender=''):
+		self.pos='adjective'		# part of speech
+		self.gender=gender
+		Term.__init__(self,lang,term)
+
+	def setGender(self,gender):
+		self.gender=gender
 		
+	def getGender(self):
+		return(self.gender)
+
 
 if __name__ == '__main__':
 	apage = WiktionaryEntry('nl',u'iemand')
@@ -273,11 +288,70 @@ if __name__ == '__main__':
 	print
 	t=apage.wikiwrap()
 	print t
+
+	apage = WiktionaryEntry('nl',u'Italiaanse')
+	aword = Noun('nl',u'Italiaanse','f')
+	ameaning = Meaning(u'vrouwelijke persoon die uit [[Italië]] komt',aword)
+
+#	{{-rel-}}
+#	* [[Italiaan]]
+	detrans = Noun('de',u'Italienerin','f')
+	entrans = Noun('en',u'Italian')
+	frtrans = Noun('fr',u'Italienne','f')
+	ittrans = Noun('it',u'italiana','f')
+
+	ameaning.addTranslation(detrans)
+	ameaning.addTranslation(entrans)
+	ameaning.addTranslation(frtrans)
+	ameaning.addTranslation(ittrans)
+	
+	asubentry = SubEntry('nl')
+	asubentry.addMeaning(ameaning)
+
+	apage.addSubEntry(asubentry)
+
+	aword = Adjective('nl',u'Italiaanse')
+	ameaning = Meaning(u'uit Italië afkomstig',aword)
+	anothermeaning = Meaning(u'gerelateerd aan de Italiaanse taal',aword)
+
+	detrans = Noun('de',u'italienisch')
+	entrans = Noun('en',u'Italian')
+	frtrans = Noun('fr',u'italien','m')
+	frtrans2 = Noun('fr',u'italienne','f')
+	ittrans = Noun('it',u'italiano','m')
+	ittrans2 = Noun('it',u'italiana','f')
+
+	ameaning.addTranslation(detrans)
+	ameaning.addTranslation(entrans)
+	ameaning.addTranslation(frtrans)
+	ameaning.addTranslation(frtrans2)
+	ameaning.addTranslation(ittrans)
+	ameaning.addTranslation(ittrans2)
+	
+	anothermeaning.addTranslation(detrans)
+	anothermeaning.addTranslation(entrans)
+	anothermeaning.addTranslation(frtrans)
+	anothermeaning.addTranslation(frtrans2)
+	anothermeaning.addTranslation(ittrans)
+	anothermeaning.addTranslation(ittrans2)
+
+	anothersubentry = SubEntry('nl')
+	anothersubentry.addMeaning(ameaning)
+	anothersubentry.addMeaning(anothermeaning)
+
+	apage.addSubEntry(anothersubentry)
+
+	print
+	u=apage.wikiwrap()
+	print u
+
+#	{{-syn-}}
+#	* [[Italiaans]]
 	
 	
 #	{{-nl-}}
 #	{{-noun-}}
-#	'''Italiaanse''' {{f}}; vrouwelijke persoon die uit [[Itali]] komt
+#	'''Italiaanse''' {{f}}; vrouwelijke persoon die uit [[Italië]] komt
 
 #	{{-rel-}}
 #	* [[Italiaan]]
@@ -289,7 +363,7 @@ if __name__ == '__main__':
 #	*{{it}}: [[italiana]] {{f}}
 
 #	{{-adj-}}
-#	#'''Italiaanse'''; uit Itali afkomstig
+#	#'''Italiaanse'''; uit Italië afkomstig
 #	#'''Italiaanse'''; gerelateerd aan de Italiaanse taal
 
 #	{{-syn-}}
