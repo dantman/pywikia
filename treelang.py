@@ -20,8 +20,8 @@ This script understands various command-line arguments:
     -hint: used as -hint:de:Anweisung to give the robot a hint where to
            start looking for translations
     -name: similar to -same, but UPPERCASE the last name for eo:
-    -untranslated: only run on untranslated pages, and interactively ask
-                   for a translation hints on such pages.
+    -untranslated: untranslated pages are not skipped; instead in those
+                   cases interactively a translation hint is asked of the user.
     -confirm: ask for confirmation in all cases. Without this argument, 
               additions and unambiguous modifications are made without
               confirmation.
@@ -70,7 +70,7 @@ datetable={
 yearADfmt={'ja':'%d&#24180;'} # Others default to '%d'
 
 yearBCfmt={'de':'%d v. Chr.','en':'%d BC','fr':'-%d','pl':'%d p.n.e.',
-           'es':'%d adC','eo':'-%d'} # No default
+           'es':'%d adC','eo':'-%d','nl':'%d v. Chr.'} # No default
 
 msg={
     'en':('Adding','Removing','Modifying'),
@@ -255,8 +255,9 @@ def treesearch(pl):
     if untranslated:
         if len(arr)>1:
             print "Already has translations"
-            return
         else:
+            if bell:
+                sys.stdout.write('\07')
             newhint=raw_input("Hint:")
             if not newhint:
                 return
@@ -425,3 +426,4 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:",pl.asselflink(),"links to incorrect",xpl.aslink()
+
