@@ -12,12 +12,12 @@ __version__ = '$Id$'
 #
 # PARAM=VALUE               
 # ===========               
-mylang='test'
-username=''
+mylang = 'test'
+username = ''
 # atbottom is a list of languages that prefer to have the interwiki
 # links at the bottom of the page. You can use interwiki_atbottom.append('xx')
 # in user-config.py to add more.
-interwiki_atbottom = ['en','es','hu','hr','nl']
+interwiki_atbottom = ['en', 'es', 'hu', 'hr', 'nl']
 # on_separate_lines is a list of languages that want the interwiki links
 # each on a separate line
 interwiki_on_separate_lines = ['nl']
@@ -36,10 +36,10 @@ treelang_log = True
 throttle = 6
 # Slow down the robot such that it never makes a second change within
 # 'put_throttle' seconds.
-put_throttle=60
+put_throttle = 60
 # Sometimes you want to know when a delay is inserted. If a delay is larger
 # than 'noisysleep' seconds, it is logged on the screen.
-noisysleep=5.0
+noisysleep = 5.0
 
 # End of configuration section
 # ============================
