@@ -118,7 +118,7 @@ special = {
     'ca': 'Especial',
     'co': 'Special',
     'cs': 'Speci%C3%A1ln%C3%AD',
-    'cy': 'Special',
+    'cy': 'Arbennig',
     'da': 'Speciel',
     'de': 'Spezial',
     'el': 'Special',
