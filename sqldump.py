@@ -91,15 +91,23 @@ class SQLentry:
         self.comment = self.comment.replace('\\n', '\n')
         # I hope that titles and usernames can't :-)
 
-    def full_title(self):
+    def full_title(self, underline = True):
         '''
         Returns the full page title in the form 'namespace:title', using the
         localized namespace titles defined in your family file.
+        If underline is True, returns the page title with underlines instead of
+        spaces.
         '''
+        if not underline:
+            title = self.title.replace('_', ' ')
+        else:
+            title = self.title
         namespace_title = wikipedia.family.namespace(wikipedia.mylang, self.namespace)
         if namespace_title == None:
             return self.title
         else:
+            if underline:
+                namespace_title = namespace_title.replace(' ', '_') 
             return namespace_title + ':' + self.title
 
     def age(self):
@@ -161,9 +169,64 @@ class SQLdump:
                  yield new_entry
         f.close()
 
-# test routines
+def query_percentnames(sqldump):
+    '''
+    yields pages that contain internal links where special characters are
+    encoded as hexadecimal codes, e.g. %F6
+    '''
+    Rpercentlink = re.compile('\[\[[^\]]*?%[A-F0-9][A-F0-9][^\]]*?\]\]')
+    for entry in sqldump.entries():
+        text = wikipedia.removeLanguageLinks(entry.text)
+        if Rpercentlink.search(text):
+            yield entry
+
+def query_shortpages(sqldump, minsize):
+    '''
+    yields articles that have less than minsize bytes of text
+    '''
+    for entry in sqldump.entries():
+        if entry.namespace == 0 and not entry.redirect and len(entry.text) < minsize:
+            yield entry
+
+def query_find(sqldump, keyword):
+    '''
+    yields pages which contain keyword
+    '''
+    # TODO: same for regex
+    for entry in sqldump.entries():
+        if entry.text.find(keyword) != -1:
+            yield entry
+
+def query_unmountedcats(sqldump):
+    for entry in sqldump.entries():
+        if entry.namespace == 14:
+            has_supercategory = False
+            for ns in wikipedia.family.category_namespaces(wikipedia.mylang):
+                if entry.text.find('[[%s:' % ns) != -1:
+                    has_supercategory = True
+                    break
+            if not has_supercategory:
+                yield entry
+            
+def query(sqldump, action):
+    if action == 'percentnames':
+        for entry in query_percentnames(sqldump):
+            yield entry
+    elif action == 'shortpages':
+        minsize = int(wikipedia.input(u'Minimum size:'))
+        for entry in query_shortpages(sqldump, minsize):
+            yield entry
+    elif action == 'find':
+        keyword = wikipedia.input(u'Search for:')
+        for entry in query_find(sqldump, keyword):
+            yield entry
+    if action == 'unmountedcats':
+        for entry in query_unmountedcats(sqldump):
+            yield entry
+ 
 if __name__=="__main__":
     import sys
+    action = None
     for arg in sys.argv[1:]:
         arg = unicode(arg, config.console_encoding)
         if wikipedia.argHandler(arg):
@@ -173,14 +236,9 @@ if __name__=="__main__":
                 filename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
             else:
                 filename = arg[5:]
+        else:
+            action = arg
     sqldump = SQLdump(filename, wikipedia.myencoding())
-    Rpercentlink = re.compile('\[\[[^\]]*?%[A-F1-6][A-F1-6][^\]]*?\]\]')
-    for page in sqldump.entries():
-        text = ''
-        i = wikipedia.getLanguageLinks(page.text)
-        for k in i.keys():
-            text += '[[%s:%s]]' % (k, i[k])
-        #wikipedia.output(page.full_title())
-        if Rpercentlink.search(text):
-            wikipedia.output(u'*[[%s]]' % page.full_title())
- 
+    for entry in query(sqldump, action):
+        wikipedia.output(u'*[[%s]]' % entry.full_title())
+
