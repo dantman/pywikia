@@ -27,6 +27,8 @@ and follow the on-screen instructions.
 # (C) Rob W.W. Hooft, 2004
 # (C) Daniel Herding, 2004
 #
+__version__ = '$Id$'
+#
 # Distribute under the terms of the PSF license.
 # 
 import re, sys, string, pickle
@@ -61,8 +63,6 @@ msg_remove={
     'nl':u'Bot: Verwijderd uit Categorie %s',
     'pt':u'Bot: Removendo [[Categoria:%s]]',
     }
-
-
 
 catContentDB={}
 def get_subcats(supercat):
@@ -171,7 +171,7 @@ def add_category(sort_by_last_name = False):
         pagenames = pl.links()
     else:
         refpage = wikipedia.input(u'Wikipedia page that is now linked to:')
-        pl = wikipedia.PageLink(wikipedia.getSit(), refpage)
+        pl = wikipedia.PageLink(wikipedia.getSite(), refpage)
         pagenames = wikipedia.getReferences(pl)
     print "  ==> %d pages to process"%len(pagenames)
     print
@@ -525,4 +525,3 @@ if __name__ == "__main__":
     else:
         # show help
         wikipedia.output(__doc__, 'utf-8')
-
