@@ -10,9 +10,8 @@ import sys,copy,wikipedia,re
 # language to check for missing links and modify
 mylang = 'nl'
 
-theuser='Rob Hooft'
 # Summary used in the modification request
-wikipedia.setAction('%s: semi-automatic interwiki script'%theuser)
+wikipedia.setAction('%s: semi-automatic interwiki script'%wikipedia.username)
 
 debug = 1
 forreal = 1
@@ -46,7 +45,8 @@ def autonomous_problem(name):
     
 def sametranslate(name,arr):
     for newcode in wikipedia.langs:
-        newname=wikipedia.link2url(wikipedia.url2link(name),code=newcode)
+        xname=wikipedia.url2link(name,code=newcode,incode=mylang)
+        newname=wikipedia.link2url(xname,code=newcode,incode=mylang)
         # Put as suggestion into array
         if newcode=='eo' and same=='name':
             newname=newname.split('_')
@@ -62,8 +62,8 @@ def autotranslate(name,arr,same=0):
     if hints:
         for h in hints:
             newcode,newname=h.split(':')
-            newname=wikipedia.url2link(newname)
-            newname=wikipedia.link2url(newname)
+            newname=wikipedia.url2link(newname,code=newcode,incode=mylang)
+            newname=wikipedia.link2url(newname,code=newcode,incode=mylang)
             arr[newcode,newname]=None
     # Autotranslate dates into some other languages, the rest will come from
     # existing interwiki links.
@@ -73,8 +73,8 @@ def autotranslate(name,arr,same=0):
         for newcode,fmt in datetable[m.group(2)].items():
             newname=fmt%int(m.group(1))
             # Standardize
-            newname=wikipedia.url2link(newname)
-            newname=wikipedia.link2url(newname)
+            newname=wikipedia.url2link(newname,code=newcode,incode=mylang)
+            newname=wikipedia.link2url(newname,code=newcode,incode=mylang)
             # Put as suggestion into array
             arr[newcode,newname]=None
         return
@@ -86,7 +86,7 @@ def autotranslate(name,arr,same=0):
         for newcode in wikipedia.langs:
             fmt = yearADfmt.get(newcode,'%d')
             newname = fmt%int(m.group(0))
-            newname=wikipedia.link2url(newname)
+            newname=wikipedia.link2url(newname,code=newcode,incode=mylang)
             # Put as suggestion into array
             arr[newcode,newname]=None
         return
@@ -99,7 +99,7 @@ def autotranslate(name,arr,same=0):
             fmt = yearBCfmt.get(newcode)
             if fmt:
                 newname = fmt%int(m.group(1))
-                newname=wikipedia.link2url(newname)
+                newname=wikipedia.link2url(newname,code=newcode,incode=mylang)
                 # Put as suggestion into array
                 arr[newcode,newname]=None
         return
@@ -114,8 +114,8 @@ def compareLanguages(old,new):
             confirm+=1
             removing.append(code)
         elif old[code]!=new[code]:
-            oo=wikipedia.url2link(wikipedia.link2url(old[code]))
-            nn=wikipedia.url2link(wikipedia.link2url(new[code]))
+            oo=wikipedia.url2link(wikipedia.link2url(old[code],code=code,incode=mylang),code=code,incode=mylang)
+            nn=wikipedia.url2link(wikipedia.link2url(new[code],code=code,incode=mylang),code=code,incode=mylang)
             if oo!=nn:
                 modifying.append(code)
     for code,name in new.iteritems():
@@ -192,7 +192,7 @@ def treestep(arr,code,name,abort_on_redirect=0):
             #newname=newname.replace('%EB','%D0%BB')
             #newname=newname.replace('%F2','%D1%82')
         if not (newcode,newname) in arr:
-            lname=wikipedia.url2link(newname)
+            lname=wikipedia.url2link(newname,code=newcode,incode=code)
             print "NOTE: from %s:%s we got the new %s:%s"%(code,name,newcode,lname)
             arr[newcode,newname]=None
             n+=1
@@ -264,7 +264,7 @@ inname='_'.join(inname)
 if not inname:
     inname=raw_input('Which page to check:')
 
-inname=wikipedia.link2url(inname)
+inname=wikipedia.link2url(inname,code=mylang,incode=mylang)
 
 m=treesearch(mylang,inname)
 if not m:
@@ -281,10 +281,10 @@ for code,cname in k:
             confirm+=1
             autonomous_problem(inname)
     elif m[(code,cname)]:
-        print "%s:%s"%(code,wikipedia.url2link(cname))
-        if new.has_key(code) and repr(new[code])!=repr(wikipedia.url2link(cname)):
-            print repr(new[code]),repr(wikipedia.url2link(cname))
-            print "ERROR: %s has '%s' as well as '%s'"%(code,new[code],wikipedia.url2link(cname))
+        print "%s:%s"%(code,wikipedia.url2link(cname,code=code,incode=mylang))
+        if new.has_key(code) and repr(new[code])!=repr(wikipedia.url2link(cname,code=code,incode=mylang)):
+            print repr(new[code]),repr(wikipedia.url2link(cname,code=code,incode=mylang))
+            print "ERROR: %s has '%s' as well as '%s'"%(code,new[code],wikipedia.url2link(cname,code=code,incode=mylang))
             while 1:
                 if bell:
                     sys.stdout.write('\07')
@@ -294,7 +294,7 @@ for code,cname in k:
                 if answer.startswith('f'):
                     break
                 elif answer.startswith('l'):
-                    new[code]=wikipedia.url2link(cname)
+                    new[code]=wikipedia.url2link(cname,code=code,incode=mylang)
                     break
                 elif answer.startswith('n'):
                     del new[code]
@@ -302,7 +302,7 @@ for code,cname in k:
                 elif answer.startswith('q'):
                     sys.exit(1)
         else:
-            new[code]=wikipedia.url2link(cname)
+            new[code]=wikipedia.url2link(cname,code=code,incode=mylang)
 print "==status=="
 old=wikipedia.getLanguageLinks(m[mylang,inname])
 if old is None:
