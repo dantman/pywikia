@@ -1,7 +1,7 @@
 import os,wikipedia,sys
 
 codefrom='nl'
-codeto='en'
+codeto=None
 mode=0
 word=[]
 
@@ -16,6 +16,8 @@ for arg in sys.argv[1:]:
         mode=3
     else:
         word.append(arg)
+
+files={}
 
 word=' '.join(word)
 if mode==1:
@@ -41,18 +43,26 @@ for f in pages:
     #print "ll",ll
     for pl2 in ll:
         #print "pl2=",pl2
-        if pl2.code()==codeto:
+        if codeto is None or pl2.code()==codeto:
+            # Select file
+            if codeto is None and mode!=1:
+                if not files.has_key(pl2.code()):
+                    print "opening file for",pl2.code()
+                    files[pl2.code()]=open("%s-backref.log"%pl2.code(),"a")
+                fil=files[pl2.code()]
+            else:
+                fil=sys.stderr
             try:
                 ll2=pl2.interwiki()
             except wikipedia.NoPage:
-                print >> sys.stderr, "%s does not exist, referred from %s"%(pl2,pl)
-                sys.stderr.flush()
+                print >> fil , "%s does not exist, referred from %s"%(pl2,pl)
+                fil.flush()
             except wikipedia.IsRedirectPage:
-                print >> sys.stderr, "%s is redirect, referred from %s"%(pl2,pl)
-                sys.stderr.flush()
+                print >> fil , "%s is redirect, referred from %s"%(pl2,pl)
+                fil.flush()
             except wikipedia.LockedPage:
-                print >> sys.stderr, "%s is locked, can't check whether it links %s"%(pl2,pl)
-                sys.stderr.flush()
+                print >> fil , "%s is locked, can't check whether it links %s"%(pl2,pl)
+                fil.flush()
             else:
                 found=0
                 for pl3 in ll2:
@@ -60,8 +70,8 @@ for f in pages:
                         found+=1
                         #print "compare",pl,pl3
                         if pl3!=pl:
-                            print >> sys.stderr, "%s does not link to %s but to %s"%(pl2,pl,pl3)
-                            sys.stderr.flush()
+                            print >> fil, "%s does not link to %s but to %s"%(pl2,pl,pl3)
+                            fil.flush()
                 if not found:
                     print >> sys.stderr, "%s does not link to %s"%(pl2,pl)
                     
