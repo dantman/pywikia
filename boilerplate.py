@@ -15,8 +15,9 @@ Command line options:
               Note: we might want to change this to -oldformat and make the
               new format the default later.
 other:        First argument is the old boilerplate name, second one is the new
-              name. If only one argument is given, the bot simply converts the
-              boilerplate to the new format: {{msg:stub}} -> {{stub}}.
+              name. If only one argument is given, the bot resolves the
+              boilerplate by putting its text directly into the article.
+              This is done by changing msg: into subst:.
 """
 #
 # (C) Daniel Herding, 2004
@@ -38,9 +39,10 @@ def getReferences(pl):
     x = wikipedia.getReferences(pl)
     return x
 
-# read command line parameters
 oldformat = True
 boilerplate_names = []
+resolve = False
+# read command line parameters
 for arg in sys.argv[1:]:
     if wikipedia.argHandler(arg):
         pass
@@ -57,9 +59,10 @@ old = boilerplate_names[0]
 if len(boilerplate_names) >= 2:
     new = boilerplate_names[1]
 else:
-    # if only one argument is given, don't change the boilerplate, but only convert the
-    # format.
-    new = old
+    # if only one argument is given, don't replace the boilerplate with another
+    # one, but resolve the boilerplate by putting its text directly into the
+    # article.
+    resolve = True
 
 # get edit summary message
 if msg.has_key(wikipedia.mylang):
@@ -85,7 +88,9 @@ def treat(refpl):
             return
         
         # Replace all occurences of the boilerplate in this article
-        if oldformat:
+        if resolve:
+            reftxt = re.sub(boilerplateR, '{{subst:' + unicode(old, 'iso-8859-1') + '}}', reftxt)
+        elif oldformat:
             reftxt = re.sub(boilerplateR, '{{msg:' + unicode(new, 'iso-8859-1') + '}}', reftxt)
         else:
             reftxt = re.sub(boilerplateR, '{{' + unicode(new, 'iso-8859-1') + '}}', reftxt)
