@@ -703,8 +703,8 @@ def main():
                 f.close()
             elif arg.startswith('-pos:'):
                 if arg[5]!=':':
-                    self.mysite = wikipedia.getSite()
-                    pl=wikipedia.PageLink(self.mysite,arg[5:])
+                    mysite = wikipedia.getSite()
+                    pl=wikipedia.PageLink(mysite, arg[5:])
                     if pl.exists():
                         alternatives.append(pl.linkname())
                     else:
