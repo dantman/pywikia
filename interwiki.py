@@ -312,6 +312,8 @@ class Subject:
         mods, removing = compareLanguages(old, new)
         if not mods and not globalvar.always:
             print "No changes needed"
+            if globalvar.backlink:
+                self.reportBacklinks(new)
         else:
             if mods:
                 print "Changes to be made:",mods
@@ -511,6 +513,24 @@ class SubjectArray:
         """Start the process until finished"""
         while not self.isDone():
             self.queryStep()
+
+class OrderedSubjectArray(SubjectArray):
+    """A different algorithm that will always try to complete the first
+       subject in the list"""
+    def maxOpenCode(self):
+        """Return the code of the foreign language that has the most
+           open queries plus the number. If there is nothing left, return
+           None, 0. Only languages that are TODO for the first Subject
+           are returned."""
+        max = 0
+        maxlang = None
+        for lang in self.subjects[0].openCodes():
+            if lang != wikipedia.mylang:
+                count = self.counts[lang]
+                if count > max:
+                    max = count
+                    maxlang = lang
+        return maxlang, max
     
 def compareLanguages(old, new):
     removing = []
@@ -596,7 +616,7 @@ if __name__ == "__main__":
 
     unequal.read_exceptions()
     
-    sa=SubjectArray()
+    sa=OrderedSubjectArray()
 
     if skipfile:
         for pl in wikipedia.PageLinksFromFile(skipfile):
