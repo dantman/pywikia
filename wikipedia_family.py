@@ -42,6 +42,7 @@ langs = {
     'hu':'hu.wikipedia.org',   # Hungarian
     'ia':'ia.wikipedia.org',   # Interlingua
     'id':'id.wikipedia.org',   # Indonesian
+    'io':'io.wikipedia.org',   # Ido
     'is':'is.wikipedia.org',   # Icelandic
     'it':'it.wikipedia.org',   # Italian
     'ja':'ja.wikipedia.org',   # Japanese
