@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -715,7 +715,7 @@ def main():
                 else:
                     alternatives.append(arg[5:])
             elif arg=='-just':
-                getalternatives = False
+                getAlternatives = False
             elif arg=='-redir':
                 solve_redirect = True
             elif arg=='-main':
