@@ -28,6 +28,10 @@ there is one word list for each language.
 The bot does not rely on Latin script, but does rely on Latin punctuation.
 It is therefore expected to work on for example Russian and Korean, but not
 on for example Japanese.
+
+Command-line options:
+-html	change HTML-entities like &uuml; into their respective letters. This
+        is done both before and after the normal check.
 """
 #
 # (C) Andre Engels, 2005
@@ -120,8 +124,56 @@ def askAlternative(word,context=None):
                     correct = Word(word).getAlternatives()[i]
     return correct
 
+def removeHTML(page):
+    result = page
+    result = result.replace('&Auml;',u'Ä')
+    result = result.replace('&auml;',u'ä')
+    result = result.replace('&Euml;',u'Ë')
+    result = result.replace('&euml;',u'ë')
+    result = result.replace('&Iuml;',u'Ï')
+    result = result.replace('&iuml;',u'ï')
+    result = result.replace('&Ouml;',u'Ö')
+    result = result.replace('&ouml;',u'ö')
+    result = result.replace('&Uuml;',u'Ü')
+    result = result.replace('&uuml;',u'ü')
+    result = result.replace('&Aacute;',u'Á')
+    result = result.replace('&aacute;',u'á')
+    result = result.replace('&Eacute;',u'É')
+    result = result.replace('&eacute;',u'é')
+    result = result.replace('&Iacute;',u'Í')
+    result = result.replace('&iacute;',u'í')
+    result = result.replace('&Oacute;',u'Ó')
+    result = result.replace('&oacute;',u'ó')
+    result = result.replace('&Uacute;',u'Ú')
+    result = result.replace('&uacute;',u'ú')
+    result = result.replace('&Agrave;',u'À')
+    result = result.replace('&agrave;',u'à')
+    result = result.replace('&Egrave;',u'È')
+    result = result.replace('&egrave;',u'è')
+    result = result.replace('&Igrave;',u'Ì')
+    result = result.replace('&igrave;',u'ì')
+    result = result.replace('&Ograve;',u'Ò')
+    result = result.replace('&ograve;',u'ò')
+    result = result.replace('&Ugrave;',u'Ù')
+    result = result.replace('&ugrave;',u'ù')
+    result = result.replace('&Acirc;',u'Â')
+    result = result.replace('&acirc;',u'â')
+    result = result.replace('&Ecirc;',u'Ê')
+    result = result.replace('&ecirc;',u'ê')
+    result = result.replace('&Icirc;',u'Î')
+    result = result.replace('&icirc;',u'î')
+    result = result.replace('&Ocirc;',u'Ô')
+    result = result.replace('&ocirc;',u'ô')
+    result = result.replace('&Ucirc;',u'Û')
+    result = result.replace('&ucirc;',u'û')
+    result = result.replace('&Aring;',u'Å')
+    result = result.replace('&aring;',u'å')
+    return result
+
 def spellcheck(page):
     text = page
+    if correct_html_codes:
+        text = removeHTML(text)
     loc = 0
     while True:
         wordsearch = re.compile(r'([\s\=\<\>\_]*)([^\s\=\<\>\_]+)')
@@ -146,6 +198,8 @@ def spellcheck(page):
                 loc += len(replacement)
         else:
             loc += len(match.group(2))
+    if correct_html_codes:
+        text = removeHTML(text)
     return text
 
 class Word(object):
@@ -240,6 +294,7 @@ try:
     knownwords = {}
     start = None
     newpages = False
+    correct_html_codes = False
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg)
         if arg:
@@ -247,6 +302,8 @@ try:
                 start = arg[7:]
             if arg.startswith("-newpages"):
                 newpages = True
+            if arg.startswith("-html"):
+                correct_html_codes = True
             title.append(arg)
     mysite = wikipedia.getSite()
     wikipedia.setAction(wikipedia.translate(mysite,msg))
