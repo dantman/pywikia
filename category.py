@@ -155,8 +155,7 @@ def add_category(sort_by_last_name = False):
     # get edit summary message
     wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_change) % newcat)
     
-    ns = wikipedia.family.category_namespaces(wikipedia.mylang)
-    cat_namespace = ns[0].encode(wikipedia.myencoding())
+    cat_namespace = wikipedia.family.category_namespace(wikipedia.mylang)
 
     answer = ''
     for nm in pagenames:
