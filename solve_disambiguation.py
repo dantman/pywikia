@@ -394,7 +394,7 @@ for arg in sys.argv[1:]:
         if len(arg) == 5:
             # todo: check for console encoding to allow special characters
             # in filenames, as done below with pagename
-            file = raw_input('Please enter the list\'s filename: ')
+            file = wikipedia.input('Please enter the list\'s filename: ')
         else:
             file = arg[6:]
         # open file and read page titles out of it
@@ -410,7 +410,7 @@ for arg in sys.argv[1:]:
                 alternatives.append(pl.linkname())
             else:
                 print "Possibility does not actually exist:",pl
-                answer = raw_input('Use it anyway? [y|N] ')
+                answer = wikipedia.input('Use it anyway? [y|N] ')
                 if answer in ('Y', 'y'):
                     alternatives.append(pl.linkname())
         else:
@@ -431,9 +431,7 @@ if page_title != []:
 # if no disambiguation pages was given as an argument, and none was
 # read from a file, query the user
 if page_list == []:
-    pagename = raw_input('Which page to check: ')
-    pagename = unicode(pagename, config.console_encoding)
-    pagename = pagename.encode(wikipedia.code2encoding(wikipedia.mylang))
+    pagename = wikipedia.input('Which page to check: ', encode = True)
     page_list.append(pagename)
 
 for wrd in (page_list):
@@ -469,7 +467,7 @@ for wrd in (page_list):
             alternatives.append(str(thispl.getRedirectTo()))
         except wikipedia.NoPage:
             print "The specified page was not found."
-            user_input = raw_input("Please enter the name of the page where the redirect should have pointed at, or press enter to quit: ")
+            user_input = wikipedia.input("Please enter the name of the page where the redirect should have pointed at, or press enter to quit: ")
             if user_input == "":
                 sys.exit(1)
             else:
@@ -536,7 +534,7 @@ for wrd in (page_list):
                     print "== %s =="%(refpl)
                     print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-context):m.end()+context])
                     if always == None:
-                        choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
+                        choice=wikipedia.input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
                                          "        m=more context,l=list,a=add new):")
                     else:
                         choice=always
@@ -560,7 +558,7 @@ for wrd in (page_list):
                         choice=-2
                         break
                     elif choice=='a':
-                        ns=raw_input('New alternative:')
+                        ns=wikipedia.input('New alternative:')
                         alternatives.append(ns)
                     elif choice=='q':
                         return False
