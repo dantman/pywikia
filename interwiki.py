@@ -842,6 +842,8 @@ if __name__ == "__main__":
 
     for arg in sys.argv[1:]:
         wikipedia.argHandler(arg)
+        if arg == '-noauto':
+            globalvar.auto = False
 
     for arg in sys.argv[1:]:
         if wikipedia.argHandler(arg):
@@ -862,7 +864,7 @@ if __name__ == "__main__":
             globalvar.untranslatedonly = False
             globalvar.askhints = True
         elif arg == '-noauto':
-            globalvar.auto = False
+            pass
         elif arg.startswith('-hint:'):
             hints.append(arg[6:])
         elif arg.startswith('-warnfile:'):
