@@ -32,6 +32,7 @@ PageLink: A MediaWiki page
     imagelinks (*): The pictures on the page (list of strings)
     getRedirectTo (*): The page the page redirects to
     isCategory(): True if the page is a category, false otherwise
+    isImage(): True if the page is an image, false otherwise
 
     put(newtext): Saves the page
     delete: Deletes the page (requires being logged in)
@@ -333,6 +334,18 @@ class PageLink(object):
         if p[0] in family.category_namespaces(self._code):
             return True
         return False
+
+    def isImage(self):
+        """True if the page is an Image description page, false otherwise."""
+        t=self.hashfreeLinkname()
+        # Look at the part before the first ':'
+        p=t.split(':')
+        if p[1:]==[]:
+            return False
+        if p[0]==family.image_namespace(self._code):
+            return True
+        return False
+
         
     def put(self, newtext, comment=None, watchArticle = False, minorEdit = True):
         """Replace the new page with the contents of the first argument.

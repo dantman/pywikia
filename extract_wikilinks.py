@@ -15,12 +15,23 @@ as captured from one of the wikipedia servers.
 __version__='$Id$'
 #
 import sys,re,wikipedia
-R=re.compile('/wiki/(.*?)" *')
-fn=sys.argv[1]
+R = re.compile('/wiki/(.*?)" *')
+fn = []
+
+for arg in sys.argv[1:]:
+    arg = wikipedia.argHandler(arg)
+    if arg:
+        if fn:
+            print "Ignoring argument %s"%arg
+        else:
+            fn = arg
+
+if not fn:
+    print "No file specified to get the links from"
+    sys.exit(1)
+
 f=open(fn)
 text=f.read()
 f.close()
 for hit in R.findall(text):
-    if not ':' in hit:
-        if not hit in ['Hoofdpagina','In_het_nieuws']:
-            print "[[%s:%s]]" %(wikipedia.mylang,hit)
+    print "[[%s:%s]]" %(wikipedia.mylang,hit)
