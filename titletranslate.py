@@ -41,7 +41,7 @@ def sametranslate(pl, arr):
         if x not in arr:
             arr[x] = None
 
-def translate(pl, arr, same=0, hints = None):
+def translate(pl, arr, same = False, hints = None):
     if same:
         return sametranslate(pl, arr)
     if hints:

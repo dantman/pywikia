@@ -29,12 +29,20 @@ This script understands various command-line arguments:
                  to an operator is needed, write the name of the page
                  to autonomous_problems.dat and terminate.
 
-    Arguments that are interpreted by more bot:
+    -test: run on pages named "Scheikunde", "Natuurkunde", and "Wiskunde".
+           This is a trivial test of the functionality.
+
+    -nobell: do not use the terminal bell to announce a question
+
+    -nolog: switch off the log file
+
+    -nobacklink: switch off the backlink warnings
+    
+    Arguments that are interpreted by more bots:
 
     -lang: specifies the language the bot is run on (e.g. -lang:de).
            Overwrites the settings in username.dat
-    
-     All other arguments are words that make up the page name.
+
 
 Two configuration options can be used to change the workings of this robot:
 
@@ -70,13 +78,13 @@ class Global:
     # Container class for global settings
     always = False
     autonomous = False
-    backlink = True
+    backlink = config.treelang_backlink
     bell = True
     confirm = False
     debug = True
     force = False
     forreal = False
-    log = True
+    log = config.treelang_log
     minquerysize = 5
     maxquerysize = 25
     same = False
@@ -88,7 +96,10 @@ class Subject:
         self.todo = {pl:pl.code()}
         self.done = {}
         self.translate(hints)
-        self.confirm = 0
+        if globalvar.confirm:
+            self.confirm = 1
+        else:
+            self.confirm = 0
 
     def translate(self, hints = None):
         import titletranslate
@@ -141,6 +152,17 @@ class Subject:
                     for pl2 in iw:
                         self.conditionalAdd(pl2, counter)
         del self.pending
+        if len(self.done) == 1 and len(self.todo) == 0 and globalvar.untranslated:
+            if globalvar.bell:
+                sys.stdout.write('\07')
+            print "%s does not have any interwiki links"%self.inpl.asasciilink()
+            newhint = raw_input("Hint:")
+            if newhint:
+                arr = {}
+                titletranslate.translate(pl, arr, same = False,
+                                         hints = [newhint])
+                for pl in arr.iterkeys():
+                    self.todo[pl] = pl.code()
 
     def isDone(self):
         return len(self.todo) == 0
@@ -205,10 +227,10 @@ class Subject:
         ####
         mods, removing = compareLanguages(old, new)
         if not mods and not globalvar.always:
-            print "No changes"
+            print "No changes needed"
         else:
-            print mods
-            print "==changes should be made=="
+            if mods:
+                print "Changes to be made:",mods
             oldtext = self.inpl.get()
             newtext = wikipedia.replaceLanguageLinks(oldtext, new)
             if globalvar.debug:
@@ -219,7 +241,7 @@ class Subject:
             if newtext != oldtext:
                 print "NOTE: Replace %s" % self.inpl.asasciilink()
                 if globalvar.forreal:
-                    if removing:
+                    if removing and not globalvar.force:
                         self.problem('removing: %s'%(",".join(removing)))
                         if not globalvar.autonomous:
                             if globalvar.bell:
@@ -230,7 +252,7 @@ class Subject:
                     else:
                         answer = 'y'
                     if answer == 'y':
-                        
+                        print "NOTE: Updating live wikipedia..."
                         status, reason, data = self.inpl.put(newtext,
                                                              comment='robot '+mods)
                         if str(status) != '302':
@@ -341,7 +363,6 @@ class SubjectArray:
             self.queryStep()
     
 def compareLanguages(old, new):
-    global confirm
     removing = []
     adding = []
     modifying = []
@@ -392,6 +413,8 @@ if __name__ == "__main__":
             globalvar.autonomous = True
         elif arg == '-nolog':
             globalvar.log = False
+        elif arg == '-nobacklink':
+            globalvar.backlink = False
         elif arg == '-nobell':
             globalvar.bell = False
         elif arg == '-test':
