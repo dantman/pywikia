@@ -120,6 +120,9 @@ def translate(pl, arr, same = False, hints = None, auto = True):
             elif newcode=='pl' and i>2019:
                 # pl: redirects far future years to decades
                 pass
+            elif newcode=='fi' and i==666:
+                # Yet another case of a number with another meaning
+                pass
             else:
                 newname = fmt%i 
                 x=wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family), newname)
