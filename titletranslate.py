@@ -74,10 +74,18 @@ def translate(pl, arr, same = False, hints = None):
     Ryear = re.compile('^\d+$')
     m = Ryear.match(pl.linkname())
     if m:
+        i=int(m.group(0))
         for newcode in wikipedia.seriouslangs:
-            if newcode!='ja':
+            if newcode=='ja':
+                fmt = '%d&#24180;'
+            else:
                 fmt = '%d'
-                newname = fmt%int(m.group(0)) 
+            if newcode == 'ja' and i<1800:
+                pass
+            elif newcode == 'ia' and i<1980:
+                pass
+            else:
+                newname = fmt%i 
                 x=wikipedia.PageLink(newcode, newname)
                 if x not in arr:
                     arr[x] = None
