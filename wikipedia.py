@@ -48,7 +48,8 @@ PageGroup: A group of PageLinks (internally ordered)
     add(pl): Add the page pl to the PageGroup; give an error if it already
         is in the group
     addforce(pl): Add the page pl to the PageGroup even if it is already in
-    remove(pl): Remove all occurences of the page pl from the PageGroup    remforce(pl): Remove the page pl from the PageGroup if it is in the group
+    remove(pl): Remove all occurences of the page pl from the PageGroup
+    remforce(pl): Remove the page pl from the PageGroup if it is in the group
     aslist(): Use the PageGroup as an ordinary list
     show(): Write down the contents of the PageGroup on the screen
     addall(list): Add all PageLinks from a (not necessarily ordered) list
@@ -537,7 +538,7 @@ class PageLink(object):
             raise IsNotRedirectPage(self)
             
             
-    def getVersionHistory(self, force = False):
+    def getVersionHistory(self, forceReload = False):
         """
         Loads the version history page and returns a list of tuples, where each
         tuple represents one edit and is built of edit date/time, user name, and edit
@@ -547,7 +548,7 @@ class PageLink(object):
         host = site.hostname()
         url = site.family.version_history_address(site, self.urlname())
 
-        if not hasattr(self, '_versionhistory') or force = True:
+        if not hasattr(self, '_versionhistory') or forceReload:
             output(u'Getting version history of %s' % self.linkname())
             txt, charset = getUrl(host, url, site)
             self._versionhistory = txt
