@@ -89,6 +89,7 @@ langs = {
     'pt':'pt.wikipedia.org',   # Portuguese
     'ro':'ro.wikipedia.org',   # Romanian
     'ru':'ru.wikipedia.org',   # Russian
+    'sa':'sa.wikipedia.org',   # Sanskrit
     'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
     'simple':'simple.wikipedia.org', # Simple English
     'sk':'sk.wikipedia.org',   # Slovakian
@@ -127,7 +128,7 @@ latin1old = ['et', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
              'ga', 'na']
 
 # Translation used on all wikipedia's for the Special: namespace.
-# This is e.g. used by the login script.
+# Only necessary when it is not 'Special'.
 special = {
     'af': 'Spesiaal',
     'ar': '%D8%AE%D8%A7%D8%B5',
@@ -176,7 +177,8 @@ special = {
     'wa': 'Sipeci%C3%A5s',
     }
 
-# And the image namespace. Only necessary when it is not 'Image'.
+# And the image namespace.
+
 image = {
     'af': 'Beeld',
     'ar': '%D8%B5%D9%88%D8%B1%D8%A9',
@@ -280,7 +282,7 @@ interwiki_putfirst = {
           'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
           'it','ia','he','jv','ka','csb','ks','sw','la','lv',
           'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
-          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
+          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
           'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
           'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
           'zh-tw'],
@@ -289,7 +291,7 @@ interwiki_putfirst = {
           'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
           'it','ia','he','jv','ka','csb','ks','sw','la','lv',
           'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
-          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
+          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
           'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
           'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
           'zh-tw'],
@@ -299,7 +301,7 @@ interwiki_putfirst = {
           'fy','ga','gv','gd','gl','ko','hi','hr','id','is',
           'it','ia','he','jv','ka','csb','ks','sw','la','lv',
           'lt','hu','mk','mg','ml','mi','mr','ms','nah','na',
-          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
+          'nl','ja','no','nb','oc','nds','pl','pt','ro','ru','sa',
           'st','sq','simple','sk','sl','sr','su','fi','sv','ta',
           'tt','th','ur','vi','tr','uk','vo','yi','zh','zh-cn',
           'zh-tw'],
