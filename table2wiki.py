@@ -136,7 +136,7 @@ for article in articles:
     num = 1
     while num != 0:
         newText, num = re.subn("([^\r\n]{1})(<[tT]{1}[dDhHrR]{1})",
-                               "\\1\r\n\\2", newText, 0)
+                               r"\1\r\n\2", newText)
         
     ##################
     # every open-tag gets a new line.
@@ -145,42 +145,42 @@ for article in articles:
     ##################
     # <table> tag with attributes, with more text on the same line
     newText = re.sub("[\r\n]*?<(?i)(table) ([\w\W]*?)>([\w\W]*?)[\r\n ]*",
-                     "\r\n{| \\2\r\n\\3", newText, 0)
+                     r"\r\n{| \2\r\n\3", newText)
     # <table> tag without attributes, with more text on the same line
     newText = re.sub("[\r\n]*?<(TABLE|table)>([\w\W]*?)[\r\n ]*",
-                     "\r\n{|\n\\2\r\n", newText, 0)
+                     r"\r\n{|\n\2\r\n", newText)
     # <table> tag with attributes, without more text on the same line
     newText = re.sub("[\r\n]*?<(TABLE|table) ([\w\W]*?)>[\r\n ]*",
-                     "\r\n{| \\2\r\n", newText, 0)
+                     r"\r\n{| \2\r\n", newText)
     # <table> tag without attributes, without more text on the same line
     newText = re.sub("[\r\n]*?<(TABLE|table)>[\r\n ]*",
-                     "\r\n{|\r\n", newText, 0)
+                     "\r\n{|\r\n", newText)
     # end </table>
-    newText = re.sub("[\s]*<\/(TABLE|table)>", "\r\n|}", newText, 0)
+    newText = re.sub("[\s]*<\/(TABLE|table)>", "\r\n|}", newText)
     
     ##################
     # captions
     newText = re.sub("<caption ([\w\W]*?)>([\w\W]*?)<\/caption>",
-                         "\r\n|+\\1 | \\2", newText, 0)
+                     r"\r\n|+\1 | \2", newText)
     newText = re.sub("<caption>([\w\W]*?)<\/caption>",
-                     "\r\n|+ \\1", newText, 0)
+                     r"\r\n|+ \1", newText)
     
     ##################
     # <th> often people don't write them within <tr>, be warned!
     newText = re.sub("[\r\n]+<(TH|th)([^>]*?)>([\w\W]*?)<\/(th|TH)>",
-                     "\r\n!\\2 | \\3\r\n", newText, 0)
+                     r"\r\n!\2 | \3\r\n", newText)
 
     # fail save. sometimes people forget </th>
     # <th> without attributes
     newText, n = re.subn("[\r\n]+<(th|TH)>([\w\W]*?)[\r\n]+",
-                         "\r\n! \\2\r\n", newText, 0)
+                         r"\r\n! \2\r\n", newText)
     if n>0:
         warning_messages.append('WARNING: found <th> without </th>. (%d occurences)' % n)
         warnings += n
 
     # <th> with attributes
     newText, n = re.subn("[\r\n]+<(th|TH)([^>]*?)>([\w\W]*?)[\r\n]+",
-                             "\r\n!\\2 | \\3\r\n", newText, 0)
+                         r"\n!\2 | \3\r\n", newText)
     if n>0:
         warning_messages.append('WARNING: found <th> without </th>. (%d occurences)' % n)
         warnings += n
@@ -188,36 +188,38 @@ for article in articles:
 
     ##################
     # very simple <tr>
-    newText = re.sub("[\r\n]*<(tr|TR)([^>]*?)>[\r\n]*", "\r\n|-----\\2\r\n", newText, 0)
-    newText = re.sub("[\r\n]*<(tr|TR)>[\r\n]*", "\r\n|-----\r\n", newText, 0)
+    newText = re.sub("[\r\n]*<(tr|TR)([^>]*?)>[\r\n]*",
+                     r"\r\n|-----\2\r\n", newText)
+    newText = re.sub("[\r\n]*<(tr|TR)>[\r\n]*",
+                     r"\r\n|-----\r\n", newText)
     
     ##################
     # normal <td> without arguments
     newText = re.sub("[\r\n]+<(td|TD)>([\w\W]*?)<\/(TD|td)>",
-                     "\r\n| \\2\r\n", newText, 0)         
+                     r"\r\n| \2\r\n", newText)         
 
     ##################
     # normal <td> with arguments
     newText = re.sub("[\r\n]+<(td|TD)([^>]*?)>([\w\W]*?)<\/(TD|td)>",
-                     "\r\n|\\2 | \\3", newText, 0)
+                     r"\r\n|\2 | \3", newText)
 
     # WARNING: this sub might eat cells of bad HTML, but most likely it
     # will correct errors
     # TODO: some more docu please
     newText, n = re.subn("[\r\n]+<(td|TD)>([^\r\n]*?)<(td|TD)>",
-                         "\r\n| \\2\r\n", newText, 0)
+                         r"\r\n| \2\r\n", newText)
     if n>0:
         warning_messages.append('WARNING: (sorry, bot code unreadable (1). I don\'t know why this warning is given.) (%d occurences)' % n)
         warnings += n
     
     # fail save, sometimes it's a <td><td></tr>
     #        newText, n = re.subn("[\r\n]+<(td|TD)>([^<]*?)<(td|TD)><\/(tr|TR)>",
-    #                             "\r\n| \\2\r\n", newText, 0)
+    #                             "\r\n| \\2\r\n", newText)
     #        newText, n = re.subn("[\r\n]+<(td|TD)([^>]*?)>([^<]*?)<(td|TD)><\/(tr|TR)>",
-    #                             "\r\n|\\2| \\3\r\n", newText, 0)
+    #                             "\r\n|\\2| \\3\r\n", newText)
     #
     newText, n = re.subn("[\r\n]+<(td|TD)([^>]+?)>([^\r\n]*?)<\/(td|TD)>",
-                         "\r\n|\\2 | \\3\r\n", newText, 0)
+                         r"\r\n|\2 | \3\r\n", newText)
     if n>0:
         warning_messages.append('WARNING: found <td><td></tr>, but no </td>. (%d occurences)' % n)
         warnings += n
@@ -225,20 +227,20 @@ for article in articles:
     # fail save. sometimes people forget </td>
     # <td> without arguments, with missing </td> 
     newText, n = re.subn("<(td|TD)>([^<]*?)[\r\n]+",
-                         "\r\n| \\2\r\n", newText, 0)
+                         r"\r\n| \2\r\n", newText)
     if n>0:
         warning_messages.append('WARNING: found <td> without </td>. (%d occurences)' % n)
         warnings += n
 
     # <td> with arguments, with missing </td> 
     newText, n = re.subn("[\r\n]*<(td|TD)([^>]*?)>([\w\W]*?)[\r\n]+",
-                         "\r\n|\\2 | \\3\r\n", newText, 0)
+                         r"\r\n|\2 | \3\r\n", newText)
     if n > 0:
         warning_messages.append('NOTE: Found <td> without </td>. This shouldn\'t cause problems.')
 
     # TODO: some docu please
     newText, n = re.subn("<(td|TD)>([\w\W]*?)[\r\n]+",
-                         "\r\n| \\2\r\n", newText, 0)
+                         r"\r\n| \2\r\n", newText)
 
     if n>0:
         warning_messages.append('WARNING: (sorry, bot code unreadable (2). I don\'t know why this warning is given.) (%d occurences)' % n)
@@ -247,26 +249,26 @@ for article in articles:
 
     ##################
     # Garbage collecting ;-)
-    newText = re.sub("<td>[\r\n]*<\/tr>", "", newText, 0)
-    newText = re.sub("[\r\n]*<\/[Tt][rRdDhH]>", "", newText, 0)
+    newText = re.sub("<td>[\r\n]*<\/tr>", "", newText)
+    newText = re.sub("[\r\n]*<\/[Tt][rRdDhH]>", "", newText)
     
     ##################
     # OK, that's only theory but works most times.
     # Most browsers assume that <th> gets a new row and we do the same
     #        newText, n = re.subn("([\r\n]+\|\ [^\r\n]*?)([\r\n]+\!)",
-    #                             "\\1\r\n|-----\\2", newText, 0)
+    #                             "\\1\r\n|-----\\2", newText)
     #        warnings = warnings + n
     # adds a |---- below for the case the new <tr> is missing
     #        newText, n = re.subn("([\r\n]+\!\ [^\r\n]*?[\r\n]+)(\|\ )",
-    #                             "\\1|-----\r\n\\2", newText, 0)
+    #                             "\\1|-----\r\n\\2", newText)
     #        warnings = warnings + n
     
     
     ##################
     # most <th> come with '''title'''. Senseless in my eyes cuz
     # <th> should be bold anyways.
-    newText = re.sub("[\r\n]+\!([^'\n\r]*)([']{3})?([^'\r\n]*)([']{3})?",
-                     "\r\n!\\1\\3", newText, 0)
+    newText = re.sub("[\r\n]+\!([^'\n\r]*)'''([^'\r\n]*)'''",
+                     r"\r\n!\1\2", newText)
     
     ##################
     # kills indention within tables. Be warned, it might seldom bring
@@ -276,27 +278,29 @@ for article in articles:
         num = 1
         while num != 0:
             newText, num = re.subn("(\{\|[\w\W]*?)\n[ \t]+([\w\W]*?\|\})",
-                                   "\\1\r\n\\2", newText, 0)
+                                   r"\1\r\n\2", newText)
             
     ##################
     # kills additional spaces after | or ! or {|
     # This line was creating problems, so I commented it out --Daniel
-    # newText = re.sub("[\r\n]+\|[\t ]+?[\r\n]+", "\r\n| ", newText, 0)
+    # newText = re.sub("[\r\n]+\|[\t ]+?[\r\n]+", "\r\n| ", newText)
     # kills trailing spaces and tabs
-    newText = re.sub("\r\n(.*)[\t\ ]+[\r\n]+", "\r\n\\1\r\n", newText, 0)
+    newText = re.sub("\r\n(.*)[\t\ ]+[\r\n]+",
+                     r"\r\n\1\r\n", newText)
     # kill extra new-lines
-    newText = re.sub("[\r\n]{4,}(\!|\|)", "\r\n\\1", newText, 0);
+    newText = re.sub("[\r\n]{4,}(\!|\|)",
+                     r"\r\n\1", newText);
 
 
     ##################        
     # shortening if <table> had no arguments/parameters
-    newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\{| ", newText, 0)
+    newText = re.sub("[\r\n]+\{\|[\ ]+\| ", "\r\n\{| ", newText)
     # shortening if <td> had no articles
-    newText = re.sub("[\r\n]+\|[\ ]+\| ", "\r\n| ", newText, 0)
+    newText = re.sub("[\r\n]+\|[\ ]+\| ", "\r\n| ", newText)
     # shortening if <th> had no articles
-    newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText, 0)
+    newText = re.sub("\n\|\+[\ ]+\|", "\n|+ ", newText)
     # shortening of <caption> had no articles
-    newText = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newText, 0)
+    newText = re.sub("[\r\n]+\![\ ]+\| ", "\r\n! ", newText)
     
     ##################
     # proper attributes. attribute values need to be in quotation marks.
@@ -319,29 +323,30 @@ for article in articles:
     while num != 0:
         newText, num = re.subn("[\r\n]+(\|[^\|\-\}]{1}[^\n\r]{0,35})" +
                                "[\r\n]+(\|[^\|\-\}]{1}[^\r\n]{0,35})[\r\n]+",
-                               "\r\n\\1 |\\2\r\n", newText, 0)
+                               r"\r\n\1 |\2\r\n", newText)
     ####
     # add a new line if first is * or #
-    newText = re.sub("[\r\n]+\| ([*#]{1})", "\r\n|\r\n\\1", newText,0)
+    newText = re.sub("[\r\n]+\| ([*#]{1})",
+                     r"\r\n|\r\n\1", newText)
     
     ##################
     # strip <center> from <th>
     newText = re.sub("([\r\n]+\![^\r\n]+?)<center>([\w\W]+?)<\/center>",
-                     "\\1 \\2", newText, 0)
+                     r"\1 \2", newText)
     # strip align="center" from <th> because the .css does it
     # if there are no other attributes than align, we don't need that | either
     newText = re.sub("([\r\n]+\! +)align\=\"center\" +\|",
-                     "\\1", newText, 0)
+                     r"\1", newText)
     # if there are other attributes, simply strip the align="center"
     newText = re.sub("([\r\n]+\![^\r\n\|]+?)align\=\"center\"([^\n\r\|]+?\|)",
-                     "\\1 \\2", newText, 0)
+                     r"\1 \2", newText)
     
     ##################
     # kill additional spaces within arguments
     num = 1
     while num != 0:
         newText, num = re.subn("[\r\n]+(\||\!)([^|\r\n]*?)[ \t]{2,}([^\r\n]+?)",
-                               "\r\n\\1\\2 \\3", newText, 0)
+                               r"\r\n\1\2 \3", newText)
         
     ##################
     # I hate those long lines because they make a wall of letters
@@ -349,8 +354,10 @@ for article in articles:
     if config.splitLongParagraphs:
         num = 1
         while num != 0:
+            # TODO: how does this work? docu please.
+            # why are only äöüß used, but not other special characters?
             newText, num = re.subn("(\r\n[A-Z]{1}[^\n\r]{200,}?[a-zäöüß]\.)\ ([A-ZÄÖÜ]{1}[^\n\r]{200,})",
-                                   "\\1\r\n\\2", newText, 0)
+                                   r"\1\r\n\2", newText)
             
     ##################
     if newText!=text:
@@ -383,7 +390,10 @@ for article in articles:
             if warnings > 0:
                 warn = " - " + str(warnings) + " warnings!"
             status, reason, data = pl.put(newText, myComment[wikipedia.chooselang(wikipedia.mylang,myComment)] + warn)
-            print status,reason
+            # Printing a status report isn't a bad idea, but the MediaWiki
+            # software gives a '302 Temporarily Moved' when you save a page,
+            # so this might be confusing.
+            # print status,reason
             fixedSites = fixedSites + " " + article
         else:
             notFixedSites = notFixedSites + " " + article
