@@ -158,11 +158,12 @@ def autotranslate(pl, arr, same=0):
     m = Ryear.match(pl.linkname())
     if m:
         for newcode in wikipedia.langs:
-            fmt = yearADfmt.get(newcode, '%d')
-            newname = fmt%int(m.group(0)) 
-            x=wikipedia.PageLink(newcode, newname)
-            if x not in arr:
-                arr[x] = None
+            if newcode not in ['test','zh-cn','zh-tw']:
+                fmt = yearADfmt.get(newcode, '%d')
+                newname = fmt%int(m.group(0)) 
+                x=wikipedia.PageLink(newcode, newname)
+                if x not in arr:
+                    arr[x] = None
         return
 
     # Autotranslate years B.C.
@@ -451,4 +452,7 @@ if backlink:
                     else:
                         # New warning
                         print "WARNING:", pl.asasciiselflink(), "links to incorrect", xpl.asasciilink()
+
+
+
 
