@@ -1,16 +1,25 @@
 # -*- coding: utf-8 -*-
 
-# Translation database. Non-ASCII characters must be encoded in hexadecimal
-# unicode and prefixed with a small u,
-# e.g. u"[[Domäne (Biologie)|Domäne]]"
+'''
+This module translates a string from one language to another, using
+translations given in a hard-coded dictionary. Various dictionaries exist for
+different types of text; e.g. type 'geography' is for tables about places and
+regions, and 'city' is for tables about cities and villages.
 
-# For each table type, there can be three lists:
-#  * "translations" - direct replacements. Work in either direction.
-#  * "regexes" - regular expression replacements. These are more powerful tthan
-#     direct replacements, but only work in one direction.
-#  * "includes" - items from another table type are included.
+For each table type, there can be three lists:
+* translations - direct replacements. Work in either direction, e.g. if
+                 the bot knows that he should replace 'Location' with 'Ligging'
+                 when translating from English to Dutch, he can also translate
+                 it from Dutch to English.
+* regexes      - regular expression replacements. These are more powerful than
+                 direct replacements as they support wildcards etc., but only
+                 work in one direction.
+* includes     - one type can include all items from another type, e.g. when
+                 translating a text of the type 'city', the bot also tries to
+                 apply the translations and regexes given for type 'geography'
+                 because 'city' includes 'geography'.
+'''
 
-#
 # (C) Daniel Herding, 2004
 #
 # Distribute under the terms of the PSF license.
@@ -23,12 +32,12 @@ types = {
     # translations for images (inside other tables)
     "images": {
          "translations": [
-             { "en":"[[image:",     "de":"[[bild:",                "nl":"[[afbeelding:",    "fr":"[[image:",      },
-             { "en":"[[Image:",     "de":"[[Bild:",                "nl":"[[Afbeelding:",    "fr":"[[Image:",      },
+             { "en":"[[image:",     "de":"[[bild:",          "nl":"[[afbeelding:",    "fr":"[[image:",      },
+             { "en":"[[Image:",     "de":"[[Bild:",          "nl":"[[Afbeelding:",    "fr":"[[Image:",      },
              { "en":"larger image", "de":u"Bild vergrößern", "nl":"grotere versie",   "fr":u"En détail"  },
              { "en":"larger image", "de":u"Bild vergrößern", "nl":"groter",           "fr":u"En détail"  },
              # usually used as link description for articles about flags, coats of arms etc.
-             { "en":"Details",      "de":u"Details",               "nl":"details",          "fr":u"Détails"    },
+             { "en":"Details",      "de":u"Details",         "nl":"details",          "fr":u"Détails"    },
          ],
     },
     
@@ -113,10 +122,10 @@ types = {
             { "en":"[[Vertebrata]]",                    "de":"[[Wirbeltiere]] (Vertebrata)",          "nl":"Gewervelden (''[[Vertebrata]]'')", },
             # superclasses
             # classes
-            { "en":"[[Aves]]",                          "de":u"[[Vögel]] (Aves)",                  "nl":"Vogels (''[[Aves]]'')",               },
+            { "en":"[[Aves]]",                          "de":u"[[Vögel]] (Aves)",                     "nl":"Vogels (''[[Aves]]'')",               },
             { "en":"[[Insect]]a",                       "de":"[[Insekten]] (Insecta)",             },
-            { "en":"[[Mammal]]ia",                      "de":u"[[Säugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
-            { "en":"[[Mammalia]]",                      "de":u"[[Säugetiere]] (Mammalia)",         "nl":"Zoogdieren (''[[Mammalia]]'')",   },
+            { "en":"[[Mammal]]ia",                      "de":u"[[Säugetiere]] (Mammalia)",            "nl":"Zoogdieren (''[[Mammalia]]'')",   },
+            { "en":"[[Mammalia]]",                      "de":u"[[Säugetiere]] (Mammalia)",            "nl":"Zoogdieren (''[[Mammalia]]'')",   },
             { "en":"[[dicotyledon|Magnoliopsida]]",     "de":u"Zweikeimblättrige (Magnoliopsida)", },
             {                                           "de":"Reptilien (Reptilia)",                  "nl":"Reptielen (''[[Reptilia]]'')",  },
         ],
@@ -182,18 +191,18 @@ types = {
     
     "months": {
         "translations": [
-            { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",      "nl":"januari", },
-            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":u"février",  "nl":"februari", },
-            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":u"März",  "fr":"mars",         "nl":"maart", },
-            { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",        "nl":"april", },
-            { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",          "nl":"mei", },
-            { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",         "nl":"juni", },
-            { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",      "nl":"juli", },
-            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":u"août",     "nl":"augustus", },
-            { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre",    "nl":"september", },
-            { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",      "nl":"oktober", },
-            { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",     "nl":"november", },
-            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":u"décembre", "nl":"december", },
+            { "sl":"januar",    "it":"gennaio",   "en":"January",   "de":"Januar",    "fr":"janvier",    "nl":"januari", },
+            { "sl":"februar",   "it":"febbraio",  "en":"February",  "de":"Februar",   "fr":u"février",   "nl":"februari", },
+            { "sl":"marec",     "it":"marzo",     "en":"March",     "de":u"März",     "fr":"mars",       "nl":"maart", },
+            { "sl":"april",     "it":"aprile",    "en":"April",     "de":"April",     "fr":"avril",      "nl":"april", },
+            { "sl":"maj",       "it":"maggio",    "en":"May",       "de":"Mai",       "fr":"mai",        "nl":"mei", },
+            { "sl":"junij",     "it":"giugno",    "en":"June",      "de":"Juni",      "fr":"juin",       "nl":"juni", },
+            { "sl":"julij",     "it":"luglio",    "en":"July",      "de":"Juli",      "fr":"juillet",    "nl":"juli", },
+            { "sl":"avgust",    "it":"agosto",    "en":"August",    "de":"August",    "fr":u"août",      "nl":"augustus", },
+            { "sl":"september", "it":"settembre", "en":"September", "de":"September", "fr":"septembre",  "nl":"september", },
+            { "sl":"oktober",   "it":"ottobre",   "en":"October",   "de":"Oktober",   "fr":"octobre",    "nl":"oktober", },
+            { "sl":"november",  "it":"novembre",  "en":"November",  "de":"November",  "fr":"novembre",   "nl":"november", },
+            { "sl":"december",  "it":"dicembre",  "en":"December",  "de":"Dezember",  "fr":u"décembre",  "nl":"december", },
         ]
     },
     
@@ -214,7 +223,7 @@ types = {
     "units": {
         "translations": [
             { "en":"[[Square kilometre|km&sup2;]]",  "de":"[[Quadratkilometer|km&sup2;]]",  "nl":"[[Vierkante kilometer|km&sup2;]]", },
-            { "en":u"[[Square kilometre|km²]]",   "de":u"[[Quadratkilometer|km²]]",   "nl":u"[[Vierkante kilometer|km²]]",     },
+            { "en":u"[[Square kilometre|km²]]",      "de":u"[[Quadratkilometer|km²]]",      "nl":u"[[Vierkante kilometer|km²]]",     },
             { "en":"as of ",                         "de":"Stand: ",                         },
             { "en":"years",                          "de":"Jahre",                           "nl":"jaar"},
         ]
