@@ -435,6 +435,7 @@ for wrd in (page_list):
                 n += 1
                 context = 30
                 while 1:
+                    print '\n'
                     print "== %s =="%(refpl)
                     print wikipedia.UnicodeToAsciiHtml(reftxt[max(0,m.start()-context):m.end()+context])
                     choice=raw_input("Option (#,r#,s=skip link,n=next page,u=unlink,q=quit,\n"
@@ -455,6 +456,7 @@ for wrd in (page_list):
                     elif choice=='m':
                         context*=2
                     elif choice=='l':
+                        print '\n'
                         for i in range(len(alternatives)):
                             print "%3d" % i,repr(alternatives[i])
                     else:
