@@ -39,38 +39,38 @@ msg_remove={
     }
 
 
-"""
-A robot to mass-add a category to a list of pages.
-
-Just run this robot without any additional arguments.
-
-"""
-
-# given a CatLink, returns a CatLink which has an explicit sort key which
-# sorts persons by their last names.
-# Trailing words in brackets will be removed.
-# Example: If category_name is 'Author' and pl is a PageLink to
-# [[Alexandre Dumas (senior)]], this function will return this CatLink:
-# [[Category:Author|Dumas, Alexandre]]
-def sorted_by_last_name(catlink, pagelink):
-    page_name = pagelink.linkname()
-    # regular expression that matches a name followed by a space and
-    # disambiguation brackets. Group 1 is the name without the rest.
-    bracketsR = re.compile('(.*) \(.+?\)')
-    match_object = bracketsR.match(page_name)
-    if match_object:
-        page_name = match_object.group(1)
-    split_string = page_name.split(' ')
-    if len(split_string) > 1:
-        # pull last part of the name to the beginning, and append the rest after a comma
-        # e.g. "John von Neumann" becomes "Neumann, John von"
-        sorted_key = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
-        # give explicit sort key
-        return wikipedia.PageLink(wikipedia.mylang, catlink.linkname() + '|' + sorted_key)
-    else:
-        return wikipedia.PageLink(wikipedia.mylang, catlink.linkname())
 
 def add_category(sort_by_last_name = False):
+'''
+A robot to mass-add a category to a list of pages.
+'''
+
+    def sorted_by_last_name(catlink, pagelink):
+        '''
+        given a CatLink, returns a CatLink which has an explicit sort key which
+        sorts persons by their last names.
+        Trailing words in brackets will be removed.
+        Example: If category_name is 'Author' and pl is a PageLink to
+        [[Alexandre Dumas (senior)]], this function will return this CatLink:
+        [[Category:Author|Dumas, Alexandre]]
+        '''
+        page_name = pagelink.linkname()
+        # regular expression that matches a name followed by a space and
+        # disambiguation brackets. Group 1 is the name without the rest.
+        bracketsR = re.compile('(.*) \(.+?\)')
+        match_object = bracketsR.match(page_name)
+        if match_object:
+            page_name = match_object.group(1)
+        split_string = page_name.split(' ')
+        if len(split_string) > 1:
+            # pull last part of the name to the beginning, and append the rest after a comma
+            # e.g. "John von Neumann" becomes "Neumann, John von"
+            sorted_key = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
+            # give explicit sort key
+            return wikipedia.PageLink(wikipedia.mylang, catlink.linkname() + '|' + sorted_key)
+        else:
+            return wikipedia.PageLink(wikipedia.mylang, catlink.linkname())
+
     print "This bot has two modes: you can add a category link to all"
     print "pages mentioned in a List that is now in another wikipedia page"
     print "or you can add a category link to all pages that link to a"
@@ -135,10 +135,8 @@ def add_category(sort_by_last_name = False):
                     text = wikipedia.replaceCategoryLinks(text, cats)
                     pl2.put(text)
 
-def rename_category():
-    old_cat_title = wikipedia.input(u'Please enter the old name of the category:')
+def rename_category(old_cat_title, new_cat_title):
     old_cat = catlib.CatLink(wikipedia.mylang, old_cat_title)
-    new_cat_title = wikipedia.input(u'Please enter the new name of the category:')
     
     # get edit summary message
     wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % old_cat_title)
@@ -157,50 +155,56 @@ def rename_category():
         for subcategory in subcategories:
             catlib.change_category(subcategory, old_cat_title, new_cat_title)
 
-# asks for a category, and removes the category tag from all pages 
-# in that category, without prompting.
-def remove_category():
-    old_cat_title = wikipedia.input(u'Please enter the name of the category that should be removed:')
-    old_cat = catlib.CatLink(wikipedia.mylang, old_cat_title)
+def remove_category(cat_title):
+    '''
+    Asks for a category, and removes the category tag from all pages 
+    in that category and from the category pages of all subcategories, without
+    prompting.
+    Doesn't remove category tags pointing at subcategories. Doesn't delete the
+    category page.
+    '''
+    cat = catlib.CatLink(wikipedia.mylang, cat_title)
     # get edit summary message
-    wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang,msg_remove)] % old_cat_title)
+    wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang,msg_remove)] % cat_title)
     
-    articles = old_cat.articles(recurse = 0)
+    articles = cat.articles(recurse = 0)
     if len(articles) == 0:
-        print 'There are no articles in category ' + old_cat_title
+        print 'There are no articles in category ' + cat_title
     else:
         for article in articles:
-            catlib.change_category(article, old_cat_title, None)
-    
-    subcategories = old_cat.subcategories(recurse = 0)
+            catlib.change_category(article, cat_title, None)
+    # Also removes the category tag from subcategories' pages 
+    subcategories = cat.subcategories(recurse = 0)
     if len(subcategories) == 0:
-        print 'There are no subcategories in category ' + old_cat_title
+        print 'There are no subcategories in category ' + cat_title
     else:
         for subcategory in subcategories:
-            catlib.change_category(subcategory, old_cat_title, None)
+            catlib.change_category(subcategory, cat_title, None)
 
-
-"""
-Script to help a human to tidy up a category by moving its articles into
-subcategories
-
-Specify the category name on the command line. The program will
-pick up the page, and look for all subcategories, and show them with
-a number adjacent to them. It will then automatically loop over all pages
-in the category. It will ask you to type the number of the appropriate
-replacement, and perform the change robotically.
-
-If you don't want to move the article to a subcategory, but to another
-category, you can use the 'j' (jump) command.
-
-Typing 's' will leave the complete page unchanged.
-
-Important:
- * this bot is written to work with the MonoBook skin, so make sure your bot
-   account uses this skin
-"""
-
-def tidy_category():
+def tidy_category(cat_title):
+    """
+    Script to help a human to tidy up a category by moving its articles into
+    subcategories
+    
+    Specify the category name on the command line. The program will pick up the
+    page, and look for all subcategories and supercategories, and show them with
+    a number adjacent to them. It will then automatically loop over all pages
+    in the category. It will ask you to type the number of the appropriate
+    replacement, and perform the change robotically.
+    
+    If you don't want to move the article to a subcategory or supercategory, but to
+    another category, you can use the 'j' (jump) command.
+    
+    Typing 's' will leave the complete page unchanged.
+    
+    Typing '?' will show you the first few bytes of the current page, helping
+    you to find out what the article is about and in which other categories it
+    currently is.
+    
+    Important:
+     * this bot is written to work with the MonoBook skin, so make sure your bot
+       account uses this skin
+    """
     # This is a temporary knowledge base (dictionary data type) for all known
     # supercategory-subcategory relationships, so that category pages don't need to
     # be loaded over and over again
@@ -275,7 +279,7 @@ def tidy_category():
             elif choice == '':
                 wikipedia.output(u'Saving category as %s' % current_cat.linkname())
                 if current_cat == original_cat:
-                    print 'No changes necessarry.'
+                    print 'No changes necessary.'
                 else:
                     catlib.change_category(article, original_cat.catname(), current_cat.catname())
                 flag = True
@@ -323,7 +327,6 @@ def tidy_category():
                 flag = True
     
     # begin main part of tidy_category
-    cat_title = wikipedia.input(u'Which category do you want to tidy up?')
     catlink = catlib.CatLink(wikipedia.mylang, cat_title)
     
     # get edit summary message
@@ -361,11 +364,15 @@ if __name__ == "__main__":
     if action == 'add':
         add_category(sort_by_last_name)
     elif action == 'remove':
-        remove_category()
+        cat_title = wikipedia.input(u'Please enter the name of the category that should be removed:')
+        remove_category(cat_title)
     elif action == 'rename':
-        rename_category()
+        old_cat_title = wikipedia.input(u'Please enter the old name of the category:')
+        new_cat_title = wikipedia.input(u'Please enter the new name of the category:')
+        rename_category(old_cat_title, new_cat_title)
     elif action == 'tidy':
-        tidy_category()
+        cat_title = wikipedia.input(u'Which category do you want to tidy up?')
+        tidy_category(cat_title)
     else:
         print
         print 'Syntax: python category.py action [-option]'
@@ -375,7 +382,7 @@ if __name__ == "__main__":
         print ' * rename - move all pages in a category to another category'
         print ' * tidy - tidy up a category by moving its articles into subcategories'
         print 'and  option can be one of these:'
-        print ' * person - sort persons by their last name'
+        print ' * person - sort persons by their last name (for action \'add\')'
         print 
         print 'For example, to create a new category from a list of persons, type:'
         print '  python category.py add -person'
