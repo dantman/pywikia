@@ -413,7 +413,10 @@ class PageLink(object):
         if self.site().version() >= "1.4":
             if not self.site().gettoken():
                 output(u"Getting page to get a token.")
-                self.get(force = True)
+                try:
+                    self.get(force = True)
+                except (NoPage, IsRedirectPage, LockedPage):
+                    pass
         return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().token)
 
     def interwiki(self):
@@ -1345,7 +1348,15 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             else:
                 # Store character set for later reference
                 site.checkCharset(charset)
-                
+
+            # Looking for the token
+            R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+            tokenloc = R.search(text)
+            if tokenloc:
+                site.puttoken(tokenloc.group(1))
+            elif not site.gettoken():
+                site.puttoken('')
+
             if not read_only:
                 # check if we're logged in
                 p=re.compile('userlogin')
@@ -1392,14 +1403,6 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         # Convert to a unicode string. If there's invalid unicode data inside
         # the page, replace it with question marks.
         x = unicode(x, charset, errors = 'replace')
-
-        # Looking for the token
-        R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
-        tokenloc = R.search(text)
-        if tokenloc:
-            site.puttoken(tokenloc.group(1))
-        elif not site.gettoken():
-            site.puttoken('')
         return x
 
 def allpages(start = '!', site = None, throttle = True):
