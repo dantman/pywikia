@@ -14,6 +14,12 @@ __version__ = '$Id$'
 # ===========               
 mylang = 'test'
 username = ''
+# the encoding that's used in the user's console, i.e. how strings are encoded
+# when they are read by raw_input(). On Windows systems' DOS box, this should
+# be 'cp850' ('cp437' for older versions). Linux users might try 'iso-8859-1'
+# or 'utf-8'.
+console_encoding='cp850'
+
 # atbottom is a list of languages that prefer to have the interwiki
 # links at the bottom of the page. You can use interwiki_atbottom.append('xx')
 # in user-config.py to add more.

@@ -3,9 +3,9 @@
 Library with functions needed for image treatment
 """
 
-import re,sys
+import re, sys, string, md5
 import httplib
-import wikipedia, string, md5
+import wikipedia, config
 
 copy_message = {
     "en":"This image was copied from the %s Wikipedia. The original description was:<br>%s",
@@ -83,9 +83,7 @@ def get_image(fn,target,description):
     print "The filename on wikipedia will default to:",fn
     newfn = raw_input("Better name : ")
     if newfn:
-        # this is currently hardcoded to use the MS-DOS Codepage 850 to read
-        # the input. I will probably add a config option later.
-        fn = unicode(newfn, 'cp850')
+        fn = unicode(newfn, config.console_encoding)
     fn = fn.encode(wikipedia.code2encoding(wikipedia.mylang))
 
     # Wikipedia doesn't allow spaces in the file name.
@@ -97,7 +95,7 @@ def get_image(fn,target,description):
     # description page.
     if description=='':
         description = raw_input('Description : ')
-        description = unicode(description, 'cp850')
+        description = unicode(description, config.console_encoding)
     description = description.encode(wikipedia.code2encoding(wikipedia.mylang))
     print description
 
