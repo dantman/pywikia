@@ -216,8 +216,9 @@ image = {
 
 category = {
     'en': 'Category',
-    'nl': 'Categorie'
-    }
+    'nl': 'Categorie',
+    'fr': 'Cat\xe9gorie'
+}
 
 def category_namespaces(code):
     ns = []
