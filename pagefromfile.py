@@ -105,5 +105,5 @@ except:
     wikipedia.stopme()
     raise
 else:
-    raise
+    wikipedia.stopme()
 
