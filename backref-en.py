@@ -3,10 +3,13 @@ import os,wikipedia,sys
 codefrom='nl'
 codeto='de'
 
-for f in wikipedia.allnlpages(start=sys.argv[1]):
-    print f,wikipedia.link2url(f,incode=codefrom)
+pages=open('nltode.dat').readlines()
+for ff in pages:
+    f=ff.strip()
+#for f in wikipedia.allnlpages(start=sys.argv[1]):
+    print f
     sys.stdout.flush()
-    xf=wikipedia.link2url(f,incode=codefrom)
+    xf=wikipedia.link2url(f,code=codefrom)
     stdf=wikipedia.url2link(xf,code=codefrom,incode=codefrom)
     try:
         ll=wikipedia.getLanguageLinks(wikipedia.getPage(codefrom,wikipedia.link2url(f,code=codefrom)))
