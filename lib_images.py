@@ -120,7 +120,7 @@ def get_image(fn, target, description, debug=False):
         description = wikipedia.UnicodeToAsciiHtml(description).encode(wikipedia.code2encoding(wikipedia.mylang))
     # don't upload if we're in debug mode
     if not debug:
-        data = post_multipart(wikipedia.family.hostname(wikipedia.mylang),
+        data = post_multipart(wikipedia.family.hostname(target),
                               wikipedia.family.upload_address(target),
                               (('wpUploadDescription', description),
                                ('wpUploadAffirm', '1'),
