@@ -233,19 +233,20 @@ ignore={
 
 
 def getReferences(pl):
-    x = wikipedia.getReferences(pl, follow_redirects = False)
-    print "Found %d references" % len(x)
+    refs = wikipedia.getReferences(pl, follow_redirects = False)
+    print "Found %d references" % len(refs)
     # Remove ignorables
     if ignore.has_key(pl.code()):
         ignore_regexes =[]
         for ig in ignore[pl.code()]:
+            ig = ig.encode(wikipedia.myencoding())
             ignore_regexes.append(re.compile(ig))
         for Rignore in ignore_regexes:
-            for i in range(len(x)-1, -1, -1):
-                if Rignore.match(x[i]):
-                    wikipedia.output('Ignoring page ' + x[i], wikipedia.myencoding())
-                    del x[i]
-    return x
+            for i in range(len(refs)-1, -1, -1):
+                if Rignore.match(refs[i]):
+                    wikipedia.output('Ignoring page ' + refs[i], wikipedia.myencoding())
+                    del refs[i]
+    return refs
 
 def unique(list):
     # remove duplicate entries
