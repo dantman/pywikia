@@ -682,7 +682,7 @@ def putPage(code, name, text, comment = None, watchArticle = '0', minorEdit = '1
         comment = username + ' - ' + comment
     try:
         text = forCode(text, code)
-        if newPage:
+        if newPage=='1':
             data = urlencode((
                 ('wpMinoredit', minorEdit),
                 ('wpSave', '1'),
