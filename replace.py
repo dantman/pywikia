@@ -71,6 +71,116 @@ msg = {
 
 # Predefined replacements tasks.
 fixes = {
+    # temporarily needed for moving de: autobahns
+    'BAB': {
+        'regex': False,
+        'replacements': {
+            '[[A100 (Autobahn)|A 100]]': '[[A 100]]',
+            '[[A103 (Autobahn)|A 103]]': '[[A 103]]',
+            '[[A104 (Autobahn)|A 104]]': '[[A 104]]',
+            '[[A111 (Autobahn)|A 111]]': '[[A 111]]',
+            '[[A113 (Autobahn)|A 113]]': '[[A 113]]',
+            '[[A114 (Autobahn)|A 114]]': '[[A 114]]',
+            '[[A115 (Autobahn)|A 115]]': '[[A 115]]',
+            '[[A143 (Autobahn)|A 143]]': '[[A 143]]',
+            '[[A210 (Autobahn)|A 210]]': '[[A 210]]',
+            '[[A215 (Autobahn)|A 215]]': '[[A 215]]',
+            '[[A226 (Autobahn)|A 226]]': '[[A 226]]',
+            '[[A241 (Autobahn)|A 241]]': '[[A 241]]',
+            '[[A250 (Autobahn)|A 250]]': '[[A 250]]',
+            '[[A252 (Autobahn)|A 252]]': '[[A 252]]',
+            '[[A253 (Autobahn)|A 253]]': '[[A 253]]',
+            '[[A255 (Autobahn)|A 255]]': '[[A 255]]',
+            '[[A261 (Autobahn)|A 261]]': '[[A 261]]',
+            '[[A270 (Autobahn)|A 270]]': '[[A 270]]',
+            '[[A280 (Autobahn)|A 280]]': '[[A 280]]',
+            '[[A281 (Autobahn)|A 281]]': '[[A 281]]',
+            '[[A293 (Autobahn)|A 293]]': '[[A 293]]',
+            '[[A352 (Autobahn)|A 352]]': '[[A 352]]',
+            '[[A388 (Autobahn)|A 388]]': '[[A 388]]',
+            '[[A391 (Autobahn)|A 391]]': '[[A 391]]',
+            '[[A392 (Autobahn)|A 392]]': '[[A 392]]',
+            '[[A395 (Autobahn)|A 395]]': '[[A 395]]',
+            '[[A443 (Autobahn)|A 443]]': '[[A 443]]',
+            '[[A445 (Autobahn)|A 445]]': '[[A 445]]',
+            '[[A480 (Autobahn)|A 480]]': '[[A 480]]',
+            '[[A485 (Autobahn)|A 485]]': '[[A 485]]',
+            '[[A516 (Autobahn)|A 516]]': '[[A 516]]',
+            '[[A524 (Autobahn)|A 524]]': '[[A 524]]',
+            '[[A535 (Autobahn)|A 535]]': '[[A 535]]',
+            '[[A540 (Autobahn)|A 540]]': '[[A 540]]',
+            '[[A542 (Autobahn)|A 542]]': '[[A 542]]',
+            '[[A544 (Autobahn)|A 544]]': '[[A 544]]',
+            '[[A553 (Autobahn)|A 553]]': '[[A 553]]',
+            '[[A555 (Autobahn)|A 555]]': '[[A 555]]',
+            '[[A559 (Autobahn)|A 559]]': '[[A 559]]',
+            '[[A560 (Autobahn)|A 560]]': '[[A 560]]',
+            '[[A562 (Autobahn)|A 562]]': '[[A 562]]',
+            '[[A565 (Autobahn)|A 565]]': '[[A 565]]',
+            '[[A571 (Autobahn)|A 571]]': '[[A 571]]',
+            '[[A573 (Autobahn)|A 573]]': '[[A 573]]',
+            '[[A602 (Autobahn)|A 602]]': '[[A 602]]',
+            '[[A620 (Autobahn)|A 620]]': '[[A 620]]',
+            '[[A623 (Autobahn)|A 623]]': '[[A 623]]',
+            '[[A643 (Autobahn)|A 643]]': '[[A 643]]',
+            '[[A648 (Autobahn)|A 648]]': '[[A 648]]',
+            '[[A650 (Autobahn)|A 650]]': '[[A 650]]',
+            '[[A652 (Autobahn)|A 652]]': '[[A 652]]',
+            '[[A656 (Autobahn)|A 656]]': '[[A 656]]',
+            '[[A659 (Autobahn)|A 659]]': '[[A 659]]',
+            '[[A661 (Autobahn)|A 661]]': '[[A 661]]',
+            '[[A671 (Autobahn)|A 671]]': '[[A 671]]',
+            '[[A672 (Autobahn)|A 672]]': '[[A 672]]',
+            '[[A831 (Autobahn)|A 831]]': '[[A 831]]',
+            '[[A861 (Autobahn)|A 861]]': '[[A 861]]',
+            '[[A862 (Autobahn)|A 862]]': '[[A 862]]',
+            '[[A864 (Autobahn)|A 864]]': '[[A 864]]',
+            '[[A952 (Autobahn)|A 952]]': '[[A 952]]',
+            '[[A980 (Autobahn)|A 980]]': '[[A 980]]',
+            '[[A995 (Autobahn)|A 995]]': '[[A 995]]',
+            '[[A26 (Autobahn)|A 26]]': '[[A 26]]',
+            '[[A27 (Autobahn)|A 27]]': '[[A 27]]',
+            '[[A28 (Autobahn)|A 28]]': '[[A 28]]',
+            '[[A29 (Autobahn)|A 29]]': '[[A 29]]',
+            '[[A30 (Autobahn)|A 30]]': '[[A 30]]',
+            '[[A31 (Autobahn)|A 31]]': '[[A 31]]',
+            '[[A33 (Autobahn)|A 33]]': '[[A 33]]',
+            '[[A37 (Autobahn)|A 37]]': '[[A 37]]',
+            '[[A38 (Autobahn)|A 38]]': '[[A 38]]',
+            '[[A39 (Autobahn)|A 39]]': '[[A 39]]',
+            '[[A40 (Autobahn)|A 40]]': '[[A 40]]',
+            '[[A42 (Autobahn)|A 42]]': '[[A 42]]',
+            '[[A43 (Autobahn)|A 43]]': '[[A 43]]',
+            '[[A44 (Autobahn)|A 44]]': '[[A 44]]',
+            '[[A45 (Autobahn)|A 45]]': '[[A 45]]',
+            '[[A46 (Autobahn)|A 46]]': '[[A 46]]',
+            '[[A48 (Autobahn)|A 48]]': '[[A 48]]',
+            '[[A49 (Autobahn)|A 49]]': '[[A 49]]',
+            '[[A57 (Autobahn)|A 57]]': '[[A 57]]',
+            '[[A59 (Autobahn)|A 59]]': '[[A 59]]',
+            '[[A60 (Autobahn)|A 60]]': '[[A 60]]',
+            '[[A61 (Autobahn)|A 61]]': '[[A 61]]',
+            '[[A62 (Autobahn)|A 62]]': '[[A 62]]',
+            '[[A63 (Autobahn)|A 63]]': '[[A 63]]',
+            '[[A64 (Autobahn)|A 64]]': '[[A 64]]',
+            '[[A65 (Autobahn)|A 65]]': '[[A 65]]',
+            '[[A66 (Autobahn)|A 66]]': '[[A 66]]',
+            '[[A67 (Autobahn)|A 67]]': '[[A 67]]',
+            '[[A70 (Autobahn)|A 70]]': '[[A 70]]',
+            '[[A71 (Autobahn)|A 71]]': '[[A 71]]',
+            '[[A72 (Autobahn)|A 72]]': '[[A 72]]',
+            '[[A73 (Autobahn)|A 73]]': '[[A 73]]',
+            '[[A81 (Autobahn)|A 81]]': '[[A 81]]',
+            '[[A92 (Autobahn)|A 92]]': '[[A 92]]',
+            '[[A93 (Autobahn)|A 93]]': '[[A 93]]',
+            '[[A94 (Autobahn)|A 94]]': '[[A 94]]',
+            '[[A95 (Autobahn)|A 95]]': '[[A 95]]',
+            '[[A96 (Autobahn)|A 96]]': '[[A 96]]',
+            '[[A98 (Autobahn)|A 98]]': '[[A 98]]',
+            '[[A99 (Autobahn)|A 99]]': '[[A 99]]',
+            '[[A99 (Autobahn)|A 99]]': '[[A 99]]',
+            }
+        },
     # These replacements will convert HTML to wiki syntax where possible, and
     # make remaining tags XHTML compliant.
     'HTML': {
@@ -218,7 +328,8 @@ def generator(source, replacements, exceptions, regex, textfilename = None, sqlf
         for pl in read_pages_from_text_file(textfilename):
             yield pl
     elif source == 'userinput':
-        yield wikipedia.PageLink(wikipedia.mylang, pagenames)
+        for pagename in pagenames:
+            yield wikipedia.PageLink(wikipedia.mylang, pagename)
 
 # How we want to retrieve information on which pages need to be changed.
 # Can either be 'sqldump', 'textfile' or 'userinput'.
@@ -326,7 +437,7 @@ for pl in generator(source, replacements, exceptions, regex, textfilename, sqlfi
         wikipedia.output(u'Skipping locked page %s' % pl.linkname())
         continue
     except wikipedia.IsRedirectPage:
-        pass
+        continue
     
     skip_page = False
     # skip all pages that contain certain texts
