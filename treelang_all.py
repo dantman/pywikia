@@ -11,6 +11,16 @@ starts at A (and therefore skips everything that starts with e.g. digits).
 
 If no options are specified at all, treelang is run with the options
 -backlink -autonomous.
+
+A complete alternative is to run on a file of warnings that are coming from a
+treelang_all run on another wikipedia. Just select the lines from the backlink
+log file that represent omissions on your home wikipedia, and then run
+
+treelang_all.py -warnfile:xxxxxx
+
+specifying the name of the file on the xxxxx. This will parse the warnings, and
+give them as hints to treelang in a special run that is optimized to solve the
+warnings.
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -24,9 +34,25 @@ import os,wikipedia,sys
 options=[]
 start=[]
 file=[]
+hints={}
+
+debug = 0
 
 for arg in sys.argv[1:]:
-    if arg[0] == '-' and len(arg)>1:
+    if arg.startswith('-warnfile:'):
+        import re
+        R=re.compile(r'WARNING:[^\[]*\[\[([^\[]+)\]\][^\[]+\[\[([^\[]+):([^\[]+)\]\]')
+        fn=arg[10:]
+        f=open(fn)
+        for line in f.readlines():
+            m=R.search(line)
+            if m:
+                #print m.group(1), m.group(2), m.group(3)
+                if not hints.has_key(m.group(1)):
+                    hints[m.group(1)]=[]
+                hints[m.group(1)].append('%s:%s'%(m.group(2),wikipedia.link2url(m.group(3),m.group(2))))
+        f.close()
+    elif arg[0] == '-' and len(arg)>1:
         options.append(arg)
     elif os.path.exists(arg):
         file.append(arg)
@@ -55,6 +81,10 @@ if file:
         for line in f.readlines():
             lst.append(wikipedia.PageLink(wikipedia.mylang,line))
         f.close()
+elif hints:
+    lst=[]
+    for key in hints.iterkeys():
+        lst.append(wikipedia.PageLink(wikipedia.mylang,linkname=key))
 else:
     lst=wikipedia.allpages(start = start)
         
@@ -65,10 +95,18 @@ for pl in lst:
     if os.isatty(1):
         print
         print repr(f)
+    hintstr=''
+    if hints.has_key(pl.linkname()):
+        for hint in hints[pl.linkname()]:
+            hintstr += ' -hint:%s'%hint
     if sys.platform=='win32':
-        status = os.system("python treelang.py %s %s" % (options, f))
+        status = os.system("python treelang.py %s %s %s" % (options, hintstr, f))
     else:
-        status = os.system("python treelang.py %s '%s'" % (options, f))
+        if debug:
+            print ("python treelang.py %s %s '%s'" % (options, hintstr, f))
+            status = 0
+        else:
+            status = os.system("python treelang.py %s %s '%s'" % (options, hintstr, f))
     if status not in normalstatus:
         print "Exit status ", status
         sys.exit(1)
