@@ -17,7 +17,8 @@
 #       - edit conflict
 #       - difflib
 #       - minor edits
-#
+#       - watch/unwatch
+#       - remove tmpfiles (post-edit crash however...?)
 #       - ...
 #
 
@@ -42,6 +43,7 @@ def options(args):
     parser.add_option("-u", "--username", help="Username to login with (ignored with -a)")
     parser.add_option("-p", "--page", help="Page to edit")
     parser.add_option("-e", "--editor", help="Editor to use")
+    parser.add_option("-w", "--watch", action="store_true", default=False, help="Watch article after edit")
 ##    parser.add_option("-p", "--password", help="Password to login with")
     return parser.parse_args(args=args)
 
@@ -93,7 +95,7 @@ def main():
     except wikipedia.LockedPage:
         sys.exit("You do not have permission to edit %s" % pl.hashfreeLinkname())
     if old != new:
-        pl.put(new, comment=raw_input("What did you change? ") + sig, minorEdit=False, anon=opts.anonymous) # code
+        pl.put(new, comment=raw_input("What did you change? ") + sig, minorEdit=False, watchArticle=opts.watch, anon=opts.anonymous) # code
     else:
         print "Nothing changed"
 
