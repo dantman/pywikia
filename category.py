@@ -248,7 +248,7 @@ def tidy_category():
                 catlib.change_category(article, original_cat.catname(), None)
                 flag = True
             elif choice == '?':
-                wikipedia.output(article.get())[0:length]
+                wikipedia.output(article.get()[0:length])
                 length = length+500            
             else:
                 try:
