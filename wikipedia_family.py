@@ -331,7 +331,7 @@ class Family(family.Family):
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
 
-        self.alphabetic = ['af','ar','roa-rup','ay','bg','be','bn','bs','br',
+        self.alphabetic = ['af','ar','roa-rup','ast','ay','bg','be','bn','bs','br',
                       'ca','chr','co','cs','cy','da','de','als','et',
                       'el','en','es','eo','eu','fa','fr','fy','ga','gv',
                       'gd','gl','ko','ha','hi','hr','io','id','ia','is','it',
@@ -381,27 +381,26 @@ class Family(family.Family):
         # if you carefully avoid the options, you could get away without these
         # for another wikimedia family.
         
-        self.biglangs = ['de', 'en', 'es', 'fr', 'ja', 'nl', 'pl', 'sv']
+        self.biglangs = ['da', 'de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'sv']
         
         self.biglangs2 = self.biglangs + [
-                    'ca', 'da', 'eo', 'et', 'fi', 'he', 'it', 'no', 'pt', 'ro',
-                    'sl', 'zh']
+                    'ca', 'eo', 'et', 'fi', 'he', 'no', 'pt', 'ro', 'sl', 'zh']
         
         self.biglangs3 = self.biglangs2 + [
-                    'af', 'bg', 'cs', 'cy', 'hr', 'ia', 'id', 'la', 'ms', 'simple',
-                    'wa']
+                    'af', 'bg', 'cs', 'cy', 'hr', 'hu', 'ia', 'id', 'la', 'ms'
+                    'simple', 'wa']
         
         self.biglangs4 = self.biglangs3 + [
-                        'ar', 'bs', 'el', 'eu', 'fy', 'gl', 'hu', 'is', 'ko', 'ku',
-                        'lt', 'nds', 'oc', 'ru', 'sr', 'tr', 'uk']
+                        'ast', 'eu', 'fy', 'gl', 'io', 'is', 'ko', 'ku', 'lt', 'nds',
+                        'oc', 'sk', 'sr', 'su', 'tr', 'ru', 'uk']
         
         self.seriouslangs = self.biglangs4 + [
-                        'fa', 'hi', 'lv', 'ta', 'th', 'tt', 'ur', 'vi']
+                        'ar', 'be', 'bs', 'csb', 'el', 'fa', 'ga', 'hi', 'jv', 'lv',
+                        'mi', 'minnan', 'sa', 'ta', 'th', 'tokipona', 'tt', 'ur', 'vi']
         
         # other groups of language that we might want to do at once
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
-        
         
         #
         # Two functions to figure out the encoding of different languages
