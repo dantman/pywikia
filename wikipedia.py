@@ -32,16 +32,28 @@ except ImportError:
     print "name is mistyped in the configuration file"
     sys.exit(1)
 
-# Set needput to True if you want write-access to the Wiki
+#
+# The family module used to be used as-is. However, that gave maintenance
+# nightmares. Newer families are classes so that they can inherit. If a
+# family is a new-style family, we must instantiate the class.
+#
+if hasattr(family,'Family'):
+    family=family.Family()
+
+# Set needput to True if you want write-access to the Wiki. This can be set
+# to False if you want to protect yourself from programming mistakes during
+# debugging.
 needput = True 
 
 # This is used during the run-time of the program to store all character
 # sets encountered for each of the wikipedia languages. This allows us to
 # cross-check the stored character sets in the family. Unfortunately, the
-# Export feature makes this cross-check useless.
+# Export feature makes this cross-check useless, so it is only used for the
+# individual get-page pages.
 charsets = {}
 
 # Keep the modification time of all downloaded pages for an eventual put.
+# We are not going to be worried about the memory this can take.
 edittime = {}
 
 # Languages to use for comment text after the actual language but before
