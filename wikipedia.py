@@ -1582,6 +1582,10 @@ def output(text, decoder = None, newline = True):
     if decoder:
         text = unicode(text, decoder)
     elif type(text) != type(u''):
+        print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!" 	 
+        import traceback 	 
+        print traceback.print_stack() 	 
+        print "DBG> Attempting to recover, but please report this problem"
         try:
             text = unicode(text, 'utf-8')
         except UnicodeDecodeError:
