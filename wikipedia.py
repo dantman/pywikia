@@ -378,7 +378,7 @@ class PageLink(object):
         return False
 
         
-    def put(self, newtext, comment=None, watchArticle = False, minorEdit = True):
+    def put(self, newtext, comment=None, watchArticle = False, minorEdit = True, anon=False):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
@@ -387,7 +387,7 @@ class PageLink(object):
             newPage="0"
         else:
             newPage="1"
-        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage)
+        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, anon)
 
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
@@ -915,7 +915,7 @@ class Throttle(object):
 get_throttle = Throttle()
 put_throttle = Throttle(config.put_throttle)
 
-def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False):
+def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, anon=False):
     """Upload 'text' on page 'name' to the 'site' wiki.
        Use of this routine can normally be avoided; use PageLink.put
        instead.
@@ -932,7 +932,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     if comment is None:
         comment=action
     # Prefix the comment with the user name if the user is not logged in.
-    if not site.loggedin():
+    if not site.loggedin() and not anon:
         comment = username + ' - ' + comment
     # Use the proper encoding for the comment
     comment = comment.encode(site.encoding())
@@ -969,7 +969,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     conn.putheader('Content-Length', str(len(data)))
     conn.putheader("Content-type", "application/x-www-form-urlencoded")
     conn.putheader("User-agent", "RobHooftWikiRobot/1.0")
-    if site.cookies():
+    if not anon and site.cookies():
         conn.putheader('Cookie',site.cookies())
     conn.endheaders()
     conn.send(data)
