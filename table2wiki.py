@@ -331,11 +331,11 @@ def convert(text):
             warn = ""
             if warnings == 0:
                 # get edit summary message
-                wikipedia.setAction(msg_no_warnings[wikipedia.chooselang(wikipedia.mylang, msg_no_warnings)])
+                wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_no_warnings))
             elif warnings == 1:
-                wikipedia.setAction(msg_one_warning[wikipedia.chooselang(wikipedia.mylang, msg_one_warning)] % warnings)
+                wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_one_warning) % warnings)
             else:
-                wikipedia.setAction(msg_multiple_warnings[wikipedia.chooselang(wikipedia.mylang, msg_multiple_warnings)] % warnings)
+                wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_multiple_warnings) % warnings)
             return newText
         else:
             print "OK. I'm not uploading"

@@ -58,7 +58,7 @@ def make_categories(page,list):
     for p in list:
         cattitle="%s:%s" % (wikipedia.family.category_namespace(wikipedia.mylang, fallback = None), p)
         pllist.append(wikipedia.PageLink(wikipedia.mylang,cattitle))
-    page.put(wikipedia.replaceCategoryLinks(page.get(),pllist), comment=msg[wikipedia.chooselang(wikipedia.mylang,msg)])
+    page.put(wikipedia.replaceCategoryLinks(page.get(), pllist), comment = wikipedia.translate(wikipedia.mylang, msg))
 
 docorrections=True
 start=[]

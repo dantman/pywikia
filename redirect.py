@@ -112,7 +112,7 @@ def retrieve_broken_redirects(source):
 
 def delete_broken_redirects(source):
     # get reason for deletion text
-    reason = reason_broken[wikipedia.chooselang(wikipedia.mylang, reason_broken)]
+    reason = wikipedia.translate(wikipedia.mylang, reason_broken)
 
     for redir_name in retrieve_broken_redirects(source):
         redir_page = wikipedia.PageLink(wikipedia.mylang, redir_name)
@@ -212,7 +212,7 @@ for arg in sys.argv[1:]:
 
 if action == 'double':
     # get summary text
-    wikipedia.setAction(msg_double[wikipedia.chooselang(wikipedia.mylang, msg_double)])
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_double))
     fix_double_redirects(source)
 elif action == 'broken':
     delete_broken_redirects(source)

@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.13 2004/07/16 16:03:54 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.14 2004/08/03 19:55:36 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -154,8 +154,7 @@ if page_list == [] and action != 'parse_sqldump':
     page_list.append(pagename)
 
 # get edit summary message
-msglang = wikipedia.chooselang(wikipedia.mylang,msg)
-wikipedia.setAction(msg[msglang])
+wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg))
 
 if wikipedia.myencoding() == "utf-8":
     print "There is no need to run this robot on UTF-8 wikis."

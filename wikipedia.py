@@ -1652,26 +1652,6 @@ if not family.langs.has_key(mylang):
     setMyLang('test')
     family.langs['test']='test.wikipedia.org'
 
-
-def chooselang(code, choice):
-    """Selecting the language for a text. 'Code' is a language, 'choice'
-       is a list of languages. Choose from 'choice' the language that is
-       most applicable to use on the Wikipedia in language 'code'.
-       The language itself is always checked first, then languages that
-       have been defined to be alternatives, and finally English. If none of
-       the options gives result, we just take the first language in the
-       list.
-    """
-    # NOTE: obsolete, use translate() whenever possible
-    if code in choice:
-        return code
-    for alternative in altlang(code):
-        if alternative in choice:
-            return alternative
-    if 'en' in choice:
-        return 'en'
-    return choice[1]
-
 def translate(code, dict):
     """
     Given a language code and a dictionary, returns the dictionary's value for

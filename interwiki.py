@@ -170,7 +170,6 @@ class Global:
     log = config.treelang_log
     minarraysize = 100
     maxquerysize = 60
-    msglang = 'en'
     same = False
     shownew = True
     skip = {}
@@ -802,11 +801,11 @@ def compareLanguages(old, new):
             adding.append(code2)
     s = ""
     if adding:
-        s = s + " %s:" % (msg[globalvar.msglang][0]) + ",".join(adding)
+        s = s + " %s:" % (wikipedia.translate(wikipedia.mylang, msg)[0]) + ",".join(adding)
     if removing: 
-        s = s + " %s:" % (msg[globalvar.msglang][1]) + ",".join(removing)
+        s = s + " %s:" % (wikipedia.translate(wikipedia.mylang, msg)[1]) + ",".join(removing)
     if modifying:
-        s = s + " %s:" % (msg[globalvar.msglang][2]) + ",".join(modifying)
+        s = s + " %s:" % (wikipedia.translate(wikipedia.mylang, msg)[2]) + ",".join(modifying)
     return s,removing
 
 def ReadWarnfile(fn, sa):
@@ -948,8 +947,6 @@ if __name__ == "__main__":
             number = int(arg[8:])
         else:
             inname.append(arg)
-
-    globalvar.msglang = wikipedia.chooselang(wikipedia.mylang,msg)
 
     if globalvar.log:
         import logger

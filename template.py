@@ -130,9 +130,9 @@ else:
 
 # get edit summary message
 if remove:
-    wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang, msg_remove)] % old)
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_remove) % old)
 else:
-    wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang, msg_change)] % old)
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg_change) % old)
     
 
 # get template namespace

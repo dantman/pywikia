@@ -79,20 +79,20 @@ wikipedia.put_throttle.setDelay(10)
 
 # Summary message when run without -redir parameter
 msg={
-    'en':u'Robot-assisted disambiguation',
-    'da':u'Retter flertydigt link til',
-    'de':u'Bot-unterstützte Begriffsklärung',
-    'nl':u'Robot-geholpen doorverwijzing',
-    'fr':u'Homonymie résolue à l\'aide du robot'
+    'en':u'Robot-assisted disambiguation: %s',
+    'da':u'Retter flertydigt link til: %s',
+    'de':u'Bot-unterstützte Begriffsklärung: %s',
+    'nl':u'Robot-geholpen doorverwijzing: %s',
+    'fr':u'Homonymie résolue à l\'aide du robot: %s'
     }
 
 # Summary message when run with -redir parameter
 msg_redir={
-          'en':u'Robot-assisted disambiguation',
-          'da':u'Retter flertydigt link til',
-          'de':u'Bot-unterstützte Redirectauflösung',
-          'nl':u'Robot-geholpen doorverwijzing',
-          'fr':u'Correction de lien vers redirect'
+          'en':u'Robot-assisted disambiguation: %s',
+          'da':u'Retter flertydigt link til: %s',
+          'de':u'Bot-unterstützte Redirectauflösung: %s',
+          'nl':u'Robot-geholpen doorverwijzing: %s',
+          'fr':u'Correction de lien vers redirect: %s'
           }
 
 # disambiguation page name format for "primary topic" disambiguations
@@ -349,9 +349,9 @@ if page_list == []:
 for wrd in (page_list):
     # when run with -redir argument, there's another summary message
     if solve_redirect:
-        wikipedia.setAction(msg_redir[wikipedia.chooselang(wikipedia.mylang,msg_redir)] + u': ' + wrd)
+        wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg_redir) % wrd)
     else:
-        wikipedia.setAction(msg[wikipedia.chooselang(wikipedia.mylang,msg)] + u': ' + wrd)
+        wikipedia.setAction(wikipedia.translate(wikipedia.mylang,msg) % wrd)
 
     thispl = wikipedia.PageLink(wikipedia.mylang, wrd)
 

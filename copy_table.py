@@ -87,10 +87,6 @@ for arg in sys.argv[1:]:
     else:
         page_title.append(arg)
 
-# get edit summary message
-msglang = wikipedia.chooselang(wikipedia.mylang,msg)
-print msglang
-
 # if the page name is given as a command line argument,
 # connect the title's parts with spaces
 if page_title != []:
@@ -130,7 +126,7 @@ def treat(to_pl):
         print "Interwiki link to " + from_lang + " not found."
         return
     from_text = from_pl.get()
-    wikipedia.setAction(msg[msglang] + from_lang + ":" + from_pl.linkname())
+    wikipedia.setAction(wikipedia.translate(wikipedia.mylang, msg) + from_lang + ":" + from_pl.linkname())
     # search start of table
     table = get_table(from_text)
     if not table:

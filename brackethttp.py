@@ -31,7 +31,7 @@ for arg in sys.argv[1:]:
             for line in difflib.ndiff(text.split('\r\n'),newText.split('\r\n')):
                 if line[0] in ['+','-']:
                     print repr(line)[2:-1]
-            status, reason, data = pl.put(newText, myComment[wikipedia.chooselang(wikipedia.mylang,myComment)])
+            status, reason, data = pl.put(newText, wikipedia.translate(wikipedia.mylang,myComment))
             print status, reason
         else:
             print "No bad link found"
