@@ -3,3 +3,4 @@ user-config.py
 *-login.data
 autonomous_problem.dat
 treelang.log
+*.dump
