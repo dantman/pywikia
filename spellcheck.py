@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 """
 This bot spellchecks Wikipedia pages. It is very simple, only checking
@@ -122,7 +122,7 @@ def spellcheck(page):
     text = page
     loc = 0
     while True:
-        wordsearch = re.compile(r'(\s*)(\S+)')
+        wordsearch = re.compile(r'([\s\=]*)([^\s\=]+)')
         match = wordsearch.search(text,loc)
         if not match:
             # No more words on this page
