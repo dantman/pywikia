@@ -69,19 +69,22 @@ def urlencode(query):
         l.append(k + '=' + v)
     return '&'.join(l)
 
+def spu(name):
+    return name.replace(' ','_')
+
 def putPage(code, name, text):
     """Upload 'text' on page 'name' to the 'code' language wikipedia."""
     import httplib
     host = langs[code]
     if host[-4:] == '.com':
         raise Error("Cannot put pages on a .com wikipedia")
-    address = '/w/wiki.phtml?title=%s&action=submit'%(name)
+    address = '/w/wiki.phtml?title=%s&action=submit'%spu(name)
     try:
         data = urlencode((
             ('wpSummary', action),
             ('wpMinoredit', '1'),
             ('wpSave', '1'),
-            ('wpEdittime', edittime[code,name]),
+            ('wpEdittime', edittime[code,spu(name)]),
             ('wpTextbox1', text)))
     except KeyError:
         print edittime
@@ -115,7 +118,7 @@ def getPage(code, name):
     f.close()
     m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
     if m:
-        edittime[code,name]=m.group(1)
+        edittime[code,spu(name)]=m.group(1)
     else:
         m = re.search('value="(\d+)" name="wpEdittime"',text)
         if m:

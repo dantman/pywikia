@@ -43,7 +43,6 @@ def beforeandafter(x):
         a.append(1)
     else:
         a.append(x+1)
-    print a
     return tuple(a)
 
 def cstr(c):
