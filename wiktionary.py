@@ -46,7 +46,7 @@ langnames =	{'nl':	{
 			'fr' : u'French',
 			}
 		}
-print langnames
+#print langnames
 # A big thanks to Rob for the following:
 class sortonname:
 	def __init__(self, lang):
@@ -97,8 +97,8 @@ class SubEntry:					# On one page, different terms in different languages can be
 
 	def wikiwrap(self,wikilang):
 		for meaning in self.meanings:
-			subentry=wiktionaryformats[wikilang]['langheader'] + '\n'
 			term=meaning.term
+			subentry=wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][term.lang]).replace('%%ISOLangcode%%',term.lang) + '\n'
 
 			subentry += wiktionaryformats[wikilang]['posheader'][term.pos]
 			subentry +='\n'	
@@ -123,7 +123,6 @@ class SubEntry:					# On one page, different terms in different languages can be
 				first = 1
 				for translation in meaning.translations[language]:
 					term=translation.term
-					print term,first
 					if first==0:
 						subentry += ', '
 					else:					
@@ -223,29 +222,29 @@ class Noun(Term):
 
 if __name__ == '__main__':
 	apage = WiktionaryEntry('nl',u'iemand')
-	print 'Wiktionary language: %s'%apage.wikilang
-	print 'Wiktionary apage: %s'%apage.term
-	print
+#	print 'Wiktionary language: %s'%apage.wikilang
+#	print 'Wiktionary apage: %s'%apage.term
+#	print
 	aword = Noun('nl',u'iemand')
-	print 'Noun: %s'%aword.term
+#	print 'Noun: %s'%aword.term
 	aword.setGender('m')
-	print 'Gender: %s'%aword.gender
+#	print 'Gender: %s'%aword.gender
         frtrans = Noun('fr',u"quelqu'un")
 	frtrans.setGender('m')
 	entrans1 = Noun('en',u'somebody')
 	entrans2 = Noun('en',u'someone')
-
-	print 'frtrans: %s'%frtrans
+#	print 'frtrans: %s'%frtrans
 
 	ameaning = Meaning(u'een persoon',aword)
 	ameaning.addTranslation(frtrans)
-	print ameaning.translations
+#	print ameaning.translations
 	ameaning.addTranslation(entrans1)
-	print ameaning.translations
+#	print ameaning.translations
 	ameaning.addTranslation(entrans2)
-	print ameaning.translations
-			
-	asubentry = SubEntry('nl')
+#	print ameaning.translations
+	ameaning.addTranslation(aword) # This is for testing whether the order of the translations is correct
+
+	asubentry = SubEntry('en')
 	asubentry.addMeaning(ameaning)
 
 	apage.addSubEntry(asubentry)
