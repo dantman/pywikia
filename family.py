@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import config, urllib
 
@@ -67,17 +67,20 @@ class Family(object):
             'de': u'Diskussion',
             'nl': u'Overleg',
             'pt': u'Discussão',
+            'es': u'Discusión',
         },
         2: {
             '_default': u'User',
             'de': u'Benutzer',
             'nl': u'Gebruiker',
             'pt': u'Usuário',
+            'es': u'Usuario',
         },
         3: {
             '_default': u'User talk',
             'de': u'Benutzer Diskussion',
             'pt': u'Usuário_Discussão',
+            'es': u'Usuario Discusión',
         },
         4: {
             '_default': u'Wikipedia',
@@ -86,6 +89,7 @@ class Family(object):
             '_default': u'Wikipedia talk',
             'de': u'Wikipedia Diskussion',
             'pt': u'Wikipedia_Discussão',
+            'es': u'Wikipedia Discusión',
         },
         6: {
             # TODO: convert all percent-encoded titles to plaintext
@@ -139,6 +143,7 @@ class Family(object):
             '_default': u'Image talk',
             'de': u'Bild Diskussion',
             'pt': u'Imagem_Discussão',
+            'es': u'Imagen_Discusión',
         },
         8: {
             '_default': u'MediaWiki',
@@ -148,6 +153,7 @@ class Family(object):
             '_default': u'MediaWiki talk',
             'de': u'MediaWiki Diskussion',
             'pt': u'MediaWiki_Discussão',
+            'es': u'MediaWiki Discusión',
         },
         10: {
             '_default':u'Template',
@@ -155,21 +161,25 @@ class Family(object):
             'es':u'Plantilla',
             'nl':u'Sjabloon',
             'pt':u'Predefinição',
+            'es':u'Plantilla',
         },
         11: {
             '_default': u'Template talk',
             'de': u'Vorlage Diskussion',
             'pt': u'Predefinição_Discussão',
+            'es': u'Plantilla Discusión',
         },
         12: {
             '_default': u'Help',
             'de': u'Hilfe',
             'pt': u'Ajuda',
+            'es': u'Ayuda',
         },
         13: {
             '_default': u'Help talk',
             'de': u'Hilfe Diskussion',
             'pt': u'Ajuda_Discussão',
+            'es': u'Ayuda Discusión',
         },
         14: {
             '_default': u'Category',
