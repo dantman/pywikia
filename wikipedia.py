@@ -298,7 +298,7 @@ edittime = {}
 # after those, in code-alphabetical order.
 
 interwiki_putfirst = {
-    'en':['af','ar','om','bs','ca','co','cs','cy','da','de',
+    'en':['af','ar','om','bg','bs','ca','co','cs','cy','da','de',
           'als','et','el','en','es','eo','eu','fa','fr','fy',
           'ga','gd','gl','ko','hi','hr','id','is','it','ia',
           'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
@@ -306,7 +306,7 @@ interwiki_putfirst = {
           'oc','nds','pl','pt','ro','ru','st','sq','simple',
           'sk','sl','sr','su','fi','sv','ta','tt','th','ur',
           'vi','tr','uk','vo','yi','zh','zh-cn','zh-tw'],
-    'fr':['af','ar','om','bs','ca','co','cs','cy','da','de',
+    'fr':['af','ar','om','bg','bs','ca','co','cs','cy','da','de',
           'als','et','el','en','es','eo','eu','fa','fr','fy',
           'ga','gd','gl','ko','hi','hr','id','is','it','ia',
           'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
@@ -315,7 +315,7 @@ interwiki_putfirst = {
           'sk','sl','sr','su','fi','sv','ta','tt','th','ur',
           'vi','tr','uk','vo','yi','zh','zh-cn','zh-tw'],
     'hu':['en'],
-    'pl':['af','ar','om','bs','ca','co','cs','cy','da','de',
+    'pl':['af','ar','om','bg','bs','ca','co','cs','cy','da','de',
           'als','et','el','en','es','eo','eu','fa','fr','fy',
           'ga','gd','gl','ko','hi','hr','id','is','it','ia',
           'he','jv','ka','csb','ks','sw','la','lv','lt','hu',
