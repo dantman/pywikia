@@ -142,7 +142,7 @@ def treestep(arr,pl,abort_on_redirect=0):
     except wikipedia.IsRedirectPage,arg:
         if abort_on_redirect and pl.code()==mylang:
             raise
-        newpl=wikipedia.PageLink(pl.code(),arg)
+        newpl=wikipedia.PageLink(pl.code(),str(arg))
         arr[pl]=''
         print "NOTE: %s is a redirect to %s"%(pl,newpl)
         if not newpl in arr:
@@ -241,7 +241,7 @@ for pl in k:
             autonomous_problem(inpl)
     elif m[pl]:
         print pl
-        if new.has_key(pl.code()) and new[pl.code()]!=pl and new[pl.code()]!=None:
+        if new.has_key(pl.code()) and new[pl.code()]!=None and new[pl.code()]!=pl:
             print "ERROR: '%s' as well as '%s'"%(new[pl.code()],pl)
             while 1:
                 if bell:
@@ -259,7 +259,7 @@ for pl in k:
                     break
                 elif answer.startswith('q'):
                     sys.exit(1)
-        else:
+        elif pl.code() not in new or new[pl.code()]!=None:
             new[pl.code()]=pl
 print "==status=="
 old={}

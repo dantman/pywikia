@@ -130,6 +130,8 @@ class PageLink:
 
     def __cmp__(self,other):
         #print "__cmp__",self,other
+        if not hasattr(other,'code'):
+            return -1
         if not self.code()==other.code():
             return cmp(self.code(),other.code())
         u1=html2unicode(self.linkname(),language=self.code())
@@ -373,15 +375,13 @@ def removeLanguageLinks(text):
     
 def interwikiFormat(links):
     s=[]
-    if type(links)==type({}):
-        ar=links.keys()
-        ar.sort()
-        for code in ar:
+    ar=links.keys()
+    ar.sort()
+    for code in ar:
+        try:
+            s.append(links[code].aslink())
+        except AttributeError:
             s.append('[[%s:%s]]'%(code, links[code]))
-    else:
-        links.sort()
-        for pl in links:
-            s.append(pl.aslink())
     return ' '.join(s)+'\r\n'
             
 def code2encoding(code):
