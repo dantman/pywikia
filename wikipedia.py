@@ -969,8 +969,9 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
                 if charsets.has_key(code):
                     assert charsets[code].lower() == charset.lower(), "charset for %s changed from %s to %s"%(code,charsets[code],charset)
                 charsets[code] = charset
-                if code2encoding(code).lower() != charset.lower():
-                    raise ValueError("code2encodings has wrong charset for %s. It should be %s"%(code,charset))
+                c2e_charset = code2encoding(code).lower()
+                if c2e_charset != charset.lower():
+                    raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s"%(code,charset, c2e_charset))
                 
             if not read_only:
                 # check if we're logged in
