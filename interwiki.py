@@ -269,6 +269,7 @@ class Subject:
                                 print "%s: %s gives new redirect %s"% (self.inpl.asasciiselflink(), pl.asasciilink(), pl3.asasciilink())
                 except wikipedia.NoPage:
                     print "NOTE: %s does not exist" % pl.asasciilink()
+                    #print "DBG> ",pl.urlname()
                     if pl == self.inpl:
                         # This is the home subject page.
                         # In this case we can stop all hints!
@@ -352,18 +353,22 @@ class Subject:
             code = pl.code()
             if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
                 if pl != self.inpl:
+                    err = 'Someone refers to %s with us' % pl.asasciilink()
                     if returnonquestion:
+                        print "ERROR: %s"%err
                         return None
-                    self.problem('Someone refers to %s with us' % pl.asasciilink())
+                    self.problem(err)
                     if globalvar.autonomous:
                         return None
             elif pl.exists() and not pl.isRedirectPage():
                 if new.has_key(code) and new[code] is None:
                     print "NOTE: Ignoring %s"%(pl.asasciilink())
                 elif new.has_key(code) and new[code] != pl:
+                    err = "'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink())
                     if returnonquestion:
+                        print "ERROR: %s"%err
                         return None
-                    self.problem("'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink()))
+                    self.problem(err)
                     if globalvar.autonomous:
                         return None
                     # beep before asking question
