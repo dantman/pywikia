@@ -438,6 +438,93 @@ class PageLink:
             return str(arg)
         else:
             raise IsNotRedirectPage(self)
+            
+            
+    def delete(pl, reason = None, prompt = True):
+        """Deletes the page from the wiki. Requires administrator status. If
+           reason is None, asks for a reason. If prompt is True, asks the user
+           if he wants to delete the page.
+        """
+        # TODO: Find out if bot is logged in with an admin account, raise exception
+        # or show error message otherwise
+        # TODO: Find out if deletion was successful or e.g. if file has already been
+        # deleted by someone else
+    
+        # taken from lib_images.py and modified
+        def post_multipart(host, selector, fields):
+            """
+            Post fields and files to an http host as multipart/form-data.
+            fields is a sequence of (name, value) elements for regular form
+            fields. files is a sequence of (name, filename, value) elements for 
+            data to be uploaded as files. Return the server's response page.
+            """
+            import httplib
+            content_type, body = encode_multipart_formdata(fields)
+            h = httplib.HTTP(host)
+            h.putrequest('POST', selector)
+            h.putheader('content-type', content_type)
+            h.putheader('content-length', str(len(body)))
+            h.putheader("User-agent", "RobHooftWikiRobot/1.0")
+            h.putheader('Host', host)
+            h.putheader('Cookie', cookies)
+            h.endheaders()
+            h.send(body)
+            errcode, errmsg, headers = h.getreply()
+            return h.file.read()
+        
+        # taken from lib_images.py and modified
+        def encode_multipart_formdata(fields):
+            """
+            fields is a sequence of (name, value) elements for regular form fields.
+            files is a sequence of (name, filename, value) elements for data to be uploaded as files
+            Return (content_type, body) ready for httplib.HTTP instance
+            """
+            BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
+            CRLF = '\r\n'
+            L = []
+            for (key, value) in fields:
+                L.append('--' + BOUNDARY)
+                L.append('Content-Disposition: form-data; name="%s"' % key)
+                L.append('')
+                L.append(value)
+            L.append('--' + BOUNDARY + '--')
+            L.append('')
+            body = CRLF.join(L)
+            content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+            return content_type, body
+    
+        if reason == None:
+            reason = input(u'Please enter a reason for the deletion:', myencoding())
+        answer = 'y'
+        if prompt:
+            answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
+        if answer in ['y', 'Y']:
+            output(u'Deleting page %s...' % pl.linkname())
+            returned_html = post_multipart(family.hostname(mylang),
+                                           family.delete_address(pl.urlname()),
+                                           (('wpReason', reason),
+                                            ('wpConfirm', '1')))
+            # check if deletion was successful
+            # therefore, we need to know what the MediaWiki software says after
+            # a successful deletion
+            deleted_msg = mediawiki_messages.get('actioncomplete')
+            deleted_msg = re.escape(deleted_msg)
+            deleted_msgR = re.compile(deleted_msg)
+            if deleted_msgR.search(returned_html):
+                output(u'Deletion successful.')
+            else:
+                output(u'Deletion failed:.')
+                # show debug information
+                try:
+                    ibegin = returned_html.index('<!-- start content -->') + 22
+                    iend = returned_html.index('<!-- end content -->')
+                except ValueError:
+                    # if begin/end markers weren't found, show entire HTML file
+                    output(returned_html, myencoding())
+                else:
+                    # otherwise, remove the irrelevant sections
+                    returned_html = returned_html[ibegin:iend]
+                output(returned_html, myencoding())
         
 # Regular expression recognizing redirect pages
 
@@ -1354,92 +1441,6 @@ def getReferences(pl, follow_redirects = True):
             del x[i]
     return x
 
-def deletePage(pl, reason = None, prompt = True):
-    """Deletes page pl from the wiki. Requires administrator status. If
-       reason is None, asks for a reason. If prompt is True, asks the user
-       if he wants to delete the page.
-    """
-    # TODO: Find out if bot is logged in with an admin account, raise exception
-    # or show error message otherwise
-    # TODO: Find out if deletion was successful or e.g. if file has already been
-    # deleted by someone else
-
-    # taken from lib_images.py and modified
-    def post_multipart(host, selector, fields):
-        """
-        Post fields and files to an http host as multipart/form-data.
-        fields is a sequence of (name, value) elements for regular form fields.
-        files is a sequence of (name, filename, value) elements for data to be uploaded as files
-        Return the server's response page.
-        """
-        import httplib
-        content_type, body = encode_multipart_formdata(fields)
-        h = httplib.HTTP(host)
-        h.putrequest('POST', selector)
-        h.putheader('content-type', content_type)
-        h.putheader('content-length', str(len(body)))
-        h.putheader("User-agent", "RobHooftWikiRobot/1.0")
-        h.putheader('Host', host)
-        h.putheader('Cookie', cookies)
-        h.endheaders()
-        h.send(body)
-        errcode, errmsg, headers = h.getreply()
-        return h.file.read()
-    
-    # taken from lib_images.py and modified
-    def encode_multipart_formdata(fields):
-        """
-        fields is a sequence of (name, value) elements for regular form fields.
-        files is a sequence of (name, filename, value) elements for data to be uploaded as files
-        Return (content_type, body) ready for httplib.HTTP instance
-        """
-        BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
-        CRLF = '\r\n'
-        L = []
-        for (key, value) in fields:
-            L.append('--' + BOUNDARY)
-            L.append('Content-Disposition: form-data; name="%s"' % key)
-            L.append('')
-            L.append(value)
-        L.append('--' + BOUNDARY + '--')
-        L.append('')
-        body = CRLF.join(L)
-        content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
-        return content_type, body
-
-    if reason == None:
-        reason = input(u'Please enter a reason for the deletion:', myencoding())
-    answer = 'y'
-    if prompt:
-        answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
-    if answer in ['y', 'Y']:
-        output(u'Deleting page %s...' % pl.linkname())
-        returned_html = post_multipart(family.hostname(mylang),
-                                       family.delete_address(pl.urlname()),
-                                       (('wpReason', reason),
-                                        ('wpConfirm', '1')))
-        # check if deletion was successful
-        # therefore, we need to know what the MediaWiki software says after
-        # a successful deletion
-        deleted_msg = mediawiki_messages.get('actioncomplete')
-        deleted_msg = re.escape(deleted_msg)
-        deleted_msgR = re.compile(deleted_msg)
-        if deleted_msgR.search(returned_html):
-            output(u'Deletion successful.')
-        else:
-            output(u'Deletion failed:.')
-            # show debug information
-            try:
-                ibegin = returned_html.index('<!-- start content -->') + 22
-                iend = returned_html.index('<!-- end content -->')
-            except ValueError:
-                # if begin/end markers weren't found, show entire HTML file
-                output(returned_html, myencoding())
-            else:
-                # otherwise, remove the irrelevant sections
-                returned_html = returned_html[ibegin:iend]
-            output(returned_html, myencoding())
-                                    
     
 ######## Unicode library functions ########
 

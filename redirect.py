@@ -4,8 +4,24 @@ Script to resolve double redirects, and to delete broken redirects.
 Requires access to MediaWiki's maintenance pages or to a SQL dump file. Delete function requires
 adminship.
 
-For syntax information, run the bot without arguments.
+Syntax:
 
+    python redirect.py action [argument]
+
+where action can be one of these:
+
+* double - fix redirects which point to other redirects
+* broken - delete redirects where targets don\'t exist. Requires adminship.
+
+and argument can be:
+
+* sql - retrieve information from a local dump (http://download.wikimedia.org).
+
+if this argument isn't given, info will be loaded from the maintenance page of
+the live wiki.
+argument can also be given as "-sql:filename.sql".
+
+NOTE: For resolving redirects, please use solve_disambiguation.py -redir.
 """
 #
 # (C) Daniel Herding, 2004
@@ -129,7 +145,7 @@ def delete_broken_redirects(source):
                 target_page = wikipedia.PageLink(wikipedia.mylang, target_name)
                 target_page.get(read_only = True)
             except wikipedia.NoPage:
-                wikipedia.deletePage(redir_page, reason, prompt = False)
+                redir_page.delete(reason, prompt = False)
             except wikipedia.IsRedirectPage:
                 wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
             else:
@@ -191,7 +207,7 @@ def fix_double_redirects(source):
 action = None
 # where the bot should get his infos from (either None to load the maintenance
 # special page from the live wiki, the filename of a local sql dump file)
-dump = None
+source = None
 for arg in sys.argv[1:]:
     arg = unicode(arg, config.console_encoding)
     if wikipedia.argHandler(arg):
@@ -217,13 +233,5 @@ if action == 'double':
 elif action == 'broken':
     delete_broken_redirects(source)
 else:
-    print 'Syntax: python redirect.py action [argument]'
-    print 'where action can be one of these:'
-    print ' * double - fix redirects which point to other redirects'
-    print ' * broken - delete redirects where targets don\'t exist. Requires adminship.'
-    print 'and argument can be:'
-    print ' * sql - retrieve information from a local dump (http://download.wikimedia.org).'
-    print '         if this argument isn\'t given, info will be loaded from the maintenance'
-    print '         page of the live wiki.'
-    print '         argument can also be given as "-sql:filename.sql".'
-    print 'NOTE: For resolving redirects, please use solve_disambiguation.py -redir.' # TODO: make this runnable from within this bot.
+    wikipedia.output(__doc__, 'utf-8')
+
