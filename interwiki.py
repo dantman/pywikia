@@ -116,11 +116,12 @@ import sys, copy, re
 import wikipedia, config, unequal
 
 msg = {
-    'en':('Adding','Removing','Modifying'),
-    'nl':('Erbij','Eraf','Anders'),
     'da':('Tilføjer','Fjerner','Ændrer'),
-    'fr':('Ajoute','Retire','Modifie'),
     'de':('Ergänze','Entferne','Ändere'),
+    'en':('Adding','Removing','Modifying'),
+    'fr':('Ajoute','Retire','Modifie'),
+    'nl':('Erbij','Eraf','Anders'),
+    'no':('Tilfoeyer','Fjerner','Endrer'),
     }
 
 class Global:
