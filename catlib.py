@@ -171,7 +171,7 @@ class _CatLink(wikipedia.PageLink):
            Returns a sorted, unique list of all subcategories.
         """
         supercats = []
-        for title in self.catlist(recurse)[1]:
+        for title in self.catlist(recurse)[2]:
             ncat = _CatLink(self.site(), title)
             supercats.append(ncat)
         return unique(supercats)
