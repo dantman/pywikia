@@ -384,6 +384,8 @@ def code2encodings(code):
         return 'utf-8','iso-8859-2'
     if code=='ru':
         return 'utf-8','iso-8859-5'
+    if code=='cs':
+        return 'utf-8','iso-8859-1'
     return code2encoding(code),
     
 def url2link(percentname,incode,code):
@@ -482,7 +484,7 @@ def unicodeName(name,language):
             return unicode(name,encoding)
         except UnicodeError:
             continue
-    print name
+    print language,name
     raise "Would be encoding into local, probably a bug"
     #return unicode(name,code2encoding(inlanguage))
     
