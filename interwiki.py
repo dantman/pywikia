@@ -458,15 +458,26 @@ class Subject:
             else:
                 print "NOTE: Replace %s" % self.inpl.asasciilink()
                 if globalvar.forreal:
-                    if removing and not globalvar.force:
+                    # Determine whether we need permission to submit
+                    ask = False
+                    if removing:
                         self.problem('removing: %s'%(",".join(removing)))
-                        if not globalvar.autonomous:
+                        ask = True
+                    if globalvar.force:
+                        ask = False
+                    if globalvar.confirm:
+                        ask = True
+                    # If we need to ask, do so
+                    if ask:
+                        if globalvar.autonomous:
+                            # If we cannot ask, deny permission
+                            answer = 'n'
+                        else:
                             if globalvar.bell:
                                 sys.stdout.write('\07')
                             answer = raw_input('submit y/n ?')
-                        else:
-                            answer = 'n'
                     else:
+                        # If we do not need to ask, allow
                         answer = 'y'
                     if answer == 'y':
                         # Check whether we will have to wait for wikipedia. If so, make
