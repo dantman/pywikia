@@ -111,16 +111,16 @@ class TemplateRobot:
         # regular expression to find the original template.
         # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
         # The new syntax, {{vfd}}, will also be found.
-        templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '}}')
+        templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '(?P<sortkey>\|[^}]+)?}}')
         replacements = {}
         if self.remove:
             replacements[templateR] = ''
         elif self.resolve:
             replacements[templateR] = '{{subst:' + self.old + '}}'
         elif self.oldFormat:
-            replacements[templateR] = '{{msg:' + self.new + '}}'
+            replacements[templateR] = '{{msg:' + self.new + '\g<sortkey>}}'
         else:
-            replacements[templateR] = '{{' + self.new + '}}'
+            replacements[templateR] = '{{' + self.new + '\g<sortkey>}}'
         replaceBot = replace.ReplaceRobot(self.generator, replacements, regex = True)
         replaceBot.run()
     
