@@ -85,7 +85,7 @@ msg={
     'de':u'Bot-unterstützte Begriffsklärung: %s',
     'nl':u'Robot-geholpen doorverwijzing: %s',
     'fr':u'Homonymie résolue à l\'aide du robot: %s',
-    'pt':u'Disambiguação assistida por bot: %s'
+    'pt':u'Desambiguação assistida por bot: %s'
     }
 
 # Summary message when run with -redir parameter
@@ -95,7 +95,7 @@ msg_redir={
           'de':u'Bot-unterstützte Redirectauflösung: %s',
           'nl':u'Robot-geholpen doorverwijzing: %s',
           'fr':u'Correction de lien vers redirect: %s',
-          'pt':u'Disambiguação assistida por bot: %s'
+          'pt':u'Desambiguação assistida por bot: %s'
           }
 
 # disambiguation page name format for "primary topic" disambiguations
@@ -104,7 +104,7 @@ primary_topic_format={
           'de':u'%s_(Begriffsklärung)',
           'en':u'%s_(disambiguation)',
           'nl':u'%s_(doorverwijspagina)',
-          'pt':u'%s_(Disambuigração)'
+          'pt':u'%s_(Desambuigração)'
           }
 
 # letters that can follow a link and are regarded as part of this link
@@ -118,7 +118,7 @@ link_trail={
    'en':u'[a-z]*',
    'fr':u'[a-z|à|â|ç|é|è|ê|î|ô|û]*',
    'nl':u'[a-z|ä|ö|ü|ï|ë|é|è|é|à|ç]*',
-   'pt':u'[a-z|á|â|à|ã|é|ê|í|ó|ô|õ|ú|ü|ñ|ç]*'
+   'pt':u'[a-z|á|â|à|ã|é|ê|í|ó|ô|õ|ú|ü|ç]*'
    }
 
 # List pages that will be ignored if they got a link to a disambiguation
@@ -198,6 +198,10 @@ ignore={
           u'Wikipedia:Liste mathematischer Themen/BKS',
           u'Wikipedia:Liste mathematischer Themen/Redirects'
           u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
+    'pt':{
+          u'Categoria:Desambiguação',
+          u'Wikipedia:Links para desambiguar páginas',
+          u'Wikipedia:Desambiguação',
       )
     }
 
