@@ -237,6 +237,7 @@ class Subject:
                                              hints = [newhint])
                     for pl in arr.iterkeys():
                         self.todo[pl] = pl.code()
+                        counter.plus(pl.code())
 
     def isDone(self):
         """Return True if all the work for this subject has completed."""
