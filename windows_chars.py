@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.11 2004/07/14 10:21:05 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.12 2004/07/14 12:22:33 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -70,7 +70,7 @@ def treat(page):
             print "No changes required."
         else:
             reftxt = reftxt.replace(u"\x80", "&euro;")   # euro sign
-            reftxt = reftxt.replace(u"\x82", "&sbquo")   # single low-9 quotation mark
+            reftxt = reftxt.replace(u"\x82", "&sbquo;")   # single low-9 quotation mark
             reftxt = reftxt.replace(u"\x83", "&fnof;")   # latin small f with hook = function = florin
             reftxt = reftxt.replace(u"\x84", "&bdquo;")  # double low-9 quotation mark
             reftxt = reftxt.replace(u"\x85", "&hellip;") # horizontal ellipsis = three dot leader
