@@ -85,11 +85,11 @@ def treat(refpl):
         
         # Replace all occurences of the boilerplate in this article
         if resolve:
-            reftxt = re.sub(boilerplateR, '{{subst:' + unicode(old, 'iso-8859-1') + '}}', reftxt)
+            reftxt = re.sub(boilerplateR, '{{subst:' + old + '}}', reftxt)
         elif oldformat:
-            reftxt = re.sub(boilerplateR, '{{msg:' + unicode(new, 'iso-8859-1') + '}}', reftxt)
+            reftxt = re.sub(boilerplateR, '{{msg:' + new + '}}', reftxt)
         else:
-            reftxt = re.sub(boilerplateR, '{{' + unicode(new, 'iso-8859-1') + '}}', reftxt)
+            reftxt = re.sub(boilerplateR, '{{' + new + '}}', reftxt)
 
         refpl.put(reftxt)
 
@@ -99,8 +99,6 @@ def treat(refpl):
 boilerplateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + old[0].upper() + old[0].lower() + ']' + old[1:] + '}}')
 
 # loop over all pages using the boilerplate
-print '%d' % len(getReferences(thispl))
-sys.exit()
 for ref in getReferences(thispl):
     refpl=wikipedia.PageLink(wikipedia.mylang, ref)
     treat(refpl)
