@@ -557,8 +557,6 @@ class PageLink(object):
         answer = 'y'
         if prompt:
             answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
-        print pl.site().hostname()
-        print pl.site().delete_address(pl.urlname())
         if answer in ['y', 'Y']:
             output(u'Deleting page %s...' % pl.linkname())
             returned_html = post_multipart(pl.site().hostname(),
