@@ -78,6 +78,8 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         for newcode in wikipedia.family.seriouslangs:
             if newcode in ['ja', 'zh']:
                 fmt = '%d&#24180;'
+            elif newcode == 'ko':
+                fmt = '%d&#45380;'
             else:
                 fmt = '%d'
             if newcode == 'ja' and i<1900:
@@ -85,6 +87,9 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                 pass
             elif newcode == 'ia' and i<1400:
                 # some ia pages are numbers
+                pass
+            elif newcode == 'simple' and i<200:
+                # some simple pages are numbers
                 pass
             elif newcode == 'la':
                 # la pages are not years but numbers
