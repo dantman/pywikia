@@ -993,7 +993,7 @@ class GetAll(object):
     def getData(self):
         if not self.pages:
             return
-        addr = self.site.export_address()
+        address = self.site.export_address()
         # In the next line, we assume that what we got for eo: is NOT in x-convention
         # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
         # find nothing, we will retry the normal way with an unadapted form.
@@ -1005,14 +1005,19 @@ class GetAll(object):
                     ('curonly', 'True'),
                     ))
         #print repr(data)
-        headers = {"Content-type": "application/x-www-form-urlencoded", 
-                   "User-agent": "PythonWikipedia/1.0"}
         # Slow ourselves down
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
         now = time.time()
         conn = httplib.HTTPConnection(self.site.hostname())
-        conn.request("POST", addr, data, headers)
+        conn.putrequest("POST", address)
+        conn.putheader('Content-Length', str(len(data)))
+        conn.putheader("Content-type", "application/x-www-form-urlencoded")
+        conn.putheader("User-agent", "PythonWikipediaBot/1.0")
+        if self.site.cookies():
+            conn.putheader('Cookie', self.site.cookies())
+        conn.endheaders()
+        conn.send(data)
         response = conn.getresponse()
         data = response.read()
         conn.close()
