@@ -284,7 +284,7 @@ class PageLink:
     def exists(self):
         """True if the page exists (itself or as redirect), False if not"""
         try:
-            self.get()
+            self.get(read_only = True)
         except NoPage:
             return False
         except IsRedirectPage:
@@ -296,7 +296,7 @@ class PageLink:
     def isRedirectPage(self):
         """True if the page is a redirect page, False if not or not existing"""
         try:
-            self.get()
+            self.get(read_only = True)
         except NoPage:
             return False
         except IsRedirectPage:
@@ -308,7 +308,7 @@ class PageLink:
            has less than 4 characters, False otherwise. Can return the same
            exceptions as get()
         """
-        txt = self.get()
+        txt = self.get(read_only = True)
         txt = removeLanguageLinks(txt)
         txt = removeCategoryLinks(txt, self.code())
         if len(txt) < 4:
@@ -336,7 +336,7 @@ class PageLink:
            interwiki links in the page text.
         """
         result = []
-        ll = getLanguageLinks(self.get(), incode = self.code())
+        ll = getLanguageLinks(self.get(read_only = True), incode = self.code())
         for newcode,newname in ll.iteritems():
             if newname[0] == ':':
                 print "ERROR> link from %s to %s:%s has leading :?!"%(self,newcode,repr(newname))
@@ -361,7 +361,7 @@ class PageLink:
            The return value is a list of PageLink objects for each of the
            category links in the page text."""
         result = []
-        ll = getCategoryLinks(self.get(),self.code())
+        ll = getCategoryLinks(self.get(read_only = True), self.code())
         for catname in ll:
             result.append(self.__class__(self.code(), linkname=catname))
         return result
@@ -391,7 +391,7 @@ class PageLink:
         """
         result = []
         try:
-            thistxt = removeLanguageLinks(self.get())
+            thistxt = removeLanguageLinks(self.get(read_only = True))
         except IsRedirectPage:
             return
         thistxt = removeCategoryLinks(thistxt, self.code())
@@ -409,12 +409,12 @@ class PageLink:
         w1=r'('+im+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-        for l in Rlink.findall(self.get()):
+        for l in Rlink.findall(self.get(read_only = True)):
             result.append(PageLink(self._code,l[0]))
         w1=r'('+im.lower()+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-        for l in Rlink.findall(self.get()):
+        for l in Rlink.findall(self.get(read_only = True)):
             result.append(PageLink(self._code,l[0]))
         return result
 
@@ -543,7 +543,7 @@ class GetAll:
             print repr(self.pages)
             print "BUG> bug, page not found in list"
         if self.debug:
-            xtext = pl2.get()
+            xtext = pl2.get(read_only = True)
             if text != xtext:
                 print "################Text differs"
                 import difflib
@@ -833,22 +833,23 @@ def getUrl(host,address):
     return text,charset
     
 def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True):
-    """Get the contents of page 'name' from the 'code' language wikipedia
-       Do not use this directly; for 99% of the possible ideas you can
-       use the PageLink object instead.
-       
-       Arguments:
-           code          - the wiki's language code
-           name          - the page name
-           get_edit_page - If true, gets the edit page, otherwise gets the
-                           normal page.
-           read_only     - If true, doesn't raise LockedPage exceptions.
-           do_quote      - ??? (TODO: what is this for?)
-
-       This routine returns a unicode string containing the wiki text if
-       get_edit_page is True; otherwise it returns a unicode string containing
-       the entire page's HTML code.
-       """
+    """
+    Get the contents of page 'name' from the 'code' language wikipedia
+    Do not use this directly; for 99% of the possible ideas you can
+    use the PageLink object instead.
+   
+    Arguments:
+        code          - the wiki's language code
+        name          - the page name
+        get_edit_page - If true, gets the edit page, otherwise gets the
+                       normal page.
+        read_only     - If true, doesn't raise LockedPage exceptions.
+        do_quote      - ??? (TODO: what is this for?)
+ 
+    This routine returns a unicode string containing the wiki text if
+    get_edit_page is True; otherwise it returns a unicode string containing
+    the entire page's HTML code.
+    """
     host = family.hostname(code)
     name = re.sub(' ', '_', name)
     output(url2unicode("Getting page %s:%s"%(code, name), language = code))
@@ -900,7 +901,7 @@ def getPage(code, name, get_edit_page = True, read_only = False, do_quote = True
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
             except AttributeError:
-                print "WARNING: No text area found on %s %s. Maybe the server is down. Retrying in %d minutes..." % (host, address, retry_idle_time)
+                print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %d minutes..." % (host, address, retry_idle_time)
                 time.sleep(retry_idle_time * 60)
                 retry_idle_time *= 2
                 #retry
