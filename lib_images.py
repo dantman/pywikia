@@ -7,6 +7,11 @@ import re,sys
 import httplib
 import wikipedia, string, md5
 
+copy_message = {
+    "en":"This image was copied from the %s Wikipedia. The original description was:<br>%s",
+    "de":"Dieses Bild wurde von der %s-Wikipedia kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
+}
+
 uploadaddr='/wiki/%s:Upload'%wikipedia.special[wikipedia.mylang]
 
 def post_multipart(host, selector, fields, files):
@@ -25,6 +30,7 @@ def post_multipart(host, selector, fields, files):
     h.putheader('Host', host)
     h.putheader('Cookie',wikipedia.cookies)
     h.endheaders()
+    print "Uploading file"
     h.send(body)
     errcode, errmsg, headers = h.getreply()
     return h.file.read()
@@ -102,8 +108,6 @@ def get_image(fn,target,description):
                            ('wpUpload','upload bestand')),
                           (('wpUploadFile',fn,contents),)
                           )
-    print data                      
-
     return fn
 
 
@@ -127,8 +131,13 @@ def transfer_image(imagelink, target, debug=False):
     if debug: print "MD5 hash is: %s" % md5sum
     url = "http://" + imagelink.code() + ".wikipedia.org/upload/" + md5sum[0] + "/" + md5sum[:2] + "/" + filename
     if debug: print "URL should be: %s" % url
+    # localize the text that should be printed on the image description page
+    if copy_message.has_key(wikipedia.mylang):
+        msg_lang = wikipedia.mylang
+    else:
+        msg_lang = "en"
     try:
-        description="This image was copied from the " + imagelink.code() + " Wikipedia. The original description was:<br>" + imagelink.get()
+        description = copy_message[msg_lang] % (imagelink.code(), imagelink.get())
     except wikipedia.NoPage:
         description=''
         print "Image does not exist or description page is empty."
