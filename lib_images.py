@@ -160,19 +160,19 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
         forbidden = '/' # to be extended
         allowed_formats = (u'jpg', u'jpeg', u'png', u'gif', u'svg', u'ogg')
         while not ok:
+            ok = True
             newfn = wikipedia.input(u'Better name:')
+            if newfn == "":
+                newfn=fn
             ext = os.path.splitext(newfn)[1].lower().strip('.')
-            if ext not in allowed_formats:
-                ans = wikipedia.input(u"File is not is %s but %s. Continue [y/N]? " % (allowed_formats, ext))
-                if not ans.lower().startswith('y'):
-                    continue
             for c in forbidden:
                 if c in newfn:
                     print "Invalid character: %s. Please try again" % c
                     ok = False
-                    break
-            else:
-                ok = True
+            if ext not in allowed_formats and ok:
+                ans = wikipedia.input(u"File is not is %s but %s. Continue [y/N]? " % (allowed_formats, ext))
+                if not ans.lower().startswith('y'):
+                    ok = False
         if newfn != '':
             fn = newfn
     # Wikipedia doesn't allow spaces in the file name.
@@ -201,7 +201,7 @@ def get_image(original_url, source_wiki, original_description, keep=False, debug
 
     formdata = {}
     formdata["wpUploadDescription"] = description
-    if wikipedia.family.version() >= '1.4':
+    if wikipedia.family.version(wikipedia.mylang) >= '1.4':
         formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
     formdata["wpUploadAffirm"] = "1"
