@@ -67,7 +67,6 @@ langs = {
     'lb':'lb.wikipedia.org',   # Luxembourgish
     'lt':'lt.wikipedia.org',   # Latvian
     'lv':'lv.wikipedia.org',   # Livonian
-    'meta':'meta.wikipedia.org', # Wikimedia meta wiki
     'mg':'mg.wikipedia.org',   # Malagasy
     'mi':'mi.wikipedia.org',   # Maori
     'minnan':'minnan.wikipedia.org', # Min-Nan
@@ -196,7 +195,7 @@ namespaces = {
     },
     5: {
         '_default': u'Wikipedia talk',
-        'de': u'Wikipedia Diskussion',        
+        'de': u'Wikipedia Diskussion',
     },
     6: {
         # TODO: convert all percent-encoded titles to plaintext
