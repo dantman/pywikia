@@ -597,7 +597,7 @@ class PageLink:
         else:
             im='Image:'
         w1=r'('+im+'[^\]\|]*)'
-        w2=r'([^\]\|]*)'
+        w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
         for l in Rlink.findall(self.get()):
             result.append(PageLink(self._code,l[0]))
