@@ -110,35 +110,6 @@ def add_category(sort_by_last_name = False):
                     text = wikipedia.replaceCategoryLinks(text, cats)
                     pl2.put(text, comment = catpl.aslocallink().encode(wikipedia.code2encoding(wikipedia.mylang)))
 
-
-# Given an article which is in category old_cat, moves it to
-# category new_cat. Moves subcategories of old_cat to new_cat
-# as well.
-# If new_cat_title is None, the category will be removed.
-def change_category(article, old_cat_title, new_cat_title):
-    cats = article.categories()
-    sort_key = ''
-    for cat in cats:
-        cattext=':'.join(cat.linkname().split(':')[1:])
-        if cattext == old_cat_title:
-            # because a list element is removed, the iteration will skip the 
-            # next element. this might lead to forgotten categories, but
-            # usually each category should only appear once per article.
-            cats.remove(cat)
-        elif cattext.startswith(old_cat_title + '|'):
-            sort_key = cat.catname().split('|', 1)[1]
-            cats.remove(cat)
-    if new_cat_title != None:
-        if sort_key == '':
-            new_cat = catlib.CatLink(new_cat_title)
-        else:
-            new_cat = catlib.CatLink(new_cat_title + '|' + sort_key)
-        cats.append(new_cat)
-    text = article.get()
-    text = wikipedia.replaceCategoryLinks(text, cats)
-    article.put(text)
-
-
 def rename_category():
     old_cat_title = wikipedia.input('Please enter the old name of the category: ')
     old_cat = catlib.CatLink(old_cat_title)
@@ -152,14 +123,14 @@ def rename_category():
         print 'There are no articles in category ' + old_cat_title
     else:
         for article in articles:
-            change_category(article, old_cat_title, new_cat_title)
+            catlib.change_category(article, old_cat_title, new_cat_title)
     
     subcategories = old_cat.subcategories(recurse = 0)
     if len(subcategories) == 0:
         print 'There are no subcategories in category ' + old_cat_title
     else:
         for subcategory in subcategories:
-            change_category(subcategory, old_cat_title, new_cat_title)
+            catlib.change_category(subcategory, old_cat_title, new_cat_title)
 
 # asks for a category, and removes the category tag from all pages 
 # in that category, without prompting.
@@ -174,14 +145,14 @@ def remove_category():
         print 'There are no articles in category ' + old_cat_title
     else:
         for article in articles:
-            change_category(article, old_cat_title, None)
+            catlib.change_category(article, old_cat_title, None)
     
     subcategories = old_cat.subcategories(recurse = 0)
     if len(subcategories) == 0:
         print 'There are no subcategories in category ' + old_cat_title
     else:
         for subcategory in subcategories:
-            change_category(subcategory, old_cat_title, None)
+            catlib.change_category(subcategory, old_cat_title, None)
 
 
 """
@@ -259,7 +230,7 @@ def tidy_category():
             else:
                 print original_cat.catname()
                 print current_cat.catname()
-                change_category(article, original_cat.catname(), current_cat.catname())
+                catlib.change_category(article, original_cat.catname(), current_cat.catname())
         elif choice == 'j':
             new_cat_title = wikipedia.input('Please enter the category the article should be moved to: ')
             new_cat = catlib.CatLink(new_cat_title)
@@ -267,7 +238,7 @@ def tidy_category():
             move_to_subcategory(article, original_cat, new_cat)
         elif choice == 'r':
             # remove the category tag
-            change_category(article, original_cat, None)
+            catlib.change_category(article, original_cat, None)
         else:
             try:
                 choice=int(choice)

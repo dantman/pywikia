@@ -150,3 +150,30 @@ if __name__=="__main__":
         else:
             print "Ignored argument", arg
     test()
+
+# Given an article which is in category old_cat, moves it to
+# category new_cat. Moves subcategories of old_cat to new_cat
+# as well.
+# If new_cat_title is None, the category will be removed.
+def change_category(article, old_cat_title, new_cat_title):
+    cats = article.categories()
+    sort_key = ''
+    for cat in cats:
+        cattext=':'.join(cat.linkname().split(':')[1:])
+        if cattext == old_cat_title:
+            # because a list element is removed, the iteration will skip the 
+            # next element. this might lead to forgotten categories, but
+            # usually each category should only appear once per article.
+            cats.remove(cat)
+        elif cattext.startswith(old_cat_title + '|'):
+            sort_key = cat.catname().split('|', 1)[1]
+            cats.remove(cat)
+    if new_cat_title != None:
+        if sort_key == '':
+            new_cat = catlib.CatLink(new_cat_title)
+        else:
+            new_cat = catlib.CatLink(new_cat_title + '|' + sort_key)
+        cats.append(new_cat)
+    text = article.get()
+    text = wikipedia.replaceCategoryLinks(text, cats)
+    article.put(text)
