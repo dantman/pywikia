@@ -116,7 +116,7 @@ def asktoadd(pl):
                 if checkflag == 0:
                     try:
                         print("==%s==")%pl.linkname()
-                        print wikipedia.UnicodeToAsciiHtml(pl.get()[0:500])
+                        wikipedia.output(pl.get()[0:500])
                         ctoshow = 1000
                         checkflag = 1
                     except wikipedia.NoPage:
@@ -130,7 +130,7 @@ def asktoadd(pl):
                         checkflag = 2
                 elif checkflag == 1:
                     print("==%s==")%pl.linkname()
-                    print wikipedia.UnicodeToAsciiHtml(pl.get()[0:ctoshow])
+                    wikipedia.output(pl.get()[0:ctoshow])
                     ctoshow = ctoshow + 500
                 elif checkflag == 2:
                     print("Unable to show the text of this page.")

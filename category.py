@@ -207,7 +207,7 @@ def tidy_category():
     # current_cat = original_cat.
     def move_to_subcategory(article, original_cat, current_cat):
         print
-        print 'Treating page ' + article.ascii_linkname() + ', currently in category ' + current_cat.ascii_linkname()
+        wikipedia.output('Treating page %s, currently in category %s' % (article.linkname(), current_cat.linkname()))
         subcatlist = get_subcats(current_cat)
         print
         if len(subcatlist) == 0:
@@ -220,7 +220,7 @@ def tidy_category():
         print 's - Skip this article'
         print 'r - Remove this category tag'
         print '? - Read the page'
-        print 'Enter - Save category as ' + current_cat.ascii_linkname()
+        wikipedia.output('Enter - Save category as %s' % current_cat.linkname())
 
         flag = False
         length = 1000
@@ -229,7 +229,7 @@ def tidy_category():
             if choice == 's':
                 flag = True
             elif choice == '':
-                print 'Saving category as ' + current_cat.ascii_linkname()
+                wikipedia.output('Saving category as %s' % current_cat.linkname())
                 if current_cat == original_cat:
                     print 'No changes necessarry.'
                 else:
@@ -248,7 +248,7 @@ def tidy_category():
                 catlib.change_category(article, original_cat.catname(), None)
                 flag = True
             elif choice == '?':
-                print wikipedia.UnicodeToAsciiHtml(article.get())[0:length]
+                wikipedia.output(article.get())[0:length]
                 length = length+500            
             else:
                 try:

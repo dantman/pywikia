@@ -44,7 +44,7 @@ def choosecats(pagetext):
             chosen=choosecats(pagetext)
             flag=True
         elif choice=="?":
-            print wikipedia.UnicodeToAsciiHtml(pagetext[0:length])
+            wikipedia.output(pagetext[0:length])
             length = length+500
         elif choice=="xx" and chosen==[]:
             chosen = None
@@ -81,7 +81,7 @@ for p in wikipedia.allpages(start = start):
         text=p.get()
         cats=p.categories()
         if cats == []:
-            print "========== %s =========="%p.ascii_linkname()
+            wikipedia.output("========== %s ==========" % p.linkname())
             print "No categories"
             print "----------------------------------------"
             newcats=choosecats(text)
@@ -89,7 +89,7 @@ for p in wikipedia.allpages(start = start):
                 make_categories(p,newcats)
         else:
             if docorrections:
-                print "========== %s =========="%p.ascii_linkname()
+            wikipedia.output("========== %s ==========" % p.linkname())
                 for c in cats:
                     print c.linkname()
                 print "----------------------------------------"
