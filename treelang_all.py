@@ -47,16 +47,17 @@ debug = 0
 for arg in sys.argv[1:]:
     if arg.startswith('-warnfile:'):
         import re
-        R=re.compile(r'WARNING:[^\[]*\[\[([^\[]+)\]\][^\[]+\[\[([^\[]+):([^\[]+)\]\]')
+        R=re.compile(r'WARNING: ([^\[]*):\[\[([^\[]+)\]\][^\[]+\[\[([^\[]+):([^\[]+)\]\]')
         fn=arg[10:]
         f=open(fn)
         for line in f.readlines():
             m=R.search(line)
             if m:
-                #print m.group(1), m.group(2), m.group(3)
-                if not hints.has_key(m.group(1)):
-                    hints[m.group(1)]=[]
-                hints[m.group(1)].append('%s:%s'%(m.group(2),wikipedia.link2url(m.group(3),m.group(2))))
+                if m.group(1)==wikipedia.mylang:
+                    #print m.group(1), m.group(2), m.group(3), m.group(4)
+                    if not hints.has_key(m.group(2)):
+                        hints[m.group(2)]=[]
+                    hints[m.group(2)].append('%s:%s'%(m.group(3),wikipedia.link2url(m.group(4),m.group(3))))
         f.close()
     elif arg[0] == '-' and len(arg)>1:
         options.append(arg)
