@@ -1074,7 +1074,7 @@ class Throttle(object):
     def checkMultiplicity(self):
         processes = {}
         my_pid = 1
-        count = 0
+        count = 1
         try:
             f = open('throttle.log','r')
         except IOError:
@@ -1103,7 +1103,7 @@ class Throttle(object):
             f.write(str(p)+' '+str(processes[p])+'\n')
         f.close()
         self.process_multiplicity = count
-        print("Checked for running processes. %s processes currently running, "%len(processes) +
+        print("Checked for running processes. %s processes currently running, "%count +
               "including the current process.")
 
     def setDelay(self, delay = config.minthrottle, absolute = False):
