@@ -365,60 +365,101 @@ class Subject:
             f.write("%s {%s}\n" % (self.inpl.asasciilink(), txt))
             f.close()
 
+    def whereReport(self, pl, indent=4):
+        for pl2 in self.foundin[pl]:
+            if pl2 is None:
+                print " "*indent,"Given as a hint."
+            else:
+                print " "*indent,pl2.asasciilink()
+
     def assemble(self):
-        new = {}
+        # No errors have been seen so far
         nerr = 0
+        # Build up a dictionary of all links found, with the code as key.
+        # Each value will be a list.
+        new = {}
         for pl in self.done.keys():
             code = pl.code()
             if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage() and not pl.isEmpty():
                 if pl != self.inpl:
                     self.problem("Found link to %s"%pl.asasciilink())
-                    for pl2 in self.foundin[pl]:
-                        if pl2==None:
-                            print "    Given as a hint."
-                        else:
-                            print "    ",pl2.asasciilink()
+                    self.whereReport(pl)
                 nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
                 if code in new:
                     new[code].append(pl)
                 else:
                     new[code] = [pl]
+        # Clean up the Chinese links
         if 'zh-cn' in new or 'zh-tw' in new:
             if 'zh' in new:
                 del new['zh']
                 print "Ignoring links to zh in presence of zh-cn or zh-tw"
+        # See if new{} contains any problematic values
         result = {}
-        for k,v in new.items():
+        for k, v in new.items():
             if len(v) > 1:
                 nerr += 1
                 self.problem("Found more than one link for %s"%k)
-        for k,v in new.items():
-            if len(v) > 1 or nerr > 0:
-                print "Links to %s"%k
-                i = 0
-                for pl2 in v:
-                    i += 1
-                    print "  (%d) Found link to %s in:"%(i,pl2.asasciilink())
-                    for pl3 in self.foundin[pl2]:
-                        if pl3==None:
-                            print "        Given as a hint."
-                        else:
-                            print "        %s"%pl3.asasciilink()
-                if not globalvar.autonomous:
-                    answer = raw_input("Which variant should be used [type number or (n)one, (g)ive up] :")
-                    if answer in 'gG':
-                        return None
-                    elif answer in 'nN':
-                        # None acceptable
-                        pass
-                    else:
-                        answer = int(answer)
-                        result[k] = v[answer-1]
-            else:
-                result[k] = v[0]
-        if globalvar.autonomous and nerr>0:
+        # If there are any errors, we need to go through all
+        # items manually.
+        if nerr > 0:
+            # First loop over the ones that have more solutions
+            for k,v in new.items():
+                if len(v) > 1:
+                    print "="*30
+                    print "Links to %s"%k
+                    i = 0
+                    for pl2 in v:
+                        i += 1
+                        print "  (%d) Found link to %s in:"%(i,pl2.asasciilink())
+                        self.whereReport(pl2, indent=8)
+                    if not globalvar.autonomous:
+                        while 1:
+                            answer = raw_input("Which variant should be used [number, (n)one, (g)ive up] :")
+                            if answer:
+                                if answer in 'gG':
+                                    return None
+                                elif answer in 'nN':
+                                    # None acceptable
+                                    break
+                                elif answer[0] in '0123456789':
+                                    answer = int(answer)
+                                    result[k] = v[answer-1]
+                                    break
+            # We don't need to continue with the rest if we're in autonomous
+            # mode.
+            if globalvar.autonomous:
                 return None
+            # Loop over the ones that have one solution, so are in principle
+            # not a problem.
+            acceptall = False
+            for k,v in new.items():
+                if len(v) == 1:
+                    print "="*30
+                    print "Found link to %s in:"%pl2.asasciilink()
+                    self.whereReport(pl2, indent=4)
+                    while 1:
+                        if acceptall: 
+                            answer = raw_input("What should be done [(a)ccept, (r)eject, (g)ive up, accept a(l)l] :")
+                            if not answer:
+                                answer = 'a'
+                        else: # accept
+                            answer = 'a'
+                        if answer in 'lL': # accept all
+                            acceptall = True
+                            answer = 'a'
+                        if answer in 'aA': # accept this one
+                            result[k] = v[0]
+                            break
+                        elif answer in 'gG': # give up
+                            return None
+                        elif answer in 'rR': # reject
+                            # None acceptable
+                            break
+        else: # nerr <= 0, hence there are no lists longer than one.
+            for k,v in new.items():
+                result[k] = v[0]
         return result
     
     def finish(self, sa = None):
