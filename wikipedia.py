@@ -23,7 +23,7 @@ loggedin = False
 # the full name of the language is given behind each line as a comment
 
 langs = {
-    'af':'af.wikipedia.org',   # Afrikaans
+    'af':'af.wikipedia.org',   # Afrikaans, UTF-8
     'ar':'ar.wikipedia.org',   # Arabic, UTF-8
     'bs':'bs.wikipedia.org',   # Bosnian, UTF-8
     'ca':'ca.wikipedia.org',   # Catalan, UTF-8
@@ -90,7 +90,7 @@ latin1 = ['en', 'sv', 'nl', 'de', 'es', 'fr', 'nds',
           'tt', 'uk', 'vo', 'ga', 'da', 'test']
 
 # Languages that used to be coded in iso-8859-1
-latin1old = ['cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no','af']
+latin1old = ['af', 'cs', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it', 'no']
 
 # Translation used on all wikipedia's for the Special: namespace.
 # This is e.g. used by the login script.
@@ -258,12 +258,16 @@ class PageLink:
         if linkname is None and urlname is None and name is not None:
             # Clean up the name, it can come from anywhere.
             name = name.strip()
+            if name and name[0]==':':
+                name=name[1:]
             self._urlname = link2url(name, self._code, incode = self._incode)
             self._linkname = url2link(self._urlname, code = self._code,
                                       incode = mylang)
         elif linkname is not None:
             # We do not trust a linkname either....
             name = linkname.strip()
+            if name and name[0]==':':
+                name=name[1:]
             self._urlname = link2url(name, self._code, incode=self._incode)
             self._linkname = url2link(self._urlname, code = self._code,
                                       incode = mylang)
@@ -415,6 +419,10 @@ class PageLink:
         result = []
         ll = getLanguageLinks(self.get(), incode = self.code())
         for newcode,newname in ll.iteritems():
+            if newname[0] == ':':
+                print "ERROR> link from %s to %s:%s has leading :?!"%(self,newcode,repr(newname))
+            if newname[0] == ' ':
+                print "ERROR> link from %s to %s:%s has leading space?!"%(self,newcode,repr(newname))
             try:
                 result.append(self.__class__(newcode, linkname=newname,
                                              incode = self.code()))
