@@ -59,10 +59,12 @@ class _CatLink(wikipedia.PageLink):
             
     def _make_catlist(self, recurse = False, site = None):
         """Make a list of all articles and categories that are in this
-           category. If recurse is set to True, articles and categories
+           category. If recurse is set to True, articles and subcategories
            of any subcategories are also retrieved.
 
-           Returns a non-unique list of page titles in random order.
+           Returns non-unique, non-sorted lists of articles, subcategories and
+           supercategories. The supercategory list only contains the
+           supercategories of this category, regardless of the recurse argument.
 
            This should not be used outside of this module.
         """
@@ -73,7 +75,10 @@ class _CatLink(wikipedia.PageLink):
         ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
-        pages = []
+        articles = []
+        subcats = []
+        supercats=[]
+        
         while catstodo:
             cat = catstodo.pop()
             catsdone.append(cat)
@@ -112,9 +117,10 @@ class _CatLink(wikipedia.PageLink):
                     ncat = _CatLink(self.site(), title)
                     if recurse and ncat not in catsdone:
                         catstodo.append(ncat)
-                pages.append(title)
+                    subcats.append(title)
+                else:
+                    articles.append(title)
         # get supercategories
-        supercats=[]
         try:
             ibegin = self_txt.index('<div id="catlinks">')
             iend = self_txt.index('<!-- end content -->')
@@ -128,8 +134,7 @@ class _CatLink(wikipedia.PageLink):
                 # There might be a link to Special:Categories we don't want
                 if iscattitle(title):
                     supercats.append(title)
-        
-        return (pages, supercats)
+        return (articles, subcats, supercats)
     
     def subcategories(self, recurse = False):
         """Create a list of all subcategories of the current category.
@@ -139,10 +144,9 @@ class _CatLink(wikipedia.PageLink):
            Returns a sorted, unique list of all subcategories.
         """
         subcats = []
-        for title in self.catlist(recurse)[0]:
-            if iscattitle(title):
-                ncat = _CatLink(self.site(), title)
-                subcats.append(ncat)
+        for title in self.catlist(recurse)[1]:
+            ncat = _CatLink(self.site(), title)
+            subcats.append(ncat)
         return unique(subcats)
     
     #returns a list of all articles in this category
@@ -155,9 +159,8 @@ class _CatLink(wikipedia.PageLink):
         """
         articles = []
         for title in self.catlist(recurse)[0]:
-            if not iscattitle(title):
-                npage = wikipedia.PageLink(self.site(), title)
-                articles.append(npage)
+            npage = wikipedia.PageLink(self.site(), title)
+            articles.append(npage)
         return unique(articles)
 
     def supercategories(self, recurse = False):
