@@ -71,7 +71,10 @@ class LinkChecker:
             conn.request('GET', '%s?%s' % (path, query))
         except socket.error, arg:
             return False, u'Socket Error: %s' % arg
-        response = conn.getresponse()
+        try:
+            response = conn.getresponse()
+        except Exception, arg:
+            return False, u'Error: %s' % arg
         #wikipedia.output('%s: %s' % (self.url, response.status))
         # site down if the server status is between 400 and 499
         siteDown = response.status in range(400, 500)
@@ -91,7 +94,7 @@ class LinkCheckThread(threading.Thread):
         linkChecker = LinkChecker(self.url)
         ok, message = linkChecker.check()
         if not ok:
-            wikipedia.output('WARNING: %s links to %s: %s' % (self.title, self.url, message))
+            wikipedia.output('*[[%s]] links to %s - %s' % (self.title, self.url, message))
     
 class WeblinkCheckerRobot:
     '''
@@ -124,7 +127,7 @@ def main():
     start = '!'
     sqlfilename = None
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, logname = 'weblinkchecker.log')
         if arg:
             if arg.startswith('-sql'):
                 if len(arg) == 4:
