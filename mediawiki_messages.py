@@ -81,18 +81,14 @@ def refresh_messages(lang):
 
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
-    itemR = re.compile("<tr bgcolor=\"#F0F0FF\">\n"
-                     + "<td>\n"
-                     + "<p><a href=.+?>(.+?)<\/a><br \/>\n"
-                     + ".*?<a href=.+?>.+?<\/a><\/p>\n"
-                     + "</td>\n"
-                     + "<td>\n"
-                     + "<p>.+?</p>\n"
-                     + "</td>\n"
-                     + "<td>\n"
-                     + "<p>(.+?)</p>\n"
-                     + "<\/td>\n"
-                     + "<\/tr>", re.DOTALL)
+    itemR = re.compile("<tr bgcolor=\"#f0f0ff\"><td>\n"
+                     + "\s*<a href=.+?>.+?<\/a><br \/>\n"
+                     + "\s*.*?<a href=.+?>.+?<\/a>\n"
+                     + "\s*</td><td>\n"
+                     + "\s*.+?\n"
+                     + "\s*</td><td>\n"
+                     + "\s*.+?\n"
+                     + "\s*<\/td><\/tr>", re.DOTALL)
     items = itemR.findall(allmessages)
     # we will save the found key:value pairs here
     dictionary = {}
