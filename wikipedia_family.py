@@ -57,6 +57,7 @@ langs = {
     'mi':'mi.wikipedia.org',   # Maori
     'mk':'mk.wikipedia.org',   # Macedonian
     'ml':'ml.wikipedia.org',   # Malayalam
+    'mn':'mn.wikipedia.org',   # Mongolian
     'mr':'mr.wikipedia.org',   # Marathi
     'ms':'ms.wikipedia.org',   # Malay
     'na':'na.wikipedia.org',   # Nauruan
@@ -73,6 +74,7 @@ langs = {
     'ru':'ru.wikipedia.org',   # Russian
     'sa':'sa.wikipedia.org',   # Sanskrit
     'sh':'sh.wikipedia.org',   # OBSOLETE, Serbocroatian
+    'si':'si.wikipedia.org',   # Sinhalese
     'simple':'simple.wikipedia.org', # Simple English
     'sk':'sk.wikipedia.org',   # Slovakian
     'sl':'sl.wikipedia.org',   # Slovenian
