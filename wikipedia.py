@@ -487,7 +487,20 @@ class PageLink:
            keys in hash-tables.
         """
         return hash(str(self))
-    
+
+    def links(self):
+        # Gives the normal (not-interwiki) pages the page redirects to, as PageLinks
+        result = []
+        try:
+            thistxt = removeLanguageLinks(self.get())
+        except IsRedirectPage:
+            pass
+        w=r'([^\]\|]*)'
+        Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
+        for l in Rlink.findall(thistxt):
+            result.append(l[0])
+        return result
+
     def getRedirectTo(self):
         # Given a redirect page, gives the page it redirects to
         try:
@@ -496,6 +509,7 @@ class PageLink:
             return arg
         else:
             raise IsNotRedirectPage(self)
+        
 
 # Shortcut get to get multiple pages at once
 class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
@@ -966,6 +980,7 @@ def allpages(start = '%21%200'):
             break
         m += n
         sys.stderr.write('AllPages: %d done; continuing from "%s";\n'%(m,url2link(start,code='nl',incode='ascii')))
+
 
 # Part of library dealing with interwiki links
 
