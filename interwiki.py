@@ -79,7 +79,7 @@ This script understands various command-line arguments:
                    running years AD, because ja: redirects many years to
                    decennia or centuries.
 
-    -shownew:      show the source of every new pagelink found anywhere.
+    -noshownew:    don't show the source of every new pagelink found.
     
     Arguments that are interpreted by more bots:
 
@@ -140,7 +140,7 @@ class Global:
     maxquerysize = 60
     msglang = 'en'
     same = False
-    shownew = False
+    shownew = True
     skip = {}
     untranslated = False
     
@@ -294,32 +294,35 @@ class Subject:
             f=open('autonomous_problem.dat', 'a')
             f.write("%s {%s}\n" % (self.inpl.asasciilink(), txt))
             f.close()
-            
-    def finish(self):
-        """Round up the subject, making any necessary changes. This method
-           should be called exactly once after the todo list has gone empty."""
-        if not self.isDone():
-            raise "Bugcheck: finish called before done"
-        if self.inpl.isRedirectPage():
-            return
-        if len(self.done) == 1:
-            # No interwiki at all
-            return
-        print "======Post-processing %s======"%(self.inpl.asasciilink())
-        # Assemble list of accepted interwiki links
+
+    def ask(self, askall, pl):
+        if not askall:
+            return True
+        answer = ' '
+        while answer not in 'yn':
+            answer = raw_input('%s y/n? '%pl.asasciilink())
+        return answer=='y'
+    
+    def assemble(self, returnonquestion = False, askall = False):
         new = {}
         for pl in self.done.keys():
             code = pl.code()
             if code == wikipedia.mylang and pl.exists() and not pl.isRedirectPage():
                 if pl != self.inpl:
+                    if returnonquestion:
+                        return None
                     self.problem('Someone refers to %s with us' % pl.asasciilink())
+                    if globalvar.autonomous:
+                        return None
             elif pl.exists() and not pl.isRedirectPage():
                 if new.has_key(code) and new[code] is None:
                     print "NOTE: Ignoring %s"%(pl.asasciilink())
                 elif new.has_key(code) and new[code] != pl:
+                    if returnonquestion:
+                        return None
                     self.problem("'%s' as well as '%s'" % (new[code].asasciilink(), pl.asasciilink()))
                     if globalvar.autonomous:
-                        return
+                        return None
                     while 1:
                         if globalvar.bell:
                             sys.stdout.write('\07')
@@ -334,24 +337,51 @@ class Subject:
                             break
                         elif answer.startswith('g'):
                             # Give up
-                            return
+                            return None
                 elif code in ('zh-tw','zh-cn') and new.has_key('zh') and new['zh'] is not None:
                     print "NOTE: Ignoring %s, using %s"%(new['zh'].asasciilink(),pl.asasciilink())
-                    new['zh'] = None # Remove the global zh link
-                    new[code] = pl # Add the more precise one
+                    if self.ask(askall, pl):
+                        new['zh'] = None # Remove the global zh link
+                        new[code] = pl # Add the more precise one
                 elif code == 'zh' and (
                     (new.has_key('zh-tw') and new['zh-tw'] is not None) or
                     (new.has_key('zh-cn') and new['zh-cn'] is not None)):
                     print "NOTE: Ignoring %s"%(pl.asasciilink())
                     pass # do not add global zh if there is a specific zh-tw or zh-cn
                 elif code not in new:
-                    new[code] = pl
+                    if self.ask(askall, pl):
+                        new[code] = pl
 
         # Remove the neithers
         for k,v in new.items():
             if v is None:
                 del new[k]
 
+        return new
+    
+    def finish(self):
+        """Round up the subject, making any necessary changes. This method
+           should be called exactly once after the todo list has gone empty."""
+        if not self.isDone():
+            raise "Bugcheck: finish called before done"
+        if self.inpl.isRedirectPage():
+            return
+        if len(self.done) == 1:
+            # No interwiki at all
+            return
+        print "======Post-processing %s======"%(self.inpl.asasciilink())
+        # Assemble list of accepted interwiki links
+        if globalvar.autonomous:
+            new = self.assemble()
+            if new == None: # There are questions
+                return
+        else:
+            new = self.assemble(returnonquestion = True)
+            if new == None: # There are questions
+                new = self.assemble(askall = True)
+                if new == None:
+                    return # User said give up
+            
         print "==status=="
         old={}
         try:
@@ -659,8 +689,8 @@ if __name__ == "__main__":
             globalvar.confirm = True
         elif arg == '-autonomous':
             globalvar.autonomous = True
-        elif arg == '-shownew':
-            globalvar.shownew = True
+        elif arg == '-noshownew':
+            globalvar.shownew = False
         elif arg == '-nolog':
             globalvar.log = False
         elif arg == '-nobacklink':
