@@ -1576,9 +1576,18 @@ def chooselang(code, choice):
 # of ASCII. If decoder is None, text should be a unicode string. Otherwise it
 # should be encoded in the given encoding.
 # If a character can't be displayed, it will be replaced with a question mark.
-def output(text, decoder = None, newline=True):
+def output(text, decoder = None, newline = True):
     if decoder:
         text = unicode(text, decoder)
+    elif type(text) != type(u''):
+        print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!"
+        import traceback
+        print traceback.print_stack()
+        print "DBG> Attempting to recover, but please report this problem"
+        try:
+            text = unicode(text, 'utf-8')
+        except UnicodeDecodeError:
+            text = unicode(text, 'iso8859-1')
     if newline:
         print text.encode(config.console_encoding, 'replace')
     else:
