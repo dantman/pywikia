@@ -42,6 +42,7 @@ PageLink: A MediaWiki page
 PageGroup: A group of PageLinks (internally ordered)
     __init__(list): Create a PageGroup of the list of PageLinks in list,
         which does not need to be ordered.
+    __init__(): Create an empty PageGroup
     contains(pl): Boolean, true iff pl in the PageGroup
     merge(pg): Combine 2 groups
     add(pl): Add the page pl to the PageGroup; give an error if it already
@@ -50,6 +51,7 @@ PageGroup: A group of PageLinks (internally ordered)
     remove(pl): Remove all occurences of the page pl from the PageGroup    remforce(pl): Remove the page pl from the PageGroup if it is in the group
     aslist(): Use the PageGroup as an ordinary list
     show(): Write down the contents of the PageGroup on the screen
+    addall(list): Add all PageLinks from a (not necessarily ordered) list
 
 Other functions:
 getall(xx,Pages): Get all pages in Pages (where Pages is a list of PageLinks,
@@ -163,6 +165,9 @@ class EditConflict(Error):
 
 class PageInList(Error):
     """Trying to page to list that is already included"""
+
+class EmptyGroup(Error):
+    """PageGroup is empty"""
 
 SaxError = xml.sax._exceptions.SAXParseException
 
@@ -628,7 +633,7 @@ class PageLink(object):
 class PageGroup(object):
     # A PageGroup is an ordered set of PageLink objects
 
-    def __init__(self,list):
+    def __init__(self,list=[]):
         self._list=list
         self._list=self._sorted(self._list)
 
@@ -646,15 +651,9 @@ class PageGroup(object):
         i1 = len(l1)
         i2 = len(l2)
         if i1*i1 < i2:
-            l = l2
-            for p in l1:
-                l = self._add(l,p,force=True)
-            return l
+            return self._adall(l2,l1)
         elif i2*i2 < i1:
-            l = l1
-            for p in l2:
-                l = self._add(l,p,force=True)
-            return l
+            return self._adall(l1,l2)
         else:
             return self._merge(l1,l2)
 
@@ -670,6 +669,7 @@ class PageGroup(object):
 
     def _compare(self,p1,p2):
         # Compare two pagelinks. True iff p1 <= p2
+
         if p1.linkname() < p2.linkname():
             return True
         elif p2.linkname() < p1.linkname():
@@ -682,6 +682,8 @@ class PageGroup(object):
         # Where in the list could pl be inserted? Returns a pair of numbers
         # [x,y] with x<=y, such that pl[:x] are smaller, pl[y:] are larger
         # and pl[x:y] are equal.
+        if len(list) == 0:
+            raise EmptyGroup
         if len(list) == 1:
             if list[0] == pl:
                 return [0,1]
@@ -727,7 +729,10 @@ class PageGroup(object):
 
 
     def _add(self,list,pl,force=False):
-        res = self._find(list,pl)
+        try:
+            res = self._find(list,pl)
+        except EmptyGroup:
+            return [pl]
         x = res[0]
         y = res[1]
         if not force:
@@ -735,8 +740,17 @@ class PageGroup(object):
                 raise PageInList()
         return(list[:y]+[pl]+list[y:])
 
+    def _addall(self,l1,l2):
+        l=l1
+        for i in l2:
+            self._add(l,i)
+        return l
+
     def contains(self,pl):
-        res = self._find(self._list,pl)
+        try:
+            res = self._find(self._list,pl)
+        except EmptyGroup:
+            return False
         x = res[0]
         y = res[1]
         if x == y:
@@ -754,7 +768,10 @@ class PageGroup(object):
         self._list = self._add(self._list,pl,force=True)
 
     def remove(self,pl):
-        res = self._find(self._list,pl)
+        try:
+            res = self._find(self._list,pl)
+        except EmptyGroup:
+            pass
         x = res[0]
         y = res[1]
         self._list = self._list[:x] + self._list[y:]
@@ -765,6 +782,9 @@ class PageGroup(object):
     def show(self):
         for pl in self._list:
             print(pl.linkname())
+
+    def addall(self,pagelist):
+        self._list=self._addall(self._list,pagelist)
 
 # Regular expression recognizing redirect pages
 def redirectRe(site):
