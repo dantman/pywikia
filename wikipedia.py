@@ -413,7 +413,10 @@ class Throttle:
             now = time.time()
             ago = now - self.now
             if ago < self.delay:
-                time.sleep(self.delay - ago)
+                delta = self.delay - ago
+                if delta > config.noisysleep:
+                    print "Sleeping for %.1f seconds" % delta
+                time.sleep(delta)
             self.now = time.time()
 
 get_throttle = Throttle()

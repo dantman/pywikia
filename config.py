@@ -36,6 +36,9 @@ throttle = 6
 # Slow down the robot such that it never makes a second change within
 # 'put_throttle' seconds.
 put_throttle=60
+# Sometimes you want to know when a delay is inserted. If a delay is larger
+# than 'noisysleep' seconds, it is logged on the screen.
+noisysleep=5.0
 
 # End of configuration section
 # ============================
