@@ -44,7 +44,7 @@ def add_category(sort_by_last_name = False):
     print "or you can add a category link to all pages that link to a"
     print "specific page. If you want the second, please give an empty"
     print "answer to the first question."
-    listpage = wikipedia.input('Wikipedia page with list of pages to change: ')
+    listpage = wikipedia.input('Wikipedia page with list of pages to change:')
     if listpage:
         try:
             pl = wikipedia.PageLink(wikipedia.mylang, listpage)
@@ -53,12 +53,12 @@ def add_category(sort_by_last_name = False):
             sys.exit()
         pagenames = pl.links()
     else:
-        refpage = wikipedia.input('Wikipedia page that is now linked to: ')
+        refpage = wikipedia.input('Wikipedia page that is now linked to:')
         pl = wikipedia.PageLink(wikipedia.mylang, refpage)
         pagenames = wikipedia.getReferences(pl)
     print "  ==> %d pages to process"%len(pagenames)
     print
-    newcat = wikipedia.input('Category to add (do not give namespace) : ')
+    newcat = wikipedia.input('Category to add (do not give namespace):')
     newcat = newcat[:1].capitalize() + newcat[1:]
 
     ns = wikipedia.family.category_namespaces(wikipedia.mylang)
@@ -73,12 +73,13 @@ def add_category(sort_by_last_name = False):
         pl2 = wikipedia.PageLink(wikipedia.mylang, nm)
         if answer != 'a':
             answer = ''
+            
         while answer not in ('y','n','a'):
-            answer = wikipedia.input("%s [y/n/a(ll)] : "%(pl2.aslink()))
+            answer = wikipedia.input("%s [y/n/a(ll)]:"%(pl2.aslink()), decoder = pl.encoding())
             if answer == 'a':
                 confirm = ''
 		while confirm not in ('y','n'):
-	            confirm = wikipedia.input("This should be used if and only if you are sure that your links are correct !!! Are you sure ? [y/n] : ")
+	            confirm = wikipedia.input("This should be used if and only if you are sure that your links are correct !!! Are you sure ? [y/n]:")
 	
 	if answer == 'y' or answer == 'a':
             try:
@@ -111,9 +112,9 @@ def add_category(sort_by_last_name = False):
                     pl2.put(text, comment = catpl.aslocallink().encode(wikipedia.code2encoding(wikipedia.mylang)))
 
 def rename_category():
-    old_cat_title = wikipedia.input('Please enter the old name of the category: ')
+    old_cat_title = wikipedia.input('Please enter the old name of the category:')
     old_cat = catlib.CatLink(old_cat_title)
-    new_cat_title = wikipedia.input('Please enter the new name of the category: ')
+    new_cat_title = wikipedia.input('Please enter the new name of the category:')
     
     # get edit summary message
     wikipedia.setAction(msg_change[wikipedia.chooselang(wikipedia.mylang,msg_change)] % old_cat_title)
@@ -135,7 +136,7 @@ def rename_category():
 # asks for a category, and removes the category tag from all pages 
 # in that category, without prompting.
 def remove_category():
-    old_cat_title = wikipedia.input('Please enter the name of the category that should be removed: ')
+    old_cat_title = wikipedia.input('Please enter the name of the category that should be removed:')
     old_cat = catlib.CatLink(old_cat_title)
     # get edit summary message
     wikipedia.setAction(msg_remove[wikipedia.chooselang(wikipedia.mylang,msg_remove)] % old_cat_title)
@@ -224,7 +225,7 @@ def tidy_category():
         flag = False
         length = 1000
         while not flag:
-            choice=wikipedia.input("Choice: ")
+            choice=wikipedia.input("Choice:")
             if choice == 's':
                 flag = True
             elif choice == '':
@@ -237,7 +238,7 @@ def tidy_category():
                     catlib.change_category(article, original_cat.catname(), current_cat.catname())
                 flag = True
             elif choice == 'j':
-                new_cat_title = wikipedia.input('Please enter the category the article should be moved to: ')
+                new_cat_title = wikipedia.input('Please enter the category the article should be moved to:')
                 new_cat = catlib.CatLink(new_cat_title)
                 # recurse into chosen category
                 move_to_subcategory(article, original_cat, new_cat)
@@ -259,7 +260,7 @@ def tidy_category():
                 flag = True
     
     # begin main part of tidy_category
-    cat_title = wikipedia.input('Which category do you want to tidy up? ')
+    cat_title = wikipedia.input('Which category do you want to tidy up?')
     catlink = catlib.CatLink(cat_title)
     
     # get edit summary message

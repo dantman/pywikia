@@ -160,7 +160,11 @@ class PageLink:
         """The code for the language of the page this PageLink refers to,
            without :"""
         return self._code
-
+    
+    def encoding(self):
+        return code2encoding(self._code)
+    
+    # sorry, this seems to be the same as linkname(). don't use it, i'll remove it later.
     def name(self):
         return urllib.unquote(self._linkname)
     
@@ -1451,23 +1455,29 @@ def chooselang(code, choice):
         return 'en'
     return choice[1]
 
+# Works like print, but uses the encoding used by the user's console instead
+# of ASCII. If decoder is None, text should be a unicode string. Otherwise it
+# should be encoded in the given encoding.
+# If a character can't be displayed, it will be replaced with a question mark.
+def output(text, decoder = None, newline=True):
+    if decoder:
+        text = unicode(text, decode)
+    if newline:
+        print text.encode(config.console_encoding, 'replace')
+    else:
+        # comma means 'don't print newline after question'
+        print text.encode(config.console_encoding, 'replace'),
+
 # Works like raw_input(), but returns a unicode string instead of ASCII.
 # if encode is True, it will encode the string into a format suitable for
 # the local wiki (utf-8 or iso8859-1).
-# Argument question should be encoded in raw unicode.
-def input(question, encode = False):
-    # print 
-    text = raw_input(question.encode(config.console_encoding, 'replace'))
+# If decoder is None, question should be a unicode string. Otherwise it
+# should be encoded in the given encoding.
+# Unlike raw_input, this function automatically adds a space after the question.
+def input(question, encode = False, decoder=None):
+    output(question, decoder=decoder, newline=False)
+    text = raw_input()
     text = unicode(text, config.console_encoding)
     if encode:
         text = text.encode(code2encoding(mylang))
     return text
-    
-# Works like print, but uses the encoding used by the user's console instead
-# of ASCII. If encoding is None, text should be a unicode string. Otherwise it
-# should be encoded in that encoding.
-# If a character can't be displayed, it will be replaced with a question mark.
-def output(text, encoding = None):
-    if encoding:
-        text = unicode(text, encoding)
-    print text.encode(config.console_encoding, 'replace')
