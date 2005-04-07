@@ -176,6 +176,7 @@ def removeHTML(page):
     result = result.replace('&ucirc;',u'û')
     result = result.replace('&Aring;',u'Å')
     result = result.replace('&aring;',u'å')
+    result = result.replace('&deg;',u'°')
     return result
 
 def spellcheck(page):
@@ -311,13 +312,14 @@ try:
         if arg:
             if arg.startswith("-start:"):
                 start = arg[7:]
-            if arg.startswith("-newpages"):
+            elif arg.startswith("-newpages"):
                 newpages = True
-            if arg.startswith("-html"):
+            elif arg.startswith("-html"):
                 correct_html_codes = True
-            if arg.startswith("-rebuild"):
+            elif arg.startswith("-rebuild"):
                 rebuild = True
-            title.append(arg)
+            else:
+                title.append(arg)
     mysite = wikipedia.getSite()
     wikipedia.setAction(wikipedia.translate(mysite,msg))
     filename = 'spelling/spelling-' + mysite.language() + '.txt'
