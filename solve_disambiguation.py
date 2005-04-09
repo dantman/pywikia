@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -421,9 +421,10 @@ class DisambiguationRobot:
         except wikipedia.IsRedirectPage:
             wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), disambPl.linkname()))
             if self.solve_redirect:
+                target = self.alternatives[0]
                 choice = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
-                if choice2 == 'y':
-                    redir_text = '#REDIRECT [[%s]]' % target
+                if choice == 'y':
+                    redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     refpl.put(redir_text)
             else:
                 choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N|c(hange redirect)]' % refpl.linkname())
