@@ -435,7 +435,7 @@ class DisambiguationRobot:
                         if not self.treat(refpl2, refpl):
                             break
                 elif choice == 'c':
-                    text="#%s [[%s]]"%(self.mysite.redirect(default=True), disambPl.linkname())
+                    text=refpl.get(throttle=False,get_redirect=True)
                     include = "redirect"
         if include in [True,"redirect"]:
             # make a backup of the original text so we can show the changes later
