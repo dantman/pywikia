@@ -327,8 +327,9 @@ class PageLink(object):
         else:
             # Make sure we re-raise an exception we got on an earlier attempt
             if hasattr(self, '_redirarg'):
-                raise IsRedirectPage,self._redirarg
-            if hasattr(self, '_getexception'):
+                if not get_redirect:
+                    raise IsRedirectPage,self._redirarg
+            elif hasattr(self, '_getexception'):
                 raise self._getexception
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
@@ -347,7 +348,8 @@ class PageLink(object):
             except IsRedirectPage,arg:
                 self._getexception = IsRedirectPage
                 self._redirarg = arg
-                raise
+                if not get_redirect:
+                    raise
             except LockedPage: # won't happen if read_only is True
                 self._getexception = LockedPage
                 raise
@@ -971,26 +973,27 @@ class GetAll(object):
                     for c2 in c,c.lower():
                         for x in 'Xx':
                             redirectto = redirectto.replace(c2+x,c2+x+x+x+x)
-            pl2._getexception = IsRedirectPage(redirectto)
+            pl2._getexception = IsRedirectPage
+            pl2._redirarg = redirectto
         else:
             if len(text)<50:
                 output(u"DBG> short text in %s:" % pl2.aslink())
                 output(text)
-            hn = pl2.hashname()
-            if hn:
-                m = re.search("== *%s *==" % hn, text)
-                if not m:
-                    output("WARNING: Hashname does not exist: %s" % self)
-                else:
-                    # Store the content
-                    pl2._contents = text
-                    # Store the time stamp
-                    edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
+        hn = pl2.hashname()
+        if hn:
+            m = re.search("== *%s *==" % hn, text)
+            if not m:
+                output("WARNING: Hashname does not exist: %s" % self)
             else:
                 # Store the content
                 pl2._contents = text
                 # Store the time stamp
                 edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
+        else:
+            # Store the content
+            pl2._contents = text
+            # Store the time stamp
+            edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
 
     def getData(self):
         if not self.pages:
