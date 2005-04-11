@@ -517,10 +517,13 @@ class Family:
 
     redirect = {
         'bg': [u'виж'],
-        'cy': ['ail-cyfeirio'],
-        'et': ['suuna'],
-        'ga': ['athsheoladh'],
-        'nn': ['omdiriger'],
+        'cs': [u'přesměruj'],
+        'cy': [u'ail-cyfeirio'],
+        'et': [u'suuna'],
+        'eu': [u'bidali'],
+        'ga': [u'athsheoladh'],
+        'is': [u'tilvísun'],
+        'nn': [u'omdiriger'],
         'ru': [u'перенаправление', u'перенапр'],
         'sr': [u'преусмери'],
         'tt': [u'yünältü']
