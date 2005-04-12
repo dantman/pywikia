@@ -218,6 +218,7 @@ class Family:
             3: {
                 '_default': u'User talk',
                 'af': u'GebruikerBespreking',
+                'da': u'Bruger diskussion',
                 'de': u'Benutzer Diskussion',
                 'es': u'Usuario Discusión',
                 'hu': u'User vita',
@@ -284,6 +285,7 @@ class Family:
             },
             7: {
                 '_default': u'Image talk',
+                'da': u'Billede diskussion',
                 'de': u'Bild Diskussion',
                 'es': u'Imagen_Discusión',
                 'hu': u'Kép vita',
@@ -295,6 +297,7 @@ class Family:
             },
             9: {
                 '_default': u'MediaWiki talk',
+                'da': u'MediaWiki diskussion',
                 'de': u'MediaWiki Diskussion',
                 'es': u'MediaWiki Discusión',
                 'hu': u'MediaWiki vita',
@@ -334,6 +337,7 @@ class Family:
             },
             11: {
                 '_default': u'Template talk',
+                'da': u'Skabelon diskussion',
                 'de': u'Vorlage Diskussion',
                 'es': u'Plantilla Discusión',
                 'hu': u'Sablon vita',
@@ -341,6 +345,7 @@ class Family:
             },
             12: {
                 '_default': u'Help',
+                'da': u'Hjælp',
                 'de': u'Hilfe',
                 'es': u'Ayuda',
                 'hu': u'Segítség',
@@ -348,6 +353,7 @@ class Family:
             },
             13: {
                 '_default': u'Help talk',
+                'da': u'Hjælp diskussion',
                 'de': u'Hilfe Diskussion',
                 'pt': u'Ajuda_Discussão',
                 'es': u'Ayuda Discusión',
@@ -396,6 +402,7 @@ class Family:
                 'bg'  :     u'Категория беседа',
                 'ca'  :     u'Categoria Discussió',
                 'cs'  :     u'Kategorie diskuse',
+                'da'  :     u'Kategori diskussion',
                 'de'  :     u'Kategorie Diskussion',
                 'eo'  :     u'Kategoria diskuto',
                 'es'  :     u'Categoría Discusión',
