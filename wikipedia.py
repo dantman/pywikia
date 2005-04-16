@@ -840,7 +840,7 @@ def redirectRe(site):
         txt = '(?:redirect|'+'|'.join(site.redirect())+')'
     else:
         txt = 'redirect'
-    return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]\]|\|)', re.I)
+    return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]|\|)', re.I)
 
 # Shortcut get to get multiple pages at once
 class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
