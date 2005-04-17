@@ -43,6 +43,7 @@ import re, sys, string
 msg={
     "en":"robot: copying table from ",
     "de":"Bot: Kopiere Tabelle von ",
+    "pt":"Bot: Copiando tabela de ",
     }
 
 # Prints text on the screen only if in -debug mode.
