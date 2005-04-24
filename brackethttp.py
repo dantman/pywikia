@@ -14,7 +14,8 @@ import re, sys
 
 import wikipedia
 
-myComment = {'en':'Bot: URL fixed'
+myComment = {'en':'Bot: URL fixed',
+             'pt':'Bot: Corrigindo URL'
              }
 
 try:

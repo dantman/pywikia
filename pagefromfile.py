@@ -32,7 +32,8 @@ import re, sys
 
 msg={
     'en':u'Automated import of articles',
-    'nl':u'Geautomatiseerde import'
+    'nl':u'Geautomatiseerde import',
+    'pt':u'Importação automática de artigo'
     }
 
 # Adapt these to the file you are using. 'starttext' and 'endtext' are
