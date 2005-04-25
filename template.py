@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Very simple script to replace a template with another one,
 and to convert the old MediaWiki boilerplate format to the new template format.
@@ -83,11 +83,13 @@ class TemplateRobot:
     msg_change={
         'en':u'Robot: Changing template: %s',
         'de':u'Bot: Ändere Vorlage: %s',
+        'pt':u'Bot: Alterando predefinição: %s',
         }
     
     msg_remove={
         'en':u'Robot: Removing template: %s',
         'de':u'Bot: Entferne Vorlage: %s',
+        'pt':u'Bot: Removendo predefinição: %s',
         }
 
     def __init__(self, generator, old, new = None, remove = False, oldFormat = False):
