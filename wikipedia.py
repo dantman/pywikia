@@ -2169,7 +2169,7 @@ class Site(object):
             self._fill()
         if check:
             txt = getPage(self, 'Non-existing page', get_edit_page = False)
-            self.loggedin = 'Userlogin' not in txt
+            self._loggedin = 'Userlogin' not in txt
         return self._loggedin
 
     def _fill(self):
