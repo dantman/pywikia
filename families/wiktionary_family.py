@@ -78,7 +78,11 @@ class Family(family.Family):
         self.seriouslangs = self.biglangs4
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+        
+        self.latin1 = ['da', 'sv']
        
     def code2encoding(self, code):
-        return 'utf-8'
-
+        if code in self.latin1:
+            return 'iso-8859-1'
+        else:
+            return 'utf-8'
