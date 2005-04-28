@@ -6,19 +6,25 @@ You can run the bot with the following commandline parameters:
 
 -sql         - Search information from a local SQL dump.
                Argument can also be given as "-sql:filename".
+
+TODO:
+
 -file        - Search information from a local text file.
                Argument can also be given as "-file:filename".
 -cat         - Search categories.
                Argument can also be given as "-cat:category_name".
 -page        - Only search a single page.
                Argument can also be given as "-page:pagename".
+-namespace   - Search in namespaces
 
-Use: python find.py -argument
+Syntax: python find.py -argument
+Use find.py 1.3, version without bug
 
 '''
 #
 # (C) E2m, 2004
-# (C) Leonardo Gregianin, 2004-2005
+#
+__version__ = '$Id$'
 #
 # Distributed under the terms of the PSF license.
 #
