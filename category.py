@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -64,6 +64,7 @@ deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach %s verschoben',
     'en':u'Robot: Category was moved to %s',
     'fr':u'Robot : catégorie déplacée sur %s',
+    'pt':u'Bot: Categoria %s foi movida',
     }
 
 class CategoryDatabase:
