@@ -1777,7 +1777,7 @@ def getCategoryLinks(text, site):
     result = []
     ns = site.category_namespaces()
     for prefix in ns:
-        R = re.compile(r'\[\['+prefix+':([^\]]*)\]\]')
+        R = re.compile(r'\[\['+prefix+':([^\]\|]*)(?:\||\])')
         for t in R.findall(text):
             if t:
                 # remove leading / trailing spaces
