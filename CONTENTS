@@ -98,10 +98,8 @@ imagetransfer.py       : Given a Wikipedia page, check the interwiki links
 interwiki.py           : A robot to check interwiki links on all pages (or
                          a range of pages) of a wikipedia.
 imageharvest.py        : Bot for getting multiple images from an external site.
-pagelist.py            : Starting with one or more pages, spiders the wiki
-                         forward as well as backward, and thus can be used to
-                         get a list of Wikipedia pages connected to a certain
-                         subject.
+makecat.py             : Given an existing or new category, find pages for that
+                         category
 redirect.py            : Fix double redirects and broken redirects. Note:
                          solve_disambiguation also has functions which treat
                          redirects.
