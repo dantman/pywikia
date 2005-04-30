@@ -1785,6 +1785,7 @@ def getCategoryLinks(text, site):
                 if site.language() == 'eo':
                     t = t.replace('xx','x')
                 t = t[:1].capitalize() + t[1:]
+                print t
                 result.append(ns[0]+':'+t)
             else:
                 print "ERROR: empty category link"
