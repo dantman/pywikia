@@ -28,6 +28,8 @@ PageLink: A MediaWiki page
         counting interwiki and category links
     interwiki (*): The interwiki links from the page (list of PageLinks)
     categories (*): The categories the page is in (list of PageLinks)
+    rawcategories (*): Like categories, but if the link contains a |, the
+        part after the | is included.
     links (*): The normal links from the page (list of links)
     imagelinks (*): The pictures on the page (list of strings)
     getRedirectTo (*): The page the page redirects to
@@ -462,6 +464,17 @@ class PageLink(object):
            category links in the page text."""
         result = []
         ll = getCategoryLinks(self.get(read_only = True), self.site())
+        for catname in ll:
+            result.append(self.__class__(self.site(), title = catname))
+        return result
+
+    def rawcategories(self):
+        """Just like categories, but gives the categories including the part
+           after the |, if any. Of course these will thus be pagelinks to
+           non-existing pages, but as long as we just use linkname() and
+           such, that won't matter."""
+        result = []
+        ll = getCategoryLinks(self.get(read_only = True), self.site(), raw=True)
         for catname in ll:
             result.append(self.__class__(self.site(), title = catname))
         return result
@@ -1770,14 +1783,17 @@ def normalWhitespace(text):
 
 # Categories
 
-def getCategoryLinks(text, site):
+def getCategoryLinks(text, site, raw=False):
     """Returns a list of category links.
        in the form {code:pagename}. Do not call this routine directly, use
        PageLink objects instead"""
     result = []
     ns = site.category_namespaces()
     for prefix in ns:
-        R = re.compile(r'\[\['+prefix+':([^\]\|]*)(?:\||\])')
+        if raw:
+            R = re.compile(r'\[\['+prefix+':([^\]]*)\]')
+        else:
+            R = re.compile(r'\[\['+prefix+':([^\]\|]*)(?:\||\])')
         for t in R.findall(text):
             if t:
                 # remove leading / trailing spaces

@@ -59,7 +59,7 @@ def needcheck(pl):
             return False
     return True
 
-def include(pl,checklinks=True):
+def include(pl,checklinks=True,linkterm=None):
     cl = checklinks
     #wikipedia.getall(mysite,[pl])
     try:
@@ -72,7 +72,11 @@ def include(pl,checklinks=True):
     else:
         cats = pl.categories()
         if not workingcat in cats:
-            pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
+            cats = pl.rawcategories()
+            if linkterm:
+                pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.PageLink(mysite,"%s|%s"%(workingcat.linkname(),linkterm))]))
+            else:
+                pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
     if cl:
         if checkforward:
             try:
@@ -110,6 +114,10 @@ def asktoadd(pl):
         if answer=='y':
             include(pl)
             break
+        if answer=='z':
+            linkterm = wikipedia.input(u"In what manner should it be alphabetized?")
+            include(pl,linkterm=linkterm)
+            break
         elif answer=='n':
             exclude(pl)
             break
@@ -120,6 +128,7 @@ def asktoadd(pl):
             print("x: Add the page, but do not check links to and from it")
             print("t: Give the beginning of the text of the page")
             print("a: Add another page")
+            print("z: Add under another title (as [[Category|Title]])")
             print("l: Give a list of the pages to check")
         elif answer=='a':
             pagetitle = raw_input("Specify page to add:")

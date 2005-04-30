@@ -85,7 +85,7 @@ try:
     for p in wikipedia.allpages(start = start, site = mysite):
         try:
             text=p.get()
-            cats=p.categories()
+            cats=p.rawcategories()
             if cats == []:
                 wikipedia.output(u"========== %s ==========" % p.linkname())
                 print "No categories"
