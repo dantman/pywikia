@@ -559,7 +559,7 @@ class PageLink(object):
         except IsRedirectPage, arg:
             if '|' in arg:
                 warnings.warn("%s has a | character, this makes no sense", Warning)
-            return str(arg)
+            return arg[0]
         else:
             raise IsNotRedirectPage(self)
             

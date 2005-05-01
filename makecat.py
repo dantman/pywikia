@@ -139,7 +139,7 @@ def asktoadd(pl):
             if pl.exists():
                 if pl.isRedirectPage():
                     print("Redirect page. Will be included normally.")
-                    pl2=pl.getRedirectTo()
+                    pl2=wikipedia.PageLink(mysite,pl.getRedirectTo())
                     checkprepare(pl2)
                 else:
                     include(pl,checklinks=False)
