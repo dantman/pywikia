@@ -231,7 +231,13 @@ try:
             else:
                 loaded = 50
             wikipedia.getall(mysite,tocheck[:loaded])
-        asktoadd(tocheck[0])
+        if not checkbackward:
+            if not tocheck[0].exists():
+                pass
+            else:
+                asktoadd(tocheck[0])
+        else:
+            asktoadd(tocheck[0])
         tocheck = tocheck[1:]
         loaded -= 1
 finally:
