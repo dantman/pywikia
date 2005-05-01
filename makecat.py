@@ -149,8 +149,6 @@ def asktoadd(pl):
             break
         elif answer=='l':
             print("Number of pages still to check: %s")%len(tocheck)
-            print("Number of pages in the category: %s")%len(include)
-            print("Number of pages not to include: %s")%len(exclude)
             print("Pages to be checked:")
             print tocheck
             print("==%s==")%pl.linkname()
