@@ -116,10 +116,11 @@ def asktoadd(pl):
             break
         if answer=='z':
             if pl.exists():
-                linkterm = wikipedia.input(u"In what manner should it be alphabetized?")
-                include(pl,linkterm=linkterm)
-            else:
-                include(pl)
+                if not pl.isRedirectPage():
+                    linkterm = wikipedia.input(u"In what manner should it be alphabetized?")
+                    include(pl,linkterm=linkterm)
+                    break
+            include(pl)
             break
         elif answer=='n':
             exclude(pl)
