@@ -115,8 +115,11 @@ def asktoadd(pl):
             include(pl)
             break
         if answer=='z':
-            linkterm = wikipedia.input(u"In what manner should it be alphabetized?")
-            include(pl,linkterm=linkterm)
+            if pl.exists():
+                linkterm = wikipedia.input(u"In what manner should it be alphabetized?")
+                include(pl,linkterm=linkterm)
+            else:
+                include(pl)
             break
         elif answer=='n':
             exclude(pl)
