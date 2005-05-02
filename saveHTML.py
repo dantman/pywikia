@@ -103,8 +103,15 @@ def extractImages(data):
 
     images = []
     rImage = re.compile('<a href=[\r\n]*?"/wiki/.*?:(.*?)".*?[\r\n]*?.*?class=[\r\n]*?"image"', re.MULTILINE)
+    rThumb = re.compile('<a href=[\r\n]*?"/wiki/.*?:(.*?)".*?[\r\n]*?.*?class=[\r\n]*?"internal".*?[\r\n]*?.*?<img', re.MULTILINE or re.DOTALL)
     last = ""
     img = rImage.findall(data)
+    timg = rThumb.findall(data)
+    for i in timg:
+        try:
+            img.index(i)
+        except:
+            img.append(i)
     print "Bilder: ", img
 
     for image in img:
