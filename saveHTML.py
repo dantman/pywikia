@@ -102,33 +102,15 @@ def extractImages(data):
     contain information on last change """
 
     images = []
-
-    s = StringIO.StringIO(data)
-    rImage = re.compile('.*<a href="/wiki/.*?:(.*?)".*?[\n]*?.*?class="internal"')
-    rThumb = re.compile('.*<a href="/wiki/.*?:(.*?)".*?class="image"')
+    rImage = re.compile('<a href=[\r\n]*?"/wiki/.*?:(.*?)".*?[\r\n]*?.*?class=[\r\n]*?"image"', re.MULTILINE)
     last = ""
-    for line in s:
-        img = rImage.match(line)
-        try:
-            
-            path = md5.new(html2txt(img.group(1))).hexdigest()
-            if path != last:
-                images.append( {'image':img.group(1),
-                                'path':  str(path[0])+"/"+str(path[0:2])+"/"})
-            last = path 
-        except:
-            pass
+    img = rImage.findall(data)
+    print "Bilder: ", img
 
-        img = rThumb.match(line)
-        try:
-            path = md5.new(html2txt(img.group(1))).hexdigest()
-            if path != last:
-                images.append( {'image':img.group(1),
-                                'path':  str(path[0])+"/"+str(path[0:2])+"/"})
-            last = path
-        except:
-            pass
-    
+    for image in img:
+        path = md5.new(html2txt(image)).hexdigest()
+        images.append( {'image': image,
+                        'path' : str(path[0])+"/"+str(path[0:2])+"/"})
     images.sort()
     return images
 
@@ -174,7 +156,7 @@ def main():
 
     headers = {"Content-type": "application/x-www-form-urlencoded", 
                "User-agent": "RobHooftWikiRobot/1.0"}
-    print "opening connection to ",mysite.hostname(),
+    print "opening connection to", mysite.hostname(),
     conn = httplib.HTTPConnection(mysite.hostname())
     print " done"
 
@@ -227,12 +209,7 @@ def main():
                 f.write(content)
                 f.close()
                 print "\t\t", (len(content)/1024), "KB done"
+    conn.close()
+
 if __name__ == "__main__":
-    try:
-        main()
-        conn.close()
-    except:
-        wikipedia.stopme()
-        raise
-    else:
-        wikipedia.stopme()
+    main()
