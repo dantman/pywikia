@@ -631,8 +631,8 @@ class DisambiguationRobot:
                     else:
                         self.alternatives.append(user_input)
                 except wikipedia.IsNotRedirectPage:
-                    print "The specified page is not a redirect."
-                    sys.exit(1)
+                    print "The specified page is not a redirect. Skipping."
+                    continue
             elif self.getAlternatives:
                 try:
                     if self.primary:
