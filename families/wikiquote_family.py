@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import urllib
 import family, config
 
@@ -30,7 +30,7 @@ class Family(family.Family):
         # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': u'Wikiquote',
-        },
+        }
         self.namespaces[5] = {
             '_default': u'Wikiquote talk',
             'pt': u'Wikiquote DiscussÃ£o',
