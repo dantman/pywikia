@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an SQL dump or a text file, or only
@@ -278,7 +278,7 @@ class ReplacePageGenerator:
         # TODO - UNFINISHED
     
     # TODO: Make MediaWiki's search feature available.
-    def generate(self):
+    def generateWithoutPreloading(self):
         '''
         Starts the generator.
         '''
@@ -295,6 +295,35 @@ class ReplacePageGenerator:
             for pagename in self.pagenames:
                 yield wikipedia.PageLink(wikipedia.getSite(), pagename)
 
+    def preload(self, pages):
+        try:
+            wikipedia.getall(wikipedia.getSite(), pages, throttle=False)
+        except wikipedia.SaxError:
+            # Ignore this error, and get the pages the traditional way later.
+            pass
+        
+    def generate(self):
+        # this array will contain up to 20 pages and will be flushed
+        # after these pages have been preloaded.
+        somePages = []
+        i = 0
+        for pl in self.generateWithoutPreloading():
+            i += 1
+            somePages.append(pl)
+            # We don't want to load too many pages at once using XML export.
+            # We only get 20 at a time.
+            if i >= 20:
+                self.preload(somePages)
+                for refpl in somePages:
+                    yield refpl
+                i = 0
+                somePages = []
+        # preload remaining pages
+        self.preload(somePages)
+        for refpl in somePages:
+            yield refpl
+
+                
 class ReplaceRobot:
     def __init__(self, generator, replacements, exceptions = [], regex = False, acceptall = False):
         self.generator = generator
@@ -363,6 +392,7 @@ class ReplaceRobot:
                 if new_text == original_text:
                     wikipedia.output('No changes were necessary in %s' % pl.linkname())
                 else:
+                    wikipedia.output(u'>>> %s <<<' % pl.linkname())
                     wikipedia.showColorDiff(original_text, new_text)
                     if not self.acceptall:
                         choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
