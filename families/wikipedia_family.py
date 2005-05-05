@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -27,13 +27,15 @@ class Family(family.Family):
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
             '_default': u'Wikipedia',
+            'sl': u'Wikipedija',
         }
         self.namespaces[5] = {
             '_default': u'Wikipedia talk',
             'af': u'WikipediaBespreking',
             'de': u'Wikipedia Diskussion',
-            'pt': u'Wikipedia_Discussão',
             'es': u'Wikipedia Discusión',
+            'pt': u'Wikipedia_Discussão',
+            'sl': u'Pogovor k Wikipediji',
         }
             
         # On most Wikipedias page names must start with a capital letter, but some
