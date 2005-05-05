@@ -176,7 +176,7 @@ class Table2WikiRobot:
         # captions
         newTable = re.sub("<(CAPTION|caption) ([\w\W]*?)>([\w\W]*?)<\/caption>",
                          r"\r\n|+\1 | \2", newTable)
-        newTable = re.sub("(CAPTION|caption)([\w\W]*?)<\/caption>",
+        newTable = re.sub("<(CAPTION|caption)([\w\W]*?)<\/caption>",
                          r"\r\n|+ \1", newTable)
         
         ##################
