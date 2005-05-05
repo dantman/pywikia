@@ -332,18 +332,12 @@ class Table2WikiRobot:
                 
         ##################
         if newText!=text:
-            import difflib
             if self.debug:
                 print text
                 print newText
             elif not self.quietMode:
-                for line in difflib.ndiff(text.split('\n'), newText.split('\n')):
-                    if line[0] == '-':
-                        wikipedia.output(line)
-                for line in difflib.ndiff(text.split('\n'), newText.split('\n')):
-                    if line[0] == '+':
-                        wikipedia.output(line)
-    
+                wikipedia.showColorDiff(text, newText)
+                
             if config.table2wikiAskOnlyWarnings and warnings == 0:
                 doUpload="y"
             else:
@@ -371,6 +365,7 @@ class Table2WikiRobot:
         Returns True if the converted table was successfully saved, otherwise
         returns False.
         '''
+        print '\n\n'
         site = pl.site()
         try:
             text = pl.get()
