@@ -91,8 +91,9 @@ class PreloadingGenerator:
     generator, loads them using Special:Export, and yields them one after
     the other. Then retrieves 20 more pages, etc.
     """
-    def __init__(self, generator):
+    def __init__(self, generator, pageNumber = 20):
         self.generator = generator
+        self.pageNumber = pageNumber
 
     def preload(self, pages):
         try:
@@ -111,7 +112,7 @@ class PreloadingGenerator:
             somePages.append(pl)
             # We don't want to load too many pages at once using XML export.
             # We only get 20 at a time.
-            if i >= 20:
+            if i >= self.pageNumber:
                 self.preload(somePages)
                 for refpl in somePages:
                     yield refpl
