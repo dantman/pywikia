@@ -278,7 +278,7 @@ class ReplacePageGenerator:
         # TODO - UNFINISHED
     
     # TODO: Make MediaWiki's search feature available.
-    def generateWithoutPreloading(self):
+    def generate(self):
         '''
         Starts the generator.
         '''
@@ -295,6 +295,18 @@ class ReplacePageGenerator:
             for pagename in self.pagenames:
                 yield wikipedia.PageLink(wikipedia.getSite(), pagename)
 
+# This is the same class as in table2wiki.py. Maybe both bots should use the
+# same code.
+class PreloadingGenerator:
+    """
+    Wraps around another generator. Retrieves up to 20 pages from that
+    generator, loads them using Special:Export, and yields them one after
+    the other. Then retrieves 20 more pages, etc.
+    """
+    def __init__(self, generator, pageNumber = 20):
+        self.generator = generator
+        self.pageNumber = pageNumber
+
     def preload(self, pages):
         try:
             wikipedia.getall(wikipedia.getSite(), pages, throttle=False)
@@ -307,12 +319,12 @@ class ReplacePageGenerator:
         # after these pages have been preloaded.
         somePages = []
         i = 0
-        for pl in self.generateWithoutPreloading():
+        for pl in self.generator.generate():
             i += 1
             somePages.append(pl)
             # We don't want to load too many pages at once using XML export.
             # We only get 20 at a time.
-            if i >= 20:
+            if i >= self.pageNumber:
                 self.preload(somePages)
                 for refpl in somePages:
                     yield refpl
@@ -520,7 +532,7 @@ def main():
             exceptions = fix['exceptions']
         replacements = fix['replacements']
     
-    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace, textfilename, sqlfilename, categoryname, pagenames)
+    gen = PreloadingGenerator(ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, sqlfilename, categoryname, pagenames))
     bot = ReplaceRobot(gen, replacements, exceptions, regex, acceptall)
     bot.run()
 
