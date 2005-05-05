@@ -158,73 +158,78 @@ class Table2WikiRobot:
     
     
         ##################
-        # <table> tag with attributes, with more table on the same line
-        newTable = re.sub("[\r\n]*?<(?i)(table) ([\w\W]*?)>([\w\W]*?)[\r\n ]*",
-                         r"\r\n{| \2\r\n\3", newTable)
-        # <table> tag without attributes, with more table on the same line
-        newTable = re.sub("[\r\n]*?<(TABLE|table)>([\w\W]*?)[\r\n ]*",
-                         r"\r\n{|\n\2\r\n", newTable)
-        # <table> tag with attributes, without more table on the same line
-        newTable = re.sub("[\r\n]*?<(TABLE|table) ([\w\W]*?)>[\r\n ]*",
-                         r"\r\n{| \2\r\n", newTable)
-        # <table> tag without attributes, without more table on the same line
-        newTable = re.sub("[\r\n]*?<(TABLE|table)>[\r\n ]*",
+        # <table> tag with attributes, with more text on the same line
+        newTable = re.sub("(?i)[\r\n]*?<table (?P<attr>[\w\W]*?)>(?P<more>[\w\W]*?)[\r\n ]*",
+                         r"\r\n{| \g<attr>\r\n\g<more>", newTable)
+        # <table> tag without attributes, with more text on the same line
+        newTable = re.sub("(?i)[\r\n]*?<table>(?P<more>[\w\W]*?)[\r\n ]*",
+                         r"\r\n{|\n\g<more>\r\n", newTable)
+        # <table> tag with attributes, without more text on the same line
+        newTable = re.sub("(?i)[\r\n]*?<table (?P<attr>[\w\W]*?)>[\r\n ]*",
+                         r"\r\n{| \g<attr>\r\n", newTable)
+        # <table> tag without attributes, without more text on the same line
+        newTable = re.sub("(?i)[\r\n]*?<table>[\r\n ]*",
                          "\r\n{|\r\n", newTable)
         # end </table>
-        newTable = re.sub("[\s]*<\/(TABLE|table)>", "\r\n|}", newTable)
+        newTable = re.sub("(?i)[\s]*<\/table>",
+                          "\r\n|}", newTable)
         
         ##################
-        # captions
-        newTable = re.sub("<(CAPTION|caption) ([\w\W]*?)>([\w\W]*?)<\/caption>",
-                         r"\r\n|+\1 | \2", newTable)
-        newTable = re.sub("<(CAPTION|caption)([\w\W]*?)<\/caption>",
-                         r"\r\n|+ \1", newTable)
+        # caption with attributes
+        newTable = re.sub("(?i)<caption (?P<attr>[\w\W]*?)>(?P<caption>[\w\W]*?)<\/caption>",
+                         r"\r\n|+\g<attr> | \g<caption>", newTable)
+        # caption without attributes
+        newTable = re.sub("(?i)<caption>(?P<caption>[\w\W]*?)<\/caption>",
+                         r"\r\n|+ \g<caption>", newTable)
         
         ##################
         # <th> often people don't write them within <tr>, be warned!
-        newTable = re.sub("[\r\n]+<(TH|th)([^>]*?)>([\w\W]*?)<\/(th|TH)>",
-                         r"\r\n!\2 | \3\r\n", newTable)
+        # <th> with attributes
+        newTable = re.sub("(?i)[\r\n]+<th(?P<attr>[^>]*?)>(?P<header>[\w\W]*?)<\/th>",
+                         r"\r\n!\g<attr> | \g<header>\r\n", newTable)
     
         # fail save. sometimes people forget </th>
-        # <th> without attributes
-        newTable, n = re.subn("[\r\n]+<(th|TH)>([\w\W]*?)[\r\n]+",
-                             r"\r\n! \2\r\n", newTable)
+        # <th> without attributes, without closing </th>
+        newTable, n = re.subn("(?i)[\r\n]+<th>(?P<header>[\w\W]*?)[\r\n]+",
+                             r"\r\n! \g<header>\r\n", newTable)
         if n>0:
             warning_messages.append(u'WARNING: found <th> without </th>. (%d occurences)\n' % n)
             warnings += n
     
-        # <th> with attributes
-        newTable, n = re.subn("[\r\n]+<(th|TH)([^>]*?)>([\w\W]*?)[\r\n]+",
-                             r"\n!\2 | \3\r\n", newTable)
+        # <th> with attributes, without closing </th>
+        newTable, n = re.subn("(?i)[\r\n]+<th(?P<attr>[^>]*?)>(?P<header>[\w\W]*?)[\r\n]+",
+                             r"\n!\g<attr> | \g<header>\r\n", newTable)
         if n>0:
-            warning_messages.append(u'WARNING: found <th> without </th>. (%d occurences\n)' % n)
+            warning_messages.append(u'WARNING: found <th ...> without </th>. (%d occurences\n)' % n)
             warnings += n
-    
+
     
         ##################
-        # very simple <tr>
-        newTable = re.sub("[\r\n]*<(tr|TR)([^>]*?)>[\r\n]*",
-                         r"\r\n|-----\2\r\n", newTable)
-        newTable = re.sub("[\r\n]*<(tr|TR)>[\r\n]*",
+        # <tr> with attributes
+        newTable = re.sub("(?i)[\r\n]*<tr(?P<attr>[^>]*?)>[\r\n]*",
+                         r"\r\n|-----\g<attr>\r\n", newTable)
+        
+        # <tr> without attributes
+        newTable = re.sub("(?i)[\r\n]*<tr>[\r\n]*",
                          r"\r\n|-----\r\n", newTable)
         
         ##################
         # normal <td> without arguments
-        newTable = re.sub("[\r\n]+<(td|TD)>([\w\W]*?)<\/(TD|td)>",
-                         r"\r\n| \2\r\n", newTable)
+        newTable = re.sub("(?i)[\r\n]+<td>(?P<cell>[\w\W]*?)<\/td>",
+                         r"\r\n| \g<cell>\r\n", newTable)
     
         ##################
         # normal <td> with arguments
-        newTable = re.sub("[\r\n]+<(td|TD)([^>]*?)>([\w\W]*?)<\/(TD|td)>",
-                         r"\r\n|\2 | \3", newTable)
+        newTable = re.sub("(?i)[\r\n]+<td(?P<attr>[^>]*?)>(?P<cell>[\w\W]*?)<\/td>",
+                         r"\r\n|\g<attr> | \g<cell>", newTable)
     
         # WARNING: this sub might eat cells of bad HTML, but most likely it
         # will correct errors
         # TODO: some more docu please
-        newTable, n = re.subn("[\r\n]+<(td|TD)>([^\r\n]*?)<(td|TD)>",
-                             r"\r\n| \2\r\n", newTable)
+        newTable, n = re.subn("(?i)[\r\n]+<td>(?P<cell>[^\r\n]*?)<td>",
+                             r"\r\n| \g<cell>\r\n", newTable)
         if n>0:
-            warning_messages.append(u'WARNING: (sorry, bot code unreadable (1). I don\'t know why this warning is given.) (%d occurences)\n' % n)
+            warning_messages.append(u'<td> used where </td> was expected. (%d occurences)\n' % n)
             warnings += n
         
         # fail save, sometimes it's a <td><td></tr>
@@ -232,40 +237,35 @@ class Table2WikiRobot:
         #                             "\r\n| \\2\r\n", newTable)
         #        newTable, n = re.subn("[\r\n]+<(td|TD)([^>]*?)>([^<]*?)<(td|TD)><\/(tr|TR)>",
         #                             "\r\n|\\2| \\3\r\n", newTable)
-        #
+        # if n>0:
+        #     warning_messages.append(u'WARNING: found <td><td></tr>, but no </td>. (%d occurences)\n' % n)
+        #     warnings += n
+
+        # what is this for?
         newTable, n = re.subn("[\r\n]+<(td|TD)([^>]+?)>([^\r\n]*?)<\/(td|TD)>",
                              r"\r\n|\2 | \3\r\n", newTable)
         if n>0:
-            warning_messages.append(u'WARNING: found <td><td></tr>, but no </td>. (%d occurences)\n' % n)
-            warnings += n
+            warning_messages.append(u'WARNING: (sorry, bot code unreadable (1). I don\'t know why this warning is given.) (%d occurences)\n' % n)
         
         # fail save. sometimes people forget </td>
         # <td> without arguments, with missing </td> 
-        newTable, n = re.subn("<(td|TD)>([^<]*?)[\r\n]+",
-                             r"\r\n| \2\r\n", newTable)
+        newTable, n = re.subn("(?i)<td>(?P<cell>[^<]*?)[\r\n]+",
+                             r"\r\n| \g<cell>\r\n", newTable)
         if n>0:
-            warning_messages.append(u'WARNING: found <td> without </td>. (%d occurences)\n' % n)
-            warnings += n
-    
-        # <td> with arguments, with missing </td> 
-        newTable, n = re.subn("[\r\n]*<(td|TD)([^>]*?)>([\w\W]*?)[\r\n]+",
-                             r"\r\n|\2 | \3\r\n", newTable)
-        if n > 0:
             warning_messages.append(u'NOTE: Found <td> without </td>. This shouldn\'t cause problems.\n')
     
-        # TODO: some docu please
-        newTable, n = re.subn("<(td|TD)>([\w\W]*?)[\r\n]+",
-                             r"\r\n| \2\r\n", newTable)
-    
-        if n>0:
-            warning_messages.append(u'WARNING: (sorry, bot code unreadable (2). I don\'t know why this warning is given.) (%d occurences)\n' % n)
-            warnings += n
+        # <td> with arguments, with missing </td> 
+        newTable, n = re.subn("(?i)[\r\n]*<td(?P<attr>[^>]*?)>(?P<cell>[\w\W]*?)[\r\n]+",
+                             r"\r\n|\g<attr> | \g<cell>\r\n", newTable)
+        if n > 0:
+            warning_messages.append(u'NOTE: Found <td> without </td>. This shouldn\'t cause problems.\n')
     
     
         ##################
         # Garbage collecting ;-)
-        newTable = re.sub("<td>[\r\n]*<\/tr>", "", newTable)
-        newTable = re.sub("[\r\n]*<\/[Tt][rRdDhH]>", "", newTable)
+        newTable = re.sub("(?i)<td>[\r\n]*<\/tr>", "", newTable)
+        # delete closing tags
+        newTable = re.sub("(?i)[\r\n]*<\/t[rdh]>", "", newTable)
         
         ##################
         # OK, that's only theory but works most times.
