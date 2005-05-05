@@ -426,7 +426,7 @@ class PageLink(object):
             newPage="0"
         else:
             newPage="1"
-        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().gettoken())
+        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken())
 
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
@@ -657,11 +657,13 @@ class PageLink(object):
             answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
         if answer in ['y', 'Y']:
             output(u'Deleting page %s...' % pl.linkname())
+            token = pl.site().getToken()
             returned_html = post_multipart(pl.site().hostname(),
                                            pl.site().delete_address(pl.urlname()),
                                            (('wpReason', reason),
-                                            ('wpConfirm', '1')),
-                                           pl.site().cookies())
+                                            ('wpConfirm', '1'),
+                                            ('wpEditToken', token)),
+                            pl.site().cookies())
             # check if deletion was successful
             # therefore, we need to know what the MediaWiki software says after
             # a successful deletion
@@ -1257,12 +1259,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
     if site.version() >= "1.4":
         if not token:
-            output(u"Getting page to get a token.")
-            try:
-                PageLink(site,url2link("Non-existing page",site,site)).get(force = True)
-            except Error:
-                pass
-            token = site.gettoken()
+            token = site.getToken()
         else:
             safetuple = (site,name,text,comment,watchArticle,minorEdit,newPage)
     # Check whether we are not too quickly after the previous putPage, and
@@ -1440,7 +1437,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             tokenloc = R.search(text)
             if tokenloc:
                 site.puttoken(tokenloc.group(1))
-            elif not site.gettoken():
+            elif not site.getToken():
                 site.puttoken('')
 
             if not read_only:
@@ -2352,7 +2349,13 @@ class Site(object):
     def languages(self):
         return self.family.langs.keys()
 
-    def gettoken(self):
+    def getToken(self):
+        if not self._token:
+            output(u"Getting page to get a token.")
+            try:
+                PageLink(self, url2link("Non-existing page", self, self)).get(force = True)
+            except Error:
+                pass
         return self._token
 
     def puttoken(self,value):
