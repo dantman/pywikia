@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Nifty script to convert HTML-tables to Wikipedia's syntax.
@@ -375,13 +375,13 @@ class Table2WikiRobot:
         try:
             text = pl.get()
         except wikipedia.NoPage:
-            print "ERROR: couldn't find " + page_title
+            wikipedia.output(u"ERROR: couldn't find %s" % pl.linkname())
             return False
         except wikipedia.LockedPage:
-            wikipedia.output(u'Skipping locked page %s' % page_title)
+            wikipedia.output(u'Skipping locked page %s' % pl.linkname())
             return False
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u'Skipping redirect %s' % page_title)
+            wikipedia.output(u'Skipping redirect %s' % pl.linkname())
             return False
         converted_text, warnings = self.convert(text)
         # If the user pressed 'n'
