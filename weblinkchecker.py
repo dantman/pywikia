@@ -42,7 +42,15 @@ class SqlPageGenerator:
         for entry in self.dump.entries():
             if not entry.redirect:
                 yield entry.full_title(), entry.text
-                    
+
+class SinglePageGenerator:
+    '''Pseudo-generator'''
+    def __init__(self, pl):
+        self.pl = pl
+            
+    def generate(self):
+        yield self.pl.linkname(), self.pl.get()
+
 class LinkChecker:
     '''
     Given a HTTP URL, tries to load the page from the Internet and checks if it
@@ -66,10 +74,11 @@ class LinkChecker:
         # TODO: HTTPS
         try:
             conn = httplib.HTTPConnection(host)
+            header = {'User-agent': 'PythonWikipediaBot/1.0'}
         except httplib.error, arg:
             return False, u'HTTP Error: %s' % arg
         try:
-            conn.request('GET', '%s?%s' % (path, query))
+            conn.request('GET', '%s?%s' % (path, query), None, header)
         except socket.error, arg:
             return False, u'Socket Error: %s' % arg
         except UnicodeEncodeError, arg:
@@ -99,7 +108,6 @@ class LinkCheckThread(threading.Thread):
         ok, message = linkChecker.check()
         if ok:
             self.history.linkAlive(self.url)
-            pass
         else:
             wikipedia.output('*[[%s]] links to %s - %s' % (self.title, self.url, message))
             self.history.linkDead(self.url, message, self.title)
@@ -185,17 +193,8 @@ class WeblinkCheckerRobot:
         self.history = History()
         
     def run(self):
-        try:
-            for (title, text) in self.generator.generate():
-                self.checkLinksIn(title, text)
-        except:
-            if threading.activeCount() > 1:
-                wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % threading.activeCount())
-                # wait 5 seconds
-                time.sleep(5)
-            if threading.activeCount() > 1:
-                wikipedia.output(u"Killing remaining %i threads..." % threading.activeCount())
-                # Threads will die automatically because they are daemonic
+        for (title, text) in self.generator.generate():
+           self.checkLinksIn(title, text)
     
     def checkLinksIn(self, title, text):
         #wikipedia.output(title)
@@ -216,6 +215,7 @@ class WeblinkCheckerRobot:
 def main():
     start = '!'
     sqlfilename = None
+    pageTitle = []
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, logname = 'weblinkchecker.log')
         if arg:
@@ -224,20 +224,36 @@ def main():
                     sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
                 else:
                     sqlfilename = arg[5:]
-                source = sqlfilename
+                source = 'sqldump'
             elif arg.startswith('-start:'):
                 start = arg[7:]
             else:
-                print 'Unknown argument: %s' % arg
+                #print 'Unknown argument: %s' % arg
+                pageTitle.append(arg)
+                source = 'page'
 
-    if sqlfilename:
+    if source == 'sqldump':
         gen = SqlPageGenerator(sqlfilename)
+    elif source == 'page':
+        pageTitle = ' '.join(pageTitle)
+        pl = wikipedia.PageLink(wikipedia.getSite(), pageTitle)
+        gen = SinglePageGenerator(pl)
     else:
         gen = AllpagesPageGenerator(start)
     bot = WeblinkCheckerRobot(gen)
     try:
         bot.run()
     finally:
+        i = 0
+        while threading.activeCount() > 1 and i < 10:
+            wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % threading.activeCount())
+            # wait 1 second
+            time.sleep(1)
+            i += 1
+        if threading.activeCount() > 1:
+            wikipedia.output(u"Killing remaining %i threads..." % threading.activeCount())
+            # Threads will die automatically because they are daemonic
+
         bot.history.save()
     
 if __name__ == "__main__":
