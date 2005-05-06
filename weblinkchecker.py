@@ -215,6 +215,7 @@ class WeblinkCheckerRobot:
 
 def main():
     start = '!'
+    source = None
     sqlfilename = None
     pageTitle = []
     for arg in sys.argv[1:]:
