@@ -14,6 +14,7 @@ class Family(family.Family):
             'de':'de',
             'en':'en',
             'nl':'nl',
+            'sv':'sv',
             }
     
         # Most namespaces are inherited from family.Family.
