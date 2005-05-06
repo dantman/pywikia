@@ -72,6 +72,8 @@ class LinkChecker:
             conn.request('GET', '%s?%s' % (path, query))
         except socket.error, arg:
             return False, u'Socket Error: %s' % arg
+        except UnicodeEncodeError, arg:
+            return False, u'Non-ASCII Characters in URL'
         try:
             response = conn.getresponse()
         except Exception, arg:
