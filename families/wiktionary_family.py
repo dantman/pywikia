@@ -79,15 +79,10 @@ class Family(family.Family):
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
         
-        self.latin1 = ['da']
+        self.latin1 = ['da', 'sv']
        
     def code2encoding(self, code):
         if code in self.latin1:
             return 'iso-8859-1'
         else:
             return 'utf-8'
-
-    def code2encodings(self, code):
-        if code == 'sv':
-            return 'utf-8', 'iso-8859-1'
-        return self.code2encoding(code)
