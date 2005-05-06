@@ -74,7 +74,8 @@ class LinkChecker:
         # TODO: HTTPS
         try:
             conn = httplib.HTTPConnection(host)
-            header = {'User-agent': 'PythonWikipediaBot/1.0'}
+            #header = {'User-agent': 'PythonWikipediaBot/1.0'}
+            header = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.1) Opera 7.03 [de]'}
         except httplib.error, arg:
             return False, u'HTTP Error: %s' % arg
         try:
