@@ -320,6 +320,8 @@ class PageLink(object):
 
             SectionError: The subject does not exist on a page with a # link
         """
+        if self.site().language() == 'nb':
+            return PageLink(getSite('no'),self.linkname()).get()
         if force:
             # When forcing, we retry the page no matter what. Old exceptions
             # and contents do not apply any more.
@@ -1437,7 +1439,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             tokenloc = R.search(text)
             if tokenloc:
                 site.puttoken(tokenloc.group(1))
-            elif not site.getToken():
+            elif not site.getToken(getalways = False):
                 site.puttoken('')
 
             if not read_only:
@@ -2349,13 +2351,16 @@ class Site(object):
     def languages(self):
         return self.family.langs.keys()
 
-    def getToken(self):
+    def getToken(self, getalways = True):
         if not self._token:
-            output(u"Getting page to get a token.")
-            try:
-                PageLink(self, url2link("Non-existing page", self, self)).get(force = True)
-            except Error:
-                pass
+            if getalways:
+                output(u"Getting page to get a token.")
+                try:
+                    PageLink(self, url2link("Non-existing page", self, self)).get(force = True)
+                except Error:
+                    pass
+            else:
+                return False
         return self._token
 
     def puttoken(self,value):
