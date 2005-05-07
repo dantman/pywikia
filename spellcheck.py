@@ -129,7 +129,7 @@ def askAlternative(word,context=None):
         else:
             for i in xrange(len(Word(word).getAlternatives())):
                 if answer == str(i+1):
-                    correct = Word(word).getAlternatives()[i]
+                    correct = Word(word).getAlternatives()[i].replace('_',' ')
     return correct
 
 def removeHTML(page):
