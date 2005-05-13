@@ -421,6 +421,67 @@ class Family:
             },
         }
         
+        # A list of disambiguation template names in different languages
+        # First character must be lower case!
+        self.disambigs = {
+            '_default':   u'disambig',
+        	'af'  :       u'dubbelsinnig',
+        	'als' :       u'begriffsklärung',
+        	'ang' :       u'disambig',
+        	'ar'  :       u'disambig',
+        	'be'  :       u'неадназначнасьць',
+        	'bg'  :       u'пояснение',
+        	'ca'  :       u'неадназначнасьць',
+        	'cs'  :       u'rozcestník',
+        	'cy'  :       u'anamrwysedd',
+        	'da'  :       u'flertydig',
+        	'de'  :       u'begriffsklärung',
+        	'el'  :       u'disambig',
+        	'en'  :       u'disambig',
+        	'eo'  :       u'apartigilo',
+        	'es'  :       u'desambiguacion',
+        	'et'  :       u'täpsustuslehekülg',
+        	'fa'  :       u'ابهام زدایی',
+        	'fi'  :       u'täsmennyssivu',
+        	'fr'  :       u'homonymie',
+        	'ga'  :       u'idirdhealú',
+        	'gl'  :       u'homónimos',
+        	'hr'  :       u'disambig',
+        	'hu'  :       u'egyert',
+        	'ia'  :       u'disambiguation',
+        	'id'  :       u'disambig',
+        	'io'  :       u'homonimo',
+        	'is'  :       u'aðgreining',
+        	'it'  :       u'disambigua',
+        	'ja'  :       u'aimai',
+        	'ka'  :       u'არაორაზროვნება',
+        	'ko'  :       u'disambig',
+        	'ku'  :       u'cudakirin',
+        	'la'  :       u'discretiva',
+        	'lb'  :       u'homonymie',
+        	'li'  :       u'verdudeliking',
+        	'lt'  :       u'disambig',
+        	'nds' :       u'begreepkloren',
+        	'nl'  :       u'dp',
+        	'nn'  :       u'fleirtyding',
+        	'no'  :       u'peker',
+        	'pl'  :       u'disambig',
+        	'pt'  :       u'desambiguação',
+        	'ro'  :       u'dezambiguizare',
+        	'ru'  :       u'disambig',
+        	'sk'  :       u'disambiguation',
+        	'sl'  :       u'disambig',
+        	'sq'  :       u'kthjellim',
+        	'sr'  :       u'вишезначна одредница',
+        	'su'  :       u'disambig',
+        	'sv'  :       u'disambig',
+        	'th'  :       u'แก้กำกวม',
+        	'vi'  :       u'trang định hướng',
+        	'wa'  :       u'omonimeye',
+        	'zh'  :       u'disambig',
+        	'zh-min-nan': u'khu-pia̍t-ia̍h',
+        }
+
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
     
@@ -480,6 +541,14 @@ class Family:
         else:
             raise KeyError('ERROR: title for namespace %d in language %s unknown' % (namespace_number, code))  
     
+    def disambig(self, code, fallback = '_default'):
+        if self.disambigs.has_key(code):
+            return self.disambigs[code]
+        elif fallback:
+            return self.disambigs[fallback]
+        else:
+            raise KeyError('ERROR: title for disambig template in language %s unknown' % code)  
+
     # Returns the title of the special namespace in language 'code', taken from
     # dictionary above.
     # If the dictionary doesn't contain a translation, it will use language

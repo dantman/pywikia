@@ -32,9 +32,11 @@ PageLink: A MediaWiki page
         part after the | is included.
     links (*): The normal links from the page (list of links)
     imagelinks (*): The pictures on the page (list of strings)
+    templates(*): All templates referenced on the page (list of strings)
     getRedirectTo (*): The page the page redirects to
     isCategory(): True if the page is a category, false otherwise
     isImage(): True if the page is an image, false otherwise
+    isDisambig (*): True if the page is a disambiguation page
 
     put(newtext): Saves the page
     delete: Deletes the page (requires being logged in)
@@ -419,6 +421,16 @@ class PageLink(object):
             return True
         return False
         
+    def isDisambig(self):
+        defdis = self.site().family.disambig( "_default" )
+        locdis = self.site().family.disambig( self._site.lang )
+
+        for tn in self.templates():
+            tn2 = tn[:1].lower() + tn[1:]
+            if tn2 == defdis or tn2 == locdis:
+                return True
+        return False
+
     def put(self, newtext, comment=None, watchArticle = False, minorEdit = True):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
@@ -480,7 +492,7 @@ class PageLink(object):
         for catname in ll:
             result.append(self.__class__(self.site(), title = catname))
         return result
-            
+        
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            PageLink objects"""
@@ -542,6 +554,21 @@ class PageLink(object):
             Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
             for l in Rlink.findall(self.get(read_only = True)):
                 result.append(PageLink(self._site,l[0]))
+        return result
+
+    def templates(self):
+        """Gives a list of template names used on a page (strings).
+        """
+        try:
+            thistxt = self.get(read_only = True)
+        except IsRedirectPage:
+            return []
+                
+        result = []
+        w=r'([^\}\|]*)'
+        Rlink = re.compile(r'\{\{'+w+r'(\|'+w+r')?\}\}')
+        for l in Rlink.findall(thistxt):
+            result.append(l[0])
         return result
 
     def getRedirectTo(self, read_only = False):
@@ -925,10 +952,10 @@ class GetAll(object):
         while True:
             try:
                 data = self.getData()
-            except socket.error:
+            except (socket.error, httplib.BadStatusLine):
                 # Print the traceback of the caught exception
                 print ''.join(traceback.format_exception(*sys.exc_info()))
-                output(u'DBG> got socket error in GetAll.run. Sleeping for %d seconds'%dt)
+                output(u'DBG> got network error in GetAll.run. Sleeping for %d seconds'%dt)
                 time.sleep(dt)
                 if dt <= 60:
                     dt += 15
