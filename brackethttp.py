@@ -23,7 +23,7 @@ try:
         if wikipedia.argHandler(arg):
             pass
         else:
-            pl = wikipedia.PageLink(wikipedia.getSite(), arg)
+            pl = wikipedia.Page(wikipedia.getSite(), arg)
             text = pl.get()
         
             newText = re.sub("(http:\/\/([^ ]*[^\] ]))\)", "[\\1 \\2])", text)

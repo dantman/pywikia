@@ -57,7 +57,7 @@ class UploadRobot:
                 wikipedia.output(u'No input filename given.')
                 self.filename = wikipedia.input(u'Give filename:')
             full_image_name = "%s:%s" % (othersite.image_namespace(), self.filename)
-            pl = wikipedia.PageLink(othersite, full_image_name)
+            pl = wikipedia.Page(othersite, full_image_name)
             lib_images.transfer_image(pl)
         else:
             while not self.filenameOK():

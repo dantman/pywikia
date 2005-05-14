@@ -221,7 +221,7 @@ class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
        all its translations)"""
     def __init__(self, pl, hints = None):
-        """Constructor. Takes as arguments the PageLink on the home wiki
+        """Constructor. Takes as arguments the Page on the home wiki
            plus optionally a list of hints for translation"""
         # Remember the "origin page"
         self.inpl = pl
@@ -241,7 +241,7 @@ class Subject(object):
         self.hintsasked = False
         
     def pl(self):
-        """Return the PageLink on the home wiki"""
+        """Return the Page on the home wiki"""
         return self.inpl
     
     def translate(self, hints = None):
@@ -314,7 +314,7 @@ class Subject(object):
                 try:
                     iw = pl.interwiki()
                 except wikipedia.IsRedirectPage,arg:
-                    pl3 = wikipedia.PageLink(pl.site(),arg.args[0])
+                    pl3 = wikipedia.Page(pl.site(),arg.args[0])
                     wikipedia.output(u"NOTE: %s is redirect to %s" % (pl.aslink(), pl3.aslink()))
                     if pl == self.inpl:
                         # This is a redirect page itself. We don't need to
@@ -572,7 +572,7 @@ class Subject(object):
             try:
                 if wikipedia.getSite('no') in new.keys():
                     if wikipedia.getSite('nn') in new or self.inpl.site().lang == 'nn':
-                        new[wikipedia.getSite('nb')] = wikipedia.PageLink(wikipedia.getSite('nb'),new[wikipedia.getSite('no')].linkname())
+                        new[wikipedia.getSite('nb')] = wikipedia.Page(wikipedia.getSite('nb'),new[wikipedia.getSite('no')].linkname())
                         del new[wikipedia.getSite('no')]
             except KeyError:
                 # Apparently no and/or nn and/or nb does not exist in this family
@@ -688,7 +688,7 @@ class SubjectArray(object):
 
     def setGenerator(self, generator):
         """Add a generator of subjects. Once the list of subjects gets
-           too small, this generator is called to produce more PageLinks"""
+           too small, this generator is called to produce more Pages"""
         self.generator = generator
 
     def dump(self, fn):
@@ -864,7 +864,7 @@ def ReadWarnfile(filename, sa):
     # we won't use removeHints
     hints = reader.getHints()[0]
     for pagename in hints.iterkeys():
-        pl = wikipedia.PageLink(wikipedia.getSite(), pagename)
+        pl = wikipedia.Page(wikipedia.getSite(), pagename)
         # The WarnfileReader gives us a list of pagelinks, but titletranslate.py expects a list of strings, so we convert it back.
         # TODO: This is a quite ugly hack, in the future we should maybe make titletranslate expect a list of pagelinks.
         hintStrings = []
@@ -958,7 +958,7 @@ if __name__ == "__main__":
                                 current_year = '%d' % i
                         # There is no year 0
                         if i != 0:
-                            sa.add(wikipedia.PageLink(wikipedia.getSite(), current_year),hints=hints)
+                            sa.add(wikipedia.Page(wikipedia.getSite(), current_year),hints=hints)
                     globalvar.followredirect = False
                 elif arg.startswith('-days'):
                     if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
@@ -968,21 +968,21 @@ if __name__ == "__main__":
                     else:
                         startmonth = 1
                     fd = date.FormatDate(wikipedia.getSite())
-                    pl = wikipedia.PageLink(wikipedia.getSite(), fd(startmonth, 1))
+                    pl = wikipedia.Page(wikipedia.getSite(), fd(startmonth, 1))
                     wikipedia.output(u"Starting with %s" % pl.aslink())
                     for month in range(startmonth, 12+1):
                         for day in range(1, date.days_in_month[month]+1):
-                            pl = wikipedia.PageLink(wikipedia.getSite(), fd(month, day))
+                            pl = wikipedia.Page(wikipedia.getSite(), fd(month, day))
                             sa.add(pl,hints=hints)
                 elif arg == '-nobell':
                     globalvar.bell = False
                 elif arg.startswith('-skipfile:'):
                     skipfile = arg[10:]
                 elif arg == '-restore':
-                    for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
+                    for pl in wikipedia.PagesFromFile('interwiki.dump'):
                         sa.add(pl,hints=hints)
                 elif arg == '-continue':
-                    for pl in wikipedia.PageLinksFromFile('interwiki.dump'):
+                    for pl in wikipedia.PagesFromFile('interwiki.dump'):
                         sa.add(pl,hints=hints)
                     try:
                         start = str(pl.linkname().encode(pl.encoding()))
@@ -990,7 +990,7 @@ if __name__ == "__main__":
                         print "Dump file is empty?! Starting at the beginning."
                         start = "!"
                 elif arg.startswith('-file:'):
-                    for pl in wikipedia.PageLinksFromFile(arg[6:]):
+                    for pl in wikipedia.PagesFromFile(arg[6:]):
                         sa.add(pl,hints=hints)
                 elif arg.startswith('-start:'):
                     start = arg[7:]
@@ -1010,7 +1010,7 @@ if __name__ == "__main__":
         unequal.read_exceptions()
     
         if skipfile:
-            for pl in wikipedia.PageLinksFromFile(skipfile):
+            for pl in wikipedia.PagesFromFile(skipfile):
                 globalvar.skip[pl] = None
 
         if start:
@@ -1035,7 +1035,7 @@ if __name__ == "__main__":
             inname = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
 
         if inname:
-            inpl = wikipedia.PageLink(wikipedia.getSite(), inname)
+            inpl = wikipedia.Page(wikipedia.getSite(), inname)
             sa.add(inpl, hints = hints)
 
         try:

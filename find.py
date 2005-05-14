@@ -71,11 +71,11 @@ class ReadPages:
                     if self.regex:
                         old = re.compile(old)
                         if old.search(entry.text):
-                            yield wikipedia.PageLink(mysite, entry.full_title())
+                            yield wikipedia.Page(mysite, entry.full_title())
                             break
                     else:
                         if entry.text.find(old) != -1:
-                            yield wikipedia.PageLink(mysite, entry.full_title())
+                            yield wikipedia.Page(mysite, entry.full_title())
                             break
 
     def read_pages_from_category(self):
@@ -93,11 +93,11 @@ class ReadPages:
             # TODO: use findall() instead.
             m=R.match(line)
             if m:
-                yield wikipedia.PageLink(wikipedia.getSite(), m.group(1))
+                yield wikipedia.Page(wikipedia.getSite(), m.group(1))
         f.close()
 
     def read_pages_from_wiki_page(self):
-        listpage = wikipedia.PageLink(wikipedia.getSite(), self.pagetitle)
+        listpage = wikipedia.Page(wikipedia.getSite(), self.pagetitle)
         list = wikipedia.get(listpage, read_only = True)
 
     def generate(self):
@@ -116,7 +116,7 @@ class ReadPages:
         #-page
         elif self.source == 'userinput':
             for pagename in self.pagenames:
-                yield wikipedia.PageLink(wikipedia.getSite(), pagename)
+                yield wikipedia.Page(wikipedia.getSite(), pagename)
 
                 
 class FindPages:

@@ -355,7 +355,7 @@ try:
         newpages = wikipedia.getPage(mysite, mysite.newpagesname(500), do_quote=False, get_edit_page=False, throttle = True)
         R = re.compile("<li.*?>.*?title=(.*?)&")
         for hit in R.findall(newpages):
-            page = wikipedia.PageLink(mysite,hit)
+            page = wikipedia.Page(mysite,hit)
             try:
                 text = page.get()
             except wikipedia.Error:
@@ -378,7 +378,7 @@ try:
         title = ' '.join(title)
         while title != '':
             try:
-                page = wikipedia.PageLink(mysite,title)
+                page = wikipedia.Page(mysite,title)
                 text = page.get()
             except wikipedia.NoPage:
                 print "Page does not exist."

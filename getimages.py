@@ -39,7 +39,7 @@ def getfn():
 def main():
     for filename in getfn():
         print "Handling images from %s" % filename
-        for image in wikipedia.PageLinksFromFile(filename):
+        for image in wikipedia.PagesFromFile(filename):
             if image.isImage():
                 print "-" * 50
                 print "Image: %s" % image.linkname()

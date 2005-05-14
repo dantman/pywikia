@@ -43,8 +43,8 @@ def unique(l):
     l.sort()
     return l
     
-class _CatLink(wikipedia.PageLink):
-    """Subclass of PageLink that has some special tricks that only work for
+class _CatLink(wikipedia.Page):
+    """Subclass of Page that has some special tricks that only work for
        category: pages"""
 
     def iscattitle(self, title):
@@ -193,7 +193,7 @@ class _CatLink(wikipedia.PageLink):
         """
         articles = []
         for title in self.catlist(recurse)[0]:
-            npage = wikipedia.PageLink(self.site(), title)
+            npage = wikipedia.Page(self.site(), title)
             articles.append(npage)
         return unique(articles)
 
@@ -220,7 +220,7 @@ class _CatLink(wikipedia.PageLink):
         existed.
         """
         catname = self.site().category_namespace() + ':' + catname
-        targetCat = wikipedia.PageLink(self.site(), catname)
+        targetCat = wikipedia.Page(self.site(), catname)
         if targetCat.exists():
             wikipedia.output('Target page %s already exists!' % targetCat.linkname())
             return False

@@ -58,13 +58,13 @@ class TemplatePageGenerator:
         # get template namespace
         ns = mysite.template_namespace(fallback = None)
         # Download 'What links here' of the template page
-        self.templatePl = wikipedia.PageLink(mysite, ns + ':' + templateName)
+        self.templatePl = wikipedia.Page(mysite, ns + ':' + templateName)
 
     def generate(self):
         # yield all pages using the template
         if self.sqlfilename == None:
             for ref in wikipedia.getReferences(self.templatePl):
-                refpl=wikipedia.PageLink(wikipedia.getSite(), ref)
+                refpl=wikipedia.Page(wikipedia.getSite(), ref)
                 yield refpl
         else:
             import sqldump
@@ -75,7 +75,7 @@ class TemplatePageGenerator:
             templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}')
             for entry in dump.entries():
                 if templateR.search(entry.text):
-                    pl = wikipedia.PageLink(mysite, entry.full_title())
+                    pl = wikipedia.Page(mysite, entry.full_title())
                     yield pl
 
 class TemplateRobot:

@@ -141,7 +141,7 @@ for arg in sys.argv[1:]:
             log = False
         else:
             mysite = wikipedia.getSite()
-            todo.append(wikipedia.PageLink(mysite,arg))
+            todo.append(wikipedia.Page(mysite,arg))
 
 # Make sure we have the final site
 mysite = wikipedia.getSite()

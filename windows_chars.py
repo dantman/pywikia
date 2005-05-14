@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.18 2004/10/17 08:52:09 hooft Exp $'
+__version__='$Id: windows_chars.py,v 1.19 2005/02/06 17:27:52 a_engels Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -52,7 +52,7 @@ windows_1252 = [u"\x80",         u"\x82", u"\x83", u"\x84", u"\x85", u"\x86", u"
 # HTML entities, and saves it
 def treat(page):
     print
-    pl=wikipedia.PageLink(wikipedia.getSite(), page)
+    pl=wikipedia.Page(wikipedia.getSite(), page)
     try:
         reftxt=pl.get()
     except wikipedia.IsRedirectPage:

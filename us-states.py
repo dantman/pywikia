@@ -95,12 +95,12 @@ def main():
         for sn in abbrev:
             R=re.compile('[^[]]*' + '\%2C_' + sn)
             for res in R.findall(p.urlname()):
-                pl=wikipedia.PageLink(mysite, p.urlname().replace(sn,abbrev[sn]))
+                pl=wikipedia.Page(mysite, p.urlname().replace(sn,abbrev[sn]))
                 # A bit hacking here - the real work is done in the 'except wikipedia.NoPage'
                 # part rather than the 'try'.
                 try:
                     goal = pl.getRedirectTo()
-                    if wikipedia.PageLink(mysite, goal):
+                    if wikipedia.Page(mysite, goal):
                         print("Not creating %s - redirect already exists.") % goal
                     else:
                         print("WARNING!!! %s already exists but redirects elsewhere!") % goal
@@ -109,7 +109,7 @@ def main():
                 except wikipedia.NoPage:
                     change=''
                     if p.isRedirectPage():
-                        p2 = wikipedia.PageLink(mysite, p.getRedirectTo())
+                        p2 = wikipedia.Page(mysite, p.getRedirectTo())
                         print ('Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.')%p2.urlname().replace("%2C",",").replace("_"," ")
                     else:
                         p2 = p

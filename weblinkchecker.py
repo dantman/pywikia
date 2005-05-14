@@ -238,7 +238,7 @@ def main():
         gen = SqlPageGenerator(sqlfilename)
     elif source == 'page':
         pageTitle = ' '.join(pageTitle)
-        pl = wikipedia.PageLink(wikipedia.getSite(), pageTitle)
+        pl = wikipedia.Page(wikipedia.getSite(), pageTitle)
         gen = SinglePageGenerator(pl)
     else:
         gen = AllpagesPageGenerator(start)

@@ -6,8 +6,8 @@ Contents of the library (objects and functions to be used outside, situation
 late August 2004)
 
 Classes:
-PageLink: A MediaWiki page
-    __init__: PageLink(xx,Title) - the page with title Title on language xx:
+Page: A MediaWiki page
+    __init__: Page(xx,Title) - the page with title Title on language xx:
     linkname: The name of the page, in a form suitable for an interwiki link
     urlname: TheNopage name of the page, in a form suitable for a URL
     catname: The name of the page, with the namespace part removed
@@ -26,8 +26,8 @@ PageLink: A MediaWiki page
     isRedirectPage (*): True if the page is a redirect, false otherwise
     isEmpty (*): True if the page has 4 characters or less content, not
         counting interwiki and category links
-    interwiki (*): The interwiki links from the page (list of PageLinks)
-    categories (*): The categories the page is in (list of PageLinks)
+    interwiki (*): The interwiki links from the page (list of Pages)
+    categories (*): The categories the page is in (list of Pages)
     rawcategories (*): Like categories, but if the link contains a |, the
         part after the | is included.
     links (*): The normal links from the page (list of links)
@@ -43,8 +43,8 @@ PageLink: A MediaWiki page
 
     (*): This loads the page if it has not been loaded before
 
-PageGroup: A group of PageLinks (internally ordered)
-    __init__(list): Create a PageGroup of the list of PageLinks in list,
+PageGroup: A group of Pages (internally ordered)
+    __init__(list): Create a PageGroup of the list of Pages in list,
         which does not need to be ordered.
     __init__(): Create an empty PageGroup
     contains(pl): Boolean, true iff pl in the PageGroup
@@ -56,19 +56,19 @@ PageGroup: A group of PageLinks (internally ordered)
     remforce(pl): Remove the page pl from the PageGroup if it is in the group
     aslist(): Use the PageGroup as an ordinary list
     show(): Write down the contents of the PageGroup on the screen
-    addall(list): Add all PageLinks from a (not necessarily ordered) list
+    addall(list): Add all Pages from a (not necessarily ordered) list
     getone(): Get any one element
     isEmpty(): True IFF the group is empty
 
 Other functions:
-getall(xx,Pages): Get all pages in Pages (where Pages is a list of PageLinks,
+getall(xx,Pages): Get all pages in Pages (where Pages is a list of Pages,
     and xx: the language the pages are on)
-PageLinksFromFile(fn): Get from fn a list of PageLinks in the form
+PagesFromFile(fn): Get from fn a list of Pages in the form
     [[xx:Title]]
 setAction(text): Use 'text' instead of "Wikipedia python library" in
     summaries
 forSite(text,xx): Change 'text' such that it is usable on the given site xx
-allpages(): Get all page titles in one's home language as PageLinks (or all
+allpages(): Get all page titles in one's home language as Pages (or all
     pages from 'Start' if allpages(start='Start') is used).
 getReferences(Pagelink): The pages linking to the Pagelink object, as a
     list of strings
@@ -91,12 +91,12 @@ removeLanguageLinks(text): gives the wiki-code 'text' without any interlanguage
     links.
 replaceLanguageLinks(oldtext, new): in the wiki-code 'oldtext' remove the
     language links and replace them by the language links in new, a dictionary
-    with the languages as keys and either PageLinks or linknames as values
+    with the languages as keys and either Pages or linknames as values
 getCategoryLinks(text,xx): get all category links in text 'text' (links in the
     form xx:pagename)
 removeCategoryLinks(text,xx): remove all category links in 'text'
 replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
-    those in new (new a list of category PageLinks)
+    those in new (new a list of category Pages)
 stopme(): Put this on a bot when it is not or not any more communicating
     with the Wiki. It will remove the bot from the list of running processes,
     and thus not slow down other bot threads any more.
@@ -174,8 +174,8 @@ class NotLoggedIn(Error):
 
 SaxError = xml.sax._exceptions.SAXParseException
 
-# The most important thing in this whole module: The PageLink class
-class PageLink(object):
+# The most important thing in this whole module: The Page class
+class Page(object):
     """A Wikipedia page link."""
     def __init__(self, site, title = None, insite = None, tosite = None):
         """
@@ -209,7 +209,7 @@ class PageLink(object):
         self._linkname = url2link(self._urlname, site = self._site, insite = self._tosite)
 
     def site(self):
-        """The site of the page this PageLink refers to,
+        """The site of the page this Page refers to,
            without :"""
         return self._site
 
@@ -220,12 +220,12 @@ class PageLink(object):
         return self._site.encoding()
     
     def urlname(self):
-        """The name of the page this PageLink refers to, in a form suitable
+        """The name of the page this Page refers to, in a form suitable
            for the URL of the page."""
         return self._urlname
 
     def linkname(self, doublex = False):
-        """The name of the page this PageLink refers to, in a form suitable
+        """The name of the page this Page refers to, in a form suitable
            for a wiki-link"""
         if doublex:
             ln=self._linkname
@@ -260,7 +260,7 @@ class PageLink(object):
         return ':'.join(p)
 
     def hashname(self):
-        """The name of the section this PageLink refers to. Sections are
+        """The name of the section this Page refers to. Sections are
            denominated by a # in the linkname(). If no section is referenced,
            None is returned."""
         ln = self.linkname()
@@ -323,7 +323,7 @@ class PageLink(object):
             SectionError: The subject does not exist on a page with a # link
         """
         if self.site().language() == 'nb':
-            return PageLink(getSite('no'),self.linkname()).get()
+            return Page(getSite('no'),self.linkname()).get()
         if force:
             # When forcing, we retry the page no matter what. Old exceptions
             # and contents do not apply any more.
@@ -447,7 +447,7 @@ class PageLink(object):
            the page text to do its work, so it can raise the same exceptions
            that are raised by the get() method.
 
-           The return value is a list of PageLink objects for each of the
+           The return value is a list of Page objects for each of the
            interwiki links in the page text.
         """
         result = []
@@ -474,7 +474,7 @@ class PageLink(object):
            the page text to do its work, so it can raise the same exceptions
            that are raised by the get() method.
 
-           The return value is a list of PageLink objects for each of the
+           The return value is a list of Page objects for each of the
            category links in the page text."""
         result = []
         ll = getCategoryLinks(self.get(read_only = True), self.site())
@@ -495,7 +495,7 @@ class PageLink(object):
         
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
-           PageLink objects"""
+           Page objects"""
         if not hasattr(other, 'site'):
             return -1
         if not self.site() == other.site():
@@ -505,7 +505,7 @@ class PageLink(object):
         return cmp(u1,u2)
 
     def __hash__(self):
-        """Pseudo method that makes it possible to store PageLink objects as
+        """Pseudo method that makes it possible to store Page objects as
            keys in hash-tables. This relies on the fact that the string
            representation of an instance can not change after the construction.
         """
@@ -536,24 +536,24 @@ class PageLink(object):
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
         for l in Rlink.findall(self.get(read_only = True)):
-            result.append(PageLink(self._site,l[0]))
+            result.append(Page(self._site,l[0]))
         w1=r'('+im.lower()+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
         for l in Rlink.findall(self.get(read_only = True)):
-            result.append(PageLink(self._site,l[0]))
+            result.append(Page(self._site,l[0]))
         if im <> 'Image:':
             im='Image:'
             w1=r'('+im+'[^\]\|]*)'
             w2=r'([^\]]*)'
             Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
             for l in Rlink.findall(self.get(read_only = True)):
-                result.append(PageLink(self._site,l[0]))
+                result.append(Page(self._site,l[0]))
             w1=r'('+im.lower()+'[^\]\|]*)'
             w2=r'([^\]]*)'
             Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
             for l in Rlink.findall(self.get(read_only = True)):
-                result.append(PageLink(self._site,l[0]))
+                result.append(Page(self._site,l[0]))
         return result
 
     def templates(self):
@@ -715,14 +715,14 @@ class PageLink(object):
                 output(returned_html, myencoding())
 
 class PageGroup(object):
-    # A PageGroup is an ordered set of PageLink objects
+    # A PageGroup is an ordered set of Page objects
 
     def __init__(self,list=[]):
         self._list=list
         self._list=self._sorted(self._list)
 
     def _sorted(self,list):
-        # Sorting a list of PageLinks. We're using mergesort        
+        # Sorting a list of Pages. We're using mergesort        
         if len(list) <= 1:
             return list
         else:
@@ -997,9 +997,9 @@ class GetAll(object):
                             pl._contents = pl._contents.replace(c2+x,c2+x+x)
 
     def oneDone(self, title, timestamp, text):
-        pl = PageLink(self.site, title)
+        pl = Page(self.site, title)
         for pl2 in self.pages:
-            if PageLink(self.site, pl2.hashfreeLinkname()) == pl:
+            if Page(self.site, pl2.hashfreeLinkname()) == pl:
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
         else:
@@ -1079,9 +1079,9 @@ def getall(site, pages, throttle = True):
     
 # Library functions
 
-def PageLinksFromFile(fn, site = None):
+def PagesFromFile(fn, site = None):
     """Read a file of page links between double-square-brackets, and return
-       them as a list of PageLink objects. 'fn' is the name of the file that
+       them as a list of Page objects. 'fn' is the name of the file that
        should be read."""
     if site is None:
         site = getSite()
@@ -1105,7 +1105,7 @@ def PageLinksFromFile(fn, site = None):
             pagename = ':'.join(part[i:])
             thesite = getSite(code = code, fam = fam)
             #print "DBG> Pagename", repr(thesite),pagename
-            yield PageLink(thesite, pagename)
+            yield Page(thesite, pagename)
         else:
             print "ERROR: Did not understand %s line:\n%s" % (fn, repr(line))
     f.close()
@@ -1282,7 +1282,7 @@ put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
 
 def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None):
     """Upload 'text' on page 'name' to the 'site' wiki.
-       Use of this routine can normally be avoided; use PageLink.put
+       Use of this routine can normally be avoided; use Page.put
        instead.
     """
     safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
@@ -1413,7 +1413,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
     """
     Get the contents of page 'name' from the 'site' wiki
     Do not use this directly; for 99% of the possible ideas you can
-    use the PageLink object instead.
+    use the Page object instead.
    
     Arguments:
         site          - the wiki site
@@ -1586,7 +1586,7 @@ def newpages(number=10, onlyonce=False, site=None):
                         dtt = time.strptime(timeonly+' '+time.strftime('%d %m %Y',time.localtime()), '%H:%M %d %m %Y')
                     d["date"] = datetime.datetime.fromtimestamp(time.mktime(dtt))
                     d["length"] = int(d["length"])
-                    d["title"] = PageLink(site, d["title"])
+                    d["title"] = Page(site, d["title"])
                     yield d
             if onlyonce:
                 break
@@ -1602,7 +1602,7 @@ def allpages(start = '!', site = None, throttle = True):
        alphanumerical order, starting at a given page. By default,
        it starts at '!', so it should yield all pages.
 
-       The objects returned by this generator are all PageLink()s.
+       The objects returned by this generator are all Page()s.
     """
     if site == None:
         site = getSite()
@@ -1636,9 +1636,9 @@ def allpages(start = '!', site = None, throttle = True):
             # count how many articles we found on the current page
             n = n + 1
             if site.version()=="1.2":
-                yield PageLink(site, url2link(hit, site = site, insite = site))
+                yield Page(site, url2link(hit, site = site, insite = site))
             else:
-                yield PageLink(site, hit)
+                yield Page(site, hit)
             # save the last hit, so that we know where to continue when we
             # finished all articles on the current page. Append a '!' so that
             # we don't yield a page twice.
@@ -1654,7 +1654,7 @@ def allpages(start = '!', site = None, throttle = True):
 def getLanguageLinks(text, insite = None):
     """Returns a dictionary of other language links mentioned in the text
        in the form {code:pagename}. Do not call this routine directly, use
-       PageLink objects instead"""
+       Page objects instead"""
     if insite == None:
         insite = getSite()
     result = {}
@@ -1720,7 +1720,7 @@ def replaceLanguageLinks(oldtext, new, site = None):
        in oldtext by the new links given in new.
 
        'new' should be a dictionary with the language names as keys, and
-       either PageLink objects or the link-names of the pages as values.
+       either Page objects or the link-names of the pages as values.
     """
     if site == None:
         site = getSite()
@@ -1733,7 +1733,7 @@ def replaceLanguageLinks(oldtext, new, site = None):
             cats = getCategoryLinks(s2, site = site)
             s3 = []
             for catname in cats:
-                s3.append(PageLink(site, catname))
+                s3.append(Page(site, catname))
             s2 = removeCategoryLinks(s2, site) + config.interwiki_text_separator + s
             newtext = replaceCategoryLinks(s2, s3, site=site)
         else:
@@ -1747,7 +1747,7 @@ def interwikiFormat(links, insite = None):
        page.
 
        'links' should be a dictionary with the language names as keys, and
-       either PageLink objects or the link-names of the pages as values.
+       either Page objects or the link-names of the pages as values.
 
        The string is formatted for inclusion in insite (defaulting to your own).
     """
@@ -1812,7 +1812,7 @@ def normalWhitespace(text):
 def getCategoryLinks(text, site, raw=False):
     """Returns a list of category links.
        in the form {code:pagename}. Do not call this routine directly, use
-       PageLink objects instead"""
+       Page objects instead"""
     result = []
     ns = site.category_namespaces()
     for prefix in ns:
@@ -2383,7 +2383,7 @@ class Site(object):
             if getalways:
                 output(u"Getting page to get a token.")
                 try:
-                    PageLink(self, url2link("Non-existing page", self, self)).get(force = True)
+                    Page(self, url2link("Non-existing page", self, self)).get(force = True)
                 except Error:
                     pass
             else:

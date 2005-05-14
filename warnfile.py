@@ -45,7 +45,7 @@ class WarnfileReader:
                             thesite = wikipedia.getSite(code=lang, fam=family)
                         else:
                             thesite = mysite.getSite(code = m.group('targetsite'))
-                        targetPl = wikipedia.PageLink(thesite, m.group('targettitle'))
+                        targetPl = wikipedia.Page(thesite, m.group('targettitle'))
                         if removing:
                             if not removeHints.has_key(m.group('localtitle')):
                                 removeHints[m.group('localtitle')]=[]
@@ -70,7 +70,7 @@ class WarnfileRobot:
         k.sort()
         print "Fixing... %d pages" % len(k)
         for pagename in k:
-            pl = wikipedia.PageLink(wikipedia.getSite(), pagename)
+            pl = wikipedia.Page(wikipedia.getSite(), pagename)
             old={}
             try:
                 for pl2 in pl.interwiki():

@@ -73,7 +73,7 @@ class TableSqlDumpGenerator:
         tableTagR = re.compile('<table', re.IGNORECASE)
         for entry in self.sqldump.entries():
             if tableTagR.search(entry.text):
-                pl = wikipedia.PageLink(wikipedia.getSite(), entry.full_title())
+                pl = wikipedia.Page(wikipedia.getSite(), entry.full_title())
                 yield pl
 
 class SinglePageGenerator:
@@ -531,7 +531,7 @@ def main():
     # connect the title's parts with spaces
     elif page_title != []:
         page_title = ' '.join(page_title)
-        pl = wikipedia.PageLink(wikipedia.getSite(), page_title)
+        pl = wikipedia.Page(wikipedia.getSite(), page_title)
         gen = PreloadingGenerator(SinglePageGenerator(pl))
     else:
         wikipedia.output(__doc__, 'utf-8')

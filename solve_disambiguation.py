@@ -237,7 +237,7 @@ class ReferringPageGenerator:
                         del refs[i]
         refpls = []
         for ref in refs:
-            refpl = wikipedia.PageLink(self.disambPl.site(), ref)
+            refpl = wikipedia.Page(self.disambPl.site(), ref)
             if not self.primaryIgnoreManager.isIgnored(refpl):
                 refpls.append(refpl)
 
@@ -459,7 +459,7 @@ class DisambiguationRobot:
                 if wikipedia.isInterwikiLink(m.group(1)):
                     continue
                 else:
-                    linkpl=wikipedia.PageLink(disambPl.site(), m.group(1))
+                    linkpl=wikipedia.Page(disambPl.site(), m.group(1))
                 # Check whether the link found is to disambPl.
                 if linkpl != disambPl:
                     continue
@@ -568,7 +568,7 @@ class DisambiguationRobot:
                         curpos -= 1
                         continue
                     new_page_title = self.alternatives[choice]
-                    reppl = wikipedia.PageLink(disambPl.site(), new_page_title)
+                    reppl = wikipedia.Page(disambPl.site(), new_page_title)
                     new_page_title = reppl.linkname()
                     # There is a function that uncapitalizes the link target's first letter
                     # if the link description starts with a small letter. This is useful on
@@ -614,7 +614,7 @@ class DisambiguationRobot:
             else:
                 wikipedia.setAction(wikipedia.translate(self.mysite,msg) % disambTitle)
     
-            disambPl = wikipedia.PageLink(self.mysite, disambTitle)
+            disambPl = wikipedia.Page(self.mysite, disambTitle)
             
             self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl, enabled = self.primary)
     
@@ -636,12 +636,12 @@ class DisambiguationRobot:
             elif self.getAlternatives:
                 try:
                     if self.primary:
-                        disamb_pl = wikipedia.PageLink(self.mysite, primary_topic_format[self.mylang] % disambTitle)
+                        disamb_pl = wikipedia.Page(self.mysite, primary_topic_format[self.mylang] % disambTitle)
                         thistxt = disamb_pl.get(throttle=False)
                     else:
                         thistxt = disambPl.get(throttle=False)
                 except wikipedia.IsRedirectPage,arg:
-                    thistxt = wikipedia.PageLink(self.mysite, str(arg)).get(throttle=False)
+                    thistxt = wikipedia.Page(self.mysite, str(arg)).get(throttle=False)
                 except wikipedia.NoPage:
                     print "Page does not exist?!"
                     thistxt = ""
@@ -710,7 +710,7 @@ def main():
             elif arg.startswith('-pos:'):
                 if arg[5]!=':':
                     mysite = wikipedia.getSite()
-                    pl=wikipedia.PageLink(mysite, arg[5:])
+                    pl=wikipedia.Page(mysite, arg[5:])
                     if pl.exists():
                         alternatives.append(pl.linkname())
                     else:

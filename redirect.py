@@ -182,7 +182,7 @@ class RedirectRobot:
         reason = wikipedia.translate(wikipedia.getSite(), reason_broken)
     
         for redir_name in self.generator.retrieve_broken_redirects():
-            redir_page = wikipedia.PageLink(wikipedia.getSite(), redir_name)
+            redir_page = wikipedia.Page(wikipedia.getSite(), redir_name)
             try:
                 target_name = redir_page.getRedirectTo(read_only = True)
             except wikipedia.IsNotRedirectPage:
@@ -193,7 +193,7 @@ class RedirectRobot:
                 wikipedia.output(u'%s is locked.' % redir_page.linkname())
             else:
                 try:
-                    target_page = wikipedia.PageLink(wikipedia.getSite(), target_name)
+                    target_page = wikipedia.Page(wikipedia.getSite(), target_name)
                     target_page.get(read_only = True)
                 except wikipedia.NoPage:
                     redir_page.delete(reason, prompt = False)
@@ -209,7 +209,7 @@ class RedirectRobot:
         mysite = wikipedia.getSite()
         for redir_name in self.generator.retrieve_double_redirects():
             print ''
-            redir = wikipedia.PageLink(mysite, redir_name)
+            redir = wikipedia.Page(mysite, redir_name)
             try:
                 target = redir.getRedirectTo()
             except wikipedia.IsNotRedirectPage:
@@ -220,7 +220,7 @@ class RedirectRobot:
                 wikipedia.output(u'%s is locked, skipping.' % redir.linkname())
             else:
                 try:
-                    second_redir = wikipedia.PageLink(mysite, target)
+                    second_redir = wikipedia.Page(mysite, target)
                     second_target = second_redir.getRedirectTo(read_only = True)
                 except wikipedia.IsNotRedirectPage:
                     wikipedia.output(u'%s is not a redirect.' % second_redir.linkname())

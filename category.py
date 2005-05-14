@@ -113,7 +113,7 @@ class CategoryDatabase:
     
     def getArticles(self, cat):
         '''
-        For a given category, return a list of PageLinks for all its articles.
+        For a given category, return a list of Pages for all its articles.
         Saves this list in a temporary database so that it won't be loaded from the
         server next time it's required.
         '''
@@ -157,7 +157,7 @@ def sorted_by_last_name(catlink, pagelink):
         given a CatLink, returns a CatLink which has an explicit sort key which
         sorts persons by their last names.
         Trailing words in brackets will be removed.
-        Example: If category_name is 'Author' and pl is a PageLink to
+        Example: If category_name is 'Author' and pl is a Page to
         [[Alexandre Dumas (senior)]], this function will return this CatLink:
         [[Category:Author|Dumas, Alexandre]]
         '''
@@ -175,9 +175,9 @@ def sorted_by_last_name(catlink, pagelink):
             # e.g. "John von Neumann" becomes "Neumann, John von"
             sorted_key = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
             # give explicit sort key
-            return wikipedia.PageLink(site, catlink.linkname() + '|' + sorted_key)
+            return wikipedia.Page(site, catlink.linkname() + '|' + sorted_key)
         else:
-            return wikipedia.PageLink(site, catlink.linkname())
+            return wikipedia.Page(site, catlink.linkname())
 
 def add_category(sort_by_last_name = False):
     '''
@@ -191,14 +191,14 @@ def add_category(sort_by_last_name = False):
     listpage = wikipedia.input(u'Wikipedia page with list of pages to change:')
     if listpage:
         try:
-            pl = wikipedia.PageLink(wikipedia.getSite(), listpage)
+            pl = wikipedia.Page(wikipedia.getSite(), listpage)
         except NoPage:
             wikipedia.output(u'The page ' + listpage + ' could not be loaded from the server.')
             sys.exit()
         pagenames = pl.links()
     else:
         refpage = wikipedia.input(u'Wikipedia page that is now linked to:')
-        pl = wikipedia.PageLink(wikipedia.getSite(), refpage)
+        pl = wikipedia.Page(wikipedia.getSite(), refpage)
         pagenames = wikipedia.getReferences(pl)
     print "  ==> %d pages to process"%len(pagenames)
     print
@@ -212,7 +212,7 @@ def add_category(sort_by_last_name = False):
 
     answer = ''
     for nm in pagenames:
-        pl2 = wikipedia.PageLink(wikipedia.getSite(), nm)
+        pl2 = wikipedia.Page(wikipedia.getSite(), nm)
         if answer != 'a':
             answer = ''
             
@@ -230,13 +230,13 @@ def add_category(sort_by_last_name = False):
                 wikipedia.output(u"%s doesn't exist yet. Ignoring."%(pl2.aslocallink()))
                 pass
             except wikipedia.IsRedirectPage,arg:
-                pl3 = wikipedia.PageLink(wikipedia.getSite(),arg.args[0])
+                pl3 = wikipedia.Page(wikipedia.getSite(),arg.args[0])
                 wikipedia.output(u"WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink()))
             else:
                 wikipedia.output(u"Current categories:")
                 for curpl in cats:
                     wikipedia.output(u"* %s" % pl.aslink())
-                catpl = wikipedia.PageLink(wikipedia.getSite(), cat_namespace + ':' + newcat)
+                catpl = wikipedia.Page(wikipedia.getSite(), cat_namespace + ':' + newcat)
                 if sort_by_last_name:
                     catpl = sorted_by_last_name(catpl, pl2) 
                 if catpl in cats:

@@ -18,8 +18,8 @@ def sametranslate(pl, arr, same):
             newname = newname.split(' ')
             newname[-1] = newname[-1].upper()
             newname = ' '.join(newname)
-        x=wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family), newname)
-        x2=wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family), newname[0].lower() + newname[1:])
+        x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
+        x2=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname[0].lower() + newname[1:])
         if x not in arr:
             if same == "wiktionary":
                 if site.language() in site.family.nocapitalize:
@@ -68,7 +68,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
             for newcode in codes:
                 if newcode in site.languages():
                     if newcode != site.language():
-                        x = wikipedia.PageLink(site.getSite(code=newcode), newname)
+                        x = wikipedia.Page(site.getSite(code=newcode), newname)
                         if x not in arr:
                             arr[x] = None
                 else:
@@ -82,7 +82,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         if m:
             for newcode, fmt in date.date_format[date.datetable[site.lang][m.group(2)]].items():
                 newname = fmt % int(m.group(1))
-                x = wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family),newname)
+                x = wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family),newname)
                 if x not in arr:
                     arr[x] = None
             return
@@ -133,7 +133,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                 pass
             else:
                 newname = fmt%i 
-                x=wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family), newname)
+                x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
                 if x not in arr:
                     arr[x] = None
         return
@@ -155,7 +155,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                     fmt = date.yearBCfmt.get(newcode)
                     if fmt:
                         newname = fmt % m
-                        x=wikipedia.PageLink(wikipedia.getSite(code=newcode, fam=site.family), newname)
+                        x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
                         if x not in arr:
                             arr[x] = None
             return

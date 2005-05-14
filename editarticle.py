@@ -91,9 +91,9 @@ class EditArticle:
     def setpage(self):
         """Sets page and pagelink"""
         self.page = self.options.page or wikipedia.input(u"Page to edit: ", encode=True)
-        self.pagelink = wikipedia.PageLink(self.site, self.page)
+        self.pagelink = wikipedia.Page(self.site, self.page)
         if not self.options.edit_redirect and self.pagelink.isRedirectPage():
-            self.pagelink = wikipedia.PageLink(site, self.pagelink.getRedirectTo())
+            self.pagelink = wikipedia.Page(site, self.pagelink.getRedirectTo())
 
     def repair(self, content):
         """Removes single newlines and prepare encoding for local wiki"""

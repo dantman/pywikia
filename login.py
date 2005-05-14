@@ -55,7 +55,7 @@ def makepath(path):
 
 def allowedbot(username, site):
     """Checks whether the bot is listed on Wikipedia:bots"""
-    pl = wikipedia.PageLink(site, "Wikipedia:Bots")
+    pl = wikipedia.Page(site, "Wikipedia:Bots")
     text = pl.get()
     return "[[user:%s" % username in text.lower()
 

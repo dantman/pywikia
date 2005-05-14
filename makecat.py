@@ -74,7 +74,7 @@ def include(pl,checklinks=True,linkterm=None):
         if not workingcat in cats:
             cats = pl.rawcategories()
             if linkterm:
-                pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.PageLink(mysite,"%s|%s"%(workingcat.linkname(),linkterm))]))
+                pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.Page(mysite,"%s|%s"%(workingcat.linkname(),linkterm))]))
             else:
                 pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
     if cl:
@@ -82,7 +82,7 @@ def include(pl,checklinks=True,linkterm=None):
             try:
                 pl.get()                
             except wikipedia.IsRedirectPage:
-                pl2 = wikipedia.PageLink(mysite,pl.getRedirectTo())
+                pl2 = wikipedia.Page(mysite,pl.getRedirectTo())
                 if needcheck(pl2):
                     tocheck.append(pl2)
                     checked[pl2]=pl2                
@@ -90,13 +90,13 @@ def include(pl,checklinks=True,linkterm=None):
                 pass
             else:
                 for link in pl.links():
-                    pl2 = wikipedia.PageLink(mysite,link)
+                    pl2 = wikipedia.Page(mysite,link)
                     if needcheck(pl2):
                         tocheck.append(pl2)
                         checked[pl2]=pl2
         if checkbackward:
             for link in wikipedia.getReferences(pl):
-                pl2 = wikipedia.PageLink(mysite,link)
+                pl2 = wikipedia.Page(mysite,link)
                 if needcheck(pl2):
                     tocheck.append(pl2)
                     checked[pl2]=pl2
@@ -136,14 +136,14 @@ def asktoadd(pl):
             print("l: Give a list of the pages to check")
         elif answer=='a':
             pagetitle = raw_input("Specify page to add:")
-            page=wikipedia.PageLink(wikipedia.mylang,pagetitle)
+            page=wikipedia.Page(wikipedia.mylang,pagetitle)
             if not page in checked.keys():
                 include(page)
         elif answer=='x':
             if pl.exists():
                 if pl.isRedirectPage():
                     print("Redirect page. Will be included normally.")
-                    pl2=wikipedia.PageLink(mysite,pl.getRedirectTo())
+                    pl2=wikipedia.Page(mysite,pl.getRedirectTo())
                     checkprepare(pl2)
                 else:
                     include(pl,checklinks=False)
@@ -201,7 +201,7 @@ try:
             except IndexError:
                 pass
             exclude(line,real_exclude=False)
-            pl = wikipedia.PageLink(mysite,line)
+            pl = wikipedia.Page(mysite,line)
             checked[pl] = pl
         f.close()
         excludefile = codecs.open(filename, 'a', encoding = mysite.encoding())
@@ -221,7 +221,7 @@ try:
         if not answer:
             answer = workingcatname
         print answer
-        pl = wikipedia.PageLink(mysite,answer)
+        pl = wikipedia.Page(mysite,answer)
         tocheck = []
         checked[pl] = pl
         include(pl)

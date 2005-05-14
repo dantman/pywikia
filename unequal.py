@@ -47,9 +47,9 @@ def read_exceptions():
             if not m:
                 raise ValueError("Do not understand %s"%line)
             code, name = m.group(1).split(':',1)
-            pl1 = wikipedia.PageLink(wikipedia.getSite(code=code), name)
+            pl1 = wikipedia.Page(wikipedia.getSite(code=code), name)
             code, name = m.group(3).split(':',1)
-            pl2 = wikipedia.PageLink(wikipedia.getSite(code=code), name)
+            pl2 = wikipedia.Page(wikipedia.getSite(code=code), name)
             if m.group(2) == '<':
                 _bigger.add(pl1, pl2)
             elif m.group(2) == '!=':

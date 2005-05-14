@@ -80,7 +80,7 @@ def main(args):
         sys.exit(1)
     
     for page_list_item in page_list:
-        inpl = wikipedia.PageLink(mysite, page_list_item)
+        inpl = wikipedia.Page(mysite, page_list_item)
         ilinks = inpl.interwiki()
     
         for page in ilinks:
@@ -92,7 +92,7 @@ def main(args):
                 except wikipedia.NoPage:
                     pass
                 except wikipedia.IsRedirectPage,arg:
-                    page2=wikipedia.PageLink(page.site(),arg.args[0])
+                    page2=wikipedia.Page(page.site(),arg.args[0])
                     try:
                         for i in page2.imagelinks():
                             imagelist.append(i)
@@ -114,7 +114,7 @@ def main(args):
                     commonslink = imagelink.linkname()
                     commonslink = [wikipedia.getSite().image_namespace()] + commonslink.split(':')[1:]
                     commonslink = ':'.join(commonslink)
-                    commonslink = wikipedia.PageLink(wikipedia.getSite(),commonslink)
+                    commonslink = wikipedia.Page(wikipedia.getSite(),commonslink)
                     if commonslink.get(throttle=False):
                         print "Image is already on WikiCommons."
                         wikipedia.output(commonslink.get(throttle=False))

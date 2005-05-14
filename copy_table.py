@@ -100,11 +100,11 @@ def treat(to_pl, fromsite):
         for image in images:
             # Copy the image to the current wikipedia, copy the image description page as well.
             # Prompt the user so that he can translate the filename.
-            new_filename = lib_images.transfer_image(wikipedia.PageLink(fromsite, image), debug)
+            new_filename = lib_images.transfer_image(wikipedia.Page(fromsite, image), debug)
             # if the upload succeeded
             if new_filename:
-                old_image_tag = wikipedia.PageLink(fromsite, image).linkname()
-                new_image_tag = wikipedia.PageLink(mysite, mysite.image_namespace() + ":" + new_filename).linkname()
+                old_image_tag = wikipedia.Page(fromsite, image).linkname()
+                new_image_tag = wikipedia.Page(mysite, mysite.image_namespace() + ":" + new_filename).linkname()
                 print_debug(u"Replacing " + old_image_tag + " with " + new_image_tag)
                 # We want to replace "Image:My pic.jpg" as well as "image:my_pic.jpg", so we need a regular expression.
                 old_image_tag = old_image_tag.replace(" ", "[ \_]")
@@ -219,7 +219,7 @@ if __name__=="__main__":
         fromsite = mysite.getSite(code=from_lang)
     
         for current_page_name in page_list:
-            thispl = wikipedia.PageLink(mysite, current_page_name)
+            thispl = wikipedia.Page(mysite, current_page_name)
             treat(thispl, fromsite)
     except:
         wikipedia.stopme()

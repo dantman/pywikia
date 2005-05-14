@@ -151,7 +151,7 @@ fixes = {
 
 class ReplacePageGenerator:
     """
-    Generator which will yield PageLinks for pages that might contain text to
+    Generator which will yield Pages for pages that might contain text to
     replace. These pages might be retrieved from a local SQL dump file or a
     text file, or as a list of pages entered by the user.
 
@@ -186,7 +186,7 @@ class ReplacePageGenerator:
     
     def read_pages_from_sql_dump(self):
         """
-        Generator which will yield PageLinks to pages that might contain text to
+        Generator which will yield Pages to pages that might contain text to
         replace. These pages will be retrieved from a local sql dump file
         (cur table).
     
@@ -222,18 +222,18 @@ class ReplacePageGenerator:
                     if self.regex:
                         old = re.compile(old)
                         if old.search(entry.text):
-                            yield wikipedia.PageLink(mysite, entry.full_title())
+                            yield wikipedia.Page(mysite, entry.full_title())
                             break
                     else:
                         if entry.text.find(old) != -1:
-                            yield wikipedia.PageLink(mysite, entry.full_title())
+                            yield wikipedia.Page(mysite, entry.full_title())
                             break
     
     def read_pages_from_category(self):
         """
         Generator which will yield pages that are listed in a text file created by
         the bot operator. Will regard everything inside [[double brackets]] as a
-        page name, and yield PageLinks for these pages.
+        page name, and yield Pages for these pages.
     
         Arguments:
             * textfilename - the textfile's path, either absolute or relative
@@ -247,7 +247,7 @@ class ReplacePageGenerator:
         """
         Generator which will yield pages that are listed in a text file created by
         the bot operator. Will regard everything inside [[double brackets]] as a
-        page name, and yield PageLinks for these pages.
+        page name, and yield Pages for these pages.
     
         Arguments:
             * textfilename - the textfile's path, either absolute or relative
@@ -261,19 +261,19 @@ class ReplacePageGenerator:
             # TODO: use findall() instead.
             m=R.match(line)
             if m:
-                yield wikipedia.PageLink(wikipedia.getSite(), m.group(1))
+                yield wikipedia.Page(wikipedia.getSite(), m.group(1))
         f.close()
     
     def read_pages_from_wiki_page(self):
         '''
         Generator which will yield pages that are listed in a wiki page. Will
         regard everything inside [[double brackets]] as a page name, except for
-        interwiki and category links, and yield PageLinks for these pages.
+        interwiki and category links, and yield Pages for these pages.
     
         Arguments:
             * pagetitle - the title of a page on the home wiki
         '''
-        listpage = wikipedia.PageLink(wikipedia.getSite(), self.pagetitle)
+        listpage = wikipedia.Page(wikipedia.getSite(), self.pagetitle)
         list = wikipedia.get(listpage, read_only = True)
         # TODO - UNFINISHED
     
@@ -293,7 +293,7 @@ class ReplacePageGenerator:
                 yield pl
         elif self.source == 'userinput':
             for pagename in self.pagenames:
-                yield wikipedia.PageLink(wikipedia.getSite(), pagename)
+                yield wikipedia.Page(wikipedia.getSite(), pagename)
 
 # This is the same class as in table2wiki.py. Maybe both bots should use the
 # same code.
@@ -380,7 +380,7 @@ class ReplaceRobot:
         """
         Starts the robot.
         """
-        # Run the generator which will yield PageLinks to pages which might need to be
+        # Run the generator which will yield Pages to pages which might need to be
         # changed.
         for pl in self.generator.generate():
             print ''
