@@ -136,10 +136,11 @@ def main(args):
     if not password:
         # As we don't want the password to appear on the screen, we use getpass(). 
         password = getpass.getpass('password: ')
-    # Convert the password from the encoding your shell uses to the one your wiki
-    # uses, via Unicode. This is the same as wikipedia.input() does with the 
-    # username, but input() uses raw_input() instead of getpass().
-    password = unicode(password, config.console_encoding)
+        # Convert the password from the encoding your shell uses to the one your wiki
+        # uses, via Unicode. This is the same as wikipedia.input() does with the 
+        # username, but input() uses raw_input() instead of getpass().
+        password = unicode(password, config.console_encoding)
+
     password = password.encode(wikipedia.myencoding())
 
     wikipedia.output(u"Logging in to %s as %s" % (repr(mysite), username))
