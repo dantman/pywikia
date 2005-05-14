@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-"""Split a treelang.log file into chunks of warnings separated by language"""
+"""Splits a interwiki.log file into chunks of warnings separated by language"""
 #
 # (C) Rob W.W. Hooft, 2003
 #
@@ -10,15 +10,19 @@ __version__ = '$Id$'
 
 import wikipedia
 import codecs
+import re
 
 wikipedia.stopme() # No need to have me on the stack - I don't contact the wiki
 files={}
 count={}
+
 # TODO: Variable log filename
-for line in codecs.open('logs/interwiki.log', 'r', 'utf-8'):
-    if line[:8] == 'WARNING:':
-        code = line.split(':')[1]
-        code = code.strip()
+logFile = codecs.open('logs/interwiki.log', 'r', 'utf-8')
+rWarning = re.compile('WARNING: \[\[(?P<code>\w+):.*')
+for line in logFile:
+    m = rWarning.match(line)
+    if m:
+        code = m.group('code')
         if code in wikipedia.getSite().languages():
             if not files.has_key(code):
                 files[code] = codecs.open('logs/warning_%s.log' % code, 'w', 'utf-8')
