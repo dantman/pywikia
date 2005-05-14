@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to resolve double redirects, and to delete broken redirects.
 Requires access to MediaWiki's maintenance pages or to a SQL dump file. Delete function requires
@@ -156,7 +156,7 @@ class RedirectGenerator:
             maintenance_txt, charset = wikipedia.getUrl(host, url, mysite)
         
             # regular expression which finds redirects which point to another redirect inside the HTML
-            Rredir = re.compile('\<li\>\<a href=".+?" title=(.*?)">')
+            Rredir = re.compile('\<li\>\<a href=".+?" title="(.*?)">')
             redir_names = Rredir.findall(maintenance_txt)
             print 'Retrieved %d redirects from special page.\n' % len(redir_names)
             for redir_name in redir_names:
