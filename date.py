@@ -1,4 +1,4 @@
-﻿#coding: utf-8
+#coding: utf-8
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -805,37 +805,38 @@ days_in_month = {
 
 # format for dates B.C., required for interwiki.py with the -years argument and for titletranslate.py
 yearBCfmt = {
-        'af':'%d v.Chr.',
+        'af': u'%d v.Chr.',
         #'bg':'%d &#1075;. &#1087;&#1088;.&#1085;.&#1077;.', # All years BC redirect to centuries for bg:
-        'bs':'%d p.ne.',
-        'ca':'%d aC',
-        'da':'%d f.Kr.',
-        'de':'%d v. Chr.',
-        'en':'%d BC',
-        'eo':'-%d',
-        'es':'%d adC',
-        'et':'%d eKr',
-        'fi':'%d eaa',
-        'fo':'%d f. Kr.',
-        'fr':'-%d',
-        'he':'%d &#1500;&#1508;&#1504;&#1492;"&#1505;',
-        'hr':'%d p.n.e.',
-        'is':'%d f. Kr.',
-        'it':'%d AC',
-        'la':'%d a.C.n',
-        'lb':'-%d',
-        'nds':'%d v. Chr.',
-        'nl':'%d v. Chr.',
-        'nn':'-%d',
-        'no':'%d f.Kr.',
-        'pl':'%d p.n.e.',
-        'pt':'%d a.C.',
-        'ro':'%d î.Hr.',
-        'ru':'%d &#1076;&#1086; &#1085;.&#1101;.',
-        'sl':'%d pr. n. št.',
-        'sr':'%d. &#1087;&#1085;&#1077;.',
-        'sv':'%d f.Kr.',
-        'zh':'&#21069;%d&#24180;'
+        'bs': u'%d p.ne.',
+        'ca': u'%d aC',
+        'da': u'%d f.Kr.',
+        'de': u'%d v. Chr.',
+        'en': u'%d BC',
+        'eo': u'-%d',
+        'es': u'%d adC',
+        'et': u'%d eKr',
+        'fi': u'%d eaa',
+        'fo': u'%d f. Kr.',
+        'fr': u'-%d',
+        'he': u'%d &#1500;&#1508;&#1504;&#1492;"&#1505;',
+        'hr': u'%d p.n.e.',
+        'is': u'%d f. Kr.',
+        'it': u'%d AC',
+        'ko': u'기원전 %d년',
+        'la': u'%d a.C.n',
+        'lb': u'-%d',
+        'nds': u'%d v. Chr.',
+        'nl': u'%d v. Chr.',
+        'nn': u'-%d',
+        'no': u'%d f.Kr.',
+        'pl': u'%d p.n.e.',
+        'pt': u'%d a.C.',
+        'ro': u'%d î.Hr.',
+        'ru': u'%d до н. э.',
+        'sl': u'%d pr. n. št.',
+        'sr': u'%d. пне.',
+        'sv': u'%d f.Kr.',
+        'zh': u'前%d年'
 } # No default
 
 # For all languages the maximal value a year BC can have; before this date the
