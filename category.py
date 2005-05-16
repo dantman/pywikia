@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -226,6 +226,7 @@ def add_category(sort_by_last_name = False):
 	if answer == 'y' or answer == 'a':
             try:
                 cats = pl2.categories()
+                rawcats = pl2.rawcategories()
             except wikipedia.NoPage:
                 wikipedia.output(u"%s doesn't exist yet. Ignoring."%(pl2.aslocallink()))
                 pass
@@ -235,7 +236,7 @@ def add_category(sort_by_last_name = False):
             else:
                 wikipedia.output(u"Current categories:")
                 for curpl in cats:
-                    wikipedia.output(u"* %s" % pl.aslink())
+                    wikipedia.output(u"* %s" % curpl.aslink())
                 catpl = wikipedia.Page(wikipedia.getSite(), cat_namespace + ':' + newcat)
                 if sort_by_last_name:
                     catpl = sorted_by_last_name(catpl, pl2) 
@@ -243,9 +244,9 @@ def add_category(sort_by_last_name = False):
                     wikipedia.output(u"%s already has %s"%(pl2.aslocallink(), catpl.aslocallink()))
                 else:
                     wikipedia.output(u'Adding %s' % catpl.aslocallink())
-                    cats.append(catpl)
+                    rawcats.append(catpl)
                     text = pl2.get()
-                    text = wikipedia.replaceCategoryLinks(text, cats)
+                    text = wikipedia.replaceCategoryLinks(text, rawcats)
                     pl2.put(text)
 
 class CategoryMoveRobot:
