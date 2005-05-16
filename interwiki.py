@@ -431,11 +431,11 @@ class Subject(object):
     def formatPl(self, pl):
         if hasattr(pl, '_contents'):    #TODO: UGLY! need pl.isLoaded()
             if pl.isDisambig():
-                return "*" + pl.aslink()
+                return "*" + pl.aslink(othersite = None)
             else:
-                return pl.aslink()
+                return pl.aslink(othersite = None)
         else:
-            return "?" + pl.aslink()
+            return "?" + pl.aslink(othersite = None)
 
     def assemble(self):
         # No errors have been seen so far
