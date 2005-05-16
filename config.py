@@ -89,6 +89,11 @@ noisysleep = 5.0
 # running solve_disambiguation.py with the -primary argument.
 special_page_limit = 500
 
+# How many external links should weblinkchecker.py check at the same time?
+# If you have a fast connection, you might want to increase this number so
+# that slow servers won't slow you down.
+max_external_links = 50
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.

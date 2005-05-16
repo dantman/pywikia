@@ -1,5 +1,44 @@
- #-*- coding: utf-8 -*-
-import wikipedia
+# -*- coding: utf-8  -*-
+"""
+This bot is used for checking external links found at the wiki. It checks
+several pages at once, with a limit set by the config variable
+max_external_links.
+
+The bot won't change any wiki pages, it will only report dead links such that
+people can fix or remove the links themselves.
+
+The bot will store all links found dead in a .dat file in the deadlinks
+subdirectory. To avoid the removing of links which are only temporarily
+unavailable, the bot only reports links which were reported dead at least
+two times, with a time lag of at least one week. Such links will be stored
+in a .txt file in the deadlinks subdirectory.
+
+When a link is found alive, it will be removed from the .dat file.
+
+Syntax examples:
+    python weblinkchecker.py
+        Loads all wiki pages in alphabetical order using the Special:Allpages
+        feature.
+
+    python weblinkchecker.py -start:Example_page
+        Loads all wiki pages using the Special:Allpages feature, starting at
+        "Example page"
+    
+    python weblinkchecker.py Example page
+        Only checks links found in the wiki page "Example page"
+
+    python weblinkchecker.py -sql:20050516.sql
+        Checks all links found in an SQL cur dump.
+
+"""
+
+#
+# (C) Daniel Herding, 2005
+#
+# Distributed under the terms of the PSF license.
+#
+
+import wikipedia, config
 import sys, re
 import codecs, pickle
 import httplib, socket, urlparse
@@ -107,10 +146,11 @@ class LinkCheckThread(threading.Thread):
         linkChecker = LinkChecker(self.url)
         ok, message = linkChecker.check()
         if ok:
-            self.history.linkAlive(self.url)
+            if self.history.setLinkAlive(self.url):
+                wikipedia.output('*Link to %s in [[%s]] is back alive.' % (self.url, self.title))
         else:
-            wikipedia.output('*[[%s]] links to %s - %s' % (self.title, self.url, message))
-            self.history.linkDead(self.url, message, self.title)
+            wikipedia.output('*[[%s]] links to %s - %s.' % (self.title, self.url, message))
+            self.history.setLinkDead(self.url, message, self.title)
 
 class History:
     '''
@@ -147,14 +187,14 @@ class History:
     def log(self, url, error, containingPage):
         site = wikipedia.getSite()
         wikipedia.output(u"** Logging page for deletion.")
-        txtfilename = 'deadlinks/delete-%s-%s.txt' % (site.family.name, site.lang)
+        txtfilename = 'deadlinks/results-%s-%s.txt' % (site.family.name, site.lang)
         txtfile = codecs.open(txtfilename, 'a', 'utf-8')
         txtfile.write("* %s\n" % url)
         for (title, date, error) in self.dict[url]:
             txtfile.write("** In [[%s]] on %s, %s\n" % (title, time.ctime(date), error))
         txtfile.close()
             
-    def linkDead(self, url, error, containingPage):
+    def setLinkDead(self, url, error, containingPage):
         now = time.time()
         if self.dict.has_key(url):
             timeSinceFirstFound = now - self.dict[url][0][1]
@@ -172,9 +212,16 @@ class History:
         else:
             self.dict[url] = [(containingPage, now, error)]
 
-    def linkAlive(self, url):
+    def setLinkAlive(self, url):
+        """
+        If the link was previously found dead, removes it from the .dat file
+        and returns True, else returns False.
+        """
         if self.dict.has_key(url):
             del self.dict[url]
+            return True
+        else:
+            return False
             
     def save(self):
         datfile = open(self.datfilename, 'w')
@@ -201,10 +248,9 @@ class WeblinkCheckerRobot:
         linkR = re.compile(r'http://[^ \]\r\n]+')
         urls = linkR.findall(text)
         for url in urls:
-            # Don't start more than 50 threads at once. Each thread will check
-            # one page, then die.
-            # TODO: Make number of threads a config variable.
-            while threading.activeCount() >= 50:
+            # Limit the number of threads started at the same time. Each
+            # thread will check one page, then die.
+            while threading.activeCount() >= config.max_external_links:
                 # wait 100 ms
                 time.sleep(0.1)
             thread = LinkCheckThread(title, url, self.history)
@@ -229,11 +275,12 @@ def main():
             elif arg.startswith('-start:'):
                 start = arg[7:]
             else:
-                #print 'Unknown argument: %s' % arg
                 pageTitle.append(arg)
                 source = 'page'
 
     if source == 'sqldump':
+        # Bot will read all wiki pages from the dump and won't access the wiki.
+        wikipedia.stopme()
         gen = SqlPageGenerator(sqlfilename)
     elif source == 'page':
         pageTitle = ' '.join(pageTitle)
@@ -246,6 +293,7 @@ def main():
         bot.run()
     finally:
         i = 0
+        # Don't wait longer than 10 seconds for threads to finish.
         while threading.activeCount() > 1 and i < 10:
             wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % threading.activeCount())
             # wait 1 second
