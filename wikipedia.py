@@ -1169,6 +1169,7 @@ class Throttle(object):
         self.delay = 0
         if multiplydelay:
             self.checkMultiplicity()
+        self.setDelay(mindelay)
 
     def checkMultiplicity(self):
         processes = {}
@@ -1207,8 +1208,8 @@ class Throttle(object):
 
     def setDelay(self, delay = config.minthrottle, absolute = False):
         if absolute:
-            self.mindelay = delay
             self.maxdelay = delay
+            self.mindelay = delay
         self.delay = delay
         # Don't count the time we already waited as part of our waiting time :-0
         self.now = time.time()
