@@ -89,6 +89,7 @@ class WarnfileRobot:
                     new[site] = pl2
             if removeHints.has_key(pagename):
                 for pl2 in removeHints[pagename]:
+                    site = pl2.site()
                     try:
                         del new[site]
                     except KeyError:
