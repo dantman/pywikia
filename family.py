@@ -381,6 +381,7 @@ class Family:
                 'id': u'Kategori',
                 'is': u'Flokkur',
                 'it': u'Categoria',
+                'ko': u'분류',
                 'ku': u'Kategorî',
                 'li': u'Kategorie',
                 'nb': u'Kategori',
