@@ -1,10 +1,9 @@
  #-*- coding: utf-8 -*-
 import wikipedia
 import sys, re
-import httplib, socket
-import urlparse
+import codecs, pickle
+import httplib, socket, urlparse
 import threading, time
-import pickle, time
 
 class AllpagesPageGenerator:
     '''
