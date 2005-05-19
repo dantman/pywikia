@@ -1,4 +1,5 @@
-﻿import config, urllib
+# -*- coding: utf-8  -*-
+import config, urllib
 
 # Parent class for all wiki families
 
@@ -713,16 +714,13 @@ class Family:
     def export_address(self, code):
         return '%s?title=%s:Export' % (self.path(code), self.special_namespace_url(code))
 
-    def allpagesname(self, code, start, namespace = 0):
-        # This is very ugly: to get all pages, the wikipedia code
-        # 'fakes' getting a page with the returned name.
-        # This will need to be fixed someday.
+    def allpages_address(self, code, start, namespace = 0):
         if self.version(code)=="1.2":
-            return '%s:Allpages&printable=yes&from=%s' % (
-                self.special_namespace_url(code), start)
+            return '%s?title=%s:Allpages&printable=yes&from=%s' % (
+                self.path(code), self.special_namespace_url(code), start)
         else:
-            return '%s:Allpages&from=%s&namespace=%s' % (
-                self.special_namespace_url(code), start, namespace)
+            return '%s?title=%s:Allpages&from=%s&namespace=%s' % (
+                self.path(code), self.special_namespace_url(code), start, namespace)
 
     def newpagesname(self, code, limit=50):
         return "%s:Newpages&limit=%d" % (self.special_namespace_url(code), limit)

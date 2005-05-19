@@ -1625,7 +1625,11 @@ def allpages(start = '!', site = None, namespace = 0, throttle = True):
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
         start = link2url(start, site = site)
         # load a list which contains a series of article names (always 480?)
-        returned_html = getPage(site, site.allpagesname(start,namespace), do_quote = False, get_edit_page = False, throttle = throttle)
+        #returned_html = getPage(site, site.allpagesname(start,namespace), do_quote = False, get_edit_page = False, throttle = throttle)
+        host = site.hostname()
+        url = site.allpages_address(start, namespace)
+        print 'Retrieving Allpages special page for %s from %s, namespace %i' % (repr(site), start, namespace)
+        returned_html, charset = getUrl(host, url, site)
         # Try to find begin and end markers
         try:
             # In 1.4, another table was added above the navigational links
@@ -2307,8 +2311,8 @@ class Site(object):
         if self.encoding().lower() != charset.lower():
             raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s"%(repr(self),charset, self.encoding()))
 
-    def allpagesname(self, s, ns = 0):
-        return self.family.allpagesname(self.lang, start = s, namespace = ns)
+    def allpages_address(self, s, ns = 0):
+        return self.family.allpages_address(self.lang, start = s, namespace = ns)
 
     def newpagesname(self, n=50):
         return self.family.newpagesname(self.lang, n)
