@@ -34,9 +34,10 @@ Page: A MediaWiki page
     imagelinks (*): The pictures on the page (list of strings)
     templates(*): All templates referenced on the page (list of strings)
     getRedirectTo (*): The page the page redirects to
-    isCategory(): True if the page is a category, false otherwise
-    isImage(): True if the page is an image, false otherwise
+    isCategory: True if the page is a category, false otherwise
+    isImage: True if the page is an image, false otherwise
     isDisambig (*): True if the page is a disambiguation page
+    namespace: The namespace in which the page is
 
     put(newtext): Saves the page
     delete: Deletes the page (requires being logged in)
@@ -420,7 +421,20 @@ class Page(object):
         if p[0]==self.site().image_namespace():
             return True
         return False
-        
+
+    def namespace(self):
+        """Gives the number of the namespace of the page. Does not work for
+           all namespaces in all languages, only when defined in family.py.
+           If not defined, it will return 0 (the main namespace)"""
+        t=self.hashfreeLinkname()
+        p=t.split(':')
+        if p[1:]==[]:
+            return 0
+        for ns in self.site().family.namespaces:
+            if p[0]==self.site().namespace(ns):
+                return ns
+        return 0
+
     def isDisambig(self):
         defdis = self.site().family.disambig( "_default" )
         locdis = self.site().family.disambig( self._site.lang )
@@ -1598,7 +1612,7 @@ def newpages(number=10, onlyonce=False, site=None):
         except ValueError:
             continue
 
-def allpages(start = '!', site = None, throttle = True):
+def allpages(start = '!', site = None, namespace = 0, throttle = True):
     """Generator which yields all articles in the home language in
        alphanumerical order, starting at a given page. By default,
        it starts at '!', so it should yield all pages.
@@ -1611,7 +1625,7 @@ def allpages(start = '!', site = None, throttle = True):
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
         start = link2url(start, site = site)
         # load a list which contains a series of article names (always 480?)
-        returned_html = getPage(site, site.allpagesname(start), do_quote = False, get_edit_page = False, throttle = throttle)
+        returned_html = getPage(site, site.allpagesname(start,namespace), do_quote = False, get_edit_page = False, throttle = throttle)
         # Try to find begin and end markers
         try:
             # In 1.4, another table was added above the navigational links
@@ -2293,8 +2307,8 @@ class Site(object):
         if self.encoding().lower() != charset.lower():
             raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s"%(repr(self),charset, self.encoding()))
 
-    def allpagesname(self, s):
-        return self.family.allpagesname(self.lang, s)
+    def allpagesname(self, s, ns = 0):
+        return self.family.allpagesname(self.lang, start = s, namespace = ns)
 
     def newpagesname(self, n=50):
         return self.family.newpagesname(self.lang, n)

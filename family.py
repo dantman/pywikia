@@ -713,7 +713,7 @@ class Family:
     def export_address(self, code):
         return '%s?title=%s:Export' % (self.path(code), self.special_namespace_url(code))
 
-    def allpagesname(self, code, start):
+    def allpagesname(self, code, start, namespace = 0):
         # This is very ugly: to get all pages, the wikipedia code
         # 'fakes' getting a page with the returned name.
         # This will need to be fixed someday.
@@ -721,8 +721,8 @@ class Family:
             return '%s:Allpages&printable=yes&from=%s' % (
                 self.special_namespace_url(code), start)
         else:
-            return '%s:Allpages&from=%s' % (
-                self.special_namespace_url(code), start)
+            return '%s:Allpages&from=%s&namespace=%s' % (
+                self.special_namespace_url(code), start, namespace)
 
     def newpagesname(self, code, limit=50):
         return "%s:Newpages&limit=%d" % (self.special_namespace_url(code), limit)

@@ -1014,21 +1014,22 @@ if __name__ == "__main__":
                 globalvar.skip[pl] = None
 
         if start:
-            try:
-                if number:
-                    print "Treating %d pages starting at %s" % (number, start)
-                    i = 0
-                    for pl in wikipedia.allpages(start = start):
-                        sa.add(pl,hints=hints)
-                        i += 1
-                        if i >= number:
-                            break
-                else:
-                    print "Treating pages starting at %s" % start
-                    sa.setGenerator(wikipedia.allpages(start = start))
-            except:
-                wikipedia.stopme()
-                raise
+            namespace = wikipedia.Page(wikipedia.getSite(),start).namespace()
+            if number:
+                print "Treating %d pages starting at %s" % (number, start)
+                if namespace != 0:
+                    start = ':'.join(start.split(':')[1:])
+                i = 0
+                for pl in wikipedia.allpages(start = start, namespace = namespace):
+                    sa.add(pl,hints=hints)
+                    i += 1
+                    if i >= number:
+                        break
+            else:
+                print "Treating pages starting at %s" % start
+                if namespace != 0:
+                    start = ':'.join(start.split(':')[1:])
+                sa.setGenerator(wikipedia.allpages(start = start, namespace = namespace))
 
         inname = '_'.join(inname)
         if sa.isDone() and not inname:
