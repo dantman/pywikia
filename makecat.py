@@ -19,6 +19,7 @@ I(gnore) - do not include the page, but if you meet it again, ask again.
 X - add the page, but do not check links to and from it
 Other possiblities:
 A(dd) - add another page, which may have been one that was included before
+C(heck) - check links to and from the page, but do not add the page itself
 R(emove) - remove a page that is already in the list
 L(ist) - show current list of pages to include or to check
 """
@@ -59,24 +60,24 @@ def needcheck(pl):
             return False
     return True
 
-def include(pl,checklinks=True,linkterm=None):
+def include(pl,checklinks=True,realinclude=True,linkterm=None):
     cl = checklinks
-    #wikipedia.getall(mysite,[pl])
-    try:
-        text = pl.get()
-    except wikipedia.NoPage:
-        pass
-    except wikipedia.IsRedirectPage:
-        cl = True
-        pass
-    else:
-        cats = pl.categories()
-        if not workingcat in cats:
-            cats = pl.rawcategories()
-            if linkterm:
-                pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.Page(mysite,"%s|%s"%(workingcat.linkname(),linkterm))]))
-            else:
-                pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
+    if realinclude:
+        try:
+            text = pl.get()
+        except wikipedia.NoPage:
+            pass
+        except wikipedia.IsRedirectPage:
+            cl = True
+            pass
+        else:
+            cats = pl.categories()
+            if not workingcat in cats:
+                cats = pl.rawcategories()
+                if linkterm:
+                    pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.Page(mysite,"%s|%s"%(workingcat.linkname(),linkterm))]))
+                else:
+                    pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
     if cl:
         if checkforward:
             try:
@@ -114,6 +115,9 @@ def asktoadd(pl):
         if answer=='y':
             include(pl)
             break
+        if answer=='c':
+            include(pl,realinclude=False)
+            break
         if answer=='z':
             if pl.exists():
                 if not pl.isRedirectPage():
@@ -129,10 +133,11 @@ def asktoadd(pl):
             exclude(pl,real_exclude=False)
             break
         elif answer=='o':
-            print("x: Add the page, but do not check links to and from it")
             print("t: Give the beginning of the text of the page")
-            print("a: Add another page")
             print("z: Add under another title (as [[Category|Title]])")
+            print("x: Add the page, but do not check links to and from it")
+            print("c: Do not add the page, but do check links")
+            print("a: Add another page")
             print("l: Give a list of the pages to check")
         elif answer=='a':
             pagetitle = raw_input("Specify page to add:")
