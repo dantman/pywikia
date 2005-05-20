@@ -851,11 +851,11 @@ def compareLanguages(old, new):
             adding.append(site2)
     s = ""
     if adding:
-        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[0]) + ",".join([x.lang for x in adding])
+        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[0]) + " " + ", ".join([x.lang for x in adding])
     if removing: 
-        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[1]) + ",".join([x.lang for x in removing])
+        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[1]) + " " + ", ".join([x.lang for x in removing])
     if modifying:
-        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[2]) + ",".join([x.lang for x in modifying])
+        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[2]) + " " + ", ".join([x.lang for x in modifying])
     return s,removing
 
 def ReadWarnfile(filename, sa):
