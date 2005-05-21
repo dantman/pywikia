@@ -582,7 +582,10 @@ class Page(object):
         w=r'([^\}\|]*)'
         Rlink = re.compile(r'\{\{'+w+r'(\|'+w+r')?\}\}')
         for l in Rlink.findall(thistxt):
-            result.append(l[0])
+            if l[0].startswith('msg:'):
+                result.append(l[0][4:])
+            else:
+                result.append(l[0])
         return result
 
     def getRedirectTo(self, read_only = False):
