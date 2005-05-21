@@ -102,36 +102,69 @@ class LinkChecker:
     '''
     def __init__(self, url):
         self.url = url
+        # we ignore the fragment
+        self.scheme, self.host, self.path, self.query, self.fragment = urlparse.urlsplit(self.url)
+        if not self.path:
+            self.path = '/'
+        if self.query:
+            self.query = '?' + self.query
+        #header = {'User-agent': 'PythonWikipediaBot/1.0'}
+        # we fake being Opera because some webservers block
+        # unknown clients
+        self.header = {'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050511 Firefox/1.0.4 SUSE/1.0.4-0.3'}
+
+
+    def resolveRedirect(self):
+        '''
+        Requests the header from the server. If the page is an HTTP redirect,
+        returns the redirect target URL as a string. Otherwise returns None.
+        '''
+        conn = httplib.HTTPConnection(self.host)
+        conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
+        response = conn.getresponse()
+
+        if response.status >= 300 and response.status <= 399:
+            redirTarget = response.getheader('Location')
+            if redirTarget.startswith('http://'):
+                newURL = redirTarget
+            else:
+                newURL = 'http://%s/%s' % (self.host, redirTarget)
+            wikipedia.output(u'%s is a redirect to %s' % (self.url, newURL))
+            return newURL
+
         
     def check(self):
-        # we ignore the fragment
-        scheme, host, path, query, fragment = urlparse.urlsplit(self.url)
-        if not path:
-            path = '/'
-        #print scheme, host, path, query, fragment
-        # TODO: HTTPS
         try:
-            conn = httplib.HTTPConnection(host)
-            #header = {'User-agent': 'PythonWikipediaBot/1.0'}
-            # we fake being Opera because some webservers block
-            # unknown clients
-            header = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.1) Opera 7.03 [de]'}
+            url = self.resolveRedirect()
         except httplib.error, arg:
             return False, u'HTTP Error: %s' % arg
-        try:
-            conn.request('GET', '%s?%s' % (path, query), None, header)
         except socket.error, arg:
             return False, u'Socket Error: %s' % arg
         except UnicodeEncodeError, arg:
             return False, u'Non-ASCII Characters in URL'
-        try:
-            response = conn.getresponse()
-        except Exception, arg:
-            return False, u'Error: %s' % arg
-        #wikipedia.output('%s: %s' % (self.url, response.status))
-        # site down if the server status is between 400 and 499
-        siteDown = response.status in range(400, 500)
-        return not siteDown, '%s %s' % (response.status, response.reason)
+        if url:
+            redirChecker = LinkChecker(url)
+            return redirChecker.check()
+        else:
+            # TODO: HTTPS
+            try:
+                conn = httplib.HTTPConnection(self.host)
+            except httplib.error, arg:
+                return False, u'HTTP Error: %s' % arg
+            try:
+                conn.request('GET', '%s%s' % (self.path, self.query), None, self.header)
+            except socket.error, arg:
+                return False, u'Socket Error: %s' % arg
+            except UnicodeEncodeError, arg:
+                return False, u'Non-ASCII Characters in URL'
+            try:
+                response = conn.getresponse()
+            except Exception, arg:
+                return False, u'Error: %s' % arg
+            #wikipedia.output('%s: %s' % (self.url, response.status))
+            # site down if the server status is between 400 and 499
+            siteDown = response.status in range(400, 500)
+            return not siteDown, '%s %s' % (response.status, response.reason)
 
 class LinkCheckThread(threading.Thread):
     '''
