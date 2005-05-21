@@ -57,15 +57,15 @@ class AllpagesPageGenerator:
             i = 0
             pls = []
             for pl in wikipedia.allpages(start = self.start):
-                    pls.append(pl)
-                    i += 1
-                    if i >= 60:
-                        self.start = pl.urlname() + '!'
-                        break
-            wikipedia.getall(wikipedia.getSite(), pls)
-            for pl in pls:
-                if not pl.isRedirectPage():
-                    yield pl.linkname(), pl.get()
+                pls.append(pl)
+                i += 1
+                if i >= 60:
+                    wikipedia.getall(wikipedia.getSite(), pls)
+                    for pl in pls:
+                        if not pl.isRedirectPage():
+                            yield pl.linkname(), pl.get()
+                    i = 0
+                    pls = []
 
 class SqlPageGenerator:
     '''
@@ -113,6 +113,8 @@ class LinkChecker:
         try:
             conn = httplib.HTTPConnection(host)
             #header = {'User-agent': 'PythonWikipediaBot/1.0'}
+            # we fake being Opera because some webservers block
+            # unknown clients
             header = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.1) Opera 7.03 [de]'}
         except httplib.error, arg:
             return False, u'HTTP Error: %s' % arg
