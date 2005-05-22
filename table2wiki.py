@@ -321,16 +321,25 @@ class Table2WikiRobot:
         # proper attributes. attribute values need to be in quotation marks.
         num = 1
         while num != 0:
-            # group 1 starts with newlines, followed by a table tag
-            # (either !, |, {|, or |---), then zero or more attribute key-value
+            # group 1 starts with newlines, followed by a table or row tag
+            # ( {| or |--- ), then zero or more attribute key - value
             # pairs where the value already has correct quotation marks, and
             # finally the key of the attribute we want to fix here.
             # group 2 is the value of the attribute we want to fix here.
             # We recognize it by searching for a string of non-whitespace characters
             # - [^\s]+? - which is not embraced by quotation marks - [^"]
-            # group 3 is a whitespace character and probably unnecessary..
-            newTable, num = re.subn(r'([\r\n]+(?:!|\||\{\|)[^\r\n\|]+) *= *([^"\s>]+)(\s)',
-                                   r'\1="\2"\3', newTable, 1)
+            newTable, num = re.subn(r'([\r\n]+(?:\|-|\{\|)[^\r\n\|]+) *= *([^"\s>]+)',
+                                   r'\1="\2"', newTable, 1)
+
+        num = 1
+        while num != 0:
+            # The same for header and cell tags ( ! or | ), but for these tags the
+            # attribute part is finished by a | character. We don't want to change
+            # cell contents which accidentially contain an equal sign.
+            # Group 1 and 2 are anologously to the previous regular expression,
+            # group 3 are the remaining attribute key - value pairs.
+            newTable, num = re.subn(r'([\r\n]+(?:!|\|)[^\r\n\|]+) *= *([^"\s>]+)([^\|\r\n]*)\|',
+                                   r'\1="\2"\3|', newTable, 1)
            
         ##################
         # merge two short <td>s
