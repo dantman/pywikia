@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -115,12 +115,12 @@ primary_topic_format={
 # to find out the setting for your Wikipedia.
 # Note: this is a regular expression.
 link_trail={
-   'de':u'[a-z|ä|ö|ü|ß]*',
-   'da':u'[a-z|æ|ø|å]*',
+   'de':u'[a-zäöüß]*',
+   'da':u'[a-zæøå]*',
    'en':u'[a-z]*',
-   'fr':u'[a-z|à|â|ç|é|è|ê|î|ô|û]*',
-   'nl':u'[a-z|ä|ö|ü|ï|ë|é|è|é|à|ç]*',
-   'pt':u'[a-z|á|â|à|ã|é|ê|í|ó|ô|õ|ú|ü|ç]*'
+   'fr':u'[a-zàâçéèêîôû]*',
+   'nl':u'[a-zäöüïëéèéàç]*',
+   'pt':u'[a-záâàãéêíóôõúüç]*'
    }
 
 # List pages that will be ignored if they got a link to a disambiguation
