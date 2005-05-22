@@ -119,6 +119,8 @@ class LinkChecker:
         Requests the header from the server. If the page is an HTTP redirect,
         returns the redirect target URL as a string. Otherwise returns None.
         '''
+        # TODO: Malconfigured HTTP servers might give a redirect loop. A
+        # recursion counter and limit would help.
         conn = httplib.HTTPConnection(self.host)
         conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
         response = conn.getresponse()
@@ -337,7 +339,7 @@ def main():
         i = 0
         # Don't wait longer than 10 seconds for threads to finish.
         while threading.activeCount() > 1 and i < 10:
-            wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % threading.activeCount())
+            wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 1)) # don't count the main thread
             # wait 1 second
             time.sleep(1)
             i += 1
