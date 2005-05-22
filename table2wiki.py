@@ -325,12 +325,12 @@ class Table2WikiRobot:
             # (either !, |, {|, or |---), then zero or more attribute key-value
             # pairs where the value already has correct quotation marks, and
             # finally the key of the attribute we want to fix here.
-            # group 3 is the value of the attribute we want to fix here.
+            # group 2 is the value of the attribute we want to fix here.
             # We recognize it by searching for a string of non-whitespace characters
             # - [^\s]+? - which is not embraced by quotation marks - [^"]
-            # group 4 is a whitespace character and probably unnecessary..
-            newTable, num = re.subn(r'([\r\n]+(\!|\||\{\|)[^\r\n\|]+)[ ]*=[ ]*([^"][^\s]+?[^"])(\s)',
-                                   r'\1="\3"\4', newTable, 1)
+            # group 3 is a whitespace character and probably unnecessary..
+            newTable, num = re.subn(r'([\r\n]+(?:!|\||\{\|)[^\r\n\|]+) *= *([^"\s>]+)(\s)',
+                                   r'\1="\2"\3', newTable, 1)
            
         ##################
         # merge two short <td>s
