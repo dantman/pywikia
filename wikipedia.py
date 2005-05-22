@@ -441,7 +441,9 @@ class Page(object):
 
         for tn in self.templates():
             tn2 = tn[:1].lower() + tn[1:]
-            if tn2 in defdis or tn2 in locdis:
+            if (type(defdis) == type([]) and tn2 in defdis) or (tn2 == defdis):
+                return True
+            if (type(locdis) == type([]) and tn2 in locdis) or (tn2 == locdis):
                 return True
         return False
 

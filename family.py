@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -467,6 +467,7 @@ class Family:
         	'fr'  :       [u'homonymie'],
         	'ga'  :       [u'idirdhealú'],
         	'gl'  :       [u'homónimos'],
+        	'he'  :       [u'disambiguationafter', u'פירושונים'],
         	'hr'  :       [u'disambig'],
         	'hu'  :       [u'egyert'],
         	'ia'  :       [u'disambiguation'],
@@ -490,6 +491,7 @@ class Family:
         	'pt'  :       [u'desambiguação'],
         	'ro'  :       [u'dezambiguizare'],
         	'ru'  :       [u'disambig'],
+        	'simple':	  [u'disambig'],
         	'sk'  :       [u'disambiguation'],
         	'sl'  :       [u'disambig'],
         	'sq'  :       [u'kthjellim'],
