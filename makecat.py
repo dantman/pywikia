@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 """
 This bot takes as its argument (or, if no argument is given, asks for it), the
 name of a new or existing category. It will then try to find new articles for
@@ -34,8 +35,11 @@ import wikipedia, date, catlib
 
 msg={
     'en':u'Creation or update of category:',
+    'es':u'Creación o actualiza de la categoría:',
+    'it':u'La creazione o laggiornamento di categoria:',
     'nl':u'Aanmaak of uitbreiding van categorie:',
-}
+    'pt':u'Criando ou atualizando categoria:',
+    }
 
 def isdate(s):
     #returns true iff s is a date or year
