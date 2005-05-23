@@ -1,4 +1,4 @@
-#coding: utf-8
+# -*- coding: utf-8  -*-
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -8,9 +8,15 @@ lists which are required by some other programs.
 # © Daniel Herding, 2004
 # © Ævar Arnfjörð Bjarmason, 2004
 # © Andre Engels, 2005
+# © Yuri Astrakhan, 2005
 #
 # Distribute under the terms of the PSF license.
 #
+
+# used for date recognition
+import types
+import re
+
 
 # date formats for various languages, required for interwiki.py with the -days argument
 date_format = {
@@ -883,46 +889,160 @@ romanNums = ['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX',
              'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX',
              'XX', 'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXVIX',
              'XXX']
-			  
+             
+numberPattern = u'(\d+)'
+romanNumPattern = u'([IVX]+)'
 
+def escapePattern( pattern ):
+    """Converts a string pattern into a regex expression.
+    Substitutes %d with (\d+), and %s with ([IVX]+).
+    Returns a compiled regex object"""
+
+    # TODO: need to rewrite to handle special characters that regex might misinterpret
+    pt = pattern
+    pt = re.compile(u'%d').sub( u'(\d+)', pt )
+    pt = re.compile(u'%s').sub( u'([IVX]+)', pt )
+    return re.compile(pt)
+
+
+def dh( value, pattern, encf, decf ):
+    """Try to get a value from the str
+    """
+    if type(value) is int:
+        return pattern % encf(value)
+    else:
+        pt = re.compile(u'%d').sub(numberPattern, pattern )
+        m = re.compile(pt).match( value )
+        if m:
+            try:
+                year = decf( int( m.group(1) ))
+                if value == pattern % encf(year):
+                    return year
+            except:
+                pass
+        return None
+
+def dh_lt( value ):
+    """Try to get a value from the str - lithuanian
+    """
+    pattern = u'%s amžiaus %d-as dešimtmetis'
+    revpattern = romanNumPattern +u' amžiaus '+ numberPattern +u'-as dešimtmetis'
+    encf = lambda i: (romanNums[i/100+1], i%100/10+1)
+    
+    if type(value) is int:
+        return pattern % encf(value)
+    else:
+        m = re.compile(revpattern).match( value )
+        if m:
+            try:
+                rom = romanNums.index(m.group(1))
+                num = int(m.group(2))
+                year = (rom-1)*100 + (num-1)*10
+                if value == pattern % encf(year):
+                    return year
+            except:
+                pass
+        return None
+        
+def dh_pl( value ):
+    """Try to get a value from the str - polish
+    """
+    pattern = u'Lata %d. %s wieku'
+    revpattern = u'Lata '+ numberPattern +u'. '+ romanNumPattern +u' wieku'
+    encf = lambda i: (i%100, romanNums[i/100+1])
+    
+    if type(value) is int:
+        return pattern % encf(value)
+    else:
+        m = re.compile(revpattern).match( value )
+        if m:
+            try:
+                num = int(m.group(1))
+                rom = romanNums.index(m.group(2))
+                year = (rom-1)*100 + num
+                if value == pattern % encf(year):
+                    return year
+            except:
+                pass
+        return None
+        
+def dh_sk( value ):
+    """Try to get a value from the str - slovak
+    """
+    pattern = u'%d. roky %d. storočia'
+    revpattern = numberPattern +u'. roky '+ numberPattern +u'. storočia'
+    encf = lambda i: (i%100, i/100+1)
+    
+    if type(value) is int:
+        return pattern % encf(value)
+    else:
+        m = re.compile(revpattern).match( value )
+        if m:
+            try:
+                num1 = int(m.group(1))
+                num2 = int(m.group(2))
+                year = (num2-1)*100 + num1
+                if value == pattern % encf(year):
+                    return year
+            except:
+                pass
+        return None
+
+def noConv( i ):
+    return i
+#
+# lambda val: dh( val, u'pattern string', encodingFunc, decodingFunc )
+#
+# encodingFunc converts from 'i' to a some number(s) used in localized string
+# decodingFunc converts the first number found in the string back into normalized i
+#   Normalized i is the 0-ending year:  1980, 1990, etc.
+#   No error check is performed (it assumes 'i' is already in that form)
+#   encodingFunc can return a bunch of values together (.., .., ..)
+#
+# Usage scenarios:
+#  decadesAD['en'](1980) => u'1980s'
+#  decadesAD['en'](u'1980s') => 1980
+#  decadesAD['en'](u'anything else') => None
+#
 decadesAD = {
-    'bg' :      lambda dec: (u'%d-те' % dec),
-    'ca' :      lambda dec: (u'Dècada del %d' % dec),
-    'cy' :      lambda dec: (u'%dau' % dec),
-    'da' :      lambda dec: (u"%d'erne" % dec),
-    'de' :      lambda dec: (u'%der' % dec),
-    'el' :      lambda dec: (u'Δεκαετία %d' % dec),
-    'en' :      lambda dec: (u'%ds' % dec),
-    'eo' :      lambda dec: (u'%d-aj jaroj' % dec),
-    'es' :      lambda dec: (u'Años %d' % dec),
-    'et' :      lambda dec: (u'%d. aastad' % dec),
-    'fi' :      lambda dec: (u'%d-luku' % dec),
-    'fr' :      lambda dec: (u'Années %d' % dec),
-    'is' :      lambda dec: (u'%d–%d' % (dec+1,dec+10)),
-    'it' :      lambda dec: (u'Anni %d' % dec),
-    'ja' :      lambda dec: (u'%d年代' % dec),
-    'la' :      lambda dec: (u'Decennium %d' % dec/10+1),
-    'lt' :      lambda dec: (u'%s amžiaus %d-as dešimtmetis' % (romanNums[dec/100+1], dec%100/10+1)),
-    'mi' :      lambda dec: (u'Ngahurutanga %d' % dec/10+1),
-    'nl' :      lambda dec: (u'%d-%d' % (dec,dec+9)),
-    'no' :      lambda dec: (u'%d-årene' % dec),
-    'pl' :      lambda dec: (u'Lata %d. %s wieku' % (dec%100/10*10, romanNums[dec/100+1])),
-    'pt' :      lambda dec: (u'Década de %d' % dec),
-    'ro' :      lambda dec: (u'Anii %d' % dec),
-    'ru' :      lambda dec: (u'%d-е' % dec),
-    'simple' :  lambda dec: (u'%ds' % dec),
-    'sk' :      lambda dec: (u'%d. roky %d. storočia' % (dec%100/10*10, dec/100+1)),
-    'sl' :      lambda dec: (u'%d.' % dec),
-    'sv' :      lambda dec: (u'%d-talet' % dec),
-    'zh' :      lambda dec: (u'%d年代' % dec),
+    'bg' :      lambda val: dh( val, u'%d-те',                   noConv, noConv ),
+    'ca' :      lambda val: dh( val, u'Dècada del %d',           noConv, noConv ),
+    'cy' :      lambda val: dh( val, u'%dau',                    noConv, noConv ),
+    'da' :      lambda val: dh( val, u"%d'erne",                 noConv, noConv ),
+    'de' :      lambda val: dh( val, u'%der',                    noConv, noConv ),
+    'el' :      lambda val: dh( val, u'Δεκαετία %d',             noConv, noConv ),
+    'en' :      lambda val: dh( val, u'%ds',                     noConv, noConv ),
+    'eo' :      lambda val: dh( val, u'%d-aj jaroj',             noConv, noConv ),
+    'es' :      lambda val: dh( val, u'Años %d',                 noConv, noConv ),
+    'et' :      lambda val: dh( val, u'%d. aastad',              noConv, noConv ),
+    'fi' :      lambda val: dh( val, u'%d-luku',                 noConv, noConv ),
+    'fr' :      lambda val: dh( val, u'Années %d',               noConv, noConv ),
+    'is' :      lambda val: dh( val, u'%d–%d',                   lambda i: (i+1,i+10), lambda i: i-1 ),     # '1971–1980'
+    'it' :      lambda val: dh( val, u'Anni %d',                 noConv, noConv ),
+    'ja' :      lambda val: dh( val, u'%d年代',                  noConv, noConv ),
+    'la' :      lambda val: dh( val, u'Decennium %d',            lambda i: i/10+1, lambda i: (i-1)*10 ),
+    'lt' :      lambda val: dh_lt( val ),                                                                   # 1970 => 'XX amžiaus 8-as dešimtmetis'
+    'mi' :      lambda val: dh( val, u'Ngahurutanga %d',         lambda i: i/10+1, lambda i: (i-1)*10 ),
+    'nl' :      lambda val: dh( val, u'%d-%d',                   lambda i: (i,i+9), noConv ),				# '1970-1979'
+    'no' :      lambda val: dh( val, u'%d-årene',                noConv, noConv ),
+    'pl' :      lambda val: dh_pl( val ),                                                                   # 1970 => 'Lata 70. XX wieku'
+    'pt' :      lambda val: dh( val, u'Década de %d',            noConv, noConv ),
+    'ro' :      lambda val: dh( val, u'Anii %d',                 noConv, noConv ),
+    'ru' :      lambda val: dh( val, u'%d-е',                    noConv, noConv ),
+    'simple' :  lambda val: dh( val, u'%ds',                     noConv, noConv ),
+    'sk' :      lambda val: dh_sk( val ),                                                                   # 1970 => '70. roky 20. storočia'
+    'sl' :      lambda val: dh( val, u'%d.',                     noConv, noConv ),
+    'sv' :      lambda val: dh( val, u'%d-talet',                noConv, noConv ),
+    'zh' :      lambda val: dh( val, u'%d年代',                  noConv, noConv ),
 }
 
 decadesBC = {
-    'de' :      lambda dec: (u'%der v. Chr.' % dec),
-    'en' :      lambda dec: (u'%ds BC' % dec),
-    'fr' :      lambda dec: (u'Années -%d' % dec),
-    'it' :      lambda dec: (u'Anni %d AC' % dec),
-    'pt' :      lambda dec: (u'Década de %d a.C.' % dec),
-    'ru' :      lambda dec: (u'%d-е до н. э.' % dec),
-    'sl' :      lambda dec: (u'%d. pr. n. št.' % dec),
+    'de' :      lambda val: dh( val, u'%der v. Chr.',            noConv, noConv ),
+    'en' :      lambda val: dh( val, u'%ds BC',                  noConv, noConv ),
+    'fr' :      lambda val: dh( val, u'Années -%d',              noConv, noConv ),
+    'it' :      lambda val: dh( val, u'Anni %d AC',              noConv, noConv ),
+    'pt' :      lambda val: dh( val, u'Década de %d a.C.',       noConv, noConv ),
+    'ru' :      lambda val: dh( val, u'%d-е до н. э.',           noConv, noConv ),
+    'sl' :      lambda val: dh( val, u'%d. pr. n. št.',          noConv, noConv ),
 }
+

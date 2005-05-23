@@ -452,7 +452,7 @@ class Family:
         	'ar'  :       [u'disambig'],
         	'be'  :       [u'неадназначнасьць'],
         	'bg'  :       [u'пояснение'],
-        	'ca'  :       [u'desambiguació'],
+        	'ca'  :       [u'Desambiguació'],
         	'cs'  :       [u'rozcestník'],
         	'cy'  :       [u'anamrwysedd'],
         	'da'  :       [u'flertydig'],
