@@ -159,11 +159,12 @@ class LinkChecker:
         if url:
             if url in self.redirectChain:
                 return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [url])
+            elif len(self.redirectChain) >= 19:
+                return False, u'Long Chain of Redirects: %s' % ' -> '.join(self.redirectChain + [url])
             else:
                 redirChecker = LinkChecker(url, self.redirectChain)
                 return redirChecker.check()
         else:
-            # TODO: HTTPS
             try:
                 conn = httplib.HTTPConnection(self.host)
             except httplib.error, arg:
