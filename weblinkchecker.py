@@ -100,19 +100,20 @@ class LinkChecker:
     Warning: Also returns false if your Internet connection isn't working
     correctly! (This will give a Socket Error)
     '''
-    def __init__(self, url, redirectList = []):
+    def __init__(self, url, redirectChain = []):
         """
-        redirectList is a list of redirects which were resolved by
+        redirectChain is a list of redirects which were resolved by
         resolveRedirect(). This is needed to detect redirect loops.
         """
         self.url = url
-        self.redirectList = redirectList
+        self.redirectChain = redirectChain + [self.url]
         # we ignore the fragment
         self.scheme, self.host, self.path, self.query, self.fragment = urlparse.urlsplit(self.url)
         if not self.path:
             self.path = '/'
         if self.query:
             self.query = '?' + self.query
+        self.protocol = url.split(':', 1)[0]
         #header = {'User-agent': 'PythonWikipediaBot/1.0'}
         # we fake being Opera because some webservers block
         # unknown clients
@@ -124,18 +125,20 @@ class LinkChecker:
         Requests the header from the server. If the page is an HTTP redirect,
         returns the redirect target URL as a string. Otherwise returns None.
         '''
+        # TODO: Malconfigured HTTP servers might give a redirect loop. A
+        # recursion counter and limit would help.
         conn = httplib.HTTPConnection(self.host)
         conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
         response = conn.getresponse()
 
         if response.status >= 300 and response.status <= 399:
             redirTarget = response.getheader('Location')
-            if redirTarget.startswith('http://'):
+            if redirTarget.startswith('http://') or redirTarget.startswith('https://'):
                 newURL = redirTarget
             elif redirTarget.startswith('/'):
-                newURL = 'http://%s%s' % (self.host, redirTarget)
+                newURL = '%s://%s%s' % (self.protocol, self.host, redirTarget)
             else:
-                newURL = 'http://%s/%s' % (self.host, redirTarget)
+                newURL = '%s://%s/%s' % (self.protocol, self.host, redirTarget)
             wikipedia.output(u'%s is a redirect to %s' % (self.url, newURL))
             return newURL
 
@@ -143,7 +146,7 @@ class LinkChecker:
     def check(self):
         """
         Returns True and the server status message if the page is alive.
-        Otherwise returns false and an error message.
+        Otherwise returns false
         """
         try:
             url = self.resolveRedirect()
@@ -154,12 +157,10 @@ class LinkChecker:
         except UnicodeEncodeError, arg:
             return False, u'Non-ASCII Characters in URL'
         if url:
-            if url in self.redirectList:
-                self.redirectList.append(url)
-                return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectList)
+            if url in self.redirectChain:
+                return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [url])
             else:
-                self.redirectList.append(url)
-                redirChecker = LinkChecker(url, self.redirectList)
+                redirChecker = LinkChecker(url, self.redirectChain)
                 return redirChecker.check()
         else:
             # TODO: HTTPS
@@ -303,7 +304,7 @@ class WeblinkCheckerRobot:
         # So characters inside the URL can be anything except whitespace and
         # closing squared brackets, and the last character also can't be  right
         # parenthesis.
-        linkR = re.compile(r'http://[^\]\s]*[^\]\)\s]')
+        linkR = re.compile(r'http[s]?://[^\]\s]*[^\]\)\s]')
         urls = linkR.findall(text)
         for url in urls:
             # Limit the number of threads started at the same time. Each
@@ -352,7 +353,7 @@ def main():
     finally:
         i = 0
         # Don't wait longer than 10 seconds for threads to finish.
-        while threading.activeCount() > 1 and i < 10:
+        while threading.activeCount() > 1 and i < 30:
             wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 1)) # don't count the main thread
             # wait 1 second
             time.sleep(1)
