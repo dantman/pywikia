@@ -1,5 +1,7 @@
+# -*- coding: utf-8  -*-
 #
 # (C) Rob W.W. Hooft, 2003
+# (C) Yuri Astrakhan, 2005
 #
 # Distribute under the terms of the PSF license.
 #
@@ -139,23 +141,113 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         return
 
     # Autotranslate years B.C.
-    if date.yearBCfmt.has_key(site.lang) and auto:
-        dt=date.yearBCfmt[site.lang]
-        dt = re.compile('%d').sub('(\d+)',dt)
-        Ryear = re.compile(dt)
-        m = Ryear.match(pl.linkname())
-        if m:
-            m = int(m.group(1))
-            for newcode in site.family.seriouslangs:
+    if auto:
+        # Year BC
+        year = isDateBC( pl )
+        if year != None:
+            for newcode in site.family.knownlanguages: #site.family.seriouslangs:
                 include = True
                 if date.maxyearBC.has_key(newcode):
-                    if m > date.maxyearBC[newcode]:
+                    if year > date.maxyearBC[newcode]:
                         include = False
                 if include:
                     fmt = date.yearBCfmt.get(newcode)
                     if fmt:
-                        newname = fmt % m
+                        newname = fmt % year
                         x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
                         if x not in arr:
                             arr[x] = None
             return
+            
+        # Decade BC
+        year = isDecadesBC( pl )
+        if year != None:
+            for newcode in site.family.knownlanguages: #site.family.seriouslangs:
+                include = True
+                if date.maxyearBC.has_key(newcode):
+                    if year > date.maxyearBC[newcode]:
+                        include = False
+                if include:
+                    fmt = date.decadesBC.get(newcode)
+                    if fmt:
+                        newname = fmt(year)
+                        x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
+                        if x not in arr:
+                            arr[x] = None
+            return
+
+        # Decade AD
+        year = isDecadesAD( pl )
+        if year != None:
+            for newcode in site.family.knownlanguages: #site.family.seriouslangs:
+                fmt = date.decadesAD.get(newcode)
+                if fmt:
+                    newname = fmt(year)
+                    x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
+                    if x not in arr:
+                        arr[x] = None
+            return
+
+bcDateErrors = [u'[[ko:%d년]]']
+
+def getPoisonedLinks(pl):
+    """Returns a list of known corrupted links that should be removed if seen
+    """
+    result = []
+    
+    year = isDateBC( pl )
+    if year != None:
+        # year BC
+        for fmt in bcDateErrors:
+            result.append( fmt % year )
+            
+        decade = year / 10 * 10   # remove last digit
+                                  # BUG: need to let the fmt function do that, because its locale-dependent
+        for lang, fmt in date.decadesBC.iteritems():
+            result.append( u'[[' + lang + u':' + fmt(decade) + u']]' )
+
+        century = (year-1)/100 + 1
+        for lang, fmt in date.centuriesBC.iteritems():
+            result.append( u'[[' + lang + u':' + fmt(century) + u']]' )
+
+        if year == 398:
+            # i guess this is like friday the 13th for the years
+            for fmt in date.yearBCfmt.values():
+                result.append( u'[[%s:%s]]' % (fmt, 399) )
+
+    return result
+    
+def isDateBC( pl ):
+    """Guesses if the name of this link matches with the date format
+    """
+    try:
+        dt = date.yearBCfmt[ pl.site().lang ]
+        Ryear = date.escapePattern( dt )
+        m = Ryear.match(pl.linkname())
+        if m:
+            year = int(m.group(1))
+            if dt % year == pl.linkname():
+                return year
+    except:
+        pass
+    return None
+
+
+def isSpecialYear( pl, yearArray ):
+    """Guesses if the name of this link matches with the date format
+    """
+    year = None
+    try:
+        year = yearArray[ pl.site().lang ]( pl.linkname() )
+    except:
+        pass
+    return year
+
+def isDecadesAD( pl ):
+    return isSpecialYear( pl, date.decadesAD )
+    
+def isDecadesBC( pl ):
+    return isSpecialYear( pl, date.decadesBC )
+
+def isCenturiesBC( pl ):
+    return isSpecialYear( pl, date.centuriesBC )

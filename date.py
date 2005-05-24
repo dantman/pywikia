@@ -988,6 +988,22 @@ def dh_sk( value ):
                 pass
         return None
 
+def dh_roman( value, pattern ):
+    """Try to get a value from the str - single roman numeral
+    """
+    if type(value) is int:
+        return pattern % romanNums[ value ]
+    else:
+        m = escapePattern(pattern).match( value )
+        if m:
+            try:
+                val = romanNums.index(m.group(1))
+                if value == pattern % romanNums[ val ]:
+                    return val
+            except:
+                pass
+        return None
+
 def noConv( i ):
     return i
 #
@@ -1023,7 +1039,7 @@ decadesAD = {
     'la' :      lambda val: dh( val, u'Decennium %d',            lambda i: i/10+1, lambda i: (i-1)*10 ),
     'lt' :      lambda val: dh_lt( val ),                                                                   # 1970 => 'XX amžiaus 8-as dešimtmetis'
     'mi' :      lambda val: dh( val, u'Ngahurutanga %d',         lambda i: i/10+1, lambda i: (i-1)*10 ),
-    'nl' :      lambda val: dh( val, u'%d-%d',                   lambda i: (i,i+9), noConv ),				# '1970-1979'
+    'nl' :      lambda val: dh( val, u'%d-%d',                   lambda i: (i,i+9), noConv ),               # '1970-1979'
     'no' :      lambda val: dh( val, u'%d-årene',                noConv, noConv ),
     'pl' :      lambda val: dh_pl( val ),                                                                   # 1970 => 'Lata 70. XX wieku'
     'pt' :      lambda val: dh( val, u'Década de %d',            noConv, noConv ),
@@ -1039,6 +1055,7 @@ decadesAD = {
 decadesBC = {
     'de' :      lambda val: dh( val, u'%der v. Chr.',            noConv, noConv ),
     'en' :      lambda val: dh( val, u'%ds BC',                  noConv, noConv ),
+    'es' :      lambda val: dh( val, u'Años %d adC',             noConv, noConv ),
     'fr' :      lambda val: dh( val, u'Années -%d',              noConv, noConv ),
     'it' :      lambda val: dh( val, u'Anni %d AC',              noConv, noConv ),
     'pt' :      lambda val: dh( val, u'Década de %d a.C.',       noConv, noConv ),
@@ -1046,3 +1063,19 @@ decadesBC = {
     'sl' :      lambda val: dh( val, u'%d. pr. n. št.',          noConv, noConv ),
 }
 
+centuriesBC = {
+    'af' :      lambda val: dh( val, u'%de eeu v. C.',           noConv, noConv ),
+    'ca' :      lambda val: dh_roman( val, u'Segle %s aC' ),
+    'da' :      lambda val: dh( val, u'%d. århundrede f.Kr.',    noConv, noConv ),
+    'de' :      lambda val: dh( val, u'%d. Jahrhundert v. Chr.', noConv, noConv ),
+    'en' :      lambda val: dh( val, u'%dth century BC',         noConv, noConv ),
+    'eo' :      lambda val: dh( val, u'%d-a jarcento a.K.',      noConv, noConv ),
+    'es' :      lambda val: dh_roman( val, u'Siglo %s adC' ),	
+    'fr' :      lambda val: dh_roman( val, u'%se siècle av. J.-C.' ),
+    'it' :      lambda val: dh_roman( val, u'%s secolo AC' ),
+    'ja' :      lambda val: dh( val, u'紀元前%d世紀',             noConv, noConv ),
+    'nl' :      lambda val: dh( val, u'%de eeuw v. Chr.',        noConv, noConv ),
+    'pl' :      lambda val: dh_roman( val, u'%s wiek p.n.e.' ),
+    'sl' :      lambda val: dh( val, u'%d. stoletje pr. n. št.', noConv, noConv ),
+    'zh' :      lambda val: dh( val, u'前%d世纪',                 noConv, noConv ),
+}
