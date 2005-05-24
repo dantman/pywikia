@@ -100,8 +100,13 @@ class LinkChecker:
     Warning: Also returns false if your Internet connection isn't working
     correctly! (This will give a Socket Error)
     '''
-    def __init__(self, url):
+    def __init__(self, url, redirectList = []):
+        """
+        redirectList is a list of redirects which were resolved by
+        resolveRedirect(). This is needed to detect redirect loops.
+        """
         self.url = url
+        self.redirectList = redirectList
         # we ignore the fragment
         self.scheme, self.host, self.path, self.query, self.fragment = urlparse.urlsplit(self.url)
         if not self.path:
@@ -119,8 +124,6 @@ class LinkChecker:
         Requests the header from the server. If the page is an HTTP redirect,
         returns the redirect target URL as a string. Otherwise returns None.
         '''
-        # TODO: Malconfigured HTTP servers might give a redirect loop. A
-        # recursion counter and limit would help.
         conn = httplib.HTTPConnection(self.host)
         conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
         response = conn.getresponse()
@@ -129,6 +132,8 @@ class LinkChecker:
             redirTarget = response.getheader('Location')
             if redirTarget.startswith('http://'):
                 newURL = redirTarget
+            elif redirTarget.startswith('/'):
+                newURL = 'http://%s%s' % (self.host, redirTarget)
             else:
                 newURL = 'http://%s/%s' % (self.host, redirTarget)
             wikipedia.output(u'%s is a redirect to %s' % (self.url, newURL))
@@ -136,6 +141,10 @@ class LinkChecker:
 
         
     def check(self):
+        """
+        Returns True and the server status message if the page is alive.
+        Otherwise returns false and an error message.
+        """
         try:
             url = self.resolveRedirect()
         except httplib.error, arg:
@@ -145,8 +154,13 @@ class LinkChecker:
         except UnicodeEncodeError, arg:
             return False, u'Non-ASCII Characters in URL'
         if url:
-            redirChecker = LinkChecker(url)
-            return redirChecker.check()
+            if url in self.redirectList:
+                self.redirectList.append(url)
+                return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectList)
+            else:
+                self.redirectList.append(url)
+                redirChecker = LinkChecker(url, self.redirectList)
+                return redirChecker.check()
         else:
             # TODO: HTTPS
             try:
