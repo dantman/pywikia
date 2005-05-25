@@ -21,6 +21,7 @@ For each unknown word, you get a couple of options:
     r: Replace the word, and add the replacement as a known alternative
     s: Replace the word, but do not add the replacement
     *: Edit the page using the gui
+    g: Give a list of 'guessed' words, which are similar to the given one
 
 When the bot is ended, it will save the extensions to its word list;
 there is one word list for each language.
@@ -75,6 +76,47 @@ def makepath(path):
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
 
+def distance(a,b):
+    # Calculates the Levenshtein distance between a and b.
+    # That is, the number of edits needed to change one into
+    # the other, where one edit is the addition, removal or
+    # change of a single character.
+    # Copied from Magnus Lie Hetland at http://hetland.org/python/
+    n, m = len(a), len(b)
+    if n > m:
+        # Make sure n <= m, to use O(min(n,m)) space
+        a,b = b,a
+        n,m = m,n
+    current = range(n+1)
+    for i in range(1,m+1):
+        previous, current = current, [i]+[0]*m
+        for j in range(1,n+1):
+            add, delete = previous[j]+1, current[j-1]+1
+            change = previous[j-1]
+            if a[j-1] != b[i-1]:
+                change = change + 1
+            current[j] = min(add, delete, change)     
+    return current[n]
+
+def getalternatives(string):
+    # Find possible correct words for the incorrect word string
+    simwords = {}
+    for i in xrange(11):
+        simwords[i] = []
+    for alt in knownwords.keys():
+        diff = distance(string,alt)
+        if diff < 11:
+            if knownwords[alt] == alt:
+                simwords[diff] += [alt]
+            else:
+                simwords[diff] += knownwords[alt]
+    found = 0
+    posswords = []
+    for i in xrange(11):
+        if found < 20:
+            posswords += simwords[i]
+    return posswords[:30]
+
 def uncap(string):
     # uncapitalize the first word of the string
     return string[0].lower()+string[1:]
@@ -100,6 +142,7 @@ def askAlternative(word,context=None):
         wikipedia.output(u"i: Ignore once")
         wikipedia.output(u"r: Replace text")
         wikipedia.output(u"s: Replace text, but do not save as alternative")
+        wikipedia.output(u"g: Guess (give me a list of similar words- SLOW!)")
         wikipedia.output(u"*: Edit by hand")
         answer = wikipedia.input(u":")
         if answer in "aAiI":
@@ -124,6 +167,14 @@ def askAlternative(word,context=None):
             correct = word
             knownwords[uncap(word)] = uncap(word)
             newwords.append(uncap(word))
+        elif answer in "gG":
+            possible = getalternatives(word)
+            if possible:
+                print "Found alternatives:"
+                for pos in possible:
+                    print "  %s"%pos
+            else:
+                print "No similar words found."
         elif answer=="*":
             correct = edit
         else:
