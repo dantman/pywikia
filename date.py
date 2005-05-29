@@ -933,7 +933,7 @@ def dh( value, pattern, encf, decf ):
         Usage scenarios:
             decadesAD['en'](1980) => u'1980s'
             decadesAD['en'](u'1980s') => 1980
-            decadesAD['en'](u'anything else') => None
+            decadesAD['en'](u'anything else') => raise ValueError (or some other exception?)
     """
     if type(value) is int:
         return pattern % encf(value)
@@ -942,8 +942,6 @@ def dh( value, pattern, encf, decf ):
         m = cm.match(value)
         values = [ dcrs[i](m.group(i+1)) for i in range(len(dcrs))]     # decode each found value using provided decoder
         year = decf( values )
-#        print "year %d" % year
-#        print encf(year)
         if value == pattern % encf(year):
             return year
             
@@ -953,12 +951,12 @@ def dh_dec( value, pattern ):
     """decoding helper for a single integer value, no conversion, round to decimals (used in decades)"""
     return dh( value, pattern, dec0, singleVal )
 
-def dh_cent( value, pattern ):
-    """decoding helper for a single integer value, no conversion, no rounding (used in centuries)"""
+def dh_noConv( value, pattern ):
+    """decoding helper for a single integer value, no conversion, no rounding (used in centuries, milleniums)"""
     return dh( value, pattern, noConv, singleVal )
 
-def dh_romCent( value, pattern ):
-    """decoding helper for a single roman number (used in centuries)"""
+def dh_roman( value, pattern ):
+    """decoding helper for a single roman number (used in centuries, milleniums)"""
     return dh( value, pattern, lambda i: romanNums[i], singleVal )
 
 def singleVal( v ):
@@ -991,13 +989,13 @@ decadesAD = {
     'fr' :      lambda val: dh_dec( val, u'Années %d' ),
     
     #1970s => '1971–1980'
-    'is' :      lambda val: dh( val, u'%d–%d',                   lambda i: (dec1(i),dec1(i)+9), lambda i: i[0]-1 ),
+    'is' :      lambda val: dh( val, u'%d–%d',                   lambda i: (dec1(i),dec1(i)+9), lambda v: v[0]-1 ),
     'it' :      lambda val: dh_dec( val, u'Anni %d' ),
     'ja' :      lambda val: dh_dec( val, u'%d年代' ),
     'ko' :      lambda val: dh_dec( val, u'%d년대' ),
     
     #1970s => 'Decennium 198' (1971-1980)
-    'la' :      lambda val: dh( val, u'Decennium %d',            lambda i: dec1(i)/10+1, lambda i: (i[0]-1)*10 ),
+    'la' :      lambda val: dh( val, u'Decennium %d',            lambda i: dec1(i)/10+1, lambda v: (v[0]-1)*10 ),
     
     #1970s => 'XX amžiaus 8-as dešimtmetis' (1971-1980)
     'lt' :      lambda val: dh( val, u'%s amžiaus %d-as dešimtmetis',
@@ -1005,7 +1003,7 @@ decadesAD = {
                     lambda v: (v[0]-1)*100 + (v[1]-1)*10 ),
     
     #1970s => 'Ngahurutanga 198' (1971-1980)
-    'mi' :      lambda val: dh( val, u'Ngahurutanga %d',         lambda i: dec0(i)/10+1, lambda i: (i[0]-1)*10 ),
+    'mi' :      lambda val: dh( val, u'Ngahurutanga %d',         lambda i: dec0(i)/10+1, lambda v: (v[0]-1)*10 ),
 
     #1970s => '1970-1979'
     'nl' :      lambda val: dh( val, u'%d-%d',                   lambda i: (dec0(i),dec0(i)+9), singleVal ),
@@ -1043,70 +1041,116 @@ decadesBC = {
 }
 
 centuriesAD = {
-    'af' :      lambda val: dh_cent( val, u'%dste eeu' ),
-    'ang':      lambda val: dh_cent( val, u'%de géarhundred' ),
-    'ast':      lambda val: dh_romCent( val, u'Sieglu %s' ),
-    'be' :      lambda val: dh_cent( val, u'%d стагодзьдзе' ),
-    'bg' :      lambda val: dh_cent( val, u'%d век' ),
-    'ca' :      lambda val: dh_romCent( val, u'Segle %s' ),
-    'cs' :      lambda val: dh_cent( val, u'%d. století' ),
-    'da' :      lambda val: dh_cent( val, u'%d. århundrede' ),
-    'de' :      lambda val: dh_cent( val, u'%d. Jahrhundert' ),
-    'el' :      lambda val: dh_cent( val, u'%dος αιώνας' ),
-    'en' :      lambda val: dh_cent( val, u'%dth century' ),
-    'eo' :      lambda val: dh_cent( val, u'%d-a jarcento' ),
-    'es' :      lambda val: dh_romCent( val, u'Siglo %s' ),
-    'et' :      lambda val: dh_cent( val, u'%d. sajand' ),
+    'af' :      lambda val: dh_noConv( val, u'%dste eeu' ),
+    'ang':      lambda val: dh_noConv( val, u'%de géarhundred' ),
+    'ast':      lambda val: dh_roman( val, u'Sieglu %s' ),
+    'be' :      lambda val: dh_noConv( val, u'%d стагодзьдзе' ),
+    'bg' :      lambda val: dh_noConv( val, u'%d век' ),
+    'ca' :      lambda val: dh_roman( val, u'Segle %s' ),
+    'cs' :      lambda val: dh_noConv( val, u'%d. století' ),
+    'da' :      lambda val: dh_noConv( val, u'%d. århundrede' ),
+    'de' :      lambda val: dh_noConv( val, u'%d. Jahrhundert' ),
+    'el' :      lambda val: dh_noConv( val, u'%dος αιώνας' ),
+    'en' :      lambda val: dh_noConv( val, u'%dth century' ),
+    'eo' :      lambda val: dh_noConv( val, u'%d-a jarcento' ),
+    'es' :      lambda val: dh_roman( val, u'Siglo %s' ),
+    'et' :      lambda val: dh_noConv( val, u'%d. sajand' ),
     'fi' :      lambda val: dh( val, u'%d00-luku',                   lambda i: i-1, lambda v: v[0]+1 ),
-    'fr' :      lambda val: dh_romCent( val, u'%se siècle' ),
-    'fy' :      lambda val: dh_cent( val, u'%de ieu' ),
-    'he' :      lambda val: dh_cent( val, u'המאה ה-%d' ),
-	#'hi' :	u'बीसवी शताब्दी'
-    'hr' :      lambda val: dh_cent( val, u'%d. stoljeće' ),
-    'io' :      lambda val: dh_cent( val, u'%dma yar-cento' ),
-    'it' :      lambda val: dh_romCent( val, u'%s secolo' ),
-    'ja' :      lambda val: dh_cent( val, u'%d世紀' ),
-    'ko' :      lambda val: dh_cent( val, u'%d세기' ),
-    'la' :      lambda val: dh_cent( val, u'Saeculum %d' ),
-    'lb' :      lambda val: dh_cent( val, u'%d. Joerhonnert' ),
-	#'li': u'Twintegste ieuw'
-    'lt' :      lambda val: dh_romCent( val, u'%s amžius' ),
-    'mi' :      lambda val: dh_cent( val, u'Tua %d rau tau' ),
-    'nl' :      lambda val: dh_cent( val, u'%de eeuw' ),
-    'no' :      lambda val: dh_cent( val, u'%d. århundre' ),
-    'pl' :      lambda val: dh_romCent( val, u'%s wiek' ),
-    'pt' :      lambda val: dh_romCent( val, u'Século %s' ),
-    'ro' :      lambda val: dh_romCent( val, u'Secolul al %s-lea' ),
-    'simple' :  lambda val: dh_cent( val, u'%dth century' ),
-    'sk' :      lambda val: dh_cent( val, u'%d. storočie' ),
-    'sl' :      lambda val: dh_cent( val, u'%d. stoletje' ),
+    'fr' :      lambda val: dh_roman( val, u'%se siècle' ),
+    'fy' :      lambda val: dh_noConv( val, u'%de ieu' ),
+    'he' :      lambda val: dh_noConv( val, u'המאה ה-%d' ),
+    #'hi' : u'बीसवी शताब्दी'
+    'hr' :      lambda val: dh_noConv( val, u'%d. stoljeće' ),
+    'io' :      lambda val: dh_noConv( val, u'%dma yar-cento' ),
+    'it' :      lambda val: dh_roman( val, u'%s secolo' ),
+    'ja' :      lambda val: dh_noConv( val, u'%d世紀' ),
+    'ko' :      lambda val: dh_noConv( val, u'%d세기' ),
+    'la' :      lambda val: dh_noConv( val, u'Saeculum %d' ),
+    'lb' :      lambda val: dh_noConv( val, u'%d. Joerhonnert' ),
+    #'li': u'Twintegste ieuw'
+    'lt' :      lambda val: dh_roman( val, u'%s amžius' ),
+    'mi' :      lambda val: dh_noConv( val, u'Tua %d rau tau' ),
+    'nl' :      lambda val: dh_noConv( val, u'%de eeuw' ),
+    'no' :      lambda val: dh_noConv( val, u'%d. århundre' ),
+    'pl' :      lambda val: dh_roman( val, u'%s wiek' ),
+    'pt' :      lambda val: dh_roman( val, u'Século %s' ),
+    'ro' :      lambda val: dh_roman( val, u'Secolul al %s-lea' ),
+    'ru' :      lambda val: dh_roman( val, u'%s век' ),
+    'simple' :  lambda val: dh_noConv( val, u'%dth century' ),
+    'sk' :      lambda val: dh_noConv( val, u'%d. storočie' ),
+    'sl' :      lambda val: dh_noConv( val, u'%d. stoletje' ),
     'sv' :      lambda val: dh( val, u'%d00-talet',                   lambda i: i-1, lambda v: v[0]+1 ),
-    'tr' :      lambda val: dh_cent( val, u'%d. yüzyıl' ),
-    'uk' :      lambda val: dh_cent( val, u'%d століття' ),
-    'wa' :      lambda val: dh_cent( val, u'%dinme sieke' ),
-    'zh' :      lambda val: dh_cent( val, u'%d世纪' ),
+    'tr' :      lambda val: dh_noConv( val, u'%d. yüzyıl' ),
+    'uk' :      lambda val: dh_noConv( val, u'%d століття' ),
+    'wa' :      lambda val: dh_noConv( val, u'%dinme sieke' ),
+    'zh' :      lambda val: dh_noConv( val, u'%d世纪' ),
 }
 
 centuriesBC = {
-    'af' :      lambda val: dh_cent( val, u'%de eeu v. C.' ),
-    'ca' :      lambda val: dh_romCent( val, u'Segle %s aC' ),
-    'da' :      lambda val: dh_cent( val, u'%d. århundrede f.Kr.' ),
-    'de' :      lambda val: dh_cent( val, u'%d. Jahrhundert v. Chr.' ),
-    'en' :      lambda val: dh_cent( val, u'%dth century BC' ),
-    'eo' :      lambda val: dh_cent( val, u'%d-a jarcento a.K.' ),
-    'es' :      lambda val: dh_romCent( val, u'Siglo %s adC' ),   
-    'fr' :      lambda val: dh_romCent( val, u'%se siècle av. J.-C.' ),
-    'it' :      lambda val: dh_romCent( val, u'%s secolo AC' ),
-    'ja' :      lambda val: dh_cent( val, u'紀元前%d世紀' ),
-    'nl' :      lambda val: dh_cent( val, u'%de eeuw v. Chr.' ),
-    'pl' :      lambda val: dh_romCent( val, u'%s wiek p.n.e.' ),
-    'sl' :      lambda val: dh_cent( val, u'%d. stoletje pr. n. št.' ),
-    'zh' :      lambda val: dh_cent( val, u'前%d世纪' ),
+    'af' :      lambda val: dh_noConv( val, u'%de eeu v. C.' ),
+    'ca' :      lambda val: dh_roman( val, u'Segle %s aC' ),
+    'da' :      lambda val: dh_noConv( val, u'%d. århundrede f.Kr.' ),
+    'de' :      lambda val: dh_noConv( val, u'%d. Jahrhundert v. Chr.' ),
+    'en' :      lambda val: dh_noConv( val, u'%dth century BC' ),
+    'eo' :      lambda val: dh_noConv( val, u'%d-a jarcento a.K.' ),
+    'es' :      lambda val: dh_roman( val, u'Siglo %s adC' ),   
+    'fr' :      lambda val: dh_roman( val, u'%se siècle av. J.-C.' ),
+    'it' :      lambda val: dh_roman( val, u'%s secolo AC' ),
+    'ja' :      lambda val: dh_noConv( val, u'紀元前%d世紀' ),
+    'nl' :      lambda val: dh_noConv( val, u'%de eeuw v. Chr.' ),
+    'pl' :      lambda val: dh_roman( val, u'%s wiek p.n.e.' ),
+    'ru' :      lambda val: dh_roman( val, u'%s век до н. э.' ),
+    'sl' :      lambda val: dh_noConv( val, u'%d. stoletje pr. n. št.' ),
+    'zh' :      lambda val: dh_noConv( val, u'前%d世纪' ),
 }
 
-def testArray( m, year, testYear ):
+milleniumsAD = {
+    'bg' :      lambda val: dh_noConv( val, u'%d хилядолетие' ),
+    'de' :      lambda val: dh_noConv( val, u'%d. Jahrtausend' ),
+    'el' :      lambda val: dh_noConv( val, u'%dη χιλιετία' ),
+    'en' :      lambda val: dh_noConv( val, u'%dnd millennium' ),
+    'es' :      lambda val: dh_roman( val, u'%s milenio' ),
+    'fr' :      lambda val: dh_roman( val, u'%se millénaire' ),
+    'it' :      lambda val: dh_roman( val, u'%s millennio' ),
+    'ja' :      lambda val: dh_noConv( val, u'%d千年紀' ),
+    'lb' :      lambda val: dh_noConv( val, u'%d. Joerdausend' ),
+    'lt' :      lambda val: dh_noConv( val, u'%d tūkstantmetis' ),
+    #'pt' : u'Segundo milénio d.C.'
+    'ro' :      lambda val: dh_roman( val, u'Mileniul %s' ),
+    'ru' :      lambda val: dh_noConv( val, u'%d тысячелетие' ),
+    'sk' :      lambda val: dh_noConv( val, u'%d. tisícročie' ),
+    'sl' :      lambda val: dh_noConv( val, u'%d. tisočletje' ),
+    #'sv' : u'1000-talet (millennium)'
+    #'ur' : u'1000مبم'
+}
+
+milleniumsBC = {
+    'bg' :      lambda val: dh_noConv( val, u'%d хилядолетие пр.н.е.' ),
+    'da' :      lambda val: dh_noConv( val, u'%d. årtusinde f.Kr.' ),
+    'de' :      lambda val: dh_noConv( val, u'%d. Jahrtausend v. Chr.' ),
+    'en' :      lambda val: dh_noConv( val, u'%dst millennium BC' ),
+    'es' :      lambda val: dh_roman( val, u'%s milenio adC' ),
+    'fr' :      lambda val: dh_roman( val, u'%ser millénaire av. J.-C.' ),
+    'it' :      lambda val: dh_roman( val, u'%s millennio AC' ),
+    'ja' :      lambda val: dh_noConv( val, u'紀元前%d千年紀' ),
+    'lb' :      lambda val: dh_noConv( val, u'%d. Joerdausend v. Chr.' ),
+    #'pt' : u'Primeiro milénio a.C.'
+    'ro' :      lambda val: dh_roman( val, u'Mileniul %s î.Hr.' ),
+    'ru' :      lambda val: dh_noConv( val, u'%d тысячелетие до н. э.' ),
+    'zh' :      lambda val: dh_noConv( val, u'前%d千年' ),
+}
+
+
+def testYearMap( m, year, testYear ):
+    """This is a test function, to be used interactivelly to test the validity of the above maps.
+    To test, run this function with the map name, year to be tested, and the final year expected.
+    Usage example:
+        import date
+        date.testYearMap( decadesAD, 1992, 1990 )
+        date.testYearMap( centuriesAD, 20, 20 )
+    """
     import wikipedia
     for code, value in m.iteritems():
-        wikipedia.output(u'%s: %d->%s->%d' % (code, year, value(year), value(value(year))))
+        wikipedia.output(u"%s: %d -> '%s' -> %d" % (code, year, value(year), value(value(year))))
         if value(value(year)) != testYear:
-            raise ValueError("years didn't match")
+            raise ValueError("assert failed, years didn't match")
