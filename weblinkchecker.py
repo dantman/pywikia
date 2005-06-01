@@ -304,10 +304,11 @@ class WeblinkCheckerRobot:
         # Note: while allowing parenthesis inside URLs, MediaWiki will regard
         # right parenthesis at the end of the URL as not part of that URL.
         # The same applies to dot, comma, colon and some other characters.
-        # So characters inside the URL can be anything except whitespace and
-        # closing squared brackets, and the last character also can't be a
-        # parenthesis or another character disallowed by MediaWiki.
-        linkR = re.compile(r'http[s]?://[^\]\s]*[^\]\s\)\.:;,<>]')
+        # So characters inside the URL can be anything except whitespace,
+        # closing squared brackets, greater than and less than, and the last
+        # character also can't be parenthesis or another character disallowed
+        # by MediaWiki.
+        linkR = re.compile(r'http[s]?://[^\]\s<>]*[^\]\s\)\.:;,<>]')
         urls = linkR.findall(text)
         for url in urls:
             # Remove HTML comments in URLs
