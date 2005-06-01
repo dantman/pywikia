@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -59,7 +59,7 @@ class Family:
                 'bn': u'বিশেষ',
                 'ca': u'Especial',
                 'cs': u'Speciální',
-                #'csb': u'Specjalnô',
+                'csb': u'Specjalnô',
                 'cy': u'Arbennig',
                 'da': u'Speciel',
                 'de': u'Spezial',
@@ -117,6 +117,7 @@ class Family:
                 'bn': u'আলাপ',
                 'ca': u'Discussió',
                 'cs': u'Diskuse',
+                'csb': u'Diskùsëjô',
                 'cy': u'Sgwrs',
                 'da': u'Diskussion',
                 'de': u'Diskussion',
@@ -173,6 +174,7 @@ class Family:
                 'ar': u'مستخدم',
                 'bg': u'Потребител',
                 'ca': u'Usuari',
+                'cbs': u'Brëkòwnik',
                 'cs': u'Wikipedista',
                 'cy': u'Defnyddiwr',
                 'da': u'Bruger',
@@ -244,6 +246,7 @@ class Family:
                 'ar': u'صورة',
                 'bg': u'Картинка',
                 'ca': u'Imatge',
+                'cbs': u'Òbrôzk',
                 'cs': u'Soubor',
                 'cy': u'Delwedd',
                 'da': u'Billede',
@@ -316,6 +319,7 @@ class Family:
                 '_default':u'Template',
                 'als':u'Vorlage',
                 'bg':u'Шаблон',
+                'cbs':u'Szablóna',
                 'cs':u'Šablona',
                 'cy':u'Nodyn',
                 'da':u'Skabelon',
@@ -358,6 +362,7 @@ class Family:
             },
             12: {
                 '_default': u'Help',
+                'cbs': u'Pòmòc',
                 'da': u'Hjælp',
                 'de': u'Hilfe',
                 'el': u'Βοήθεια',
@@ -380,6 +385,7 @@ class Family:
                 'ar': u'تصنيف',
                 'bg': u'Категория',
                 'ca': u'Categoria',
+                'cbs': u'Kategòrëjô',
                 'cs': u'Kategorie',
                 'da': u'Kategori',
                 'de': u'Kategorie',
