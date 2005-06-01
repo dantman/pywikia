@@ -139,7 +139,7 @@ class LinkChecker:
                 newURL = '%s://%s%s' % (self.protocol, self.host, redirTarget)
             else:
                 newURL = '%s://%s/%s' % (self.protocol, self.host, redirTarget)
-            wikipedia.output(u'%s is a redirect to %s' % (self.url, newURL))
+            # wikipedia.output(u'%s is a redirect to %s' % (self.url, newURL))
             return newURL
 
         
@@ -310,6 +310,8 @@ class WeblinkCheckerRobot:
         linkR = re.compile(r'http[s]?://[^\]\s]*[^\]\s\)\.:;,<>]')
         urls = linkR.findall(text)
         for url in urls:
+            # Remove HTML comments in URLs
+            url = re.sub('<!--.*?-->', '', url)
             # Limit the number of threads started at the same time. Each
             # thread will check one page, then die.
             while threading.activeCount() >= config.max_external_links:
@@ -355,14 +357,14 @@ def main():
         bot.run()
     finally:
         i = 0
-        # Don't wait longer than 10 seconds for threads to finish.
+        # Don't wait longer than 30 seconds for threads to finish.
         while threading.activeCount() > 1 and i < 30:
             wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 1)) # don't count the main thread
             # wait 1 second
             time.sleep(1)
             i += 1
         if threading.activeCount() > 1:
-            wikipedia.output(u"Killing remaining %i threads..." % threading.activeCount())
+            wikipedia.output(u"Killing remaining %i threads..." % (threading.activeCount() - 1))
             # Threads will die automatically because they are daemonic
 
         bot.history.save()
