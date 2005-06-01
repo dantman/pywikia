@@ -170,8 +170,11 @@ class PageInList(LookupError):
 class EmptyGroup(ValueError):
     """PageGroup is empty"""
 
-class NotLoggedIn(Error):
+class NotLoggedIn(Exception):
     """Anonymous editing Wikipedia is not possible"""
+
+class PageNotFound(Exception):
+    """Page not found in list"""
 
 SaxError = xml.sax._exceptions.SAXParseException
 
@@ -199,12 +202,17 @@ class Page(object):
              title = title[1:]
         title = link2url(title, site = self._site, insite = insite)
         title = title.split('%3A')
-        # translate a default namespace name into the local namespace name
         if len(title) > 1:
+            # translate a default namespace name into the local namespace name
             for ns in site.family.namespaces.keys():
                 if title[0] == site.family.namespace('_default', ns):
                     title[0] = site.namespace(ns)
                     title[0] = link2url (title[0], site = self._site, insite = insite)
+            # Capitalize the first non-namespace part
+            for ns in site.family.namespaces.keys():
+                if title[0] == site.namespace(ns):
+                    if not site.nocapitalize:
+                        title[1] = title[1][0].upper()+title[1][1:]
         title = '%3A'.join(title)
         self._urlname = title
         self._linkname = url2link(self._urlname, site = self._site, insite = self._tosite)
@@ -992,6 +1000,8 @@ class GetAll(object):
             f.close()
             print >>sys.stderr, "Dumped invalid XML to sax_parse_bug.dat"
             raise
+        except PageNotFound:
+            return
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
@@ -1026,7 +1036,7 @@ class GetAll(object):
             print repr(pl)
             print repr(self.pages)
             print "BUG> bug, page not found in list"
-            return
+            raise PageNotFound
         m = redirectRe(self.site).match(text)
         if m:
             edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
