@@ -100,21 +100,28 @@ def distance(a,b):
 
 def getalternatives(string):
     # Find possible correct words for the incorrect word string
+    basetext = wikipedia.input(u"Give a text that should occur in the words to be checked.\nYou can choose to give no text, but this will make searching slow:")
+    basetext = basetext.lower()
     simwords = {}
     for i in xrange(11):
         simwords[i] = []
     for alt in knownwords.keys():
-        diff = distance(string,alt)
-        if diff < 11:
-            if knownwords[alt] == alt:
-                simwords[diff] += [alt]
+        if basetext:
+            if alt.lower().find(basetext) == -1:
+                dothis = False
             else:
-                simwords[diff] += knownwords[alt]
-    found = 0
+                dothis = True
+        else: dothis = True
+        if dothis:
+            diff = distance(string,alt)
+            if diff < 11:
+                if knownwords[alt] == alt:
+                    simwords[diff] += [alt]
+                else:
+                    simwords[diff] += knownwords[alt]
     posswords = []
     for i in xrange(11):
-        if found < 20:
-            posswords += simwords[i]
+        posswords += simwords[i]            
     return posswords[:30]
 
 def uncap(string):
@@ -142,7 +149,7 @@ def askAlternative(word,context=None):
         wikipedia.output(u"i: Ignore once")
         wikipedia.output(u"r: Replace text")
         wikipedia.output(u"s: Replace text, but do not save as alternative")
-        wikipedia.output(u"g: Guess (give me a list of similar words- SLOW!)")
+        wikipedia.output(u"g: Guess (give me a list of similar words)")
         wikipedia.output(u"*: Edit by hand")
         answer = wikipedia.input(u":")
         if answer in "aAiI":
