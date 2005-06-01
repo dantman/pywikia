@@ -75,145 +75,80 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                             arr[x] = None
                 else:
                     wikipedia.output(u"Ignoring unknown language code %s"%newcode)
-    # Autotranslate dates into some other languages, the rest will come from
-    # existing interwiki links.
-    if date.datetable.has_key(site.lang) and auto:
-        dt='(\d+) (%s)' % ('|'.join(date.datetable[site.lang].keys()))
-        Rdate = re.compile(dt)
-        m = Rdate.match(pl.linkname())
-        if m:
-            for newcode, fmt in date.date_format[date.datetable[site.lang][m.group(2)]].items():
-                newname = fmt % int(m.group(1))
-                x = wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family),newname)
-                if x not in arr:
-                    arr[x] = None
-            return
 
-    # Autotranslate years A.D.
-    Ryear = re.compile('^\d+$')
-    m = Ryear.match(pl.linkname())
-    if m and auto:
-        i=int(m.group(0))
-        if i==0:
-            return
-        if site.lang in date.yearADfmt:
-            # These have different texts for years
-            return
-        if site.lang in ['ia','la'] and i<1400:
-            return
-        if site.lang in ['simple','lt'] and i<200:
-            return
-        for newcode in site.family.seriouslangs:
-            if newcode in date.yearADfmt:
-                fmt = date.yearADfmt[newcode]
-            else:
-                fmt = '%d'
-            if newcode == 'ja' and i<1900:
-                # ja pages before 1900 are redirects
-                pass
-            elif newcode in ['ia','la'] and i<1400:
-                # some ia pages are numbers
-                pass
-            elif newcode in ['simple','lt'] and i<200:
-                # some simple pages are numbers
-                # lt:69 has yet another meaning
-                pass
-            elif newcode=='es' and i>2005:
-                # es: redirects future years to a single page
-                pass
-            elif newcode=='no' and i>2010:
-                # no: redirects far future years to the century
-                pass
-            elif newcode=='ja' and i>2015:
-                # ja: redirects far future years to decades
-                pass
-            elif newcode=='pl' and i>2019:
-                # pl: redirects far future years to decades
-                pass
-            elif newcode=='fi' and i==666:
-                # Yet another case of a number with another meaning
-                pass
-            else:
-                newname = fmt%i 
-                x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
-                if x not in arr:
-                    arr[x] = None
-        return
-
-    # Autotranslate years B.C.
+    # Autotranslate dates into all other languages, the rest will come from existing interwiki links.
     if auto:
-        # Year BC
-        year = isDateBC( pl )
-        if year != None:
-            for newcode in site.family.knownlanguages: #site.family.seriouslangs:
-                include = True
-                if date.maxyearBC.has_key(newcode):
-                    if year > date.maxyearBC[newcode]:
-                        include = False
-                if include:
-                    fmt = date.yearBCfmt.get(newcode)
-                    if fmt:
-                        newname = fmt % year
-                        x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
+        # search inside all dictionaries for this link
+        dictName, year = getDictionaryYear( pl.site().language(), pl.linkname() )
+        if dictName:
+            for entryLang, entry in date.dateFormats[dictName].iteritems():
+                try:
+                    if entryLang != pl.site().language():
+                        if dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and year > date.maxyearBC[pl.site().language()]:
+                            pass
+                        newname = entry(year)
+                        x = wikipedia.Page( wikipedia.getSite(code=newcode, fam=site.family), newname )
                         if x not in arr:
-                            arr[x] = None
-            return
-            
-        # Decade BC
-        year = isDecadesBC( pl )
-        if year != None:
-            for newcode in site.family.knownlanguages: #site.family.seriouslangs:
-                include = True
-                if date.maxyearBC.has_key(newcode):
-                    if year > date.maxyearBC[newcode]:
-                        include = False
-                if include:
-                    fmt = date.decadesBC.get(newcode)
-                    if fmt:
-                        newname = fmt(year)
-                        x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
-                        if x not in arr:
-                            arr[x] = None
-            return
+                            arr[x] = None   # add new page
+                except:
+                    pass
 
-        # Decade AD
-        year = isDecadesAD( pl )
-        if year != None:
-            for newcode in site.family.knownlanguages: #site.family.seriouslangs:
-                fmt = date.decadesAD.get(newcode)
-                if fmt:
-                    newname = fmt(year)
-                    x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
-                    if x not in arr:
-                        arr[x] = None
-            return
+def getDictionaryYear( lang, linkname ):
+    for dictName, dict in date.dateFormats.iteritems():
+        try:
+            year = dict[ lang ]( linkname )
+            return (dictName,year)
+        except:
+            pass
+
+    return (None,None)
+
+
 
 bcDateErrors = [u'[[ko:%d년]]']
+bcFormats = ['centuriesBC', 'decadesBC', 'milleniumsBC', 'yearsBC']
+adFormats = ['centuriesAD','decadesAD','milleniumsAD','yearsAD']
+monthFormats = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+decadeFormats = ['decadesAD','decadesBC']
 
+
+def appendFormatedDates( result, dictName, year ):
+    for code, value in date.dateFormats[dictName].iteritems():
+        result.append( u'[[%s:%s]]' % (code,value(year)) )
+    
 def getPoisonedLinks(pl):
     """Returns a list of known corrupted links that should be removed if seen
     """
     result = []
     
-    year = isDateBC( pl )
-    if year != None:
-        # year BC
-        for fmt in bcDateErrors:
-            result.append( fmt % year )
-            
-        decade = year / 10 * 10   # remove last digit
-                                  # BUG: need to let the fmt function do that, because its locale-dependent
-        for lang, fmt in date.decadesBC.iteritems():
-            result.append( u'[[' + lang + u':' + fmt(decade) + u']]' )
+    wikipedia.output( u'getting poisoned links for %s' % pl.linkname() )
 
-        century = (year-1)/100 + 1
-        for lang, fmt in date.centuriesBC.iteritems():
-            result.append( u'[[' + lang + u':' + fmt(century) + u']]' )
+    dictName, year = getDictionaryYear( pl.site().language(), pl.linkname() )
+    if dictName != None:
+        wikipedia.output( u'date found in %s' % dictName )
+        
+        # errors in year BC
+        if dictName in bcFormats:
+            for fmt in bcDateErrors:
+                result.append( fmt % year )
 
-        if year == 398:
-            # i guess this is like friday the 13th for the years
-            for fmt in date.yearBCfmt.values():
-                result.append( u'[[%s:%s]]' % (fmt, 399) )
+        # i guess this is like friday the 13th for the years
+        if year == 398 and dictName == 'yearsBC':
+            appendFormatedDates( result, dictName, 399 )
+        
+        if dictName == 'yearsBC':
+            appendFormatedDates( result, 'decadesBC', year )
+            appendFormatedDates( result, 'yearsAD', year )
+
+        if dictName == 'yearsAD':
+            appendFormatedDates( result, 'decadesAD', year )
+            appendFormatedDates( result, 'yearsBC', year )
+
+        if dictName == 'centuriesBC':
+            appendFormatedDates( result, 'decadesBC', year*100+1 )
+
+        if dictName == 'centuriesAD':
+            appendFormatedDates( result, 'decadesAD', year*100+1 )
 
     return result
     
@@ -233,21 +168,21 @@ def isDateBC( pl ):
     return None
 
 
-def isSpecialYear( pl, yearArray ):
+def isSpecialYear( pl, yearMapName ):
     """Guesses if the name of this link matches with the date format
     """
     year = None
     try:
-        year = yearArray[ pl.site().lang ]( pl.linkname() )
+        year = dateFormats[yearMapName][ pl.site().lang ]( pl.linkname() )
     except:
         pass
     return year
 
 def isDecadesAD( pl ):
-    return isSpecialYear( pl, date.decadesAD )
+    return isSpecialYear( pl, 'decadesAD' )
     
 def isDecadesBC( pl ):
-    return isSpecialYear( pl, date.decadesBC )
+    return isSpecialYear( pl, 'decadesBC' )
 
 def isCenturiesBC( pl ):
-    return isSpecialYear( pl, date.centuriesBC )
+    return isSpecialYear( pl, 'centuriesBC' )
