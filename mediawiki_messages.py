@@ -6,15 +6,15 @@ software in the current language. These can be used in other bots.
 The function refresh_messages() downloads all the current messages and saves
 them to disk. It is run automatically when a bot first tries to access one of
 the messages. It can be updated manually by running this script, e.g. when
-somebody changed the current message at the wiki.
+somebody changed the current message at the wiki. The texts will also be
+reloaded automatically once a month.
 
-Syntax: python mediawiki_messages [-lang:xx]
+Syntax: python mediawiki_messages [-all] [-debug]
 
 Command line options:
-
--lang:XX download labels in language XX instead of the one given in
-         username.dat
-
+    -all  -  Reloads messages for all wikis where messages are already present
+    -debug  -  Shows example messages after loading
+    
 """
 
 # (C) Daniel Herding, 2004
@@ -86,7 +86,7 @@ def refresh_messages(site):
 
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
-    itemR = re.compile("<tr bgcolor=\"#f0f0ff\"><td>\n"
+    itemR = re.compile("<tr bgcolor=\"#[0-9a-f]{6}\"><td>\n"
                      + "\s*<a href=.+?>(.+?)<\/a><br \/>\n"
                      + "\s*<a href=.+?>.+?<\/a>\n"
                      + "\s*</td><td>\n"
@@ -136,8 +136,9 @@ def main():
     else:
         refresh_messages(wikipedia.getSite())
     if debug:
-        print "DBG> successfulupload contains %s" % get('successfulupload')
-
+        print "DBG> successfulupload contains %s" %  get('successfulupload')
+        print "DBG> deletedtext contains %s" % get('deletedtext')
+        
 if __name__ == "__main__":
     try:
         main()
