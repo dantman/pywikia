@@ -1552,7 +1552,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         # Convert to a unicode string. If there's invalid unicode data inside
         # the page, replace it with question marks.
         x = unicode(x, charset, errors = 'replace')
-        return x, isWatched
+        return x
 
 def newpages(number=10, onlyonce=False, site=None):
     """Generator which yields new articles subsequently.
