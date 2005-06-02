@@ -180,7 +180,7 @@ SaxError = xml.sax._exceptions.SAXParseException
 
 # The most important thing in this whole module: The Page class
 class Page(object):
-    """A Wikipedia page link."""
+    """A page on the wiki."""
     def __init__(self, site, title = None, insite = None, tosite = None):
         """
         Constructor. Normally called with two arguments:
@@ -1458,6 +1458,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
     get_edit_page is True; otherwise it returns a unicode string containing
     the entire page's HTML code.
     """
+    isWatched = False
     host = site.hostname()
     name = re.sub(' ', '_', name)
     output(url2unicode(u'Getting page %s' % site.linkto(name), site = site))
@@ -1491,7 +1492,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             site.checkCharset(charset)
 
         if get_edit_page:
-            # Looking for the token
+            # Look for the edit token
             R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
             tokenloc = R.search(text)
             if tokenloc:
@@ -1499,6 +1500,12 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             elif not site.getToken(getalways = False):
                 site.puttoken('')
 
+            # Look if the page is on our watchlist
+            R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
+            matchWatching = R.search(text)
+            if matchWatching:
+                print 'Page is on watchlist.'
+                print 'The bot doesn\'t know how to deal with this. The page won\'t be on the watchlist any longer after saving.'
             if not read_only:
                 # check if we're logged in
                 p=re.compile('userlogin')
@@ -1545,7 +1552,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         # Convert to a unicode string. If there's invalid unicode data inside
         # the page, replace it with question marks.
         x = unicode(x, charset, errors = 'replace')
-        return x
+        return x, isWatched
 
 def newpages(number=10, onlyonce=False, site=None):
     """Generator which yields new articles subsequently.
