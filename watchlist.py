@@ -86,7 +86,8 @@ def refresh(site):
     watchlist = []
     itemR = re.compile(r'<input type=\'checkbox\' name=\'id\[\]\' value=\"(.+?)\"')
     for m in itemR.finditer(watchlistHTML):
-        watchlist.append(m.group(1))
+        pageName = unicode(m.group(1), site.encoding())
+        watchlist.append(pageName)
     # Save the dictionary to disk
     # The file is stored in the watchlists subdir. Create if necessary.
     if watchlist == []:
@@ -108,15 +109,14 @@ def refresh_all():
             site = wikipedia.getSite(code = lang, fam = family)
             refresh(site)
 def main():
-    debug = False
-    refresh_all = False
+    all = False
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg)
         if arg:
             if arg == '-all':
-                refresh_all = True
+                all = True
 
-    if refresh_all:
+    if all:
         refresh_all()
     else:
         refresh(wikipedia.getSite())

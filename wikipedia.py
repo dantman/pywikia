@@ -349,7 +349,7 @@ class Page(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents = getPage(self.site(), self.urlname(), read_only = read_only, get_redirect = get_redirect, throttle = throttle)
+                self._contents, self._isWatched = getPage(self.site(), self.urlname(), read_only = read_only, get_redirect = get_redirect, throttle = throttle)
                 hn = self.hashname()
                 if hn:
                     hn = underline2space(hn)
@@ -455,11 +455,20 @@ class Page(object):
                 return True
         return False
 
-    def put(self, newtext, comment=None, watchArticle = False, minorEdit = True):
+    def put(self, newtext, comment=None, watchArticle = None, minorEdit = True):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
+
+           If watchArticle is None, leaves the watchlist status unchanged.
         """
+        if watchArticle == None:
+            # if the page was loaded via get(), we know its status
+            if hasattr(self, '_isWatched'):
+                watchArticle = self._isWatched
+            else:
+                import watchlist
+                watchArticle = watchlist.isWatched(self.linkname())
         if self.exists():
             newPage="0"
         else:
@@ -1504,8 +1513,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
             matchWatching = R.search(text)
             if matchWatching:
-                print 'Page is on watchlist.'
-                print 'The bot doesn\'t know how to deal with this. The page won\'t be on the watchlist any longer after saving.'
+                isWatched = True
             if not read_only:
                 # check if we're logged in
                 p=re.compile('userlogin')
@@ -1552,7 +1560,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         # Convert to a unicode string. If there's invalid unicode data inside
         # the page, replace it with question marks.
         x = unicode(x, charset, errors = 'replace')
-        return x
+        return x, isWatched
 
 def newpages(number=10, onlyonce=False, site=None):
     """Generator which yields new articles subsequently.
