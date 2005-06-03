@@ -349,7 +349,7 @@ class Page(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents, self._isWatched = getPage(self.site(), self.urlname(), read_only = read_only, get_redirect = get_redirect, throttle = throttle)
+                self._contents, self._isWatched = getEditPage(self.site(), self.urlname(), read_only = read_only, get_redirect = get_redirect, throttle = throttle)
                 hn = self.hashname()
                 if hn:
                     hn = underline2space(hn)
@@ -1300,7 +1300,7 @@ class Throttle(object):
         f.close()
     
     def __call__(self, requestsize = 1):
-        """This is called from getPage without arguments. It will make sure
+        """This is called from getEditPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
            since the last time it was called before it returns."""
         waittime = self.waittime()
@@ -1448,7 +1448,7 @@ def getUrl(host, address, site = None):
     #print text
     return text,charset
     
-def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True, get_redirect=False, throttle = True):
+def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=False, throttle = True):
     """
     Get the contents of page 'name' from the 'site' wiki
     Do not use this directly; for 99% of the possible ideas you can
@@ -1457,15 +1457,11 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
     Arguments:
         site          - the wiki site
         name          - the page name
-        get_edit_page - If true, gets the edit page, otherwise gets the
-                       normal page.
         read_only     - If true, doesn't raise LockedPage exceptions.
         do_quote      - ??? (TODO: what is this for?)
         get_redirect  - Get the contents, even if it is a redirect page
  
-    This routine returns a unicode string containing the wiki text if
-    get_edit_page is True; otherwise it returns a unicode string containing
-    the entire page's HTML code.
+    This routine returns a unicode string containing the wiki text.
     """
     isWatched = False
     host = site.hostname()
@@ -1477,10 +1473,7 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
         if name != urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
-    if get_edit_page:
-        address = site.edit_address(name)
-    else:
-        address = site.get_address(name)
+    address = site.edit_address(name)
     # Make sure Brion doesn't get angry by waiting if the last time a page
     # was retrieved was not long enough ago.
     if throttle:
@@ -1500,62 +1493,59 @@ def getPage(site, name, get_edit_page = True, read_only = False, do_quote = True
             # Store character set for later reference
             site.checkCharset(charset)
 
-        if get_edit_page:
-            # Look for the edit token
-            R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
-            tokenloc = R.search(text)
-            if tokenloc:
-                site.puttoken(tokenloc.group(1))
-            elif not site.getToken(getalways = False):
-                site.puttoken('')
+        # Look for the edit token
+        R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+        tokenloc = R.search(text)
+        if tokenloc:
+            site.puttoken(tokenloc.group(1))
+        elif not site.getToken(getalways = False):
+            site.puttoken('')
 
-            # Look if the page is on our watchlist
-            R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
-            matchWatching = R.search(text)
-            if matchWatching:
-                isWatched = True
-            if not read_only:
-                # check if we're logged in
-                p=re.compile('userlogin')
-                if p.search(text) != None:
-                    output(u'Warning: You\'re probably not logged in on %s:' % repr(site))
-            m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
+        # Look if the page is on our watchlist
+        R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
+        matchWatching = R.search(text)
+        if matchWatching:
+            isWatched = True
+        if not read_only:
+            # check if we're logged in
+            p=re.compile('userlogin')
+            if p.search(text) != None:
+                output(u'Warning: You\'re probably not logged in on %s:' % repr(site))
+        m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
+        if m:
+            edittime[repr(site), link2url(name, site = site)] = m.group(1)
+        else:
+            m = re.search('value="(\d+)" name="wpEdittime"',text)
             if m:
                 edittime[repr(site), link2url(name, site = site)] = m.group(1)
             else:
-                m = re.search('value="(\d+)" name="wpEdittime"',text)
-                if m:
-                    edittime[repr(site), link2url(name, site = site)] = m.group(1)
-                else:
-                    edittime[repr(site), link2url(name, site = site)] = "0"
-            try:
-                i1 = re.search('<textarea[^>]*>', text).end()
-            except AttributeError:
-                # We assume that the server is down. Wait some time, then try again.
-                print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %d minutes..." % (host, address, retry_idle_time)
-                time.sleep(retry_idle_time * 60)
-                # Next time wait longer, but not longer than half an hour
-                retry_idle_time *= 2
-                if retry_idle_time > 30:
-                    retry_idle_time = 30
-                continue
-            i2 = re.search('</textarea>', text).start()
-            if i2-i1 < 2:
-                raise NoPage(site, name)
-            m = redirectRe(site).match(text[i1:i2])
-            if m and not get_redirect:
-                output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), unicode(m.group(1), site.encoding())))
-                raise IsRedirectPage(m.group(1))
-            if edittime[repr(site), link2url(name, site = site)] == "0" and not read_only:
-                print "DBG> page may be locked?!"
-                raise LockedPage()
+                edittime[repr(site), link2url(name, site = site)] = "0"
+        try:
+            i1 = re.search('<textarea[^>]*>', text).end()
+        except AttributeError:
+            # We assume that the server is down. Wait some time, then try again.
+            print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %d minutes..." % (host, address, retry_idle_time)
+            time.sleep(retry_idle_time * 60)
+            # Next time wait longer, but not longer than half an hour
+            retry_idle_time *= 2
+            if retry_idle_time > 30:
+                retry_idle_time = 30
+            continue
+        i2 = re.search('</textarea>', text).start()
+        if i2-i1 < 2:
+            raise NoPage(site, name)
+        m = redirectRe(site).match(text[i1:i2])
+        if m and not get_redirect:
+            output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), unicode(m.group(1), site.encoding())))
+            raise IsRedirectPage(m.group(1))
+        if edittime[repr(site), link2url(name, site = site)] == "0" and not read_only:
+            print "DBG> page may be locked?!"
+            raise LockedPage()
 
-            x = text[i1:i2]
-            x = unescape(x)
-            while x and x[-1] in '\n ':
-                x = x[:-1]
-        else:
-            x = text # If not editing
+        x = text[i1:i2]
+        x = unescape(x)
+        while x and x[-1] in '\n ':
+            x = x[:-1]
             
         # Convert to a unicode string. If there's invalid unicode data inside
         # the page, replace it with question marks.
@@ -1587,6 +1577,7 @@ def newpages(number=10, onlyonce=False, site=None):
         put_throttle() # TODO: delay might be too long?
         returned_html, charset = getUrl(host, url, site)
 
+        # TODO: Use regular expressions!
         start = "<ol start='1' class='special'>"
         end = "</ol>"
         try:
@@ -1658,12 +1649,11 @@ def allpages(start = '!', site = None, namespace = 0, throttle = True):
     while True:
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
         start = link2url(start, site = site)
-        # load a list which contains a series of article names (always 480?)
-        #returned_html = getPage(site, site.allpagesname(start,namespace), do_quote = False, get_edit_page = False, throttle = throttle)
+        # load a list which contains a series of article names (always 480)
         host = site.hostname()
-        url = site.allpages_address(start, namespace)
+        path = site.allpages_address(start, namespace)
         print 'Retrieving Allpages special page for %s from %s, namespace %i' % (repr(site), start, namespace)
-        returned_html, charset = getUrl(host, url, site)
+        returned_html, charset = getUrl(host, path, site)
         # Try to find begin and end markers
         try:
             # In 1.4, another table was added above the navigational links
@@ -2263,7 +2253,9 @@ class Site(object):
         if not hasattr(self,'_loggedin'):
             self._fill()
         if check:
-            txt = getPage(self, 'Non-existing page', get_edit_page = False)
+            host = self.hostname()
+            path = self.get_address('Non-existing page')
+            txt, charset = getUrl(host, path, self)
             self._loggedin = 'Userlogin' not in txt
         return self._loggedin
 
