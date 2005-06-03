@@ -985,7 +985,7 @@ if __name__ == "__main__":
                     for pl in wikipedia.PagesFromFile('interwiki.dump'):
                         sa.add(pl,hints=hints)
                     try:
-                        start = str(pl.linkname().encode(pl.encoding()))
+                        start = pl.linkname()
                     except NameError:
                         print "Dump file is empty?! Starting at the beginning."
                         start = "!"
@@ -1016,7 +1016,7 @@ if __name__ == "__main__":
         if start:
             namespace = wikipedia.Page(wikipedia.getSite(),start).namespace()
             if number:
-                print "Treating %d pages starting at %s" % (number, start)
+                wikipedia.output(u"Treating %d pages starting at %s" % (number, start))
                 if namespace != 0:
                     start = ':'.join(start.split(':')[1:])
                 i = 0
