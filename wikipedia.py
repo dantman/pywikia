@@ -1582,7 +1582,11 @@ def newpages(number=10, onlyonce=False, site=None):
         site = getSite()
     seen = set()
     while True:
-        returned_html = getPage(site, site.newpagesname(number), do_quote=False, get_edit_page=False, throttle=throttle)
+        host = site.hostname()
+        url = site.newpages_address()
+        put_throttle() # TODO: delay might be too long?
+        returned_html, charset = getUrl(host, url, site)
+
         start = "<ol start='1' class='special'>"
         end = "</ol>"
         try:
@@ -2344,8 +2348,8 @@ class Site(object):
     def allpages_address(self, s, ns = 0):
         return self.family.allpages_address(self.lang, start = s, namespace = ns)
 
-    def newpagesname(self, n=50):
-        return self.family.newpagesname(self.lang, n)
+    def newpages_address(self, n=50):
+        return self.family.newpages_address(self.lang, n)
 
     def references_address(self, s):
         return self.family.references_address(self.lang, s)
