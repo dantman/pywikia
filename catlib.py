@@ -1,4 +1,5 @@
-﻿"""
+# -*- coding: utf-8  -*-
+"""
 Library to work with category pages on Wikipedia
 """
 #
@@ -101,11 +102,12 @@ class _CatLink(wikipedia.Page):
             # each of the list pages, so we will care about them after this
             # loop.
             while not thisCatDone:
-                target = cat.urlname()
+                host = site.hostname()
+                path = site.get_address(cat.urlname())
                 if startFromPage:
-                    target += '&from=' + startFromPage
+                    path += '&from=' + startFromPage
                 if purge:
-                    target += '&action=purge'
+                    path += '&action=purge'
                 # this loop will run until the page could be retrieved
                 # Try to retrieve the page until it was successfully loaded (just in case
                 # the server is down or overloaded)
@@ -113,16 +115,16 @@ class _CatLink(wikipedia.Page):
                 retry_idle_time = 1
                 while True:
                     try:
-                        txt = wikipedia.getPage(site, target, get_edit_page = False)
+                        txt, charset = wikipedia.getUrl(host, path, site)
+                        txt = unicode(txt, site.encoding())
                     except:
                         # We assume that the server is down. Wait some time, then try again.
                         raise
                         print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (cat.linkname(), retry_idle_time)
                         time.sleep(retry_idle_time * 60)
                         # Next time wait longer, but not longer than half an hour
-                        retry_idle_time *= 2
-                        if retry_idle_time > 30:
-                            retry_idle_time = 30
+                        if retry_idle_time < 32:
+                            retry_idle_time *= 2
                         continue
                     break
                 
