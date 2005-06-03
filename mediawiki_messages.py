@@ -77,12 +77,11 @@ def makepath(path):
     return normpath(abspath(path))
     
 def refresh_messages(site):
-    host = site.hostname()
-    # get 'all messages' special page's URL
-    url = site.allmessages_address()
+    # get 'all messages' special page's path
+    path = site.allmessages_address()
     print 'Retrieving MediaWiki messages for %s' % repr(site)
     wikipedia.put_throttle() # It actually is a get, but a heavy one.
-    allmessages, charset = wikipedia.getUrl(host, url, site)
+    allmessages = wikipedia.getUrl(site, path)
 
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
@@ -99,7 +98,7 @@ def refresh_messages(site):
     dictionary = {}
     for item in items:
         # Key strings only contain ASCII characters, so we can use them as dictionary keys
-        dictionary[item[0]] = unicode(item[1], wikipedia.myencoding())
+        dictionary[item[0]] = item[1]
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
     if dictionary == {}:

@@ -113,11 +113,10 @@ class RedirectGenerator:
         if self.source == None:
             # retrieve information from the live wiki's maintenance page
             mysite = wikipedia.getSite()
-            host = mysite.hostname()
             # broken redirect maintenance page's URL
-            url = mysite.broken_redirects_address(default_limit = False)
+            path = mysite.broken_redirects_address(default_limit = False)
             print 'Retrieving special page...' 
-            maintenance_txt, charset = wikipedia.getUrl(host, url, mysite)
+            maintenance_txt = wikipedia.getUrl(mysite, path)
             
             # regular expression which finds redirects which point to a non-existing page inside the HTML
             Rredir = re.compile('\<li\>\<a href=\"\/w\/wiki.phtml\?title=(.*?)&amp;redirect=no\"')
@@ -148,13 +147,11 @@ class RedirectGenerator:
         if self.source == None:
             mysite = wikipedia.getSite()
             # retrieve information from the live wiki's maintenance page
-            host = mysite.hostname()
             # double redirect maintenance page's URL
-            url = mysite.double_redirects_address(default_limit = False)
-            
-            print 'Retrieving special page...' 
-            maintenance_txt, charset = wikipedia.getUrl(host, url, mysite)
-        
+            path = mysite.double_redirects_address(default_limit = False)
+            print 'Retrieving special page...'
+            maintenance_txt = wikipedia.getUrl(mysite, path)
+
             # regular expression which finds redirects which point to another redirect inside the HTML
             Rredir = re.compile('\<li\>\<a href=".+?" title="(.*?)">')
             redir_names = Rredir.findall(maintenance_txt)

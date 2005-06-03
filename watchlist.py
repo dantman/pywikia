@@ -75,18 +75,17 @@ def makepath(path):
     return normpath(abspath(path))
     
 def refresh(site):
-    host = site.hostname()
     # get watchlist special page's URL
-    url = site.watchlist_address()
+    path = site.watchlist_address()
     print 'Retrieving watchlist for %s' % repr(site)
     #wikipedia.put_throttle() # It actually is a get, but a heavy one.
-    watchlistHTML, charset = wikipedia.getUrl(host, url, site)
+    watchlistHTML = wikipedia.getUrl(site, path)
 
     print 'Parsing watchlist'
     watchlist = []
     itemR = re.compile(r'<input type=\'checkbox\' name=\'id\[\]\' value=\"(.+?)\"')
     for m in itemR.finditer(watchlistHTML):
-        pageName = unicode(m.group(1), site.encoding())
+        pageName = m.group(1)
         watchlist.append(pageName)
     # Save the dictionary to disk
     # The file is stored in the watchlists subdir. Create if necessary.

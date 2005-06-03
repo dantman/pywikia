@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -233,7 +233,7 @@ class ReferringPageGenerator:
                 # run backwards because we might remove list items
                 for i in range(len(refs)-1, -1, -1):
                     if Rignore.match(refs[i]):
-                        wikipedia.output('Ignoring page ' + refs[i], wikipedia.myencoding())
+                        wikipedia.output('Ignoring page ' + refs[i])
                         del refs[i]
         refpls = []
         for ref in refs:
@@ -621,7 +621,6 @@ class DisambiguationRobot:
             if self.solve_redirect:
                 try:
                     target = disambPl.getRedirectTo()
-                    target = unicode(target, wikipedia.myencoding()) 
                     self.alternatives.append(target)
                 except wikipedia.NoPage:
                     print "The specified page was not found."

@@ -102,7 +102,6 @@ class _CatLink(wikipedia.Page):
             # each of the list pages, so we will care about them after this
             # loop.
             while not thisCatDone:
-                host = site.hostname()
                 path = site.get_address(cat.urlname())
                 if startFromPage:
                     path += '&from=' + startFromPage
@@ -115,8 +114,7 @@ class _CatLink(wikipedia.Page):
                 retry_idle_time = 1
                 while True:
                     try:
-                        txt, charset = wikipedia.getUrl(host, path, site)
-                        txt = unicode(txt, site.encoding())
+                        txt = wikipedia.getUrl(site, path)
                     except:
                         # We assume that the server is down. Wait some time, then try again.
                         raise

@@ -636,12 +636,11 @@ class Page(object):
         summary.
         """
         site = self.site()
-        host = site.hostname()
-        url = site.family.version_history_address(site, self.urlname())
+        path = site.family.version_history_address(site, self.urlname())
 
         if not hasattr(self, '_versionhistory') or forceReload:
             output(u'Getting version history of %s' % self.linkname())
-            txt, charset = getUrl(host, url, site)
+            txt = getUrl(site, path)
             self._versionhistory = txt
             
         # regular expression matching one edit in the version history.
@@ -1422,20 +1421,19 @@ def forSite(text, site):
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
     
-def getUrl(host, address, site = None):
-    """Low-level routine to get a URL from wikipedia.
+def getUrl(site, path):
+    """Low-level routine to get a URL from the wiki.
 
-       host and address are the host and address part of a http url.
+       site is a Site object, path is the absolute path.
 
-       Return value is a 2-tuple of the text of the page, and the character
-       set used to encode it.
+       Returns the HTML text of the page converted to unicode.
     """
     #print host,address
     uo = MyURLopener()
-    if site and site.cookies():
+    if site.cookies():
         uo.addheader('Cookie', site.cookies())
     #print ('Opening: http://%s%s'%(host, address))
-    f = uo.open('http://%s%s'%(host, address))
+    f = uo.open('http://%s%s'%(site.hostname(), path))
     text = f.read()
     #print f.info()
     ct = f.info()['Content-Type']
@@ -1444,9 +1442,13 @@ def getUrl(host, address, site = None):
     if m:
         charset = m.group(1)
     else:
-        charset = None
-    #print text
-    return text,charset
+        print "WARNING: No character set found"
+        # Latin-1 as default
+        charset = 'iso8859-1'
+    site.checkCharset(charset)
+    # convert HTML to unicode
+    # TODO: We might want to use error='replace' in case of bad encoding.
+    return unicode(text, charset)
     
 def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=False, throttle = True):
     """
@@ -1464,7 +1466,6 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
     This routine returns a unicode string containing the wiki text.
     """
     isWatched = False
-    host = site.hostname()
     name = re.sub(' ', '_', name)
     output(url2unicode(u'Getting page %s' % site.linkto(name), site = site))
     # A heuristic to encode the URL into %XX for characters that are not
@@ -1473,7 +1474,7 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
         if name != urllib.quote(name):
             print "DBG> quoting",name
         name = urllib.quote(name)
-    address = site.edit_address(name)
+    path = site.edit_address(name)
     # Make sure Brion doesn't get angry by waiting if the last time a page
     # was retrieved was not long enough ago.
     if throttle:
@@ -1484,14 +1485,8 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
     retry_idle_time = 1
     while True:
         starttime = time.time()
-        text, charset = getUrl(host, address, site)
+        text = getUrl(site, path)
         get_throttle.setDelay(time.time() - starttime)\
-        # Extract the actual text from the textedit field
-        if charset is None:
-            print "WARNING: No character set found"
-        else:
-            # Store character set for later reference
-            site.checkCharset(charset)
 
         # Look for the edit token
         R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
@@ -1520,6 +1515,8 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
                 edittime[repr(site), link2url(name, site = site)] = m.group(1)
             else:
                 edittime[repr(site), link2url(name, site = site)] = "0"
+
+        # Extract the actual text from the textedit field
         try:
             i1 = re.search('<textarea[^>]*>', text).end()
         except AttributeError:
@@ -1536,20 +1533,17 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
             raise NoPage(site, name)
         m = redirectRe(site).match(text[i1:i2])
         if m and not get_redirect:
-            output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), unicode(m.group(1), site.encoding())))
+            output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), m.group(1)))
             raise IsRedirectPage(m.group(1))
         if edittime[repr(site), link2url(name, site = site)] == "0" and not read_only:
-            print "DBG> page may be locked?!"
+            output(u"DBG> page may be locked?!")
             raise LockedPage()
 
         x = text[i1:i2]
         x = unescape(x)
         while x and x[-1] in '\n ':
             x = x[:-1]
-            
-        # Convert to a unicode string. If there's invalid unicode data inside
-        # the page, replace it with question marks.
-        x = unicode(x, charset, errors = 'replace')
+
         return x, isWatched
 
 def newpages(number=10, onlyonce=False, site=None):
@@ -1572,10 +1566,9 @@ def newpages(number=10, onlyonce=False, site=None):
         site = getSite()
     seen = set()
     while True:
-        host = site.hostname()
-        url = site.newpages_address()
+        path = site.newpages_address()
         put_throttle() # TODO: delay might be too long?
-        returned_html, charset = getUrl(host, url, site)
+        returned_html = getUrl(site, path)
 
         # TODO: Use regular expressions!
         start = "<ol start='1' class='special'>"
@@ -1650,10 +1643,9 @@ def allpages(start = '!', site = None, namespace = 0, throttle = True):
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
         start = link2url(start, site = site)
         # load a list which contains a series of article names (always 480)
-        host = site.hostname()
         path = site.allpages_address(start, namespace)
         print 'Retrieving Allpages special page for %s from %s, namespace %i' % (repr(site), start, namespace)
-        returned_html, charset = getUrl(host, path, site)
+        returned_html = getUrl(site, path)
         # Try to find begin and end markers
         try:
             # In 1.4, another table was added above the navigational links
@@ -2035,11 +2027,10 @@ def isInterwikiLink(s, site = None):
 
 def getReferences(pl, follow_redirects = True):
     site = pl.site()
-    host = site.hostname()
-    url = site.references_address(pl.urlname())
+    path = site.references_address(pl.urlname())
     
     output(u'Getting references to %s' % (site.linkto(pl.linkname())))
-    txt, charset = getUrl(host, url, site)
+    txt = getUrl(site, path)
     # remove brackets which would disturb the regular expression cascadedListR 
     txt = txt.replace('<a', 'a')
     txt = txt.replace('</a', '/a')
@@ -2253,9 +2244,8 @@ class Site(object):
         if not hasattr(self,'_loggedin'):
             self._fill()
         if check:
-            host = self.hostname()
             path = self.get_address('Non-existing page')
-            txt, charset = getUrl(host, path, self)
+            txt = getUrl(self, path)
             self._loggedin = 'Userlogin' not in txt
         return self._loggedin
 
