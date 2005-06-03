@@ -2377,7 +2377,10 @@ class Site(object):
 
     def login_address(self):
         return self.family.login_address(self.lang)
-    
+
+    def watchlist_address(self):
+        return self.family.watchlist_address(self.lang)
+
     def getSite(self, code):
         return getSite(code = code, fam = self.family, user=self.user)
 
