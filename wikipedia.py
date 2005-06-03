@@ -11,8 +11,8 @@ Page: A MediaWiki page
     linkname: The name of the page, in a form suitable for an interwiki link
     urlname: TheNopage name of the page, in a form suitable for a URL
     catname: The name of the page, with the namespace part removed
-    hashname: The section of the page (the part of the name after '#')
-    hashfreeLinkname: The name without the section part
+    section: The section of the page (the part of the name after '#')
+    sectionFreeLinkname: The name without the section part
     ascii_linkname: The name of the page, using ASCII-only
     aslink: The name of the page in the form [[xx:Title]]
     aslocallink: The name of the pagthroe in the form [[Title]]
@@ -261,14 +261,14 @@ class Page(object):
         """The name of the page without the namespace part. Gives an error
         if the page is from the main namespace. Note that this is a raw way
         of doing things - it simply looks for a : in the name."""
-        t=self.hashfreeLinkname(doublex = doublex)
+        t=self.sectionFreeLinkname(doublex = doublex)
         p=t.split(':')
         p=p[1:]
         if p==[]:
             raise NoNamespace(self)
         return ':'.join(p)
 
-    def hashname(self):
+    def section(self):
         """The name of the section this Page refers to. Sections are
            denominated by a # in the linkname(). If no section is referenced,
            None is returned."""
@@ -281,8 +281,8 @@ class Page(object):
             hn = re.sub('&hash;', '&#', hn)
             return hn
 
-    def hashfreeLinkname(self, doublex=False):
-        hn=self.hashname()
+    def sectionFreeLinkname(self, doublex=False):
+        hn=self.section()
         ln=self.linkname(doublex=doublex)
         if hn:
             return ln[:-len(hn)-1]
@@ -350,12 +350,12 @@ class Page(object):
         if not hasattr(self, '_contents'):
             try:
                 self._contents, self._isWatched = getEditPage(self.site(), self.urlname(), read_only = read_only, get_redirect = get_redirect, throttle = throttle)
-                hn = self.hashname()
+                hn = self.section()
                 if hn:
                     hn = underline2space(hn)
                     m = re.search("== *%s *==" % hn, self._contents)
                     if not m:
-                        output("WARNING: Hashname does not exist: %s" % self.linkname())
+                        output("WARNING: Section does not exist: %s" % self.linkname())
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
@@ -410,7 +410,7 @@ class Page(object):
 
     def isCategory(self):
         """True if the page is a Category, false otherwise."""
-        t=self.hashfreeLinkname()
+        t=self.sectionFreeLinkname()
         # Look at the part before the first ':'
         p=t.split(':')
         if p[1:]==[]:
@@ -421,7 +421,7 @@ class Page(object):
 
     def isImage(self):
         """True if the page is an Image description page, false otherwise."""
-        t=self.hashfreeLinkname()
+        t=self.sectionFreeLinkname()
         # Look at the part before the first ':'
         p=t.split(':')
         if p[1:]==[]:
@@ -434,7 +434,7 @@ class Page(object):
         """Gives the number of the namespace of the page. Does not work for
            all namespaces in all languages, only when defined in family.py.
            If not defined, it will return 0 (the main namespace)"""
-        t=self.hashfreeLinkname()
+        t=self.sectionFreeLinkname()
         p=t.split(':')
         if p[1:]==[]:
             return 0
@@ -1014,7 +1014,7 @@ class GetAll(object):
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 if self.site.lang == 'eo':
-                    if pl.hashfreeLinkname() != pl.hashfreeLinkname(doublex = True):
+                    if pl.sectionFreeLinkname() != pl.sectionFreeLinkname(doublex = True):
                         # Maybe we have used x-convention when we should not?
                         try:
                             pl.get(force = True, throttle = self.throttle)
@@ -1036,7 +1036,7 @@ class GetAll(object):
     def oneDone(self, title, timestamp, text):
         pl = Page(self.site, title)
         for pl2 in self.pages:
-            if Page(self.site, pl2.hashfreeLinkname()) == pl:
+            if Page(self.site, pl2.sectionFreeLinkname()) == pl:
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
         else:
@@ -1060,11 +1060,11 @@ class GetAll(object):
             if len(text)<50:
                 output(u"DBG> short text in %s:" % pl2.aslink())
                 output(text)
-        hn = pl2.hashname()
+        hn = pl2.section()
         if hn:
             m = re.search("== *%s *==" % hn, text)
             if not m:
-                output("WARNING: Hashname does not exist: %s" % self)
+                output("WARNING: Section does not exist: %s" % self)
             else:
                 # Store the content
                 pl2._contents = text
@@ -1083,7 +1083,7 @@ class GetAll(object):
         # In the next line, we assume that what we got for eo: is NOT in x-convention
         # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
         # find nothing, we will retry the normal way with an unadapted form.
-        pagenames = u'\r\n'.join([x.hashfreeLinkname(doublex = False) for x in self.pages])
+        pagenames = u'\r\n'.join([x.sectionFreeLinkname(doublex = False) for x in self.pages])
         pagenames = forSite(pagenames, self.site)
         data = urlencode((
                     ('action', 'submit'),

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -307,7 +307,7 @@ class Subject(object):
             # todo list.
             if unequal.bigger(self.inpl, pl):
                 print "NOTE: %s is bigger than %s, not following references" % (pl, self.inpl)
-            elif pl.hashname():
+            elif pl.section():
                 # We have been referred to a part of a page, not the whole page. Do not follow references.
                 pass
             else:
@@ -645,7 +645,7 @@ class Subject(object):
            needed."""
         for site in new.keys():
             pl = new[site]
-            if not unequal.bigger(self.inpl, pl) and not pl.hashname():
+            if not unequal.bigger(self.inpl, pl) and not pl.section():
                 shouldlink = new.values() + [self.inpl]
                 linked = pl.interwiki()
                 for xpl in shouldlink:
