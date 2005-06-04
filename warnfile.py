@@ -25,7 +25,7 @@ class WarnfileReader:
 
     def getHints(self):
         print "Parsing warnfile..."
-        R=re.compile(r'WARNING: (?P<locallang>[^\[]*):\[\[(?P<localtitle>[^\[]+)\]\](?P<warningtype>[^\[]+)\[\[(?P<targetsite>[^:]+:[^:]+):(?P<targettitle>[^\[]+)\]\]')
+	R=re.compile(r'WARNING: (\[\[wikipedia:)?(?P<locallang>[^\[:]*):(\[\[)?(?P<localtitle>[^\[]+)\]\](?P<warningtype>[^\[]+)\[\[(?P<targetsite>[^:]+:[^:]+):(?P<targettitle>[^\[]+)\]\]')
         import codecs
         f = codecs.open(self.filename, 'r', 'utf-8')
         hints={}

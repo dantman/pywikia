@@ -18,14 +18,15 @@ count={}
 
 # TODO: Variable log filename
 logFile = codecs.open('logs/interwiki.log', 'r', 'utf-8')
-rWarning = re.compile('WARNING: \[\[(?P<code>\w+):.*')
+rWarning = re.compile('WARNING: \[\[(?P<family>\w+):(?P<code>\w+):.*')
 for line in logFile:
     m = rWarning.match(line)
     if m:
+        family = m.group('family')
         code = m.group('code')
         if code in wikipedia.getSite().languages():
             if not files.has_key(code):
-                files[code] = codecs.open('logs/warning_%s.log' % code, 'w', 'utf-8')
+                files[code] = codecs.open('logs/warning-%s-%s.log' % (family, code), 'w', 'utf-8')
                 count[code] = 0
             files[code].write(line)
             count[code] += 1
