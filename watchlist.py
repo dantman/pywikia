@@ -30,7 +30,7 @@ def get(site = None):
         site = wikipedia.getSite()
     if cache.has_key(site):
         # Use cached copy if it exists.
-        dictionary = cache[site]
+        watchlist = cache[site]
     else:
         fn = 'watchlists/watchlist-%s-%s.dat' % (site.family.name, site.lang)
         try:
@@ -87,7 +87,7 @@ def refresh(site):
     for m in itemR.finditer(watchlistHTML):
         pageName = m.group(1)
         watchlist.append(pageName)
-    # Save the dictionary to disk
+    # Save the watchlist to disk
     # The file is stored in the watchlists subdir. Create if necessary.
     if watchlist == []:
         print 'Error extracting watchlist for %s. Maybe you\'re not logged in, or the server is down.' % repr(site)
