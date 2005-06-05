@@ -9,16 +9,15 @@ Classes:
 Page: A MediaWiki page
     __init__: Page(xx,Title) - the page with title Title on language xx:
     linkname: The name of the page, in a form suitable for an interwiki link
-    urlname: TheNopage name of the page, in a form suitable for a URL
+    urlname: The name of the page, in a form suitable for a URL
     catname: The name of the page, with the namespace part removed
     section: The section of the page (the part of the name after '#')
     sectionFreeLinkname: The name without the section part
-    ascii_linkname: The name of the page, using ASCII-only
-    aslink: The name of the page in the form [[xx:Title]]
+    aslink: The name of the page in the form [[family:xx:Title]]
     aslocallink: The name of the pagthroe in the form [[Title]]
-    asselflink: The name of the page in the form xx:[[Title]]
+    asselflink: The name of the page in the form family:xx:[[Title]]
     
-    site: The wikimedia site of the page
+    site: The wiki where this page is in
     encoding: The encoding the page is in
 
     get (*): The text of the page
@@ -1521,7 +1520,7 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
             i1 = re.search('<textarea[^>]*>', text).end()
         except AttributeError:
             # We assume that the server is down. Wait some time, then try again.
-            print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %d minutes..." % (host, address, retry_idle_time)
+            print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (site.hostname(), path, retry_idle_time)
             time.sleep(retry_idle_time * 60)
             # Next time wait longer, but not longer than half an hour
             retry_idle_time *= 2
