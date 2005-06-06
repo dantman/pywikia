@@ -330,10 +330,11 @@ class PreloadingGenerator:
                     yield refpl
                 i = 0
                 somePages = []
-        # preload remaining pages
-        self.preload(somePages)
-        for refpl in somePages:
-            yield refpl
+        if somePages != []:
+            # preload remaining pages
+            self.preload(somePages)
+            for refpl in somePages:
+                yield refpl
 
                 
 class ReplaceRobot:
