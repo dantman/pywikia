@@ -119,13 +119,14 @@ class RedirectGenerator:
             maintenance_txt = wikipedia.getUrl(mysite, path)
             
             # regular expression which finds redirects which point to a non-existing page inside the HTML
-            Rredir = re.compile('\<li\>\<a href=\"\/w\/wiki.phtml\?title=(.*?)&amp;redirect=no\"')
+            Rredir = re.compile('\<li\>\<a href=".+?" title="(.*?)"')
         
             redir_names = Rredir.findall(maintenance_txt)
             print 'Retrieved %d redirects from special page.\n' % len(redir_names)
             for redir_name in redir_names:
                 yield redir_name
         else:
+            # retrieve information from SQL dump
             print 'Step 1: Getting a list of all redirects'
             redirs = self.get_redirects_from_dump()
             print 'Step 2: Getting a list of all page titles'
