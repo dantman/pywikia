@@ -63,7 +63,7 @@ class TemplatePageGenerator:
     def generate(self):
         # yield all pages using the template
         if self.sqlfilename == None:
-            for ref in wikipedia.getReferences(self.templatePl):
+            for ref in self.templatePl.getReferences():
                 refpl=wikipedia.Page(wikipedia.getSite(), ref)
                 yield refpl
         else:

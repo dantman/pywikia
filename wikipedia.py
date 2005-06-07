@@ -36,6 +36,7 @@ Page: A MediaWiki page
     isCategory: True if the page is a category, false otherwise
     isImage: True if the page is an image, false otherwise
     isDisambig (*): True if the page is a disambiguation page
+    getReferences: The pages linking to the page, as a list of strings
     namespace: The namespace in which the page is
 
     put(newtext): Saves the page
@@ -70,8 +71,6 @@ setAction(text): Use 'text' instead of "Wikipedia python library" in
 forSite(text,xx): Change 'text' such that it is usable on the given site xx
 allpages(): Get all page titles in one's home language as Pages (or all
     pages from 'Start' if allpages(start='Start') is used).
-getReferences(Pagelink): The pages linking to the Pagelink object, as a
-    list of strings
 checkLogin(): gives True if the bot is logged in on the home language, False
     otherwise
 argHandler(text): Checks whether text is an argument defined on wikipedia.py
@@ -453,6 +452,36 @@ class Page(object):
             if (type(locdis) == type([]) and tn2 in locdis) or (tn2 == locdis):
                 return True
         return False
+
+    def getReferences(self, follow_redirects = True):
+        site = self.site()
+        path = site.references_address(self.urlname())
+        
+        output(u'Getting references to %s' % (site.linkto(self.linkname())))
+        txt = getUrl(site, path)
+        # remove brackets which would disturb the regular expression cascadedListR
+        # TODO: rewrite regex
+        txt = txt.replace('<a', 'a')
+        txt = txt.replace('</a', '/a')
+        txt = txt.replace('<li', 'li')
+        txt = txt.replace('</li', 'li')
+        if not follow_redirects:
+            # remove these links from HTML which are in an unordered
+            # list at level > 1.
+            cascadedListR = re.compile(r"(.*<ul>[^<]*)<ul>[^<]*<\/ul>([^<]*</\ul>.*)")
+            # current index in txt string
+            pos = 0
+            while cascadedListR.search(txt):
+                m = cascadedListR.search(txt)
+                txt = m.group(1) + m.group(2)
+        Rref = re.compile('li>a href.*="([^"]*)"')
+        x = Rref.findall(txt)
+        x.sort()
+        # Remove duplicates
+        for i in range(len(x)-1, 0, -1):
+            if x[i] == x[i-1]:
+                del x[i]
+        return x
 
     def put(self, newtext, comment=None, watchArticle = None, minorEdit = True):
         """Replace the new page with the contents of the first argument.
@@ -2030,37 +2059,6 @@ def isInterwikiLink(s, site = None):
     if l in site.family.langs:
         return True
     return False
-
-def getReferences(pl, follow_redirects = True):
-    site = pl.site()
-    path = site.references_address(pl.urlname())
-    
-    output(u'Getting references to %s' % (site.linkto(pl.linkname())))
-    txt = getUrl(site, path)
-    # remove brackets which would disturb the regular expression cascadedListR 
-    txt = txt.replace('<a', 'a')
-    txt = txt.replace('</a', '/a')
-    txt = txt.replace('<li', 'li')
-    txt = txt.replace('</li', 'li')
-    if not follow_redirects:
-        # remove these links from HTML which are in an unordered
-        # list at level > 1.
-        cascadedListR = re.compile(r"(.*<ul>[^<]*)<ul>[^<]*<\/ul>([^<]*</\ul>.*)")
-        endR = re.compile(r"</ul>")
-        # current index in txt string
-        pos = 0
-        while cascadedListR.search(txt):
-            m = cascadedListR.search(txt)
-            txt = m.group(1) + m.group(2)
-    Rref = re.compile('li>a href.*="([^"]*)"')
-    x = Rref.findall(txt)
-    x.sort()
-    # Remove duplicates
-    for i in range(len(x)-1, 0, -1):
-        if x[i] == x[i-1]:
-            del x[i]
-    return x
-
     
 ######## Unicode library functions ########
 

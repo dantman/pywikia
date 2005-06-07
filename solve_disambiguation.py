@@ -221,7 +221,7 @@ class ReferringPageGenerator:
         self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl, enabled = primary)
         
     def getReferences(self):
-        refs = wikipedia.getReferences(self.disambPl, follow_redirects = False)
+        refs = self.disambPl.getReferences(follow_redirects = False)
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
         if ignore_title.has_key(self.disambPl.site().lang):

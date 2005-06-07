@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -198,8 +198,8 @@ def add_category(sort_by_last_name = False):
         pagenames = pl.links()
     else:
         refpage = wikipedia.input(u'Wikipedia page that is now linked to:')
-        pl = wikipedia.Page(wikipedia.getSite(), refpage)
-        pagenames = wikipedia.getReferences(pl)
+        page = wikipedia.Page(wikipedia.getSite(), refpage)
+        pagenames = page.getReferences()
     print "  ==> %d pages to process"%len(pagenames)
     print
     newcat = wikipedia.input(u'Category to add (do not give namespace):')
