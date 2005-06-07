@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family, config
 
-# SouthernApproachWiki, a wiki about Zürich Airport.
+# ZRHwiki, formerly known as SouthernApproachWiki, a wiki about Zürich Airport.
 
 class Family(family.Family):
     def __init__(self):
@@ -9,16 +9,16 @@ class Family(family.Family):
         self.name = 'southernapproach'
         
         self.langs = {
-            'de':'www.southernapproach.ch',
+            'de':'www.zrhwiki.ch',
         }
             
         # Most namespaces are inherited from family.Family.
         
         self.namespaces[4] = {
-            '_default': u'SouthernApproachWiki',
+            '_default': u'ZRHwiki',
         }
         self.namespaces[5] = {
-            '_default': u'SouthernApproachWiki Diskussion',
+            '_default': u'ZRHwiki Diskussion',
         }
 
     def version(self, code):
