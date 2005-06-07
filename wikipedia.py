@@ -75,10 +75,10 @@ getReferences(Pagelink): The pages linking to the Pagelink object, as a
 checkLogin(): gives True if the bot is logged in on the home language, False
     otherwise
 argHandler(text): Checks whether text is an argument defined on wikipedia.py
-    (these are -family, -lang, -clearthrottle, -putthrottle and -nil)
+    (these are -family, -lang, and -log)
 translate(xx, dict): dict is a dictionary, giving text depending on language,
     xx is a language. Returns the text in the most applicable language for
-    the xx: wikipedia
+    the xx: wiki
 
 output(text): Prints the text 'text' in the encoding of the user's console.
 input(text): Asks input from the user, printing the text 'text' first.
@@ -1083,6 +1083,10 @@ class GetAll(object):
         # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
         # find nothing, we will retry the normal way with an unadapted form.
         pagenames = u'\r\n'.join([x.sectionFreeLinkname(doublex = False) for x in self.pages])
+        if type(pagenames) != type(u''):
+            print 'Warning: wikipedia.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
+            print pagenames
+
         pagenames = forSite(pagenames, self.site)
         data = urlencode((
                     ('action', 'submit'),
@@ -1346,6 +1350,9 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     comment = comment.encode(site.encoding())
     try:
         # Encode the text into the right encoding for the wiki
+        if type(text) != type(u''):
+            print 'Warning: wikipedia.putPage() got non-unicode page content. Please report this.'
+            print text
         text = forSite(text, site)
         predata = [
             ('wpSave', '1'),
@@ -2451,7 +2458,7 @@ def checkLogin(site = None):
 def argHandler(arg, logname = 'default.log'):
     '''
     Takes a commandline parameter, converts it to unicode, and returns it unless
-    it is one of the global parameters as -lang or -throttle. If it is a global
+    it is one of the global parameters as -lang or -log. If it is a global
     parameter, processes it and returns None.
     '''
     global default_code, default_family
