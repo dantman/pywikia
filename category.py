@@ -188,66 +188,69 @@ def add_category(sort_by_last_name = False):
     print "or you can add a category link to all pages that link to a"
     print "specific page. If you want the second, please give an empty"
     print "answer to the first question."
-    listpage = wikipedia.input(u'Wikipedia page with list of pages to change:')
-    if listpage:
+    listpageTitle = wikipedia.input(u'Wiki page with list of pages to change:')
+    site = wikipedia.getSite()
+    if listpageTitle:
         try:
-            pl = wikipedia.Page(wikipedia.getSite(), listpage)
+            listpage = wikipedia.Page(site, listpageTitle)
         except NoPage:
-            wikipedia.output(u'The page ' + listpage + ' could not be loaded from the server.')
+            wikipedia.output(u'The page %s could not be loaded from the server.' % listpageTitle)
             sys.exit()
-        pagenames = pl.links()
+        pages = [wikipedia.Page(site, title) for title in listpage.links()]
+        
     else:
-        refpage = wikipedia.input(u'Wikipedia page that is now linked to:')
-        page = wikipedia.Page(wikipedia.getSite(), refpage)
-        pagenames = page.getReferences()
-    print "  ==> %d pages to process"%len(pagenames)
+        referredPage = wikipedia.input(u'Wikipedia page that is now linked to:')
+        page = wikipedia.Page(wikipedia.getSite(), referredPage)
+        pages = page.getReferences()
+    print "  ==> %d pages to process" % len(pages)
     print
-    newcat = wikipedia.input(u'Category to add (do not give namespace):')
-    newcat = newcat[:1].capitalize() + newcat[1:]
+    newcatTitle = wikipedia.input(u'Category to add (do not give namespace):')
+    newcatTitle = newcatTitle[:1].capitalize() + newcatTitle[1:]
 
     # get edit summary message
-    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_add) % newcat)
+    wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_add) % newcatTitle)
     
     cat_namespace = wikipedia.getSite().category_namespaces()[0]
 
     answer = ''
-    for nm in pagenames:
-        pl2 = wikipedia.Page(wikipedia.getSite(), nm)
+    for page in pages:
         if answer != 'a':
             answer = ''
             
         while answer not in ('y','n','a'):
-            answer = wikipedia.input(u'%s [y/n/a(ll)]:' % (pl2.aslink()))
+            answer = wikipedia.input(u'%s [y/n/a(ll)]:' % (page.aslink()))
             if answer == 'a':
                 confirm = ''
 		while confirm not in ('y','n'):
 	            confirm = wikipedia.input(u'This should be used if and only if you are sure that your links are correct! Are you sure? [y/n]:')
+                if confirm == 'n':
+                    answer = ''
 	
 	if answer == 'y' or answer == 'a':
             try:
-                cats = pl2.categories()
-                rawcats = pl2.rawcategories()
+                cats = page.categories()
+                rawcats = page.rawcategories()
             except wikipedia.NoPage:
-                wikipedia.output(u"%s doesn't exist yet. Ignoring."%(pl2.aslocallink()))
+                wikipedia.output(u"%s doesn't exist yet. Ignoring." % (page.linkname()))
                 pass
             except wikipedia.IsRedirectPage,arg:
-                pl3 = wikipedia.Page(wikipedia.getSite(),arg.args[0])
-                wikipedia.output(u"WARNING: %s is redirect to [[%s]]. Ignoring."%(pl2.aslocallink(),pl3.aslocallink()))
+                redirTarget = wikipedia.Page(site,arg.args[0])
+                wikipedia.output(u"WARNING: %s is redirect to %s. Ignoring." % (page.linkname(), redirTarget.linkname()))
             else:
                 wikipedia.output(u"Current categories:")
-                for curpl in cats:
-                    wikipedia.output(u"* %s" % curpl.aslink())
-                catpl = wikipedia.Page(wikipedia.getSite(), cat_namespace + ':' + newcat)
+                for cat in cats:
+                    wikipedia.output(u"* %s" % cat.linkname())
+                catpl = wikipedia.Page(site, cat_namespace + ':' + newcatTitle)
                 if sort_by_last_name:
-                    catpl = sorted_by_last_name(catpl, pl2) 
+                    catpl = sorted_by_last_name(catpl, page) 
                 if catpl in cats:
-                    wikipedia.output(u"%s already has %s"%(pl2.aslocallink(), catpl.aslocallink()))
+                    wikipedia.output(u"%s is already in %s." % (page.linkname(), catpl.linkname()))
                 else:
                     wikipedia.output(u'Adding %s' % catpl.aslocallink())
                     rawcats.append(catpl)
-                    text = pl2.get()
+                    text = page.get()
                     text = wikipedia.replaceCategoryLinks(text, rawcats)
-                    pl2.put(text)
+                    page.put(text)
 
 class CategoryMoveRobot:
     def __init__(self, oldCatTitle, newCatTitle):
