@@ -100,11 +100,10 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
                         tocheck.append(pl2)
                         checked[pl2]=pl2
         if checkbackward:
-            for link in pl.getReferences():
-                pl2 = wikipedia.Page(mysite,link)
-                if needcheck(pl2):
-                    tocheck.append(pl2)
-                    checked[pl2]=pl2
+            for refPage in pl.getReferences():
+                if needcheck(refPage):
+                    tocheck.append(refPage)
+                    checked[refPage] = refPage
 
 def exclude(pl,real_exclude=True):
     if real_exclude:

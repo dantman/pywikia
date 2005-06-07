@@ -225,24 +225,14 @@ class ReferringPageGenerator:
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
         if ignore_title.has_key(self.disambPl.site().lang):
-            ignore_title_regexes = []
             for ig in ignore_title[self.disambPl.site().lang]:
-                ig = ig.encode(wikipedia.myencoding())
-                ignore_title_regexes.append(re.compile(ig))
-            for Rignore in ignore_title_regexes:
-                # run backwards because we might remove list items
-                for i in range(len(refs)-1, -1, -1):
-                    if Rignore.match(refs[i]):
-                        wikipedia.output('Ignoring page ' + refs[i])
+                for i in range(len(refs)):
+                    if re.match(ig, refs[i].linkname()):
+                        wikipedia.output('Ignoring page %s' % refs[i].linkname())
                         del refs[i]
-        refpls = []
-        for ref in refs:
-            refpl = wikipedia.Page(self.disambPl.site(), ref)
-            if not self.primaryIgnoreManager.isIgnored(refpl):
-                refpls.append(refpl)
-
-        wikipedia.output(u"Will work on %d pages." % len(refpls))
-        return refpls
+        
+        wikipedia.output(u"Will work on %d pages." % len(refs))
+        return refs
     
     def generate(self):
         refpls = self.getReferences()

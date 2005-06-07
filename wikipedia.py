@@ -36,7 +36,7 @@ Page: A MediaWiki page
     isCategory: True if the page is a category, false otherwise
     isImage: True if the page is an image, false otherwise
     isDisambig (*): True if the page is a disambiguation page
-    getReferences: The pages linking to the page, as a list of strings
+    getReferences: The pages linking to the page
     namespace: The namespace in which the page is
 
     put(newtext): Saves the page
@@ -454,6 +454,11 @@ class Page(object):
         return False
 
     def getReferences(self, follow_redirects = True):
+        """
+        Returns a list of pages that link to the page.
+        If follow_redirects is True, also returns pages
+        that link to a redirect pointing to the page.
+        """
         site = self.site()
         path = site.references_address(self.urlname())
         
@@ -475,13 +480,15 @@ class Page(object):
                 m = cascadedListR.search(txt)
                 txt = m.group(1) + m.group(2)
         Rref = re.compile('li>a href.*="([^"]*)"')
-        x = Rref.findall(txt)
-        x.sort()
-        # Remove duplicates
-        for i in range(len(x)-1, 0, -1):
-            if x[i] == x[i-1]:
-                del x[i]
-        return x
+        refTitles = Rref.findall(txt)
+        refTitles.sort()
+        refPages = []
+        # create list of Page objects, removing duplicates
+        for refTitle in refTitles:
+            page = Page(site, refTitle)
+            if page not in refPages:
+                refPages.append(page)
+        return refPages
 
     def put(self, newtext, comment=None, watchArticle = None, minorEdit = True):
         """Replace the new page with the contents of the first argument.
