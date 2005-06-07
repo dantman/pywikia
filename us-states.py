@@ -81,7 +81,7 @@ def main():
         }
 
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'us-states')
         if arg:
             if arg.startswith('-start:'):
                 start = arg[7:]

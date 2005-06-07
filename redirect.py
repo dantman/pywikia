@@ -251,7 +251,7 @@ def main():
     # default to -1 which means all redirects are checked
     restart = -1
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'redirect')
         if arg:
             if arg == 'double':
                 action = 'double'

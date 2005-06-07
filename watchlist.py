@@ -110,7 +110,7 @@ def refresh_all():
 def main():
     all = False
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'watchlist')
         if arg:
             if arg == '-all':
                 all = True

@@ -132,7 +132,7 @@ do_all = False
 
 for arg in sys.argv[1:]:
     url=sys.argv[1]
-    arg = wikipedia.argHandler(arg)
+    arg = wikipedia.argHandler(arg, 'check_extern')
     if arg:
         if arg.startswith('-start:'):
             start=arg[7:]

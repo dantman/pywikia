@@ -27,7 +27,7 @@ def getfn():
     fns = []
 
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'getimages')
         if arg:
             fns.append(arg)
 

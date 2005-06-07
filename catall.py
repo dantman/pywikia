@@ -67,7 +67,7 @@ docorrections=True
 start=[]
 
 for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
+    arg = wikipedia.argHandler(arg, 'catall')
     if arg:
         if arg == '-onlynew':
             docorrections=False

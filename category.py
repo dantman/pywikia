@@ -564,7 +564,7 @@ if __name__ == "__main__":
         sort_by_last_name = False
         restore = False
         for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg)
+            arg = wikipedia.argHandler(arg, 'category')
             if arg:
                 if arg == 'add':
                     action = 'add'

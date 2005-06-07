@@ -2460,11 +2460,15 @@ def checkLogin(site = None):
         site = getSite()
     return site.loggedin(check=True)
     
-def argHandler(arg, logname = 'default.log'):
+def argHandler(arg, moduleName):
     '''
     Takes a commandline parameter, converts it to unicode, and returns it unless
     it is one of the global parameters as -lang or -log. If it is a global
     parameter, processes it and returns None.
+
+    moduleName should be the name of the module calling this function. This is
+    required because the -help option loads the module's docstring and because
+    the module name will be used for the filename of the log.
     '''
     global default_code, default_family
     if sys.platform=='win32':
@@ -2474,7 +2478,14 @@ def argHandler(arg, logname = 'default.log'):
     else:
         # Linux uses the same encoding for both
         arg = unicode(arg, config.console_encoding)
-    if arg.startswith('-family:'):
+    if arg == '-help':
+        try:
+            exec('import %s as module' % moduleName)
+            output(module.__doc__, 'utf-8')
+        except:
+            output(u'Sorry, no help available for %s' % moduleName)
+        sys.exit(0)
+    elif arg.startswith('-family:'):
         global default_family 
         default_family = arg[8:]
     elif arg.startswith('-lang:'):
@@ -2483,7 +2494,7 @@ def argHandler(arg, logname = 'default.log'):
     elif arg.startswith('-putthrottle:'):
         put_throttle.setDelay(int(arg[13:]),absolute = True)
     elif arg == '-log':
-        activateLog(logname)
+        activateLog('%s.log' % moduleName)
     elif arg.startswith('-log:'):
         activateLog(arg[5:])
     elif arg == '-nolog':

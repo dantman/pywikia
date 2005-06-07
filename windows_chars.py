@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to replace bad Windows-1252 (cp1252) characters with 
 HTML entities on ISO 8859-1 wikis. Don't run this script on a UTF-8 wiki.
@@ -32,7 +32,7 @@ Options that are accepted by more robots:
 #
 # Distribute under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.19 2005/02/06 17:27:52 a_engels Exp $'
+__version__='$Id: windows_chars.py,v 1.20 2005/05/14 09:13:29 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -122,7 +122,7 @@ def main():
 
     action = None 
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'windows_chars')
         if arg:
             if arg.startswith('-file'):
                 if len(arg) == 5:

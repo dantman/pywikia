@@ -182,7 +182,7 @@ try:
     workingcatname = []
     tocheck = []
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'makecat')
         if arg:
             if arg.startswith('-nodate'):
                 skipdates = True

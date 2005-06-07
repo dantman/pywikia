@@ -109,7 +109,7 @@ class WarnfileRobot:
 if __name__ == "__main__":
     try:
         for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg)
+            arg = wikipedia.argHandler(arg, 'warnfile')
             if arg:
                 reader = WarnfileReader(arg)
                 bot = WarnfileRobot(reader)

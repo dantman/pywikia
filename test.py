@@ -12,7 +12,7 @@ __version__='$Id$'
 import re,sys,wikipedia
 
 for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
+    arg = wikipedia.argHandler(arg, 'test')
     if arg:
         print "Unknown argument",arg
         wikipedia.stopme()

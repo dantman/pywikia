@@ -673,7 +673,7 @@ def main():
     main_only = False
 
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'solve_disambiguation')
         if arg:
             if arg.startswith('-primary:'):
                 primary = True

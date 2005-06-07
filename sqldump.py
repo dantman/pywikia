@@ -249,7 +249,7 @@ if __name__=="__main__":
     import sys
     action = None
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'sqldump')
         if arg:
             if arg.startswith('-sql'):
                 if len(arg) == 4:

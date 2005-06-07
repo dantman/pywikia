@@ -288,7 +288,7 @@ def test():
 if __name__=="__main__":
     import sys
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'catlib')
         if arg:
             print "Ignored argument", arg
     test()

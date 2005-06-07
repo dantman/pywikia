@@ -123,7 +123,7 @@ def main():
     debug = False
     refresh_all = False
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'mediawiki_messages')
         if arg:
             if arg == '-debug':
                 debug = True

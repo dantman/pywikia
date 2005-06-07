@@ -28,7 +28,7 @@ list = []
 complete = True
 
 for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
+    arg = wikipedia.argHandler(arg, 'extract_wikilinks')
     if arg:
         if arg.startswith("-sorted"):
             sorted = True

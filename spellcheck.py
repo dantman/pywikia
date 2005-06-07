@@ -366,7 +366,7 @@ try:
     correct_html_codes = False
     rebuild = False
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'spellcheck')
         if arg:
             if arg.startswith("-start:"):
                 start = arg[7:]

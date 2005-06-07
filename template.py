@@ -137,7 +137,7 @@ def main():
     new = None
     # read command line parameters
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'template')
         if arg:
             if arg == '-remove':
                 remove = True

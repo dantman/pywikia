@@ -501,7 +501,7 @@ def main():
     debug = False
     source = None
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'table2wiki')
         if arg:
             if arg.startswith('-file:'):
                 f=open(arg[6:], 'r')

@@ -892,7 +892,7 @@ if __name__ == "__main__":
             wikipedia.activateLog('interwiki.log')
 
         for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg, logname='interwiki.log')
+            arg = wikipedia.argHandler(arg, 'interwiki')
             if arg:
                 if arg == '-noauto':
                     globalvar.auto = False

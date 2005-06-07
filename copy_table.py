@@ -185,7 +185,7 @@ if __name__=="__main__":
 
         # read command line parameters
         for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg)
+            arg = wikipedia.argHandler(arg, 'copy_table')
             if arg:
                 if arg.startswith("-from"):
                     from_lang = arg[6:]

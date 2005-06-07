@@ -20,7 +20,7 @@ myComment = {'en':'Bot: URL fixed',
 
 try:
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
+        if wikipedia.argHandler(arg, 'brackethttp'):
             pass
         else:
             pl = wikipedia.Page(wikipedia.getSite(), arg)

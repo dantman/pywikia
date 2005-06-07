@@ -76,7 +76,7 @@ def main(args):
     wiki = ''
 
     for arg in args:
-        if wikipedia.argHandler(arg):
+        if wikipedia.argHandler(arg, 'upload'):
             print arg
             if arg.startswith('-keep'):
                 keep = True

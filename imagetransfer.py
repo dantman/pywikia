@@ -36,7 +36,7 @@ def main(args):
 
     for arg in args:
     #for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg)
+        arg = wikipedia.argHandler(arg, 'imagetransfer')
         if arg:
             if arg.startswith('-from:'):
                 source_wikis.append(arg[6:])
@@ -64,7 +64,7 @@ def main(args):
 
     # Use mysite when getting pages, but commons when uploading pages.
     mysite = wikipedia.getSite()
-    wikipedia.argHandler('-lang:commons')
+    wikipedia.argHandler('-lang:commons', 'imagetransfer')
 
     # if no page title was given as an argument, and none was
     # read from a file, query the user

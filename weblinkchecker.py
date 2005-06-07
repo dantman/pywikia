@@ -329,7 +329,7 @@ def main():
     sqlfilename = None
     pageTitle = []
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, logname = 'weblinkchecker.log')
+        arg = wikipedia.argHandler(arg, 'weblinkchecker')
         if arg:
             if arg.startswith('-sql'):
                 if len(arg) == 4:

@@ -15,7 +15,6 @@ Specific arguments:
 -include    The beginning and end text should be included in the
             page.
 -utf        The input file is UTF-8
--log        Add logging to file "pagefromfile.log"
 
 Note the '-utf' option is necessary on older versions of Windows;
 whether it's necessary or useful on Windows XP and/or other
@@ -33,7 +32,7 @@ import re, sys
 msg={
     'en':u'Automated import of articles',
     'nl':u'Geautomatiseerde import',
-    'pt':u'Importação automática de artigo'
+    'pt':u'Importaï¿½o automï¿½ica de artigo'
     }
 
 # Adapt these to the file you are using. 'starttext' and 'endtext' are
@@ -79,7 +78,7 @@ def main():
     findpage(text)
 
 for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg)
+    arg = wikipedia.argHandler(arg, 'pagefromfile')
     if arg:
         if arg.startswith("-start:"):
             starttext=arg[7:]
@@ -92,9 +91,6 @@ for arg in sys.argv[1:]:
         elif arg=="-utf":
             import codecs
             utf = True
-        elif arg=="-log":
-            import logger
-            sys.stdout = logger.Logger(sys.stdout, filename = 'pagefromfile.log')
         else:
             print "Disregarding unknown argument %s."%arg
 mysite = wikipedia.getSite()

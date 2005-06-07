@@ -74,7 +74,7 @@ class EditArticle:
         """Parse commandline and set options attribute"""
         my_args = []
         for arg in self.all_args:
-            arg = wikipedia.argHandler(arg)
+            arg = wikipedia.argHandler(arg, 'editarticle')
             if arg:
                 my_args.append(arg)
         parser = optparse.OptionParser()

@@ -103,7 +103,7 @@ try:
     shown = False
 
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg):
+        if wikipedia.argHandler(arg, 'imageharvest'):
             if arg == "-pattern":
                 image_url = True
             elif arg == "-shown":
