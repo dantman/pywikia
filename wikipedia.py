@@ -1360,15 +1360,15 @@ class Throttle(object):
 get_throttle = Throttle(config.minthrottle,config.maxthrottle)
 put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
 
-def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None):
+def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None, gettoken = False):
     """Upload 'text' on page 'name' to the 'site' wiki.
        Use of this routine can normally be avoided; use Page.put
        instead.
     """
     safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
     if site.version() >= "1.4":
-        if not token:
-            token = site.getToken()
+        if gettoken or not token:
+            token = site.getToken(getagain = gettoken)
         else:
             safetuple = (site,name,text,comment,watchArticle,minorEdit,newPage)
     # Check whether we are not too quickly after the previous putPage, and
@@ -1448,7 +1448,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
             print "Changing page has failed. Retrying."
             putPage(safetuple[0], safetuple[1], safetuple[2], comment=safetuple[3],
                     watchArticle=safetuple[4], minorEdit=safetuple[5], newPage=safetuple[6],
-                    token=None)
+                    token=None,gettoken=True)
         else:
             output(data, decoder = myencoding())
     return response.status, response.reason, data
@@ -2430,16 +2430,15 @@ class Site(object):
     def languages(self):
         return self.family.langs.keys()
 
-    def getToken(self, getalways = True):
+    def getToken(self, getalways = True, getagain = False):
+        if getagain or (getalways and not self._token):
+            output(u"Getting page to get a token.")
+            try:
+                Page(self, url2link("Non-existing page", self, self)).get(force = True)
+            except Error:
+                pass
         if not self._token:
-            if getalways:
-                output(u"Getting page to get a token.")
-                try:
-                    Page(self, url2link("Non-existing page", self, self)).get(force = True)
-                except Error:
-                    pass
-            else:
-                return False
+            return False
         return self._token
 
     def puttoken(self,value):
