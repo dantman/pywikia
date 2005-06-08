@@ -210,7 +210,10 @@ class Page(object):
             for ns in site.family.namespaces.keys():
                 if title[0] == site.namespace(ns):
                     if not site.nocapitalize:
-                        title[1] = title[1][0].upper()+title[1][1:]
+                        try:
+                            title[1] = title[1][0].upper()+title[1][1:]
+                        except IndexError: # title[1] is empty
+                            print "WARNING: Strange title %s"%'%3A'.join(title)
         title = '%3A'.join(title)
         self._urlname = title
         self._linkname = url2link(self._urlname, site = self._site, insite = self._tosite)
