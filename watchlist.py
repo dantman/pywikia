@@ -89,13 +89,9 @@ def refresh(site):
         watchlist.append(pageName)
     # Save the watchlist to disk
     # The file is stored in the watchlists subdir. Create if necessary.
-    if watchlist == []:
-        print 'Error extracting watchlist for %s. Maybe you\'re not logged in, or the server is down.' % repr(site)
-        sys.exit()
-    else:
-        f = open(makepath('watchlists/watchlist-%s-%s.dat' % (site.family.name, site.lang)), 'w')
-        pickle.dump(watchlist, f)
-        f.close()
+    f = open(makepath('watchlists/watchlist-%s-%s.dat' % (site.family.name, site.lang)), 'w')
+    pickle.dump(watchlist, f)
+    f.close()
 
 def refresh_all():
     import dircache, time
