@@ -226,7 +226,7 @@ class ReferringPageGenerator:
         # Remove ignorables
         if ignore_title.has_key(self.disambPl.site().lang):
             for ig in ignore_title[self.disambPl.site().lang]:
-                for i in range(len(refs)):
+                for i in range(len(refs)-1, -1, -1):
                     if re.match(ig, refs[i].linkname()):
                         wikipedia.output('Ignoring page %s' % refs[i].linkname())
                         del refs[i]
