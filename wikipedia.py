@@ -356,7 +356,7 @@ class Page(object):
                     hn = underline2space(hn)
                     m = re.search("== *%s *==" % hn, self._contents)
                     if not m:
-                        output("WARNING: Section does not exist: %s" % self.linkname())
+                        output(u"WARNING: Section does not exist: %s" % self.linkname())
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
@@ -1102,7 +1102,7 @@ class GetAll(object):
         if hn:
             m = re.search("== *%s *==" % hn, text)
             if not m:
-                output("WARNING: Section does not exist: %s" % self)
+                output(u"WARNING: Section does not exist: %s" %pl2.linkname())
             else:
                 # Store the content
                 pl2._contents = text
