@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+﻿# -*- coding: UTF-8 -*-
 """
 This bot takes as its argument (or, if no argument is given, asks for it), the
 name of a new or existing category. It will then try to find new articles for
@@ -41,6 +41,11 @@ msg={
     'pt':u'Criando ou atualizando categoria:',
     }
 
+def rawtoclean(c):
+    #Given the 'raw' category, provides the 'clean' category
+    c2 = c.linkname().split('|')[0]
+    return wikipedia.Page(mysite,c2)
+
 def isdate(s):
     #returns true iff s is a date or year
     result = False
@@ -78,6 +83,9 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
             cats = pl.categories()
             if not workingcat in cats:
                 cats = pl.rawcategories()
+                for c in cats:
+                    if rawtoclean(c) in parentcats:
+                        cats.remove(c)
                 if linkterm:
                     pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.Page(mysite,"%s|%s"%(workingcat.linkname(),linkterm))]))
                 else:
@@ -216,15 +224,19 @@ try:
     except IOError:
         # File does not exist
         excludefile = codecs.open(filename, 'w', encoding = mysite.encoding())
-    if workingcat.exists():
-        list = workingcat.articles()
+    try:
+        parentcats = workingcat.categories()
+    except wikipedia.Error:
+        parentcats = []
+    list = workingcat.articles()
+    if list:
         for pl in list:
             checked[pl]=pl
         wikipedia.getall(mysite,list)
         for pl in list:
             include(pl)
     else:
-        wikipedia.output(u"Category %s does not exist yet. Which page to start with?"%workingcatname)
+        wikipedia.output(u"Category %s does not exist or is empty. Which page to start with?"%workingcatname)
         answer = wikipedia.input(u"(Default is [[%s]]):"%workingcatname)
         if not answer:
             answer = workingcatname
