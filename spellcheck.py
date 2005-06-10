@@ -410,18 +410,8 @@ except:
     raise
 try:
     if newpages:
-        newpages = wikipedia.getPage(mysite, mysite.newpagesname(500), do_quote=False, get_edit_page=False, throttle = True)
-        R = re.compile("<li.*?>.*?title=(.*?)&")
-        for hit in R.findall(newpages):
-            page = wikipedia.Page(mysite,hit)
-            try:
-                text = page.get()
-            except wikipedia.Error:
-                pass
-            else:
-                text = spellcheck(text)
-                if text != page.get():
-                    page.put(text)
+        wikipedia.output(u"Someone changed the Pywikipediabot's code, so this does not work. Thank him.")
+        crash # Yes, that's not Python, but it does what it should.
     elif start:
         for page in wikipedia.allpages(start = start, site = mysite):
             try:
