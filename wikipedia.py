@@ -1591,31 +1591,7 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
 
         return x, isWatched
 
-def newpages(number=10,site=None):
-    """Give the last number new pages (according to Special:Newpages)"""
-    if site is None:
-        site = getSite()
-    foundpages = []
-    path = site.newpages_address()
-    returned_html = getUrl(site, path)
-    start = "<ol start='1' class='special'>"
-    end = "</ol>"
-    startpos = returned_html.index(start) + len(start)
-    endpos = startpos + returned_html[startpos:].index(end)
-    for line in returned_html[startpos:endpos].strip().split('\n'):
-        try:
-            start = line.index('title="') + 7
-        except ValueError:
-            continue
-        try:
-            end = start + line[start:].index('">')
-        except ValueError:
-            continue
-        foundpages.append(Page(site,line[start:end]))
-    return foundpages
-
-
-def newpageslive(number=10, onlyonce=False, site=None):
+def newpages(number = 10, repeat = False, site = None):
     """Generator which yields new articles subsequently.
        It starts with the article created 'number' articles
        ago (first argument). When these are all yielded
@@ -1636,68 +1612,26 @@ def newpageslive(number=10, onlyonce=False, site=None):
     seen = set()
     while True:
         path = site.newpages_address()
-        put_throttle() # TODO: delay might be too long?
-        returned_html = getUrl(site, path)
+        get_throttle()
+        html = getUrl(site, path)
 
         # TODO: Use regular expressions!
-        start = "<ol start='1' class='special'>"
-        end = "</ol>"
-        try:
-            startpos = returned_html.index(start) + len(start)
-            endpos = startpos + returned_html[startpos:].index(end)
-            relevant = returned_html[startpos:endpos]
-            lines = [line.strip() for line in relevant.strip().split('\n')][::-1]
+        entryR = re.compile('<li>(?P<date>.+?) <a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\) \. \. (?P<loggedin><a href=".+?" title=".+?">)?(?P<username>.+?)(</a>)?( <em>\((?P<comment>.+?)\)</em>)?</li>')
+        for m in entryR.finditer(html):
+            date = m.group('date')
+            title = m.group('title')
+            title = title.replace('&quot;', '"')
+            length = int(m.group('length'))
+            loggedIn = (m.group('loggedin') != None)
+            username = m.group('username')
+            comment = m.group('comment')
 
-            ds = {
-                "date": ("<li>", "<a href="),
-                "patroldate": ('not_patrolled">', "<a href="),
-                "title": ('title="', '">'),
-                "length": ("</a> (", " "),
-                "user_login": ('">', "</a>"),
-                "comment": ("em>","</em>"),
-                "user_anon": (" . . ", " <", "</li>"),
-                }
-    
-            all = [["date", "patroldate"], ["title"], ["length"], ["user_login", "user_anon"], ["comment"]]
-            for line in lines:
-                d = {}    
-                start = 0
-                for info in all:
-                    for subinfo in info:
-                        try:
-                            start = start + line[start:].index(ds[subinfo][0]) + len(ds[subinfo][0])
-                        except ValueError:
-                            continue
-                        try:
-                            end = start + line[start:].index(ds[subinfo][1])
-                        except ValueError:
-                            end = start + line[start:].index(ds[subinfo][2]) # ugly, IndexError thus means ValueError
-                        d[subinfo] = line[start:end]
-                        break
-                if "patroldate" in d.keys():
-                    d["date"] = d["patroldate"]
-                if d["title"] in seen:
-                    continue
-                else:
-                    seen.add(d["title"])
-                    try:
-                        dtt = time.strptime(d["date"].strip(), u'%H:%M, %d. %b %Y')
-                    except ValueError:
-                        # error on parsing date, fallback to time only plus current date
-                        timeonly = d["date"].strip()
-                        timeonly = timeonly[:timeonly.index(',')]
-                        dtt = time.strptime(timeonly+' '+time.strftime('%d %m %Y',time.localtime()), '%H:%M %d %m %Y')
-                    d["date"] = datetime.datetime.fromtimestamp(time.mktime(dtt))
-                    d["length"] = int(d["length"])
-                    d["title"] = Page(site, d["title"])
-                    yield d
-            if onlyonce:
-                break
-            else:
-                pass
-            # FIXME: if they don't overlap, refetch with more articles
-        except ValueError:
-            continue
+            if title not in seen:
+                seen.add(title)
+                page = Page(site, title)
+                yield page, date, length, loggedIn, username, comment
+        if not repeat:
+            break
 
 def allpages(start = '!', site = None, namespace = 0, throttle = True):
     """Generator which yields all articles in the home language in

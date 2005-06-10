@@ -8,11 +8,13 @@ import traceback
 
 __metaclass__ = type
 
-question = """\a1) {{delete}}
+question = """
+\a
+1) {{delete}}
 2) {{stub}}
 3) {{cleanup}}
 q) quit cleaningbot
-*) OK
+Enter) OK
 What is it? """
 
 messages = {
@@ -23,36 +25,31 @@ messages = {
 
 done = ["{{delete}}", "{{speedy}}", "{{VfD}}", "{{cleanup}}", "{{nonsense}}"] # do nothing if this is in it
 
-class CleaningBot:
-    trashhold = 250
-    def __init__(self, site=None):
-        if site is None:
-            site = wikipedia.getSite()
-        self.site = site
-
-    def pages(self):
-        for page in wikipedia.newpageslive(5):
-            yield page
-
+class PageHandler:
+    def __init__(self, page, date, length, loggedIn, user, comment):
+        self.page = page
+        self.date = date
+        self.length = length
+        self.loggedIn = loggedIn
+        self.user = user
+        self.comment = comment
+    
     def showpageinfo(self):
-        print self.pageinfo["date"]
-        print self.pageinfo["title"]
-        print "Length:", self.pageinfo["length"]
-        print "User:", self.pageinfo.get("user_login") or self.pageinfo.get("user_anon")
-        comment = self.pageinfo.get("comment")
-        if comment is not None:
-            print "Comment:", comment
-        else:
+        print self.date
+        print self.page.linkname()
+        print "Length: %i bytes" % self.length
+        print "User: %s" % self.user
+        if self.comment == None:
             print "no comment"
-
+        else:
+            print "Comment: %s" % self.comment
 
     def couldbebad(self):
-        if self.pageinfo["length"] < self.trashhold and self.pageinfo.get("user_anon") is not None:
-            return True
-        return False
+        return self.length < 250 and not self.loggedIn
+
 
     def handlebadpage(self):
-        self.content = self.pageinfo["title"].get()
+        self.content = self.page.get()
         for d in done:
             if d in self.content:
                 print d, 'in content, nothing necessary'
@@ -75,47 +72,44 @@ class CleaningBot:
     def handlespam(self):
         print 'prepending {{delete}}...'
         newcontent = "{{delete}}\n" + self.content
-        self.pageinfo["title"].put(newcontent, comment=messages["delete"], minorEdit=True, watchArticle=False)
+        self.page.put(newcontent, comment=messages["delete"])
 
     def handlestub(self):
         print 'appending {{stub}}...'
         newcontent = self.content + "\n{{stub}}"
-        self.pageinfo["title"].put(newcontent, comment=messages["stub"], minorEdit=True, watchArticle=False)
+        self.page.put(newcontent, comment = messages["stub"])
 
     def handlecleanup(self):
         print 'prepending {{cleanup}}...'
         newcontent = "{{cleanup}}\n" + self.content
-        self.pageinfo["title"].put(newcontent, comment=messages["cleanup"], minorEdit=True, watchArticle=False)
+        self.page.put(newcontent, comment = messages["cleanup"])
 
-    def mainloop(self):
-        gen = self.pages()
-        while True:
+    def run(self):
+        self.showpageinfo()
+        if self.couldbebad():
+            print "Integrity of page doubtful..."
             try:
-                try:
-                    page = gen.next()
-                except StopIteration:
-                    time.sleep(1)
-                    continue
-            except TypeError:
-                traceback.print_exc()
-                continue
-            self.pageinfo = page
-            self.showpageinfo()
-            if self.couldbebad():
-                print "Integrity of page doubtful..."
-                try:
-                    self.handlebadpage()
-                except wikipedia.NoPage:
-                    print 'seems already gone'
-            print '----- Current time:', datetime.datetime.now()
+                self.handlebadpage()
+            except wikipedia.NoPage:
+                print 'seems already gone'
+        print '----- Current time:', datetime.datetime.now()
 
-def main():
-    app = CleaningBot()
-    app.mainloop()
+                
+class CleaningBot:
+    def __init__(self, site=None):
+        if site is None:
+            site = wikipedia.getSite()
+        self.site = site
+
+    def run(self):
+        for (page, date, length, loggedIn, username, comment) in wikipedia.newpages(100, repeat = True):
+            handler = PageHandler(page, date, length, loggedIn, username, comment)
+            handler.run()
 
 if __name__ == "__main__":
     try:
-        main()
+        bot = CleaningBot()
+        bot.run()
     except:
         wikipedia.stopme()
         raise

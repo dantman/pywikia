@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 """
 This bot spellchecks Wikipedia pages. It is very simple, only checking
@@ -417,8 +417,7 @@ except:
     raise
 try:
     if newpages:
-        newpageslist = wikipedia.newpages(number = 1000)
-        for page in newpageslist:
+        for (page, date, length, user, comment) in wikipedia.newpages(1000):
             try:
                 text = page.get()
             except wikipedia.Error:
