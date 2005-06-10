@@ -1591,7 +1591,31 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
 
         return x, isWatched
 
-def newpages(number=10, onlyonce=False, site=None):
+def newpages(number=10,site=None):
+    """Give the last number new pages (according to Special:Newpages)"""
+    if site is None:
+        site = getSite()
+    foundpages = []
+    path = site.newpages_address()
+    returned_html = getUrl(site, path)
+    start = "<ol start='1' class='special'>"
+    end = "</ol>"
+    startpos = returned_html.index(start) + len(start)
+    endpos = startpos + returned_html[startpos:].index(end)
+    for line in returned_html[startpos:endpos].strip().split('\n'):
+        try:
+            start = line.index('title="') + 7
+        except ValueError:
+            continue
+        try:
+            end = start + line[start:].index('">')
+        except ValueError:
+            continue
+        foundpages.append(Page(site,line[start:end]))
+    return foundpages
+
+
+def newpageslive(number=10, onlyonce=False, site=None):
     """Generator which yields new articles subsequently.
        It starts with the article created 'number' articles
        ago (first argument). When these are all yielded
@@ -1623,7 +1647,7 @@ def newpages(number=10, onlyonce=False, site=None):
             endpos = startpos + returned_html[startpos:].index(end)
             relevant = returned_html[startpos:endpos]
             lines = [line.strip() for line in relevant.strip().split('\n')][::-1]
-    
+
             ds = {
                 "date": ("<li>", "<a href="),
                 "patroldate": ('not_patrolled">', "<a href="),

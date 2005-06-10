@@ -31,7 +31,7 @@ class CleaningBot:
         self.site = site
 
     def pages(self):
-        for page in wikipedia.newpages(5):
+        for page in wikipedia.newpageslive(5):
             yield page
 
     def showpageinfo(self):

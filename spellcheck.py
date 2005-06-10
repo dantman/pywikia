@@ -410,8 +410,16 @@ except:
     raise
 try:
     if newpages:
-        wikipedia.output(u"Someone changed the Pywikipediabot's code, so this does not work. Thank him.")
-        crash # Yes, that's not Python, but it does what it should.
+        newpageslist = wikipedia.newpages(number = 1000)
+        for page in newpageslist:
+            try:
+                text = page.get()
+            except wikipedia.Error:
+                pass
+            else:
+                text = spellcheck(text)
+                if text != page.get():
+                    page.put(text)
     elif start:
         for page in wikipedia.allpages(start = start, site = mysite):
             try:
