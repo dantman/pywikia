@@ -417,7 +417,7 @@ except:
     raise
 try:
     if newpages:
-        for (page, date, length, user, comment) in wikipedia.newpages(1000):
+        for (page, date, length, loggedIn, user, comment) in wikipedia.newpages(1000):
             try:
                 text = page.get()
             except wikipedia.Error:
