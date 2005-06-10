@@ -22,6 +22,7 @@ For each unknown word, you get a couple of options:
     s: Replace the word, but do not add the replacement
     *: Edit the page using the gui
     g: Give a list of 'guessed' words, which are similar to the given one
+    x: Ignore this word, and do not check the rest of the page
 
 When the bot is ended, it will save the extensions to its word list;
 there is one word list for each language.
@@ -151,6 +152,7 @@ def askAlternative(word,context=None):
         wikipedia.output(u"s: Replace text, but do not save as alternative")
         wikipedia.output(u"g: Guess (give me a list of similar words)")
         wikipedia.output(u"*: Edit by hand")
+        wikipedia.output(u"x: Do not check the rest of this page")
         answer = wikipedia.input(u":")
         if answer in "aAiI":
             correct = word
@@ -184,6 +186,8 @@ def askAlternative(word,context=None):
                 print "No similar words found."
         elif answer=="*":
             correct = edit
+        elif answer=="x":
+            correct = endpage
         else:
             for i in xrange(len(Word(word).getAlternatives())):
                 if answer == str(i+1):
@@ -259,6 +263,8 @@ def spellcheck(page):
                 newtxt = edit_window.edit(text,search=smallword)
                 if newtxt:
                     text = newtxt
+            elif replacement == endpage:
+                loc = len(page)
             else:
                 replacement = bigword.replace(replacement)
                 text = text[:loc] + replacement + text[loc+len(match.group(2)):]
@@ -358,6 +364,7 @@ class Word(object):
 
 try:
     edit = SpecialTerm("edit")
+    endpage = SpecialTerm("end page")
     title = []
     knownwords = {}
     newwords = []
