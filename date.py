@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -827,6 +827,7 @@ yearBCfmt = {
         'fr': u'-%d',
         'he':u'%d לפנה"ס',
         'hr': u'%d p.n.e.',
+        'id': u'%d SM',
         'is': u'%d f. Kr.',
         'it': u'%d AC',
         'ko': u'기원전 %d년',

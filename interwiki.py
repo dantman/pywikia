@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -189,7 +189,8 @@ msg = {
     'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
     'pl':(u'dodaje', u'usuwa', u'poprawia'),
     'pt':(u'Adicionando', u'Removendo',u'Modificando'),
-    'sv':(u'lägger till', u'tar bort', u'ändrar'),
+    'sk':(u'Pridal', u'Odobral',u'Zmenil' ),
+    'sv':(u'Lägger till', u'Tar bort', u'Ändrar'),
     }
 
 class Global(object):
