@@ -1626,6 +1626,7 @@ def newpages(number=10, onlyonce=False, site=None):
     
             ds = {
                 "date": ("<li>", "<a href="),
+                "patroldate": ('not_patrolled">', "<a href="),
                 "title": ('title="', '">'),
                 "length": ("</a> (", " "),
                 "user_login": ('">', "</a>"),
@@ -1633,10 +1634,9 @@ def newpages(number=10, onlyonce=False, site=None):
                 "user_anon": (" . . ", " <", "</li>"),
                 }
     
-            all = [["date"], ["title"], ["length"], ["user_login", "user_anon"], ["comment"]]
+            all = [["date", "patroldate"], ["title"], ["length"], ["user_login", "user_anon"], ["comment"]]
             for line in lines:
-                d = {}
-    
+                d = {}    
                 start = 0
                 for info in all:
                     for subinfo in info:
@@ -1650,8 +1650,9 @@ def newpages(number=10, onlyonce=False, site=None):
                             end = start + line[start:].index(ds[subinfo][2]) # ugly, IndexError thus means ValueError
                         d[subinfo] = line[start:end]
                         break
+                if "patroldate" in d.keys():
+                    d["date"] = d["patroldate"]
                 if d["title"] in seen:
-    ##                print "DEBUG: already seen %r" % d["title"]
                     continue
                 else:
                     seen.add(d["title"])
@@ -1669,7 +1670,6 @@ def newpages(number=10, onlyonce=False, site=None):
             if onlyonce:
                 break
             else:
-    ##            print "DEBUG: seen'm all, restart..."
                 pass
             # FIXME: if they don't overlap, refetch with more articles
         except ValueError:
