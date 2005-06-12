@@ -171,7 +171,7 @@ import codecs
 import socket
 #import logger
 
-import wikipedia, config, unequal, date
+import wikipedia, config, date
 import titletranslate
 
 msg = {
@@ -307,9 +307,7 @@ class Subject(object):
             isredirect = 0
             # Now check whether any interwiki links should be added to the
             # todo list.
-            if unequal.bigger(self.inpl, pl):
-                print "NOTE: %s is bigger than %s, not following references" % (pl, self.inpl)
-            elif pl.section():
+            if pl.section():
                 # We have been referred to a part of a page, not the whole page. Do not follow references.
                 pass
             else:
@@ -329,8 +327,6 @@ class Subject(object):
                         pass
                     elif not globalvar.followredirect:
                         print "NOTE: not following redirects."
-                    elif unequal.unequal(self.inpl, pl3):
-                        print "NOTE: %s is unequal to %s, not adding it" % (pl3, self.inpl)
                     else:
                         if self.conditionalAdd(pl3, counter, pl):
                             if globalvar.shownew:
@@ -373,8 +369,6 @@ class Subject(object):
                     for pl2 in iw:
                       if pl2.site().language() in globalvar.neverlink:
                           print "Skipping link %s to an ignored language"% pl2
-                      elif unequal.unequal(self.inpl, pl2):
-                          print "NOTE: %s is unequal to %s, not adding it" % (pl2, self.inpl)
                       elif globalvar.same=='wiktionary' and pl2.linkname().lower()!=self.inpl.linkname().lower():
                           print "NOTE: Ignoring %s for %s in wiktionary mode"% (pl2, self.inpl)
                       else:   
@@ -658,7 +652,7 @@ class Subject(object):
            needed."""
         for site in new.keys():
             pl = new[site]
-            if not unequal.bigger(self.inpl, pl) and not pl.section():
+            if not pl.section():
                 shouldlink = new.values() + [self.inpl]
                 linked = pl.interwiki()
                 for xpl in shouldlink:
@@ -1020,8 +1014,6 @@ if __name__ == "__main__":
                 else:
                     inname.append(arg)
 
-        unequal.read_exceptions()
-    
         if skipfile:
             for pl in wikipedia.PagesFromFile(skipfile):
                 globalvar.skip[pl] = None
