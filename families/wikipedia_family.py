@@ -114,7 +114,7 @@ class Family(family.Family):
     def code2encoding(self, code):
         """Return the encoding for a specific language wikipedia"""
         if code in self.latin1:
-            return 'iso-8859-1'
+            return 'iso8859-1'
         return 'utf-8'
     
     def code2encodings(self, code):
@@ -122,9 +122,9 @@ class Family(family.Family):
            wikipedia"""
         # Historic compatibility
         if code == 'pl':
-            return 'utf-8', 'iso-8859-2'
+            return 'utf-8', 'iso8859-2'
         if code == 'ru':
-            return 'utf-8', 'iso-8859-5'
+            return 'utf-8', 'iso8859-5'
         if code in self.latin1old:
-            return 'utf-8', 'iso-8859-1'
+            return 'utf-8', 'iso8859-1'
         return self.code2encoding(code),
