@@ -1170,7 +1170,7 @@ def PagesFromFile(fn, site = None):
     if site is None:
         site = getSite()
     f=open(fn, 'r')
-    R=re.compile(r'\[\[(.*)]\]')
+    R=re.compile(r'\[\[(.+?)\]\]')
     for line in f.readlines():
         m=R.match(line)
         if m:
@@ -1179,7 +1179,7 @@ def PagesFromFile(fn, site = None):
             try:
                 fam=Family(part[i], fatal = False)
                 i += 1
-            except ValueError:
+            except:
                 fam=site.family
             if part[i] in fam.langs:
                 code = part[i]
