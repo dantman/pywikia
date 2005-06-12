@@ -124,6 +124,12 @@ import datetime
 import config, mediawiki_messages
 import htmlentitydefs
 
+import locale
+# we'll set the locale to system default. This will ensure correct string
+# handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
+# longer needed.
+locale.setlocale(locale.LC_ALL, '')
+
 try:
     set # introduced in Python2.4: faster and future
 except NameError:
