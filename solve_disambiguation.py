@@ -613,7 +613,7 @@ class DisambiguationRobot:
     
             if self.solve_redirect:
                 try:
-                    target = disambPl.getRedirectTo()
+                    target = disambPl.getRedirectTarget()
                     self.alternatives.append(target)
                 except wikipedia.NoPage:
                     print "The specified page was not found."

@@ -95,7 +95,7 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
             try:
                 pl.get()                
             except wikipedia.IsRedirectPage:
-                pl2 = wikipedia.Page(mysite,pl.getRedirectTo())
+                pl2 = wikipedia.Page(mysite,pl.getRedirectTarget())
                 if needcheck(pl2):
                     tocheck.append(pl2)
                     checked[pl2]=pl2                
@@ -159,7 +159,7 @@ def asktoadd(pl):
             if pl.exists():
                 if pl.isRedirectPage():
                     print("Redirect page. Will be included normally.")
-                    pl2=wikipedia.Page(mysite,pl.getRedirectTo())
+                    pl2=wikipedia.Page(mysite,pl.getRedirectTarget())
                     checkprepare(pl2)
                 else:
                     include(pl,checklinks=False)

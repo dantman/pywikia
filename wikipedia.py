@@ -32,7 +32,7 @@ Page: A MediaWiki page
     links (*): The normal links from the page (list of links)
     imagelinks (*): The pictures on the page (list of strings)
     templates(*): All templates referenced on the page (list of strings)
-    getRedirectTo (*): The page the page redirects to
+    getRedirectTarget (*): The page the page redirects to
     isCategory: True if the page is a category, false otherwise
     isImage: True if the page is an image, false otherwise
     isDisambig (*): True if the page is a disambiguation page
@@ -650,7 +650,7 @@ class Page(object):
                 result.append(l[0])
         return result
 
-    def getRedirectTo(self, read_only = False):
+    def getRedirectTarget(self, read_only = False):
         """
         If the page is a redirect page, gives the title of the page it
         redirects to. Otherwise it will raise an IsNotRedirectPage exception.
