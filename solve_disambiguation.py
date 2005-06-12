@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -428,7 +428,7 @@ class DisambiguationRobot:
                     text=refpl.get(throttle=False,get_redirect=True)
                     include = "redirect"
         except wikipedia.NoPage:
-            wikipedia.output(u'Page [[%s]] does not seem to exist?! Skipping.') % refpl.linkname()
+            wikipedia.output(u'Page [[%s]] does not seem to exist?! Skipping.' % refpl.linkname())
             include = False
         if include in [True,"redirect"]:
             # make a backup of the original text so we can show the changes later
