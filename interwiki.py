@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -349,6 +349,17 @@ class Subject(object):
                 #except wikipedia.SectionError:
                 #    wikipedia.output(u"NOTE: section %s does not exist" % pl.aslink())
                 else:
+                    if not globalvar.autonomous:
+                        if self.inpl.isDisambig() and not pl.isDisambig():
+                            choice = wikipedia.input('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway? [y|N]' % (self.inpl.aslink(), pl.aslink()))
+                        elif not self.inpl.isDisambig() and pl.isDisambig():
+                            choice = wikipedia.input('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway? [y|N]' % (self.inpl.aslink(), pl.aslink()))
+                        else:
+                            choice = 'y'
+                        if choice not in ['y', 'Y']:
+                            wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % pl.aslink())
+                            del self.done[pl]
+                            iw = ()
                     if self.inpl == pl:
                         self.untranslated = (len(iw) == 0)
                         if globalvar.untranslatedonly:
