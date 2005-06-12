@@ -480,7 +480,7 @@ class Family:
         	'fr'  :       [u'homonymie'],
         	'ga'  :       [u'idirdhealú'],
         	'gl'  :       [u'homónimos'],
-        	'he'  :       [u'disambiguationafter', u'פירושונים'],
+        	'he'  :       [u'disambiguationAfter', u'פירושונים'],
         	'hr'  :       [u'disambig'],
         	'hu'  :       [u'egyert'],
         	'ia'  :       [u'disambiguation'],
