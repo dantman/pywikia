@@ -83,6 +83,6 @@ class Family(family.Family):
        
     def code2encoding(self, code):
         if code in self.latin1:
-            return 'iso8859-1'
+            return 'iso-8859-1'
         else:
             return 'utf-8'

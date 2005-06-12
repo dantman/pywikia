@@ -291,10 +291,10 @@ class Family(family.Family):
             
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
         
-        # Languages that are coded in iso8859-1
+        # Languages that are coded in iso-8859-1
         self.latin1 = ['en', 'sv', 'nl', 'da', 'dk']
         
-        # Languages that used to be coded in iso8859-1
+        # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
                     'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
                     'nds', 'co', 'mi', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
@@ -383,7 +383,7 @@ class Family(family.Family):
     def code2encoding(self, code):
         """Return the encoding for a specific language wikipedia"""
         if code in self.latin1:
-            return 'iso8859-1'
+            return 'iso-8859-1'
         return 'utf-8'
     
     def code2encodings(self, code):
@@ -395,5 +395,5 @@ class Family(family.Family):
         if code == 'ru':
             return 'utf-8', 'iso-8859-5'
         if code in self.latin1old:
-            return 'utf-8', 'iso8859-1'
+            return 'utf-8', 'iso-8859-1'
         return self.code2encoding(code),

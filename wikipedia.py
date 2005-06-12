@@ -1494,7 +1494,7 @@ def getUrl(site, path):
     else:
         print "WARNING: No character set found"
         # Latin-1 as default
-        charset = 'iso8859-1'
+        charset = 'iso-8859-1'
     site.checkCharset(charset)
     # convert HTML to unicode
     # TODO: We might want to use error='replace' in case of bad encoding.
