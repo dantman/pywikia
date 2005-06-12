@@ -458,7 +458,7 @@ class Family:
         # A list of disambiguation template names in different languages
         # First character must be lower case!
         self.disambigs = {
-            '_default':   [u'disambig'],
+            '_default':       [u'disambig'],
         	'af'  :       [u'dubbelsinnig'],
         	'als' :       [u'begriffsklärung'],
         	'ang' :       [u'disambig'],
@@ -504,7 +504,7 @@ class Family:
         	'pt'  :       [u'desambiguação'],
         	'ro'  :       [u'dezambiguizare'],
         	'ru'  :       [u'disambig'],
-        	'simple':	  [u'disambig'],
+        	'simple':     [u'disambig'],
         	'sk'  :       [u'disambiguation'],
         	'sl'  :       [u'disambig'],
         	'sq'  :       [u'kthjellim'],
@@ -512,6 +512,7 @@ class Family:
         	'su'  :       [u'disambig'],
         	'sv'  :       [u'disambig'],
         	'th'  :       [u'แก้กำกวม'],
+                'tr'  :       [u'anlam ayrım'],
         	'vi'  :       [u'trang định hướng'],
         	'wa'  :       [u'omonimeye'],
         	'zh'  :       [u'disambig'],
