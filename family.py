@@ -504,7 +504,7 @@ class Family:
         	'pt'  :       [u'desambiguação'],
         	'ro'  :       [u'dezambiguizare'],
         	'ru'  :       [u'disambig'],
-        	'simple':     [u'disambig'],
+        	'simple':     [u'disambig', u'disambiguation'],
         	'sk'  :       [u'disambiguation'],
         	'sl'  :       [u'disambig'],
         	'sq'  :       [u'kthjellim'],
