@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -106,7 +106,7 @@ primary_topic_format={
           'de':u'%s_(Begriffsklärung)',
           'en':u'%s_(disambiguation)',
           'nl':u'%s_(doorverwijspagina)',
-          'pt':u'%s_(Desambuigração)'
+          'pt':u'%s_(desambiguação)'
           }
 
 # letters that can follow a link and are regarded as part of this link
