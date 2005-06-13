@@ -338,8 +338,6 @@ class Page(object):
 
             SectionError: The subject does not exist on a page with a # link
         """
-        if self.site().language() == 'nb':
-            return Page(getSite('no'),self.linkname()).get()
         if force:
             # When forcing, we retry the page no matter what. Old exceptions
             # and contents do not apply any more.
@@ -2545,11 +2543,11 @@ def altlang(code):
     if code=='da':
         return ['nb','no']
     if code in ['is','no','nb','nn']:
-        return ['no','nb','nn','da']
+        return ['no','nb','nn','da','sv']
     if code=='sv':
         return ['da','no','nb']
     if code=='se':
-        return ['no','nb','sv','fi','da','nn']
+        return ['no','nb','sv','nn','fi','da']
     if code in ['id','jv','ms','su']:
         return ['id','ms','jv','su']
     if code in ['bs','hr','mk','sh','sr']:

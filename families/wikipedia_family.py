@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -68,7 +68,7 @@ class Family(family.Family):
         self.obsolete = {'sh':'hr',
                     'dk':'da',
                     'minnan':'zh-min-nan',
-                    'nb':'no',
+                    'no':'nb',
                     'jp':'ja',
                     'tokipona':'none',
                     'zh-tw':'zh',
@@ -83,7 +83,7 @@ class Family(family.Family):
             'de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'pt', 'sv']
         
         self.biglangs2 = self.biglangs + [
-            'ca', 'da', 'eo', 'et', 'fi', 'id', 'no', 'ro', 'sl', 'zh']
+            'ca', 'da', 'eo', 'et', 'fi', 'id', 'nb', 'ro', 'sl', 'zh']
         
         self.biglangs3 = self.biglangs2 + [
             'bg', 'cs', 'he', 'hr', 'hu', 'ru', 'ms', 'sk', 'tt', 'uk', 'wa']
@@ -107,7 +107,7 @@ class Family(family.Family):
         
         # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
-                    'vi', 'lt', 'fi', 'it', 'no', 'simple', 'gl', 'eu',
+                    'vi', 'lt', 'fi', 'it', 'nb', 'simple', 'gl', 'eu',
                     'nds', 'co', 'mi', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
                     'ga', 'na', 'es', 'test']
         

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -575,15 +575,6 @@ class Subject(object):
             if globalvar.backlink:
                 self.reportBacklinks(new)
         else:
-            # Change no: to nb: in presence of nn:
-            try:
-                if wikipedia.getSite('no') in new.keys():
-                    if wikipedia.getSite('nn') in new or self.inpl.site().lang == 'nn':
-                        new[wikipedia.getSite('nb')] = wikipedia.Page(wikipedia.getSite('nb'),new[wikipedia.getSite('no')].linkname())
-                        del new[wikipedia.getSite('no')]
-            except KeyError:
-                # Apparently no and/or nn and/or nb does not exist in this family
-                pass
             if mods:
                 wikipedia.output(u"Changes to be made: %s" % mods)
             oldtext = self.inpl.get()

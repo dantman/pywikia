@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -444,6 +444,7 @@ class Family:
                 'hu'  :     u'Kategória vita',
                 'is'  :     u'Flokkaspjall',
                 'it'  :     u'Discussioni categoria',
+                'nb'  :     u'Kategoridiskusjon',
                 'nl'  :     u'Overleg categorie',
                 'no'  :     u'Kategoridiskusjon',
                 'pl'  :     u'Dyskusja kategorii',
@@ -496,6 +497,7 @@ class Family:
         	'lb'  :       [u'homonymie'],
         	'li'  :       [u'verdudeliking'],
         	'lt'  :       [u'disambig'],
+                'nb'  :       [u'peker'],
         	'nds' :       [u'begreepkloren'],
         	'nl'  :       [u'dp'],
         	'nn'  :       [u'fleirtyding'],

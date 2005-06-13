@@ -42,7 +42,7 @@ class Family(family.Family):
                         'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl', 'sa',
                         'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona', 'tr', 'vi']
     
-        self.obsolete = {'nb':'no',
+        self.obsolete = {'no':'nb',
                     'minnan':'zh-min-nan',
                     'zh-tw':'zh',
                     'zh-cn':'zh'}
