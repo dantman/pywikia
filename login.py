@@ -57,7 +57,7 @@ def allowedbot(username, site):
     """Checks whether the bot is listed on Wikipedia:bots"""
     pl = wikipedia.Page(site, "Wikipedia:Bots")
     text = pl.get()
-    return "[[user:%s" % username in text.lower()
+    return "[[user:%s" % username.lower() in text.lower()
 
 def login(site, username, password, remember=True):
     """Login to wikipedia.
