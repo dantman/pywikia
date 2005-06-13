@@ -64,7 +64,7 @@ class AllpagesPageGenerator:
                     for pl in pls:
                         if not pl.isRedirectPage():
                             try:
-                                text = pl.get()
+                                text = pl.get(read_only = True)
                             except wikipedia.NoPage:
                                 wikipedia.output(u"BUG: %s no longer exists?" % pl.aslink())
                             else:
@@ -92,7 +92,7 @@ class SinglePageGenerator:
         self.pl = pl
             
     def generate(self):
-        yield self.pl.linkname(), self.pl.get()
+        yield self.pl.linkname(), self.pl.get(read_only = True)
 
 class LinkChecker:
     '''
