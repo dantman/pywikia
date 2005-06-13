@@ -63,7 +63,12 @@ class AllpagesPageGenerator:
                     wikipedia.getall(wikipedia.getSite(), pls)
                     for pl in pls:
                         if not pl.isRedirectPage():
-                            yield pl.linkname(), pl.get()
+                            try:
+                                text = pl.get()
+                            except wikipedia.NoPage:
+                                wikipedia.output(u"BUG: %s no longer exists?" % pl.aslink())
+                            else:
+                                yield pl.linkname(), text
                     i = 0
                     pls = []
 
