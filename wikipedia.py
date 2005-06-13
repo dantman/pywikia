@@ -1703,7 +1703,7 @@ def getLanguageLinks(text, insite = None):
     # interwiki link.
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
-    interwikiR = re.compile(r'\[\[([a-z\-]+):([^\]]*)\]\]')
+    interwikiR = re.compile(r'\[\[([a-z\-]+):([^\[\]]*)\]\]')
     for lang, pagetitle in interwikiR.findall(text):
         if not pagetitle:
             print "ERROR: empty link to %s:" % lang
