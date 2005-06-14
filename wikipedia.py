@@ -2219,7 +2219,7 @@ class Site(object):
         if not hasattr(self,'_loggedin'):
             self._fill()
         if check:
-            path = self.get_address('Non-existing page')
+            path = self.get_address('Non-existing_page')
             txt = getUrl(self, path)
             self._loggedin = 'Userlogin' not in txt
         return self._loggedin
