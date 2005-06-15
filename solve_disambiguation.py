@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -201,6 +201,7 @@ ignore_title = {
           u'Wikipedia:Kurze Artikel',
           u'Wikipedia:Liste mathematischer Themen/BKS',
           u'Wikipedia:Liste mathematischer Themen/Redirects',
+          u'Wikipedia:Löschkandidaten/.+',
           u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
           u'Wikipedia:WikiProjekt Altertumswissenschaft/.+'
           ),
