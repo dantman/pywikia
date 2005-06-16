@@ -60,7 +60,11 @@ class AllpagesPageGenerator:
                 pls.append(pl)
                 i += 1
                 if i >= 60:
-                    wikipedia.getall(wikipedia.getSite(), pls)
+                    try:
+                        wikipedia.getall(wikipedia.getSite(), pls)
+                    except wikipedia.SaxError:
+                        # Ignore this error, and get the pages the traditional way.
+                        pass
                     for pl in pls:
                         if not pl.isRedirectPage():
                             try:
