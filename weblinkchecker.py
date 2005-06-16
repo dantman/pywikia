@@ -206,7 +206,11 @@ class LinkCheckThread(threading.Thread):
         
     def run(self):
         linkChecker = LinkChecker(self.url)
-        ok, message = linkChecker.check()
+        try:
+            ok, message = linkChecker.check()
+        except:
+            wikipedia.output('Exception while processing URL %s in page %s' % (self.url, self.title))
+            raise
         if ok:
             if self.history.setLinkAlive(self.url):
                 wikipedia.output('*Link to %s in [[%s]] is back alive.' % (self.url, self.title))
