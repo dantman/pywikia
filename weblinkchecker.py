@@ -306,18 +306,20 @@ class WeblinkCheckerRobot:
            self.checkLinksIn(title, text)
     
     def checkLinksIn(self, title, text):
-        
         # RFC 2396 says that URLs may only contain certain characters.
         # For this regex we also accept non-allowed characters, so that the bot
         # will later show these links as broken ('Non-ASCII Characters in URL').
-        # Note: while allowing parenthesis inside URLs, MediaWiki will regard
+        # Note: While allowing parenthesis inside URLs, MediaWiki will regard
         # right parenthesis at the end of the URL as not part of that URL.
         # The same applies to dot, comma, colon and some other characters.
         # So characters inside the URL can be anything except whitespace,
         # closing squared brackets, greater than and less than, and the last
         # character also can't be parenthesis or another character disallowed
         # by MediaWiki.
-        linkR = re.compile(r'http[s]?://[^\]\s<>]*[^\]\s\)\.:;,<>]')
+        # MediaWiki allows closing curly braces inside links, but such braces
+        # often come from templates where URLs are parameters, so as a
+        # workaround we won't allow them inside links here.
+        linkR = re.compile(r'http[s]?://[^\]\s<>}]*[^\]\s\)\.:;,<>}]')
         urls = linkR.findall(text)
         for url in urls:
             # Remove HTML comments in URLs
