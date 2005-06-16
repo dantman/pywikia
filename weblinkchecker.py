@@ -134,20 +134,19 @@ class LinkChecker:
         Requests the header from the server. If the page is an HTTP redirect,
         returns the redirect target URL as a string. Otherwise returns None.
         '''
-        # TODO: Malconfigured HTTP servers might give a redirect loop. A
-        # recursion counter and limit would help.
         conn = httplib.HTTPConnection(self.host)
         conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
         response = conn.getresponse()
-
+        newURL = None
         if response.status >= 300 and response.status <= 399:
             redirTarget = response.getheader('Location')
-            if redirTarget.startswith('http://') or redirTarget.startswith('https://'):
-                newURL = redirTarget
-            elif redirTarget.startswith('/'):
-                newURL = '%s://%s%s' % (self.protocol, self.host, redirTarget)
-            else:
-                newURL = '%s://%s/%s' % (self.protocol, self.host, redirTarget)
+            if redirTarget:
+                if redirTarget.startswith('http://') or redirTarget.startswith('https://'):
+                    newURL = redirTarget
+                elif redirTarget.startswith('/'):
+                    newURL = '%s://%s%s' % (self.protocol, self.host, redirTarget)
+                else:
+                    newURL = '%s://%s/%s' % (self.protocol, self.host, redirTarget)
             # wikipedia.output(u'%s is a redirect to %s' % (self.url, newURL))
             return newURL
 
