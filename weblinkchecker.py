@@ -316,13 +316,13 @@ class WeblinkCheckerRobot:
         # right parenthesis at the end of the URL as not part of that URL.
         # The same applies to dot, comma, colon and some other characters.
         # So characters inside the URL can be anything except whitespace,
-        # closing squared brackets, greater than and less than, and the last
-        # character also can't be parenthesis or another character disallowed
-        # by MediaWiki.
+        # closing squared brackets, quotation marks, greater than and less
+        # than, and the last character also can't be parenthesis or another
+        # character disallowed by MediaWiki.
         # MediaWiki allows closing curly braces inside links, but such braces
         # often come from templates where URLs are parameters, so as a
         # workaround we won't allow them inside links here.
-        linkR = re.compile(r'http[s]?://[^\]\s<>}]*[^\]\s\)\.:;,<>}]')
+        linkR = re.compile(r'http[s]?://[^\]\s<>}"]*[^\]\s\)\.:;,<>}"]')
         urls = linkR.findall(text)
         for url in urls:
             # Remove HTML comments in URLs
