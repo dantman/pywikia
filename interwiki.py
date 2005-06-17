@@ -470,6 +470,8 @@ class Subject(object):
             if len(v) > 1:
                 nerr += 1
                 self.problem("Found more than one link for %s"%k)
+        if nerr == 0 and len( self.foundin[self.inpl] ) == 0:
+            self.problem(u'No other language (%d) refers back to %s' % (len(new),self.formatPl(self.inpl)))
         # If there are any errors, we need to go through all
         # items manually.
         if nerr > 0:
@@ -641,30 +643,33 @@ class Subject(object):
     def reportBacklinks(self, new):
         """Report missing back links. This will be called from finish() if
            needed."""
-        for site in new.keys():
-            pl = new[site]
-            if not pl.section():
-                shouldlink = new.values() + [self.inpl]
-                linked = pl.interwiki()
-                for xpl in shouldlink:
-                    if xpl != pl and not xpl in linked:
-                        for l in linked:
-                            if l.site() == xpl.site():
-                                wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (self.formatPl(pl), self.formatPl(xpl), self.formatPl(l)))
-                                break
-                        else:
-                            wikipedia.output(u"WARNING: %s does not link to %s" % (self.formatPl(pl), self.formatPl(xpl)))
-                # Check for superfluous links
-                for xpl in linked:
-                    if not xpl in shouldlink:
-                        # Check whether there is an alternative page on that language.
-                        for l in shouldlink:
-                            if l.site() == xpl.site():
-                                # Already reported above.
-                                break
-                        else:
-                            # New warning
-                            wikipedia.output(u"WARNING: %s links to incorrect %s" % (self.formatPl(pl), xpl.aslink()))
+        try:
+            for site in new.keys():
+                pl = new[site]
+                if not pl.section():
+                    shouldlink = new.values() + [self.inpl]
+                    linked = pl.interwiki()
+                    for xpl in shouldlink:
+                        if xpl != pl and not xpl in linked:
+                            for l in linked:
+                                if l.site() == xpl.site():
+                                    wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (self.formatPl(pl), self.formatPl(xpl), self.formatPl(l)))
+                                    break
+                            else:
+                                wikipedia.output(u"WARNING: %s does not link to %s" % (self.formatPl(pl), self.formatPl(xpl)))
+                    # Check for superfluous links
+                    for xpl in linked:
+                        if not xpl in shouldlink:
+                            # Check whether there is an alternative page on that language.
+                            for l in shouldlink:
+                                if l.site() == xpl.site():
+                                    # Already reported above.
+                                    break
+                            else:
+                                # New warning
+                                wikipedia.output(u"WARNING: %s links to incorrect %s" % (self.formatPl(pl), xpl.aslink()))
+        except (socket.error, IOError):
+            wikipedia.output(u'ERROR: could not report backlinks')
     
 class SubjectArray(object):
     """A class keeping track of a list of subjects, controlling which pages
