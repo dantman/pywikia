@@ -114,6 +114,7 @@ class _CatLink(wikipedia.Page):
                 retry_idle_time = 1
                 while True:
                     try:
+                        wikipedia.output('Getting [[%s]]...' % cat.linkname())
                         txt = wikipedia.getUrl(site, path)
                     except:
                         # We assume that the server is down. Wait some time, then try again.
