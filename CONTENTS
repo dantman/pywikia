@@ -1,31 +1,31 @@
-This is a package to build robots for wikipedia. Some example robots are 
+This is a package to build robots for MediaWiki wikis like Wikipedia. Some example robots are
 included. 
 
 =======================================================================
 PLEASE DO NOT PLAY WITH THIS PACKAGE. These programs can actually
-modify the live wikipedia on the net, and proper wiki-etiquette should
-be followed before running it on any of the wikipedia sites.
+modify the live wiki on the net, and proper wiki-etiquette should
+be followed before running it on any wiki.
 =======================================================================
 
-To get started on proper usage of the interwiki robot, please refer to:
+To get started on proper usage of the bot framework, please refer to:
 
-    http://meta.wikipedia.org/wiki/Interwiki_bot/Getting_started
+    http://meta.wikimedia.org/wiki/Using_the_python_wikipediabot
 
 
-More about robot visit reference your language:
+For more about robots, please visit the reference in your language:
 
 Bulgarian  : http://bg.wikipedia.org/wiki/%D0%A3%D0%B8%D0%BA%D0%B8%D0%BF%D0%B5%D0%B4%D0%B8%D1%8F:%D0%91%D0%BE%D1%82
 Chinese    : http://zh.wikipedia.org/wiki/Help:%E6%9C%BA%E5%99%A8%E4%BA%BA
 Deutsch    : http://de.wikipedia.org/wiki/Wikipedia:Bots
 English    : http://en.wikipedia.org/wiki/Wikipedia:Bots
 Esperanto  : http://eo.wikipedia.org/wiki/Vikipedio:Roboto
-Español    : http://es.wikipedia.org/wiki/Wikipedia:Bot
-Français   : http://fr.wikipedia.org/wiki/Wikipédia:Bot
+Espaï¿½l    : http://es.wikipedia.org/wiki/Wikipedia:Bot
+Franï¿½is   : http://fr.wikipedia.org/wiki/Wikipï¿½ia:Bot
 Italiano   : http://it.wikipedia.org/wiki/Wikipedia:Bot
 Japonese   : http://ja.wikipedia.org/wiki/Wikipedia:Bot?????????
 Nederlands : http://nl.wikipedia.org/wiki/Help:Gebruik_van_bots
 Potuguese  : http://pt.wikipedia.org/wiki/Ajuda:Como usar bots
-Româna     : http://ro.wikipedia.org/wiki/Wikipedia:Bot
+Romï¿½a     : http://ro.wikipedia.org/wiki/Wikipedia:Bot
 
 
 The contents of the package are:
@@ -38,26 +38,21 @@ wiktionary.py          : The wiktionary library
 config.py              : Configuration module containing all defaults. Do not
                          change these! See below how to change values.
 lib_images.py          : Part of the Wikipedia library special for the uploading
-logger.py              : A support library logging screen output to a file
 titletranslate.py      : rules and tricks to auto-translate wikipage titles
 date.py                : Date formats in various languages
-family.py              : All wiki families
+family.py              : Abstract superclass for wiki families. Subclassed by
+                         the classes in the 'families' subdirectory.
 translator.py          : various translations (for copy_table.py)
 catlib.py              : Library routines written especially to handle
                          category pages and recurse over category contents.
-unequal.py             : A few routines coordinating exceptions to the 
-                         rule that interwiki-linked pages are equal.
-nl-exceptions.dat      : Some more specific exceptions used by unequal.py
 gui.py                 : Some GUI elements for solve_disambiguation.py
 mediawiki_messages.py  : Access to the various translations of the MediaWiki
                          software interface
-sqldump.py             : Routines to extract information from local SQL dump
-                         files, like the ones at http://download.wikimedia.org
 WdTXMLParser.py        : Used by WdT.py
 
 === Utilities ===
 
-extract_names.py,      
+extract_names.py,
 extract_wikilinks.py   : Two bots to get all linked-to Wikipedia pages from an
                          HTML-file. They differ in their output: extract_names
                          gives bare names (can be used for solve_disambiguation.py,
@@ -65,7 +60,7 @@ extract_wikilinks.py   : Two bots to get all linked-to Wikipedia pages from an
                          gives them in interwiki-link format (can be used for
                          interwiki.py)
 login.py               : Log in to an account on your "home" wikipedia. 
-splitwarning.py        : split a treelang.log file into warning files for each
+splitwarning.py        : split an interwiki.log file into warning files for each
                          separate language. suggestion: Zip the created files up, 
                          put them somewhere on the internet, and send an 
                          announcement of the location on the robot mailinglist.
@@ -76,9 +71,9 @@ xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
 editarticle.py         : Edit an article with your favourite editor. Run
                          the script with the "--help" option to get
                          detailed infortion on possiblities.
-find.py		       : Search information.
-wikipedia_cd_fork_family.py :A fork of the German Wikipedia which will be used to create a 'stable' version
-                             which can be distributed on CDs.
+find.py		       : Search for information. Not yet working.
+sqldump.py             : Extract information from local cur SQL dump
+                         files, like the ones at http://download.wikimedia.org
 
 === Robots ===
 
@@ -89,6 +84,8 @@ category.py            : add a category link to all pages mentioned on a page,
 catall.py              : Add or change categories on a number of pages.
 check_extern.py        : check external links to see whether they still exist,
                          have been moved etcetera.
+                         Note that weblinkchecker.py does the same, but is more
+                         powerful.
 copy_table.py          : copy a table from one wikipedia to another, making
                          automatic translations
 getimages.py           : Script to transfer many images from one wiki to another.
@@ -109,15 +106,15 @@ replace.py             : Search articles for a text and replace it by another
                          pages or crawl an SQL dump.
 saveHTML.py            : ?                       
 solve_disambiguation.py: Interactive robot doing disambiguation.
-standardize_interwiki.py:A robot that downloads a page, and reformats the 
+standardize_interwiki.py:A robot that downloads a page, and reformats the
                          interwiki links in a standard way (i.e. move all
                          of them to the bottom or the top, with the same
                          separator, in the right order).
 table2wiki.py          : Semi-automatic converting HTML-tables to wiki-tables.
 template.py            : change one template (that is {{...}}) into
                          another
-touchall.py            : Bot goes over all pages of the home wiki, and edits them without
-changing.
+touchall.py            : Bot goes over all pages of the home wiki, and edits
+                         them without changing.
 upload.py              : upload an image to Wikipedia
 us-states.py           : A robot to add redirects to cities for US state 
                          abbreviations.
@@ -125,28 +122,42 @@ warnfile.py            : A robot that parses a warning file created by
                          interwiki.py on another wikipedia language,
                          and implements the suggested changes without
                          verifying them.
-windows_chars.py       : change characters that are not part of Latin-1 into
+weblinkchecker.py      : Check if external links are still working.
+windows_chars.py       : Change characters that are not part of Latin-1 into
                          something harmless. It is advisable to do this on
-                         Latin-1 Wikipedias before switching to UTF-8.
+                         Latin-1 wikis before switching to UTF-8.
 WdT.py                 : something to retrieve the German 'word of the day'
 
 === Directories ===
 
+deadlinks              : Contains information retrieved by weblinkchecker.py
 disambiguations        : If you run solve_disambiguation.py with the -primary
                          argument, the bot will save information here
+families               : Contains wiki-specific information like URLs,
+                         languages, encodings etc.
+logs                   : Contains logfiles.
 mediawiki-messages     : Information retrieved by mediawiki_messages.py will
                          be stored here.
 login-data             : login.py stores your cookies here (Your password won't
                          be stored as plaintext).
-families               : MediaWiki families
+spelling               : Contains dictionaries for spellcheck.py.
+watchlists             : Information retrieved by watchlist.py will be stored
+                         here.
 
 
 More precise information, and a list of the options that are available for
-the various programs, are given at the start of the programs' source code files.
+the various programs, can be retrieved by running the bot with the -help
+parameter, e.g.
+
+    python interwiki.py -help
 
 You need to have at least python version 2.3 installed on your computer
 to be able to run any of the code in this package. Support for older
 versions of python is not planned.
+
+You do not need to "install" this package to be able to make use of
+it. You can actually just run it from the directory where you unpacked
+it or where you have your copy of the CVS sources.
 
 Before you run any of the programs, you need to create a file named
 user-config.py in your current directory. It needs at least two lines: 
@@ -163,10 +174,4 @@ There are other variables that can be set in the configuration file, please
 check config.py for ideas.
 
 After that, you are advised to create a username + password for the bot, and
-run login.py. If this is not done, the bot will make its edits under an IP
-number rather than a login name, a practice which is not liked by people
-checking Recentchanges.
-
-You do not need to "install" this package to be able to make use of
-it. You can actually just run it from the directory where you unpacked
-it or where you have your copy of the CVS sources.
+run login.py. Anonymous editing is not possible.
