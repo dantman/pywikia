@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -10,7 +10,7 @@ class Family:
             'aa','ab','af','als','am','an','ang','ar','as','ast','av','ay','az',
             'ba','be','bg','bh','bi','bn','bo','br','bs','ca','ch','cho','chr',
             'co','cr','cs','csb','cv','cy','da','de','dv','dz','ee','el','en','eo',
-            'es','et','eu','fa','fi','fj','fo','fr','fy','ga','gd','gl','gn',
+            'es','et','eu','fa','ff','fi','fj','fo','fr','fy','ga','gd','gl','gn',
             'got','gu','gv','ha','haw','he','hi','hr','ht','hu','hy','ia','id',
             'ie','ik','io','is','it','iu','ja','jbo','jv','ka','kk','kl',
             'km','kn','ko','ks','ku','kw','la','lb','li','ln','lo','lt','lv',
@@ -26,7 +26,7 @@ class Family:
             'aa','ab','af','am','ang','ar','an','roa-rup','as','ast','av','ay',
             'az','bg','ba','be','bn','bh','bi','bo','bs','br','ca','cv','ch','chr',
             'ny','sn','cho','co','cs','cy','da','de','dv','dz','et','el','als','en',
-            'es','eo','eu','ee','fa','fo','fj','fr','fy','ga','gv','gd','gl',
+            'es','eo','eu','ee','fa','fo','fj','fr','fy','ff','ga','gv','gd','gl',
             'got','gn','gu','ko','ht','ha','haw','hy','hi','hr','io','ik','id',
             'ia','ie','iu','xh','zu','is','it','he','jv','kl','kn','ka','kk',
             'csb','ks','kw','km','ky','rn','sw','ku','lo','la','lv','lt','lb','li',
