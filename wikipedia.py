@@ -528,19 +528,19 @@ class Page(object):
         ll = getLanguageLinks(self.get(read_only = True), insite = self.site())
         for newsite,newname in ll.iteritems():
             if newname[0] == ':':
-                output(u"ERROR> link from %s to %s:%s has leading colon?!" % (self, newsite, newname))
+                output(u"ERROR> link from %s to %s:%s has leading colon?!" % (self.linkname(), newsite, newname))
             if newname[0] == ' ':
-                output(u"ERROR> link from %s to %s:%s has leading space?!" % (self, newsite, newname))
+                output(u"ERROR> link from %s to %s:%s has leading space?!" % (self.linkname(), newsite, newname))
             for pagenametext in self.site().family.pagenamecodes(self.site().language()):
                 newname = newname.replace("{{"+pagenametext+"}}",self.linkname())
             try:
                 result.append(self.__class__(newsite, newname, insite = self.site()))
             except UnicodeEncodeError:
-                output(u"ERROR> link from %s to %s:%s is invalid encoding?!" % (self, newsite, newname))
+                output(u"ERROR> link from %s to %s:%s is invalid encoding?!" % (self.linkname(), newsite, newname))
             except NoSuchEntity:
-                output(u"ERROR> link from %s to %s:%s contains invalid character?!" % (self, newsite, newname))
+                output(u"ERROR> link from %s to %s:%s contains invalid character?!" % (self.linkname(), newsite, newname))
             except ValueError:
-                output(u"ERROR> link from %s to %s:%s contains invalid unicode reference?!" % (self, newsite, newname))
+                output(u"ERROR> link from %s to %s:%s contains invalid unicode reference?!" % (self.linkname(), newsite, newname))
         return result
 
     def categories(self):
