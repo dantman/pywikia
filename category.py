@@ -77,7 +77,9 @@ class CategoryDatabase:
         if rebuild:
             self.rebuild()
         else:
+            wikipedia.output(u'Reading dump from %s' % filename)
             try:
+                
                 f = open(filename, 'r')
                 databases = pickle.load(f)
                 f.close()
@@ -141,8 +143,7 @@ class CategoryDatabase:
         '''
         Saves the contents of the dictionaries superclassDB and catContentDB to disk.
         '''
-        # this is currently only used by print_treeview(). We might want to add it
-        # for others like the tidy bot.
+        wikipedia.output(u'Dumping to %s, please wait...' % filename)
         f = open(filename, 'w')
         databases = {
             'catContentDB': self.catContentDB,
