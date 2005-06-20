@@ -1,7 +1,25 @@
 # -*- coding: utf-8  -*-
 """
-Reads a cur SQL dump and offers a generator over SQLentry objects. Each SQLentry
-object represents a page.
+Reads a cur SQL dump and offers a generator over SQLentry objects which can be
+used by other bots. Each SQLentry object represents a page.
+
+Can also be run directly from the command line to retrieve page lists from
+an SQL dump.
+
+Syntax:
+
+    python sqldump.py -sql:filename.sql action
+
+Where action can be one of these:
+
+* find               - List pages which contain a certain text
+* findr              - List pages containing text matching a regular expression
+* shortpages         - List pages with short contents
+* unmountedcats      - List categories that don't have a supercategory
+* percentnames       - List pages that contain internal links where special
+                       characters are encoded as hexadecimal codes, e.g. %F6
+* baddisambiguations - Created for de.wikipedia to fix primary topic
+                       disambiguations (Begriffsklärung nach Modell 2).
 """
 #
 # (C) Daniel Herding, 2004
@@ -248,6 +266,7 @@ if __name__=="__main__":
     wikipedia.stopme() # No need to have me on the stack, as I'm not contacting the wiki
     import sys
     action = None
+    filename = None
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'sqldump')
         if arg:
@@ -258,9 +277,11 @@ if __name__=="__main__":
                     filename = arg[5:]
             else:
                 action = arg
-                
-    sqldump = SQLdump(filename, wikipedia.myencoding())
+    if not filename or not action:
+        wikipedia.output(__doc__, 'utf-8')
+    else:
+        sqldump = SQLdump(filename, wikipedia.myencoding())
+        
+        for entry in query(sqldump, action):
+            wikipedia.output(u'*[[%s]]' % entry.full_title())
     
-    for entry in query(sqldump, action):
-        wikipedia.output(u'*[[%s]]' % entry.full_title())
-
