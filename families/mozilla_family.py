@@ -2,7 +2,7 @@
 
 import family
 
-# The Mozilla project's wiki
+# The official Mozilla Wiki.
 
 class Family(family.Family):
     name = 'mozilla'
@@ -23,4 +23,4 @@ class Family(family.Family):
         return "1.4.2"
     
     def path(self, code):
-        return '/wiki'
+        return ''
