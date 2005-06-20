@@ -1,9 +1,7 @@
 # -*- coding: utf-8  -*-
-import family, config
+import family
     
 # The Memory Alpha family, a set of StarTrek wikis.
-
-# A language not mentioned here is not known by the robot
 
 class Family(family.Family):
     def __init__(self):
@@ -11,10 +9,10 @@ class Family(family.Family):
         self.name = 'memoryalpha'
     
         self.langs = {
-            'de':'de',
-            'en':'en',
-            'nl':'nl',
-            'sv':'sv',
+            'de': None,
+            'en': None,
+            'nl': None,
+            'sv': None,
             }
     
         # Most namespaces are inherited from family.Family.
@@ -24,14 +22,15 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': u'Memory Alpha talk',
             'de': u'Memory Alpha Diskussion',
+            'nl': u'Overleg Memory Alpha',
+            'sv': u'Memory Alphadiskussion',
         }
         
         # A few selected big languages for things that we do not want to loop over
         # all languages. This is only needed by the titletranslate.py module, so
         # if you carefully avoid the options, you could get away without these
-        # for another wikimedia family.
-    
-        self.biglangs = ['en','de']
+        # for another wiki family.
+        self.biglangs = ['en', 'de']
 
     def hostname(self,code):
         return 'www.memory-alpha.org'
