@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -861,11 +861,11 @@ def compareLanguages(old, new):
         s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[2]) + " " + ", ".join([x.lang for x in modifying])
     return s,removing
 
-def ReadWarnfile(filename, sa):
+def readWarnfile(filename, sa):
     import warnfile
     reader = warnfile.WarnfileReader(filename)
     # we won't use removeHints
-    hints = reader.getHints()[0]
+    (hints, removeHints) = reader.getHints()
     for pagename in hints.iterkeys():
         pl = wikipedia.Page(wikipedia.getSite(), pagename)
         # The WarnfileReader gives us a list of pagelinks, but titletranslate.py expects a list of strings, so we convert it back.
@@ -887,6 +887,7 @@ if __name__ == "__main__":
         start = None
         number = None
         skipfile = None
+        warnfile = None
         
         sa=SubjectArray()
         
@@ -922,7 +923,7 @@ if __name__ == "__main__":
                 elif arg.startswith('-hint:'):
                     pass
                 elif arg.startswith('-warnfile:'):
-                    ReadWarnfile(arg[10:], sa)
+                    warnfile = arg[10:]
                 elif arg == '-name':
                     globalvar.same = 'name'
                 elif arg == '-confirm':
@@ -1009,6 +1010,9 @@ if __name__ == "__main__":
                     globalvar.showtextlink += globalvar.showtextlinkadd
                 else:
                     inname.append(arg)
+        
+        if warnfile:
+            readWarnfile(warnfile, sa)
 
         if skipfile:
             for pl in wikipedia.PagesFromFile(skipfile):
