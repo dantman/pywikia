@@ -1,7 +1,6 @@
 # -*- coding: utf-8  -*-
 
-import urllib
-import family, config
+import family
 
 # The Mozilla project's wiki
 
@@ -21,7 +20,7 @@ class Family(family.Family):
 	    }
 	
     def version(self, code):
-        return "1.3.8"
+        return "1.4.2"
     
     def path(self, code):
         return '/wiki'
