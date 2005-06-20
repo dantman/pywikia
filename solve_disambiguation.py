@@ -231,7 +231,9 @@ class ReferringPageGenerator:
                     if re.match(ig, refs[i].linkname()):
                         wikipedia.output('Ignoring page %s' % refs[i].linkname())
                         del refs[i]
-        
+                    elif self.primaryIgnoreManager.isIgnored(refs[i]):
+                        #wikipedia.output('Ignoring page %s because it was skipped before' % refs[i].linkname())
+                        del refs[i]
         wikipedia.output(u"Will work on %d pages." % len(refs))
         return refs
     
