@@ -44,7 +44,7 @@ def unique(l):
     l.sort()
     return l
     
-class _CatLink(wikipedia.Page):
+class _Category(wikipedia.Page):
     """Subclass of Page that has some special tricks that only work for
        category: pages"""
 
@@ -114,7 +114,10 @@ class _CatLink(wikipedia.Page):
                 retry_idle_time = 1
                 while True:
                     try:
-                        wikipedia.output('Getting [[%s]]...' % cat.linkname())
+                        if startFromPage:
+                            wikipedia.output('Getting [[%s]] starting at %s...' % (cat.linkname(), startFromPage))
+                        else:
+                            wikipedia.output('Getting [[%s]]...' % cat.linkname())
                         txt = wikipedia.getUrl(site, path)
                     except:
                         # We assume that the server is down. Wait some time, then try again.
@@ -142,7 +145,7 @@ class _CatLink(wikipedia.Page):
                 txt = txt[ibegin:iend]
                 for title in Rtitle.findall(txt):
                     if self.iscattitle(title):
-                        ncat = _CatLink(self.site(), title)
+                        ncat = _Category(self.site(), title)
                         if recurse and ncat not in catsdone:
                             catstodo.append(ncat)
                         subcats.append(title)
@@ -180,7 +183,7 @@ class _CatLink(wikipedia.Page):
         """
         subcats = []
         for title in self.catlist(recurse)[1]:
-            ncat = _CatLink(self.site(), title)
+            ncat = _Category(self.site(), title)
             subcats.append(ncat)
         return unique(subcats)
     
@@ -207,7 +210,7 @@ class _CatLink(wikipedia.Page):
         """
         supercats = []
         for title in self.catlist(recurse)[2]:
-            ncat = _CatLink(self.site(), title)
+            ncat = _Category(self.site(), title)
             supercats.append(ncat)
         return unique(supercats)
     
@@ -232,12 +235,12 @@ class _CatLink(wikipedia.Page):
             targetCat.put(self.get(), creationSummary)
             return True
     
-def CatLink(code, name):
+def Category(code, name):
     """Factory method to create category link objects from the category name"""
     # Standardized namespace
     ns = wikipedia.getSite().category_namespaces()[0]
     # Prepend it
-    return _CatLink(code, "%s:%s" % (ns, name))
+    return _Category(code, "%s:%s" % (ns, name))
 
 # Given an article which is in category old_cat, moves it to
 # category new_cat. Moves subcategories of old_cat to new_cat
@@ -266,9 +269,9 @@ def change_category(article, old_cat_title, new_cat_title):
         return
     if new_cat_title != None:
         if sort_key == '':
-            new_cat = CatLink(site, new_cat_title)
+            new_cat = Category(site, new_cat_title)
         else:
-            new_cat = CatLink(site, new_cat_title + '|' + sort_key)
+            new_cat = Category(site, new_cat_title + '|' + sort_key)
         cats.append(new_cat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
@@ -278,7 +281,7 @@ def change_category(article, old_cat_title, new_cat_title):
 def test():
     site = wikipedia.getSite()
     
-    pl=CatLink(site, 'Software')
+    pl=Category(site, 'Software')
     
     print pl.catlist(recurse = False)
 

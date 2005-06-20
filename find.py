@@ -79,7 +79,7 @@ class ReadPages:
                             break
 
     def read_pages_from_category(self):
-        category = catlib.CatLink(wikipedia.getSite(), self.categoryname)
+        category = catlib.Category(wikipedia.getSite(), self.categoryname)
         for page in category.articles(recurse = False):
             yield page
 

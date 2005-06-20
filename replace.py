@@ -239,7 +239,7 @@ class ReplacePageGenerator:
             * textfilename - the textfile's path, either absolute or relative
         """
         import catlib
-        category = catlib.CatLink(wikipedia.getSite(), self.categoryname)
+        category = catlib.Category(wikipedia.getSite(), self.categoryname)
         for page in category.articles(recurse = False):
             yield page
 

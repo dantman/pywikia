@@ -205,7 +205,7 @@ try:
         workingcatname = ' '.join(workingcatname)
     mysite = wikipedia.getSite()
     wikipedia.setAction(wikipedia.translate(mysite,msg) + ' ' + workingcatname)
-    workingcat = catlib.CatLink(mysite,workingcatname)
+    workingcat = catlib.Category(mysite,workingcatname)
     filename = 'category/' + wikipedia.UnicodeToAsciiHtml(workingcatname) + '_exclude.txt'
     try:
         f = codecs.open(filename, 'r', encoding = mysite.encoding())

@@ -98,7 +98,7 @@ class CategoryDatabase:
     
     def getSubcats(self, supercat):
         '''
-        For a given supercategory, return a list of CatLinks for all its
+        For a given supercategory, return a list of Categorys for all its
         subcategories.
         Saves this list in a temporary database so that it won't be loaded from the
         server next time it's required.
@@ -155,11 +155,11 @@ class CategoryDatabase:
         
 def sorted_by_last_name(catlink, pagelink):
         '''
-        given a CatLink, returns a CatLink which has an explicit sort key which
+        given a Category, returns a Category which has an explicit sort key which
         sorts persons by their last names.
         Trailing words in brackets will be removed.
         Example: If category_name is 'Author' and pl is a Page to
-        [[Alexandre Dumas (senior)]], this function will return this CatLink:
+        [[Alexandre Dumas (senior)]], this function will return this Category:
         [[Category:Author|Dumas, Alexandre]]
         '''
         page_name = pagelink.linkname()
@@ -261,7 +261,7 @@ class CategoryMoveRobot:
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % oldCatTitle)
 
     def run(self):
-        old_cat = catlib.CatLink(wikipedia.getSite(), self.oldCatTitle)
+        old_cat = catlib.Category(wikipedia.getSite(), self.oldCatTitle)
         articles = old_cat.articles(recurse = 0)
         if len(articles) == 0:
             wikipedia.output(u'There are no articles in category ' + self.oldCatTitle)
@@ -311,7 +311,7 @@ class CategoryRemoveRobot:
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.catTitle)
         
     def run(self):
-        cat = catlib.CatLink(wikipedia.getSite(), self.catTitle)
+        cat = catlib.Category(wikipedia.getSite(), self.catTitle)
       
         articles = cat.articles(recurse = 0)
         if len(articles) == 0:
@@ -411,7 +411,7 @@ class CategoryTidyRobot:
                 flag = True
             elif choice == 'j':
                 newCatTitle = wikipedia.input(u'Please enter the category the article should be moved to:')
-                newCat = catlib.CatLink(wikipedia.getSite(), newCatTitle)
+                newCat = catlib.Category(wikipedia.getSite(), newCatTitle)
                 # recurse into chosen category
                 self.move_to_category(article, original_cat, newCat)
                 flag = True
@@ -453,7 +453,7 @@ class CategoryTidyRobot:
                 flag = True
     
     def run(self):
-        catlink = catlib.CatLink(wikipedia.getSite(), self.catTitle)
+        catlink = catlib.Category(wikipedia.getSite(), self.catTitle)
         
         # get edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_change) % self.catTitle)
@@ -494,9 +494,9 @@ class CategoryTreeRobot:
         of cat, up to level maxDepth. Recursively calls itself.
         
         Parameters:
-            * cat - the CatLink of the node we're currently opening
+            * cat - the Category of the node we're currently opening
             * currentDepth - the current level in the tree (for recursion)
-            * parent - the CatLink of the category we're coming from
+            * parent - the Category of the category we're coming from
         '''
         
         # Translations to say that the current category is in more categories than
@@ -547,7 +547,7 @@ class CategoryTreeRobot:
             * catTitle - the title of the category which will be the tree's root
             * maxDepth - the limit beyond which no subcategories will be listed
         """
-        cat = catlib.CatLink(wikipedia.getSite(), self.catTitle)
+        cat = catlib.Category(wikipedia.getSite(), self.catTitle)
         tree = self.treeview(cat)
         if filename:
             wikipedia.output(u'Saving results in %s' % filename)
