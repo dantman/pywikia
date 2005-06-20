@@ -23,4 +23,4 @@ class Family(family.Family):
         return "1.4.2"
     
     def path(self, code):
-        return ''
+        return '/index.php'
