@@ -20,7 +20,7 @@ leave only one reference unchanged.
 
 Command line options:
 
-   -pos:XXXX adds XXXX as an alternative disambiguation
+   -pos:XXXX   adds XXXX as an alternative disambiguation
 
    -just       only use the alternatives given on the command line, do not
                read the page for other possibilities
@@ -57,7 +57,7 @@ Command line options:
 
 Options that are accepted by more robots:
 
-   -lang:XX  set your home wikipedia to XX instead of the one given in
+   -lang:XX    set your home wikipedia to XX instead of the one given in
              username.dat
 
 To complete a move of a page, one can use:
@@ -739,11 +739,11 @@ def main():
     bot = DisambiguationRobot(always, alternatives, getAlternatives, solve_redirect, page_list, primary, main_only)
     bot.run()
 
-            
-try:
-    main()
-except:
-    wikipedia.stopme()
-    raise
-else:
-    wikipedia.stopme()
+if __name__ == "__main__":
+    try:
+        main()
+    except:
+        wikipedia.stopme()
+        raise
+    else:
+        wikipedia.stopme()

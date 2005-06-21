@@ -1,23 +1,21 @@
+# -*- coding: utf-8 -*-
 """
 Script to upload images to wikipedia.
 
 Arguments:
 
-  -lang:xx Log in to the given wikipedia language to upload to
-
   -keep    Keep the filename as is
 
   -wiki:xx The page is not a URL or filename, but the name of the
-           file on another wikipedia, namely xx:. Do NOT include
-           'Image:' or similar as name of the file.
+           file on another wiki of the same family, namely xx:.
+           Do NOT include 'Image:' or similar as name of the file.
 
 If any other arguments are given, the first is the URL or filename
 to upload, and the rest is a proposed description to go with the
 upload. If none of these are given, the user is asked for the
-file or URL to upload.
-  
-The script will ask for the location of an image, and for a description.
-It will then send the image to wikipedia.
+file or URL to upload. The bot will then upload the image to wiki.
+
+The script will ask for the location of an image, if not given as a parameter, and for a description.
 """
 #
 # (C) Rob W.W. Hooft, Andre Engels 2003-2004
@@ -34,7 +32,6 @@ class UploadRobot:
         self.filename = filename
         self.description = description
         self.wiki = wiki
-        #print wiki
         self.keep = keep
         
         mysite = wikipedia.getSite()
@@ -90,7 +87,8 @@ def main(args):
     bot = UploadRobot(filename, description, wiki, keep)
     bot.run()
 
-try:
-    main(sys.argv[1:])
-finally:
-    wikipedia.stopme()
+if __name__ == "__main__":
+    try:
+        main(sys.argv[1:])
+    finally:
+        wikipedia.stopme()
