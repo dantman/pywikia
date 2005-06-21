@@ -6,17 +6,16 @@ Script to help a human solve disambiguations by presenting a set of options.
 Specify the disambiguation page on the command line. The program will
 pick up the page, and look for all alternative links, and show them with
 a number adjacent to them. It will then automatically loop over all pages
-referring to the disambiguation page, and show 30 characters on each side
-of the reference to help you make the decision between the
+referring to the disambiguation page, and show 30 characters of context on
+each side of the reference to help you make the decision between the
 alternatives. It will ask you to type the number of the appropriate
-replacement, and perform the change robotically.
+replacement, and perform the change.
 
 It is possible to choose to replace only the link (just type the number) or
 replace both link and link-text (type 'r' followed by the number).
 
-Multiple references in one page will be scanned in order, but typing 'n' on
-any one of them will leave the complete page unchanged; it is not possible to
-leave only one reference unchanged.
+Multiple references in one page will be scanned in order, but typing 'n' (next)
+on any one of them will leave the complete page unchanged. To leave only some reference unchanged, use the 's' (skip) option.
 
 Command line options:
 
@@ -54,11 +53,6 @@ Command line options:
 
    -main       only check pages in the main namespace, not in the talk,
                wikipedia, user, etc. namespaces.
-
-Options that are accepted by more robots:
-
-   -lang:XX    set your home wikipedia to XX instead of the one given in
-             username.dat
 
 To complete a move of a page, one can use:
 
@@ -742,8 +736,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except:
-        wikipedia.stopme()
-        raise
-    else:
+    finally:
         wikipedia.stopme()

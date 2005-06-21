@@ -19,20 +19,13 @@ Command line options:
               wiki. Example:
               python windows_chars.py -sql:20040711_cur_table.sql.sql -lang:es
 
-Options that are accepted by more robots:
-
-    -lang:XX  set your home wikipedia to XX instead of the one given in
-              username.dat
-
-
-
 """
 #
 # (C) Daniel Herding, 2004
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.20 2005/05/14 09:13:29 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.21 2005/06/07 17:49:50 wikipedian Exp $'
 #
 import wikipedia, config
 import re, sys
@@ -169,10 +162,8 @@ def main():
             for page in page_list:
                 treat(page)
 
-try:
-    main()
-except:
-    wikipedia.stopme()
-    raise
-else:
-    wikipedia.stopme()
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
