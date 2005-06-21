@@ -17,7 +17,7 @@ Mediawiki projects. It has been written by several people using the language Pyt
     All POSIX (Linux/BSD/UNIX-like OSes)
 
 @contributors see http://sourceforge.net/project/memberlist.php?group_id=93107
-@documentation see http://pywikipediabot.v10.com.br
+@documentation see http://republico.estv.ipv.pt/~nmct/wikipedia/leo/pybot/
 
 """
 __docformat__ = 'epytext en'
