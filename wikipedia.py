@@ -2442,11 +2442,7 @@ def argHandler(arg, moduleName):
         # Linux uses the same encoding for both
         arg = unicode(arg, config.console_encoding)
     if arg == '-help':
-        try:
-            exec('import %s as module' % moduleName)
-            output(module.__doc__, 'utf-8')
-        except:
-            output(u'Sorry, no help available for %s' % moduleName)
+        showHelp(moduleName)
         sys.exit(0)
     elif arg.startswith('-family:'):
         global default_family 
@@ -2704,6 +2700,35 @@ def input(question, encode = False, decoder=None):
     if encode:
         text = text.encode(myencoding())
     return text
+
+def showHelp(moduleName):
+    globalHelp =u'''
+Global arguments available for all bots:
+
+-lang:xx          Set the language of the wiki you want to work on, overriding
+                  the configuration in user-config.py. xx should be the
+                  language code.
+
+-family:xyz       Set the family of the wiki you want to work on, e.g.
+                  wikipedia, wiktionary, wikitravel, ...
+                  This will override the configuration in user-config.py.
+
+-log              Enable the logfile. Logs will be stored in the logs
+                  subdirectory.
+
+-log:xyz          Enable the logfile, using xyz as the filename.
+
+-nolog            Disable the logfile (if it's enabled by default).
+
+-putthrottle:nn   Set the minimum time (in seconds) the bot will wait between
+                  saving pages.
+'''
+    output(globalHelp)
+    try:
+        exec('import %s as module' % moduleName)
+        output(module.__doc__, 'utf-8')
+    except:
+        output(u'Sorry, no help available for %s' % moduleName)
 
 def stopme():
     """This should be run when a bot does not interact with the Wiki, or
