@@ -35,7 +35,7 @@ __version__ = '$Id$'
 #
 # Distributed under the terms of the PSF license.
 # 
-import re, sys, string, pickle, gzip
+import re, sys, string, pickle, bz2
 import wikipedia, catlib, config, interwiki
 
 # Summary messages
@@ -73,13 +73,13 @@ class CategoryDatabase:
     subcategories and articles, so that category pages don't need to
     be loaded over and over again
     '''
-    def __init__(self, rebuild = False, filename = 'category.dump.gz'):
+    def __init__(self, rebuild = False, filename = 'category.dump.bz2'):
         if rebuild:
             self.rebuild()
         else:
             try:
                 
-                f = gzip.GzipFile(filename, 'r')
+                f = bz2.BZ2File(filename, 'r')
                 wikipedia.output(u'Reading dump from %s' % filename)
                 databases = pickle.load(f)
                 f.close()
@@ -139,12 +139,12 @@ class CategoryDatabase:
             self.superclassDB[subcat] = supercatlist
             return supercatlist
 
-    def dump(self, filename = 'category.dump.gz'):
+    def dump(self, filename = 'category.dump.bz2'):
         '''
         Saves the contents of the dictionaries superclassDB and catContentDB to disk.
         '''
         wikipedia.output(u'Dumping to %s, please wait...' % filename)
-        f = gzip.GzipFile(filename, 'w')
+        f = bz2.BZ2File(filename, 'w')
         databases = {
             'catContentDB': self.catContentDB,
             'superclassDB': self.superclassDB
