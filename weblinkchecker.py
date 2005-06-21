@@ -241,6 +241,9 @@ class History:
     def __init__(self):
         site = wikipedia.getSite()
         self.datfilename = 'deadlinks/deadlinks-%s-%s.dat' % (site.family.name, site.lang)
+        # count the number of logged links, so that we can insert captions
+        # from time to time
+        self.logCount = 0
         try:
             datfile = open(self.datfilename, 'r')
             self.dict = pickle.load(datfile)
@@ -254,6 +257,11 @@ class History:
         wikipedia.output(u"** Logging page for deletion.")
         txtfilename = 'deadlinks/results-%s-%s.txt' % (site.family.name, site.lang)
         txtfile = codecs.open(txtfilename, 'a', 'utf-8')
+        self.logCount += 1
+        if self.logCount % 30 == 0:
+            # insert a caption
+            containingPageTitle = self.dict[url][0][0]
+            txtfile.write('=== %s ===\n' % containingPageTitle[:3])
         txtfile.write("* %s\n" % url)
         for (title, date, error) in self.dict[url]:
             txtfile.write("** In [[%s]] on %s, %s\n" % (title, time.ctime(date), error))
