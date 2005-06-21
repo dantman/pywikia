@@ -38,45 +38,23 @@ Syntax examples:
 # Distributed under the terms of the PSF license.
 #
 
-import wikipedia, config
+import wikipedia, config, pagegenerators
 import sys, re
 import codecs, pickle
 import httplib, socket, urlparse
 import threading, time
 
-class AllpagesPageGenerator:
-    '''
-    Using the Allpages special page, retrieves all articles, loads them (60 at
-    a time) using XML export, and yields title/text pairs.
-    '''
-    def __init__(self, start ='!'):
+class AllpagesPageContentGenerator:
+    def __init__(self, start):
         self.start = start
-    
-    def generate(self):
-        while True:
-            i = 0
-            pls = []
-            for pl in wikipedia.allpages(start = self.start):
-                pls.append(pl)
-                i += 1
-                if i >= 60:
-                    try:
-                        wikipedia.getall(wikipedia.getSite(), pls)
-                    except wikipedia.SaxError:
-                        # Ignore this error, and get the pages the traditional way.
-                        pass
-                    for pl in pls:
-                        if not pl.isRedirectPage():
-                            try:
-                                text = pl.get(read_only = True)
-                            except wikipedia.NoPage:
-                                wikipedia.output(u"BUG: %s no longer exists?" % pl.aslink())
-                            else:
-                                yield pl.linkname(), text
-                    i = 0
-                    pls = []
 
-class SqlPageGenerator:
+    def generate(self):
+        gen = pagegenerators.AllpagesPageGenerator(self.start)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        for page in preloadingGen.generate():
+            yield page.linkname(), page.get()
+
+class SqlPageContentGenerator:
     '''
     Using an SQL dump file, retrieves all pages that are not redirects (doesn't
     load them from the live wiki), and yields title/text pairs.
@@ -90,13 +68,13 @@ class SqlPageGenerator:
             if not entry.redirect:
                 yield entry.full_title(), entry.text
 
-class SinglePageGenerator:
+class SinglePageContentGenerator:
     '''Pseudo-generator'''
-    def __init__(self, pl):
-        self.pl = pl
-            
+    def __init__(self, page):
+        self.page = page
+
     def generate(self):
-        yield self.pl.linkname(), self.pl.get(read_only = True)
+        yield self.page.linkname(), self.page.get(read_only = True)
 
 class LinkChecker:
     '''
@@ -368,13 +346,13 @@ def main():
     if source == 'sqldump':
         # Bot will read all wiki pages from the dump and won't access the wiki.
         wikipedia.stopme()
-        gen = SqlPageGenerator(sqlfilename)
+        gen = SqlPageContentGenerator(sqlfilename)
     elif source == 'page':
         pageTitle = ' '.join(pageTitle)
-        pl = wikipedia.Page(wikipedia.getSite(), pageTitle)
-        gen = SinglePageGenerator(pl)
+        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+        gen = SinglePageContentGenerator(page)
     else:
-        gen = AllpagesPageGenerator(start)
+        gen = AllpagesPageContentGenerator(start)
     bot = WeblinkCheckerRobot(gen)
     try:
         bot.run()

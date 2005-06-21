@@ -41,7 +41,8 @@ Please check every article you change.
 # Distribute under the terms of the PSF license.
 __version__='$Id$'
 
-import re,sys,wikipedia,config,time
+import re, sys, time
+import wikipedia, config, pagegenerators
 
 msg_no_warnings = {'de':'Bot: Tabellensyntax konvertiert',
                    'en':'User-controlled Bot: table syntax updated',
@@ -76,52 +77,6 @@ class TableSqlDumpGenerator:
                 pl = wikipedia.Page(wikipedia.getSite(), entry.full_title())
                 yield pl
 
-class SinglePageGenerator:
-    '''Pseudo-generator'''
-    def __init__(self, pl):
-        self.pl = pl
-    
-    def generate(self):
-        yield self.pl
-
-
-class PreloadingGenerator:
-    """
-    Wraps around another generator. Retrieves up to 20 pages from that
-    generator, loads them using Special:Export, and yields them one after
-    the other. Then retrieves 20 more pages, etc.
-    """
-    def __init__(self, generator, pageNumber = 20):
-        self.generator = generator
-        self.pageNumber = pageNumber
-
-    def preload(self, pages):
-        try:
-            wikipedia.getall(wikipedia.getSite(), pages, throttle=False)
-        except wikipedia.SaxError:
-            # Ignore this error, and get the pages the traditional way later.
-            pass
-        
-    def generate(self):
-        # this array will contain up to 20 pages and will be flushed
-        # after these pages have been preloaded.
-        somePages = []
-        i = 0
-        for pl in self.generator.generate():
-            i += 1
-            somePages.append(pl)
-            # We don't want to load too many pages at once using XML export.
-            # We only get 20 at a time.
-            if i >= self.pageNumber:
-                self.preload(somePages)
-                for refpl in somePages:
-                    yield refpl
-                i = 0
-                somePages = []
-        # preload remaining pages
-        self.preload(somePages)
-        for refpl in somePages:
-            yield refpl
 
                          
 class Table2WikiRobot:
@@ -535,13 +490,13 @@ def main():
                 page_title.append(arg)
 
     if source == 'sqldump':
-        gen = PreloadingGenerator(TableSqlDumpGenerator(sqlfilename))
+        gen = pagegenerators.PreloadingGenerator(TableSqlDumpGenerator(sqlfilename))
     # if the page is given as a command line argument,
     # connect the title's parts with spaces
     elif page_title != []:
         page_title = ' '.join(page_title)
-        pl = wikipedia.Page(wikipedia.getSite(), page_title)
-        gen = PreloadingGenerator(SinglePageGenerator(pl))
+        page = wikipedia.Page(wikipedia.getSite(), page_title)
+        gen = pagegenerators.PreloadingGenerator(pagegenerators.SinglePageGenerator(page))
     else:
         wikipedia.output(__doc__, 'utf-8')
         sys.exit(0)
