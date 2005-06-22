@@ -188,74 +188,74 @@ class SQLdump(object):
                  yield new_entry
         f.close()
 
-def query_percentnames(sqldump):
-    '''
-    yields pages that contain internal links where special characters are
-    encoded as hexadecimal codes, e.g. %F6
-    '''
-    Rpercentlink = re.compile('\[\[[^\]]*?%[A-F0-9][A-F0-9][^\]]*?\]\]')
-    for entry in sqldump.entries():
-        text = wikipedia.removeLanguageLinks(entry.text)
-        if Rpercentlink.search(text):
-            yield entry
-
-def query_shortpages(sqldump, minsize):
-    '''
-    yields articles that have less than minsize bytes of text
-    '''
-    for entry in sqldump.entries():
-        if entry.namespace == 0 and not entry.redirect and len(entry.text) < minsize:
-            yield entry
-
-def query_find(sqldump, keyword):
-    '''
-    yields pages which contain keyword
-    '''
-    for entry in sqldump.entries():
-        if entry.text.find(keyword) != -1:
-            yield entry
-
-def query_findr(sqldump, regex):
-    '''
-    yields pages which contain a string matching the given regular expression
-    '''
-    r = re.compile(regex)
-    for entry in sqldump.entries():
-        if entry.namespace == 0 and r.search(entry.text):
-            yield entry
-
-def query_unmountedcats(sqldump):
-    '''
-    yields categories which don't have any supercategory
-    '''
-    for entry in sqldump.entries():
-        if entry.namespace == 14:
-            has_supercategory = False
-            for ns in wikipedia.getSite().category_namespaces():
-                if entry.text.find('[[%s:' % ns) != -1:
-                    has_supercategory = True
-                    break
-            if not has_supercategory:
+    def query_percentnames(self):
+        '''
+        yields pages that contain internal links where special characters are
+        encoded as hexadecimal codes, e.g. %F6
+        '''
+        Rpercentlink = re.compile('\[\[[^\]]*?%[A-F0-9][A-F0-9][^\]]*?\]\]')
+        for entry in self.entries():
+            text = wikipedia.removeLanguageLinks(entry.text)
+            if Rpercentlink.search(text):
                 yield entry
+    
+    def query_shortpages(self, minsize):
+        '''
+        yields articles that have less than minsize bytes of text
+        '''
+        for entry in self.entries():
+            if entry.namespace == 0 and not entry.redirect and len(entry.text) < minsize:
+                yield entry
+    
+    def query_find(self, keyword):
+        '''
+        yields pages which contain keyword
+        '''
+        for entry in self.entries():
+            if entry.text.find(keyword) != -1:
+                yield entry
+    
+    def query_findr(self, regex):
+        '''
+        yields pages which contain a string matching the given regular expression
+        '''
+        r = re.compile(regex)
+        for entry in self.entries():
+            if entry.namespace == 0 and r.search(entry.text):
+                yield entry
+    
+    def query_unmountedcats(self):
+        '''
+        yields categories which don't have any supercategory
+        '''
+        for entry in self.entries():
+            if entry.namespace == 14:
+                has_supercategory = False
+                for ns in wikipedia.getSite().category_namespaces():
+                    if entry.text.find('[[%s:' % ns) != -1:
+                        has_supercategory = True
+                        break
+                if not has_supercategory:
+                    yield entry
             
 def query(sqldump, action):
     if action == 'percentnames':
-        for entry in query_percentnames(sqldump):
+        for entry in sqldump.query_percentnames():
             yield entry
     elif action == 'shortpages':
         minsize = int(wikipedia.input(u'Minimum size:'))
-        for entry in query_shortpages(sqldump, minsize):
+        for entry in sqldump.query_shortpages(minsize):
             yield entry
     elif action == 'find':
         keyword = wikipedia.input(u'Search for:')
-        for entry in query_find(sqldump, keyword):
+        for entry in sqldump.query_find(keyword):
             yield entry
     elif action == 'findr':
         keyword = wikipedia.input(u'Search for:')
-        for entry in query_findr(sqldump, keyword):
+        for entry in sqldump.query_findr(keyword):
             yield entry
     elif action == 'unmountedcats':
-        for entry in query_unmountedcats(sqldump):
+        for entry in sqldump.query_unmountedcats():
             yield entry
     elif action == 'baddisambiguation':
         for entry in sqldump.entries():
