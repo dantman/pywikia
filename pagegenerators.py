@@ -5,11 +5,11 @@ import wikipedia
 
 class SinglePageGenerator:
     '''Pseudo-generator'''
-    def __init__(self, pl):
-        self.pl = pl
+    def __init__(self, page):
+        self.page = page
 
     def generate(self):
-        yield self.pl
+        yield self.page
 
 class AllpagesPageGenerator:
     '''
@@ -18,16 +18,25 @@ class AllpagesPageGenerator:
     '''
     def __init__(self, start ='!'):
         self.start = start
-    
+
     def generate(self):
         for page in wikipedia.allpages(start = self.start):
             yield page
 
+class ReferringPageGenerator:
+    def __init__(self, referredPage, followRedirects = False):
+        self.referredPage = referredPage
+        self.followRedirects = followRedirects
+
+    def generate(self):
+        for page in self.referredPage.getReferences(follow_redirects = self.followRedirects):
+            yield page
+
 class PreloadingGenerator:
     """
-    Wraps around another generator. Retrieves up to 20 pages from that
-    generator, loads them using Special:Export, and yields them one after
-    the other. Then retrieves 20 more pages, etc.
+    Wraps around another generator. Retrieves as many pages as stated by pageNumber
+    from that generator, loads them using Special:Export, and yields them one after
+    the other. Then retrieves more pages, etc.
     """
     def __init__(self, generator, pageNumber = 60):
         self.generator = generator
@@ -39,7 +48,7 @@ class PreloadingGenerator:
         except wikipedia.SaxError:
             # Ignore this error, and get the pages the traditional way later.
             pass
-        
+
     def generate(self):
         # this array will contain up to 20 pages and will be flushed
         # after these pages have been preloaded.

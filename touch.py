@@ -29,6 +29,9 @@ def main():
         if arg:
             if arg.startswith('-start:'):
                 gen = pagegenerators.AllpagesPageGenerator(arg[7:])
+            elif arg.startswith('-ref:'):
+                referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
+                gen = pagegenerators.ReferringPageGenerator(referredPage)
             else:
                 pageTitle.append(arg)
                 
