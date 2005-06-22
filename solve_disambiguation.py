@@ -68,7 +68,7 @@ To complete a move of a page, one can use:
 #
 __version__='$Id$'
 #
-import wikipedia, config
+import wikipedia, config, pagegenerators
 import re, sys, math
 
 # This is a purely interactive robot. We set the delays lower.
@@ -215,7 +215,7 @@ class ReferringPageGenerator:
         # if run with the -primary argument, enable the ignore manager
         self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl, enabled = primary)
         
-    def getReferences(self):
+    def generate(self):
         refs = self.disambPl.getReferences(follow_redirects = False)
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
@@ -229,27 +229,8 @@ class ReferringPageGenerator:
                         #wikipedia.output('Ignoring page %s because it was skipped before' % refs[i].linkname())
                         del refs[i]
         wikipedia.output(u"Will work on %d pages." % len(refs))
-        return refs
-    
-    def generate(self):
-        refpls = self.getReferences()
-        while refpls:
-            # We don't want to load too many pages at once using XML export.
-            # We only get 20 at a time.
-            someRefPls = []
-            for i in range(0, 20):
-                try:
-                    someRefPls.append(refpls.pop(0))
-                # Nothing left to do?
-                except IndexError:
-                    break
-            try:
-                wikipedia.getall(self.disambPl.site(), someRefPls, throttle=False)
-            except wikipedia.SaxError:
-                # Ignore this error, and get the pages the traditional way later.
-                pass
-            for refpl in someRefPls:
-                yield refpl
+        for page in refs:
+            yield page
 
 class PrimaryIgnoreManager:
     '''
@@ -417,7 +398,8 @@ class DisambiguationRobot:
                 choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N|c(hange redirect)]' % refpl.linkname())
                 if choice == 'y':
                     gen = ReferringPageGenerator(refpl, self.primary)
-                    for refpl2 in gen.generate():
+                    preloadingGen = pagegenerators.PreloadingGenerator(gen)
+                    for refpl2 in preloadingGen.generate():
                         # run until the user selected 'quit'
                         if not self.treat(refpl2, refpl):
                             break
@@ -648,7 +630,8 @@ class DisambiguationRobot:
             self.listAlternatives()
     
             gen = ReferringPageGenerator(disambPl, self.primary)
-            for refpl in gen.generate():
+            preloadingGen = pagegenerators.PreloadingGenerator(gen)
+            for refpl in preloadingGen.generate():
                 if not self.primaryIgnoreManager.isIgnored(refpl):
                     # run until the user selected 'quit'
                     if not self.treat(refpl, disambPl):
