@@ -2,6 +2,7 @@
 # -*- coding: utf-8  -*-
 
 import wikipedia, pagegenerators
+import sys
 
 class TouchBot:
     def __init__(self, generator):
@@ -20,7 +21,21 @@ class TouchBot:
                 pass
 
 def main():
-    gen = pagegenerators.AllpagesPageGenerator()
+    #page generator
+    gen = None
+    pageTitle = []
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg, 'touch')
+        if arg:
+            if arg.startswith('-start:'):
+                gen = pagegenerators.AllpagesPageGenerator(arg[7:])
+            else:
+                pageTitle.append(arg)
+                
+    if pageTitle:
+        page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
+        gen = pagegenerators.SinglePageGenerator(page)
+    
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
     bot = TouchBot(preloadingGen)
     bot.run()
