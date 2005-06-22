@@ -62,7 +62,7 @@ syntax, use:
 
 from __future__ import generators
 import sys, re
-import wikipedia, config
+import wikipedia, pagegenerators, config
 
 # Summary messages in different languages
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
@@ -295,48 +295,6 @@ class ReplacePageGenerator:
             for pagename in self.pagenames:
                 yield wikipedia.Page(wikipedia.getSite(), pagename)
 
-# This is the same class as in table2wiki.py. Maybe both bots should use the
-# same code.
-class PreloadingGenerator:
-    """
-    Wraps around another generator. Retrieves up to 20 pages from that
-    generator, loads them using Special:Export, and yields them one after
-    the other. Then retrieves 20 more pages, etc.
-    """
-    def __init__(self, generator, pageNumber = 20):
-        self.generator = generator
-        self.pageNumber = pageNumber
-
-    def preload(self, pages):
-        try:
-            wikipedia.getall(wikipedia.getSite(), pages, throttle=False)
-        except wikipedia.SaxError:
-            # Ignore this error, and get the pages the traditional way later.
-            pass
-        
-    def generate(self):
-        # this array will contain up to 20 pages and will be flushed
-        # after these pages have been preloaded.
-        somePages = []
-        i = 0
-        for pl in self.generator.generate():
-            i += 1
-            somePages.append(pl)
-            # We don't want to load too many pages at once using XML export.
-            # We only get 20 at a time.
-            if i >= self.pageNumber:
-                self.preload(somePages)
-                for refpl in somePages:
-                    yield refpl
-                i = 0
-                somePages = []
-        if somePages != []:
-            # preload remaining pages
-            self.preload(somePages)
-            for refpl in somePages:
-                yield refpl
-
-                
 class ReplaceRobot:
     def __init__(self, generator, replacements, exceptions = [], regex = False, acceptall = False):
         self.generator = generator
@@ -344,7 +302,7 @@ class ReplaceRobot:
         self.exceptions = exceptions
         self.regex = regex
         self.acceptall = acceptall
-        
+
     def checkExceptions(self, original_text):
         """
         If one of the exceptions applies for the given text, returns the 
@@ -532,8 +490,9 @@ def main():
         if fix.has_key('exceptions'):
             exceptions = fix['exceptions']
         replacements = fix['replacements']
-    
-    gen = PreloadingGenerator(ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, sqlfilename, categoryname, pagenames))
+
+    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, sqlfilename, categoryname, pagenames)
+    preloadingGen = pagegenerators.PreloadingGenerator(gen)
     bot = ReplaceRobot(gen, replacements, exceptions, regex, acceptall)
     bot.run()
 
