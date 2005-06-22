@@ -5,7 +5,9 @@ import re
 import wikipedia
 
 class SinglePageGenerator:
-    '''Pseudo-generator'''
+    '''
+    Pseudo-generator
+    '''
     def __init__(self, page):
         self.page = page
 
@@ -25,6 +27,9 @@ class AllpagesPageGenerator:
             yield page
 
 class ReferringPageGenerator:
+    '''
+    Yields all pages referring to a specific page.
+    '''
     def __init__(self, referredPage, followRedirects = False):
         self.referredPage = referredPage
         self.followRedirects = followRedirects
@@ -33,12 +38,24 @@ class ReferringPageGenerator:
         for page in self.referredPage.getReferences(follow_redirects = self.followRedirects):
             yield page
 
+class CategorizedPageGenerator:
+    '''
+    Yields all pages in a specific category.
+    '''
+    def __init__(self, category, recurse = False):
+        self.category = category
+        self.recurse = recurse
+
+    def generate(self):
+        for page in self.category.articles(recurse = self.recurse):
+            yield page
+
 class TextfilePageGenerator:
-    """
+    '''
     Read a file of page links between double-square-brackets, and return
     them as a list of Page objects. 'filename' is the name of the file that
     should be read.
-    """
+    '''
     def __init__(self, filename):
         self.filename = filename
 
@@ -86,7 +103,7 @@ class PreloadingGenerator:
             pass
 
     def generate(self):
-        # this array will contain up to 20 pages and will be flushed
+        # this array will contain up to pageNumber pages and will be flushed
         # after these pages have been preloaded.
         somePages = []
         i = 0

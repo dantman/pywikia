@@ -8,21 +8,24 @@ working.
 
 This script understands various command-line arguments:
 
-    -start:        used as -start:pagename, specifies that the robot should
+    -start:        used as -start:page_name, specifies that the robot should
                    go alphabetically through all pages on the home wiki,
                    starting at the named page.
 
-    -file:         used as -file:filename, read a list of pages to treat
+    -file:         used as -file:file_name, read a list of pages to treat
                    from the named textfile. Page titles should be enclosed
                    in [[double-squared brackets]].
 
-    -ref:          used as -start:pagename, specifies that the robot should
+    -ref:          used as -start:page_name, specifies that the robot should
                    touch all pages referring to the named page.
+
+    -cat:          used as -cat:category_name, specifies that the robot should
+                   touch all pages in the named category.
 
 All other parameters will be regarded as a page title; in this case, the bot
 will only touch a single page.
 """
-import wikipedia, pagegenerators
+import wikipedia, pagegenerators, catlib
 import sys
 
 class TouchBot:
@@ -55,6 +58,9 @@ def main():
                 gen = pagegenerators.ReferringPageGenerator(referredPage)
             elif arg.startswith('-file:'):
                 gen = pagegenerators.TextfilePageGenerator(arg[6:])
+            elif arg.startswith('-cat:'):
+                cat = catlib.Category(wikipedia.getSite(), arg[5:])
+                gen = pagegenerators.CategorizedPageGenerator(cat)
             else:
                 pageTitle.append(arg)
 
