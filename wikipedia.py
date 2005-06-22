@@ -1038,6 +1038,8 @@ class GetAll(object):
                     dt += 60
             else:
                 break
+        if not data:
+            return
         handler = WikimediaXmlHandler()
         handler.setCallback(self.oneDone)
         try:
@@ -1117,7 +1119,7 @@ class GetAll(object):
             edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
 
     def getData(self):
-        if not self.pages:
+        if self.pages == []:
             return
         address = self.site.export_address()
         # In the next line, we assume that what we got for eo: is NOT in x-convention
