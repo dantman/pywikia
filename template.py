@@ -46,36 +46,26 @@ Move the page [[Template:Cities in Washington]] manually afterwards.
 __version__='$Id$'
 #
 import wikipedia, config
-import replace
+import replace, pagegenerators
 import re, sys, string
 
-class TemplatePageGenerator:
-    def __init__(self, templateName, sqlfilename = None):
-        self.templateName = templateName
+class SqlTemplatePageGenerator:
+    def __init__(self, template, sqlfilename):
+        self.template = template
         self.sqlfilename = sqlfilename
-        mysite = wikipedia.getSite()
-    
-        # get template namespace
-        ns = mysite.template_namespace(fallback = None)
-        # Download 'What links here' of the template page
-        self.templatePl = wikipedia.Page(mysite, ns + ':' + templateName)
 
     def generate(self):
-        # yield all pages using the template
-        if self.sqlfilename == None:
-            for refPage in self.templatePl.getReferences():
-                yield refPage
-        else:
-            import sqldump
-            dump = sqldump.SQLdump(self.sqlfilename, mysite.encoding())
-            # regular expression to find the original template.
-            # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
-            # The new syntax, {{vfd}}, will also be found.
-            templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}')
-            for entry in dump.entries():
-                if templateR.search(entry.text):
-                    pl = wikipedia.Page(mysite, entry.full_title())
-                    yield pl
+        import sqldump
+        mysite = wikipedia.getSite()
+        dump = sqldump.SQLdump(self.sqlfilename, mysite.encoding())
+        # regular expression to find the original template.
+        # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
+        # The new syntax, {{vfd}}, will also be found.
+        templateName = self.template.linkname().split(':', 1)[1]
+        templateRegex = r'\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}'
+        for entry in dump.query_findr(templateRegex):
+            page = wikipedia.Page(mysite, entry.full_title())
+            yield page
 
 class TemplateRobot:
     # Summary messages
@@ -114,16 +104,16 @@ class TemplateRobot:
         # The new syntax, {{vfd}}, will also be found.
         # The group 'sortkey' will either match a sortkey led by a pipe, or an
         # empty string.
-        templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '(?P<sortkey>\|[^}]+|)}}')
+        templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '(?P<parameters>\|[^}]+|)}}')
         replacements = {}
         if self.remove:
             replacements[templateR] = ''
         elif self.resolve:
             replacements[templateR] = '{{subst:' + self.old + '}}'
         elif self.oldFormat:
-            replacements[templateR] = '{{msg:' + self.new + '\g<sortkey>}}'
+            replacements[templateR] = '{{msg:' + self.new + '\g<parameters>}}'
         else:
-            replacements[templateR] = '{{' + self.new + '\g<sortkey>}}'
+            replacements[templateR] = '{{' + self.new + '\g<parameters>}}'
         replaceBot = replace.ReplaceRobot(self.generator, replacements, regex = True)
         replaceBot.run()
     
@@ -152,18 +142,26 @@ def main():
                 template_names.append(arg)
 
     if len(template_names) == 0 or len(template_names) > 2:
-        wikipedia.output(__doc__, 'utf-8')
-        wikipedia.stopme()
+        wikipedia.showHelp('template')
         sys.exit()
     old = template_names[0]
     if len(template_names) == 2:
         new = template_names[1]
 
-    gen = TemplatePageGenerator(old, sqlfilename)
-    bot = TemplateRobot(gen, old, new, remove, oldFormat)
+    mysite = wikipedia.getSite()
+    ns = mysite.template_namespace(fallback = None)
+    oldTemplate = wikipedia.Page(mysite, ns + ':' + old)
+
+    if sqlfilename:
+        gen = SqlTemplatePageGenerator(oldTemplate, sqlfilename)
+    else:
+        gen = pagegenerators.ReferringPageGenerator(oldTemplate)
+    preloadingGen = pagegenerators.PreloadingGenerator(gen)
+    bot = TemplateRobot(preloadingGen, old, new, remove, oldFormat)
     bot.run()
 
-try:
-    main()
-finally:
-    wikipedia.stopme()
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
