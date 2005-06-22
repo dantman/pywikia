@@ -58,7 +58,7 @@ class LinkedPageGenerator:
         self.linkingPage = linkingPage
 
     def generate(self):
-        for page in self.page.linkingPage():
+        for page in self.linkingPage.linkedPages():
             yield page
 
 class TextfilePageGenerator:

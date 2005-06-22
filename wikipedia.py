@@ -593,8 +593,8 @@ class Page(object):
         except IsRedirectPage:
             return
         thistxt = removeCategoryLinks(thistxt, self.site())
-        w=r'([^\]\|]*)'
-        Rlink = re.compile(r'\[\['+w+r'(?:\|'+w+r')?\]\]')
+
+        Rlink = re.compile(r'\[\[(?P<linkname>[^\]\|]*)(?:\|[^\]\|]*)?\]\]')
         for l in Rlink.findall(thistxt):
             page = Page(getSite(), l)
             result.append(page)

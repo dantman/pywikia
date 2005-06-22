@@ -56,6 +56,9 @@ def main():
             elif arg.startswith('-ref:'):
                 referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
                 gen = pagegenerators.ReferringPageGenerator(referredPage)
+            elif arg.startswith('-links:'):
+                linkingPage = wikipedia.Page(wikipedia.getSite(), arg[7:])
+                gen = pagegenerators.LinkedPageGenerator(linkingPage)
             elif arg.startswith('-file:'):
                 gen = pagegenerators.TextfilePageGenerator(arg[6:])
             elif arg.startswith('-cat:'):
