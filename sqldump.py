@@ -215,13 +215,13 @@ class SQLdump(object):
             if entry.text.find(keyword) != -1:
                 yield entry
     
-    def query_findr(self, regex):
+    def query_findr(self, regex, namespace = None):
         '''
         yields pages which contain a string matching the given regular expression
         '''
         r = re.compile(regex)
         for entry in self.entries():
-            if entry.namespace == 0 and r.search(entry.text):
+            if r.search(entry.text) and (namespace == None or entry.namespace == namespace):
                 yield entry
     
     def query_unmountedcats(self):
