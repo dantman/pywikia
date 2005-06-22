@@ -21,7 +21,7 @@ the links from; other arguments are ignored.
 # Modified by Gerrit Holl, 01-11-2004
 
 import sys
-import wikipedia, lib_images
+import wikipedia, lib_images, pagegenerators
 
 def getfn():
     fns = []
@@ -39,7 +39,8 @@ def getfn():
 def main():
     for filename in getfn():
         print "Handling images from %s" % filename
-        for image in wikipedia.PagesFromFile(filename):
+        gen = pagegenerators.TextfilePageGenerator(filename)
+        for image in gen.generate():
             if image.isImage():
                 print "-" * 50
                 print "Image: %s" % image.linkname()

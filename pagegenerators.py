@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
+import re
 import wikipedia
 
 class SinglePageGenerator:
@@ -31,6 +32,41 @@ class ReferringPageGenerator:
     def generate(self):
         for page in self.referredPage.getReferences(follow_redirects = self.followRedirects):
             yield page
+
+class TextfilePageGenerator:
+    """
+    Read a file of page links between double-square-brackets, and return
+    them as a list of Page objects. 'filename' is the name of the file that
+    should be read.
+    """
+    def __init__(self, filename):
+        self.filename = filename
+
+    def generate(self):
+        site = wikipedia.getSite()
+        f = open(self.filename, 'r')
+        R = re.compile(r'\[\[(.+?)\]\]')
+        for line in f.readlines():
+            m = R.match(line)
+            if m:
+                part = m.group(1).split(':')
+                i = 0
+                try:
+                    fam = wikipedia.Family(part[i], fatal = False)
+                    i += 1
+                except:
+                    fam = site.family
+                if part[i] in fam.langs:
+                    code = part[i]
+                    i += 1
+                else:
+                    code = site.lang
+                pagename = ':'.join(part[i:])
+                thesite = wikipedia.getSite(code = code, fam = fam)
+                yield wikipedia.Page(thesite, pagename)
+            else:
+                wikipedia.output(u"ERROR: Did not understand %s line:\n%s" % (self.filename, line))
+        f.close()
 
 class PreloadingGenerator:
     """

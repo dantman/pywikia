@@ -161,11 +161,11 @@ next time.
 __version__ = '$Id$'
 #
 import sys, copy, re
-import time
+import time, date
 import codecs
 import socket
 
-import wikipedia, config, date
+import wikipedia, config, pagegenerators
 import titletranslate
 
 msg = {
@@ -974,18 +974,21 @@ if __name__ == "__main__":
                 elif arg.startswith('-skipfile:'):
                     skipfile = arg[10:]
                 elif arg == '-restore':
-                    for pl in wikipedia.PagesFromFile('interwiki.dump'):
-                        sa.add(pl,hints=hints)
+                    gen = pagegenerators.TextfilePageGenerator('interwiki.dump')
+                    for page in gen.generate():
+                        sa.add(page, hints=hints)
                 elif arg == '-continue':
-                    for pl in wikipedia.PagesFromFile('interwiki.dump'):
-                        sa.add(pl,hints=hints)
+                    gen = pagegenerators.TextfilePageGenerator('interwiki.dump')
+                    for page in gen.generate():
+                        sa.add(page, hints=hints)
                     try:
-                        start = pl.linkname()
+                        start = page.linkname()
                     except NameError:
                         print "Dump file is empty?! Starting at the beginning."
                         start = "!"
                 elif arg.startswith('-file:'):
-                    for pl in wikipedia.PagesFromFile(arg[6:]):
+                    gen = pagegenerators.TextfilePageGenerator(arg[6:])
+                    for pl in gen.generate():
                         sa.add(pl,hints=hints)
                 elif arg.startswith('-start:'):
                     start = arg[7:]
@@ -1006,8 +1009,9 @@ if __name__ == "__main__":
             readWarnfile(warnfile, sa)
 
         if skipfile:
-            for pl in wikipedia.PagesFromFile(skipfile):
-                globalvar.skip[pl] = None
+            gen = pagegenerators.TextfilePageGenerator(skipfile)
+            for page in gen.generate():
+                globalvar.skip[page] = None
 
         if start:
             namespace = wikipedia.Page(wikipedia.getSite(),start).namespace()

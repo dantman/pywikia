@@ -64,8 +64,6 @@ PageGroup: A group of Pages (internally ordered)
 Other functions:
 getall(xx,Pages): Get all pages in Pages (where Pages is a list of Pages,
     and xx: the language the pages are on)
-PagesFromFile(fn): Get from fn a list of Pages in the form
-    [[xx:Title]]
 setAction(text): Use 'text' instead of "Wikipedia python library" in
     summaries
 forSite(text,xx): Change 'text' such that it is usable on the given site xx
@@ -1161,37 +1159,7 @@ def getall(site, pages, throttle = True):
     
 # Library functions
 
-def PagesFromFile(fn, site = None):
-    """Read a file of page links between double-square-brackets, and return
-       them as a list of Page objects. 'fn' is the name of the file that
-       should be read."""
-    if site is None:
-        site = getSite()
-    f=open(fn, 'r')
-    R=re.compile(r'\[\[(.+?)\]\]')
-    for line in f.readlines():
-        m=R.match(line)
-        if m:
-            part = m.group(1).split(':')
-            i = 0
-            try:
-                fam=Family(part[i], fatal = False)
-                i += 1
-            except:
-                fam=site.family
-            if part[i] in fam.langs:
-                code = part[i]
-                i += 1
-            else:
-                code = site.lang
-            pagename = ':'.join(part[i:])
-            thesite = getSite(code = code, fam = fam)
-            #print "DBG> Pagename", repr(thesite),pagename
-            yield Page(thesite, pagename)
-        else:
-            print "ERROR: Did not understand %s line:\n%s" % (fn, repr(line))
-    f.close()
-    
+
 def unescape(s):
     """Replace escaped HTML-special characters by their originals"""
     if '&' not in s:
