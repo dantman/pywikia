@@ -50,6 +50,17 @@ class CategorizedPageGenerator:
         for page in self.category.articles(recurse = self.recurse):
             yield page
 
+class LinkedPageGenerator:
+    '''
+    Yields all pages linked from a specific page.
+    '''
+    def __init__(self, linkingPage):
+        self.linkingPage = linkingPage
+
+    def generate(self):
+        for page in self.page.linkingPage():
+            yield page
+
 class TextfilePageGenerator:
     '''
     Read a file of page links between double-square-brackets, and return

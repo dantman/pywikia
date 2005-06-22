@@ -1,4 +1,4 @@
-﻿# -*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 """
 This bot takes as its argument (or, if no argument is given, asks for it), the
 name of a new or existing category. It will then try to find new articles for
@@ -102,11 +102,10 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
             except wikipedia.Error:
                 pass
             else:
-                for link in pl.links():
-                    pl2 = wikipedia.Page(mysite,link)
-                    if needcheck(pl2):
-                        tocheck.append(pl2)
-                        checked[pl2]=pl2
+                for page2 in pl.linkedPages():
+                    if needcheck(page2):
+                        tocheck.append(page2)
+                        checked[page2] = page2
         if checkbackward:
             for refPage in pl.getReferences():
                 if needcheck(refPage):

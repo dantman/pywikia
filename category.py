@@ -197,7 +197,7 @@ def add_category(sort_by_last_name = False):
         except NoPage:
             wikipedia.output(u'The page %s could not be loaded from the server.' % listpageTitle)
             sys.exit()
-        pages = [wikipedia.Page(site, title) for title in listpage.links()]
+        pages = listpage.linkedPages()
         
     else:
         referredPage = wikipedia.input(u'Wikipedia page that is now linked to:')

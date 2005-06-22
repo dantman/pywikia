@@ -29,7 +29,7 @@ Page: A MediaWiki page
     categories (*): The categories the page is in (list of Pages)
     rawcategories (*): Like categories, but if the link contains a |, the
         part after the | is included.
-    links (*): The normal links from the page (list of links)
+    linkedPages (*): The normal pages linked from the page (list of Pages)
     imagelinks (*): The pictures on the page (list of strings)
     templates(*): All templates referenced on the page (list of strings)
     getRedirectTarget (*): The page the page redirects to
@@ -583,9 +583,9 @@ class Page(object):
         """
         return hash(str(self))
 
-    def links(self):
+    def linkedPages(self):
         """Gives the normal (not-interwiki, non-category) pages the page
-           links to, as a list of strings
+           links to, as a list of Page objects
         """
         result = []
         try:
@@ -594,9 +594,10 @@ class Page(object):
             return
         thistxt = removeCategoryLinks(thistxt, self.site())
         w=r'([^\]\|]*)'
-        Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
+        Rlink = re.compile(r'\[\['+w+r'(?:\|'+w+r')?\]\]')
         for l in Rlink.findall(thistxt):
-            result.append(l[0])
+            page = Page(getSite(), l)
+            result.append(page)
         return result
 
     def imagelinks(self):
