@@ -492,8 +492,8 @@ def main():
         replacements = fix['replacements']
 
     gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, sqlfilename, categoryname, pagenames)
-    preloadingGen = pagegenerators.PreloadingGenerator(gen)
-    bot = ReplaceRobot(gen, replacements, exceptions, regex, acceptall)
+    preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
+    bot = ReplaceRobot(preloadingGen, replacements, exceptions, regex, acceptall)
     bot.run()
 
 
