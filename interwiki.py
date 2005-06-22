@@ -418,7 +418,7 @@ class Subject(object):
         self.problemfound = True
         if globalvar.autonomous:
             f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
-            f.write("%s {%s}\n" % (self.inpl.aslink(), txt))
+            f.write("* %s {%s}\n" % (self.inpl.aslink(), txt))
             f.close()
 
     def whereReport(self, pl, indent=4):
