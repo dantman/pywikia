@@ -52,7 +52,11 @@ class AllpagesPageContentGenerator:
         gen = pagegenerators.AllpagesPageGenerator(self.start)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for page in preloadingGen.generate():
-            yield page.linkname(), page.get()
+            try:
+                text = page.get(read_only = True)
+            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                continue
+            yield page.linkname(), text
 
 class SqlPageContentGenerator:
     '''
