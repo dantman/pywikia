@@ -74,26 +74,22 @@ class TextfilePageGenerator:
         site = wikipedia.getSite()
         f = open(self.filename, 'r')
         R = re.compile(r'\[\[(.+?)\]\]')
-        for line in f.readlines():
-            m = R.match(line)
-            if m:
-                part = m.group(1).split(':')
-                i = 0
-                try:
-                    fam = wikipedia.Family(part[i], fatal = False)
-                    i += 1
-                except:
-                    fam = site.family
-                if part[i] in fam.langs:
-                    code = part[i]
-                    i += 1
-                else:
-                    code = site.lang
-                pagename = ':'.join(part[i:])
-                thesite = wikipedia.getSite(code = code, fam = fam)
-                yield wikipedia.Page(thesite, pagename)
+        for pageTitle in R.findall(f.read()):
+            parts = pageTitle.split(':')
+            i = 0
+            try:
+                fam = wikipedia.Family(parts[i], fatal = False)
+                i += 1
+            except:
+                fam = site.family
+            if parts[i] in fam.langs:
+                code = parts[i]
+                i += 1
             else:
-                wikipedia.output(u"ERROR: Did not understand %s line:\n%s" % (self.filename, line))
+                code = site.lang
+            pagename = ':'.join(parts[i:])
+            site = wikipedia.getSite(code = code, fam = fam)
+            yield wikipedia.Page(site, pagename)
         f.close()
 
 class PreloadingGenerator:
