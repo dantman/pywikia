@@ -70,11 +70,13 @@ def main():
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = pagegenerators.SinglePageGenerator(page)
+    if not gen:
+        wikipedia.showHelp('touch')
+    else:
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        bot = TouchBot(preloadingGen)
+        bot.run()
 
-    preloadingGen = pagegenerators.PreloadingGenerator(gen)
-    bot = TouchBot(preloadingGen)
-    bot.run()
-    
 if __name__ == "__main__":
     try:
         main()
