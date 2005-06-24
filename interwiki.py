@@ -426,16 +426,7 @@ class Subject(object):
             if pl2 is None:
                 wikipedia.output(u" "*indent + "Given as a hint.")
             else:
-                wikipedia.output(u" "*indent + self.formatPl(pl2))
-
-    def formatPl(self, pl):
-        if hasattr(pl, '_contents'):    #TODO: UGLY! need pl.isLoaded()
-            if pl.isDisambig():
-                return "*" + pl.aslink(othersite = None)
-            else:
-                return pl.aslink(othersite = None)
-        else:
-            return "?" + pl.aslink(othersite = None)
+                wikipedia.output(u" "*indent + pl2.aslink())
 
     def assemble(self):
         # No errors have been seen so far
@@ -449,7 +440,7 @@ class Subject(object):
             site = pl.site()
             if site == mysite and pl.exists() and not pl.isRedirectPage():
                 if pl != self.inpl:
-                    self.problem("Found link to %s" % self.formatPl(pl) )
+                    self.problem("Found link to %s" % pl.aslink() )
                     self.whereReport(pl)
                     nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
@@ -464,7 +455,7 @@ class Subject(object):
                 nerr += 1
                 self.problem("Found more than one link for %s"%k)
         if nerr == 0 and len( self.foundin[self.inpl] ) == 0:
-            self.problem(u'No other language (%d) refers back to %s' % (len(new),self.formatPl(self.inpl)))
+            self.problem(u'None of %i other languages refers back to %s' % (len(new), self.inpl.aslink()))
         # If there are any errors, we need to go through all
         # items manually.
         if nerr > 0:
@@ -476,7 +467,7 @@ class Subject(object):
                     i = 0
                     for pl2 in v:
                         i += 1
-                        wikipedia.output(u"  (%d) Found link to %s in:" % (i, self.formatPl(pl2)) )
+                        wikipedia.output(u"  (%d) Found link to %s in:" % (i, pl2.aslink()))
                         self.whereReport(pl2, indent=8)
                     if not globalvar.autonomous:
                         while 1:
@@ -507,7 +498,7 @@ class Subject(object):
                 if len(v) == 1:
                     print "="*30
                     pl2 = v[0]
-                    wikipedia.output(u"Found link to %s in:" % self.formatPl(pl2))
+                    wikipedia.output(u"Found link to %s in:" % pl2.aslink())
                     self.whereReport(pl2, indent=4)
                     while 1:
                         if acceptall: 
@@ -549,7 +540,7 @@ class Subject(object):
         if len(self.done) == 1:
             # No interwiki at all
             return
-        wikipedia.output(u"======Post-processing %s======" % self.formatPl(self.inpl))
+        wikipedia.output(u"======Post-processing %s======" % self.inpl.aslink())
         # Assemble list of accepted interwiki links
         new = self.assemble()
         if new == None: # User said give up or autonomous with problem
@@ -646,10 +637,10 @@ class Subject(object):
                         if xpl != pl and not xpl in linked:
                             for l in linked:
                                 if l.site() == xpl.site():
-                                    wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (self.formatPl(pl), self.formatPl(xpl), self.formatPl(l)))
+                                    wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (pl.aslink(), xpl.aslink(), l.aslink()))
                                     break
                             else:
-                                wikipedia.output(u"WARNING: %s does not link to %s" % (self.formatPl(pl), self.formatPl(xpl)))
+                                wikipedia.output(u"WARNING: %s does not link to %s" % (pl.aslink(), xpl.aslink()))
                     # Check for superfluous links
                     for xpl in linked:
                         if not xpl in shouldlink:
@@ -660,7 +651,7 @@ class Subject(object):
                                     break
                             else:
                                 # New warning
-                                wikipedia.output(u"WARNING: %s links to incorrect %s" % (self.formatPl(pl), xpl.aslink()))
+                                wikipedia.output(u"WARNING: %s links to incorrect %s" % (pl.aslink(), xpl.aslink()))
         except (socket.error, IOError):
             wikipedia.output(u'ERROR: could not report backlinks')
     
