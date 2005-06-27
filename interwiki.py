@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -454,7 +454,7 @@ class Subject(object):
             if len(v) > 1:
                 nerr += 1
                 self.problem("Found more than one link for %s"%k)
-        if nerr == 0 and len( self.foundin[self.inpl] ) == 0:
+        if nerr == 0 and len( self.foundin[self.inpl] ) == 0 and len(new) != 0:
             self.problem(u'None of %i other languages refers back to %s' % (len(new), self.inpl.aslink()))
         # If there are any errors, we need to go through all
         # items manually.
