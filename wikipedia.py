@@ -13,7 +13,7 @@ Page: A MediaWiki page
     catname: The name of the page, with the namespace part removed
     section: The section of the page (the part of the name after '#')
     sectionFreeLinkname: The name without the section part
-    aslink: The name of the page in the form [[family:xx:Title]]
+    aslink: The name of the page in the form [[Title]] or [[lang:Title]]
     site: The wiki where this page is in
     encoding: The encoding the page is in
 
@@ -279,14 +279,20 @@ class Page(object):
         """A more complete string representation"""
         return "%s{%s}" % (self.__class__.__name__, str(self))
 
-    def aslink(self, othersite = ()):
-        """A string representation in the form of a link. The link will
-           be an interwiki link if needed. Specify othersite if you want to
-           use the link somewhere else than on the _tosite wiki (e.g. specify
-           None to make the link complete."""
-        if othersite == ():
-            othersite = self._tosite
-        return self._site.linkto(self.linkname(), othersite = othersite)
+    def aslink(self, forceInterwiki = False):
+        """
+        A string representation in the form of a link. The link will
+        be an interwiki link if needed.
+
+        If you set forceInterwiki to True, the link will have the format
+        of an interwiki link even if it points to the home wiki.
+
+        Note that the family is never included.
+        """
+        if forceInterwiki or self.site() != getSite():
+            return '[[%s:%s]]' % (self.site().lang, self.linkname())
+        else:
+            return '[[%s]]' % self.linkname()
 
     def get(self, read_only = False, force = False, get_redirect=False, throttle = True):
         """The wiki-text of the page. This will retrieve the page if it has not
@@ -2020,13 +2026,10 @@ class Site(object):
         return self.family.name+":"+self.lang
     
     def linkto(self, linkname, othersite = None):
-        if not othersite or othersite.family != self.family:
-            s = self.family.name+":"
+        if othersite and othersite.lang == self.lang:
+            return '[[%s:%s]]' % (self.lang, linkname)
         else:
-            s = ""
-        if s or othersite.lang!=self.lang:
-            s += self.lang+":"
-        return "[[" + s + linkname + "]]"
+            return '[[%s]]' % linkname
 
     def encoding(self):
         return self.family.code2encoding(self.lang)

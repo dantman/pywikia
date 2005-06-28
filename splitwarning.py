@@ -18,7 +18,7 @@ count={}
 
 # TODO: Variable log filename
 logFile = codecs.open('logs/interwiki.log', 'r', 'utf-8')
-rWarning = re.compile('WARNING: \[\[(?P<family>\w+):(?P<code>\w+):.*')
+rWarning = re.compile('WARNING: (?P<family>.+?): \[\[(?P<code>.+?):.*')
 for line in logFile:
     m = rWarning.match(line)
     if m:
