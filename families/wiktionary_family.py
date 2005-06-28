@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -78,11 +78,3 @@ class Family(family.Family):
         self.seriouslangs = self.biglangs4
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
-        
-        self.latin1 = ['da', 'sv']
-       
-    def code2encoding(self, code):
-        if code in self.latin1:
-            return 'iso-8859-1'
-        else:
-            return 'utf-8'
