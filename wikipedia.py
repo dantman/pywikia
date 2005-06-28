@@ -476,10 +476,7 @@ class Page(object):
             else:
                 import watchlist
                 watchArticle = watchlist.isWatched(self.linkname())
-        if self.exists():
-            newPage="0"
-        else:
-            newPage="1"
+        newPage = not self.exists()
         return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken())
 
     def interwiki(self):
@@ -1177,7 +1174,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
             ('wpTextbox1', text)]
         # Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions
-        if newPage and newPage != '0':
+        if newPage:
             predata.append(('wpEdittime', ''))
         else:
             predata.append(('wpEdittime', edittime[repr(site), link2url(name, site = site)]))
@@ -1195,7 +1192,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     except KeyError:
         print edittime
 	raise
-    if newPage and newPage!= '0':
+    if newPage:
         output(url2unicode("Creating page %s"%site.linkto(name), site = site))
     else:
         output(url2unicode("Changing page %s"%site.linkto(name), site = site))
