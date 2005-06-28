@@ -14,7 +14,6 @@ Page: A MediaWiki page
     section: The section of the page (the part of the name after '#')
     sectionFreeLinkname: The name without the section part
     aslink: The name of the page in the form [[family:xx:Title]]
-    aslocallink: The name of the pagthroe in the form [[Title]]
     site: The wiki where this page is in
     encoding: The encoding the page is in
 
@@ -288,10 +287,6 @@ class Page(object):
         if othersite == ():
             othersite = self._tosite
         return self._site.linkto(self.linkname(), othersite = othersite)
-
-    def aslocallink(self):
-        """A string representation in the form of a local link"""
-        return "[[%s]]" % (self.linkname())
 
     def get(self, read_only = False, force = False, get_redirect=False, throttle = True):
         """The wiki-text of the page. This will retrieve the page if it has not

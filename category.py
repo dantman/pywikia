@@ -247,7 +247,7 @@ def add_category(sort_by_last_name = False):
                 if catpl in cats:
                     wikipedia.output(u"%s is already in %s." % (page.linkname(), catpl.linkname()))
                 else:
-                    wikipedia.output(u'Adding %s' % catpl.aslocallink())
+                    wikipedia.output(u'Adding %s' % catpl.aslink())
                     rawcats.append(catpl)
                     text = page.get()
                     text = wikipedia.replaceCategoryLinks(text, rawcats)
