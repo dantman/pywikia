@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -1204,7 +1204,7 @@ class FormatDate(object):
         self.site = site
 
     def __call__(self, m, d):
-        return wikipedia.html2unicode( dateFormats[monthNames[m-1]][self.site.lang](d), site = self.site )
+        return dateFormats[monthNames[m-1]][self.site.lang](d)
 
     
 def formatYear(lang, year):

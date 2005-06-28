@@ -202,8 +202,7 @@ def transfer_image(imagelink, debug=False):
        This function is used by imagetransfer.py and by copy_table.py
     """
     # convert HTML entities to encoding of the source wiki
-    image_linkname = wikipedia.html2unicode(imagelink.linkname(), imagelink.site())
-    image_linkname = image_linkname.encode('utf-8')
+    image_linkname = imagelink.linkname().encode('utf-8')
     if debug: print "--------------------------------------------------"
     if debug: print "Found image: %s"% image_linkname
     # need to strip off "Afbeelding:", "Image:" etc.

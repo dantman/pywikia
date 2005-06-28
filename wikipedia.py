@@ -543,9 +543,7 @@ class Page(object):
             return -1
         if not self.site() == other.site():
             return cmp(self.site(), other.site())
-        u1=html2unicode(self.linkname(), site = self.site())
-        u2=html2unicode(other.linkname(), site = other.site())
-        return cmp(u1,u2)
+        return cmp(self.linkname(), other.linkname())
 
     def __hash__(self):
         """Pseudo method that makes it possible to store Page objects as
