@@ -37,7 +37,7 @@ class WarnfileReader:
             m=R.search(line)
             if m:
                 #print "DBG>",line
-                if m.group('locallang')==mysite.lang:
+                if m.group('locallang') == mysite.lang and m.group('family') == mysite.family.name:
                     #wikipedia.output(u' '.join([m.group('locallang'), m.group('localtitle'), m.group('warningtype'), m.group('targetsite'), m.group('targettitle')]))
                     #print m.group(3)
                     removing = (m.group('warningtype') == ' links to incorrect ')
