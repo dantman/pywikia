@@ -17,7 +17,6 @@ class Family(family.Family):
             'minnan':'zh-min-nan.wikipedia.org',
             'nb':'no.wikipedia.org',
             'tokipona':'tokipona.wikipedia.org',
-            'sh':'sh.wikipedia.org',
             'zh-cn':'zh.wikipedia.org',
             'zh-tw':'zh.wikipedia.org'
             }
@@ -65,8 +64,7 @@ class Family(family.Family):
             'nn': 7
             }
 
-        self.obsolete = {'sh':'hr',
-                    'dk':'da',
+        self.obsolete = {'dk':'da',
                     'minnan':'zh-min-nan',
                     'no':'nb',
                     'jp':'ja',
@@ -83,20 +81,21 @@ class Family(family.Family):
             'de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'pt', 'sv']
         
         self.biglangs2 = self.biglangs + [
-            'ca', 'da', 'eo', 'et', 'fi', 'id', 'nb', 'ro', 'sl', 'zh']
+            'ca', 'da', 'eo', 'et', 'fi', 'hu', 'nb', 'ro', 'sl', 'zh']
         
         self.biglangs3 = self.biglangs2 + [
-            'bg', 'cs', 'he', 'hr', 'hu', 'ru', 'ms', 'sk', 'tt', 'uk', 'wa']
+            'bg', 'cs', 'gl', 'he', 'hr', 'id', 'ru', 'nn', 'sk', 'uk']
         
         self.biglangs4 = self.biglangs3 + [
-            'af', 'ast', 'bs', 'cy', 'el', 'eu', 'fy', 'gl', 'ia', 'io',
-            'is', 'ko', 'ku', 'la', 'lb', 'lt', 'nn', 'simple', 'sr', 'tr']
-        
-        self.seriouslangs = self.biglangs4 + [
-            'als', 'an', 'ang', 'ar', 'be', 'bn', 'br', 'csb', 'fa', 'fo',
-            'ga', 'gd', 'hi', 'hy', 'ie', 'jv', 'ka', 'kn', 'ks', 'kw',
-            'li', 'lv', 'mi', 'ml', 'mr', 'nds', 'oc', 'os', 'sa', 'scn',
-            'se', 'sq', 'su', 'ta', 'te', 'th', 'tl', 'ur', 'vi', 'zh-min-nan']
+            'af', 'ast', 'bs', 'cy', 'el', 'eu', 'ia', 'io', 'is', 'ko',
+            'la', 'lb', 'lt', 'ms', 'nds', 'simple', 'sr', 'tr', 'tt', 'wa']
+
+        self.biglangs5 = self.biglangs4 + [
+             'als', 'an', 'ang', 'ar', 'be', 'bn', 'br', 'co', 'csb', 'fa',
+             'fo', 'fy', 'ga', 'gd', 'gu', 'hi', 'hy', 'ie', 'jv', 'ka',
+             'kn', 'ks', 'ku', 'kw', 'li', 'lv', 'mi', 'mk', 'ml', 'mr',
+             'mt', 'nah', 'oc', 'os', 'sa', 'scn', 'se', 'sh', 'sq', 'su',
+             'ta', 'te', 'th', 'tl', 'tpi', 'ur', 'vi', 'yi', 'zh-min-nan']
 
         # other groups of language that we might want to do at once
             
@@ -106,10 +105,11 @@ class Family(family.Family):
         self.latin1 = ['sv', 'nl', 'da', 'dk']
         
         # Languages that used to be coded in iso-8859-1
-        self.latin1old = ['de', 'et', 'es', 'ia', 'la', 'af', 'cs', 'fr', 'pt', 'sl', 'bs', 'fy',
-                    'vi', 'lt', 'fi', 'it', 'nb', 'simple', 'gl', 'eu',
-                    'nds', 'co', 'mi', 'mr', 'id', 'lv', 'sw', 'tt', 'uk', 'vo',
-                    'ga', 'na', 'es', 'test']
+        self.latin1old = ['de', 'en', 'et', 'es', 'ia', 'la', 'af', 'cs',
+                    'fr', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it',
+                    'nb', 'simple', 'gl', 'eu', 'nds', 'co', 'mi', 'mr',
+                    'id', 'lv', 'sw', 'tt', 'uk', 'vo', 'ga', 'na', 'es',
+                    'test']
         
     def code2encoding(self, code):
         """Return the encoding for a specific language wikipedia"""
