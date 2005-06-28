@@ -79,7 +79,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
     # Autotranslate dates into all other languages, the rest will come from existing interwiki links.
     if auto:
         # search inside all dictionaries for this link
-        dictName, year = getDictionaryYear( pl.site().language(), pl.linkname() )
+        dictName, year = date.getDictionaryYear( pl.site().language(), pl.linkname() )
         if dictName:
             for entryLang, entry in date.dateFormats[dictName].iteritems():
                 try:
@@ -92,18 +92,6 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                             arr[x] = None   # add new page
                 except:
                     pass
-
-def getDictionaryYear( lang, linkname ):
-    for dictName, dict in date.dateFormats.iteritems():
-        try:
-            year = dict[ lang ]( linkname )
-            return (dictName,year)
-        except:
-            pass
-
-    return (None,None)
-
-
 
 bcDateErrors = [u'[[ko:%d년]]']
 bcFormats = ['centuriesBC', 'decadesBC', 'milleniumsBC', 'yearsBC']
@@ -123,7 +111,7 @@ def getPoisonedLinks(pl):
     
     wikipedia.output( u'getting poisoned links for %s' % pl.linkname() )
 
-    dictName, year = getDictionaryYear( pl.site().language(), pl.linkname() )
+    dictName, year = date.getDictionaryYear( pl.site().language(), pl.linkname() )
     if dictName != None:
         wikipedia.output( u'date found in %s' % dictName )
         
@@ -151,38 +139,3 @@ def getPoisonedLinks(pl):
             appendFormatedDates( result, 'decadesAD', year*100+1 )
 
     return result
-    
-def isDateBC( pl ):
-    """Guesses if the name of this link matches with the date format
-    """
-    try:
-        dt = date.yearBCfmt[ pl.site().lang ]
-        Ryear = date.escapePattern( dt )
-        m = Ryear.match(pl.linkname())
-        if m:
-            year = int(m.group(1))
-            if dt % year == pl.linkname():
-                return year
-    except:
-        pass
-    return None
-
-
-def isSpecialYear( pl, yearMapName ):
-    """Guesses if the name of this link matches with the date format
-    """
-    year = None
-    try:
-        year = dateFormats[yearMapName][ pl.site().lang ]( pl.linkname() )
-    except:
-        pass
-    return year
-
-def isDecadesAD( pl ):
-    return isSpecialYear( pl, 'decadesAD' )
-    
-def isDecadesBC( pl ):
-    return isSpecialYear( pl, 'decadesBC' )
-
-def isCenturiesBC( pl ):
-    return isSpecialYear( pl, 'centuriesBC' )

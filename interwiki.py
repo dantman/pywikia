@@ -167,6 +167,7 @@ import socket
 
 import wikipedia, config, pagegenerators
 import titletranslate
+import vertexgen
 
 msg = {
     'af':(u'Bygevoeg', u'Verwyder', u'Verander'),
@@ -459,6 +460,17 @@ class Subject(object):
         # If there are any errors, we need to go through all
         # items manually.
         if nerr > 0:
+
+            # Save all the found interwikies as a "article  from  to"  file
+            if vertexgen.vertfile:
+                for k,v in new.items():
+                    for pl2 in v:
+                        for pl3 in self.foundin[pl2]:
+                            if pl3 is None:
+                                vertexgen.add( self.formatPl(self.inpl), u':hint:', self.formatPl(pl2) )
+                            else:
+                                vertexgen.add( self.formatPl(self.inpl), self.formatPl(pl3), self.formatPl(pl2) )
+                    
             # First loop over the ones that have more solutions
             for k,v in new.items():
                 if len(v) > 1:
@@ -883,6 +895,8 @@ if __name__ == "__main__":
             if arg:
                 if arg == '-noauto':
                     globalvar.auto = False
+                elif arg.startswith('-vertfile:'):
+                    vertexgen.openFile(arg[10:])
                 elif arg.startswith('-hint:'):
                     hints.append(arg[6:])
                 elif arg == '-force':
@@ -931,20 +945,12 @@ if __name__ == "__main__":
                     for i in range(startyear,2050):
                         if i % 100 == 0:
                             print "Preparing %d..." % i
-                        # For years BC, append language-dependent text, e.g. "v. Chr."
-                        # This text is read from date.py
-                        if i < 0:
-                            current_year = (date.yearBCfmt[wikipedia.getSite().lang]) % (-i)
-                        else:
-                            # For years AD, some languages need special formats
-                            # This format is read from date.py
-                            if date.yearADfmt.has_key(wikipedia.getSite().lang):
-                                current_year = (date.yearADfmt[wikipedia.getSite().lang]) % i
-                            else:
-                                current_year = '%d' % i
+
                         # There is no year 0
                         if i != 0:
-                            sa.add(wikipedia.Page(wikipedia.getSite(), current_year),hints=hints)
+                            current_year = date.formatYear( wikipedia.getSite().lang, i )
+                            sa.add( wikipedia.Page(wikipedia.getSite(), current_year), hints=hints)
+
                     globalvar.followredirect = False
                 elif arg.startswith('-days'):
                     if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():

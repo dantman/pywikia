@@ -47,19 +47,10 @@ def rawtoclean(c):
     return wikipedia.Page(mysite,c2)
 
 def isdate(s):
-    #returns true iff s is a date or year
-    result = False
-    if date.datetable.has_key(mysite):
-        dt='(\d+) (%s)' % ('|'.join(date.datetable[wikipedia.mylang].keys()))
-        Rdate = re.compile(dt)
-        m = Rdate.match(s)
-        if m:
-            result = True
-    Ryear = re.compile('^\d+$')
-    m = Ryear.match(s)
-    if m:
-        result = True
-    return result
+    """returns true iff s is a date or year
+    """
+    dict,val = getDictionaryYear( wikipedia.mylang, s ) 
+    return dict != None
 
 def needcheck(pl):
     if checked.has_key(pl):
