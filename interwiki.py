@@ -649,10 +649,10 @@ class Subject(object):
                         if xpl != pl and not xpl in linked:
                             for l in linked:
                                 if l.site() == xpl.site():
-                                    wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (pl.aslink(), xpl.aslink(), l.aslink()))
+                                    wikipedia.output(u"WARNING: %s does not link to %s but to %s" % (pl.aslink(othersite = None), xpl.aslink(othersite = None), l.aslink(othersite = None)))
                                     break
                             else:
-                                wikipedia.output(u"WARNING: %s does not link to %s" % (pl.aslink(), xpl.aslink()))
+                                wikipedia.output(u"WARNING: %s does not link to %s" % (pl.aslink(othersite = None), xpl.aslink(othersite = None)))
                     # Check for superfluous links
                     for xpl in linked:
                         if not xpl in shouldlink:
@@ -663,7 +663,7 @@ class Subject(object):
                                     break
                             else:
                                 # New warning
-                                wikipedia.output(u"WARNING: %s links to incorrect %s" % (pl.aslink(), xpl.aslink()))
+                                wikipedia.output(u"WARNING: %s links to incorrect %s" % (pl.aslink(othersite = None), xpl.aslink(othersite = None)))
         except (socket.error, IOError):
             wikipedia.output(u'ERROR: could not report backlinks')
     
