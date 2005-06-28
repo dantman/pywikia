@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -324,7 +324,7 @@ class Subject(object):
                     else:
                         if self.conditionalAdd(pl3, counter, pl):
                             if globalvar.shownew:
-                                wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.asselflink(), pl.aslink(), pl3.aslink()))
+                                wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.aslink(), pl.aslink(), pl3.aslink()))
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % pl.aslink())
                     #print "DBG> ",pl.urlname()
@@ -368,7 +368,7 @@ class Subject(object):
                       else:   
                           if self.conditionalAdd(pl2, counter, pl):
                               if globalvar.shownew:
-                                  wikipedia.output(u"%s: %s gives new interwiki %s"% (self.inpl.asselflink(), pl.aslink(), pl2.aslink()))
+                                  wikipedia.output(u"%s: %s gives new interwiki %s"% (self.inpl.aslink(), pl.aslink(), pl2.aslink()))
                               
         # These pages are no longer 'in progress'
         del self.pending

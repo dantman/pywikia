@@ -15,8 +15,6 @@ Page: A MediaWiki page
     sectionFreeLinkname: The name without the section part
     aslink: The name of the page in the form [[family:xx:Title]]
     aslocallink: The name of the pagthroe in the form [[Title]]
-    asselflink: The name of the page in the form family:xx:[[Title]]
-    
     site: The wiki where this page is in
     encoding: The encoding the page is in
 
@@ -295,11 +293,6 @@ class Page(object):
         """A string representation in the form of a local link"""
         return "[[%s]]" % (self.linkname())
 
-    def asselflink(self):
-        """A string representation in the form of a local link, but prefixed by
-           the language"""
-        return "%s:[[%s]]" % (self._site.lang, self.linkname())
-    
     def get(self, read_only = False, force = False, get_redirect=False, throttle = True):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
