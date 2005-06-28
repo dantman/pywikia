@@ -1,12 +1,14 @@
 """
-A robot to implement backlinks from a treelang.log file without checking them
+A robot to implement backlinks from a interwiki.log file without checking them
 against the live wikipedia.
 
-Just run this robot with the warnfile names as arguments:
+Just run this with the warnfile name as parameter. If not specified, the
+default filename for the family and language given by global parameters or
+user-config.py will be used.
 
 Example:
 
-   python warnfile.py -lang:es nl/warning_es.dat
+   python warnfile.py -lang:es
 
 """
 #
@@ -104,19 +106,24 @@ class WarnfileRobot:
                     status, reason, data = pl.put(newtext, comment='warnfile '+mods)
                     if str(status) != '302':
                         print status, reason
-            
+
+def main():
+    filename = None
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg, 'warnfile')
+        if arg:
+            filename = arg
+
+    if not filename:
+        mysite = wikipedia.getSite()
+        filename = 'logs/warning-%s-%s.log' % (mysite.family.name, mysite.lang)
+    reader = WarnfileReader(filename)
+    bot = WarnfileRobot(reader)
+    bot.run()
 
 if __name__ == "__main__":
     try:
-        for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg, 'warnfile')
-            if arg:
-                reader = WarnfileReader(arg)
-                bot = WarnfileRobot(reader)
-                bot.run()
-    except:
-        wikipedia.stopme()
-        raise
-    else:
+        main()
+    finally:
         wikipedia.stopme()
 
