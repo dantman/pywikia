@@ -35,12 +35,13 @@ class Family(family.Family):
             'es': u'Wiktionary Discusión',
         }
 
-        # On most Wikipedias page names must start with a capital letter, but some
-        # languages don't use this.
-            
-        self.nocapitalize = ['cs', 'de', 'es', 'en', 'fa', 'fr', 'gu', 'hi', 'hr',
-                        'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl', 'sa',
-                        'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona', 'tr', 'vi']
+        # Other than most Wikipedias, page names must not start with a capital
+        # letter on some Wiktionaries.
+
+        self.nocapitalize = ['cs', 'de', 'en', 'eo', 'es', 'fa', 'fr', 'gu',
+                        'hi', 'hr', 'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl',
+                        'sa', 'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona',
+                        'tr', 'vi']
     
         self.obsolete = {'no':'nb',
                     'minnan':'zh-min-nan',
