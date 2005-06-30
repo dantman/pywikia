@@ -1824,12 +1824,10 @@ def url2unicode(percentname, site):
     else:
         # Before removing the % encoding, make sure it is an ASCII string.
         # unquote doesn't work on unicode strings.
-        x=urllib.unquote(str(percentname))
-    #print "DBG> ",language,repr(percentname),repr(x)
+        x = urllib.unquote(str(percentname))
     for encoding in site.encodings():
         try:
-            x = x.encode(encoding)
-            return x
+            return x.decode(encoding)
         except:
             pass
     raise UnicodeError("Could not decode %s" % repr(percentname))
