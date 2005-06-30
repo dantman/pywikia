@@ -2024,7 +2024,7 @@ class Site(object):
         return self.family.name+":"+self.lang
     
     def linkto(self, linkname, othersite = None):
-        if othersite and othersite.lang == self.lang:
+        if othersite and othersite.lang != self.lang:
             return '[[%s:%s]]' % (self.lang, linkname)
         else:
             return '[[%s]]' % linkname
