@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
-import re
+import re, codecs
 import wikipedia
 
 class SinglePageGenerator:
@@ -72,7 +72,7 @@ class TextfilePageGenerator:
 
     def generate(self):
         site = wikipedia.getSite()
-        f = open(self.filename, 'r')
+        f = codecs.open(self.filename, 'r', 'utf-8')
         R = re.compile(r'\[\[(.+?)\]\]')
         for pageTitle in R.findall(f.read()):
             parts = pageTitle.split(':')
