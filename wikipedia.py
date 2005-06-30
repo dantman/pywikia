@@ -496,19 +496,19 @@ class Page(object):
         ll = getLanguageLinks(self.get(read_only = True), insite = self.site())
         for newsite,newname in ll.iteritems():
             if newname[0] == ':':
-                output(u"ERROR> link from %s to %s:%s has leading colon?!" % (self.linkname(), newsite, newname))
+                output(u"ERROR: link from %s to [[%s:%s]] has leading colon?!" % (self.aslink(), newsite, newname))
             if newname[0] == ' ':
-                output(u"ERROR> link from %s to %s:%s has leading space?!" % (self.linkname(), newsite, newname))
+                output(u"ERROR: link from %s to [[%s:%s]] has leading space?!" % (self.aslink(), newsite, newname))
             for pagenametext in self.site().family.pagenamecodes(self.site().language()):
                 newname = newname.replace("{{"+pagenametext+"}}",self.linkname())
             try:
                 result.append(self.__class__(newsite, newname, insite = self.site()))
-            except UnicodeEncodeError:
-                output(u"ERROR> link from %s to %s:%s is invalid encoding?!" % (self.linkname(), newsite, newname))
+            except UnicodeError:
+                output(u"ERROR: link from %s to [[%s:%s]] is invalid encoding?!" % (self.aslink(), newsite, newname))
             except NoSuchEntity:
-                output(u"ERROR> link from %s to %s:%s contains invalid character?!" % (self.linkname(), newsite, newname))
+                output(u"ERROR: link from %s to [[%s:%s]] contains invalid character?!" % (self.aslink(), newsite, newname))
             except ValueError:
-                output(u"ERROR> link from %s to %s:%s contains invalid unicode reference?!" % (self.linkname(), newsite, newname))
+                output(u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!" % (self.aslink(), newsite, newname))
         return result
 
     def categories(self):
@@ -934,7 +934,7 @@ class GetAll(object):
             print 'Warning: wikipedia.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
             print pagenames
         # convert Unicode string to the encoding used on that wiki
-        pagenames = pagenames.encode(site.encoding())
+        pagenames = pagenames.encode(self.site.encoding())
         data = urlencode((
                     ('action', 'submit'),
                     ('pages', pagenames),
@@ -1826,14 +1826,11 @@ def url2unicode(percentname, site):
         # unquote doesn't work on unicode strings.
         x=urllib.unquote(str(percentname))
     #print "DBG> ",language,repr(percentname),repr(x)
-    # Try utf-8 first. It almost cannot succeed by accident!
-    for encoding in ('utf-8',)+site.encodings():
+    for encoding in site.encodings():
         try:
-            encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
-            x,l = decode_func(x)
-            #print "DBG> ",encoding,repr(x)
+            x = x.encode(encoding)
             return x
-        except UnicodeError:
+        except:
             pass
     raise UnicodeError("Could not decode %s" % repr(percentname))
 
