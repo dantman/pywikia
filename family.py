@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -512,7 +512,7 @@ class Family:
         	'sq'  :       [u'kthjellim'],
         	'sr'  :       [u'вишезначна одредница'],
         	'su'  :       [u'disambig'],
-        	'sv'  :       [u'disambig'],
+        	'sv'  :       [u'betydelselista', u'disambig'],
         	'th'  :       [u'แก้กำกวม'],
                 'tr'  :       [u'anlam ayrım'],
         	'vi'  :       [u'trang định hướng'],
