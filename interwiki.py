@@ -360,15 +360,21 @@ class Subject(object):
                             wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % pl.aslink())
                             # Ignore the interwiki links
                             iw = ()
-                    for pl2 in iw:
-                      if pl2.site().language() in globalvar.neverlink:
-                          print "Skipping link %s to an ignored language"% pl2
-                      elif globalvar.same=='wiktionary' and pl2.linkname().lower()!=self.inpl.linkname().lower():
-                          print "NOTE: Ignoring %s for %s in wiktionary mode"% (pl2, self.inpl)
-                      else:   
-                          if self.conditionalAdd(pl2, counter, pl):
-                              if globalvar.shownew:
-                                  wikipedia.output(u"%s: %s gives new interwiki %s"% (self.inpl.aslink(), pl.aslink(), pl2.aslink()))
+                    for page2 in iw:
+                        if page2.site().language() in globalvar.neverlink:
+                            print "Skipping link %s to an ignored language"% page2
+                            continue
+                        if globalvar.same=='wiktionary' and page2.linkname().lower()!=self.inpl.linkname().lower():
+                            print "NOTE: Ignoring %s for %s in wiktionary mode"% (page2, self.inpl)
+                            continue
+                        if not globalvar.autonomous:
+                            if self.inpl.namespace() != page2.namespace():
+                                choice = wikipedia.input('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway? [y|N]' % (self.inpl.aslink(), self.inpl.namespace(), page2.aslink(), page2.namespace()))
+                                if choice not in ['y', 'Y']:
+                                    continue
+                        if self.conditionalAdd(page2, counter, pl):
+                            if globalvar.shownew:
+                                wikipedia.output(u"%s: %s gives new interwiki %s"% (self.inpl.aslink(), pl.aslink(), page2.aslink()))
                               
         # These pages are no longer 'in progress'
         del self.pending
