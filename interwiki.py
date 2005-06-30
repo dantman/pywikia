@@ -987,8 +987,13 @@ if __name__ == "__main__":
                     gen = pagegenerators.TextfilePageGenerator(arg[6:])
                     for pl in gen.generate():
                         sa.add(pl,hints=hints)
+                elif arg == '-start':
+                    start = '_'                     # start page will be entered interactively
                 elif arg.startswith('-start:'):
-                    start = arg[7:]
+                    if len(arg) == 7:
+                        start = '_'                 # start page will be entered interactively
+                    else:
+                        start = arg[7:]
                 elif arg.startswith('-number:'):
                     number = int(arg[8:])
                 elif arg.startswith('-array:'):
@@ -1011,6 +1016,9 @@ if __name__ == "__main__":
                 globalvar.skip[page] = None
 
         if start:
+            if start == '_':
+                start = wikipedia.input(u'Which page to start from: ', wikipedia.myencoding())
+
             namespace = wikipedia.Page(wikipedia.getSite(),start).namespace()
             if number:
                 wikipedia.output(u"Treating %d pages starting at %s" % (number, start))
