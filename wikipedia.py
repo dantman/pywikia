@@ -560,7 +560,7 @@ class Page(object):
         try:
             thistxt = removeLanguageLinks(self.get(read_only = True))
         except IsRedirectPage:
-            return
+            raise
         thistxt = removeCategoryLinks(thistxt, self.site())
 
         Rlink = re.compile(r'\[\[(?P<linkname>[^\]\|]*)(?:\|[^\]\|]*)?\]\]')
