@@ -46,7 +46,6 @@ getall(xx,Pages): Get all pages in Pages (where Pages is a list of Pages,
     and xx: the language the pages are on)
 setAction(text): Use 'text' instead of "Wikipedia python library" in
     summaries
-forSite(text,xx): Change 'text' such that it is usable on the given site xx
 allpages(): Get all page titles in one's home language as Pages (or all
     pages from 'Start' if allpages(start='Start') is used).
 checkLogin(): gives True if the bot is logged in on the home language, False
@@ -934,8 +933,8 @@ class GetAll(object):
         if type(pagenames) != type(u''):
             print 'Warning: wikipedia.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
             print pagenames
-
-        pagenames = forSite(pagenames, self.site)
+        # convert Unicode string to the encoding used on that wiki
+        pagenames = pagenames.encode(site.encoding())
         data = urlencode((
                     ('action', 'submit'),
                     ('pages', pagenames),
@@ -1171,7 +1170,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         if type(text) != type(u''):
             print 'Warning: wikipedia.putPage() got non-unicode page content. Please report this.'
             print text
-        text = forSite(text, site)
+        text = text.encode(site.encoding())
         predata = [
             ('wpSave', '1'),
             ('wpSummary', comment),
@@ -1231,16 +1230,6 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         else:
             output(data, decoder = myencoding())
     return response.status, response.reason, data
-
-def forSite(text, site):
-    """Prepare the unicode string 'text' for inclusion into a page for
-       wiki 'site'. All of the characters in the text should be encodable,
-       otherwise this will fail! This condition is normally met, except if
-       you would copy text verbatim from an UTF-8 language into a iso-8859-1
-       language, and none of the robots in the package should do such things"""
-    if type(text) == type(u''):
-        text = text.encode(site.encoding())
-    return text
 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
