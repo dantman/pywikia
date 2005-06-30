@@ -1839,8 +1839,7 @@ def unicode2html(x, encoding):
     entities. If it does work, we return it unchanged.
     """
     try:
-        encode_func, decode_func, stream_reader, stream_writer = codecs.lookup(encoding)
-        y,l = encode_func(x)
+        x.encode(encoding)
     except UnicodeError:
         x = UnicodeToAsciiHtml(x)
     return x
@@ -2221,10 +2220,9 @@ def argHandler(arg, moduleName):
     return None
 
 #########################
-# Interpret configuration 
+# Interpret configuration
 #########################
 
-# Get the name of the user for submit messages
 username = config.username
 if not config.username:
     print "Please make a file user-config.py, and put in there:"
@@ -2451,6 +2449,8 @@ def input(question, encode = False, decoder=None):
        Unlike raw_input, this function automatically adds a space after the
        question.
     """
+    # sound the terminal bell to notify the user
+    sys.stdout.write('\07')
     output(question, decoder=decoder, newline=False)
     text = raw_input()
     text = unicode(text, config.console_encoding)

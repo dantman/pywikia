@@ -64,8 +64,6 @@ This script understands various command-line arguments:
                    to an operator is needed, write the name of the page
                    to autonomous_problems.dat and continue on the next page.
 
-    -nobell:       do not use the terminal bell to announce a question
-
     -nobacklink:   switch off the backlink warnings
 
     -start:        used as -start:pagename, specifies that the robot should
@@ -194,7 +192,6 @@ class Global(object):
     always = False
     autonomous = False
     backlink = config.interwiki_backlink
-    bell = True
     confirm = False
     debug = True
     followredirect = True
@@ -385,8 +382,6 @@ class Subject(object):
             # Only once! 
             self.hintsasked = True
             if globalvar.untranslated:
-                if globalvar.bell:
-                    sys.stdout.write('\07')
                 newhint = None
                 t = globalvar.showtextlink
                 if t:
@@ -419,9 +414,6 @@ class Subject(object):
         """Report a problem with the resolution of this subject."""
         wikipedia.output(u"ERROR: %s" % txt)
         self.confirm += 1
-        # beep at the first error
-        if globalvar.bell and not self.problemfound and not globalvar.autonomous:
-            sys.stdout.write('\07')
         self.problemfound = True
         if globalvar.autonomous:
             f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
@@ -489,7 +481,7 @@ class Subject(object):
                         self.whereReport(pl2, indent=8)
                     if not globalvar.autonomous:
                         while 1:
-                            answer = raw_input("Which variant should be used [number, (n)one, (g)ive up] :")
+                            answer = wikipedia.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
                             if answer:
                                 if answer in 'gG':
                                     return None
@@ -522,7 +514,7 @@ class Subject(object):
                         if acceptall: 
                             answer = 'a'
                         else: 
-                            answer = raw_input("What should be done [(a)ccept, (r)eject, (g)ive up, accept a(l)l] :")
+                            answer = wikipedia.input(u"What should be done [(a)ccept, (r)eject, (g)ive up, accept a(l)l] :")
                             if not answer:
                                 answer = 'a'
                         if answer in 'lL': # accept all
@@ -606,8 +598,6 @@ class Subject(object):
                             # If we cannot ask, deny permission
                             answer = 'n'
                         else:
-                            if globalvar.bell:
-                                sys.stdout.write('\07')
                             answer = wikipedia.input(u'Submit? [y|N]')
                     else:
                         # If we do not need to ask, allow
@@ -972,8 +962,6 @@ if __name__ == "__main__":
                         for day in range(1, date.days_in_month[month]+1):
                             pl = wikipedia.Page(wikipedia.getSite(), fd(month, day))
                             sa.add(pl,hints=hints)
-                elif arg == '-nobell':
-                    globalvar.bell = False
                 elif arg.startswith('-skipfile:'):
                     skipfile = arg[10:]
                 elif arg == '-restore':
