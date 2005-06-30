@@ -203,6 +203,8 @@ ignore_title = {
           u'Categoria:Desambiguação',
           u'Wikipedia:Links para desambiguar páginas',
           u'Wikipedia:Desambiguação',
+          u'Wikipedia:Lista de páginas de desambiguação',
+          u'Usuário:Nuno Tavares/Stats/Ambiguações',
           ),
     'fy':(
           u'Wikipedy:Fangnet',
