@@ -38,8 +38,9 @@ class Family(family.Family):
         # Other than most Wikipedias, page names must not start with a capital
         # letter on some Wiktionaries.
 
-        self.nocapitalize = ['cs', 'de', 'en', 'eo', 'es', 'fa', 'fr', 'gu',
-                        'hi', 'hr', 'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl',
+        self.nocapitalize = ['bg', 'cs', 'de', 'en', 'eo', 'es',
+                        'fa', 'fr', 'gu', 'hi', 'hr', 'hu', 'it',
+                        'ja', 'ka', 'kn', 'ku', 'ml', 'nl',
                         'sa', 'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona',
                         'tr', 'vi']
     
