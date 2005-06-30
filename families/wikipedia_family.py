@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -26,7 +26,21 @@ class Family(family.Family):
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
             '_default': u'Wikipedia',
+            'ar': u'ويكيبيديا',
+            'bg': u'Уикипедия',
+            'ca': u'Viquipèdia',
+            'cy': u'Wicipedia',
+            'el': u'Βικιπαίδεια',
+            'eo': u'Vikipedio',
+            'he': u'ויקיפדיה',
+            'fr': u'Wikipédia',
+            'hu': u'Wikipédia',
+            'ko': u'위키백과',
+            'ru': u'Википедия',
             'sl': u'Wikipedija',
+            'sk': u'Wikipédia',
+            'sr': u'Википедија',
+            'th': u'วกพเดย',# doesn't seem to be correct for some reason
         }
         self.namespaces[5] = {
             '_default': u'Wikipedia talk',
