@@ -1228,7 +1228,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
                     watchArticle=safetuple[4], minorEdit=safetuple[5], newPage=safetuple[6],
                     token=None,gettoken=True)
         else:
-            output(data, decoder = myencoding())
+            output(data.decode(myencoding()))
     return response.status, response.reason, data
 
 class MyURLopener(urllib.FancyURLopener):
@@ -2223,6 +2223,11 @@ def argHandler(arg, moduleName):
 # Interpret configuration
 #########################
 
+# search for user interface module in the 'userinterfaces' subdirectory
+sys.path.append('userinterfaces')
+exec "import %s as uiModule" % 'terminal'
+ui = uiModule.UI()
+
 username = config.username
 if not config.username:
     print "Please make a file user-config.py, and put in there:"
@@ -2412,19 +2417,15 @@ def activateLog(logname):
         logfile = codecs.open('logs/%s' % logname, 'a', 'utf-8')
     except IOError:
         logfile = codecs.open('logs/%s' % logname, 'w', 'utf-8')
-    
-def output(text, decoder = None, newline = True):
-    """Works like print, but uses the encoding used by the user's console
-       (console_encoding in the configuration file) instead of ASCII. If
-       decoder is None, text should be a unicode string. Otherwise it
-       should be encoded in the given encoding."""
-    # If a character can't be displayed, it will be replaced with a
-    # question mark.
-    if decoder:
-        text = unicode(text, decoder)
-    elif type(text) != type(u''):
-        print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!" 	 
-        print traceback.print_stack() 	 
+
+def output(text, newline = True):
+    """
+    Works like print, but uses the encoding used by the user's console
+    (console_encoding in the configuration file) instead of ASCII.
+    Parameter text should be a unicode string."""
+    if type(text) != type(u''):
+        print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!"
+        print traceback.print_stack()
         print "DBG> Attempting to recover, but please report this problem"
         try:
             text = unicode(text, 'utf-8')
@@ -2434,29 +2435,13 @@ def output(text, decoder = None, newline = True):
         # save the text in a logfile (will be written in utf-8)
         logfile.write(text + '\n')
         logfile.flush()
-    if newline:
-        print text.encode(config.console_encoding, 'replace')
-    else:
-        # comma means 'don't print newline after question'
-        print text.encode(config.console_encoding, 'replace'),
+    ui.output(text, newline = newline)
 
-def input(question, encode = False, decoder=None):
-    """Works like raw_input(), but returns a unicode string instead of ASCII.
-       if encode is True, it will encode the entered string into a format
-       suitable for the local wiki (utf-8 or iso8859-1). Otherwise it will
-       return Unicode. If decoder is None, question should be a unicode
-       string. Otherwise it should be encoded in the given encoding.
-       Unlike raw_input, this function automatically adds a space after the
-       question.
-    """
-    # sound the terminal bell to notify the user
-    sys.stdout.write('\07')
-    output(question, decoder=decoder, newline=False)
-    text = raw_input()
-    text = unicode(text, config.console_encoding)
-    if encode:
-        text = text.encode(myencoding())
-    return text
+def input(question):
+    return ui.input(question)
+
+def inputChoice(question, answers, hotkeys):
+    return ui.inputChoice(question, answers, hotkeys)
 
 def showHelp(moduleName):
     globalHelp =u'''
