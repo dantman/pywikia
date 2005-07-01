@@ -51,7 +51,7 @@ class EditArticle:
     def initialise_data(self):
         """Login, set editor, page and pagelink attributes"""
         self.login()#anonymous=self.options.anonymous)
-        self.editor = self.options.editor or wikipedia.input(u"Editor to use: ", encode=True)
+        self.editor = self.options.editor or wikipedia.input(u"Editor to use:")
         self.setpage()
 
     def login(self):#, anonymous):
@@ -59,7 +59,7 @@ class EditArticle:
         if False:#anonymous:
             self.site = wikipedia.getSite(user=None)
         else:
-            self.username = self.options.username or wikipedia.input(u"Username: ", encode=True)
+            self.username = self.options.username or wikipedia.input(u"Username:")
             self.site = wikipedia.getSite(user=self.username)
             self.site._fill() # load cookies
             if not self.site._loggedin:
@@ -90,7 +90,7 @@ class EditArticle:
 
     def setpage(self):
         """Sets page and pagelink"""
-        self.page = self.options.page or wikipedia.input(u"Page to edit: ", encode=True)
+        self.page = self.options.page or wikipedia.input(u"Page to edit:")
         self.pagelink = wikipedia.Page(self.site, self.page)
         if not self.options.edit_redirect and self.pagelink.isRedirectPage():
             self.pagelink = wikipedia.Page(site, self.pagelink.getRedirectTarget())
