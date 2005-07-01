@@ -2225,7 +2225,7 @@ def argHandler(arg, moduleName):
 
 # search for user interface module in the 'userinterfaces' subdirectory
 sys.path.append('userinterfaces')
-exec "import %s_interface as uiModule" % 'tkinter'
+exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 
 username = config.username

@@ -28,6 +28,9 @@ username = ''
 # windows, and iso-8859-1 on other systems
 console_encoding = None
 
+# tkinter isn't yet ready
+userinterface = 'terminal'
+
 # attop is a list of languages that prefer to have the interwiki
 # links at the top of the page. You can use interwiki_attop.append('xx')
 # in user-config.py to add more.
