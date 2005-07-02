@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an SQL dump or a text file, or only
@@ -17,6 +17,10 @@ You can run the bot with the following commandline parameters:
 -page        - Only edit a single page.
                Argument can also be given as "-page:pagename". You can give this
                parameter multiple times to edit multiple pages.
+-start       - Work on all pages in the wiki, starting at a given page. Choose
+               "-start:!" to start at the beginning.
+               NOTE: You are advised to use -sql instead of this option; this is
+               meant for cases where there is no recent SQL-dump.
 -regex       - Make replacements using regular expressions. If this argument
                isn't given, the bot will make simple text replacements.
 -except:XYZ  - Ignore pages which contain XYZ. If the -regex argument is given,
@@ -157,7 +161,7 @@ class ReplacePageGenerator:
 
     Arguments:
         * source       - Where the bot should retrieve the page list from.
-                         Can be 'sqldump', 'textfile' or 'userinput'.
+                         Can be 'sqldump', 'textfile', 'userinput' or 'allpages'.
         * replacements - A dictionary where keys are original texts and values
                          are replacement texts.
         * exceptions   - A list of strings; pages which contain one of these
@@ -173,7 +177,7 @@ class ReplacePageGenerator:
         * pagenames    - a list of pages which will be used when source is
                          'userinput'.
     """
-    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, sqlfilename = None, categoryname = None, pagenames = None):
+    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, sqlfilename = None, categoryname = None, pagenames = None, startpage = None):
         self.source = source
         self.replacements = replacements
         self.exceptions = exceptions
@@ -183,7 +187,8 @@ class ReplacePageGenerator:
         self.sqlfilename = sqlfilename
         self.categoryname = categoryname
         self.pagenames = pagenames
-    
+        self.startpage = startpage    
+
     def read_pages_from_sql_dump(self):
         """
         Generator which will yield Pages to pages that might contain text to
@@ -294,6 +299,9 @@ class ReplacePageGenerator:
         elif self.source == 'userinput':
             for pagename in self.pagenames:
                 yield wikipedia.Page(wikipedia.getSite(), pagename)
+        elif self.source == 'allpages':
+            for pl in wikipedia.allpages(start = self.startpage):
+                yield pl
 
 class ReplaceRobot:
     def __init__(self, generator, replacements, exceptions = [], regex = False, acceptall = False):
@@ -404,6 +412,8 @@ def main():
     # Which namespace should be processed when using a SQL dump
     # default to -1 which means all namespaces will be processed
     namespace = -1
+    # Which page to start
+    startpage = None
     # Load default summary message.
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
@@ -437,6 +447,12 @@ def main():
                 else:
                     pagenames.append(arg[6:])
                 source = 'userinput'
+            elif arg.startswith('-start'):
+                if len(arg) == 6:
+                    startpage = wikipedia.input(u'Which page do you want to chage?')
+                else:
+                    startpage = arg[7:]
+                source = 'allpages'
             elif arg.startswith('-except:'):
                 exceptions.append(arg[8:])
             elif arg.startswith('-fix:'):
@@ -491,7 +507,7 @@ def main():
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
-    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, sqlfilename, categoryname, pagenames)
+    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, sqlfilename, categoryname, pagenames, startpage)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, regex, acceptall)
     bot.run()
