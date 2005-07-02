@@ -570,7 +570,10 @@ class DisambiguationRobot:
             wikipedia.showColorDiff(original_text, text)
             print ''
             # save the page
-            refpl.put(text)
+            try:
+                refpl.put(text)
+            except:
+                print 'Not Loggin!'
         return True
     
     
