@@ -65,7 +65,7 @@ msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
                          'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
                         }
 
-class TableSqlDumpGenerator:
+class TableSqlDumpGenerator(pagegenerators.PageGenerator):
     def __init__(self, sqlfilename):
         import sqldump
         self.sqldump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
@@ -76,9 +76,7 @@ class TableSqlDumpGenerator:
             if tableTagR.search(entry.text):
                 pl = wikipedia.Page(wikipedia.getSite(), entry.full_title())
                 yield pl
-
-
-                         
+              
 class Table2WikiRobot:
     def __init__(self, generator, debug = False, quietMode = False):
         self.generator = generator
@@ -443,7 +441,7 @@ class Table2WikiRobot:
                 pl.put(newText)
 
     def run(self):
-        for pl in self.generator.generate():
+        for pl in self.generator():
             self.treat(pl)
             
 def main():

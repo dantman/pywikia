@@ -966,11 +966,11 @@ if __name__ == "__main__":
                     skipfile = arg[10:]
                 elif arg == '-restore':
                     gen = pagegenerators.TextfilePageGenerator('interwiki.dump')
-                    for page in gen.generate():
+                    for page in gen():
                         sa.add(page, hints=hints)
                 elif arg == '-continue':
                     gen = pagegenerators.TextfilePageGenerator('interwiki.dump')
-                    for page in gen.generate():
+                    for page in gen():
                         sa.add(page, hints=hints)
                     try:
                         start = page.linkname()
@@ -979,7 +979,7 @@ if __name__ == "__main__":
                         start = "!"
                 elif arg.startswith('-file:'):
                     gen = pagegenerators.TextfilePageGenerator(arg[6:])
-                    for pl in gen.generate():
+                    for pl in gen():
                         sa.add(pl,hints=hints)
                 elif arg == '-start':
                     start = '_'                     # start page will be entered interactively
@@ -1006,7 +1006,7 @@ if __name__ == "__main__":
 
         if skipfile:
             gen = pagegenerators.TextfilePageGenerator(skipfile)
-            for page in gen.generate():
+            for page in gen():
                 globalvar.skip[page] = None
 
         if start:

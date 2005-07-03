@@ -25,7 +25,7 @@ Command line options:
 #
 # Distributed under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.22 2005/06/21 09:29:13 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.23 2005/06/22 18:51:39 wikipedian Exp $'
 #
 import wikipedia, config
 import replace, pagegenerators
@@ -68,7 +68,7 @@ replacements = {
     u"\x9F": u"&Yuml;"    # latin capital letter Y with diaeresis
 }
 
-class SqlWindows1252PageGenerator:
+class SqlWindows1252PageGenerator(pagegenerators.PageGenerator):
     """
     opens a local SQL dump file, searches for pages with Windows-1252
     characters.

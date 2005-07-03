@@ -33,7 +33,7 @@ class TouchBot:
         self.generator = generator
 
     def run(self):
-        for page in self.generator.generate():
+        for page in self.generator():
             try:
                 text = page.get()
                 page.put(text)

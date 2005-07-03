@@ -40,7 +40,7 @@ def main():
     for filename in getfn():
         print "Handling images from %s" % filename
         gen = pagegenerators.TextfilePageGenerator(filename)
-        for image in gen.generate():
+        for image in gen():
             if image.isImage():
                 print "-" * 50
                 print "Image: %s" % image.linkname()

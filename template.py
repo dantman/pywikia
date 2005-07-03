@@ -49,7 +49,7 @@ import wikipedia, config
 import replace, pagegenerators
 import re, sys, string
 
-class SqlTemplatePageGenerator:
+class SqlTemplatePageGenerator(pagegenerators.PageGenerator):
     def __init__(self, template, sqlfilename):
         self.template = template
         self.sqlfilename = sqlfilename

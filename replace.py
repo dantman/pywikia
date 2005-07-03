@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an SQL dump or a text file, or only
@@ -153,7 +153,7 @@ fixes = {
     
 }
 
-class ReplacePageGenerator:
+class ReplacePageGenerator(pagegenerators.PageGenerator):
     """
     Generator which will yield Pages for pages that might contain text to
     replace. These pages might be retrieved from a local SQL dump file or a
@@ -349,7 +349,7 @@ class ReplaceRobot:
         """
         # Run the generator which will yield Pages to pages which might need to be
         # changed.
-        for pl in self.generator.generate():
+        for pl in self.generator():
             print ''
             try:
                 # Load the page's text from the wiki

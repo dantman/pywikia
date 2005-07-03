@@ -44,21 +44,28 @@ import codecs, pickle
 import httplib, socket, urlparse
 import threading, time
 
-class AllpagesPageContentGenerator:
+class ContentGenerator(object):
+    def __call__(self):
+        return self.generate()
+
+    def generate(self):
+        raise Exception("Abstract class")
+    
+class AllpagesPageContentGenerator(ContentGenerator):
     def __init__(self, start):
         self.start = start
-
+    
     def generate(self):
         gen = pagegenerators.AllpagesPageGenerator(self.start)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        for page in preloadingGen.generate():
+        for page in preloadingGen():
             try:
                 text = page.get(read_only = True)
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 continue
             yield page.linkname(), text
 
-class SqlPageContentGenerator:
+class SqlPageContentGenerator(ContentGenerator):
     '''
     Using an SQL dump file, retrieves all pages that are not redirects (doesn't
     load them from the live wiki), and yields title/text pairs.
@@ -72,7 +79,7 @@ class SqlPageContentGenerator:
             if not entry.redirect:
                 yield entry.full_title(), entry.text
 
-class SinglePageContentGenerator:
+class SinglePageContentGenerator(ContentGenerator):
     '''Pseudo-generator'''
     def __init__(self, page):
         self.page = page
@@ -80,7 +87,7 @@ class SinglePageContentGenerator:
     def generate(self):
         yield self.page.linkname(), self.page.get(read_only = True)
 
-class LinkChecker:
+class LinkChecker(object):
     '''
     Given a HTTP URL, tries to load the page from the Internet and checks if it
     is still online.
@@ -295,7 +302,7 @@ class WeblinkCheckerRobot:
         self.history = History()
         
     def run(self):
-        for (title, text) in self.generator.generate():
+        for (title, text) in self.generator():
            self.checkLinksIn(title, text)
     
     def checkLinksIn(self, title, text):

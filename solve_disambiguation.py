@@ -214,14 +214,14 @@ ignore_title = {
           ),
     }
 
-class ReferringPageGenerator(object):
+class ReferringPageGenerator(pagegenerators.PageGenerator):
     def __init__(self, disambPl, primary=False):
         self.disambPl = disambPl
         # if run with the -primary argument, enable the ignore manager
         self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl,
                                                          enabled=primary)
         
-    def __call__(self):
+    def generate(self):
         refs = self.disambPl.getReferences(follow_redirects=False)
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
