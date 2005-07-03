@@ -146,9 +146,6 @@ class EditConflict(Error):
 class PageInList(LookupError):
     """Trying to add page to list that is already included"""
 
-class NotLoggedIn(Exception):
-    """Anonymous editing Wikipedia is not possible"""
-
 class PageNotFound(Exception):
     """Page not found in list"""
 
@@ -1160,10 +1157,6 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     # If no comment is given for the change, use the default
     if comment is None:
         comment=action
-    # Prefix the comment with the user name if the user is not logged in.
-    if not site.loggedin():
-        print "Anonymous editing is not possible."
-        raise NotLoggedIn
     # Use the proper encoding for the comment
     comment = comment.encode(site.encoding())
     try:
@@ -1214,14 +1207,12 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
 
     # Prepare the return values
     response = conn.getresponse()
-    data = response.read()
+    data = response.read().decode(myencoding())
     conn.close()
-    if data != '':
-        if "<title>Edit conflict" in data: # FIXME: multi-lingual
+    if data != u'':
+        editconflict = mediawiki_messages.get('editconflict').replace('$1', '')
+        if '<title>%s' % editconflict in data:
             raise EditConflict()
-        elif "<title>500 Internal Server Error" in data:
-            print "Anonymous editing currently not possible."
-            raise NotLoggedIn
         elif safetuple and "<" in data:
             # We might have been using an outdated token
             print "Changing page has failed. Retrying."
@@ -1229,7 +1220,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
                     watchArticle=safetuple[4], minorEdit=safetuple[5], newPage=safetuple[6],
                     token=None,gettoken=True)
         else:
-            output(data.decode(myencoding()))
+            output(data)
     return response.status, response.reason, data
 
 class MyURLopener(urllib.FancyURLopener):
