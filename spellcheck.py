@@ -326,7 +326,7 @@ class Word(object):
         if rep == self.derive():
             return self.word
         if self.word.find(self.derive()) == -1:
-            return wikipedia.input("Please give the result of replacing %s by %s in %s:"%(self.derive(),rep,self.word))
+            return wikipedia.input(u"Please give the result of replacing %s by %s in %s:"%(self.derive(),rep,self.word))
         return self.word.replace(self.derive(),rep)
             
     def isCorrect(self):
