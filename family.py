@@ -517,7 +517,7 @@ class Family:
                 'tr'  :       [u'anlam ayrım'],
         	'vi'  :       [u'trang định hướng'],
         	'wa'  :       [u'omonimeye'],
-        	'zh'  :       [u'disambig'],
+        	'zh'  :       [u'disambig', '消歧义'],
         	'zh-min-nan': [u'khu-pia̍t-ia̍h'],
         }
 
