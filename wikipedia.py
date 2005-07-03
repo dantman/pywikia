@@ -2418,12 +2418,16 @@ def activateLog(logname):
     except IOError:
         logfile = codecs.open('logs/%s' % logname, 'w', 'utf-8')
 
-def output(text, newline = True):
+def output(text, decoder = None, newline = True):
     """
     Works like print, but uses the encoding used by the user's console
     (console_encoding in the configuration file) instead of ASCII.
-    Parameter text should be a unicode string."""
-    if type(text) != type(u''):
+    If decoder is None, text should be a unicode string. Otherwise it
+    should be encoded in the given encoding.
+    """
+    if decoder:
+        text = unicode(text, decoder)
+    elif type(text) != type(u''):
         print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!"
         print traceback.print_stack()
         print "DBG> Attempting to recover, but please report this problem"
