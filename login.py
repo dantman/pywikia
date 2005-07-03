@@ -72,7 +72,7 @@ class LoginManager:
         if self.site == wikipedia.getSite('en', 'wikipedia'):
             pl = wikipedia.Page(self.site, "Wikipedia:Bots")
             text = pl.get()
-            return "[[user:%s" % username.lower() in text.lower()
+            return "[[user:%s" % self.username.lower() in text.lower()
         else:
             # No bot policies on other 
             return True
@@ -140,7 +140,7 @@ class LoginManager:
         wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
         # Ensure bot policy on the English Wikipedia
         if not self.botAllowed():
-            wikipedia.output(u'Your username is not listed on [[Wikipedia:Bots]]. Please make sure you are allowed to use the robot before actually using it!')
+            wikipedia.output(u'*** Your username is not listed on [[Wikipedia:Bots]].\n*** Please make sure you are allowed to use the robot before actually using it!')
         cookiedata = self.getCookie()
         if cookiedata:
             self.storecookiedata(cookiedata)
