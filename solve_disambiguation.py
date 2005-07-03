@@ -728,10 +728,6 @@ def main():
 
 if __name__ == "__main__":
     try:
-        if wikipedia.checkLogin():
-            main()
-        else:
-            print 'Not logged in!'
-            sys.exit()
+        main()
     finally:
         wikipedia.stopme()

@@ -48,8 +48,6 @@ setAction(text): Use 'text' instead of "Wikipedia python library" in
     summaries
 allpages(): Get all page titles in one's home language as Pages (or all
     pages from 'Start' if allpages(start='Start') is used).
-checkLogin(): gives True if the bot is logged in on the home language, False
-    otherwise
 argHandler(text): Checks whether text is an argument defined on wikipedia.py
     (these are -family, -lang, and -log)
 translate(xx, dict): dict is a dictionary, giving text depending on language,
@@ -98,7 +96,7 @@ import xml.sax, xml.sax.handler
 import warnings
 import datetime
 
-import config, mediawiki_messages
+import config, mediawiki_messages, login
 import htmlentitydefs
 
 import locale
@@ -474,6 +472,9 @@ class Page(object):
 
            If watchArticle is None, leaves the watchlist status unchanged.
         """
+        while not self.site().loggedin(check = True):
+            loginMan = login.LoginManager()
+            loginMan.login()
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
@@ -1971,19 +1972,19 @@ class Site(object):
         
     def cookies(self):
         if not hasattr(self,'_cookies'):
-            self._fill()
+            self._loadCookies()
         return self._cookies
 
     def loggedin(self, check = False):
-        if not hasattr(self,'_loggedin'):
-            self._fill()
+        if check or not hasattr(self,'_loggedin'):
+            self._loadCookies()
         if check:
             path = self.get_address('Non-existing_page')
             txt = getUrl(self, path)
             self._loggedin = 'Userlogin' not in txt
         return self._loggedin
 
-    def _fill(self):
+    def _loadCookies(self):
         """Retrieve session cookies for login"""
         #if self.user is None:
         #    u = ""
@@ -2173,11 +2174,6 @@ def getSite(code = None, fam = None, user=None):
     if not _sites.has_key(key):
         _sites[key] = Site(code=code, fam=fam, user=user)
     return _sites[key]
-    
-def checkLogin(site = None):
-    if not site:
-        site = getSite()
-    return site.loggedin(check=True)
     
 def argHandler(arg, moduleName):
     '''
