@@ -1,8 +1,9 @@
 #!/bin/sh
+dt=`date +"%Y%m%d"`
 /bin/rm -rf temp
 mkdir temp
 cd temp
 cvs -d `cat ../CVS/Root` export -D now -d pywikipediabot pywikipedia
-/bin/rm -f $HOME/robot.zip
-zip -rv $HOME/robot.zip pywikipediabot/*
-tar -cvzf $HOME/robot.tar.gz pywikipediabot/*
+/bin/rm -f $HOME/snapshot-$dt.zip
+zip -rv $HOME/snapshot-$dt.zip pywikipediabot/*
+tar -cvzf $HOME/snapshot-$dt.tar.gz pywikipediabot/*
