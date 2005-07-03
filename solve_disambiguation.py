@@ -68,53 +68,56 @@ To complete a move of a page, one can use:
 #
 __version__='$Id$'
 #
-import wikipedia, config, pagegenerators
-import re, sys, math
+# Standard library imports
+import re, sys
+
+# Application specific imports
+import wikipedia, pagegenerators
 
 # This is a purely interactive robot. We set the delays lower.
 wikipedia.put_throttle.setDelay(4)
 
 # Summary message when run without -redir parameter
-msg={
-    'en':u'Robot-assisted disambiguation: %s',
-    'da':u'Retter flertydigt link til: %s',
-    'de':u'Bot-unterstützte Begriffsklärung: %s',
-    'nl':u'Robot-geholpen doorverwijzing: %s',
-    'fr':u'Homonymie résolue à l\'aide du robot: %s',
-    'pt':u'Desambiguação assistida por bot: %s'
+msg = {
+    'en': u'Robot-assisted disambiguation: %s',
+    'da': u'Retter flertydigt link til: %s',
+    'de': u'Bot-unterstützte Begriffsklärung: %s',
+    'nl': u'Robot-geholpen doorverwijzing: %s',
+    'fr': u'Homonymie résolue à l\'aide du robot: %s',
+    'pt': u'Desambiguação assistida por bot: %s'
     }
 
 # Summary message when run with -redir parameter
-msg_redir={
-          'en':u'Robot-assisted disambiguation: %s',
-          'da':u'Retter flertydigt link til: %s',
-          'de':u'Bot-unterstützte Redirectauflösung: %s',
-          'nl':u'Robot-geholpen doorverwijzing: %s',
-          'fr':u'Correction de lien vers redirect: %s',
-          'pt':u'Desambiguação assistida por bot: %s'
-          }
+msg_redir = {
+    'en': u'Robot-assisted disambiguation: %s',
+    'da': u'Retter flertydigt link til: %s',
+    'de': u'Bot-unterstützte Redirectauflösung: %s',
+    'nl': u'Robot-geholpen doorverwijzing: %s',
+    'fr': u'Correction de lien vers redirect: %s',
+    'pt': u'Desambiguação assistida por bot: %s'
+    }
 
 # disambiguation page name format for "primary topic" disambiguations
 # (Begriffsklärungen nach Modell 2)
-primary_topic_format={
-          'de':u'%s_(Begriffsklärung)',
-          'en':u'%s_(disambiguation)',
-          'nl':u'%s_(doorverwijspagina)',
-          'pt':u'%s_(desambiguação)'
-          }
+primary_topic_format = {
+    'de': u'%s_(Begriffsklärung)',
+    'en': u'%s_(disambiguation)',
+    'nl': u'%s_(doorverwijspagina)',
+    'pt': u'%s_(desambiguação)'
+    }
 
-# letters that can follow a link and are regarded as part of this link
+# letters that can follow a wikilink and are regarded as part of this link
 # This depends on the linktrail setting in LanguageXx.php.
 # See http://meta.wikipedia.org/wiki/Locales_for_the_Wikipedia_Software
 # to find out the setting for your Wikipedia.
 # Note: this is a regular expression.
-link_trail={
-   'de':u'[a-zäöüß]*',
-   'da':u'[a-zæøå]*',
-   'en':u'[a-z]*',
-   'fr':u'[a-zàâçéèêîôû]*',
-   'nl':u'[a-zäöüïëéèéàç]*',
-   'pt':u'[a-záâàãéêíóôõúüç]*'
+link_trail = {
+   'de': u'[a-zäöüß]*',
+   'da': u'[a-zæøå]*',
+   'en': u'[a-z]*',
+   'fr': u'[a-zàâçéèêîôû]*',
+   'nl': u'[a-zäöüïëéèéàç]*',
+   'pt': u'[a-záâàãéêíóôõúüç]*'
    }
 
 # List pages that will be ignored if they got a link to a disambiguation
@@ -211,14 +214,15 @@ ignore_title = {
           ),
     }
 
-class ReferringPageGenerator:
-    def __init__(self, disambPl, primary = False):
+class ReferringPageGenerator(object):
+    def __init__(self, disambPl, primary=False):
         self.disambPl = disambPl
         # if run with the -primary argument, enable the ignore manager
-        self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl, enabled = primary)
+        self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl,
+                                                         enabled=primary)
         
-    def generate(self):
-        refs = self.disambPl.getReferences(follow_redirects = False)
+    def __call__(self):
+        refs = self.disambPl.getReferences(follow_redirects=False)
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
         if ignore_title.has_key(self.disambPl.site().lang):
@@ -231,10 +235,9 @@ class ReferringPageGenerator:
                         #wikipedia.output('Ignoring page %s because it was skipped before' % refs[i].linkname())
                         del refs[i]
         wikipedia.output(u"Will work on %d pages." % len(refs))
-        for page in refs:
-            yield page
+        return iter(refs)
 
-class PrimaryIgnoreManager:
+class PrimaryIgnoreManager(object):
     '''
     If run with the -primary argument, reads from a file which pages should
     not be worked on; these are the ones where the user pressed n last time.
@@ -297,7 +300,7 @@ class PrimaryIgnoreManager:
         return normpath(abspath(path))
     
 
-class DisambiguationRobot:
+class DisambiguationRobot(object):
     ignore_contents = {
         'de':(u'{{[Ii]nuse}}',
               u'{{[Ll]öschen}}',
@@ -316,11 +319,7 @@ class DisambiguationRobot:
         self.mysite = wikipedia.getSite()
         self.mylang = self.mysite.language()
 
-        # compile regular expressions
-        self.ignore_contents_regexes = []
-        if self.ignore_contents.has_key(self.mylang):
-            for ig in self.ignore_contents[self.mylang]:
-                self.ignore_contents_regexes.append(re.compile(ig))
+        self.setupRegexes()
         
     def checkContents(self, text):
         '''
@@ -343,22 +342,38 @@ class DisambiguationRobot:
             result[i]=None
         self.alternatives = result.keys()
     
+    def listAlternativesGui(self):
+        # list in new window, does not behave as expected, so not used currently.
+        print '\n\t\t--> beachte neues Fenster <--'
+        import gui
+        list_window = gui.ListBoxWindow()
+        list_window.list(self.alternatives)
     
     def listAlternatives(self):
-            #########
-        # The GUI for the list is disabled because it doesn't
-        # work exactly as expected.
-        #########
-        #list in new window
-        #print '\n\t\t--> beachte neues Fenster <--'
-        #import gui
-        #list_window = gui.ListBoxWindow()
-        #mylist = list_window.list(alternatives)
-        ##########
-        print '\n'
+        print
+        print
         for i in range(len(self.alternatives)):
             wikipedia.output(u"%3d - %s" % (i, self.alternatives[i]))
     
+    def setupRegexes(self):
+        # compile regular expressions
+        self.ignore_contents_regexes = []
+        if self.ignore_contents.has_key(self.mylang):
+            for ig in self.ignore_contents[self.mylang]:
+                self.ignore_contents_regexes.append(re.compile(ig))
+
+        if self.mylang in link_trail:
+            linktrail = link_trail[self.mylang]
+        else:
+            linktrail = '[a-z]*'
+        self.trailR = re.compile(linktrail)
+        # The regular expression which finds links. Results consist of three groups:
+        # group(1) is the target page title, that is, everything before | or ].
+        # group(2) is the alternative link title, that's everything between | and ].
+        # group(3) is the link trail, that's letters after ]] which are part of the word.
+        # note that the definition of 'letter' varies from language to language.
+        self.linkR = re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + linktrail + ')')
+        
     def treat(self, refpl, disambPl):
         """
         Parameters:
@@ -368,17 +383,6 @@ class DisambiguationRobot:
         Returns False if the user pressed q to completely quit the program.
         Otherwise, returns True.
         """
-        if self.mylang in link_trail:
-            linktrail=link_trail[self.mylang]
-        else:
-            linktrail='[a-z]*'
-        trailR=re.compile(linktrail)
-        # The regular expression which finds links. Results consist of three groups:
-        # group(1) is the target page title, that is, everything before | or ].
-        # group(2) is the alternative link title, that's everything between | and ].
-        # group(3) is the link trail, that's letters after ]] which are part of the word.
-        # note that the definition of 'letter' varies from language to language.
-        linkR=re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + linktrail + ')')
 
         include = False
         try:
@@ -401,7 +405,7 @@ class DisambiguationRobot:
                 if choice == 'y':
                     gen = ReferringPageGenerator(refpl, self.primary)
                     preloadingGen = pagegenerators.PreloadingGenerator(gen)
-                    for refpl2 in preloadingGen.generate():
+                    for refpl2 in preloadingGen():
                         # run until the user selected 'quit'
                         if not self.treat(refpl2, refpl):
                             break
@@ -411,15 +415,15 @@ class DisambiguationRobot:
         except wikipedia.NoPage:
             wikipedia.output(u'Page [[%s]] does not seem to exist?! Skipping.' % refpl.linkname())
             include = False
-        if include in [True,"redirect"]:
+        if include in (True, "redirect"):
             # make a backup of the original text so we can show the changes later
-            original_text=text
+            original_text = text
             n = 0
             curpos = 0
             edited = False
             # This loop will run until we have finished the current page
             while True:
-                m=linkR.search(text, pos = curpos)
+                m = self.linkR.search(text, pos = curpos)
                 if not m:
                     if n == 0:
                         wikipedia.output(u"No changes necessary in %s" % refpl.linkname())
@@ -444,7 +448,8 @@ class DisambiguationRobot:
                 # This loop will run while the user doesn't choose an option
                 # that will actually change the page
                 while True:
-                    print '\n'
+                    print
+                    print
                     wikipedia.output(u">>> %s <<<" % refpl.linkname())
                     # at the beginning of the link, start red color.
                     # at the end of the link, reset the color to default
@@ -452,18 +457,18 @@ class DisambiguationRobot:
                     wikipedia.output(displayedText)
                     if not self.always:
                         if edited:
-                            choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                            choice = wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
                                                "        q=quit, m=more context, l=list, a=add new, x=save in this form):")
                         else:
-                            choice=wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
+                            choice = wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
                                                "        q=quit, m=more context, l=list, a=add new):")
                     else:
                         choice = self.always
-                    if choice=='a':
+                    if choice == 'a':
                         newAlternative = wikipedia.input(u'New alternative:')
                         self.alternatives.append(newAlternative)
                         self.listAlternatives()
-                    elif choice=='e':
+                    elif choice == 'e':
                         import gui
                         edit_window = gui.EditBoxWindow()
                         newtxt = edit_window.edit(text, search=disambPl.linkname())
@@ -471,11 +476,11 @@ class DisambiguationRobot:
                         if newtxt:
                             text = newtxt
                             break
-                    elif choice=='l':
+                    elif choice == 'l':
                         self.listAlternatives()
-                    elif choice=='m':
+                    elif choice == 'm':
                         # show more text around the link we're working on
-                        context*=2
+                        context *= 2
                     else:
                         break
             
@@ -490,14 +495,14 @@ class DisambiguationRobot:
                         # If run with the -primary argument, skip this occurence next time.
                         self.primaryIgnoreManager.ignore(refpl)
                     return True
-                elif choice=='q':
+                elif choice == 'q':
                     # quit the program
                     return False
-                elif choice=='s':
+                elif choice == 's':
                     # Next link on this page
                     n -= 1
                     continue
-                elif choice=='x' and edited:
+                elif choice == 'x' and edited:
                     # Save the page as is
                     break
     
@@ -520,22 +525,24 @@ class DisambiguationRobot:
                 else:
                     if len(choice)>0 and choice[0] == 'r':
                     # we want to throw away the original link text
-                        replaceit = 1
+                        replaceit = True
                         choice = choice[1:]
                     elif include == "redirect":
-                        replaceit = 1
+                        replaceit = True
                     else:
-                        replaceit = 0
+                        replaceit = False
     
                     try:
                         choice=int(choice)
                     except ValueError:
-                        print '\nUnknown option'
+                        print
+                        print "Unknown option"
                         # step back to ask the user again what to do with the current link
                         curpos -= 1
                         continue
                     if choice >= len(self.alternatives) or choice < 0:
-                        print '\nChoice out of range. Please select a number between 0 and %d.' % (len(self.alternatives) - 1)
+                        print
+                        print "Choice out of range. Please select a number between 0 and %d." % (len(self.alternatives) - 1)
                         # show list of possible choices
                         self.listAlternatives()
                         # step back to ask the user again what to do with the current link
@@ -558,7 +565,7 @@ class DisambiguationRobot:
                     elif new_page_title == link_text or replaceit:
                         newlink = "[[%s]]" % new_page_title
                     # check if we can create a link with trailing characters instead of a pipelink
-                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(trailR, '', link_text[len(new_page_title):]) == '':
+                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(self.trailR, '', link_text[len(new_page_title):]) == '':
                         newlink = "[[%s]]%s" % (new_page_title, link_text[len(new_page_title):])
                     else:
                         newlink = "[[%s|%s]]" % (new_page_title, link_text)
@@ -633,7 +640,7 @@ class DisambiguationRobot:
     
             gen = ReferringPageGenerator(disambPl, self.primary)
             preloadingGen = pagegenerators.PreloadingGenerator(gen)
-            for refpl in preloadingGen.generate():
+            for refpl in preloadingGen():
                 if not self.primaryIgnoreManager.isIgnored(refpl):
                     # run until the user selected 'quit'
                     if not self.treat(refpl, disambPl):
@@ -670,13 +677,13 @@ def main():
                 always = arg[8:]
             elif arg.startswith('-file'):
                 if len(arg) == 5:
-                    # todo: check for console encoding to allow special characters
-                    # in filenames, as done below with pagename
-                    file = wikipedia.input(u'Please enter the list\'s filename:')
+                    # todo: check for console encoding to allow special
+                    # characters in filenames, as done below with pagename
+                    fn = wikipedia.input(u'Please enter the list\'s filename:')
                 else:
-                    file = arg[6:]
+                    fn = arg[6:]
                 # open file and read page titles out of it
-                f=open(file)
+                f = open(fn)
                 for line in f.readlines():
                     if line != '\n':
                         page_list.append(line)
@@ -684,7 +691,7 @@ def main():
             elif arg.startswith('-pos:'):
                 if arg[5]!=':':
                     mysite = wikipedia.getSite()
-                    pl=wikipedia.Page(mysite, arg[5:])
+                    pl = wikipedia.Page(mysite, arg[5:])
                     if pl.exists():
                         alternatives.append(pl.linkname())
                     else:
@@ -694,11 +701,11 @@ def main():
                             alternatives.append(pl.linkname())
                 else:
                     alternatives.append(arg[5:])
-            elif arg=='-just':
+            elif arg == '-just':
                 getAlternatives = False
-            elif arg=='-redir':
+            elif arg == '-redir':
                 solve_redirect = True
-            elif arg=='-main':
+            elif arg == '-main':
                 main_only = True
             else:
                 page_title.append(arg)
@@ -715,15 +722,16 @@ def main():
         pagename = wikipedia.input(u'Which page to check:')
         page_list.append(pagename)
                 
-    bot = DisambiguationRobot(always, alternatives, getAlternatives, solve_redirect, page_list, primary, main_only)
+    bot = DisambiguationRobot(always, alternatives, getAlternatives,
+                              solve_redirect, page_list, primary, main_only)
     bot.run()
 
 if __name__ == "__main__":
     try:
-        if wikipedia.checkLogin()==True:
+        if wikipedia.checkLogin():
             main()
         else:
-            print 'Not loggin!'
+            print 'Not logged in!'
             sys.exit()
     finally:
         wikipedia.stopme()
