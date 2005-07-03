@@ -1,26 +1,31 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-Script to log the robot in to a wikipedia account.
+Script to log the robot in to a wiki account.
 
 Suggestion is to make a special account to use for robot use only. Make
 sure this robot account is well known on your home wikipedia before using.
 
-This script has no command line arguments. Please run it as such. It will ask
-for your username and password (it will show your password on the screen!), log
-in to your home wikipedia using this combination, and store the resulting
-cookies (containing your password in encoded form, so keep it secured!) in a
-file named login.data
+Parameters:
 
-The wikipedia library will be looking for this file and will use the login
-information if it is present.
+   -user:XXXX   logs in with username XXXX
 
-Arguments:
+   -pass:XXXX   uses XXXX as password. It's not recommended to use this
+                parameter because your password will be shown on your
+                screen.
 
-  -lang:xx Log in to the given wikipedia language
-  
+    
+    
+If not given as parameter, the script will ask for your username and password
+(password entry will be hidden), log in to your home wiki using this
+combination, and store the resulting cookies (containing your password hash,
+so keep it secured!) in a file in the login-data subdirectory.
+
+All bots in this library will be looking for this cookie file and will use the
+login information if it is present.
+
 To log out, throw away the XX-login.data file that is created in the login-data
-subdirectory..
+subdirectory.
 """
 #
 # (C) Rob W.W. Hooft, 2003
@@ -53,118 +58,114 @@ def makepath(path):
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
 
-def allowedbot(username, site):
-    """Checks whether the bot is listed on Wikipedia:bots"""
-    pl = wikipedia.Page(site, "Wikipedia:Bots")
-    text = pl.get()
-    return "[[user:%s" % username.lower() in text.lower()
+class LoginManager:
+    def __init__(self, username = None, password = None, site = None):
+        self.username = username or config.username
+        self.password = password
+        self.site = site or wikipedia.getSite()
 
-def login(site, username, password, remember=True):
-    """Login to wikipedia.
-
-    site        Site object for Wikipedia language+family
-    username    Username to login with
-    password    Password for username
-    remember    Remember login (default: True)
-    
-    Returns cookie data if succesful, False otherwise."""
-
-    data = {"wpName": username,
-            "wpPassword": password,
-            "wpLoginattempt": "Aanmelden & Inschrijven",
-            "wpRemember": str(int(bool(remember)))}
-    data = wikipedia.urlencode(data.items())
-    headers = {"Content-type": "application/x-www-form-urlencoded", 
-               "User-agent": "RobHooftWikiRobot/1.0"}
-    pagename = site.login_address()
-    conn = httplib.HTTPConnection(site.hostname())
-    conn.request("POST", pagename, data, headers)
-    response = conn.getresponse()
-    conn.close()
-    data = response.read()
-
-    n=0
-    Reat=re.compile(': (.*?);')
-    L = []
-    for eat in response.msg.getallmatchingheaders('set-cookie'):
-        m = Reat.search(eat)
-        if m:
-            n += 1
-            L.append(m.group(1))
-
-    if len(L) == 4:
-        return "\n".join(L)
-    else:
-        return False
-
-def storecookiedata(data, site, user=None):
-    """Stores cookie data
-    
-    The first argument is the raw data, as returned by login().
-    The second argument is the Site object.
-    The third argument is optional and is the user. It allows muliple-user bots.
-    If it is not given, the filename is old-style. Otherwise, the username is
-    also included in the filename for the login data.
-    
-    Returns nothing."""
-
-    #if user is None:
-    user = ""
-    #else:
-    #    user += "-"
-    f = open(makepath('login-data/%s-%s-%slogin.data' % (site.family.name, site.lang, user)), 'w')
-    f.write(data)
-    f.close()
-
-def main(args):
-
-    username = password = None
-    for arg in args:#sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'login')
-        if arg is None: continue
-        if arg.startswith("-user:"):
-            username = arg[6:]
-        elif arg.startswith("-pass:"): # not recommended
-            password = arg[6:]
+    def botAllowed(self):
+        """
+        Checks whether the bot is listed on Wikipedia:Bots to comply with
+        the policy on the English Wikipedia.
+        """
+        if self.site == wikipedia.getSite('en', 'wikipedia'):
+            pl = wikipedia.Page(self.site, "Wikipedia:Bots")
+            text = pl.get()
+            return "[[user:%s" % username.lower() in text.lower()
         else:
-            sys.exit("Unknown argument: %s" % arg)
+            # No bot policies on other 
+            return True
+    
+    def getCookie(self, remember=True):
+        """Login to wikipedia.
+    
+        remember    Remember login (default: True)
+        
+        Returns cookie data if succesful, False otherwise."""
+    
+        data = {"wpName": self.username,
+                "wpPassword": self.password,
+                "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
+                "wpRemember": str(int(bool(remember)))}
+        data = wikipedia.urlencode(data.items())
+        headers = {
+            "Content-type": "application/x-www-form-urlencoded", 
+            "User-agent": "RobHooftWikiRobot/1.0"
+        }
+        pagename = self.site.login_address()
+        conn = httplib.HTTPConnection(self.site.hostname())
+        conn.request("POST", pagename, data, headers)
+        response = conn.getresponse()
+        conn.close()
+        data = response.read()
+    
+        n=0
+        Reat=re.compile(': (.*?);')
+        L = []
+        for eat in response.msg.getallmatchingheaders('set-cookie'):
+            m = Reat.search(eat)
+            if m:
+                n += 1
+                L.append(m.group(1))
 
-    mysite = wikipedia.getSite()
+        if len(L) == 4:
+            return "\n".join(L)
+        else:
+            return False
 
-    if username is None:
-        username = config.username # wikipedia.input(u'username:', encode = True)
-    if not password:
-        # As we don't want the password to appear on the screen, we use getpass(). 
-        password = getpass.getpass('password: ')
-        # Convert the password from the encoding your shell uses to the one your wiki
-        # uses, via Unicode. This is the same as wikipedia.input() does with the 
-        # username, but input() uses raw_input() instead of getpass().
-        password = unicode(password, config.console_encoding)
+    def storecookiedata(self, data):
+        """
+        Stores cookie data.
 
-    password = password.encode(wikipedia.myencoding())
+        The argument data is the raw data, as returned by getCookie().
 
-    wikipedia.output(u"Logging in to %s as %s" % (repr(mysite), username))
-    # Ensure bot policy on the English Wikipedia
-    ensite=wikipedia.getSite(code='en',fam='wikipedia')
-    if mysite == ensite:
-        if not allowedbot(username, ensite):
-            print "Your username is not listed on [[Wikipedia:Bots]]"
-            print "Please make sure you are allowed to use the robot"
-            print "Before actually using it!"
-            
-    cookiedata = login(mysite, username, password)
-    if cookiedata:
-        storecookiedata(cookiedata, mysite, username)
-        print "Should be logged in now"
-    else:
-        print "Login failed. Wrong password?"
+        Returns nothing."""
+        filename = 'login-data/%s-%s-%slogin.data' % (self.site.family.name, self.site.lang, self.username)
+        f = open(makepath(filename), 'w')
+        f.write(data)
+        f.close()
+
+    def login(self):
+        if not self.password:
+            # As we don't want the password to appear on the screen, we use getpass(). 
+            self.password = getpass.getpass('Password for user %s on %s: ' % (self.username, self.site))
+            # Convert the password from the encoding your shell uses to the one your wiki
+            # uses, via Unicode. This is the same as wikipedia.input() does with the 
+            # username, but input() uses raw_input() instead of getpass().
+            self.password = unicode(self.password, config.console_encoding)
+    
+        self.password = self.password.encode(wikipedia.myencoding())
+    
+        wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
+        # Ensure bot policy on the English Wikipedia
+        if not self.botAllowed():
+            wikipedia.output(u'Your username is not listed on [[Wikipedia:Bots]]. Please make sure you are allowed to use the robot before actually using it!')
+        cookiedata = self.getCookie()
+        if cookiedata:
+            self.storecookiedata(cookiedata)
+            wikipedia.output(u"Should be logged in now")
+        else:
+            wikipedia.output(u"Login failed. Wrong password?")
+
+def main():
+    username = password = None
+    for arg in sys.argv[1:]:
+        arg = wikipedia.argHandler(arg, 'login')
+        if arg:
+            if arg.startswith("-user:"):
+                username = arg[6:]
+            elif arg.startswith("-pass:"): # not recommended
+                password = arg[6:]
+            else:
+                wikipedia.showHelp('login')
+                sys.exit()
+    loginMan = LoginManager(username, password)
+    loginMan.login()
 
 if __name__ == "__main__":
     try:
-        main(sys.argv[1:])
-    except:
-        wikipedia.stopme()
-        raise
-    else:
+        main()
+    finally:
         wikipedia.stopme()
 
