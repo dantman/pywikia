@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -121,10 +121,6 @@ class Family(family.Family):
                     'nb', 'simple', 'gl', 'eu', 'nds', 'co', 'mi', 'mr',
                     'id', 'lv', 'sw', 'tt', 'uk', 'vo', 'ga', 'na', 'es',
                     'nl', 'da', 'dk', 'sv', 'test']
-        
-    def code2encoding(self, code):
-        """Return the encoding for a specific language wikipedia"""
-        return 'utf-8'
     
     def code2encodings(self, code):
         """Return a list of historical encodings for a specific language
