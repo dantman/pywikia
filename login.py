@@ -82,7 +82,7 @@ class LoginManager:
     
         remember    Remember login (default: True)
         
-        Returns cookie data if succesful, False otherwise."""
+        Returns cookie data if succesful, None otherwise."""
     
         data = {"wpName": self.username,
                 "wpPassword": self.password,
@@ -112,7 +112,7 @@ class LoginManager:
         if len(L) == 4:
             return "\n".join(L)
         else:
-            return False
+            return None
 
     def storecookiedata(self, data):
         """
@@ -121,7 +121,7 @@ class LoginManager:
         The argument data is the raw data, as returned by getCookie().
 
         Returns nothing."""
-        filename = 'login-data/%s-%s-%slogin.data' % (self.site.family.name, self.site.lang, self.username)
+        filename = 'login-data/%s-%s-login.data' % (self.site.family.name, self.site.lang)
         f = open(makepath(filename), 'w')
         f.write(data)
         f.close()
