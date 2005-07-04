@@ -182,10 +182,12 @@ ignore_title = {
     'de':(
           u'100 Wörter des 21. Jahrhunderts',
           u'Abkürzungen/[A-Z]',
-          u'Benutzer:Zwobot/Probleme',
+          u'Benutzer:Achim Raschka/Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
+          u'Benutzer:Achim Raschka/Liste aller 2-Buchstaben-Kombinationen',
           u'Benutzer:Katharina/Begriffsklärungen',
           u'Benutzer:Tsor/Begriffsklärungen',
           u'Benutzer:SirJective/Klammerzusatz',
+          u'Benutzer:Zwobot/Probleme',
           u'Benutzer Diskussion:.+',
           u'GISLexikon \([A-Z]\)',
           u'Lehnwort',
