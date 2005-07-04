@@ -2365,8 +2365,10 @@ def showDiff(oldtext, newtext):
             colors += lastcolors + [None]
         elif lastline:
             diff += lastline + '\n'
-            # colorize the entire line in red or green
-            colors += [color[lastline[0]] for c in lastline] + [None]
+            # colorize the + or - sign only
+            lastcolors = [None for c in lastline]
+            lastcolors[0] = color[lastline[0]]
+            colors += lastcolors + [None]
         lastline = None
         if line[0] in ('+', '-'):
             lastline = line
