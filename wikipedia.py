@@ -721,7 +721,7 @@ class Page(object):
             return content_type, body
     
         if reason == None:
-            reason = input(u'Please enter a reason for the deletion:', myencoding())
+            reason = input(u'Please enter a reason for the deletion:')
         answer = 'y'
         if prompt:
             answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
