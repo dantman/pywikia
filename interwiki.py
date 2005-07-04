@@ -133,6 +133,13 @@ This script understands various command-line arguments:
                    asked for (by typing '?'). Only useful in combination
                    with a hint-asking option like -untranslated, -askhints
                    or -untranslatedonly
+                   
+    -allowupdateall    Allows interwiki to update all other language sites.
+                   You must be logged in into all of the required sites.
+
+    -allowupdate:  used as    -allowupdate:en,es,fr
+                   Allows interwiki to update other language sites.
+                   You must be logged in into all of the spescified sites.
 
 A configuration option can be used to change the working of this robot:
 
@@ -209,6 +216,9 @@ class Global(object):
     neverlink = []
     showtextlink = 0
     showtextlinkadd = 300
+    allowUpdates = []
+    allowUpdateAll = False
+
 
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -555,82 +565,128 @@ class Subject(object):
         new = self.assemble()
         if new == None: # User said give up or autonomous with problem
             return
+        
+        # Make sure new contains every page link, including the page we are processing
+        # replaceLinks will skip the site it's working on.
+        if not new.has_key(self.inpl.site()):
+            new[self.inpl.site()] = self.inpl
 
         print "==status=="
-        old={}
+        self.replaceLinks(self.inpl, new, True, sa)
+        
+        isDisambig = self.inpl.isDisambig()
+
+        # Process other languages here
+        for site in new.keys():
+            pl = new[site]
+            wikipedia.output(u"site %s" % site)
+            if site.lang in globalvar.allowUpdates or globalvar.allowUpdateAll:
+                if isDisambig != pl.isDisambig():
+                    wikipedia.output(u"Cannot update %s, disambig flag doesn't match." % site.lang)
+                else:
+                    wikipedia.output(u"updating %s" % pl.aslink())
+                    self.replaceLinks(pl, new, False, sa)                
+                    
+
+    def replaceLinks(self, pl, new, printBackLinks, sa):
+        wikipedia.output(u"Updating links on page %s." % pl.aslink())
+
+        # sanity check - the page we are fixing must be the only one for that site.
+        pltmp = new[pl.site()]
+        if pltmp != pl:
+            wikipedia.output(u"BUG: %s is not in the list of new links!" % pl.aslink())
+            return False
+            
+        # Avoid adding a iw link back to itself
+        # It must be added back on before exiting this method.
+        del new[pl.site()]
         try:
-            for pl in self.inpl.interwiki():
-                old[pl.site()] = pl
-        except wikipedia.NoPage:
-            wikipedia.output(u"BUG: %s no longer exists?" % self.inpl.aslink())
-            return
-        ####
-        mods, removing = compareLanguages(old, new)
-        if not mods and not globalvar.always:
-            print "No changes needed"
-            if globalvar.backlink:
-                self.reportBacklinks(new)
-        else:
-            if mods:
-                wikipedia.output(u"Changes to be made: %s" % mods)
-            oldtext = self.inpl.get()
-            newtext = wikipedia.replaceLanguageLinks(oldtext, new)
-            if globalvar.debug:
-                wikipedia.showDiff(oldtext, newtext)
-            if newtext == oldtext:
-                if globalvar.backlink:
+            # Put interwiki links into a map
+            old={}
+            try:
+                for pl2 in pl.interwiki():
+                    old[pl2.site()] = pl2
+            except wikipedia.NoPage:
+                wikipedia.output(u"BUG: %s no longer exists?" % pl.aslink())
+                return False
+
+            # Check what needs to get done
+            mods, removing = compareLanguages(old, new, insite = pl.site())
+            if not mods and not globalvar.always:
+                wikipedia.output( u'No changes needed' )
+                if printBackLinks and globalvar.backlink:
                     self.reportBacklinks(new)
             else:
-                wikipedia.output(u"NOTE: Replace %s" % self.inpl.aslink())
-                if globalvar.forreal:
-                    # Determine whether we need permission to submit
-                    ask = False
-                    if removing:
-                        self.problem('removing: %s'%(",".join([x.lang for x in removing])))
-                        ask = True
-                    if globalvar.force:
+                if mods:
+                    wikipedia.output(u"Changes to be made: %s" % mods)
+                oldtext = pl.get()
+                newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = pl.site())
+                if globalvar.debug:
+                    try:
+                        wikipedia.showDiff(oldtext, newtext)
+                    except:
+                        wikipedia.output(u'Error executing showDiff')
+                if newtext == oldtext:
+                    if printBackLinks and globalvar.backlink:
+                        self.reportBacklinks(new)
+                else:
+                    wikipedia.output(u"NOTE: Replace %s" % pl.aslink())
+                    if globalvar.forreal:
+                        
+                        # Determine whether we need permission to submit
                         ask = False
-                    if globalvar.confirm:
-                        ask = True
-                    # If we need to ask, do so
-                    if ask:
-                        if globalvar.autonomous:
-                            # If we cannot ask, deny permission
-                            answer = 'n'
-                        else:
-                            answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No'], ['y', 'N'], 'N')
-                    else:
-                        # If we do not need to ask, allow
-                        answer = 'y'
-                    if answer == 'y':
-                        # Check whether we will have to wait for wikipedia. If so, make
-                        # another get-query first.
-                        if sa:
-                            while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
-                                print "NOTE: Performing a recursive query first to save time...."
-                                qdone = sa.oneQuery()
-                                if not qdone:
-                                    # Nothing more to do
-                                    break
-                        print "NOTE: Updating live wiki..."
-                        timeout=60
-                        while 1:
-                            try:    
-                                status, reason, data = self.inpl.put(newtext,
-                                                                 comment=u'robot '+mods)
-                            except (socket.error, IOError):
-                                if timeout>3600:
-                                    raise
-                                print "ERROR putting page. Sleeping %d seconds before trying again"%timeout
-                                timeout=timeout*2
-                                time.sleep(timeout)
+                        if removing:
+                            self.problem('removing: %s'%(",".join([x.lang for x in removing])))
+                            ask = True
+                        if globalvar.force:
+                            ask = False
+                        if globalvar.confirm:
+                            ask = True
+                        # If we need to ask, do so
+                        if ask:
+                            if globalvar.autonomous:
+                                # If we cannot ask, deny permission
+                                answer = 'n'
                             else:
-                                break
-                        if str(status) != '302':
-                            print status, reason
+                                answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No'], ['y', 'N'], 'N')
                         else:
-                            if globalvar.backlink:
-                                self.reportBacklinks(new)
+                            # If we do not need to ask, allow
+                            answer = 'y'
+                        
+                        # If we got permission to submit, do so
+                        if answer == 'y':
+                            # Check whether we will have to wait for wikipedia. If so, make
+                            # another get-query first.
+                            if sa:
+                                while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
+                                    print "NOTE: Performing a recursive query first to save time...."
+                                    qdone = sa.oneQuery()
+                                    if not qdone:
+                                        # Nothing more to do
+                                        break
+
+                            print "NOTE: Updating live wiki..."
+                            timeout=60
+                            while 1:
+                                try:
+                                    print "DBG> updating ", pl
+                                    status, reason, data = pl.put(newtext, comment=u'robot '+mods)
+                                except (socket.error, IOError):
+                                    if timeout>3600:
+                                        raise
+                                    print "ERROR putting page. Sleeping %d seconds before trying again"%timeout
+                                    timeout=timeout*2
+                                    time.sleep(timeout)
+                                else:
+                                    break
+                            if str(status) != '302':
+                                print status, reason
+                            else:
+                                if printBackLinks and globalvar.backlink:
+                                    self.reportBacklinks(new)
+        finally:
+            # re-add the pl back to the new links list.
+            new[pl.site()] = pl
 
     def reportBacklinks(self, new):
         """Report missing back links. This will be called from finish() if
@@ -830,11 +886,10 @@ class SubjectArray(object):
     def __len__(self):
         return len(self.subjects)
     
-def compareLanguages(old, new):
+def compareLanguages(old, new, insite):
     removing = []
     adding = []
     modifying = []
-    mysite = wikipedia.getSite()
     for site in old.keys():
         if site not in new:
             removing.append(site)
@@ -846,11 +901,11 @@ def compareLanguages(old, new):
             adding.append(site2)
     s = ""
     if adding:
-        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[0]) + " " + ", ".join([x.lang for x in adding])
+        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[0]) + " " + ", ".join([x.lang for x in adding])
     if removing: 
-        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[1]) + " " + ", ".join([x.lang for x in removing])
+        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[1]) + " " + ", ".join([x.lang for x in removing])
     if modifying:
-        s = s + " %s:" % (wikipedia.translate(mysite.lang, msg)[2]) + " " + ", ".join([x.lang for x in modifying])
+        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[2]) + " " + ", ".join([x.lang for x in modifying])
     return s,removing
 
 def readWarnfile(filename, sa):
@@ -930,6 +985,10 @@ if __name__ == "__main__":
                     globalvar.backlink = False
                 elif arg == '-noredirect':
                     globalvar.followredirect = False
+                elif arg.startswith('-allowupdate:'):
+                    globalvar.allowUpdates = arg[13:].split(',')
+                elif arg == '-allowupdateall':
+                    globalvar.allowUpdateAll = True
                 elif arg.startswith('-years'):
                     # Look if user gave a specific year at which to start
                     # Must be a natural number or negative integer.
