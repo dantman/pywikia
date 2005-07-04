@@ -2321,8 +2321,8 @@ def showDiff(oldtext, newtext):
     # This will store the last line beginning with + or -.
     lastline = None
     # For testing purposes only: show original, uncolored diff
-    #     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
-    #         print line
+    # for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
+    #     print line
     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
         if line.startswith('?'):
             # initialize color vector with None, which means default color
@@ -2345,6 +2345,14 @@ def showDiff(oldtext, newtext):
         lastline = None
         if line[0] in ('+', '-'):
             lastline = line
+    # there might be one + or - line left that wasn't followed by a ? line.
+    if lastline:
+        diff += lastline + '\n'
+        # colorize the + or - sign only
+        lastcolors = [None for c in lastline]
+        lastcolors[0] = color[lastline[0]]
+        colors += lastcolors + [None]
+
     output(diff, colors = colors)
 
 def activateLog(logname):
