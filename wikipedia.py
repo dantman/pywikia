@@ -862,6 +862,7 @@ class GetAll(object):
             print repr(self.pages)
             print "BUG> bug, page not found in list"
             raise PageNotFound
+
         m = redirectRe(self.site).match(text)
         if m:
             edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
@@ -877,6 +878,7 @@ class GetAll(object):
             if len(text)<50:
                 output(u"DBG> short text in %s:" % pl2.aslink())
                 output(text)
+
         hn = pl2.section()
         if hn:
             m = re.search("== *%s *==" % hn, text)
@@ -1548,7 +1550,7 @@ def interwikiFormat(links, insite = None):
         ar = ar2 + ar
     for site in ar:
         try:
-            s.append(links[site].aslink())
+            s.append(links[site].aslink(forceInterwiki = True))
         except AttributeError:
             s.append(site.linkto(links[site],othersite=insite))
     if insite.lang in config.interwiki_on_one_line:
