@@ -3,15 +3,13 @@
 Very simple script to replace a template with another one,
 and to convert the old MediaWiki boilerplate format to the new template format.
 
-Syntax: python template.py [-newformat] oldTemplate [newTemplate]
+Syntax: python template.py [-remove] [sql[:filename]] oldTemplate [newTemplate]
 
 Specify the template on the command line. The program will
 pick up the template page, and look for all pages using it. It will
 then automatically loop over them, and replace the template.
 
 Command line options:
-
--oldformat - Use the old format {{msg:Stub}} instead of {{Stub}}.
 
 -remove    - Remove every occurence of the template from every article
 
@@ -81,12 +79,11 @@ class TemplateRobot:
         'pt':u'Bot: Removendo predefinição: %s',
         }
 
-    def __init__(self, generator, old, new = None, remove = False, oldFormat = False):
+    def __init__(self, generator, old, new = None, remove = False):
         self.generator = generator
         self.old = old
         self.new = new
         self.remove = remove
-        self.oldFormat = oldFormat
         # if only one argument is given, don't replace the template with another
         # one, but resolve the template by putting its text directly into the
         # article.
@@ -110,15 +107,12 @@ class TemplateRobot:
             replacements[templateR] = ''
         elif self.resolve:
             replacements[templateR] = '{{subst:' + self.old + '}}'
-        elif self.oldFormat:
-            replacements[templateR] = '{{msg:' + self.new + '\g<parameters>}}'
         else:
             replacements[templateR] = '{{' + self.new + '\g<parameters>}}'
         replaceBot = replace.ReplaceRobot(self.generator, replacements, regex = True)
         replaceBot.run()
     
 def main():
-    oldFormat = False
     template_names = []
     resolve = False
     remove = False
@@ -131,8 +125,6 @@ def main():
         if arg:
             if arg == '-remove':
                 remove = True
-            elif arg == '-oldformat':
-                oldFormat = True
             elif arg.startswith('-sql'):
                 if len(arg) == 4:
                     sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
@@ -157,7 +149,7 @@ def main():
     else:
         gen = pagegenerators.ReferringPageGenerator(oldTemplate)
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
-    bot = TemplateRobot(preloadingGen, old, new, remove, oldFormat)
+    bot = TemplateRobot(preloadingGen, old, new, remove)
     bot.run()
 
 if __name__ == "__main__":
