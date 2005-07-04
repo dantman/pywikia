@@ -667,93 +667,66 @@ class Page(object):
             users.add(edit[1])
         return users
                           
-    def delete(pl, reason = None, prompt = True):
+    def delete(self, reason = None, prompt = True):
         """Deletes the page from the wiki. Requires administrator status. If
            reason is None, asks for a reason. If prompt is True, asks the user
            if he wants to delete the page.
         """
         # TODO: Find out if bot is logged in with an admin account, raise exception
         # or show error message otherwise
-        # TODO: Find out if deletion was successful or e.g. if file has already been
-        # deleted by someone else
-    
-        # taken from lib_images.py and modified UGLY COPY
-        def post_multipart(host, selector, fields, cookies):
-            """
-            Post fields and files to an http host as multipart/form-data.
-            fields is a sequence of (name, value) elements for regular form
-            fields. files is a sequence of (name, filename, value) elements for 
-            data to be uploaded as files. Return the server's response page.
-            """
-            content_type, body = encode_multipart_formdata(fields)
-            h = httplib.HTTP(host)
-            h.putrequest('POST', selector)
-            h.putheader('content-type', content_type)
-            h.putheader('content-length', str(len(body)))
-            h.putheader("User-agent", "PythonWikipediaBot/1.0")
-            h.putheader('Host', host)
-            if cookies:
-                h.putheader('Cookie', cookies)
-            h.endheaders()
-            h.send(body)
-            errcode, errmsg, headers = h.getreply()
-            return h.file.read()
-        
-        # taken from lib_images.py and modified UGLY COPY
-        def encode_multipart_formdata(fields):
-            """
-            fields is a sequence of (name, value) elements for regular form fields.
-            files is a sequence of (name, filename, value) elements for data to be uploaded as files
-            Return (content_type, body) ready for httplib.HTTP instance
-            """
-            BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
-            CRLF = '\r\n'
-            L = []
-            for (key, value) in fields:
-                L.append('--' + BOUNDARY)
-                L.append('Content-Disposition: form-data; name="%s"' % key)
-                L.append('')
-                L.append(value)
-            L.append('--' + BOUNDARY + '--')
-            L.append('')
-            body = CRLF.join(L)
-            content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
-            return content_type, body
-    
         if reason == None:
             reason = input(u'Please enter a reason for the deletion:')
+        reason = reason.encode(self.site().encoding())
         answer = 'y'
         if prompt:
-            answer = input(u'Do you want to delete %s? [y|N]' % pl.linkname())
+            answer = inputChoice(u'Do you want to delete %s?' % self.linkname(), ['Yes', 'No'], ['y', 'N'], 'N')
         if answer in ['y', 'Y']:
-            output(u'Deleting page %s...' % pl.linkname())
-            token = pl.site().getToken()
-            returned_html = post_multipart(pl.site().hostname(),
-                                           pl.site().delete_address(pl.urlname()),
-                                           (('wpReason', reason),
-                                            ('wpConfirm', '1'),
-                                            ('wpEditToken', token)),
-                            pl.site().cookies())
-            # check if deletion was successful
-            # therefore, we need to know what the MediaWiki software says after
-            # a successful deletion
-            deleted_msg = mediawiki_messages.get('actioncomplete')
-            deleted_msg = re.escape(deleted_msg)
-            deleted_msgR = re.compile(deleted_msg)
-            if deleted_msgR.search(returned_html):
-                output(u'Deletion successful.')
-            else:
-                output(u'Deletion failed:.')
-                try:
-                    ibegin = returned_html.index('<!-- start content -->') + 22
-                    iend = returned_html.index('<!-- end content -->')
-                except ValueError:
-                    # if begin/end markers weren't found, show entire HTML file
-                    output(returned_html, myencoding())
+            token = self.site().getToken(self)
+            # put_throttle()
+            host = self.site().hostname()
+            address = self.site().delete_address(space2underline(self.linkname()))
+
+            while not self.site().loggedin(check = True):
+                loginMan = login.LoginManager()
+                loginMan.login()
+
+            predata = [
+                ('wpReason', reason),
+                ('wpConfirm', '1')]
+            if token:
+                predata.append(('wpEditToken', token))
+            data = urlencode(tuple(predata))
+            conn = httplib.HTTPConnection(host)
+            conn.putrequest("POST", address)
+            conn.putheader('Content-Length', str(len(data)))
+            conn.putheader("Content-type", "application/x-www-form-urlencoded")
+            conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
+            if self.site().cookies():
+                conn.putheader('Cookie', self.site().cookies())
+            conn.endheaders()
+            conn.send(data)
+        
+            response = conn.getresponse()
+            data = response.read()
+            conn.close()
+        
+            if data != '':
+                data = data.decode(myencoding())
+                if mediawiki_messages.get('actioncomplete') in data:
+                    output(u'Deletion successful.')
                 else:
-                    # otherwise, remove the irrelevant sections
-                    returned_html = returned_html[ibegin:iend]
-                output(returned_html, myencoding())
+                    output(u'Deletion failed:.')
+                    try:
+                        ibegin = data.index('<!-- start content -->') + 22
+                        iend = data.index('<!-- end content -->')
+                    except ValueError:
+                        # if begin/end markers weren't found, show entire HTML file
+                        output(data)
+                    else:
+                        # otherwise, remove the irrelevant sections
+                        data = data[ibegin:iend]
+                    output(data)
+
 
 # Regular expression recognizing redirect pages
 def redirectRe(site):
