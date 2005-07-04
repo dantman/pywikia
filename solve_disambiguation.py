@@ -369,12 +369,13 @@ class DisambiguationRobot(object):
         else:
             linktrail = '[a-z]*'
         self.trailR = re.compile(linktrail)
-        # The regular expression which finds links. Results consist of three groups:
-        # group(1) is the target page title, that is, everything before | or ].
-        # group(2) is the alternative link title, that's everything between | and ].
-        # group(3) is the link trail, that's letters after ]] which are part of the word.
+        # The regular expression which finds links. Results consist of four groups:
+        # group title is the target page title, that is, everything before | or ].
+        # group section is the page section. It'll include the # to make life easier for us.
+        # group label is the alternative link title, that's everything between | and ].
+        # group linktrail is the link trail, that's letters after ]] which are part of the word.
         # note that the definition of 'letter' varies from language to language.
-        self.linkR = re.compile(r'\[\[([^\]\|]*)(?:\|([^\]]*))?\]\](' + linktrail + ')')
+        self.linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
         
     def treat(self, refpl, disambPl):
         """
@@ -436,10 +437,10 @@ class DisambiguationRobot(object):
                 # Make sure that next time around we will not find this same hit.
                 curpos = m.start() + 1
                 # Try to standardize the page.
-                if wikipedia.isInterwikiLink(m.group(1)):
+                if wikipedia.isInterwikiLink(m.group('title')):
                     continue
                 else:
-                    linkpl=wikipedia.Page(disambPl.site(), m.group(1))
+                    linkpl=wikipedia.Page(disambPl.site(), m.group('title'))
                 # Check whether the link found is to disambPl.
                 if linkpl != disambPl:
                     continue
@@ -508,18 +509,22 @@ class DisambiguationRobot(object):
     
                 # The link looks like this:
                 # [[page_title|link_text]]trailing_chars
-                page_title = m.group(1)
-                link_text = m.group(2)
+                page_title = m.group('title')
+                link_text = m.group('label')
     
                 if not link_text:
                     # or like this: [[page_title]]trailing_chars
                     link_text = page_title
-                trailing_chars = m.group(3)
+                if m.group('section') == None:
+                    section = ''
+                else:
+                    section = m.group('section')
+                trailing_chars = m.group('linktrail')
                 if trailing_chars:
                     link_text += trailing_chars
     
                 if choice=='u':
-                    # unlink
+                    # unlink - we remove the section if there's any
                     text = text[:m.start()] + link_text + text[m.end():]
                     continue
                 else:
@@ -558,18 +563,18 @@ class DisambiguationRobot(object):
                     # this feature.
                     if self.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
                         new_page_title = new_page_title[0].lower() + new_page_title[1:]
-                    if replaceit and trailing_chars: 
-                        newlink = "[[%s]]%s" % (new_page_title, trailing_chars)
-                    elif new_page_title == link_text or replaceit:
+                    if replaceit and trailing_chars:
+                        newlink = "[[%s%s]]%s" % (new_page_title, section, trailing_chars)
+                    elif replaceit or (new_page_title == link_text and not section):
                         newlink = "[[%s]]" % new_page_title
                     # check if we can create a link with trailing characters instead of a pipelink
-                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(self.trailR, '', link_text[len(new_page_title):]) == '':
+                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(self.trailR, '', link_text[len(new_page_title):]) == '' and not section:
                         newlink = "[[%s]]%s" % (new_page_title, link_text[len(new_page_title):])
                     else:
-                        newlink = "[[%s|%s]]" % (new_page_title, link_text)
+                        newlink = "[[%s%s|%s]]" % (new_page_title, section, link_text)
                     text = text[:m.start()] + newlink + text[m.end():]
                     continue
-    
+
                 wikipedia.output(text[max(0,m.start()-30):m.end()+30])
             wikipedia.output(u'\nThe following changes have been made:\n')
             wikipedia.showDiff(original_text, text)
