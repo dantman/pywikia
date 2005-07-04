@@ -288,20 +288,20 @@ class ReplacePageGenerator(pagegenerators.PageGenerator):
         Starts the generator.
         '''
         if self.source == 'sqldump':
-            for pl in self.read_pages_from_sql_dump():
-                yield pl
+            for page in self.read_pages_from_sql_dump():
+                yield page
         elif self.source == 'textfile':
-            for pl in self.read_pages_from_text_file():
-                yield pl
+            for page in self.read_pages_from_text_file():
+                yield page
         elif self.source == 'category':
-            for pl in self.read_pages_from_category():
-                yield pl
+            for page in self.read_pages_from_category():
+                yield page
         elif self.source == 'userinput':
             for pagename in self.pagenames:
                 yield wikipedia.Page(wikipedia.getSite(), pagename)
         elif self.source == 'allpages':
-            for pl in wikipedia.allpages(start = self.startpage):
-                yield pl
+            for page in wikipedia.allpages(start = self.startpage):
+                yield page
 
 class ReplaceRobot:
     def __init__(self, generator, replacements, exceptions = [], regex = False, acceptall = False):
@@ -347,38 +347,38 @@ class ReplaceRobot:
         """
         Starts the robot.
         """
-        # Run the generator which will yield Pages to pages which might need to be
+        # Run the generator which will yield Pages which might need to be
         # changed.
-        for pl in self.generator():
+        for page in self.generator():
             print ''
             try:
                 # Load the page's text from the wiki
-                original_text = pl.get()
+                original_text = page.get()
             except wikipedia.NoPage:
-                wikipedia.output(u'Page %s not found' % pl.linkname())
+                wikipedia.output(u'Page %s not found' % page.linkname())
                 continue
             except wikipedia.LockedPage:
-                wikipedia.output(u'Skipping locked page %s' % pl.linkname())
+                wikipedia.output(u'Skipping locked page %s' % page.linkname())
                 continue
             except wikipedia.IsRedirectPage:
                 continue
             match = self.checkExceptions(original_text)
             # skip all pages that contain certain texts
             if match:
-                wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), match))
+                wikipedia.output(u'Skipping %s because it contains %s' % (page.linkname(), match))
             else:
                 new_text = self.doReplacements(original_text)
                 if new_text == original_text:
-                    wikipedia.output('No changes were necessary in %s' % pl.linkname())
+                    wikipedia.output('No changes were necessary in %s' % page.linkname())
                 else:
-                    wikipedia.output(u'>>> %s <<<' % pl.linkname())
+                    wikipedia.output(u'>>> %s <<<' % page.linkname())
                     wikipedia.showDiff(original_text, new_text)
                     if not self.acceptall:
-                        choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
+                        choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
                         if choice in ['a', 'A']:
                             self.acceptall = True
                     if self.acceptall or choice in ['y', 'Y']:
-                        pl.put(new_text)
+                        page.put(new_text)
     
 def main():
     # How we want to retrieve information on which pages need to be changed.
