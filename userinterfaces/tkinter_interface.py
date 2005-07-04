@@ -12,22 +12,33 @@ class MainloopThread(threading.Thread):
         self.window.mainloop()
 
 class CustomMessageBox(tkMessageBox.Message):
-    def __init__(self, parent, question, options, hotkeys):
+    def __init__(self, parent, question, options, hotkeys, default = None):
         self.selection = None
         self.hotkeys = hotkeys
+        self.default = default
 
-        top = self.top = Toplevel(parent)
-        Label(top, text=question).pack()
+        self.top = Toplevel(parent)
+        Label(self.top, text=question).grid(columnspan = 2)
         for i in range(len(options)):
-            b = Button(text = options[i], command = lambda h=hotkeys[i]: self.select(h))
-            b.pack(pady=5)
+            # mark hotkey with underline
+            m = re.search('[%s%s]' % (hotkeys[i].lower(), hotkeys[i].upper()), options[i])
+            if m:
+                pos = m.start()
+            else:
+                options[i] += ' (%s)' % hotkeys[i]
+                pos = len(options[i]) - 2
+            b = Button(self.top, text = options[i], underline = pos, command = lambda h=hotkeys[i]: self.select(h))
+            b.grid(row = 1, column = i)
 
     def select(self, i):
         self.selection = i
         self.top.destroy()
 
     def ask(self):
-        return self.selection
+        if self.default and not self.selection:
+            return self.default
+        else:
+            return self.selection
 
 class UI:
     def __init__(self, parent = None):
@@ -95,10 +106,10 @@ class UI:
         answer = tkSimpleDialog.askstring('title', question)
         return answer
 
-    def inputChoice(self, question, options, hotkeys):
+    def inputChoice(self, question, options, hotkeys, default = None):
 
-        d = CustomMessageBox(self.root, question, options, hotkeys)
-        self.root.wait_window(d.top)
+        d = CustomMessageBox(self.parent, question, options, hotkeys)
+        self.parent.wait_window(d.top)
         answer = d.ask()
         return answer
 
