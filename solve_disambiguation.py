@@ -576,7 +576,7 @@ class DisambiguationRobot(object):
     
                 wikipedia.output(text[max(0,m.start()-30):m.end()+30])
             print '\nThe following changes have been made:\n'
-            wikipedia.showColorDiff(original_text, text)
+            wikipedia.showDiff(original_text, text)
             print ''
             # save the page
             refpl.put(text)

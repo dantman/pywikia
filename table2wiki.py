@@ -340,7 +340,7 @@ class Table2WikiRobot:
             print table
             print newTable
         elif not self.quietMode:
-            wikipedia.showColorDiff(table, newTable)
+            wikipedia.showDiff(table, newTable)
         return newTable, warnings, warning_messages
 
     def findTable(self, text):

@@ -102,7 +102,7 @@ class WarnfileRobot:
                 oldtext = pl.get()
                 newtext = wikipedia.replaceLanguageLinks(oldtext, new)
                 if 1:
-                    wikipedia.showColorDiff(oldtext, newtext)
+                    wikipedia.showDiff(oldtext, newtext)
                     status, reason, data = pl.put(newtext, comment='warnfile '+mods)
                     if str(status) != '302':
                         print status, reason

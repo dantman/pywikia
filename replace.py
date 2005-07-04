@@ -372,7 +372,7 @@ class ReplaceRobot:
                     wikipedia.output('No changes were necessary in %s' % pl.linkname())
                 else:
                     wikipedia.output(u'>>> %s <<<' % pl.linkname())
-                    wikipedia.showColorDiff(original_text, new_text)
+                    wikipedia.showDiff(original_text, new_text)
                     if not self.acceptall:
                         choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
                         if choice in ['a', 'A']:

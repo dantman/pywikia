@@ -2332,35 +2332,13 @@ def translate(code, dict):
         return dict['en']
     return dict.values()[0]
 
-# Taken from interwiki.py. 
 def showDiff(oldtext, newtext):
-    sep = '\r\n'
-    ol = oldtext.split(sep)
-    if len(ol) == 1:
-        sep = '\n'
-        ol = oldtext.split(sep)
-    nl = newtext.split(sep)
-    for line in difflib.ndiff(ol,nl):
-        if line[0] in ['+','-']:
-            output(line)
-
-def colorize(text, color):
-    if sys.platform=='win32':
-        return text
-    else:
-        return '\x1b[' + color + ';1m' + text + '\x1b[0m'
-
-
-def showColorDiff(oldtext, newtext):
     """
-    Returns a string showing the differences between oldtext and newtext.
-    The differences are highlighted (only on Unix systems) using
-    the dictionary replacements, which describes which changes were made.
-    If regex is true, the dictionary contents are interpreted as regular
-    expressions.
+    Prints a string showing the differences between oldtext and newtext.
+    The differences are highlighted (only on Unix systems) to show which
+    changes were made.
     """
     # For information on difflib, see http://pydoc.org/2.3/difflib.html
-
     color = {
         '+': 10, # green
         '-': 12  # red
@@ -2369,11 +2347,12 @@ def showColorDiff(oldtext, newtext):
     colors = []
     # This will store the last line beginning with + or -.
     lastline = None
-    # For testing only: show original diff
+    # For testing purposes only: show original, uncolored diff
     #     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
     #         print line
     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
         if line.startswith('?'):
+            # initialize color vector with None, which means default color
             lastcolors = [None for c in lastline]
             # colorize the + or - sign
             lastcolors[0] = color[lastline[0]]
@@ -2381,12 +2360,13 @@ def showColorDiff(oldtext, newtext):
             for i in range(len(line)):
                 if line[i] != ' ':
                     lastcolors[i] = color[lastline[0]]
-            colors += lastcolors + [None]
             diff += lastline + '\n'
+            # append one None (default color) for the newline character
+            colors += lastcolors + [None]
         elif lastline:
+            diff += lastline + '\n'
             # colorize the entire line in red or green
             colors += [color[lastline[0]] for c in lastline] + [None]
-            diff += lastline + '\n'
         lastline = None
         if line[0] in ('+', '-'):
             lastline = line
@@ -2405,6 +2385,12 @@ def output(text, decoder = None, colors = [], newline = True):
     (console_encoding in the configuration file) instead of ASCII.
     If decoder is None, text should be a unicode string. Otherwise it
     should be encoded in the given encoding.
+
+    colors is a list of integers, one for each character of text. If a
+    list entry is None, the default color will be used for the
+    character at that position.
+
+    If newline is True, a linebreak will be added after printing the text.
     """
     if decoder:
         text = unicode(text, decoder)
