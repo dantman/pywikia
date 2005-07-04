@@ -109,7 +109,7 @@ class CustomMessageBox(tkMessageBox.Message):
         self.default = default
 
         self.top = Toplevel(parent)
-        Label(self.top, text=question).grid(columnspan = 2)
+        Label(self.top, text=question).grid(columnspan = len(options))
         for i in range(len(options)):
             # mark hotkey with underline
             m = re.search('[%s%s]' % (hotkeys[i].lower(), hotkeys[i].upper()), options[i])
