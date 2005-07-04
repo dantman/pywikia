@@ -396,13 +396,13 @@ class DisambiguationRobot(object):
             wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), disambPl.linkname()))
             if self.solve_redirect:
                 target = self.alternatives[0]
-                choice = wikipedia.input(u'Do you want to make redirect %s point to %s? [y|N]' % (refpl.linkname(), target))
-                if choice == 'y':
+                choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refpl.linkname(), target), ['yes', 'no'], ['y', 'N'], 'N')
+                if choice in ('y', 'Y'):
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     refpl.put(redir_text)
             else:
-                choice = wikipedia.input(u'Do you want to work on pages linking to %s? [y|N|c(hange redirect)]' % refpl.linkname())
-                if choice == 'y':
+                choice = wikipedia.input(u'Do you want to work on pages linking to %s?' % refpl.linkname(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
+                if choice in ('y', 'Y'):
                     gen = ReferringPageGenerator(refpl, self.primary)
                     preloadingGen = pagegenerators.PreloadingGenerator(gen)
                     for refpl2 in preloadingGen():
@@ -453,8 +453,10 @@ class DisambiguationRobot(object):
                     wikipedia.output(u">>> %s <<<" % refpl.linkname())
                     # at the beginning of the link, start red color.
                     # at the end of the link, reset the color to default
-                    displayedText = text[max(0, m.start() - context):m.start()] + wikipedia.colorize(text[m.start():m.end()], '91') + text[m.end():m.end()+context]
-                    wikipedia.output(displayedText)
+                    
+                    colors = [None for c in text[max(0, m.start() - context) : m.start()]] + [12 for c in text[m.start() : m.end()]] + [None for c in text[m.end() : m.end() + context]]
+                    wikipedia.output(text[max(0, m.start() - context) : m.end() + context], colors = colors)
+
                     if not self.always:
                         if edited:
                             choice = wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
@@ -695,8 +697,7 @@ def main():
                     if pl.exists():
                         alternatives.append(pl.linkname())
                     else:
-                        print "Possibility does not actually exist:",pl
-                        answer = wikipedia.input(u'Use it anyway? [y|N]')
+                        answer = wikipedia.inputChoice(u'Possibility %s does not actually exist. Use it anyway?' % pl.linkname(), ['yes', 'no'], ['y', 'N'], 'N')
                         if answer in ('Y', 'y'):
                             alternatives.append(pl.linkname())
                 else:

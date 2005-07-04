@@ -2354,50 +2354,44 @@ def colorize(text, color):
 def showColorDiff(oldtext, newtext):
     """
     Returns a string showing the differences between oldtext and newtext.
-    The differences are highlighted (only seems to work on Unix systems) using
+    The differences are highlighted (only on Unix systems) using
     the dictionary replacements, which describes which changes were made.
     If regex is true, the dictionary contents are interpreted as regular
     expressions.
     """
     # For information on difflib, see http://pydoc.org/2.3/difflib.html
-    def printLastLine(lastline, lastcolor):
-        # highlight the minus red or the plus green
-        if lastline != None:
-            lastline = colorize(lastline[0], lastcolor) + lastline[1:]
-            output(lastline)
-        
+
+    color = {
+        '+': 10, # green
+        '-': 12  # red
+    }
+    diff = ''
+    colors = []
     # This will store the last line beginning with + or -.
-    # It will be printed as soon as a line beginning with a ? or another line
-    # starting with + or - occurs.
     lastline = None
-    lastcolor = None
     # For testing only: show original diff
-    #for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
-    #    output(line)
+    #     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
+    #         print line
     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
-        if line[0] == '-':
-            # if lastline wasn't followed by a line starting with ?
-            printLastLine(lastline, lastcolor)
+        if line.startswith('?'):
+            lastcolors = [None for c in lastline]
+            # colorize the + or - sign
+            lastcolors[0] = color[lastline[0]]
+            # colorize changed parts in red or green
+            for i in range(len(line)):
+                if line[i] != ' ':
+                    lastcolors[i] = color[lastline[0]]
+            colors += lastcolors + [None]
+            diff += lastline + '\n'
+        elif lastline:
+            # colorize the entire line in red or green
+            colors += [color[lastline[0]] for c in lastline] + [None]
+            diff += lastline + '\n'
+        lastline = None
+        if line[0] in ('+', '-'):
             lastline = line
-            lastcolor = '91' # red
-        elif line[0] == '+':
-            printLastLine(lastline, lastcolor)
-            lastline = line
-            lastcolor = '92' # green
-        elif line[0] == '?':
-            # iterate backwards over the whole line
-            for i in range(len(line)-1, -1, -1):
-                # The original diff marks changes with a ^ under the changed
-                # part. We'll highlight with colors instead.
-                # If the line seperator is changed, the ? line would be one byte
-                # longer than the +/- line, causing an out of bounds exception,
-                # so we check if i<len(line)-1.
-                if line[i] != ' ' and i<len(line)-1:
-                    lastline = lastline[:i] + colorize(lastline[i], lastcolor) + lastline[i+1:]
-            output(lastline)
-            lastline = None
-    printLastLine(lastline, lastcolor)
-    
+    output(diff, colors = colors)
+
 def activateLog(logname):
     global logfile
     try:
@@ -2405,7 +2399,7 @@ def activateLog(logname):
     except IOError:
         logfile = codecs.open('logs/%s' % logname, 'w', 'utf-8')
 
-def output(text, decoder = None, newline = True):
+def output(text, decoder = None, colors = [], newline = True):
     """
     Works like print, but uses the encoding used by the user's console
     (console_encoding in the configuration file) instead of ASCII.
@@ -2426,13 +2420,13 @@ def output(text, decoder = None, newline = True):
         # save the text in a logfile (will be written in utf-8)
         logfile.write(text + '\n')
         logfile.flush()
-    ui.output(text, newline = newline)
+    ui.output(text, colors = colors, newline = newline)
 
 def input(question):
     return ui.input(question)
 
-def inputChoice(question, answers, hotkeys):
-    return ui.inputChoice(question, answers, hotkeys)
+def inputChoice(question, answers, hotkeys, default = None):
+    return ui.inputChoice(question, answers, hotkeys, default)
 
 def showHelp(moduleName):
     globalHelp =u'''
