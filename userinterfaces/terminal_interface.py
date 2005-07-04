@@ -72,7 +72,6 @@ class UI:
                 options[i] = '%s[%s]%s' % (option[:pos], hotkey, option[pos+1:])
             else:
                 options[i] = '%s [%s]' % (option, hotkey)
-
         while True:
             prompt = '%s (%s)' % (question, ', '.join(options))
             answer = self.input(prompt)
@@ -80,3 +79,11 @@ class UI:
                 return answer
             elif default:
                 return default
+
+    def editText(self, text, search = None):
+        """
+        Uses the Tkinter edit box because we don't have a console editor
+        """
+        import tkinter_interface
+        tkui = tkinter_interface.UI()
+        return tkui.editText(text, search)

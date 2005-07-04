@@ -350,11 +350,11 @@ class DisambiguationRobot(object):
         list_window.list(self.alternatives)
     
     def listAlternatives(self):
-        print
-        print
+        list = u'\n'
         for i in range(len(self.alternatives)):
-            wikipedia.output(u"%3d - %s" % (i, self.alternatives[i]))
-    
+            list += (u"%3i - %s\n" % (i, self.alternatives[i]))
+        wikipedia.output(list)
+
     def setupRegexes(self):
         # compile regular expressions
         self.ignore_contents_regexes = []
@@ -448,9 +448,7 @@ class DisambiguationRobot(object):
                 # This loop will run while the user doesn't choose an option
                 # that will actually change the page
                 while True:
-                    print
-                    print
-                    wikipedia.output(u">>> %s <<<" % refpl.linkname())
+                    wikipedia.output(u"\n\n>>> %s <<<" % refpl.linkname())
                     # at the beginning of the link, start red color.
                     # at the end of the link, reset the color to default
                     
@@ -471,9 +469,7 @@ class DisambiguationRobot(object):
                         self.alternatives.append(newAlternative)
                         self.listAlternatives()
                     elif choice == 'e':
-                        import gui
-                        edit_window = gui.EditBoxWindow()
-                        newtxt = edit_window.edit(text, search=disambPl.linkname())
+                        newtxt = wikipedia.ui.editText(text, search=disambPl.linkname())
                         # if user didn't press Cancel
                         if newtxt:
                             text = newtxt
@@ -537,14 +533,12 @@ class DisambiguationRobot(object):
                     try:
                         choice=int(choice)
                     except ValueError:
-                        print
-                        print "Unknown option"
+                        wikipedia.output(u"Unknown option")
                         # step back to ask the user again what to do with the current link
                         curpos -= 1
                         continue
                     if choice >= len(self.alternatives) or choice < 0:
-                        print
-                        print "Choice out of range. Please select a number between 0 and %d." % (len(self.alternatives) - 1)
+                        wikipedia.output(u"Choice out of range. Please select a number between 0 and %i." % (len(self.alternatives) - 1))
                         # show list of possible choices
                         self.listAlternatives()
                         # step back to ask the user again what to do with the current link
@@ -575,9 +569,9 @@ class DisambiguationRobot(object):
                     continue
     
                 wikipedia.output(text[max(0,m.start()-30):m.end()+30])
-            print '\nThe following changes have been made:\n'
+            wikipedia.output(u'\nThe following changes have been made:\n')
             wikipedia.showDiff(original_text, text)
-            print ''
+            wikipedia.output(u'')
             # save the page
             refpl.put(text)
         return True
@@ -606,14 +600,14 @@ class DisambiguationRobot(object):
                     target = disambPl.getRedirectTarget()
                     self.alternatives.append(target)
                 except wikipedia.NoPage:
-                    print "The specified page was not found."
+                    wikipedia.output(u"The specified page was not found.")
                     user_input = wikipedia.input(u"Please enter the name of the page where the redirect should have pointed at, or press enter to quit:")
                     if user_input == "":
                         sys.exit(1)
                     else:
                         self.alternatives.append(user_input)
                 except wikipedia.IsNotRedirectPage:
-                    print "The specified page is not a redirect. Skipping."
+                    wikipedia.output(u"The specified page is not a redirect. Skipping.")
                     continue
             elif self.getAlternatives:
                 try:
@@ -625,7 +619,7 @@ class DisambiguationRobot(object):
                 except wikipedia.IsRedirectPage,arg:
                     thistxt = wikipedia.Page(self.mysite, str(arg)).get(throttle=False)
                 except wikipedia.NoPage:
-                    print "Page does not exist?!"
+                    wikipedia.output(u"Page does not exist?!")
                     thistxt = ""
                 thistxt = wikipedia.removeLanguageLinks(thistxt)
                 thistxt = wikipedia.removeCategoryLinks(thistxt, self.mysite)
