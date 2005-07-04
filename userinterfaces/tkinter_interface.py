@@ -1,7 +1,15 @@
 import time
-import re, sys
+import re, sys, threading
 import tkMessageBox, tkSimpleDialog
 from Tkinter import *
+
+class MainloopThread(threading.Thread):
+    def __init__(self, window):
+        threading.Thread.__init__(self)
+        self.window = window
+
+    def run(self):
+        self.window.mainloop()
 
 class CustomMessageBox(tkMessageBox.Message):
     def __init__(self, parent, question, options, hotkeys):
@@ -37,8 +45,12 @@ class UI:
         # put textarea into top frame, using all available space
         self.logBox.pack(anchor=CENTER, fill=BOTH)
         self.top_frame.pack(side=TOP)
+        self.logBox.tag_config(12, foreground='red')
+        self.logBox.tag_config(10, foreground='green')
 
-    def output(self, text, urgency = 1, newline = True):
+        MainloopThread(self.parent).start()
+
+    def output(self, text, urgency = 1, colors = None, newline = True):
         """
         urgency levels:
             0 - Debug output. Won't be shown in normal mode.
@@ -49,13 +61,31 @@ class UI:
         """
         if urgency >= 2:
             d = tkMessageBox.showinfo('title', text)
-        if urgency >= 1:
+        elif urgency >= 1:
+            # Save the line number before appending text
+            lineCount = int(self.logBox.index(END).split('.')[0]) - 1
             self.logBox.insert(END, text)
+            if colors:
+                # How many characters we already added in this line
+                offset = 0
+                # We create a tag region for each colored character.
+                # It would be more efficient to try to use longer
+                # regions.
+                for i in range(len(colors)):
+                    if text[i] == '\n':
+                        lineCount += 1
+                        offset = i + 1
+                    if colors[i]:
+                        startidx = '%i.%i' % (lineCount, i - offset)
+                        endidx = '%i.%i' % (lineCount, i + 1 - offset)
+                        # tag the whole occurence (start included, stop excluded)
+                        self.logBox.tag_add(colors[i], startidx , endidx)
+                        
+                        
             if newline:
                 self.logBox.insert(END, '\n')
             # auto-scroll down
             self.logBox.see(END)
-            d = tkMessageBox.showinfo('title', text)
 
     def input(self, question):
         """
