@@ -338,9 +338,9 @@ class Subject(object):
                 else:
                     if not globalvar.autonomous:
                         if self.inpl.isDisambig() and not pl.isDisambig():
-                            choice = wikipedia.input('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway? [y|N]' % (self.inpl.aslink(), pl.aslink()))
+                            choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(), pl.aslink()), ['Yes', 'No'], ['y', 'N'], 'N')
                         elif not self.inpl.isDisambig() and pl.isDisambig():
-                            choice = wikipedia.input('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway? [y|N]' % (self.inpl.aslink(), pl.aslink()))
+                            choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.inpl.aslink(), pl.aslink()), ['Yes', 'No'], ['y', 'N'], 'N')
                         else:
                             choice = 'y'
                         if choice not in ['y', 'Y']:
@@ -366,7 +366,7 @@ class Subject(object):
                             continue
                         if not globalvar.autonomous:
                             if self.inpl.namespace() != page2.namespace():
-                                choice = wikipedia.input('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway? [y|N]' % (self.inpl.aslink(), self.inpl.namespace(), page2.aslink(), page2.namespace()))
+                                choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.inpl.aslink(), self.inpl.namespace(), page2.aslink(), page2.namespace()), ['Yes', 'No'], ['y', 'N'], 'N')
                                 if choice not in ['y', 'Y']:
                                     continue
                         if self.conditionalAdd(page2, counter, pl):
@@ -514,7 +514,7 @@ class Subject(object):
                         if acceptall: 
                             answer = 'a'
                         else: 
-                            answer = wikipedia.input(u"What should be done [(a)ccept, (r)eject, (g)ive up, accept a(l)l] :")
+                            answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'G', 'l'], 'G')
                             if not answer:
                                 answer = 'a'
                         if answer in 'lL': # accept all
@@ -598,7 +598,7 @@ class Subject(object):
                             # If we cannot ask, deny permission
                             answer = 'n'
                         else:
-                            answer = wikipedia.input(u'Submit? [y|N]')
+                            answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No'], ['y', 'N'], 'N')
                     else:
                         # If we do not need to ask, allow
                         answer = 'y'
@@ -1011,7 +1011,7 @@ if __name__ == "__main__":
 
         if start:
             if start == '_':
-                start = wikipedia.input(u'Which page to start from: ', wikipedia.myencoding())
+                start = wikipedia.input(u'Which page to start from: ')
 
             namespace = wikipedia.Page(wikipedia.getSite(),start).namespace()
             if number:
@@ -1032,7 +1032,7 @@ if __name__ == "__main__":
 
         inname = '_'.join(inname)
         if sa.isDone() and not inname:
-            inname = wikipedia.input(u'Which page to check: ', wikipedia.myencoding())
+            inname = wikipedia.input(u'Which page to check: ')
 
         if inname:
             inpl = wikipedia.Page(wikipedia.getSite(), inname)
