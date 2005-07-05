@@ -171,9 +171,11 @@ def main():
                 wikipedia.showHelp('login')
                 sys.exit()
     if logall:
-        for lang in wikipedia.getSite().family.seriouslangs:
-            loginMan = LoginManager(username, password, site = wikipedia.getSite(code=lang))
-            loginMan.login()
+        for familyName in config.usernames.iterkeys():
+            for lang in config.usernames[familyName].iterkeys():
+                site = wikipedia.getSite(code=lang, fam=familyName)
+                loginMan = LoginManager(username, password, site = site)
+                loginMan.login()
     else:
         loginMan = LoginManager(username, password)
         loginMan.login()
