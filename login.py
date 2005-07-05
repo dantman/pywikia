@@ -10,15 +10,13 @@ Parameters:
 
    -user:XXXX   logs in with username XXXX
 
-   -pass:XXXX   uses XXXX as password. It's not recommended to use this
+   -pass:XXXX   uses XXXX as password. Be careful if you use this
                 parameter because your password will be shown on your
                 screen.
 
-   -all         try to login on a large number of languages at once (on
-                Wikipedia: all with at least ~100 pages)
+   -all         try to log in on all sites where a username is defined in
+                user-config.py.
 
-    
-    
 If not given as parameter, the script will ask for your username and password
 (password entry will be hidden), log in to your home wiki using this
 combination, and store the resulting cookies (containing your password hash,
@@ -163,7 +161,7 @@ def main():
         if arg:
             if arg.startswith("-user:"):
                 username = arg[6:]
-            elif arg.startswith("-pass:"): # not recommended
+            elif arg.startswith("-pass:"):
                 password = arg[6:]
             elif arg == "-all":
                 logall = True
@@ -185,4 +183,3 @@ if __name__ == "__main__":
         main()
     finally:
         wikipedia.stopme()
-
