@@ -404,7 +404,7 @@ class DisambiguationRobot(object):
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     refpl.put(redir_text)
             else:
-                choice = wikipedia.input(u'Do you want to work on pages linking to %s?' % refpl.linkname(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
+                choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refpl.linkname(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
                 if choice in ('y', 'Y'):
                     gen = ReferringPageGenerator(refpl, self.primary)
                     preloadingGen = pagegenerators.PreloadingGenerator(gen)
