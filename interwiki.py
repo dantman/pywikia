@@ -579,14 +579,11 @@ class Subject(object):
         # Process other languages here
         for site in new.keys():
             pl = new[site]
-            wikipedia.output(u"site %s" % site)
             if site.lang in globalvar.allowUpdates or globalvar.allowUpdateAll:
                 if isDisambig != pl.isDisambig():
                     wikipedia.output(u"Cannot update %s, disambig flag doesn't match." % site.lang)
                 else:
-                    wikipedia.output(u"updating %s" % pl.aslink())
-                    self.replaceLinks(pl, new, False, sa)                
-                    
+                    self.replaceLinks(pl, new, False, sa)
 
     def replaceLinks(self, pl, new, printBackLinks, sa):
         wikipedia.output(u"Updating links on page %s." % pl.aslink())
