@@ -7,14 +7,13 @@
 __version__ = '$Id$'
 
 import os, re, sys
-#
-# (Suggestion: try to keep this list alphabetically sorted).
-#
+
+# IMPORTANT:
 # Do not change any of the variables in this file. Instead, make
 # a file user-config.py, and overwrite values in there.
-#
-# PARAM=VALUE               
-# ===========
+
+############## ACCOUNT SETTINGS ##############
+
 # The family of sites we are working on. wikipedia.py will import
 # families/xxx_family.py so if you want to change this variable,
 # you need to write such a file.
@@ -39,6 +38,8 @@ for filename in os.listdir('families'):
         familyName = m.group('name')
         usernames[familyName] = {}
 
+############## USER INTERFACE SETTINGS ##############
+
 # the encoding that's used in the user's console, i.e. how strings are encoded
 # when they are read by raw_input(). On Windows systems' DOS box, this should
 # be 'cp850' ('cp437' for older versions). Linux users might try 'iso-8859-1'
@@ -48,6 +49,21 @@ console_encoding = None
 
 # tkinter isn't yet ready
 userinterface = 'terminal'
+
+############## LOGFILE SETTINGS ##############
+
+# Should all bots keep a logfile?
+# TODO: Not used yet
+always_log = False
+# Should no bot, not even interwiki.py, keep a logfile?
+never_log = False
+# Should interwiki.py report warnings for missing links between foreign
+# languages?
+interwiki_backlink = True
+# Should the system bell be ringed if the bot expects user input?
+ring_bell = True
+
+############## PAGE METADATA FORMATTING SETTINGS ##############
 
 # attop is a list of languages that prefer to have the interwiki
 # links at the top of the page.
@@ -71,24 +87,7 @@ category_text_separator = '\r\n'
 # When both at the bottom should categories come after interwikilinks?
 categories_last = []
 
-# will split long paragraphs for better reading the source.
-# only table2wiki.py use it by now
-splitLongParagraphs = False
-# sometimes HTML-tables are indented for better reading.
-# That can do very ugly results.
-deIndentTables = True
-# table2wiki.py works quite stable, so you might switch to True
-table2wikiAskOnlyWarnings = True
-table2wikiSkipWarnings = False
-
-# Should all bots keep a logfile?
-# TODO: Not used yet
-always_log = False
-# Should no bot, not even interwiki.py, keep a logfile?
-never_log = False
-# Should interwiki.py report warnings for missing links between foreign
-# languages?
-interwiki_backlink = True
+############## SETTINGS TO AVOID SERVER OVERLOAD ##############
 
 # Slow down the robot such that it never requests a second page within
 # 'minthrottle' seconds. This can be lengthened if the server is slow,
@@ -108,6 +107,20 @@ noisysleep = 5.0
 # you heavily use boilerplate.py, double_redirect.py, and especially if you're
 # running solve_disambiguation.py with the -primary argument.
 special_page_limit = 500
+
+############## TABLE CONVERSION BOT SETTINGS ##############
+
+# will split long paragraphs for better reading the source.
+# only table2wiki.py use it by now
+splitLongParagraphs = False
+# sometimes HTML-tables are indented for better reading.
+# That can do very ugly results.
+deIndentTables = True
+# table2wiki.py works quite stable, so you might switch to True
+table2wikiAskOnlyWarnings = True
+table2wikiSkipWarnings = False
+
+############## WEBLINK CHECKER SETTINGS ##############
 
 # How many external links should weblinkchecker.py check at the same time?
 # If you have a fast connection, you might want to increase this number so
