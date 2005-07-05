@@ -216,28 +216,29 @@ ignore_title = {
           ),
     }
 
-class ReferringPageGenerator(pagegenerators.PageGenerator):
+class ReferringPageGenerator:
     def __init__(self, disambPl, primary=False):
         self.disambPl = disambPl
         # if run with the -primary argument, enable the ignore manager
         self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl,
                                                          enabled=primary)
         
-    def generate(self):
+    def __iter__(self):
         refs = self.disambPl.getReferences(follow_redirects=False)
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
         if ignore_title.has_key(self.disambPl.site().lang):
             for ig in ignore_title[self.disambPl.site().lang]:
                 for i in range(len(refs)-1, -1, -1):
-                    if re.match(ig, refs[i].linkname()):
-                        wikipedia.output('Ignoring page %s' % refs[i].linkname())
+                    if re.match(ig, refs[i].title()):
+                        wikipedia.output('Ignoring page %s' % refs[i].title())
                         del refs[i]
                     elif self.primaryIgnoreManager.isIgnored(refs[i]):
-                        #wikipedia.output('Ignoring page %s because it was skipped before' % refs[i].linkname())
+                        #wikipedia.output('Ignoring page %s because it was skipped before' % refs[i].title())
                         del refs[i]
         wikipedia.output(u"Will work on %d pages." % len(refs))
-        return iter(refs)
+        for ref in refs:
+            yield ref
 
 class PrimaryIgnoreManager(object):
     '''
@@ -392,23 +393,23 @@ class DisambiguationRobot(object):
             text=refpl.get(throttle=False)
             ignoreReason = self.checkContents(text)
             if ignoreReason:
-                wikipedia.output('\n\nSkipping %s because it contains %s.\n\n' % (refpl.linkname(), ignoreReason))
+                wikipedia.output('\n\nSkipping %s because it contains %s.\n\n' % (refpl.title(), ignoreReason))
             else:
                 include = True
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u'%s is a redirect to %s' % (refpl.linkname(), disambPl.linkname()))
+            wikipedia.output(u'%s is a redirect to %s' % (refpl.title(), disambPl.title()))
             if self.solve_redirect:
                 target = self.alternatives[0]
-                choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refpl.linkname(), target), ['yes', 'no'], ['y', 'N'], 'N')
+                choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refpl.title(), target), ['yes', 'no'], ['y', 'N'], 'N')
                 if choice in ('y', 'Y'):
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     refpl.put(redir_text)
             else:
-                choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refpl.linkname(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
+                choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refpl.title(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
                 if choice in ('y', 'Y'):
                     gen = ReferringPageGenerator(refpl, self.primary)
                     preloadingGen = pagegenerators.PreloadingGenerator(gen)
-                    for refpl2 in preloadingGen():
+                    for refpl2 in preloadingGen:
                         # run until the user selected 'quit'
                         if not self.treat(refpl2, refpl):
                             break
@@ -416,7 +417,7 @@ class DisambiguationRobot(object):
                     text=refpl.get(throttle=False,get_redirect=True)
                     include = "redirect"
         except wikipedia.NoPage:
-            wikipedia.output(u'Page [[%s]] does not seem to exist?! Skipping.' % refpl.linkname())
+            wikipedia.output(u'Page [[%s]] does not seem to exist?! Skipping.' % refpl.title())
             include = False
         if include in (True, "redirect"):
             # make a backup of the original text so we can show the changes later
@@ -429,7 +430,7 @@ class DisambiguationRobot(object):
                 m = self.linkR.search(text, pos = curpos)
                 if not m:
                     if n == 0:
-                        wikipedia.output(u"No changes necessary in %s" % refpl.linkname())
+                        wikipedia.output(u"No changes necessary in %s" % refpl.title())
                         return True
                     else:
                         # stop loop and save page
@@ -451,7 +452,7 @@ class DisambiguationRobot(object):
                 # This loop will run while the user doesn't choose an option
                 # that will actually change the page
                 while True:
-                    wikipedia.output(u"\n\n>>> %s <<<" % refpl.linkname())
+                    wikipedia.output(u"\n\n>>> %s <<<" % refpl.title())
                     # at the beginning of the link, start red color.
                     # at the end of the link, reset the color to default
                     
@@ -472,7 +473,7 @@ class DisambiguationRobot(object):
                         self.alternatives.append(newAlternative)
                         self.listAlternatives()
                     elif choice == 'e':
-                        newtxt = wikipedia.ui.editText(text, search=disambPl.linkname())
+                        newtxt = wikipedia.ui.editText(text, search=disambPl.title())
                         # if user didn't press Cancel
                         if newtxt:
                             text = newtxt
@@ -553,7 +554,7 @@ class DisambiguationRobot(object):
                         continue
                     new_page_title = self.alternatives[choice]
                     reppl = wikipedia.Page(disambPl.site(), new_page_title)
-                    new_page_title = reppl.linkname()
+                    new_page_title = reppl.title()
                     # There is a function that uncapitalizes the link target's first letter
                     # if the link description starts with a small letter. This is useful on
                     # nl: but annoying on de:.
@@ -643,7 +644,7 @@ class DisambiguationRobot(object):
     
             gen = ReferringPageGenerator(disambPl, self.primary)
             preloadingGen = pagegenerators.PreloadingGenerator(gen)
-            for refpl in preloadingGen():
+            for refpl in preloadingGen:
                 if not self.primaryIgnoreManager.isIgnored(refpl):
                     # run until the user selected 'quit'
                     if not self.treat(refpl, disambPl):
@@ -696,11 +697,11 @@ def main():
                     mysite = wikipedia.getSite()
                     pl = wikipedia.Page(mysite, arg[5:])
                     if pl.exists():
-                        alternatives.append(pl.linkname())
+                        alternatives.append(pl.title())
                     else:
-                        answer = wikipedia.inputChoice(u'Possibility %s does not actually exist. Use it anyway?' % pl.linkname(), ['yes', 'no'], ['y', 'N'], 'N')
+                        answer = wikipedia.inputChoice(u'Possibility %s does not actually exist. Use it anyway?' % pl.title(), ['yes', 'no'], ['y', 'N'], 'N')
                         if answer in ('Y', 'y'):
-                            alternatives.append(pl.linkname())
+                            alternatives.append(pl.title())
                 else:
                     alternatives.append(arg[5:])
             elif arg == '-just':

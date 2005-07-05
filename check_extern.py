@@ -171,7 +171,7 @@ try:
                 i += 1
                 if i==480:
                     break
-            start = todo[len(todo)-1].linkname() + '_0'
+            start = todo[len(todo)-1].title() + '_0'
         # todo is a list of pages to do, donow are the pages we will be doing in this run.
         if len(todo)>60:
             # Take the first 60.
@@ -202,7 +202,7 @@ try:
                     else:
                         nonworking += 1
                         print
-                        wikipedia.output(u'Page "%s" links to:'%pl.linkname())
+                        wikipedia.output(u'Page "%s" links to:'%pl.title())
                         wikipedia.output(url)
                         wikipedia.output(u'Which gave error: %s %s'%(error,errorname(error)))
             # If anything is wrong with the Wikipedia page, just ignore

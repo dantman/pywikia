@@ -43,7 +43,7 @@ msg={
 
 def rawtoclean(c):
     #Given the 'raw' category, provides the 'clean' category
-    c2 = c.linkname().split('|')[0]
+    c2 = c.title().split('|')[0]
     return wikipedia.Page(mysite,c2)
 
 def isdate(s):
@@ -56,7 +56,7 @@ def needcheck(pl):
     if checked.has_key(pl):
         return False
     if skipdates:
-        if isdate(pl.linkname()):
+        if isdate(pl.title()):
             return False
     return True
 
@@ -78,7 +78,7 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
                     if rawtoclean(c) in parentcats:
                         cats.remove(c)
                 if linkterm:
-                    pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.Page(mysite,"%s|%s"%(workingcat.linkname(),linkterm))]))
+                    pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.Page(mysite,"%s|%s"%(workingcat.title(),linkterm))]))
                 else:
                     pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
     if cl:
@@ -105,12 +105,12 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
 
 def exclude(pl,real_exclude=True):
     if real_exclude:
-        excludefile.write('%s\n'%pl.linkname())
+        excludefile.write('%s\n'%pl.title())
 
 def asktoadd(pl):
     ctoshow = 500
     print
-    print("==%s==")%pl.linkname()
+    print("==%s==")%pl.title()
     while 1:
         answer = raw_input("y(es)/n(o)/i(gnore)/(o)ther options? ")
         if answer=='y':
@@ -161,9 +161,9 @@ def asktoadd(pl):
             print("Number of pages still to check: %s")%len(tocheck)
             print("Pages to be checked:")
             print tocheck
-            print("==%s==")%pl.linkname()
+            print("==%s==")%pl.title()
         elif answer=='t':
-            print("==%s==")%pl.linkname()
+            print("==%s==")%pl.title()
             try:
                 wikipedia.output(pl.get(get_redirect=True)[0:ctoshow])
             except wikipedia.NoPage:

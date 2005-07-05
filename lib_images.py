@@ -202,12 +202,12 @@ def transfer_image(imagelink, debug=False):
        This function is used by imagetransfer.py and by copy_table.py
     """
     # convert HTML entities to encoding of the source wiki
-    image_linkname = imagelink.linkname().encode('utf-8')
+    image_title = imagelink.title().encode('utf-8')
     if debug: print "--------------------------------------------------"
-    if debug: print "Found image: %s"% image_linkname
+    if debug: print "Found image: %s"% image_title
     # need to strip off "Afbeelding:", "Image:" etc.
     # we only need the substring following the first colon
-    filename = string.split(image_linkname, ":", 1)[1]
+    filename = string.split(image_title, ":", 1)[1]
     if debug: print "Image filename is: %s " % filename
     # Spaces might occur, but internally they are represented by underscores.
     # Change the name now, because otherwise we get the wrong MD5 hash.

@@ -25,7 +25,7 @@ Command line options:
 #
 # Distributed under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.23 2005/06/22 18:51:39 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.24 2005/07/03 06:01:39 hooft Exp $'
 #
 import wikipedia, config
 import replace, pagegenerators
@@ -68,7 +68,7 @@ replacements = {
     u"\x9F": u"&Yuml;"    # latin capital letter Y with diaeresis
 }
 
-class SqlWindows1252PageGenerator(pagegenerators.PageGenerator):
+class SqlWindows1252PageGenerator:
     """
     opens a local SQL dump file, searches for pages with Windows-1252
     characters.
@@ -76,7 +76,7 @@ class SqlWindows1252PageGenerator(pagegenerators.PageGenerator):
     def __init__(self, filename):
         self.filename = filename
 
-    def generate(self):
+    def __iter__(self):
         # open SQL dump and read page titles out of it
         import sqldump
         sqldump = sqldump.SQLdump(self.filename, 'latin-1')
@@ -122,7 +122,7 @@ def main():
     # reconnect the title's parts with spaces
     if pageTitle != []:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
-        gen = pagegenerators.SinglePageGenerator(page)
+        gen = iter([page])
 
     # get edit summary message
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))

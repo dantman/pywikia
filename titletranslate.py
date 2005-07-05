@@ -15,7 +15,7 @@ def sametranslate(pl, arr, same):
     site = pl.site()
     for newcode in site.family.seriouslangs:
         # Put as suggestion into array
-        newname = pl.linkname()
+        newname = pl.title()
         if newcode in ['eo','cs'] and same == 'name':
             newname = newname.split(' ')
             newname[-1] = newname[-1].upper()
@@ -27,7 +27,7 @@ def sametranslate(pl, arr, same):
                 if site.language() in site.family.nocapitalize:
                     if newcode in site.family.nocapitalize:
                         arr[x] = None
-                    elif pl.linkname()[0].upper() == pl.linkname()[0]:
+                    elif pl.title()[0].upper() == pl.title()[0]:
                         arr[x] = None
                 else:
                     arr[x] = None
@@ -52,7 +52,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                 # if given as -hint:xy or -hint:xy:, assume that there should
                 # be a page in language xy with the same title as the page 
                 # we're currently working on
-                newname = pl.linkname()
+                newname = pl.title()
             if codes == 'all':
                 codes = site.family.seriouslangs
             elif codes == '10' or codes == 'main': # names 'main' and 'more' kept for backward compatibility
@@ -79,7 +79,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
     # Autotranslate dates into all other languages, the rest will come from existing interwiki links.
     if auto:
         # search inside all dictionaries for this link
-        dictName, year = date.getDictionaryYear( pl.site().language(), pl.linkname() )
+        dictName, year = date.getDictionaryYear( pl.site().language(), pl.title() )
         if dictName:
             for entryLang, entry in date.dateFormats[dictName].iteritems():
                 try:
@@ -109,9 +109,9 @@ def getPoisonedLinks(pl):
     """
     result = []
     
-    wikipedia.output( u'getting poisoned links for %s' % pl.linkname() )
+    wikipedia.output( u'getting poisoned links for %s' % pl.title() )
 
-    dictName, year = date.getDictionaryYear( pl.site().language(), pl.linkname() )
+    dictName, year = date.getDictionaryYear( pl.site().language(), pl.title() )
     if dictName != None:
         wikipedia.output( u'date found in %s' % dictName )
         

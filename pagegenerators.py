@@ -7,24 +7,7 @@ import re, codecs
 # Application specific imports
 import wikipedia, date
 
-class PageGenerator(object):
-    def __call__(self):
-        return self.generate()
-
-    def generate(self):
-        raise Exception("Abstract class")
-    
-class SinglePageGenerator(PageGenerator):
-    '''
-    Pseudo-generator
-    '''
-    def __init__(self, page):
-        self.page = page
-
-    def generate(self):
-        yield self.page
-
-class AllpagesPageGenerator(PageGenerator):
+class AllpagesPageGenerator:
     '''
     Using the Allpages special page, retrieves all articles, loads them (60 at
     a time) using XML export, and yields title/text pairs.
@@ -33,11 +16,11 @@ class AllpagesPageGenerator(PageGenerator):
         self.start = start
         self.namespace = namespace
 
-    def generate(self):
+    def __iter__(self):
         for page in wikipedia.allpages(start = self.start, namespace = self.namespace):
             yield page
 
-class ReferringPageGenerator(PageGenerator):
+class ReferringPageGenerator:
     '''
     Yields all pages referring to a specific page.
     '''
@@ -45,11 +28,11 @@ class ReferringPageGenerator(PageGenerator):
         self.referredPage = referredPage
         self.followRedirects = followRedirects
 
-    def generate(self):
+    def __iter__(self):
         for page in self.referredPage.getReferences(follow_redirects = self.followRedirects):
             yield page
 
-class CategorizedPageGenerator(PageGenerator):
+class CategorizedPageGenerator:
     '''
     Yields all pages in a specific category.
     '''
@@ -57,22 +40,22 @@ class CategorizedPageGenerator(PageGenerator):
         self.category = category
         self.recurse = recurse
 
-    def generate(self):
+    def __iter__(self):
         for page in self.category.articles(recurse = self.recurse):
             yield page
 
-class LinkedPageGenerator(PageGenerator):
+class LinkedPageGenerator:
     '''
     Yields all pages linked from a specific page.
     '''
     def __init__(self, linkingPage):
         self.linkingPage = linkingPage
 
-    def generate(self):
+    def __iter__(self):
         for page in self.linkingPage.linkedPages():
             yield page
 
-class TextfilePageGenerator(PageGenerator):
+class TextfilePageGenerator:
     '''
     Read a file of page links between double-square-brackets, and return
     them as a list of Page objects. 'filename' is the name of the file that
@@ -81,7 +64,7 @@ class TextfilePageGenerator(PageGenerator):
     def __init__(self, filename):
         self.filename = filename
 
-    def generate(self):
+    def __iter__(self):
         site = wikipedia.getSite()
         f = codecs.open(self.filename, 'r', 'utf-8')
         R = re.compile(r'\[\[(.+?)\]\]')
@@ -103,12 +86,12 @@ class TextfilePageGenerator(PageGenerator):
             yield wikipedia.Page(site, pagename)
         f.close()
 
-class YearPageGenerator(PageGenerator):
+class YearPageGenerator:
     def __init__(self, start = 1, end = 2050):
         self.start = start
         self.end = end
 
-    def generate(self):
+    def __iter__(self):
         wikipedia.output(u"Starting with year %i" % self.start)
         for i in range(self.start, self.end + 1):
             if i % 100 == 0:
@@ -118,12 +101,12 @@ class YearPageGenerator(PageGenerator):
                 current_year = date.formatYear(wikipedia.getSite().lang, i )
                 yield wikipedia.Page(wikipedia.getSite(), current_year)
 
-class DayPageGenerator(PageGenerator):
+class DayPageGenerator:
     def __init__(self, startMonth = 1, endMonth = 12):
         self.startMonth = startMonth
         self.endMonth = endMonth
 
-    def generate(self):
+    def __iter__(self):
         fd = date.FormatDate(wikipedia.getSite())
         firstPage = wikipedia.Page(wikipedia.getSite(), fd(self.startMonth, 1))
         wikipedia.output(u"Starting with %s" % firstPage.aslink())
@@ -131,7 +114,7 @@ class DayPageGenerator(PageGenerator):
             for day in range(1, date.days_in_month[month]+1):
                 yield wikipedia.Page(wikipedia.getSite(), fd(month, day))
 
-class PreloadingGenerator(PageGenerator):
+class PreloadingGenerator:
     """
     Wraps around another generator. Retrieves as many pages as stated by pageNumber
     from that generator, loads them using Special:Export, and yields them one after
@@ -148,12 +131,12 @@ class PreloadingGenerator(PageGenerator):
             # Ignore this error, and get the pages the traditional way later.
             pass
 
-    def generate(self):
+    def __iter__(self):
         # this array will contain up to pageNumber pages and will be flushed
         # after these pages have been preloaded.
         somePages = []
         i = 0
-        for page in self.generator():
+        for page in self.generator:
             i += 1
             somePages.append(page)
             # We don't want to load too many pages at once using XML export.

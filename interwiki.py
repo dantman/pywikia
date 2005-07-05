@@ -364,7 +364,7 @@ class Subject(object):
                         if page2.site().language() in globalvar.neverlink:
                             print "Skipping link %s to an ignored language"% page2
                             continue
-                        if globalvar.same=='wiktionary' and page2.linkname().lower()!=self.inpl.linkname().lower():
+                        if globalvar.same=='wiktionary' and page2.title().lower()!=self.inpl.title().lower():
                             print "NOTE: Ignoring %s for %s in wiktionary mode"% (page2, self.inpl)
                             continue
                         if not globalvar.autonomous:
@@ -743,7 +743,7 @@ class InterwikiBot(object):
             wikipedia.output(u"NOTE: The first unfinished subject is " + fs.pl().aslink())
         print "NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number)
         i = 0
-        for page in self.pageGenerator():
+        for page in self.pageGenerator:
             if page not in globalvar.skip:
                 i += 1
                 self.add(page, hints = hints)
@@ -899,13 +899,11 @@ def readWarnfile(filename, sa):
     reader = warnfile.WarnfileReader(filename)
     # we won't use removeHints
     (hints, removeHints) = reader.getHints()
-    for page in hints.iterkeys():
+    pages = hints.keys()
+    for page in pages:
         # The WarnfileReader gives us a list of pagelinks, but titletranslate.py expects a list of strings, so we convert it back.
         # TODO: This is a quite ugly hack, in the future we should maybe make titletranslate expect a list of pagelinks.
-        hintStrings = []
-        for hintedPage in hints[page]:
-            #lang = 
-            hintStrings.append('%s:%s' % (hintedPage.site().language(), hintedPage.linkname()))
+        hintStrings = ['%s:%s' % (hintedPage.site().language(), hintedPage.title()) for hintedPage in hints[page]]
         sa.add(page, hints = hintStrings)
 
 #===========
@@ -990,7 +988,7 @@ if __name__ == "__main__":
                 elif arg.startswith('-skipfile:'):
                     skipfile = arg[10:]
                     skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
-                    for page in skipPageGen():
+                    for page in skipPageGen:
                         globalvar.skip.add(page)
                 elif arg == '-restore':
                     hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
@@ -998,10 +996,10 @@ if __name__ == "__main__":
                     hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
                     # We waste this generator to find out the last page's title
                     # This is an ugly workaround.
-                    for page in hintlessPageGen():
+                    for page in hintlessPageGen:
                         pass
                     try:
-                        start = page.linkname()
+                        start = page.title()
                     except NameError:
                         print "Dump file is empty?! Starting at the beginning."
                         start = "!"
@@ -1028,7 +1026,7 @@ if __name__ == "__main__":
 
         if hintlessPageGen:
             bot.setPageGenerator(hintlessPageGen)
-#             for page in hintlessPageGen():
+#             for page in hintlessPageGen:
 #                 bot.add(page, hints=hints)
 
         if warnfile:

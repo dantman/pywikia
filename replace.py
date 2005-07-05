@@ -153,7 +153,7 @@ fixes = {
     
 }
 
-class ReplacePageGenerator(pagegenerators.PageGenerator):
+class ReplacePageGenerator:
     """
     Generator which will yield Pages for pages that might contain text to
     replace. These pages might be retrieved from a local SQL dump file or a
@@ -283,7 +283,7 @@ class ReplacePageGenerator(pagegenerators.PageGenerator):
         # TODO - UNFINISHED
     
     # TODO: Make MediaWiki's search feature available.
-    def generate(self):
+    def __iter__(self):
         '''
         Starts the generator.
         '''
@@ -349,29 +349,29 @@ class ReplaceRobot:
         """
         # Run the generator which will yield Pages which might need to be
         # changed.
-        for page in self.generator():
+        for page in self.generator:
             print ''
             try:
                 # Load the page's text from the wiki
                 original_text = page.get()
             except wikipedia.NoPage:
-                wikipedia.output(u'Page %s not found' % page.linkname())
+                wikipedia.output(u'Page %s not found' % page.title())
                 continue
             except wikipedia.LockedPage:
-                wikipedia.output(u'Skipping locked page %s' % page.linkname())
+                wikipedia.output(u'Skipping locked page %s' % page.title())
                 continue
             except wikipedia.IsRedirectPage:
                 continue
             match = self.checkExceptions(original_text)
             # skip all pages that contain certain texts
             if match:
-                wikipedia.output(u'Skipping %s because it contains %s' % (page.linkname(), match))
+                wikipedia.output(u'Skipping %s because it contains %s' % (page.title(), match))
             else:
                 new_text = self.doReplacements(original_text)
                 if new_text == original_text:
-                    wikipedia.output('No changes were necessary in %s' % page.linkname())
+                    wikipedia.output('No changes were necessary in %s' % page.title())
                 else:
-                    wikipedia.output(u'>>> %s <<<' % page.linkname())
+                    wikipedia.output(u'>>> %s <<<' % page.title())
                     wikipedia.showDiff(original_text, new_text)
                     if not self.acceptall:
                         choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')

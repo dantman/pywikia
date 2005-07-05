@@ -65,12 +65,12 @@ msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
                          'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
                         }
 
-class TableSqlDumpGenerator(pagegenerators.PageGenerator):
+class TableSqlDumpGenerator:
     def __init__(self, sqlfilename):
         import sqldump
         self.sqldump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
 
-    def generate(self):
+    def __iter__(self):
         tableTagR = re.compile('<table', re.IGNORECASE)
         for entry in self.sqldump.entries():
             if tableTagR.search(entry.text):
@@ -405,18 +405,18 @@ class Table2WikiRobot:
         Returns True if the converted table was successfully saved, otherwise
         returns False.
         '''
-        wikipedia.output(u'\n>>> %s <<<' % pl.linkname())
+        wikipedia.output(u'\n>>> %s <<<' % pl.title())
         site = pl.site()
         try:
             text = pl.get()
         except wikipedia.NoPage:
-            wikipedia.output(u"ERROR: couldn't find %s" % pl.linkname())
+            wikipedia.output(u"ERROR: couldn't find %s" % pl.title())
             return False
         except wikipedia.LockedPage:
-            wikipedia.output(u'Skipping locked page %s' % pl.linkname())
+            wikipedia.output(u'Skipping locked page %s' % pl.title())
             return False
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u'Skipping redirect %s' % pl.linkname())
+            wikipedia.output(u'Skipping redirect %s' % pl.title())
             return False
         newText, convertedTables, warningSum = self.convertAllHTMLTables(text)
         if convertedTables == 0:
@@ -441,7 +441,7 @@ class Table2WikiRobot:
                 pl.put(newText)
 
     def run(self):
-        for pl in self.generator():
+        for pl in self.generator:
             self.treat(pl)
             
 def main():
@@ -494,7 +494,7 @@ def main():
     elif page_title != []:
         page_title = ' '.join(page_title)
         page = wikipedia.Page(wikipedia.getSite(), page_title)
-        gen = pagegenerators.PreloadingGenerator(pagegenerators.SinglePageGenerator(page))
+        gen = pagegenerators.PreloadingGenerator(iter([page]))
     else:
         wikipedia.output(__doc__, 'utf-8')
         sys.exit(0)

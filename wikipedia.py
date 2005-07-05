@@ -8,7 +8,7 @@ late August 2004)
 Classes:
 Page: A MediaWiki page
     __init__: Page(xx,Title) - the page with title Title on language xx:
-    linkname: The name of the page, in a form suitable for an interwiki link
+    title: The name of the page, in a form suitable for an interwiki link
     urlname: The name of the page, in a form suitable for a URL
     catname: The name of the page, with the namespace part removed
     section: The section of the page (the part of the name after '#')
@@ -65,7 +65,7 @@ removeLanguageLinks(text): gives the wiki-code 'text' without any interlanguage
     links.
 replaceLanguageLinks(oldtext, new): in the wiki-code 'oldtext' remove the
     language links and replace them by the language links in new, a dictionary
-    with the languages as keys and either Pages or linknames as values
+    with the languages as keys and either Pages or titles as values
 getCategoryLinks(text,xx): get all category links in text 'text' (links in the
     form xx:pagename)
 removeCategoryLinks(text,xx): remove all category links in 'text'
@@ -191,7 +191,7 @@ class Page(object):
                             print "WARNING: Strange title %s"%'%3A'.join(title)
         title = '%3A'.join(title)
         self._urlname = title
-        self._linkname = url2link(self._urlname, site = self._site, insite = self._tosite)
+        self._title = url2link(self._urlname, site = self._site, insite = self._tosite)
 
     def site(self):
         """The site of the page this Page refers to,
@@ -209,11 +209,11 @@ class Page(object):
            for the URL of the page."""
         return self._urlname
 
-    def linkname(self, doublex = False):
+    def title(self, doublex = False):
         """The name of the page this Page refers to, in a form suitable
            for a wiki-link"""
         if doublex:
-            ln=self._linkname
+            ln=self._title
             # Double all x-es just to be sure...
             ln = ln.replace('&#265;','cx')
             ln = ln.replace('&#264;','Cx')
@@ -231,7 +231,7 @@ class Page(object):
             ln = ln.replace('X','Xx')
             return ln
         else:
-            return self._linkname
+            return self._title
 
     def catname(self, doublex = False):
         """The name of the page without the namespace part. Gives an error
@@ -246,9 +246,9 @@ class Page(object):
 
     def section(self):
         """The name of the section this Page refers to. Sections are
-           denominated by a # in the linkname(). If no section is referenced,
+           denominated by a # in the title(). If no section is referenced,
            None is returned."""
-        ln = self.linkname()
+        ln = self.title()
         ln = re.sub('&#', '&hash;', ln)
         if not '#' in ln:
             return None
@@ -259,7 +259,7 @@ class Page(object):
 
     def sectionFreeLinkname(self, doublex=False):
         hn=self.section()
-        ln=self.linkname(doublex=doublex)
+        ln=self.title(doublex=doublex)
         if hn:
             return ln[:-len(hn)-1]
         else:
@@ -284,9 +284,9 @@ class Page(object):
         Note that the family is never included.
         """
         if forceInterwiki or self.site() != getSite():
-            return '[[%s:%s]]' % (self.site().lang, self.linkname())
+            return '[[%s:%s]]' % (self.site().lang, self.title())
         else:
-            return '[[%s]]' % self.linkname()
+            return '[[%s]]' % self.title()
 
     def get(self, read_only = False, force = False, get_redirect=False, throttle = True):
         """The wiki-text of the page. This will retrieve the page if it has not
@@ -326,7 +326,7 @@ class Page(object):
                     hn = underline2space(hn)
                     m = re.search("== *%s *==" % hn, self._contents)
                     if not m:
-                        output(u"WARNING: Section does not exist: %s" % self.linkname())
+                        output(u"WARNING: Section does not exist: %s" % self.title())
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
@@ -478,7 +478,7 @@ class Page(object):
                 watchArticle = self._isWatched
             else:
                 import watchlist
-                watchArticle = watchlist.isWatched(self.linkname())
+                watchArticle = watchlist.isWatched(self.title())
         newPage = not self.exists()
         return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken())
 
@@ -498,7 +498,7 @@ class Page(object):
             if newname[0] == ' ':
                 output(u"ERROR: link from %s to [[%s:%s]] has leading space?!" % (self.aslink(), newsite, newname))
             for pagenametext in self.site().family.pagenamecodes(self.site().language()):
-                newname = newname.replace("{{"+pagenametext+"}}",self.linkname())
+                newname = newname.replace("{{"+pagenametext+"}}",self.title())
             try:
                 result.append(self.__class__(newsite, newname, insite = self.site()))
             except UnicodeError:
@@ -525,7 +525,7 @@ class Page(object):
     def rawcategories(self):
         """Just like categories, but gives the categories including the part
            after the |, if any. Of course these will thus be pagelinks to
-           non-existing pages, but as long as we just use linkname() and
+           non-existing pages, but as long as we just use title() and
            such, that won't matter."""
         result = []
         ll = getCategoryLinks(self.get(read_only = True), self.site(), raw=True)
@@ -540,7 +540,7 @@ class Page(object):
             return -1
         if not self.site() == other.site():
             return cmp(self.site(), other.site())
-        return cmp(self.linkname(), other.linkname())
+        return cmp(self.title(), other.title())
 
     def __hash__(self):
         """Pseudo method that makes it possible to store Page objects as
@@ -560,7 +560,7 @@ class Page(object):
             raise
         thistxt = removeCategoryLinks(thistxt, self.site())
 
-        Rlink = re.compile(r'\[\[(?P<linkname>[^\]\|]*)(?:\|[^\]\|]*)?\]\]')
+        Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(?:\|[^\]\|]*)?\]\]')
         for l in Rlink.findall(thistxt):
             page = Page(getSite(), l)
             result.append(page)
@@ -645,7 +645,7 @@ class Page(object):
         path = site.family.version_history_address(site, self.urlname())
 
         if not hasattr(self, '_versionhistory') or forceReload:
-            output(u'Getting version history of %s' % self.linkname())
+            output(u'Getting version history of %s' % self.title())
             txt = getUrl(site, path)
             self._versionhistory = txt
             
@@ -679,12 +679,12 @@ class Page(object):
         reason = reason.encode(self.site().encoding())
         answer = 'y'
         if prompt:
-            answer = inputChoice(u'Do you want to delete %s?' % self.linkname(), ['Yes', 'No'], ['y', 'N'], 'N')
+            answer = inputChoice(u'Do you want to delete %s?' % self.title(), ['Yes', 'No'], ['y', 'N'], 'N')
         if answer in ['y', 'Y']:
             token = self.site().getToken(self)
             # put_throttle()
             host = self.site().hostname()
-            address = self.site().delete_address(space2underline(self.linkname()))
+            address = self.site().delete_address(space2underline(self.title()))
 
             while not self.site().loggedin(check = True):
                 loginMan = login.LoginManager(site = self.site())
@@ -883,7 +883,7 @@ class GetAll(object):
         if hn:
             m = re.search("== *%s *==" % hn, text)
             if not m:
-                output(u"WARNING: Section does not exist: %s" %pl2.linkname())
+                output(u"WARNING: Section does not exist: %s" %pl2.title())
             else:
                 # Store the content
                 pl2._contents = text
@@ -1973,11 +1973,11 @@ class Site(object):
     def __repr__(self):
         return self.family.name+":"+self.lang
     
-    def linkto(self, linkname, othersite = None):
+    def linkto(self, title, othersite = None):
         if othersite and othersite.lang != self.lang:
-            return '[[%s:%s]]' % (self.lang, linkname)
+            return '[[%s:%s]]' % (self.lang, title)
         else:
-            return '[[%s]]' % linkname
+            return '[[%s]]' % title
 
     def encoding(self):
         return self.family.code2encoding(self.lang)

@@ -47,19 +47,19 @@ import wikipedia, config
 import replace, pagegenerators
 import re, sys, string
 
-class SqlTemplatePageGenerator(pagegenerators.PageGenerator):
+class SqlTemplatePageGenerator:
     def __init__(self, template, sqlfilename):
         self.template = template
         self.sqlfilename = sqlfilename
 
-    def generate(self):
+    def __iter__(self):
         import sqldump
         mysite = wikipedia.getSite()
         dump = sqldump.SQLdump(self.sqlfilename, mysite.encoding())
         # regular expression to find the original template.
         # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
         # The new syntax, {{vfd}}, will also be found.
-        templateName = self.template.linkname().split(':', 1)[1]
+        templateName = self.template.title().split(':', 1)[1]
         templateRegex = r'\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}'
         for entry in dump.query_findr(templateRegex):
             page = wikipedia.Page(mysite, entry.full_title())

@@ -87,7 +87,7 @@ try:
             text=p.get()
             cats=p.rawcategories()
             if cats == []:
-                wikipedia.output(u"========== %s ==========" % p.linkname())
+                wikipedia.output(u"========== %s ==========" % p.title())
                 print "No categories"
                 print "----------------------------------------"
                 newcats=choosecats(text)
@@ -95,9 +95,9 @@ try:
                     make_categories(p, newcats, mysite)
             else:
                 if docorrections:
-                    wikipedia.output(u"========== %s ==========" % p.linkname())
+                    wikipedia.output(u"========== %s ==========" % p.title())
                     for c in cats:
-                        print c.linkname()
+                        print c.title()
                     print "----------------------------------------"
                     newcats=choosecats(text)
                     if newcats == None:

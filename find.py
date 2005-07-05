@@ -145,9 +145,9 @@ class FindPages:
         count = 0
         arq = codecs.open('find.dat', 'w', 'utf-8')
         for pl in self.generate:
-            arq.write("# [[%s]] \n" % pl.linkname())
+            arq.write("# [[%s]] \n" % pl.title())
             count +=1
-            print str(count), pl.linkname()
+            print str(count), pl.title()
         arq.close()
 
 def main():

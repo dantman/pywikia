@@ -36,7 +36,7 @@ class PageHandler:
     
     def showpageinfo(self):
         print self.date
-        print self.page.linkname()
+        print self.page.title()
         print "Length: %i bytes" % self.length
         print "User: %s" % self.user
         if self.comment == None:

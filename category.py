@@ -162,7 +162,7 @@ def sorted_by_last_name(catlink, pagelink):
         [[Alexandre Dumas (senior)]], this function will return this Category:
         [[Category:Author|Dumas, Alexandre]]
         '''
-        page_name = pagelink.linkname()
+        page_name = pagelink.title()
         site = pagelink.site()
         # regular expression that matches a name followed by a space and
         # disambiguation brackets. Group 1 is the name without the rest.
@@ -176,9 +176,9 @@ def sorted_by_last_name(catlink, pagelink):
             # e.g. "John von Neumann" becomes "Neumann, John von"
             sorted_key = split_string[-1] + ', ' + string.join(split_string[:-1], ' ')
             # give explicit sort key
-            return wikipedia.Page(site, catlink.linkname() + '|' + sorted_key)
+            return wikipedia.Page(site, catlink.title() + '|' + sorted_key)
         else:
-            return wikipedia.Page(site, catlink.linkname())
+            return wikipedia.Page(site, catlink.title())
 
 def add_category(sort_by_last_name = False):
     '''
@@ -233,20 +233,20 @@ def add_category(sort_by_last_name = False):
                     cats = page.categories()
                     rawcats = page.rawcategories()
                 except wikipedia.NoPage:
-                    wikipedia.output(u"%s doesn't exist yet. Ignoring." % (page.linkname()))
+                    wikipedia.output(u"%s doesn't exist yet. Ignoring." % (page.title()))
                     pass
                 except wikipedia.IsRedirectPage,arg:
                     redirTarget = wikipedia.Page(site,arg.args[0])
-                    wikipedia.output(u"WARNING: %s is redirect to %s. Ignoring." % (page.linkname(), redirTarget.linkname()))
+                    wikipedia.output(u"WARNING: %s is redirect to %s. Ignoring." % (page.title(), redirTarget.title()))
                 else:
                     wikipedia.output(u"Current categories:")
                     for cat in cats:
-                        wikipedia.output(u"* %s" % cat.linkname())
+                        wikipedia.output(u"* %s" % cat.title())
                     catpl = wikipedia.Page(site, cat_namespace + ':' + newcatTitle)
                     if sort_by_last_name:
                         catpl = sorted_by_last_name(catpl, page) 
                     if catpl in cats:
-                        wikipedia.output(u"%s is already in %s." % (page.linkname(), catpl.linkname()))
+                        wikipedia.output(u"%s is already in %s." % (page.title(), catpl.title()))
                     else:
                         wikipedia.output(u'Adding %s' % catpl.aslink())
                         rawcats.append(catpl)
@@ -373,7 +373,7 @@ class CategoryTidyRobot:
         always use current_cat = original_cat.
         '''
         print
-        wikipedia.output(u'Treating page %s, currently in category %s' % (article.linkname(), current_cat.linkname()))
+        wikipedia.output(u'Treating page %s, currently in category %s' % (article.title(), current_cat.title()))
         subcatlist = self.catDB.getSubcats(current_cat)
         supercatlist = self.catDB.getSupercats(current_cat)
         print
@@ -386,15 +386,15 @@ class CategoryTidyRobot:
         # show subcategories as possible choices (with numbers)
         for i in range(len(supercatlist)):
             # layout: we don't expect a cat to have more than 10 supercats
-            wikipedia.output(u'u%d - Move up to %s' % (i, supercatlist[i].linkname()))
+            wikipedia.output(u'u%d - Move up to %s' % (i, supercatlist[i].title()))
         for i in range(len(subcatlist)):
             # layout: we don't expect a cat to have more than 100 subcats
-            wikipedia.output(u'%2d - Move down to %s' % (i, subcatlist[i].linkname()))
+            wikipedia.output(u'%2d - Move down to %s' % (i, subcatlist[i].title()))
         print ' j - Jump to another category'
         print ' n - Skip this article'
         print ' r - Remove this category tag'
         print ' ? - Read the page'
-        wikipedia.output(u'Enter - Save category as %s' % current_cat.linkname())
+        wikipedia.output(u'Enter - Save category as %s' % current_cat.title())
 
         flag = False
         length = 1000
@@ -404,7 +404,7 @@ class CategoryTidyRobot:
             if choice == 'n':
                 flag = True
             elif choice == '':
-                wikipedia.output(u'Saving category as %s' % current_cat.linkname())
+                wikipedia.output(u'Saving category as %s' % current_cat.title())
                 if current_cat == original_cat:
                     print 'No changes necessary.'
                 else:
@@ -432,7 +432,7 @@ class CategoryTidyRobot:
                     print ''
                     print 'Original categories: '
                     for cat in article.categories(): 
-                        wikipedia.output(u'* %s' % cat.linkname()) 
+                        wikipedia.output(u'* %s' % cat.title()) 
                     # show more text if the user uses this function again
                     length = length+500
             elif choice[0] == 'u':
@@ -512,7 +512,7 @@ class CategoryTreeRobot:
             }
             
         result = u'#' * currentDepth
-        result += '[[:%s|%s]]' % (cat.linkname(), cat.linkname().split(':', 1)[1])
+        result += '[[:%s|%s]]' % (cat.title(), cat.title().split(':', 1)[1])
         result += ' (%d)' % len(self.catDB.getArticles(cat))
         # We will remove an element of this array, but will need the original array
         # later, so we create a shallow copy with [:]
@@ -526,7 +526,7 @@ class CategoryTreeRobot:
             supercat_names = []
             for i in range(len(supercats)):
                 # create a list of wiki links to the supercategories
-                supercat_names.append('[[:%s|%s]]' % (supercats[i].linkname(), supercats[i].linkname().split(':', 1)[1]))
+                supercat_names.append('[[:%s|%s]]' % (supercats[i].title(), supercats[i].title().split(':', 1)[1]))
                 # print this list, separated with commas, using translations given in also_in_cats
             result += ' ' + wikipedia.translate(wikipedia.getSite(), also_in_cats) % ', '.join(supercat_names)
         result += '\n'

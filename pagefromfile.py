@@ -56,7 +56,7 @@ def findpage(t):
     try:
         title = re.search("'''(.*?)'''",page).group(1)
         pl = wikipedia.Page(mysite,wikipedia.UnicodeToAsciiHtml(title))
-        print pl.linkname()
+        print pl.title()
         if pl.exists():
             print "Page %s already exists, not adding!"%title
         else:

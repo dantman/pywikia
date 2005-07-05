@@ -1188,11 +1188,11 @@ dateFormats = {
 }
 
 
-def getDictionaryYear( lang, linkname ):
+def getDictionaryYear( lang, title ):
     """Returns (dictName,value), where value can be a year, date, etc, and dictName is 'yearsBC','december',etc."""
     for dictName, dict in dateFormats.iteritems():
         try:
-            year = dict[ lang ]( linkname )
+            year = dict[ lang ]( title )
             return (dictName,year)
         except:
             pass

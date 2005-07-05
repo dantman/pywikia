@@ -40,10 +40,10 @@ def main():
     for filename in getfn():
         print "Handling images from %s" % filename
         gen = pagegenerators.TextfilePageGenerator(filename)
-        for image in gen():
+        for image in gen:
             if image.isImage():
                 print "-" * 50
-                print "Image: %s" % image.linkname()
+                print "Image: %s" % image.title()
                 try:
                     # show the image description page's contents
                     print image.get()

@@ -44,28 +44,21 @@ import codecs, pickle
 import httplib, socket, urlparse
 import threading, time
 
-class ContentGenerator(object):
-    def __call__(self):
-        return self.generate()
-
-    def generate(self):
-        raise Exception("Abstract class")
-    
-class AllpagesPageContentGenerator(ContentGenerator):
+class AllpagesPageContentGenerator:
     def __init__(self, start):
         self.start = start
     
-    def generate(self):
+    def __iter__(self):
         gen = pagegenerators.AllpagesPageGenerator(self.start)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        for page in preloadingGen():
+        for page in preloadingGen:
             try:
                 text = page.get(read_only = True)
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 continue
-            yield page.linkname(), text
+            yield page.title(), text
 
-class SqlPageContentGenerator(ContentGenerator):
+class SqlPageContentGenerator:
     '''
     Using an SQL dump file, retrieves all pages that are not redirects (doesn't
     load them from the live wiki), and yields title/text pairs.
@@ -74,18 +67,10 @@ class SqlPageContentGenerator(ContentGenerator):
         import sqldump
         self.dump = sqldump.SQLdump(sqlfilename, wikipedia.getSite().encoding())
 
-    def generate(self):
+    def __iter__(self):
         for entry in self.dump.entries():
             if not entry.redirect:
                 yield entry.full_title(), entry.text
-
-class SinglePageContentGenerator(ContentGenerator):
-    '''Pseudo-generator'''
-    def __init__(self, page):
-        self.page = page
-
-    def generate(self):
-        yield self.page.linkname(), self.page.get(read_only = True)
 
 class LinkChecker(object):
     '''
@@ -302,7 +287,7 @@ class WeblinkCheckerRobot:
         self.history = History()
         
     def run(self):
-        for (title, text) in self.generator():
+        for (title, text) in self.generator:
            self.checkLinksIn(title, text)
     
     def checkLinksIn(self, title, text):
@@ -360,8 +345,8 @@ def main():
         gen = SqlPageContentGenerator(sqlfilename)
     elif source == 'page':
         pageTitle = ' '.join(pageTitle)
-        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
-        gen = SinglePageContentGenerator(page)
+        pageContents = wikipedia.Page(wikipedia.getSite(), pageTitle).get(read_only = True)
+        gen = iter([(pageTitle, pageContents)])
     else:
         gen = AllpagesPageContentGenerator(start)
     bot = WeblinkCheckerRobot(gen)

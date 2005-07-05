@@ -33,7 +33,7 @@ class TouchBot:
         self.generator = generator
 
     def run(self):
-        for page in self.generator():
+        for page in self.generator:
             try:
                 text = page.get()
                 page.put(text)
@@ -69,7 +69,7 @@ def main():
 
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
-        gen = pagegenerators.SinglePageGenerator(page)
+        gen = iter([page])
     if not gen:
         wikipedia.showHelp('touch')
     else:

@@ -111,7 +111,7 @@ def main(args):
             except wikipedia.NoPage:
                 try:
                     # Maybe the image is on WikiCommons?
-                    commonslink = imagelink.linkname()
+                    commonslink = imagelink.title()
                     commonslink = [wikipedia.getSite().image_namespace()] + commonslink.split(':')[1:]
                     commonslink = ':'.join(commonslink)
                     commonslink = wikipedia.Page(wikipedia.getSite(),commonslink)

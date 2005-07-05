@@ -103,8 +103,8 @@ def treat(to_pl, fromsite):
             new_filename = lib_images.transfer_image(wikipedia.Page(fromsite, image), debug)
             # if the upload succeeded
             if new_filename:
-                old_image_tag = wikipedia.Page(fromsite, image).linkname()
-                new_image_tag = wikipedia.Page(mysite, mysite.image_namespace() + ":" + new_filename).linkname()
+                old_image_tag = wikipedia.Page(fromsite, image).title()
+                new_image_tag = wikipedia.Page(mysite, mysite.image_namespace() + ":" + new_filename).title()
                 print_debug(u"Replacing " + old_image_tag + " with " + new_image_tag)
                 # We want to replace "Image:My pic.jpg" as well as "image:my_pic.jpg", so we need a regular expression.
                 old_image_tag = old_image_tag.replace(" ", "[ \_]")

@@ -115,14 +115,14 @@ class _Category(wikipedia.Page):
                 while True:
                     try:
                         if startFromPage:
-                            wikipedia.output('Getting [[%s]] starting at %s...' % (cat.linkname(), startFromPage))
+                            wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), startFromPage))
                         else:
-                            wikipedia.output('Getting [[%s]]...' % cat.linkname())
+                            wikipedia.output('Getting [[%s]]...' % cat.title())
                         txt = wikipedia.getUrl(site, path)
                     except:
                         # We assume that the server is down. Wait some time, then try again.
                         raise
-                        print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (cat.linkname(), retry_idle_time)
+                        print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (cat.title(), retry_idle_time)
                         time.sleep(retry_idle_time * 60)
                         # Next time wait longer, but not longer than half an hour
                         if retry_idle_time < 32:
@@ -155,7 +155,7 @@ class _Category(wikipedia.Page):
                 matchObj = RLinkToNextPage.search(txt)
                 if matchObj:
                     startFromPage = matchObj.group(1)
-                    wikipedia.output('There are more articles in %s.' % cat.linkname())
+                    wikipedia.output('There are more articles in %s.' % cat.title())
                 else:
                     thisCatDone = True
         # get supercategories
@@ -226,12 +226,12 @@ class _Category(wikipedia.Page):
         catname = self.site().category_namespace() + ':' + catname
         targetCat = wikipedia.Page(self.site(), catname)
         if targetCat.exists():
-            wikipedia.output('Target page %s already exists!' % targetCat.linkname())
+            wikipedia.output('Target page %s already exists!' % targetCat.title())
             return False
         else:
-            wikipedia.output('Moving text from %s to %s.' % (self.linkname(), targetCat.linkname()))
+            wikipedia.output('Moving text from %s to %s.' % (self.title(), targetCat.title()))
             authors = ', '.join(self.contributingUsers())
-            creationSummary = wikipedia.translate(wikipedia.getSite(), msg_created_for_renaming) % (self.linkname(), authors)
+            creationSummary = wikipedia.translate(wikipedia.getSite(), msg_created_for_renaming) % (self.title(), authors)
             targetCat.put(self.get(), creationSummary)
             return True
     
@@ -253,7 +253,7 @@ def change_category(article, old_cat_title, new_cat_title):
     sort_key = ''
     removed = False
     for cat in cats:
-        cattext = cat.linkname().split('|')[0].split(':', 1)[1]
+        cattext = cat.title().split('|')[0].split(':', 1)[1]
         if cattext == old_cat_title:
             # because a list element is removed, the iteration will skip the 
             # next element. this might lead to forgotten categories, but
