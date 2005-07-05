@@ -706,7 +706,7 @@ def run():
 		parseWikiPage(ofn)
 		new = ea.edit(ofn)
 	except wikipedia.LockedPage:
-		sys.exit("You do not have permission to edit %s" % self.pagelink.hashfreeLinkname())
+		sys.exit("You do not have permission to edit %s" % self.pagelink.sectionFreeTitle())
 	if old != new:
 		new = ea.repair(new)
 		ea.showdiff(old, new)

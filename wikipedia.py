@@ -12,7 +12,7 @@ Page: A MediaWiki page
     urlname: The name of the page, in a form suitable for a URL
     catname: The name of the page, with the namespace part removed
     section: The section of the page (the part of the name after '#')
-    sectionFreeLinkname: The name without the section part
+    sectionFreeTitle: The name without the section part
     aslink: The name of the page in the form [[Title]] or [[lang:Title]]
     site: The wiki where this page is in
     encoding: The encoding the page is in
@@ -237,7 +237,7 @@ class Page(object):
         """The name of the page without the namespace part. Gives an error
         if the page is from the main namespace. Note that this is a raw way
         of doing things - it simply looks for a : in the name."""
-        t=self.sectionFreeLinkname(doublex = doublex)
+        t=self.sectionFreeTitle(doublex = doublex)
         p=t.split(':')
         p=p[1:]
         if p==[]:
@@ -257,7 +257,7 @@ class Page(object):
             hn = re.sub('&hash;', '&#', hn)
             return hn
 
-    def sectionFreeLinkname(self, doublex=False):
+    def sectionFreeTitle(self, doublex=False):
         hn=self.section()
         ln=self.title(doublex=doublex)
         if hn:
@@ -381,7 +381,7 @@ class Page(object):
 
     def isCategory(self):
         """True if the page is a Category, false otherwise."""
-        t=self.sectionFreeLinkname()
+        t=self.sectionFreeTitle()
         # Look at the part before the first ':'
         p=t.split(':')
         if p[1:]==[]:
@@ -392,7 +392,7 @@ class Page(object):
 
     def isImage(self):
         """True if the page is an Image description page, false otherwise."""
-        t=self.sectionFreeLinkname()
+        t=self.sectionFreeTitle()
         # Look at the part before the first ':'
         p=t.split(':')
         if p[1:]==[]:
@@ -405,7 +405,7 @@ class Page(object):
         """Gives the number of the namespace of the page. Does not work for
            all namespaces in all languages, only when defined in family.py.
            If not defined, it will return 0 (the main namespace)"""
-        t=self.sectionFreeLinkname()
+        t=self.sectionFreeTitle()
         p=t.split(':')
         if p[1:]==[]:
             return 0
@@ -831,7 +831,7 @@ class GetAll(object):
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 if self.site.lang == 'eo':
-                    if pl.sectionFreeLinkname() != pl.sectionFreeLinkname(doublex = True):
+                    if pl.sectionFreeTitle() != pl.sectionFreeTitle(doublex = True):
                         # Maybe we have used x-convention when we should not?
                         try:
                             pl.get(force = True, throttle = self.throttle)
@@ -853,7 +853,7 @@ class GetAll(object):
     def oneDone(self, title, timestamp, text):
         pl = Page(self.site, title)
         for pl2 in self.pages:
-            if Page(self.site, pl2.sectionFreeLinkname()) == pl:
+            if Page(self.site, pl2.sectionFreeTitle()) == pl:
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
         else:
@@ -902,7 +902,7 @@ class GetAll(object):
         # In the next line, we assume that what we got for eo: is NOT in x-convention
         # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
         # find nothing, we will retry the normal way with an unadapted form.
-        pagenames = u'\r\n'.join([x.sectionFreeLinkname(doublex = False) for x in self.pages])
+        pagenames = u'\r\n'.join([x.sectionFreeTitle(doublex = False) for x in self.pages])
         if type(pagenames) != type(u''):
             print 'Warning: wikipedia.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
             print pagenames
