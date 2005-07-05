@@ -14,6 +14,9 @@ Parameters:
                 parameter because your password will be shown on your
                 screen.
 
+   -all         try to login on a large number of languages at once (on
+                Wikipedia: all with at least ~100 pages)
+
     
     
 If not given as parameter, the script will ask for your username and password
@@ -150,6 +153,7 @@ class LoginManager:
 
 def main():
     username = password = None
+    logall = False
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'login')
         if arg:
@@ -157,11 +161,18 @@ def main():
                 username = arg[6:]
             elif arg.startswith("-pass:"): # not recommended
                 password = arg[6:]
+            elif arg == "-all":
+                logall = True
             else:
                 wikipedia.showHelp('login')
                 sys.exit()
-    loginMan = LoginManager(username, password)
-    loginMan.login()
+    if logall:
+        for lang in wikipedia.getSite().family.seriouslangs:
+            loginMan = LoginManager(username, password, site = wikipedia.getSite(code=lang))
+            loginMan.login()
+    else:
+        loginMan = LoginManager(username, password)
+        loginMan.login()
 
 if __name__ == "__main__":
     try:
