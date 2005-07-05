@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -110,6 +110,8 @@ class Family(family.Family):
              'kn', 'ks', 'ku', 'kw', 'li', 'lv', 'mi', 'mk', 'ml', 'mr',
              'mt', 'nah', 'oc', 'os', 'sa', 'scn', 'se', 'sh', 'sq', 'su',
              'ta', 'te', 'th', 'tl', 'tpi', 'ur', 'vi', 'yi', 'zh-min-nan']
+
+        self.seriouslangs = self.biglangs5
 
         # other groups of language that we might want to do at once
             
