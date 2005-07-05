@@ -196,7 +196,6 @@ class Global(object):
     debug = True
     followredirect = True
     force = False
-    forreal = True
     minarraysize = 100
     maxquerysize = 60
     same = False
@@ -439,7 +438,7 @@ class Subject(object):
             site = pl.site()
             if site == mysite and pl.exists() and not pl.isRedirectPage():
                 if pl != self.inpl:
-                    self.problem("Found link to %s" % pl.aslink() )
+                    self.problem("Found link to %s" % pl.aslink(forceInterwiki = True) )
                     self.whereReport(pl)
                     nerr += 1
             elif pl.exists() and not pl.isRedirectPage():
@@ -475,10 +474,10 @@ class Subject(object):
                     print "="*30
                     print "Links to %s"%k
                     i = 0
-                    for pl2 in v:
+                    for page2 in v:
                         i += 1
-                        wikipedia.output(u"  (%d) Found link to %s in:" % (i, pl2.aslink()))
-                        self.whereReport(pl2, indent=8)
+                        wikipedia.output(u"  (%d) Found link to %s in:" % (i, page2.aslink(forceInterwiki = True)))
+                        self.whereReport(page2, indent=8)
                     if not globalvar.autonomous:
                         while 1:
                             answer = wikipedia.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
@@ -562,7 +561,8 @@ class Subject(object):
             new[self.inpl.site()] = self.inpl
 
         #self.replaceLinks(self.inpl, new, True, sa)
-        
+
+        updatedSites = []
         # Process all languages here
         for (site, page) in new.iteritems():
             # if we have an account for this site
@@ -570,10 +570,19 @@ class Subject(object):
                 if self.inpl.isDisambig() != page.isDisambig():
                     wikipedia.output(u"Cannot update %s, disambiguation flag doesn't match." % site.lang)
                 else:
-                    self.replaceLinks(page, new, sa)
+                    # Try to do the changes
+                    if self.replaceLinks(page, new, sa):
+                        # Changes were successful
+                        updatedSites.append(site)
+        for site in updatedSites:
+            # don't report backlinks for pages we already changed
+            del new[site]
         self.reportBacklinks(new)
 
     def replaceLinks(self, pl, new, sa):
+        """
+        Returns True if saving was successful.
+        """
         wikipedia.output(u"Updating links on page %s." % pl.aslink(forceInterwiki = True))
 
         # sanity check - the page we are fixing must be the only one for that site.
@@ -605,62 +614,59 @@ class Subject(object):
                 oldtext = pl.get()
                 newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = pl.site())
                 if globalvar.debug:
-                    try:
-                        wikipedia.showDiff(oldtext, newtext)
-                    except:
-                        wikipedia.output(u'Error executing showDiff')
+                    wikipedia.showDiff(oldtext, newtext)
                 if newtext != oldtext:
                     # wikipedia.output(u"NOTE: Replace %s" % pl.aslink())
-                    if globalvar.forreal:
-                        
-                        # Determine whether we need permission to submit
+                    # Determine whether we need permission to submit
+                    ask = False
+                    if removing:
+                        self.problem('removing: %s'%(",".join([x.lang for x in removing])))
+                        ask = True
+                    if globalvar.force:
                         ask = False
-                        if removing:
-                            self.problem('removing: %s'%(",".join([x.lang for x in removing])))
-                            ask = True
-                        if globalvar.force:
-                            ask = False
-                        if globalvar.confirm:
-                            ask = True
-                        # If we need to ask, do so
-                        if ask:
-                            if globalvar.autonomous:
-                                # If we cannot ask, deny permission
-                                answer = 'n'
-                            else:
-                                answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No'], ['y', 'N'], 'N')
+                    if globalvar.confirm:
+                        ask = True
+                    # If we need to ask, do so
+                    if ask:
+                        if globalvar.autonomous:
+                            # If we cannot ask, deny permission
+                            answer = 'n'
                         else:
-                            # If we do not need to ask, allow
-                            answer = 'y'
-                        
-                        # If we got permission to submit, do so
-                        if answer == 'y':
-                            # Check whether we will have to wait for wikipedia. If so, make
-                            # another get-query first.
-                            if sa:
-                                while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
-                                    print "NOTE: Performing a recursive query first to save time...."
-                                    qdone = sa.oneQuery()
-                                    if not qdone:
-                                        # Nothing more to do
-                                        break
-
-                            print "NOTE: Updating live wiki..."
-                            timeout=60
-                            while 1:
-                                try:
-                                    print "DBG> updating ", pl
-                                    status, reason, data = pl.put(newtext, comment=u'robot '+mods)
-                                except (socket.error, IOError):
-                                    if timeout>3600:
-                                        raise
-                                    print "ERROR putting page. Sleeping %d seconds before trying again"%timeout
-                                    timeout=timeout*2
-                                    time.sleep(timeout)
-                                else:
+                            answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No'], ['y', 'N'], 'N')
+                    else:
+                        # If we do not need to ask, allow
+                        answer = 'y'
+                    # If we got permission to submit, do so
+                    if answer == 'y':
+                        # Check whether we will have to wait for wikipedia. If so, make
+                        # another get-query first.
+                        if sa:
+                            while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
+                                print "NOTE: Performing a recursive query first to save time...."
+                                qdone = sa.oneQuery()
+                                if not qdone:
+                                    # Nothing more to do
                                     break
-                            if str(status) != '302':
-                                print status, reason
+                        print "NOTE: Updating live wiki..."
+                        timeout=60
+                        while 1:
+                            try:
+                                # print "DBG> updating ", pl
+                                status, reason, data = pl.put(newtext, comment=u'robot '+mods)
+                            except (socket.error, IOError):
+                                if timeout>3600:
+                                    raise
+                                wikipedia.output(u"ERROR putting page. Sleeping %i seconds before trying again" % timeout)
+                                timeout *= 2
+                                time.sleep(timeout)
+                            else:
+                                break
+                        if str(status) == '302':
+                            return True
+                        else:
+                            print status, reason
+
+                return False
         finally:
             # re-add the pl back to the new links list.
             new[pl.site()] = pl
@@ -669,30 +675,29 @@ class Subject(object):
         """Report missing back links. This will be called from finish() if
            needed."""
         try:
-            for site in new.keys():
-                pl = new[site]
-                if not pl.section():
+            for site, page in new.iteritems():
+                if not page.section():
                     shouldlink = new.values() + [self.inpl]
-                    linked = pl.interwiki()
-                    for xpl in shouldlink:
-                        if xpl != pl and not xpl in linked:
+                    linked = page.interwiki()
+                    for xpage in shouldlink:
+                        if xpage != page and not xpage in linked:
                             for l in linked:
-                                if l.site() == xpl.site():
-                                    wikipedia.output(u"WARNING: %s: %s does not link to %s but to %s" % (pl.site().family.name, pl.aslink(forceInterwiki = True), xpl.aslink(forceInterwiki = True), l.aslink(forceInterwiki = True)))
+                                if l.site() == xpage.site():
+                                    wikipedia.output(u"WARNING: %s: %s does not link to %s but to %s" % (page.site().family.name, page.aslink(forceInterwiki = True), xpage.aslink(forceInterwiki = True), l.aslink(forceInterwiki = True)))
                                     break
                             else:
-                                wikipedia.output(u"WARNING: %s: %s does not link to %s" % (pl.site().family.name, pl.aslink(forceInterwiki = True), xpl.aslink(forceInterwiki = True)))
+                                wikipedia.output(u"WARNING: %s: %s does not link to %s" % (page.site().family.name, page.aslink(forceInterwiki = True), xpage.aslink(forceInterwiki = True)))
                     # Check for superfluous links
-                    for xpl in linked:
-                        if not xpl in shouldlink:
+                    for xpage in linked:
+                        if not xpage in shouldlink:
                             # Check whether there is an alternative page on that language.
                             for l in shouldlink:
-                                if l.site() == xpl.site():
+                                if l.site() == xpage.site():
                                     # Already reported above.
                                     break
                             else:
                                 # New warning
-                                wikipedia.output(u"WARNING: %s: %s links to incorrect %s" % (pl.site().family.name, pl.aslink(forceInterwiki = True), xpl.aslink(forceInterwiki = True)))
+                                wikipedia.output(u"WARNING: %s: %s links to incorrect %s" % (page.site().family.name, page.aslink(forceInterwiki = True), xpage.aslink(forceInterwiki = True)))
         except (socket.error, IOError):
             wikipedia.output(u'ERROR: could not report backlinks')
     
