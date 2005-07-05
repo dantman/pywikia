@@ -917,6 +917,8 @@ if __name__ == "__main__":
         number = None
         skipfile = None
         warnfile = None
+        # a page generator which doesn't give hints
+        hintlessPageGen = None
         
         sa=SubjectArray()
         
@@ -976,9 +978,7 @@ if __name__ == "__main__":
                         startyear = 1
                     # avoid problems where year pages link to centuries etc.
                     globalvar.followredirect = False
-                    gen = pagegenerators.YearPageGenerator(startyear)
-                    for page in gen():
-                        sa.add(page, hints=hints)
+                    hintlessPageGen = pagegenerators.YearPageGenerator(startyear)
                 elif arg.startswith('-days'):
                     if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
                         # Looks as if the user gave a specific month at which to start
@@ -986,28 +986,26 @@ if __name__ == "__main__":
                         startMonth = int(arg[6:])
                     else:
                         startMonth = 1
-                    gen = pagegenerators.DayPageGenerator(startMonth)
-                    for page in gen():
-                        sa.add(page, hints=hints)
+                    hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
                 elif arg.startswith('-skipfile:'):
                     skipfile = arg[10:]
                 elif arg == '-restore':
-                    gen = pagegenerators.TextfilePageGenerator('interwiki.dump')
-                    for page in gen():
-                        sa.add(page, hints=hints)
+                    hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
                 elif arg == '-continue':
-                    gen = pagegenerators.TextfilePageGenerator('interwiki.dump')
-                    for page in gen():
-                        sa.add(page, hints=hints)
+                    hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
+                    # We waste this generator to find out the last page's title
+                    # This is an ugly workaround.
+                    for page in hintlessPageGen():
+                        pass
                     try:
                         start = page.linkname()
                     except NameError:
                         print "Dump file is empty?! Starting at the beginning."
                         start = "!"
+                    # old generator is used up, create a new one
+                    hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
                 elif arg.startswith('-file:'):
-                    gen = pagegenerators.TextfilePageGenerator(arg[6:])
-                    for pl in gen():
-                        sa.add(pl,hints=hints)
+                    hintlessPageGen = pagegenerators.TextfilePageGenerator(arg[6:])
                 elif arg == '-start':
                     start = '_'                     # start page will be entered interactively
                 elif arg.startswith('-start:'):
@@ -1027,13 +1025,17 @@ if __name__ == "__main__":
                     globalvar.showtextlink += globalvar.showtextlinkadd
                 else:
                     inname.append(arg)
-        
+
+        if hintlessPageGen:
+            for page in hintlessPageGen():
+                sa.add(page, hints=hints)
+
         if warnfile:
             readWarnfile(warnfile, sa)
 
         if skipfile:
-            gen = pagegenerators.TextfilePageGenerator(skipfile)
-            for page in gen():
+            skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
+            for page in skipPageGen():
                 globalvar.skip[page] = None
 
         if start:
