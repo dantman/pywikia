@@ -899,15 +899,14 @@ def readWarnfile(filename, sa):
     reader = warnfile.WarnfileReader(filename)
     # we won't use removeHints
     (hints, removeHints) = reader.getHints()
-    for pagename in hints.iterkeys():
-        pl = wikipedia.Page(wikipedia.getSite(), pagename)
+    for page in hints.iterkeys():
         # The WarnfileReader gives us a list of pagelinks, but titletranslate.py expects a list of strings, so we convert it back.
         # TODO: This is a quite ugly hack, in the future we should maybe make titletranslate expect a list of pagelinks.
         hintStrings = []
-        for hint in hints[pagename]:
+        for hintedPage in hints[page]:
             #lang = 
-            hintStrings.append('%s:%s' % (hint.site().language(), hint.linkname()))
-        sa.add(pl, hints = hintStrings)
+            hintStrings.append('%s:%s' % (hintedPage.site().language(), hintedPage.linkname()))
+        sa.add(page, hints = hintStrings)
 
 #===========
         
