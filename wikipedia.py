@@ -1165,9 +1165,9 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         print edittime
 	raise
     if newPage:
-        output(url2unicode("Creating page [[%s:%s]]" % site.lang, name, site = site))
+        output(url2unicode("Creating page [[%s:%s]]" % (site.lang, name), site = site))
     else:
-        output(url2unicode("Changing page [[%s:%s]]" % site.lang, name, site = site))
+        output(url2unicode("Changing page [[%s:%s]]" % (site.lang, name), site = site))
     # Submit the prepared information
     conn = httplib.HTTPConnection(host)
 
@@ -1247,7 +1247,7 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
     """
     isWatched = False
     name = re.sub(' ', '_', name)
-    output(url2unicode(u'Getting page [[%s:%s]]' % site.lang, name, site = site))
+    output(url2unicode(u'Getting page [[%s:%s]]' % (site.lang, name), site = site))
     # A heuristic to encode the URL into %XX for characters that are not
     # allowed in a URL.
     if not '%' in name and do_quote: # It should not have been done yet
