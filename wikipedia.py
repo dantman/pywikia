@@ -434,7 +434,7 @@ class Page(object):
         site = self.site()
         path = site.references_address(self.urlname())
         
-        output(u'Getting references to %s' % (site.linkto(self.linkname())))
+        output(u'Getting references to %s' % self.aslink())
         txt = getUrl(site, path)
         # remove brackets which would disturb the regular expression cascadedListR
         # TODO: rewrite regex
@@ -470,7 +470,7 @@ class Page(object):
            If watchArticle is None, leaves the watchlist status unchanged.
         """
         while not self.site().loggedin(check = True):
-            loginMan = login.LoginManager()
+            loginMan = login.LoginManager(site = self.site())
             loginMan.login()
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
@@ -687,7 +687,7 @@ class Page(object):
             address = self.site().delete_address(space2underline(self.linkname()))
 
             while not self.site().loggedin(check = True):
-                loginMan = login.LoginManager()
+                loginMan = login.LoginManager(site = self.site())
                 loginMan.login()
 
             predata = [
@@ -1165,9 +1165,9 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         print edittime
 	raise
     if newPage:
-        output(url2unicode("Creating page %s"%site.linkto(name), site = site))
+        output(url2unicode("Creating page [[%s:%s]]" % site.lang, name, site = site))
     else:
-        output(url2unicode("Changing page %s"%site.linkto(name), site = site))
+        output(url2unicode("Changing page [[%s:%s]]" % site.lang, name, site = site))
     # Submit the prepared information
     conn = httplib.HTTPConnection(host)
 
@@ -1247,7 +1247,7 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
     """
     isWatched = False
     name = re.sub(' ', '_', name)
-    output(url2unicode(u'Getting page %s' % site.linkto(name), site = site))
+    output(url2unicode(u'Getting page [[%s:%s]]' % site.lang, name, site = site))
     # A heuristic to encode the URL into %XX for characters that are not
     # allowed in a URL.
     if not '%' in name and do_quote: # It should not have been done yet
