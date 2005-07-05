@@ -5,7 +5,7 @@
 import re, codecs
 
 # Application specific imports
-import wikipedia
+import wikipedia, date
 
 class PageGenerator(object):
     def __call__(self):
@@ -102,6 +102,34 @@ class TextfilePageGenerator(PageGenerator):
             site = wikipedia.getSite(code = code, fam = fam)
             yield wikipedia.Page(site, pagename)
         f.close()
+
+class YearPageGenerator(PageGenerator):
+    def __init__(self, start = 1, end = 2050):
+        self.start = start
+        self.end = end
+
+    def generate(self):
+        wikipedia.output(u"Starting with year %i" % self.start)
+        for i in range(self.start, self.end + 1):
+            if i % 100 == 0:
+                wikipedia.output(u'Preparing %i...' % i)
+            # There is no year 0
+            if i != 0:
+                current_year = date.formatYear(wikipedia.getSite().lang, i )
+                yield wikipedia.Page(wikipedia.getSite(), current_year)
+
+class DayPageGenerator(PageGenerator):
+    def __init__(self, startMonth = 1, endMonth = 12):
+        self.startMonth = startMonth
+        self.endMonth = endMonth
+
+    def generate(self):
+        fd = date.FormatDate(wikipedia.getSite())
+        firstPage = wikipedia.Page(wikipedia.getSite(), fd(self.startMonth, 1))
+        wikipedia.output(u"Starting with %s" % firstPage.aslink())
+        for month in range(self.startMonth, self.endMonth+1):
+            for day in range(1, date.days_in_month[month]+1):
+                yield wikipedia.Page(wikipedia.getSite(), fd(month, day))
 
 class PreloadingGenerator(PageGenerator):
     """

@@ -974,31 +974,21 @@ if __name__ == "__main__":
                         startyear = int(arg[7:])
                     else:
                         startyear = 1
-                    print "Starting with year %d" %startyear
-                    for i in range(startyear,2050):
-                        if i % 100 == 0:
-                            print "Preparing %d..." % i
-
-                        # There is no year 0
-                        if i != 0:
-                            current_year = date.formatYear( wikipedia.getSite().lang, i )
-                            sa.add( wikipedia.Page(wikipedia.getSite(), current_year), hints=hints)
-
+                    # avoid problems where year pages link to centuries etc.
                     globalvar.followredirect = False
+                    gen = pagegenerators.YearPageGenerator(startyear)
+                    for page in gen():
+                        sa.add(page, hints=hints)
                 elif arg.startswith('-days'):
                     if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
                         # Looks as if the user gave a specific month at which to start
                         # Must be a natural number.
-                        startmonth = int(arg[6:])
+                        startMonth = int(arg[6:])
                     else:
-                        startmonth = 1
-                    fd = date.FormatDate(wikipedia.getSite())
-                    pl = wikipedia.Page(wikipedia.getSite(), fd(startmonth, 1))
-                    wikipedia.output(u"Starting with %s" % pl.aslink())
-                    for month in range(startmonth, 12+1):
-                        for day in range(1, date.days_in_month[month]+1):
-                            pl = wikipedia.Page(wikipedia.getSite(), fd(month, day))
-                            sa.add(pl,hints=hints)
+                        startMonth = 1
+                    gen = pagegenerators.DayPageGenerator(startMonth)
+                    for page in gen():
+                        sa.add(page, hints=hints)
                 elif arg.startswith('-skipfile:'):
                     skipfile = arg[10:]
                 elif arg == '-restore':
