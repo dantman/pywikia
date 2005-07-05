@@ -162,6 +162,10 @@ import sys, copy, re
 import time, date
 import codecs
 import socket
+try:
+    set # introduced in Python 2.4: faster and future
+except NameError:
+    from sets import Set as set
 
 import wikipedia, config, pagegenerators
 import titletranslate
@@ -200,7 +204,7 @@ class Global(object):
     maxquerysize = 60
     same = False
     shownew = True
-    skip = []
+    skip = set()
     untranslated = False
     untranslatedonly = False
     askhints = False
@@ -990,7 +994,7 @@ if __name__ == "__main__":
                     skipfile = arg[10:]
                     skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
                     for page in skipPageGen():
-                        globalvar.skip.append(page)
+                        globalvar.skip.add(page)
                 elif arg == '-restore':
                     hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
                 elif arg == '-continue':
