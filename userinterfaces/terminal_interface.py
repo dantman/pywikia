@@ -56,7 +56,8 @@ class UI:
         """
 
         # sound the terminal bell to notify the user
-        sys.stdout.write('\07')
+        if config.ring_bell:
+            sys.stdout.write('\07')
         self.output(question, newline=False)
         text = raw_input()
         text = unicode(text, config.console_encoding)
