@@ -200,7 +200,7 @@ class Global(object):
     maxquerysize = 60
     same = False
     shownew = True
-    skip = {}
+    skip = []
     untranslated = False
     untranslatedonly = False
     askhints = False
@@ -915,7 +915,6 @@ if __name__ == "__main__":
         hints = []
         start = None
         number = None
-        skipfile = None
         warnfile = None
         # a page generator which doesn't give hints
         hintlessPageGen = None
@@ -989,6 +988,9 @@ if __name__ == "__main__":
                     hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
                 elif arg.startswith('-skipfile:'):
                     skipfile = arg[10:]
+                    skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
+                    for page in skipPageGen():
+                        globalvar.skip.append(page)
                 elif arg == '-restore':
                     hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
                 elif arg == '-continue':
@@ -1032,11 +1034,6 @@ if __name__ == "__main__":
 
         if warnfile:
             readWarnfile(warnfile, sa)
-
-        if skipfile:
-            skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
-            for page in skipPageGen():
-                globalvar.skip[page] = None
 
         if start:
             if start == '_':
