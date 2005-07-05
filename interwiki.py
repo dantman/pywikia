@@ -742,15 +742,15 @@ class InterwikiBot(object):
         if fs:
             wikipedia.output(u"NOTE: The first unfinished subject is " + fs.pl().aslink())
         print "NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number)
-        i = 0
-        for page in self.pageGenerator:
-            if page not in globalvar.skip:
-                i += 1
+        for i in range(number):
+            try:
+                page = self.pageGenerator.next()
+                while page in globalvar.skip:
+                    page = self.pageGenerator.next()
                 self.add(page, hints = hints)
-                if i >= number:
-                    return
-        # nothing more to generate
-        self.pageGenerator = None
+            except StopIteration:
+                self.pageGenerator = None
+                break
 
     def firstSubject(self):
         """Return the first subject that is still being worked on"""
@@ -1025,9 +1025,8 @@ if __name__ == "__main__":
                     inname.append(arg)
 
         if hintlessPageGen:
-            bot.setPageGenerator(hintlessPageGen)
-#             for page in hintlessPageGen:
-#                 bot.add(page, hints=hints)
+            # we'll use iter() to create make a next() function available.
+            bot.setPageGenerator(iter(hintlessPageGen))
 
         if warnfile:
             readWarnfile(warnfile, bot)
