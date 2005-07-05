@@ -134,13 +134,6 @@ This script understands various command-line arguments:
                    with a hint-asking option like -untranslated, -askhints
                    or -untranslatedonly
                    
-    -allowupdateall    Allows interwiki to update all other language sites.
-                   You must be logged in into all of the required sites.
-
-    -allowupdate:  used as    -allowupdate:en,es,fr
-                   Allows interwiki to update other language sites.
-                   You must be logged in into all of the spescified sites.
-
 A configuration option can be used to change the working of this robot:
 
 interwiki_backlink: if set to True, all problems in foreign wikis will
@@ -216,9 +209,6 @@ class Global(object):
     neverlink = []
     showtextlink = 0
     showtextlinkadd = 300
-    allowUpdates = []
-    allowUpdateAll = False
-
 
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -331,7 +321,7 @@ class Subject(object):
                     else:
                         if self.conditionalAdd(pl3, counter, pl):
                             if globalvar.shownew:
-                                wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.aslink(), pl.aslink(), pl3.aslink()))
+                                wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.aslink(), pl.aslink(forceInterwiki = True), pl3.aslink(forceInterwiki = True)))
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % pl.aslink())
                     #print "DBG> ",pl.urlname()
@@ -571,22 +561,19 @@ class Subject(object):
         if not new.has_key(self.inpl.site()):
             new[self.inpl.site()] = self.inpl
 
-        print "==status=="
         self.replaceLinks(self.inpl, new, True, sa)
         
-        isDisambig = self.inpl.isDisambig()
-
-        # Process other languages here
-        for site in new.keys():
-            pl = new[site]
-            if site.lang in globalvar.allowUpdates or globalvar.allowUpdateAll:
-                if isDisambig != pl.isDisambig():
-                    wikipedia.output(u"Cannot update %s, disambig flag doesn't match." % site.lang)
+        # Process all languages here
+        for (site, page) in new.iteritems():
+            # if we have an account for this site
+            if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
+                if self.inpl.isDisambig() != page.isDisambig():
+                    wikipedia.output(u"Cannot update %s, disambiguation flag doesn't match." % site.lang)
                 else:
-                    self.replaceLinks(pl, new, False, sa)
+                    self.replaceLinks(page, new, False, sa)
 
     def replaceLinks(self, pl, new, printBackLinks, sa):
-        wikipedia.output(u"Updating links on page %s." % pl.aslink())
+        wikipedia.output(u"Updating links on page %s." % pl.aslink(forceInterwiki = True))
 
         # sanity check - the page we are fixing must be the only one for that site.
         pltmp = new[pl.site()]
@@ -982,10 +969,6 @@ if __name__ == "__main__":
                     globalvar.backlink = False
                 elif arg == '-noredirect':
                     globalvar.followredirect = False
-                elif arg.startswith('-allowupdate:'):
-                    globalvar.allowUpdates = arg[13:].split(',')
-                elif arg == '-allowupdateall':
-                    globalvar.allowUpdateAll = True
                 elif arg.startswith('-years'):
                     # Look if user gave a specific year at which to start
                     # Must be a natural number or negative integer.
