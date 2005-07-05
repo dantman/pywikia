@@ -705,7 +705,7 @@ class Subject(object):
         except (socket.error, IOError):
             wikipedia.output(u'ERROR: could not report backlinks')
     
-class SubjectArray(object):
+class InterwikiBot(object):
     """A class keeping track of a list of subjects, controlling which pages
        are queried from which languages when."""
     
@@ -713,7 +713,7 @@ class SubjectArray(object):
         """Constructor. We always start with empty lists."""
         self.subjects = []
         self.counts = {}
-        self.generator = None
+        self.pageGenerator = None
 
     def add(self, pl, hints = None):
         """Add a single subject to the list"""
@@ -723,10 +723,10 @@ class SubjectArray(object):
             # Keep correct counters
             self.plus(site)
 
-    def setGenerator(self, generator):
+    def setPageGenerator(self, pageGenerator):
         """Add a generator of subjects. Once the list of subjects gets
            too small, this generator is called to produce more Pages"""
-        self.generator = generator
+        self.pageGenerator = pageGenerator
 
     def dump(self, fn):
         f = codecs.open(fn, 'w', 'utf-8')
@@ -737,20 +737,20 @@ class SubjectArray(object):
     def generateMore(self, number):
         """Generate more subjects. This is called internally when the
            list of subjects becomes to small, but only if there is a
-           generator"""
+           PageGenerator"""
         fs = self.firstSubject()
         if fs:
             wikipedia.output(u"NOTE: The first unfinished subject is " + fs.pl().aslink())
         print "NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number)
-        for i in range(number):
-            try:
-                pl=self.generator.next()
-                while pl in globalvar.skip:
-                    pl=self.generator.next()
-                self.add(pl, hints = hints)
-            except StopIteration:
-                self.generator = None
-                break
+        i = 0
+        for page in self.pageGenerator():
+            if page not in globalvar.skip:
+                i += 1
+                self.add(page, hints = hints)
+                if i >= number:
+                    return
+        # nothing more to generate
+        self.pageGenerator = None
 
     def firstSubject(self):
         """Return the first subject that is still being worked on"""
@@ -788,7 +788,7 @@ class SubjectArray(object):
         # some subjects may need to retrieve a second home-language page!
         if len(self.subjects) - mycount < globalvar.minarraysize:
             # Can we make more home-language queries by adding subjects?
-            if self.generator and mycount < globalvar.maxquerysize:
+            if self.pageGenerator and mycount < globalvar.maxquerysize:
                 timeout = 60
                 while timeout<3600:
                     try:
@@ -851,7 +851,7 @@ class SubjectArray(object):
     
     def isDone(self):
         """Check whether there is still more work to do"""
-        return len(self) == 0 and self.generator is None
+        return len(self) == 0 and self.pageGenerator is None
 
     def plus(self, site): 
         """This is a routine that the Subject class expects in a counter"""
@@ -919,10 +919,10 @@ if __name__ == "__main__":
         start = None
         number = None
         warnfile = None
-        # a page generator which doesn't give hints
+        # a PageGenerator (which doesn't give hints, only Pages)
         hintlessPageGen = None
         
-        sa=SubjectArray()
+        bot=InterwikiBot()
         
         if not config.never_log:
             wikipedia.activateLog('interwiki.log')
@@ -954,8 +954,6 @@ if __name__ == "__main__":
                     globalvar.untranslatedonly = False
                     globalvar.askhints = True    
                 elif arg == '-noauto':
-                    pass
-                elif arg.startswith('-hint:'):
                     pass
                 elif arg.startswith('-warnfile:'):
                     warnfile = arg[10:]
@@ -1011,13 +1009,10 @@ if __name__ == "__main__":
                     hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
                 elif arg.startswith('-file:'):
                     hintlessPageGen = pagegenerators.TextfilePageGenerator(arg[6:])
-                elif arg == '-start':
-                    start = '_'                     # start page will be entered interactively
                 elif arg.startswith('-start:'):
-                    if len(arg) == 7:
-                        start = '_'                 # start page will be entered interactively
-                    else:
-                        start = arg[7:]
+                    firstPageName = arg[7:]
+                    namespace = wikipedia.Page(wikipedia.getSite(), firstPageName).namespace()
+                    hintlessPageGen = pagegenerators.AllpagesPageGenerator(firstPageName, namespace)
                 elif arg.startswith('-number:'):
                     number = int(arg[8:])
                 elif arg.startswith('-array:'):
@@ -1032,47 +1027,27 @@ if __name__ == "__main__":
                     inname.append(arg)
 
         if hintlessPageGen:
-            for page in hintlessPageGen():
-                sa.add(page, hints=hints)
+            bot.setPageGenerator(hintlessPageGen)
+#             for page in hintlessPageGen():
+#                 bot.add(page, hints=hints)
 
         if warnfile:
-            readWarnfile(warnfile, sa)
-
-        if start:
-            if start == '_':
-                start = wikipedia.input(u'Which page to start from: ')
-
-            namespace = wikipedia.Page(wikipedia.getSite(),start).namespace()
-            if number:
-                wikipedia.output(u"Treating %d pages starting at %s" % (number, start))
-                if namespace != 0:
-                    start = ':'.join(start.split(':')[1:])
-                i = 0
-                for pl in wikipedia.allpages(start = start, namespace = namespace):
-                    sa.add(pl,hints=hints)
-                    i += 1
-                    if i >= number:
-                        break
-            else:
-                print "Treating pages starting at %s" % start
-                if namespace != 0:
-                    start = ':'.join(start.split(':')[1:])
-                sa.setGenerator(wikipedia.allpages(start = start, namespace = namespace))
+            readWarnfile(warnfile, bot)
 
         inname = '_'.join(inname)
-        if sa.isDone() and not inname:
+        if bot.isDone() and not inname:
             inname = wikipedia.input(u'Which page to check: ')
 
         if inname:
             inpl = wikipedia.Page(wikipedia.getSite(), inname)
-            sa.add(inpl, hints = hints)
+            bot.add(inpl, hints = hints)
 
         try:
-            sa.run()
+            bot.run()
         except KeyboardInterrupt:
-            sa.dump('interwiki.dump')
+            bot.dump('interwiki.dump')
         except:
-            sa.dump('interwiki.dump')
+            bot.dump('interwiki.dump')
             raise
 
     finally:
