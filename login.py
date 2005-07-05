@@ -63,9 +63,9 @@ def makepath(path):
 
 class LoginManager:
     def __init__(self, username = None, password = None, site = None):
-        self.username = username or config.username
-        self.password = password
         self.site = site or wikipedia.getSite()
+        self.username = username or config.usernames[self.site.family.name][self.site.lang]
+        self.password = password
 
     def botAllowed(self):
         """

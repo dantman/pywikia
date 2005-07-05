@@ -5,6 +5,8 @@
 # Distribute under the terms of the PSF license.
 #
 __version__ = '$Id$'
+
+import os, re, sys
 #
 # (Suggestion: try to keep this list alphabetically sorted).
 #
@@ -13,14 +15,30 @@ __version__ = '$Id$'
 #
 # PARAM=VALUE               
 # ===========
-# The family of sites we are working on. wikipedia.py will import xxx_family.py
-# so if you want to change this variable, you need to write such a file.
-# There exists a file for wikitravel.
+# The family of sites we are working on. wikipedia.py will import
+# families/xxx_family.py so if you want to change this variable,
+# you need to write such a file.
 family = 'wikipedia'
-# The language
-mylang = 'test'
-# My user name
-username = ''
+# The language code of the site we're working on.
+mylang = 'language'
+
+# The dictionary usernames should contain a username for each site where you
+# have a bot account. Please set your usernames by adding such lines to your
+# user-config.py:
+#
+# usernames['wikipedia']['de'] = 'myGermanUsername'
+# usernames['wiktionary']['en'] = 'myEnglishUsername'
+#
+usernames = {}
+# Get the names of all known families, and initialize
+# with empty dictionaries
+RfamilyFile = re.compile('(?P<name>.+)_family.py$')
+for filename in os.listdir('families'):
+    m = RfamilyFile.match(filename)
+    if m:
+        familyName = m.group('name')
+        usernames[familyName] = {}
+
 # the encoding that's used in the user's console, i.e. how strings are encoded
 # when they are read by raw_input(). On Windows systems' DOS box, this should
 # be 'cp850' ('cp437' for older versions). Linux users might try 'iso-8859-1'
@@ -32,8 +50,7 @@ console_encoding = None
 userinterface = 'terminal'
 
 # attop is a list of languages that prefer to have the interwiki
-# links at the top of the page. You can use interwiki_attop.append('xx')
-# in user-config.py to add more.
+# links at the top of the page.
 interwiki_attop = ['fr']
 # on_one_line is a list of languages that want the interwiki links
 # one-after-another on a single line
@@ -110,7 +127,6 @@ for _key in _gl:
         _tp[_key]=type(globals()[_key])
 del _key
 # Get the user files
-import os,sys
 _thislevel=0
 _fns=["user-config.py"]
 for _filename in _fns:

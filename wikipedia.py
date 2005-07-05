@@ -2190,19 +2190,23 @@ sys.path.append('userinterfaces')
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 
-username = config.username
-if not config.username:
-    print "Please make a file user-config.py, and put in there:"
-    print "One line saying \"username='yy'\""
-    print "One line saying \"mylang='xx'\""
-    print "....filling in your real name and home wikipedia."
-    print "for other possible configuration variables check config.py"
-    sys.exit(1)
 default_family = config.family
 default_code = config.mylang
 logfile = None
 # Check
-getSite()
+try:
+    getSite()
+except KeyError:
+    print(
+u"""Please create a file user-config.py, and put in there:\n
+One line saying \"mylang='language'\"
+One line saying \"usernames['wikipedia']['language']='yy'\"\n
+...filling in your username and the language code of the wiki you want to work
+on.\n
+For other possible configuration variables check config.py.
+""")
+    sys.exit(1)
+
 
 # Languages to use for comment text after the actual language but before
 # en:. For example, if for language 'xx', you want the preference of
