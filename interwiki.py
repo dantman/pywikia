@@ -561,7 +561,7 @@ class Subject(object):
         if not new.has_key(self.inpl.site()):
             new[self.inpl.site()] = self.inpl
 
-        self.replaceLinks(self.inpl, new, True, sa)
+        #self.replaceLinks(self.inpl, new, True, sa)
         
         # Process all languages here
         for (site, page) in new.iteritems():
@@ -570,9 +570,10 @@ class Subject(object):
                 if self.inpl.isDisambig() != page.isDisambig():
                     wikipedia.output(u"Cannot update %s, disambiguation flag doesn't match." % site.lang)
                 else:
-                    self.replaceLinks(page, new, False, sa)
+                    self.replaceLinks(page, new, sa)
+        self.reportBacklinks(new)
 
-    def replaceLinks(self, pl, new, printBackLinks, sa):
+    def replaceLinks(self, pl, new, sa):
         wikipedia.output(u"Updating links on page %s." % pl.aslink(forceInterwiki = True))
 
         # sanity check - the page we are fixing must be the only one for that site.
@@ -597,9 +598,7 @@ class Subject(object):
             # Check what needs to get done
             mods, removing = compareLanguages(old, new, insite = pl.site())
             if not mods and not globalvar.always:
-                wikipedia.output( u'No changes needed' )
-                if printBackLinks and globalvar.backlink:
-                    self.reportBacklinks(new)
+                wikipedia.output(u'No changes needed' )
             else:
                 if mods:
                     wikipedia.output(u"Changes to be made: %s" % mods)
@@ -610,11 +609,8 @@ class Subject(object):
                         wikipedia.showDiff(oldtext, newtext)
                     except:
                         wikipedia.output(u'Error executing showDiff')
-                if newtext == oldtext:
-                    if printBackLinks and globalvar.backlink:
-                        self.reportBacklinks(new)
-                else:
-                    wikipedia.output(u"NOTE: Replace %s" % pl.aslink())
+                if newtext != oldtext:
+                    # wikipedia.output(u"NOTE: Replace %s" % pl.aslink())
                     if globalvar.forreal:
                         
                         # Determine whether we need permission to submit
@@ -665,9 +661,6 @@ class Subject(object):
                                     break
                             if str(status) != '302':
                                 print status, reason
-                            else:
-                                if printBackLinks and globalvar.backlink:
-                                    self.reportBacklinks(new)
         finally:
             # re-add the pl back to the new links list.
             new[pl.site()] = pl
