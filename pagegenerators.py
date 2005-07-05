@@ -29,11 +29,12 @@ class AllpagesPageGenerator(PageGenerator):
     Using the Allpages special page, retrieves all articles, loads them (60 at
     a time) using XML export, and yields title/text pairs.
     '''
-    def __init__(self, start ='!'):
+    def __init__(self, start ='!', namespace = 0):
         self.start = start
+        self.namespace = namespace
 
     def generate(self):
-        for page in wikipedia.allpages(start = self.start):
+        for page in wikipedia.allpages(start = self.start, namespace = self.namespace):
             yield page
 
 class ReferringPageGenerator(PageGenerator):
