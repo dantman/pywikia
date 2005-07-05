@@ -64,7 +64,11 @@ def makepath(path):
 class LoginManager:
     def __init__(self, username = None, password = None, site = None):
         self.site = site or wikipedia.getSite()
-        self.username = username or config.usernames[self.site.family.name][self.site.lang]
+        try:
+            self.username = username or config.usernames[self.site.family.name][self.site.lang]
+        except:
+            wikipedia.output(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'')
+            sys.exit(1)
         self.password = password
 
     def botAllowed(self):
