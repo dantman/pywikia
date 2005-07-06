@@ -81,6 +81,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         # search inside all dictionaries for this link
         dictName, year = date.getDictionaryYear( pl.site().language(), pl.title() )
         if dictName:
+            wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (pl.linkname(),dictName,year))
             for entryLang, entry in date.dateFormats[dictName].iteritems():
                 try:
                     if entryLang != pl.site().language():
