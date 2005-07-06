@@ -170,17 +170,30 @@ class Page(object):
         else:
             self._tosite = getSite() # Default to home wiki
         # Clean up the name, it can come from anywhere.
+        # Remove leading and trailing whitespace
         title = title.strip()
+        # Replace underlines by spaces
+        title = underline2space(title)
+        # Convert HTML entities to unicode
+        title = html2unicode(title, site = site, altsite = insite)
+        # Convert URL-encoded characters to unicode
+        title = title.encode(site.encoding())
+        title = urllib.unquote(title)
+        title = unicode(title, site.encoding())
+        # Remove leading colon
         if title.startswith(':'):
              title = title[1:]
-        title = link2url(title, site = self._site, insite = insite)
-        title = title.split('%3A')
+        # Capitalize first letter
+        if not site.nocapitalize:
+                title = title[0].upper() + title[1:]
+        # split up into namespace and rest
+        title = title.split(':', 1)
+        # if the page is not in namespace 0:
         if len(title) > 1:
             # translate a default namespace name into the local namespace name
             for ns in site.family.namespaces.keys():
                 if title[0] == site.family.namespace('_default', ns):
                     title[0] = site.namespace(ns)
-                    title[0] = link2url (title[0], site = self._site, insite = insite)
             # Capitalize the first non-namespace part
             for ns in site.family.namespaces.keys():
                 if title[0] == site.namespace(ns):
@@ -189,9 +202,7 @@ class Page(object):
                             title[1] = title[1][0].upper()+title[1][1:]
                         except IndexError: # title[1] is empty
                             print "WARNING: Strange title %s"%'%3A'.join(title)
-        title = '%3A'.join(title)
-        self._urlname = title
-        self._title = url2link(self._urlname, site = self._site, insite = self._tosite)
+        self._title = ':'.join(title)
 
     def site(self):
         """The site of the page this Page refers to,
@@ -207,7 +218,7 @@ class Page(object):
     def urlname(self):
         """The name of the page this Page refers to, in a form suitable
            for the URL of the page."""
-        return self._urlname
+        return urllib.quote(self.title())
 
     def title(self, doublex = False):
         """The name of the page this Page refers to, in a form suitable
@@ -860,12 +871,13 @@ class GetAll(object):
             print repr(title)
             print repr(pl)
             print repr(self.pages)
-            print "BUG> bug, page not found in list"
+            print "BUG: page not found in list"
+
             raise PageNotFound
 
         m = redirectRe(self.site).match(text)
         if m:
-            edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
+            edittime[self.site, title] = timestamp
             redirectto=m.group(1)
             if pl.site().lang=="eo":
                 for c in 'CGHJSU':
@@ -888,12 +900,12 @@ class GetAll(object):
                 # Store the content
                 pl2._contents = text
                 # Store the time stamp
-                edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
+                edittime[self.site, title] = timestamp
         else:
             # Store the content
             pl2._contents = text
             # Store the time stamp
-            edittime[repr(self.site), link2url(title, site = self.site)] = timestamp
+            edittime[self.site, title] = timestamp
 
     def getData(self):
         if self.pages == []:
@@ -1149,7 +1161,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         if newPage:
             predata.append(('wpEdittime', ''))
         else:
-            predata.append(('wpEdittime', edittime[repr(site), link2url(name, site = site)]))
+            predata.append(('wpEdittime', edittime[site, name]))
         # Pass the minorEdit and watchArticle arguments to the Wiki.
         if minorEdit and minorEdit != '0':
             predata.append(('wpMinoredit', '1'))
@@ -1230,7 +1242,7 @@ def getUrl(site, path):
     # TODO: We might want to use error='replace' in case of bad encoding.
     return unicode(text, charset)
     
-def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=False, throttle = True):
+def getEditPage(site, name, read_only = False, get_redirect=False, throttle = True):
     """
     Get the contents of page 'name' from the 'site' wiki
     Do not use this directly; for 99% of the possible ideas you can
@@ -1248,12 +1260,6 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
     isWatched = False
     name = re.sub(' ', '_', name)
     output(url2unicode(u'Getting page [[%s:%s]]' % (site.lang, name), site = site))
-    # A heuristic to encode the URL into %XX for characters that are not
-    # allowed in a URL.
-    if not '%' in name and do_quote: # It should not have been done yet
-        if name != urllib.quote(name):
-            print "DBG> quoting",name
-        name = urllib.quote(name)
     path = site.edit_address(name)
     # Make sure Brion doesn't get angry by waiting if the last time a page
     # was retrieved was not long enough ago.
@@ -1288,13 +1294,13 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
                 output(u'Warning: You\'re probably not logged in on %s:' % repr(site))
         m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
         if m:
-            edittime[repr(site), link2url(name, site = site)] = m.group(1)
+            edittime[site, name] = m.group(1)
         else:
             m = re.search('value="(\d+)" name="wpEdittime"',text)
             if m:
-                edittime[repr(site), link2url(name, site = site)] = m.group(1)
+                edittime[site, name] = m.group(1)
             else:
-                edittime[repr(site), link2url(name, site = site)] = "0"
+                edittime[site, name] = "0"
 
         # Extract the actual text from the textedit field
         try:
@@ -1315,7 +1321,7 @@ def getEditPage(site, name, read_only = False, do_quote = True, get_redirect=Fal
         if m and not get_redirect:
             output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), m.group(1)))
             raise IsRedirectPage(m.group(1))
-        if edittime[repr(site), link2url(name, site = site)] == "0" and not read_only:
+        if edittime[site, name] == "0" and not read_only:
             output(u"DBG> page may be locked?!")
             raise LockedPage()
 
@@ -1674,8 +1680,8 @@ def url2link(percentname, insite, site):
     """Convert a url-name of a page into a proper name for an interwiki link
        the argument 'insite' specifies the target wiki
        """
-    result = underline2space(percentname)
-    x = url2unicode(result, site = site)
+    percentname = underline2space(percentname)
+    x = url2unicode(percentname, site = site)
     return unicode2html(x, insite.encoding())
     
 def link2url(name, site, insite = None):
@@ -1721,15 +1727,7 @@ def link2url(name, site, insite = None):
         name = name.replace('&#365;x','ux')
         name = name.replace('&#364;x','Ux')
         name = name.replace('&#364;X','UX')
-    if '%' in name:
-        # There might be %XX encoding. Just try to decode, if that fails
-        # we must ignore the % sign and it is apparently in the title.
-        try:
-            name = url2unicode(name, site = site)
-        except UnicodeError:
-            name = html2unicode(name, site = site, altsite = insite)
-    else:
-        name = html2unicode(name, site = site, altsite = insite)
+    name = html2unicode(name, site = site, altsite = insite)
 
     #print "DBG>",repr(name)
     # Remove spaces from beginning and the end
@@ -1787,6 +1785,7 @@ def url2unicode(percentname, site):
     for c in percentname:
         if ord(c)>128:
             x=percentname
+            print 'DBG: non-ASCII character in urlname', percentname, c
             break
     else:
         # Before removing the % encoding, make sure it is an ASCII string.
