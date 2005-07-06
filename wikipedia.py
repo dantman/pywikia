@@ -483,7 +483,7 @@ class Page(object):
 
            If watchArticle is None, leaves the watchlist status unchanged.
         """
-        while not self.site().loggedin(check = True):
+        while not self.site().loggedin():
             loginMan = login.LoginManager(site = self.site())
             loginMan.login()
         if watchArticle == None:
@@ -700,7 +700,7 @@ class Page(object):
             host = self.site().hostname()
             address = self.site().delete_address(space2underline(self.title()))
 
-            while not self.site().loggedin(check = True):
+            while not self.site().loggedin():
                 loginMan = login.LoginManager(site = self.site())
                 loginMan.login()
 
@@ -1939,22 +1939,25 @@ class Site(object):
             self._loadCookies()
         return self._cookies
 
-    def loggedin(self, check = False):
-        if check or not hasattr(self,'_loggedin'):
-            self._loadCookies()
-        if check:
+    def loggedin(self, alwaysCheck = False):
+        """
+        Checks if we're logged in by loading a page and looking for the login
+        link. We assume that we're not being logged out during a bot run, so
+        loading the test page is only required once. If you want to be really
+        sure, set alwaysCheck to True.
+        """
+        self._loadCookies()
+        if alwaysCheck or not hasattr(self,'_loggedin'):
+            output(u'Getting a page to check if we\'re logged in')
             path = self.get_address('Non-existing_page')
             txt = getUrl(self, path)
+            # We assume that the text 'Userlogin' appears nowhere except for
+            # the login link.
             self._loggedin = 'Userlogin' not in txt
         return self._loggedin
 
     def _loadCookies(self):
         """Retrieve session cookies for login"""
-        #if self.user is None:
-        #    u = ""
-        #else:
-        #    u = self.user + "-"
-        #fn = 'login-data/%s-%s-%slogin.data' % (self.family.name, self.lang, u)
         fn = 'login-data/%s-%s-login.data' % (self.family.name, self.lang)
         if not os.path.exists(fn):
             fn = 'login-data/%s-login.data' % self.lang
@@ -1965,7 +1968,6 @@ class Site(object):
         else:
             f = open(fn)
             self._cookies = '; '.join([x.strip() for x in f.readlines()])
-            self._loggedin = True
             f.close()
 
     def __repr__(self):

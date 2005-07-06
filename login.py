@@ -172,7 +172,7 @@ def main():
         for familyName in config.usernames.iterkeys():
             for lang in config.usernames[familyName].iterkeys():
                 site = wikipedia.getSite(code=lang, fam=familyName)
-                if site.loggedin(check = True):
+                if site.loggedin():
                     wikipedia.output(u'Already logged in on %s' % site)
                 else:
                     loginMan = LoginManager(username, password, site = site)

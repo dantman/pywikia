@@ -19,7 +19,7 @@ for arg in sys.argv[1:]:
         sys.exit(1)
 
 mysite = wikipedia.getSite()
-if mysite.loggedin(check=1):
+if mysite.loggedin():
     print "Logged in (%s)" % repr(mysite)
 else:
     print "Not logged in (%s)" % repr(mysite)
