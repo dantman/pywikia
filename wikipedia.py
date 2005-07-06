@@ -218,7 +218,8 @@ class Page(object):
     def urlname(self):
         """The name of the page this Page refers to, in a form suitable
            for the URL of the page."""
-        return urllib.quote(self.title())
+        encodedTitle = self.title().encode(self.site().encoding())
+        return urllib.quote(encodedTitle)
 
     def title(self, doublex = False):
         """The name of the page this Page refers to, in a form suitable
@@ -877,7 +878,7 @@ class GetAll(object):
 
         m = redirectRe(self.site).match(text)
         if m:
-            edittime[self.site, title] = timestamp
+            edittime[self.site, pl.urlname()] = timestamp
             redirectto=m.group(1)
             if pl.site().lang=="eo":
                 for c in 'CGHJSU':
@@ -900,12 +901,12 @@ class GetAll(object):
                 # Store the content
                 pl2._contents = text
                 # Store the time stamp
-                edittime[self.site, title] = timestamp
+                edittime[self.site, pl.urlname()] = timestamp
         else:
             # Store the content
             pl2._contents = text
             # Store the time stamp
-            edittime[self.site, title] = timestamp
+            edittime[self.site, pl.urlname()] = timestamp
 
     def getData(self):
         if self.pages == []:
@@ -1165,7 +1166,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         # Pass the minorEdit and watchArticle arguments to the Wiki.
         if minorEdit and minorEdit != '0':
             predata.append(('wpMinoredit', '1'))
-        if watchArticle and watchArticle != '0':
+        if watchArticle:
             predata.append(('wpWatchthis', '1'))
         # Give the token, but only if one is supplied.
         if token:
