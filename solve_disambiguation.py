@@ -403,7 +403,10 @@ class DisambiguationRobot(object):
                 choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refpl.title(), target), ['yes', 'no'], ['y', 'N'], 'N')
                 if choice in ('y', 'Y'):
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
-                    refpl.put(redir_text)
+                    try:
+                        refpl.put(redir_text)
+                    except wikipedia.PageNotSaved, error:
+                        wikipedia.output(u'Page not saved: %s' % error)
             else:
                 choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refpl.title(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
                 if choice in ('y', 'Y'):
@@ -581,7 +584,10 @@ class DisambiguationRobot(object):
             wikipedia.showDiff(original_text, text)
             wikipedia.output(u'')
             # save the page
-            refpl.put(text)
+            try:
+                refpl.put(text)
+            except wikipedia.PageNotSaved, error:
+                wikipedia.output(u'Page not saved: %s' % error)
         return True
     
     
