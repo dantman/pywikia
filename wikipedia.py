@@ -225,35 +225,15 @@ class Page(object):
         encodedTitle = self.title().encode(self.site().encoding())
         return urllib.quote(encodedTitle)
 
-    def title(self, doublex = False):
-        """The name of the page this Page refers to, in a form suitable
-           for a wiki-link"""
-        if doublex:
-            ln=self._title
-            # Double all x-es just to be sure...
-            ln = ln.replace('&#265;','cx')
-            ln = ln.replace('&#264;','Cx')
-            ln = ln.replace('&#285;','gx')
-            ln = ln.replace('&#284;','Gx')
-            ln = ln.replace('&#293;','hx')
-            ln = ln.replace('&#292;','Hx')
-            ln = ln.replace('&#309;','jx')
-            ln = ln.replace('&#308;','Jx')
-            ln = ln.replace('&#349;','sx')
-            ln = ln.replace('&#348;','Sx')
-            ln = ln.replace('&#365;','ux')
-            ln = ln.replace('&#364;','Ux')
-            ln = ln.replace('x','xx')
-            ln = ln.replace('X','Xx')
-            return ln
-        else:
-            return self._title
+    def title(self):
+        """The name of this Page, as a Unicode string"""
+        return self._title
 
-    def catname(self, doublex = False):
+    def catname(self):
         """The name of the page without the namespace part. Gives an error
         if the page is from the main namespace. Note that this is a raw way
         of doing things - it simply looks for a : in the name."""
-        t=self.sectionFreeTitle(doublex = doublex)
+        t=self.sectionFreeTitle()
         p=t.split(':')
         p=p[1:]
         if p==[]:
@@ -273,13 +253,13 @@ class Page(object):
             hn = re.sub('&hash;', '&#', hn)
             return hn
 
-    def sectionFreeTitle(self, doublex=False):
-        hn=self.section()
-        ln=self.title(doublex=doublex)
-        if hn:
-            return ln[:-len(hn)-1]
+    def sectionFreeTitle(self):
+        sectionName = self.section()
+        title = self.title()
+        if sectionName:
+            return title[:-len(sectionName)-1]
         else:
-            return ln
+            return title
             
     def __str__(self):
         """A console representation of the pagelink"""
@@ -850,17 +830,7 @@ class GetAll(object):
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
-                if self.site.lang == 'eo':
-                    if pl.sectionFreeTitle() != pl.sectionFreeTitle(doublex = True):
-                        # Maybe we have used x-convention when we should not?
-                        try:
-                            pl.get(force = True, throttle = self.throttle)
-                        except (NoPage, IsRedirectPage, LockedPage, SectionError):
-                            pass
-                    else:
-                        pl._getexception = NoPage
-                else:
-                    pl._getexception = NoPage
+                pl._getexception = NoPage
             if hasattr(pl,'_contents') and pl.site().lang=="eo":
                 # Edit-pages on eo: use X-convention, XML export does not.
                 # Double X-es where necessary so that we can submit a changed
@@ -923,7 +893,7 @@ class GetAll(object):
         # In the next line, we assume that what we got for eo: is NOT in x-convention
         # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
         # find nothing, we will retry the normal way with an unadapted form.
-        pagenames = u'\r\n'.join([x.sectionFreeTitle(doublex = False) for x in self.pages])
+        pagenames = u'\r\n'.join([x.sectionFreeTitle() for x in self.pages])
         if type(pagenames) != type(u''):
             print 'Warning: wikipedia.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
             print pagenames
