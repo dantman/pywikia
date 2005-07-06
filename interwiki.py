@@ -578,10 +578,8 @@ class Subject(object):
                     if self.replaceLinks(page, new, sa):
                         # Changes were successful
                         updatedSites.append(site)
-        for site in updatedSites:
-            # don't report backlinks for pages we already changed
-            del new[site]
-        self.reportBacklinks(new)
+        # don't report backlinks for pages we already changed
+        self.reportBacklinks(new, updatedSites)
 
     def replaceLinks(self, pl, new, sa):
         """
@@ -675,12 +673,17 @@ class Subject(object):
             # re-add the pl back to the new links list.
             new[pl.site()] = pl
 
-    def reportBacklinks(self, new):
-        """Report missing back links. This will be called from finish() if
-           needed."""
+    def reportBacklinks(self, new, updatedSites):
+        """
+        Report missing back links. This will be called from finish() if needed.
+
+        updatedSites is a list that contains all sites we changed, to avoid
+        reporting of missing backlinks for pages we already fixed
+
+        """
         try:
             for site, page in new.iteritems():
-                if not page.section():
+                if site not in updatedSites and not page.section():
                     shouldlink = new.values() + [self.inpl]
                     linked = page.interwiki()
                     for xpage in shouldlink:
