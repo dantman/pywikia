@@ -177,9 +177,7 @@ class Page(object):
         # Convert HTML entities to unicode
         title = html2unicode(title, site = site, altsite = insite)
         # Convert URL-encoded characters to unicode
-        title = title.encode(site.encoding())
-        title = urllib.unquote(title)
-        title = unicode(title, site.encoding())
+        title = url2unicode(title, site = site)
         # Remove leading colon
         if title.startswith(':'):
              title = title[1:]
@@ -1780,24 +1778,10 @@ def UnicodeToAsciiHtml(s):
     #print
     return ''.join(html)
 
-def url2unicode(percentname, site):
-    # Does the input string contain non-ascii characters? In that case,
-    # it is not really an url, and we do not have to unquote it....
-    for c in percentname:
-        if ord(c)>128:
-            x=percentname
-            print 'DBG: non-ASCII character in urlname', percentname, c
-            break
-    else:
-        # Before removing the % encoding, make sure it is an ASCII string.
-        # unquote doesn't work on unicode strings.
-        x = urllib.unquote(str(percentname))
-    for encoding in site.encodings():
-        try:
-            return x.decode(encoding)
-        except:
-            pass
-    raise UnicodeError("Could not decode %s" % repr(percentname))
+def url2unicode(title, site):
+    title = title.encode(site.encoding())
+    title = urllib.unquote(title)
+    return unicode(title, site.encoding())
 
 def unicode2html(x, encoding):
     """
