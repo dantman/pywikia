@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -655,10 +655,13 @@ class Subject(object):
                             try:
                                 # print "DBG> updating ", pl
                                 status, reason, data = pl.put(newtext, comment=u'robot '+mods)
-                            except (socket.error, IOError):
+                            except wikipedia.EditConflict, error:
+                                wikipedia.output(u'ERROR putting page: %s. Giving up.' % error)
+                            except (socket.error, IOError, wikipedia.PageNotSaved), error:
                                 if timeout>3600:
                                     raise
-                                wikipedia.output(u"ERROR putting page. Sleeping %i seconds before trying again" % timeout)
+                                wikipedia.output(u'ERROR putting page: %s' % error)
+                                wikipedia.output(u'Sleeping %i seconds before trying again.' % timeout)
                                 timeout *= 2
                                 time.sleep(timeout)
                             else:
