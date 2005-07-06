@@ -1270,7 +1270,17 @@ def getEditPage(site, name, read_only = False, get_redirect=False, throttle = Tr
     retry_idle_time = 1
     while True:
         starttime = time.time()
-        text = getUrl(site, path)
+        try:
+            text = getUrl(site, path)
+        except AttributeError:
+            # We assume that the server is down. Wait some time, then try again.
+            print "WARNING: Could not load %s%s. Maybe the server is down. Retrying in %i minutes..." % (site.hostname(), path, retry_idle_time)
+            time.sleep(retry_idle_time * 60)
+            # Next time wait longer, but not longer than half an hour
+            retry_idle_time *= 2
+            if retry_idle_time > 30:
+                retry_idle_time = 30
+            continue
         get_throttle.setDelay(time.time() - starttime)\
 
         # Look for the edit token
@@ -1505,17 +1515,17 @@ def replaceLanguageLinks(oldtext, new, site = None):
     s = interwikiFormat(new, insite = site)
     s2 = removeLanguageLinks(oldtext, site = site)
     if s:
-        if site.language() in config.interwiki_attop:
-            newtext = s + config.interwiki_text_separator + s2
-        elif site.language() in config.categories_last:
+        if site.language() in site.family.interwiki_attop:
+            newtext = s + site.family.interwiki_text_separator + s2
+        elif site.language() in site.family.categories_last:
             cats = getCategoryLinks(s2, site = site)
             s3 = []
             for catname in cats:
                 s3.append(Page(site, catname))
-            s2 = removeCategoryLinks(s2, site) + config.interwiki_text_separator + s
+            s2 = removeCategoryLinks(s2, site) + site.family.interwiki_text_separator + s
             newtext = replaceCategoryLinks(s2, s3, site=site)
         else:
-            newtext = s2 + config.interwiki_text_separator + s
+            newtext = s2 + site.family.interwiki_text_separator + s
     else:
         newtext = s2
     return newtext
@@ -1558,7 +1568,7 @@ def interwikiFormat(links, insite = None):
             s.append(links[site].aslink(forceInterwiki = True))
         except AttributeError:
             s.append(site.linkto(links[site],othersite=insite))
-    if insite.lang in config.interwiki_on_one_line:
+    if insite.lang in insite.family.interwiki_on_one_line:
         sep = ' '
     else:
         sep = '\r\n'
@@ -1629,20 +1639,20 @@ def replaceCategoryLinks(oldtext, new, site = None):
     # first remove interwiki links and add them later, so that
     # interwiki tags appear below category tags if both are set
     # to appear at the bottom of the article
-    if not site.lang in config.categories_last:
+    if not site.lang in site.family.categories_last:
         interwiki_links = getLanguageLinks(oldtext, insite = site)
         oldtext = removeLanguageLinks(oldtext, site = site)
     s = categoryFormat(new, insite = site)
     s2 = removeCategoryLinks(oldtext, site = site)
     if s:
-        if site.language() in config.category_attop:
-            newtext = s + config.category_text_separator + s2
+        if site.language() in site.family.category_attop:
+            newtext = s + site.family.category_text_separator + s2
         else:
-            newtext = s2 + config.category_text_separator + s
+            newtext = s2 + site.family.category_text_separator + s
     else:
         newtext = s2
     # now re-add interwiki links
-    if not site.lang in config.categories_last:
+    if not site.lang in site.family.categories_last:
         newtext = replaceLanguageLinks(newtext, interwiki_links)
     return newtext
     
@@ -2034,7 +2044,7 @@ class Site(object):
         return cmp(self.family.name,other.family.name)
 
     def category_on_one_line(self):
-        return self.lang in config.category_on_one_line
+        return self.lang in site.family.category_on_one_line
 
     def redirect(self,default=False):
         if default:

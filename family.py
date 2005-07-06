@@ -526,6 +526,28 @@ class Family:
     
         self.nocapitalize = []
     
+        # attop is a list of languages that prefer to have the interwiki
+        # links at the top of the page.
+        self.interwiki_attop = []
+        # on_one_line is a list of languages that want the interwiki links
+        # one-after-another on a single line
+        self.interwiki_on_one_line = []
+        
+        # String used as separator between interwiki links and the text
+        self.interwiki_text_separator = '\r\n'
+        
+        # Similar for category
+        self.category_attop = []
+        # on_one_line is a list of languages that want the category links
+        # one-after-another on a single line
+        self.category_on_one_line = []
+        
+        # String used as separator between category links and the text
+        self.category_text_separator = '\r\n'
+        
+        # When both at the bottom should categories come after interwikilinks?
+        self.categories_last = []
+
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
         # alphabetical order on language code is used. For languages that are in
@@ -684,6 +706,7 @@ class Family:
         return pos2
 
 
+        
     # Methods
     
     def hostname(self, code):
