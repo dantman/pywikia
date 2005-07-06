@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -1003,11 +1003,13 @@ if __name__ == "__main__":
                         pass
                     try:
                         start = page.title()
+                        namespace = page.namespace()
                     except NameError:
                         print "Dump file is empty?! Starting at the beginning."
                         start = "!"
+                        namespace = 0
                     # old generator is used up, create a new one
-                    hintlessPageGen = pagegenerators.TextfilePageGenerator('interwiki.dump')
+                    hintlessPageGen = pagegenerators.CombinedGenerator(pagegenerators.TextfilePageGenerator('interwiki.dump'),pagegenerators.AllpagesPageGenerator(start, namespace))
                 elif arg.startswith('-file:'):
                     hintlessPageGen = pagegenerators.TextfilePageGenerator(arg[6:])
                 elif arg.startswith('-start:'):
