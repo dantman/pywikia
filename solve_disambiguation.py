@@ -437,8 +437,8 @@ class DisambiguationRobot(object):
                         break
                 # Make sure that next time around we will not find this same hit.
                 curpos = m.start() + 1
-                # Try to standardize the page.
-                if wikipedia.isInterwikiLink(m.group('title')):
+                # ignore interwiki links and links to sections of the same page
+                if m.group('title') == '' or wikipedia.isInterwikiLink(m.group('title')):
                     continue
                 else:
                     linkpl=wikipedia.Page(disambPl.site(), m.group('title'))
