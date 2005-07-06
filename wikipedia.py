@@ -314,6 +314,10 @@ class Page(object):
 
             SectionError: The subject does not exist on a page with a # link
         """
+        for illegalChar in ['#', '+', '<', '>', '[', ']', '|', '{', '}']:
+            if illegalChar in self.sectionFreeTitle():
+                output(u'illegal character in %s!' % self.aslink())
+                raise NoPage('illegal character in %s!' % self.aslink())
         if force:
             # When forcing, we retry the page no matter what. Old exceptions
             # and contents do not apply any more.
