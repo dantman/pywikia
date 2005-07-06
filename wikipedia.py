@@ -181,6 +181,9 @@ class Page(object):
         title = html2unicode(title, site = site, altsite = insite)
         # Convert URL-encoded characters to unicode
         title = url2unicode(title, site = site)
+        # replace cx by ĉ etc.
+        if site.lang == 'eo':
+            title = resolveEsperantoXConvention(title)
         # Remove leading colon
         if title.startswith(':'):
              title = title[1:]
@@ -1403,7 +1406,8 @@ def allpages(start = '!', site = None, namespace = 0, throttle = True):
         site = getSite()
     while True:
         # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
-        start = link2url(start, site = site)
+        start = start.encode(site.encoding())
+        start = urllib.quote(start)
         # load a list which contains a series of article names (always 480)
         path = site.allpages_address(start, namespace)
         print 'Retrieving Allpages special page for %s from %s, namespace %i' % (repr(site), start, namespace)
@@ -1701,71 +1705,36 @@ def url2link(percentname, insite, site):
     percentname = underline2space(percentname)
     x = url2unicode(percentname, site = site)
     return unicode2html(x, insite.encoding())
-    
-def link2url(name, site, insite = None):
-    """Convert an interwiki link name of a page to the proper name to be used
-       in a URL for that page. code should specify the language for the link"""
-    if site.language() == 'eo':
-        name = name.replace('cx','&#265;')
-        name = name.replace('Cx','&#264;')
-        name = name.replace('CX','&#264;')
-        name = name.replace('gx','&#285;')
-        name = name.replace('Gx','&#284;')
-        name = name.replace('GX','&#284;')
-        name = name.replace('hx','&#293;')
-        name = name.replace('Hx','&#292;')
-        name = name.replace('HX','&#292;')
-        name = name.replace('jx','&#309;')
-        name = name.replace('Jx','&#308;')
-        name = name.replace('JX','&#308;')
-        name = name.replace('sx','&#349;')
-        name = name.replace('Sx','&#348;')
-        name = name.replace('SX','&#348;')
-        name = name.replace('ux','&#365;')
-        name = name.replace('Ux','&#364;')
-        name = name.replace('UX','&#364;')
-        name = name.replace('XX','X')
-        name = name.replace('Xx','X')
-        name = name.replace('xx','x')
-        name = name.replace('&#265;x','cx')
-        name = name.replace('&#264;x','Cx')
-        name = name.replace('&#264;X','CX')
-        name = name.replace('&#285;x','gx')
-        name = name.replace('&#284;x','Gx')
-        name = name.replace('&#284;X','GX')
-        name = name.replace('&#293;x','hx')
-        name = name.replace('&#292;x','Hx')
-        name = name.replace('&#292;X','HX')
-        name = name.replace('&#309;x','jx')
-        name = name.replace('&#308;x','Jx')
-        name = name.replace('&#308;X','JX')
-        name = name.replace('&#349;x','sx')
-        name = name.replace('&#348;x','Sx')
-        name = name.replace('&#348;X','SX')
-        name = name.replace('&#365;x','ux')
-        name = name.replace('&#364;x','Ux')
-        name = name.replace('&#364;X','UX')
-    name = html2unicode(name, site = site, altsite = insite)
 
-    #print "DBG>",repr(name)
-    # Remove spaces from beginning and the end
-    name = name.strip()
-    # Standardize capitalization
-    if name:
-        if not site.nocapitalize:
-            name = name[0].upper()+name[1:]
-    #print "DBG>",repr(name)
-    try:
-        result = str(name.encode(site.encoding()))
-    except UnicodeError:
-        #print "Cannot convert %s into a URL for %s" % (repr(name), code)
-        # Put entities in there. The URL will not be found.
-        result = addEntity(name)
-        #print "Using entities instead",result
-        #print "BUG> This is probably a bug in the robot that did not recognize an interwiki link!"
-        #raise
-    result = space2underline(result)
-    return urllib.quote(result)
+def resolveEsperantoXConvention(text):
+    """
+    Resolves the x convention used to encode Esperanto special characters,
+    e.g. Cxefpagxo and CXefpagXo will both be converted to Ĉefpaĝo.
+    Note that to encode non-Esperanto words like Bordeaux, one uses a
+    double x, i.e. Bordeauxx or BordeauxX.
+    """
+    chars = [
+        (u'c', u'ĉ'),
+        (u'C', u'Ĉ'),
+        (u'g', u'ĝ'),
+        (u'G', u'Ĝ'),
+        (u'h', u'ĥ'),
+        (u'H', u'Ĥ'),
+        (u'j', u'ĵ'),
+        (u'J', u'Ĵ'),
+        (u's', u'ŝ'),
+        (u'S', u'Ŝ'),
+        (u'u', u'ŭ'),
+        (u'U', u'Ŭ')
+    ]
+    for (l, e) in chars:
+        # replace occurences of cghjsuCGHJSU which are followed by exactly one
+        # x or X by the appropriate Esperanto special character
+        text = re.sub(l + '[xX](?![xX])', e, text)
+    # replace double x with single x
+    text = re.sub('x[xX]', 'x', text)
+    text = re.sub('X[xX]', 'X', text)
+    return text
 
 def isInterwikiLink(s, site = None):
     """Try to check whether s is in the form "xx:link" where xx: is a
