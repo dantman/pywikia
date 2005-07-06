@@ -68,6 +68,7 @@ class Family(family.Family):
             'fr': self.alphabetic,
             'he': ['en'],
             'hu': ['en'],
+            'lb': self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
             'fi': self.alphabetic,
