@@ -138,9 +138,12 @@ class SectionError(ValueError):
     """The section specified by # does not exist"""
 
 class NoNamespace(Error):
-    """Wikipedia page is not in a special namespace"""
+    """Page is not in a special namespace"""
 
-class EditConflict(Error):
+class PageNotSaved(Error):
+    """ Saving the page has failed """
+
+class EditConflict(PageNotSaved):
     """There has been an edit conflict while uploading the page"""
 
 class PageInList(LookupError):
@@ -1177,8 +1180,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
         data = urlencode(tuple(predata))
     
     except KeyError:
-        print edittime
-	raise
+	raise PageNotSaved(u'Token not found. Edittime: %s' % edittime)
     if newPage:
         output(url2unicode("Creating page [[%s:%s]]" % (site.lang, name), site = site))
     else:
@@ -1196,13 +1198,16 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     conn.send(data)
 
     # Prepare the return values
-    response = conn.getresponse()
+    try:
+        response = conn.getresponse()
+    except httplib.BadStatusLine, line:
+        raise PageNotSaved('Bad status line: %s' % line)
     data = response.read().decode(myencoding())
     conn.close()
     if data != u'':
         editconflict = mediawiki_messages.get('editconflict').replace('$1', '')
         if '<title>%s' % editconflict in data:
-            raise EditConflict()
+            raise EditConflict(u'An edit conflict has occured.')
         elif safetuple and "<" in data:
             # We might have been using an outdated token
             print "Changing page has failed. Retrying."
