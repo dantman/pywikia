@@ -717,6 +717,7 @@ class InterwikiBot(object):
         self.subjects = []
         self.counts = {}
         self.pageGenerator = None
+        self.generated = 0
 
     def add(self, pl, hints = None):
         """Add a single subject to the list"""
@@ -726,10 +727,11 @@ class InterwikiBot(object):
             # Keep correct counters
             self.plus(site)
 
-    def setPageGenerator(self, pageGenerator):
+    def setPageGenerator(self, pageGenerator, number = None):
         """Add a generator of subjects. Once the list of subjects gets
            too small, this generator is called to produce more Pages"""
         self.pageGenerator = pageGenerator
+        self.generateNumber = number
 
     def dump(self, fn):
         f = codecs.open(fn, 'w', 'utf-8')
@@ -751,6 +753,11 @@ class InterwikiBot(object):
                 while page in globalvar.skip:
                     page = self.pageGenerator.next()
                 self.add(page, hints = hints)
+                self.generated += 1
+                if self.generateNumber:
+                    if self.generated == self.generateNumber:
+                        self.pageGenerator = None
+                        break
             except StopIteration:
                 self.pageGenerator = None
                 break
@@ -1031,7 +1038,7 @@ if __name__ == "__main__":
 
         if hintlessPageGen:
             # we'll use iter() to create make a next() function available.
-            bot.setPageGenerator(iter(hintlessPageGen))
+            bot.setPageGenerator(iter(hintlessPageGen),number = number)
 
         if warnfile:
             readWarnfile(warnfile, bot)
