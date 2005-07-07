@@ -326,7 +326,7 @@ class Page(object):
                 hn = self.section()
                 if hn:
                     hn = underline2space(hn)
-                    m = re.search("== *%s *==" % hn, self._contents)
+                    m = re.search("=+ *%s *=+" % hn, self._contents)
                     if not m:
                         output(u"WARNING: Section does not exist: %s" % self.title())
             # Store any exceptions for later reference
@@ -1996,7 +1996,7 @@ class Site(object):
         return cmp(self.family.name,other.family.name)
 
     def category_on_one_line(self):
-        return self.lang in site.family.category_on_one_line
+        return self.lang in self.site().family.category_on_one_line
 
     def redirect(self,default=False):
         if default:
