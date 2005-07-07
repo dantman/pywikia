@@ -303,7 +303,9 @@ class Page(object):
         for illegalChar in ['#', '+', '<', '>', '[', ']', '|', '{', '}']:
             if illegalChar in self.sectionFreeTitle():
                 output(u'illegal character in %s!' % self.aslink())
-                raise NoPage('illegal character in %s!' % self.aslink())
+                raise NoPage('Illegal character in %s!' % self.aslink())
+        if self.namespace() == -1:
+                raise NoPage('%s is in the Special namespace!' % self.aslink())
         if force:
             # When forcing, we retry the page no matter what. Old exceptions
             # and contents do not apply any more.
