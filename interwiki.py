@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -181,6 +181,7 @@ msg = {
     'es':(u'Añadido', u'Eliminado', u'Modificado'),
     'fr':(u'Ajoute', u'Retire', u'Modifie'),
     'is':(u'Bæti við', u'Fjarlægi', u'Breyti'),
+    'it':(u'Aggiunta', u'Togliere', u'Modificare'),
     'nl':(u'Erbij', u'Eraf', u'Anders'),
     'nn':(u'la til', u'fjerna', u'endra'),
     'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
@@ -419,9 +420,13 @@ class Subject(object):
         self.confirm += 1
         self.problemfound = True
         if globalvar.autonomous:
-            f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
-            f.write("* %s {%s}\n" % (self.inpl.aslink(), txt))
-            f.close()
+            try:
+                f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
+                f.write("* %s {%s}\n" % (self.inpl.aslink(), txt))
+                f.close()
+            except:
+                print 'File of autonomous_problem.dat open or corrupted! Try again with -restore.'
+                sys.exit()
 
     def whereReport(self, pl, indent=4):
         for pl2 in self.foundin[pl]:
