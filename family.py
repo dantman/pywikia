@@ -8,7 +8,7 @@ class Family:
 
         self.knownlanguages = [
             'aa','ab','af','als','am','an','ang','ar','as','ast','av','ay','az',
-            'ba','be','bg','bh','bi','bn','bo','br','bs','ca','ch','cho','chr',
+            'ba','be','bg','bh','bi','bm','bn','bo','br','bs','ca','ch','cho','chr',
             'co','cr','cs','csb','cv','cy','da','de','dv','dz','ee','el','en','eo',
             'es','et','eu','fa','ff','fi','fj','fo','fr','fur','fy','ga','gd','gl','gn',
             'got','gu','gv','ha','haw','he','hi','hr','ht','hu','hy','ia','id',
@@ -24,7 +24,7 @@ class Family:
 
         self.alphabetic = [
             'aa','ab','af','am','ang','ar','an','roa-rup','as','ast','av','ay',
-            'az','bg','ba','be','bn','bh','bi','bo','bs','br','ca','cv','ch','chr',
+            'az','bg','bm','ba','be','bn','bh','bi','bo','bs','br','ca','cv','ch','chr',
             'ny','sn','cho','co','cs','cy','da','de','dv','dz','et','el','als','en',
             'es','eo','eu','ee','fa','fo','fj','fr','fy','ff','fur','ga','gv','gd','gl',
             'got','gn','gu','ko','ht','ha','haw','hy','hi','hr','io','ik','id',
