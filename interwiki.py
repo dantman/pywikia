@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -690,7 +690,11 @@ class Subject(object):
             for site, page in new.iteritems():
                 if site not in updatedSites and not page.section():
                     shouldlink = new.values() + [self.inpl]
-                    linked = page.interwiki()
+                    try:
+                        linked = page.interwiki()
+                    except wikipedia.NoPage:
+                        wikipedia.output(u"WARNING: Page %s does no longer exist?!"%page)
+                        break
                     for xpage in shouldlink:
                         if xpage != page and not xpage in linked:
                             for l in linked:
