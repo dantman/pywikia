@@ -83,8 +83,8 @@ class UI:
 
     def editText(self, text, search = None):
         """
-        Uses the Tkinter edit box because we don't have a console editor
+        Uses a Tkinter edit box because we don't have a console editor
         """
-        import tkinter_interface
-        tkui = tkinter_interface.UI()
-        return tkui.editText(text, search)
+        import gui
+        editor = gui.EditBoxWindow()
+        return editor.edit(text, search)
