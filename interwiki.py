@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -597,6 +597,10 @@ class Subject(object):
         """
         Returns True if saving was successful.
         """
+        if pl.title() != pl.sectionFreeTitle():
+            # This is not a page, but a subpage. Do not edit it.
+            wikipedia.output(u"Not editing %s: not doing interwiki on subpages"%pl)
+            return False
         wikipedia.output(u"Updating links on page %s." % pl.aslink(forceInterwiki = True))
 
         # sanity check - the page we are fixing must be the only one for that site.
@@ -604,7 +608,7 @@ class Subject(object):
         if pltmp != pl:
             wikipedia.output(u"BUG: %s is not in the list of new links!" % pl.aslink(forceInterwiki = True))
             return False
-            
+
         # Avoid adding a iw link back to itself
         # It must be added back on before exiting this method.
         del new[pl.site()]
