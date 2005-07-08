@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import urllib
 import family, config
 
@@ -13,14 +13,14 @@ class Family(family.Family):
         # to the hostname of the site hosting that wiktibooks. For human consumption,
         # the full name of the language is given behind each line as a comment
         self.langs = {
-            'minnan':'zh-min-nan.wiktionary.org',
-            'nb':'no.wiktionary.org',
-            'zh-cn':'zh.wiktionary.org',
-            'zh-tw':'zh.wiktionary.org'
+            'minnan':'zh-min-nan.wikibooks.org',
+            'nb':'no.wikibooks.org',
+            'zh-cn':'zh.wikibooks.org',
+            'zh-tw':'zh.wikibooks.org'
             }
         
         for lang in self.knownlanguages:
-            self.langs[lang] = lang+'.wiktionary.org'
+            self.langs[lang] = '%s.wikibooks.org' % lang
 
         self.obsolete = {'nb':'no',
                     'minnan':'zh-min-nan',
@@ -70,4 +70,3 @@ class Family(family.Family):
         # group of languages that we might want to do at once
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
-        
