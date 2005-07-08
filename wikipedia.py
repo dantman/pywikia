@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -1544,10 +1544,11 @@ def interwikiFormat(links, insite = None):
             if code in getSite().family.langs:
                 site = insite.getSite(code = code)
                 if site in ar:
-                    if not insite.interwiki_putfirst_doubled(ar):
-                        del ar[ar.index(site)]
+                    del ar[ar.index(site)]
                     ar2 = ar2 + [site]
         ar = ar2 + ar
+    if insite.interwiki_putfirst_doubled(ar):
+        ar = insite.interwiki_putfirst_doubled(ar) + ar
     for site in ar:
         try:
             s.append(links[site].aslink(forceInterwiki = True))
@@ -2008,9 +2009,21 @@ class Site(object):
         return self.family.interwiki_putfirst.get(self.lang,None)
 
     def interwiki_putfirst_doubled(self,list_of_links):
-        try:
-            return len(list_of_links) >= self.family.interwiki_putfirst_doubled[self.lang]
-        except:
+        if self.family.interwiki_putfirst_doubled.has_key(self.lang):
+            if len(list_of_links) >= self.family.interwiki_putfirst_doubled[self.lang][0]:
+                list_of_links2 = []
+                for lang in list_of_links:
+                    list_of_links2.append(lang.language())
+                list = []
+                for lang in self.family.interwiki_putfirst_doubled[self.lang][1]:
+                    try:
+                        list.append(list_of_links[list_of_links2.index(lang)])
+                    except ValueError:
+                        pass
+                return list
+            else:
+                return False
+        else:
             return False
 
     def login_address(self):

@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -82,11 +82,11 @@ class Family(family.Family):
             'pl': self.alphabetic,
             'simple': self.alphabetic,
             'fi': self.alphabetic,
-            'nn': ['no','nb','sv','da']
+            'nn': self.alphabetic
             }
 
         self.interwiki_putfirst_doubled = {
-            'nn': 7
+            'nn': [7, ['nb','sv','da','af']]
             }
 
         self.obsolete = {'dk':'da',

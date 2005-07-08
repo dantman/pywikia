@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -554,10 +554,14 @@ class Family:
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
-        # Languages in interwiki_putfirst_doubled should have a number; from that
-        # number of links, links in putfirst should be repeated.
     
         self.interwiki_putfirst = {}
+
+        # Languages in interwiki_putfirst_doubled should have a number plus a list
+        # of languages. If there are at least the number of interwiki links, all
+        # languages in the list should be placed at the front as well as in the
+        # normal list.
+
         self.interwiki_putfirst_doubled = {}
 
         # Which language codes do no longer exist and by which language code should
