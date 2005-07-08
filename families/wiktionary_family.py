@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -80,3 +80,7 @@ class Family(family.Family):
         self.seriouslangs = self.biglangs4
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+
+        self.interwiki_on_one_line = ['pl']
+
+        self.interwiki_attop = ['pl']
