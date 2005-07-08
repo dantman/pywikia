@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 """
 This bot spellchecks Wikipedia pages. It is very simple, only checking
@@ -49,6 +49,7 @@ import string,codecs
 
 msg={
     'en':u'Bot-aided spell checker',
+    'es':u'Bot asistido de correción ortográfica',
     'nl':u'Spellingscontrole',
     'pt':u'Bot de correção ortográfica',
 }
