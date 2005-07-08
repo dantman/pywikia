@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -75,6 +75,7 @@ class Family(family.Family):
             
         self.interwiki_putfirst = {
             'en': self.alphabetic,
+            'et': self.alphabetic,
             'fr': self.alphabetic,
             'he': ['en'],
             'hu': ['en'],
