@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -1997,7 +1997,7 @@ class Site(object):
         return cmp(self.family.name,other.family.name)
 
     def category_on_one_line(self):
-        return self.lang in self.site().family.category_on_one_line
+        return self.lang in self.family.category_on_one_line
 
     def redirect(self,default=False):
         if default:
