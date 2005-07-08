@@ -342,15 +342,20 @@ class Subject(object):
                 else:
                     if not globalvar.autonomous:
                         if self.inpl.isDisambig() and not pl.isDisambig():
-                            choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No'], ['y', 'N'], 'N')
+                            choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No', 'Add a hint'], ['y', 'N', 'A'], 'N')
                         elif not self.inpl.isDisambig() and pl.isDisambig():
-                            choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No'], ['y', 'N'], 'N')
+                            choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No', 'Add a hint'], ['y', 'N', 'A'], 'N')
                         else:
                             choice = 'y'
                         if choice not in ['y', 'Y']:
                             wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % pl.aslink(forceInterwiki = True))
                             del self.done[pl]
                             iw = ()
+                            if choice in ['a', 'A']:
+                                newhint = wikipedia.input(u'Give a hint for language %s, not using a language code:'%pl.site().language())
+                                if newhint:
+                                    page2 = wikipedia.Page(pl.site(),newhint)
+                                    self.conditionalAdd(page2, counter, None)
                     if self.inpl == pl:
                         self.untranslated = (len(iw) == 0)
                         if globalvar.untranslatedonly:
