@@ -50,6 +50,7 @@ import string,codecs
 msg={
     'en':u'Bot-aided spell checker',
     'es':u'Bot asistido de correción ortográfica',
+    'fr':u'Correction orthographique par robot',
     'nl':u'Spellingscontrole',
     'pt':u'Bot de correção ortográfica',
 }
