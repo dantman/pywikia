@@ -63,30 +63,6 @@ interwiki_backlink = True
 # Should the system bell be ringed if the bot expects user input?
 ring_bell = True
 
-############## PAGE METADATA FORMATTING SETTINGS ##############
-
-# attop is a list of languages that prefer to have the interwiki
-# links at the top of the page.
-interwiki_attop = ['fr']
-# on_one_line is a list of languages that want the interwiki links
-# one-after-another on a single line
-interwiki_on_one_line = ['fr', 'hu']
-
-# String used as separator between interwiki links and the text
-interwiki_text_separator = '\r\n'
-
-# Similar for category
-category_attop = ['fr']
-# on_one_line is a list of languages that want the category links
-# one-after-another on a single line
-category_on_one_line = []
-
-# String used as separator between category links and the text
-category_text_separator = '\r\n'
-
-# When both at the bottom should categories come after interwikilinks?
-categories_last = []
-
 ############## SETTINGS TO AVOID SERVER OVERLOAD ##############
 
 # Slow down the robot such that it never requests a second page within
