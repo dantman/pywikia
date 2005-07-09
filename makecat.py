@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+﻿# -*- coding: UTF-8 -*-
 """
 This bot takes as its argument (or, if no argument is given, asks for it), the
 name of a new or existing category. It will then try to find new articles for
@@ -49,7 +49,7 @@ def rawtoclean(c):
 def isdate(s):
     """returns true iff s is a date or year
     """
-    dict,val = getDictionaryYear( wikipedia.mylang, s ) 
+    dict,val = date.getDictionaryYear( wikipedia.getSite().language(), s ) 
     return dict != None
 
 def needcheck(pl):
@@ -142,15 +142,14 @@ def asktoadd(pl):
             print("l: Give a list of the pages to check")
         elif answer=='a':
             pagetitle = raw_input("Specify page to add:")
-            page=wikipedia.Page(wikipedia.mylang,pagetitle)
+            page=wikipedia.Page(wikipedia.getSite(),pagetitle)
             if not page in checked.keys():
                 include(page)
         elif answer=='x':
             if pl.exists():
                 if pl.isRedirectPage():
                     print("Redirect page. Will be included normally.")
-                    pl2=wikipedia.Page(mysite,pl.getRedirectTarget())
-                    checkprepare(pl2)
+                    include(pl,realinclude=False)
                 else:
                     include(pl,checklinks=False)
             else:
