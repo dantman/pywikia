@@ -67,16 +67,18 @@ class Family(family.Family):
             
         # group of languages that we might want to do at once
     
-        self.biglangs = ['de', 'en', 'fr', 'gl', 'hu', 'it', 'ja', 'nl', 'pl', 'sv']
+        self.biglangs = ['bg', 'bg', 'fr', 'gl', 'hu', 'io', 'it', 'nl', 'pl', 'scn']
                     
         self.biglangs2 = self.biglangs + [
-            'es', 'fi', 'hi', 'ko', 'la', 'pt', 'ru', 'tr', 'zh']
+            'de', 'es', 'et', 'fi', 'hi', 'ku', 'ja', 'la', 'pt', 'sv']
         
         self.biglangs3 = self.biglangs2 + [
-            'ca', 'eo', 'et', 'gu', 'he', 'hr', 'ro']
+            'ang', 'co', 'da', 'gu', 'hr', 'ko', 'no', 'ru', 'tr', 'zh']
         
-        self.biglangs4 = self.biglangs3
-                    
+        self.biglangs4 = self.biglangs3 + [
+            'ar', 'bs', 'ca', 'cs', 'el', 'eo', 'eu', 'he', 'ia', 'id',
+            'ie', 'ro', 'sr', 'ta', 'th', 'uk', 'vi']
+        
         self.seriouslangs = self.biglangs4
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
