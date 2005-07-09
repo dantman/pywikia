@@ -583,13 +583,10 @@ class Subject(object):
         for (site, page) in new.iteritems():
             # if we have an account for this site
             if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
-                if self.inpl.isDisambig() != page.isDisambig():
-                    wikipedia.output(u"Cannot update %s, disambiguation flag doesn't match." % site.lang)
-                else:
-                    # Try to do the changes
-                    if self.replaceLinks(page, new, sa):
-                        # Changes were successful
-                        updatedSites.append(site)
+                # Try to do the changes
+                if self.replaceLinks(page, new, sa):
+                    # Changes were successful
+                    updatedSites.append(site)
         # don't report backlinks for pages we already changed
         self.reportBacklinks(new, updatedSites)
 
