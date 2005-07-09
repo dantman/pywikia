@@ -598,7 +598,8 @@ class Page(object):
         return result
 
     def templates(self):
-        """Gives a list of template names used on a page (strings).
+        """
+        Gives a list of template names used on a page, as a list of strings. Template parameters are ignored.
         """
         try:
             thistxt = self.get(read_only = True)
@@ -606,13 +607,10 @@ class Page(object):
             return []
                 
         result = []
-        w=r'([^\}\|]*)'
-        Rlink = re.compile(r'\{\{'+w+r'(\|'+w+r')?\}\}')
-        for l in Rlink.findall(thistxt):
-            if l[0].startswith('msg:'):
-                result.append(l[0][4:])
-            else:
-                result.append(l[0])
+        Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^\|]+?)(\|(?P<pamars>.+?))?}}', re.DOTALL)
+        for m in Rtemplate.finditer(thistxt):
+            # we ignore parameters.
+            result.append(m.group('name'))
         return result
 
     def getRedirectTarget(self, read_only = False):
@@ -1218,8 +1216,8 @@ def getUrl(site, path):
         charset = m.group(1)
     else:
         print "WARNING: No character set found"
-        # Latin-1 as default
-        charset = 'iso-8859-1'
+        # UTF-8 as default
+        charset = 'utf-8'
     site.checkCharset(charset)
     # convert HTML to unicode
     # TODO: We might want to use error='replace' in case of bad encoding.
