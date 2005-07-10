@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -569,9 +569,12 @@ class Subject(object):
             return
         if not self.untranslated and globalvar.untranslatedonly:
             return
-        if len(self.done) == 1:
-            # No interwiki at all
-            return
+        # The following check is not always correct and thus disabled.
+        # self.done might contain no interwiki links because of the -neverlink
+        # argument or because of disambiguation conflicts.
+#         if len(self.done) == 1:
+#             # No interwiki at all
+#             return
         wikipedia.output(u"======Post-processing %s======" % self.inpl.aslink(forceInterwiki = True))
         # Assemble list of accepted interwiki links
         new = self.assemble()
