@@ -153,9 +153,9 @@ def get_image(original_url, source_site, original_description, targetSite = None
 
     formdata = {}
     formdata["wpUploadDescription"] = description
-    if targetSite.version() >= '1.5':
-        formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
-        formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
+#     if targetSite.version() >= '1.5':
+#         formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
+#         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
     formdata["wpUploadAffirm"] = "1"
     formdata["wpUpload"] = "upload bestand"
     formdata["wpIgnoreWarning"] = "1"
