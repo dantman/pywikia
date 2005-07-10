@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -2309,7 +2309,7 @@ def showDiff(oldtext, newtext):
         '+': 10, # green
         '-': 12  # red
     }
-    diff = ''
+    diff = u''
     colors = []
     # This will store the last line beginning with + or -.
     lastline = None
@@ -2346,7 +2346,7 @@ def showDiff(oldtext, newtext):
         lastcolors[0] = color[lastline[0]]
         colors += lastcolors + [None]
 
-    output(u""+diff, colors = colors)
+    output(diff, colors = colors)
 
 def activateLog(logname):
     global logfile
