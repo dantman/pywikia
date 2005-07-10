@@ -33,11 +33,8 @@ class ImageTransferBot:
     def __init__(self, generator, targetSite = None, interwiki = False):
         self.generator = generator
         self.interwiki = interwiki
-        # Use commons when uploading images.
-        self.targetSite = targetSite or wikipedia.getSite('commons', 'commons')
-        if not self.targetSite.loggedin():
-            wikipedia.output(u"You must be logged in on %s." % self.targetSite())
-            sys.exit(1)
+        self.targetSite = targetSite
+        self.targetSite.forceLogin()
 
     def run(self):
         for page in self.generator:
