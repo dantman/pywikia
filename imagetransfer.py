@@ -1,11 +1,22 @@
 """
 Script to copy images to Wikimedia Commons, or to another wiki.
 
+Syntax:
+
+    python imagetransfer.py pagename [-interwiki] [-targetLang:xx] -targetFamily:yy]
+
 Arguments:
-  -interwiki Look for images in pages found through interwiki links.
-  
-The script will ask for a page title and eventually copy images from the
-equivalent pages (found via interwiki links) on other wikis.
+
+  -interwiki   Look for images in pages found through interwiki links.
+
+  -tolang:xx   Copy the image to the wiki in language xx
+
+  -tofamily:yy Copy the image to a wiki in the family yy
+
+If pagename is an image description page, offers to copy the image to the
+target site. If it is a normal page, it will offer to copy any of the images
+used on that page, or if the -interwiki argument is used, any of the images
+used on a page reachable via interwiki links.
 """
 #
 # (C) Andre Engels, 2004
@@ -34,6 +45,8 @@ class ImageTransferBot:
                 imagelist = []
                 for linkedPage in page.interwiki():
                     imagelist += linkedPage.imagelinks(followRedirects = True)
+            elif page.isImage():
+                imagelist = [page]
             else:
                 imagelist = page.imagelinks(followRedirects = True)
 
@@ -79,8 +92,9 @@ def main():
     pageTitle = []
     page = None
     gen = None
-    imagelist = []
     interwiki = False
+    targetLang = None
+    targetFamily = None
 
     for arg in sys.argv[1:]:
     #for arg in sys.argv[1:]:
@@ -88,6 +102,10 @@ def main():
         if arg:
             if arg == '-interwiki':
                 interwiki = True
+            elif arg.startswith('-tolang:'):
+                targetLang = arg[8:]
+            elif arg.startswith('-tofamily:'):
+                targetFamily = arg[10:]
             elif arg.startswith('-file'):
                 if len(arg) == 5:
                     filename = wikipedia.input(u'Please enter the list\'s filename: ')
@@ -111,7 +129,16 @@ def main():
             # generator which will yield only a single Page
         gen = iter([page])
 
-    bot = ImageTransferBot(gen, interwiki = interwiki)
+    if not targetLang and not targetFamily:
+        targetSite = wikipedia.getSite('commons', 'commons')
+    else:
+        if not targetLang:
+            targetLang = wikipedia.getSite().language
+        if not targetFamily:
+            targetFamily = wikipedia.getSite().family
+        targetSite = wikipedia.Site(targetLang, targetFamily)
+
+    bot = ImageTransferBot(gen, interwiki = interwiki, targetSite = targetSite)
     bot.run()
 
 if __name__ == "__main__":
