@@ -27,7 +27,7 @@ Page: A MediaWiki page
     rawcategories (*): Like categories, but if the link contains a |, the
         part after the | is included.
     linkedPages (*): The normal pages linked from the page (list of Pages)
-    imagelinks (*): The pictures on the page (list of strings)
+    imagelinks (*): The pictures on the page (list of Pages)
     templates(*): All templates referenced on the page (list of strings)
     getRedirectTarget (*): The page the page redirects to
     isCategory: True if the page is a category, false otherwise
@@ -568,32 +568,44 @@ class Page(object):
             result.append(page)
         return result
 
-    def imagelinks(self):
-        """Gives the wiki-images the page shows, as a list of pagelink objects
+    def imagelinks(self, followRedirects = False):
         """
+        Gives the images the page shows, as a list of Page objects
+        """
+        try:
+            text = self.get(read_only = True)
+        except NoPage:
+            return []
+        except IsRedirectPage:
+            if followRedirects:
+                targetPage = Page(self.site(), self.getRedirectTarget())
+                return targetPage.imagelinks()
+            else:
+                return []
         result = []
+        # TODO: Docu / rewrite for the next lines
         im=self.site().image_namespace() + ':'
         w1=r'('+im+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-        for l in Rlink.findall(self.get(read_only = True)):
+        for l in Rlink.findall(text):
             result.append(Page(self._site,l[0]))
         w1=r'('+im.lower()+'[^\]\|]*)'
         w2=r'([^\]]*)'
         Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-        for l in Rlink.findall(self.get(read_only = True)):
+        for l in Rlink.findall(text):
             result.append(Page(self._site,l[0]))
         if im <> 'Image:':
             im='Image:'
             w1=r'('+im+'[^\]\|]*)'
             w2=r'([^\]]*)'
             Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-            for l in Rlink.findall(self.get(read_only = True)):
+            for l in Rlink.findall(text):
                 result.append(Page(self._site,l[0]))
             w1=r'('+im.lower()+'[^\]\|]*)'
             w2=r'([^\]]*)'
             Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-            for l in Rlink.findall(self.get(read_only = True)):
+            for l in Rlink.findall(text):
                 result.append(Page(self._site,l[0]))
         return result
 
@@ -652,10 +664,23 @@ class Page(object):
         # regular expression matching one edit in the version history.
         # results will have 3 groups: edit date/time, user name, and edit
         # summary.
-        editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">(.*?)</a></span>.*?(?:<em>(.*?)</em>)?</li>')
+        editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
         edits = editR.findall(self._versionhistory)
+        print edits
         return edits
-        
+    
+    def getVersionHistoryTable(self, forceReload = False):
+        """
+        Returns the version history as a wiki table.
+        """
+        result = '{| border="1"\n'
+        result += '! date/time || username || edit summary\n'
+        for time, username, summary in self.getVersionHistory(forceReload = forceReload):
+            result += '|----\n'
+            result += '| %s || %s || %s\n' % (time, username, summary)
+        result += '|}\n'
+        return result
+
     def contributingUsers(self):
         """
         Returns a set of all user names (including anonymous IPs) of those who
@@ -1870,8 +1895,6 @@ class Site(object):
             self.family = Family(fam)
         else:
             self.family = fam
-        if self.lang == 'commons':
-            self.family._addlang(self.lang,'commons.wikimedia.org',{4:'Commons', 5:'Commons talk'})
         if self.lang not in self.family.langs:
             raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
@@ -2097,6 +2120,10 @@ def getSite(code = None, fam = None, user=None):
     if not _sites.has_key(key):
         _sites[key] = Site(code=code, fam=fam, user=user)
     return _sites[key]
+
+def setSite(site):
+    default_code = site.language
+    default_family = site.family
     
 def argHandler(arg, moduleName):
     '''
