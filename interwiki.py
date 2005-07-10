@@ -60,6 +60,12 @@ This script understands various command-line arguments:
                    live wiki. Without this argument, additions and
                    unambiguous modifications are made without confirmation.
 
+    -select:       ask for each link whether it should be include before
+                   changing any page. This is useful if you want to remove
+                   invalid interwiki and if you do multiple hints of which
+                   some might be correct and others incorrect. Combining
+                   -select and -confirm is possible, but seems like overkill.
+
     -autonomous:   run automatically, do not ask any questions. If a question
                    to an operator is needed, write the name of the page
                    to autonomous_problems.dat and continue on the next page.
@@ -198,6 +204,7 @@ class Global(object):
     autonomous = False
     backlink = config.interwiki_backlink
     confirm = False
+    select = False
     debug = True
     followredirect = True
     force = False
@@ -472,7 +479,7 @@ class Subject(object):
         #    self.problem(u'None of %i other languages refers back to %s' % (len(new), self.inpl.aslink()))
         # If there are any errors, we need to go through all
         # items manually.
-        if nerr > 0:
+        if nerr > 0 or globalvar.select:
 
             # Save all the found interwikies as a "article  from  to"  file
             if vertexgen.vertfile:
@@ -989,6 +996,8 @@ if __name__ == "__main__":
                     globalvar.same = 'name'
                 elif arg == '-confirm':
                     globalvar.confirm = True
+                elif arg == '-select':
+                    globalvar.select = True
                 elif arg == '-autonomous':
                     globalvar.autonomous = True
                 elif arg == '-noshownew':
