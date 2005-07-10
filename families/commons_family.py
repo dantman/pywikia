@@ -20,4 +20,6 @@ class Family(family.Family):
             '_default': 'Commons talk',
         }
 
-	self.version = '1.5'
+    def version(self, code):
+        return "1.5"
+
