@@ -223,6 +223,7 @@ class Family:
                 'sv': u'Användare',
                 'ta': u'பயனர்',
                 'th': u'ผู้ใช',
+                'tr': u'Kullanıcı',
                 'tt': u'Äğzä',
                 'uk': u'Користувач',
                 'wa': u'Uzeu',
