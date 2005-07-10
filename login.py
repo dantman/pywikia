@@ -131,7 +131,7 @@ class LoginManager:
         f.write(data)
         f.close()
 
-    def login(self):
+    def login(self, retry = False):
         if not self.password:
             # As we don't want the password to appear on the screen, we use getpass(). 
             self.password = getpass.getpass('Password for user %s on %s: ' % (self.username, self.site))
@@ -150,8 +150,14 @@ class LoginManager:
         if cookiedata:
             self.storecookiedata(cookiedata)
             wikipedia.output(u"Should be logged in now")
+            return True
         else:
             wikipedia.output(u"Login failed. Wrong password?")
+            if retry:
+                self.password = None
+                return self.login(retry = True)
+            else:
+                return False
 
 def main():
     username = password = None

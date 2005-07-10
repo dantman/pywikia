@@ -471,9 +471,7 @@ class Page(object):
 
            If watchArticle is None, leaves the watchlist status unchanged.
         """
-        while not self.site().loggedin():
-            loginMan = login.LoginManager(site = self.site())
-            loginMan.login()
+        self.site().forceLogin()
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
@@ -711,9 +709,7 @@ class Page(object):
             host = self.site().hostname()
             address = self.site().delete_address(space2underline(self.title()))
 
-            while not self.site().loggedin():
-                loginMan = login.LoginManager(site = self.site())
-                loginMan.login()
+            self.site().forceLogin()
 
             predata = [
                 ('wpReason', reason),
@@ -1907,22 +1903,26 @@ class Site(object):
             self._loadCookies()
         return self._cookies
 
-    def loggedin(self, alwaysCheck = False):
+    def loggedin(self):
         """
         Checks if we're logged in by loading a page and looking for the login
         link. We assume that we're not being logged out during a bot run, so
-        loading the test page is only required once. If you want to be really
-        sure, set alwaysCheck to True.
+        loading the test page is only required once.
         """
         self._loadCookies()
-        if alwaysCheck or not hasattr(self,'_loggedin'):
-            output(u'Getting a page to check if we\'re logged in')
+        if not hasattr(self, '_loggedin'):
+            output(u'Getting a page to check if we\'re logged in on %s' % self)
             path = self.get_address('Non-existing_page')
             txt = getUrl(self, path)
             # We assume that the text 'Userlogin' appears nowhere except for
             # the login link.
             self._loggedin = 'Userlogin' not in txt
         return self._loggedin
+
+    def forceLogin(self):
+        if not self.loggedin():
+            loginMan = login.LoginManager(site = self)
+            self._loggedin = loginMan.login(retry = True)
 
     def _loadCookies(self):
         """Retrieve session cookies for login"""
