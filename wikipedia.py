@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -2343,7 +2343,7 @@ def showDiff(oldtext, newtext):
         lastcolors[0] = color[lastline[0]]
         colors += lastcolors + [None]
 
-    output(diff, colors = colors)
+    output(u""+diff, colors = colors)
 
 def activateLog(logname):
     global logfile
