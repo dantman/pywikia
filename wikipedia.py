@@ -655,7 +655,8 @@ class Page(object):
         summary.
         """
         site = self.site()
-        path = site.family.version_history_address(site, self.urlname())
+        path = site.family.version_history_address(self.site().language(), self.urlname())
+        print path
 
         if not hasattr(self, '_versionhistory') or forceReload:
             output(u'Getting version history of %s' % self.title())
@@ -667,7 +668,6 @@ class Page(object):
         # summary.
         editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
         edits = editR.findall(self._versionhistory)
-        print edits
         return edits
     
     def getVersionHistoryTable(self, forceReload = False):
