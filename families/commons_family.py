@@ -19,3 +19,5 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': 'Commons talk',
         }
+
+	self.version = '1.5'
