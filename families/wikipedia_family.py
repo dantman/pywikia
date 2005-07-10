@@ -87,7 +87,7 @@ class Family(family.Family):
             }
 
         self.interwiki_putfirst_doubled = {
-            'nn': [7, ['no','sv','da','af']]
+            'nn': [7, ['no','nb','sv','da']]
             }
 
         self.obsolete = {'dk':'da',
