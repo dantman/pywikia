@@ -388,12 +388,13 @@ class Family:
             },
             14: {
                 '_default': u'Category',
+                'af': u'Kategorie',
                 'als': u'Kategorie',
                 'ar': u'تصنيف',
                 'be': u'Катэгорыя',
                 'bg': u'Категория',
                 'ca': u'Categoria',
-                'cbs': u'Kategòrëjô',
+                'csb': u'Kategòrëjô',
                 'cs': u'Kategorie',
                 'da': u'Kategori',
                 'de': u'Kategorie',
@@ -412,6 +413,7 @@ class Family:
                 'id': u'Kategori',
                 'is': u'Flokkur',
                 'it': u'Categoria',
+                'ka': u'კატეგორია',
                 'ko': u'분류',
                 'ku': u'Kategorî',
                 'la': u'Categoria',
@@ -425,12 +427,14 @@ class Family:
                 'pl': u'Kategoria',
                 'pt': u'Categoria',
                 'ro': u'Categorie',
+                'sk': u'Kategória',
                 'sv': u'Kategori',
+                'tr': u'Kategori',
                 'tt': u'Törkem',
                 'uk': u'Категорія',
                 'wa': u'Categoreye',
                 },
-        
+
             
             15: {
                 '_default': u'Category talk',
