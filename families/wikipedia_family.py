@@ -87,7 +87,7 @@ class Family(family.Family):
             }
 
         self.interwiki_putfirst_doubled = {
-            'nn': [7, ['nb','sv','da','af']]
+            'nn': [7, ['no','sv','da','af']]
             }
 
         self.obsolete = {'dk':'da',
@@ -107,7 +107,7 @@ class Family(family.Family):
             'de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'pt', 'sv']
         
         self.biglangs2 = self.biglangs + [
-            'ca', 'da', 'eo', 'et', 'fi', 'hu', 'nb', 'ro', 'sl', 'zh']
+            'ca', 'da', 'eo', 'et', 'fi', 'hu', 'no', 'ro', 'sl', 'zh']
         
         self.biglangs3 = self.biglangs2 + [
             'bg', 'cs', 'gl', 'he', 'hr', 'id', 'ru', 'nn', 'sk', 'uk']
@@ -132,7 +132,7 @@ class Family(family.Family):
         # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'en', 'et', 'es', 'ia', 'la', 'af', 'cs',
                     'fr', 'pt', 'sl', 'bs', 'fy', 'vi', 'lt', 'fi', 'it',
-                    'nb', 'simple', 'gl', 'eu', 'nds', 'co', 'mi', 'mr',
+                    'no', 'simple', 'gl', 'eu', 'nds', 'co', 'mi', 'mr',
                     'id', 'lv', 'sw', 'tt', 'uk', 'vo', 'ga', 'na', 'es',
                     'nl', 'da', 'dk', 'sv', 'test']
     
