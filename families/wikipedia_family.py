@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -92,7 +92,7 @@ class Family(family.Family):
 
         self.obsolete = {'dk':'da',
                     'minnan':'zh-min-nan',
-                    'no':'nb',
+                    'nb':'no',
                     'jp':'ja',
                     'tokipona':'none',
                     'zh-tw':'zh',

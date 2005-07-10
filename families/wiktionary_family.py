@@ -44,7 +44,7 @@ class Family(family.Family):
                         'sa', 'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona',
                         'tr', 'vi']
     
-        self.obsolete = {'no':'nb',
+        self.obsolete = {'nb':'no',
                     'minnan':'zh-min-nan',
                     'zh-tw':'zh',
                     'zh-cn':'zh'}
