@@ -188,8 +188,11 @@ class Page(object):
         if title.startswith(':'):
              title = title[1:]
         # Capitalize first letter
-        if not site.nocapitalize:
+        try:
+            if not site.nocapitalize:
                 title = title[0].upper() + title[1:]
+        except IndexError: # title is empty
+            pass
         # split up into namespace and rest
         title = title.split(':', 1)
         # if the page is not in namespace 0:
