@@ -1,18 +1,11 @@
 """
-Script to find images on a subject on another wikipedia and copy them
-to WikiCommons.
+Script to copy images to Wikimedia Commons, or to another wiki.
 
 Arguments:
-
-  -lang:xx Log in to the given wikipedia language
-  
-  -from:xx Only follow interwiki links to language xx. Argument can be used
-           multiple times to indicate that only some specific languages should
-           be followed. If this argument isn't used, all interwiki links will
-           be followed.
+  -interwiki Look for images in pages found through interwiki links.
   
 The script will ask for a page title and eventually copy images from the
-equivalent pages on other wikipedias.
+equivalent pages (found via interwiki links) on other wikis.
 """
 #
 # (C) Andre Engels, 2004
@@ -21,129 +14,108 @@ equivalent pages on other wikipedias.
 #
 __version__='$Id$'
 
-import re,sys,string
+import re, sys, string
 import httplib
 import wikipedia, lib_images
 
-def main(args):
-    # if the -file argument is used, page titles are dumped in this array.
-    # otherwise it will only contain one page.
-    page_list = []
-    # if -file is not used, this temporary array is used to read the page title.
-    page_title = []
-    imagelist = []
-    source_wikis = []
+class ImageTransferBot:
+    def __init__(self, generator, targetSite = None, interwiki = False):
+        self.generator = generator
+        self.interwiki = interwiki
+        # Use commons when uploading images.
+        self.targetSite = targetSite or wikipedia.getSite('commons', 'commons')
+        if not self.targetSite.loggedin():
+            wikipedia.output(u"You must be logged in on %s." % self.targetSite())
+            sys.exit(1)
 
-    for arg in args:
+    def run(self):
+        for page in self.generator:
+            if self.interwiki:
+                imagelist = []
+                for linkedPage in page.interwiki():
+                    imagelist += linkedPage.imagelinks(followRedirects = True)
+            else:
+                imagelist = page.imagelinks(followRedirects = True)
+
+            for i in range(len(imagelist)):
+                image = imagelist[i]
+                print "-"*60
+                wikipedia.output(u"%s. Found image: %s"% (i, image.aslink()))
+                try:
+                    # Show the image description page's contents
+                    wikipedia.output(image.get(throttle=False, read_only = True))
+                except wikipedia.NoPage:
+                    try:
+                        # Maybe the image is on the target site already
+                        targetTitle = self.targetSite.image_namespace() + image.title().split(':', 1)[1]
+                        targetImage = wikipedia.Page(self.targetSite, targetTitle)
+                        if targetImage.get(throttle=False):
+                            wikipedia.output(u"Image is already on %s." % self.targetSite)
+                            wikipedia.output(targetImage.get(throttle=False))
+                        else:
+                            print "Description empty."
+                    except wikipedia.NoPage:
+                        print "Description empty."
+                    except wikipedia.IsRedirectPage:
+                        print "Description page on Wikimedia Commons is redirect?!"
+                except wikipedia.IsRedirectPage:
+                    print "Description page is redirect?!"
+
+            print "="*60
+
+            while len(imagelist)>0:
+                wikipedia.output(u"Give the number of the image to transfer.")
+                todo = wikipedia.input(u"To end uploading, press enter: ")
+                if not todo:
+                    break
+                todo=int(todo)
+                if todo in range(len(imagelist)):
+                    lib_images.transfer_image(imagelist[todo], self.targetSite, debug = True)
+                else:
+                    print("No such image number.")
+
+def main():
+    # if -file is not used, this temporary array is used to read the page title.
+    pageTitle = []
+    page = None
+    gen = None
+    imagelist = []
+    interwiki = False
+
+    for arg in sys.argv[1:]:
     #for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'imagetransfer')
         if arg:
-            if arg.startswith('-from:'):
-                source_wikis.append(arg[6:])
+            if arg == '-interwiki':
+                interwiki = True
             elif arg.startswith('-file'):
                 if len(arg) == 5:
-                    # todo: check for console encoding to allow special characters
-                    # in filenames, as done below with pagename
-                    file = wikipedia.input(u'Please enter the list\'s filename: ')
+                    filename = wikipedia.input(u'Please enter the list\'s filename: ')
                 else:
-                    file = arg[6:]
-                # open file and read page titles out of it
-                f=open(file)
-                for line in f.readlines():
-                    if line != '\n':           
-                        page_list.append(line)
-                f.close()
+                    filename = arg[6:]
+                gen = pagegenerators.TextfileGenerator(filename)
             else:
-                page_title.append(arg)
+                pageTitle.append(arg)
 
-    # if the page title is given as a command line argument,
-    # connect the title's parts with spaces
-    if page_title != []:
-        page_title = ' '.join(page_title)
-        page_list.append(page_title)
+    if not gen:
+        # if the page title is given as a command line argument,
+        # connect the title's parts with spaces
+        if pageTitle != []:
+            pageTitle = ' '.join(pageTitle)
+            page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+        # if no page title was given as an argument, and none was
+        # read from a file, query the user
+        if not page:
+            pageTitle = wikipedia.input(u'Which page to check: ')
+            page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+            # generator which will yield only a single Page
+        gen = iter([page])
 
-    # Use mysite when getting pages, but commons when uploading pages.
-    mysite = wikipedia.getSite()
-    wikipedia.argHandler('-lang:commons', 'imagetransfer')
+    bot = ImageTransferBot(gen, interwiki = interwiki)
+    bot.run()
 
-    # if no page title was given as an argument, and none was
-    # read from a file, query the user
-    if page_list == []:
-        pagename = wikipedia.input(u'Which page to check: ')
-        pagename = wikipedia.url2unicode(pagename, mysite)
-        pagename = pagename.encode(wikipedia.myencoding())
-        page_list.append(pagename)
-
-    if not wikipedia.getSite().loggedin():
-        print "You must be logged in on WikiCommons."
-        import sys
-        sys.exit(1)
-    
-    for page_list_item in page_list:
-        inpl = wikipedia.Page(mysite, page_list_item)
-        ilinks = inpl.interwiki()
-    
-        for page in ilinks:
-            if page.site() in source_wikis or source_wikis==[]:
-                site=page.site()
-                try:
-                    for i in page.imagelinks():
-                        imagelist.append(i)
-                except wikipedia.NoPage:
-                    pass
-                except wikipedia.IsRedirectPage,arg:
-                    page2=wikipedia.Page(page.site(),arg.args[0])
-                    try:
-                        for i in page2.imagelinks():
-                            imagelist.append(i)
-                    except wikipedia.NoPage:
-                        pass
-                    except wikipedia.IsRedirectPage:
-                        pass
-    
-        for i in range(len(imagelist)):
-            imagelink = imagelist[i]
-            print "-"*60
-            wikipedia.output(u"%s. Found image: %s"% (i,imagelink.aslink()))
-            try:
-                # show the image description page's contents
-                wikipedia.output(imagelink.get(throttle=False))
-            except wikipedia.NoPage:
-                try:
-                    # Maybe the image is on WikiCommons?
-                    commonslink = imagelink.title()
-                    commonslink = [wikipedia.getSite().image_namespace()] + commonslink.split(':')[1:]
-                    commonslink = ':'.join(commonslink)
-                    commonslink = wikipedia.Page(wikipedia.getSite(),commonslink)
-                    if commonslink.get(throttle=False):
-                        print "Image is already on WikiCommons."
-                        wikipedia.output(commonslink.get(throttle=False))
-                    else:
-                        print "Description empty."
-                except wikipedia.NoPage:
-                    print "Description empty."
-                except wikipedia.IsRedirectPage:
-                    print "Description page on WikiCommons is redirect?!"
-            except wikipedia.IsRedirectPage:
-                print "Description page is redirect?!"
-    
-        print "="*60
-    
-        while len(imagelist)>0:
-            print("Give the number of the image to upload.")
-            todo=raw_input("To end uploading, press enter: ")
-            if not todo:
-                break
-            todo=int(todo)
-            if todo in range(len(imagelist)):
-                lib_images.transfer_image(imagelist[todo])
-            else:
-                print("No such image number.")
-
-try:
-    main(sys.argv[1:])
-except:
-    wikipedia.stopme()
-    raise
-else:
-    wikipedia.stopme()
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
