@@ -57,7 +57,7 @@ class ImageTransferBot:
                 except wikipedia.NoPage:
                     try:
                         # Maybe the image is on the target site already
-                        targetTitle = self.targetSite.image_namespace() + image.title().split(':', 1)[1]
+                        targetTitle = '%s:%s' % (self.targetSite.image_namespace(), image.title().split(':', 1)[1])
                         targetImage = wikipedia.Page(self.targetSite, targetTitle)
                         if targetImage.get(throttle=False):
                             wikipedia.output(u"Image is already on %s." % self.targetSite)
@@ -75,7 +75,7 @@ class ImageTransferBot:
 
             while len(imagelist)>0:
                 wikipedia.output(u"Give the number of the image to transfer.")
-                todo = wikipedia.input(u"To end uploading, press enter: ")
+                todo = wikipedia.input(u"To end uploading, press enter:")
                 if not todo:
                     break
                 todo=int(todo)
