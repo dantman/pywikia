@@ -504,7 +504,7 @@ class Family:
             'lt'  :       [u'disambig'],
             'nb'  :       [u'peker'],
             'nds' :       [u'begreepkloren'],
-            'nl'  :       [u'dp'],
+            'nl'  :       [u'dp','dP'],
             'nn'  :       [u'fleirtyding'],
             'no'  :       [u'peker'],
             'pl'  :       [u'disambig'],
