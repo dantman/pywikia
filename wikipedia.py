@@ -173,8 +173,6 @@ class Page(object):
         else:
             self._tosite = getSite() # Default to home wiki
         # Clean up the name, it can come from anywhere.
-        # Remove leading and trailing whitespace
-        title = title.strip()
         # Replace underlines by spaces
         title = underline2space(title)
         # Convert HTML entities to unicode
@@ -209,6 +207,10 @@ class Page(object):
                             title[1] = title[1][0].upper()+title[1][1:]
                         except IndexError: # title[1] is empty
                             print "WARNING: Strange title %s"%'%3A'.join(title)
+        # Remove leading and trailing whitespace from namespace and from rest
+        for i in range(len(title)):
+            title[i] = title[i].strip()
+
         self._title = ':'.join(title)
 
     def site(self):
