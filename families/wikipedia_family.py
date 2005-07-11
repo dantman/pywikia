@@ -54,11 +54,12 @@ class Family(family.Family):
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
             
-        self.nocapitalize = ['tlh','tokipona']
+        self.nocapitalize = ['jbo','tlh','tokipona']
             
         # attop is a list of languages that prefer to have the interwiki
         # links at the top of the page.
         self.interwiki_attop = ['fr']
+
         # on_one_line is a list of languages that want the interwiki links
         # one-after-another on a single line
         self.interwiki_on_one_line = ['fr', 'hu']
