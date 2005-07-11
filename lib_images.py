@@ -134,22 +134,11 @@ def get_image(original_url, source_site, original_description, targetSite = None
     # target wiki
     fn = fn.encode(targetSite.encoding())
     # A proper description for the submission.
-    if description=='':
-        description = wikipedia.input(u'Give a description for the image:')
-    else:
-        print ("The suggested description is:")
-        print
-        wikipedia.output(description)
-        print
-        print ("Enter return to use this description, enter a text to add something")
-        print ("at the end, or enter = followed by a text to replace the description.")
-        newtext = wikipedia.input(u'Enter return, text or =text : ')
-        if newtext=='':
-            pass
-        elif newtext.startswith('='):
-            description=newtext[1:]
-        else:
-            description=description+' '+newtext
+    wikipedia.output(u"The suggested description is:")
+    wikipedia.output(description)
+    choice = wikipedia.inputChoice(u'Do you want to change this description?', ['Yes', 'No'], ['Y', 'n'], 'y')
+    if choice not in ['n', 'N']:
+        description = wikipedia.ui.editText(description)
 
     formdata = {}
     formdata["wpUploadDescription"] = description
@@ -233,7 +222,8 @@ def transfer_image(sourceImagePage, targetSite = None, debug=False):
         # version history would be more helpful
         description += '\n\n' + sourceImagePage.getVersionHistoryTable()
         # add interwiki link
-        description += "\r\n\r\n" + sourceImagePage.aslink(forceInterwiki = True)
+        if sourceImagePage.site().family == targetSite.family:
+            description += "\r\n\r\n" + sourceImagePage.aslink(forceInterwiki = True)
     except wikipedia.NoPage:
         description=''
         print "Image does not exist or description page is empty."
