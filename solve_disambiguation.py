@@ -176,7 +176,8 @@ ignore_title = {
           u'Wikipédia:Homonymie/Homonymes dynastiques',
           u'Wikipédia:Prise de décision, noms des membres de dynasties/liste des dynastiens',
           u'Liste de toutes les combinaisons de deux lettres',
-          u'STLs de [A-Z]AA à [A-Z]ZZ',
+          u'Wikipédia:Log d\'upload/.*',
+          u'Sigles de trois lettres de [A-Z]AA à [A-Z]ZZ',
           u'Wikipédia:Pages sans interwiki,.'
           ),
     'de':(
