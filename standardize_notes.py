@@ -219,7 +219,7 @@ class ReplacePageGenerator:
         # TODO - UNFINISHED
     
     # TODO: Make MediaWiki's search feature available.
-    def generate(self):
+    def __iter__(self):
         '''
         Starts the generator.
         '''
@@ -289,6 +289,7 @@ class ReplaceRobot:
         wikipedia.output( u"Collecting references" )
         (duplicatefound, self.refusage) = self.doBuildSequenceListOfReferences( new_text )
         # Rewrite references, including dealing with duplicates.
+        wikipedia.output( u"Rewriting references" )
         new_text = self.doRewriteReferences( new_text, self.refusage )
         # Reorder References to match sequence of ordered list
         wikipedia.output( u"Collating references" )
@@ -394,7 +395,7 @@ class ReplaceRobot:
                         refkey = m.group('refname').strip()
                         if refkey != '':
                             if refusage.has_key( refkey ):
-                                wikipedia.output( u'refusage[%s] = %s' % (refkey,refusage[refkey]) )
+                                # wikipedia.output( u'refusage[%s] = %s' % (refkey,refusage[refkey]) )
                                 if refusage[refkey][2] == 0:	# if first use of reference
                                     text_line=text_line[:m.start(0)] + '{{ref|%s}}' % (refkey) + text_line[m.end(0):]
                                     refusage[refkey][2] += 1	# count use of reference
@@ -646,30 +647,30 @@ class ReplaceRobot:
         """
         # Run the generator which will yield Pages to pages which might need to be
         # changed.
-        for pl in self.generator.generate():
+        for pl in self.generator:
             print ''
             try:
                 # Load the page's text from the wiki
                 original_text = pl.get()
             except wikipedia.NoPage:
-                wikipedia.output(u'Page %s not found' % pl.linkname())
+                wikipedia.output(u'Page %s not found' % pl.title())
                 continue
             except wikipedia.LockedPage:
-                wikipedia.output(u'Skipping locked page %s' % pl.linkname())
+                wikipedia.output(u'Skipping locked page %s' % pl.title())
                 continue
             except wikipedia.IsRedirectPage:
                 continue
             match = self.checkExceptions(original_text)
             # skip all pages that contain certain texts
             if match:
-                wikipedia.output(u'Skipping %s because it contains %s' % (pl.linkname(), match))
+                wikipedia.output(u'Skipping %s because it contains %s' % (pl.title(), match))
             else:
                 new_text = self.doReplacements(original_text)
                 if new_text == original_text:
-                    wikipedia.output('No changes were necessary in %s' % pl.linkname())
+                    wikipedia.output('No changes were necessary in %s' % pl.title())
                 else:
-                    wikipedia.output(u'>>> %s <<<' % pl.linkname())
-                    wikipedia.showColorDiff(original_text, new_text)
+                    wikipedia.output(u'>>> %s <<<' % pl.title())
+                    wikipedia.showDiff(original_text, new_text)
                     if not self.acceptall:
                         choice = wikipedia.input(u'Do you want to accept these changes? [y|n|a(ll)]')
                         if choice in ['a', 'A']:
