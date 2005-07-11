@@ -680,6 +680,7 @@ class Subject(object):
                                 status, reason, data = pl.put(newtext, comment=u'robot '+mods)
                             except wikipedia.EditConflict, error:
                                 wikipedia.output(u'ERROR putting page: %s. Giving up.' % error)
+                                break
                             except (socket.error, IOError, wikipedia.PageNotSaved), error:
                                 if timeout>3600:
                                     raise
