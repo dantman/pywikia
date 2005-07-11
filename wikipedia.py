@@ -1920,6 +1920,10 @@ class Site(object):
             # We assume that the text 'Userlogin' appears nowhere except for
             # the login link.
             self._loggedin = 'Userlogin' not in txt
+            if self._loggedin:
+            # also check if we have new messages
+                if '<div class="usermessage">' in txt:
+                    output(u'NOTE: You have unread messages on %s' % self)
         return self._loggedin
 
     def forceLogin(self):
