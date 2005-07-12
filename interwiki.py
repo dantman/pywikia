@@ -488,10 +488,11 @@ class Subject(object):
                         # pages
                         edge.set_color('orange')
                     graph.add_edge(edge)
-        filename = 'interwiki-graphs/%s.png' % inpl.urlname()
-        graph.write(filename, prog = 'dot', format = 'png')
-        wikipedia.output(u'Graph saved as %s' % filename)
-
+        filename = 'interwiki-graphs/%s-%s-%s.png' % (inpl.site().family.name, inpl.site().language(), inpl.urlname())
+        if graph.write(filename, prog = 'dot', format = 'png'):
+            wikipedia.output(u'Graph saved as %s' % filename)
+        else:
+            wikipedia.output(u'Graph could not be saved as %s' % filename)
     def assemble(self):
         # No errors have been seen so far
         nerr = 0
@@ -763,7 +764,7 @@ class Subject(object):
                     try:
                         linked = page.interwiki()
                     except wikipedia.NoPage:
-                        wikipedia.output(u"WARNING: Page %s does no longer exist?!"%page)
+                        wikipedia.output(u"WARNING: Page %s does no longer exist?!" % page.title())
                         break
                     for xpage in shouldlink:
                         if xpage != page and not xpage in linked:
