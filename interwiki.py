@@ -470,20 +470,24 @@ class Subject(object):
         graph.add_edge(pydot.Edge('start', firstLabel))
         for page, referrers in self.foundin.iteritems():
             for refPage in referrers:
-                # add edges
                 sourceLabel = '"%s:%s"' % (refPage.site().language(), wikipedia.unicode2html(refPage.title(), 'ascii'))
                 targetLabel = '"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii'))
                 edge = pydot.Edge(sourceLabel, targetLabel)
-                if refPage.site() == page.site():
-                    edge.set_color('blue')
-                elif not page.exists():
-                    # mark dead links
-                    edge.set_color('red')
-                elif refPage.isDisambig() != page.isDisambig():
-                    # mark links between disambiguation and non-disambiguation
-                    # pages
-                    edge.set_color('orange')
-                graph.add_edge(edge)
+                oppositeEdge = graph.get_edge(targetLabel, sourceLabel)
+                if oppositeEdge:
+                    oppositeEdge.set_arrowtail('normal')
+                else:
+                    # add edge
+                    if refPage.site() == page.site():
+                        edge.set_color('blue')
+                    elif not page.exists():
+                        # mark dead links
+                        edge.set_color('red')
+                    elif refPage.isDisambig() != page.isDisambig():
+                        # mark links between disambiguation and non-disambiguation
+                        # pages
+                        edge.set_color('orange')
+                    graph.add_edge(edge)
         filename = 'interwiki-graphs/%s.png' % inpl.urlname()
         graph.write(filename, prog = 'dot', format = 'png')
         wikipedia.output(u'Graph saved as %s' % filename)
