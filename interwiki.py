@@ -474,24 +474,26 @@ class Subject(object):
         graph.add_edge(pydot.Edge('start', firstLabel))
         for page, referrers in self.foundin.iteritems():
             for refPage in referrers:
-                sourceLabel = '"%s:%s"' % (refPage.site().language(), wikipedia.unicode2html(refPage.title(), 'ascii'))
-                targetLabel = '"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii'))
-                edge = pydot.Edge(sourceLabel, targetLabel)
-                oppositeEdge = graph.get_edge(targetLabel, sourceLabel)
-                if oppositeEdge:
-                    oppositeEdge.set_arrowtail('normal')
-                else:
-                    # add edge
-                    if refPage.site() == page.site():
-                        edge.set_color('blue')
-                    elif not page.exists():
-                        # mark dead links
-                        edge.set_color('red')
-                    elif refPage.isDisambig() != page.isDisambig():
-                        # mark links between disambiguation and non-disambiguation
-                        # pages
-                        edge.set_color('orange')
-                    graph.add_edge(edge)
+                # if page was given as a hint, referrers would be [None]
+                if refPage != None:
+                    sourceLabel = '"%s:%s"' % (refPage.site().language(), wikipedia.unicode2html(refPage.title(), 'ascii'))
+                    targetLabel = '"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii'))
+                    edge = pydot.Edge(sourceLabel, targetLabel)
+                    oppositeEdge = graph.get_edge(targetLabel, sourceLabel)
+                    if oppositeEdge:
+                        oppositeEdge.set_arrowtail('normal')
+                    else:
+                        # add edge
+                        if refPage.site() == page.site():
+                            edge.set_color('blue')
+                        elif not page.exists():
+                            # mark dead links
+                            edge.set_color('red')
+                        elif refPage.isDisambig() != page.isDisambig():
+                            # mark links between disambiguation and non-disambiguation
+                            # pages
+                            edge.set_color('orange')
+                        graph.add_edge(edge)
         filename = 'interwiki-graphs/%s-%s-%s.png' % (self.inpl.site().family.name, self.inpl.site().language(), self.inpl.urlname())
         if graph.write(filename, prog = 'dot', format = 'png'):
             wikipedia.output(u'Graph saved as %s' % filename)
