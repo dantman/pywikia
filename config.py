@@ -50,6 +50,9 @@ console_encoding = None
 # tkinter isn't yet ready
 userinterface = 'terminal'
 
+# Should the system bell be ringed if the bot expects user input?
+ring_bell = True
+
 ############## LOGFILE SETTINGS ##############
 
 # Should all bots keep a logfile?
@@ -60,8 +63,9 @@ never_log = False
 # Should interwiki.py report warnings for missing links between foreign
 # languages?
 interwiki_backlink = True
-# Should the system bell be ringed if the bot expects user input?
-ring_bell = True
+# Should interwiki.py output a graph PNG file on conflicts?
+# You need pydot for this: http://dkbza.org/pydot.html
+interwiki_graph = False
 
 ############## SETTINGS TO AVOID SERVER OVERLOAD ##############
 

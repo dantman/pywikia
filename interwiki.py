@@ -447,6 +447,39 @@ class Subject(object):
             else:
                 wikipedia.output(u" "*indent + pl2.aslink(forceInterwiki = True))
 
+    def createGraph(self):
+        import pydot
+        # create empty graph
+        graph = pydot.Dot()
+        graph.add_node(pydot.Node('start', shape = 'point'))
+        for page in self.foundin.iterkeys():
+            # a node for each found page
+            node = pydot.Node('"%s:%s"' % (page.site().language(), page.urlname()), shape = 'rectangle')
+            if not page.exists():
+                node.set_style('filled')
+                node.set_color('red')
+                node.set_fillcolor('red')
+            elif page.isRedirectPage():
+                node.set_style('filled')
+                node.set_color('yellow')
+                node.set_fillcolor('yellow')
+            elif page.isDisambig():
+                node.set_style('filled')
+            graph.add_node(node)
+        # mark start node
+        graph.add_edge(pydot.Edge('start', '"%s:%s"' % (inpl.site().language(), inpl.urlname())))
+        for page, referrers in self.foundin.iteritems():
+            for refPage in referrers:
+                # add edges
+                # TODO: colorize redirect edges
+                edge = pydot.Edge('"%s:%s"' % (refPage.site().language(), refPage.urlname()), '"%s:%s"' % (page.site().language(), page.urlname()))
+                if refPage.site() == page.site():
+                    edge.set_color('blue')
+                graph.add_edge(edge)
+        filename = '%s.png' % inpl.urlname()
+        graph.write(filename, prog = 'dot', format = 'png')
+        wikipedia.output(u'Graph saved as %s' % filename)
+
     def assemble(self):
         # No errors have been seen so far
         nerr = 0
@@ -481,6 +514,9 @@ class Subject(object):
         # items manually.
         if nerr > 0 or globalvar.select:
 
+            if config.interwiki_graph:
+                self.createGraph()
+            
             # Save all the found interwikies as a "article  from  to"  file
             if vertexgen.vertfile:
                 for k,v in new.items():
@@ -606,7 +642,7 @@ class Subject(object):
         """
         if pl.title() != pl.sectionFreeTitle():
             # This is not a page, but a subpage. Do not edit it.
-            wikipedia.output(u"Not editing %s: not doing interwiki on subpages"%pl)
+            wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % pl.aslink(forceInterwiki = True))
             return False
         wikipedia.output(u"Updating links on page %s." % pl.aslink(forceInterwiki = True))
 
