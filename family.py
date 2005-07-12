@@ -508,7 +508,7 @@ class Family:
             'nl'  :       [u'dp','dP'],
             'nn'  :       [u'fleirtyding'],
             'no'  :       [u'peker'],
-            'pl'  :       [u'disambig'],
+            'pl'  :       [u'disambig','disambRulers','disambigC'],
             'pt'  :       [u'desambiguação'],
             'ro'  :       [u'dezambiguizare'],
             'ru'  :       [u'disambig'],
