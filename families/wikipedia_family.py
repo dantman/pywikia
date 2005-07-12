@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -29,17 +29,26 @@ class Family(family.Family):
             'ar': u'ويكيبيديا',
             'bg': u'Уикипедия',
             'ca': u'Viquipèdia',
+            'cs': u'Wikipedie',
             'cy': u'Wicipedia',
             'el': u'Βικιπαίδεια',
             'eo': u'Vikipedio',
+            'et': u'Vikipeedia',
+            'ga': u'Vicipéid',
             'he': u'ויקיפדיה',
+            'hi': u'विकिपीडिया',
             'fr': u'Wikipédia',
+            'fy': u'Wikipedy',
             'hu': u'Wikipédia',
             'ko': u'위키백과',
+            'la': u'Vicipaedia',
+            'oc': u'Oiquipedià',
+            'roa-rup': u'Uichipedia',
             'ru': u'Википедия',
             'sl': u'Wikipedija',
             'sk': u'Wikipédia',
             'sr': u'Википедија',
+            'su': u'Wikipédia',
             'th': u'วกพเดย',# doesn't seem to be correct for some reason
         }
         self.namespaces[5] = {
