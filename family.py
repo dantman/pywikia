@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -427,6 +427,7 @@ class Family:
                 'pl': u'Kategoria',
                 'pt': u'Categoria',
                 'ro': u'Categorie',
+                'ru': u'Категория',
                 'sk': u'Kategória',
                 'sv': u'Kategori',
                 'tr': u'Kategori',
