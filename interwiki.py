@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -454,7 +454,7 @@ class Subject(object):
         graph.add_node(pydot.Node('start', shape = 'point'))
         for page in self.foundin.iterkeys():
             # a node for each found page
-            node = pydot.Node('"%s:%s"' % (page.site().language(), page.urlname()), shape = 'rectangle')
+            node = pydot.Node('"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii')), shape = 'rectangle')
             if not page.exists():
                 node.set_style('filled')
                 node.set_color('red')
@@ -467,12 +467,14 @@ class Subject(object):
                 node.set_style('filled')
             graph.add_node(node)
         # mark start node
-        graph.add_edge(pydot.Edge('start', '"%s:%s"' % (inpl.site().language(), inpl.urlname())))
+        firstLabel = '"%s:%s"' % (inpl.site().language(), wikipedia.unicode2html(inpl.title(), 'ascii'))
+        graph.add_edge(pydot.Edge('start', firstLabel))
         for page, referrers in self.foundin.iteritems():
             for refPage in referrers:
                 # add edges
-                # TODO: colorize redirect edges
-                edge = pydot.Edge('"%s:%s"' % (refPage.site().language(), refPage.urlname()), '"%s:%s"' % (page.site().language(), page.urlname()))
+                sourceLabel = '"%s:%s"' % (refPage.site().language(), wikipedia.unicode2html(refPage.title(), 'ascii'))
+                targetLabel = '"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii'))
+                edge = pydot.Edge(sourceLabel, targetLabel)
                 if refPage.site() == page.site():
                     edge.set_color('blue')
                 graph.add_edge(edge)
