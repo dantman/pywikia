@@ -182,6 +182,9 @@ class Page(object):
         # replace cx by ĉ etc.
         if site.lang == 'eo':
             title = resolveEsperantoXConvention(title)
+        # Remove double spaces
+        while '  ' in title:
+            title = title.replace('  ', ' ')
         # Remove leading colon
         if title.startswith(':'):
              title = title[1:]
