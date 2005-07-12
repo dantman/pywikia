@@ -464,9 +464,13 @@ class Subject(object):
             elif page.isDisambig():
                 node.set_style('filled')
                 node.set_fillcolor('orange')
+            # if we found more than one page for this language:
+            if len(filter(lambda p: p.site() == page.site(), self.foundin.keys())) > 1:
+                # mark conflict by octagonal node
+                node.set_shape('octagon')
             graph.add_node(node)
         # mark start node
-        firstLabel = '"%s:%s"' % (self.inpl.site().language(), wikipedia.unicode2html(inpl.title(), 'ascii'))
+        firstLabel = '"%s:%s"' % (self.inpl.site().language(), wikipedia.unicode2html(self.inpl.title(), 'ascii'))
         graph.add_edge(pydot.Edge('start', firstLabel))
         for page, referrers in self.foundin.iteritems():
             for refPage in referrers:
@@ -488,11 +492,12 @@ class Subject(object):
                         # pages
                         edge.set_color('orange')
                     graph.add_edge(edge)
-        filename = 'interwiki-graphs/%s-%s-%s.png' % (inpl.site().family.name, inpl.site().language(), inpl.urlname())
+        filename = 'interwiki-graphs/%s-%s-%s.png' % (self.inpl.site().family.name, self.inpl.site().language(), self.inpl.urlname())
         if graph.write(filename, prog = 'dot', format = 'png'):
             wikipedia.output(u'Graph saved as %s' % filename)
         else:
             wikipedia.output(u'Graph could not be saved as %s' % filename)
+
     def assemble(self):
         # No errors have been seen so far
         nerr = 0
