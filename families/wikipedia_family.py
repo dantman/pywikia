@@ -94,7 +94,7 @@ class Family(family.Family):
                    'ss','sk','sl','so','sr','fi','sv','tl','ta','tt','te','th',
                    'vi','tlh','ti','tg','tpi','to','chr','chy','tr','tk','tw',
                    'udm','uk','ur','uz','wa','ve','vo','wo','fiu-vro','ts','ii',
-                   'yi','yo','zh','zh-tw','zh-cn']
+                   'yi','yo','zh','zh-tw','zh-cn'],
             'fr': self.alphabetic,
             'he': ['en'],
             'hu': ['en'],
