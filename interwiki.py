@@ -457,14 +457,13 @@ class Subject(object):
             node = pydot.Node('"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii')), shape = 'rectangle')
             if not page.exists():
                 node.set_style('filled')
-                node.set_color('red')
                 node.set_fillcolor('red')
             elif page.isRedirectPage():
                 node.set_style('filled')
-                node.set_color('yellow')
-                node.set_fillcolor('yellow')
+                node.set_fillcolor('blue')
             elif page.isDisambig():
                 node.set_style('filled')
+                node.set_fillcolor('orange')
             graph.add_node(node)
         # mark start node
         firstLabel = '"%s:%s"' % (inpl.site().language(), wikipedia.unicode2html(inpl.title(), 'ascii'))
@@ -477,6 +476,13 @@ class Subject(object):
                 edge = pydot.Edge(sourceLabel, targetLabel)
                 if refPage.site() == page.site():
                     edge.set_color('blue')
+                elif not page.exists():
+                    # mark dead links
+                    edge.set_color('red')
+                elif refPage.isDisambig() != page.isDisambig():
+                    # mark links between disambiguation and non-disambiguation
+                    # pages
+                    edge.set_color('orange')
                 graph.add_edge(edge)
         filename = 'interwiki-graphs/%s.png' % inpl.urlname()
         graph.write(filename, prog = 'dot', format = 'png')
