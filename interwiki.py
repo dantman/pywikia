@@ -478,7 +478,7 @@ class Subject(object):
                 if refPage.site() == page.site():
                     edge.set_color('blue')
                 graph.add_edge(edge)
-        filename = '%s.png' % inpl.urlname()
+        filename = 'interwiki-graphs/%s.png' % inpl.urlname()
         graph.write(filename, prog = 'dot', format = 'png')
         wikipedia.output(u'Graph saved as %s' % filename)
 
