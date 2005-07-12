@@ -205,16 +205,17 @@ class Page(object):
             # Capitalize the first non-namespace part
             for ns in site.family.namespaces.keys():
                 if title[0] == site.namespace(ns):
+                    # Remove leading and trailing whitespace from namespace and from rest
+                    for i in range(len(title)):
+                        title[i] = title[i].strip()
                     if not site.nocapitalize:
                         try:
                             title[1] = title[1][0].upper()+title[1][1:]
                         except IndexError: # title[1] is empty
                             print "WARNING: Strange title %s"%'%3A'.join(title)
-        # Remove leading and trailing whitespace from namespace and from rest
-        for i in range(len(title)):
-            title[i] = title[i].strip()
-
-        self._title = ':'.join(title)
+        # In case the part before the colon was not a namespace, we need to
+        # remove leading and trailing whitespace now.
+        self._title = ':'.join(title).strip()
 
     def site(self):
         """The site of the page this Page refers to,
