@@ -466,7 +466,7 @@ class Subject(object):
                 node.set_fillcolor('orange')
             graph.add_node(node)
         # mark start node
-        firstLabel = '"%s:%s"' % (inpl.site().language(), wikipedia.unicode2html(inpl.title(), 'ascii'))
+        firstLabel = '"%s:%s"' % (self.inpl.site().language(), wikipedia.unicode2html(inpl.title(), 'ascii'))
         graph.add_edge(pydot.Edge('start', firstLabel))
         for page, referrers in self.foundin.iteritems():
             for refPage in referrers:
