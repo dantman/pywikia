@@ -465,7 +465,7 @@ class Subject(object):
                 node.set_style('filled')
                 node.set_fillcolor('orange')
             # if we found more than one page for this language:
-            if len(filter(lambda p: p.site() == page.site(), self.foundin.keys())) > 1:
+            if len(filter(lambda p: p.site() == page.site() and not p.isRedirectPage(), self.foundin.keys())) > 1:
                 # mark conflict by octagonal node
                 node.set_shape('octagon')
             graph.add_node(node)
