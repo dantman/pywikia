@@ -448,6 +448,9 @@ class Subject(object):
                 wikipedia.output(u" "*indent + pl2.aslink(forceInterwiki = True))
 
     def createGraph(self):
+        """
+        See http://meta.wikimedia.org/wiki/Interwiki_graphs
+        """
         import pydot
         # create empty graph
         graph = pydot.Dot()
@@ -464,8 +467,8 @@ class Subject(object):
             elif page.isDisambig():
                 node.set_style('filled')
                 node.set_fillcolor('orange')
-            # if we found more than one page for this language:
-            if len(filter(lambda p: p.site() == page.site() and not p.isRedirectPage(), self.foundin.keys())) > 1:
+            # if we found more than one valid page for this language:
+            if len(filter(lambda p: p.site() == page.site() and p.exists() and not p.isRedirectPage(), self.foundin.keys())) > 1:
                 # mark conflict by octagonal node
                 node.set_shape('octagon')
             graph.add_node(node)
