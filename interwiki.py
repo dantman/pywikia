@@ -497,7 +497,10 @@ class Subject(object):
                             # pages
                             edge.set_color('orange')
                         graph.add_edge(edge)
-        filename = 'interwiki-graphs/%s-%s-%s.png' % (self.inpl.site().family.name, self.inpl.site().language(), self.inpl.urlname())
+        filename = '%s-%s-%s.png' % (self.inpl.site().family.name, self.inpl.site().language(), self.inpl.title())
+        for forbiddenChar in ':*?/\\':
+            filename = filename.replace(forbiddenChar, '_')
+        filename = 'interwiki-graphs/' + filename
         if graph.write(filename, prog = 'dot', format = 'png'):
             wikipedia.output(u'Graph saved as %s' % filename)
         else:
