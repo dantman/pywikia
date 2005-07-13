@@ -43,7 +43,7 @@ class Family:
         # Note that if mylang is 'commons', it is automatically added.
         self.langs = {}
         
-        # Translation used on all Wikipedias for the different namespaces.
+        # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
         self.namespaces = {
@@ -85,7 +85,6 @@ class Family:
                 'la': u'Specialis',
                 'li': u'Speciaal',
                 'ms': u'Istimewa',
-                'nb': u'Spesial',
                 'nds': u'Spezial',
                 'nl': u'Speciaal',
                 'nn': u'Spesial',
@@ -146,7 +145,6 @@ class Family:
                 'la': u'Disputatio',
                 'li': u'Euverlik',
                 'ms': u'Perbualan',
-                'nb': u'Diskusjon',
                 'nds': u'Diskuschoon',
                 'nl': u'Overleg',
                 'nn': u'Diskusjon',
@@ -204,7 +202,6 @@ class Family:
                 'la': u'Usor',
                 'li': u'Gebroeker',
                 'ms': u'Pengguna',
-                'nb': u'Bruker',
                 'nds': u'Bruker',
                 'nl': u'Gebruiker',
                 'nn': u'Brukar',
@@ -278,7 +275,6 @@ class Family:
                 'la': u'Imago',
                 'li': u'Afbeelding',
                 'ms': u'Imej',
-                'nb': u'Bilde',
                 'nds': u'Bild',
                 'nl': u'Afbeelding',
                 'nn': u'Fil',
@@ -344,7 +340,6 @@ class Family:
                 'ku':u'Şablon',
                 'la':u'Formula',
                 'li':u'Sjabloon',
-                'nb':u'Mal',
                 'nds':u'Vörlaag',
                 'nl':u'Sjabloon',
                 'nn':u'Mal',
@@ -418,7 +413,6 @@ class Family:
                 'ku': u'Kategorî',
                 'la': u'Categoria',
                 'li': u'Kategorie',
-                'nb': u'Kategori',
                 'nds': u'Kategorie',
                 'nl': u'Categorie',
                 'nn': u'Kategori',
@@ -450,7 +444,6 @@ class Family:
                 'hu'  :     u'Kategória vita',
                 'is'  :     u'Flokkaspjall',
                 'it'  :     u'Discussioni categoria',
-                'nb'  :     u'Kategoridiskusjon',
                 'nl'  :     u'Overleg categorie',
                 'no'  :     u'Kategoridiskusjon',
                 'pl'  :     u'Dyskusja kategorii',
@@ -503,11 +496,10 @@ class Family:
             'lb'  :       [u'homonymie'],
             'li'  :       [u'verdudeliking'],
             'lt'  :       [u'disambig'],
-            'nb'  :       [u'peker'],
+            'no'  :       [u'peker', u'etternavn'],
             'nds' :       [u'begreepkloren'],
             'nl'  :       [u'dp','dP'],
             'nn'  :       [u'fleirtyding'],
-            'no'  :       [u'peker'],
             'pl'  :       [u'disambig','disambRulers','disambigC'],
             'pt'  :       [u'desambiguação'],
             'ro'  :       [u'dezambiguizare'],
@@ -527,7 +519,7 @@ class Family:
             'zh-min-nan': [u'khu-pia̍t-ia̍h'],
         }
 
-        # On most Wikipedias page names must start with a capital letter, but some
+        # On most wikis page names must start with a capital letter, but some
         # languages don't use this.
     
         self.nocapitalize = []
@@ -799,12 +791,12 @@ class Family:
         return "%s?title=%s:Newpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
     def code2encoding(self, code):
-        """Return the encoding for a specific language wikipedia"""
+        """Return the encoding for a specific language wiki"""
         return 'utf-8'
 
     def code2encodings(self, code):
         """Return a list of historical encodings for a specific language
-           wikipedia"""
+           wiki"""
         return self.code2encoding(code),
 
     def __cmp__(self, otherfamily):
