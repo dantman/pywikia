@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -141,7 +141,8 @@ ignore_title = {
           'Wikipedia:Ongelijke redirects',
           'Gebruiker:Cars en travel',
           'Wikipedia:Archief*',
-          'Overleg Wikipedia:Logboek*'
+          'Overleg Wikipedia:Logboek*',
+          'Gebruiker:Rex/Gestarte artikelen'
           ),
      'en':('Wikipedia:Links to disambiguating pages',
           'Wikipedia:Disambiguation pages with links',
