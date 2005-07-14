@@ -720,7 +720,7 @@ class Family:
     # Which version of MediaWiki is used?
 
     def version(self, code):
-        return "1.4"
+        return "1.5"
 
     def put_address(self, code, name):
         return '%s?title=%s&action=submit' % (self.path(code), name)

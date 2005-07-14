@@ -167,7 +167,11 @@ class _Category(wikipedia.Page):
             pass
         else:
             self_txt = self_txt[ibegin:iend]
-            Rsupercat = re.compile('title ="([^"]*)"')
+            if self.site().version() < '1.5':
+                # MediaWiki 1.4 has an unneeded space here
+                Rsupercat = re.compile('title ="([^"]*)"')
+            else:
+                Rsupercat = re.compile('title="([^"]*)"')
             for title in Rsupercat.findall(self_txt):
                 # There might be a link to Special:Categories we don't want
                 if self.iscattitle(title):
