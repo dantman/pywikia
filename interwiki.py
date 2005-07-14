@@ -834,7 +834,7 @@ class InterwikiBot(object):
         
     def generateMore(self, number):
         """Generate more subjects. This is called internally when the
-           list of subjects becomes to small, but only if there is a
+           list of subjects becomes too small, but only if there is a
            PageGenerator"""
         fs = self.firstSubject()
         if fs:
@@ -1114,10 +1114,13 @@ if __name__ == "__main__":
                     hintlessPageGen = pagegenerators.CombinedGenerator(pagegenerators.TextfilePageGenerator('interwiki.dump'),pagegenerators.AllpagesPageGenerator(start, namespace))
                 elif arg.startswith('-file:'):
                     hintlessPageGen = pagegenerators.TextfilePageGenerator(arg[6:])
+                elif arg == '-start':
+                    start = '_'                     # start page will be entered interactively
                 elif arg.startswith('-start:'):
-                    firstPageName = arg[7:]
-                    namespace = wikipedia.Page(wikipedia.getSite(), firstPageName).namespace()
-                    hintlessPageGen = pagegenerators.AllpagesPageGenerator(firstPageName, namespace)
+                    if len(arg) == 7:
+                        start = '_'                 # start page will be entered interactively
+                    else:
+                        start = arg[7:]
                 elif arg.startswith('-number:'):
                     number = int(arg[8:])
                 elif arg.startswith('-array:'):
@@ -1130,6 +1133,15 @@ if __name__ == "__main__":
                     globalvar.showtextlink += globalvar.showtextlinkadd
                 else:
                     inname.append(arg)
+
+        if start:
+            if start == '_':
+                start = wikipedia.input(u'Which page to start from: ')
+ 
+            firstPageName = start
+            namespace = wikipedia.Page(wikipedia.getSite(), firstPageName).namespace()
+            hintlessPageGen = pagegenerators.AllpagesPageGenerator(firstPageName, namespace)
+
 
         if hintlessPageGen:
             # we'll use iter() to create make a next() function available.
