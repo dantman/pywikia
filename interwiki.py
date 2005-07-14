@@ -497,11 +497,11 @@ class Subject(object):
                             # pages
                             edge.set_color('orange')
                         graph.add_edge(edge)
-        filename = '%s-%s-%s.png' % (self.inpl.site().family.name, self.inpl.site().language(), self.inpl.title())
+        filename = '%s-%s-%s.%s' % (self.inpl.site().family.name, self.inpl.site().language(), self.inpl.title(), config.interwiki_graph_format)
         for forbiddenChar in ':*?/\\':
             filename = filename.replace(forbiddenChar, '_')
         filename = 'interwiki-graphs/' + filename
-        if graph.write(filename, prog = 'dot', format = 'png'):
+        if graph.write(filename, prog = 'dot', format = config.interwiki_graph_format):
             wikipedia.output(u'Graph saved as %s' % filename)
         else:
             wikipedia.output(u'Graph could not be saved as %s' % filename)

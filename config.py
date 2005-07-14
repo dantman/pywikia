@@ -66,6 +66,9 @@ interwiki_backlink = True
 # Should interwiki.py output a graph PNG file on conflicts?
 # You need pydot for this: http://dkbza.org/pydot.html
 interwiki_graph = False
+# If interwiki graphs are enabled, which format should be used?
+# Supported formats include png, jpg, ps and svg.
+interwiki_graph_format = 'png'
 
 ############## SETTINGS TO AVOID SERVER OVERLOAD ##############
 
