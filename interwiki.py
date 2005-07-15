@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -176,6 +176,9 @@ except NameError:
 import wikipedia, config, pagegenerators
 import titletranslate
 import vertexgen
+
+class NynorskException(Exception):
+    """Do not do interwiki on the Nynorsk Wikipedia."""
 
 msg = {
     'af':(u'Bygevoeg', u'Verwyder', u'Verander'),
@@ -1134,6 +1137,9 @@ if __name__ == "__main__":
                 else:
                     inname.append(arg)
 
+        if config.usernames.has_key('wikipedia') and config.usernames['wikipedia'].has_key('nn'):
+            print "Bot is not to be used at the Nynorsk Wikipedia."
+            raise NynorskException
         if start:
             if start == '_':
                 start = wikipedia.input(u'Which page to start from: ')
