@@ -385,9 +385,13 @@ class Subject(object):
                             continue
                         if not globalvar.autonomous:
                             if self.inpl.namespace() != page2.namespace():
-                                choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), self.inpl.namespace(), page2.aslink(forceInterwiki = True), page2.namespace()), ['Yes', 'No'], ['y', 'N'], 'N')
-                                if choice not in ['y', 'Y']:
-                                    continue
+                                if not self.foundin.has_key(page2):
+                                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), self.inpl.namespace(), page2.aslink(forceInterwiki = True), page2.namespace()), ['Yes', 'No'], ['y', 'N'], 'N')
+                                    if choice not in ['y', 'Y']:
+                                        # Fill up foundin, so that we will not ask again
+                                        self.foundin[page2] = pl
+                                        wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % pl.aslink(forceInterwiki = True))
+                                        continue
                         if self.conditionalAdd(page2, counter, pl):
                             if globalvar.shownew:
                                 wikipedia.output(u"%s: %s gives new interwiki %s"% (self.inpl.aslink(), pl.aslink(forceInterwiki = True), page2.aslink(forceInterwiki = True)))
