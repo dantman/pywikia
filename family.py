@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -462,7 +462,7 @@ class Family:
             'af'  :       [u'dubbelsinnig'],
             'als' :       [u'begriffsklärung'],
             'ang' :       [u'disambig'],
-            'ar'  :       [u'disambig'],
+            'ar'  :       [u'disambig',u'توضيح'],
             'be'  :       [u'неадназначнасьць'],
             'bg'  :       [u'пояснение'],
             'ca'  :       [u'desambiguació'],
@@ -500,7 +500,7 @@ class Family:
             'nds' :       [u'begreepkloren'],
             'nl'  :       [u'dp','dP'],
             'nn'  :       [u'fleirtyding'],
-            'pl'  :       [u'disambig','disambRulers','disambigC'],
+            'pl'  :       [u'disambig',u'disambRulers',u'disambigC'],
             'pt'  :       [u'desambiguação'],
             'ro'  :       [u'dezambiguizare'],
             'ru'  :       [u'disambig'],
