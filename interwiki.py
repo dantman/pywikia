@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -390,7 +390,7 @@ class Subject(object):
                                     if choice not in ['y', 'Y']:
                                         # Fill up foundin, so that we will not ask again
                                         self.foundin[page2] = pl
-                                        wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % pl.aslink(forceInterwiki = True))
+                                        wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page2.aslink(forceInterwiki = True))
                                         continue
                         if self.conditionalAdd(page2, counter, pl):
                             if globalvar.shownew:
