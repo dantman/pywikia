@@ -29,6 +29,7 @@ mylang = 'language'
 # usernames['wiktionary']['en'] = 'myEnglishUsername'
 #
 usernames = {}
+
 # Get the names of all known families, and initialize
 # with empty dictionaries
 RfamilyFile = re.compile('(?P<name>.+)_family.py$')
