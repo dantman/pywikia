@@ -717,7 +717,7 @@ class Page(object):
             token = self.site().getToken(self)
             # put_throttle()
             host = self.site().hostname()
-            address = self.site().delete_address(space2underline(self.title()))
+            address = self.site().delete_address(self.urlname())
 
             self.site().forceLogin()
 
