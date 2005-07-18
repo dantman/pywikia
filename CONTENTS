@@ -59,6 +59,9 @@ extract_wikilinks.py   : Two bots to get all linked-to Wikipedia pages from an
                          table2wiki.py or windows-chars.py), extract_wikilinks
                          gives them in interwiki-link format (can be used for
                          interwiki.py)
+followlive.py          : Periodically grab the list of new articles and analyze
+                         them. If the article is too short, a menu will let you
+                         easily add a template.
 login.py               : Log in to an account on your "home" wikipedia. 
 splitwarning.py        : split an interwiki.log file into warning files for each
                          separate language. suggestion: Zip the created files up, 
@@ -71,10 +74,9 @@ xmltest.py             : Read an XML file (e.g. the sax_parse_bug.txt sometimes
 editarticle.py         : Edit an article with your favourite editor. Run
                          the script with the "--help" option to get
                          detailed infortion on possiblities.
-find.py		       : Search for information. Not yet working.
+find.py                : Search for information. Not yet working.
 sqldump.py             : Extract information from local cur SQL dump
                          files, like the ones at http://download.wikimedia.org
-
 === Robots ===
 
 brackethttp.py         : Bot replacing a ()-bracketed http: link by an
