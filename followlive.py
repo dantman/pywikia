@@ -20,6 +20,7 @@ __metaclass__ = type
 # The question asked
 question = u"""
 b) blank page
+d) delete page (need sysop right)
 
 q) quit cleaningbot
 Enter) OK
@@ -98,6 +99,10 @@ class PageHandler:
 
             if answer == 'q':
                 sys.exit("Exiting")
+            if answer == 'd':
+                print u'Trying to delete page [[%s]].' % self.page.title()
+                self.page.delete()
+                return
             if answer == 'b':
                 print u'Blanking page [[%s]].' % self.page.title()
                 self.page.put('', comment = wikipedia.translate(wikipedia.getSite(), blanking) % self.content )
