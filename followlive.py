@@ -84,11 +84,10 @@ class PageHandler:
         return self.length < 250 or not self.loggedIn
 
     def handlebadpage(self):
-        try:
-            self.content = self.page.get()
-        except IsRedirectPage:
-            wikipedia.output(u'Already redirected, skipping.')
-            return
+        self.content = self.page.get()
+#        except IsRedirectPage:
+#            wikipedia.output(u'Already redirected, skipping.')
+#            return
 
         for d in wikipedia.translate(wikipedia.getSite(), done):
             if d in self.content:
