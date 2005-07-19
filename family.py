@@ -512,10 +512,11 @@ class Family:
             'su'  :       [u'disambig'],
             'sv'  :       [u'betydelselista', u'disambig', u'gaffel'],
             'th'  :       [u'แก้กำกวม'],
+            'tl'  :       [u'paglilinaw'],
             'tr'  :       [u'anlam ayrım'],
             'vi'  :       [u'trang định hướng'],
             'wa'  :       [u'omonimeye'],
-            'zh'  :       [u'disambig', u'消歧义'],
+            'zh'  :       [u'disambig', u'消歧义', u'消歧义页'],
             'zh-min-nan': [u'khu-pia̍t-ia̍h'],
         }
 
