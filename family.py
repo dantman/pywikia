@@ -503,7 +503,7 @@ class Family:
             'pl'  :       [u'disambig',u'disambRulers',u'disambigC'],
             'pt'  :       [u'desambiguação'],
             'ro'  :       [u'dezambiguizare'],
-            'ru'  :       [u'disambig'],
+            'ru'  :       [u'disambig',u'значения'],
             'simple':     [u'disambig', u'disambiguation'],
             'sk'  :       [u'disambiguation'],
             'sl'  :       [u'disambig'],
@@ -645,11 +645,13 @@ class Family:
         namespaces = []
         namespace_title = self.namespace(code, 14)
         namespaces.append(namespace_title)
-        namespaces.append(namespace_title.lower())
+        if namespace_title != namespace_title.lower():
+            namespaces.append(namespace_title.lower())
         default_namespace_title = self.namespace('_default', 14)
         if namespace_title != default_namespace_title:
             namespaces.append(default_namespace_title)
-            namespaces.append(default_namespace_title.lower())
+            if default_namespace_title != default_namespace_title.lower():
+                namespaces.append(default_namespace_title.lower())
         return namespaces
 
     # Redirect code can be translated.
