@@ -58,6 +58,7 @@ blanking = {
 done = {
     'en':('{{delete}}', '{{speedy}}', '{{VfD}}', '{{cleanup}}', '{{nonsense}}'),
 }
+# TODO: merge 'done' with 'templates' above
 
 class PageHandler:
     # Initialization stuff
@@ -80,10 +81,15 @@ class PageHandler:
             print "Comment: %s" % self.comment
 
     def couldbebad(self):
-        return self.length < 250 and not self.loggedIn
+        return self.length < 250 or not self.loggedIn
 
     def handlebadpage(self):
-        self.content = self.page.get()
+        try:
+            self.content = self.page.get()
+        except IsRedirectPage:
+            wikipedia.output(u'Already redirected, skipping.')
+            return
+
         for d in wikipedia.translate(wikipedia.getSite(), done):
             if d in self.content:
                 print 'Found: "',d, '" in content, nothing necessary'
@@ -105,7 +111,11 @@ class PageHandler:
                 return
             if answer == 'b':
                 print u'Blanking page [[%s]].' % self.page.title()
-                self.page.put('', comment = wikipedia.translate(wikipedia.getSite(), blanking) % self.content )
+                try:
+                    self.page.put('', comment = wikipedia.translate(wikipedia.getSite(), blanking) % self.content )
+                except EditConflict:
+                    print "An edit conflict occured ! Automaticly retrying"
+                    handlebadpage(self)
                 return
             if answer == '':
                 print 'Page correct ! Proceding with next pages.'
