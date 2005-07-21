@@ -714,7 +714,7 @@ class Subject(object):
                     # Determine whether we need permission to submit
                     ask = False
                     if removing:
-                        self.problem('removing: %s'%(",".join([x.lang for x in removing])))
+                        self.problem('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), pl.aslink(forceInterwiki = True)))
                         ask = True
                     if globalvar.force:
                         ask = False
