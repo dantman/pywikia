@@ -17,7 +17,7 @@ class Family:
             'mg','mi','zh-min-nan','mk','ml','mn','mo','mr','ms','mt','mus','my',
             'na','nah','nds','ne','ng','nl','nn','no','nv','ny','oc','om',
             'or','os','pa','pi','pl','ps','pt','qu','rm','rn','ro','roa-rup',
-            'ru','rw', 'sa','sc','scn','sd','se','sg','sh','si','simple','sk','sl','sm','sn',
+            'ru','rw', 'sa','sc','scn','sco','sd','se','sg','sh','si','simple','sk','sl','sm','sn',
             'so','sq','sr','ss','st','su','sv','sw','ta','te','tg','th','ti','tl',
             'tn','to','tpi','tr','ts','tt','tum','tw','ug','uk','ur','uz','ve',
             'vi','vo','wa','wo','xh','yi','yo','za','zh','zu']
@@ -33,9 +33,9 @@ class Family:
             'lv','lt','lb','li','ln','jbo','hu','mk','mg','ml','mt','mi','mr','ms',
             'mn','mo','mus','my','nah','na','nv','cr','ng','nl','ne','nds','ja',
             'no','nb','nn','oc','or','om','os','ug','pi','ps','nds','pl','pt','pa',
-            'ro','rm','qu','ru','se','sm','sa','sg','sc','st','tn','sq','sh','scn',
+            'ro','rm','qu','ru','se','sm','sa','sg','sc','sco','st','sq','sh','scn',
             'si','simple','sd','ss','sk','sl','sr','su','fi','sv','tl','tg','ta',
-            'tt','te','th','ti','tlh','vi','tokipona','tpi','to','tk','tum','tr',
+            'tt','te','th','ti','tlh','vi','tokipona','tpi','to','ts','tk','tum','tr',
             'tw','uk','ur','ug','uz','ve','vo','wa','wo','ts','yi','yo','za','zh',
             'zh-cn','zh-tw']
 
