@@ -93,11 +93,12 @@ import math
 import difflib
 import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
-import warnings
-import datetime
+import htmlentitydefs
 
 import config, mediawiki_messages, login
-import htmlentitydefs
+import xmlreader
+import warnings
+import datetime
 
 import locale
 # we'll set the locale to system default. This will ensure correct string
@@ -767,53 +768,6 @@ def redirectRe(site):
         txt = 'redirect'
     return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]|\|)', re.I)
 
-# Shortcut get to get multiple pages at once
-class WikimediaXmlHandler(xml.sax.handler.ContentHandler):
-    def setCallback(self, callback):
-        self.callback = callback
-        
-    def startElement(self, name, attrs):
-        self.destination = None
-        if name == 'page':
-            self.text=u''
-            self.title=u''
-            self.timestamp=u''
-        elif name == 'text':
-            self.destination = 'text'
-            self.text=u''
-        elif name == 'title':
-            self.destination = 'title'
-            self.title=u''
-        elif name == 'timestamp':
-            self.destination = 'timestamp'
-            self.timestamp=u''
-
-    def endElement(self, name):
-        if name == 'revision':
-            # All done for this.
-            text = self.text
-            # Remove trailing newlines and spaces
-            while text and text[-1] in '\n ':
-                text = text[:-1]
-            # Replace newline by cr/nl
-            text = u'\r\n'.join(text.split('\n'))
-            # Decode the timestamp
-            timestamp = (self.timestamp[0:4]+
-                         self.timestamp[5:7]+
-                         self.timestamp[8:10]+
-                         self.timestamp[11:13]+
-                         self.timestamp[14:16]+
-                         self.timestamp[17:19])
-            # Report back to the caller
-            self.callback(self.title.strip(), timestamp, text)
-            
-    def characters(self, data):
-        if self.destination == 'text':
-            self.text += data
-        elif self.destination == 'title':
-            self.title += data
-        elif self.destination == 'timestamp':
-            self.timestamp += data
             
 class GetAll(object):
     def __init__(self, site, pages, throttle):
@@ -846,7 +800,7 @@ class GetAll(object):
                 break
         if not data:
             return
-        handler = WikimediaXmlHandler()
+        handler = xmlreader.MediaWikiXmlHandler()
         handler.setCallback(self.oneDone)
         try:
             xml.sax.parseString(data, handler)
@@ -871,7 +825,10 @@ class GetAll(object):
                         for x in 'Xx':
                             pl._contents = pl._contents.replace(c2+x,c2+x+x)
 
-    def oneDone(self, title, timestamp, text):
+    def oneDone(self, entry):
+        title = entry.title
+        timestamp = entry.timestamp
+        text = entry.text
         pl = Page(self.site, title)
         for pl2 in self.pages:
             if Page(self.site, pl2.sectionFreeTitle()) == pl:
@@ -926,7 +883,7 @@ class GetAll(object):
         # find nothing, we will retry the normal way with an unadapted form.
         pagenames = u'\r\n'.join([x.sectionFreeTitle() for x in self.pages])
         if type(pagenames) != type(u''):
-            print 'Warning: wikipedia.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
+            print 'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
             print pagenames
         # convert Unicode string to the encoding used on that wiki
         pagenames = pagenames.encode(self.site.encoding())
