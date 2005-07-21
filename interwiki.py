@@ -181,23 +181,23 @@ class NynorskException(Exception):
     """Do not do interwiki on the Nynorsk Wikipedia."""
 
 msg = {
-    'af':(u'Bygevoeg', u'Verwyder', u'Verander'),
-    'cs':(u'přidal', u'odebral', u'změnil'),
-    'csb':(u'dodôwô', u'rëmô', u'pòprôwiô'),
-    'da':(u'Tilføjer', u'Fjerner', u'Ændrer'),
-    'de':(u'Ergänze', u'Entferne', u'Ändere'),
-    'en':(u'Adding', u'Removing', u'Modifying'),
-    'es':(u'Añadido', u'Eliminado', u'Modificado'),
-    'fr':(u'Ajoute', u'Retire', u'Modifie'),
-    'is':(u'Bæti við', u'Fjarlægi', u'Breyti'),
-    'it':(u'Aggiunta', u'Togliere', u'Modificare'),
-    'nl':(u'Erbij', u'Eraf', u'Anders'),
-    'nn':(u'la til', u'fjerna', u'endra'),
-    'no':(u'Tilføyer', u'Fjerner', u'Endrer'),
-    'pl':(u'dodaje', u'usuwa', u'poprawia'),
-    'pt':(u'Adicionando', u'Removendo',u'Modificando'),
-    'sk':(u'Pridal', u'Odobral',u'Zmenil' ),
-    'sv':(u'Lägger till', u'Tar bort', u'Ändrar'),
+    'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
+    'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
+    'csb':(u'robot ', u'dodôwô', u'rëmô', u'pòprôwiô'),
+    'da': (u'robot ', u'Tilføjer', u'Fjerner', u'Ændrer'),
+    'de': (u'Bot: ', u'Ergänze', u'Entferne', u'Ändere'),
+    'en': (u'robot ', u'Adding', u'Removing', u'Modifying'),
+    'es': (u'robot ', u'Añadido', u'Eliminado', u'Modificado'),
+    'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
+    'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
+    'it': (u'robot ', u'Aggiunta', u'Togliere', u'Modificare'),
+    'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
+    'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
+    'no': (u'robot ', u'Tilføyer', u'Fjerner', u'Endrer'),
+    'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
+    'pt': (u'robot ', u'Adicionando', u'Removendo',u'Modificando'),
+    'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
+    'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
     }
 
 class Global(object):
@@ -746,7 +746,7 @@ class Subject(object):
                         while 1:
                             try:
                                 # print "DBG> updating ", pl
-                                status, reason, data = pl.put(newtext, comment=u'robot '+mods)
+                                status, reason, data = pl.put(newtext, comment = wikipedia.translate(pl.site().lang, msg)[0] + mods)
                             except wikipedia.EditConflict, error:
                                 wikipedia.output(u'ERROR putting page: %s. Giving up.' % error)
                                 return False
@@ -997,11 +997,11 @@ def compareLanguages(old, new, insite):
             adding.append(site2)
     s = ""
     if adding:
-        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[0]) + " " + ", ".join([x.lang for x in adding])
+        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[1]) + " " + ", ".join([x.lang for x in adding])
     if removing: 
-        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[1]) + " " + ", ".join([x.lang for x in removing])
+        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[2]) + " " + ", ".join([x.lang for x in removing])
     if modifying:
-        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[2]) + " " + ", ".join([x.lang for x in modifying])
+        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[3]) + " " + ", ".join([x.lang for x in modifying])
     return s,removing
 
 def readWarnfile(filename, sa):
