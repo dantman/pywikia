@@ -126,97 +126,102 @@ link_trail = {
 # instead of _
 
 ignore_title = {
-    'nl':('Wikipedia:Onderhoudspagina',
-          'Wikipedia:Doorverwijspagina',
-          'Wikipedia:Lijst van alle tweeletter-combinaties',
-          'Gebruiker:Hooft/robot/Interwiki/lijst van problemen',
-          'Wikipedia:Woorden die niet als zoekterm gebruikt kunnen worden',
-          'Gebruiker:Puckly/Bijdragen',
-          'Gebruiker:Waerth/bijdragen',
-          "Wikipedia:Project aanmelding bij startpagina's",
-          'Gebruiker:Gustar/aantekeningen denotatie annex connotatie',
-          'Wikipedia:Protection log',
-          'Gebruiker:Pven/Romeinse cijfers',
-          'Categorie:Doorverwijspagina',
-          'Wikipedia:Ongelijke redirects',
-          'Gebruiker:Cars en travel',
-          'Wikipedia:Archief*',
-          'Overleg Wikipedia:Logboek*',
-          'Gebruiker:Rex/Gestarte artikelen'
-          ),
-     'en':('Wikipedia:Links to disambiguating pages',
-          'Wikipedia:Disambiguation pages with links',
-          'Wikipedia:Multiple-place names \([A-Z]\)',
-          'Wikipedia:Non-unique personal name',
-          "User:Jerzy/Disambiguation Pages i've Editted",
-          'User:Gareth Owen/inprogress',
-          'TLAs from [A-Z][A-Z][A-Z] to [A-Z][A-Z][A-Z]',
-          'List of all two-letter combinations',
-          'User:Daniel Quinlan/redirects.+',
-          'User:Oliver Pereira/stuff',
-          'Wikipedia:French Wikipedia language links',
-          'Wikipedia:Polish language links',
-          'Wikipedia:Undisambiguated abbreviations/.+',
-          'List of acronyms and initialisms',
-          'Wikipedia:Usemod article histories',
-          'User:Pizza Puzzle/stuff',
-          'List of generic names of political parties',
-          'Talk:List of initialisms/marked',
-          'Talk:List of initialisms/sorted',
-          'Talk:Programming language',
-          'Talk:SAMPA/To do',
-          "Wikipedia:Outline of Roget's Thesaurus",
-          'User:Wik/Articles',
-          'User:Egil/Sandbox',
-          'Wikipedia talk:Make only links relevant to the context',
-          'Wikipedia:Common words, searching for which is not possible'
-          ),
-    'da':('Wikipedia:Links til sider med flertydige titler'),
-    'fr':(u'Wikipédia:Liens aux pages d\'homonymie',
-          u'Wikipédia:Homonymie',
-          u'Wikipédia:Homonymie/Homonymes dynastiques',
-          u'Wikipédia:Prise de décision, noms des membres de dynasties/liste des dynastiens',
-          u'Liste de toutes les combinaisons de deux lettres',
-          u'Wikipédia:Log d\'upload/.*',
-          u'Sigles de trois lettres de [A-Z]AA à [A-Z]ZZ',
-          u'Wikipédia:Pages sans interwiki,.'
-          ),
-    'de':(
-          u'100 Wörter des 21. Jahrhunderts',
-          u'Abkürzungen/[A-Z]',
-          u'Benutzer:Achim Raschka/Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
-          u'Benutzer:Achim Raschka/Liste aller 2-Buchstaben-Kombinationen',
-          u'Benutzer:Katharina/Begriffsklärungen',
-          u'Benutzer:Tsor/Begriffsklärungen',
-          u'Benutzer:SirJective/Klammerzusatz',
-          u'Benutzer:Zwobot/Probleme',
-          u'Benutzer Diskussion:.+',
-          u'GISLexikon \([A-Z]\)',
-          u'Lehnwort',
-          u'Liste aller 2-Buchstaben-Kombinationen',
-          u'Wikipedia:Archiv:.+',
-          u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
-          u'Wikipedia:Begriffsklärung.*',
-          u'Wikipedia:Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
-          u'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
-          u'Wikipedia:Kurze Artikel',
-          u'Wikipedia:Liste mathematischer Themen/BKS',
-          u'Wikipedia:Liste mathematischer Themen/Redirects',
-          u'Wikipedia:Löschkandidaten/.+',
-          u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
-          u'Wikipedia:WikiProjekt Altertumswissenschaft/.+'
-          ),
-    'pt':(
-          u'Categoria:Desambiguação',
-          u'Wikipedia:Links para desambiguar páginas',
-          u'Wikipedia:Desambiguação',
-          u'Wikipedia:Lista de páginas de desambiguação',
-          u'Usuário:Nuno Tavares/Stats/Ambiguações',
-          ),
-    'fy':(
-          u'Wikipedy:Fangnet',
-          ),
-    }
+    'nl': [
+        'Wikipedia:Onderhoudspagina',
+        'Wikipedia:Doorverwijspagina',
+        'Wikipedia:Lijst van alle tweeletter-combinaties',
+        'Gebruiker:Hooft/robot/Interwiki/lijst van problemen',
+        'Wikipedia:Woorden die niet als zoekterm gebruikt kunnen worden',
+        'Gebruiker:Puckly/Bijdragen',
+        'Gebruiker:Waerth/bijdragen',
+        "Wikipedia:Project aanmelding bij startpagina's",
+        'Gebruiker:Gustar/aantekeningen denotatie annex connotatie',
+        'Wikipedia:Protection log',
+        'Gebruiker:Pven/Romeinse cijfers',
+        'Categorie:Doorverwijspagina',
+        'Wikipedia:Ongelijke redirects',
+        'Gebruiker:Cars en travel',
+        'Wikipedia:Archief*',
+        'Overleg Wikipedia:Logboek*',
+        'Gebruiker:Rex/Gestarte artikelen'
+     ],
+     'en': [
+        'Wikipedia:Links to disambiguating pages',
+        'Wikipedia:Disambiguation pages with links',
+        'Wikipedia:Multiple-place names \([A-Z]\)',
+        'Wikipedia:Non-unique personal name',
+        "User:Jerzy/Disambiguation Pages i've Editted",
+        'User:Gareth Owen/inprogress',
+        'TLAs from [A-Z][A-Z][A-Z] to [A-Z][A-Z][A-Z]',
+        'List of all two-letter combinations',
+        'User:Daniel Quinlan/redirects.+',
+        'User:Oliver Pereira/stuff',
+        'Wikipedia:French Wikipedia language links',
+        'Wikipedia:Polish language links',
+        'Wikipedia:Undisambiguated abbreviations/.+',
+        'List of acronyms and initialisms',
+        'Wikipedia:Usemod article histories',
+        'User:Pizza Puzzle/stuff',
+        'List of generic names of political parties',
+        'Talk:List of initialisms/marked',
+        'Talk:List of initialisms/sorted',
+        'Talk:Programming language',
+        'Talk:SAMPA/To do',
+        "Wikipedia:Outline of Roget's Thesaurus",
+        'User:Wik/Articles',
+        'User:Egil/Sandbox',
+        'Wikipedia talk:Make only links relevant to the context',
+        'Wikipedia:Common words, searching for which is not possible'
+    ],
+    'da': [
+        'Wikipedia:Links til sider med flertydige titler'
+    ],
+    'fr': [
+        u'Wikipédia:Liens aux pages d\'homonymie',
+        u'Wikipédia:Homonymie',
+        u'Wikipédia:Homonymie/Homonymes dynastiques',
+        u'Wikipédia:Prise de décision, noms des membres de dynasties/liste des dynastiens',
+        u'Liste de toutes les combinaisons de deux lettres',
+        u'Wikipédia:Log d\'upload/.*',
+        u'Sigles de trois lettres de [A-Z]AA à [A-Z]ZZ',
+        u'Wikipédia:Pages sans interwiki,.'
+    ],
+    'de': [
+        u'100 Wörter des 21. Jahrhunderts',
+        u'Abkürzungen/[A-Z]',
+        u'Benutzer:Achim Raschka/Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
+        u'Benutzer:Achim Raschka/Liste aller 2-Buchstaben-Kombinationen',
+        u'Benutzer:Katharina/Begriffsklärungen',
+        u'Benutzer:Tsor/Begriffsklärungen',
+        u'Benutzer:SirJective/Klammerzusatz',
+        u'Benutzer:Zwobot/Probleme',
+        u'Benutzer Diskussion:.+',
+        u'GISLexikon \([A-Z]\)',
+        u'Lehnwort',
+        u'Liste aller 2-Buchstaben-Kombinationen',
+        u'Wikipedia:Archiv:.+',
+        u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
+        u'Wikipedia:Begriffsklärung.*',
+        u'Wikipedia:Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
+        u'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
+        u'Wikipedia:Kurze Artikel',
+        u'Wikipedia:Liste mathematischer Themen/BKS',
+        u'Wikipedia:Liste mathematischer Themen/Redirects',
+        u'Wikipedia:Löschkandidaten/.+',
+        u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
+        u'Wikipedia:WikiProjekt Altertumswissenschaft/.+'
+    ],
+    'pt': [
+        u'Categoria:Desambiguação',
+        u'Wikipedia:Links para desambiguar páginas',
+        u'Wikipedia:Desambiguação',
+        u'Wikipedia:Lista de páginas de desambiguação',
+        u'Usuário:Nuno Tavares/Stats/Ambiguações',
+    ],
+    'fy': [
+        u'Wikipedy:Fangnet',
+    ],
+}
 
 class ReferringPageGenerator:
     def __init__(self, disambPl, primary=False):
@@ -595,10 +600,9 @@ class DisambiguationRobot(object):
     
     def run(self):
         if self.main_only:
-            if ignore_title.has_key(self.mylang):
-                ignore_title[self.mylang] += self.mysite.namespaces()
-            else:
-                ignore_title[self.mylang] = self.mysite.namespaces()
+            if not ignore_title.has_key(self.mylang):
+                ignore_title[self.mylang] = []
+            ignore_title[self.mylang] += [u'%s:' % namespace for namespace in self.mysite.namespaces()]
     
         for disambTitle in self.page_list:
             # when run with -redir argument, there's another summary message
