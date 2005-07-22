@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Script to resolve double redirects, and to delete broken redirects.
-Requires access to MediaWiki's maintenance pages or to a SQL dump file. Delete function requires
+Requires access to MediaWiki's maintenance pages or to a XML dump file. Delete function requires
 adminship.
 
 Syntax:
@@ -15,13 +15,16 @@ where action can be one of these:
 
 and argument can be:
 
-* sql - retrieve information from a local dump (http://download.wikimedia.org).
-* namespace:n - Namespace to process. Works only with a sql dump
-* restart:n - Number of redirect to restart with (see progress). Works only with a sql dump
+* xml         - retrieve information from a local XML dump
+                (http://download.wikimedia.org). Argument can also be given as
+                "-xml:filename.xml". If this argument isn't given, info will be
+                loaded from a special page of the live wiki.
 
-if this argument isn't given, info will be loaded from the maintenance page of
-the live wiki.
-argument can also be given as "-sql:filename.sql".
+* namespace:n - Namespace to process. Works only with an XML dump. Currently not
+                supported!
+* restart:n   - Number of redirect to restart with (see progress). Works only
+                with an XML dump. Currently not supported!
+
 
 NOTE: For resolving redirects, please use solve_disambiguation.py -redir.
 """
@@ -34,7 +37,7 @@ __version__='$Id$'
 #
 from __future__ import generators
 import wikipedia, config
-import sqldump
+import xmlreader
 import re, sys
 
 # Summary message for fixing double redirects
@@ -53,64 +56,59 @@ reason_broken={
     }
 
 class RedirectGenerator:
-    def __init__(self, source = None, namespace = -1, restart = -1):
-        self.source = source
+    def __init__(self, xmlFilename = None, namespace = -1, restart = -1):
+        self.xmlFilename = xmlFilename
         self.namespace = namespace
         self.restart = restart
 
     def get_redirects_from_dump(self):
         '''
-        Loads a local sql dump file, looks at all pages which have the redirect flag
+        Loads a local XML dump file, looks at all pages which have the redirect flag
         set, and finds out where they're pointing at.
         Returns a dictionary where the redirect names are the keys and the redirect
         targets are the values.
-        NOTE: if the redirect isn't in the main namespace, the returned key will be
-        prefixed by the default namespace identifiers. See full_title() in dump.py.
         '''
-        sqlfilename = self.source
+        xmlFilename = self.xmlFilename
         dict = {}
-        # open sql dump and read page titles out of it
-        dump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
+        # open xml dump and read page titles out of it
+        dump = xmlreader.XmlDump(xmlFilename)
         redirR = wikipedia.redirectRe(wikipedia.getSite())
-        for entry in dump.entries():
-            if (entry.id % 10000) == 0:
-                print 'Checking page %s' % (entry.id)
-            if self.namespace != -1 and self.namespace != entry.namespace:
-                continue
-            if entry.redirect:
-                m = redirR.search(entry.text)
-                if m == None:
-                    # NOTE: due to a MediaWiki bug, many articles are falsely marked with the
-                    # redirect flag, so this warning will eventually show up several times.
-                    # Ask a MediaWiki developer to fix the SQL database.
-                    wikipedia.output(u'WARNING: can\'t extract the target of redirect %s, ignoring' % (entry.full_title()))
-                else:
-                    target = m.group(1)
-                    # There might be redirects to another wiki. Ignore these.
-                    for code in wikipedia.getSite().family.langs.keys():
-                        if target.startswith('%s:' % code) or target.startswith(':%s:' % code):
-                            # TODO: doesn't seem to work
-                            wikipedia.output(u'NOTE: Ignoring %s which is a redirect to %s:' % (entry.full_title(), code))
-                            target = None
-                            break
-                    # if the redirect does not link to another wiki
-                    if target:
-                        target = target.replace(' ', '_')
-                        # remove leading and trailing whitespace
-                        target = target.strip()
-                        # capitalize the first letter
-                        if not wikipedia.getSite().nocapitalize:
-                            target = target[0].upper() + target[1:]
-                        if target.find('#') != -1:
-                            target = target[:target.index('#')]
-                        if target.find('|') != -1:
-                            wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.full_title())  
-                            target = target[:target.index('|')]
-                        dict[entry.full_title()] = target
+        readPagesCount = 0
+        for entry in dump():
+            readPagesCount += 1
+            # always print status message after 1000 pages
+            if readPagesCount % 1000 == 0:
+                print '%i pages read...' % readPagesCount
+            # if self.namespace != -1 and self.namespace != entry.namespace:
+                # continue
+            m = redirR.search(entry.text)
+            if m:
+                target = m.group(1)
+                # There might be redirects to another wiki. Ignore these.
+                for code in wikipedia.getSite().family.langs.keys():
+                    if target.startswith('%s:' % code) or target.startswith(':%s:' % code):
+                        # TODO: doesn't seem to work
+                        wikipedia.output(u'NOTE: Ignoring %s which is a redirect to %s:' % (entry.title, code))
+                        target = None
+                        break
+                # if the redirect does not link to another wiki
+                if target:
+                    target = target.replace(' ', '_')
+                    # remove leading and trailing whitespace
+                    target = target.strip()
+                    # capitalize the first letter
+                    if not wikipedia.getSite().nocapitalize:
+                        target = target[0].upper() + target[1:]
+                    if '#' in target:
+                        target = target[:target.index('#')]
+                    if '|' in target:
+                        wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.title)  
+                        target = target[:target.index('|')]
+                    dict[entry.title] = target
         return dict
         
     def retrieve_broken_redirects(self):
-        if self.source == None:
+        if self.xmlFilename == None:
             # retrieve information from the live wiki's maintenance page
             mysite = wikipedia.getSite()
             # broken redirect maintenance page's URL
@@ -126,18 +124,18 @@ class RedirectGenerator:
             for redir_name in redir_names:
                 yield redir_name
         else:
-            # retrieve information from SQL dump
+            # retrieve information from XML dump
             print 'Step 1: Getting a list of all redirects'
             redirs = self.get_redirects_from_dump()
             print 'Step 2: Getting a list of all page titles'
-            dump = sqldump.SQLdump(self.source, wikipedia.myencoding())
+            dump = xmlreader.XmlDump(self.xmlFilename)
             # We save page titles in a dictionary where all values are None, so we
             # use it as a list. "dict.has_key(x)" is much faster than "x in list"
             # because "dict.has_key(x)" uses a hashtable while "x in list" compares
             # x with each list element
             pagetitles = {}
-            for entry in dump.entries():
-                pagetitles[entry.full_title()] = None
+            for entry in dump():
+                pagetitles[entry.title] = None
             print 'Step 3: Comparing.'
             brokenredirs = []
             for (key, value) in redirs.iteritems():
@@ -145,7 +143,7 @@ class RedirectGenerator:
                     yield key
 
     def retrieve_double_redirects(self):
-        if self.source == None:
+        if self.xmlFilename == None:
             mysite = wikipedia.getSite()
             # retrieve information from the live wiki's maintenance page
             # double redirect maintenance page's URL
@@ -242,9 +240,9 @@ def main():
     # what the bot should do (either resolve double redirs, or delete broken redirs)
     action = None
     # where the bot should get his infos from (either None to load the maintenance
-    # special page from the live wiki, or the filename of a local sql dump file)
-    source = None
-    # Which namespace should be processed when using a SQL dump
+    # special page from the live wiki, or the filename of a local XML dump file)
+    xmlFilename = None
+    # Which namespace should be processed when using a XML dump
     # default to -1 which means all namespaces will be processed
     namespace = -1
     # at which redirect shall we start searching double redirects again (only with dump)
@@ -257,12 +255,11 @@ def main():
                 action = 'double'
             elif arg == 'broken':
                 action = 'broken'
-            elif arg.startswith('-sql'):
+            elif arg.startswith('-xml'):
                 if len(arg) == 4:
-                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                    xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
                 else:
-                    sqlfilename = arg[5:]
-                source = sqlfilename
+                    xmlFilename = arg[5:]
             elif arg.startswith('-namespace:'):
                 namespace = int(arg[11:])
             elif arg.startswith('-restart:'):
@@ -273,7 +270,7 @@ def main():
     if not action:
         wikipedia.output(__doc__, 'utf-8')
     else:
-        gen = RedirectGenerator(source, namespace, restart)
+        gen = RedirectGenerator(xmlFilename, namespace, restart)
         bot = RedirectRobot(action, gen)
         bot.run()
             
