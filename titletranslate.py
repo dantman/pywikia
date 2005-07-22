@@ -14,9 +14,15 @@ import wikipedia, date
 def sametranslate(pl, arr, same):
     site = pl.site()
     for newcode in site.family.seriouslangs:
-        # Put as suggestion into array
-        newname = pl.title()
-        if newcode in ['eo','cs'] and same == 'name':
+        newsite = wikipedia.Site(newcode, site.family)
+        if pl.namespace() == 0:
+            newname = pl.title()
+        else:
+            # Translate the namespace
+            newname = '%s:%s' % (newsite.namespace(pl.namespace()), pl.titleWithoutNamespace())
+        # On the Esperanto Wikipedia given names are written in all-capital
+        # letters.
+        if newcode == 'eo' and same == 'name':
             newname = newname.split(' ')
             newname[-1] = newname[-1].upper()
             newname = ' '.join(newname)
