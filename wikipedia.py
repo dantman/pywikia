@@ -138,9 +138,6 @@ class NoSuchEntity(ValueError):
 class SectionError(ValueError):
     """The section specified by # does not exist"""
 
-class NoNamespace(Error):
-    """Page is not in a special namespace"""
-
 class PageNotSaved(Error):
     """ Saving the page has failed """
 
@@ -240,16 +237,17 @@ class Page(object):
         """The name of this Page, as a Unicode string"""
         return self._title
 
-    def catname(self):
+    def titleWithoutNamespace(self):
         """The name of the page without the namespace part. Gives an error
         if the page is from the main namespace. Note that this is a raw way
         of doing things - it simply looks for a : in the name."""
         t=self.sectionFreeTitle()
-        p=t.split(':')
-        p=p[1:]
-        if p==[]:
-            raise NoNamespace(self)
-        return ':'.join(p)
+        p=t.split(':', 1)
+        if len(p) == 1:
+            # page is in the main namespace
+            return p[0]
+        else:
+            return p[1]
 
     def section(self):
         """The name of the section this Page refers to. Sections are

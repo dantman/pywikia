@@ -265,7 +265,7 @@ def change_category(article, old_cat_title, new_cat_title):
             cats.remove(cat)
             removed = True
         elif cattext.startswith(old_cat_title + '|'):
-            sort_key = cat.catname().split('|', 1)[1]
+            sort_key = cat.titleWithoutNamespace().split('|', 1)[1]
             cats.remove(cat)
             removed = True
     if not removed:

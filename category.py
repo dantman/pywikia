@@ -408,7 +408,7 @@ class CategoryTidyRobot:
                 if current_cat == original_cat:
                     print 'No changes necessary.'
                 else:
-                    catlib.change_category(article, original_cat.catname(), current_cat.catname())
+                    catlib.change_category(article, original_cat.titleWithoutNamespace(), current_cat.titleWithoutNamespace())
                 flag = True
             elif choice == 'j':
                 newCatTitle = wikipedia.input(u'Please enter the category the article should be moved to:')
@@ -418,7 +418,7 @@ class CategoryTidyRobot:
                 flag = True
             elif choice == 'r':
                 # remove the category tag
-                catlib.change_category(article, original_cat.catname(), None)
+                catlib.change_category(article, original_cat.titleWithoutNamespace(), None)
                 flag = True
             elif choice == '?':
                 print ''
