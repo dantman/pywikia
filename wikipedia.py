@@ -323,11 +323,10 @@ class Page(object):
                     delattr(self, attr)
         else:
             # Make sure we re-raise an exception we got on an earlier attempt
-            if hasattr(self, '_redirarg'):
-                if not get_redirect:
-                    raise IsRedirectPage,self._redirarg
-            elif hasattr(self, '_getexception'):
+            if hasattr(self, '_getexception'):
                 raise self._getexception
+            elif hasattr(self, '_redirarg') and not get_redirect:
+                raise IsRedirectPage, self._redirarg
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
@@ -342,14 +341,14 @@ class Page(object):
             except NoPage:
                 self._getexception = NoPage
                 raise
+            except LockedPage: # won't happen if read_only is True
+                self._getexception = LockedPage
+                raise
             except IsRedirectPage,arg:
                 self._getexception = IsRedirectPage
                 self._redirarg = arg
                 if not get_redirect:
                     raise
-            except LockedPage: # won't happen if read_only is True
-                self._getexception = LockedPage
-                raise
             except SectionError:
                 self._getexception = SectionError
                 raise
@@ -641,7 +640,7 @@ class Page(object):
         read_only is True, a LockedPage exception as well.
         """
         try:
-            self.get(read_only = True)
+            self.get(read_only = read_only)
         except NoPage:
             raise NoPage(self)
         except LockedPage:
@@ -1295,12 +1294,12 @@ def getEditPage(site, name, read_only = False, get_redirect=False, throttle = Tr
         if i2-i1 < 2:
             raise NoPage(site, name)
         m = redirectRe(site).match(text[i1:i2])
-        if m and not get_redirect:
-            output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), m.group(1)))
-            raise IsRedirectPage(m.group(1))
         if edittime[site, name] == "0" and not read_only:
             output(u"DBG> page may be locked?!")
             raise LockedPage()
+        if m and not get_redirect:
+            output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), m.group(1)))
+            raise IsRedirectPage(m.group(1))
 
         x = text[i1:i2]
         x = unescape(x)
