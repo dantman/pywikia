@@ -18,25 +18,35 @@ class XmlEntry:
     """
     Represents a page.
     """
-    def __init__(self, title, text, timestamp):
+    def __init__(self, title, id, text, timestamp):
         # TODO: there are more tags we can read.
         self.title = title
+        self.id = id
         self.text = text
         self.timestamp = timestamp
 
 class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
+    def __init__(self):
+        xml.sax.handler.ContentHandler.__init__(self)
+        self.inContributorTag = False
+        
     def setCallback(self, callback):
         self.callback = callback
         
     def startElement(self, name, attrs):
         self.destination = None
-        if name == 'page':
-            self.text=u''
-            self.title=u''
-            self.timestamp=u''
+        if name == 'contributor':
+            self.inContributorTag = True
         elif name == 'text':
             self.destination = 'text'
             self.text=u''
+        elif name == 'id':
+            if self.inContributorTag:
+                self.destination = 'userid'
+                self.userid = u''
+            else:
+                self.destination = 'id'
+                self.id = u''
         elif name == 'title':
             self.destination = 'title'
             self.title=u''
@@ -45,7 +55,9 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.timestamp=u''
 
     def endElement(self, name):
-        if name == 'revision':
+        if name == 'contributor':
+            self.inContributorTag = False
+        elif name == 'revision':
             # All done for this.
             text = self.text
             # Remove trailing newlines and spaces
@@ -62,12 +74,14 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                          self.timestamp[17:19])
             self.title = self.title.strip()
             # Report back to the caller
-            entry = XmlEntry(self.title, text, timestamp)
+            entry = XmlEntry(self.title, self.id, text, timestamp)
             self.callback(entry)
             
     def characters(self, data):
         if self.destination == 'text':
             self.text += data
+        elif self.destination == 'id':
+                self.id += data 
         elif self.destination == 'title':
             self.title += data
         elif self.destination == 'timestamp':
@@ -100,32 +114,42 @@ class XmlDump(object):
         self.handler = MediaWikiXmlHandler()
         self.handler.setCallback(self.oneDone)
         self.parserThread = XmlParserThread(self.filename, self.handler)
-        # thread dies when program terminates
+        # Thread dies when program terminates
         self.parserThread.setDaemon(True)
-        # this temporary variable will contain an XmlEntry given by the parser
+        # This queue will contain XmlEntries given by the parser
         # until it has been yielded by the generator.
-        self.lastEntry = None
-
+        self.queue = []
+        self.maxQueueSize = 256
+        # This semaphore will make sure the two threads don't change the queue
+        # at the same time.
+        self.semaphore = threading.Semaphore()
+        
     def oneDone(self, entry):
-        self.lastEntry = entry
-        # wait until this class has yielded the page. Otherwise the parser
-        # thread would give another page before we had time to yield the
-        # current one.
-        while self.lastEntry:
+        """
+        Called when the parser has found an entry.
+        """
+        while len(self.queue) >= self.maxQueueSize:
             time.sleep(0.001)
+        self.semaphore.acquire()
+        # print 'Parser: ' + entry.title
+        self.queue += [entry]
+        self.semaphore.release()
 
     def __call__(self):
         '''
-        Generator which reads one line at a time from the SQL dump file, and
+        Generator which reads one line at a time from the XML dump file, and
         parses it to create SQLentry objects. Stops when the end of file is
         reached.
         '''
         wikipedia.output(u'Reading XML dump')
         self.parserThread.start()
         while self.parserThread.isAlive():
-            if self.lastEntry:
-                yield self.lastEntry
-                self.lastEntry = None
-            else:
-                # wait 10 ms
-                time.sleep(0.001)
+            # make sure the parser thread will acquire the semaphore first by
+            # waiting until it has given an entry
+            if len(self.queue) > 0:
+                self.semaphore.acquire()
+                # print 'Dump: ' + self.queue[0].title
+                yield self.queue[0]
+                self.queue = self.queue[1:] 
+                self.semaphore.release()
+
