@@ -323,10 +323,10 @@ class Page(object):
                     delattr(self, attr)
         else:
             # Make sure we re-raise an exception we got on an earlier attempt
-            if hasattr(self, '_getexception'):
-                raise self._getexception
-            elif hasattr(self, '_redirarg') and not get_redirect:
+            if hasattr(self, '_redirarg') and not get_redirect:
                 raise IsRedirectPage, self._redirarg
+            elif hasattr(self, '_getexception'):
+                raise self._getexception
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
