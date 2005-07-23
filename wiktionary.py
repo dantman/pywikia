@@ -3,6 +3,8 @@
 
 import editarticle
 
+isolangs = ['af','sq','ar','an','hy','ast','tay','ay','az','bam','eu','bn','my','bi','bs','br','bg','sro','ca','zh','chp','rmr','co','dgd','da','de','eml','en','eo','et','fo','fi','fr','cpf','fy','fur','gl','ka','el','gu','hat','haw','he','hi','hu','io','ga','is','gil','id','ia','it','ja','jv','ku','kok','ko','hr','lad','la','lv','ln','li','lt','lb','src','ma','ms','mg','mt','mnc','mi','mr','mh','mas','myn','mn','nah','nap','na','nds','no','ny','oc','uk','oen','grc','pau','pap','pzh','fa','pl','pt','pa','qu','rap','roh','ra','ro','ja-ro','ru','smi','sm','sa','sc','sco','sr','sn','si','sk','sl','so','sov','es','scn','su','sw','tl','tt','th','ti','tox','cs','che','tn','tum','tpn','tr','ts','tvl','ur','vi','vo','wa','cy','be','wo','xh','zu','sv']
+
 wiktionaryformats = {
 	'nl': {
 		'langheader':	u'{{-%%ISOLangcode%%-}}',
@@ -93,22 +95,22 @@ langnames = {
 		'es' : u'spagnuolo',
 		},
 	'fr':	{
-		'nl' : u'nEEEerlandais',
+		'nl' : u'néerlandais',
 		'en' : u'anglais',
 		'de' : u'allemand',
-		'fr' : u'franCCCais',
+		'fr' : u'français',
 		'it' : u'italien',
-		'eo' : u'espEEEranto',
+		'eo' : u'espéranto',
 		'es' : u'espagnol',
 		},
 	'es':	{
-		'nl' : u'olandEEEs',
-		'en' : u'inglEEEs',
-		'de' : u'alemAAAn',
-		'fr' : u'francEEEs',
+		'nl' : u'olandés',
+		'en' : u'inglés',
+		'de' : u'alemán',
+		'fr' : u'francés',
 		'it' : u'italiano',
 		'eo' : u'esperanto',
-		'es' : u'espaNNNol',
+		'es' : u'español',
 		},
 }
 
@@ -501,7 +503,7 @@ class Term:
 		print ' ' * indentation + 'relatedwords = %s'% self.relatedwords
 
 class Noun(Term):
-	"""	This is class inherits from Term.
+	"""	This class inherits from Term.
 		It adds properties and methods specific to nouns
 	"""
 	def __init__(self,lang,term,gender=''):
@@ -718,4 +720,4 @@ def run():
 	else:
 		wikipedia.output(u"Nothing changed")
 			
-	   
+	  
