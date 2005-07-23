@@ -114,6 +114,16 @@ class DayPageGenerator:
             for day in range(1, date.days_in_month[month]+1):
                 yield wikipedia.Page(wikipedia.getSite(), fd(month, day))
 
+class NamespaceFilterPageGenerator:
+    def __init__(self, generator, namespaces):
+        self.generator = generator
+        self.namespaces = namespaces
+
+    def __iter__(self):
+        for page in self.generator:
+            if page.namespace() in self.namespaces:
+                yield page
+
 class CombinedGenerator:
     def __init__(self,generator1,generator2):
         self.gen1 = generator1

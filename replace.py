@@ -31,7 +31,7 @@ You can run the bot with the following commandline parameters:
                you use -fix.
                Currently available predefined fixes are:
                    * HTML - convert HTML tags to wiki syntax, and fix XHTML
--namespace:n - Namespace to process. Works only with an xml dump
+-namespace:n - Number of namespace to process.
 -always      - Don't prompt you for each replacement
 other:       - First argument is the old text, second argument is the new text.
                If the -regex argument is given, the first argument will be
@@ -168,8 +168,6 @@ class ReplacePageGenerator:
                          won't be changed.
         * regex        - If the entries of replacements and exceptions should
                          be interpreted as regular expressions
-        * namespace    - Namespace to process in case of a XML dump. -1 means
-                         that all namespaces should be searched.
         * textfilename - The textfile's path, either absolute or relative, which
                          will be used when source is 'textfile'.
         * xmlfilename  - The dump's path, either absolute or relative, which
@@ -177,12 +175,11 @@ class ReplacePageGenerator:
         * pagenames    - a list of pages which will be used when source is
                          'userinput'.
     """
-    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, xmlfilename = None, categoryname = None, pagenames = None, startpage = None):
+    def __init__(self, source, replacements, exceptions, regex = False, textfilename = None, xmlfilename = None, categoryname = None, pagenames = None, startpage = None):
         self.source = source
         self.replacements = replacements
         self.exceptions = exceptions
         self.regex = regex
-        self.namespace = namespace
         self.textfilename = textfilename
         self.xmlfilename = xmlfilename
         self.categoryname = categoryname
@@ -209,9 +206,6 @@ class ReplacePageGenerator:
         dump = xmlreader.XmlDump(self.xmlfilename)
         for entry in dump.parse():
             skip_page = False
-            #if self.namespace != -1 and self.namespace != entry.namespace:
-            #    continue
-            #else:
             for exception in self.exceptions:
                 if self.regex:
                     exception = re.compile(exception)
@@ -409,9 +403,9 @@ def main():
     # will become True when the user presses a ('yes to all') or uses the -always
     # commandline paramater.
     acceptall = False
-    # Which namespace should be processed when using a XML dump
-    # default to -1 which means all namespaces will be processed
-    namespace = -1
+    # Which namespaces should be processed?
+    # default to [] which means all namespaces will be processed
+    namespaces = []
     # Which page to start
     startpage = None
     # Load default summary message.
@@ -460,7 +454,7 @@ def main():
             elif arg == '-always':
                 acceptall = True
             elif arg.startswith('-namespace:'):
-                namespace = int(arg[11:])
+                namespaces.append(int(arg[11:]))
             else:
                 commandline_replacements.append(arg)
 
@@ -507,7 +501,9 @@ def main():
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
-    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, xmlfilename, categoryname, pagenames, startpage)
+    gen = ReplacePageGenerator(source, replacements, exceptions, regex, textfilename, xmlfilename, categoryname, pagenames, startpage)
+    if namespaces != []:
+        gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, regex, acceptall)
     bot.run()
