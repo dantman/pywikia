@@ -1,14 +1,14 @@
 # -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
-which pages might need changes either from an SQL dump or a text file, or only
+which pages might need changes either from an XML dump or a text file, or only
 change a single page.
 
 You can run the bot with the following commandline parameters:
 
--sql         - Retrieve information from a local SQL dump (cur table, see
+-xml         - Retrieve information from a local XML dump (pages_current, see
                http://download.wikimedia.org).
-               Argument can also be given as "-sql:filename".
+               Argument can also be given as "-xml:filename".
 -file        - Work on all pages given in a local text file.
                Will read any [[wiki link]] and use these articles.
                Argument can also be given as "-file:filename".
@@ -19,8 +19,8 @@ You can run the bot with the following commandline parameters:
                parameter multiple times to edit multiple pages.
 -start       - Work on all pages in the wiki, starting at a given page. Choose
                "-start:!" to start at the beginning.
-               NOTE: You are advised to use -sql instead of this option; this is
-               meant for cases where there is no recent SQL-dump.
+               NOTE: You are advised to use -xml instead of this option; this is
+               meant for cases where there is no recent XML dump.
 -regex       - Make replacements using regular expressions. If this argument
                isn't given, the bot will make simple text replacements.
 -except:XYZ  - Ignore pages which contain XYZ. If the -regex argument is given,
@@ -31,27 +31,27 @@ You can run the bot with the following commandline parameters:
                you use -fix.
                Currently available predefined fixes are:
                    * HTML - convert HTML tags to wiki syntax, and fix XHTML
--namespace:n - Namespace to process. Works only with a sql dump
+-namespace:n - Namespace to process. Works only with an xml dump
 -always      - Don't prompt you for each replacement
 other:       - First argument is the old text, second argument is the new text.
                If the -regex argument is given, the first argument will be
                regarded as a regular expression, and the second argument might
                contain expressions like \\1 or \g<name>.
       
-NOTE: Only use either -sql or -file or -page, but don't mix them.
+NOTE: Only use either -xml or -file or -page, but don't mix them.
 
 Examples:
 
 If you want to change templates from the old syntax, e.g. {{msg:Stub}}, to the
-new syntax, e.g. {{Stub}}, download an SQL dump file (cur table) from
+new syntax, e.g. {{Stub}}, download an XML dump file (cur table) from
 http://download.wikimedia.org, then use this command:
 
-    python replace.py -sql -regex "{{msg:(.*?)}}" "{{\\1}}"
+    python replace.py -xml -regex "{{msg:(.*?)}}" "{{\\1}}"
 
-If you have a dump called foobar.sql and want to fix typos, e.g.
+If you have a dump called foobar.xml and want to fix typos, e.g.
 Errror -> Error, use this:
 
-    python replace.py -sql:foobar.sql "Errror" "Error"
+    python replace.py -xml:foobar.xml "Errror" "Error"
 
 If you have a page called 'John Doe' and want to convert HTML tags to wiki
 syntax, use:
@@ -146,7 +146,7 @@ fixes = {
         'replacements': {
             u'([Ss]owohl) ([^,\.]+?), als auch':              r'\1 \2 als auch',
             #u'([Ww]eder) ([^,\.]+?), noch':                   r'\1 \2 noch',
-            u'(?=\W)(\d[\d\.\,]*\d|\d)($|€|DM|mg|g|kg|l|t|ms|s|min|h|µm|mm|cm|dm|m|km|°C|K|kB|MB|TB)(?=\W)': r'\1 \2',
+            u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB)(?=\W|$)': r'\1 \2',
             u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)':   r'\1. \2',
         }
     },
@@ -156,47 +156,47 @@ fixes = {
 class ReplacePageGenerator:
     """
     Generator which will yield Pages for pages that might contain text to
-    replace. These pages might be retrieved from a local SQL dump file or a
+    replace. These pages might be retrieved from a local XML dump file or a
     text file, or as a list of pages entered by the user.
 
     Arguments:
         * source       - Where the bot should retrieve the page list from.
-                         Can be 'sqldump', 'textfile', 'userinput' or 'allpages'.
+                         Can be 'xmldump', 'textfile', 'userinput' or 'allpages'.
         * replacements - A dictionary where keys are original texts and values
                          are replacement texts.
         * exceptions   - A list of strings; pages which contain one of these
                          won't be changed.
         * regex        - If the entries of replacements and exceptions should
                          be interpreted as regular expressions
-        * namespace    - Namespace to process in case of a SQL dump. -1 means
+        * namespace    - Namespace to process in case of a XML dump. -1 means
                          that all namespaces should be searched.
         * textfilename - The textfile's path, either absolute or relative, which
                          will be used when source is 'textfile'.
-        * sqlfilename  - The dump's path, either absolute or relative, which
-                         will be used when source is 'sqldump'.
+        * xmlfilename  - The dump's path, either absolute or relative, which
+                         will be used when source is 'xmldump'.
         * pagenames    - a list of pages which will be used when source is
                          'userinput'.
     """
-    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, sqlfilename = None, categoryname = None, pagenames = None, startpage = None):
+    def __init__(self, source, replacements, exceptions, regex = False, namespace = -1, textfilename = None, xmlfilename = None, categoryname = None, pagenames = None, startpage = None):
         self.source = source
         self.replacements = replacements
         self.exceptions = exceptions
         self.regex = regex
         self.namespace = namespace
         self.textfilename = textfilename
-        self.sqlfilename = sqlfilename
+        self.xmlfilename = xmlfilename
         self.categoryname = categoryname
         self.pagenames = pagenames
         self.startpage = startpage    
 
-    def read_pages_from_sql_dump(self):
+    def read_pages_from_xml_dump(self):
         """
         Generator which will yield Pages to pages that might contain text to
-        replace. These pages will be retrieved from a local sql dump file
+        replace. These pages will be retrieved from a local XML dump file
         (cur table).
     
         Arguments:
-            * sqlfilename  - the dump's path, either absolute or relative
+            * xmlfilename  - the dump's path, either absolute or relative
             * replacements - a dictionary where old texts are keys and new texts
                              are values
             * exceptions   - a list of strings; pages which contain one of these
@@ -205,33 +205,33 @@ class ReplacePageGenerator:
                              be interpreted as regular expressions
         """
         mysite = wikipedia.getSite()
-        import sqldump
-        dump = sqldump.SQLdump(self.sqlfilename, wikipedia.myencoding())
-        for entry in dump.entries():
+        import xmlreader
+        dump = xmlreader.XmlDump(self.xmlfilename)
+        for entry in dump.parse():
             skip_page = False
-            if self.namespace != -1 and self.namespace != entry.namespace:
-                continue
-            else:
-                for exception in self.exceptions:
-                    if self.regex:
-                        exception = re.compile(exception)
-                        if exception.search(entry.text):
-                            skip_page = True
-                            break
-                    else:
-                        if entry.text.find(exception) != -1:
-                            skip_page = True
-                            break
+            #if self.namespace != -1 and self.namespace != entry.namespace:
+            #    continue
+            #else:
+            for exception in self.exceptions:
+                if self.regex:
+                    exception = re.compile(exception)
+                    if exception.search(entry.text):
+                        skip_page = True
+                        break
+                else:
+                    if entry.text.find(exception) != -1:
+                        skip_page = True
+                        break
             if not skip_page:
                 for old in self.replacements.iterkeys():
                     if self.regex:
                         old = re.compile(old)
                         if old.search(entry.text):
-                            yield wikipedia.Page(mysite, entry.full_title())
+                            yield wikipedia.Page(mysite, entry.title)
                             break
                     else:
                         if entry.text.find(old) != -1:
-                            yield wikipedia.Page(mysite, entry.full_title())
+                            yield wikipedia.Page(mysite, entry.title)
                             break
     
     def read_pages_from_category(self):
@@ -287,8 +287,8 @@ class ReplacePageGenerator:
         '''
         Starts the generator.
         '''
-        if self.source == 'sqldump':
-            for page in self.read_pages_from_sql_dump():
+        if self.source == 'xmldump':
+            for page in self.read_pages_from_xml_dump():
                 yield page
         elif self.source == 'textfile':
             for page in self.read_pages_from_text_file():
@@ -382,7 +382,7 @@ class ReplaceRobot:
     
 def main():
     # How we want to retrieve information on which pages need to be changed.
-    # Can either be 'sqldump', 'textfile' or 'userinput'.
+    # Can either be 'xmldump', 'textfile' or 'userinput'.
     source = None
     # Array which will collect commandline parameters.
     # First element is original text, second element is replacement text.
@@ -397,8 +397,8 @@ def main():
     # Predefined fixes from dictionary 'fixes' (see above).
     fix = None
     # the dump's path, either absolute or relative, which will be used when source
-    # is 'sqldump'.
-    sqlfilename = None
+    # is 'xmldump'.
+    xmlfilename = None
     # the textfile's path, either absolute or relative, which will be used when
     # source is 'textfile'.
     textfilename = None
@@ -409,7 +409,7 @@ def main():
     # will become True when the user presses a ('yes to all') or uses the -always
     # commandline paramater.
     acceptall = False
-    # Which namespace should be processed when using a SQL dump
+    # Which namespace should be processed when using a XML dump
     # default to -1 which means all namespaces will be processed
     namespace = -1
     # Which page to start
@@ -435,12 +435,12 @@ def main():
                 else:
                     categoryname = arg[5:]
                 source = 'category'
-            elif arg.startswith('-sql'):
+            elif arg.startswith('-xml'):
                 if len(arg) == 4:
-                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename:')
+                    xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
                 else:
-                    sqlfilename = arg[5:]
-                source = 'sqldump'
+                    xmlfilename = arg[5:]
+                source = 'xmldump'
             elif arg.startswith('-page'):
                 if len(arg) == 5:
                     pagenames.append(wikipedia.input(u'Which page do you want to chage?'))
@@ -507,7 +507,7 @@ def main():
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
-    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, sqlfilename, categoryname, pagenames, startpage)
+    gen = ReplacePageGenerator(source, replacements, exceptions, regex, namespace,  textfilename, xmlfilename, categoryname, pagenames, startpage)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, regex, acceptall)
     bot.run()
