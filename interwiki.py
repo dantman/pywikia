@@ -389,7 +389,7 @@ class Subject(object):
                                     choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), self.inpl.namespace(), page2.aslink(forceInterwiki = True), page2.namespace()), ['Yes', 'No'], ['y', 'N'], 'N')
                                     if choice not in ['y', 'Y']:
                                         # Fill up foundin, so that we will not ask again
-                                        self.foundin[page2] = pl
+                                        self.foundin[page2] = [pl]
                                         wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page2.aslink(forceInterwiki = True))
                                         continue
                         if self.conditionalAdd(page2, counter, pl):
