@@ -58,6 +58,7 @@ class Family(family.Family):
     
         self.interwiki_putfirst = {
             'en': self.alphabetic,
+            'et': self.alphabetic,
             'fi': self.alphabetic,
             'fr': self.alphabetic,
             'hu': ['en'],
