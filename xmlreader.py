@@ -12,6 +12,7 @@ XmlEntry objects which can be used by other bots.
 """
 import threading, time
 import xml.sax
+import codecs, re
 import wikipedia
 
 class XmlEntry:
@@ -102,54 +103,41 @@ class XmlParserThread(threading.Thread):
     
     def run(self):
         xml.sax.parse(self.filename, self.handler)
-    
+
 class XmlDump(object):
     """
     Represents an XML dump file. Reads the local file at initialization,
     parses it, and offers access to the resulting XmlEntries via a generator.
+    
+    NOTE: This used to be done by a SAX parser, but this solution with regular
+    expressions is about 10 to 20 times faster.
     """
     def __init__(self, filename):
         self.filename = filename
-        self.finished = False
-        self.handler = MediaWikiXmlHandler()
-        self.handler.setCallback(self.oneDone)
-        self.parserThread = XmlParserThread(self.filename, self.handler)
-        # Thread dies when program terminates
-        self.parserThread.setDaemon(True)
-        # This queue will contain XmlEntries given by the parser
-        # until it has been yielded by the generator.
-        self.queue = []
-        self.maxQueueSize = 256
-        # This semaphore will make sure the two threads don't change the queue
-        # at the same time.
-        self.semaphore = threading.Semaphore()
-        
-    def oneDone(self, entry):
-        """
-        Called when the parser has found an entry.
-        """
-        while len(self.queue) >= self.maxQueueSize:
-            time.sleep(0.001)
-        self.semaphore.acquire()
-        # print 'Parser: ' + entry.title
-        self.queue += [entry]
-        self.semaphore.release()
 
-    def __call__(self):
+    def parse(self): 
         '''
-        Generator which reads one line at a time from the XML dump file, and
-        parses it to create SQLentry objects. Stops when the end of file is
+        Generator which reads some lines from the XML dump file, and
+        parses them to create XmlEntry objects. Stops when the end of file is
         reached.
         '''
-        wikipedia.output(u'Reading XML dump')
-        self.parserThread.start()
-        while self.parserThread.isAlive():
-            # make sure the parser thread will acquire the semaphore first by
-            # waiting until it has given an entry
-            if len(self.queue) > 0:
-                self.semaphore.acquire()
-                # print 'Dump: ' + self.queue[0].title
-                yield self.queue[0]
-                self.queue = self.queue[1:] 
-                self.semaphore.release()
-
+        Rpage = re.compile('<page>\s*<title>(?P<title>.+?)</title>\s*<id>(?P<pageid>\d+?)</id>\s*(<restrictions>(?P<restrictions>.+?)</restrictions>)?\s*<revision>\s*<id>(?P<revisionid>\d+?)</id>\s*<timestamp>(?P<timestamp>.+?)</timestamp>\s*<contributor>\s*(<username>(?P<username>.+?)</username>\s*<id>(?P<userid>\d+?)</id>|<ip>(?P<ip>.+?)</ip>)\s*</contributor>\s*(?P<minor>(<minor/>))?\s*(?:<comment>(?P<comment>.+?)</comment>\s*)?(<text xml:space="preserve">(?P<text>.*?)</text>|<text xml:space="preserve" />)\s*</revision>\s*</page>', re.DOTALL)
+        f = codecs.open(self.filename, 'r', encoding = wikipedia.myencoding(), errors='replace')
+        print 'Reading XML dump...'
+        eof = False
+        lines = u''
+        while not eof:
+            line = f.readline()
+            lines += line
+            if line == '':
+                eof = True
+            elif line == u'</page>\n':
+                m = Rpage.search(lines)
+                if not m:
+                    print 'ERROR: could not parse these lines:'
+                    print lines
+                else:
+                    lines = u''
+                    text = m.group('text') or u''
+                    entry = XmlEntry(title = m.group('title'), id = m.group('pageid'), text = text, timestamp = m.group('timestamp'))
+                    yield entry

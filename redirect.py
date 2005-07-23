@@ -74,10 +74,10 @@ class RedirectGenerator:
         dump = xmlreader.XmlDump(xmlFilename)
         redirR = wikipedia.redirectRe(wikipedia.getSite())
         readPagesCount = 0
-        for entry in dump():
+        for entry in dump.parse():
             readPagesCount += 1
-            # always print status message after 1000 pages
-            if readPagesCount % 1000 == 0:
+            # always print status message after 10000 pages
+            if readPagesCount % 10000 == 0:
                 print '%i pages read...' % readPagesCount
             # if self.namespace != -1 and self.namespace != entry.namespace:
                 # continue
@@ -134,7 +134,7 @@ class RedirectGenerator:
             # because "dict.has_key(x)" uses a hashtable while "x in list" compares
             # x with each list element
             pagetitles = {}
-            for entry in dump():
+            for entry in dump.parse():
                 pagetitles[entry.title] = None
             print 'Step 3: Comparing.'
             brokenredirs = []
