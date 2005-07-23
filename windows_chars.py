@@ -25,7 +25,7 @@ Command line options:
 #
 # Distributed under the terms of the PSF license.
 #
-__version__='$Id: windows_chars.py,v 1.24 2005/07/03 06:01:39 hooft Exp $'
+__version__='$Id: windows_chars.py,v 1.25 2005/07/05 19:59:29 wikipedian Exp $'
 #
 import wikipedia, config
 import replace, pagegenerators
@@ -37,36 +37,36 @@ msg={
     'de':u'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
     }
 
-# characters that are in Windows-1252, but not in ISO 8859-1
-replacements = {
-    u"\x80": u"&euro;",   # euro sign
-    u"\x82": u"&sbquo;",   # single low-9 quotation mark
-    u"\x83": u"&fnof;",   # latin small f with hook = function = florin
-    u"\x84": u"&bdquo;",  # double low-9 quotation mark
-    u"\x85": u"&hellip;", # horizontal ellipsis = three dot leader
-    u"\x86": u"&dagger;", # dagger
-    u"\x87": u"&Dagger;", # double dagger
-    u"\x88": u"&circ;",   # modifier letter circumflex accent
-    u"\x89": u"&permil;", # per mille sign
-    u"\x8A": u"&Scaron;", # latin capital letter S with caron
-    u"\x8B": u"&#8249;",  # single left-pointing angle quotation mark
-    u"\x8C": u"&OElig;",  # latin capital ligature OE
-    u"\x8E": u"&#381;",   # latin capital letter Z with caron
-    u"\x91": u"&lsquo;",  # left single quotation mark
-    u"\x92": u"&rsquo;",  # right single quotation mark
-    u"\x93": u"&ldquo;",  # left double quotation mark
-    u"\x94": u"&rdquo;",  # right double quotation mark
-    u"\x95": u"&bull;",   # bullet = black small circle
-    u"\x96": u"&ndash;",  # en dash
-    u"\x97": u"&mdash;",  # em dash
-    u"\x98": u"&tilde;",  # small tilde
-    u"\x99": u"&trade;",  # trade mark sign
-    u"\x9A": u"&scaron;", # latin small letter s with caron
-    u"\x9B": u"&8250;",   # single right-pointing angle quotation mark
-    u"\x9C": u"&oelig;",  # latin small ligature oe
-    u"\x9E": u"&#382;",   # latin small letter z with caron
-    u"\x9F": u"&Yuml;"    # latin capital letter Y with diaeresis
-}
+# characters that are in Windows-1252), but not in ISO 8859-1
+replacements = [
+    (u"\x80", u"&euro;"),   # euro sign
+    (u"\x82", u"&sbquo;"),   # single low-9 quotation mark
+    (u"\x83", u"&fnof;"),   # latin small f with hook = function = florin
+    (u"\x84", u"&bdquo;"),  # double low-9 quotation mark
+    (u"\x85", u"&hellip;"), # horizontal ellipsis = three dot leader
+    (u"\x86", u"&dagger;"), # dagger
+    (u"\x87", u"&Dagger;"), # double dagger
+    (u"\x88", u"&circ;"),   # modifier letter circumflex accent
+    (u"\x89", u"&permil;"), # per mille sign
+    (u"\x8A", u"&Scaron;"), # latin capital letter S with caron
+    (u"\x8B", u"&#8249;"),  # single left-pointing angle quotation mark
+    (u"\x8C", u"&OElig;"),  # latin capital ligature OE
+    (u"\x8E", u"&#381;"),   # latin capital letter Z with caron
+    (u"\x91", u"&lsquo;"),  # left single quotation mark
+    (u"\x92", u"&rsquo;"),  # right single quotation mark
+    (u"\x93", u"&ldquo;"),  # left double quotation mark
+    (u"\x94", u"&rdquo;"),  # right double quotation mark
+    (u"\x95", u"&bull;"),   # bullet = black small circle
+    (u"\x96", u"&ndash;"),  # en dash
+    (u"\x97", u"&mdash;"),  # em dash
+    (u"\x98", u"&tilde;"),  # small tilde
+    (u"\x99", u"&trade;"),  # trade mark sign
+    (u"\x9A", u"&scaron;"), # latin small letter s with caron
+    (u"\x9B", u"&8250;"),   # single right-pointing angle quotation mark
+    (u"\x9C", u"&oelig;"),  # latin small ligature oe
+    (u"\x9E", u"&#382;"),   # latin small letter z with caron
+    (u"\x9F", u"&Yuml;")    # latin capital letter Y with diaeresis
+]
 
 class SqlWindows1252PageGenerator:
     """

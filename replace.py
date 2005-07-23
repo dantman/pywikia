@@ -83,19 +83,6 @@ msg = {
 
 # Predefined replacements tasks.
 fixes = {
-    'cat': {
-        'regex': True,
-        'msg': {
-            'de':u'Bot: entferne Grundkategorien'
-            },
-        'replacements': {
-            r'\[\[Kategorie:Zeit:.+?\]\][\r\n ]*': '',
-            r'\[\[Kategorie:Raum:.+?\]\][\r\n ]*': '',
-            r'\[\[Kategorie:Thema:.+?\]\][\r\n ]*': '',
-            r'\[\[Kategorie:Typ:.+?\]\][\r\n ]*': '',
-        }
-    },
-            
     # These replacements will convert HTML to wiki syntax where possible, and
     # make remaining tags XHTML compliant.
     'HTML': {
@@ -107,7 +94,7 @@ fixes = {
                'en':u'Robot: converting/fixing HTML',
                'de':u'Bot: konvertiere/korrigiere HTML',
               },
-        'replacements': {
+        'replacements': [
             # Everything case-insensitive (?i)
             # Keep in mind that MediaWiki automatically converts <br> to <br />
             # when rendering pages, so you might comment the next two lines out
@@ -115,26 +102,26 @@ fixes = {
             #r'(?i)<br>':                      r'<br />',
             # linebreak with attributes
             #r'(?i)<br ([^>/]+?)>':            r'<br \1 />',
-            r'(?i)<b>(.*?)</b>':              r"'''\1'''",
-            r'(?i)<strong>(.*?)</strong>':    r"'''\1'''",
-            r'(?i)<i>(.*?)</i>':              r"''\1''",
-            r'(?i)<em>(.*?)</em>':            r"''\1''",
+            (r'(?i)<b>(.*?)</b>',              r"'''\1'''"),
+            (r'(?i)<strong>(.*?)</strong>',    r"'''\1'''"),
+            (r'(?i)<i>(.*?)</i>',              r"''\1''"),
+            (r'(?i)<em>(.*?)</em>',            r"''\1''"),
             # horizontal line without attributes in a single line
-            r'(?i)([\r\n])<hr[ /]*>([\r\n])': r'\1----\2',
+            (r'(?i)([\r\n])<hr[ /]*>([\r\n])', r'\1----\2'),
             # horizontal line without attributes with more text in the same line
-            r'(?i) +<hr[ /]*> +':             r'\r\n----\r\n',
+            (r'(?i) +<hr[ /]*> +',             r'\r\n----\r\n'),
             # horizontal line with attributes; can't be done with wiki syntax
             # so we only make it XHTML compliant
-            r'(?i)<hr ([^>/]+?)>':            r'<hr \1 />',
+            (r'(?i)<hr ([^>/]+?)>',            r'<hr \1 />'),
             # a header where only spaces are in the same line
-            r'(?i)([\r\n]) *<h1> *([^<]+?) *</h1> *([\r\n])':  r"\1= \2 =\3",
-            r'(?i)([\r\n]) *<h2> *([^<]+?) *</h2> *([\r\n])':  r"\1== \2 ==\3",
-            r'(?i)([\r\n]) *<h3> *([^<]+?) *</h3> *([\r\n])':  r"\1=== \2 ===\3",
-            r'(?i)([\r\n]) *<h4> *([^<]+?) *</h4> *([\r\n])':  r"\1==== \2 ====\3",
-            r'(?i)([\r\n]) *<h5> *([^<]+?) *</h5> *([\r\n])':  r"\1===== \2 =====\3",
-            r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])':  r"\1====== \2 ======\3",
+            (r'(?i)([\r\n]) *<h1> *([^<]+?) *</h1> *([\r\n])',  r"\1= \2 =\3"),
+            (r'(?i)([\r\n]) *<h2> *([^<]+?) *</h2> *([\r\n])',  r"\1== \2 ==\3"),
+            (r'(?i)([\r\n]) *<h3> *([^<]+?) *</h3> *([\r\n])',  r"\1=== \2 ===\3"),
+            (r'(?i)([\r\n]) *<h4> *([^<]+?) *</h4> *([\r\n])',  r"\1==== \2 ====\3"),
+            (r'(?i)([\r\n]) *<h5> *([^<]+?) *</h5> *([\r\n])',  r"\1===== \2 =====\3"),
+            (r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])',  r"\1====== \2 ======\3"),
             # TODO: maybe we can make the bot replace <p> tags with \r\n's.
-        }
+        ]
     },
     # Grammar fixes for German language
     'grammar-de': {
@@ -143,12 +130,13 @@ fixes = {
         'msg': {
                'de':u'Bot: korrigiere Grammatik',
               },
-        'replacements': {
-            u'([Ss]owohl) ([^,\.]+?), als auch':              r'\1 \2 als auch',
-            #u'([Ww]eder) ([^,\.]+?), noch':                   r'\1 \2 noch',
-            u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB)(?=\W|$)': r'\1 \2',
-            u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)':   r'\1. \2',
-        }
+        'replacements': [
+            (u'([Ss]owohl) ([^,\.]+?), als auch',                                                            r'\1 \2 als auch'),
+            #(u'([Ww]eder) ([^,\.]+?), noch', r'\1 \2 noch'),
+            (u'(\d+)(minütig|stündig|tägig|wöchig|jährig|minütlich|stündlich|täglich|wöchentlich|jährlich)', r'\1-\2'),
+            (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB)(?=\W|$)',          r'\1 \2'),
+            (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
+        ]
     },
     
 }
@@ -162,8 +150,7 @@ class ReplacePageGenerator:
     Arguments:
         * source       - Where the bot should retrieve the page list from.
                          Can be 'xmldump', 'textfile', 'userinput' or 'allpages'.
-        * replacements - A dictionary where keys are original texts and values
-                         are replacement texts.
+        * replacements - A list of 2-tuples of original text and replacement text.
         * exceptions   - A list of strings; pages which contain one of these
                          won't be changed.
         * regex        - If the entries of replacements and exceptions should
@@ -193,12 +180,11 @@ class ReplacePageGenerator:
         (cur table).
     
         Arguments:
-            * xmlfilename  - the dump's path, either absolute or relative
-            * replacements - a dictionary where old texts are keys and new texts
-                             are values
-            * exceptions   - a list of strings; pages which contain one of these
+            * xmlfilename  - The dump's path, either absolute or relative
+            * replacements - A list of 2-tuples of original text and replacement text.
+            * exceptions   - A list of strings; pages which contain one of these
                              won't be changed.
-            * regex        - if the entries of replacements and exceptions should
+            * regex        - If the entries of replacements and exceptions should
                              be interpreted as regular expressions
         """
         mysite = wikipedia.getSite()
@@ -217,7 +203,7 @@ class ReplacePageGenerator:
                         skip_page = True
                         break
             if not skip_page:
-                for old in self.replacements.iterkeys():
+                for old, new in self.replacements:
                     if self.regex:
                         old = re.compile(old)
                         if old.search(entry.text):
@@ -328,7 +314,7 @@ class ReplaceRobot:
         given text.
         """
         new_text = original_text
-        for old, new in self.replacements.iteritems():
+        for old, new in self.replacements:
             if self.regex:
                 # TODO: compiling the regex each time might be inefficient
                 oldR = re.compile(old)
@@ -381,8 +367,8 @@ def main():
     # Array which will collect commandline parameters.
     # First element is original text, second element is replacement text.
     commandline_replacements = []
-    # A dictionary where keys are original texts and values are replacement texts.
-    replacements = {}
+    # A list of 2-tuples of original text and replacement text.
+    replacements = []
     # Don't edit pages which contain certain texts.
     exceptions = []
     # Should the elements of 'replacements' and 'exceptions' be interpreted
@@ -464,13 +450,13 @@ def main():
         wikipedia.stopme()
         sys.exit()
     if (len(commandline_replacements) == 2 and fix == None):
-        replacements[commandline_replacements[0]] = commandline_replacements[1]
+        replacements.append(commandline_replacements[0], commandline_replacements[1])
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
     elif fix == None:
         old = wikipedia.input(u'Please enter the text that should be replaced:')
         new = wikipedia.input(u'Please enter the new text:')
         change = '(-' + old + ' +' + new
-        replacements[old] = new
+        replacements.append(old, new)
         while True:
             old = wikipedia.input(u'Please enter another text that should be replaced, or press Enter to start:')
             if old == '':
@@ -478,7 +464,7 @@ def main():
                 break
             new = wikipedia.input(u'Please enter the new text:')
             change = change + ' & -' + old + ' +' + new
-            replacements[old] = new
+            replacements.append(old, new)
         default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
         wikipedia.output(u'The summary message will default to: %s' % default_summary_message)
         summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')

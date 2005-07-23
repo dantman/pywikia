@@ -69,24 +69,24 @@ fixes = {
         'msg': {
                'en':u'Robot: converting/fixing footnotes',
               },
-        'replacements': {
+        'replacements': [
             # Everything case-insensitive (?i)
             # These translate variations of footnote templates to ref|note format.
-            r'(?i){{an\|(.*?)}}':              r"{{ref|\1}}",
-            r'(?i){{anb\|(.*?)}}':             r"{{note|\1}}",
-            r'(?i){{endnote\|(.*?)}}':         r"{{note|\1}}",
-            r'(?i){{fn\|(.*?)}}':              r"{{ref|fn\1}}",
-            r'(?i){{fnb\|(.*?)}}':             r"{{note|fn\1}}",
-            r'(?i){{mn\|(.*?)\|(.*?)}}':              r"{{ref|mn\1_\2}}",
-            r'(?i){{mnb\|(.*?)\|(.*?)}}':             r"{{note|mn\1_\2}}",
+            (r'(?i){{an\|(.*?)}}':              r"{{ref|\1}}"),
+            (r'(?i){{anb\|(.*?)}}':             r"{{note|\1}}"),
+            (r'(?i){{endnote\|(.*?)}}':         r"{{note|\1}}"),
+            (r'(?i){{fn\|(.*?)}}':              r"{{ref|fn\1}}"),
+            (r'(?i){{fnb\|(.*?)}}':             r"{{note|fn\1}}"),
+            r'(?i){{mn\|(.*?)\|(.*?)}}':              r"{{ref|mn\1_\2}}"),
+            r'(?i){{mnb\|(.*?)\|(.*?)}}':             r"{{note|mn\1_\2}}"),
             # a header where only spaces are in the same line
-            r'(?i)([\r\n]) *<h1> *([^<]+?) *</h1> *([\r\n])':  r"\1= \2 =\3",
-            r'(?i)([\r\n]) *<h2> *([^<]+?) *</h2> *([\r\n])':  r"\1== \2 ==\3",
-            r'(?i)([\r\n]) *<h3> *([^<]+?) *</h3> *([\r\n])':  r"\1=== \2 ===\3",
-            r'(?i)([\r\n]) *<h4> *([^<]+?) *</h4> *([\r\n])':  r"\1==== \2 ====\3",
-            r'(?i)([\r\n]) *<h5> *([^<]+?) *</h5> *([\r\n])':  r"\1===== \2 =====\3",
-            r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])':  r"\1====== \2 ======\3",
-        }
+            r'(?i)([\r\n]) *<h1> *([^<]+?) *</h1> *([\r\n])':  r"\1= \2 =\3"),
+            r'(?i)([\r\n]) *<h2> *([^<]+?) *</h2> *([\r\n])':  r"\1== \2 ==\3"),
+            r'(?i)([\r\n]) *<h3> *([^<]+?) *</h3> *([\r\n])':  r"\1=== \2 ===\3"),
+            r'(?i)([\r\n]) *<h4> *([^<]+?) *</h4> *([\r\n])':  r"\1==== \2 ====\3"),
+            r'(?i)([\r\n]) *<h5> *([^<]+?) *</h5> *([\r\n])':  r"\1===== \2 =====\3"),
+            r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])':  r"\1====== \2 ======\3"),
+        ]
     }
 }
 
@@ -159,7 +159,7 @@ class ReplacePageGenerator:
                             skip_page = True
                             break
             if not skip_page:
-                for old in self.replacements.iterkeys():
+                for old, new in self.replacements:
                     if self.regex:
                         old = re.compile(old)
                         if old.search(entry.text):
@@ -271,7 +271,7 @@ class ReplaceRobot:
         """
 
         # For any additional replacements, loop through them
-        for old, new in self.replacements.iteritems():
+        for old, new in self.replacements:
             if self.regex:
                 # TODO: compiling the regex each time might be inefficient
                 oldR = re.compile(old)

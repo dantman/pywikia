@@ -102,13 +102,13 @@ class TemplateRobot:
         # The group 'sortkey' will either match a sortkey led by a pipe, or an
         # empty string.
         templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '(?P<parameters>\|[^}]+|)}}')
-        replacements = {}
+        replacements = []
         if self.remove:
-            replacements[templateR] = ''
+            replacements.append((templateR, ''))
         elif self.resolve:
-            replacements[templateR] = '{{subst:' + self.old + '}}'
+            replacements.append((templateR, '{{subst:' + self.old + '}}'))
         else:
-            replacements[templateR] = '{{' + self.new + '\g<parameters>}}'
+            replacements.append((templateR, '{{' + self.new + '\g<parameters>}}'))
         replaceBot = replace.ReplaceRobot(self.generator, replacements, regex = True)
         replaceBot.run()
     
