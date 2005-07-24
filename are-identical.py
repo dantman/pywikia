@@ -7,8 +7,12 @@ Call the script with 3 arguments:
    python are-identical.py lang1 lang2 name
 
 The script will either print "Yes" and return exit code 0,
-                    or print "No"  and return exit code 1.
-
+                    or print "No"  and return exit code 1,
+                    or print "Both links are already present"
+                                   and return exit code 2,
+                    or print "One links already present"
+                                   and return exit code 0.
+                                   
 It may raise exceptions on pages that disappeared or whatever. This is
 a simple framework at least for the moment.
 """
@@ -46,6 +50,12 @@ class IdenticalRobot:
         pg2 = arr[1]
         iw1 = pg1.interwiki()
         iw2 = pg2.interwiki()
+        if pg2 in iw1 and pg1 in iw2:
+            print "Both links are already present"
+            sys.exit(2)
+        if pg2 in iw1 or pg1 in iw2:
+            print "One link already present"
+            sys.exit(0)
         for iw in iw1:
             if iw in iw2:
                 print "Yes"
