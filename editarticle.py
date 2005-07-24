@@ -50,7 +50,7 @@ class EditArticle:
 
     def initialise_data(self):
         """Login, set editor, page and pagelink attributes"""
-        self.login()#anonymous=self.options.anonymous)
+        self.login() #anonymous=self.options.anonymous)
         self.editor = self.options.editor or wikipedia.input(u"Editor to use:")
         self.setpage()
 
@@ -61,13 +61,13 @@ class EditArticle:
         else:
             self.username = self.options.username or wikipedia.input(u"Username:")
             self.site = wikipedia.getSite(user=self.username)
-            self.site._fill() # load cookies
+            self.site._loadCookies() # load cookies
             if not self.site._loggedin:
                 password = getpass.getpass("Password: ")
-                cookie = login.login(self.site, self.username, password)
+                cookie = login.LoginManager(self.username, password, self.site)
                 if not cookie:
                     sys.exit("Login failed")
-                login.storecookiedata(cookie, self.site, self.username)
+                #login.storecookiedata(cookie, self.site, self.username)
                 wikipedia.output(u"Login succesful")
 
     def set_options(self):
