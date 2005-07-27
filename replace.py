@@ -450,13 +450,13 @@ def main():
         wikipedia.stopme()
         sys.exit()
     if (len(commandline_replacements) == 2 and fix == None):
-        replacements.append(commandline_replacements[0], commandline_replacements[1])
+        replacements.append((commandline_replacements[0], commandline_replacements[1]))
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
     elif fix == None:
         old = wikipedia.input(u'Please enter the text that should be replaced:')
         new = wikipedia.input(u'Please enter the new text:')
         change = '(-' + old + ' +' + new
-        replacements.append(old, new)
+        replacements.append((old, new))
         while True:
             old = wikipedia.input(u'Please enter another text that should be replaced, or press Enter to start:')
             if old == '':
@@ -464,7 +464,7 @@ def main():
                 break
             new = wikipedia.input(u'Please enter the new text:')
             change = change + ' & -' + old + ' +' + new
-            replacements.append(old, new)
+            replacements.append((old, new))
         default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
         wikipedia.output(u'The summary message will default to: %s' % default_summary_message)
         summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
