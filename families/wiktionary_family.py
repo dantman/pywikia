@@ -40,7 +40,7 @@ class Family(family.Family):
 
         self.nocapitalize = ['af', 'bg', 'cs', 'de', 'en', 'eo', 'es',
                         'fa', 'fr', 'gu', 'hi', 'hr', 'hu', 'it',
-                        'ja', 'ka', 'kn', 'ku', 'ml', 'nl',
+                        'ja', 'ka', 'kn', 'ku', 'ml', 'nds', 'nl',
                         'sa', 'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona',
                         'tr', 'vi']
     
