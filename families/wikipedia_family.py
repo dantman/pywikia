@@ -76,42 +76,44 @@ class Family(family.Family):
         # Similar for category
         self.category_attop = ['fr']
         
+        # A revised sorting order worked out on http://meta.wikimedia.org/wiki/User_talk:ChongDae#Re:_Chobot
+        self.alphabetic_revised = ['aa','af','ak','als','am','ang','ab','ar',
+           'an','roa-rup','as','ast','gn','av','ay','az','id','ms','bm',
+           'bn','zh-min-nan','ban','jv','su','bug','ba','be','bh','mt',
+           'bi','bo','bs','br','bg','ca','cv','cs','ch','ny','sn','tum',
+           'cho','co','za','cy','da','de','dv','nv','dz','mh','et','na','el','en','es',
+           'eo','eu','ee','to','fa','fo','fr','fy','ff','fur','ga','gv','sm','gd','gl',
+           'gay','ki','gu','got','ko','ha','haw','hy','hi','ho','hr','io','ig','ia','ie',
+           'iu','ik','os','xh','zu','is','it','he','kl','kn','kr','ka','ks','csb','kw',
+           'rw','ky','rn','sw','kv','kg','ht','kj','ku','lo','la','lv','lb','lt','li',
+           'ln','jbo','lg','hu','mk','mg','ml','mi','mr','chm','mo','mn','mus','my',
+           'nah','fj','nl','cr','ne','ja','ce','no','nn','oc','or','om','ng','hz','ug',
+           'uz','pa','kk','pi','pam','ps','km','nds','pl','pt','ty','ro','rm','qu','ru',
+           'se','sa','sg','sc','sco','st','tn','sq','scn','si','simple','sd','ss','sk',
+           'sl','so','sr','sh','fi','sv','tl','ta','tt','te','th','vi','ti','tlh','tg',
+           'tpi','chr','chy','ve','tr','tk','tw','udm','uk','ur','vo','fiu-vro','wa',
+           'wo','ts','ii','yi','yo','zh','zh-tw','zh-cn']
+
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
         # alphabetical order on language code is used. For languages that are in
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
-            
+        
+           
         self.interwiki_putfirst = {
             'en': self.alphabetic,
-            'et': ['aa','af','ak','als','am','ang','ab','ar','an','roa-rup',
-                   'as','ast','gn','av','ay','az','id','ms','ban','bm','bn',
-                   'zh-min-nan','jv','su','ba','be','bh','mt','bi','bo','bs',
-                   'br','bug','bg','ca','cv','cs','ch','ny','sn','tum','cho',
-                   'co','za','cy','da','de','dv','nv','dz','mh','et','na','el',
-                   'en','es','eo','eu','ee','fa','fo','fr','fy','ff','fur',
-                   'ga','gv','sm','gd','gl','gay','gu','got','ko','ha','haw',
-                   'hy','hi','ho','hr','io','ig','ia','ie','iu','ik','os','xh',
-                   'zu','is','it','he','kl','kn','kr','ka','ks','csb','kk','kw',
-                   'ki','rw','rn','sw','kv','kg','ht','kj','ku','ky','la','lv',
-                   'lb','lt','li','ln','jbo','lg','hu','mk','mg','ml','mi',
-                   'mr','chm','mn','mus','my','fj','nah','ng','nl','cr','ne',
-                   'ja','ce','no','nb','nn','oc','or','om','hz','ug','pa','pi',
-                   'ps','lo','km','nds','pl','pt','ty','ro','rm','qu','ru',
-                   'se','sa','sg','sc','st','tn','sq','scn','si','simple','sd',
-                   'ss','sk','sl','so','sr','fi','sv','tl','ta','tt','te','th',
-                   'vi','tlh','ti','tg','tpi','to','chr','chy','tr','tk','tw',
-                   'udm','uk','ur','uz','wa','ve','vo','wo','fiu-vro','ts','ii',
-                   'yi','yo','zh','zh-tw','zh-cn'],
+            'et': self.alphabetic_revised,
+            'fi': self.alphabetic_revised,
             'fr': self.alphabetic,
             'he': ['en'],
             'hu': ['en'],
             'lb': self.alphabetic,
+            'nn': self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
-            'fi': self.alphabetic,
-            'nn': self.alphabetic
+            'vi': self.alphabetic_revised
             }
 
         self.interwiki_putfirst_doubled = {
