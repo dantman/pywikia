@@ -995,14 +995,18 @@ def compareLanguages(old, new, insite):
     for site2 in new.keys():
         if site2 not in old:
             adding.append(site2)
-    s = ""
+    mods = ""
+    # sort by language code
+    adding.sort()
+    modifying.sort()
+    removing.sort()
     if adding:
-        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[1]) + " " + ", ".join([x.lang for x in adding])
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([x.lang for x in adding]))
     if removing: 
-        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[2]) + " " + ", ".join([x.lang for x in removing])
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[2], ", ".join([x.lang for x in removing]))
     if modifying:
-        s = s + " %s:" % (wikipedia.translate(insite.lang, msg)[3]) + " " + ", ".join([x.lang for x in modifying])
-    return s,removing
+        mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([x.lang for x in modifying]))
+    return mods, removing
 
 def readWarnfile(filename, sa):
     import warnfile
