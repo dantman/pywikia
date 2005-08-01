@@ -16,6 +16,11 @@ Parameters:
 
    -all         try to log in on all sites where a username is defined in
                 user-config.py.
+                
+   -force       when doing -all, ignores if the user is already loged in,
+                and tries to login for all listed sites.
+                This may be useful if you have changed the account name
+                and need to aquire new login cookies.
 
 If not given as parameter, the script will ask for your username and password
 (password entry will be hidden), log in to your home wiki using this
@@ -162,6 +167,7 @@ class LoginManager:
 def main():
     username = password = None
     logall = False
+    forceLogin = False
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'login')
         if arg:
@@ -171,6 +177,8 @@ def main():
                 password = arg[6:]
             elif arg == "-all":
                 logall = True
+            elif arg == "-force":
+                forceLogin = True
             else:
                 wikipedia.showHelp('login')
                 sys.exit()
@@ -178,7 +186,7 @@ def main():
         for familyName in config.usernames.iterkeys():
             for lang in config.usernames[familyName].iterkeys():
                 site = wikipedia.getSite(code=lang, fam=familyName)
-                if site.loggedin():
+                if not forceLogin and site.loggedin():
                     wikipedia.output(u'Already logged in on %s' % site)
                 else:
                     loginMan = LoginManager(username, password, site = site)
