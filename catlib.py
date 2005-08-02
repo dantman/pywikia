@@ -257,14 +257,16 @@ def change_category(article, old_cat_title, new_cat_title):
     sort_key = ''
     removed = False
     for cat in cats:
-        cattext = cat.title().split('|')[0].split(':', 1)[1]
-        if cattext == old_cat_title:
+        # get the category title without the namespace, but possibly with a
+        # "|" sign followed by a sortkey
+        catNameWithSortkey = cat.title().split(':', 1)[1]
+        if catNameWithSortkey == old_cat_title:
             # because a list element is removed, the iteration will skip the 
             # next element. this might lead to forgotten categories, but
             # usually each category should only appear once per article.
             cats.remove(cat)
             removed = True
-        elif cattext.startswith(old_cat_title + '|'):
+        elif catNameWithSortkey.startswith(old_cat_title + '|'):
             sort_key = cat.titleWithoutNamespace().split('|', 1)[1]
             cats.remove(cat)
             removed = True
