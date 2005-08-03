@@ -465,15 +465,17 @@ class Subject(object):
         for page in self.foundin.iterkeys():
             # a node for each found page
             node = pydot.Node('"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii')), shape = 'rectangle')
+            node.set_style('filled')
+            node.set_fillcolor('white')
             if not page.exists():
-                node.set_style('filled')
                 node.set_fillcolor('red')
             elif page.isRedirectPage():
-                node.set_style('filled')
                 node.set_fillcolor('blue')
             elif page.isDisambig():
-                node.set_style('filled')
                 node.set_fillcolor('orange')
+            if page.namespace() != self.inpl.namespace():
+                node.set_color('green')
+                node.set_style('filled,bold')
             # if we found more than one valid page for this language:
             if len(filter(lambda p: p.site() == page.site() and p.exists() and not p.isRedirectPage(), self.foundin.keys())) > 1:
                 # mark conflict by octagonal node
@@ -503,7 +505,11 @@ class Subject(object):
                             # mark links between disambiguation and non-disambiguation
                             # pages
                             edge.set_color('orange')
+                        if page.namespace() != self.inpl.namespace():
+                            edge.set_color('green')
+                            edge.set_decorate('1')
                         graph.add_edge(edge)
+
         filename = '%s-%s-%s.%s' % (self.inpl.site().family.name, self.inpl.site().language(), self.inpl.title(), config.interwiki_graph_format)
         for forbiddenChar in ':*?/\\':
             filename = filename.replace(forbiddenChar, '_')
