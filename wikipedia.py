@@ -186,6 +186,12 @@ class Page(object):
         # Remove leading colon
         if title.startswith(':'):
              title = title[1:]
+        # Capitalize first letter
+        try:
+            if not site.nocapitalize:
+                title = title[0].upper() + title[1:]
+        except IndexError: # title is empty
+            pass
         # split up into namespace and rest
         title = title.split(':', 1)
         # if the page is not in namespace 0:
@@ -208,12 +214,6 @@ class Page(object):
         # In case the part before the colon was not a namespace, we need to
         # remove leading and trailing whitespace now.
         title = ':'.join(title).strip()
-        # Capitalize first letter
-        try:
-            if not site.nocapitalize:
-                title = title[0].upper() + title[1:]
-        except IndexError: # title is empty
-            pass
         self._title = title
 
     def site(self):
