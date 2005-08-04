@@ -505,9 +505,8 @@ class Subject(object):
                             # mark links between disambiguation and non-disambiguation
                             # pages
                             edge.set_color('orange')
-                        if page.namespace() != self.inpl.namespace():
+                        if refPage.namespace() != page.namespace():
                             edge.set_color('green')
-                            edge.set_decorate('1')
                         graph.add_edge(edge)
 
         filename = '%s-%s-%s.%s' % (self.inpl.site().family.name, self.inpl.site().language(), self.inpl.title(), config.interwiki_graph_format)
