@@ -169,7 +169,7 @@ class UI:
             # d = tkMessageBox.showinfo('title', text)
         elif urgency >= 1:
             # Save the line number before appending text
-            lineCount = int(self.logBox.index(END).split('.')[0]) - 1
+            lineCount = float(self.logBox.index(END).split('.')[0]) - 1
             self.logBox.insert(END, text)
             if colors:
                 # How many characters we already added in this line
