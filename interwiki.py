@@ -665,6 +665,7 @@ class Subject(object):
         #self.replaceLinks(self.inpl, new, True, sa)
 
         updatedSites = []
+        notUpdatedSites = []
         # Process all languages here
         for (site, page) in new.iteritems():
             # if we have an account for this site
@@ -673,6 +674,12 @@ class Subject(object):
                 if self.replaceLinks(page, new, sa):
                     # Changes were successful
                     updatedSites.append(site)
+                else:
+                    notUpdatedSites.append(site)
+        if notUpdatedSites != [] and config.interwiki_graph:
+            # at least one site was not updated, save a conflict graph
+            self.createGraph()
+            
         # don't report backlinks for pages we already changed
         self.reportBacklinks(new, updatedSites)
 
