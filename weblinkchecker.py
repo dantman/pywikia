@@ -27,9 +27,8 @@ Syntax examples:
     python weblinkchecker.py Example page
         Only checks links found in the wiki page "Example page"
 
-    python weblinkchecker.py -sql:20050516.sql
-        Checks all links found in an SQL cur dump.
-
+    python weblinkchecker.py -xml:20050713_pages_current.xml
+        Checks all links found in an XML dump.
 """
 
 #
@@ -58,19 +57,18 @@ class AllpagesPageContentGenerator:
                 continue
             yield page.title(), text
 
-class SqlPageContentGenerator:
+class XmlPageContentGenerator:
     '''
-    Using an SQL dump file, retrieves all pages that are not redirects (doesn't
+    Using an Xml dump file, retrieves all pages that are not redirects (doesn't
     load them from the live wiki), and yields title/text pairs.
     '''
-    def __init__(self, sqlfilename):
-        import sqldump
-        self.dump = sqldump.SQLdump(sqlfilename, wikipedia.getSite().encoding())
+    def __init__(self, xmlfilename):
+        import xmlreader
+        self.dump = xmlreader.XmlDump(xmlfilename)
 
     def __iter__(self):
-        for entry in self.dump.entries():
-            if not entry.redirect:
-                yield entry.full_title(), entry.text
+        for entry in self.dump.parse():
+            yield entry.title, entry.text
 
 class LinkChecker(object):
     '''
@@ -322,27 +320,27 @@ class WeblinkCheckerRobot:
 def main():
     start = '!'
     source = None
-    sqlfilename = None
+    xmlfilename = None
     pageTitle = []
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'weblinkchecker')
         if arg:
-            if arg.startswith('-sql'):
+            if arg.startswith('-xml'):
                 if len(arg) == 4:
-                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                    xmlfilename = wikipedia.input(u'Please enter the Xml dump\'s filename: ')
                 else:
-                    sqlfilename = arg[5:]
-                source = 'sqldump'
+                    xmlfilename = arg[5:]
+                source = 'xmldump'
             elif arg.startswith('-start:'):
                 start = arg[7:]
             else:
                 pageTitle.append(arg)
                 source = 'page'
 
-    if source == 'sqldump':
+    if source == 'xmldump':
         # Bot will read all wiki pages from the dump and won't access the wiki.
         wikipedia.stopme()
-        gen = SqlPageContentGenerator(sqlfilename)
+        gen = XmlPageContentGenerator(xmlfilename)
     elif source == 'page':
         pageTitle = ' '.join(pageTitle)
         pageContents = wikipedia.Page(wikipedia.getSite(), pageTitle).get(read_only = True)
