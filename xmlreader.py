@@ -136,6 +136,7 @@ class XmlDump(object):
                 lines = lines.replace('&gt;', '>')
                 lines = lines.replace('&lt;', '<')
                 lines = lines.replace('&quot;', '"')
+                lines = lines.replace('&amp;', '&')
                 m = Rpage.search(lines)
                 if not m:
                     print 'ERROR: could not parse these lines:'
