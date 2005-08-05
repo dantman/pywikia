@@ -46,6 +46,7 @@ msg_add={
     'es':u'Bot: Añadida [[Categoría:%s]]',
     'fr':u'Robot : ajoute [[Catégorie:%s]]',
     'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
+    'no':u'Robot: Legger til [[Kategori:%s]]',
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     }
 
@@ -57,6 +58,7 @@ msg_change={
     'fr':u'Robot : modifie catégorie %s',
     'is':u'Vélmenni: Breyti flokknum [[Flokkur:%s]]',
     'nl':u'Bot: Wijziging Categorie %s',
+    'no':u'Robot: Endrer kategori %s',
     'pt':u'Bot: Modificando [[Categoria:%s]]',
     }
 
@@ -64,6 +66,7 @@ deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach %s verschoben',
     'en':u'Robot: Category was moved to %s',
     'fr':u'Robot : catégorie déplacée sur %s',
+    'no':u'Robot: Kategorien ble flyttet til %s',
     'pt':u'Bot: Categoria %s foi movida',
     }
 
