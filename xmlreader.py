@@ -132,10 +132,15 @@ class XmlDump(object):
             if line == '':
                 eof = True
             elif line == u'</page>\n':
+                # unescape characters
+                lines = lines.replace('&gt;', '>')
+                lines = lines.replace('&lt;', '<')
+                lines = lines.replace('&quot;', '"')
                 m = Rpage.search(lines)
                 if not m:
                     print 'ERROR: could not parse these lines:'
                     print lines
+                    lines = u''
                 else:
                     lines = u''
                     text = m.group('text') or u''
