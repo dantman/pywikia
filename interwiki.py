@@ -177,7 +177,13 @@ import wikipedia, config, pagegenerators
 import titletranslate
 import vertexgen
 
-class NynorskException(Exception):
+class LinkMustBeRemoved(wikipedia.Error):
+    """
+    An interwiki link has to be removed, but this can't be done because of user
+    preferences or because the user chose not to change the page.
+    """
+
+class NynorskException(wikipedia.Error):
     """Do not do interwiki on the Nynorsk Wikipedia."""
 
 msg = {
@@ -458,6 +464,7 @@ class Subject(object):
         """
         See http://meta.wikimedia.org/wiki/Interwiki_graphs
         """
+        wikipedia.output(u'Preparing graph for %s' % self.inpl.title())
         import pydot
         # create empty graph
         graph = pydot.Dot()
@@ -671,11 +678,13 @@ class Subject(object):
             # if we have an account for this site
             if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
                 # Try to do the changes
-                if self.replaceLinks(page, new, sa):
-                    # Changes were successful
-                    updatedSites.append(site)
-                else:
+                try:
+                    if self.replaceLinks(page, new, sa):
+                        # Page was changed
+                        updatedSites.append(site)
+                except LinkMustBeRemoved:
                     notUpdatedSites.append(site)
+
         if notUpdatedSites != [] and config.interwiki_graph:
             # at least one site was not updated, save a conflict graph
             self.createGraph()
@@ -777,7 +786,8 @@ class Subject(object):
                             return True
                         else:
                             print status, reason
-
+                    else:
+                        raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.lang for x in removing]), pl.aslink(forceInterwiki = True)))
                 return False
         finally:
             # re-add the pl back to the new links list.
