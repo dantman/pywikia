@@ -1,39 +1,39 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-Nifty script to convert HTML-tables to Wikipedia's syntax.
+Nifty script to convert HTML-tables to MediaWiki's own syntax.
 
 
--file:filename
-      will read any [[wikipedia link]] and use these articles
+-xml           - Retrieve information from a local XML dump (pages_current, see
+                 http://download.wikimedia.org).
+                 Argument can also be given as "-xml:filename".
+                 Searches for pages with HTML tables, and tries to convert them
+                 on the live wiki.
 
--sql:XYZ
-      reads a local SQL cur dump, available at http://download.wikimedia.org/.
-      Searches for pages with HTML tables, and tries to convert them on the live
-      wiki. Example:
-      python table2wiki.py -sql:20040711_cur_table.sql.sql -lang:de
+-file:filename - Will read any [[wikipedia link]] and use these articles
+                 This SQL query might be helpful to generate this file, but
+                 it doesn't work for MediaWiki version 1.5 and above.
+                 
+                 SELECT CONCAT('[[', cur_title, ']]')
+                     FROM cur
+                     WHERE (cur_text LIKE '%<table%'
+                         OR cur_text LIKE '%<TABLE%')
+                         AND cur_title REGEXP "^[A-N]"
+                         AND cur_namespace=0
+                     ORDER BY cur_title
+                     LIMIT 500
+               
+Example:
 
-SQL-Query
-
-SELECT CONCAT('[[', cur_title, ']]')
-       FROM cur
-       WHERE (cur_text LIKE '%<table%'
-         OR cur_text LIKE '%<TABLE%')
-         AND cur_title REGEXP "^[A-N]"
-         AND cur_namespace=0
-       ORDER BY cur_title
-       LIMIT 500
-
+      python table2wiki.py -xml:20050713_pages_current.xml -lang:de
 
 FEATURES
 Save against missing </td>
 Corrects attributes of tags
 
 KNOWN BUGS
-Broken HTML-tables will most likely result in broken wiki-tables!
+Broken HTML tables will most likely result in broken wiki tables!
 Please check every article you change.
-
-
 """
 
 # (C) 2003 Thomas R. Koll, <tomk32@tomk32.de>
@@ -65,16 +65,20 @@ msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
                          'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
                         }
 
-class TableSqlDumpGenerator:
-    def __init__(self, sqlfilename):
-        import sqldump
-        self.sqldump = sqldump.SQLdump(sqlfilename, wikipedia.myencoding())
+class TableXmlDumpPageGenerator:
+    '''
+    A page generator that will yield all pages that seem to contain an HTML
+    table.
+    '''
+    def __init__(self, xmlfilename):
+        import xmlreader
+        self.xmldump = xmlreader.XmlDump(xmlfilename)
 
     def __iter__(self):
         tableTagR = re.compile('<table', re.IGNORECASE)
-        for entry in self.sqldump.entries():
+        for entry in self.xmldump.parse():
             if tableTagR.search(entry.text):
-                pl = wikipedia.Page(wikipedia.getSite(), entry.full_title())
+                pl = wikipedia.Page(wikipedia.getSite(), entry.title)
                 yield pl
               
 class Table2WikiRobot:
@@ -468,12 +472,12 @@ def main():
                         print "ERROR: Did not understand %s line:\n%s" % (
                             arg[6:], repr(line))
                 f.close()
-            elif arg.startswith('-sql'):
+            elif arg.startswith('-xml'):
                 if len(arg) == 4:
-                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                    xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
                 else:
-                    sqlfilename = arg[5:]
-                source = 'sqldump'
+                    xmlfilename = arg[5:]
+                source = 'xmldump'
             elif arg.startswith('-skip:'):
                 articles = articles[articles.index(arg[6:]):]
             elif arg.startswith('-auto'):
@@ -487,8 +491,8 @@ def main():
             else:
                 page_title.append(arg)
 
-    if source == 'sqldump':
-        gen = pagegenerators.PreloadingGenerator(TableSqlDumpGenerator(sqlfilename))
+    if source == 'xmldump':
+        gen = pagegenerators.PreloadingGenerator(TableXmlDumpPageGenerator(xmlfilename))
     # if the page is given as a command line argument,
     # connect the title's parts with spaces
     elif page_title != []:
@@ -496,6 +500,7 @@ def main():
         page = wikipedia.Page(wikipedia.getSite(), page_title)
         gen = pagegenerators.PreloadingGenerator(iter([page]))
     else:
+        # show help
         wikipedia.output(__doc__, 'utf-8')
         sys.exit(0)
 
