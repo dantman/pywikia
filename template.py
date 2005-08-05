@@ -3,7 +3,7 @@
 Very simple script to replace a template with another one,
 and to convert the old MediaWiki boilerplate format to the new template format.
 
-Syntax: python template.py [-remove] [sql[:filename]] oldTemplate [newTemplate]
+Syntax: python template.py [-remove] [xml[:filename]] oldTemplate [newTemplate]
 
 Specify the template on the command line. The program will
 pick up the template page, and look for all pages using it. It will
@@ -13,10 +13,10 @@ Command line options:
 
 -remove    - Remove every occurence of the template from every article
 
--sql       - retrieve information from a local dump (http://download.wikimedia.org).
+-xml       - retrieve information from a local dump (http://download.wikimedia.org).
              if this argument isn\'t given, info will be loaded from the maintenance
              page of the live wiki.
-             argument can also be given as "-sql:filename.sql".
+             argument can also be given as "-xml:filename.xml".
 
 other:       First argument is the old template name, second one is the new
              name. If only one argument is given, the bot resolves the
@@ -47,23 +47,24 @@ import wikipedia, config
 import replace, pagegenerators
 import re, sys, string
 
-class SqlTemplatePageGenerator:
-    def __init__(self, template, sqlfilename):
+class XmlTemplatePageGenerator:
+    def __init__(self, template, xmlfilename):
         self.template = template
-        self.sqlfilename = sqlfilename
+        self.xmlfilename = xmlfilename
 
     def __iter__(self):
-        import sqldump
+        import xmlreader
         mysite = wikipedia.getSite()
-        dump = sqldump.SQLdump(self.sqlfilename, mysite.encoding())
+        dump = xmlreader.XmlDump(self.xmlfilename)
         # regular expression to find the original template.
         # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
         # The new syntax, {{vfd}}, will also be found.
         templateName = self.template.title().split(':', 1)[1]
-        templateRegex = r'\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}'
-        for entry in dump.query_findr(templateRegex):
-            page = wikipedia.Page(mysite, entry.full_title())
-            yield page
+        templateRegex = re.compile('\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}')
+        for entry in dump.parse():
+            if templateRegex.search(entry.text):
+                page = wikipedia.Page(mysite, entry.title)
+                yield page
 
 class TemplateRobot:
     # Summary messages
@@ -116,8 +117,8 @@ def main():
     template_names = []
     resolve = False
     remove = False
-    # If sqlfilename is None, references will be loaded from the live wiki.
-    sqlfilename = None
+    # If xmlfilename is None, references will be loaded from the live wiki.
+    xmlfilename = None
     new = None
     # read command line parameters
     for arg in sys.argv[1:]:
@@ -125,11 +126,11 @@ def main():
         if arg:
             if arg == '-remove':
                 remove = True
-            elif arg.startswith('-sql'):
+            elif arg.startswith('-xml'):
                 if len(arg) == 4:
-                    sqlfilename = wikipedia.input(u'Please enter the SQL dump\'s filename: ')
+                    xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
                 else:
-                    sqlfilename = arg[5:]
+                    xmlfilename = arg[5:]
             else:
                 template_names.append(arg)
 
@@ -144,8 +145,8 @@ def main():
     ns = mysite.template_namespace(fallback = None)
     oldTemplate = wikipedia.Page(mysite, ns + ':' + old)
 
-    if sqlfilename:
-        gen = SqlTemplatePageGenerator(oldTemplate, sqlfilename)
+    if xmlfilename:
+        gen = XmlTemplatePageGenerator(oldTemplate, xmlfilename)
     else:
         gen = pagegenerators.ReferringPageGenerator(oldTemplate)
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
