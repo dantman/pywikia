@@ -194,7 +194,7 @@ class ReplacePageGenerator:
             skip_page = False
             for exception in self.exceptions:
                 if self.regex:
-                    exception = re.compile(exception)
+                    exception = re.compile(exception, re.UNICODE)
                     if exception.search(entry.text):
                         skip_page = True
                         break
@@ -205,7 +205,7 @@ class ReplacePageGenerator:
             if not skip_page:
                 for old, new in self.replacements:
                     if self.regex:
-                        old = re.compile(old)
+                        old = re.compile(old, re.UNICODE)
                         if old.search(entry.text):
                             yield wikipedia.Page(mysite, entry.title)
                             break
@@ -298,7 +298,7 @@ class ReplaceRobot:
         """
         for exception in self.exceptions:
             if self.regex:
-                exception = re.compile(exception)
+                exception = re.compile(exception, re.UNICODE)
                 hit = exception.search(original_text)
                 if hit:
                     return hit.group(0)
@@ -317,7 +317,7 @@ class ReplaceRobot:
         for old, new in self.replacements:
             if self.regex:
                 # TODO: compiling the regex each time might be inefficient
-                oldR = re.compile(old)
+                oldR = re.compile(old, re.UNICODE)
                 new_text = oldR.sub(new, new_text)
             else:
                 new_text = new_text.replace(old, new)
