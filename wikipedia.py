@@ -486,7 +486,7 @@ class Page(object):
                 watchArticle = self._isWatched
             else:
                 import watchlist
-                watchArticle = watchlist.isWatched(self.title())
+                watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
         return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken())
 
