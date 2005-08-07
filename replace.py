@@ -138,57 +138,41 @@ fixes = {
             (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
         ]
     },
-    
+    'tenno': {
+        'regex': True,
+        'msg': {
+               'de':u'Bot: Konvertiere Vorlage',
+              },
+        'replacements': [
+            (r'\{\{Tenno\|VG=(.+?)\|NAME=\|NF=(.+?)\}\}',
+             u'{{Vorgänger-Nachfolger|VORGÄNGER=\\1|NACHFOLGER=\\2|AMT=[[Liste der japanischen Kaiser]]|ZEIT=}}')
+        ],
+    }
 }
 
-class ReplacePageGenerator:
+class XmlDumpReplacePageGenerator:
     """
-    Generator which will yield Pages for pages that might contain text to
-    replace. These pages might be retrieved from a local XML dump file or a
-    text file, or as a list of pages entered by the user.
+    Generator which will yield Pages to pages that might contain text to
+    replace. These pages will be retrieved from a local XML dump file
+    (cur table).
 
     Arguments:
-        * source       - Where the bot should retrieve the page list from.
-                         Can be 'xmldump', 'textfile', 'userinput' or 'allpages'.
+        * xmlfilename  - The dump's path, either absolute or relative
         * replacements - A list of 2-tuples of original text and replacement text.
         * exceptions   - A list of strings; pages which contain one of these
                          won't be changed.
         * regex        - If the entries of replacements and exceptions should
                          be interpreted as regular expressions
-        * textfilename - The textfile's path, either absolute or relative, which
-                         will be used when source is 'textfile'.
-        * xmlfilename  - The dump's path, either absolute or relative, which
-                         will be used when source is 'xmldump'.
-        * pagenames    - a list of pages which will be used when source is
-                         'userinput'.
     """
-    def __init__(self, source, replacements, exceptions, regex = False, textfilename = None, xmlfilename = None, categoryname = None, pagenames = None, startpage = None):
-        self.source = source
+    def __init__(self, xmlfilename, replacements, exceptions, regex):
+        self.xmlfilename = xmlfilename
         self.replacements = replacements
         self.exceptions = exceptions
         self.regex = regex
-        self.textfilename = textfilename
-        self.xmlfilename = xmlfilename
-        self.categoryname = categoryname
-        self.pagenames = pagenames
-        self.startpage = startpage    
-
-    def read_pages_from_xml_dump(self):
-        """
-        Generator which will yield Pages to pages that might contain text to
-        replace. These pages will be retrieved from a local XML dump file
-        (cur table).
     
-        Arguments:
-            * xmlfilename  - The dump's path, either absolute or relative
-            * replacements - A list of 2-tuples of original text and replacement text.
-            * exceptions   - A list of strings; pages which contain one of these
-                             won't be changed.
-            * regex        - If the entries of replacements and exceptions should
-                             be interpreted as regular expressions
-        """
-        mysite = wikipedia.getSite()
+    def __iter__(self):
         import xmlreader
+        mysite = wikipedia.getSite()
         dump = xmlreader.XmlDump(self.xmlfilename)
         for entry in dump.parse():
             skip_page = False
@@ -214,74 +198,6 @@ class ReplacePageGenerator:
                             yield wikipedia.Page(mysite, entry.title)
                             break
     
-    def read_pages_from_category(self):
-        """
-        Generator which will yield pages that are listed in a text file created by
-        the bot operator. Will regard everything inside [[double brackets]] as a
-        page name, and yield Pages for these pages.
-    
-        Arguments:
-            * textfilename - the textfile's path, either absolute or relative
-        """
-        import catlib
-        category = catlib.Category(wikipedia.getSite(), self.categoryname)
-        for page in category.articles(recurse = False):
-            yield page
-
-    def read_pages_from_text_file(self):
-        """
-        Generator which will yield pages that are listed in a text file created by
-        the bot operator. Will regard everything inside [[double brackets]] as a
-        page name, and yield Pages for these pages.
-    
-        Arguments:
-            * textfilename - the textfile's path, either absolute or relative
-        """
-        f = open(self.textfilename, 'r')
-        # regular expression which will find [[wiki links]]
-        R = re.compile(r'.*\[\[([^\]]*)\]\].*')
-        m = False
-        for line in f.readlines():
-            # BUG: this will only find one link per line.
-            # TODO: use findall() instead.
-            m=R.match(line)
-            if m:
-                yield wikipedia.Page(wikipedia.getSite(), m.group(1))
-        f.close()
-    
-    def read_pages_from_wiki_page(self):
-        '''
-        Generator which will yield pages that are listed in a wiki page. Will
-        regard everything inside [[double brackets]] as a page name, except for
-        interwiki and category links, and yield Pages for these pages.
-    
-        Arguments:
-            * pagetitle - the title of a page on the home wiki
-        '''
-        listpage = wikipedia.Page(wikipedia.getSite(), self.pagetitle)
-        list = wikipedia.get(listpage, read_only = True)
-        # TODO - UNFINISHED
-    
-    # TODO: Make MediaWiki's search feature available.
-    def __iter__(self):
-        '''
-        Starts the generator.
-        '''
-        if self.source == 'xmldump':
-            for page in self.read_pages_from_xml_dump():
-                yield page
-        elif self.source == 'textfile':
-            for page in self.read_pages_from_text_file():
-                yield page
-        elif self.source == 'category':
-            for page in self.read_pages_from_category():
-                yield page
-        elif self.source == 'userinput':
-            for pagename in self.pagenames:
-                yield wikipedia.Page(wikipedia.getSite(), pagename)
-        elif self.source == 'allpages':
-            for page in wikipedia.allpages(start = self.startpage):
-                yield page
 
 class ReplaceRobot:
     def __init__(self, generator, replacements, exceptions = [], regex = False, acceptall = False):
@@ -361,6 +277,7 @@ class ReplaceRobot:
                         page.put(new_text)
     
 def main():
+    gen = None
     # How we want to retrieve information on which pages need to be changed.
     # Can either be 'xmldump', 'textfile' or 'userinput'.
     source = None
@@ -384,8 +301,10 @@ def main():
     textfilename = None
     # the category name which will be used when source is 'category'.
     categoryname = None
-    # a list of pages which will be used when source is 'userinput'.
-    pagenames = []
+    # a single page which will be processed when the -page parameter is used
+    pageName = None
+    # a page whose referrers will be processed when the -ref parameter is used
+    referredPageName = None
     # will become True when the user presses a ('yes to all') or uses the -always
     # commandline paramater.
     acceptall = False
@@ -423,10 +342,16 @@ def main():
                 source = 'xmldump'
             elif arg.startswith('-page'):
                 if len(arg) == 5:
-                    pagenames.append(wikipedia.input(u'Which page do you want to chage?'))
+                    pageName = wikipedia.input(u'Which page do you want to chage?')
                 else:
-                    pagenames.append(arg[6:])
-                source = 'userinput'
+                    pageName = arg[6:]
+                source = 'singlepage'
+            elif arg.startswith('-ref'):
+                if len(arg) == 4:
+                    referredPageName = wikipedia.input(u'Links to which page should be processed?')
+                else:
+                    referredPageName = arg[5:]
+                source = 'ref'
             elif arg.startswith('-start'):
                 if len(arg) == 6:
                     startpage = wikipedia.input(u'Which page do you want to chage?')
@@ -443,12 +368,6 @@ def main():
                 namespaces.append(int(arg[11:]))
             else:
                 commandline_replacements.append(arg)
-
-    if source == None or len(commandline_replacements) not in [0, 2]:
-        # syntax error, show help text from the top of this file
-        wikipedia.output(__doc__, 'utf-8')
-        wikipedia.stopme()
-        sys.exit()
     if (len(commandline_replacements) == 2 and fix == None):
         replacements.append((commandline_replacements[0], commandline_replacements[1]))
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
@@ -487,7 +406,23 @@ def main():
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
-    gen = ReplacePageGenerator(source, replacements, exceptions, regex, textfilename, xmlfilename, categoryname, pagenames, startpage)
+    if source == 'textfile':
+        gen = pagegenerators.TextfilePageGenerator(textfilename)
+    elif source == 'category':
+        cat = catlib.Category(wikipedia.getSite(), categoryname)
+    elif source == 'xmldump':
+        gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions, regex)
+    elif source == 'singlepage':
+        page = wikipedia.Page(wikipedia.getSite(), pageName)
+        gen = iter([page])
+    elif source == 'ref':
+        referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
+        gen = pagegenerators.ReferringPageGenerator(referredPage)
+    elif source == None or len(commandline_replacements) not in [0, 2]:
+        # syntax error, show help text from the top of this file
+        wikipedia.output(__doc__, 'utf-8')
+        wikipedia.stopme()
+        sys.exit()
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
