@@ -36,7 +36,10 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         
     def startElement(self, name, attrs):
         self.destination = None
-        if name == 'contributor':
+        if name == 'page':
+            self.editRestriction = None
+            self.moveRestriction = None
+        elif name == 'contributor':
             self.inContributorTag = True
         elif name == 'text':
             self.destination = 'text'
@@ -61,6 +64,20 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
     def endElement(self, name):
         if name == 'contributor':
             self.inContributorTag = False
+        elif name == 'restrictions':
+            editLockMatch = re.match('edit=([^:]*)', self.restrictions)
+            if editLockMatch:
+                self.editRestriction = editLockMatch.group(1)
+            moveLockMatch = re.match('move=([^:]*)', self.restrictions)
+            if moveLockMatch:
+                self.moveRestriction = moveLockMatch.group(1)
+            if self.restrictions == 'sysop':
+                self.editRestriction = 'sysop'
+                self.moveRestriction = 'sysop'
+            if self.editRestriction:
+                wikipedia.output(u'DBG: Edit restriction: %s' % self.editRestriction)
+            if self.moveRestriction:
+                wikipedia.output(u'DBG: Move restriction: %s' % self.moveRestriction)
         elif name == 'revision':
             # All done for this.
             text = self.text
