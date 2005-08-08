@@ -203,6 +203,7 @@ msg = {
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
     'pt': (u'robot ', u'Adicionando', u'Removendo',u'Modificando'),
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
+    'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),    
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
     }
 
