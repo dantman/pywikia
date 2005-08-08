@@ -633,9 +633,9 @@ class DisambiguationRobot(object):
                 try:
                     if self.primary:
                         disamb_pl = wikipedia.Page(self.mysite, primary_topic_format[self.mylang] % disambTitle)
-                        thistxt = disamb_pl.get(throttle=False)
+                        thistxt = disamb_pl.get(throttle=False, read_only = True)
                     else:
-                        thistxt = disambPl.get(throttle=False)
+                        thistxt = disambPl.get(throttle=False, read_only = True)
                 except wikipedia.IsRedirectPage,arg:
                     thistxt = wikipedia.Page(self.mysite, str(arg)).get(throttle=False)
                 except wikipedia.NoPage:
