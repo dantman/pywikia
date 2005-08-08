@@ -48,6 +48,9 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             else:
                 self.destination = 'id'
                 self.id = u''
+        elif name == 'restrictions':
+                self.destination = 'restrictions'
+                self.restrictions = u''
         elif name == 'title':
             self.destination = 'title'
             self.title=u''
@@ -83,6 +86,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.text += data
         elif self.destination == 'id':
                 self.id += data 
+        elif self.destination == 'restrictions':
+                self.restrictions += data
         elif self.destination == 'title':
             self.title += data
         elif self.destination == 'timestamp':
