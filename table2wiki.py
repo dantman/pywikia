@@ -453,28 +453,21 @@ def main():
     # if -file is not used, this temporary array is used to read the page title.
     page_title = []
     debug = False
-    source = None
+    xmlfilename = None
+    textfilename = None
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'table2wiki')
         if arg:
             if arg.startswith('-file:'):
-                f=open(arg[6:], 'r')
-                R=re.compile(r'.*\[\[([^\]]*)\]\].*')
-                m = False
-                for line in f.readlines():
-                    m=R.match(line)            
-                    if m:
-                        articles.append(m.group(1))
-                    else:
-                        print "ERROR: Did not understand %s line:\n%s" % (
-                            arg[6:], repr(line))
-                f.close()
+                if len(arg) == 5:
+                    textfilename = wikipedia.input(u'Please enter the textfile\'s name:')
+                else:
+                    textfilename = arg[6:]
             elif arg.startswith('-xml'):
                 if len(arg) == 4:
-                    xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
+                    xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
                 else:
                     xmlfilename = arg[5:]
-                source = 'xmldump'
             elif arg.startswith('-skip:'):
                 articles = articles[articles.index(arg[6:]):]
             elif arg.startswith('-auto'):
@@ -488,20 +481,22 @@ def main():
             else:
                 page_title.append(arg)
 
-    if source == 'xmldump':
-        gen = pagegenerators.PreloadingGenerator(TableXmlDumpPageGenerator(xmlfilename))
+    if xmlfilename:
+        gen = TableXmlDumpPageGenerator(xmlfilename)
+    elif textfilename:
+        gen = pagegenerators.TextfilePageGenerator(textfilename)        
     # if the page is given as a command line argument,
     # connect the title's parts with spaces
     elif page_title != []:
         page_title = ' '.join(page_title)
         page = wikipedia.Page(wikipedia.getSite(), page_title)
-        gen = pagegenerators.PreloadingGenerator(iter([page]))
+        gen = iter([page])
     else:
         # show help
         wikipedia.output(__doc__, 'utf-8')
         sys.exit(0)
-
-    bot = Table2WikiRobot(gen, debug, quietMode)
+    preloadingGen = pagegenerators.PreloadingGenerator(gen)
+    bot = Table2WikiRobot(preloadingGen, debug, quietMode)
     bot.run()
             
 try:
