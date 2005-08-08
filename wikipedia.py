@@ -1480,7 +1480,7 @@ def removeLanguageLinks(text, site = None):
             else:
                 index = interwikiMatch.end()
                 if len(code) == 2 or len(code) == 3:
-                    print "WARNING: Link to unknown language %s" % (match.group(1))
+                    print "WARNING: Link to unknown language %s" % (interwikiMatch.group(1))
     return normalWhitespace(text)
 
 def replaceLanguageLinks(oldtext, new, site = None):
