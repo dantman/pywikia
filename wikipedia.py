@@ -293,7 +293,7 @@ class Page(object):
         else:
             return '[[%s]]' % self.title()
 
-    def get(self, read_only = False, force = False, get_redirect=False, throttle = True):
+    def get(self, force = False, get_redirect=False, throttle = True):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -326,7 +326,7 @@ class Page(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents, self._isWatched = getEditPage(self.site(), self.urlname(), read_only = read_only, get_redirect = get_redirect, throttle = throttle)
+                self._contents, self._isWatched, self.editRestriction = getEditPage(self.site(), self.urlname(), get_redirect = get_redirect, throttle = throttle)
                 hn = self.section()
                 if hn:
                     hn = underline2space(hn)
@@ -350,7 +350,7 @@ class Page(object):
     def exists(self):
         """True if the page exists (itself or as redirect), False if not"""
         try:
-            self.get(read_only = True)
+            self.get()
         except NoPage:
             return False
         except IsRedirectPage:
@@ -362,7 +362,7 @@ class Page(object):
     def isRedirectPage(self):
         """True if the page is a redirect page, False if not or not existing"""
         try:
-            self.get(read_only = True)
+            self.get()
         except NoPage:
             return False
         except IsRedirectPage:
@@ -374,7 +374,7 @@ class Page(object):
            has less than 4 characters, False otherwise. Can return the same
            exceptions as get()
         """
-        txt = self.get(read_only = True)
+        txt = self.get()
         txt = removeLanguageLinks(txt)
         txt = removeCategoryLinks(txt, site = self.site())
         if len(txt) < 4:
@@ -495,7 +495,7 @@ class Page(object):
            interwiki links in the page text.
         """
         result = []
-        ll = getLanguageLinks(self.get(read_only = True), insite = self.site())
+        ll = getLanguageLinks(self.get(), insite = self.site())
         for newsite,newname in ll.iteritems():
             if newname[0] == ':':
                 output(u"ERROR: link from %s to [[%s:%s]] has leading colon?!" % (self.aslink(), newsite, newname))
@@ -521,7 +521,7 @@ class Page(object):
            The return value is a list of Page objects for each of the
            category links in the page text."""
         result = []
-        ll = getCategoryLinks(self.get(read_only = True), self.site())
+        ll = getCategoryLinks(self.get(), self.site())
         for catname in ll:
             result.append(self.__class__(self.site(), title = catname))
         return result
@@ -532,7 +532,7 @@ class Page(object):
            non-existing pages, but as long as we just use title() and
            such, that won't matter."""
         result = []
-        ll = getCategoryLinks(self.get(read_only = True), self.site(), raw=True)
+        ll = getCategoryLinks(self.get(), self.site(), raw=True)
         for catname in ll:
             result.append(self.__class__(self.site(), title = catname))
         return result
@@ -559,7 +559,7 @@ class Page(object):
         """
         result = []
         try:
-            thistxt = removeLanguageLinks(self.get(read_only = True))
+            thistxt = removeLanguageLinks(self.get())
         except IsRedirectPage:
             raise
         thistxt = removeCategoryLinks(thistxt, self.site())
@@ -575,7 +575,7 @@ class Page(object):
         Gives the images the page shows, as a list of Page objects
         """
         try:
-            text = self.get(read_only = True)
+            text = self.get()
         except NoPage:
             return []
         except IsRedirectPage:
@@ -616,7 +616,7 @@ class Page(object):
         Gives a list of template names used on a page, as a list of strings. Template parameters are ignored.
         """
         try:
-            thistxt = self.get(read_only = True)
+            thistxt = self.get()
         except IsRedirectPage:
             return []
                 
@@ -627,16 +627,15 @@ class Page(object):
             result.append(m.group('name'))
         return result
 
-    def getRedirectTarget(self, read_only = False):
+    def getRedirectTarget(self):
         """
         If the page is a redirect page, gives the title of the page it
         redirects to. Otherwise it will raise an IsNotRedirectPage exception.
         
-        This function can raise a NoPage exception, and unless the argument 
-        read_only is True.
+        This function can raise a NoPage exception.
         """
         try:
-            self.get(read_only = read_only)
+            self.get()
         except NoPage:
             raise NoPage(self)
         except IsRedirectPage, arg:
@@ -1206,7 +1205,7 @@ def getUrl(site, path):
     # TODO: We might want to use error='replace' in case of bad encoding.
     return unicode(text, charset)
     
-def getEditPage(site, name, read_only = False, get_redirect=False, throttle = True):
+def getEditPage(site, name, get_redirect=False, throttle = True):
     """
     Get the contents of page 'name' from the 'site' wiki
     Do not use this directly; for 99% of the possible ideas you can
@@ -1215,7 +1214,6 @@ def getEditPage(site, name, read_only = False, get_redirect=False, throttle = Tr
     Arguments:
         site          - the wiki site
         name          - the page name
-        read_only     - deprecated
         do_quote      - ??? (TODO: what is this for?)
         get_redirect  - Get the contents, even if it is a redirect page
  
@@ -1262,11 +1260,10 @@ def getEditPage(site, name, read_only = False, get_redirect=False, throttle = Tr
         matchWatching = R.search(text)
         if matchWatching:
             isWatched = True
-        if not read_only:
-            # check if we're logged in
-            p=re.compile('userlogin')
-            if p.search(text) != None:
-                output(u'Warning: You\'re probably not logged in on %s:' % repr(site))
+        # check if we're logged in
+        #p=re.compile('userlogin')
+        #if p.search(text) != None:
+        #    output(u'Warning: You\'re probably not logged in on %s:' % repr(site))
         m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
         if m:
             edittime[site, name] = m.group(1)
@@ -1293,7 +1290,7 @@ def getEditPage(site, name, read_only = False, get_redirect=False, throttle = Tr
         if i2-i1 < 2:
             raise NoPage(site, name)
         m = redirectRe(site).match(text[i1:i2])
-        if edittime[site, name] == "0" and not read_only:
+        if edittime[site, name] == "0":
             output(u"DBG> page may be locked?!")
             editRestriction = 'sysop'
         if m and not get_redirect:

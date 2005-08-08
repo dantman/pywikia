@@ -52,7 +52,7 @@ class AllpagesPageContentGenerator:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for page in preloadingGen:
             try:
-                text = page.get(read_only = True)
+                text = page.get()
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 continue
             yield page.title(), text
@@ -343,7 +343,7 @@ def main():
         gen = XmlPageContentGenerator(xmlfilename)
     elif source == 'page':
         pageTitle = ' '.join(pageTitle)
-        pageContents = wikipedia.Page(wikipedia.getSite(), pageTitle).get(read_only = True)
+        pageContents = wikipedia.Page(wikipedia.getSite(), pageTitle).get()
         gen = iter([(pageTitle, pageContents)])
     else:
         gen = AllpagesPageContentGenerator(start)

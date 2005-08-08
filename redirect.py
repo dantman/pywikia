@@ -180,7 +180,7 @@ class RedirectRobot:
         for redir_name in self.generator.retrieve_broken_redirects():
             redir_page = wikipedia.Page(wikipedia.getSite(), redir_name)
             try:
-                target_name = redir_page.getRedirectTarget(read_only = True)
+                target_name = redir_page.getRedirectTarget()
             except wikipedia.IsNotRedirectPage:
                 wikipedia.output(u'%s is not a redirect.' % redir_page.title())
             except wikipedia.NoPage:
@@ -188,7 +188,7 @@ class RedirectRobot:
             else:
                 try:
                     target_page = wikipedia.Page(wikipedia.getSite(), target_name)
-                    target_page.get(read_only = True)
+                    target_page.get()
                 except wikipedia.NoPage:
                     redir_page.delete(reason, prompt = False)
                 except wikipedia.IsRedirectPage:
@@ -213,7 +213,7 @@ class RedirectRobot:
             else:
                 try:
                     second_redir = wikipedia.Page(mysite, target)
-                    second_target = second_redir.getRedirectTarget(read_only = True)
+                    second_target = second_redir.getRedirectTarget()
                 except wikipedia.IsNotRedirectPage:
                     wikipedia.output(u'%s is not a redirect.' % second_redir.title())
                 except wikipedia.NoPage:

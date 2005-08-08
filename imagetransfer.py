@@ -53,7 +53,7 @@ class ImageTransferBot:
                 wikipedia.output(u"%s. Found image: %s"% (i, image.aslink()))
                 try:
                     # Show the image description page's contents
-                    wikipedia.output(image.get(throttle=False, read_only = True))
+                    wikipedia.output(image.get(throttle=False))
                 except wikipedia.NoPage:
                     try:
                         # Maybe the image is on the target site already

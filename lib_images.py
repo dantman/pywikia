@@ -216,7 +216,7 @@ def transfer_image(sourceImagePage, targetSite = None, debug=False):
     if debug: print "URL should be: %s" % url
     # localize the text that should be printed on the image description page
     try:
-        original_description = sourceImagePage.get(read_only = True)
+        original_description = sourceImagePage.get()
         description = wikipedia.translate(targetSite, copy_message) % (sourceSite, original_description)
         # TODO: Only the page's version history is shown, but the file's
         # version history would be more helpful

@@ -215,7 +215,7 @@ class ReplacePageGenerator:
             * pagetitle - the title of a page on the home wiki
         '''
         listpage = wikipedia.Page(wikipedia.getSite(), self.pagetitle)
-        list = wikipedia.get(listpage, read_only = True)
+        list = wikipedia.get(listpage)
         # TODO - UNFINISHED
     
     # TODO: Make MediaWiki's search feature available.
