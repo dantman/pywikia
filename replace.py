@@ -17,6 +17,8 @@ You can run the bot with the following commandline parameters:
 -page        - Only edit a single page.
                Argument can also be given as "-page:pagename". You can give this
                parameter multiple times to edit multiple pages.
+-ref         - Work on all pages that link to a certain page.
+               Argument can also be given as "-ref:referredpagename".
 -start       - Work on all pages in the wiki, starting at a given page. Choose
                "-start:!" to start at the beginning.
                NOTE: You are advised to use -xml instead of this option; this is
@@ -301,8 +303,8 @@ def main():
     textfilename = None
     # the category name which will be used when source is 'category'.
     categoryname = None
-    # a single page which will be processed when the -page parameter is used
-    pageName = None
+    # pages which will be processed when the -page parameter is used
+    pageNames = []
     # a page whose referrers will be processed when the -ref parameter is used
     referredPageName = None
     # will become True when the user presses a ('yes to all') or uses the -always
@@ -342,9 +344,9 @@ def main():
                 source = 'xmldump'
             elif arg.startswith('-page'):
                 if len(arg) == 5:
-                    pageName = wikipedia.input(u'Which page do you want to chage?')
+                    pageNames.append(wikipedia.input(u'Which page do you want to chage?'))
                 else:
-                    pageName = arg[6:]
+                    pageNames.append(arg[6:])
                 source = 'singlepage'
             elif arg.startswith('-ref'):
                 if len(arg) == 4:
@@ -413,8 +415,8 @@ def main():
     elif source == 'xmldump':
         gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions, regex)
     elif source == 'singlepage':
-        page = wikipedia.Page(wikipedia.getSite(), pageName)
-        gen = iter([page])
+        pages = [wikipedia.Page(wikipedia.getSite(), pageName) for pageName in pageNames]
+        gen = iter(pages)
     elif source == 'ref':
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
