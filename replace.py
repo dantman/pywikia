@@ -140,15 +140,20 @@ fixes = {
             (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
         ]
     },
-    'tenno': {
+    'syntax': {
         'regex': True,
         'msg': {
-               'de':u'Bot: Konvertiere Vorlage',
+               'de':u'Bot: Korrigiere Wiki-Syntax',
+               'en':u'Bot: Fixing wiki syntax',
               },
         'replacements': [
-            (r'\{\{Tenno\|VG=(.+?)\|NAME=\|NF=(.+?)\}\}',
-             u'{{Vorgänger-Nachfolger|VORGÄNGER=\\1|NACHFOLGER=\\2|AMT=[[Liste der japanischen Kaiser]]|ZEIT=}}')
+            (r'\[\[(http://.+?)\]\]',   r'[\1]'),        # external link in double brackets
+            (r'\[(http://[^\|\] ]+?)\s*\|\s*([^\|\]]+?)\]',
+                r'[\1 \2]'),                      # external link and description separated by dash
+            (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),    # wiki link closed by single bracket
+            (r'{{([^}]+?)}(?!})',       r'{{\1}}'),      # template closed by single bracket
         ],
+        'exceptions':  ['<math>'],
     }
 }
 
@@ -212,7 +217,7 @@ class ReplaceRobot:
     def checkExceptions(self, original_text):
         """
         If one of the exceptions applies for the given text, returns the 
-        substring. which matches the exception. Otherwise it returns None.
+        substring which matches the exception. Otherwise it returns None.
         """
         for exception in self.exceptions:
             if self.regex:
