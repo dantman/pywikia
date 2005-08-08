@@ -826,6 +826,8 @@ class GetAll(object):
         title = entry.title
         timestamp = entry.timestamp
         text = entry.text
+        editRestriction = entry.editRestriction
+        moveRestriction = entry.moveRestriction
         pl = Page(self.site, title)
         for pl2 in self.pages:
             if Page(self.site, pl2.sectionFreeTitle()) == pl:
@@ -839,25 +841,30 @@ class GetAll(object):
 
             raise PageNotFound
 
-        m = redirectRe(self.site).match(text)
-        if m:
-            edittime[self.site, pl.urlname()] = timestamp
-            redirectto=m.group(1)
-            if pl.site().lang=="eo":
-                for c in 'CGHJSU':
-                    for c2 in c,c.lower():
-                        for x in 'Xx':
-                            redirectto = redirectto.replace(c2+x,c2+x+x+x+x)
-            pl2._getexception = IsRedirectPage
-            pl2._redirarg = redirectto
+        if editRestriction:
+            # TODO: Bot user account might have sysop status and thus be
+            # allowed to edit the locked pages.
+            pl2._getexception = LockedPage
         else:
-            if len(text)<50:
-                output(u"DBG> short text in %s:" % pl2.aslink())
-                output(text)
+            m = redirectRe(self.site).match(text)
+            if m:
+                edittime[self.site, pl.urlname()] = timestamp
+                redirectto=m.group(1)
+                if pl.site().lang=="eo":
+                    for c in 'CGHJSU':
+                        for c2 in c,c.lower():
+                            for x in 'Xx':
+                                redirectto = redirectto.replace(c2+x,c2+x+x+x+x)
+                pl2._getexception = IsRedirectPage
+                pl2._redirarg = redirectto
+        #else:
+        #    if len(text)<50:
+        #        output(u"DBG> short text in %s:" % pl2.aslink())
+        #        output(text)
 
-        hn = pl2.section()
-        if hn:
-            m = re.search("== *%s *==" % hn, text)
+        section = pl2.section()
+        if section:
+            m = re.search("== *%s *==" % section, text)
             if not m:
                 output(u"WARNING: Section does not exist: %s" %pl2.title())
             else:

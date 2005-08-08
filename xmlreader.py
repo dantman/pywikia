@@ -19,12 +19,14 @@ class XmlEntry:
     """
     Represents a page.
     """
-    def __init__(self, title, id, text, timestamp):
+    def __init__(self, title, id, text, timestamp, editRestriction, moveRestriction):
         # TODO: there are more tags we can read.
         self.title = title
         self.id = id
         self.text = text
         self.timestamp = timestamp
+        self.editRestriction = editRestriction
+        self.moveRestriction = moveRestriction
 
 class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
     def __init__(self):
@@ -65,10 +67,10 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         if name == 'contributor':
             self.inContributorTag = False
         elif name == 'restrictions':
-            editLockMatch = re.match('edit=([^:]*)', self.restrictions)
+            editLockMatch = re.search('edit=([^:]*)', self.restrictions)
             if editLockMatch:
                 self.editRestriction = editLockMatch.group(1)
-            moveLockMatch = re.match('move=([^:]*)', self.restrictions)
+            moveLockMatch = re.search('move=([^:]*)', self.restrictions)
             if moveLockMatch:
                 self.moveRestriction = moveLockMatch.group(1)
             if self.restrictions == 'sysop':
@@ -95,7 +97,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                          self.timestamp[17:19])
             self.title = self.title.strip()
             # Report back to the caller
-            entry = XmlEntry(self.title, self.id, text, timestamp)
+            entry = XmlEntry(self.title, self.id, text, timestamp, self.editRestriction, self.moveRestriction)
             self.callback(entry)
             
     def characters(self, data):
