@@ -478,6 +478,7 @@ class Family:
             'fa'  :       [u'ابهام زدایی'],
             'fi'  :       [u'täsmennyssivu'],
             'fr'  :       [u'homonymie'],
+            'fy'  :       [u'tfs'],
             'ga'  :       [u'idirdhealú'],
             'gl'  :       [u'homónimos'],
             'he'  :       [u'disambiguationAfter', u'פירושונים'],
