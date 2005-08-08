@@ -769,8 +769,10 @@ class Subject(object):
                         timeout=60
                         while 1:
                             try:
-                                # print "DBG> updating ", pl
                                 status, reason, data = pl.put(newtext, comment = wikipedia.translate(pl.site().lang, msg)[0] + mods)
+                            except wikipedia.LockedPage:
+                                wikipedia.output(u'Page %s is locked. Skipping.' % pl.title())
+                                return False
                             except wikipedia.EditConflict, error:
                                 wikipedia.output(u'ERROR putting page: %s. Giving up.' % error)
                                 return False

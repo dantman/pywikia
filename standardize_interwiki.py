@@ -36,9 +36,6 @@ try:
         except wikipedia.IsRedirectPage:
             print "--->is redirect"
             continue
-        except wikipedia.LockedPage:
-            print "--->is locked"
-            continue
         old = pl.interwiki()
         new = {}
         for pl2 in old:
@@ -50,10 +47,15 @@ try:
                 wikipedia.showDiff(oldtext, newtext)
                 # Submit changes
                 if forreal:
-                    status, reason, data = pl.put(newtext,
-                                              comment='robot interwiki standardization')
-                    if str(status) != '302':
-                        print status, reason
+                    try:
+                        status, reason, data = pl.put(newtext,
+                                                  comment='robot interwiki standardization')
+                        if str(status) != '302':
+                            print status, reason
+                    except wikipedia.LockedPage:
+                        print "--->is locked"
+                        continue
+
 except:
     wikipedia.stopme()
     raise

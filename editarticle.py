@@ -160,11 +160,7 @@ class EditArticle:
 
     def run(self):
         self.initialise_data()
-        try:
-            old, new = self.edit()
-        except wikipedia.LockedPage:
-            sys.exit("You do not have permission to edit %s" % self.pagelink.sectionFreeTitle())
-
+        old, new = self.edit()
         if old != new:
             new = self.repair(new)
             self.showdiff(old, new)

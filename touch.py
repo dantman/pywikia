@@ -38,11 +38,11 @@ class TouchBot:
                 text = page.get()
                 page.put(text)
             except wikipedia.NoPage:
-                print "Page %s does not exist?!?!"%page.aslink()
+                print "Page %s does not exist?!" % page.aslink()
             except wikipedia.IsRedirectPage:
-                pass
+                print "Page %s is a redirect?!" % page.aslink()
             except wikipedia.LockedPage:
-                pass
+                print "Page %s is locked?!" % page.aslink()
 
 def main():
     #page generator

@@ -652,11 +652,11 @@ class ReplaceRobot:
             try:
                 # Load the page's text from the wiki
                 original_text = pl.get()
+                if pl.editRestriction:
+                    wikipedia.output(u'Skipping locked page %s' % pl.title())
+                    continue
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s not found' % pl.title())
-                continue
-            except wikipedia.LockedPage:
-                wikipedia.output(u'Skipping locked page %s' % pl.title())
                 continue
             except wikipedia.IsRedirectPage:
                 continue

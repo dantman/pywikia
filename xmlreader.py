@@ -15,6 +15,27 @@ import xml.sax
 import codecs, re
 import wikipedia
 
+def parseRestrictions(restrictions):
+    '''
+    Parses the characters within a restrictions tag and returns
+    strings representing user groups allowed to edit and to move
+    a page, where None means there are no restrictions.
+    '''
+    if not restrictions:
+        return None, None
+    editRestriction = None
+    moveRestriction = None
+    editLockMatch = re.search('edit=([^:]*)', restrictions)
+    if editLockMatch:
+        editRestriction = editLockMatch.group(1)
+    moveLockMatch = re.search('move=([^:]*)', restrictions)
+    if moveLockMatch:
+        moveRestriction = moveLockMatch.group(1)
+    if restrictions == 'sysop':
+        editRestriction = 'sysop'
+        moveRestriction = 'sysop'
+    return editRestriction, moveRestriction
+
 class XmlEntry:
     """
     Represents a page.
@@ -67,15 +88,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         if name == 'contributor':
             self.inContributorTag = False
         elif name == 'restrictions':
-            editLockMatch = re.search('edit=([^:]*)', self.restrictions)
-            if editLockMatch:
-                self.editRestriction = editLockMatch.group(1)
-            moveLockMatch = re.search('move=([^:]*)', self.restrictions)
-            if moveLockMatch:
-                self.moveRestriction = moveLockMatch.group(1)
-            if self.restrictions == 'sysop':
-                self.editRestriction = 'sysop'
-                self.moveRestriction = 'sysop'
+            self.editRestriction, self.moveRestriction = parseRestrictions(self.restrictions)
             if self.editRestriction:
                 wikipedia.output(u'DBG: Edit restriction: %s' % self.editRestriction)
             if self.moveRestriction:
@@ -169,5 +182,7 @@ class XmlDump(object):
                 else:
                     lines = u''
                     text = m.group('text') or u''
-                    entry = XmlEntry(title = m.group('title'), id = m.group('pageid'), text = text, timestamp = m.group('timestamp'))
+                    restrictions = m.group('restrictions')
+                    editRestriction, moveRestriction = parseRestrictions(restrictions)
+                    entry = XmlEntry(title = m.group('title'), id = m.group('pageid'), text = text, timestamp = m.group('timestamp'), editRestriction = editRestriction, moveRestriction = moveRestriction)
                     yield entry

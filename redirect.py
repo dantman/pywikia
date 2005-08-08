@@ -185,8 +185,6 @@ class RedirectRobot:
                 wikipedia.output(u'%s is not a redirect.' % redir_page.title())
             except wikipedia.NoPage:
                 wikipedia.output(u'%s doesn\'t exist.' % redir_page.title())
-            except wikipedia.LockedPage:
-                wikipedia.output(u'%s is locked.' % redir_page.title())
             else:
                 try:
                     target_page = wikipedia.Page(wikipedia.getSite(), target_name)
@@ -212,8 +210,6 @@ class RedirectRobot:
                 wikipedia.output(u'%s is not a redirect.' % redir.title())
             except wikipedia.NoPage:
                 wikipedia.output(u'%s doesn\'t exist.' % redir.title())
-            except wikipedia.LockedPage:
-                wikipedia.output(u'%s is locked, skipping.' % redir.title())
             else:
                 try:
                     second_redir = wikipedia.Page(mysite, target)
@@ -224,7 +220,10 @@ class RedirectRobot:
                     wikipedia.output(u'%s doesn\'t exist.' % second_redir.title())
                 else:
                     txt = "#REDIRECT [[%s]]" % second_target
-                    status, reason, data = redir.put(txt)
+                    try:
+                        status, reason, data = redir.put(txt)
+                    except wikipedia.LockedPage:
+                        wikipedia.output(u'%s is locked.' % redir.title())
                     print status, reason
 
     def run(self):

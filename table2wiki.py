@@ -416,9 +416,6 @@ class Table2WikiRobot:
         except wikipedia.NoPage:
             wikipedia.output(u"ERROR: couldn't find %s" % pl.title())
             return False
-        except wikipedia.LockedPage:
-            wikipedia.output(u'Skipping locked page %s' % pl.title())
-            return False
         except wikipedia.IsRedirectPage:
             wikipedia.output(u'Skipping redirect %s' % pl.title())
             return False

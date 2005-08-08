@@ -303,10 +303,6 @@ class Page(object):
             IsRedirectPage: The page is a redirect. The argument of the
                             exception is the page it redirects to.
 
-            LockedPage: The page is locked, and therefore it won't be possible
-                        to change the page. This exception won't be raised
-                        if the argument read_only is True.
-
             SectionError: The subject does not exist on a page with a # link
         """
         for illegalChar in ['#', '+', '<', '>', '[', ']', '|', '{', '}']:
@@ -340,9 +336,6 @@ class Page(object):
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
-                raise
-            except LockedPage: # won't happen if read_only is True
-                self._getexception = LockedPage
                 raise
             except IsRedirectPage,arg:
                 self._getexception = IsRedirectPage
@@ -479,6 +472,9 @@ class Page(object):
 
            If watchArticle is None, leaves the watchlist status unchanged.
         """
+        if self.editRestriction:
+            # TODO: bot user account might have sysop rights.
+            raise LockedPage()
         self.site().forceLogin()
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
@@ -637,14 +633,12 @@ class Page(object):
         redirects to. Otherwise it will raise an IsNotRedirectPage exception.
         
         This function can raise a NoPage exception, and unless the argument 
-        read_only is True, a LockedPage exception as well.
+        read_only is True.
         """
         try:
             self.get(read_only = read_only)
         except NoPage:
             raise NoPage(self)
-        except LockedPage:
-            raise LockedPage(self)
         except IsRedirectPage, arg:
             if '|' in arg:
                 warnings.warn("%s has a | character, this makes no sense", Warning)
@@ -841,22 +835,19 @@ class GetAll(object):
 
             raise PageNotFound
 
-        if editRestriction:
-            # TODO: Bot user account might have sysop status and thus be
-            # allowed to edit the locked pages.
-            pl2._getexception = LockedPage
-        else:
-            m = redirectRe(self.site).match(text)
-            if m:
-                edittime[self.site, pl.urlname()] = timestamp
-                redirectto=m.group(1)
-                if pl.site().lang=="eo":
-                    for c in 'CGHJSU':
-                        for c2 in c,c.lower():
-                            for x in 'Xx':
-                                redirectto = redirectto.replace(c2+x,c2+x+x+x+x)
-                pl2._getexception = IsRedirectPage
-                pl2._redirarg = redirectto
+        pl2.editRestriction = entry.editRestriction
+        pl2.moveRestriction = entry.moveRestriction
+        m = redirectRe(self.site).match(text)
+        if m:
+            edittime[self.site, pl.urlname()] = timestamp
+            redirectto=m.group(1)
+            if pl.site().lang=="eo":
+                for c in 'CGHJSU':
+                    for c2 in c,c.lower():
+                        for x in 'Xx':
+                            redirectto = redirectto.replace(c2+x,c2+x+x+x+x)
+            pl2._getexception = IsRedirectPage
+            pl2._redirarg = redirectto
         #else:
         #    if len(text)<50:
         #        output(u"DBG> short text in %s:" % pl2.aslink())
@@ -1224,13 +1215,14 @@ def getEditPage(site, name, read_only = False, get_redirect=False, throttle = Tr
     Arguments:
         site          - the wiki site
         name          - the page name
-        read_only     - If true, doesn't raise LockedPage exceptions.
+        read_only     - deprecated
         do_quote      - ??? (TODO: what is this for?)
         get_redirect  - Get the contents, even if it is a redirect page
  
     This routine returns a unicode string containing the wiki text.
     """
     isWatched = False
+    editRestriction = None
     name = re.sub(' ', '_', name)
     output(url2unicode(u'Getting page [[%s:%s]]' % (site.lang, name), site = site))
     path = site.edit_address(name)
@@ -1303,7 +1295,7 @@ def getEditPage(site, name, read_only = False, get_redirect=False, throttle = Tr
         m = redirectRe(site).match(text[i1:i2])
         if edittime[site, name] == "0" and not read_only:
             output(u"DBG> page may be locked?!")
-            raise LockedPage()
+            editRestriction = 'sysop'
         if m and not get_redirect:
             output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), m.group(1)))
             raise IsRedirectPage(m.group(1))
@@ -1313,7 +1305,7 @@ def getEditPage(site, name, read_only = False, get_redirect=False, throttle = Tr
         while x and x[-1] in '\n ':
             x = x[:-1]
 
-        return x, isWatched
+        return x, isWatched, editRestriction
 
 def newpages(number = 10, repeat = False, site = None):
     """Generator which yields new articles subsequently.
