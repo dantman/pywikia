@@ -1414,6 +1414,13 @@ def getLanguageLinks(text, insite = None):
     if insite == None:
         insite = getSite()
     result = {}
+    # Ignore interwiki links within nowiki tags and HTML comments
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
+    match = nowikiOrHtmlCommentR.search(text)
+    while match:
+        text = text[:match.start()] + text[match.end():]    
+        match = nowikiOrHtmlCommentR.search(text)
+        
     # This regular expression will find every link that is possibly an
     # interwiki link.
     # NOTE: This assumes that language codes only consist of non-capital
@@ -1449,24 +1456,29 @@ def removeLanguageLinks(text, site = None):
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
     interwikiR = re.compile(r'\[\[([a-z\-]+):[^\]]*\]\][\s]*')
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
     # How much of the text we have looked at so far
     index = 0
-    done = False
-    while not done:
-        # Look for possible interwiki links in the remaining text
-        match = interwikiR.search(text, index)
-        if not match:
-            done = True
+    while True:
+        interwikiMatch = interwikiR.search(text, index)
+        if interwikiMatch:
+            nextTagMatch = interwikiMatch
+        else:
+            break
+        nowikiOrHtmlCommentMatch = nowikiOrHtmlCommentR.search(text, index)
+        if nowikiOrHtmlCommentMatch and nowikiOrHtmlCommentMatch.start() < nextTagMatch.start():
+            # an HTML comment or text in nowiki tags stands before the next interwiki link. Skip.
+            index = nowikiOrHtmlCommentMatch.end()
         else:
             # Extract what would be the language code
-            code = match.group(1)
+            code = interwikiMatch.group(1)
             if code in site.family.langs:
                 # We found a valid interwiki link. Remove it.
-                text = text[:match.start()] + text[match.end():]
+                text = text[:interwikiMatch.start()] + text[interwikiMatch.end():]
                 # continue the search on the remaining text
-                index = match.start()
+                index = interwikiMatch.start()
             else:
-                index = match.end()
+                index = interwikiMatch.end()
                 if len(code) == 2 or len(code) == 3:
                     print "WARNING: Link to unknown language %s" % (match.group(1))
     return normalWhitespace(text)
