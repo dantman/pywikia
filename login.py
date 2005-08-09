@@ -8,16 +8,16 @@ sure this robot account is well known on your home wikipedia before using.
 
 Parameters:
 
-   -user:XXXX   logs in with username XXXX
-
-   -pass:XXXX   uses XXXX as password. Be careful if you use this
+   -pass:XXXX   Uses XXXX as password. Be careful if you use this
                 parameter because your password will be shown on your
                 screen.
-
-   -all         try to log in on all sites where a username is defined in
+   
+   -sysop       Log in with your sysop account.
+   
+   -all         Try to log in on all sites where a username is defined in
                 user-config.py.
                 
-   -force       when doing -all, ignores if the user is already loged in,
+   -force       When doing -all, ignores if the user is already loged in,
                 and tries to login for all listed sites.
                 This may be useful if you have changed the account name
                 and need to aquire new login cookies.
@@ -65,13 +65,18 @@ def makepath(path):
     return normpath(abspath(path))
 
 class LoginManager:
-    def __init__(self, username = None, password = None, site = None):
+    def __init__(self, password = None, sysop = False, site = None):
         self.site = site or wikipedia.getSite()
-        try:
-            self.username = username or config.usernames[self.site.family.name][self.site.lang]
-        except:
-            wikipedia.output(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
-            sys.exit(1)
+        if sysop:
+            try:
+                self.username = config.sysopnames[self.site.family.name][self.site.lang]
+            except:
+                raise wikipedia.NoUsername(u'ERROR: Sysop username for %s:%s is undefined.\nIf you have a sysop account for that site, please add such a line to user-config.py:\n\nsysopnames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
+        else:
+            try:
+                self.username = config.usernames[self.site.family.name][self.site.lang]
+            except:
+                raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
         self.password = password
 
     def botAllowed(self):
@@ -131,7 +136,7 @@ class LoginManager:
         The argument data is the raw data, as returned by getCookie().
 
         Returns nothing."""
-        filename = 'login-data/%s-%s-login.data' % (self.site.family.name, self.site.lang)
+        filename = 'login-data/%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username)
         f = open(makepath(filename), 'w')
         f.write(data)
         f.close()
@@ -166,15 +171,16 @@ class LoginManager:
 
 def main():
     username = password = None
+    sysop = False
     logall = False
     forceLogin = False
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'login')
         if arg:
-            if arg.startswith("-user:"):
-                username = arg[6:]
-            elif arg.startswith("-pass:"):
+            if arg.startswith("-pass:"):
                 password = arg[6:]
+            elif arg == "-sysop":
+                sysop = True
             elif arg == "-all":
                 logall = True
             elif arg == "-force":
@@ -183,16 +189,20 @@ def main():
                 wikipedia.showHelp('login')
                 sys.exit()
     if logall:
-        for familyName in config.usernames.iterkeys():
-            for lang in config.usernames[familyName].iterkeys():
+        if sysop:
+            namedict = config.sysopnames
+        else:
+            namedict = config.usernames
+        for familyName in namedict.iterkeys():
+            for lang in namedict[familyName].iterkeys():
                 site = wikipedia.getSite(code=lang, fam=familyName)
-                if not forceLogin and site.loggedin():
+                if not forceLogin and site.loggedin(sysop = sysop):
                     wikipedia.output(u'Already logged in on %s' % site)
                 else:
-                    loginMan = LoginManager(username, password, site = site)
+                    loginMan = LoginManager(password, sysop = sysop, site = site)
                     loginMan.login()
     else:
-        loginMan = LoginManager(username, password)
+        loginMan = LoginManager(password, sysop = sysop)
         loginMan.login()
 
 if __name__ == "__main__":

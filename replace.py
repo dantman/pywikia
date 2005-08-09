@@ -138,6 +138,8 @@ fixes = {
             (u'(\d+)(minütig|stündig|tägig|wöchig|jährig|minütlich|stündlich|täglich|wöchentlich|jährlich)', r'\1-\2'),
             (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB)(?=\W|$)',          r'\1 \2'),
             (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
+            (u'([a-z],)([a-zA-Z])',                                                                          r'\1 \2'),
+            (u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
         ]
     },
     'syntax': {
@@ -257,7 +259,7 @@ class ReplaceRobot:
             try:
                 # Load the page's text from the wiki
                 original_text = page.get()
-                if page.editRestriction:
+                if not page.canBeEdited():
                     wikipedia.output(u'Skipping locked page %s' % page.title())
                     continue
             except wikipedia.NoPage:

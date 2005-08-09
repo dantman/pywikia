@@ -120,6 +120,9 @@ edittime = {}
 class Error(Exception):
     """Wikipedia error"""
 
+class NoUsername(Error):
+    """Username is not in user-config.py"""
+
 class NoPage(Error):
     """Wikipedia page does not exist"""
 
@@ -293,7 +296,7 @@ class Page(object):
         else:
             return '[[%s]]' % self.title()
 
-    def get(self, force = False, get_redirect=False, throttle = True):
+    def get(self, force = False, get_redirect=False, throttle = True, sysop = False):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -326,7 +329,7 @@ class Page(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents, self._isWatched, self.editRestriction = getEditPage(self.site(), self.urlname(), get_redirect = get_redirect, throttle = throttle)
+                self._contents, self._isWatched, self.editRestriction = getEditPage(self.site(), self.urlname(), get_redirect = get_redirect, throttle = throttle, sysop = sysop)
                 hn = self.section()
                 if hn:
                     hn = underline2space(hn)
@@ -473,9 +476,13 @@ class Page(object):
            If watchArticle is None, leaves the watchlist status unchanged.
         """
         if self.editRestriction:
-            # TODO: bot user account might have sysop rights.
-            raise LockedPage()
-        self.site().forceLogin()
+            try:
+                self.site().forceLogin(sysop = True)
+                output(u'Page is locked, using sysop account.')
+            except NoUsername:
+                raise LockedPage()
+        else:
+            self.site().forceLogin()
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
@@ -484,8 +491,22 @@ class Page(object):
                 import watchlist
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
-        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken())
+        sysop = (self.editRestriction != None)
+        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
+    def canBeEdited(self):
+        if self.editRestriction:
+            userdict = config.sysopnames
+        else:
+            userdict = config.usernames
+        try:
+            userdict[self.site().family.name][self.site().lang]
+            return True
+        except:
+            # We don't have a user account for that wiki, or the
+            # page is locked and we don't have a sysop account.
+            return False
+        
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
            the page text to do its work, so it can raise the same exceptions
@@ -654,7 +675,6 @@ class Page(object):
         """
         site = self.site()
         path = site.family.version_history_address(self.site().language(), self.urlname())
-        print path
 
         if not hasattr(self, '_versionhistory') or forceReload:
             output(u'Getting version history of %s' % self.title())
@@ -696,8 +716,6 @@ class Page(object):
            reason is None, asks for a reason. If prompt is True, asks the user
            if he wants to delete the page.
         """
-        # TODO: Find out if bot is logged in with an admin account, raise exception
-        # or show error message otherwise
         if reason == None:
             reason = input(u'Please enter a reason for the deletion:')
         reason = reason.encode(self.site().encoding())
@@ -705,12 +723,12 @@ class Page(object):
         if prompt:
             answer = inputChoice(u'Do you want to delete %s?' % self.title(), ['Yes', 'No'], ['y', 'N'], 'N')
         if answer in ['y', 'Y']:
-            token = self.site().getToken(self)
+            token = self.site().getToken(self, sysop = True)
             # put_throttle()
             host = self.site().hostname()
             address = self.site().delete_address(self.urlname())
 
-            self.site().forceLogin()
+            self.site().forceLogin(sysop = True)
 
             predata = [
                 ('wpReason', reason),
@@ -723,8 +741,8 @@ class Page(object):
             conn.putheader('Content-Length', str(len(data)))
             conn.putheader("Content-type", "application/x-www-form-urlencoded")
             conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
-            if self.site().cookies():
-                conn.putheader('Cookie', self.site().cookies())
+            if self.site().cookies(sysop = True):
+                conn.putheader('Cookie', self.site().cookies(sysop = True))
             conn.endheaders()
             conn.send(data)
         
@@ -1084,7 +1102,7 @@ class Throttle(object):
 get_throttle = Throttle(config.minthrottle,config.maxthrottle)
 put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
 
-def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None, gettoken = False):
+def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None, gettoken = False, sysop = False):
     """Upload 'text' on page 'name' to the 'site' wiki.
        Use of this routine can normally be avoided; use Page.put
        instead.
@@ -1092,9 +1110,9 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
     if site.version() >= "1.4":
         if gettoken or not token:
-            token = site.getToken(getagain = gettoken)
+            token = site.getToken(getagain = gettoken, sysop = sysop)
         else:
-            safetuple = (site,name,text,comment,watchArticle,minorEdit,newPage)
+            safetuple = (site,name,text,comment,watchArticle,minorEdit,newPage, sysop)
     # Check whether we are not too quickly after the previous putPage, and
     # wait a bit until the interval is acceptable
     put_throttle()
@@ -1148,7 +1166,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
     conn.putheader("Content-type", "application/x-www-form-urlencoded")
     conn.putheader("User-agent", "PythonWikipediaBot/1.0")
     if site.cookies():
-        conn.putheader('Cookie',site.cookies())
+        conn.putheader('Cookie', site.cookies(sysop = sysop))
     conn.endheaders()
     conn.send(data)
 
@@ -1168,7 +1186,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
             print "Changing page has failed. Retrying."
             putPage(safetuple[0], safetuple[1], safetuple[2], comment=safetuple[3],
                     watchArticle=safetuple[4], minorEdit=safetuple[5], newPage=safetuple[6],
-                    token=None,gettoken=True)
+                    token=None,gettoken=True, sysop=safetuple[7])
         else:
             output(data)
     return response.status, response.reason, data
@@ -1176,7 +1194,7 @@ def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
     
-def getUrl(site, path):
+def getUrl(site, path, sysop = False):
     """Low-level routine to get a URL from the wiki.
 
        site is a Site object, path is the absolute path.
@@ -1185,8 +1203,8 @@ def getUrl(site, path):
     """
     #print host,address
     uo = MyURLopener()
-    if site.cookies():
-        uo.addheader('Cookie', site.cookies())
+    if site.cookies(sysop = sysop):
+        uo.addheader('Cookie', site.cookies(sysop = sysop))
     #print ('Opening: http://%s%s'%(host, address))
     f = uo.open('http://%s%s'%(site.hostname(), path))
     text = f.read()
@@ -1205,7 +1223,7 @@ def getUrl(site, path):
     # TODO: We might want to use error='replace' in case of bad encoding.
     return unicode(text, charset)
     
-def getEditPage(site, name, get_redirect=False, throttle = True):
+def getEditPage(site, name, get_redirect=False, throttle = True, sysop = False):
     """
     Get the contents of page 'name' from the 'site' wiki
     Do not use this directly; for 99% of the possible ideas you can
@@ -1235,7 +1253,7 @@ def getEditPage(site, name, get_redirect=False, throttle = True):
     while True:
         starttime = time.time()
         try:
-            text = getUrl(site, path)
+            text = getUrl(site, path, sysop = sysop)
         except AttributeError:
             # We assume that the server is down. Wait some time, then try again.
             print "WARNING: Could not load %s%s. Maybe the server is down. Retrying in %i minutes..." % (site.hostname(), path, retry_idle_time)
@@ -1251,9 +1269,9 @@ def getEditPage(site, name, get_redirect=False, throttle = True):
         R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
         tokenloc = R.search(text)
         if tokenloc:
-            site.puttoken(tokenloc.group(1))
+            site.puttoken(tokenloc.group(1), sysop = sysop)
         elif not site.getToken(getalways = False):
-            site.puttoken('')
+            site.puttoken('', sysop = sysop)
 
         # Look if the page is on our watchlist
         R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
@@ -1869,50 +1887,67 @@ class Site(object):
         self.nocapitalize = self.lang in self.family.nocapitalize
         self.user = user
         self._token = None
+        self._sysoptoken = None
+        self.loginStatusKnown = False
+        self.loggedInAs = None
         
-    def cookies(self):
-        if not hasattr(self,'_cookies'):
-            self._loadCookies()
-        return self._cookies
-
-    def loggedin(self):
+    def forceLogin(self, sysop = False):
+        if not self.loggedin(sysop = sysop):
+            loginMan = login.LoginManager(site = self, sysop = sysop)
+            if loginMan.login(retry = True):
+                self.loginStatusKnown = True
+                self.loggedInAs = loginMan.username
+    
+    def loggedin(self, sysop = False):
         """
         Checks if we're logged in by loading a page and looking for the login
         link. We assume that we're not being logged out during a bot run, so
         loading the test page is only required once.
         """
         self._loadCookies()
-        if not hasattr(self, '_loggedin'):
+        if not self.loginStatusKnown:
             output(u'Getting a page to check if we\'re logged in on %s' % self)
             path = self.get_address('Non-existing_page')
-            txt = getUrl(self, path)
-            # We assume that the text 'Userlogin' appears nowhere except for
-            # the login link.
-            self._loggedin = 'Userlogin' not in txt
-            if self._loggedin:
-            # also check if we have new messages
-                if '<div class="usermessage">' in txt:
+            text = getUrl(self, path, sysop = sysop)
+            mytalkR = re.compile('<a href=".+?">(?P<username>.+?)</a></li><li id="pt-mytalk">')
+            m = mytalkR.search(text)
+            if m:
+                self.loginStatusKnown = True
+                self.loggedInAs = m.group('username')
+                # print m.group('username')
+                # also check if we have new messages
+                if '<div class="usermessage">' in text:
                     output(u'NOTE: You have unread messages on %s' % self)
-        return self._loggedin
+        return (self.loggedInAs != None)
+    
+    def cookies(self, sysop = False):
+        # TODO: cookie caching is disabled
+        #if not hasattr(self,'_cookies'):
+        self._loadCookies(sysop = sysop)
+        return self._cookies
 
-    def forceLogin(self):
-        if not self.loggedin():
-            loginMan = login.LoginManager(site = self)
-            self._loggedin = loginMan.login(retry = True)
-
-    def _loadCookies(self):
+    def _loadCookies(self, sysop = False):
         """Retrieve session cookies for login"""
-        fn = 'login-data/%s-%s-login.data' % (self.family.name, self.lang)
-        if not os.path.exists(fn):
-            fn = 'login-data/%s-login.data' % self.lang
-        if not os.path.exists(fn):
-            #print "Not logged in"
+        try:
+            if sysop:
+                username = config.sysopnames[self.family.name][self.lang]
+            else:
+                username = config.usernames[self.family.name][self.lang]
+        except KeyError:
             self._cookies = None
-            self._loggedin = False
+            self.loginStatusKnown = True
         else:
-            f = open(fn)
-            self._cookies = '; '.join([x.strip() for x in f.readlines()])
-            f.close()
+            fn = 'login-data/%s-%s-%s-login.data' % (self.family.name, self.lang, username)
+            #if not os.path.exists(fn):
+            #    fn = 'login-data/%s-login.data' % self.lang
+            if not os.path.exists(fn):
+                #print "Not logged in"
+                self._cookies = None
+                self.loginStatusKnown = True
+            else:
+                f = open(fn)
+                self._cookies = '; '.join([x.strip() for x in f.readlines()])
+                f.close()
 
     def __repr__(self):
         return self.family.name+":"+self.lang
@@ -2070,19 +2105,29 @@ class Site(object):
     def languages(self):
         return self.family.langs.keys()
 
-    def getToken(self, getalways = True, getagain = False):
-        if getagain or (getalways and not self._token):
+    def getToken(self, getalways = True, getagain = False, sysop = False):
+        if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
-                Page(self, url2link("Non-existing page", self, self)).get(force = True)
+                Page(self, url2link("Non-existing page", self, self)).get(force = True, sysop = sysop)
             except Error:
                 pass
-        if not self._token:
-            return False
-        return self._token
+        if sysop:
+            if not self._sysoptoken:
+                return False
+            else:
+                return self._sysoptoken
+        else:
+            if not self._token:
+                return False
+            else:
+                return self._token
 
-    def puttoken(self,value):
-        self._token = value
+    def puttoken(self,value, sysop = False):
+        if sysop:
+            self._sysoptoken = value
+        else:
+            self._token = value
         return
     
 _sites = {}

@@ -29,6 +29,7 @@ mylang = 'language'
 # usernames['wiktionary']['en'] = 'myEnglishUsername'
 #
 usernames = {}
+sysopnames = {}
 
 # Get the names of all known families, and initialize
 # with empty dictionaries
@@ -38,6 +39,7 @@ for filename in os.listdir('families'):
     if m:
         familyName = m.group('name')
         usernames[familyName] = {}
+        sysopnames[familyName] = {}
 
 ############## USER INTERFACE SETTINGS ##############
 
