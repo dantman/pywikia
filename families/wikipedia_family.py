@@ -35,6 +35,7 @@ class Family(family.Family):
             'eo': u'Vikipedio',
             'et': u'Vikipeedia',
             'ga': u'Vicipéid',
+            'gu': u'વિકિપીડિયા',
             'he': u'ויקיפדיה',
             'hi': u'विकिपीडिया',
             'fr': u'Wikipédia',
