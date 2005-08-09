@@ -610,9 +610,11 @@ class DisambiguationRobot(object):
     
     def run(self):
         if self.main_only:
-            if not ignore_title.has_key(self.mylang):
-                ignore_title[self.mylang] = []
-            ignore_title[self.mylang] += [u'%s:' % namespace for namespace in self.mysite.namespaces()]
+            if not ignore_title.has_key(self.mysite.family.name):
+                ignore_title[self.mysite.family.name] = {}
+            if not ignore_title[self.mysite.family.name].has_key(self.mylang):
+                ignore_title[self.mysite.family.name][self.mylang] = []
+            ignore_title[self.mysite.family.name][self.mylang] += [u'%s:' % namespace for namespace in self.mysite.namespaces()]
     
         for disambTitle in self.page_list:
             # when run with -redir argument, there's another summary message
