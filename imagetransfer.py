@@ -42,7 +42,6 @@ class ImageTransferBot:
         self.generator = generator
         self.interwiki = interwiki
         self.targetSite = targetSite
-        self.targetSite.forceLogin()
     
     def transferImage(self, sourceImagePage, debug=False):
         """Gets a wikilink to an image, downloads it and its description,
