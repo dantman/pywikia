@@ -44,10 +44,9 @@ def post_multipart(host, selector, fields, files, cookies):
     conn.endheaders()
     conn.send(body)
     response = conn.getresponse()
-    data = response.read()
-    print response.status, response.reason
+    returned_html = response.read()
     conn.close()
-    return data
+    return response, returned_html
 
 def encode_multipart_formdata(fields, files):
     """
@@ -105,15 +104,16 @@ class UploadRobot:
            If the upload fails, the user is asked whether to try again or not.
            If the user chooses not to retry, returns null.
         """
-        if not self.urlEncoding:
-            # URL is a unicode string, might e.g. be a filename with non-ASCII
-            # characters.
-            self.url = self.url.encode('utf-8')
-            self.url = urllib.quote(self.url)
-            self.urlEncoding = 'utf-8'
         # Get file contents
-        uo = wikipedia.MyURLopener()
-        file = uo.open(self.url)
+        if '://' in self.url:
+            uo = wikipedia.MyURLopener()
+            file = uo.open(self.url)
+        else:
+            # Opening local files with MyURLopener would be possible, but we
+            # don't do it because it only accepts ASCII characters in the
+            # filename.
+            file = open(self.url)
+        wikipedia.output('Reading file %s' % self.url)
         contents = file.read()
         if contents.find("The requested URL was not found on this server.") != -1:
             print "Couldn't download the image."
@@ -156,7 +156,7 @@ class UploadRobot:
         filename = filename.replace(' ', '_')
         # Convert the filename (currently Unicode) to the encoding used on the
         # target wiki
-        filename = filename.encode(self.targetSite.encoding())
+        encodedFilename = filename.encode(self.targetSite.encoding())
         # A proper description for the submission.
         wikipedia.output(u"The suggested description is:")
         wikipedia.output(self.description)
@@ -190,23 +190,26 @@ class UploadRobot:
         # don't upload if we're in debug mode
         if not debug:
             wikipedia.output(u'Uploading file to %s...' % self.targetSite)
-            returned_html = post_multipart(self.targetSite.hostname(),
+            response, returned_html = post_multipart(self.targetSite.hostname(),
                                   self.targetSite.upload_address(),
                                   formdata.items(),
-                                  (('wpUploadFile', filename, contents),),
+                                  (('wpUploadFile', encodedFilename, contents),),
                                   cookies = self.targetSite.cookies()
                                   )
             returned_html = returned_html.decode(self.targetSite.encoding())
             # Do we know how the "success!" HTML page should look like?
             # ATTENTION: if you changed your Wikimedia Commons account not to show
             # an English interface, this detection will fail!
-            success_msg = mediawiki_messages.get('successfulupload', site = self.targetSite)
-            success_msgR = re.compile(re.escape(success_msg))
-            if success_msgR.search(returned_html):
+            #success_msg = mediawiki_messages.get('successfulupload', site = self.targetSite)
+            #success_msgR = re.compile(re.escape(success_msg))
+            #if success_msgR.search(returned_html):
+            #     wikipedia.output(u"Upload successful.")
+            if response.status == 302:
                  wikipedia.output(u"Upload successful.")
             else:
                  # dump the HTML page
                  wikipedia.output(u'%s\n\n' % returned_html)
+                 wikipedia.output('%i %s' % (response.status, response.reason))
                  answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
                  if answer in ["y", "Y"]:
                      return upload_image(debug)
