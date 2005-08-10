@@ -204,12 +204,12 @@ class UploadRobot:
             #success_msgR = re.compile(re.escape(success_msg))
             #if success_msgR.search(returned_html):
             #     wikipedia.output(u"Upload successful.")
-            if response.status == 302:
+            if response.status in [200, 302]:
                  wikipedia.output(u"Upload successful.")
             else:
                  # dump the HTML page
                  wikipedia.output(u'%s\n\n' % returned_html)
-                 wikipedia.output('%i %s' % (response.status, response.reason))
+                 wikipedia.output(u'%i %s' % (response.status, response.reason))
                  answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
                  if answer in ["y", "Y"]:
                      return upload_image(debug)
