@@ -397,15 +397,13 @@ class Page(object):
         return False
 
     def isImage(self):
-        """True if the page is an Image description page, false otherwise."""
+        """True if the page is an image description page, false otherwise."""
         t=self.sectionFreeTitle()
         # Look at the part before the first ':'
-        p=t.split(':')
-        if p[1:]==[]:
+        p = t.split(':', 1)
+        if len(p) <= 1:
             return False
-        if p[0]==self.site().image_namespace():
-            return True
-        return False
+        return p[0] == self.site().image_namespace() or p[0] == self.site().image_namespace(code = '_default')
 
     def namespace(self):
         """Gives the number of the namespace of the page. Does not work for
@@ -581,13 +579,15 @@ class Page(object):
         result = []
         try:
             thistxt = removeLanguageLinks(self.get())
+        except NoPage:
+            return []
         except IsRedirectPage:
             raise
         thistxt = removeCategoryLinks(thistxt, self.site())
 
-        Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(?:\|[^\]\|]*)?\]\]')
-        for l in Rlink.findall(thistxt):
-            page = Page(getSite(), l)
+        Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
+        for match in Rlink.finditer(thistxt):
+            page = Page(getSite(), match.group('title'))
             result.append(page)
         return result
 
@@ -595,42 +595,19 @@ class Page(object):
         """
         Gives the images the page shows, as a list of Page objects
         """
-        try:
-            text = self.get()
-        except NoPage:
-            return []
-        except IsRedirectPage:
-            if followRedirects:
-                targetPage = Page(self.site(), self.getRedirectTarget())
-                return targetPage.imagelinks()
-            else:
-                return []
-        result = []
-        # TODO: Docu / rewrite for the next lines
-        im=self.site().image_namespace() + ':'
-        w1=r'('+im+'[^\]\|]*)'
-        w2=r'([^\]]*)'
-        Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-        for l in Rlink.findall(text):
-            result.append(Page(self._site,l[0]))
-        w1=r'('+im.lower()+'[^\]\|]*)'
-        w2=r'([^\]]*)'
-        Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-        for l in Rlink.findall(text):
-            result.append(Page(self._site,l[0]))
-        if im <> 'Image:':
-            im='Image:'
-            w1=r'('+im+'[^\]\|]*)'
-            w2=r'([^\]]*)'
-            Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-            for l in Rlink.findall(text):
-                result.append(Page(self._site,l[0]))
-            w1=r'('+im.lower()+'[^\]\|]*)'
-            w2=r'([^\]]*)'
-            Rlink = re.compile(r'\[\['+w1+r'(\|'+w2+r')?\]\]')
-            for l in Rlink.findall(text):
-                result.append(Page(self._site,l[0]))
-        return result
+        results = []
+        # Find normal images
+        for page in self.linkedPages():
+            if page.isImage():
+                results.append(page)
+        # Find images in galleries
+        galleryR = re.compile('<gallery>.*?</gallery>', re.DOTALL)
+        galleryEntryR = re.compile('(?P<title>(%s|%s):.+?)(\|.+)?\n' % (self.site().image_namespace(), self.site().family.image_namespace(code = '_default')))
+        for gallery in galleryR.findall(self.get()):
+            for match in galleryEntryR.finditer(gallery):
+                page = Page(self.site(), match.group('title'))
+                results.append(page)
+        return results
 
     def templates(self):
         """
@@ -696,7 +673,7 @@ class Page(object):
         result += '! date/time || username || edit summary\n'
         for time, username, summary in self.getVersionHistory(forceReload = forceReload):
             result += '|----\n'
-            result += '| %s || %s || %s\n' % (time, username, summary)
+            result += '| %s || %s || <nowiki>%s</nowiki>\n' % (time, username, summary)
         result += '|}\n'
         return result
 
@@ -1475,12 +1452,10 @@ def removeLanguageLinks(text, site = None):
     index = 0
     while True:
         interwikiMatch = interwikiR.search(text, index)
-        if interwikiMatch:
-            nextTagMatch = interwikiMatch
-        else:
+        if not interwikiMatch:
             break
         nowikiOrHtmlCommentMatch = nowikiOrHtmlCommentR.search(text, index)
-        if nowikiOrHtmlCommentMatch and nowikiOrHtmlCommentMatch.start() < nextTagMatch.start():
+        if nowikiOrHtmlCommentMatch and nowikiOrHtmlCommentMatch.start() < interwikiMatch.start():
             # an HTML comment or text in nowiki tags stands before the next interwiki link. Skip.
             index = nowikiOrHtmlCommentMatch.end()
         else:
@@ -1597,27 +1572,50 @@ def getCategoryLinks(text, site, raw=False):
        in the form {code:pagename}. Do not call this routine directly, use
        Page objects instead"""
     result = []
-    ns = site.category_namespaces()
-    for prefix in ns:
+    # Ignore interwiki links within nowiki tags and HTML comments
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
+    match = nowikiOrHtmlCommentR.search(text)
+    while match:
+        text = text[:match.start()] + text[match.end():]    
+        match = nowikiOrHtmlCommentR.search(text)
+    namespaces = site.category_namespaces()
+    for prefix in namespaces:
         if raw:
-            R = re.compile(r'\[\['+prefix+':([^\]]*)\]')
+            R = re.compile(r'\[\[(%s:[^\]]+)\]' % prefix)
         else:
-            R = re.compile(r'\[\['+prefix+':([^\]\|]*)(?:\||\])')
-        for t in R.findall(text):
-            if t:
-                # remove leading / trailing spaces
-                t = t.strip()
-                if site.language() == 'eo':
-                    t = t.replace('xx','x')
-                t = t[:1].capitalize() + t[1:]
-                result.append(ns[0]+':'+t)
-            else:
-                print "ERROR: empty category link"
+            R = re.compile(r'\[\[(%s:[^\]\|]+)(?:\||\])'  % prefix)
+        for title in R.findall(text):
+            result.append(title)
+    print result
     return result
 
 def removeCategoryLinks(text, site):
     """Given the wiki-text of a page, return that page with all category
        links removed. """
+    # This regular expression will find every link that is possibly an
+    # interwiki link, plus trailing whitespace. The language code is grouped.
+    # NOTE: This assumes that language codes only consist of non-capital
+    # ASCII letters and hyphens.
+    catNamespace = '|'.join(site.category_namespaces())
+    categoryR = re.compile(r'\[\[(%s):.*?\]\][\s]*' % catNamespace)
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
+    # How much of the text we have looked at so far
+    index = 0
+    while True:
+        categoryMatch = categoryR.search(text, index)
+        if not categoryMatch:
+            break
+        nowikiOrHtmlCommentMatch = nowikiOrHtmlCommentR.search(text, index)
+        if nowikiOrHtmlCommentMatch and nowikiOrHtmlCommentMatch.start() < categoryMatch.start():
+            # an HTML comment or text in nowiki tags stands before the next category link. Skip.
+            index = nowikiOrHtmlCommentMatch.end()
+        else:
+            # We found a valid category link. Remove it.
+            text = text[:categoryMatch.start()] + text[categoryMatch.end():]
+            # continue the search on the remaining text
+            index = categoryMatch.start()
+    return normalWhitespace(text)
+
     ns = site.category_namespaces()
     for prefix in ns:
         text = re.sub(r'\[\['+prefix+':([^\]]*)\]\]', '', text)
