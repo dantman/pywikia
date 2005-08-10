@@ -86,10 +86,11 @@ class UploadRobot:
         self.urlEncoding = urlEncoding
         self.description = description
         self.keepFilename = keepFilename
-        self.targetSite = targetSite or wikipedia.getSite()
-        
-        mysite = wikipedia.getSite()
-        mysite.forceLogin()
+        if config.upload_to_commons:
+            self.targetSite = targetSite or wikipedia.getSite('commons', 'commons')
+        else:
+            self.targetSite = targetSite or wikipedia.getSite()
+        self.targetSite.forceLogin()
 
     def urlOK(self):
         '''
@@ -104,6 +105,12 @@ class UploadRobot:
            If the upload fails, the user is asked whether to try again or not.
            If the user chooses not to retry, returns null.
         """
+        if not self.urlEncoding:
+            # URL is a unicode string, might e.g. be a filename with non-ASCII
+            # characters.
+            self.url = self.url.encode('utf-8')
+            self.url = urllib.quote(self.url)
+            self.urlEncoding = 'utf-8'
         # Get file contents
         uo = wikipedia.MyURLopener()
         file = uo.open(self.url)
@@ -197,15 +204,14 @@ class UploadRobot:
             success_msgR = re.compile(re.escape(success_msg))
             if success_msgR.search(returned_html):
                  wikipedia.output(u"Upload successful.")
-            # Error detection broken, disabled
-            #else:
-            #     # dump the HTML page
-            #     wikipedia.output(u'%s\n\n' % returned_html)
-            #     answer = wikipedia.inputChoice(u'Upload of %s failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
-            #     if answer in ["y", "Y"]:
-            #         return upload_image(debug)
-            #     else:
-            #         return
+            else:
+                 # dump the HTML page
+                 wikipedia.output(u'%s\n\n' % returned_html)
+                 answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
+                 if answer in ["y", "Y"]:
+                     return upload_image(debug)
+                 else:
+                     return
         return filename
 
     def run(self):
@@ -223,10 +229,11 @@ def main(args):
     keepFilename = False
 
     for arg in args:
-        if wikipedia.argHandler(arg, 'upload'):
+        arg = wikipedia.argHandler(arg, 'upload')
+        if arg:
             if arg.startswith('-keep'):
                 keepFilename = True
-            elif url == '':
+            elif url == u'':
                 url = arg
             else:
                 description.append(arg)

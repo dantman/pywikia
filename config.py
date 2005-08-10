@@ -28,6 +28,12 @@ mylang = 'language'
 # usernames['wikipedia']['de'] = 'myGermanUsername'
 # usernames['wiktionary']['en'] = 'myEnglishUsername'
 #
+# If you have a sysop account one some wikis, this will be used to delete pages
+# or to edit locked pages if you add such lines to your
+# user-config.py:
+#
+# sysopnames['wikipedia']['de'] = 'myGermanUsername'
+# sysopnames['wiktionary']['en'] = 'myEnglishUsername'
 usernames = {}
 sysopnames = {}
 
@@ -63,6 +69,9 @@ ring_bell = True
 always_log = False
 # Should no bot, not even interwiki.py, keep a logfile?
 never_log = False
+
+############## INTERWIKI SETTINGS ##############
+
 # Should interwiki.py report warnings for missing links between foreign
 # languages?
 interwiki_backlink = True
@@ -72,6 +81,11 @@ interwiki_graph = False
 # If interwiki graphs are enabled, which format should be used?
 # Supported formats include png, jpg, ps and svg.
 interwiki_graph_format = 'png'
+
+############## IMAGE RELATED SETTINGS ##############
+# If you set this to True, images will be uploaded to Wikimedia
+# Commons by default.
+upload_to_commons = False
 
 ############## SETTINGS TO AVOID SERVER OVERLOAD ##############
 
