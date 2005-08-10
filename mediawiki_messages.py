@@ -85,20 +85,44 @@ def refresh_messages(site):
 
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
-    itemR = re.compile("<tr bgcolor=\"#[0-9a-f]{6}\"><td>\n"
-                     + "\s*<a href=.+?>(.+?)<\/a><br \/>\n"
-                     + "\s*<a href=.+?>.+?<\/a>\n"
-                     + "\s*</td><td>\n"
-                     + "\s*(.+?)\n"
-                     + "\s*</td><td>\n"
-                     + "\s*.+?\n"
-                     + "\s*<\/td><\/tr>", re.DOTALL)
-    items = itemR.findall(allmessages)
+    if site.version() >= "1.5":
+        itemR = re.compile("<tr class='def'>\n"                        # first possibility: original MediaWiki message used
+                         + "\s*<td>\n"
+                         + "\s*<a href=.+?>(?P<key>.+?)<\/a><br \/>"   # message link
+                         + "\s*<a href=.+?>.+?<\/a>\n"                 # talk link
+                         + "\s*</td><td>"
+                         + "\s*(?P<current>.+?)\n"                     # current message
+                         + "\s*</td>"
+                         + "\s*</tr>"
+                         + "|"
+                         + "<tr class='orig'>\n"                       # second possibility: custom message used
+                         + "\s*<td rowspan='2'>"
+                         + "\s*<a href=.+?>(?P<key2>.+?)<\/a><br \/>"  # message link
+                         + "\s*<a href=.+?>.+?<\/a>\n"                 # talk link
+                         + "\s*</td><td>"
+                         + "\s*.+?\n"                                  # original message
+                         + "\s*</td>"
+                         + "\s*</tr><tr class='new'>"
+                         + "\s*<td>\n"
+                         + "\s*(?P<current2>.+?)\n"                    # current message
+                         + "\s*</td>"
+                         + "\s*</tr>", re.DOTALL)
+    else:
+        itemR = re.compile("<tr bgcolor=\"#[0-9a-f]{6}\"><td>\n"
+                         + "\s*<a href=.+?>(?P<key>.+?)<\/a><br \/>\n"
+                         + "\s*<a href=.+?>.+?<\/a>\n"
+                         + "\s*</td><td>\n"
+                         + "\s*.+?\n"
+                         + "\s*</td><td>\n"
+                         + "\s*(?P<current>.+?)\n"
+                         + "\s*<\/td><\/tr>", re.DOTALL)
     # we will save the found key:value pairs here
     dictionary = {}
-    for item in items:
+    for match in itemR.finditer(allmessages):
         # Key strings only contain ASCII characters, so we can use them as dictionary keys
-        dictionary[item[0]] = item[1]
+        key = match.group('key') or match.group('key2')
+        current = match.group('current') or match.group('current2')
+        dictionary[key] = current
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
     if dictionary == {}:
@@ -108,6 +132,8 @@ def refresh_messages(site):
         f = open(makepath('mediawiki-messages/mediawiki-messages-%s-%s.dat' % (site.family.name, site.lang)), 'w')
         pickle.dump(dictionary, f)
         f.close()
+    #print dictionary['addgroup']
+    #print dictionary['sitestatstext']
 
 def refresh_all_messages():
     import dircache, time
