@@ -17,7 +17,7 @@ Other options:
 """
 
 import re, sys, os
-import wikipedia, lib_images
+import wikipedia, upload
 
 def get_imagelinks(url):
     # Given a URL, get all images linked to by the page at that URL.
@@ -53,11 +53,6 @@ def main(give_url,image_url):
     url = give_url
     basicdesc = []
 
-    if not mysite.loggedin():
-        print "You must be logged in to upload images"
-        import sys
-        sys.exit(1)
-
     if url == '':
         if image_url:
             url = wikipedia.input(u"What URL range should I check (use $ for the part that is changeable)")
@@ -90,27 +85,29 @@ def main(give_url,image_url):
         ilinks = get_imagelinks(url)
 
     for image in ilinks:
-        answer =wikipedia.input(u"Include image %s (y/N/s(top))?"%image)
+        answer = wikipedia.inputChoice(u'Include image %s?' % image, ['yes', 'no', 'stop'], ['y', 'N', 's'], 'N')
         if answer in ["y","Y"]:
             desc = wikipedia.input(u"Give the description of this image:")
             desc = desc + "\r\n\n\r" + basicdesc
-            lib_images.get_image(image, None, desc)
+            uploadBot = upload.UploadRobot(image, desc)
+            uploadBot.run()
         elif answer in ["s","S"]:
             break
 try:
-    url = ''
+    url = u''
     image_url = False
     shown = False
 
     for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg, 'imageharvest'):
+        arg = wikipedia.argHandler(arg, 'imageharvest')
+        if arg:
             if arg == "-pattern":
                 image_url = True
             elif arg == "-shown":
                 shown = True
             elif arg == "-justshown":
                 shown = "just"
-            elif url == '':
+            elif url == u'':
                 url = arg
             else:
                 desc += [arg]
