@@ -709,7 +709,7 @@ class Page(object):
 
             predata = [
                 ('wpReason', reason),
-                ('wpConfirm', '1')]
+                ('wpConfirmB', '1')]
             if token:
                 predata.append(('wpEditToken', token))
             data = urlencode(tuple(predata))
