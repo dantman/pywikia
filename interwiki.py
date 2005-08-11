@@ -685,10 +685,11 @@ class Subject(object):
                         updatedSites.append(site)
                 except LinkMustBeRemoved:
                     notUpdatedSites.append(site)
-
-        if notUpdatedSites != [] and config.interwiki_graph:
-            # at least one site was not updated, save a conflict graph
-            self.createGraph()
+        
+        # disabled graph drawing for minor problems: it just takes too long 
+        #if notUpdatedSites != [] and config.interwiki_graph:
+        #    # at least one site was not updated, save a conflict graph
+        #    self.createGraph()
             
         # don't report backlinks for pages we already changed
         self.reportBacklinks(new, updatedSites)
