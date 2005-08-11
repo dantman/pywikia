@@ -731,6 +731,7 @@ class Page(object):
                 data = data.decode(myencoding())
                 if mediawiki_messages.get('actioncomplete') in data:
                     output(u'Deletion successful.')
+                    return True
                 else:
                     output(u'Deletion failed:.')
                     try:
@@ -743,6 +744,7 @@ class Page(object):
                         # otherwise, remove the irrelevant sections
                         data = data[ibegin:iend]
                     output(data)
+                    return False
 
 
 # Regular expression recognizing redirect pages
