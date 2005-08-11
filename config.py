@@ -81,6 +81,8 @@ interwiki_graph = False
 # If interwiki graphs are enabled, which format should be used?
 # Supported formats include png, jpg, ps and svg.
 interwiki_graph_format = 'png'
+# Save file with local articles without interwikis.
+without_interwiki = False
 
 ############## IMAGE RELATED SETTINGS ##############
 # If you set this to True, images will be uploaded to Wikimedia

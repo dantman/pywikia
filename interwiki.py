@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -408,6 +408,12 @@ class Subject(object):
         # Check whether we need hints and the user offered to give them
         if self.untranslated and not self.hintsasked:
             wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.inpl.aslink(forceInterwiki = True))
+            if config.without_interwiki:
+                f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
+                f.write("* %s \n" % pl.aslink())
+                f.close()
+            else:
+                pass
         if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isredirect:
             # Only once! 
             self.hintsasked = True
