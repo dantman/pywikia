@@ -36,6 +36,17 @@ copy_message = {
     'pt':u"Esta imagem foi copiada de %s. A descri��o original foi:\r\n\r\n%s",
 }
 
+nowCommonsTemplate = {
+    'de': u'{{NowCommons|%s}}',
+    'fr': u'{{Désormais sur Commons|%s}}',
+    'en': u'{{NowCommons|Image:%s}}',
+    'nl': u'{{NuCommons|Image:%s}}',
+}
+
+nowCommonsMessage = {
+    'de': u'Datei ist jetzt auf Wikimedia Commons verfügbar.',
+    'en': u'File is now available on Wikimedia Commons.',
+}
 
 class ImageTransferBot:
     def __init__(self, generator, targetSite = None, interwiki = False):
@@ -84,13 +95,21 @@ class ImageTransferBot:
         except wikipedia.IsRedirectPage:
             description=''
             print "Image description page is redirect."
-        try:
+        else:
             bot = upload.UploadRobot(url = url, description = description, targetSite = self.targetSite, urlEncoding = sourceSite.encoding())
-            return bot.run()
-        except wikipedia.NoPage:
-            print "Page not found"
-            return filename
-            
+            # try to upload
+            targetFilename = bot.run()
+            if targetFilename and self.targetSite.family.name == 'commons' and self.targetSite.lang == 'commons':
+                # upload to Commons was successful
+                reason = wikipedia.translate(sourceSite, nowCommonsMessage)
+                # try to delete the original image if we have a sysop account
+                if config.sysopnames.has_key(sourceSite.family.name) and config.sysopnames[sourceSite.family.name].has_key(sourceSite.lang):
+                    if sourceImagePage.delete(reason):
+                        return
+                if nowCommonsTemplate.has_key(sourceSite.lang) and config.usernames.has_key(sourceSite.family.name) and config.usernames[sourceSite.family.name].has_key(sourceSite.lang):
+                # add the nowCommons template.
+                    wikipedia.output(u'Adding nowCommons template to %s' % sourceImagePage.title())
+                    sourceImagePage.put(original_description + '\n\n' + nowCommonsTemplate[sourceSite.lang][0] % targetFilename, comment = nowCommonsMessage[sourceSite.lang][1])
 
     def run(self):
         for page in self.generator:
@@ -181,7 +200,7 @@ def main():
         # if no page title was given as an argument, and none was
         # read from a file, query the user
         if not page:
-            pageTitle = wikipedia.input(u'Which page to check: ')
+            pageTitle = wikipedia.input(u'Which page to check:')
             page = wikipedia.Page(wikipedia.getSite(), pageTitle)
             # generator which will yield only a single Page
         gen = iter([page])
