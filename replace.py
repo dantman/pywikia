@@ -68,7 +68,7 @@ syntax, use:
 
 from __future__ import generators
 import sys, re
-import wikipedia, pagegenerators, config
+import wikipedia, pagegenerators, catlib, config
 
 # Summary messages in different languages
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
@@ -419,6 +419,7 @@ def main():
         gen = pagegenerators.TextfilePageGenerator(textfilename)
     elif source == 'category':
         cat = catlib.Category(wikipedia.getSite(), categoryname)
+        gen = pagegenerators.CategorizedPageGenerator(cat)
     elif source == 'xmldump':
         gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions, regex)
     elif source == 'singlepage':
