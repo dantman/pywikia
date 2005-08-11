@@ -111,6 +111,33 @@ class ImageTransferBot:
                     wikipedia.output(u'Adding nowCommons template to %s' % sourceImagePage.title())
                     sourceImagePage.put(original_description + '\n\n' + nowCommonsTemplate[sourceSite.lang] % targetFilename, comment = nowCommonsMessage[sourceSite.lang])
 
+    def showImageList(self, imagelist):
+        for i in range(len(imagelist)):
+            image = imagelist[i]
+            print "-"*60
+            wikipedia.output(u"%s. Found image: %s"% (i, image.aslink()))
+            try:
+                # Show the image description page's contents
+                wikipedia.output(image.get(throttle=False))
+            except wikipedia.NoPage:
+                try:
+                    # Maybe the image is on the target site already
+                    targetTitle = '%s:%s' % (self.targetSite.image_namespace(), image.title().split(':', 1)[1])
+                    targetImage = wikipedia.Page(self.targetSite, targetTitle)
+                    if targetImage.get(throttle=False):
+                        wikipedia.output(u"Image is already on %s." % self.targetSite)
+                        wikipedia.output(targetImage.get(throttle=False))
+                    else:
+                        print "Description empty."
+                except wikipedia.NoPage:
+                    print "Description empty."
+                except wikipedia.IsRedirectPage:
+                    print "Description page on Wikimedia Commons is redirect?!"
+            except wikipedia.IsRedirectPage:
+                print "Description page is redirect?!"
+
+        print "="*60
+    
     def run(self):
         for page in self.generator:
             if self.interwiki:
@@ -122,33 +149,8 @@ class ImageTransferBot:
             else:
                 imagelist = page.imagelinks(followRedirects = True)
 
-            for i in range(len(imagelist)):
-                image = imagelist[i]
-                print "-"*60
-                wikipedia.output(u"%s. Found image: %s"% (i, image.aslink()))
-                try:
-                    # Show the image description page's contents
-                    wikipedia.output(image.get(throttle=False))
-                except wikipedia.NoPage:
-                    try:
-                        # Maybe the image is on the target site already
-                        targetTitle = '%s:%s' % (self.targetSite.image_namespace(), image.title().split(':', 1)[1])
-                        targetImage = wikipedia.Page(self.targetSite, targetTitle)
-                        if targetImage.get(throttle=False):
-                            wikipedia.output(u"Image is already on %s." % self.targetSite)
-                            wikipedia.output(targetImage.get(throttle=False))
-                        else:
-                            print "Description empty."
-                    except wikipedia.NoPage:
-                        print "Description empty."
-                    except wikipedia.IsRedirectPage:
-                        print "Description page on Wikimedia Commons is redirect?!"
-                except wikipedia.IsRedirectPage:
-                    print "Description page is redirect?!"
-
-            print "="*60
-
             while len(imagelist)>0:
+                self.showImageList(imagelist)
                 if len(imagelist) == 1:
                     # no need to query the user, only one possibility
                     todo = 0
@@ -160,6 +162,8 @@ class ImageTransferBot:
                     todo=int(todo)
                 if todo in range(len(imagelist)):
                     self.transferImage(imagelist[todo], debug = False)
+                    # remove the selected image from the list
+                    imagelist = imagelist[:todo] + imagelist[todo + 1:]
                 else:
                     print("No such image number.")
 
