@@ -363,9 +363,9 @@ def main():
                 source = 'ref'
             elif arg.startswith('-start'):
                 if len(arg) == 6:
-                    startpage = wikipedia.input(u'Which page do you want to chage?')
+                    firstPageTitle = wikipedia.input(u'Which page do you want to chage?')
                 else:
-                    startpage = arg[7:]
+                    firstPageTitle = arg[7:]
                 source = 'allpages'
             elif arg.startswith('-except:'):
                 exceptions.append(arg[8:])
@@ -425,6 +425,9 @@ def main():
     elif source == 'singlepage':
         pages = [wikipedia.Page(wikipedia.getSite(), pageName) for pageName in pageNames]
         gen = iter(pages)
+    elif source == 'allpages':
+        namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
+        gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
     elif source == 'ref':
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
