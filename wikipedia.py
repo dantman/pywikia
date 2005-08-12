@@ -218,6 +218,7 @@ class Page(object):
         # remove leading and trailing whitespace now.
         title = ':'.join(title).strip()
         self._title = title
+        self.editRestriction = None
 
     def site(self):
         """The site of the page this Page refers to,
