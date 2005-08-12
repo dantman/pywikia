@@ -144,7 +144,8 @@ ignore_title = {
             'Gebruiker:Cars en travel',
             'Wikipedia:Archief*',
             'Overleg Wikipedia:Logboek*',
-            'Gebruiker:Rex/Gestarte artikelen'
+            'Gebruiker:Rex/Gestarte artikelen',
+            'Gebruiker:Ucucha/Doorverwijspagina',
          ],
          'en': [
             'Wikipedia:Links to disambiguating pages',
