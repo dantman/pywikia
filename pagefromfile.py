@@ -15,6 +15,7 @@ Specific arguments:
 -include    The beginning and end text should be included in the
             page.
 -utf        The input file is UTF-8
+-log        Add logging to file "pagefromfile.log"
 
 Note the '-utf' option is necessary on older versions of Windows;
 whether it's necessary or useful on Windows XP and/or other
@@ -31,15 +32,14 @@ import re, sys
 
 msg={
     'en':u'Automated import of articles',
-    'nl':u'Geautomatiseerde import',
-    'pt':u'Importa�o autom�ica de artigo'
+    'nl':u'Geautomatiseerde import'
     }
 
 # Adapt these to the file you are using. 'starttext' and 'endtext' are
 # the beginning and end of each entry. Take text that should be included
 # and does not occur elsewhere in the text.
-starttext = "{{-scn-}}"
-endtext = "{{-proofreading-}}"
+starttext = "{{-start-}}"
+endtext = "{{-stop-}}"
 filename = "dict.txt"
 include = False
 utf = False
@@ -55,14 +55,15 @@ def findpage(t):
         return
     try:
         title = re.search("'''(.*?)'''",page).group(1)
+    except AttributeError:
+        wikipedia.output(u"No title found - skipping a page.")
+    else:
         pl = wikipedia.Page(mysite,wikipedia.UnicodeToAsciiHtml(title))
-        print pl.title()
+        wikipedia.output(pl.title())
         if pl.exists():
-            print "Page %s already exists, not adding!"%title
+            wikipedia.output(u"Page %s already exists, not adding!"%title)
         else:
             pl.put(page, comment = commenttext, minorEdit = False)
-    except AttributeError:
-        print "No title found - skipping a page."
     findpage(t[location.end()+1:])
     return
 
@@ -91,8 +92,11 @@ for arg in sys.argv[1:]:
         elif arg=="-utf":
             import codecs
             utf = True
+        elif arg=="-log":
+            import logger
+            sys.stdout = logger.Logger(sys.stdout, filename = 'pagefromfile.log')
         else:
-            print "Disregarding unknown argument %s."%arg
+            wikipedia.output(u"Disregarding unknown argument %s."%arg)
 mysite = wikipedia.getSite()
 commenttext = wikipedia.translate(mysite,msg)
 
