@@ -325,7 +325,10 @@ class Page(object):
             if hasattr(self, '_redirarg') and not get_redirect:
                 raise IsRedirectPage, self._redirarg
             elif hasattr(self, '_getexception'):
-                raise self._getexception
+                if self._getexception == IsRedirectPage and get_redirect:
+                    pass
+                else:
+                    raise self._getexception
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
