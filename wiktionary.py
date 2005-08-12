@@ -126,12 +126,22 @@ def invertlangnames():
     invertedlangnames = {}
     for ISOKey in langnames.keys():
         for ISOKey2 in langnames[ISOKey].keys():
-#            print langnames[ISOKey][ISOKey2]
-            invertedlangnames.setdefault(langnames[ISOKey][ISOKey2], ISOKey2)
-#            print invertedlangnames
+            lowercaselangname=langnames[ISOKey][ISOKey2].lower()
+            #Put in the names of the languages so we can easily do a reverse lookup lang name -> iso abbreviation
+            invertedlangnames.setdefault(lowercaselangname, ISOKey2)
+            # Now all the correct forms are in, but we also want to be able to find them when there are typos in them
+            for pos in range(1,len(lowercaselangname)):
+                # So first we create all the possibilities with one letter gone
+                invertedlangnames.setdefault(lowercaselangname[:pos]+lowercaselangname[pos+1:], ISOKey2)
+                # Then we switch two consecutive letters
+                invertedlangnames.setdefault(lowercaselangname[:pos-1]+lowercaselangname[pos]+lowercaselangname[pos-1]+lowercaselangname[pos+1:], ISOKey2)
+                # There are of course other typos possible, but this caters for a lot of possibilities already
+                # TODO One other treatment that would make sense is to filter out the accents.
     return invertedlangnames
 
-# A big thanks to Rob Hooft for the following:
+# A big thanks to Rob Hooft for the following class:
+# It may not seem like much, but it magically allows the translations to be sorted on
+# the names of the languages. I would never have thought of doing it like this myself.
 class sortonname:
     '''
     This class sorts translations alphabetically on the name of the language,
@@ -291,12 +301,14 @@ class Entry:
                 entry = entry + meanings[0].term.wikiWrapAsExample(wikilang) + '\n\n'
                 for meaning in meanings:
                     entry = entry + '#' + meaning.getLabel() + ' ' + meaning.definition + '\n'
+                    entry = entry + meaning.wikiWrapExamples()
                 entry +='\n'
 
             if wikilang=='nl':
                 for meaning in meanings:
                     term=meaning.term
                     entry = entry + meaning.getLabel() + term.wikiWrapAsExample(wikilang) + '; ' + meaning.definition + '\n'
+                    entry = entry + meaning.wikiWrapExamples()
                 entry +='\n'
 
             if meaning.hasSynonyms():
@@ -329,7 +341,7 @@ class Entry:
 class Meaning:
     """ This class contains one meaning for a word or an expression.
     """
-    def __init__(self,term,definition='',etymology='',synonyms=[],translations={},label='',concisedef=''):
+    def __init__(self,term,definition='',etymology='',synonyms=[],translations={},label='',concisedef='',examples=[]):
         """ Constructor
             Generally called with one parameter:
             - The Term object we are describing
@@ -344,6 +356,7 @@ class Meaning:
 	self.concisedef=concisedef
         self.etymology=etymology
         self.synonyms=synonyms
+        self.examples=examples
 
         if translations: # Why this has to be done explicitly is beyond me, but it doesn't work correctly otherwise
             self.translations=translations
@@ -426,6 +439,33 @@ class Meaning:
     def getConciseDef(self):
         if self.concisedef:
             return self.concisedef
+
+    def getExamples(self):
+        """ Returns the list of example strings for this meaning
+        """
+        return self.examples
+
+    def addExample(self,example):
+        """ Add a translation Term object to the dictionary for this meaning
+            The lang property of the Term object will be used as the key of the dictionary
+        """
+        self.examples.append(example)
+
+    def addExamples(self,*examples):
+        """ This method calls addExample as often as necessary to add
+            all the examples it receives
+        """
+        for example in examples:
+            self.addExample(example)
+
+    def hasExamples(self):
+        """ Returns True if there are examples
+            Returns False if there are no examples
+        """
+        if self.examples == []:
+            return 0
+        else:
+            return 1
 
     def wikiWrapSynonyms(self,wikilang):
         """ Returns a string with all the synonyms in a format ready for Wiktionary
@@ -510,6 +550,15 @@ class Meaning:
         for translationkey in translationkeys:
             for translation in self.translations[translationkey]:
                 translation.showContents(indentation+2)
+
+    def wikiWrapExamples(self):
+        """ Returns a string with all the examples in a format ready for Wiktionary
+        """
+        wrappedexamples = ''
+        for example in self.examples:
+            wrappedexamples = wrappedexamples + "#:'''" + example + "'''\n"
+        return wrappedexamples
+
 
 class Term:
     """ This is a superclass for terms.  """
@@ -696,7 +745,7 @@ def temp():
     """
     apage = WiktionaryPage('nl',u'Italiaanse')
     aword = Noun('nl',u'Italiaanse','f')
-    FemalePersonFromItalymeaning = Meaning(aword,definition = u'vrouwelijke persoon die uit [[Italië]] komt', label=u'NFemalePersonFromItaly', concisedef=u'vrouwelijke persoon uit Italië')
+    FemalePersonFromItalymeaning = Meaning(aword,definition = u'vrouwelijke persoon die uit [[Italië]] komt', label=u'NFemalePersonFromItaly', concisedef=u'vrouwelijke persoon uit Italië',examples=['Die vrouw is een Italiaanse'])
 
 #    {{-rel-}}
 #    * [[Italiaan]]
@@ -715,8 +764,8 @@ def temp():
 
     aword = Adjective('nl',u'Italiaanse')
     asynonym = Adjective('nl',u'Italiaans')
-    FromItalymeaning = Meaning(aword, definition = u'uit Italië afkomstig', synonyms=[asynonym], label=u'AdjFromItaly', concisedef=u'uit/van Italië')
-    RelatedToItalianLanguagemeaning = Meaning(aword, definition = u'gerelateerd aan de Italiaanse taal', synonyms=[asynonym], label=u'AdjRelatedToItalianLanguage', concisedef=u'm.b.t. de Italiaanse taal')
+    FromItalymeaning = Meaning(aword, definition = u'uit Italië afkomstig', synonyms=[asynonym], label=u'AdjFromItaly', concisedef=u'uit/van Italië',examples=['De Italiaanse mode'])
+    RelatedToItalianLanguagemeaning = Meaning(aword, definition = u'gerelateerd aan de Italiaanse taal', synonyms=[asynonym], label=u'AdjRelatedToItalianLanguage', concisedef=u'm.b.t. de Italiaanse taal',examples=['De Italiaanse werkwoorden','De Italiaanse vervoeging'])
 
     detrans = Adjective('de',u'italienisches','n')
     detrans2 = Adjective('de',u'italienischer','m')
@@ -789,9 +838,10 @@ def run():
 
 if __name__ == '__main__':
 
-    temp()
+    print invertlangnames()
+
+#    temp()
 #    run()
-#    print invertlangnames()
 
 #    ofn = '/home/jo/tmp/unitest.txt'
 #    parseWikiPage(ofn)
