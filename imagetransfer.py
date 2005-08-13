@@ -33,7 +33,7 @@ copy_message = {
     'en':u"This image was copied from %s. The original description was:\r\n\r\n%s",
     'de':u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
     'nl':u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
-    'pt':u"Esta imagem foi copiada de %s. A descri��o original foi:\r\n\r\n%s",
+    'pt':u"Esta imagem foi copiada de %s. A descrição original foi:\r\n\r\n%s",
 }
 
 nowCommonsTemplate = {
@@ -41,11 +41,13 @@ nowCommonsTemplate = {
     'fr': u'{{Désormais sur Commons|%s}}',
     'en': u'{{NowCommons|Image:%s}}',
     'nl': u'{{NuCommons|Image:%s}}',
+    'pt': u'{{NowCommons|Image:%s}}',
 }
 
 nowCommonsMessage = {
     'de': u'Datei ist jetzt auf Wikimedia Commons verfügbar.',
     'en': u'File is now available on Wikimedia Commons.',
+    'pt': u'Arquivo está agora na Wikimedia Commons.',
 }
 
 licenseTemplates = {
@@ -56,7 +58,11 @@ licenseTemplates = {
     },
     ('wikipedia:fr', 'commons:commons'): {
         u'Domaine public':           u'PD'
-    }
+    },
+    ('wikipedia:pt', 'commons:commons'): {
+        u'Domínio público':          u'PD',
+        u'GFDL':                     u'GFDL',
+    },        
 }
 
 class ImageTransferBot:
