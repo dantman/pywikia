@@ -113,7 +113,7 @@ class UploadRobot:
             # don't do it because it only accepts ASCII characters in the
             # filename.
             file = open(self.url)
-        wikipedia.output('Reading file %s' % self.url)
+        wikipedia.output(u'Reading file %s' % self.url)
         contents = file.read()
         if contents.find("The requested URL was not found on this server.") != -1:
             print "Couldn't download the image."
@@ -160,7 +160,7 @@ class UploadRobot:
         # A proper description for the submission.
         wikipedia.output(u"The suggested description is:")
         wikipedia.output(self.description)
-        choice = wikipedia.inputChoice(u'Do you want to change this description?', ['Yes', 'No'], ['Y', 'n'], 'y')
+        choice = wikipedia.inputChoice(u'Do you want to change this description?', ['Yes', 'No'], ['y', 'N'], 'n')
         if choice not in ['n', 'N']:
             newDescription = wikipedia.ui.editText(self.description)
             # if user didn't press Cancel:

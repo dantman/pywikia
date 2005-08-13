@@ -26,7 +26,7 @@ used on a page reachable via interwiki links.
 #
 __version__='$Id$'
 
-import re, sys, md5
+import re, sys, md5, urllib
 import wikipedia, upload, config
 
 copy_message = {
@@ -87,9 +87,10 @@ class ImageTransferBot:
         encodedFilename = filename.encode(sourceSite.encoding())
         md5sum = md5.new(encodedFilename).hexdigest()
         if debug: print "MD5 hash is: %s" % md5sum
+        encodedFilename = urllib.quote(encodedFilename)
         # TODO: This probably doesn't work on all wiki families
-        url = 'http://%s/upload/%s/%s/%s' % (sourceSite.hostname(), md5sum[0], md5sum[:2], filename)
-        if debug: print "URL should be: %s" % url
+        url = 'http://%s/upload/%s/%s/%s' % (sourceSite.hostname(), md5sum[0], md5sum[:2], encodedFilename)
+        print "URL should be: %s" % url
         # localize the text that should be printed on the image description page
         try:
             description = sourceImagePage.get()
