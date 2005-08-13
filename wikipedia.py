@@ -10,7 +10,7 @@ Page: A MediaWiki page
     __init__: Page(xx,Title) - the page with title Title on language xx:
     title: The name of the page, in a form suitable for an interwiki link
     urlname: The name of the page, in a form suitable for a URL
-    catname: The name of the page, with the namespace part removed
+    titleWithoutNamespace: The name of the page, with the namespace part removed
     section: The section of the page (the part of the name after '#')
     sectionFreeTitle: The name without the section part
     aslink: The name of the page in the form [[Title]] or [[lang:Title]]
@@ -41,15 +41,18 @@ Page: A MediaWiki page
 
     (*): This loads the page if it has not been loaded before
 
+Site: a MediaWiki site
+    forceLogin(): Does not continue until the user has logged in to the site
+    
+    ...
+    
 Other functions:
-getall(xx,Pages): Get all pages in Pages (where Pages is a list of Pages,
-    and xx: the language the pages are on)
+getall(): Load pages via Special:Export
 setAction(text): Use 'text' instead of "Wikipedia python library" in
-    summaries
-allpages(): Get all page titles in one's home language as Pages (or all
-    pages from 'Start' if allpages(start='Start') is used).
+    editsummaries
+allpages(): Get all pages in one's home language
 argHandler(text): Checks whether text is an argument defined on wikipedia.py
-    (these are -family, -lang, and -log)
+    (these are -family, -lang, -log and others)
 translate(xx, dict): dict is a dictionary, giving text depending on language,
     xx is a language. Returns the text in the most applicable language for
     the xx: wiki
@@ -71,9 +74,9 @@ getCategoryLinks(text,xx): get all category links in text 'text' (links in the
 removeCategoryLinks(text,xx): remove all category links in 'text'
 replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
     those in new (new a list of category Pages)
-stopme(): Put this on a bot when it is not or not any more communicating
-    with the Wiki. It will remove the bot from the list of running processes,
-    and thus not slow down other bot threads any more.
+stopme(): Put this on a bot when it is not or not communicating with the Wiki
+    any longer. It will remove the bot from the list of running processes,
+    and thus not slow down other bot threads anymore.
 
 """
 from __future__ import generators
@@ -1215,7 +1218,6 @@ def getEditPage(site, name, get_redirect=False, throttle = True, sysop = False):
     Arguments:
         site          - the wiki site
         name          - the page name
-        do_quote      - ??? (TODO: what is this for?)
         get_redirect  - Get the contents, even if it is a redirect page
  
     This routine returns a unicode string containing the wiki text.
@@ -1329,7 +1331,6 @@ def newpages(number = 10, repeat = False, site = None):
         get_throttle()
         html = getUrl(site, path)
 
-        # TODO: Use regular expressions!
         entryR = re.compile('<li>(?P<date>.+?) <a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\) \. \. (?P<loggedin><a href=".+?" title=".+?">)?(?P<username>.+?)(</a>)?( <em>\((?P<comment>.+?)\)</em>)?</li>')
         for m in entryR.finditer(html):
             date = m.group('date')
@@ -1402,6 +1403,36 @@ def allpages(start = '!', site = None, namespace = 0, throttle = True):
         if n < 100:
             break
         
+
+def replaceExceptNowikiAndComments(text, old, new):
+    """
+    Replaces old by new in text, skipping occurences of old within nowiki tags
+    and HTML comments.
+    
+    Parameters:
+        text - a string
+        old  - a compiled regular expression
+        new  - a string
+    """
+    
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
+    # How much of the text we have looked at so far
+    index = 0
+    while True:
+        match = old.search(text, index)
+        if not match:
+            break
+        nowikiOrHtmlCommentMatch = nowikiOrHtmlCommentR.search(text, index)
+        if nowikiOrHtmlCommentMatch and nowikiOrHtmlCommentMatch.start() < match.start():
+            # an HTML comment or text in nowiki tags stands before the next valid match. Skip.
+            index = nowikiOrHtmlCommentMatch.end()
+        else:
+            # We found a valid match. Replace it.
+            text = text[:match.start()] + new + text[match.end():]
+            # continue the search on the remaining text
+            index = match.start()
+    return text
+
 # Part of library dealing with interwiki links
 
 def getLanguageLinks(text, insite = None):
@@ -1448,34 +1479,11 @@ def removeLanguageLinks(text, site = None):
        a warning is printed."""
     if site == None:
         site = getSite()
-    # This regular expression will find every link that is possibly an
-    # interwiki link, plus trailing whitespace. The language code is grouped.
-    # NOTE: This assumes that language codes only consist of non-capital
-    # ASCII letters and hyphens.
-    interwikiR = re.compile(r'\[\[([a-z\-]+):[^\]]*\]\][\s]*')
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
-    # How much of the text we have looked at so far
-    index = 0
-    while True:
-        interwikiMatch = interwikiR.search(text, index)
-        if not interwikiMatch:
-            break
-        nowikiOrHtmlCommentMatch = nowikiOrHtmlCommentR.search(text, index)
-        if nowikiOrHtmlCommentMatch and nowikiOrHtmlCommentMatch.start() < interwikiMatch.start():
-            # an HTML comment or text in nowiki tags stands before the next interwiki link. Skip.
-            index = nowikiOrHtmlCommentMatch.end()
-        else:
-            # Extract what would be the language code
-            code = interwikiMatch.group(1)
-            if code in site.family.langs:
-                # We found a valid interwiki link. Remove it.
-                text = text[:interwikiMatch.start()] + text[interwikiMatch.end():]
-                # continue the search on the remaining text
-                index = interwikiMatch.start()
-            else:
-                index = interwikiMatch.end()
-                if len(code) == 2 or len(code) == 3:
-                    print "WARNING: Link to unknown language %s" % (interwikiMatch.group(1))
+    # This regular expression will find every interwiki link, plus trailing
+    # whitespace.
+    languageR = '|'.join(site.family.langs)
+    interwikiR = re.compile(r'\[\[(%s):[^\]]*\]\][\s]*' % languageR)
+    text = replaceExceptNowikiAndComments(text, interwikiR, '')
     return normalWhitespace(text)
 
 def replaceLanguageLinks(oldtext, new, site = None):
@@ -1592,7 +1600,6 @@ def getCategoryLinks(text, site, raw=False):
             R = re.compile(r'\[\[(%s:[^\]\|]+)(?:\||\])'  % prefix)
         for title in R.findall(text):
             result.append(title)
-    print result
     return result
 
 def removeCategoryLinks(text, site):
@@ -1604,27 +1611,7 @@ def removeCategoryLinks(text, site):
     # ASCII letters and hyphens.
     catNamespace = '|'.join(site.category_namespaces())
     categoryR = re.compile(r'\[\[(%s):.*?\]\][\s]*' % catNamespace)
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
-    # How much of the text we have looked at so far
-    index = 0
-    while True:
-        categoryMatch = categoryR.search(text, index)
-        if not categoryMatch:
-            break
-        nowikiOrHtmlCommentMatch = nowikiOrHtmlCommentR.search(text, index)
-        if nowikiOrHtmlCommentMatch and nowikiOrHtmlCommentMatch.start() < categoryMatch.start():
-            # an HTML comment or text in nowiki tags stands before the next category link. Skip.
-            index = nowikiOrHtmlCommentMatch.end()
-        else:
-            # We found a valid category link. Remove it.
-            text = text[:categoryMatch.start()] + text[categoryMatch.end():]
-            # continue the search on the remaining text
-            index = categoryMatch.start()
-    return normalWhitespace(text)
-
-    ns = site.category_namespaces()
-    for prefix in ns:
-        text = re.sub(r'\[\['+prefix+':([^\]]*)\]\]', '', text)
+    text = replaceExceptNowikiAndComments(text, categoryR, '') 
     return normalWhitespace(text)
 
 def replaceCategoryLinks(oldtext, new, site = None):
