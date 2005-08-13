@@ -40,8 +40,8 @@ nowCommonsTemplate = {
     'de': u'{{NowCommons|%s}}',
     'fr': u'{{Désormais sur Commons|%s}}',
     'en': u'{{NowCommons|Image:%s}}',
-    'nl': u'{{NuCommons|Image:%s}}',
-    'pt': u'{{NowCommons|Image:%s}}',
+    'nl': u'{{NuCommons|%s}}',
+    'pt': u'{{NowCommons|%s}}',
 }
 
 nowCommonsMessage = {
@@ -50,18 +50,20 @@ nowCommonsMessage = {
     'pt': u'Arquivo está agora na Wikimedia Commons.',
 }
 
+# Translations for license templates.
+# Must only be given when they are in fact different.
 licenseTemplates = {
     ('wikipedia:de', 'commons:commons'): {
         u'Bild-GFDL':                u'GFDL',
         u'Bild-GFDL-OpenGeoDB':      u'GFDL-OpenGeoDB',
         u'Bild-PD':                  u'PD',
+        u'Bild-PD-US':               u'PD-USGov',
     },
     ('wikipedia:fr', 'commons:commons'): {
         u'Domaine public':           u'PD'
     },
     ('wikipedia:pt', 'commons:commons'): {
         u'Domínio público':          u'PD',
-        u'GFDL':                     u'GFDL',
     },        
 }
 
