@@ -48,6 +48,17 @@ nowCommonsMessage = {
     'en': u'File is now available on Wikimedia Commons.',
 }
 
+licenseTemplates = {
+    ('wikipedia:de', 'commons:commons'): {
+        u'Bild-GFDL':                u'GFDL',
+        u'Bild-GFDL-OpenGeoDB':      u'GFDL-OpenGeoDB',
+        u'Bild-PD':                  u'PD',
+    },
+    ('wikipedia:fr', 'commons:commons'): {
+        u'Domaine public':           u'PD'
+    }
+}
+
 class ImageTransferBot:
     def __init__(self, generator, targetSite = None, interwiki = False):
         self.generator = generator
@@ -81,13 +92,20 @@ class ImageTransferBot:
         if debug: print "URL should be: %s" % url
         # localize the text that should be printed on the image description page
         try:
-            original_description = sourceImagePage.get()
-            description = wikipedia.translate(self.targetSite, copy_message) % (sourceSite, original_description)
+            description = sourceImagePage.get()
+            # try to translate license templates
+            if licenseTemplates.has_key((sourceSite.sitename(), self.targetSite.sitename())):
+                for old, new in licenseTemplates[(sourceSite.sitename(), self.targetSite.sitename())].iteritems():
+                    new = '{{%s}}' % new
+                    old = re.compile('{{%s}}' % old)
+                    description = wikipedia.replaceExceptNowikiAndComments(description, old, new)
+            
+            description = wikipedia.translate(self.targetSite, copy_message) % (sourceSite, description)
             # TODO: Only the page's version history is shown, but the file's
             # version history would be more helpful
             description += '\n\n' + sourceImagePage.getVersionHistoryTable()
             # add interwiki link
-            if sourceImagePage.site().family == self.targetSite.family:
+            if sourceSite.family == self.targetSite.family:
                 description += "\r\n\r\n" + sourceImagePage.aslink(forceInterwiki = True)
         except wikipedia.NoPage:
             description=''
