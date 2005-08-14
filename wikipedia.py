@@ -176,7 +176,7 @@ class Page(object):
         # Replace underlines by spaces
         title = underline2space(title)
         # Convert HTML entities to unicode
-        title = html2unicode(title, site = site, altsite = insite)
+        title = html2unicode(title)
         # Convert URL-encoded characters to unicode
         title = url2unicode(title, site = site)
         # replace cx by ĉ etc.
@@ -1748,11 +1748,6 @@ def UnicodeToAsciiHtml(s):
             html.append(c)
         else:
             html.append('&#%d;'%cord)
-##            if cord in htmlentitydefs.codepoint2name:
-##                html.append("&%s;" % htmlentitydefs.codepoint2name[cord])
-##            else:
-##                html.append('&#%d;'%cord)
-    #print
     return ''.join(html)
 
 def url2unicode(title, site):
@@ -1791,47 +1786,7 @@ def removeEntity(name):
             i += 1
     return result
 
-def addEntity(name):
-    """Convert a unicode name into ascii name with entities"""
-    result = ''
-    for c in name:
-        if ord(c) < 128:
-            result += str(c)
-        else:
-            for k, v in htmlentitydefs.entitydefs.iteritems():
-                if (len(v) == 1 and ord(c) == ord(v)) or v == '&#%d;'%ord(c):
-                    result += '&%s;' % k
-                    break
-            else:
-                result += '&#%d;' % ord(c)
-    #print "DBG> addEntity:", repr(name), repr(result)
-    return result
-
-def unicodeName(name, site, altsite = None):
-    #print "DBG> ", repr(site), site.encodings()
-    for encoding in site.encodings():
-        try:
-            if type(name)==type(u''):
-                return name
-            else:
-                return unicode(name, encoding)
-        except UnicodeError:
-            print "UnicodeError"
-            print name
-            print encoding
-            continue
-    if altsite is not None:
-        print "DBG> Using local encoding!", repr(altsite), "to", repr(site), repr(name)
-        for encoding in altsite.encodings():
-            try:
-                return unicode(name, encoding)
-            except UnicodeError:
-                continue
-    raise Error("Cannot decode")
-    #return unicode(name,code2encoding(inlanguage))
-    
-def html2unicode(name, site, altsite=None):
-    name = unicodeName(name, site, altsite)
+def html2unicode(name):
     name = removeEntity(name)
 
     Runi = re.compile('&#(\d+);')
