@@ -114,10 +114,6 @@ try:
 except NameError:
     from sets import Set as set
 
-# Keep the modification time of all downloaded pages for an eventual put.
-# We are not going to be worried about the memory this can take.
-edittime = {}
-
 # Local exceptions
 
 class Error(Exception):
@@ -336,7 +332,7 @@ class Page(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents, self._isWatched, self.editRestriction = getEditPage(self.site(), self.urlname(), get_redirect = get_redirect, throttle = throttle, sysop = sysop)
+                self._contents, self._isWatched, self.editRestriction = self.getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop)
                 hn = self.section()
                 if hn:
                     hn = underline2space(hn)
@@ -356,6 +352,92 @@ class Page(object):
                 self._getexception = SectionError
                 raise
         return self._contents
+
+    def getEditPage(self, get_redirect=False, throttle = True, sysop = False):
+        """
+        Get the contents of the Page via the edit page.
+        Do not use this directly, use get() instead.
+       
+        Arguments:
+            get_redirect  - Get the contents, even if it is a redirect page
+     
+        This routine returns a unicode string containing the wiki text.
+        """
+        isWatched = False
+        editRestriction = None
+        output(u'Getting page %s' % self.aslink())
+        path = self.site().edit_address(self.urlname())
+        # Make sure Brion doesn't get angry by waiting if the last time a page
+        # was retrieved was not long enough ago.
+        if throttle:
+            get_throttle()
+        # Try to retrieve the page until it was successfully loaded (just in case
+        # the server is down or overloaded)
+        # wait for retry_idle_time minutes (growing!) between retries.
+        retry_idle_time = 1
+        while True:
+            starttime = time.time()
+            try:
+                text = getUrl(self.site(), path, sysop = sysop)
+            except AttributeError:
+                # We assume that the server is down. Wait some time, then try again.
+                print "WARNING: Could not load %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site.hostname(), path, retry_idle_time)
+                time.sleep(retry_idle_time * 60)
+                # Next time wait longer, but not longer than half an hour
+                retry_idle_time *= 2
+                if retry_idle_time > 30:
+                    retry_idle_time = 30
+                continue
+            get_throttle.setDelay(time.time() - starttime)\
+    
+            # Look for the edit token
+            R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+            tokenloc = R.search(text)
+            if tokenloc:
+                self.site().puttoken(tokenloc.group(1), sysop = sysop)
+            elif not self.site().getToken(getalways = False):
+                self.site().puttoken('', sysop = sysop)
+    
+            # Look if the page is on our watchlist
+            R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
+            matchWatching = R.search(text)
+            if matchWatching:
+                isWatched = True
+            m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
+            if m:
+                self._editTime = m.group(1)
+            else:
+                self._editTime = "0"
+    
+            # Extract the actual text from the textedit field
+            try:
+                i1 = re.search('<textarea[^>]*>', text).end()
+            except AttributeError:
+                # We assume that the server is down. Wait some time, then try again.
+                print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (site.hostname(), path, retry_idle_time)
+                time.sleep(retry_idle_time * 60)
+                # Next time wait longer, but not longer than half an hour
+                retry_idle_time *= 2
+                if retry_idle_time > 30:
+                    retry_idle_time = 30
+                continue
+            i2 = re.search('</textarea>', text).start()
+            if i2-i1 < 2:
+                raise NoPage(self.site(), self.title())
+            m = redirectRe(self.site()).match(text[i1:i2])
+            if self._editTime == "0":
+                output(u"DBG> page may be locked?!")
+                editRestriction = 'sysop'
+            if m and not get_redirect:
+                output(u"DBG> %s is redirect to %s" % self.title(), m.group(1))
+                raise IsRedirectPage(m.group(1))
+    
+            x = text[i1:i2]
+            x = unescape(x)
+            while x and x[-1] in '\n ':
+                x = x[:-1]
+    
+            return x, isWatched, editRestriction
 
     def exists(self):
         """True if the page exists (itself or as redirect), False if not"""
@@ -497,8 +579,96 @@ class Page(object):
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
         sysop = (self.editRestriction != None)
-        return putPage(self.site(), self.urlname(), newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
+        return self.putPage(newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
+    def putPage(self, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None, gettoken = False, sysop = False):
+        """
+        Upload 'text' as new contents for this Page by filling out the edit
+        page.
+        
+        Don't use this directly, use put() instead.
+        """
+        safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
+        if self.site().version() >= "1.4":
+            if gettoken or not token:
+                token = self.site().getToken(getagain = gettoken, sysop = sysop)
+            else:
+                safetuple = (text, comment, watchArticle, minorEdit, newPage, sysop)
+        # Check whether we are not too quickly after the previous putPage, and
+        # wait a bit until the interval is acceptable
+        put_throttle()
+        # Which web-site host are we submitting to?
+        host = self.site().hostname()
+        # Get the address of the page on that host.
+        address = self.site().put_address(self.urlname())
+        # If no comment is given for the change, use the default
+        if comment is None:
+            comment=action
+        # Use the proper encoding for the comment
+        comment = comment.encode(self.site().encoding())
+        # Encode the text into the right encoding for the wiki
+        text = text.encode(self.site().encoding())
+        predata = [
+            ('wpSave', '1'),
+            ('wpSummary', comment),
+            ('wpTextbox1', text)]
+        # Except if the page is new, we need to supply the time of the
+        # previous version to the wiki to prevent edit collisions
+        if newPage:
+            predata.append(('wpEdittime', ''))
+        else:
+            predata.append(('wpEdittime', self._editTime))
+        # Pass the minorEdit and watchArticle arguments to the Wiki.
+        if minorEdit:
+            predata.append(('wpMinoredit', '1'))
+        if watchArticle:
+            predata.append(('wpWatchthis', '1'))
+        # Give the token, but only if one is supplied.
+        if token:
+            predata.append(('wpEditToken', token))
+        # Encode all of this into a HTTP request
+        data = urlencode(tuple(predata))
+        
+        if newPage:
+            output('Creating page %s' % self.aslink())
+        else:
+            output('Changing page %s' % self.aslink())
+        # Submit the prepared information
+        conn = httplib.HTTPConnection(host)
+    
+        conn.putrequest("POST", address)
+        conn.putheader('Content-Length', str(len(data)))
+        conn.putheader("Content-type", "application/x-www-form-urlencoded")
+        conn.putheader("User-agent", "PythonWikipediaBot/1.0")
+        if self.site().cookies():
+            conn.putheader('Cookie', self.site().cookies(sysop = sysop))
+        conn.endheaders()
+        conn.send(data)
+    
+        # Prepare the return values
+        try:
+            response = conn.getresponse()
+        except httplib.BadStatusLine, line:
+            raise PageNotSaved('Bad status line: %s' % line)
+        data = response.read().decode(self.site().encoding())
+        conn.close()
+        if data != u'':
+            # Saving unsuccessful. Possible reasons: edit conflict or invalid edit token.
+            editconflict = mediawiki_messages.get('editconflict', site = self.site()).replace('$1', '')
+            if '<title>%s' % editconflict in data:
+                raise EditConflict(u'An edit conflict has occured.')
+            elif safetuple and "<" in data:
+                # We might have been using an outdated token
+                print "Changing page has failed. Retrying."
+                putPage(safetuple[0], safetuple[1], safetuple[2], comment=safetuple[3],
+                        watchArticle=safetuple[4], minorEdit=safetuple[5], newPage=safetuple[6],
+                        token=None,gettoken=True, sysop=safetuple[7])
+            else:
+                output(data)
+        return response.status, response.reason, data
+        
+        
+        
     def canBeEdited(self):
         if self.editRestriction:
             userdict = config.sysopnames
@@ -843,7 +1013,7 @@ class GetAll(object):
         pl2.moveRestriction = entry.moveRestriction
         m = redirectRe(self.site).match(text)
         if m:
-            edittime[self.site, pl.urlname()] = timestamp
+            pl._editTime = timestamp
             redirectto=m.group(1)
             pl2._getexception = IsRedirectPage
             pl2._redirarg = redirectto
@@ -856,17 +1026,17 @@ class GetAll(object):
         if section:
             m = re.search("== *%s *==" % section, text)
             if not m:
-                output(u"WARNING: Section does not exist: %s" %pl2.title())
+                output(u"WARNING: Section not found: %s" % pl2.title())
             else:
                 # Store the content
                 pl2._contents = text
                 # Store the time stamp
-                edittime[self.site, pl.urlname()] = timestamp
+                pl2._editTime = timestamp
         else:
             # Store the content
             pl2._contents = text
             # Store the time stamp
-            edittime[self.site, pl.urlname()] = timestamp
+            pl2._editTime = timestamp
 
     def getData(self):
         if self.pages == []:
@@ -1085,94 +1255,6 @@ class Throttle(object):
 get_throttle = Throttle(config.minthrottle,config.maxthrottle)
 put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
 
-def putPage(site, name, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None, gettoken = False, sysop = False):
-    """Upload 'text' on page 'name' to the 'site' wiki.
-       Use of this routine can normally be avoided; use Page.put
-       instead.
-    """
-    safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
-    if site.version() >= "1.4":
-        if gettoken or not token:
-            token = site.getToken(getagain = gettoken, sysop = sysop)
-        else:
-            safetuple = (site,name,text,comment,watchArticle,minorEdit,newPage, sysop)
-    # Check whether we are not too quickly after the previous putPage, and
-    # wait a bit until the interval is acceptable
-    put_throttle()
-    # Which web-site host are we submitting to?
-    host = site.hostname()
-    # Get the address of the page on that host.
-    address = site.put_address(space2underline(name))
-    # If no comment is given for the change, use the default
-    if comment is None:
-        comment=action
-    # Use the proper encoding for the comment
-    comment = comment.encode(site.encoding())
-    try:
-        # Encode the text into the right encoding for the wiki
-        if type(text) != type(u''):
-            print 'Warning: wikipedia.putPage() got non-unicode page content. Please report this.'
-            print text
-        text = text.encode(site.encoding())
-        predata = [
-            ('wpSave', '1'),
-            ('wpSummary', comment),
-            ('wpTextbox1', text)]
-        # Except if the page is new, we need to supply the time of the
-        # previous version to the wiki to prevent edit collisions
-        if newPage:
-            predata.append(('wpEdittime', ''))
-        else:
-            predata.append(('wpEdittime', edittime[site, name]))
-        # Pass the minorEdit and watchArticle arguments to the Wiki.
-        if minorEdit and minorEdit != '0':
-            predata.append(('wpMinoredit', '1'))
-        if watchArticle:
-            predata.append(('wpWatchthis', '1'))
-        # Give the token, but only if one is supplied.
-        if token:
-            predata.append(('wpEditToken', token))
-        # Encode all of this into a HTTP request
-        data = urlencode(tuple(predata))
-    
-    except KeyError:
-	raise PageNotSaved(u'Token not found. Edittime: %s' % edittime)
-    if newPage:
-        output(url2unicode("Creating page [[%s:%s]]" % (site.lang, name), site = site))
-    else:
-        output(url2unicode("Changing page [[%s:%s]]" % (site.lang, name), site = site))
-    # Submit the prepared information
-    conn = httplib.HTTPConnection(host)
-
-    conn.putrequest("POST", address)
-    conn.putheader('Content-Length', str(len(data)))
-    conn.putheader("Content-type", "application/x-www-form-urlencoded")
-    conn.putheader("User-agent", "PythonWikipediaBot/1.0")
-    if site.cookies():
-        conn.putheader('Cookie', site.cookies(sysop = sysop))
-    conn.endheaders()
-    conn.send(data)
-
-    # Prepare the return values
-    try:
-        response = conn.getresponse()
-    except httplib.BadStatusLine, line:
-        raise PageNotSaved('Bad status line: %s' % line)
-    data = response.read().decode(myencoding())
-    conn.close()
-    if data != u'':
-        editconflict = mediawiki_messages.get('editconflict').replace('$1', '')
-        if '<title>%s' % editconflict in data:
-            raise EditConflict(u'An edit conflict has occured.')
-        elif safetuple and "<" in data:
-            # We might have been using an outdated token
-            print "Changing page has failed. Retrying."
-            putPage(safetuple[0], safetuple[1], safetuple[2], comment=safetuple[3],
-                    watchArticle=safetuple[4], minorEdit=safetuple[5], newPage=safetuple[6],
-                    token=None,gettoken=True, sysop=safetuple[7])
-        else:
-            output(data)
-    return response.status, response.reason, data
 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
@@ -1206,103 +1288,6 @@ def getUrl(site, path, sysop = False):
     # TODO: We might want to use error='replace' in case of bad encoding.
     return unicode(text, charset)
     
-def getEditPage(site, name, get_redirect=False, throttle = True, sysop = False):
-    """
-    Get the contents of page 'name' from the 'site' wiki
-    Do not use this directly; for 99% of the possible ideas you can
-    use the Page object instead.
-   
-    Arguments:
-        site          - the wiki site
-        name          - the page name
-        get_redirect  - Get the contents, even if it is a redirect page
- 
-    This routine returns a unicode string containing the wiki text.
-    """
-    isWatched = False
-    editRestriction = None
-    name = re.sub(' ', '_', name)
-    output(url2unicode(u'Getting page [[%s:%s]]' % (site.lang, name), site = site))
-    path = site.edit_address(name)
-    # Make sure Brion doesn't get angry by waiting if the last time a page
-    # was retrieved was not long enough ago.
-    if throttle:
-        get_throttle()
-    # Try to retrieve the page until it was successfully loaded (just in case
-    # the server is down or overloaded)
-    # wait for retry_idle_time minutes (growing!) between retries.
-    retry_idle_time = 1
-    while True:
-        starttime = time.time()
-        try:
-            text = getUrl(site, path, sysop = sysop)
-        except AttributeError:
-            # We assume that the server is down. Wait some time, then try again.
-            print "WARNING: Could not load %s%s. Maybe the server is down. Retrying in %i minutes..." % (site.hostname(), path, retry_idle_time)
-            time.sleep(retry_idle_time * 60)
-            # Next time wait longer, but not longer than half an hour
-            retry_idle_time *= 2
-            if retry_idle_time > 30:
-                retry_idle_time = 30
-            continue
-        get_throttle.setDelay(time.time() - starttime)\
-
-        # Look for the edit token
-        R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
-        tokenloc = R.search(text)
-        if tokenloc:
-            site.puttoken(tokenloc.group(1), sysop = sysop)
-        elif not site.getToken(getalways = False):
-            site.puttoken('', sysop = sysop)
-
-        # Look if the page is on our watchlist
-        R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
-        matchWatching = R.search(text)
-        if matchWatching:
-            isWatched = True
-        # check if we're logged in
-        #p=re.compile('userlogin')
-        #if p.search(text) != None:
-        #    output(u'Warning: You\'re probably not logged in on %s:' % repr(site))
-        m = re.search('value="(\d+)" name=\'wpEdittime\'',text)
-        if m:
-            edittime[site, name] = m.group(1)
-        else:
-            m = re.search('value="(\d+)" name="wpEdittime"',text)
-            if m:
-                edittime[site, name] = m.group(1)
-            else:
-                edittime[site, name] = "0"
-
-        # Extract the actual text from the textedit field
-        try:
-            i1 = re.search('<textarea[^>]*>', text).end()
-        except AttributeError:
-            # We assume that the server is down. Wait some time, then try again.
-            print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (site.hostname(), path, retry_idle_time)
-            time.sleep(retry_idle_time * 60)
-            # Next time wait longer, but not longer than half an hour
-            retry_idle_time *= 2
-            if retry_idle_time > 30:
-                retry_idle_time = 30
-            continue
-        i2 = re.search('</textarea>', text).start()
-        if i2-i1 < 2:
-            raise NoPage(site, name)
-        m = redirectRe(site).match(text[i1:i2])
-        if edittime[site, name] == "0":
-            output(u"DBG> page may be locked?!")
-            editRestriction = 'sysop'
-        if m and not get_redirect:
-            output(u"DBG> %s is redirect to %s" % (url2unicode(name, site = site), m.group(1)))
-            raise IsRedirectPage(m.group(1))
-
-        x = text[i1:i2]
-        x = unescape(x)
-        while x and x[-1] in '\n ':
-            x = x[:-1]
-
-        return x, isWatched, editRestriction
 
 def newpages(number = 10, repeat = False, site = None):
     """Generator which yields new articles subsequently.
