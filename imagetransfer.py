@@ -136,7 +136,7 @@ class ImageTransferBot:
                 if nowCommonsTemplate.has_key(sourceSite.lang) and config.usernames.has_key(sourceSite.family.name) and config.usernames[sourceSite.family.name].has_key(sourceSite.lang):
                 # add the nowCommons template.
                     wikipedia.output(u'Adding nowCommons template to %s' % sourceImagePage.title())
-                    sourceImagePage.put(original_description + '\n\n' + nowCommonsTemplate[sourceSite.lang] % targetFilename, comment = nowCommonsMessage[sourceSite.lang])
+                    sourceImagePage.put(description + '\n\n' + nowCommonsTemplate[sourceSite.lang] % targetFilename, comment = nowCommonsMessage[sourceSite.lang])
 
     def showImageList(self, imagelist):
         for i in range(len(imagelist)):
