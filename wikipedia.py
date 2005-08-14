@@ -590,6 +590,7 @@ class Page(object):
         Don't use this directly, use put() instead.
         """
         safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
+        # TODO: get rid of safetuple
         if self.site().version() >= "1.4":
             if gettoken or not token:
                 token = self.site().getToken(getagain = gettoken, sysop = sysop)
@@ -661,9 +662,9 @@ class Page(object):
             elif safetuple and "<" in data:
                 # We might have been using an outdated token
                 print "Changing page has failed. Retrying."
-                putPage(safetuple[0], safetuple[1], safetuple[2], comment=safetuple[3],
-                        watchArticle=safetuple[4], minorEdit=safetuple[5], newPage=safetuple[6],
-                        token=None,gettoken=True, sysop=safetuple[7])
+                self.putPage(safetuple[0], comment=safetuple[1],
+                        watchArticle=safetuple[2], minorEdit=safetuple[3], newPage=safetuple[4],
+                        token=None, gettoken=True, sysop=safetuple[5])
             else:
                 output(data)
         return response.status, response.reason, data
