@@ -497,7 +497,6 @@ class Family:
             'lb'  :       [u'homonymie'],
             'li'  :       [u'verdudeliking'],
             'lt'  :       [u'disambig'],
-            'ms'  :       [u'nyahkekaburan'],
             'no'  :       [u'peker', u'etternavn'],
             'nds' :       [u'begreepkloren'],
             'nl'  :       [u'dp','dP'],
