@@ -24,8 +24,6 @@ Page: A MediaWiki page
         counting interwiki and category links
     interwiki (*): The interwiki links from the page (list of Pages)
     categories (*): The categories the page is in (list of Pages)
-    rawcategories (*): Like categories, but if the link contains a |, the
-        part after the | is included.
     linkedPages (*): The normal pages linked from the page (list of Pages)
     imagelinks (*): The pictures on the page (list of Pages)
     templates(*): All templates referenced on the page (list of strings)
@@ -441,7 +439,11 @@ class Page(object):
             return x, isWatched, editRestriction
 
     def exists(self):
-        """True if the page exists (itself or as redirect), False if not"""
+        """
+        True iff the page exists, even if it's a redirect.
+        
+        If the title includes a section, False if this section isn't found.
+        """
         try:
             self.get()
         except NoPage:
@@ -463,9 +465,10 @@ class Page(object):
         return False
     
     def isEmpty(self):
-        """True if the page except for language links and category links
-           has less than 4 characters, False otherwise. Can return the same
-           exceptions as get()
+        """
+        True if the page except for language links and category links
+        has less than 4 characters, False otherwise. Can raise the same
+        exceptions as get()
         """
         txt = self.get()
         txt = removeLanguageLinks(txt)
@@ -475,26 +478,6 @@ class Page(object):
         else:
             return False
 
-    def isCategory(self):
-        """True if the page is a Category, false otherwise."""
-        t=self.sectionFreeTitle()
-        # Look at the part before the first ':'
-        p=t.split(':')
-        if p[1:]==[]:
-            return False
-        if p[0] in self.site().category_namespaces():
-            return True
-        return False
-
-    def isImage(self):
-        """True if the page is an image description page, false otherwise."""
-        t=self.sectionFreeTitle()
-        # Look at the part before the first ':'
-        p = t.split(':', 1)
-        if len(p) <= 1:
-            return False
-        return p[0] == self.site().image_namespace() or p[0] == self.site().image_namespace(code = '_default')
-
     def namespace(self):
         """Gives the number of the namespace of the page. Does not work for
            all namespaces in all languages, only when defined in family.py.
@@ -503,10 +486,22 @@ class Page(object):
         p=t.split(':')
         if p[1:]==[]:
             return 0
-        for ns in self.site().family.namespaces:
-            if p[0]==self.site().namespace(ns):
-                return ns
+        for namespaceNumber in self.site().family.namespaces.iterkeys():
+            if p[0]==self.site().namespace(namespaceNumber):
+                return namespaceNumber
         return 0
+
+    def isCategory(self):
+        """
+        True if the page is a Category, false otherwise.
+        """
+        return self.namespace() == 14
+
+    def isImage(self):
+        """
+        True if the page is an image description page, false otherwise.
+        """
+        return self.namespace() == 6
 
     def isDisambig(self):
         defdis = self.site().family.disambig( "_default" )
@@ -518,6 +513,7 @@ class Page(object):
             if tn in defdis or tn in locdis:
                 return True
         return False
+
 
     def getReferences(self, follow_redirects = True):
         """
@@ -662,16 +658,19 @@ class Page(object):
             elif safetuple and "<" in data:
                 # We might have been using an outdated token
                 print "Changing page has failed. Retrying."
-                self.putPage(safetuple[0], comment=safetuple[1],
+                return self.putPage(safetuple[0], comment=safetuple[1],
                         watchArticle=safetuple[2], minorEdit=safetuple[3], newPage=safetuple[4],
                         token=None, gettoken=True, sysop=safetuple[5])
             else:
                 output(data)
         return response.status, response.reason, data
-        
-        
-        
+
     def canBeEdited(self):
+        """
+        Returns True iff:
+            * the page is unprotected, and we have an account for this site, or
+            * the page is protected, and we have a sysop account for this site.
+        """
         if self.editRestriction:
             userdict = config.sysopnames
         else:
@@ -711,30 +710,23 @@ class Page(object):
                 output(u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!" % (self.aslink(), newsite, newname))
         return result
 
-    def categories(self):
-        """A list of categories that the article is in. This will retrieve
-           the page text to do its work, so it can raise the same exceptions
-           that are raised by the get() method.
-
-           The return value is a list of Page objects for each of the
-           category links in the page text."""
-        result = []
-        ll = getCategoryLinks(self.get(), self.site())
-        for catname in ll:
-            result.append(self.__class__(self.site(), title = catname))
-        return result
-
-    def rawcategories(self):
-        """Just like categories, but gives the categories including the part
-           after the |, if any. Of course these will thus be pagelinks to
-           non-existing pages, but as long as we just use title() and
-           such, that won't matter."""
-        result = []
-        ll = getCategoryLinks(self.get(), self.site(), raw=True)
-        for catname in ll:
-            result.append(self.__class__(self.site(), title = catname))
-        return result
+    def categories(self, withSortKeys = False):
+        """
+        A list of categories that the article is in. This will retrieve
+        the page text to do its work, so it can raise the same exceptions
+        that are raised by the get() method.
         
+        The return value is a list of Category objects, one for each of the
+        category links in the page text.
+
+        If withSortKeys is False, sort keys will be omitted. If it's true, the
+        | and the sort key following it will be included in the category title.
+        This means that the Category can't be retrieved, but as long as we
+        just use title() and such, that won't matter.
+        """
+        categoryTitles = getCategoryLinks(self.get(), self.site(), withSortKeys = withSortKeys)
+        return [catlib.Category(self.site(), title) for title in categoryTitles]
+
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            Page objects"""
@@ -777,7 +769,8 @@ class Page(object):
 
     def imagelinks(self, followRedirects = False):
         """
-        Gives the images the page shows, as a list of Page objects
+        Gives the images the page shows, as a list of Page objects.
+        This includes images in galleries.
         """
         results = []
         # Find normal images
@@ -1433,7 +1426,7 @@ def normalWhitespace(text):
 
 # Categories
 
-def getCategoryLinks(text, site, raw=False):
+def getCategoryLinks(text, site, withSortKeys = False):
     """Returns a list of category links.
        in the form {code:pagename}. Do not call this routine directly, use
        Page objects instead"""
@@ -1446,7 +1439,7 @@ def getCategoryLinks(text, site, raw=False):
         match = nowikiOrHtmlCommentR.search(text)
     namespaces = site.category_namespaces()
     for prefix in namespaces:
-        if raw:
+        if withSortKeys:
             R = re.compile(r'\[\[(%s:[^\]]+)\]' % prefix)
         else:
             R = re.compile(r'\[\[(%s:[^\]\|]+)(?:\||\])'  % prefix)

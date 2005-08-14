@@ -73,7 +73,7 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
         else:
             cats = pl.categories()
             if not workingcat in cats:
-                cats = pl.rawcategories()
+                cats = pl.categories(catsWithSortKeys = True)
                 for c in cats:
                     if rawtoclean(c) in parentcats:
                         cats.remove(c)

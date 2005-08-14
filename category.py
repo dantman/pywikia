@@ -234,7 +234,7 @@ def add_category(sort_by_last_name = False):
             if answer == 'y' or answer == 'a':
                 try:
                     cats = page.categories()
-                    rawcats = page.rawcategories()
+                    catsWithSortKeys = page.categories(withSortKeys = True)
                 except wikipedia.NoPage:
                     wikipedia.output(u"%s doesn't exist yet. Ignoring." % (page.title()))
                     pass
@@ -252,9 +252,9 @@ def add_category(sort_by_last_name = False):
                         wikipedia.output(u"%s is already in %s." % (page.title(), catpl.title()))
                     else:
                         wikipedia.output(u'Adding %s' % catpl.aslink())
-                        rawcats.append(catpl)
+                        catsWithSortKeys.append(catpl)
                         text = page.get()
-                        text = wikipedia.replaceCategoryLinks(text, rawcats)
+                        text = wikipedia.replaceCategoryLinks(text, catsWithSortKeys)
                         page.put(text)
 
 class CategoryMoveRobot:

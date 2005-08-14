@@ -85,7 +85,7 @@ try:
     for p in mysite.allpages(start = start):
         try:
             text=p.get()
-            cats=p.rawcategories()
+            cats=p.categories(withSortKeys = True)
             if cats == []:
                 wikipedia.output(u"========== %s ==========" % p.title())
                 print "No categories"

@@ -252,7 +252,7 @@ def Category(code, name):
 # If new_cat_title is None, the category will be removed.
 def change_category(article, old_cat_title, new_cat_title):
     print ''
-    cats = article.rawcategories()
+    cats = article.categories(withSortKeys = True)
     site = article.site()
     sort_key = ''
     removed = False
