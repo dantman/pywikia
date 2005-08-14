@@ -184,8 +184,8 @@ class Page(object):
         # Convert URL-encoded characters to unicode
         title = url2unicode(title, site = site)
         # replace cx by ĉ etc.
-        if site.lang == 'eo':
-            title = resolveEsperantoXConvention(title)
+        #if site.lang == 'eo':
+        #    title = resolveEsperantoXConvention(title)
         # Remove double spaces
         while '  ' in title:
             title = title.replace('  ', ' ')
@@ -566,11 +566,16 @@ class Page(object):
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            Page objects"""
-        if not hasattr(other, 'site'):
-            return -1
         if not self.site() == other.site():
             return cmp(self.site(), other.site())
-        return cmp(self.title(), other.title())
+        owntitle = self.title()
+        othertitle = other.title()
+        # In Esperanto X-Convention, Bordeauxx is the same as BordeauxX, and
+        # CxefpagXo is the same as Ĉefpaĝo.
+        if self.site().lang == 'eo':
+            owntitle = doubleXForEsperanto(resolveEsperantoXConvention(owntitle))
+            othertitle = doubleXForEsperanto(resolveEsperantoXConvention(othertitle))
+        return cmp(owntitle, othertitle)
 
     def __hash__(self):
         """Pseudo method that makes it possible to store Page objects as
@@ -810,14 +815,6 @@ class GetAll(object):
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 pl._getexception = NoPage
-            if hasattr(pl,'_contents') and pl.site().lang=="eo":
-                # Edit-pages on eo: use X-convention, XML export does not.
-                # Double X-es where necessary so that we can submit a changed
-                # page later.
-                for c in 'CGHJSU':
-                    for c2 in c,c.lower():
-                        for x in 'Xx':
-                            pl._contents = pl._contents.replace(c2+x,c2+x+x)
 
     def oneDone(self, entry):
         title = entry.title
@@ -825,16 +822,20 @@ class GetAll(object):
         text = entry.text
         editRestriction = entry.editRestriction
         moveRestriction = entry.moveRestriction
+        # Edit-pages on eo: use X-convention, XML export does not.
+        if self.site.lang == 'eo':
+            title = doubleXForEsperanto(title)
+            text = doubleXForEsperanto(text)
         pl = Page(self.site, title)
         for pl2 in self.pages:
             if Page(self.site, pl2.sectionFreeTitle()) == pl:
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
         else:
-            print repr(title)
-            print repr(pl)
-            print repr(self.pages)
             print "BUG: page not found in list"
+            print 'Title:', repr(title)
+            print 'Page:', repr(pl)
+            print 'Expected one of:', repr(self.pages)
 
             raise PageNotFound
 
@@ -844,11 +845,6 @@ class GetAll(object):
         if m:
             edittime[self.site, pl.urlname()] = timestamp
             redirectto=m.group(1)
-            if pl.site().lang=="eo":
-                for c in 'CGHJSU':
-                    for c2 in c,c.lower():
-                        for x in 'Xx':
-                            redirectto = redirectto.replace(c2+x,c2+x+x+x+x)
             pl2._getexception = IsRedirectPage
             pl2._redirarg = redirectto
         #else:
@@ -876,10 +872,11 @@ class GetAll(object):
         if self.pages == []:
             return
         address = self.site.export_address()
-        # In the next line, we assume that what we got for eo: is NOT in x-convention
-        # but SHOULD be. This is worst-case; to avoid not getting what we need, if we
-        # find nothing, we will retry the normal way with an unadapted form.
-        pagenames = u'\r\n'.join([x.sectionFreeTitle() for x in self.pages])
+        pagenames = [page.sectionFreeTitle() for page in self.pages]
+        #if self.site.lang == 'eo':
+        #    for i in range(len(pagenames)):
+        #        pagenames[i] = doubleXForEsperanto(pagenames[i])
+        pagenames = u'\r\n'.join(pagenames)
         if type(pagenames) != type(u''):
             print 'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
             print pagenames
@@ -1466,7 +1463,7 @@ def getLanguageLinks(text, insite = None):
                 # ignore text after the pipe
                 pagetitle = pagetitle[:pagetitle.index('|')]
             if insite.lang == 'eo':
-                pagetitle=pagetitle.replace('xx','x')
+                pagetitle = resolveEsperantoXConvention(pagetitle)
             if not pagetitle:
                 output(u"ERROR: ignoring impossible link to %s:%s" % (lang, pagetitle))
             else:
@@ -1528,7 +1525,7 @@ def interwikiFormat(links, insite = None):
         return ''
     # Security check: site may not refer to itself.
     for pl in links.values():
-        if pl==insite.language():
+        if pl.site() == insite:
             raise ValueError("Trying to add interwiki link to self")
     s = []
     ar = links.keys()
@@ -1549,7 +1546,12 @@ def interwikiFormat(links, insite = None):
         ar = insite.interwiki_putfirst_doubled(ar) + ar
     for site in ar:
         try:
-            s.append(links[site].aslink(forceInterwiki = True))
+            link = links[site].aslink(forceInterwiki = True)
+            # if linking from Esperanto, we must e.g. write Bordeauxx instead
+            # of Bordeaux
+            if insite.lang == 'eo':
+                link = doubleXForEsperanto(link)
+            s.append(link)
         except AttributeError:
             s.append(site.linkto(links[site],othersite=insite))
     if insite.lang in insite.family.interwiki_on_one_line:
@@ -1728,7 +1730,16 @@ def resolveEsperantoXConvention(text):
         else:
             i -= 1
     return text
-        
+
+def doubleXForEsperanto(text):
+    # Double X-es where necessary so that we can submit a changed
+    # page later.
+    for c in 'CGHJSU':
+        for c2 in c,c.lower():
+            text = text.replace(c2 + 'x', c2 + 'xx')
+            text = text.replace(c2 + 'X', c2 + 'Xx')
+    return text
+
 def isInterwikiLink(s, site = None):
     """Try to check whether s is in the form "xx:link" where xx: is a
        known language. In such a case we are dealing with an interwiki link."""
