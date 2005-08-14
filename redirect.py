@@ -72,7 +72,7 @@ class RedirectGenerator:
         dict = {}
         # open xml dump and read page titles out of it
         dump = xmlreader.XmlDump(xmlFilename)
-        redirR = wikipedia.redirectRe(wikipedia.getSite())
+        redirR = wikipedia.getSite().redirectRegex()
         readPagesCount = 0
         for entry in dump.parse():
             readPagesCount += 1

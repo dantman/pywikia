@@ -424,12 +424,12 @@ class Page(object):
             i2 = re.search('</textarea>', text).start()
             if i2-i1 < 2:
                 raise NoPage(self.site(), self.title())
-            m = redirectRe(self.site()).match(text[i1:i2])
+            m = self.site().redirectRegex().match(text[i1:i2])
             if self._editTime == "0":
                 output(u"DBG> page may be locked?!")
                 editRestriction = 'sysop'
             if m and not get_redirect:
-                output(u"DBG> %s is redirect to %s" % self.title(), m.group(1))
+                output(u"DBG> %s is redirect to %s" % (self.title(), m.group(1)))
                 raise IsRedirectPage(m.group(1))
     
             x = text[i1:i2]
@@ -928,16 +928,6 @@ class Page(object):
                     output(data)
                     return False
 
-
-# Regular expression recognizing redirect pages
-def redirectRe(site):
-    if site.redirect():
-        txt = '(?:redirect|'+'|'.join(site.redirect())+')'
-    else:
-        txt = 'redirect'
-    return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]|\|)', re.I)
-
-            
 class GetAll(object):
     def __init__(self, site, pages, throttle):
         """First argument is Site object.
@@ -1011,7 +1001,7 @@ class GetAll(object):
 
         pl2.editRestriction = entry.editRestriction
         pl2.moveRestriction = entry.moveRestriction
-        m = redirectRe(self.site).match(text)
+        m = self.site().redirectRegex().match(text)
         if m:
             pl._editTime = timestamp
             redirectto=m.group(1)
@@ -1926,6 +1916,18 @@ class Site(object):
     def encodings(self):
         return self.family.code2encodings(self.lang)
 
+    def redirectRegex(self):
+        """
+        Regular expression recognizing redirect pages
+        """
+        redirKeywords = [u'redirect']
+        try:
+            redirKeywords += self.family.redirect[self.lang]
+        except KeyError:
+            pass
+        txt = '(?:'+'|'.join(redirKeywords)+')'
+        return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]|\|)', re.IGNORECASE)
+
     def category_namespace(self):
         return self.family.category_namespace(self.lang)
 
@@ -1993,12 +1995,6 @@ class Site(object):
     def category_on_one_line(self):
         return self.lang in self.family.category_on_one_line
 
-    def redirect(self,default=False):
-        if default:
-            return self.family.redirect.get(self.lang,"REDIRECT")
-        else:
-            return self.family.redirect.get(self.lang,None)
-                
     def interwiki_putfirst(self):
         return self.family.interwiki_putfirst.get(self.lang,None)
 
