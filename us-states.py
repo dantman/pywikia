@@ -91,7 +91,7 @@ def main():
                 print('Warning: argument "%s" not understood; ignoring.')%arg
 
     mysite = wikipedia.getSite()
-    for p in wikipedia.allpages(start = start, site = mysite):
+    for p in mysite.allpages(start = start):
         for sn in abbrev:
             R=re.compile('[^[]]*' + '\%2C_' + sn)
             for res in R.findall(p.urlname()):

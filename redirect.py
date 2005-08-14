@@ -114,7 +114,7 @@ class RedirectGenerator:
             # broken redirect maintenance page's URL
             path = mysite.broken_redirects_address(default_limit = False)
             print 'Retrieving special page...' 
-            maintenance_txt = wikipedia.getUrl(mysite, path)
+            maintenance_txt = mysite.getUrl(path)
             
             # regular expression which finds redirects which point to a non-existing page inside the HTML
             Rredir = re.compile('\<li\>\<a href=".+?" title="(.*?)"')
@@ -149,7 +149,7 @@ class RedirectGenerator:
             # double redirect maintenance page's URL
             path = mysite.double_redirects_address(default_limit = False)
             print 'Retrieving special page...'
-            maintenance_txt = wikipedia.getUrl(mysite, path)
+            maintenance_txt = mysite.getUrl(path)
 
             # regular expression which finds redirects which point to another redirect inside the HTML
             Rredir = re.compile('\<li\>\<a href=".+?" title="(.*?)">')

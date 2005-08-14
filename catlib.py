@@ -118,7 +118,7 @@ class _Category(wikipedia.Page):
                             wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), startFromPage))
                         else:
                             wikipedia.output('Getting [[%s]]...' % cat.title())
-                        txt = wikipedia.getUrl(site, path)
+                        txt = site.getUrl(path)
                     except:
                         # We assume that the server is down. Wait some time, then try again.
                         raise

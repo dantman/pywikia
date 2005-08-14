@@ -79,7 +79,7 @@ def refresh(site):
     path = site.watchlist_address()
     print 'Retrieving watchlist for %s' % repr(site)
     #wikipedia.put_throttle() # It actually is a get, but a heavy one.
-    watchlistHTML = wikipedia.getUrl(site, path)
+    watchlistHTML = site.getUrl(path)
 
     print 'Parsing watchlist'
     watchlist = []

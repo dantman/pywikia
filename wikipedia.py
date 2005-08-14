@@ -43,14 +43,15 @@ Page: A MediaWiki page
 
 Site: a MediaWiki site
     forceLogin(): Does not continue until the user has logged in to the site
-    
+    getUrl(): Retrieve an URL from the site
+    allpages(): Load allpages special page
+    newpages(): Load newpages special page
     ...
     
 Other functions:
 getall(): Load pages via Special:Export
 setAction(text): Use 'text' instead of "Wikipedia python library" in
     editsummaries
-allpages(): Get all pages in one's home language
 argHandler(text): Checks whether text is an argument defined on wikipedia.py
     (these are -family, -lang, -log and others)
 translate(xx, dict): dict is a dictionary, giving text depending on language,
@@ -378,7 +379,7 @@ class Page(object):
         while True:
             starttime = time.time()
             try:
-                text = getUrl(self.site(), path, sysop = sysop)
+                text = self.site().getUrl(path, sysop = sysop)
             except AttributeError:
                 # We assume that the server is down. Wait some time, then try again.
                 print "WARNING: Could not load %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site.hostname(), path, retry_idle_time)
@@ -394,9 +395,9 @@ class Page(object):
             R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
             tokenloc = R.search(text)
             if tokenloc:
-                self.site().puttoken(tokenloc.group(1), sysop = sysop)
+                self.site().putToken(tokenloc.group(1), sysop = sysop)
             elif not self.site().getToken(getalways = False):
-                self.site().puttoken('', sysop = sysop)
+                self.site().putToken('', sysop = sysop)
     
             # Look if the page is on our watchlist
             R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
@@ -528,7 +529,7 @@ class Page(object):
         path = site.references_address(self.urlname())
         
         output(u'Getting references to %s' % self.aslink())
-        txt = getUrl(site, path)
+        txt = site.getUrl(path)
         # remove brackets which would disturb the regular expression cascadedListR
         # TODO: rewrite regex
         txt = txt.replace('<a', 'a')
@@ -837,7 +838,7 @@ class Page(object):
 
         if not hasattr(self, '_versionhistory') or forceReload:
             output(u'Getting version history of %s' % self.title())
-            txt = getUrl(site, path)
+            txt = site.getUrl(path)
             self._versionhistory = txt
             
         # regular expression matching one edit in the version history.
@@ -1001,7 +1002,7 @@ class GetAll(object):
 
         pl2.editRestriction = entry.editRestriction
         pl2.moveRestriction = entry.moveRestriction
-        m = self.site().redirectRegex().match(text)
+        m = self.site.redirectRegex().match(text)
         if m:
             pl._editTime = timestamp
             redirectto=m.group(1)
@@ -1248,133 +1249,6 @@ put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
 
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
-    
-def getUrl(site, path, sysop = False):
-    """Low-level routine to get a URL from the wiki.
-
-       site is a Site object, path is the absolute path.
-
-       Returns the HTML text of the page converted to unicode.
-    """
-    #print host,address
-    uo = MyURLopener()
-    if site.cookies(sysop = sysop):
-        uo.addheader('Cookie', site.cookies(sysop = sysop))
-    #print ('Opening: http://%s%s'%(host, address))
-    f = uo.open('http://%s%s'%(site.hostname(), path))
-    text = f.read()
-    #print f.info()
-    ct = f.info()['Content-Type']
-    R = re.compile('charset=([^\'\"]+)')
-    m = R.search(ct)
-    if m:
-        charset = m.group(1)
-    else:
-        print "WARNING: No character set found"
-        # UTF-8 as default
-        charset = 'utf-8'
-    site.checkCharset(charset)
-    # convert HTML to unicode
-    # TODO: We might want to use error='replace' in case of bad encoding.
-    return unicode(text, charset)
-    
-
-def newpages(number = 10, repeat = False, site = None):
-    """Generator which yields new articles subsequently.
-       It starts with the article created 'number' articles
-       ago (first argument). When these are all yielded
-       it fetches NewPages again. If there is no new page,
-       it blocks until there is one, sleeping between subsequent
-       fetches of NewPages.
-
-       The objects yielded are dictionairies. The keys are
-       date (datetime object), title (pagelink), length (int)
-       user_login (only if user is logged in, string), comment
-       (string) and user_anon (if user is not logged in, string).
-
-       The throttling is important here, so always enabled.
-    """
-    throttle = True
-    if site is None:
-        site = getSite()
-    seen = set()
-    while True:
-        path = site.newpages_address()
-        get_throttle()
-        html = getUrl(site, path)
-
-        entryR = re.compile('<li>(?P<date>.+?) <a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\) \. \. (?P<loggedin><a href=".+?" title=".+?">)?(?P<username>.+?)(</a>)?( <em>\((?P<comment>.+?)\)</em>)?</li>')
-        for m in entryR.finditer(html):
-            date = m.group('date')
-            title = m.group('title')
-            title = title.replace('&quot;', '"')
-            length = int(m.group('length'))
-            loggedIn = (m.group('loggedin') != None)
-            username = m.group('username')
-            comment = m.group('comment')
-
-            if title not in seen:
-                seen.add(title)
-                page = Page(site, title)
-                yield page, date, length, loggedIn, username, comment
-        if not repeat:
-            break
-
-def allpages(start = '!', site = None, namespace = 0, throttle = True):
-    """Generator which yields all articles in the home language in
-       alphanumerical order, starting at a given page. By default,
-       it starts at '!', so it should yield all pages.
-
-       The objects returned by this generator are all Page()s.
-    """
-    if site == None:
-        site = getSite()
-    while True:
-        # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
-        start = start.encode(site.encoding())
-        start = urllib.quote(start)
-        # load a list which contains a series of article names (always 480)
-        path = site.allpages_address(start, namespace)
-        print 'Retrieving Allpages special page for %s from %s, namespace %i' % (repr(site), start, namespace)
-        returned_html = getUrl(site, path)
-        # Try to find begin and end markers
-        try:
-            # In 1.4, another table was added above the navigational links
-            if site.version() < "1.4":
-                begin_s = '<table'
-                end_s = '</table'
-            else:
-                begin_s = '</table><hr /><table'
-                end_s = '</table><div class="printfooter">'
-            ibegin = returned_html.index(begin_s)
-            iend = returned_html.index(end_s)
-        except ValueError:
-            raise NoPage('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
-        # remove the irrelevant sections
-        returned_html = returned_html[ibegin:iend]
-        if site.version()=="1.2":
-            R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
-        else:
-            R = re.compile('title ?="(.*?)"')
-        # Count the number of useful links on this page
-        n = 0
-        for hit in R.findall(returned_html):
-            # count how many articles we found on the current page
-            n = n + 1
-            if site.version()=="1.2":
-                yield Page(site, url2link(hit, site = site, insite = site))
-            else:
-                yield Page(site, hit)
-            # save the last hit, so that we know where to continue when we
-            # finished all articles on the current page. Append a '!' so that
-            # we don't yield a page twice.
-            start = hit + '!'
-        # A small shortcut: if there are less than 100 pages listed on this
-        # page, there is certainly no next. Probably 480 would do as well,
-        # but better be safe than sorry.
-        if n < 100:
-            break
-        
 
 def replaceExceptNowikiAndComments(text, old, new):
     """
@@ -1490,7 +1364,7 @@ def interwikiFormat(links, insite = None):
        page.
 
        'links' should be a dictionary with the language names as keys, and
-       either Page objects or the link-names of the pages as values.
+       Page objects as values.
 
        The string is formatted for inclusion in insite (defaulting to your own).
     """
@@ -1860,7 +1734,7 @@ class Site(object):
         if not self.loginStatusKnown:
             output(u'Getting a page to check if we\'re logged in on %s' % self)
             path = self.get_address('Non-existing_page')
-            text = getUrl(self, path, sysop = sysop)
+            text = self.getUrl(path, sysop = sysop)
             mytalkR = re.compile('<a href=".+?">(?P<username>.+?)</a></li><li id="pt-mytalk">')
             m = mytalkR.search(text)
             if m:
@@ -1900,6 +1774,130 @@ class Site(object):
                 f = open(fn)
                 self._cookies = '; '.join([x.strip() for x in f.readlines()])
                 f.close()
+
+    def getUrl(self, path, sysop = False):
+        """
+        Low-level routine to get a URL from the wiki.
+           
+        Parameters:
+            path  - The absolute path.
+            sysop - If True, the sysop account's cookie will be used.
+    
+           Returns the HTML text of the page converted to unicode.
+        """
+        uo = MyURLopener()
+        if self.cookies(sysop = sysop):
+            uo.addheader('Cookie', self.cookies(sysop = sysop))
+        f = uo.open('http://%s%s' % (self.hostname(), path))
+        text = f.read()
+        # Find charset in the content-type meta tag
+        contentType = f.info()['Content-Type']
+        R = re.compile('charset=([^\'\"]+)')
+        m = R.search(contentType)
+        if m:
+            charset = m.group(1)
+        else:
+            print "WARNING: No character set found"
+            # UTF-8 as default
+            charset = 'utf-8'
+        # Check if this is the charset we expected
+        self.checkCharset(charset)
+        # convert HTML to unicode
+        # TODO: We might want to use error='replace' in case of bad encoding.
+        return unicode(text, charset)
+        
+    
+    def newpages(self, number = 10, repeat = False):
+        """Generator which yields new articles subsequently.
+           It starts with the article created 'number' articles
+           ago (first argument). When these are all yielded
+           it fetches NewPages again. If there is no new page,
+           it blocks until there is one, sleeping between subsequent
+           fetches of NewPages.
+    
+           The objects yielded are dictionairies. The keys are
+           date (datetime object), title (pagelink), length (int)
+           user_login (only if user is logged in, string), comment
+           (string) and user_anon (if user is not logged in, string).
+    
+           The throttling is important here, so always enabled.
+        """
+        throttle = True
+        seen = set()
+        while True:
+            path = self.newpages_address()
+            get_throttle()
+            html = self.getUrl(path)
+    
+            entryR = re.compile('<li>(?P<date>.+?) <a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\) \. \. (?P<loggedin><a href=".+?" title=".+?">)?(?P<username>.+?)(</a>)?( <em>\((?P<comment>.+?)\)</em>)?</li>')
+            for m in entryR.finditer(html):
+                date = m.group('date')
+                title = m.group('title')
+                title = title.replace('&quot;', '"')
+                length = int(m.group('length'))
+                loggedIn = (m.group('loggedin') != None)
+                username = m.group('username')
+                comment = m.group('comment')
+    
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page, date, length, loggedIn, username, comment
+            if not repeat:
+                break
+    
+    def allpages(self, start = '!', namespace = 0, throttle = True):
+        """Generator which yields all articles in the home language in
+           alphanumerical order, starting at a given page. By default,
+           it starts at '!', so it should yield all pages.
+    
+           The objects returned by this generator are all Page()s.
+        """
+        while True:
+            # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
+            start = start.encode(self.encoding())
+            start = urllib.quote(start)
+            # load a list which contains a series of article names (always 480)
+            path = self.allpages_address(start, namespace)
+            print 'Retrieving Allpages special page for %s from %s, namespace %i' % (repr(self), start, namespace)
+            returned_html = self.getUrl(path)
+            # Try to find begin and end markers
+            try:
+                # In 1.4, another table was added above the navigational links
+                if self.version() < "1.4":
+                    begin_s = '<table'
+                    end_s = '</table'
+                else:
+                    begin_s = '</table><hr /><table'
+                    end_s = '</table><div class="printfooter">'
+                ibegin = returned_html.index(begin_s)
+                iend = returned_html.index(end_s)
+            except ValueError:
+                raise NoPage('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
+            # remove the irrelevant sections
+            returned_html = returned_html[ibegin:iend]
+            if self.version()=="1.2":
+                R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
+            else:
+                R = re.compile('title ?="(.*?)"')
+            # Count the number of useful links on this page
+            n = 0
+            for hit in R.findall(returned_html):
+                # count how many articles we found on the current page
+                n = n + 1
+                if self.version()=="1.2":
+                    yield Page(self, url2link(hit, site = self, insite = self))
+                else:
+                    yield Page(self, hit)
+                # save the last hit, so that we know where to continue when we
+                # finished all articles on the current page. Append a '!' so that
+                # we don't yield a page twice.
+                start = hit + '!'
+            # A small shortcut: if there are less than 100 pages listed on this
+            # page, there is certainly no next. Probably 480 would do as well,
+            # but better be safe than sorry.
+            if n < 100:
+                break
 
     def __repr__(self):
         return self.family.name+":"+self.lang
@@ -2081,7 +2079,7 @@ class Site(object):
             else:
                 return self._token
 
-    def puttoken(self,value, sysop = False):
+    def putToken(self,value, sysop = False):
         if sysop:
             self._sysoptoken = value
         else:

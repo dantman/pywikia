@@ -29,7 +29,7 @@ else:
     start='0'
 
 try:
-    for pl in wikipedia.allpages(start = start):
+    for pl in wikipedia.getSite().allpages(start = start):
         print pl
         try:
             oldtext = pl.get()

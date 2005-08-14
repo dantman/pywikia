@@ -17,7 +17,7 @@ class AllpagesPageGenerator:
         self.namespace = namespace
 
     def __iter__(self):
-        for page in wikipedia.allpages(start = self.start, namespace = self.namespace):
+        for page in wikipedia.getSite().allpages(start = self.start, namespace = self.namespace):
             yield page
 
 class ReferringPageGenerator:

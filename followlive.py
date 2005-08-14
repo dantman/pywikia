@@ -173,7 +173,7 @@ class CleaningBot:
         self.site = site
 
     def run(self):
-        for (page, date, length, loggedIn, username, comment) in wikipedia.newpages(100, repeat = True):
+        for (page, date, length, loggedIn, username, comment) in wikipedia.getSite().newpages(100, repeat = True):
             handler = PageHandler(page, date, length, loggedIn, username, comment)
             handler.run()
 

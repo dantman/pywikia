@@ -82,7 +82,7 @@ else:
 mysite = wikipedia.getSite()
 
 try:
-    for p in wikipedia.allpages(start = start, site = mysite):
+    for p in mysite.allpages(start = start):
         try:
             text=p.get()
             cats=p.rawcategories()
