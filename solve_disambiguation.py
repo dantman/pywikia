@@ -146,6 +146,8 @@ ignore_title = {
             'Overleg Wikipedia:Logboek*',
             'Gebruiker:Rex/Gestarte artikelen',
             'Gebruiker:Ucucha/Doorverwijspagina',
+            'Gebruiker:CyeZ/Klad2',
+            'Wikipedia:De kroeg/Archief.+',
          ],
          'en': [
             'Wikipedia:Links to disambiguating pages',
