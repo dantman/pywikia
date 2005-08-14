@@ -1686,29 +1686,49 @@ def resolveEsperantoXConvention(text):
     Note that to encode non-Esperanto words like Bordeaux, one uses a
     double x, i.e. Bordeauxx or BordeauxX.
     """
-    chars = [
-        (u'c', u'ĉ'),
-        (u'C', u'Ĉ'),
-        (u'g', u'ĝ'),
-        (u'G', u'Ĝ'),
-        (u'h', u'ĥ'),
-        (u'H', u'Ĥ'),
-        (u'j', u'ĵ'),
-        (u'J', u'Ĵ'),
-        (u's', u'ŝ'),
-        (u'S', u'Ŝ'),
-        (u'u', u'ŭ'),
-        (u'U', u'Ŭ')
-    ]
-    for (l, e) in chars:
-        # replace occurences of cghjsuCGHJSU which are followed by exactly one
-        # x or X by the appropriate Esperanto special character
-        text = re.sub(l + '[xX](?![xX])', e, text)
-    # replace double x with single x
-    text = re.sub('x[xX]', 'x', text)
-    text = re.sub('X[xX]', 'X', text)
+    chars = {
+        u'cx': u'ĉ',
+        u'Cx': u'Ĉ',
+        u'gx': u'ĝ',
+        u'Gx': u'Ĝ',
+        u'hx': u'ĥ',
+        u'Hx': u'Ĥ',
+        u'jx': u'ĵ',
+        u'Jx': u'Ĵ',
+        u'sx': u'ŝ',
+        u'Sx': u'Ŝ',
+        u'ux': u'ŭ',
+        u'Ux': u'Ŭ',
+        u'xx': u'x',
+        u'Xx': u'X',
+        u'cX': u'ĉ',
+        u'CX': u'Ĉ',
+        u'gX': u'ĝ',
+        u'GX': u'Ĝ',
+        u'hX': u'ĥ',
+        u'HX': u'Ĥ',
+        u'jX': u'ĵ',
+        u'JX': u'Ĵ',
+        u'sX': u'ŝ',
+        u'SX': u'Ŝ',
+        u'uX': u'ŭ',
+        u'UX': u'Ŭ',
+        u'xX': u'x',
+        u'XX': u'X'
+    }
+    # Run backwards through the text. Post fun stuff like
+    # cx, cxx, cxxx, cxxxx, cxxxxx to an eo: wiki and you will know why.
+    i = len(text) - 1
+    while i > 0:
+        if text[i-1 : i+1] in chars.keys():
+            # We found two characters that should be replaced either by an x
+            # or by an Esperanto special character.
+            text = text[:i-1] + chars[text[i-1 : i+1]] + text[i+1:]
+            i -= 2
+        else:
+            i -= 1
     return text
-
+        
 def isInterwikiLink(s, site = None):
     """Try to check whether s is in the form "xx:link" where xx: is a
        known language. In such a case we are dealing with an interwiki link."""
