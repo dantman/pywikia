@@ -36,7 +36,7 @@ class UI:
         15 = Bright White
         """
         # don't know how to colorize in a win32 command shell
-        if colors and sys.platform != 'win32':
+        if colors and config.colorized_output:
             # 
             for i in range(len(colors)-1, -1, -1):
                 if colors[i]:

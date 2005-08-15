@@ -49,7 +49,7 @@ for filename in os.listdir('families'):
 
 ############## USER INTERFACE SETTINGS ##############
 
-# the encoding that's used in the user's console, i.e. how strings are encoded
+# The encoding that's used in the user's console, i.e. how strings are encoded
 # when they are read by raw_input(). On Windows systems' DOS box, this should
 # be 'cp850' ('cp437' for older versions). Linux users might try 'iso-8859-1'
 # or 'utf-8'. If this variable is set to None, the default is 'cp850' on
@@ -61,6 +61,14 @@ userinterface = 'terminal'
 
 # Should the system bell be ringed if the bot expects user input?
 ring_bell = True
+
+# Colorization can be used to markup important text parts of the output.
+# ANSI escape codes are used for this. Unfortunatelly this only works in
+# Linux/Unix terminals.
+# Set this to False if you're not using Windows, but want to switch off
+# colors anyway. Note that switching it to True while using Windows will lead
+# to unreadable output.
+colorized_output = (sys.platform != 'win32')
 
 ############## LOGFILE SETTINGS ##############
 
