@@ -307,9 +307,11 @@ class Page(object):
 
             SectionError: The subject does not exist on a page with a # link
         """
-        for illegalChar in ['#', '+', '<', '>', '[', ']', '|', '{', '}']:
+        # \ufffd represents a badly encoded character, the other characters are
+        # disallowed by MediaWiki.
+        for illegalChar in ['#', '+', '<', '>', '[', ']', '|', '{', '}', u'\ufffd']:
             if illegalChar in self.sectionFreeTitle():
-                output(u'illegal character in %s!' % self.aslink())
+                output(u'Illegal character in %s!' % self.aslink())
                 raise NoPage('Illegal character in %s!' % self.aslink())
         if self.namespace() == -1:
                 raise NoPage('%s is in the Special namespace!' % self.aslink())
@@ -413,7 +415,7 @@ class Page(object):
                 i1 = re.search('<textarea[^>]*>', text).end()
             except AttributeError:
                 # We assume that the server is down. Wait some time, then try again.
-                print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (site.hostname(), path, retry_idle_time)
+                print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site().hostname(), path, retry_idle_time)
                 time.sleep(retry_idle_time * 60)
                 # Next time wait longer, but not longer than half an hour
                 retry_idle_time *= 2
@@ -1796,9 +1798,15 @@ class Site(object):
             charset = 'utf-8'
         # Check if this is the charset we expected
         self.checkCharset(charset)
-        # convert HTML to unicode
-        # TODO: We might want to use error='replace' in case of bad encoding.
-        return unicode(text, charset)
+        # Convert HTML to Unicode
+        try:
+            text = unicode(text, charset, errors = 'strict')
+        except UnicodeDecodeError, e:
+            print e
+            output(u'ERROR: Invalid characters found on http://%s%s, replaced by \\ufffd.' % (self.hostname(), path)) 
+            # We use error='replace' in case of bad encoding.
+            text = unicode(text, charset, errors = 'replace')
+        return text
         
     
     def newpages(self, number = 10, repeat = False):
