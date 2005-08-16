@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -382,7 +382,7 @@ class Page(object):
                 text = self.site().getUrl(path, sysop = sysop)
             except AttributeError:
                 # We assume that the server is down. Wait some time, then try again.
-                print "WARNING: Could not load %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site.hostname(), path, retry_idle_time)
+                print "WARNING: Could not load %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site().hostname(), path, retry_idle_time)
                 time.sleep(retry_idle_time * 60)
                 # Next time wait longer, but not longer than half an hour
                 retry_idle_time *= 2
