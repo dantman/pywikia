@@ -49,6 +49,31 @@ wiktionaryformats = {
         }
 }
 
+pos = {
+    u'noun': u'noun',
+    u'adjective': u'adjective',
+    u'verb': u'verb',
+}
+
+otherheaders = {
+    u'see also': u'seealso',
+    u'see': u'seealso',
+    u'translations': u'trans',
+    u'trans': u'trans',
+    u'synonyms': u'syn',
+    u'syn': u'syn',
+    u'antonyms': u'ant',
+    u'ant': u'ant',
+    u'pronunciation': u'pron',
+    u'pron': u'pron',
+    u'related terms': u'rel',
+    u'rel': u'rel',
+    u'acronym': u'acr',
+    u'acr': u'acr',
+    u'etymology': u'etym',
+    u'etym': u'etym',
+}
+
 langnames = {
     'nl':    {
         'translingual' : u'Taalonafhankelijk',
@@ -130,14 +155,38 @@ def invertlangnames():
             #Put in the names of the languages so we can easily do a reverse lookup lang name -> iso abbreviation
             invertedlangnames.setdefault(lowercaselangname, ISOKey2)
             # Now all the correct forms are in, but we also want to be able to find them when there are typos in them
-            for pos in range(1,len(lowercaselangname)):
+            for index in range(1,len(lowercaselangname)):
                 # So first we create all the possibilities with one letter gone
-                invertedlangnames.setdefault(lowercaselangname[:pos]+lowercaselangname[pos+1:], ISOKey2)
+                invertedlangnames.setdefault(lowercaselangname[:index]+lowercaselangname[index+1:], ISOKey2)
                 # Then we switch two consecutive letters
-                invertedlangnames.setdefault(lowercaselangname[:pos-1]+lowercaselangname[pos]+lowercaselangname[pos-1]+lowercaselangname[pos+1:], ISOKey2)
+                invertedlangnames.setdefault(lowercaselangname[:index-1]+lowercaselangname[index]+lowercaselangname[index-1]+lowercaselangname[index+1:], ISOKey2)
                 # There are of course other typos possible, but this caters for a lot of possibilities already
                 # TODO One other treatment that would make sense is to filter out the accents.
     return invertedlangnames
+
+def createPOSlookupDict():
+    for key in pos.keys():
+        lowercasekey=key.lower()
+        value=pos[key]
+        for index in range(1,len(lowercasekey)):
+            # So first we create all the possibilities with one letter gone
+            pos.setdefault(lowercasekey[:index]+lowercasekey[index+1:], value)
+            # Then we switch two consecutive letters
+            pos.setdefault(lowercasekey[:index-1]+lowercasekey[index]+lowercasekey[index-1]+lowercasekey[index+1:], value)
+            # There are of course other typos possible, but this caters for a lot of possibilities already
+    return pos
+
+def createOtherHeaderslookupDict():
+    for key in otherheaders.keys():
+        lowercasekey=key.lower()
+        value=otherheaders[key]
+        for index in range(1,len(lowercasekey)):
+            # So first we create all the possibilities with one letter gone
+            otherheaders.setdefault(lowercasekey[:index]+lowercasekey[index+1:], value)
+            # Then we switch two consecutive letters
+            otherheaders.setdefault(lowercasekey[:index-1]+lowercasekey[index]+lowercasekey[index-1]+lowercasekey[index+1:], value)
+            # There are of course other typos possible, but this caters for a lot of possibilities already
+    return otherheaders
 
 # A big thanks to Rob Hooft for the following class:
 # It may not seem like much, but it magically allows the translations to be sorted on
@@ -167,6 +216,7 @@ class WiktionaryPage:
         self.entries = {}        # entries is a dictionary of entry objects indexed by entrylang
         self.sortedentries = []
         self.interwikilinks = []
+        self.categories = []
 
     def setWikilang(self,wikilang):
         """ This method allows to switch the language on the fly """
@@ -216,6 +266,14 @@ class WiktionaryPage:
                     self.sortedentries.reverse()    # and put it before all the others
                     break # FIXME: If there is a cleaner way of accomplishing this
                 i-=1
+
+    def addLink(self,link):
+        """ Add a link to another wikimedia project """
+        self.interwikilinks.append(link)
+        print self.interwikilinks
+    def addCategory(self,category):
+        """ Add a link to another wikimedia project """
+        self.categories.append(category)
 
     def wikiWrap(self):
         """ Returns a string that is ready to be submitted to Wiktionary for
@@ -688,22 +746,160 @@ class Header:
         if line.count('=')>1:
             self.level = line.count('=') // 2 # integer floor division without fractional part
             self.header = line.replace('=','').strip()
-
         elif not line.find('{{')==-1:
             self.header = line.replace('{{-','').replace('-}}','').strip()
         else:
             self.header = ''
 
-        print self.level
-        print '|',self.header,'|'
+        self.header = self.header.replace('{{','').replace('}}','').strip()
 
-def parseWikiPage(ofn):
+        headerlowercase=self.header.lower()
+        # Now we now the content of the header, let's try to find out what it means:
+        if pos.has_key(headerlowercase):
+            self.type=u'pos'
+            self.contents=pos[headerlowercase]
+        if invertedlangnames.has_key(headerlowercase):
+            self.type=u'lang'
+            self.contents=invertedlangnames[headerlowercase]
+        if otherheaders.has_key(headerlowercase):
+            self.type=u'other'
+            self.contents=otherheaders[headerlowercase]
+
+def parseWikiPage(ofn,wikilang,pagetopic):
+    '''This function will parse the content of a Wiktionary page
+       and read it into our object structure'''
+    apage = WiktionaryPage(wikilang,pagetopic)
+
+    templist = []
+    context = {}
     content = open(ofn).readlines()
+
+    splitcontent=[]
+
     for line in content:
+        # Let's get rid of line breaks and extraneous white space
+        line=line.replace('\n','').strip()
+        # Let's start by looking for general stuff, that provides information which is
+        # interesting to store at the page level
+        if line.lower().find('{wikipedia}')!=-1:
+            apage.addLink('wikipedia')
+            continue
+        if line.find('[[Category:')!=-1:
+            category=line.split(':')[1].replace(']','')
+            apage.addCategory(category)
+            continue
+        if line.find('|')==-1:
+            bracketspos=line.find('[[')
+            colonpos=line.find(':')
+            if bracketspos!=-1 and colonpos!=-1 and bracketspos < colonpos:
+                # This seems to be an interwikilink
+                # If there is a pipe in it, it's not a simple interwikilink
+                linkparts=line.replace(']','').replace('[','').split(':')
+                lang=linkparts[0]
+                linkto=linkparts[1]
+                if len(lang)>1 and len(lang)<4:
+                    apage.addLink(lang+':'+linkto)
+                continue
+        # nothing to do on empty lines
         if len(line) <2: continue
 #        print 'line0:',line[0], 'line-2:',line[-2],'|','stripped line-2',line.rstrip()[-2]
         if line.strip()[0]=='='and line.rstrip()[-2]=='=' or not line.find('{{-')==-1 and not line.find('-}}')==-1:
-            context=Header(line)
+            if templist:
+                tempdictstructure={'text': templist,
+                                   'header': header,
+                                  }
+                templist=[]
+                splitcontent.append(tempdictstructure)
+                print "tempdictstructure: ", tempdictstructure
+            print "splitcontent: ",splitcontent
+            header=Header(line)
+            print header.level, header.header, header.type, header.contents
+            if header.type==u'lang':
+                context['lang']=header.contents
+                anentry=Entry(header.contents)
+            if header.type==u'pos':
+                context['pos']=header.contents
+#                if NOTDEFINED(anentry):
+#                    anentry=Entry(wikilang)
+#               if header.contents==u'noun'
+#                     context[noun]=header.contents
+#                    aterm=Noun()
+        else:
+            print line
+            # It's not a header line, so we add it to a temporary list
+            if header.contents==u'trans':
+                # Under the translations header there is quite a bit of stuff
+                # that's only needed for formatting, we can just skip that
+                # and go on with the next line
+                if line.lower().find('{top}')!=-1: continue
+                if line.lower().find('{mid}')!=-1: continue
+                if line.lower().find('{bottom}')!=-1: continue
+                if line.find('|-')!=-1: continue
+                if line.find('{|')!=-1: continue
+                if line.find('|}')!=-1: continue
+                if line.lower().find('here-->')!=-1: continue
+                if line.lower().find('width=')!=-1: continue
+                if line.lower().find('<!--left column')!=-1: continue
+                if line.lower().find('<!--right column')!=-1: continue
+
+            templist.append(line)
+            print "templist: ", templist
+            raw_input("")
+            """
+            # It's not a header line, so we try to find out what it is then
+            # What it can be depends on the context (the header under which it is encountered)
+            if header.type==u'pos':
+                if line[:2] == "'''":
+                    # This seems to be a sample.
+                    # It can be built up like this: '''example'''
+                    # Or more elaborately like this: '''voorbeeld''' (Plural: [[voorbeelden]], diminutive: [[voorbeeldje]])
+                    # Or like this: {{en-infl-reg-other-e|ic|e}}
+                    # Let's get rid of parentheses and brackets:
+                    line=line.replace('(','').replace(')','').replace('[','').replace(']','')
+                    # Then we can split it on the spaces
+                    for part in line.split(' '):
+                        if part[:2] == "'''":
+                            example=part.replace("'",'').strip()
+                            # OK, so this should be an example of the term we are describing
+                            # maybe it is necessary to compare it to the title of the page
+                        if part[:1].lower()=='pl':
+                            flag='plural'
+                        if part[:2].lower()=='dim':
+                            flag='diminutive'
+                        if flag=='plural':
+                            plural=part.replace(',','').strip()
+                        if flag=='diminutive':
+                            diminutive=part.replace(',','').strip()
+                        # This seems like a good moment to create some objects
+                        # We know the language and the part of speech
+                        # We obtained an example and occasionally plural forms and diminutives
+                if line[:1] == "{{":
+                    # Let's get rid of accolades:
+                    line=line.replace('{','').replace('}','')
+                    # Then we can split it on the dashes
+                    parts=line.split('-')
+                    lang=parts[0]
+                    what=parts[1]
+                    mode=parts[2]
+                    other=parts[3]
+                    infl=parts[4].split('|')
+                if line[:0] == "#":
+                    # This is a definition
+                    pos=line.find('<!--')
+                    if pos < 4:
+                        # A html comment at the beginning of the line means this entry already has disambiguation labels, great
+                        pos2=line.find('-->')
+                        label=line[pos+4,pos2]
+                        definition=line[pos2+1:]
+                        print label
+                    else:
+                        definition=line[1:]
+                    print "Definition: ", definition
+                if line[:1] == "#:":
+                    # This is an example for the preceding definition
+                    example=line[2:]
+                    print "Example:", example
+           """
 
 def temp():
     """
@@ -838,10 +1034,12 @@ def run():
 
 if __name__ == '__main__':
 
-    print invertlangnames()
+    invertedlangnames=invertlangnames()
+    createPOSlookupDict()
+    createOtherHeaderslookupDict()
 
 #    temp()
 #    run()
 
-#    ofn = '/home/jo/tmp/unitest.txt'
-#    parseWikiPage(ofn)
+    ofn = '/home/jo/pywikipediabot/content.txt'
+    parseWikiPage(ofn,"","")
