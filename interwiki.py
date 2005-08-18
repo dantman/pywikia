@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -387,9 +387,13 @@ class Subject(object):
                         if page2.site().language() in globalvar.neverlink:
                             print "Skipping link %s to an ignored language"% page2
                             continue
-                        if globalvar.same=='wiktionary' and page2.title().lower()!=self.inpl.title().lower():
-                            print "NOTE: Ignoring %s for %s in wiktionary mode"% (page2, self.inpl)
-                            continue
+                        if globalvar.same=='wiktionary':
+                            if page2.title().lower()!=self.inpl.title().lower():
+                                print "NOTE: Ignoring %s for %s in wiktionary mode"% (page2, self.inpl)
+                                continue
+                            elif page2.title() != self.inpl.title() and self.inpl.site().nocapitalize and page2.site().nocapitalize:
+                                print "NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized."% (page2, self.inpl)
+                                continue
                         if not globalvar.autonomous:
                             if self.inpl.namespace() != page2.namespace():
                                 if not self.foundin.has_key(page2):
