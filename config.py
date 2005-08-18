@@ -65,10 +65,9 @@ ring_bell = True
 # Colorization can be used to markup important text parts of the output.
 # ANSI escape codes are used for this. Unfortunatelly this only works in
 # Linux/Unix terminals.
-# Set this to False if you're not using Windows, but want to switch off
-# colors anyway. Note that switching it to True while using Windows will lead
-# to unreadable output.
-colorized_output = (sys.platform != 'win32')
+# Set this to False if you're using Linux and your tty doesn't support
+# ANSI colors.
+colorized_output = (sys.stdout.isatty() and sys.platform != 'win32')
 
 ############## LOGFILE SETTINGS ##############
 
