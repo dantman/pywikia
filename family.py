@@ -425,6 +425,7 @@ class Family:
                 'ro': u'Categorie',
                 'ru': u'Категория',
                 'sk': u'Kategória',
+                'sr': u'Категорија',
                 'sv': u'Kategori',
                 'tr': u'Kategori',
                 'tt': u'Törkem',
