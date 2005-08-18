@@ -415,6 +415,7 @@ class Family:
                 'ku': u'Kategorî',
                 'la': u'Categoria',
                 'li': u'Kategorie',
+                'mk': u'Категорија',
                 'nds': u'Kategorie',
                 'nl': u'Categorie',
                 'nn': u'Kategori',
