@@ -39,7 +39,7 @@ class Family(family.Family):
         # letter on some Wiktionaries.
 
         self.nocapitalize = ['af', 'bg', 'cs', 'de', 'en', 'eo', 'es',
-                        'fa', 'fr', 'gu', 'hi', 'hr', 'hu', 'it',
+                        'fa', 'fr', 'gu', 'hi', 'hr', 'hu', 'is', 'it',
                         'ja', 'ka', 'kn', 'ku', 'ml', 'nds', 'nl',
                         'sa', 'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona',
                         'tr', 'vi']
