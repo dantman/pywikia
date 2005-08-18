@@ -96,11 +96,12 @@ import difflib
 import re, urllib, codecs, sys
 import xml.sax, xml.sax.handler
 import htmlentitydefs
+import warnings
+import datetime
 
 import config, mediawiki_messages, login
 import xmlreader
-import warnings
-import datetime
+import catlib
 
 import locale
 # we'll set the locale to system default. This will ensure correct string
