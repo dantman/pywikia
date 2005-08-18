@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -101,9 +101,9 @@ import datetime
 
 import config, mediawiki_messages, login
 import xmlreader
-import catlib
 
 import locale
+
 # we'll set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
 # longer needed.
@@ -2402,3 +2402,5 @@ def stopme():
        not slow down other bots any more.
     """
     get_throttle.drop()
+
+import catlib
