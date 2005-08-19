@@ -421,6 +421,7 @@ class Family:
                 'nn': u'Kategori',
                 'no': u'Kategori',
                 'nv': u"T'ááłáhági át'éego",
+                'os': u'Категори',
                 'pl': u'Kategoria',
                 'pt': u'Categoria',
                 'ro': u'Categorie',
