@@ -411,10 +411,11 @@ class Meaning:
         """
         self.term=term
         self.definition=definition
-	self.concisedef=concisedef
+        self.concisedef=concisedef
         self.etymology=etymology
         self.synonyms=synonyms
         self.examples=examples
+        self.label=label
 
         if translations: # Why this has to be done explicitly is beyond me, but it doesn't work correctly otherwise
             self.translations=translations
@@ -620,7 +621,7 @@ class Meaning:
 
 class Term:
     """ This is a superclass for terms.  """
-    def __init__(self,lang,term,relatedwords=[],label=''):
+    def __init__(self,lang,term,relatedwords=[]): # ,label=''):
         """ Constructor
             Generally called with two parameters:
             - The language of the term
@@ -631,7 +632,7 @@ class Term:
         self.lang=lang
         self.term=term
         self.relatedwords=relatedwords
-        self.label=label
+#        self.label=label
 
     def __getitem__(self):
         """ Documenting as an afterthought is a bad idea
@@ -651,12 +652,12 @@ class Term:
     def getLang(self):
         return self.lang
 
-    def setLabel(self,label):
-        self.label=label.replace('<!--','').replace('-->','')
+#    def setLabel(self,label):
+#        self.label=label.replace('<!--','').replace('-->','')
 
-    def getLabel(self):
-        if self.label:
-            return '<!--' + self.label + '-->'
+#    def getLabel(self):
+#        if self.label:
+#            return '<!--' + self.label + '-->'
 
     def wikiWrapGender(self,wikilang):
         """ Returns a string with the gender in a format ready for Wiktionary, if it is applicable
@@ -767,7 +768,11 @@ class Header:
 
 def parseWikiPage(ofn,wikilang,pagetopic):
     '''This function will parse the content of a Wiktionary page
-       and read it into our object structure'''
+       and read it into our object structure.
+       It returns a list of dictionaries. Each dictionary contains a header object
+       and the textual content found under that header. Only relevant content is stored.
+       Empty lines and lines to create tables for presentation to the user are taken out.'''
+
     apage = WiktionaryPage(wikilang,pagetopic)
 
     templist = []
@@ -800,18 +805,22 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                 if len(lang)>1 and len(lang)<4:
                     apage.addLink(lang+':'+linkto)
                 continue
-        # nothing to do on empty lines
-        if len(line) <2: continue
+        # store empty lines literally, necessary for the blocks we don't parse 
+        # and return literally
+        if len(line) <2:
+            templist.append(line)
+            continue
 #        print 'line0:',line[0], 'line-2:',line[-2],'|','stripped line-2',line.rstrip()[-2]
         if line.strip()[0]=='='and line.rstrip()[-2]=='=' or not line.find('{{-')==-1 and not line.find('-}}')==-1:
+            # When a new header is encountered, it is necessary to store the information
+            # encountered under the previous header.
             if templist:
                 tempdictstructure={'text': templist,
                                    'header': header,
                                   }
                 templist=[]
                 splitcontent.append(tempdictstructure)
-                print "tempdictstructure: ", tempdictstructure
-            print "splitcontent: ",splitcontent
+            print "splitcontent: ",splitcontent,"\n\n"
             header=Header(line)
             print header.level, header.header, header.type, header.contents
             if header.type==u'lang':
@@ -825,7 +834,6 @@ def parseWikiPage(ofn,wikilang,pagetopic):
 #                     context[noun]=header.contents
 #                    aterm=Noun()
         else:
-            print line
             # It's not a header line, so we add it to a temporary list
             if header.contents==u'trans':
                 # Under the translations header there is quite a bit of stuff
@@ -843,13 +851,18 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                 if line.lower().find('<!--right column')!=-1: continue
 
             templist.append(line)
-            print "templist: ", templist
-            raw_input("")
-            """
-            # It's not a header line, so we try to find out what it is then
-            # What it can be depends on the context (the header under which it is encountered)
-            if header.type==u'pos':
-                if line[:2] == "'''":
+
+    for contentblock in splitcontent:
+        print "contentblock:",contentblock
+        print contentblock['header']
+        # Now we parse the text blocks.
+        # Let's start with describing what to do with content found under the POS header
+        if contentblock['header'].type==u'pos':
+            flag=False
+            for line in contentblock['text']:
+                print line
+                print line[:3]
+                if line[:3] == "'''":
                     # This seems to be a sample.
                     # It can be built up like this: '''example'''
                     # Or more elaborately like this: '''voorbeeld''' (Plural: [[voorbeelden]], diminutive: [[voorbeeldje]])
@@ -858,22 +871,26 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                     line=line.replace('(','').replace(')','').replace('[','').replace(']','')
                     # Then we can split it on the spaces
                     for part in line.split(' '):
-                        if part[:2] == "'''":
+                        print part[:3], "Flag:", flag
+                        if flag==False and part[:3] == "'''":
                             example=part.replace("'",'').strip()
+                            print 'Example:', example
                             # OK, so this should be an example of the term we are describing
                             # maybe it is necessary to compare it to the title of the page
-                        if part[:1].lower()=='pl':
+                        if part.replace("'",'')[:2].lower()=='pl':
                             flag='plural'
-                        if part[:2].lower()=='dim':
+                        if part.replace("'",'')[:3].lower()=='dim':
                             flag='diminutive'
                         if flag=='plural':
-                            plural=part.replace(',','').strip()
+                            plural=part.replace(',','').replace("'",'').strip()
+                            print 'Plural: ',plural
                         if flag=='diminutive':
-                            diminutive=part.replace(',','').strip()
+                            diminutive=part.replace(',','').replace("'",'').strip()
+                            print 'Diminutive: ',diminutive
                         # This seems like a good moment to create some objects
                         # We know the language and the part of speech
                         # We obtained an example and occasionally plural forms and diminutives
-                if line[:1] == "{{":
+                if line[:2] == "{{":
                     # Let's get rid of accolades:
                     line=line.replace('{','').replace('}','')
                     # Then we can split it on the dashes
@@ -883,23 +900,23 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                     mode=parts[2]
                     other=parts[3]
                     infl=parts[4].split('|')
-                if line[:0] == "#":
+                if line[:1] == "#":
                     # This is a definition
                     pos=line.find('<!--')
                     if pos < 4:
                         # A html comment at the beginning of the line means this entry already has disambiguation labels, great
                         pos2=line.find('-->')
-                        label=line[pos+4,pos2]
+                        label=line[pos+4:pos2]
                         definition=line[pos2+1:]
-                        print label
+                        print 'label:',label
                     else:
                         definition=line[1:]
                     print "Definition: ", definition
-                if line[:1] == "#:":
+                if line[:2] == "#:":
                     # This is an example for the preceding definition
                     example=line[2:]
                     print "Example:", example
-           """
+        raw_input("")
 
 def temp():
     """
