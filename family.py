@@ -670,6 +670,7 @@ class Family:
         'et': [u'suuna'],
         'eu': [u'bidali'],
         'ga': [u'athsheoladh'],
+        'id': [u'redirected'],
         'is': [u'tilvísun'],
         'nn': [u'omdiriger'],
         'ru': [u'перенаправление', u'перенапр'],
