@@ -71,7 +71,6 @@ class Family:
                 'fa': u'ویژه',
                 'fi': u'Toiminnot',
                 'fo': u'Serstakur',
-                'fy': u'Wiki',
                 'ga': u'Speisialta',
                 'he': u'מיוחד',
                 'hi': u'विशेष',
