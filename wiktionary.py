@@ -852,6 +852,9 @@ def parseWikiPage(ofn,wikilang,pagetopic):
 
             templist.append(line)
 
+    # make sure variables are defined
+    sample = plural = diminutive = label = definition = ''
+    examples = []
     for contentblock in splitcontent:
         print "contentblock:",contentblock
         print contentblock['header']
@@ -861,13 +864,12 @@ def parseWikiPage(ofn,wikilang,pagetopic):
             flag=False
             for line in contentblock['text']:
                 print line
-                print line[:3]
                 if line[:3] == "'''":
-                    # This seems to be a sample.
-                    # It can be built up like this: '''example'''
-                    # Or more elaborately like this: '''voorbeeld''' (Plural: [[voorbeelden]], diminutive: [[voorbeeldje]])
+                    # This seems to be an ''inflection line''
+                    # It can be built up like this: '''sample'''
+                    # Or more elaborately like this: '''staal''' (Plural: [[stalen]], diminutive: [[staaltje]])
                     # Or like this: {{en-infl-reg-other-e|ic|e}}
-                    # Let's get rid of parentheses and brackets:
+                    # Let's first get rid of parentheses and brackets:
                     line=line.replace('(','').replace(')','').replace('[','').replace(']','')
                     # Then we can split it on the spaces
                     for part in line.split(' '):
@@ -887,9 +889,6 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                         if flag=='diminutive':
                             diminutive=part.replace(',','').replace("'",'').strip()
                             print 'Diminutive: ',diminutive
-                        # This seems like a good moment to create some objects
-                        # We know the language and the part of speech
-                        # We obtained an example and occasionally plural forms and diminutives
                 if line[:2] == "{{":
                     # Let's get rid of accolades:
                     line=line.replace('{','').replace('}','')
@@ -900,8 +899,26 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                     mode=parts[2]
                     other=parts[3]
                     infl=parts[4].split('|')
+                if line[:1].isdigit():
+                    # Somebody didn't like automatic numbering and added static numbers
+                    # of their own. Let's get rid of them
+                    while line[:1].isdigit():
+                        line=line[1:]
+                    # and replace them with a hash, so the following if block picks it up
+                    line = '#' + line
                 if line[:1] == "#":
-                    # This is a definition
+                    # This probably is a definition
+                    # If we already had a definition we need to store that one's data
+                    # in a Meaning object and make that Meaning object part of the Page object
+                    # TODO
+                    ameaning = Meaning(definition=definition, label=label, examples=examples):
+                    # sample
+                    # plural and diminutive belong with the Noun object
+                    # comparative and superlative belong with the Adjective object
+                    # conjugations belong with the Verb object
+                    
+                    
+                    
                     pos=line.find('<!--')
                     if pos < 4:
                         # A html comment at the beginning of the line means this entry already has disambiguation labels, great
@@ -916,6 +933,7 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                     # This is an example for the preceding definition
                     example=line[2:]
                     print "Example:", example
+                    examples.add(example)
         raw_input("")
 
 def temp():
