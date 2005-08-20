@@ -1161,6 +1161,7 @@ if __name__ == "__main__":
                         namespace = 0
                     # old generator is used up, create a new one
                     hintlessPageGen = pagegenerators.CombinedGenerator(pagegenerators.TextfilePageGenerator('interwiki.dump'),pagegenerators.AllpagesPageGenerator(start, namespace))
+                    start = None
                 elif arg.startswith('-file:'):
                     hintlessPageGen = pagegenerators.TextfilePageGenerator(arg[6:])
                 elif arg == '-start':
