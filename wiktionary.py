@@ -1,8 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
+'''
+This module contains code to store Wiktionary content in Python objects.
+The objects can output the content again in Wiktionary format by means of the wikiWrap methods
+
+I'm currently working on a parser that can read the textual version in the various Wiktionary formats and store what it finds in the Python objects.
+
+The data dictionaries will be moved to a separate file, later on. Right now it's practical to have everything together. They also still need to be expanded to contain more languages and more Wiktionary formats. Right now I like to keep everything together to keep my sanity.
+
+The code is still very much alpha level and the scope of what it can do is still rather limited, only 3 parts of speech, only 2 different Wiktionary output formats, only langnames matrix for about 8 languages. On of the things on the todo list is to harvest the content of this matrix dictionary from the various Wiktionary projects. GerardM put them all in templates already.
+'''
+
+
 #from editarticle import EditArticle
 #import wikipedia
+import copy
 
 isolangs = ['af','sq','ar','an','hy','ast','tay','ay','az','bam','eu','bn','my','bi','bs','br','bg','sro','ca','zh','chp','rmr','co','dgd','da','de','eml','en','eo','et','fo','fi','fr','cpf','fy','fur','gl','ka','el','gu','hat','haw','he','hi','hu','io','ga','is','gil','id','ia','it','ja','jv','ku','kok','ko','hr','lad','la','lv','ln','li','lt','lb','src','ma','ms','mg','mt','mnc','mi','mr','mh','mas','myn','mn','nah','nap','na','nds','no','ny','oc','uk','oen','grc','pau','pap','pzh','fa','pl','pt','pa','qu','rap','roh','ra','ro','ja-ro','ru','smi','sm','sa','sc','sco','sr','sn','si','sk','sl','so','sov','es','scn','su','sw','tl','tt','th','ti','tox','cs','che','tn','tum','tpn','tr','ts','tvl','ur','vi','vo','wa','cy','be','wo','xh','zu','sv']
 
@@ -271,6 +284,7 @@ class WiktionaryPage:
         """ Add a link to another wikimedia project """
         self.interwikilinks.append(link)
         print self.interwikilinks
+
     def addCategory(self,category):
         """ Add a link to another wikimedia project """
         self.categories.append(category)
@@ -743,28 +757,42 @@ class Header:
         """
         self.type=''        # The type of header, i.e. lang, pos, other
         self.contents=''    # If lang, which lang? If pos, which pos?
-        self.level=0
+
+        self.level=None
+        self.header = ''
         if line.count('=')>1:
             self.level = line.count('=') // 2 # integer floor division without fractional part
-            self.header = line.replace('=','').strip()
+            self.header = line.replace('=','')
         elif not line.find('{{')==-1:
-            self.header = line.replace('{{-','').replace('-}}','').strip()
-        else:
-            self.header = ''
+            self.header = line.replace('{{-','').replace('-}}','')
 
-        self.header = self.header.replace('{{','').replace('}}','').strip()
+        print 'Header 1:', self.header
+        self.header = self.header.replace('{{','').replace('}}','').strip().lower()
+        print 'Header 2:', self.header
 
-        headerlowercase=self.header.lower()
-        # Now we now the content of the header, let's try to find out what it means:
-        if pos.has_key(headerlowercase):
+        # Now we know the content of the header, let's try to find out what it means:
+        if pos.has_key(self.header):
             self.type=u'pos'
-            self.contents=pos[headerlowercase]
-        if invertedlangnames.has_key(headerlowercase):
+            self.contents=pos[self.header]
+        if langnames.has_key(self.header):
+            print 'Found: ', self.header, 'in langnames'
             self.type=u'lang'
-            self.contents=invertedlangnames[headerlowercase]
-        if otherheaders.has_key(headerlowercase):
+            self.contents=self.header
+        if invertedlangnames.has_key(self.header):
+            print 'Found: ', self.header, 'in invertedlangnames'
+            self.type=u'lang'
+            self.contents=invertedlangnames[self.header]
+        if otherheaders.has_key(self.header):
             self.type=u'other'
-            self.contents=otherheaders[headerlowercase]
+            self.contents=otherheaders[self.header]
+
+    def __repr__(self):
+        return self.__module__+".Header("+\
+            "contents='"+self.contents+\
+            "', header='"+self.header+\
+            "', level="+str(self.level)+\
+            ", type='"+self.type+\
+            "')"
 
 def parseWikiPage(ofn,wikilang,pagetopic):
     '''This function will parse the content of a Wiktionary page
@@ -805,8 +833,8 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                 if len(lang)>1 and len(lang)<4:
                     apage.addLink(lang+':'+linkto)
                 continue
-        # store empty lines literally, necessary for the blocks we don't parse 
-        # and return literally
+        # store empty lines literally, this necessary for the blocks we don't parse 
+        # and will return literally
         if len(line) <2:
             templist.append(line)
             continue
@@ -817,28 +845,25 @@ def parseWikiPage(ofn,wikilang,pagetopic):
             if templist:
                 tempdictstructure={'text': templist,
                                    'header': header,
+                                   'context': copy.copy(context),
                                   }
                 templist=[]
                 splitcontent.append(tempdictstructure)
             print "splitcontent: ",splitcontent,"\n\n"
             header=Header(line)
-            print header.level, header.header, header.type, header.contents
+            print "Header parsed:",header.level, header.header, header.type, header.contents
             if header.type==u'lang':
                 context['lang']=header.contents
-                anentry=Entry(header.contents)
             if header.type==u'pos':
                 context['pos']=header.contents
-#                if NOTDEFINED(anentry):
-#                    anentry=Entry(wikilang)
-#               if header.contents==u'noun'
-#                     context[noun]=header.contents
-#                    aterm=Noun()
+
         else:
             # It's not a header line, so we add it to a temporary list
+            # containing content lines
             if header.contents==u'trans':
                 # Under the translations header there is quite a bit of stuff
                 # that's only needed for formatting, we can just skip that
-                # and go on with the next line
+                # and go on processing the next line
                 if line.lower().find('{top}')!=-1: continue
                 if line.lower().find('{mid}')!=-1: continue
                 if line.lower().find('{bottom}')!=-1: continue
@@ -853,13 +878,13 @@ def parseWikiPage(ofn,wikilang,pagetopic):
             templist.append(line)
 
     # make sure variables are defined
-    sample = plural = diminutive = label = definition = ''
+    gender = sample = plural = diminutive = label = definition = ''
     examples = []
     for contentblock in splitcontent:
         print "contentblock:",contentblock
         print contentblock['header']
         # Now we parse the text blocks.
-        # Let's start with describing what to do with content found under the POS header
+        # Let's start by describing what to do with content found under the POS header
         if contentblock['header'].type==u'pos':
             flag=False
             for line in contentblock['text']:
@@ -867,7 +892,7 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                 if line[:3] == "'''":
                     # This seems to be an ''inflection line''
                     # It can be built up like this: '''sample'''
-                    # Or more elaborately like this: '''staal''' (Plural: [[stalen]], diminutive: [[staaltje]])
+                    # Or more elaborately like this: '''staal''' ''n'' (Plural: [[stalen]], diminutive: [[staaltje]])
                     # Or like this: {{en-infl-reg-other-e|ic|e}}
                     # Let's first get rid of parentheses and brackets:
                     line=line.replace('(','').replace(')','').replace('[','').replace(']','')
@@ -875,10 +900,21 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                     for part in line.split(' '):
                         print part[:3], "Flag:", flag
                         if flag==False and part[:3] == "'''":
-                            example=part.replace("'",'').strip()
-                            print 'Example:', example
+                            sample=part.replace("'",'').strip()
+                            print 'Sample:', sample
                             # OK, so this should be an example of the term we are describing
                             # maybe it is necessary to compare it to the title of the page
+                        if sample:
+                            maybegender=part.replace("'",'').replace("}",'').replace("{",'').lower()
+                            if maybegender=='m':
+                               gender='m'
+                            if maybegender=='f':
+                               gender='f'
+                            if maybegender=='n':
+                                gender='n'
+                            if maybegender=='c':
+                                gender='c'
+                        print 'Gender: ',gender
                         if part.replace("'",'')[:2].lower()=='pl':
                             flag='plural'
                         if part.replace("'",'')[:3].lower()=='dim':
@@ -899,6 +935,16 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                     mode=parts[2]
                     other=parts[3]
                     infl=parts[4].split('|')
+                if sample:
+                    # We can create a Term object
+                    # TODO which term object depends on the POS
+                    print "contentblock['context'].['lang']", contentblock['context']['lang']
+                    if contentblock['header'].contents=='noun':
+                        theterm=Noun(lang=contentblock['context']['lang'], term=sample, gender=gender)
+                    if contentblock['header'].contents=='verb':
+                        theterm=Verb(lang=contentblock['context']['lang'], term=sample)
+                    sample=''
+                    raw_input("")
                 if line[:1].isdigit():
                     # Somebody didn't like automatic numbering and added static numbers
                     # of their own. Let's get rid of them
@@ -911,12 +957,16 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                     # If we already had a definition we need to store that one's data
                     # in a Meaning object and make that Meaning object part of the Page object
                     # TODO
-                    ameaning = Meaning(definition=definition, label=label, examples=examples):
-                    # sample
-                    # plural and diminutive belong with the Noun object
-                    # comparative and superlative belong with the Adjective object
-                    # conjugations belong with the Verb object
-                    
+                    if definition:
+                        ameaning = Meaning(term=theterm,definition=definition, label=label, examples=examples)
+                        # sample
+                        # plural and diminutive belong with the Noun object
+                        # comparative and superlative belong with the Adjective object
+                        # conjugations belong with the Verb object
+
+                        # Reset everything for the next round
+                        sample = plural = diminutive = label = definition = ''
+                        examples = []
                     
                     
                     pos=line.find('<!--')
@@ -934,6 +984,9 @@ def parseWikiPage(ofn,wikilang,pagetopic):
                     example=line[2:]
                     print "Example:", example
                     examples.add(example)
+        # Make sure we store the last definition
+        if definition:
+            ameaning = Meaning(term=theterm, definition=definition, label=label, examples=examples)
         raw_input("")
 
 def temp():
@@ -1020,10 +1073,12 @@ def temp():
 
     print
     u=apage.wikiWrap()
-    print u
+    print repr(u)
+    raw_input()
 
     apage.setWikilang('en')
-    print apage.wikiWrap()
+    print repr(apage.wikiWrap())
+    raw_input()
 
 
 #    {{-nl-}}
@@ -1067,14 +1122,15 @@ def run():
     else:
         wikipedia.output(u"Nothing changed")
 
+# this is setup
+invertedlangnames=invertlangnames()
+createPOSlookupDict()
+createOtherHeaderslookupDict()
+
 if __name__ == '__main__':
 
-    invertedlangnames=invertlangnames()
-    createPOSlookupDict()
-    createOtherHeaderslookupDict()
+    temp()
 
-#    temp()
-#    run()
 
-    ofn = '/home/jo/pywikipediabot/content.txt'
+    ofn = 'wiktionaryentry.txt'
     parseWikiPage(ofn,"","")
