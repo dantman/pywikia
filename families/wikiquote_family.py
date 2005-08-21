@@ -35,6 +35,17 @@ class Family(family.Family):
             '_default': u'Wikiquote talk',
             'pt': u'Wikiquote DiscussÃ£o',
         }
+
+        # attop is a list of languages that prefer to have the interwiki
+        # links at the top of the page.
+        self.interwiki_attop = ['fr', 'pl']
+
+        # on_one_line is a list of languages that want the interwiki links
+        # one-after-another on a single line
+        self.interwiki_on_one_line = ['fr', 'pl']
+        
+        # Similar for category
+        self.category_attop = ['fr', 'pl']
         
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
