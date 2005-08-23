@@ -728,7 +728,7 @@ class Page(object):
         just use title() and such, that won't matter.
         """
         categoryTitles = getCategoryLinks(self.get(), self.site(), withSortKeys = withSortKeys)
-        return [catlib.Category(self.site(), title) for title in categoryTitles]
+        return [catlib.Category(self.site(), ':'.join(title.split(':')[1:])) for title in categoryTitles]
 
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
