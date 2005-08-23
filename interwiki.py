@@ -139,7 +139,10 @@ This script understands various command-line arguments:
                    asked for (by typing '?'). Only useful in combination
                    with a hint-asking option like -untranslated, -askhints
                    or -untranslatedonly
-                   
+
+    -localonly     only work on the local wiki, not on other wikis in the family
+                   I have a login at
+
 A configuration option can be used to change the working of this robot:
 
 interwiki_backlink: if set to True, all problems in foreign wikis will
@@ -230,6 +233,7 @@ class Global(object):
     neverlink = []
     showtextlink = 0
     showtextlinkadd = 300
+    localonly = False
 
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -708,6 +712,11 @@ class Subject(object):
         """
         Returns True if saving was successful.
         """
+        if globalvar.localonly:
+            # In this case only continue on the Page we started with
+            if pl != self.pl():
+                return False
+
         if pl.title() != pl.sectionFreeTitle():
             # This is not a page, but a subpage. Do not edit it.
             wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % pl.aslink(forceInterwiki = True))
@@ -720,7 +729,7 @@ class Subject(object):
             wikipedia.output(u"BUG: %s is not in the list of new links!" % pl.aslink(forceInterwiki = True))
             return False
 
-        # Avoid adding a iw link back to itself
+        # Avoid adding an iw link back to itself
         # It must be added back on before exiting this method.
         del new[pl.site()]
         try:
@@ -1121,6 +1130,8 @@ if __name__ == "__main__":
                     globalvar.backlink = False
                 elif arg == '-noredirect':
                     globalvar.followredirect = False
+                elif arg == '-localonly':
+                    globalvar.localonly = True
                 elif arg.startswith('-years'):
                     # Look if user gave a specific year at which to start
                     # Must be a natural number or negative integer.
