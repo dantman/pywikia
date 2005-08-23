@@ -99,6 +99,7 @@ langnames = {
         'es' : u'Spaans',
         },
      'de':    {
+        'translingual' : u'???',
         'nl' : u'Niederländisch',
         'en' : u'Englisch',
         'de' : u'Deutsch',
@@ -118,6 +119,7 @@ langnames = {
         'es' : u'Spanish',
         },
     'eo':    {
+        'translingual' : u'???',
         'nl' : u'Nederlanda',
         'en' : u'Angla',
         'de' : u'Germana',
@@ -127,6 +129,7 @@ langnames = {
         'es' : u'Hispana',
         },
     'it':    {
+        'translingual' : u'???',
         'nl' : u'olandese',
         'en' : u'inglese',
         'de' : u'tedesco',
@@ -136,6 +139,7 @@ langnames = {
         'es' : u'spagnuolo',
         },
     'fr':    {
+        'translingual' : u'???',
         'nl' : u'néerlandais',
         'en' : u'anglais',
         'de' : u'allemand',
@@ -145,6 +149,7 @@ langnames = {
         'es' : u'espagnol',
         },
     'es':    {
+        'translingual' : u'???',
         'nl' : u'olandés',
         'en' : u'inglés',
         'de' : u'alemán',
@@ -289,6 +294,200 @@ class WiktionaryPage:
         """ Add a link to another wikimedia project """
         self.categories.append(category)
 
+    def parseWikiPage(self,content):
+        '''This function will parse the content of a Wiktionary page
+           and read it into our object structure.
+           It returns a list of dictionaries. Each dictionary contains a header object
+           and the textual content found under that header. Only relevant content is stored.
+           Empty lines and lines to create tables for presentation to the user are taken out.'''
+
+        templist = []
+        context = {}
+
+        splitcontent=[]
+        content=content.split('\n')
+        for line in content:
+            print line
+            # Let's get rid of line breaks and extraneous white space
+            line=line.replace('\n','').strip()
+            # Let's start by looking for general stuff, that provides information which is
+            # interesting to store at the page level
+            if line.lower().find('{wikipedia}')!=-1:
+                self.addLink('wikipedia')
+                continue
+            if line.lower().find('[[category:')!=-1:
+                category=line.split(':')[1].replace(']','')
+                self.addCategory(category)
+                print 'category: ', category
+                continue
+            if line.find('|')==-1:
+                bracketspos=line.find('[[')
+                colonpos=line.find(':')
+                if bracketspos!=-1 and colonpos!=-1 and bracketspos < colonpos:
+                    # This seems to be an interwikilink
+                    # If there is a pipe in it, it's not a simple interwikilink
+                    linkparts=line.replace(']','').replace('[','').split(':')
+                    lang=linkparts[0]
+                    linkto=linkparts[1]
+                    if len(lang)>1 and len(lang)<4:
+                        self.addLink(lang+':'+linkto)
+                    continue
+            # store empty lines literally, this necessary for the blocks we don't parse 
+            # and will return literally
+            if len(line) <2:
+                templist.append(line)
+                continue
+#        print 'line0:',line[0], 'line-2:',line[-2],'|','stripped line-2',line.rstrip()[-2]
+            if line.strip()[0]=='='and line.rstrip()[-2]=='=' or not line.find('{{-')==-1 and not line.find('-}}')==-1:
+                # When a new header is encountered, it is necessary to store the information
+                # encountered under the previous header.
+                if templist:
+                    tempdictstructure={'text': templist,
+                                       'header': header,
+                                       'context': copy.copy(context),
+                                      }
+                    templist=[]
+                    splitcontent.append(tempdictstructure)
+                print "splitcontent: ",splitcontent,"\n\n"
+                header=Header(line)
+                print "Header parsed:",header.level, header.header, header.type, header.contents
+                if header.type==u'lang':
+                    context['lang']=header.contents
+                if header.type==u'pos':
+                    context['pos']=header.contents
+
+            else:
+                # It's not a header line, so we add it to a temporary list
+                # containing content lines
+                if header.contents==u'trans':
+                    # Under the translations header there is quite a bit of stuff
+                    # that's only needed for formatting, we can just skip that
+                    # and go on processing the next line
+                    if line.lower().find('{top}')!=-1: continue
+                    if line.lower().find('{mid}')!=-1: continue
+                    if line.lower().find('{bottom}')!=-1: continue
+                    if line.find('|-')!=-1: continue
+                    if line.find('{|')!=-1: continue
+                    if line.find('|}')!=-1: continue
+                    if line.lower().find('here-->')!=-1: continue
+                    if line.lower().find('width=')!=-1: continue
+                    if line.lower().find('<!--left column')!=-1: continue
+                    if line.lower().find('<!--right column')!=-1: continue
+
+                templist.append(line)
+
+        # make sure variables are defined
+        gender = sample = plural = diminutive = label = definition = ''
+        examples = []
+        for contentblock in splitcontent:
+            print "contentblock:",contentblock
+            print contentblock['header']
+            # Now we parse the text blocks.
+            # Let's start by describing what to do with content found under the POS header
+            if contentblock['header'].type==u'pos':
+                flag=False
+                for line in contentblock['text']:
+                    print line
+                    if line[:3] == "'''":
+                        # This seems to be an ''inflection line''
+                        # It can be built up like this: '''sample'''
+                        # Or more elaborately like this: '''staal''' ''n'' (Plural: [[stalen]],     diminutive: [[staaltje]])
+                        # Or like this: {{en-infl-reg-other-e|ic|e}}
+                        # Let's first get rid of parentheses and brackets:
+                        line=line.replace('(','').replace(')','').replace('[','').replace(']','')
+                        # Then we can split it on the spaces
+                        for part in line.split(' '):
+                            print part[:3], "Flag:", flag
+                            if flag==False and part[:3] == "'''":
+                                sample=part.replace("'",'').strip()
+                                print 'Sample:', sample
+                                # OK, so this should be an example of the term we are describing
+                                # maybe it is necessary to compare it to the title of the page
+                            if sample:
+                                maybegender=part.replace("'",'').replace("}",'').replace("{",'').lower()
+                                if maybegender=='m':
+                                   gender='m'
+                                if maybegender=='f':
+                                   gender='f'
+                                if maybegender=='n':
+                                    gender='n'
+                                if maybegender=='c':
+                                    gender='c'
+                            print 'Gender: ',gender
+                            if part.replace("'",'')[:2].lower()=='pl':
+                                flag='plural'
+                            if part.replace("'",'')[:3].lower()=='dim':
+                                flag='diminutive'
+                            if flag=='plural':
+                                plural=part.replace(',','').replace("'",'').strip()
+                                print 'Plural: ',plural
+                            if flag=='diminutive':
+                                diminutive=part.replace(',','').replace("'",'').strip()
+                                print 'Diminutive: ',diminutive
+                    if line[:2] == "{{":
+                        # Let's get rid of accolades:
+                        line=line.replace('{','').replace('}','')
+                        # Then we can split it on the dashes
+                        parts=line.split('-')
+                        lang=parts[0]
+                        what=parts[1]
+                        mode=parts[2]
+                        other=parts[3]
+                        infl=parts[4].split('|')
+                    if sample:
+                        # We can create a Term object
+                        # TODO which term object depends on the POS
+                        print "contentblock['context'].['lang']", contentblock['context']['lang']
+                        if contentblock['header'].contents=='noun':
+                            theterm=Noun(lang=contentblock['context']['lang'], term=sample, gender=gender)
+                        if contentblock['header'].contents=='verb':
+                            theterm=Verb(lang=contentblock['context']['lang'], term=sample)
+                        sample=''
+                        raw_input("")
+                    if line[:1].isdigit():
+                        # Somebody didn't like automatic numbering and added static numbers
+                        # of their own. Let's get rid of them
+                        while line[:1].isdigit():
+                            line=line[1:]
+                        # and replace them with a hash, so the following if block picks it up
+                        line = '#' + line
+                    if line[:1] == "#":
+                        # This probably is a definition
+                        # If we already had a definition we need to store that one's data
+                        # in a Meaning object and make that Meaning object part of the Page object
+                        # TODO
+                        if definition:
+                            ameaning = Meaning(term=theterm,definition=definition, label=label, examples=examples)
+                            # sample
+                            # plural and diminutive belong with the Noun object
+                            # comparative and superlative belong with the Adjective object
+                            # conjugations belong with the Verb object
+
+                            # Reset everything for the next round
+                            sample = plural = diminutive = label = definition = ''
+                            examples = []
+                    
+                    
+                        pos=line.find('<!--')
+                        if pos < 4:
+                            # A html comment at the beginning of the line means this entry already has disambiguation labels, great
+                            pos2=line.find('-->')
+                            label=line[pos+4:pos2]
+                            definition=line[pos2+1:]
+                            print 'label:',label
+                        else:
+                            definition=line[1:]
+                        print "Definition: ", definition
+                    if line[:2] == "#:":
+                        # This is an example for the preceding definition
+                        example=line[2:]
+                        print "Example:", example
+                        examples.add(example)
+            # Make sure we store the last definition
+            if definition:
+                ameaning = Meaning(term=theterm, definition=definition, label=label, examples=examples)
+#            raw_input("")
+
     def wikiWrap(self):
         """ Returns a string that is ready to be submitted to Wiktionary for
             this page
@@ -343,7 +542,7 @@ class Entry:
         self.entrylang=entrylang
         self.meanings = {} # a dictionary containing the meanings for this term grouped by part of speech
 	if meaning:
-            addMeaning(meaning)
+            self.addMeaning(meaning)
         self.posorder = [] # we don't want to shuffle the order of the parts of speech, so we keep a list to keep the order in which they were encountered
 
     def addMeaning(self,meaning):
@@ -766,20 +965,16 @@ class Header:
         elif not line.find('{{')==-1:
             self.header = line.replace('{{-','').replace('-}}','')
 
-        print 'Header 1:', self.header
         self.header = self.header.replace('{{','').replace('}}','').strip().lower()
-        print 'Header 2:', self.header
 
         # Now we know the content of the header, let's try to find out what it means:
         if pos.has_key(self.header):
             self.type=u'pos'
             self.contents=pos[self.header]
         if langnames.has_key(self.header):
-            print 'Found: ', self.header, 'in langnames'
             self.type=u'lang'
             self.contents=self.header
         if invertedlangnames.has_key(self.header):
-            print 'Found: ', self.header, 'in invertedlangnames'
             self.type=u'lang'
             self.contents=invertedlangnames[self.header]
         if otherheaders.has_key(self.header):
@@ -794,200 +989,6 @@ class Header:
             ", type='"+self.type+\
             "')"
 
-def parseWikiPage(ofn,wikilang,pagetopic):
-    '''This function will parse the content of a Wiktionary page
-       and read it into our object structure.
-       It returns a list of dictionaries. Each dictionary contains a header object
-       and the textual content found under that header. Only relevant content is stored.
-       Empty lines and lines to create tables for presentation to the user are taken out.'''
-
-    apage = WiktionaryPage(wikilang,pagetopic)
-
-    templist = []
-    context = {}
-    content = open(ofn).readlines()
-
-    splitcontent=[]
-
-    for line in content:
-        # Let's get rid of line breaks and extraneous white space
-        line=line.replace('\n','').strip()
-        # Let's start by looking for general stuff, that provides information which is
-        # interesting to store at the page level
-        if line.lower().find('{wikipedia}')!=-1:
-            apage.addLink('wikipedia')
-            continue
-        if line.find('[[Category:')!=-1:
-            category=line.split(':')[1].replace(']','')
-            apage.addCategory(category)
-            continue
-        if line.find('|')==-1:
-            bracketspos=line.find('[[')
-            colonpos=line.find(':')
-            if bracketspos!=-1 and colonpos!=-1 and bracketspos < colonpos:
-                # This seems to be an interwikilink
-                # If there is a pipe in it, it's not a simple interwikilink
-                linkparts=line.replace(']','').replace('[','').split(':')
-                lang=linkparts[0]
-                linkto=linkparts[1]
-                if len(lang)>1 and len(lang)<4:
-                    apage.addLink(lang+':'+linkto)
-                continue
-        # store empty lines literally, this necessary for the blocks we don't parse 
-        # and will return literally
-        if len(line) <2:
-            templist.append(line)
-            continue
-#        print 'line0:',line[0], 'line-2:',line[-2],'|','stripped line-2',line.rstrip()[-2]
-        if line.strip()[0]=='='and line.rstrip()[-2]=='=' or not line.find('{{-')==-1 and not line.find('-}}')==-1:
-            # When a new header is encountered, it is necessary to store the information
-            # encountered under the previous header.
-            if templist:
-                tempdictstructure={'text': templist,
-                                   'header': header,
-                                   'context': copy.copy(context),
-                                  }
-                templist=[]
-                splitcontent.append(tempdictstructure)
-            print "splitcontent: ",splitcontent,"\n\n"
-            header=Header(line)
-            print "Header parsed:",header.level, header.header, header.type, header.contents
-            if header.type==u'lang':
-                context['lang']=header.contents
-            if header.type==u'pos':
-                context['pos']=header.contents
-
-        else:
-            # It's not a header line, so we add it to a temporary list
-            # containing content lines
-            if header.contents==u'trans':
-                # Under the translations header there is quite a bit of stuff
-                # that's only needed for formatting, we can just skip that
-                # and go on processing the next line
-                if line.lower().find('{top}')!=-1: continue
-                if line.lower().find('{mid}')!=-1: continue
-                if line.lower().find('{bottom}')!=-1: continue
-                if line.find('|-')!=-1: continue
-                if line.find('{|')!=-1: continue
-                if line.find('|}')!=-1: continue
-                if line.lower().find('here-->')!=-1: continue
-                if line.lower().find('width=')!=-1: continue
-                if line.lower().find('<!--left column')!=-1: continue
-                if line.lower().find('<!--right column')!=-1: continue
-
-            templist.append(line)
-
-    # make sure variables are defined
-    gender = sample = plural = diminutive = label = definition = ''
-    examples = []
-    for contentblock in splitcontent:
-        print "contentblock:",contentblock
-        print contentblock['header']
-        # Now we parse the text blocks.
-        # Let's start by describing what to do with content found under the POS header
-        if contentblock['header'].type==u'pos':
-            flag=False
-            for line in contentblock['text']:
-                print line
-                if line[:3] == "'''":
-                    # This seems to be an ''inflection line''
-                    # It can be built up like this: '''sample'''
-                    # Or more elaborately like this: '''staal''' ''n'' (Plural: [[stalen]], diminutive: [[staaltje]])
-                    # Or like this: {{en-infl-reg-other-e|ic|e}}
-                    # Let's first get rid of parentheses and brackets:
-                    line=line.replace('(','').replace(')','').replace('[','').replace(']','')
-                    # Then we can split it on the spaces
-                    for part in line.split(' '):
-                        print part[:3], "Flag:", flag
-                        if flag==False and part[:3] == "'''":
-                            sample=part.replace("'",'').strip()
-                            print 'Sample:', sample
-                            # OK, so this should be an example of the term we are describing
-                            # maybe it is necessary to compare it to the title of the page
-                        if sample:
-                            maybegender=part.replace("'",'').replace("}",'').replace("{",'').lower()
-                            if maybegender=='m':
-                               gender='m'
-                            if maybegender=='f':
-                               gender='f'
-                            if maybegender=='n':
-                                gender='n'
-                            if maybegender=='c':
-                                gender='c'
-                        print 'Gender: ',gender
-                        if part.replace("'",'')[:2].lower()=='pl':
-                            flag='plural'
-                        if part.replace("'",'')[:3].lower()=='dim':
-                            flag='diminutive'
-                        if flag=='plural':
-                            plural=part.replace(',','').replace("'",'').strip()
-                            print 'Plural: ',plural
-                        if flag=='diminutive':
-                            diminutive=part.replace(',','').replace("'",'').strip()
-                            print 'Diminutive: ',diminutive
-                if line[:2] == "{{":
-                    # Let's get rid of accolades:
-                    line=line.replace('{','').replace('}','')
-                    # Then we can split it on the dashes
-                    parts=line.split('-')
-                    lang=parts[0]
-                    what=parts[1]
-                    mode=parts[2]
-                    other=parts[3]
-                    infl=parts[4].split('|')
-                if sample:
-                    # We can create a Term object
-                    # TODO which term object depends on the POS
-                    print "contentblock['context'].['lang']", contentblock['context']['lang']
-                    if contentblock['header'].contents=='noun':
-                        theterm=Noun(lang=contentblock['context']['lang'], term=sample, gender=gender)
-                    if contentblock['header'].contents=='verb':
-                        theterm=Verb(lang=contentblock['context']['lang'], term=sample)
-                    sample=''
-                    raw_input("")
-                if line[:1].isdigit():
-                    # Somebody didn't like automatic numbering and added static numbers
-                    # of their own. Let's get rid of them
-                    while line[:1].isdigit():
-                        line=line[1:]
-                    # and replace them with a hash, so the following if block picks it up
-                    line = '#' + line
-                if line[:1] == "#":
-                    # This probably is a definition
-                    # If we already had a definition we need to store that one's data
-                    # in a Meaning object and make that Meaning object part of the Page object
-                    # TODO
-                    if definition:
-                        ameaning = Meaning(term=theterm,definition=definition, label=label, examples=examples)
-                        # sample
-                        # plural and diminutive belong with the Noun object
-                        # comparative and superlative belong with the Adjective object
-                        # conjugations belong with the Verb object
-
-                        # Reset everything for the next round
-                        sample = plural = diminutive = label = definition = ''
-                        examples = []
-                    
-                    
-                    pos=line.find('<!--')
-                    if pos < 4:
-                        # A html comment at the beginning of the line means this entry already has disambiguation labels, great
-                        pos2=line.find('-->')
-                        label=line[pos+4:pos2]
-                        definition=line[pos2+1:]
-                        print 'label:',label
-                    else:
-                        definition=line[1:]
-                    print "Definition: ", definition
-                if line[:2] == "#:":
-                    # This is an example for the preceding definition
-                    example=line[2:]
-                    print "Example:", example
-                    examples.add(example)
-        # Make sure we store the last definition
-        if definition:
-            ameaning = Meaning(term=theterm, definition=definition, label=label, examples=examples)
-        raw_input("")
 
 def temp():
     """
@@ -1133,4 +1134,7 @@ if __name__ == '__main__':
 
 
     ofn = 'wiktionaryentry.txt'
-    parseWikiPage(ofn,"","")
+    content = open(ofn).readlines()
+
+    apage = WiktionaryPage(wikilang,pagetopic)
+    apage.parseWikiPage(content)
