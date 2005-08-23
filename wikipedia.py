@@ -841,7 +841,10 @@ class Page(object):
         # regular expression matching one edit in the version history.
         # results will have 3 groups: edit date/time, user name, and edit
         # summary.
-        editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
+        if self.site().version() < "1.4":
+            editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
+        else:
+            editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
         edits = editR.findall(self._versionhistory)
         return edits
     
