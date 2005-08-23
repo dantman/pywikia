@@ -1281,7 +1281,7 @@ def replaceExceptNowikiAndComments(text, old, new):
 
 # Part of library dealing with interwiki links
 
-def getLanguageLinks(text, insite = None):
+def getLanguageLinks(text, insite = None, getPageObjects = False):
     """Returns a dictionary of other language links mentioned in the text
        in the form {code:pagename}. Do not call this routine directly, use
        Page objects instead"""
@@ -1316,7 +1316,11 @@ def getLanguageLinks(text, insite = None):
             if not pagetitle:
                 output(u"ERROR: ignoring impossible link to %s:%s" % (lang, pagetitle))
             else:
-                result[insite.getSite(code=lang)] = pagetitle
+                if getPageObjects:
+                    # if getPageObjects is true, we want the actual page objects rather than the titles
+                    result[insite.getSite(code=lang)] = Page(insite.getSite(code=lang),pagetitle)
+                else:
+                    result[insite.getSite(code=lang)] = pagetitle
     return result
 
 def removeLanguageLinks(text, site = None):
@@ -1477,7 +1481,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
     # interwiki tags appear below category tags if both are set
     # to appear at the bottom of the article
     if not site.lang in site.family.categories_last:
-        interwiki_links = getLanguageLinks(oldtext, insite = site)
+        interwiki_links = getLanguageLinks(oldtext, insite = site, getPageObjects = True)
         oldtext = removeLanguageLinks(oldtext, site = site)
     s = categoryFormat(new, insite = site)
     s2 = removeCategoryLinks(oldtext, site = site)
