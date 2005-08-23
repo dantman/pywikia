@@ -258,37 +258,30 @@ class WiktionaryPage:
             self.sortedentries = self.entries.keys()
             self.sortedentries.sort(sortonname(langnames[self.wikilang]))
 
-            i = 0
-            while i< len(self.sortedentries):
-                x = self.sortedentries[i]
-                if x == self.wikilang:    # search the entry of the same language of the Wiktionary
-                    samelangentry = self.sortedentries[i]
-                    del self.sortedentries[i]
-                    self.sortedentries.reverse()
-                    self.sortedentries.append(samelangentry)
-                    self.sortedentries.reverse()    # and put it before all the others
-                    break # FIXME: If there is a cleaner way of accomplishing this
-                i+=1
+            try:
+                samelangentrypos=self.sortedentries.index(self.wikilang)
+            except (ValueError):
+                # wikilang isn't in the list, do nothing
+                pass
+            else:
+                samelangentry=self.sortedentries[samelangentrypos]
+                self.sortedentries.remove(self.wikilang)
+                self.sortedentries.insert(0,samelangentry)
 
-            # The same needs to be done to get the translingual on top
-
-            i = len(self.sortedentries)-1
-
-            while i>0 :
-                x = self.sortedentries[i]
-                if x == u'translingual':    # search the Translingual entry
-                    translingualentry = self.sortedentries[i]
-                    del self.sortedentries[i]
-                    self.sortedentries.reverse()
-                    self.sortedentries.append(translingualentry)
-                    self.sortedentries.reverse()    # and put it before all the others
-                    break # FIXME: If there is a cleaner way of accomplishing this
-                i-=1
+            try:
+                translingualentrypos=self.sortedentries.index(u'translingual')
+            except (ValueError):
+                # translingual isn't in the list, do nothing
+                pass
+            else:
+                translingualentry=self.sortedentries[translingualentrypos]
+                self.sortedentries.remove(u'translingual')
+                self.sortedentries.insert(0,translingualentry)
 
     def addLink(self,link):
         """ Add a link to another wikimedia project """
         self.interwikilinks.append(link)
-        print self.interwikilinks
+ #       print self.interwikilinks
 
     def addCategory(self,category):
         """ Add a link to another wikimedia project """
@@ -307,7 +300,7 @@ class WiktionaryPage:
         splitcontent=[]
         content=content.split('\n')
         for line in content:
-            print line
+ #           print line
             # Let's get rid of line breaks and extraneous white space
             line=line.replace('\n','').strip()
             # Let's start by looking for general stuff, that provides information which is
@@ -318,7 +311,7 @@ class WiktionaryPage:
             if line.lower().find('[[category:')!=-1:
                 category=line.split(':')[1].replace(']','')
                 self.addCategory(category)
-                print 'category: ', category
+#                print 'category: ', category
                 continue
             if line.find('|')==-1:
                 bracketspos=line.find('[[')
@@ -348,9 +341,9 @@ class WiktionaryPage:
                                       }
                     templist=[]
                     splitcontent.append(tempdictstructure)
-                print "splitcontent: ",splitcontent,"\n\n"
+#                print "splitcontent: ",splitcontent,"\n\n"
                 header=Header(line)
-                print "Header parsed:",header.level, header.header, header.type, header.contents
+#                print "Header parsed:",header.level, header.header, header.type, header.contents
                 if header.type==u'lang':
                     context['lang']=header.contents
                 if header.type==u'pos':
@@ -380,14 +373,14 @@ class WiktionaryPage:
         gender = sample = plural = diminutive = label = definition = ''
         examples = []
         for contentblock in splitcontent:
-            print "contentblock:",contentblock
-            print contentblock['header']
+ #           print "contentblock:",contentblock
+ #           print contentblock['header']
             # Now we parse the text blocks.
             # Let's start by describing what to do with content found under the POS header
             if contentblock['header'].type==u'pos':
                 flag=False
                 for line in contentblock['text']:
-                    print line
+  #                  print line
                     if line[:3] == "'''":
                         # This seems to be an ''inflection line''
                         # It can be built up like this: '''sample'''
@@ -397,10 +390,10 @@ class WiktionaryPage:
                         line=line.replace('(','').replace(')','').replace('[','').replace(']','')
                         # Then we can split it on the spaces
                         for part in line.split(' '):
-                            print part[:3], "Flag:", flag
+#                            print part[:3], "Flag:", flag
                             if flag==False and part[:3] == "'''":
                                 sample=part.replace("'",'').strip()
-                                print 'Sample:', sample
+#                                print 'Sample:', sample
                                 # OK, so this should be an example of the term we are describing
                                 # maybe it is necessary to compare it to the title of the page
                             if sample:
@@ -413,17 +406,17 @@ class WiktionaryPage:
                                     gender='n'
                                 if maybegender=='c':
                                     gender='c'
-                            print 'Gender: ',gender
+#                            print 'Gender: ',gender
                             if part.replace("'",'')[:2].lower()=='pl':
                                 flag='plural'
                             if part.replace("'",'')[:3].lower()=='dim':
                                 flag='diminutive'
                             if flag=='plural':
                                 plural=part.replace(',','').replace("'",'').strip()
-                                print 'Plural: ',plural
+#                                print 'Plural: ',plural
                             if flag=='diminutive':
                                 diminutive=part.replace(',','').replace("'",'').strip()
-                                print 'Diminutive: ',diminutive
+#                                print 'Diminutive: ',diminutive
                     if line[:2] == "{{":
                         # Let's get rid of accolades:
                         line=line.replace('{','').replace('}','')
@@ -437,13 +430,13 @@ class WiktionaryPage:
                     if sample:
                         # We can create a Term object
                         # TODO which term object depends on the POS
-                        print "contentblock['context'].['lang']", contentblock['context']['lang']
+#                        print "contentblock['context'].['lang']", contentblock['context']['lang']
                         if contentblock['header'].contents=='noun':
                             theterm=Noun(lang=contentblock['context']['lang'], term=sample, gender=gender)
                         if contentblock['header'].contents=='verb':
                             theterm=Verb(lang=contentblock['context']['lang'], term=sample)
                         sample=''
-                        raw_input("")
+#                        raw_input("")
                     if line[:1].isdigit():
                         # Somebody didn't like automatic numbering and added static numbers
                         # of their own. Let's get rid of them
@@ -474,14 +467,14 @@ class WiktionaryPage:
                             pos2=line.find('-->')
                             label=line[pos+4:pos2]
                             definition=line[pos2+1:]
-                            print 'label:',label
+#                            print 'label:',label
                         else:
                             definition=line[1:]
-                        print "Definition: ", definition
+#                        print "Definition: ", definition
                     if line[:2] == "#:":
                         # This is an example for the preceding definition
                         example=line[2:]
-                        print "Example:", example
+#                        print "Example:", example
                         examples.add(example)
             # Make sure we store the last definition
             if definition:

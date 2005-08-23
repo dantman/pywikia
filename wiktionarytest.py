@@ -233,8 +233,6 @@ The translations below need to be checked by native speakers and inserted into t
             apage = wiktionary.WiktionaryPage(value['wikilang'],value['term'])
             apage.parseWikiPage(value['wikiformat'])
 
-            print apage.categories
-            print internalrepresentation[0]
             self.assertEqual(apage.categories, internalrepresentation[0])
 
 '''
