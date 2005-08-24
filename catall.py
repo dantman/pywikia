@@ -91,7 +91,7 @@ try:
                 print "No categories"
                 print "----------------------------------------"
                 newcats=choosecats(text)
-                if newcats != [] and newcats != None:
+                if newcats != [] and newcats is not None:
                     make_categories(p, newcats, mysite)
             else:
                 if docorrections:

@@ -510,7 +510,7 @@ class Subject(object):
         for page, referrers in self.foundin.iteritems():
             for refPage in referrers:
                 # if page was given as a hint, referrers would be [None]
-                if refPage != None:
+                if refPage is not None:
                     sourceLabel = '"%s:%s"' % (refPage.site().language(), wikipedia.unicode2html(refPage.title(), 'ascii'))
                     targetLabel = '"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii'))
                     edge = pydot.Edge(sourceLabel, targetLabel)

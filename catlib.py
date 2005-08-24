@@ -273,7 +273,7 @@ def change_category(article, old_cat_title, new_cat_title):
     if not removed:
         wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), old_cat_title))
         return
-    if new_cat_title != None:
+    if new_cat_title is not None:
         if sort_key == '':
             new_cat = Category(site, new_cat_title)
         else:

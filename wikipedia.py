@@ -578,7 +578,7 @@ class Page(object):
                 import watchlist
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
-        sysop = (self.editRestriction != None)
+        sysop = (self.editRestriction is not None)
         return self.putPage(newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
     def putPage(self, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None, gettoken = False, sysop = False):
@@ -1748,7 +1748,7 @@ class Site(object):
                 # also check if we have new messages
                 if '<div class="usermessage">' in text:
                     output(u'NOTE: You have unread messages on %s' % self)
-        return (self.loggedInAs != None)
+        return (self.loggedInAs is not None)
     
     def cookies(self, sysop = False):
         # TODO: cookie caching is disabled
@@ -1845,7 +1845,7 @@ class Site(object):
                 title = m.group('title')
                 title = title.replace('&quot;', '"')
                 length = int(m.group('length'))
-                loggedIn = (m.group('loggedin') != None)
+                loggedIn = (m.group('loggedin') is not None)
                 username = m.group('username')
                 comment = m.group('comment')
     
@@ -2040,7 +2040,7 @@ class Site(object):
         list=()
         for n in self.family.namespaces:
             ns = self.family.namespace(self.lang, n)
-            if ns != None:
+            if ns is not None:
                 list += (self.family.namespace(self.lang, n),)
         return list
 

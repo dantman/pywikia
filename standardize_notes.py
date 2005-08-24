@@ -429,7 +429,7 @@ class ReplaceRobot:
                 else:
                     wikipedia.output( u'Error accessing URL.' )
             else:
-                if urlobj != None:
+                if urlobj is not None:
                     wikipedia.output( u':::URL: ' + extlink_linkname )
                     # urlinfo = urlobj.info()
                     aline = urlobj.read()
@@ -598,7 +598,7 @@ class ReplaceRobot:
                     new_text = new_text + text_line	# copy section headline
                     if self.references != []:
                         for newref in self.references:		# scan through all references
-                            if newref != None:
+                            if newref is not None:
                                 new_text = new_text + newref    # insert references
                         self.references = []			# empty references
                 else:
@@ -632,7 +632,7 @@ class ReplaceRobot:
                     new_text = new_text + '== References ==\n'	# set to standard name
                     if self.references != []:
                         for newref in self.references:		# scan through all references
-                            if newref != None:
+                            if newref is not None:
                                 new_text = new_text + newref    # insert references
                         self.references = []			# empty references
                 else:

@@ -119,7 +119,7 @@ def getPoisonedLinks(pl):
     wikipedia.output( u'getting poisoned links for %s' % pl.title() )
 
     dictName, year = date.getDictionaryYear( pl.site().language(), pl.title() )
-    if dictName != None:
+    if dictName is not None:
         wikipedia.output( u'date found in %s' % dictName )
         
         # errors in year BC

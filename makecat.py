@@ -50,7 +50,7 @@ def isdate(s):
     """returns true iff s is a date or year
     """
     dict,val = date.getDictionaryYear( wikipedia.getSite().language(), s ) 
-    return dict != None
+    return dict is not None
 
 def needcheck(pl):
     if checked.has_key(pl):
