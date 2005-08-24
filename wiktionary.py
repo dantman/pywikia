@@ -280,6 +280,10 @@ class WiktionaryPage:
 
     def addLink(self,link):
         """ Add a link to another wikimedia project """
+        link=link.replace('[','').replace(']','')
+        pos=link.find(':')
+        if pos!=1:
+            link=link[:pos]
         self.interwikilinks.append(link)
  #       print self.interwikilinks
 
@@ -347,6 +351,10 @@ class WiktionaryPage:
                 if header.type==u'lang':
                     context['lang']=header.contents
                 if header.type==u'pos':
+                    if not(context.has_key('lang')):
+                        # This entry lacks a language indicator,
+                        # so we assume it is the same language as the Wiktionary we're working on
+                        context['lang']=self.wikilang
                     context['pos']=header.contents
 
             else:
@@ -369,18 +377,27 @@ class WiktionaryPage:
 
                 templist.append(line)
 
+            # Let's not forget the last block that was encountered
+            if templist:
+                tempdictstructure={'text': templist,
+                                   'header': header,
+                                   'context': copy.copy(context),
+                                  }
+                splitcontent.append(tempdictstructure)
+
+
         # make sure variables are defined
         gender = sample = plural = diminutive = label = definition = ''
         examples = []
         for contentblock in splitcontent:
- #           print "contentblock:",contentblock
- #           print contentblock['header']
+#            print "contentblock:",contentblock
+#            print contentblock['header']
             # Now we parse the text blocks.
             # Let's start by describing what to do with content found under the POS header
             if contentblock['header'].type==u'pos':
                 flag=False
                 for line in contentblock['text']:
-  #                  print line
+#                    print line
                     if line[:3] == "'''":
                         # This seems to be an ''inflection line''
                         # It can be built up like this: '''sample'''
@@ -448,9 +465,9 @@ class WiktionaryPage:
                         # This probably is a definition
                         # If we already had a definition we need to store that one's data
                         # in a Meaning object and make that Meaning object part of the Page object
-                        # TODO
                         if definition:
                             ameaning = Meaning(term=theterm,definition=definition, label=label, examples=examples)
+
                             # sample
                             # plural and diminutive belong with the Noun object
                             # comparative and superlative belong with the Adjective object
@@ -459,8 +476,16 @@ class WiktionaryPage:
                             # Reset everything for the next round
                             sample = plural = diminutive = label = definition = ''
                             examples = []
-                    
-                    
+
+                            if not(self.entries.has_key(contentblock['context']['lang'])):
+                                # If no entry for this language has been foreseen yet
+                                # let's create one
+                                anentry = Entry(contentblock['context']['lang'])
+                                # and add it to our page object
+                                self.addEntry(anentry)
+                            # Then we can easily add this meaning to it.
+                            anentry.addMeaning(ameaning)
+                            
                         pos=line.find('<!--')
                         if pos < 4:
                             # A html comment at the beginning of the line means this entry already has disambiguation labels, great
@@ -479,7 +504,15 @@ class WiktionaryPage:
             # Make sure we store the last definition
             if definition:
                 ameaning = Meaning(term=theterm, definition=definition, label=label, examples=examples)
-#            raw_input("")
+                if not(self.entries.has_key(contentblock['context']['lang'])):
+                    # If no entry for this language has been foreseen yet
+                    # let's create one
+                    anentry = Entry(contentblock['context']['lang'])
+                    # and add it to our page object
+                    self.addEntry(anentry)
+                    # Then we can easily add this meaning to it.
+                    anentry.addMeaning(ameaning)
+ #            raw_input("")
 
     def wikiWrap(self):
         """ Returns a string that is ready to be submitted to Wiktionary for
@@ -952,6 +985,7 @@ class Header:
 
         self.level=None
         self.header = ''
+
         if line.count('=')>1:
             self.level = line.count('=') // 2 # integer floor division without fractional part
             self.header = line.replace('=','')

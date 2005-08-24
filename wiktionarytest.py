@@ -199,7 +199,7 @@ The translations below need to be checked by native speakers and inserted into t
    'internalrep':
     (
      [u'1000 English basic words',u'Colors',u'Browns',u'Trees',u'Foods'],
-     [u'io','ia'],
+     [u'io','la'],
      {u'en':
       [u'nut', None, u'nuts',
        [{'definition': u'A hard-shelled seed', 'concisedef': u'seed',
@@ -219,12 +219,12 @@ The translations below need to be checked by native speakers and inserted into t
       ],
        u'nl':
       [u'nut', 'n', None,
-       ['[[use]], [[benefit]]']
+       [{'definition': u'[[use]], [[benefit]]'}]
       ],
      }
      )
     },{'wikilang': 'en', 'term': 'nut', 'wikiformat': u"""[[category:Foods]]
-[[category:Drinks]]""", 'internalrep': ([u'Foods', u'Drinks'],[])})
+[[category:Drinks]]""", 'internalrep': ([u'Foods', u'Drinks'],[],{})})
 
     def testWhetherCategoriesAreParsedProperly(self):
         """Test whether Categories are parsed properly"""
@@ -234,6 +234,37 @@ The translations below need to be checked by native speakers and inserted into t
             apage.parseWikiPage(value['wikiformat'])
 
             self.assertEqual(apage.categories, internalrepresentation[0])
+
+    def testWhetherLinksAreParsedProperly(self):
+        """Test whether Links are parsed properly"""
+        for value in self.knownvalues:
+            internalrepresentation=value['internalrep']
+            apage = wiktionary.WiktionaryPage(value['wikilang'],value['term'])
+            apage.parseWikiPage(value['wikiformat'])
+
+            self.assertEqual(apage.interwikilinks, internalrepresentation[1])
+
+    def testWhetherDefsAreParsedProperly(self):
+        """Test whether Definitions are parsed properly"""
+        for value in self.knownvalues:
+            internalrepresentation=value['internalrep'][2]
+            apage = wiktionary.WiktionaryPage(value['wikilang'],value['term'])
+            apage.parseWikiPage(value['wikiformat'])
+            for entrylang in internalrepresentation.keys():
+                term=internalrepresentation[entrylang][0]
+                gender=internalrepresentation[entrylang][1]
+                plural=internalrepresentation[entrylang][2]
+                definitions=internalrepresentation[entrylang][3]
+                refdefs=[]
+                for definition in definitions:
+                    refdefs.append(definition['definition'])
+
+                resultmeanings=[]
+                for key in apage.entries[entrylang].meanings.keys():
+                    for resultmeaning in apage.entries[entrylang].meanings[key]:
+                        resultmeanings.append(resultmeaning.definition)
+
+                self.assertEqual(resultmeanings.sort(), refdefs.sort())
 
 '''
 class ToRomanBadInput(unittest.TestCase):
