@@ -219,6 +219,7 @@ class _Category(wikipedia.Page):
         return unique(supercats)
     
     def isEmpty(self):
+        # TODO: rename; naming conflict with Page.isEmpty
         (articles, subcats, supercats) = self.catlist(purge = True)
         return (articles == [] and subcats == [])
     
@@ -246,12 +247,14 @@ def Category(code, name):
     # Prepend it
     return _Category(code, "%s:%s" % (ns, name))
 
-# Given an article which is in category old_cat, moves it to
-# category new_cat. Moves subcategories of old_cat to new_cat
-# as well.
-# If new_cat_title is None, the category will be removed.
-def change_category(article, old_cat_title, new_cat_title):
-    print ''
+def change_category(article, oldCat, newCatTitle):
+    """
+    Given an article which is in category oldCat, moves it to
+    category called newCatTitle. Moves subcategories of oldCat as well.
+    oldCat should be a Category object, newCatTitle should be
+    the new name as a string, without namespace.
+    If newCatTitle is None, the category will be removed.
+    """
     cats = article.categories(withSortKeys = True)
     site = article.site()
     sort_key = ''
@@ -259,26 +262,25 @@ def change_category(article, old_cat_title, new_cat_title):
     for cat in cats:
         # get the category title without the namespace, but possibly with a
         # "|" sign followed by a sortkey
-        catNameWithSortkey = cat.title().split(':', 1)[1]
-        if catNameWithSortkey == old_cat_title:
+        if cat == oldCat:
             # because a list element is removed, the iteration will skip the 
             # next element. this might lead to forgotten categories, but
             # usually each category should only appear once per article.
             cats.remove(cat)
             removed = True
-        elif catNameWithSortkey.startswith(old_cat_title + '|'):
+        elif cat.title().startswith(oldCat.title() + '|'):
             sort_key = cat.titleWithoutNamespace().split('|', 1)[1]
             cats.remove(cat)
             removed = True
     if not removed:
-        wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), old_cat_title))
+        wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
         return
-    if new_cat_title is not None:
+    if newCatTitle is not None:
         if sort_key == '':
-            new_cat = Category(site, new_cat_title)
+            newCat = Category(site, newCatTitle)
         else:
-            new_cat = Category(site, new_cat_title + '|' + sort_key)
-        cats.append(new_cat)
+            newCat = Category(site, newCatTitle + '|' + sort_key)
+        cats.append(newCat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
     article.put(text)

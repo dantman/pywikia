@@ -259,34 +259,33 @@ def add_category(sort_by_last_name = False):
 
 class CategoryMoveRobot:
     def __init__(self, oldCatTitle, newCatTitle):
-        self.oldCatTitle = oldCatTitle
+        self.oldCat = catlib.Category(wikipedia.getSite(), oldCatTitle)
         self.newCatTitle = newCatTitle
         # get edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % oldCatTitle)
 
     def run(self):
-        old_cat = catlib.Category(wikipedia.getSite(), self.oldCatTitle)
-        articles = old_cat.articles(recurse = 0)
+        articles = self.oldCat.articles(recurse = 0)
         if len(articles) == 0:
-            wikipedia.output(u'There are no articles in category ' + self.oldCatTitle)
+            wikipedia.output(u'There are no articles in category ' + self.oldCat.title())
         else:
             for article in articles:
-                catlib.change_category(article, self.oldCatTitle, self.newCatTitle)
+                catlib.change_category(article, self.oldCat, self.newCatTitle)
         
-        subcategories = old_cat.subcategories(recurse = 0)
+        subcategories = self.oldCat.subcategories(recurse = 0)
         if len(subcategories) == 0:
-            wikipedia.output(u'There are no subcategories in category ' + self.oldCatTitle)
+            wikipedia.output(u'There are no subcategories in category ' + self.oldCat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.oldCatTitle, self.newCatTitle)
-        # try to copy page contents to new cat page
-        if old_cat.copyTo(newCatTitle):
-            if old_cat.isEmpty():
-                reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % newCatTitle
-                # TODO: only try to delete if bot has admin status
-                old_cat.delete(reason)
-            else:
-                wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCatTitle, self.newCatTitle))
+                catlib.change_category(subcategory, self.oldCat, self.newCatTitle)
+        if self.oldCat.exists():
+            # try to copy page contents to new cat page
+            if self.oldCat.copyTo(newCatTitle):
+                if self.oldCat.isEmpty():
+                    reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % newCatTitle
+                    self.oldCat.delete(reason)
+                else:
+                    wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCatTitle, self.newCatTitle))
 
 class CategoryRemoveRobot:
     '''
@@ -310,28 +309,25 @@ class CategoryRemoveRobot:
     }
     
     def __init__(self, catTitle):
-        self.catTitle = catTitle
+        self.cat = catlib.Category(wikipedia.getSite(), catTitle)
         # get edit summary message
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.catTitle)
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())
         
     def run(self):
-        cat = catlib.Category(wikipedia.getSite(), self.catTitle)
-      
-        articles = cat.articles(recurse = 0)
+        articles = self.cat.articles(recurse = 0)
         if len(articles) == 0:
-            wikipedia.output(u'There are no articles in category %s' % self.catTitle)
+            wikipedia.output(u'There are no articles in category %s' % self.cat.title())
         else:
             for article in articles:
-                catlib.change_category(article, self.catTitle, None)
+                catlib.change_category(article, self.cat, None)
         # Also removes the category tag from subcategories' pages 
-        subcategories = cat.subcategories(recurse = 0)
+        subcategories = self.cat.subcategories(recurse = 0)
         if len(subcategories) == 0:
-            wikipedia.output(u'There are no subcategories in category %s' % self.catTitle)
+            wikipedia.output(u'There are no subcategories in category %s' % self.cat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.catTitle, None)
-        # TODO: only try to delete if bot has admin status
-        if cat.isEmpty():
+                catlib.change_category(subcategory, self.cat.title(), None)
+        if self.cat.exists() and self.cat.isEmpty():
             reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
             cat.delete(reason)
 
