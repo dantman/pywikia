@@ -410,7 +410,11 @@ class Page(object):
                 self._editTime = m.group(1)
             else:
                 self._editTime = "0"
-    
+            m = re.search('value="(\d+)" name=["\']wpStarttime["\']', text)
+            if m:
+                self._startTime = m.group(1)
+            else:
+                self._startTime = "0"
             # Extract the actual text from the textedit field
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
@@ -619,6 +623,7 @@ class Page(object):
             predata.append(('wpEdittime', ''))
         else:
             predata.append(('wpEdittime', self._editTime))
+        predata.append(('wpStarttime', self._startTime))            
         # Pass the minorEdit and watchArticle arguments to the Wiki.
         if minorEdit:
             predata.append(('wpMinoredit', '1'))
@@ -1008,11 +1013,15 @@ class GetAll(object):
             redirectto=m.group(1)
             pl2._getexception = IsRedirectPage
             pl2._redirarg = redirectto
-        #else:
-        #    if len(text)<50:
-        #        output(u"DBG> short text in %s:" % pl2.aslink())
-        #        output(text)
-
+        # There's no possibility to read the wpStarttime argument from the XML.
+        # This argument makes sure an edit conflict is raised if the page is
+        # deleted between retrieval and saving of the page. It contains the
+        # UTC timestamp (server time) of the moment we first retrieved the edit
+        # page. As we can't use server time, we simply use client time. Please
+        # make sure your system clock is correct. If it's too slow, the bot might
+        # recreate pages someone deleted. If it's too fast, the bot will raise
+        # EditConflict exceptions although there's no conflict.
+        pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
         section = pl2.section()
         if section:
             m = re.search("== *%s *==" % section, text)
@@ -2075,7 +2084,7 @@ class Site(object):
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
-                Page(self, url2link("Non-existing page", self, self)).get(force = True, sysop = sysop)
+                Page(self, "Non-existing page").get(force = True, sysop = sysop)
             except Error:
                 pass
         if sysop:
