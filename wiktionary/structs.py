@@ -2,20 +2,8 @@
 # -*- coding: utf-8  -*-
 
 '''
-This module contains code to store Wiktionary content in Python objects.
-The objects can output the content again in Wiktionary format by means of the wikiWrap methods
-
-I'm currently working on a parser that can read the textual version in the various Wiktionary formats and store what it finds in the Python objects.
-
-The data dictionaries will be moved to a separate file, later on. Right now it's practical to have everything together. They also still need to be expanded to contain more languages and more Wiktionary formats. Right now I like to keep everything together to keep my sanity.
-
-The code is still very much alpha level and the scope of what it can do is still rather limited, only 3 parts of speech, only 2 different Wiktionary output formats, only langnames matrix for about 8 languages. On of the things on the todo list is to harvest the content of this matrix dictionary from the various Wiktionary projects. GerardM put them all in templates already.
+Basic structures for wiktionary.py
 '''
-
-
-#from editarticle import EditArticle
-#import wikipedia
-import copy
 
 isolangs = ['af','sq','ar','an','hy','ast','tay','ay','az','bam','eu','bn','my','bi','bs','br','bg','sro','ca','zh','chp','rmr','co','dgd','da','de','eml','en','eo','et','fo','fi','fr','cpf','fy','fur','gl','ka','el','gu','hat','haw','he','hi','hu','io','ga','is','gil','id','ia','it','ja','jv','ku','kok','ko','hr','lad','la','lv','ln','li','lt','lb','src','ma','ms','mg','mt','mnc','mi','mr','mh','mas','myn','mn','nah','nap','na','nds','no','ny','oc','uk','oen','grc','pau','pap','pzh','fa','pl','pt','pa','qu','rap','roh','ra','ro','ja-ro','ru','smi','sm','sa','sc','sco','sr','sn','si','sk','sl','so','sov','es','scn','su','sw','tl','tt','th','ti','tox','cs','che','tn','tum','tpn','tr','ts','tvl','ur','vi','vo','wa','cy','be','wo','xh','zu','sv']
 
@@ -99,7 +87,6 @@ langnames = {
         'es' : u'Spaans',
         },
      'de':    {
-        'translingual' : u'???',
         'nl' : u'Niederländisch',
         'en' : u'Englisch',
         'de' : u'Deutsch',
@@ -119,7 +106,6 @@ langnames = {
         'es' : u'Spanish',
         },
     'eo':    {
-        'translingual' : u'???',
         'nl' : u'Nederlanda',
         'en' : u'Angla',
         'de' : u'Germana',
@@ -129,7 +115,6 @@ langnames = {
         'es' : u'Hispana',
         },
     'it':    {
-        'translingual' : u'???',
         'nl' : u'olandese',
         'en' : u'inglese',
         'de' : u'tedesco',
@@ -139,7 +124,6 @@ langnames = {
         'es' : u'spagnuolo',
         },
     'fr':    {
-        'translingual' : u'???',
         'nl' : u'néerlandais',
         'en' : u'anglais',
         'de' : u'allemand',
@@ -149,7 +133,6 @@ langnames = {
         'es' : u'espagnol',
         },
     'es':    {
-        'translingual' : u'???',
         'nl' : u'olandés',
         'en' : u'inglés',
         'de' : u'alemán',
@@ -206,32 +189,8 @@ def createOtherHeaderslookupDict():
             # There are of course other typos possible, but this caters for a lot of possibilities already
     return otherheaders
 
-# A big thanks to Rob Hooft for the following class:
-# It may not seem like much, but it magically allows the translations to be sorted on
-# the names of the languages. I would never have thought of doing it like this myself.
-class sortonname:
-    '''
-    This class sorts translations alphabetically on the name of the language,
-    instead of on the iso abbreviation that is used internally.
-    '''
-    def __init__(self, lang):
-        self.lang = lang
 
-    def __call__(self, one, two):
-        return cmp(self.lang[one], self.lang[two])
-
-# this is setup
+# And run some additional setup here
 invertedlangnames=invertlangnames()
 createPOSlookupDict()
 createOtherHeaderslookupDict()
-
-if __name__ == '__main__':
-
-    temp()
-
-
-    ofn = 'wiktionaryentry.txt'
-    content = open(ofn).readlines()
-
-    apage = WiktionaryPage(wikilang,pagetopic)
-    apage.parseWikiPage(content)
