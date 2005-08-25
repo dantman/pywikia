@@ -86,23 +86,18 @@ from __future__ import generators
 #
 __version__ = '$Id$'
 #
-import os
-import httplib
-import socket
+import os, sys
+import httplib, socket, urllib
 import traceback
 import time
 import math
-import difflib
-import re, urllib, codecs, sys
+import re, codecs, difflib, locale
 import xml.sax, xml.sax.handler
 import htmlentitydefs
 import warnings
-import datetime
 
 import config, mediawiki_messages, login
 import xmlreader
-
-import locale
 
 # we'll set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
@@ -663,6 +658,9 @@ class Page(object):
             editconflict = mediawiki_messages.get('editconflict', site = self.site()).replace('$1', '')
             if '<title>%s' % editconflict in data:
                 raise EditConflict(u'An edit conflict has occured.')
+            elif '<label for=\'wpRecreate\'' in data:
+                # Make sure your system clock is correct!
+                raise EditConflict(u'Someone deleted the page.')
             elif safetuple and "<" in data:
                 # We might have been using an outdated token
                 print "Changing page has failed. Retrying."
@@ -732,6 +730,7 @@ class Page(object):
         This means that the Category can't be retrieved, but as long as we
         just use title() and such, that won't matter.
         """
+        import catlib
         categoryTitles = getCategoryLinks(self.get(), self.site(), withSortKeys = withSortKeys)
         return [catlib.Category(self.site(), ':'.join(title.split(':')[1:])) for title in categoryTitles]
 
@@ -2421,5 +2420,3 @@ def stopme():
        not slow down other bots any more.
     """
     get_throttle.drop()
-
-import catlib
