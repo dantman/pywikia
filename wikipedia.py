@@ -738,6 +738,9 @@ class Page(object):
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            Page objects"""
+        if not isinstance(other, Page):
+            # especially, return -1 if other is None
+            return -1
         if not self.site() == other.site():
             return cmp(self.site(), other.site())
         owntitle = self.title()
