@@ -12,6 +12,7 @@ The data dictionaries will be moved to a separate file, later on. Right now it's
 The code is still very much alpha level and the scope of what it can do is still rather limited, only 3 parts of speech, only 2 different Wiktionary output formats, only langnames matrix for about 8 languages. On of the things on the todo list is to harvest the content of this matrix dictionary from the various Wiktionary projects. GerardM put them all in templates already.
 '''
 
+import meaning
 
 class Entry:
     """ This class contains the entries that belong together on one page.

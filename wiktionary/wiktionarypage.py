@@ -10,6 +10,14 @@ I'm currently working on a parser that can read the textual version in the vario
 The code is still very much alpha level and the scope of what it can do is still rather limited, only 3 parts of speech, only 2 different Wiktionary output formats, only langnames matrix for about 8 languages. One of the things on the todo list is to harvest the content of this matrix dictionary from the various Wiktionary projects. GerardM put them all on line in templates already.
 '''
 
+import entry
+import sortonlanguagename
+import structs
+import header
+import copy
+import meaning
+import term
+
 class WiktionaryPage:
     """ This class contains all that can appear on one Wiktionary page """
 
@@ -46,7 +54,7 @@ class WiktionaryPage:
 
         if not self.entries == {}:
             self.sortedentries = self.entries.keys()
-            self.sortedentries.sort(sortonname(langnames[self.wikilang]))
+            self.sortedentries.sort(sortonlanguagename.sortonlanguagename(structs.langnames[self.wikilang]))
 
             try:
                 samelangentrypos=self.sortedentries.index(self.wikilang)
@@ -130,27 +138,27 @@ class WiktionaryPage:
                 # encountered under the previous header.
                 if templist:
                     tempdictstructure={'text': templist,
-                                       'header': header,
+                                       'header': aheader,
                                        'context': copy.copy(context),
                                       }
                     templist=[]
                     splitcontent.append(tempdictstructure)
 #                print "splitcontent: ",splitcontent,"\n\n"
-                header=Header(line)
-#                print "Header parsed:",header.level, header.header, header.type, header.contents
-                if header.type==u'lang':
-                    context['lang']=header.contents
-                if header.type==u'pos':
+                aheader=header.Header(line)
+#                print "Header parsed:",aheader.level, aheader.header, aheader.type, aheader.contents
+                if aheader.type==u'lang':
+                    context['lang']=aheader.contents
+                if aheader.type==u'pos':
                     if not(context.has_key('lang')):
                         # This entry lacks a language indicator,
                         # so we assume it is the same language as the Wiktionary we're working on
                         context['lang']=self.wikilang
-                    context['pos']=header.contents
+                    context['pos']=aheader.contents
 
             else:
                 # It's not a header line, so we add it to a temporary list
                 # containing content lines
-                if header.contents==u'trans':
+                if aheader.contents==u'trans':
                     # Under the translations header there is quite a bit of stuff
                     # that's only needed for formatting, we can just skip that
                     # and go on processing the next line
@@ -170,7 +178,7 @@ class WiktionaryPage:
             # Let's not forget the last block that was encountered
             if templist:
                 tempdictstructure={'text': templist,
-                                   'header': header,
+                                   'header': aheader,
                                    'context': copy.copy(context),
                                   }
                 splitcontent.append(tempdictstructure)
@@ -239,9 +247,9 @@ class WiktionaryPage:
                         # TODO which term object depends on the POS
 #                        print "contentblock['context'].['lang']", contentblock['context']['lang']
                         if contentblock['header'].contents=='noun':
-                            theterm=Noun(lang=contentblock['context']['lang'], term=sample, gender=gender)
+                            theterm=term.Noun(lang=contentblock['context']['lang'], term=sample, gender=gender)
                         if contentblock['header'].contents=='verb':
-                            theterm=Verb(lang=contentblock['context']['lang'], term=sample)
+                            theterm=term.Verb(lang=contentblock['context']['lang'], term=sample)
                         sample=''
 #                        raw_input("")
                     if line[:1].isdigit():
@@ -256,7 +264,7 @@ class WiktionaryPage:
                         # If we already had a definition we need to store that one's data
                         # in a Meaning object and make that Meaning object part of the Page object
                         if definition:
-                            ameaning = Meaning(term=theterm,definition=definition, label=label, examples=examples)
+                            ameaning = meaning.Meaning(term=theterm,definition=definition, label=label, examples=examples)
 
                             # sample
                             # plural and diminutive belong with the Noun object
@@ -270,7 +278,7 @@ class WiktionaryPage:
                             if not(self.entries.has_key(contentblock['context']['lang'])):
                                 # If no entry for this language has been foreseen yet
                                 # let's create one
-                                anentry = Entry(contentblock['context']['lang'])
+                                anentry = entry.Entry(contentblock['context']['lang'])
                                 # and add it to our page object
                                 self.addEntry(anentry)
                             # Then we can easily add this meaning to it.
@@ -293,11 +301,11 @@ class WiktionaryPage:
                         examples.add(example)
             # Make sure we store the last definition
             if definition:
-                ameaning = Meaning(term=theterm, definition=definition, label=label, examples=examples)
+                ameaning = meaning.Meaning(term=theterm, definition=definition, label=label, examples=examples)
                 if not(self.entries.has_key(contentblock['context']['lang'])):
                     # If no entry for this language has been foreseen yet
                     # let's create one
-                    anentry = Entry(contentblock['context']['lang'])
+                    anentry = entry.Entry(contentblock['context']['lang'])
                     # and add it to our page object
                     self.addEntry(anentry)
                     # Then we can easily add this meaning to it.

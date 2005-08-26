@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
+import term
+
 class Meaning:
     """ This class contains one meaning for a word or an expression.
     """

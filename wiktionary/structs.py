@@ -87,6 +87,7 @@ langnames = {
         'es' : u'Spaans',
         },
      'de':    {
+        'translingual' : u'???',
         'nl' : u'Niederländisch',
         'en' : u'Englisch',
         'de' : u'Deutsch',
@@ -106,6 +107,7 @@ langnames = {
         'es' : u'Spanish',
         },
     'eo':    {
+        'translingual' : u'???',
         'nl' : u'Nederlanda',
         'en' : u'Angla',
         'de' : u'Germana',
@@ -115,6 +117,7 @@ langnames = {
         'es' : u'Hispana',
         },
     'it':    {
+        'translingual' : u'???',
         'nl' : u'olandese',
         'en' : u'inglese',
         'de' : u'tedesco',
@@ -124,6 +127,7 @@ langnames = {
         'es' : u'spagnuolo',
         },
     'fr':    {
+        'translingual' : u'???',
         'nl' : u'néerlandais',
         'en' : u'anglais',
         'de' : u'allemand',
@@ -133,6 +137,7 @@ langnames = {
         'es' : u'espagnol',
         },
     'es':    {
+        'translingual' : u'???',
         'nl' : u'olandés',
         'en' : u'inglés',
         'de' : u'alemán',

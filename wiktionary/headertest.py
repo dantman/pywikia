@@ -25,28 +25,28 @@ class KnownValues(unittest.TestCase):
     def testHeaderInitKnownValuesContents(self):
         """Header parsing comparing known result with known input for contents"""
         for wikiline, contents, level, type in self.knownValues:
-            result = wiktionary.Header(wikiline).contents
+            result = header.Header(wikiline).contents
             self.assertEqual(contents, result)
 
     def testHeaderInitKnownValuesLevel(self):
         """Header parsing comparing known result with known input for level"""
         for wikiline, contents, level, type in self.knownValues:
-            result = wiktionary.Header(wikiline).level
+            result = header.Header(wikiline).level
             self.assertEqual(level, result)
 
     def testHeaderInitKnownValuesType(self):
         """Header parsing comparing known result with known input for type"""
         for wikiline, contents, level, type in self.knownValues:
-            result = wiktionary.Header(wikiline).type
+            result = header.Header(wikiline).type
             self.assertEqual(type, result)
 
     def testReprSanity(self):
         """Header __repr__, __eq__, __ne__ should give sane results"""
         for stuff in self.knownValues:
             wikiline=stuff[0]
-            h=wiktionary.Header(wikiline)
+            h=header.Header(wikiline)
             self.assertEqual(h, eval(repr(h)) )
-            self.assertNotEqual(h,wiktionary.Header())
+            self.assertNotEqual(h,header.Header())
 
 if __name__ == "__main__":
     unittest.main()

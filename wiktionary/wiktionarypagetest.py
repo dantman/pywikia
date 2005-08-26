@@ -4,6 +4,7 @@
 """Unit tests for Wiktionary.py"""
 
 import wiktionarypage
+import entry as entrymodule
 import unittest
 
 
@@ -21,9 +22,9 @@ class SortEntriesCheckSortOrder(unittest.TestCase):
                               ['translingual', 'de', 'en', 'eo', 'fr', 'nl', 'es']),
                  )
         for example in examples:
-            page = wiktionary.WiktionaryPage(example[0][0], example[0][1])
+            page = wiktionarypage.WiktionaryPage(example[0][0], example[0][1])
             for lang in example[1]:
-                entry = wiktionary.Entry(lang)
+                entry = entrymodule.Entry(lang)
                 page.addEntry(entry)
             page.sortEntries()
             self.assertEqual(page.sortedentries, example[2])
@@ -196,7 +197,7 @@ The translations below need to be checked by native speakers and inserted into t
         """Test whether Categories are parsed properly"""
         for value in self.knownvalues:
             internalrepresentation=value['internalrep']
-            apage = wiktionary.WiktionaryPage(value['wikilang'],value['term'])
+            apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
             apage.parseWikiPage(value['wikiformat'])
 
             self.assertEqual(apage.categories, internalrepresentation[0])
@@ -205,7 +206,7 @@ The translations below need to be checked by native speakers and inserted into t
         """Test whether Links are parsed properly"""
         for value in self.knownvalues:
             internalrepresentation=value['internalrep']
-            apage = wiktionary.WiktionaryPage(value['wikilang'],value['term'])
+            apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
             apage.parseWikiPage(value['wikiformat'])
 
             self.assertEqual(apage.interwikilinks, internalrepresentation[1])
@@ -214,7 +215,7 @@ The translations below need to be checked by native speakers and inserted into t
         """Test whether Definitions are parsed properly"""
         for value in self.knownvalues:
             internalrepresentation=value['internalrep'][2]
-            apage = wiktionary.WiktionaryPage(value['wikilang'],value['term'])
+            apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
             apage.parseWikiPage(value['wikiformat'])
             for entrylang in internalrepresentation.keys():
                 term=internalrepresentation[entrylang][0]
