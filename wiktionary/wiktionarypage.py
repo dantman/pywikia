@@ -310,6 +310,29 @@ class WiktionaryPage:
                     self.addEntry(anentry)
                     # Then we can easily add this meaning to it.
                     anentry.addMeaning(ameaning)
+
+
+            headercontent=contentblock['header'].contents
+
+            if headercontent=='trans' or headercontent=='syn' or headercontent=='ant':
+                # On the English Wiktionary we will find concisedefs here to link defs
+                # the content of these sections
+                if line[:3] == "'''":
+                    # This seems to be line containing a concisedef
+                    concisedef=line.replace("'",'').strip()
+
+                    # Now we have this concisedef, it's worthless if it can't
+                    # be matched to a definition in order to know to what
+                    # meaning the following content belongs to
+
+                    # Let's start by creating a list of meanings for the entry
+                    # we're working on
+
+                    for anothermeaning in anentry.meanings[contentblock['context']['pos']]:
+                        print 'anothermeaning',anothermeaning
+                        
+                        TO BE CONTINUED
+
  #            raw_input("")
 
     def wikiWrap(self):

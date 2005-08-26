@@ -2,17 +2,10 @@
 # -*- coding: utf-8  -*-
 
 '''
-This module contains code to store Wiktionary content in Python objects.
-The objects can output the content again in Wiktionary format by means of the wikiWrap methods
-
-I'm currently working on a parser that can read the textual version in the various Wiktionary formats and store what it finds in the Python objects.
-
-The data dictionaries will be moved to a separate file, later on. Right now it's practical to have everything together. They also still need to be expanded to contain more languages and more Wiktionary formats. Right now I like to keep everything together to keep my sanity.
-
-The code is still very much alpha level and the scope of what it can do is still rather limited, only 3 parts of speech, only 2 different Wiktionary output formats, only langnames matrix for about 8 languages. On of the things on the todo list is to harvest the content of this matrix dictionary from the various Wiktionary projects. GerardM put them all in templates already.
 '''
 
 import meaning
+import structs
 
 class Entry:
     """ This class contains the entries that belong together on one page.
@@ -48,12 +41,12 @@ class Entry:
     def wikiWrap(self,wikilang):
         """ Returns a string for this entry in a format ready for Wiktionary
         """
-        entry = wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][self.entrylang]).replace('%%ISOLangcode%%',self.entrylang) + '\n'
+        entry = structs.wiktionaryformats[wikilang]['langheader'].replace('%%langname%%',langnames[wikilang][self.entrylang]).replace('%%ISOLangcode%%',self.entrylang) + '\n'
 
         for pos in self.posorder:
             meanings = self.meanings[pos]
 
-            entry += wiktionaryformats[wikilang]['posheader'][pos]
+            entry += structs.wiktionaryformats[wikilang]['posheader'][pos]
             entry +='\n'
             if wikilang=='en':
                 entry = entry + meanings[0].term.wikiWrapAsExample(wikilang) + '\n\n'
@@ -70,13 +63,13 @@ class Entry:
                 entry +='\n'
 
             if meaning.hasSynonyms():
-                entry = entry + wiktionaryformats[wikilang]['synonymsheader'] + '\n'
+                entry = entry + structs.wiktionaryformats[wikilang]['synonymsheader'] + '\n'
                 for meaning in meanings:
                     entry = entry + '*' + meaning.getLabel() + "'''" + meaning.getConciseDef() + "''': " + meaning.wikiWrapSynonyms(wikilang)
                 entry +='\n'
 
             if meaning.hasTranslations():
-                entry = entry + wiktionaryformats[wikilang]['translationsheader'] + '\n'
+                entry = entry + structs.wiktionaryformats[wikilang]['translationsheader'] + '\n'
                 for meaning in meanings:
                     entry = entry + meaning.getLabel() + "'''" + meaning.getConciseDef() + "'''" + '\n' + meaning.wikiWrapTranslations(wikilang,self.entrylang) + '\n\n'
                 entry +='\n'

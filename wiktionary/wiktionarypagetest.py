@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
-"""Unit tests for Wiktionary.py"""
+"""Unit tests for Wiktionarypage.py"""
 
 import wiktionarypage
 import entry as entrymodule
@@ -186,7 +186,7 @@ The translations below need to be checked by native speakers and inserted into t
       ],
        u'nl':
       [u'nut', 'n', None,
-       [{'definition': u'[[use]], [[benefit]]'}]
+       [{'definition': u'[[use]], [[benefit]]', 'concisedef': u''}]
       ],
      }
      )
@@ -218,9 +218,9 @@ The translations below need to be checked by native speakers and inserted into t
             apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
             apage.parseWikiPage(value['wikiformat'])
             for entrylang in internalrepresentation.keys():
-                term=internalrepresentation[entrylang][0]
-                gender=internalrepresentation[entrylang][1]
-                plural=internalrepresentation[entrylang][2]
+#                term=internalrepresentation[entrylang][0]
+#                gender=internalrepresentation[entrylang][1]
+#                plural=internalrepresentation[entrylang][2]
                 definitions=internalrepresentation[entrylang][3]
                 refdefs=[]
                 for definition in definitions:
@@ -232,6 +232,33 @@ The translations below need to be checked by native speakers and inserted into t
                         resultmeanings.append(resultmeaning.definition)
 
                 self.assertEqual(resultmeanings.sort(), refdefs.sort())
+
+    def testWhetherDefsAndConciseDefsAreMatchedProperly(self):
+        """Test whether Definitions and ConciseDefs are matched properly"""
+        for value in self.knownvalues:
+            internalrepresentation=value['internalrep'][2]
+            apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
+            apage.parseWikiPage(value['wikiformat'])
+            for entrylang in internalrepresentation.keys():
+#                term=internalrepresentation[entrylang][0]
+#                gender=internalrepresentation[entrylang][1]
+#                plural=internalrepresentation[entrylang][2]
+                definitions=internalrepresentation[entrylang][3]
+                refdefs={}
+                for definition in definitions:
+                    if definition['concisedef']!='':
+                        refdefs[definition['concisedef']] = definition['definition']
+
+                resultmeanings={}
+                for key in apage.entries[entrylang].meanings.keys():
+                    for resultmeaning in apage.entries[entrylang].meanings[key]:
+                        resultmeanings[resultmeaning.concisedef] = resultmeaning.definition
+
+                for concisedef in resultmeanings.keys():
+                    print concisedef
+                    if concisedef!='':
+                        self.assertEqual(resultmeanings[concisedef], refdefs[concisedef])
+
 
 if __name__ == "__main__":
     unittest.main()

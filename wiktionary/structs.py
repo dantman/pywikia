@@ -153,6 +153,7 @@ def invertlangnames():
     On the English Wiktionary it is customary to use full language names. For
     parsing we need a dictionary to efficiently convert these back to iso
     abbreviations.
+    The dictionary that gets created also contains common misspellings
     '''
     invertedlangnames = {}
     for ISOKey in langnames.keys():
@@ -171,6 +172,10 @@ def invertlangnames():
     return invertedlangnames
 
 def createPOSlookupDict():
+    '''
+    The dictionary for looking up parts of speech gets completed
+    with common misspellings
+    '''
     for key in pos.keys():
         lowercasekey=key.lower()
         value=pos[key]
@@ -183,6 +188,10 @@ def createPOSlookupDict():
     return pos
 
 def createOtherHeaderslookupDict():
+    '''
+    The dictionary for looking up names of other headers gets completed
+    with common misspellings
+    '''
     for key in otherheaders.keys():
         lowercasekey=key.lower()
         value=otherheaders[key]
@@ -195,7 +204,8 @@ def createOtherHeaderslookupDict():
     return otherheaders
 
 
-# And run some additional setup here
+# Execute the functions that will take care of setting up and completing
+# lookup dictionaries for stuff that can appear in headers.
 invertedlangnames=invertlangnames()
 createPOSlookupDict()
 createOtherHeaderslookupDict()

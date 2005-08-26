@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
+import structs
+
 class Term:
     """ This is a superclass for terms.  """
     def __init__(self,lang,term,relatedwords=[]): # ,label=''):
@@ -45,29 +47,29 @@ class Term:
         """ Returns a string with the gender in a format ready for Wiktionary, if it is applicable
         """
         if self.gender:
-            return ' ' + wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
+            return ' ' + structs.wiktionaryformats[wikilang]['gender'].replace('%%gender%%',self.gender)
         else:
             return ''
 
     def wikiWrapAsExample(self,wikilang):
         """ Returns a string with the gender in a format ready for Wiktionary, if it exists
         """
-        return wiktionaryformats[wikilang]['beforeexampleterm'] + self.term + wiktionaryformats[wikilang]['afterexampleterm'] + self.wikiWrapGender(wikilang)
+        return structs.wiktionaryformats[wikilang]['beforeexampleterm'] + self.term + structs.wiktionaryformats[wikilang]['afterexampleterm']
 
     def wikiWrapForList(self,wikilang):
         """ Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
         """
-        return '[[' + self.term + ']]' + self.wikiWrapGender(wikilang)
+        return '[[' + self.term + ']]'
 
     def wikiWrapAsTranslation(self,wikilang):
         """    Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
         """
-        return '[[' + self.term + ']]' + self.wikiWrapGender(wikilang)
+        return '[[' + self.term + ']]'
 
     def showContents(self,indentation):
         """ Prints the contents of this Term.
             Every subobject is indented a little further on the screen.
-            The primary purpose is to help keep your sanity while debugging.
+            The primary purpose is to help keep one's sanity while debugging.
         """
         print ' ' * indentation + 'lang = %s'% self.lang
         print ' ' * indentation + 'pos = %s'% self.pos
@@ -100,6 +102,21 @@ class Noun(Term):
         Term.showContents(self,indentation)
         print ' ' * indentation + 'gender = %s'% self.gender
 
+    def wikiWrapAsExample(self,wikilang):
+        """ Returns a string with the gender in a format ready for Wiktionary, if it exists
+        """
+        return Term.wikiWrapAsExample(self, wikilang) + Term.wikiWrapGender(self,wikilang)
+
+    def wikiWrapForList(self,wikilang):
+        """ Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
+        """
+        return Term.wikiWrapForList(self, wikilang) + Term.wikiWrapGender(self, wikilang)
+
+    def wikiWrapAsTranslation(self,wikilang):
+        """    Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
+        """
+        return Term.wikiWrapAsTranslation(self, wikilang) + Term.wikiWrapGender(self, wikilang)
+
 class Adjective(Term):
     def __init__(self,lang,term,gender=''):
         self.pos='adjective'        # part of speech
@@ -112,6 +129,39 @@ class Adjective(Term):
     def getGender(self):
         return(self.gender)
 
+    def wikiWrapAsExample(self,wikilang):
+        """ Returns a string with the gender in a format ready for Wiktionary, if it exists
+        """
+        return Term.wikiWrapAsExample(self, wikilang) + Term.wikiWrapGender(self,wikilang)
+
+    def wikiWrapForList(self,wikilang):
+        """ Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
+        """
+        return Term.wikiWrapForList(self, wikilang) + Term.wikiWrapGender(self, wikilang)
+
+    def wikiWrapAsTranslation(self,wikilang):
+        """    Returns a string with this term as a link followed by the gender in a format ready for Wiktionary
+        """
+        return Term.wikiWrapAsTranslation(self, wikilang) + Term.wikiWrapGender(self, wikilang)
+
+class Verb(Term):
+    def __init__(self,lang,term):
+        self.pos='verb'        # part of speech
+        Term.__init__(self,lang,term)
+
     def showContents(self,indentation):
         Term.showContents(self,indentation)
-        print ' ' * indentation + 'gender = %s'% self.gender
+
+    def wikiWrapForList(self,wikilang):
+        """ Returns a string with this term as a link in a format ready for Wiktionary
+        """
+        if wikilang=='en':
+            pos=self.term.lower().find('to ')
+            if pos==0:
+                return 'to [[' + self.term[3:] + ']]'
+        return Term.wikiWrapForList(self, wikilang)
+
+    def wikiWrapAsTranslation(self,wikilang):
+        """ Returns a string with this term as a link in a format ready for Wiktionary
+        """
+        return Verb.wikiWrapForList(self, wikilang)

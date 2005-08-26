@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
-"""Unit tests for Wiktionary.py"""
+"""Unit tests for header.py"""
 
 import header
 import unittest

@@ -2,6 +2,7 @@
 # -*- coding: utf-8  -*-
 
 import term
+import structs
 
 class Meaning:
     """ This class contains one meaning for a word or an expression.
@@ -161,16 +162,16 @@ class Meaning:
             # When treating an entry of the same lang as the Wiktionary, we want to output the translations in such a way that they end up sorted alphabetically on the language name in the language of the current Wiktionary
             alllanguages=self.translations.keys()
             alllanguages.sort(sortonname(langnames[wikilang]))
-            wrappedtranslations = wiktionaryformats[wikilang]['transbefore'] + '\n'
+            wrappedtranslations = structs.wiktionaryformats[wikilang]['transbefore'] + '\n'
             alreadydone = 0
             for language in alllanguages:
                 if language == wikilang: continue # don't output translation for the wikilang itself
                 # split translations into two column table
                 if not alreadydone and langnames[wikilang][language][0:1].upper() > 'M':
-                    wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transinbetween'] + '\n'
+                    wrappedtranslations = wrappedtranslations + structs.wiktionaryformats[wikilang]['transinbetween'] + '\n'
                     alreadydone = 1
                 # Indicating the language according to the wikiformats dictionary
-                wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
+                wrappedtranslations = wrappedtranslations + structs.wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
                 first = 1
                 for translation in self.translations[language]:
                     term=translation.term
@@ -181,12 +182,12 @@ class Meaning:
                     wrappedtranslations = wrappedtranslations + translation.wikiWrapAsTranslation(wikilang)
                 wrappedtranslations += '\n'
             if not alreadydone:
-                wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transinbetween'] + '\n' + wiktionaryformats[wikilang]['transnoNtoZ'] + '\n'
+                wrappedtranslations = wrappedtranslations + structs.wiktionaryformats[wikilang]['transinbetween'] + '\n' + structs.wiktionaryformats[wikilang]['transnoNtoZ'] + '\n'
                 alreadydone = 1
-            wrappedtranslations = wrappedtranslations + wiktionaryformats[wikilang]['transafter'] + '\n'
+            wrappedtranslations = wrappedtranslations + structs.wiktionaryformats[wikilang]['transafter'] + '\n'
         else:
             # For the other entries we want to output the translation in the language of the Wiktionary
-            wrappedtranslations = wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][wikilang]).replace('%%ISOLangcode%%',wikilang) + ': '
+            wrappedtranslations = structs.wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][wikilang]).replace('%%ISOLangcode%%',wikilang) + ': '
             first = True
             for translation in self.translations[wikilang]:
                 term=translation.term
