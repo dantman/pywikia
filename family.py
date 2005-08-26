@@ -534,7 +534,7 @@ class Family:
             'vi'  :       [u'trang định hướng'],
             'wa'  :       [u'omonimeye'],
             'zh'  :       [u'disambig', u'消歧义', u'消歧义页'],
-            'zh-min-nan': [u'khu-pia̍t-ia̍h'],
+            'zh-min-nan': [u'khu-pia̍t-ia̍h','khPI'],
         }
 
         # On most wikis page names must start with a capital letter, but some
