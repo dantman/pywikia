@@ -5,7 +5,7 @@ import structs
 
 class Term:
     """ This is a superclass for terms.  """
-    def __init__(self,lang,term,relatedwords=[]): # ,label=''):
+    def __init__(self,lang,term,relatedwords=[],gender='',number=1,diminutive=False,wikiline=u''):
         """ Constructor
             Generally called with two parameters:
             - The language of the term
@@ -16,7 +16,30 @@ class Term:
         self.lang=lang
         self.term=term
         self.relatedwords=relatedwords
-#        self.label=label
+        self.gender=gender # m: masculine, f: feminine, n: neutral, c: common
+        self.number=number # 1: singular, 2: plural
+        self.diminutive=diminutive # True: diminutive, False: not a diminutive
+
+        if wikiline:
+            pos=wikiline.find("''")
+            if pos==-1:
+                pos=wikiline.find("{{")
+            if pos==-1:
+                pos=len(wikiline)
+            maybegender=wikiline[pos:].replace("'",'').replace('{','').replace('}','').strip()
+            self.term=wikiline[:pos].replace("[",'').replace(']','').strip()
+            if maybegender.find('m')!=-1:
+                self.gender='m'
+            if maybegender.find('f')!=-1:
+                self.gender='f'
+            if maybegender.find('n')!=-1:
+                self.gender='n'
+            if maybegender.find('c')!=-1:
+                self.gender='c'
+            if maybegender.find('p')!=-1:
+                self.number=2
+            if maybegender.find('dim')!=-1:
+                self.diminutive=True
 
     def __getitem__(self):
         """ Documenting as an afterthought is a bad idea
@@ -35,6 +58,18 @@ class Term:
 
     def getLang(self):
         return self.lang
+
+    def setGender(self,gender):
+        self.gender=gender
+
+    def getGender(self):
+        return(self.gender)
+
+    def setNumber(self,number):
+        self.number=number
+
+    def getNumber(self):
+        return(self.number)
 
 #    def setLabel(self,label):
 #        self.label=label.replace('<!--','').replace('-->','')
@@ -80,7 +115,7 @@ class Noun(Term):
     """ This class inherits from Term.
         It adds properties and methods specific to nouns
     """
-    def __init__(self,lang,term,gender=''):
+    def __init__(self,lang,term,gender='',number=1,diminutive=False):
         """ Constructor
             Generally called with two parameters:
             - The language of the term
@@ -89,14 +124,7 @@ class Noun(Term):
             - gender is optional
         """
         self.pos='noun'        # part of speech
-        self.gender=gender
-        Term.__init__(self,lang,term)
-
-    def setGender(self,gender):
-        self.gender=gender
-
-    def getGender(self):
-        return(self.gender)
+        Term.__init__(self,lang,term,gender=gender,number=number,diminutive=diminutive)
 
     def showContents(self,indentation):
         Term.showContents(self,indentation)
@@ -118,16 +146,9 @@ class Noun(Term):
         return Term.wikiWrapAsTranslation(self, wikilang) + Term.wikiWrapGender(self, wikilang)
 
 class Adjective(Term):
-    def __init__(self,lang,term,gender=''):
+    def __init__(self,lang,term,gender='',number=1):
         self.pos='adjective'        # part of speech
-        self.gender=gender
-        Term.__init__(self,lang,term)
-
-    def setGender(self,gender):
-        self.gender=gender
-
-    def getGender(self):
-        return(self.gender)
+        Term.__init__(self,lang,term,gender=gender,number=number)
 
     def wikiWrapAsExample(self,wikilang):
         """ Returns a string with the gender in a format ready for Wiktionary, if it exists

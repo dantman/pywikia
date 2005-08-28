@@ -17,7 +17,7 @@ class KnownValues(unittest.TestCase):
                   )
 
     def testTermKnownValuesWikiWrapAsExample(self):
-        """WikiWrap output correct for a term as an example"""
+        """WikiWrap output correct for a term used as an example"""
         for wikilang, pos, termlang, thisterm, termgender, asexample, forlist in self.knownValues:
             if pos=='noun':
                 aterm = term.Noun(termlang, thisterm, gender=termgender)
@@ -37,7 +37,7 @@ class KnownValues(unittest.TestCase):
             self.assertEqual(forlist, result)
 
     def testTermKnownValuesWikiWrapAsTranslation(self):
-        """WikiWrap output correct for a term when as a translation"""
+        """WikiWrap output correct for a term when used as a translation"""
         for wikilang, pos, termlang, thisterm, termgender, asexample, forlist in self.knownValues:
             if pos=='noun':
                 aterm = term.Noun(termlang, thisterm, gender=termgender)
@@ -46,5 +46,24 @@ class KnownValues(unittest.TestCase):
             result = aterm.wikiWrapAsTranslation(wikilang)
             self.assertEqual(forlist, result)
 
+    knownParserValues = (
+                    ("[[example]] ",'en','example','',1),
+                    ("[[voorbeeld]] ''n''",'nl','voorbeeld','n',1),
+                    ("[[voorbeeld]] {{n}}",'nl','voorbeeld','n',1),
+                    ("[[voorbeelden]] ''n, pl''",'nl','voorbeelden','n',2),
+                    ("[[voorbeelden]] {{n}},{{p}}",'nl','voorbeelden','n',2),
+#                    ("to [[show]]",'en','to show','',1),
+                    ("[[tonen]]",'nl','tonen','',1),
+                  )
+
+    def testParser(self):
+        '''self.term, self.gender and self.number parsed correctly from Wiki format'''
+        for wikiline, termlang, thisterm, termgender, termnumber in self.knownParserValues:
+            aterm = term.Term(termlang, '', wikiline=wikiline)
+            self.assertEqual(aterm.getTerm(), thisterm)
+            self.assertEqual(aterm.getGender(), termgender)
+            self.assertEqual(aterm.getNumber(), termnumber)
+
 if __name__ == "__main__":
     unittest.main()
+    

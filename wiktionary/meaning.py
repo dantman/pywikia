@@ -7,14 +7,14 @@ import structs
 class Meaning:
     """ This class contains one meaning for a word or an expression.
     """
-    def __init__(self,term,definition='',etymology='',synonyms=[],translations={},label='',concisedef='',examples=[]):
+    def __init__(self,term,definition='',etymology='',synonyms={'remark': '', 'synonyms': [{'remark': '', 'synonym': ''}]},translations={},label='',concisedef='',examples=[]):
         """ Constructor
             Generally called with one parameter:
             - The Term object we are describing
 
             - definition (string) for this term is optional
             - etymology (string) is optional
-            - synonyms (list of Term objects) is optional
+            - synonyms (optional)
             - translations (dictionary of Term objects, ISO639 is the key) is optional
         """
         self.term=term
@@ -22,6 +22,13 @@ class Meaning:
         self.concisedef=concisedef
         self.etymology=etymology
         self.synonyms=synonyms
+        # A structure, possibly containing the following items:
+        # {'remark' : 'this remark concerns all the synonyms for this meaning',
+        #  'synonyms' : [
+        #                {'remark': 'this remark concerns this particular synonym',
+        #                 'synonym': Term object containing the synonym
+        #                },
+        #               ]
         self.examples=examples
         self.label=label
 
@@ -54,6 +61,25 @@ class Meaning:
     def getSynonyms(self):
         """ Returns the list of synonym Term objects  """
         return self.synonyms
+
+    def parseSynonyms(self,synonymswikiline):
+        synsremark = ''
+        synonyms = []
+        openparenthesis=synonymswikiline.lower().find('(see')
+        if openparenthesis!=-1:
+            closeparenthesis=synonymswikiline.find(')',openparenthesis)
+            synsremark=synonymswikiline[openparenthesis:closeparenthesis+1]
+            synonymswikiline=synonymswikiline[:openparenthesis-1] +  synonymswikiline[closeparenthesis+1:]
+        for synonym in synonymswikiline.split(','):
+            synremark = ''
+            openparenthesis=synonym.lower().find('(')
+            if openparenthesis!=-1:
+                closeparenthesis=synonym.find(')',openparenthesis)
+                synremark=synonym[openparenthesis:closeparenthesis+1]
+                synonym=synonym[:openparenthesis-1] +  synonym[closeparenthesis+2:]
+            synonym=synonym.replace(',','').replace("[",'').replace(']','').strip()
+            synonyms.append({'synonym': synonym, 'remark': synremark})
+        self.synonyms={'remark': synsremark, 'synonyms': synonyms}
 
     def hasSynonyms(self):
         """ Returns True if there are synonyms
@@ -102,6 +128,9 @@ class Meaning:
     def getLabel(self):
         if self.label:
             return u'<!--' + self.label + u'-->'
+
+    def setConciseDef(self,concisedef):
+        self.concisedef=concisedef
 
     def getConciseDef(self):
         if self.concisedef:

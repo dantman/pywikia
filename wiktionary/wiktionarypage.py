@@ -127,7 +127,7 @@ class WiktionaryPage:
                     if len(lang)>1 and len(lang)<4:
                         self.addLink(lang+':'+linkto)
                     continue
-            # store empty lines literally, this necessary for the blocks we don't parse 
+            # store empty lines literally, this is necessary for the blocks we don't parse 
             # and will return literally
             if len(line) <2:
                 templist.append(line)
@@ -184,8 +184,10 @@ class WiktionaryPage:
                 splitcontent.append(tempdictstructure)
 
 
-        # make sure variables are defined
+        # make sure variables are defined before they are used
         gender = sample = plural = diminutive = label = definition = ''
+        number = 1
+        diminutive = False
         examples = []
         for contentblock in splitcontent:
 #            print "contentblock:",contentblock
@@ -212,15 +214,20 @@ class WiktionaryPage:
                                 # OK, so this should be an example of the term we are describing
                                 # maybe it is necessary to compare it to the title of the page
                             if sample:
-                                maybegender=part.replace("'",'').replace("}",'').replace("{",'').lower()
-                                if maybegender=='m':
-                                   gender='m'
-                                if maybegender=='f':
-                                   gender='f'
-                                if maybegender=='n':
-                                    gender='n'
-                                if maybegender=='c':
-                                    gender='c'
+                                for subpart in line.split(' '):
+                                    maybegender=part.replace("'",'').replace("}",'').replace("{",'').lower()
+                                    if maybegender=='m':
+                                        gender='m'
+                                    if maybegender=='f':
+                                        gender='f'
+                                    if maybegender=='n':
+                                        gender='n'
+                                    if maybegender=='c':
+                                        gender='c'
+                                    if maybegender[:1]=='p':
+                                        number=2
+                                    if maybegender[:3]=='dim':
+                                        diminutive=True
 #                            print 'Gender: ',gender
                             if part.replace("'",'')[:2].lower()=='pl':
                                 flag='plural'
@@ -247,7 +254,7 @@ class WiktionaryPage:
                         # TODO which term object depends on the POS
 #                        print "contentblock['context'].['lang']", contentblock['context']['lang']
                         if contentblock['header'].contents=='noun':
-                            theterm=term.Noun(lang=contentblock['context']['lang'], term=sample, gender=gender)
+                            theterm=term.Noun(lang=contentblock['context']['lang'], term=sample, gender=gender, number=number, diminutive=diminutive)
                         if contentblock['header'].contents=='verb':
                             theterm=term.Verb(lang=contentblock['context']['lang'], term=sample)
                         sample=''
@@ -285,14 +292,14 @@ class WiktionaryPage:
                             anentry.addMeaning(ameaning)
                             
                         pos=line.find('<!--')
-                        if pos < 4:
+                        if pos!=-1 and pos < 4:
                             # A html comment at the beginning of the line means this entry already has disambiguation labels, great
                             pos2=line.find('-->')
                             label=line[pos+4:pos2]
                             definition=line[pos2+1:]
 #                            print 'label:',label
                         else:
-                            definition=line[1:]
+                            definition=line[1:].strip()
 #                        print "Definition: ", definition
                     if line[:2] == "#:":
                         # This is an example for the preceding definition
@@ -317,21 +324,43 @@ class WiktionaryPage:
             if headercontent=='trans' or headercontent=='syn' or headercontent=='ant':
                 # On the English Wiktionary we will find concisedefs here to link defs
                 # the content of these sections
-                if line[:3] == "'''":
-                    # This seems to be line containing a concisedef
-                    concisedef=line.replace("'",'').strip()
-
+                concisedefclean=''
+                for line in contentblock['text']:
+                    if line[:3] == "'''":
+                        # This seems to be line containing a concisedef
+                        concisedef=line.replace("'''",'').strip()
+                        concisedefclean=concisedef.replace("(",'').replace(")",'').replace("'",'').replace(":",'').replace(".",'').lower()
+                    if line[:2] == "*(":
+                        # This seems to be line containing a concisedef
+                        pos=line.find(')')
+                        concisedef=line[2:pos].strip()
+                        concisedefclean=concisedef.replace("(",'').replace(")",'').replace("'",'').replace(":",'').replace(".",'').lower()
+                        restofline=line[pos+2:].strip()
                     # Now we have this concisedef, it's worthless if it can't
                     # be matched to a definition in order to know to what
                     # meaning the following content belongs to
 
                     # Let's start by creating a list of meanings for the entry
                     # we're working on
-
-                    for anothermeaning in anentry.meanings[contentblock['context']['pos']]:
-                        print 'anothermeaning',anothermeaning
+                    if concisedefclean:
+                        highest=0
+                        winner=anentry.meanings[contentblock['context']['pos']][0]
+                        for anothermeaning in anentry.meanings[contentblock['context']['pos']]:
+                            score=0
+                            for word in concisedefclean.split():
+                                definition=anothermeaning.definition.replace("(",'').replace(")",'').replace("'",'').replace(":",'').replace(".",'').replace("#",'').lower()
+                                if len(word)>1 and definition.find(' '+word+' ')!=-1:
+                                    score+=1
+                                if len(word)>2 and definition.find(word)!=-1:
+                                    score+=1
+                            if score>highest:
+                                highest=score
+                                winner=anothermeaning
+#                        print 'winner:',winner.definition, 'score:',highest
+                        winner.setConciseDef(concisedef)
+                    if headercontent=='syn':
+                        winner.parseSynonyms(restofline)
                         
-                        TO BE CONTINUED
 
  #            raw_input("")
 

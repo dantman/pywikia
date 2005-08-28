@@ -169,18 +169,18 @@ The translations below need to be checked by native speakers and inserted into t
      [u'io','la'],
      {u'en':
       [u'nut', None, u'nuts',
-       [{'definition': u'A hard-shelled seed', 'concisedef': u'seed',
+       [{'definition': u'A hard-shelled seed.', 'concisedef': u'seed',
          'trans': {'nl': u"[[noot]] ''f''", 'fr': u"""''no generic translation exists''; [[noix]] ''f'' ''is often used, but this actually means "[[walnut]]"''""", 'de': u"[[Nuss]] ''f''", 'it': u"[[noce]] {{f}}", 'la': u"[[nux]]"}},
         {'definition': u"A piece of metal, often [[hexagonal]], with a hole through it with internal threading intended to fit on to a bolt.", 'concisedef': u'that fits on a bolt', 
          'trans': {'nl': u"[[moer]] ''f''", 'fr': u"[[Ã©crou]] ''m''", 'de': u"[[Mutter]] ''f''", 'it': u"[[dado]] {{m}}"}},
-        {'definition': u"(''informal'') An insane person.", 'concisedef': u"'''informal: insane person'''",
-         'syns': u"[[loony]], [[nutcase]], [[nutter]]",
+        {'definition': u"(''informal'') An insane person.", 'concisedef': u"informal: insane person",
+         'syns': {'remark': '', 'synonyms': [{'remark': '', 'synonym': u"loony"}, {'remark': '', 'synonym': u"nutcase"}, {'remark': '', 'synonym': u"nutter"}]},
          'trans': {'nl': u"[[gek]] ''m'', [[gekkin]] ''f'', [[zot]] ''m'', [[zottin]] ''f''", 'fr': "[[fou]] ''m'', [[folle]] ''f''", 'de': "[[Irre]] ''m/f'', [[Irrer]] ''m indef.''"}},
-        {'definition': u"(''slang'') The head.", 'concisedef': u"'''slang: the head'''",
-         'syns': u"[[bonce]], [[noddle]] (See further synonyms under [[head]])",
+        {'definition': u"(''slang'') The head.", 'concisedef': u"slang: the head",
+         'syns': {'remark': '(See further synonyms under [[head]])', 'synonyms': [{'remark': '', 'synonym': u"bonce"}, {'remark': '', 'synonym': u"noddle"}]},
          'trans': {'de': u"[[Birne]] ''f'', [[RÃ¼be]] ''f'', [[DÃ¶tz]] ''m''"}},
-        {'definition': u"(''slang; rarely used in the singular'') A testicle.", 'concisedef': u"'''slang: testicle'''",
-         'syns': u"[[ball]], [[bollock]] (''taboo slang''), [[nad]]",
+        {'definition': u"(''slang; rarely used in the singular'') A testicle.", 'concisedef': u"slang: testicle",
+         'syns': {'remark': '', 'synonyms': [{'remark': '', 'synonym': u"ball"}, {'remark': "(''taboo slang'')", 'synonym': u"bollock"}, {'remark': '', 'synonym': u"nad"}]},
          'trans': {'nl': u"[[noten]] ''m (plural)'' <!--Never heard this before-->, [[bal]] ''m'', [[teelbal]] ''m''", 'fr': u"[[couille]] ''f''", 'de': u"[[Ei]] ''n'', ''lately:'' [[Nuss]] ''f''", 'es': u"[[cojone]], [[huevo]]"}},
        ],
       ],
@@ -212,7 +212,7 @@ The translations below need to be checked by native speakers and inserted into t
             self.assertEqual(apage.interwikilinks, internalrepresentation[1])
 
     def testWhetherDefsAreParsedProperly(self):
-        """Test whether Definitions are parsed properly"""
+        """Test whether definitions are parsed properly"""
         for value in self.knownvalues:
             internalrepresentation=value['internalrep'][2]
             apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
@@ -234,7 +234,7 @@ The translations below need to be checked by native speakers and inserted into t
                 self.assertEqual(resultmeanings.sort(), refdefs.sort())
 
     def testWhetherDefsAndConciseDefsAreMatchedProperly(self):
-        """Test whether Definitions and ConciseDefs are matched properly"""
+        """Test whether definitions and concisedefs are matched properly"""
         for value in self.knownvalues:
             internalrepresentation=value['internalrep'][2]
             apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
@@ -255,9 +255,33 @@ The translations below need to be checked by native speakers and inserted into t
                         resultmeanings[resultmeaning.concisedef] = resultmeaning.definition
 
                 for concisedef in resultmeanings.keys():
-                    print concisedef
-                    if concisedef!='':
+                    if concisedef!='' and refdefs.has_key(concisedef) and resultmeanings.has_key(concisedef):
                         self.assertEqual(resultmeanings[concisedef], refdefs[concisedef])
+
+    def testWhetherSynonymsAreParsedProperly(self):
+        """Test whether synonyms are parsed properly"""
+        for value in self.knownvalues:
+            internalrepresentation=value['internalrep'][2]
+            apage = wiktionarypage.WiktionaryPage(value['wikilang'],value['term'])
+            apage.parseWikiPage(value['wikiformat'])
+            for entrylang in internalrepresentation.keys():
+#                term=internalrepresentation[entrylang][0]
+#                gender=internalrepresentation[entrylang][1]
+#                plural=internalrepresentation[entrylang][2]
+                definitions=internalrepresentation[entrylang][3]
+                refsyns={}
+                for definition in definitions:
+                    if definition.has_key('syns') and definition['syns']!='':
+                        refsyns[definition['concisedef']] = definition['syns']
+
+                resultsyns={}
+                for key in apage.entries[entrylang].meanings.keys():
+                    for resultmeaning in apage.entries[entrylang].meanings[key]:
+                        resultsyns[resultmeaning.concisedef] = resultmeaning.synonyms
+
+                for concisedef in resultsyns.keys():
+                    if concisedef!='' and refsyns.has_key(concisedef) and resultsyns.has_key(concisedef):
+                        self.assertEqual(resultsyns[concisedef], refsyns[concisedef])
 
 
 if __name__ == "__main__":
