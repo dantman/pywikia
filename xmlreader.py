@@ -40,7 +40,7 @@ class XmlEntry:
     """
     Represents a page.
     """
-    def __init__(self, title, id, text, timestamp, editRestriction, moveRestriction):
+    def __init__(self, title, id, text, timestamp, editRestriction, moveRestriction, revisionid):
         # TODO: there are more tags we can read.
         self.title = title
         self.id = id
@@ -48,10 +48,12 @@ class XmlEntry:
         self.timestamp = timestamp
         self.editRestriction = editRestriction
         self.moveRestriction = moveRestriction
+        self.revisionid = revisionid
 
 class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
     def __init__(self):
         xml.sax.handler.ContentHandler.__init__(self)
+        self.inRevisionTag = False
         self.inContributorTag = False
         
     def setCallback(self, callback):
@@ -62,6 +64,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         if name == 'page':
             self.editRestriction = None
             self.moveRestriction = None
+        elif name == 'revision':
+            self.inRevisionTag = True
         elif name == 'contributor':
             self.inContributorTag = True
         elif name == 'text':
@@ -71,6 +75,9 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             if self.inContributorTag:
                 self.destination = 'userid'
                 self.userid = u''
+            elif self.inRevisionTag:
+                self.destination = 'revisionid'
+                self.revisionid = u''
             else:
                 self.destination = 'id'
                 self.id = u''
@@ -110,16 +117,19 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                          self.timestamp[17:19])
             self.title = self.title.strip()
             # Report back to the caller
-            entry = XmlEntry(self.title, self.id, text, timestamp, self.editRestriction, self.moveRestriction)
+            entry = XmlEntry(self.title, self.id, text, timestamp, self.editRestriction, self.moveRestriction, self.revisionid)
+            self.inRevisionTag = False
             self.callback(entry)
             
     def characters(self, data):
         if self.destination == 'text':
             self.text += data
         elif self.destination == 'id':
-                self.id += data 
+            self.id += data 
+        elif self.destination == 'revisionid':
+            self.revisionid += data 
         elif self.destination == 'restrictions':
-                self.restrictions += data
+            self.restrictions += data
         elif self.destination == 'title':
             self.title += data
         elif self.destination == 'timestamp':

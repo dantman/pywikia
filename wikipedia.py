@@ -26,18 +26,20 @@ Page: A MediaWiki page
     categories (*): The categories the page is in (list of Pages)
     linkedPages (*): The normal pages linked from the page (list of Pages)
     imagelinks (*): The pictures on the page (list of Pages)
-    templates(*): All templates referenced on the page (list of strings)
+    templates (*): All templates referenced on the page (list of strings)
     getRedirectTarget (*): The page the page redirects to
     isCategory: True if the page is a category, false otherwise
     isImage: True if the page is an image, false otherwise
     isDisambig (*): True if the page is a disambiguation page
     getReferences: The pages linking to the page
     namespace: The namespace in which the page is
+    permalink (*): The url of the permalink of the current version
 
     put(newtext): Saves the page
     delete: Deletes the page (requires being logged in)
 
-    (*): This loads the page if it has not been loaded before
+    (*): This loads the page if it has not been loaded before; permalink might
+      even reload it if is has been loaded before
 
 Site: a MediaWiki site
     forceLogin(): Does not continue until the user has logged in to the site
@@ -213,6 +215,7 @@ class Page(object):
         title = ':'.join(title).strip()
         self._title = title
         self.editRestriction = None
+        self._permalink = None
 
     def site(self):
         """The site of the page this Page refers to,
@@ -439,6 +442,15 @@ class Page(object):
                 x = x[:-1]
     
             return x, isWatched, editRestriction
+
+    def permalink(self):
+        """
+        Get the permalink page for this page
+        """
+        if not self._permalink:
+            # When we get the page with getall, the permalink is received automatically
+            getall(self.site(),[self,],force=True)
+        return "http://%s%s&oldid=%s"%(self.site().hostname(), self.site().get_address(self.title()), self._permalink)
 
     def exists(self):
         """
@@ -937,14 +949,14 @@ class Page(object):
                     return False
 
 class GetAll(object):
-    def __init__(self, site, pages, throttle):
+    def __init__(self, site, pages, throttle, force):
         """First argument is Site object.
         Second argument is list (should have .append and be iterable)"""
         self.site = site
         self.pages = []
         self.throttle = throttle
         for pl in pages:
-            if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
+            if ((not hasattr(pl,'_contents') and not hasattr(pl,'_getexception')) or force):
                 self.pages.append(pl)
             else:
                 output(u"BUGWARNING: %s already done!" % pl.aslink())
@@ -1009,6 +1021,7 @@ class GetAll(object):
 
         pl2.editRestriction = entry.editRestriction
         pl2.moveRestriction = entry.moveRestriction
+        pl2._permalink = entry.revisionid
         m = self.site.redirectRegex().match(text)
         if m:
             pl._editTime = timestamp
@@ -1079,9 +1092,9 @@ class GetAll(object):
         get_throttle.setDelay(time.time() - now)
         return data
     
-def getall(site, pages, throttle = True):
+def getall(site, pages, throttle = True, force = False):
     output(u'Getting %d pages from %s...' % (len(pages), site))
-    return GetAll(site, pages, throttle).run()
+    return GetAll(site, pages, throttle, force).run()
     
 # Library functions
 
