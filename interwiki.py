@@ -142,6 +142,13 @@ This script understands various command-line arguments:
 
     -localonly     only work on the local wiki, not on other wikis in the family
                    I have a login at
+                   
+    -limittwo      only update two pages - one in the local wiki (if loged-in),
+                   and one in the top available one.
+                   For example, if the local page has links to de and fr,
+                   this option will make sure that only local and de: (larger)
+                   site is updated. This option is useful to quickly set two way
+                   links without updating all of wiki's sites.
 
 A configuration option can be used to change the working of this robot:
 
@@ -224,7 +231,7 @@ class Global(object):
     minarraysize = 100
     maxquerysize = 60
     same = False
-    shownew = True
+    shownew = config.interwiki_shownew
     skip = set()
     untranslated = False
     untranslatedonly = False
@@ -234,6 +241,8 @@ class Global(object):
     showtextlink = 0
     showtextlinkadd = 300
     localonly = False
+    limittwo = False
+    topWikies = ['en', 'de', 'fr', 'ja', 'sv', 'nl', 'pl', 'pt', 'it', 'es', 'zh', 'no', 'fi', 'ru', 'da', 'eo', 'he', 'uk', 'bg', 'ca', 'sl', 'hu', 'cs', 'sk', 'sr', 'ko', 'ro', 'id', 'et', 'nn']
 
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -689,16 +698,43 @@ class Subject(object):
         updatedSites = []
         notUpdatedSites = []
         # Process all languages here
-        for (site, page) in new.iteritems():
-            # if we have an account for this site
-            if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
-                # Try to do the changes
-                try:
-                    if self.replaceLinks(page, new, sa):
-                        # Page was changed
-                        updatedSites.append(site)
-                except LinkMustBeRemoved:
-                    notUpdatedSites.append(site)
+
+        if globalvar.limittwo:
+            lclSite = self.inpl.site()
+            lclSiteDone = False
+            frgnSiteDone = False
+            for siteCode in globalvar.topWikies + [self.inpl.site().lang]:   #make sure there is always this site's code
+                site = wikipedia.getSite(code = siteCode)
+#                wikipedia.output(u"DBG> Searching for %s (code=%s)" % (site,siteCode))
+                if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and new.has_key(site)):
+                    if site == lclSite:
+                        lclSiteDone = True   # even if we fail the update
+
+                    if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
+                        wikipedia.output(u"Found pair match between %s and %s" % (lclSite, site))
+                        try:
+                            if self.replaceLinks(new[site], new, sa):
+                                updatedSites.append(site)
+                            if site != lclSite:
+                                frgnSiteDone = True
+                        except LinkMustBeRemoved:
+                            notUpdatedSites.append(site)
+                    
+                    if lclSiteDone and frgnSiteDone:
+                        break
+            else:
+                wikipedia.output(u"Unable to find a suitable pair")
+        else:
+            for (site, page) in new.iteritems():
+                # if we have an account for this site
+                if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
+                    # Try to do the changes
+                    try:
+                        if self.replaceLinks(page, new, sa):
+                            # Page was changed
+                            updatedSites.append(site)
+                    except LinkMustBeRemoved:
+                        notUpdatedSites.append(site)
         
         # disabled graph drawing for minor problems: it just takes too long 
         #if notUpdatedSites != [] and config.interwiki_graph:
@@ -706,7 +742,8 @@ class Subject(object):
         #    self.createGraph()
             
         # don't report backlinks for pages we already changed
-        self.reportBacklinks(new, updatedSites)
+        if globalvar.backlink:
+            self.reportBacklinks(new, updatedSites)
 
     def replaceLinks(self, pl, new, sa):
         """
@@ -1132,6 +1169,8 @@ if __name__ == "__main__":
                     globalvar.followredirect = False
                 elif arg == '-localonly':
                     globalvar.localonly = True
+                elif arg == '-limittwo':
+                    globalvar.limittwo = True
                 elif arg.startswith('-years'):
                     # Look if user gave a specific year at which to start
                     # Must be a natural number or negative integer.

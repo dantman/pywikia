@@ -82,12 +82,18 @@ never_log = False
 # Should interwiki.py report warnings for missing links between foreign
 # languages?
 interwiki_backlink = True
+
+# Should interwiki.py display every new link it discovers?
+interwiki_shownew = True
+
 # Should interwiki.py output a graph PNG file on conflicts?
 # You need pydot for this: http://dkbza.org/pydot.html
 interwiki_graph = False
+
 # If interwiki graphs are enabled, which format should be used?
 # Supported formats include png, jpg, ps and svg.
 interwiki_graph_format = 'png'
+
 # Save file with local articles without interwikis.
 without_interwiki = False
 
