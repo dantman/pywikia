@@ -518,7 +518,7 @@ class Family:
             'nl'  :       [u'dp','dP'],
             'nn'  :       [u'fleirtyding'],
             'pl'  :       [u'disambig',u'disambRulers',u'disambigC'],
-            'pt'  :       [u'desambiguação', u'desamb', u'minidesambig', u'desambigexplicada', u'Ver desambiguação', u'Ver desambiguação1', u'desambiguação-redirect'],
+            'pt'  :       [u'desambiguação'],
             'ro'  :       [u'dezambiguizare'],
             'ru'  :       [u'disambig',u'значения'],
             'simple':     [u'disambig', u'disambiguation'],
