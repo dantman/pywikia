@@ -585,24 +585,12 @@ class Family:
         # code yy:, add {'xx':'yy'} to obsolete.
     
         self.obsolete = {}
-    
-        # A few selected big languages for things that we do not want to loop over
-        # all languages. This is only needed by the titletranslate.py module, so
-        # if you carefully avoid the options, you could get away without these
-        # for another wikimedia family.
-    
-        self.biglangs = []
-    
-        self.biglangs2 = self.biglangs + []
-    
-        self.biglangs3 = self.biglangs2 + []
-    
-        self.biglangs4 = self.biglangs3 + []
-    
-        self.seriouslangs = self.biglangs4 + []
-    
-        # other groups of language that we might want to do at once
-    
+        
+        # Language codes of the largest wikis. They should be roughly sorted
+        # by size.
+        
+        self.languages_by_size = []
+
         # languages in Cyrillic
         self.cyrilliclangs = []
 

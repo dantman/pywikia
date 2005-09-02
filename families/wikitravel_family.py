@@ -30,7 +30,7 @@ class Family(family.Family):
     # if you carefully avoid the options, you could get away without these
     # for another wikimedia family.
 
-    biglangs = ['en','fr','ro']
+    self.languages_by_size = ['en','fr','ro']
 
     def hostname(self,code):
         return 'wikitravel.org'

@@ -29,7 +29,7 @@ class Family(family.Family):
         # if you carefully avoid the options, you could get away without these
         # for another wikimedia family.
     
-        self.biglangs = ['en','de']
+        self.languages_by_size = ['en','de']
 
     def version(self, code):
         return "1.4"

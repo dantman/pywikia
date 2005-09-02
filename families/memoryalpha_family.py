@@ -30,7 +30,7 @@ class Family(family.Family):
         # all languages. This is only needed by the titletranslate.py module, so
         # if you carefully avoid the options, you could get away without these
         # for another wiki family.
-        self.biglangs = ['en', 'de']
+        self.languages_by_size = ['en', 'de', 'nl', 'sv']
 
     def hostname(self,code):
         return 'www.memory-alpha.org'

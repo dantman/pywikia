@@ -129,33 +129,22 @@ class Family(family.Family):
                     'zh-tw':'zh',
                     'zh-cn':'zh'}
             
-        # A few selected big languages for things that we do not want to loop over
-        # all languages. This is only needed by the titletranslate.py module, so
-        # if you carefully avoid the options, you could get away without these
-        # for another wikimedia family./ca
+        # Language codes of the largest wikis. They should be roughly sorted
+        # by size.
         
-        self.biglangs = [
-            'de', 'en', 'es', 'fr', 'it', 'ja', 'nl', 'pl', 'pt', 'sv']
-        
-        self.biglangs2 = self.biglangs + [
-            'ca', 'da', 'eo', 'et', 'fi', 'hu', 'no', 'ro', 'sl', 'zh']
-        
-        self.biglangs3 = self.biglangs2 + [
-            'bg', 'cs', 'gl', 'he', 'hr', 'id', 'ru', 'nn', 'sk', 'uk']
-        
-        self.biglangs4 = self.biglangs3 + [
+        self.languages_by_size = [
+            'en', 'de', 'ja', 'fr', 'nl', 'pl', 'es', 'it', 'pt', 'sv',
+            'ca', 'da', 'eo', 'et', 'fi', 'hu', 'no', 'ro', 'sl', 'zh',
+            'bg', 'cs', 'gl', 'he', 'hr', 'id', 'ru', 'nn', 'sk', 'uk',
             'af', 'ast', 'bs', 'cy', 'el', 'eu', 'ia', 'io', 'is', 'ko',
-            'la', 'lb', 'lt', 'ms', 'nds', 'simple', 'sr', 'tr', 'tt', 'wa']
-
-        self.biglangs5 = self.biglangs4 + [
-             'als', 'an', 'ang', 'ar', 'be', 'bn', 'br', 'co', 'csb', 'fa',
-             'fo', 'fy', 'ga', 'gd', 'gu', 'hi', 'hy', 'ie', 'jv', 'ka',
-             'kn', 'ks', 'ku', 'kw', 'li', 'lv', 'mi', 'mk', 'ml', 'mr',
-             'mt', 'nah', 'oc', 'os', 'sa', 'scn', 'sco', 'se', 'sh', 'sq',
-             'su', 'ta', 'te', 'th', 'tl', 'tpi', 'ur', 'vi', 'yi',
-             'zh-min-nan']
-
-        self.seriouslangs = self.biglangs5
+            'la', 'lb', 'lt', 'ms', 'nds', 'simple', 'sr', 'tr', 'tt', 'wa',
+            'als', 'an', 'ang', 'ar', 'be', 'bn', 'br', 'co', 'csb', 'fa',
+            'fo', 'fy', 'ga', 'gd', 'gu', 'hi', 'hy', 'ie', 'jv', 'ka',
+            'kn', 'ks', 'ku', 'kw', 'li', 'lv', 'mi', 'mk', 'ml', 'mr',
+            'mt', 'nah', 'oc', 'os', 'sa', 'scn', 'sco', 'se', 'sh', 'sq',
+            'su', 'ta', 'te', 'th', 'tl', 'tpi', 'ur', 'vi', 'yi',
+            'zh-min-nan'
+        ]
 
         # other groups of language that we might want to do at once
             

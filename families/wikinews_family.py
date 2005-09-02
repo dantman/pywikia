@@ -60,18 +60,12 @@ class Family(family.Family):
             
         # group of languages that we might want to do at once
     
-        self.biglangs = ['de', 'en', 'fr', 'gl', 'hu', 'it', 'ja', 'nl', 'pl', 'sv']
-                    
-        self.biglangs2 = self.biglangs + [
-            'es', 'fi', 'hi', 'ko', 'la', 'pt', 'ru', 'tr', 'zh']
-        
-        self.biglangs3 = self.biglangs2 + [
-            'ca', 'eo', 'et', 'gu', 'he', 'hr', 'ro']
-        
-        self.biglangs4 = self.biglangs3
-                    
-        self.seriouslangs = self.biglangs4
-        
+        self.languages_by_size = [
+            'de', 'en', 'fr', 'gl', 'hu', 'it', 'ja', 'nl', 'pl', 'sv',
+            'es', 'fi', 'hi', 'ko', 'la', 'pt', 'ru', 'tr', 'zh',
+            'ca', 'eo', 'et', 'gu', 'he', 'hr', 'ro'
+        ]
+
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
        
     def code2encoding(self, code):

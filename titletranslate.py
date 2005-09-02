@@ -13,7 +13,7 @@ import wikipedia, date
 
 def sametranslate(pl, arr, same):
     site = pl.site()
-    for newcode in site.family.seriouslangs:
+    for newcode in site.family.languages_by_size:
         newsite = wikipedia.Site(newcode, site.family)
         if pl.namespace() == 0:
             newname = pl.title()
@@ -59,20 +59,16 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                 # be a page in language xy with the same title as the page 
                 # we're currently working on
                 newname = pl.title()
-            if codes == 'all':
-                codes = site.family.seriouslangs
-            elif codes == '10' or codes == 'main': # names 'main' and 'more' kept for backward compatibility
-                codes = site.family.biglangs
-            elif codes == '20' or codes == 'more':
-                codes = site.family.biglangs2
-            elif codes == '30':
-                codes = site.family.biglangs3
-            elif codes == '50':
-                codes = site.family.biglangs4
-            elif codes == 'cyril':
-                codes = site.family.cyrilliclangs
-            else:
-                codes = codes.split(',')
+            try:
+                number = int(codes)
+                codes = site.family.languages_by_size[:number]
+            except ValueError:
+                if codes == 'all':
+                    codes = site.family.languages_by_size
+                elif codes == 'cyril':
+                    codes = site.family.cyrilliclangs
+                else:
+                    codes = codes.split(',')
             for newcode in codes:
                 if newcode in site.languages():
                     if newcode != site.language():
