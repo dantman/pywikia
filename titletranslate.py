@@ -87,18 +87,19 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         # search inside all dictionaries for this link
         dictName, year = date.getDictionaryYear( pl.site().language(), pl.title() )
         if dictName:
-            wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (pl.title(),dictName,year))
-            for entryLang, entry in date.dateFormats[dictName].iteritems():
-                try:
+           if not (dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and year > date.maxyearBC[pl.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(pl.site().language()) and year > date.maxyearAD[pl.site().language()]):
+                wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (pl.title(),dictName,year))
+                for entryLang, entry in date.dateFormats[dictName].iteritems():
                     if entryLang != pl.site().language():
-                        if dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and year > date.maxyearBC[pl.site().language()]:
+                        if dictName == 'yearsBC' and date.maxyearBC.has_key(entryLang) and year > date.maxyearBC[entryLang]:
                             pass
-                        newname = entry(year)
-                        x = wikipedia.Page( wikipedia.getSite(code=newcode, fam=site.family), newname )
-                        if x not in arr:
-                            arr[x] = None   # add new page
-                except:
-                    pass
+                        elif dictName == 'yearsAD' and date.maxyearAD.has_key(entryLang) and year > date.maxyearAD[entryLang]:
+                            pass
+                        else:
+                            newname = entry(year)
+                            x = wikipedia.Page( wikipedia.getSite(code=entryLang, fam=site.family), newname )
+                            if x not in arr:
+                                arr[x] = None   # add new page
 
 bcDateErrors = [u'[[ko:%d년]]']
 bcFormats = ['centuriesBC', 'decadesBC', 'milleniumsBC', 'yearsBC']
