@@ -127,6 +127,10 @@ def dh_roman( value, pattern ):
     """decoding helper for a single roman number (used in centuries, milleniums)"""
     return dh( value, pattern, lambda i: romanNums[i], singleVal )
 
+def dh_thai_solar_calendar( value, pattern ):
+    """decoding helper for the Thai solar calendar"""
+    return dh( value, pattern, lambda i: i + 543, lambda l: l[0] - 543 )
+
 def singleVal( v ):
     return v[0]
 
@@ -979,6 +983,7 @@ dateFormats = {
         'sl' :      lambda val: dh_noConv( val, u'%d' ),
         'sr' :      lambda val: dh_noConv( val, u'%d' ),
         'sv' :      lambda val: dh_noConv( val, u'%d' ),
+        'th' :      lambda val: dh_thai_solar_calendar( val, u'พ.ศ. %d' ),
         'tr' :      lambda val: dh_noConv( val, u'%d' ),
         'tt' :      lambda val: dh_noConv( val, u'%d' ),
         'uk' :      lambda val: dh_noConv( val, u'%d' ),
