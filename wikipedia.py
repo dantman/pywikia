@@ -667,11 +667,12 @@ class Page(object):
         conn.close()
         if data != u'':
             # Saving unsuccessful. Possible reasons: edit conflict or invalid edit token.
-            editconflict = mediawiki_messages.get('editconflict', site = self.site()).replace('$1', '')
-            if '<title>%s' % editconflict in data:
+            # A second text area means that an edit conflict has occured.
+            if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
             elif '<label for=\'wpRecreate\'' in data:
-                # Make sure your system clock is correct!
+                # Make sure your system clock is correct if this error occurs
+                # without any reason!
                 raise EditConflict(u'Someone deleted the page.')
             elif safetuple and "<" in data:
                 # We might have been using an outdated token
