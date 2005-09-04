@@ -242,7 +242,6 @@ class Global(object):
     showtextlinkadd = 300
     localonly = False
     limittwo = False
-    topWikies = ['en', 'de', 'fr', 'ja', 'sv', 'nl', 'pl', 'pt', 'it', 'es', 'zh', 'no', 'fi', 'ru', 'da', 'eo', 'he', 'uk', 'bg', 'ca', 'sl', 'hu', 'cs', 'sk', 'sr', 'ko', 'ro', 'id', 'et', 'nn']
 
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -703,7 +702,7 @@ class Subject(object):
             lclSite = self.inpl.site()
             lclSiteDone = False
             frgnSiteDone = False
-            for siteCode in globalvar.topWikies + [self.inpl.site().lang]:   #make sure there is always this site's code
+            for siteCode in lclSite.family.languages_by_size + [self.inpl.site().lang]:   #make sure there is always this site's code
                 site = wikipedia.getSite(code = siteCode)
 #                wikipedia.output(u"DBG> Searching for %s (code=%s)" % (site,siteCode))
                 if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and new.has_key(site)):
