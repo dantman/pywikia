@@ -308,7 +308,7 @@ class Page(object):
         """
         # \ufffd represents a badly encoded character, the other characters are
         # disallowed by MediaWiki.
-        for illegalChar in ['#', '+', '<', '>', '[', ']', '|', '{', '}', u'\ufffd']:
+        for illegalChar in ['#', '+', '<', '>', '[', ']', '|', '{', '}', '\n', u'\ufffd']:
             if illegalChar in self.sectionFreeTitle():
                 output(u'Illegal character in %s!' % self.aslink())
                 raise NoPage('Illegal character in %s!' % self.aslink())
@@ -1324,7 +1324,7 @@ def getLanguageLinks(text, insite = None, getPageObjects = False):
     # interwiki link.
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
-    interwikiR = re.compile(r'\[\[([a-z\-]+):([^\[\]]*)\]\]')
+    interwikiR = re.compile(r'\[\[([a-z\-]+):([^\[\]\n]*)\]\]')
     for lang, pagetitle in interwikiR.findall(text):
         if not pagetitle:
             print "ERROR: empty link to %s:" % lang
