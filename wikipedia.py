@@ -711,7 +711,7 @@ class Page(object):
            interwiki links in the page text.
         """
         result = []
-        ll = getLanguageLinks(self.get(), insite = self.site())
+        ll = getLanguageLinks(self.get(), insite = self.site(), pageLink = self.aslink())
         for newsite,newname in ll.iteritems():
             if newname[0] == ':':
                 output(u"ERROR: link from %s to [[%s:%s]] has leading colon?!" % (self.aslink(), newsite, newname))
@@ -1306,7 +1306,7 @@ def replaceExceptNowikiAndComments(text, old, new):
 
 # Part of library dealing with interwiki links
 
-def getLanguageLinks(text, insite = None, getPageObjects = False):
+def getLanguageLinks(text, insite = None, getPageObjects = False, pageLink = "[[]]"):
     """Returns a dictionary of other language links mentioned in the text
        in the form {code:pagename}. Do not call this routine directly, use
        Page objects instead"""
@@ -1326,11 +1326,9 @@ def getLanguageLinks(text, insite = None, getPageObjects = False):
     # ASCII letters and hyphens.
     interwikiR = re.compile(r'\[\[([a-z\-]+):([^\[\]\n]*)\]\]')
     for lang, pagetitle in interwikiR.findall(text):
-        if not pagetitle:
-            print "ERROR: empty link to %s:" % lang
         # Check if it really is in fact an interwiki link to a known
         # language, or if it's e.g. a category tag or an internal link
-        elif lang in insite.family.obsolete:
+        if lang in insite.family.obsolete:
             lang=insite.family.obsolete[lang]
         if lang in insite.family.langs:
             if '|' in pagetitle:
@@ -1339,7 +1337,7 @@ def getLanguageLinks(text, insite = None, getPageObjects = False):
             if insite.lang == 'eo':
                 pagetitle = resolveEsperantoXConvention(pagetitle)
             if not pagetitle:
-                output(u"ERROR: ignoring impossible link to %s:%s" % (lang, pagetitle))
+                output(u"ERROR: %s - ignoring impossible link to %s:%s" % (pageLink, lang, pagetitle))
             else:
                 if getPageObjects:
                     # if getPageObjects is true, we want the actual page objects rather than the titles
