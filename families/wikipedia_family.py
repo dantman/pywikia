@@ -133,22 +133,22 @@ class Family(family.Family):
         # by size.
         
         self.languages_by_size = [
-            'en', 'de', 'ja', 'fr', 'nl', 'pl', 'es', 'it', 'pt', 'sv',
-            'ca', 'da', 'eo', 'et', 'fi', 'hu', 'no', 'ro', 'sl', 'zh',
-            'bg', 'cs', 'gl', 'he', 'hr', 'id', 'ru', 'nn', 'sk', 'uk',
-            'af', 'ast', 'bs', 'cy', 'el', 'eu', 'ia', 'io', 'is', 'ko',
-            'la', 'lb', 'lt', 'ms', 'nds', 'simple', 'sr', 'tr', 'tt', 'wa',
-            'als', 'an', 'ang', 'ar', 'be', 'bn', 'br', 'co', 'csb', 'fa',
-            'fo', 'fy', 'ga', 'gd', 'gu', 'hi', 'hy', 'ie', 'jv', 'ka',
-            'kn', 'ks', 'ku', 'kw', 'li', 'lv', 'mi', 'mk', 'ml', 'mr',
-            'mt', 'nah', 'oc', 'os', 'sa', 'scn', 'sco', 'se', 'sh', 'sq',
-            'su', 'ta', 'te', 'th', 'tl', 'tpi', 'ur', 'vi', 'yi',
-            'zh-min-nan'
+            'en', 'de', 'fr', 'sv', 'nl', 'pl', 'ja', 'pt', 'es', 'it',
+            'no', 'fi', 'eo', 'da', 'zh', 'sk', 'ca', 'hu', 'sl', 'ru',
+            'cs', 'ro', 'id', 'he', 'nn', 'et', 'uk', 'bg', 'gl', 'hr',
+            'sr', 'ko', 'lt', 'io', 'lb', 'ms', 'wa', 'tr', 'simple', 'af',
+            'mk', 'tt', 'ast', 'la', 'cy', 'eu', 'is', 'bs', 'vi', 'ia',
+            'el', 'jv', 'ar', 'fa', 'ka', 'lv', 'sq', 'scn',  'fy', 'nds',
+            'ga', 'th', 'fo', 'tl', 'kn', 'gd', 'os', 'li', 'zh-min-nan', 'mr',
+            'ku', 'oc', 'be', 'su', 'br', 'csb', 'an', 'se', 'als', 'kw',
+            'sh', 'hi', 'te', 'sa', 'mn', 'co', 'ta', 'ang', 'mi', 'sco',
+            'mg', 'hy', 'bn', 'ie', 'ht', 'na', 'ks', 'mt', 'rm', 'tpi',
+            'nah', 'ur', 'jbo', 'gu', 'cv', 'ml', 'yi'
         ]
 
         # other groups of language that we might want to do at once
             
-        self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+        self.cyrilliclangs = ['ab', 'be', 'bg', 'ce', 'cv', 'kk', 'ky', 'mk', 'mn', 'mo', 'ru', 'sr', 'tg', 'uk'] # languages in Cyrillic
         
         # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'en', 'et', 'es', 'ia', 'la', 'af', 'cs',
