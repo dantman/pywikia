@@ -922,7 +922,8 @@ class InterwikiBot(object):
         self.generateNumber = number
 
     def dump(self):
-        f = codecs.open(getDumpFileName(), 'w', 'utf-8')
+        site = wikipedia.getSite()
+        f = codecs.open(u'interwiki-dumps/interwikidump-%s-%s.txt' % (site.family.name, site.lang), 'w', 'utf-8')
         for subj in self.subjects:
             f.write(subj.pl().aslink(None)+'\n')
         f.close()
@@ -1117,9 +1118,6 @@ def readWarnfile(filename, sa):
         hintStrings = ['%s:%s' % (hintedPage.site().language(), hintedPage.title()) for hintedPage in hints[page]]
         sa.add(page, hints = hintStrings)
 
-def getDumpFileName():
-    return u'interwiki_%s.dump' % wikipedia.getSite().lang
-
 #===========
         
 globalvar=Global()
@@ -1244,24 +1242,25 @@ if __name__ == "__main__":
             print "Bot is not to be used at the Nynorsk Wikipedia."
             raise NynorskException
             
-        # We need to know what language we are processing before invoking getDumpFileName()
+        # We need to know what language we are processing before invoking getSite()
         if optRestore or optContinue:
-            hintlessPageGen = pagegenerators.TextfilePageGenerator(getDumpFileName())
+            site = wikipedia.getSite()
+            dumpFileName = u'interwiki-dumps/interwikidump-%s-%s.txt' % (site.family.name, site.lang)
+            hintlessPageGen = pagegenerators.TextfilePageGenerator(dumpFileName)
             if optContinue:
                 # We waste this generator to find out the last page's title
                 # This is an ugly workaround.
                 for page in hintlessPageGen:
                     pass
                 try:
-                    start = page.title()
+                    nextPage = page.title() + '!'
                     namespace = page.namespace()
                 except NameError:
                     print "Dump file is empty?! Starting at the beginning."
-                    start = "!"
+                    nextPage = "!"
                     namespace = 0
                 # old generator is used up, create a new one
-                hintlessPageGen = pagegenerators.CombinedGenerator(pagegenerators.TextfilePageGenerator(getDumpFileName()),pagegenerators.AllpagesPageGenerator(start, namespace))
-                start = None
+                hintlessPageGen = pagegenerators.CombinedGenerator(pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace))
 
         if start:
             if start == '_':
