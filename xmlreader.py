@@ -194,5 +194,6 @@ class XmlDump(object):
                     text = m.group('text') or u''
                     restrictions = m.group('restrictions')
                     editRestriction, moveRestriction = parseRestrictions(restrictions)
-                    entry = XmlEntry(title = m.group('title'), id = m.group('pageid'), text = text, timestamp = m.group('timestamp'), editRestriction = editRestriction, moveRestriction = moveRestriction)
+                    # we don't care about the revisionid.
+                    entry = XmlEntry(title = m.group('title'), id = m.group('pageid'), text = text, timestamp = m.group('timestamp'), editRestriction = editRestriction, moveRestriction = moveRestriction, revisionid = m.group('revisionid'))
                     yield entry
