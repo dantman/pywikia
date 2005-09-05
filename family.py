@@ -596,6 +596,9 @@ class Family:
 
         # languages in Cyrillic
         self.cyrilliclangs = []
+        
+        # Main page names for all languages
+        self.mainpages = {}
 
     def _addlang(self, code, location, namespaces = {}):
         """Add a new language to the langs and namespaces of the family.
