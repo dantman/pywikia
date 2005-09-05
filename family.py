@@ -7,21 +7,22 @@ class Family:
     def __init__(self):
 
         self.knownlanguages = [
-            'aa','ab','af','als','am','an','ang','ar','as','ast','av','ay','az',
-            'ba','be','bg','bh','bi','bm','bn','bo','br','bs','ca','ch','cho','chr',
-            'co','cr','cs','csb','cv','cy','da','de','dv','dz','ee','el','en','eo',
-            'es','et','eu','fa','ff','fi','fj','fo','fr','fur','fy','ga','gd','gl','gn',
-            'got','gu','gv','ha','haw','he','hi','hr','ht','hu','hy','ia','id',
-            'ie','ik','io','is','it','iu','ja','jbo','jv','ka','kk','kl',
-            'km','kn','ko','ks','ku','kw','la','lb','li','ln','lo','lt','lv',
-            'mg','mi','zh-min-nan','mk','ml','mn','mo','mr','ms','mt','mus','my',
-            'na','nah','nds','ne','ng','nl','nn','no','nv','ny','oc','om',
-            'or','os','pa','pi','pl','ps','pt','qu','rm','rn','ro','roa-rup',
-            'ru','rw', 'sa','sc','scn','sco','sd','se','sg','sh','si','simple','sk','sl','sm','sn',
-            'so','sq','sr','ss','st','su','sv','sw','ta','te','tg','th','ti','tl',
-            'tn','to','tpi','tr','ts','tt','tum','tw','ug','uk','ur','uz','ve',
-            'vi','vo','wa','wo','xh','yi','yo','za','zh','zu']
-
+            'aa','ab','af','ak','als','am','an','ang','ar','arc','as','ast','av',
+            'ay','az','ba','be','bg','bh','bi','bm','bn','bo','br','bs','ca','ce',
+            'ceb','ch','cho','chr','chy','co','cr','cs','csb','cv','cy','da','de',
+            'dv','dz','ee','el','en','eo','es','et','eu','fa','ff','fi','fiu-vro',
+            'fj','fo','fr','fur','fy','ga','gd','gl','gn','got','gu','gv','ha',
+            'haw','he','hi','ho','hr','ht','hu','hy','hz','ia','id','ie','ig',
+            'ii','ik','io','is','it','iu','ja','jbo','jv','ka','kg','ki','kj',
+            'kk','kl','km','kn','ko','kr','ks','ku','kv','kw','ky','la','lb',
+            'lg','li','ln','lo','lt','lv','mg','mh','mi','mk','ml','mn','mo',
+            'mr','ms','mt','mus','my','na','nah','nds','ne','ng','nl','nn',
+            'no','nv','ny','oc','om','or','os','pa','pam','pi','pl','ps','pt',
+            'qu','rm','rn','ro','roa-rup','ru','rw','sa','sc','scn','sco','sd',
+            'se','sg','sh','si','simple','sk','sl','sm','sn','so','sq','sr',
+            'ss','st','su','sv','sw','ta','te','tg','th','ti','tk','tl','tn',
+            'to','tpi','tr','ts','tt','tum','tw','ty','ug','uk','ur','uz','ve',
+            'vi','vo','wa','wo','xh','yi','yo','za','zh','zh-min-nan','zu']
         self.alphabetic = [
             'aa','ab','af','am','ang','ar','an','roa-rup','as','ast','av','ay',
             'az','bg','bm','minnan','zh-min-nan','ba','be','bn','bh','bi','bo',
