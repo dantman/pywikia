@@ -143,6 +143,21 @@ def dec0( i ):
 def dec1( i ):
     return dec0(i)+1        # round to the nearest decade, decade starts with a '1'-ending year
 
+def slh( value, lst ):
+    """This function helps in simple list value matching.
+        Usually it will be used as a lambda call in a map:
+            lambda val: slh( val, [u'January',u'February',...] )
+
+        Usage scenarios:
+            map['MonthNames']['en'](1) => u'January'
+            map['MonthNames']['en'](u'January') => 1
+            map['MonthNames']['en'](u'anything else') => raise ValueError
+    """
+    if type(value) is int:
+        return lst[value-1]
+    else:
+        return lst.index(value)+1
+
 #
 # All years/decades/centuries/milleniums are designed in such a way
 # as to allow for easy date to string and string to date conversion.
@@ -205,6 +220,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Janeiro' ),
             'ro' :      lambda val: dh_noConv( val, u'%d ianuarie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d января' ),
+            'se' :      lambda val: dh_noConv( val, u'ođđajagimánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. január' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. januar' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. јануар' ),
@@ -269,6 +285,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Fevereiro' ),
             'ro' :      lambda val: dh_noConv( val, u'%d februarie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d февраля' ),
+            'se' :      lambda val: dh_noConv( val, u'guovvamánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. február' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. februar' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. фебруар' ),
@@ -333,6 +350,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Março' ),
             'ro' :      lambda val: dh_noConv( val, u'%d martie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d марта' ),
+            'se' :      lambda val: dh_noConv( val, u'njukčamánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. marec' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. marec' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. март' ),
@@ -398,6 +416,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Abril' ),
             'ro' :      lambda val: dh_noConv( val, u'%d aprilie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d апреля' ),
+            'se' :      lambda val: dh_noConv( val, u'cuoŋománu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. apríl' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. april' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. април' ),
@@ -463,6 +482,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Maio' ),
             'ro' :      lambda val: dh_noConv( val, u'%d mai' ),
             'ru' :      lambda val: dh_noConv( val, u'%d мая' ),
+            'se' :      lambda val: dh_noConv( val, u'miessemánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. máj' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. maj' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. мај' ),
@@ -527,6 +547,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Junho' ),
             'ro' :      lambda val: dh_noConv( val, u'%d iunie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d июня' ),
+            'se' :      lambda val: dh_noConv( val, u'geassemánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. jún' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. junij' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. јун' ),
@@ -591,6 +612,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Julho' ),
             'ro' :      lambda val: dh_noConv( val, u'%d iulie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d июля' ),
+            'se' :      lambda val: dh_noConv( val, u'suoidnemánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. júl' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. julij' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. јул' ),
@@ -656,6 +678,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Agosto' ),
             'ro' :      lambda val: dh_noConv( val, u'%d august' ),
             'ru' :      lambda val: dh_noConv( val, u'%d августа' ),
+            'se' :      lambda val: dh_noConv( val, u'borgemánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. august' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. avgust' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. август' ),
@@ -720,6 +743,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Setembro' ),
             'ro' :      lambda val: dh_noConv( val, u'%d septembrie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d сентября' ),
+            'se' :      lambda val: dh_noConv( val, u'čakčamánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. september' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. september' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. септембар' ),
@@ -784,6 +808,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Outubro' ),
             'ro' :      lambda val: dh_noConv( val, u'%d octombrie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d октября' ),
+            'se' :      lambda val: dh_noConv( val, u'golggotmánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. október' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. oktober' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. октобар' ),
@@ -798,7 +823,7 @@ dateFormats = {
             'zh' :      lambda val: dh_noConv( val, u'10月%d日' ),
     },
     
-    'November':{
+    'November': {
             'af' :      lambda val: dh_noConv( val, u'%d November' ),
             'ang':      lambda val: dh_noConv( val, u'%d Blótmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d نوفمبر' ),
@@ -848,6 +873,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Novembro' ),
             'ro' :      lambda val: dh_noConv( val, u'%d noiembrie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d ноября' ),
+            'se' :      lambda val: dh_noConv( val, u'skábmamánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. november' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. november' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. новембар' ),
@@ -862,7 +888,7 @@ dateFormats = {
             'zh' :      lambda val: dh_noConv( val, u'11月%d日' ),
     },
     
-    'December':{
+    'December': {
             'af' :      lambda val: dh_noConv( val, u'%d Desember' ),
             'ang':      lambda val: dh_noConv( val, u'%d Géolmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d ديسمبر' ),
@@ -913,6 +939,7 @@ dateFormats = {
             'pt' :      lambda val: dh_noConv( val, u'%d de Dezembro' ),
             'ro' :      lambda val: dh_noConv( val, u'%d decembrie' ),
             'ru' :      lambda val: dh_noConv( val, u'%d декабря' ),
+            'se' :      lambda val: dh_noConv( val, u'juovlamánu %d.' ),
             'sk' :      lambda val: dh_noConv( val, u'%d. december' ),
             'sl' :      lambda val: dh_noConv( val, u'%d. december' ),
             'sr' :      lambda val: dh_noConv( val, u'%d. децембар' ),
@@ -927,15 +954,104 @@ dateFormats = {
             'zh' :      lambda val: dh_noConv( val, u'12月%d日' ),
     },
     
+    'monthNames': {
+            'af' :      lambda val: slh( val, [u'Januarie', u'Februarie', u'Maart', u'April', u'Mei', u'Junie', u'Julie', u'Augustus', u'September', u'Oktober', u'November', u'Desember'] ),
+            'als':      lambda val: slh( val, [u'Januar', u'Februar', u'März', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
+            'an' :      lambda val: slh( val, [u'Chinero', u'Frebero', u'Marzo', u'Abril', u'Mayo', u'Chunio', u'Chulio', u'Agosto', u'Setiembre', u'Otubre', u'Nobiembre', u'Abiento'] ),
+            'ang':      lambda val: slh( val, [u'Se æfterra Gēola', u'Solmónaþ', u'Hrēþmōnaþ', u'Ēastermōnaþ', u'Þrimilcemónaþ', u'Séremónaþ', u'Mǽdmónaþ', u'Wéodmónaþ', u'Háligmónaþ', u'Winterfylleþ', u'Blótmónaþ', u'Géolmónaþ'] ),
+            'ar' :      lambda val: slh( val, [u'يناير', u'فبراير', u'مارس', u'إبريل', u'مايو', u'يونيو', u'يوليو', u'أغسطس', u'سبتمبر', u'أكتوبر', u'نوفمبر', u'ديسمبر'] ),
+            'ast':      lambda val: slh( val, [u'Xineru', u'Febreru', u'Marzu', u'Abril', u'Mayu', u'Xunu', u'Xunetu', u'Agostu', u'Setiembre', u'Ochobre', u'Payares', u'Avientu'] ),
+            'be' :      lambda val: slh( val, [u'Студзень', u'Люты', u'Сакавік', u'Красавік', u'Травень', u'Чэрвень', u'Ліпень', u'Жнівень', u'Верасень', u'Кастрычнік', u'Лістапад', u'Сьнежань'] ),
+            'bg' :      lambda val: slh( val, [u'Януари', u'Февруари', u'Март', u'Април', u'Май', u'Юни', u'Юли', u'Август', u'Септември', u'Октомври', u'Ноември', u'Декември'] ),
+            'bs' :      lambda val: slh( val, [u'Januar', u'Februar', u'Mart', u'April', u'Maj', u'Juni', u'Juli', u'Avgust', u'Septembar', u'Oktobar', u'Novembar', u'Decembar'] ),
+            'ca' :      lambda val: slh( val, [u'Gener', u'Febrer', u'Març', u'Abril', u'Maig', u'Juny', u'Juliol', u'Agost', u'Setembre', u'Octubre', u'Novembre', u'Desembre'] ),
+            'cs' :      lambda val: slh( val, [u'Leden', u'Únor', u'Březen', u'Duben', u'Květen', u'Červen', u'Červenec', u'Srpen', u'Září', u'Říjen', u'Listopad', u'Prosinec'] ),
+            'csb':      lambda val: slh( val, [u'Stëcznik', u'Gromicznik', u'Strumiannik', u'Łżëkwiôt', u'Môj', u'Czerwińc', u'Lëpinc', u'Zélnik', u'Séwnik', u'Rujan', u'Lëstopadnik', u'Gòdnik'] ),
+            'cv' :      lambda val: slh( val, [u'Кăрлач', u'Нарăс', u'Пуш', u'Ака', u'Çу', u'Çěртме', u'Утă', u'Çурла', u'Авăн', u'Юпа', u'Чӳк', u'Раштав'] ),
+            'cy' :      lambda val: slh( val, [u'Ionawr', u'Chwefror', u'Mawrth', u'Ebrill', u'Mai', u'Mehefin', u'Gorffennaf', u'Awst', u'Medi', u'Hydref', u'Tachwedd', u'Rhagfyr'] ),
+            'da' :      lambda val: slh( val, [u'Januar', u'Februar', u'Marts', u'April', u'Maj', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'December'] ),
+            'de' :      lambda val: slh( val, [u'Januar', u'Februar', u'März', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
+            'el' :      lambda val: slh( val, [u'Ιανουάριος', u'Φεβρουάριος', u'Μάρτιος', u'Απρίλιος', u'Μάιος', u'Ιούνιος', u'Ιούλιος', u'Αύγουστος', u'Σεπτέμβριος', u'Οκτώβριος', u'Νοέμβριος', u'Δεκέμβριος'] ),
+            'en' :      lambda val: slh( val, [u'January', u'February', u'March', u'April', u'May', u'June', u'July', u'August', u'September', u'October', u'November', u'December'] ),
+            'eo' :      lambda val: slh( val, [u'Januaro', u'Februaro', u'Marto', u'Aprilo', u'Majo', u'Junio', u'Julio', u'Aŭgusto', u'Septembro', u'Oktobro', u'Novembro', u'Decembro'] ),
+            'es' :      lambda val: slh( val, [u'Enero', u'Febrero', u'Marzo', u'Abril', u'Mayo', u'Junio', u'Julio', u'Agosto', u'Septiembre', u'Octubre', u'Noviembre', u'Diciembre'] ),
+            'et' :      lambda val: slh( val, [u'Jaanuar', u'Veebruar', u'Märts', u'Aprill', u'Mai', u'Juuni', u'Juuli', u'August', u'September', u'Oktoober', u'November', u'Detsember'] ),
+            'eu' :      lambda val: slh( val, [u'Urtarril', u'Otsail', u'Martxo', u'Apiril', u'Maiatz', u'Ekain', u'Uztail', u'Abuztu', u'Irail', u'Urri', u'Azaro', u'Abendu'] ),
+            'fa' :      lambda val: slh( val, [u'ژانویه', u'فوریه', u'مارس', u'آوریل', u'مه', u'ژوئن', u'ژوئیه', u'اوت', u'سپتامبر', u'اکتبر', u'نوامبر', u'دسامبر'] ),
+            'fi' :      lambda val: slh( val, [u'Tammikuu', u'Helmikuu', u'Maaliskuu', u'Huhtikuu', u'Toukokuu', u'Kesäkuu', u'Heinäkuu', u'Elokuu', u'Syyskuu', u'Lokakuu', u'Marraskuu', u'Joulukuu'] ),
+            'fo' :      lambda val: slh( val, [u'Januar', u'Februar', u'Mars', u'Apríl', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Desember'] ),
+            'fr' :      lambda val: slh( val, [u'Janvier', u'Février', u'Mars (mois)', u'Avril', u'Mai', u'Juin', u'Juillet', u'Août', u'Septembre', u'Octobre', u'Novembre', u'Décembre'] ),
+            'fur':      lambda val: slh( val, [u'Zenâr', u'Fevrâr', u'Març', u'Avrîl', u'Mai', u'Zugn', u'Lui', u'Avost', u'Setembar', u'Otubar', u'Novembar', u'Dicembar'] ),
+            'fy' :      lambda val: slh( val, [u'Jannewaris', u'Febrewaris', u'Maart', u'April', u'Maaie', u'Juny', u'July', u'Augustus', u'Septimber', u'Oktober', u'Novimber', u'Desimber'] ),
+            'ga' :      lambda val: slh( val, [u'Eanáir', u'Feabhra', u'Márta', u'Aibreán', u'Bealtaine', u'Meitheamh', u'Iúil', u'Lúnasa', u'Meán Fómhair', u'Deireadh Fómhair', u'Samhain', u'Nollaig'] ),
+            'gl' :      lambda val: slh( val, [u'Xaneiro', u'Febreiro', u'Marzo', u'Abril', u'Maio', u'Xuño', u'Xullo', u'Agosto', u'Setembro', u'Outubro', u'Novembro', u'Decembro'] ),
+            'he' :      lambda val: slh( val, [u'ינואר', u'פברואר', u'מרץ', u'אפריל', u'מאי', u'יוני', u'יולי', u'אוגוסט', u'ספטמבר', u'אוקטובר', u'נובמבר', u'דצמבר'] ),
+            'hr' :      lambda val: slh( val, [u'Siječanj', u'Veljača', u'Ožujak', u'Travanj', u'Svibanj', u'Lipanj', u'Srpanj', u'Kolovoz', u'Rujan', u'Listopad', u'Studeni', u'Prosinac'] ),
+            'hu' :      lambda val: slh( val, [u'Január', u'Február', u'Március', u'Április', u'Május', u'Június', u'Július', u'Augusztus', u'Szeptember', u'Október', u'November', u'December'] ),
+            'ia' :      lambda val: slh( val, [u'Januario', u'Februario', u'Martio', u'April', u'Maio', u'Junio', u'Julio', u'Augusto', u'Septembre', u'Octobre', u'Novembre', u'Decembre'] ),
+            'id' :      lambda val: slh( val, [u'Januari', u'Februari', u'Maret', u'April', u'Mei', u'Juni', u'Juli', u'Agustus', u'September', u'Oktober', u'November', u'Desember'] ),
+            'ie' :      lambda val: slh( val, [u'Januar', u'Februar', u'Marte', u'April', u'May', u'Junio', u'Juli', u'August', u'Septembre', u'Octobre', u'Novembre', u'Decembre'] ),
+            'io' :      lambda val: slh( val, [u'Januaro', u'Februaro', u'Marto', u'Aprilo', u'Mayo', u'Junio', u'Julio', u'Agosto', u'Septembro', u'Oktobro', u'Novembro', u'Decembro'] ),
+            'is' :      lambda val: slh( val, [u'Janúar', u'Febrúar', u'Mars (mánuður)', u'Apríl', u'Maí', u'Júní', u'Júlí', u'Ágúst', u'September', u'Október', u'Nóvember', u'Desember'] ),
+            'it' :      lambda val: slh( val, [u'Gennaio', u'Febbraio', u'Marzo', u'Aprile', u'Maggio', u'Giugno', u'Luglio', u'Agosto', u'Settembre', u'Ottobre', u'Novembre', u'Dicembre'] ),
+            'ja' :      lambda val: slh( val, [u'1月', u'2月', u'3月', u'4月', u'5月', u'6月', u'7月', u'8月', u'9月', u'10月', u'11月', u'12月'] ),
+            'jv' :      lambda val: slh( val, [u'Januari', u'Februari', u'Maret', u'April', u'Mei', u'Juni', u'Juli', u'Agustus', u'September', u'Oktober', u'November', u'Desember'] ),
+            'ka' :      lambda val: slh( val, [u'იანვარი', u'თებერვალი', u'მარტი', u'აპრილი', u'მაისი', u'ივნისი', u'ივლისი', u'აგვისტო', u'სექტემბერი', u'ოქტომბერი', u'ნოემბერი', u'დეკემბერი'] ),
+            'kn' :      lambda val: slh( val, [u'ಜನವರಿ', u'ಫೆಬ್ರವರಿ', u'ಮಾರ್ಚಿ', u'ಎಪ್ರಿಲ್', u'ಮೇ', u'ಜೂನ', u'ಜುಲೈ', u'ಆಗಸ್ಟ್ ', u'ಸೆಪ್ಟೆಂಬರ್', u'ಅಕ್ಟೋಬರ್', u'ನವೆಂಬರ್', u'ಡಿಸೆಂಬರ್'] ),
+            'ko' :      lambda val: slh( val, [u'1월', u'2월', u'3월', u'4월', u'5월', u'6월', u'7월', u'8월', u'9월', u'10월', u'11월', u'12월'] ),
+            'ku' :      lambda val: slh( val, [u'Rêbendan', u'Reşemî', u'Adar', u'Avrêl', u'Gulan', u'Pûşper', u'Tîrmeh', u'Gelawêj (meh)', u'Rezber', u'Kewçêr', u'Sermawez', u'Berfanbar'] ),
+            'kw' :      lambda val: slh( val, [u'Mys Genver', u'Mys Whevrer', u'Mys Merth', u'Mys Ebrel', u'Mys Me', u'Mys Metheven', u'Mys Gortheren', u'Mys Est', u'Mys Gwyngala', u'Mys Hedra', u'Mys Du', u'Mys Kevardhu'] ),
+            'la' :      lambda val: slh( val, [u'Ianuarius', u'Februarius', u'Martius', u'Aprilis', u'Maius', u'Iunius', u'Iulius', u'Augustus (mensis)', u'September', u'October', u'November', u'December'] ),
+            'lb' :      lambda val: slh( val, [u'Januar', u'Februar', u'Mäerz', u'Abrëll', u'Mee', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
+            'li' :      lambda val: slh( val, [u'Jannewarie', u'Fibberwarie', u'Miert', u'April', u'Mei', u'Juni', u'Juli', u'Augustus (maond)', u'September', u'Oktober', u'November', u'December'] ),
+            'lt' :      lambda val: slh( val, [u'Sausis', u'Vasaris', u'Kovas', u'Balandis', u'Gegužė', u'Birželis', u'Liepa', u'Rugpjūtis', u'Rugsėjis', u'Spalis', u'Lapkritis', u'Gruodis'] ),
+            'mi' :      lambda val: slh( val, [u'Kohi-tātea', u'Hui-tanguru', u'Poutū-te-rangi', u'Paenga-whāwhā', u'Haratua', u'Pipiri', u'Hōngongoi', u'Here-turi-kōkā', u'Mahuru', u'Whiringa-ā-nuku', u'Whiringa-ā-rangi', u'Hakihea'] ),
+            'mr' :      lambda val: slh( val, [u'जानेवारी', u'फेब्रुवारी', u'मार्च', u'एप्रिल', u'मे', u'जून', u'जुलै', u'ऑगस्ट', u'सप्टेंबर', u'ऑक्टोबर', u'नोव्हेंबर', u'डिसेंबर'] ),
+            'ms' :      lambda val: slh( val, [u'Januari', u'Februari', u'Mac', u'April', u'Mei', u'Jun', u'Julai', u'Ogos', u'September', u'Oktober', u'November', u'Disember'] ),
+            'nl' :      lambda val: slh( val, [u'Januari', u'Februari', u'Maart', u'April', u'Mei', u'Juni', u'Juli', u'Augustus (maand)', u'September', u'Oktober', u'November', u'December'] ),
+            'nn' :      lambda val: slh( val, [u'Januar', u'Februar', u'Mars', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Desember'] ),
+            'no' :      lambda val: slh( val, [u'Januar', u'Februar', u'Mars', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Desember'] ),
+            'oc' :      lambda val: slh( val, [u'Genièr', u'Febrièr', u'Març', u'Abril', u'Mai', u'Junh', u'Julhet', u'Agost', u'Setembre', u'Octobre', u'Novembre', u'Decembre'] ),
+            'pl' :      lambda val: slh( val, [u'Styczeń', u'Luty', u'Marzec', u'Kwiecień', u'Maj', u'Czerwiec', u'Lipiec', u'Sierpień', u'Wrzesień', u'Październik', u'Listopad', u'Grudzień'] ),
+            'pt' :      lambda val: slh( val, [u'Janeiro', u'Fevereiro', u'Março', u'Abril', u'Maio', u'Junho', u'Julho', u'Agosto', u'Setembro', u'Outubro', u'Novembro', u'Dezembro'] ),
+            'ro' :      lambda val: slh( val, [u'Ianuarie', u'Februarie', u'Martie', u'Aprilie', u'Mai', u'Iunie', u'Iulie', u'August', u'Septembrie', u'Octombrie', u'Noiembrie', u'Decembrie'] ),
+            'ru' :      lambda val: slh( val, [u'Январь', u'Февраль', u'Март', u'Апрель', u'Май', u'Июнь', u'Июль', u'Август', u'Сентябрь', u'Октябрь', u'Ноябрь', u'Декабрь'] ),
+            'scn':      lambda val: slh( val, [u'Jinnaru', u'Frivaru', u'Marzu', u'Aprili', u'Maiu', u'Giugnu', u'Giugnettu', u'Austu', u'Sittemmiru', u'Uttuviru', u'Nuvemmiru', u'Dicemmiru'] ),
+            'sco':      lambda val: slh( val, [u'Januar', u'Februar', u'Mairch', u'Aprile', u'Mey', u'Juin', u'Julie', u'Augist', u'September', u'October', u'November', u'December'] ),
+            'se' :      lambda val: slh( val, [u'Ođđajagimánnu', u'Guovvamánnu', u'Njukčamánnu', u'Cuoŋománnu', u'Miessemánnu', u'Geassemánnu', u'Suoidnemánnu', u'Borgemánnu', u'Čakčamánnu', u'Golggotmánnu', u'Skábmamánnu', u'Juovlamánnu'] ),
+            'simple' :      lambda val: slh( val, [u'January', u'February', u'March', u'April', u'May', u'June', u'July', u'August', u'September', u'October', u'November', u'December'] ),
+            'sk' :      lambda val: slh( val, [u'Január', u'Február', u'Marec', u'Apríl', u'Máj', u'Jún', u'Júl', u'August', u'September', u'Október', u'November', u'December'] ),
+            'sl' :      lambda val: slh( val, [u'Januar', u'Februar', u'Marec', u'April', u'Maj', u'Junij', u'Julij', u'Avgust', u'September', u'Oktober', u'November', u'December'] ),
+            'sq' :      lambda val: slh( val, [u'Janari', u'Shkurti', u'Marsi (muaj)', u'Prilli', u'Maji', u'Qershori', u'Korriku', u'Gushti', u'Shtatori', u'Tetori', u'Nëntori', u'Dhjetori'] ),
+            'sr' :      lambda val: slh( val, [u'Јануар', u'Фебруар', u'Март', u'Април', u'Мај', u'Јун', u'Јул', u'Август', u'Септембар', u'Октобар', u'Новембар', u'Децембар'] ),
+            'su' :      lambda val: slh( val, [u'Januari', u'Pébruari', u'Maret', u'April', u'Méi', u'Juni', u'Juli', u'Agustus', u'Séptémber', u'Oktober', u'Nopémber', u'Désémber'] ),
+            'sv' :      lambda val: slh( val, [u'Januari', u'Februari', u'Mars', u'April', u'Maj', u'Juni', u'Juli', u'Augusti', u'September', u'Oktober', u'November', u'December'] ),
+            'th' :      lambda val: slh( val, [u'มกราคม', u'กุมภาพันธ์', u'มีนาคม', u'เมษายน', u'พฤษภาคม', u'มิถุนายน', u'กรกฎาคม', u'สิงหาคม', u'กันยายน', u'ตุลาคม', u'พฤศจิกายน', u'ธันวาคม'] ),
+            'tl' :      lambda val: slh( val, [u'Enero', u'Pebrero', u'Marso', u'Abril', u'Mayo', u'Hunyo', u'Hulyo', u'Agosto', u'Setyembre', u'Oktubre', u'Nobyembre', u'Disyembre'] ),
+            'tpi':      lambda val: slh( val, [u'Janueri', u'Februeri', u'Mas', u'Epril', u'Me', u'Jun', u'Julai', u'Ogas', u'Septemba', u'Oktoba', u'Novemba', u'Disemba'] ),
+            'tr' :      lambda val: slh( val, [u'Ocak', u'Şubat', u'Mart', u'Nisan', u'Mayıs', u'Haziran', u'Temmuz', u'Ağustos', u'Eylül', u'Ekim', u'Kasım', u'Aralık'] ),
+            'tt' :      lambda val: slh( val, [u'Ğínwar', u'Febräl', u'Mart', u'Äpril', u'May', u'Yün', u'Yül', u'August', u'Sentäber', u'Öktäber', u'Nöyäber', u'Dekäber'] ),
+            'uk' :      lambda val: slh( val, [u'Січень', u'Лютий', u'Березень', u'Квітень', u'Травень', u'Червень', u'Липень', u'Серпень', u'Вересень', u'Жовтень', u'Листопад', u'Грудень'] ),
+            'ur' :      lambda val: slh( val, [u'جنوری', u'فروری', u'مارچ', u'اپريل', u'مئ', u'جون', u'جولائ', u'اگست', u'ستمبر', u'اکتوبر', u'نومبر', u'دسمبر'] ),
+            'vi' :      lambda val: slh( val, [u'Tháng một', u'Tháng hai', u'Tháng ba', u'Tháng tư', u'Tháng năm', u'Tháng sáu', u'Tháng bảy', u'Tháng tám', u'Tháng chín', u'Tháng mười', u'Tháng mười một', u'Tháng mười hai'] ),
+            'vo' :      lambda val: slh( val, [u'Yanul', u'Febul', u'Mäzul', u'Prilul', u'Mayul', u'Yunul', u'Yulul', u'Gustul', u'Setul', u'Tobul', u'Novul', u'Dekul'] ),
+            'wa' :      lambda val: slh( val, [u'Djanvî', u'Fevrî', u'Måss', u'Avri', u'May', u'Djun', u'Djulete', u'Awousse', u'Setimbe', u'Octôbe', u'Nôvimbe', u'Decimbe'] ),
+            'zh' :      lambda val: slh( val, [u'1月', u'2月', u'3月', u'4月', u'5月', u'6月', u'7月', u'8月', u'9月', u'10月', u'11月', u'12月'] ),
+
+            # 'sc' :      lambda val: slh( val, [u'Ghennarzu', u'Frearzu', u'Martzu', u'', u'', u'', u'', u'', u'', u'', u'', u''] ),
+            # 'hi' :      lambda val: slh( val, [u'', u'', u'', u'', u'मई', u'', u'', u'', u'', u'', u'', u''] ),
+            # 'ml' :      lambda val: slh( val, [u'', u'', u'', u'', u'', u'ജൂണ്‍', u'', u'', u'', u'', u'', u''] ),
+    },
+    
     'yearsAD': {
         'af' :      lambda val: dh_noConv( val, u'%d' ),
-        'ast' :     lambda val: dh_noConv( val, u'%d' ),
+        'ast':      lambda val: dh_noConv( val, u'%d' ),
         'be' :      lambda val: dh_noConv( val, u'%d' ),
         'bg' :      lambda val: dh_noConv( val, u'%d' ),
         'bs' :      lambda val: dh_noConv( val, u'%d' ),
         'ca' :      lambda val: dh_noConv( val, u'%d' ),
         'cs' :      lambda val: dh_noConv( val, u'%d' ),
-        'csb' :     lambda val: dh_noConv( val, u'%d' ),
+        'csb':      lambda val: dh_noConv( val, u'%d' ),
         'cy' :      lambda val: dh_noConv( val, u'%d' ),
         'da' :      lambda val: dh_noConv( val, u'%d' ),
         'de' :      lambda val: dh_noConv( val, u'%d' ),
@@ -969,7 +1085,7 @@ dateFormats = {
         'mi' :      lambda val: dh_noConv( val, u'%d' ),
         'minnan' :  lambda val: dh_noConv( val, u'%d nî' ),
         'nb' :      lambda val: dh_noConv( val, u'%d' ),
-        'nds' :     lambda val: dh_noConv( val, u'%d' ),
+        'nds':      lambda val: dh_noConv( val, u'%d' ),
         'nl' :      lambda val: dh_noConv( val, u'%d' ),
         'nn' :      lambda val: dh_noConv( val, u'%d' ),
         'no' :      lambda val: dh_noConv( val, u'%d' ),
@@ -1008,7 +1124,7 @@ dateFormats = {
         'fr' :      lambda val: dh_noConv( val, u'-%d' ),
         'he' :      lambda val: dh_noConv( val, u'%d לפנה"ס' ),
         'hr' :      lambda val: dh_noConv( val, u'%d p.n.e.' ),
-        'id' :		lambda val: dh_noConv( val, u'%d SM' ),
+        'id' :      lambda val: dh_noConv( val, u'%d SM' ),
         'is' :      lambda val: dh_noConv( val, u'%d f. Kr.' ),
         'it' :      lambda val: dh_noConv( val, u'%d AC' ),
         'ko' :      lambda val: dh_noConv( val, u'기원전 %d년' ),
@@ -1196,9 +1312,9 @@ dateFormats = {
     },
     
     'Cat_Year_MusicAlbums': {
-		'en' :      lambda val: dh_noConv( val, u'Category:%d albums' ),
-		'fr' :      lambda val: dh_noConv( val, u'Catégorie:Album musical sorti en %d' ),
-		'pl' :      lambda val: dh_noConv( val, u'Kategoria:Albumy muzyczne wydane w roku %d' ),
+        'en' :      lambda val: dh_noConv( val, u'Category:%d albums' ),
+        'fr' :      lambda val: dh_noConv( val, u'Catégorie:Album musical sorti en %d' ),
+        'pl' :      lambda val: dh_noConv( val, u'Kategoria:Albumy muzyczne wydane w roku %d' ),
         'sv' :      lambda val: dh_noConv( val, u'Kategori:%d års musikalbum' ),
     },
 }
@@ -1271,4 +1387,3 @@ def testAll():
 
     for d in dateFormats.keys():
         testYearMap( d, 30, 30 )
-        
