@@ -177,8 +177,8 @@ class Page(object):
         # Convert URL-encoded characters to unicode
         title = url2unicode(title, site = site)
         # replace cx by ĉ etc.
-        #if site.lang == 'eo':
-        #    title = resolveEsperantoXConvention(title)
+        if site.lang == 'eo':
+            title = doubleXForEsperanto(resolveEsperantoXConvention(title))
         # Remove double spaces
         while '  ' in title:
             title = title.replace('  ', ' ')

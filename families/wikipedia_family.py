@@ -50,7 +50,7 @@ class Family(family.Family):
             'sk': u'Wikipédia',
             'sr': u'Википедија',
             'su': u'Wikipédia',
-            'th': u'วกพเดย',# doesn't seem to be correct for some reason
+            'th': u'\u0e27\u0e34\u0e01\u0e34\u0e1e\u0e35\u0e40\u0e14\u0e35\u0e22',
         }
         self.namespaces[5] = {
             '_default': u'Wikipedia talk',
