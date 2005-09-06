@@ -170,6 +170,7 @@ def slh( value, lst ):
 dateFormats = {
     'January': { 
             'af' :      lambda val: dh_noConv( val, u'%d Januarie' ),
+            'an' :      lambda val: dh_noConv( val, u'%d de chinero' ),
             'ang':      lambda val: dh_noConv( val, u'%d Æfterra Géola' ),
             'ar' :      lambda val: dh_noConv( val, u'%d يناير' ),
             'ast':      lambda val: dh_noConv( val, u'%d de xineru' ),
@@ -238,6 +239,7 @@ dateFormats = {
     
     'February': {
             'af' :      lambda val: dh_noConv( val, u'%d Februarie' ),
+            'an' :      lambda val: dh_noConv( val, u'%d de frebero' ),
             'ang':      lambda val: dh_noConv( val, u'%d Solmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d فبراير' ),
             'ast':      lambda val: dh_noConv( val, u'%d de febreru' ),
@@ -304,6 +306,7 @@ dateFormats = {
     
     'March': {
             'af' :      lambda val: dh_noConv( val, u'%d Maart' ),
+            'an' :      lambda val: dh_noConv( val, u'%d de marzo' ),
             'ang':      lambda val: dh_noConv( val, u'%d Hréþmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d مارس' ),
             'ast':      lambda val: dh_noConv( val, u'%d de marzu' ),
@@ -370,6 +373,7 @@ dateFormats = {
     
     'April': {
             'af' :      lambda val: dh_noConv( val, u'%d April' ),
+            'an' :      lambda val: dh_noConv( val, u"%d d'abril" ),
             'ang':      lambda val: dh_noConv( val, u'%d Éastermónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d أبريل' ),
             'ast':      lambda val: dh_noConv( val, u"%d d'abril" ),
@@ -437,6 +441,7 @@ dateFormats = {
     
     'May': {
             'af' :      lambda val: dh_noConv( val, u'%d Mei' ),
+            'an' :      lambda val: dh_noConv( val, u'%d de mayo' ),
             'ang':      lambda val: dh_noConv( val, u'%d Þrimilcemónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d مايو' ),
             'ast':      lambda val: dh_noConv( val, u'%d de mayu' ),
@@ -504,6 +509,7 @@ dateFormats = {
     
     'June': {
             'af' :      lambda val: dh_noConv( val, u'%d Junie' ),
+            'an' :      lambda val: dh_noConv( val, u'%d de chunio' ),
             'ang':      lambda val: dh_noConv( val, u'%d Séremónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d يونيو' ),
             'ast':      lambda val: dh_noConv( val, u'%d de xunu' ),
@@ -570,6 +576,7 @@ dateFormats = {
     
     'July': {
             'af' :      lambda val: dh_noConv( val, u'%d Julie' ),
+            'an' :      lambda val: dh_noConv( val, u'%d de chulio' ),
             'ang':      lambda val: dh_noConv( val, u'%d Mǽdmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d يوليو' ),
             'ast':      lambda val: dh_noConv( val, u'%d de xunetu' ),
@@ -636,6 +643,7 @@ dateFormats = {
     
     'August': {
             'af' :      lambda val: dh_noConv( val, u'%d Augustus' ),
+            'an' :      lambda val: dh_noConv( val, u"%d d'agosto" ),
             'ang':      lambda val: dh_noConv( val, u'%d Wéodmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d أغسطس' ),
             'ast':      lambda val: dh_noConv( val, u"%d d'agostu" ),
@@ -703,6 +711,7 @@ dateFormats = {
     
     'September': {
             'af' :      lambda val: dh_noConv( val, u'%d September' ),
+            'an' :      lambda val: dh_noConv( val, u'%d de setiembre' ),
             'ang':      lambda val: dh_noConv( val, u'%d Háligmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d سبتمبر' ),
             'ast':      lambda val: dh_noConv( val, u'%d de setiembre' ),
@@ -769,6 +778,7 @@ dateFormats = {
     
     'October': {
             'af' :      lambda val: dh_noConv( val, u'%d Oktober' ),
+            'an' :      lambda val: dh_noConv( val, u"%d d'otubre" ),
             'ang':      lambda val: dh_noConv( val, u'%d Winterfylleþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d أكتوبر' ),
             'ast':      lambda val: dh_noConv( val, u"%d d'ochobre" ),
@@ -835,6 +845,7 @@ dateFormats = {
     
     'November': {
             'af' :      lambda val: dh_noConv( val, u'%d November' ),
+            'an' :      lambda val: dh_noConv( val, u'%d de nobiembre' ),
             'ang':      lambda val: dh_noConv( val, u'%d Blótmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d نوفمبر' ),
             'ast':      lambda val: dh_noConv( val, u'%d de payares' ),
@@ -901,6 +912,7 @@ dateFormats = {
     
     'December': {
             'af' :      lambda val: dh_noConv( val, u'%d Desember' ),
+            'an' :      lambda val: dh_noConv( val, u"%d d'abiento" ),
             'ang':      lambda val: dh_noConv( val, u'%d Géolmónaþ' ),
             'ar' :      lambda val: dh_noConv( val, u'%d ديسمبر' ),
             'ast':      lambda val: dh_noConv( val, u"%d d'avientu" ),
@@ -1064,6 +1076,7 @@ dateFormats = {
         'ca' :      lambda val: dh_noConv( val, u'%d' ),
         'cs' :      lambda val: dh_noConv( val, u'%d' ),
         'csb':      lambda val: dh_noConv( val, u'%d' ),
+        'cv' :      lambda val: dh_noConv( val, u'%d' ),        
         'cy' :      lambda val: dh_noConv( val, u'%d' ),
         'da' :      lambda val: dh_noConv( val, u'%d' ),
         'de' :      lambda val: dh_noConv( val, u'%d' ),
