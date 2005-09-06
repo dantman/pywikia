@@ -376,9 +376,9 @@ class Subject(object):
                 else:
                     if not globalvar.autonomous:
                         if self.inpl.isDisambig() and not pl.isDisambig():
-                            choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No', 'Add a hint'], ['y', 'N', 'A'], 'N')
+                            choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
                         elif not self.inpl.isDisambig() and pl.isDisambig():
-                            choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No', 'Add a hint'], ['y', 'N', 'A'], 'N')
+                            choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
                         else:
                             choice = 'y'
                         if choice not in ['y', 'Y']:
@@ -414,7 +414,7 @@ class Subject(object):
                         if not globalvar.autonomous:
                             if self.inpl.namespace() != page2.namespace():
                                 if not self.foundin.has_key(page2):
-                                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), self.inpl.namespace(), page2.aslink(forceInterwiki = True), page2.namespace()), ['Yes', 'No'], ['y', 'N'], 'N')
+                                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), self.inpl.namespace(), page2.aslink(forceInterwiki = True), page2.namespace()), ['Yes', 'No'], ['y', 'n'])
                                     if choice not in ['y', 'Y']:
                                         # Fill up foundin, so that we will not ask again
                                         self.foundin[page2] = [pl]
@@ -647,7 +647,7 @@ class Subject(object):
                         if acceptall: 
                             answer = 'a'
                         else: 
-                            answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'G', 'l'], 'G')
+                            answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'])
                             if not answer:
                                 answer = 'a'
                         if answer in 'lL': # accept all
@@ -811,7 +811,7 @@ class Subject(object):
                             # If we cannot ask, deny permission
                             answer = 'n'
                         else:
-                            answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No'], ['y', 'N'], 'N')
+                            answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No'], ['y', 'n'])
                     else:
                         # If we do not need to ask, allow
                         answer = 'y'
@@ -1038,11 +1038,22 @@ class InterwikiBot(object):
             print "NOTE: Nothing left to do 2"
             return False
         # Get the content of the assembled list in one blow
-        try:
-            wikipedia.getall(site, plgroup)
-        except wikipedia.SaxError:
-            # Ignore this error, and get the pages the traditional way.
-            pass
+        retryCount = 2
+        timeout = 30
+        while True:
+            try:
+                wikipedia.getall(site, plgroup)
+            except wikipedia.SaxError:
+                if retryCount > 0:
+                    retryCount = retryCount - 1
+                    wikipedia.output(u'Sleeping %i seconds before trying again.' % timeout)
+                    time.sleep(timeout)
+                    timeout = timeout * 2
+                else:
+                    # Ignore this error, and get the pages the traditional way.
+                    break
+            else:
+                break
         # Tell all of the subjects that the promised work is done
         for subj in group:
             subj.workDone(self)
