@@ -946,7 +946,7 @@ class InterwikiBot(object):
                     if globalvar.skipauto:
                         dictName, year = date.getDictionaryYear(page.site().language(), page.title())
                         if dictName != None:
-                            wikipedia.output(u'Skiping: %s is auto entry %s(%s)' % (page,dictName,year))
+                            wikipedia.output(u'Skiping: %s is auto entry %s(%s)' % (page.title(),dictName,year))
                             continue
                     break
 
