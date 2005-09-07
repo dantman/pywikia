@@ -1947,6 +1947,16 @@ class Site(object):
     def encodings(self):
         return self.family.code2encodings(self.lang)
 
+    def redirect(self, default = False):
+        """
+        Gives the localized redirect tag for the site. Falls back
+        to 'REDIRECT' if the site has no special redirect tag.
+        """
+        if default:
+            return self.family.redirect.get(self.lang, "REDIRECT") 	 
+        else: 	 
+            return self.family.redirect.get(self.lang, None)
+
     def redirectRegex(self):
         """
         Regular expression recognizing redirect pages
