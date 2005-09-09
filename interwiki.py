@@ -1252,7 +1252,15 @@ if __name__ == "__main__":
         if config.usernames.has_key('wikipedia') and config.usernames['wikipedia'].has_key('nn'):
             print "Bot is not to be used at the Nynorsk Wikipedia."
             raise NynorskException
-            
+        
+        # ensure that we don't try to change main page
+        try:
+            site = wikipedia.getSite()
+            mainpagename = site.family.mainpages[site.language()]
+            globalvar.skip.add(wikipedia.Page(site, mainpagename))
+        except:
+            wikipedia.output(u'Missing main page name')
+
         # We need to know what language we are processing before invoking getSite()
         if optRestore or optContinue:
             site = wikipedia.getSite()
@@ -1296,7 +1304,7 @@ if __name__ == "__main__":
         if inname:
             inpl = wikipedia.Page(wikipedia.getSite(), inname)
             bot.add(inpl, hints = hints)
-
+        
         try:
             bot.run()
         except KeyboardInterrupt:
