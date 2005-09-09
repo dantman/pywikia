@@ -80,6 +80,7 @@ msg = {
        'fr':u'Bot : Remplacement de texte automatisé %s',
        'hu':u'Robot: Automatikus szövegcsere %s',
        'is':u'Vélmenni: breyti texta %s',
+       'lt':u'Botas: Automatinis teksto keitimas %s',       
        'pt':u'Bot: Mudança automática %s',
        }
 

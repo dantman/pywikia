@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -211,6 +211,7 @@ msg = {
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),
+    'lt': (u'robotas ', u'Pridedama', u'Šalinama', u'Keičiama'),
     'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
     'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
     'no': (u'robot ', u'Tilføyer', u'Fjerner', u'Endrer'),
