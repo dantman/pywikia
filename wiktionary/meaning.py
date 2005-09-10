@@ -81,6 +81,104 @@ class Meaning:
             synonyms.append({'synonym': synonym, 'remark': synremark})
         self.synonyms={'remark': synsremark, 'synonyms': synonyms}
 
+    def parseTranslations(self,translationswikiline):
+        # There can be many translations for a language, each one can have remark
+        # a gender and a number.
+        # There can also be a remark for the group of translations for a given language
+        # And there can be a remark applying to all the translations
+        # It is also possible that the translation for a given language is not parseable
+        # In that case the entire line should go into the remark.
+#        alltransremark = ''
+#        alltrans = {} # a dictionary containing all the translations with all the languages
+        translationsremark = ''
+        translations = [] # a list of translations for a given language
+#        translation = '' # a term object
+        colon=translationswikiline.find(':')
+        if colon!=-1:
+#            lang, trans = translationswikiline.split(':') # standard way of doing this doesn't work if there are more colons in the line
+            lang = translationswikiline[:colon].replace('*','').replace('[','').replace(']','').strip().lower()
+            trans = translationswikiline[colon+1:]
+            isolang=''
+            if structs.langnames.has_key(lang):
+                isolang=lang
+            if structs.invertedlangnames.has_key(lang):
+                isolang=structs.invertedlangnames[lang]
+            for translation in trans.split(','):
+                translationremark = ''
+                number = 1
+                masculine = feminine = neutral = common = diminutive = False
+                partconsumed = False
+                for part in translation.split(' '):
+                    print 'part: ', part,
+                    part=part.strip()
+                    colon=part.find(':')
+                    if colon!=-1:
+                        translationremark = part.replace("'",'').replace('(','').replace(')','').replace(':','')
+                        partconsumed = True
+                    cleanpart=part.replace("'",'').lower()
+                    delim=''
+                    if cleanpart.find(','):
+                        delim=','
+                    if cleanpart.find(';'):
+                        delim=';'
+                    if cleanpart.find('/'):
+                        delim='/'
+                    if 0 <= part.find("'") <= 2 or part.find('{')!=-1:
+                        if delim=='':
+                            delim='|'
+                            cleanpart=cleanpart+'|'
+                        for maybegender in cleanpart.split(delim):
+                            maybegender=maybegender.strip()
+                            if maybegender=='m' or maybegender=='{{m}}':
+                                masculine=True
+                                partconsumed = True
+                            if maybegender=='f' or maybegender=='{{f}}':
+                                feminine=True
+                                partconsumed = True
+                            if maybegender=='n' or maybegender=='{{n}}':
+                                neutral=True
+                                partconsumed = True
+                            if maybegender=='c' or maybegender=='{{c}}':
+                                common=True
+                                partconsumed = True
+                            if maybegender=='p' or maybegender=='pl' or maybegender=='plural' or maybegender=='{{p}}':
+                                number=2
+                                partconsumed = True
+                            if maybegender[:3]=='dim' or maybegender=='{{dim}}':
+                                diminutive=True
+                                partconsumed = True
+                    print 'consumed: ', partconsumed
+                    if not partconsumed:
+                        # This must be our term
+                        termweareworkingon=part.replace("[",'').replace("]",'').lower()
+                # Now we have enough information to create a term
+                # object for this translation and add it to our list
+                addedflag=False
+                if masculine:
+                    thistrans = term.Term(isolang,termweareworkingon,gender='m',number=number,diminutive=diminutive,wikiline=translation)
+                    translations.append(thistrans)
+                    addedflag=True
+                if feminine:
+                    thistrans = term.Term(isolang,termweareworkingon,gender='f',number=number,diminutive=diminutive,wikiline=translation)
+                    translations.append(thistrans)
+                    addedflag=True
+                if neutral:
+                    thistrans = term.Term(isolang,termweareworkingon,gender='n',number=number,diminutive=diminutive,wikiline=translation)
+                    translations.append(thistrans)
+                    addedflag=True
+                if common:
+                    thistrans = term.Term(isolang,termweareworkingon,gender='c',number=number,diminutive=diminutive,wikiline=translation)
+                    translations.append(thistrans)
+                    addedflag=True
+                if not addedflag:
+                    thistrans = term.Term(isolang,termweareworkingon,number=number,diminutive=diminutive,wikiline=translation)
+                    translations.append(thistrans)
+                    addedflag=True
+            self.translations[isolang]=translations
+            print 'orig:', lang, trans
+            print 'result:', isolang, translations
+            print 'finalresult:',self.translations
+
     def hasSynonyms(self):
         """ Returns True if there are synonyms
             Returns False if there are no synonyms
@@ -203,7 +301,7 @@ class Meaning:
                 wrappedtranslations = wrappedtranslations + structs.wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][language]).replace('%%ISOLangcode%%',language) + ': '
                 first = 1
                 for translation in self.translations[language]:
-                    term=translation.term
+                    termweareworkingon=translation.term
                     if first==0:
                         wrappedtranslations += ', '
                     else:
@@ -219,7 +317,7 @@ class Meaning:
             wrappedtranslations = structs.wiktionaryformats[wikilang]['translang'].replace('%%langname%%',langnames[wikilang][wikilang]).replace('%%ISOLangcode%%',wikilang) + ': '
             first = True
             for translation in self.translations[wikilang]:
-                term=translation.term
+                termweareworkingon=translation.term
                 if first==False:
                     wrappedtranslations += ', '
                 else:

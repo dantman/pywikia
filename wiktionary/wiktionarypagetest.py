@@ -31,7 +31,10 @@ class SortEntriesCheckSortOrder(unittest.TestCase):
 
 class TestKnownValuesInParser(unittest.TestCase):
     """This class will check various aspects of parsing Wiktionary entries into our object model"""
-    knownvalues=({'wikilang': 'en', 'term': 'nut', 'wikiformat': u"""==English==
+    knownvalues=(
+{'wikilang': 'en',
+ 'term': 'nut',
+ 'wikiformat': u"""==English==
 ===Etymology===
 From Middle English [[nute]], from Old English [[hnutu]]. <!-- Is Latin [[nux]], nuc- a cognate? -->
 ===Pronunciation===
@@ -172,22 +175,26 @@ The translations below need to be checked by native speakers and inserted into t
        [{'definition': u'A hard-shelled seed.', 'concisedef': u'seed',
          'trans': {'remark': '',
                    'alltrans': {
-                             'nl': {'remark': '', 'translations': [{'remark': '',
-                                                                    'translation': (u"noot", 'f', 1)}
-                                                                  ]
+                             'nl': {'remark': '',
+                                    'translations': [{'remark': '',
+                                                      'translation': (u"noot", 'f', 1)}
+                                                    ]
                                    },
 #                            'fr': u"""''no generic translation exists''; [[noix]] ''f'' ''is often used, but this actually means "[[walnut]]"''""",
-                             'de': {'remark': '', 'translations': [{'remark': '',
-                                                                    'translation': (u"Nuss", 'f', 1)}
-                                                                  ]
+                             'de': {'remark': '',
+                                    'translations': [{'remark': '',
+                                                      'translation': (u"Nuss", 'f', 1)}
+                                                    ]
                                    },
-                             'it': {'remark': '', 'translations': [{'remark': '',
-                                                                    'translation': (u"noce", 'f', 1)}
-                                                                  ]
+                             'it': {'remark': '',
+                                    'translations': [{'remark': '',
+                                                      'translation': (u"noce", 'f', 1)}
+                                                    ]
                                    },
-                             'la': {'remark': '', 'translations': [{'remark': '',
-                                                                    'translation': (u"nux", '', 1)}
-                                                                  ]
+                             'la': {'remark': '',
+                                    'translations': [{'remark': '',
+                                                      'translation': (u"nux", '', 1)}
+                                                    ]
                                    },
                                }
                   }
@@ -326,7 +333,34 @@ The translations below need to be checked by native speakers and inserted into t
       ],
      }
     )
-
+   },
+{'wikilang': 'nl',
+ 'term': 'dummy',
+ 'wikiformat': u"""
+""",
+   'internalrep':
+    (
+     [u''],
+     [u''],
+     {u'en':
+      [u'', None, u'',
+       [{'definition': u'', 'concisedef': u'',
+         'trans': {'remark': '',
+                   'alltrans': {
+                             'nl': {'remark': '',
+                                    'translations': [{'remark': '',
+                                                      'translation': (u"", '', 1)}
+                                                    ]
+                                   },
+                               }
+                  }
+         }
+       ],
+      ],
+     }
+    )
+   }
+  )
 #     def testWhetherCategoriesAreParsedProperly(self):
 #         """Test whether Categories are parsed properly"""
 #         for value in self.knownvalues:

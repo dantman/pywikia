@@ -322,8 +322,8 @@ class WiktionaryPage:
             headercontent=contentblock['header'].contents
 
             if headercontent=='trans' or headercontent=='syn' or headercontent=='ant':
-                # On the English Wiktionary we will find concisedefs here to link defs
-                # the content of these sections
+                # On the English Wiktionary we will find concisedefs here to link definitions
+                # to the content of these sections
                 concisedefclean=''
                 for line in contentblock['text']:
                     if line[:3] == "'''":
@@ -359,8 +359,11 @@ class WiktionaryPage:
 #                        print 'winner:',winner.definition, 'score:',highest
                         winner.setConciseDef(concisedef)
                     if headercontent=='syn':
+#                        print 'syn',restofline
                         winner.parseSynonyms(restofline)
-                        
+                    if headercontent=='trans':
+#                        print 'trans',restofline
+                        winner.parseTranslations(line)
 
  #            raw_input("")
 
