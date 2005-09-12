@@ -942,7 +942,7 @@ class InterwikiBot(object):
                 while True:
                     page = self.pageGenerator.next()
                     if page in globalvar.skip:
-                        wikipedia.output(u'Skiping: %s is in the skip list' % page)
+                        wikipedia.output(u'Skiping: %s is in the skip list' % page.title())
                         continue
                     if globalvar.skipauto:
                         dictName, year = date.getDictionaryYear(page.site().language(), page.title())
