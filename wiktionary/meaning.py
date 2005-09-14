@@ -35,7 +35,9 @@ class Meaning:
         if translations: # Why this has to be done explicitly is beyond me, but it doesn't work correctly otherwise
             self.translations=translations
         else:
-            self.translations={}
+            self.translations={} # a dictionary containing lists with translations (Term objects) to the different languages.
+            self.translationsremark='' # a remark applying to all the translations for this meaning
+            self.translationsremarks={} # a dictionary containing remarks applying to a specific language
         self.label=label
 
     def setDefinition(self,definition):
@@ -82,34 +84,40 @@ class Meaning:
         self.synonyms={'remark': synsremark, 'synonyms': synonyms}
 
     def parseTranslations(self,translationswikiline):
+        '''
+        This function will parse one line in wiki format
+        Typically this is the translation towards one language.
+        '''
         # There can be many translations for a language, each one can have remark
         # a gender and a number.
         # There can also be a remark for the group of translations for a given language
-        # And there can be a remark applying to all the translations
+        # And there can be a remark applying to all the translations (That has to be detected and stored on a higher level though.
         # It is also possible that the translation for a given language is not parseable
         # In that case the entire line should go into the remark.
-#        alltransremark = ''
-#        alltrans = {} # a dictionary containing all the translations with all the languages
         translationsremark = ''
         translations = [] # a list of translations for a given language
 #        translation = '' # a term object
+        print "From wiki:", translationswikiline
         colon=translationswikiline.find(':')
         if colon!=-1:
-#            lang, trans = translationswikiline.split(':') # standard way of doing this doesn't work if there are more colons in the line
+            # Split in lang and the rest of the line which should be a list of translations
             lang = translationswikiline[:colon].replace('*','').replace('[','').replace(']','').strip().lower()
             trans = translationswikiline[colon+1:]
+            # Look up lang and convert to an ISO abbreviation
             isolang=''
             if structs.langnames.has_key(lang):
                 isolang=lang
-            if structs.invertedlangnames.has_key(lang):
+            elif structs.invertedlangnames.has_key(lang):
                 isolang=structs.invertedlangnames[lang]
+
+            # Now split up the translations
             for translation in trans.split(','):
                 translationremark = ''
                 number = 1
                 masculine = feminine = neutral = common = diminutive = False
                 partconsumed = False
                 for part in translation.split(' '):
-                    print 'part: ', part,
+#                    print 'part: ', part,
                     part=part.strip()
                     colon=part.find(':')
                     if colon!=-1:
@@ -147,7 +155,7 @@ class Meaning:
                             if maybegender[:3]=='dim' or maybegender=='{{dim}}':
                                 diminutive=True
                                 partconsumed = True
-                    print 'consumed: ', partconsumed
+ #                   print 'consumed: ', partconsumed
                     if not partconsumed:
                         # This must be our term
                         termweareworkingon=part.replace("[",'').replace("]",'').lower()
@@ -174,10 +182,15 @@ class Meaning:
                     thistrans = term.Term(isolang,termweareworkingon,number=number,diminutive=diminutive,wikiline=translation)
                     translations.append(thistrans)
                     addedflag=True
-            self.translations[isolang]=translations
+            if not isolang:
+                print "Houston, we have a problem. This line doesn't seem to contain an indication of the language:",translationswikiline
+            self.translations[isolang] = {'remark':   translationsremark,
+                                          'alltrans': translations }
+            print "termweareworkingon",termweareworkingon
             print 'orig:', lang, trans
             print 'result:', isolang, translations
             print 'finalresult:',self.translations
+            raw_input()
 
     def hasSynonyms(self):
         """ Returns True if there are synonyms

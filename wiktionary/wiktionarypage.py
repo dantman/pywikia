@@ -98,7 +98,7 @@ class WiktionaryPage:
 
         templist = []
         context = {}
-
+        aheader = ''
         splitcontent=[]
         content=content.split('\n')
         for line in content:
@@ -136,7 +136,7 @@ class WiktionaryPage:
             if line.strip()[0]=='='and line.rstrip()[-2]=='=' or not line.find('{{-')==-1 and not line.find('-}}')==-1:
                 # When a new header is encountered, it is necessary to store the information
                 # encountered under the previous header.
-                if templist:
+                if templist and aheader:
                     tempdictstructure={'text': templist,
                                        'header': aheader,
                                        'context': copy.copy(context),
@@ -190,6 +190,8 @@ class WiktionaryPage:
         diminutive = False
         examples = []
         for contentblock in splitcontent:
+            headercontent=contentblock['header'].contents
+
 #            print "contentblock:",contentblock
 #            print contentblock['header']
             # Now we parse the text blocks.
@@ -253,9 +255,9 @@ class WiktionaryPage:
                         # We can create a Term object
                         # TODO which term object depends on the POS
 #                        print "contentblock['context'].['lang']", contentblock['context']['lang']
-                        if contentblock['header'].contents=='noun':
+                        if headercontent=='noun':
                             theterm=term.Noun(lang=contentblock['context']['lang'], term=sample, gender=gender, number=number, diminutive=diminutive)
-                        if contentblock['header'].contents=='verb':
+                        if headercontent=='verb':
                             theterm=term.Verb(lang=contentblock['context']['lang'], term=sample)
                         sample=''
 #                        raw_input("")
@@ -318,20 +320,18 @@ class WiktionaryPage:
                     # Then we can easily add this meaning to it.
                     anentry.addMeaning(ameaning)
 
-
-            headercontent=contentblock['header'].contents
-
+            winner = False # This is going to contain the Meaning object which has the Definition which matches the Concisedef of the entry we are working on right now
             if headercontent=='trans' or headercontent=='syn' or headercontent=='ant':
-                # On the English Wiktionary we will find concisedefs here to link definitions
-                # to the content of these sections
+                # On the English Wiktionary we will find concisedefs here to link definitions to the content of these sections, but only if there is more than one definition.
+                print "number of meanings:",len(anentry.meanings.keys())
                 concisedefclean=''
                 for line in contentblock['text']:
                     if line[:3] == "'''":
-                        # This seems to be line containing a concisedef
+                        # This seems to be a line containing a concisedef
                         concisedef=line.replace("'''",'').strip()
                         concisedefclean=concisedef.replace("(",'').replace(")",'').replace("'",'').replace(":",'').replace(".",'').lower()
                     if line[:2] == "*(":
-                        # This seems to be line containing a concisedef
+                        # This seems to be a line containing a concisedef
                         pos=line.find(')')
                         concisedef=line[2:pos].strip()
                         concisedefclean=concisedef.replace("(",'').replace(")",'').replace("'",'').replace(":",'').replace(".",'').lower()
@@ -358,6 +358,12 @@ class WiktionaryPage:
                                 winner=anothermeaning
 #                        print 'winner:',winner.definition, 'score:',highest
                         winner.setConciseDef(concisedef)
+                        if headercontent=='trans':
+                            """
+                            We have to find a way to read the rest of the lines until the next ConciseDef into a structure, that can be processed later on. In contrast to a list of synonyms where the synonyms are on the rest of the lines, translations are on the following lines.
+                            It's also possible that there is no concisedef and that the translation's block simpy starts... or that there are numbers instead of concisedefs.
+                            """
+
                     if headercontent=='syn':
 #                        print 'syn',restofline
                         winner.parseSynonyms(restofline)

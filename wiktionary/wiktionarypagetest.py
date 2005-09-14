@@ -294,7 +294,7 @@ The translations below need to be checked by native speakers and inserted into t
                                {'remark': '',
                                 'synonym': u"nad"}]},
          'trans': {'remark': '',
-                   'trans': {'nl': {'remark': '<!--Never heard this before-->',
+                   'alltrans': {'nl': {'remark': '<!--Never heard this before-->',
                                     'translations': [{'remark': '',
                                                       'translation': (u"noten", 'm', 2)},
                                                      {'remark': '',
@@ -337,13 +337,16 @@ The translations below need to be checked by native speakers and inserted into t
 {'wikilang': 'nl',
  'term': 'dummy',
  'wikiformat': u"""
+{{-nl-}}
+{{-noun-}}
+'''dummy''' {{m}}
 """,
    'internalrep':
     (
      [u''],
      [u''],
-     {u'en':
-      [u'', None, u'',
+     {u'nl':
+      [u'dummy', 'm', u"dummy's",
        [{'definition': u'', 'concisedef': u'',
          'trans': {'remark': '',
                    'alltrans': {
@@ -460,12 +463,29 @@ The translations below need to be checked by native speakers and inserted into t
 
                 resulttrans={}
                 for key in apage.entries[entrylang].meanings.keys():
+                    print key
                     for resultmeaning in apage.entries[entrylang].meanings[key]:
-                        resulttrans[resultmeaning.concisedef] = resultmeaning.translations
+                        print resultmeaning.concisedef
+                        print 'Translations: ',resultmeaning.getTranslations()
+                        resulttrans[resultmeaning.concisedef] = resultmeaning.getTranslations()
 
                 for concisedef in resulttrans.keys():
                     if concisedef!='' and reftrans.has_key(concisedef) and resulttrans.has_key(concisedef):
-                        self.assertEqual(resulttrans[concisedef], reftrans[concisedef])
+                        print concisedef
+                        print resulttrans[concisedef]
+#                        raw_input()
+                        print reftrans[concisedef]
+                        raw_input()
+#                         self.assertEqual(resulttrans[concisedef]['remark'], reftrans[concisedef]['remark'])
+#                         for translatedlang in resulttrans[concisedef]['alltrans']:
+#                             self.assertEqual(resulttrans[concisedef]['alltrans'][translatedlang]['remark'], reftrans[concisedef]['alltrans'][translatedlang]['remark'])
+#                             for translation in resulttrans[concisedef]['alltrans'][translatedlang][translations]:
+#                                 self.assertEqual(resulttrans[concisedef]['alltrans'][translatedlang][translation]['remark'], reftrans[concisedef]['alltrans'][translatedlang][translation]['remark'])
+#                                 refterm,refgender,refnumber=reftrans[concisedef]['alltrans'][translatedlang][translation]
+#                                 resultterm,resultgender,resultnumber=reftrans[concisedef]['alltrans'][translatedlang][translation]
+#                                 self.assertEqual(refterm,resultterm)
+#                                 self.assertEqual(refgender,resultgender)
+#                                 self.assertEqual(refnumber,resultnumber)
 
 if __name__ == "__main__":
     unittest.main()
