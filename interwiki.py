@@ -331,6 +331,13 @@ class Subject(object):
         for pl in self.pending:
             # Mark the page as done
             self.done[pl] = pl.site()
+
+            # make sure that none of the linked items is an auto item
+            if globalvar.skipauto:
+                dictName, year = date.getDictionaryYear(pl.site().language(), pl.title())
+                if dictName != None:
+                    wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.inpl.site().language(), self.inpl.title(), pl.site().language(),pl.title(),dictName,year))                
+
             # Register this fact at the todo-counter.
             counter.minus(pl.site())
             # Assume it's not a redirect
@@ -942,12 +949,12 @@ class InterwikiBot(object):
                 while True:
                     page = self.pageGenerator.next()
                     if page in globalvar.skip:
-                        wikipedia.output(u'Skiping: %s is in the skip list' % page.title())
+                        wikipedia.output(u'Skipping: %s is in the skip list' % page.title())
                         continue
                     if globalvar.skipauto:
                         dictName, year = date.getDictionaryYear(page.site().language(), page.title())
                         if dictName != None:
-                            wikipedia.output(u'Skiping: %s is auto entry %s(%s)' % (page.title(),dictName,year))
+                            wikipedia.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
                             continue
                     break
 
