@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -523,6 +523,7 @@ class Family:
             'li'  :       [u'verdudeliking'],
             'ln'  :       [u'bokokani'],
             'lt'  :       [u'disambig'],
+            'mt'  :       [u'diżambigwazzjoni'],
             'no'  :       [u'peker', u'etternavn'],
             'nds' :       [u'begreepkloren'],
             'nl'  :       [u'dp','dP'],
