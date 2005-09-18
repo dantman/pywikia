@@ -3,6 +3,7 @@
 
 import term
 import structs
+import re
 
 class Meaning:
     """ This class contains one meaning for a word or an expression.
@@ -35,7 +36,7 @@ class Meaning:
         if translations: # Why this has to be done explicitly is beyond me, but it doesn't work correctly otherwise
             self.translations=translations
         else:
-            self.translations={} # a dictionary containing lists with translations (Term objects) to the different languages.
+            self.translations={} # a dictionary containing lists with translations to the different languages. Each translation is again a dictionary as follows: {'remark': '', 'trans': Term object}
             self.translationsremark='' # a remark applying to all the translations for this meaning
             self.translationsremarks={} # a dictionary containing remarks applying to a specific language
         self.label=label
@@ -95,13 +96,14 @@ class Meaning:
         # It is also possible that the translation for a given language is not parseable
         # In that case the entire line should go into the remark.
         translationsremark = ''
+        translationremark = ''
         translations = [] # a list of translations for a given language
 #        translation = '' # a term object
         print "From wiki:", translationswikiline
         colon=translationswikiline.find(':')
         if colon!=-1:
             # Split in lang and the rest of the line which should be a list of translations
-            lang = translationswikiline[:colon].replace('*','').replace('[','').replace(']','').strip().lower()
+            lang = translationswikiline[:colon].replace('*','').replace('[','').replace(']','').replace('{','').replace('}','').strip().lower()
             trans = translationswikiline[colon+1:]
             # Look up lang and convert to an ISO abbreviation
             isolang=''
@@ -110,9 +112,22 @@ class Meaning:
             elif structs.invertedlangnames.has_key(lang):
                 isolang=structs.invertedlangnames[lang]
 
+            # We need to prepare the line a bit to make it more easily parseable
+            # All the commas found between '' '' are converted to simple spaces
+            # Also }}, {{ has to be converted to }} {{
+
+            trans="''".join([ [i[1],re.sub(',',' ',i[1])][i[0]%2==1] for i in enumerate(trans.split("''")) ])
+
+            trans=re.sub(r"(}}.*),(.*{{)",'}} {{',trans)
+
+            print 'trans:',trans
             # Now split up the translations
             for translation in trans.split(','):
-                translationremark = ''
+                # Find what is contained inside parentheses
+                m= re.search(r'(\(.*\))',translation)
+                if m:
+                    translationremark = m.group(1).replace('(','').replace(')','')
+                    translation=translation.replace(m.group(1),'')
                 number = 1
                 masculine = feminine = neutral = common = diminutive = False
                 partconsumed = False
@@ -137,6 +152,7 @@ class Meaning:
                             cleanpart=cleanpart+'|'
                         for maybegender in cleanpart.split(delim):
                             maybegender=maybegender.strip()
+                            print 'maybegender: |',maybegender,'|'
                             if maybegender=='m' or maybegender=='{{m}}':
                                 masculine=True
                                 partconsumed = True
@@ -159,29 +175,40 @@ class Meaning:
                     if not partconsumed:
                         # This must be our term
                         termweareworkingon=part.replace("[",'').replace("]",'').lower()
+                        if termweareworkingon.find('#')!=-1 and termweareworkingon.find('|')!=-1:
+                            termweareworkingon=termweareworkingon.split('#')[0]
+                            print 'termweareworkingon:', termweareworkingon
                 # Now we have enough information to create a term
                 # object for this translation and add it to our list
+                print 'termweareworkingon:', termweareworkingon
                 addedflag=False
                 if masculine:
-                    thistrans = term.Term(isolang,termweareworkingon,gender='m',number=number,diminutive=diminutive,wikiline=translation)
+                    thistrans = {'remark': translationremark, 'trans': term.Term(isolang,termweareworkingon,gender='m',number=number,diminutive=diminutive,wikiline=translation)}
                     translations.append(thistrans)
                     addedflag=True
                 if feminine:
-                    thistrans = term.Term(isolang,termweareworkingon,gender='f',number=number,diminutive=diminutive,wikiline=translation)
+                    thistrans = {'remark': translationremark, 'trans': term.Term(isolang,termweareworkingon,gender='f',number=number,diminutive=diminutive,wikiline=translation)}
                     translations.append(thistrans)
                     addedflag=True
                 if neutral:
-                    thistrans = term.Term(isolang,termweareworkingon,gender='n',number=number,diminutive=diminutive,wikiline=translation)
+                    thistrans = {'remark': translationremark, 'trans': term.Term(isolang,termweareworkingon,gender='n',number=number,diminutive=diminutive,wikiline=translation)}
                     translations.append(thistrans)
                     addedflag=True
                 if common:
-                    thistrans = term.Term(isolang,termweareworkingon,gender='c',number=number,diminutive=diminutive,wikiline=translation)
+                    thistrans = {'remark': translationremark, 'trans': term.Term(isolang,termweareworkingon,gender='c',number=number,diminutive=diminutive,wikiline=translation)}
                     translations.append(thistrans)
                     addedflag=True
+                # if it wasn't added by now, it's a term which has no gender indication
                 if not addedflag:
-                    thistrans = term.Term(isolang,termweareworkingon,number=number,diminutive=diminutive,wikiline=translation)
+                    print 'termweareworkingon before using it:', termweareworkingon
+                    test=termweareworkingon
+                    print 'test:',test
+                    thistrans = {'remark': translationremark, 'trans': term.Term(isolang,'test',number=number,diminutive=diminutive,wikiline=translation)}
                     translations.append(thistrans)
-                    addedflag=True
+                    print 'translations:',translations
+
+                print 'thistransterm:',thistrans['trans'].getTerm()
+
             if not isolang:
                 print "Houston, we have a problem. This line doesn't seem to contain an indication of the language:",translationswikiline
             self.translations[isolang] = {'remark':   translationsremark,
