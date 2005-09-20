@@ -6,6 +6,7 @@ import re, codecs
 
 # Application specific imports
 import wikipedia, date
+import config
 
 class AllpagesPageGenerator:
     '''
@@ -31,6 +32,23 @@ class ReferringPageGenerator:
     def __iter__(self):
         for page in self.referredPage.getReferences(follow_redirects = self.followRedirects):
             yield page
+
+def AllReferringPageGenerator(referredPage, followRedirects = False):
+    '''
+    Yields all pages referring to a specific page, without being limited by
+    the special_page_limit setting.
+    '''
+    newoffset = 0
+    more = True
+    while more:
+        more = False
+        for page in referredPage.getReferences(
+                         follow_redirects = followRedirects,
+                         offset = newoffset):
+            yield page
+            more = True
+        newoffset += config.special_page_limit
+
 
 class CategorizedPageGenerator:
     '''

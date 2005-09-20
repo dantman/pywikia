@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -529,14 +529,17 @@ class Page(object):
         return False
 
 
-    def getReferences(self, follow_redirects = True):
+    def getReferences(self, follow_redirects = True, offset = 0):
         """
         Returns a list of pages that link to the page.
         If follow_redirects is True, also returns pages
         that link to a redirect pointing to the page.
+        If offset is non-zero, skips that many references before loading.
         """
         site = self.site()
         path = site.references_address(self.urlname())
+        if offset:
+            path = path + "&offset=%i" % offset
         
         output(u'Getting references to %s' % self.aslink())
         txt = site.getUrl(path)
