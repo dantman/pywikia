@@ -47,13 +47,8 @@ class KnownValues(unittest.TestCase):
         for wikiline, results in self.knownParserValues:
             ameaning = meaning.Meaning('en', 'dummy')
             ameaning.parseTranslations(wikiline)
-            print "ref results" ,results
-#            for trans in results:
-#            print "ref translations:",trans
             i=0
             for termlang, thisterm, termgender, termnumber, termisadiminutive, remark in results:
-                print "i, result translations:",i,ameaning.translations
-                print ameaning.translations[termlang]['alltrans'][i]['trans'].getTerm()
                 resultterm = ameaning.translations[termlang]['alltrans'][i]['trans']
                 self.assertEqual(resultterm.getTerm(), thisterm)
                 self.assertEqual(resultterm.getGender(), termgender)

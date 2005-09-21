@@ -95,11 +95,8 @@ class Meaning:
         # And there can be a remark applying to all the translations (That has to be detected and stored on a higher level though.
         # It is also possible that the translation for a given language is not parseable
         # In that case the entire line should go into the remark.
-        translationsremark = ''
-        translationremark = ''
+        translationsremark = translationremark = ''
         translations = [] # a list of translations for a given language
-#        translation = '' # a term object
-        print "From wiki:", translationswikiline
         colon=translationswikiline.find(':')
         if colon!=-1:
             # Split in lang and the rest of the line which should be a list of translations
@@ -120,23 +117,33 @@ class Meaning:
 
             trans=re.sub(r"(}}.*),(.*{{)",'}} {{',trans)
 
-            print 'trans:',trans
-            # Now split up the translations
+            # Now split up the translations (we got rid of extraneous commas)
             for translation in trans.split(','):
+                translation=translation.strip()
                 # Find what is contained inside parentheses
                 m= re.search(r'(\(.*\))',translation)
                 if m:
-                    translationremark = m.group(1).replace('(','').replace(')','')
-                    translation=translation.replace(m.group(1),'')
+                    # Only when the parentheses don't occur
+                    # between [[ ]]
+                    if translation[m.end(1)+1:m.end(1)+2]!=']':
+                        translationremark = m.group(1).replace('(','').replace(')','')
+                        translation=translation.replace(m.group(1),'')
                 number = 1
                 masculine = feminine = neutral = common = diminutive = False
                 partconsumed = False
                 for part in translation.split(' '):
-#                    print 'part: ', part,
                     part=part.strip()
                     colon=part.find(':')
                     if colon!=-1:
-                        translationremark = part.replace("'",'').replace('(','').replace(')','').replace(':','')
+                        colon2=part.find(':',colon+1)
+                        pipe=part.find('|')
+                        if colon2!=-1 and pipe!=-1:
+                            # We found a link to another language Wiktionary
+                            # This contains no interesting information to store
+                            # If the target Wiktionary uses them, we'll create them upon output
+                            pass
+                        else:
+                            translationremark = part.replace("'",'').replace('(','').replace(')','').replace(':','')
                         partconsumed = True
                     cleanpart=part.replace("'",'').lower()
                     delim=''
@@ -152,7 +159,6 @@ class Meaning:
                             cleanpart=cleanpart+'|'
                         for maybegender in cleanpart.split(delim):
                             maybegender=maybegender.strip()
-                            print 'maybegender: |',maybegender,'|'
                             if maybegender=='m' or maybegender=='{{m}}':
                                 masculine=True
                                 partconsumed = True
@@ -177,10 +183,8 @@ class Meaning:
                         termweareworkingon=part.replace("[",'').replace("]",'').lower()
                         if termweareworkingon.find('#')!=-1 and termweareworkingon.find('|')!=-1:
                             termweareworkingon=termweareworkingon.split('#')[0]
-                            print 'termweareworkingon:', termweareworkingon
                 # Now we have enough information to create a term
                 # object for this translation and add it to our list
-                print 'termweareworkingon:', termweareworkingon
                 addedflag=False
                 if masculine:
                     thistrans = {'remark': translationremark, 'trans': term.Term(isolang,termweareworkingon,gender='m',number=number,diminutive=diminutive,wikiline=translation)}
@@ -200,24 +204,13 @@ class Meaning:
                     addedflag=True
                 # if it wasn't added by now, it's a term which has no gender indication
                 if not addedflag:
-                    print 'termweareworkingon before using it:', termweareworkingon
-                    test=termweareworkingon
-                    print 'test:',test
-                    thistrans = {'remark': translationremark, 'trans': term.Term(isolang,'test',number=number,diminutive=diminutive,wikiline=translation)}
+                    thistrans = {'remark': translationremark, 'trans': term.Term(isolang,termweareworkingon,number=number,diminutive=diminutive)}
                     translations.append(thistrans)
-                    print 'translations:',translations
-
-                print 'thistransterm:',thistrans['trans'].getTerm()
 
             if not isolang:
                 print "Houston, we have a problem. This line doesn't seem to contain an indication of the language:",translationswikiline
             self.translations[isolang] = {'remark':   translationsremark,
                                           'alltrans': translations }
-            print "termweareworkingon",termweareworkingon
-            print 'orig:', lang, trans
-            print 'result:', isolang, translations
-            print 'finalresult:',self.translations
-            raw_input()
 
     def hasSynonyms(self):
         """ Returns True if there are synonyms
