@@ -8,7 +8,7 @@ lists which are required by some other programs.
 # © Daniel Herding, 2004
 # © Ævar Arnfjörð Bjarmason, 2004
 # © Andre Engels, 2005
-# © Yuri Astrakhan, 2005 (years/decades/centuries/milleniums  str <=> int  conversions)
+# © Yuri Astrakhan, 2005 (years/decades/centuries/millenniums  str <=> int  conversions)
 #
 # Distribute under the terms of the PSF license.
 #
@@ -19,8 +19,21 @@ import re
 import wikipedia
 
 
-# Month names, must be in order (used as indexes)
-monthNames = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ]
+#
+# Different collections of well known formats
+#
+enMonthNames    = [ u'January', u'February', u'March', u'April', u'May', u'June', u'July', u'August', u'September', u'October', u'November', u'December' ]
+
+dayMnthFmts     = [ str(s) for s in enMonthNames ]		# convert to ascii
+yrMnthFmts      = [ 'Year_' + s for s in dayMnthFmts ]	# e.g. 'Year_January'
+adFormats       = [ 'MillenniumAD', 'CenturyAD', 'DecadeAD', 'YearAD' ]
+bcFormats       = [ 'MillenniumBC', 'CenturyBC', 'DecadeBC', 'YearBC' ]
+decadeFormats   = [ 'DecadeAD', 'DecadeBC' ]
+centuryFormats  = [ 'CenturyAD', 'CenturyBC' ]
+yearFormats     = [ 'YearAD', 'YearBC' ]
+millFormats     = [ 'MillenniumAD', 'MillenniumBC' ]
+snglValsFormats = [ 'CurrEvents' ]
+
 
 # number of days in each month, required for interwiki.py with the -days argument
 days_in_month = {
@@ -79,7 +92,7 @@ def escapePattern( pattern ):
                 decoders.append( lambda v: int(v) )
             elif pattern[pos] == 's':
                 decoders.append( lambda v: romanNums.index(v) )
-            
+
         _escPtrnCache[pattern] = (cm, decoders)
 
     return _escPtrnCache[pattern]
@@ -92,15 +105,15 @@ def dh( value, pattern, encf, decf, filter = None ):
 
         encodingFunc converts from an integer parameter to a single number or a tuple parameter that
             can be passed as format argument to the pattern:   pattern % encodingFunc(year)
-            
+
         decodingFunc converts a list of positive integers found in the original value string
             into a year value. dh() searches creates this list based on the pattern string.
             dh() interprets %d as a decimal and %s as a roman numeral number.
 
         Usage scenarios:
-            decadesAD['en'](1980) => u'1980s'
-            decadesAD['en'](u'1980s') => 1980
-            decadesAD['en'](u'anything else') => raise ValueError (or some other exception?)
+            map['DecadeAD']['en'](1980) => u'1980s'
+            map['DecadeAD']['en'](u'1980s') => 1980
+            map['DecadeAD']['en'](u'anything else') => raise ValueError (or some other exception?)
     """
     if type(value) is int:
         # Encode an integer value into a textual form.
@@ -115,7 +128,7 @@ def dh( value, pattern, encf, decf, filter = None ):
             # decode each found value using provided decoder
             values = [ dcrs[i](m.group(i+1)) for i in range(len(dcrs))]
             year = decf( values )
-            
+
             # recursive call to re-encode and see if we get the original (may through filter exception)
             if value == dh(year,pattern,encf,decf,filter):
                 return year
@@ -124,60 +137,74 @@ def dh( value, pattern, encf, decf, filter = None ):
 
 def dh_dayOfMnth( value, pattern ):
     """decoding helper for a single integer value <=31, no conversion, no rounding (used in days of month)"""
-    return dh( value, pattern, noConv, singleVal, lambda v: 1<=v and v<=31 )
+    return dh( value, pattern, encNoConv, decSinglVal, lambda v: 1<=v and v<=31 )
 
 def dh_MnthOfYear( value, pattern ):
     """decoding helper for a single integer value >=1000, no conversion, no rounding (used in month of the year)"""
-    return dh( value, pattern, noConv, singleVal, lambda v: v>=1000 )
+    return dh( value, pattern, encNoConv, decSinglVal, lambda v: v>=1000 )
 
 def dh_dec( value, pattern ):
     """decoding helper for a single integer value, no conversion, round to decimals (used in decades)"""
-    return dh( value, pattern, dec0, singleVal )
+    return dh( value, pattern, encDec0, decSinglVal )
 
 def dh_noConv( value, pattern ):
-    """decoding helper for a single integer value, no conversion, no rounding (used in centuries, milleniums)"""
-    return dh( value, pattern, noConv, singleVal )
+    """decoding helper for a single integer value, no conversion, no rounding (used in centuries, millenniums)"""
+    return dh( value, pattern, encNoConv, decSinglVal )
 
-def dh_simpleYear( value ):
+def dh_simpleInt( value ):
     """decoding helper for a single integer value representing a year with no extra symbols"""
-    return dh_noConv( value, u'%d' ),
+    return dh_noConv( value, u'%d' )
 
 def dh_roman( value, pattern ):
-    """decoding helper for a single roman number (used in centuries, milleniums)"""
-    return dh( value, pattern, lambda i: romanNums[i], singleVal )
+    """decoding helper for a single roman number (used in centuries, millenniums)"""
+    return dh( value, pattern, lambda i: romanNums[i], decSinglVal )
 
-def dh_thai_solar_calendar( value, pattern ):
-    """decoding helper for the Thai solar calendar"""
-    return dh( value, pattern, lambda i: i + 543, lambda l: l[0] - 543 )
-
-def singleVal( v ):
+def decSinglVal( v ):
     return v[0]
 
-def noConv( i ):
+def encNoConv( i ):
     return i
 
-def dec0( i ):
-    return (i/10)*10        # round to the nearest decade, decade starts with a '0'-ending year 
+def encDec0( i ):
+    return (i/10)*10            # round to the nearest decade, decade starts with a '0'-ending year
 
-def dec1( i ):
-    return dec0(i)+1        # round to the nearest decade, decade starts with a '1'-ending year
+def encDec1( i ):
+    return encDec0(i)+1         # round to the nearest decade, decade starts with a '1'-ending year
 
 def slh( value, lst ):
-    """This function helps in simple list value matching. 
+    """This function helps in simple list value matching.
     !!!!! The index starts at 1, so 1st element has index 1, not 0 !!!!!
         Usually it will be used as a lambda call in a map:
             lambda v: slh( v, [u'January',u'February',...] )
 
         Usage scenarios:
-            map['MonthNames']['en'](1) => u'January'
-            map['MonthNames']['en'](u'January') => 1
-            map['MonthNames']['en'](u'anything else') => raise ValueError
+            map['MonthName']['en'](1) => u'January'
+            map['MonthName']['en'](u'January') => 1
+            map['MonthName']['en'](u'anything else') => raise ValueError
     """
     if type(value) is int:
         return lst[value-1]
     else:
         return lst.index(value)+1
+
+def dh_singVal( value, match ):
+    """This function helps with matching a single value.
+            map['CurrEvents']['en'](0) => u'Current Events'
+            map['CurrEvents']['en'](u'Current Events') => 0"""
+    if type(value) is int:
+        if value == 0:
+            return match
+        else:
+            raise ValueError("unknown value %d" % value)
+    else:
+        if value == match:
+            return 0
+        else:
+            raise ValueError()
         
+
+def monthName(lang,ind):
+    return dateFormats['MonthName'][lang](ind)    
 
 # Helper for KN: digits representation
 _knDigits=u'೦೧೨೩೪೫೬೭೮೯'
@@ -195,1202 +222,45 @@ def dh_knYearConverter( value ):
             tmp = value.translate(_knLocalToDigits)     # Convert
             return dh_noConv( tmp, u'%d' )
         else:
-            raise ValueError("string contains regular digits")    
+            raise ValueError("string contains regular digits")
 
 #
-# All years/decades/centuries/milleniums are designed in such a way
+# All years/decades/centuries/millenniums are designed in such a way
 # as to allow for easy date to string and string to date conversion.
 # For example, using any map with either an integer or a string will produce its oposite value:
-#            decadesBC['en'](1980) => u'1980s BC'
-#            decadesBC['en'](u'1980s BC') => 1980
+#            map['DecadeBC']['en'](1980) => u'1980s BC'
+#            map['DecadeBC']['en'](u'1980s BC') => 1980
 # This is useful when trying to decide if a certain article is a localized date or not, or generating dates.
 # See dh() for additional information.
 #
+
 dateFormats = {
-    'January': { 
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Januarie' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u'%d de chinero' ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Æfterra Géola' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d يناير' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u'%d de xineru' ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d студзеня' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d януари' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. januar' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de gener' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di ghjennaghju' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. leden' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d stëcznika' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Кăрлач, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Ionawr' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. januar' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. Januar' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Ιανουαρίου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'January %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de januaro' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de enero' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. jaanuar' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Urtarrilaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. tammikuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. januar' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d janvier' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d jannewaris' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Eanáir' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de xaneiro' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d בינואר' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. siječnja' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Január %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de januario' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Januari' ),
-            'ie' :      lambda v: dh_dayOfMnth( v, u'%d januar' ), # not all months for ie added yet
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di januaro' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. janúar' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d gennaio' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'1月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Januari' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d იანვარი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'1월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê rêbendanê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Ianuarii' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Januar' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d januari' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Sausio %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d јануари' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'ജനുവരി %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d Januar' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d januari' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. januar' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. januar' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de genièr' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d stycznia' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Janeiro' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d ianuarie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d января' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di jinnaru' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'ođđajagimánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. január' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. januar' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. јануар' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Janar' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d januari' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'జనవరి %d' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Enero %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Ocak' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. Ğínwar' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d січня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d جنوری' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 1' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d di djanvî" ), # Walloon names depend on the day number; taking the most common form
-            'zh' :      lambda v: dh_dayOfMnth( v, u'1月%d日' ),
-    },
-    
-    'February': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Februarie' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u'%d de frebero' ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Solmónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d فبراير' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u'%d de febreru' ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d лютага' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d февруари' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. februar' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de febrer' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di frivaghju' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. únor' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d gromicznika' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Нарăс, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Chwefror' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. februar' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. Februar' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Φεβρουαρίου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'February %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de februaro' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de febrero' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. veebruar' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Ottsailaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. helmikuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. februar' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d février' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d febrewaris' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Feabhra' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de febreiro' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d בפברואר' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. veljače' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Február %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de februario' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Februari' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di februaro' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. febrúar' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d febbraio' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'2月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Februari' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d თებერვალი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'2월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê reşemiyê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Februarii' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Februar' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d februari' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Vasario %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d февруари' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'ഫെബ്രുവരി %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d Februar' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d februari' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. februar' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. februar' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de febrièr' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d lutego' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Fevereiro' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d februarie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d февраля' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di frivaru' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'guovvamánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. február' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. februar' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. фебруар' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Shkurt' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d februari' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'ఫిబ్రవరి %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d กุมภาพันธ์' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Pebrero %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Şubat' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. Febräl' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d лютого' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d فروری' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 2' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d di fevrî" ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'2月%d日' ),
-    },
-    
-    'March': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Maart' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u'%d de marzo' ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Hréþmónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d مارس' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u'%d de marzu' ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d сакавіка' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d март' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. mart' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de març' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di marzu' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. březen' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d strumiannika' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Пуш, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Mawrth' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. marts' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. März' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'March %d' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Μαρτίου' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de marto' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de marzo' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. märts' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Martxoaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. maaliskuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. mars' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d mars' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d maart' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Márta' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de marzo' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d במרץ' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. ožujka' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Március %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de martio' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Maret' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di marto' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. mars' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d marzo' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'3月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Maret' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d მარტი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'3월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê adarê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Martii' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Mäerz' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d miert' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Kovo %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d март' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'മാര്ച് %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d März' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d maart' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. mars' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. mars' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de març' ),
-            'os' :      lambda v: dh_dayOfMnth( v, u'%d мартъийы' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d marca' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Março' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d martie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d марта' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di marzu' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'njukčamánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. marec' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. marec' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Mars' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. март' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d mars' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'మార్చి %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d มีนาคม' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Marso %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Mart' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. Mart' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d березня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d مارچ' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 3' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d di måss" ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'3月%d日' ),
-    },
-    
-    'April': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d April' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u"%d d'abril" ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Éastermónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d إبريل' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u"%d d'abril" ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d красавіка' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d април' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. april' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u"%d d'abril" ),
-            'co' :      lambda v: dh_dayOfMnth( v, u"%d d'aprile" ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. duben' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d łżëkwiôta' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Ака, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Ebrill' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. april' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. April' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Απριλίου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'April %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de aprilo' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de abril' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. aprill' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Apirilaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. huhtikuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. apríl' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d avril' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d april' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Aibreán' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de abril' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d באפריל' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. travnja' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Április %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de april' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d April' ),
-            'ie' :      lambda v: dh_dayOfMnth( v, u'%d april' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di aprilo' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. apríl' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d aprile' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'4月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d April' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d აპრილი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'4월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê avrêlê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Aprilis' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Abrëll' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d april' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Balandžio %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d април' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'ഏപ്രില് %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d April' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d april' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. april' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. april' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u"%d d'abril" ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d kwietnia' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Abril' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d aprilie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d апреля' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di aprili' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'cuoŋománu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. apríl' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. april' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Prill' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. април' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d april' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'ఏప్రిల్ %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d เมษายน' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Abríl %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Nisan' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. Äpril' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d квітня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d اپریل' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 4' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d di avri" ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'4月%d日' ),
-    },
-    
-    'May': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Mei' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u'%d de mayo' ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Þrimilcemónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d مايو' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u'%d de mayu' ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d траўня' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d май' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. maj' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de maig' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di maghju' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. květen' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d môja' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Çу, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Mai' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. maj' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Μαΐου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'May %d' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. mai' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Maiatzaren %d' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. Mai' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de majo' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de mayo' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. toukokuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. mai' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d mai' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d maaie' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Bealtaine' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de maio' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d במאי' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. svibnja' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Május %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de maio' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Mei' ),
-            'ie' :      lambda v: dh_dayOfMnth( v, u'%d may' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di mayo' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. maí' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d maggio' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'5月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Mei' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d მაისი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'5월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê gulanê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Maii' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Mee' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d mei' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Gegužės %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d мај' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'മേയ് %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d Mai' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d mei' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. mai' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. mai' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de mai' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d maja' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Maio' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d mai' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d мая' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di maiu' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'miessemánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. máj' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. maj' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Maj' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. мај' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d maj' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'మే %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d พฤษภาคม' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Mayo %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Mayıs' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. May' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d травня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d مئ' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 5' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d di may" ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'5月%d日' ),
-    },
-    
-    'June': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Junie' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u'%d de chunio' ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Séremónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d يونيو' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u'%d de xunu' ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d чэрвеня' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d юни' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. juni' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de juny' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di ghjugnu' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. červen' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d czerwińca' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Çěртме, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Mehefin' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. juni' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. Juni' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Ιουνίου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'June %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de junio' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de junio' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. juuni' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Ekainaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. kesäkuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. juni' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d juin' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d juny' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Meitheamh' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de xuño' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d ביוני' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. lipnja' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Június %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de junio' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Juni' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di junio' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. júní' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d giugno' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'6月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Juni' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d ივნისი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'6월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê pûşperê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Iunii' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Juni' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d juni' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Birželio %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d јуни' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'ജൂണ്‍ %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d Juni' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d juni' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. juni' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. juni' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de junh' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d czerwca' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Junho' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d iunie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d июня' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di giugnu' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'geassemánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. jún' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. junij' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Qershor' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. јун' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d juni' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'జూన్ %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d มิถุนายน' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Hunyo %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Haziran' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. Yün' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d червня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d جون' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 6' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d di djun" ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'6月%d日' ),
-    },
-    
-    'July': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Julie' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u'%d de chulio' ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Mǽdmónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d يوليو' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u'%d de xunetu' ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d ліпеня' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d юли' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. juli' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de juliol' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di lugliu' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. červenec' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d lëpinca' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Утă, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Gorffennaf' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. juli' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. Juli' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'July %d' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Ιουλίου' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de julio' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de julio' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. juuli' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Uztailaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. heinäkuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. juli' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d juillet' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d july' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Iúil' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de xullo' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d ביולי' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. srpnja' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Július %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de julio' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Juli' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di julio' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. júlí' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d luglio' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'7月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Juli' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d ივლისი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'7월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê tîrmehê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Iulii' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Juli' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d juli' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Liepos %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d јули' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'ജൂലൈ %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d Juli' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d juli' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. juli' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. juli' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de julhet' ),
-            'os' :      lambda v: dh_dayOfMnth( v, u'%d июлы' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d lipca' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Julho' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d iulie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d июля' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di giugnettu' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'suoidnemánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. júl' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. julij' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Korrik' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. јул' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d juli' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'జూలై %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d กรกฎาคม' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Hulyo %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Temmuz' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d Yül' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d липня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d جلائ' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 7' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d di djulete" ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'7月%d日' ),
-    },
-    
-    'August': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Augustus' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u"%d d'agosto" ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Wéodmónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d أغسطس' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u"%d d'agostu" ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d жніўня' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d август' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. avgust' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u"%d d'agost" ),
-            'co' :      lambda v: dh_dayOfMnth( v, u"%d d'aostu" ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. srpen' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d zélnika' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Çурла, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Awst' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. august' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. August' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Αυγούστου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'August %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de aŭgusto' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de agosto' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. august' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Abuztuaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. elokuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. august' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d août' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d augustus' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Lúnasa' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de agosto' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d באוגוסט' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. kolovoza' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Augusztus %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de augusto' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Agustus' ),
-            'ie' :      lambda v: dh_dayOfMnth( v, u'%d august' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di agosto' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. ágúst' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d agosto' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'8月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Agustus' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d აგვისტო' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'8월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê gelawêjê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Augusti' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. August' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d augustus' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Rugpjūčio %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d август' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'ആഗസ്റ്റ്‌ %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d August' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d augustus' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. august' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. august' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u"%d d'agost" ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d sierpnia' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Agosto' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d august' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d августа' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di austu' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'borgemánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. august' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. avgust' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Gusht' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. август' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d augusti' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'ఆగష్టు %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d สิงหาคม' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Agosto %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Ağustos' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. August' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d серпня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d اگست' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 8' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d d' awousse" ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'8月%d日' ),
-    },
-    
-    'September': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d September' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u'%d de setiembre' ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Háligmónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d سبتمبر' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u'%d de setiembre' ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d верасьня' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d септември' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. septembar' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de setembre' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di settembre' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. září' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d séwnika' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Авăн, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Medi' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. september' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. September' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Σεπτεμβρίου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'September %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de septembro' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de septiembre' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. september' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Irailaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. syyskuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. september' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d septembre' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d septimber' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Meán Fómhair' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de setembro' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d בספטמבר' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. rujna' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Szeptember %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de septembre' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d September' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di septembro' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. september' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d settembre' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'9月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d September' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d სექტემბერი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'9월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê rezberê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Septembris' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. September' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d september' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Rugsėjo %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d септември' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'സപ്തന്പര് %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d September' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d september' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. september' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. september' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de setembre' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d września' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Setembro' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d septembrie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d сентября' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di sittemmiru' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'čakčamánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. september' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. september' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Shtator' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. септембар' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d september' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'సెప్టెంబర్ %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d กันยายน' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Setyembre %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Eylül' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. Sentäber' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d вересня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d ستمب' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 9' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u'%d di setimbe' ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'9月%d日' ),
-    },
-    
-    'October': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Oktober' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u"%d d'otubre" ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Winterfylleþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d اكتوبر' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u"%d d'ochobre" ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d кастрычніка' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d октомври' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. oktobar' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u"%d d'octubre" ),
-            'co' :      lambda v: dh_dayOfMnth( v, u"%d d'uttrovi" ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. říjen' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d rujana' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Юпа, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Hydref' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. oktober' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. Oktober' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Οκτωβρίου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'October %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de oktobro' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de octubre' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. oktoober' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Urriaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. lokakuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. oktober' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d octobre' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d oktober' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Deireadh Fómhair' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de outubro' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d באוקטובר' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d. listopada' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'Október %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de octobre' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Oktober' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di oktobro' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. október' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d ottobre' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'10月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Oktober' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d ოქტომბერი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'10월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê kewçêrê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Octobris' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Oktober' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d oktober' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Spalio %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d октомври' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'ഒക്ടോബര് %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d Oktober' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d oktober' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. oktober' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. oktober' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u"%d d'octobre" ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d października' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Outubro' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d octombrie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d октября' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di uttuviru' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'golggotmánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. október' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. oktober' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Tetor' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. октобар' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d oktober' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'అక్టోబర్ %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d ตุลาคม' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Oktubre %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Ekim' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. Öktäber' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d жовтня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d اکتوبر' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 10' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u"%d d' octôbe" ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'10月%d日' ),
-    },
-    
-    'November': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d November' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u'%d de nobiembre' ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Blótmónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d نوفمبر' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u'%d de payares' ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d лістапада' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d ноември' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. novembar' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de novembre' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di nuvembri' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. listopad' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d lëstopadnika' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Чӳк, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Tachwedd' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. november' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. November' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Νοεμβρίου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'November %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de novembro' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de noviembre' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. november' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Azaroaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. marraskuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. november' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d novembre' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d novimber' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Samhain' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de novembro' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d בנובמבר' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d studenog' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'November %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de novembre' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d November' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di novembro' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d novembre' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. nóvember' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'11月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d November' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d ნოემბერი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'11월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê sermawezê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Novembris' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. November' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d november' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Lapkričio  %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d ноември' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'നവന്പര് %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d November' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d november' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. november' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. november' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de novembre' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d listopada' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Novembro' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d noiembrie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d ноября' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di nuvemmiru' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'skábmamánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. november' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. november' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Nëntor' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. новембар' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d november' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'నవంబర్ %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d พฤศจิกายน' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Nobyembre %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Kasım' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d. Nöyäber' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d листопада' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d نومب' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 11' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u'%d di nôvimbe' ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'11月%d日' ),
-    },
-    
-    'December': {
-            'af' :      lambda v: dh_dayOfMnth( v, u'%d Desember' ),
-            'an' :      lambda v: dh_dayOfMnth( v, u"%d d'abiento" ),
-            'ang':      lambda v: dh_dayOfMnth( v, u'%d Géolmónaþ' ),
-            'ar' :      lambda v: dh_dayOfMnth( v, u'%d ديسمبر' ),
-            'ast':      lambda v: dh_dayOfMnth( v, u"%d d'avientu" ),
-            'be' :      lambda v: dh_dayOfMnth( v, u'%d сьнежня' ),
-            'bg' :      lambda v: dh_dayOfMnth( v, u'%d декември' ),
-            'bs' :      lambda v: dh_dayOfMnth( v, u'%d. decembar' ),
-            'ca' :      lambda v: dh_dayOfMnth( v, u'%d de desembre' ),
-            'co' :      lambda v: dh_dayOfMnth( v, u'%d di decembre' ),
-            'cs' :      lambda v: dh_dayOfMnth( v, u'%d. prosinec' ),
-            'csb':      lambda v: dh_dayOfMnth( v, u'%d gòdnika' ),
-            'cv' :      lambda v: dh_dayOfMnth( v, u'Раштав, %d' ),
-            'cy' :      lambda v: dh_dayOfMnth( v, u'%d Rhagfyr' ),
-            'da' :      lambda v: dh_dayOfMnth( v, u'%d. december' ),
-            'de' :      lambda v: dh_dayOfMnth( v, u'%d. Dezember' ),
-            'el' :      lambda v: dh_dayOfMnth( v, u'%d Δεκεμβρίου' ),
-            'en' :      lambda v: dh_dayOfMnth( v, u'December %d' ),
-            'eo' :      lambda v: dh_dayOfMnth( v, u'%d-a de decembro' ),
-            'es' :      lambda v: dh_dayOfMnth( v, u'%d de diciembre' ),
-            'et' :      lambda v: dh_dayOfMnth( v, u'%d. detsember' ),
-            'eu' :      lambda v: dh_dayOfMnth( v, u'Abenduaren %d' ),
-            'fi' :      lambda v: dh_dayOfMnth( v, u'%d. joulukuuta' ),
-            'fo' :      lambda v: dh_dayOfMnth( v, u'%d. desember' ),
-            'fr' :      lambda v: dh_dayOfMnth( v, u'%d décembre' ),
-            'fy' :      lambda v: dh_dayOfMnth( v, u'%d desimber' ),
-            'ga' :      lambda v: dh_dayOfMnth( v, u'%d Mí na Nollag' ),
-            'gl' :      lambda v: dh_dayOfMnth( v, u'%d de decembro' ),
-            'he' :      lambda v: dh_dayOfMnth( v, u'%d בדצמבר' ),
-            'hr' :      lambda v: dh_dayOfMnth( v, u'%d prosinca' ),
-            'hu' :      lambda v: dh_dayOfMnth( v, u'December %d' ),
-            'ia' :      lambda v: dh_dayOfMnth( v, u'%d de Decembre' ),
-            'id' :      lambda v: dh_dayOfMnth( v, u'%d Desember' ),
-            'io' :      lambda v: dh_dayOfMnth( v, u'%d di decembro' ),
-            'is' :      lambda v: dh_dayOfMnth( v, u'%d. desember' ),
-            'it' :      lambda v: dh_dayOfMnth( v, u'%d dicembre' ),
-            'ja' :      lambda v: dh_dayOfMnth( v, u'12月%d日' ),
-            'jv' :      lambda v: dh_dayOfMnth( v, u'%d Desember' ),
-            'ka' :      lambda v: dh_dayOfMnth( v, u'%d დეკემბერი' ),
-            'ko' :      lambda v: dh_dayOfMnth( v, u'12월 %d일' ),
-            'ku' :      lambda v: dh_dayOfMnth( v, u"%d'ê berfanbarê" ),
-            'la' :      lambda v: dh_dayOfMnth( v, u'%d Decembris' ),
-            'lb' :      lambda v: dh_dayOfMnth( v, u'%d. Dezember' ),
-            'li' :      lambda v: dh_dayOfMnth( v, u'%d december' ),
-            'lt' :      lambda v: dh_dayOfMnth( v, u'Gruodžio %d' ),
-            'mk' :      lambda v: dh_dayOfMnth( v, u'%d декември' ),
-            'ml' :      lambda v: dh_dayOfMnth( v, u'ഡിസന്പര് %d' ),
-            'nds':      lambda v: dh_dayOfMnth( v, u'%d Dezember' ),
-            'nl' :      lambda v: dh_dayOfMnth( v, u'%d december' ),
-            'nn' :      lambda v: dh_dayOfMnth( v, u'%d. desember' ),
-#uses template  'no' :      lambda v: dh_dayOfMnth( v, u'%d. desember' ),
-            'oc' :      lambda v: dh_dayOfMnth( v, u'%d de decembre' ),
-            'pl' :      lambda v: dh_dayOfMnth( v, u'%d grudnia' ),
-            'pt' :      lambda v: dh_dayOfMnth( v, u'%d de Dezembro' ),
-            'ro' :      lambda v: dh_dayOfMnth( v, u'%d decembrie' ),
-            'ru' :      lambda v: dh_dayOfMnth( v, u'%d декабря' ),
-            'scn':      lambda v: dh_dayOfMnth( v, u'%d di dicemmiru' ),
-            'se' :      lambda v: dh_dayOfMnth( v, u'juovlamánu %d.' ),
-            'sk' :      lambda v: dh_dayOfMnth( v, u'%d. december' ),
-            'sl' :      lambda v: dh_dayOfMnth( v, u'%d. december' ),
-            'sq' :      lambda v: dh_dayOfMnth( v, u'%d Dhjetor' ),
-            'sr' :      lambda v: dh_dayOfMnth( v, u'%d. децембар' ),
-            'sv' :      lambda v: dh_dayOfMnth( v, u'%d december' ),
-            'te' :      lambda v: dh_dayOfMnth( v, u'డిసెంబర్ %d' ),
-            'th' :      lambda v: dh_dayOfMnth( v, u'%d ธันวาคม' ),
-            'tl' :      lambda v: dh_dayOfMnth( v, u'Disyembre %d' ),
-            'tr' :      lambda v: dh_dayOfMnth( v, u'%d Aralık' ),
-            'tt' :      lambda v: dh_dayOfMnth( v, u'%d.Dekäber' ),
-            'uk' :      lambda v: dh_dayOfMnth( v, u'%d грудня' ),
-            'ur' :      lambda v: dh_dayOfMnth( v, u'%d دسمب' ),
-            'vi' :      lambda v: dh_dayOfMnth( v, u'%d tháng 12' ),
-            'wa' :      lambda v: dh_dayOfMnth( v, u'%d di decimbe' ),
-            'zh' :      lambda v: dh_dayOfMnth( v, u'12月%d日' ),
-    },
+    'January': {},
+    'February': {},
+    'March': {},
+    'April': {},
+    'May': {},
+    'June': {},
+    'July': {},
+    'August': {},
+    'September': {},
+    'October': {},
+    'November': {},
+    'December': {},
+    'Year_January': {},
+    'Year_February': {},
+    'Year_March': {},
+    'Year_April': {},
+    'Year_May': {},
+    'Year_June': {},
+    'Year_July': {},
+    'Year_August': {},
+    'Year_September': {},
+    'Year_October': {},
+    'Year_November': {},
+    'Year_December': {},
 
-	'Year_January': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Januarie %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'Januar %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'January %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Enero de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Jaanuar %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Janvier %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Gennaio' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年1月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'იანვარი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 1월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'Januari %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Styczeń %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'January %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'Januari %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d01مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 1 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年1月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 1 goe̍h' ),
-	},
-	'Year_February': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Februarie %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'Februar %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'February %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Febrero de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Veebruar %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Février %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Febbraio' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年2月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'თებერვალი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 2월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'Februari %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Luty %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'February %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'Februari %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d02مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 2 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年2月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 2 goe̍h' ),
-	},
-	'Year_March': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Maart %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'März %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'March %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Marzo de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Märts %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Mars %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Marzo' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年3月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'მარტი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 3월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'Maart %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Marzec %d' ),
-            'scn':      lambda v: dh_MnthOfYear( v, u'Marzu %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'March %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'Mars %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d03مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 3 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年3月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 3 goe̍h' ),
-	},
-	'Year_April': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'April %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'April %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'April %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Abril de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Aprill %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Avril %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Aprile' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年4月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'აპრილი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 4월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'April %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Kwiecień %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'April %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'April %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d04مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 4 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年4月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 4 goe̍h' ),
-	},
-	'Year_May': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Mei %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'Mai %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'May %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Mayo de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Mai %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Mai %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Maggio' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年5月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'მაისი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 5월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'Mei %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Maj %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'May %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'Maj %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d05مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 5 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年5月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 5 goe̍h' ),
-	},
-	'Year_June': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Junie %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'Juni %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'June %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Junio de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Juuni %d' ),
-            'fi' :      lambda v: dh_MnthOfYear( v, u'Huhtikuu %d' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Juin %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Giugno' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年6月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'ივნისი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 6월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'Juni %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Czerwiec %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'June %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'Juni %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d06مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 6 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年6月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 6 goe̍h' ),
-	},
-	'Year_July': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Julie %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'Juli %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'July %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Julio de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Juuli %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Juillet %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Luglio' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年7月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'ივლისი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 7월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'Juli %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Lipiec %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'July %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'Juli %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d07مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 7 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年7月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 7 goe̍h' ),
-	},
-	'Year_August': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Augustus %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'August %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'August %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Agosto de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'August %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Août %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Agosto' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年8月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'აგვისტო, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 8월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'Augustus %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Sierpień %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'August %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'Augusti %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d08مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 8 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年8月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 8 goe̍h' ),
-	},
-	'Year_September': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'September %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'September %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'September %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Septiembre de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'September %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Septembre %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Settembre' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年9月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'სექტემბერი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 9월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'September %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Wrzesień %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'September %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'September %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d09مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 9 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年9月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 9 goe̍h' ),
-	},
-	'Year_October': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Oktober %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'Oktober %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'October %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Octubre de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Oktoober %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Octobre %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Ottobre' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年10月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'ოქტომბერი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 10월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'Oktober %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Październik %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'October %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'Oktober %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d10مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 10 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年10月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 10 goe̍h' ),
-	},
-	'Year_November': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'November %d' ),
-#            'ang':      lambda v: dh_MnthOfYear( v, u'' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'November %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'November %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Noviembre de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'November %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Novembre %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Novembre' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年11月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'ნოემბერი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 11월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'November %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Listopad %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'November %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'November %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d11مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 11 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年11月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 11 goe̍h' ),
-	},
-	'Year_December': {
-            'af' :      lambda v: dh_MnthOfYear( v, u'Desember %d' ),
-            'ang':      lambda v: dh_MnthOfYear( v, u'Gēolmōnaþ %d' ),
-            'de' :      lambda v: dh_MnthOfYear( v, u'Dezember %d' ),
-            'en' :      lambda v: dh_MnthOfYear( v, u'December %d' ),
-            'es' :      lambda v: dh_MnthOfYear( v, u'Diciembre de %d' ),
-            'et' :      lambda v: dh_MnthOfYear( v, u'Detsember %d' ),
-#            'fi' :      lambda v: dh_MnthOfYear( v, u'' ),
-            'fr' :      lambda v: dh_MnthOfYear( v, u'Décembre %d' ),
-            'it' :      lambda v: dh_MnthOfYear( v, u'Attualità/Anno %d - Dicembre' ),
-            'ja' :      lambda v: dh_MnthOfYear( v, u'「最近の出来事」%d年12月' ),
-            'ka' :      lambda v: dh_MnthOfYear( v, u'დეკემბერი, %d' ),
-            'ko' :      lambda v: dh_MnthOfYear( v, u'%d년 12월' ),
-            'nl' :      lambda v: dh_MnthOfYear( v, u'December %d' ),
-            'pl' :      lambda v: dh_MnthOfYear( v, u'Grudzień %d' ),
-            'simple':   lambda v: dh_MnthOfYear( v, u'December %d' ),
-            'sv' :      lambda v: dh_MnthOfYear( v, u'December %d' ),
-            'ur' :      lambda v: dh_MnthOfYear( v, u'%d12مبم' ),
-            'vi' :      lambda v: dh_MnthOfYear( v, u'Tháng 12 năm %d' ),
-            'zh' :      lambda v: dh_MnthOfYear( v, u'%d年12月' ),
-            'zh-min-nan': lambda v: dh_MnthOfYear( v, u'%d nî 12 goe̍h' ),
-    },
-
-    'monthNames': {
+    'MonthName': {
             'af' :      lambda v: slh( v, [u'Januarie', u'Februarie', u'Maart', u'April', u'Mei', u'Junie', u'Julie', u'Augustus', u'September', u'Oktober', u'November', u'Desember'] ),
             'als':      lambda v: slh( v, [u'Januar', u'Februar', u'März', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
             'an' :      lambda v: slh( v, [u'Chinero', u'Frebero', u'Marzo', u'Abril', u'Mayo', u'Chunio', u'Chulio', u'Agosto', u'Setiembre', u'Otubre', u'Nobiembre', u'Abiento'] ),
@@ -1408,7 +278,7 @@ dateFormats = {
             'da' :      lambda v: slh( v, [u'Januar', u'Februar', u'Marts', u'April', u'Maj', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'December'] ),
             'de' :      lambda v: slh( v, [u'Januar', u'Februar', u'März', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
             'el' :      lambda v: slh( v, [u'Ιανουάριος', u'Φεβρουάριος', u'Μάρτιος', u'Απρίλιος', u'Μάιος', u'Ιούνιος', u'Ιούλιος', u'Αύγουστος', u'Σεπτέμβριος', u'Οκτώβριος', u'Νοέμβριος', u'Δεκέμβριος'] ),
-            'en' :      lambda v: slh( v, monthNames ),
+            'en' :      lambda v: slh( v, enMonthNames ),
             'eo' :      lambda v: slh( v, [u'Januaro', u'Februaro', u'Marto', u'Aprilo', u'Majo', u'Junio', u'Julio', u'Aŭgusto', u'Septembro', u'Oktobro', u'Novembro', u'Decembro'] ),
             'es' :      lambda v: slh( v, [u'Enero', u'Febrero', u'Marzo', u'Abril', u'Mayo', u'Junio', u'Julio', u'Agosto', u'Septiembre', u'Octubre', u'Noviembre', u'Diciembre'] ),
             'et' :      lambda v: slh( v, [u'Jaanuar', u'Veebruar', u'Märts', u'Aprill', u'Mai', u'Juuni', u'Juuli', u'August', u'September', u'Oktoober', u'November', u'Detsember'] ),
@@ -1431,11 +301,11 @@ dateFormats = {
             'io' :      lambda v: slh( v, [u'Januaro', u'Februaro', u'Marto', u'Aprilo', u'Mayo', u'Junio', u'Julio', u'Agosto', u'Septembro', u'Oktobro', u'Novembro', u'Decembro'] ),
             'is' :      lambda v: slh( v, [u'Janúar', u'Febrúar', u'Mars (mánuður)', u'Apríl', u'Maí', u'Júní', u'Júlí', u'Ágúst', u'September', u'Október', u'Nóvember', u'Desember'] ),
             'it' :      lambda v: slh( v, [u'Gennaio', u'Febbraio', u'Marzo', u'Aprile', u'Maggio', u'Giugno', u'Luglio', u'Agosto', u'Settembre', u'Ottobre', u'Novembre', u'Dicembre'] ),
-            'ja' :      lambda v: slh( v, [u'1月', u'2月', u'3月', u'4月', u'5月', u'6月', u'7月', u'8月', u'9月', u'10月', u'11月', u'12月'] ),
+            'ja' :      lambda v: slh( v, makeMonthList( u'%d月' )),
             'jv' :      lambda v: slh( v, [u'Januari', u'Februari', u'Maret', u'April', u'Mei', u'Juni', u'Juli', u'Agustus', u'September', u'Oktober', u'November', u'Desember'] ),
             'ka' :      lambda v: slh( v, [u'იანვარი', u'თებერვალი', u'მარტი', u'აპრილი', u'მაისი', u'ივნისი', u'ივლისი', u'აგვისტო', u'სექტემბერი', u'ოქტომბერი', u'ნოემბერი', u'დეკემბერი'] ),
             'kn' :      lambda v: slh( v, [u'ಜನವರಿ', u'ಫೆಬ್ರವರಿ', u'ಮಾರ್ಚಿ', u'ಎಪ್ರಿಲ್', u'ಮೇ', u'ಜೂನ', u'ಜುಲೈ', u'ಆಗಸ್ಟ್ ', u'ಸೆಪ್ಟೆಂಬರ್', u'ಅಕ್ಟೋಬರ್', u'ನವೆಂಬರ್', u'ಡಿಸೆಂಬರ್'] ),
-            'ko' :      lambda v: slh( v, [u'1월', u'2월', u'3월', u'4월', u'5월', u'6월', u'7월', u'8월', u'9월', u'10월', u'11월', u'12월'] ),
+            'ko' :      lambda v: slh( v, makeMonthList( u'%d월' )),
             'ku' :      lambda v: slh( v, [u'Rêbendan', u'Reşemî', u'Adar', u'Avrêl', u'Gulan', u'Pûşper', u'Tîrmeh', u'Gelawêj (meh)', u'Rezber', u'Kewçêr', u'Sermawez', u'Berfanbar'] ),
             'kw' :      lambda v: slh( v, [u'Mys Genver', u'Mys Whevrer', u'Mys Merth', u'Mys Ebrel', u'Mys Me', u'Mys Metheven', u'Mys Gortheren', u'Mys Est', u'Mys Gwyngala', u'Mys Hedra', u'Mys Du', u'Mys Kevardhu'] ),
             'la' :      lambda v: slh( v, [u'Ianuarius', u'Februarius', u'Martius', u'Aprilis', u'Maius', u'Iunius', u'Iulius', u'Augustus (mensis)', u'September', u'October', u'November', u'December'] ),
@@ -1458,7 +328,7 @@ dateFormats = {
             'scn':      lambda v: slh( v, [u'Jinnaru', u'Frivaru', u'Marzu', u'Aprili', u'Maiu', u'Giugnu', u'Giugnettu', u'Austu', u'Sittemmiru', u'Uttuviru', u'Nuvemmiru', u'Dicemmiru'] ),
             'sco':      lambda v: slh( v, [u'Januar', u'Februar', u'Mairch', u'Aprile', u'Mey', u'Juin', u'Julie', u'Augist', u'September', u'October', u'November', u'December'] ),
             'se' :      lambda v: slh( v, [u'Ođđajagimánnu', u'Guovvamánnu', u'Njukčamánnu', u'Cuoŋománnu', u'Miessemánnu', u'Geassemánnu', u'Suoidnemánnu', u'Borgemánnu', u'Čakčamánnu', u'Golggotmánnu', u'Skábmamánnu', u'Juovlamánnu'] ),
-            'simple':   lambda v: slh( v, monthNames ),
+            'simple':   lambda v: slh( v, enMonthNames ),
             'sk' :      lambda v: slh( v, [u'Január', u'Február', u'Marec', u'Apríl', u'Máj', u'Jún', u'Júl', u'August', u'September', u'Október', u'November', u'December'] ),
             'sl' :      lambda v: slh( v, [u'Januar', u'Februar', u'Marec', u'April', u'Maj', u'Junij', u'Julij', u'Avgust', u'September', u'Oktober', u'November', u'December'] ),
             'sq' :      lambda v: slh( v, [u'Janari', u'Shkurti', u'Marsi (muaj)', u'Prilli', u'Maji', u'Qershori', u'Korriku', u'Gushti', u'Shtatori', u'Tetori', u'Nëntori', u'Dhjetori'] ),
@@ -1476,87 +346,108 @@ dateFormats = {
             'vi' :      lambda v: slh( v, [u'Tháng một', u'Tháng hai', u'Tháng ba', u'Tháng tư', u'Tháng năm', u'Tháng sáu', u'Tháng bảy', u'Tháng tám', u'Tháng chín', u'Tháng mười', u'Tháng mười một', u'Tháng mười hai'] ),
             'vo' :      lambda v: slh( v, [u'Yanul', u'Febul', u'Mäzul', u'Prilul', u'Mayul', u'Yunul', u'Yulul', u'Gustul', u'Setul', u'Tobul', u'Novul', u'Dekul'] ),
             'wa' :      lambda v: slh( v, [u'Djanvî', u'Fevrî', u'Måss', u'Avri', u'May', u'Djun', u'Djulete', u'Awousse', u'Setimbe', u'Octôbe', u'Nôvimbe', u'Decimbe'] ),
-            'zh' :      lambda v: slh( v, [u'1月', u'2月', u'3月', u'4月', u'5月', u'6月', u'7月', u'8月', u'9月', u'10月', u'11月', u'12月'] ),
+            'zh' :      lambda v: slh( v, makeMonthList( u'%d月' )),
     },
     
-    'yearsAD': {
-        'af' :      dh_simpleYear,
-        'ar' :      dh_simpleYear,
-        'ast':      dh_simpleYear,
-        'be' :      dh_simpleYear,
-        'bg' :      dh_simpleYear,
-        'bs' :      dh_simpleYear,
-        'ca' :      dh_simpleYear,
-        'cs' :      dh_simpleYear,
-        'csb':      dh_simpleYear,
-        'cv' :      dh_simpleYear,
-        'cy' :      dh_simpleYear,
-        'da' :      dh_simpleYear,
-        'de' :      dh_simpleYear,
-        'el' :      dh_simpleYear,
-        'en' :      dh_simpleYear,
-        'eo' :      dh_simpleYear,
-        'es' :      dh_simpleYear,
-        'et' :      dh_simpleYear,
-        'eu' :      dh_simpleYear,
-        'fi' :      dh_simpleYear,
-        'fo' :      dh_simpleYear,
-        'fr' :      dh_simpleYear,
-        'fy' :      dh_simpleYear,
-        'gl' :      dh_simpleYear,
-        'he' :      dh_simpleYear,
-        'hr' :      dh_simpleYear,
-        'hu' :      dh_simpleYear,
-        'ia' :      dh_simpleYear,
-        'id' :      dh_simpleYear,
-        'io' :      dh_simpleYear,
-        'is' :      dh_simpleYear,
-        'it' :      dh_simpleYear,
+    'Number': {
+        'da' :      lambda v: dh_noConv( v, u'%d (tal)' ),
+        'en' :      lambda v: dh_noConv( v, u'%d (number)' ),
+        'fr' :      lambda v: dh_noConv( v, u'%d (nombre)' ),
+        'fr' :      lambda v: dh_noConv( v, u'%d (nombre)' ),
+        'he' :      lambda v: dh_noConv( v, u'%d (מספר)' ),
+        'ja' :      dh_simpleInt,
+        'ko' :      dh_simpleInt,
+        'la' :      dh_simpleInt,
+        'nn' :      lambda v: dh_noConv( v, u'Talet %d' ),
+        'no' :      lambda v: dh_noConv( v, u'%d (tall)' ),
+        'ru' :      lambda v: dh_noConv( v, u'%d (число)' ),
+        'sl' :      lambda v: dh_noConv( v, u'%d (število)' ),
+        'sv' :      lambda v: dh_noConv( v, u'%d (tal)' ),
+        'th' :      lambda v: dh_noConv( v, u'%d (จำนวน)' ),
+        'zh' :      dh_simpleInt,
+    },
+
+    'YearAD': {
+        'af' :      dh_simpleInt,
+        'ar' :      dh_simpleInt,
+        'ast':      dh_simpleInt,
+        'be' :      dh_simpleInt,
+        'bg' :      dh_simpleInt,
+        'bs' :      dh_simpleInt,
+        'ca' :      dh_simpleInt,
+        'cs' :      dh_simpleInt,
+        'csb':      dh_simpleInt,
+        'cv' :      dh_simpleInt,
+        'cy' :      dh_simpleInt,
+        'da' :      dh_simpleInt,
+        'de' :      dh_simpleInt,
+        'el' :      dh_simpleInt,
+        'en' :      dh_simpleInt,
+        'eo' :      dh_simpleInt,
+        'es' :      dh_simpleInt,
+        'et' :      dh_simpleInt,
+        'eu' :      dh_simpleInt,
+        'fi' :      dh_simpleInt,
+        'fo' :      dh_simpleInt,
+        'fr' :      dh_simpleInt,
+        'fy' :      dh_simpleInt,
+        'gl' :      dh_simpleInt,
+        'he' :      dh_simpleInt,
+        'hr' :      dh_simpleInt,
+        'hu' :      dh_simpleInt,
+        'ia' :      dh_simpleInt,
+        'id' :      dh_simpleInt,
+        'ie' :      dh_simpleInt,
+        'io' :      dh_simpleInt,
+        'is' :      dh_simpleInt,
+        'it' :      dh_simpleInt,
         'ja' :      lambda v: dh_noConv( v, u'%d年' ),
-        'ka' :      dh_simpleYear,
+        'ka' :      dh_simpleInt,
         'kn' :      dh_knYearConverter,
         'ko' :      lambda v: dh_noConv( v, u'%d년' ),
-        'ku' :      dh_simpleYear,
-        'kw' :      dh_simpleYear,
-        'la' :      dh_simpleYear,
-        'lb' :      dh_simpleYear,
-        'li' :      dh_simpleYear,
-        'lt' :      dh_simpleYear,
-        'lv' :      dh_simpleYear,
-        'mi' :      dh_simpleYear,
-        'minnan' :  lambda v: dh_noConv( v, u'%d nî' ),        
-        'mk' :      dh_simpleYear,
-        'nb' :      dh_simpleYear,
-        'nds':      dh_simpleYear,
-        'nl' :      dh_simpleYear,
-        'nn' :      dh_simpleYear,
-        'no' :      dh_simpleYear,
-        'os' :      dh_simpleYear,
-        'pl' :      dh_simpleYear,
-        'pt' :      dh_simpleYear,
-        'ro' :      dh_simpleYear,
-        'ru' :      dh_simpleYear,
-        'scn':      dh_simpleYear,
-        'simple' :  dh_simpleYear,
-        'sk' :      dh_simpleYear,
-        'sl' :      dh_simpleYear,
-        'sq' :      dh_simpleYear,
-        'sr' :      dh_simpleYear,
-        'sv' :      dh_simpleYear,
-        'te' :      dh_simpleYear,
-        'th' :      lambda v: dh_thai_solar_calendar( v, u'พ.ศ. %d' ),        
-        'tl' :      dh_simpleYear,
-        'tr' :      dh_simpleYear,
-        'tt' :      dh_simpleYear,
-        'uk' :      dh_simpleYear,
+        'ku' :      dh_simpleInt,
+        'kw' :      dh_simpleInt,
+        'la' :      dh_simpleInt,
+        'lb' :      dh_simpleInt,
+        'li' :      dh_simpleInt,
+        'lt' :      dh_simpleInt,
+        'lv' :      dh_simpleInt,
+        'mi' :      dh_simpleInt,
+        'minnan' :  lambda v: dh_noConv( v, u'%d nî' ),
+        'mk' :      dh_simpleInt,
+        'nb' :      dh_simpleInt,
+        'nds':      dh_simpleInt,
+        'nl' :      dh_simpleInt,
+        'nn' :      dh_simpleInt,
+        'no' :      dh_simpleInt,
+        'os' :      dh_simpleInt,
+        'pl' :      dh_simpleInt,
+        'pt' :      dh_simpleInt,
+        'ro' :      dh_simpleInt,
+        'ru' :      dh_simpleInt,
+        'scn':      dh_simpleInt,
+        'simple' :  dh_simpleInt,
+        'sk' :      dh_simpleInt,
+        'sl' :      dh_simpleInt,
+        'sq' :      dh_simpleInt,
+        'sr' :      dh_simpleInt,
+        'sv' :      dh_simpleInt,
+        'te' :      dh_simpleInt,
+        
+        #2005 => 'พ.ศ. 2548'
+        'th' :      lambda v: dh( v, u'พ.ศ. %d',                lambda i: i + 543, lambda l: l[0] - 543 ),
+        'tl' :      dh_simpleInt,
+        'tr' :      dh_simpleInt,
+        'tt' :      dh_simpleInt,
+        'uk' :      dh_simpleInt,
         'ur' :      lambda v: dh_noConv( v, u'%dسبم' ),
-        'vi' :      dh_simpleYear,
-        'wa' :      dh_simpleYear,
+        'vi' :      dh_simpleInt,
+        'wa' :      dh_simpleInt,
         'zh' :      lambda v: dh_noConv( v, u'%d年' ),
     },
 
-    'yearsBC': {
-        'af' :      lambda v: dh_noConv( v, u'%d v.C.' ),       # original - '%d v.Chr.'
+    'YearBC': {
+        'af' :      lambda v: dh_noConv( v, u'%d v.C.' ),
         'bg' :      lambda v: dh_noConv( v, u'%d г. пр.н.е.' ),
         'bs' :      lambda v: dh_noConv( v, u'%d p.ne.' ),
         'ca' :      lambda v: dh_noConv( v, u'%d aC' ),
@@ -1572,6 +463,7 @@ dateFormats = {
         'he' :      lambda v: dh_noConv( v, u'%d לפנה"ס' ),
         'hr' :      lambda v: dh_noConv( v, u'%d p.n.e.' ),
         'id' :      lambda v: dh_noConv( v, u'%d SM' ),
+        'io' :      lambda v: dh_noConv( v, u'%d aK' ),
         'is' :      lambda v: dh_noConv( v, u'%d f. Kr.' ),
         'it' :      lambda v: dh_noConv( v, u'%d AC' ),
         'ko' :      lambda v: dh_noConv( v, u'기원전 %d년' ),
@@ -1589,11 +481,12 @@ dateFormats = {
         'sl' :      lambda v: dh_noConv( v, u'%d pr. n. št.' ),
         'sr' :      lambda v: dh_noConv( v, u'%d. пне.' ),
         'sv' :      lambda v: dh_noConv( v, u'%d f.Kr.' ),
+        'tt' :      lambda v: dh_noConv( v, u'MA %d' ),
         'uk' :      lambda v: dh_noConv( v, u'%d до Р.Х.' ),
         'zh' :      lambda v: dh_noConv( v, u'前%d年' ),
     },
 
-    'decadesAD': {
+    'DecadeAD': {
         'bg' :      lambda v: dh_dec( v, u'%d-те' ),
         'bs' :      lambda v: dh_dec( v, u'%dte' ),
         'ca' :      lambda v: dh_dec( v, u'Dècada del %d' ),
@@ -1608,50 +501,52 @@ dateFormats = {
         'fi' :      lambda v: dh_dec( v, u'%d-luku' ),
         'fo' :      lambda v: dh_dec( v, u'%d-árini' ),
         'fr' :      lambda v: dh_dec( v, u'Années %d' ),
-        
+        'io' :      lambda v: dh_dec( v, u'%da yari' ),
+
         #1970s => '1971–1980'
-        'is' :      lambda v: dh( v, u'%d–%d',                   lambda i: (dec1(i),dec1(i)+9), lambda v: v[0]-1 ),
+        'is' :      lambda v: dh( v, u'%d–%d',                   lambda i: (encDec1(i),encDec1(i)+9), lambda v: v[0]-1 ),
         'it' :      lambda v: dh_dec( v, u'Anni %d' ),
         'ja' :      lambda v: dh_dec( v, u'%d年代' ),
         'ko' :      lambda v: dh_dec( v, u'%d년대' ),
-        
+
         #1970s => 'Decennium 198' (1971-1980)
-        'la' :      lambda v: dh( v, u'Decennium %d',            lambda i: dec1(i)/10+1, lambda v: (v[0]-1)*10 ),
-        
+        'la' :      lambda v: dh( v, u'Decennium %d',            lambda i: encDec1(i)/10+1, lambda v: (v[0]-1)*10 ),
+
         #1970s => 'XX amžiaus 8-as dešimtmetis' (1971-1980)
         'lt' :      lambda v: dh( v, u'%s amžiaus %d-as dešimtmetis',
-                        lambda i: (romanNums[dec1(i)/100+1], dec1(i)%100/10+1),
+                        lambda i: (romanNums[encDec1(i)/100+1], encDec1(i)%100/10+1),
                         lambda v: (v[0]-1)*100 + (v[1]-1)*10 ),
-        
+
         #1970s => 'Ngahurutanga 198' (1971-1980)
-        'mi' :      lambda v: dh( v, u'Ngahurutanga %d',         lambda i: dec0(i)/10+1, lambda v: (v[0]-1)*10 ),
+        'mi' :      lambda v: dh( v, u'Ngahurutanga %d',         lambda i: encDec0(i)/10+1, lambda v: (v[0]-1)*10 ),
 
         #1970s => '1970-1979'
-        'nl' :      lambda v: dh( v, u'%d-%d',                   lambda i: (dec0(i),dec0(i)+9), singleVal ),
+        'nl' :      lambda v: dh( v, u'%d-%d',                   lambda i: (encDec0(i),encDec0(i)+9), decSinglVal ),
         'no' :      lambda v: dh_dec( v, u'%d-årene' ),
-        
+
         #1970s => 'Lata 70. XX wieku'
         'pl' :      lambda v: dh( v, u'Lata %d. %s wieku',
-                    lambda i: (dec0(i)%100, romanNums[ dec0(i)/100+1 ]),
+                    lambda i: (encDec0(i)%100, romanNums[ encDec0(i)/100+1 ]),
                     lambda v: (v[1]-1)*100 + v[0] ),
-                    
+
         'pt' :      lambda v: dh_dec( v, u'Década de %d' ),
         'ro' :      lambda v: dh_dec( v, u'Anii %d' ),
         'ru' :      lambda v: dh_dec( v, u'%d-е' ),
-        'scn':      lambda v: dh_dec( v, u'%dini' ),        
+        'scn':      lambda v: dh_dec( v, u'%dini' ),
         'simple' :  lambda v: dh_dec( v, u'%ds' ),
-        
+
         # 1970 => '70. roky 20. storočia'
         'sk' :      lambda v: dh( v, u'%d. roky %d. storočia',
-                    lambda i: (dec0(i)%100, dec0(i)/100+1),
+                    lambda i: (encDec0(i)%100, encDec0(i)/100+1),
                     lambda v: (v[1]-1)*100 + v[0] ),
 
         'sl' :      lambda v: dh_dec( v, u'%d.' ),
         'sv' :      lambda v: dh_dec( v, u'%d-talet' ),
+        'tt' :      lambda v: dh_dec( v, u'%d. yıllar' ),
         'zh' :      lambda v: dh_dec( v, u'%d年代' ),
     },
 
-    'decadesBC': {
+    'DecadeBC': {
         'de' :      lambda v: dh_dec( v, u'%der v. Chr.' ),
         'en' :      lambda v: dh_dec( v, u'%ds BC' ),
         'es' :      lambda v: dh_dec( v, u'Años %d adC' ),
@@ -1660,9 +555,10 @@ dateFormats = {
         'pt' :      lambda v: dh_dec( v, u'Década de %d a.C.' ),
         'ru' :      lambda v: dh_dec( v, u'%d-е до н. э.' ),
         'sl' :      lambda v: dh_dec( v, u'%d. pr. n. št.' ),
+        'tt' :      lambda v: dh_dec( v, u'MA %d. yıllar' ),
     },
 
-    'centuriesAD': {
+    'CenturyAD': {
         'af' :      lambda v: dh_noConv( v, u'%dste eeu' ),
         'ang':      lambda v: dh_noConv( v, u'%de géarhundred' ),
         'ast':      lambda v: dh_roman( v, u'Sieglu %s' ),
@@ -1706,36 +602,42 @@ dateFormats = {
         'ro' :      lambda v: dh_roman( v, u'Secolul al %s-lea' ),
         'ru' :      lambda v: dh_roman( v, u'%s век' ),
         'scn':      lambda v: dh_roman( v, u'Seculu %s' ),
-        'simple' :  lambda v: dh_noConv( v, u'%dth century' ),
+        'simple' :  lambda v: dh_noConv( v, u'%dth century' ),			##################### '21st century' !!!
         'sk' :      lambda v: dh_noConv( v, u'%d. storočie' ),
         'sl' :      lambda v: dh_noConv( v, u'%d. stoletje' ),
         'sv' :      lambda v: dh( v, u'%d00-talet',                   lambda i: i-1, lambda v: v[0]+1 ),
+        'th' :      lambda v: dh_noConv( v, u'คริสต์ศตวรรษที่ %d' ),
         'tr' :      lambda v: dh_noConv( v, u'%d. yüzyıl' ),
+        'tt' :      lambda v: dh_noConv( v, u'%d. yöz' ),
         'uk' :      lambda v: dh_noConv( v, u'%d століття' ),
         'wa' :      lambda v: dh_noConv( v, u'%dinme sieke' ),
         'zh' :      lambda v: dh_noConv( v, u'%d世纪' ),
     },
 
-    'centuriesBC': {
+    'CenturyBC': {
         'af' :      lambda v: dh_noConv( v, u'%de eeu v. C.' ),
         'ca' :      lambda v: dh_roman( v, u'Segle %s aC' ),
         'da' :      lambda v: dh_noConv( v, u'%d. århundrede f.Kr.' ),
         'de' :      lambda v: dh_noConv( v, u'%d. Jahrhundert v. Chr.' ),
         'en' :      lambda v: dh_noConv( v, u'%dth century BC' ),
         'eo' :      lambda v: dh_noConv( v, u'%d-a jarcento a.K.' ),
-        'es' :      lambda v: dh_roman( v, u'Siglo %s adC' ),   
+        'es' :      lambda v: dh_roman( v, u'Siglo %s adC' ),
         'fr' :      lambda v: dh_roman( v, u'%se siècle av. J.-C.' ),
+        'he' :      lambda v: dh_noConv( v, u'המאה ה-%d לפנה"ס' ),
+        'io' :      lambda v: dh_noConv( v, u'%dma yar-cento aK' ),
         'it' :      lambda v: dh_roman( v, u'%s secolo AC' ),
         'ja' :      lambda v: dh_noConv( v, u'紀元前%d世紀' ),
+        'la' :      lambda v: dh_noConv( v, u'Saeculum %d a.C.n.' ),
         'nl' :      lambda v: dh_noConv( v, u'%de eeuw v. Chr.' ),
         'pl' :      lambda v: dh_roman( v, u'%s wiek p.n.e.' ),
         'ru' :      lambda v: dh_roman( v, u'%s век до н. э.' ),
         'scn':      lambda v: dh_roman( v, u'Seculu %s a. C.' ),
         'sl' :      lambda v: dh_noConv( v, u'%d. stoletje pr. n. št.' ),
+        'tt' :      lambda v: dh_noConv( v, u'MA %d. yöz' ),
         'zh' :      lambda v: dh_noConv( v, u'前%d世纪' ),
     },
 
-    'milleniumsAD': {
+    'MillenniumAD': {
         'bg' :      lambda v: dh_noConv( v, u'%d хилядолетие' ),
         'de' :      lambda v: dh_noConv( v, u'%d. Jahrtausend' ),
         'el' :      lambda v: dh_noConv( v, u'%dη χιλιετία' ),
@@ -1751,37 +653,238 @@ dateFormats = {
         'ru' :      lambda v: dh_noConv( v, u'%d тысячелетие' ),
         'sk' :      lambda v: dh_noConv( v, u'%d. tisícročie' ),
         'sl' :      lambda v: dh_noConv( v, u'%d. tisočletje' ),
+        'tt' :      lambda v: dh_noConv( v, u'%d. meñyıllıq' ),
         #'sv' : u'1000-talet (millennium)'
         #'ur' : u'1000مبم'
     },
-    
-    'milleniumsBC': {
+
+    'MillenniumBC': {
         'bg' :      lambda v: dh_noConv( v, u'%d хилядолетие пр.н.е.' ),
         'da' :      lambda v: dh_noConv( v, u'%d. årtusinde f.Kr.' ),
         'de' :      lambda v: dh_noConv( v, u'%d. Jahrtausend v. Chr.' ),
+        'el' :      lambda v: dh_noConv( v, u'%dη χιλιετία π.Χ.' ),
         'en' :      lambda v: dh_noConv( v, u'%dst millennium BC' ),
         'es' :      lambda v: dh_roman( v, u'%s milenio adC' ),
         'fr' :      lambda v: dh_roman( v, u'%ser millénaire av. J.-C.' ),
+        'he' :      lambda v: dh_noConv( v, u'המילניום ה-%d לפנה"ס' ),
         'it' :      lambda v: dh_roman( v, u'%s millennio AC' ),
         'ja' :      lambda v: dh_noConv( v, u'紀元前%d千年紀' ),
         'lb' :      lambda v: dh_noConv( v, u'%d. Joerdausend v. Chr.' ),
         #'pt' : u'Primeiro milénio a.C.'
         'ro' :      lambda v: dh_roman( v, u'Mileniul %s î.Hr.' ),
         'ru' :      lambda v: dh_noConv( v, u'%d тысячелетие до н. э.' ),
+        'tt' :      lambda v: dh_noConv( v, u'MA %d. meñyıllıq' ),
         'zh' :      lambda v: dh_noConv( v, u'前%d千年' ),
     },
-    
+
     'Cat_Year_MusicAlbums': {
         'en' :      lambda v: dh_noConv( v, u'Category:%d albums' ),
         'fr' :      lambda v: dh_noConv( v, u'Catégorie:Album musical sorti en %d' ),
         'pl' :      lambda v: dh_noConv( v, u'Kategoria:Albumy muzyczne wydane w roku %d' ),
         'sv' :      lambda v: dh_noConv( v, u'Kategori:%d års musikalbum' ),
     },
+    
+    'CurrEvents': {
+        'ang':      lambda v: dh_singVal( v, u'Efenealde belimpas' ),
+        'ar' :      lambda v: dh_singVal( v, u'الأحداث الجارية' ),
+        'bg' :      lambda v: dh_singVal( v, u'Текущи събития' ),
+        'ca' :      lambda v: dh_singVal( v, u'Viquipèdia:Actualitat' ),
+        'cs' :      lambda v: dh_singVal( v, u'Aktuality' ),
+        'da' :      lambda v: dh_singVal( v, u'Aktuelle begivenheder' ),
+        'de' :      lambda v: dh_singVal( v, u'Aktuelle Ereignisse' ),
+        'en' :      lambda v: dh_singVal( v, u'Current events' ),
+        'eo' :      lambda v: dh_singVal( v, u'Aktualaĵoj' ),
+        'es' :      lambda v: dh_singVal( v, u'Actualidad' ),
+        'et' :      lambda v: dh_singVal( v, u'Current events' ),
+        'fa' :      lambda v: dh_singVal( v, u'وقایع کنونی' ),
+        'fi' :      lambda v: dh_singVal( v, u'Ajankohtaista' ),
+        'fr' :      lambda v: dh_singVal( v, u'Actualités' ),
+        'gl' :      lambda v: dh_singVal( v, u'Novas' ),
+        'he' :      lambda v: dh_singVal( v, u'ויקיפדיה:אקטואליה' ),
+        'hu' :      lambda v: dh_singVal( v, u'Friss események' ),
+        'id' :      lambda v: dh_singVal( v, u'Wikipedia:Peristiwa terkini' ),
+        'io' :      lambda v: dh_singVal( v, u'Current events' ),
+        'it' :      lambda v: dh_singVal( v, u'Attualità' ),
+        'ja' :      lambda v: dh_singVal( v, u'最近の出来事' ),
+        'ka' :      lambda v: dh_singVal( v, u'ახალი ამბები' ),
+        'ko' :      lambda v: dh_singVal( v, u'요즘 화제' ),
+        'ku' :      lambda v: dh_singVal( v, u'Bûyerên rojane' ),
+        'la' :      lambda v: dh_singVal( v, u'Novissima' ),
+        'lb' :      lambda v: dh_singVal( v, u'Aktualitéit' ),
+        'li' :      lambda v: dh_singVal( v, u"In 't nuuis" ),
+        'mn' :      lambda v: dh_singVal( v, u'Мэдээ' ),
+        'nl' :      lambda v: dh_singVal( v, u'In het nieuws' ),
+        'os' :      lambda v: dh_singVal( v, u'Xabar' ),
+        'pl' :      lambda v: dh_singVal( v, u'Bieżące wydarzenia' ),
+        'pt' :      lambda v: dh_singVal( v, u'Eventos atuais' ),
+        'ro' :      lambda v: dh_singVal( v, u'Actualităţi' ),
+        'ru' :      lambda v: dh_singVal( v, u'Текущие события' ),
+        'simple':   lambda v: dh_singVal( v, u'World news' ),
+        'sl' :      lambda v: dh_singVal( v, u'Trenutni dogodki' ),
+        'sr' :      lambda v: dh_singVal( v, u'Тренутни догађаји' ),
+        'sv' :      lambda v: dh_singVal( v, u'Aktuella händelser' ),
+        'th' :      lambda v: dh_singVal( v, u'เหตุการณ์ปัจจุบัน' ),
+        'tl' :      lambda v: dh_singVal( v, u'Kasalukuyang pangyayari' ),
+        'tr' :      lambda v: dh_singVal( v, u'Güncel olaylar' ),
+        'uk' :      lambda v: dh_singVal( v, u'Поточні події' ),
+        'ur' :      lambda v: dh_singVal( v, u'حالات حاضرہ' ),
+        'vi' :      lambda v: dh_singVal( v, u'Thời sự' ),
+        'yo' :      lambda v: dh_singVal( v, u'Current events' ),
+        'zh' :      lambda v: dh_singVal( v, u'新闻动态' ),
+        'zh-min-nan': lambda v: dh_singVal( v, u'Sin-bûn sū-kiāⁿ' ),
+    },
 }
+
+def addFmt( type, lang, isMnthOfYear, patterns ):
+    """Add 12 month formats for a specific type ('January','Feb..), for a given language.
+    The function must accept one parameter for the ->int or ->string conversions, just like
+    everywhere else in the formats map.
+    The patterns parameter is a list of 12 elements to be used for each month.
+    """
+    if len(patterns) != 12:
+        raise ValueError(u'pattern %s does not have 12 elements' % lang )
+    if len(type) != 12:
+        raise ValueError(u'type %s does not have 12 elements' % lang )
+        
+    for i in range(12):
+        if patterns[i] != None:
+            if isMnthOfYear:
+                dateFormats[type[i]][lang] = eval(u'lambda v: dh_MnthOfYear( v, u"%s" )' % patterns[i])
+            else:
+                dateFormats[type[i]][lang] = eval(u'lambda v: dh_dayOfMnth( v, u"%s" )' % patterns[i])
+            
+def makeMonthList( pattern ):
+    return [ pattern % m for m in range(1,13) ]
+
+def makeMonthNamedList( lang, pattern, makeUpperCase = None ):
+    """Creates a list of 12 elements based on the name of the month.
+    The language-dependent month name is used as a formating argument to the pattern.
+    The pattern must be have one %s that will be replaced by the localized month name.
+    Use %%d for any other parameters that should be preserved.
+    """
+    if makeUpperCase == None:
+        f = lambda s: s
+    elif makeUpperCase == True:
+        f = lambda s: s[0].upper() + s[1:]
+    elif makeUpperCase == False:
+        f = lambda s: s[0].lower() + s[1:]
+
+    return [ pattern % f(monthName(lang, m)) for m in range(1,13) ]
+
+
+#
+# Add day of the month formats to the formatting table:   "en:May 15"
+#
+addFmt( dayMnthFmts, 'af', False,		makeMonthNamedList( 'af', u"%%d %s", True ))
+addFmt( dayMnthFmts, 'an', False,		[ u"%d de chinero", u"%d de frebero", u"%d de marzo", u"%d d'abril", u"%d de mayo", u"%d de chunio", u"%d de chulio", u"%d d'agosto", u"%d de setiembre", u"%d d'otubre", u"%d de nobiembre", u"%d d'abiento" ])
+addFmt( dayMnthFmts, 'ang',False,		[ u"%d Æfterra Géola", u"%d Solmónaþ", u"%d Hréþmónaþ", u"%d Éastermónaþ", u"%d Þrimilcemónaþ", u"%d Séremónaþ", u"%d Mǽdmónaþ", u"%d Wéodmónaþ", u"%d Háligmónaþ", u"%d Winterfylleþ", u"%d Blótmónaþ", u"%d Géolmónaþ" ])
+addFmt( dayMnthFmts, 'ar', False,		[ u"%d يناير", u"%d فبراير", u"%d مارس", u"%d إبريل", u"%d مايو", u"%d يونيو", u"%d يوليو", u"%d أغسطس", u"%d سبتمبر", u"%d اكتوبر", u"%d نوفمبر", u"%d ديسمبر" ])
+addFmt( dayMnthFmts, 'ast',False,		[ u"%d de xineru", u"%d de febreru", u"%d de marzu", u"%d d'abril", u"%d de mayu", u"%d de xunu", u"%d de xunetu", u"%d d'agostu", u"%d de setiembre", u"%d d'ochobre", u"%d de payares", u"%d d'avientu" ])
+addFmt( dayMnthFmts, 'be', False,		[ u"%d студзеня", u"%d лютага", u"%d сакавіка", u"%d красавіка", u"%d траўня", u"%d чэрвеня", u"%d ліпеня", u"%d жніўня", u"%d верасьня", u"%d кастрычніка", u"%d лістапада", u"%d сьнежня" ])
+addFmt( dayMnthFmts, 'bg', False,		makeMonthNamedList( 'bg', u"%%d %s", False ))
+addFmt( dayMnthFmts, 'bs', False,		makeMonthNamedList( 'bs', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'ca', False,		[ u"%d de gener", u"%d de febrer", u"%d de març", u"%d d'abril", u"%d de maig", u"%d de juny", u"%d de juliol", u"%d d'agost", u"%d de setembre", u"%d d'octubre", u"%d de novembre", u"%d de desembre" ])
+addFmt( dayMnthFmts, 'co', False,		[ u"%d di ghjennaghju", u"%d di frivaghju", u"%d di marzu", u"%d d'aprile", u"%d di maghju", u"%d di ghjugnu", u"%d di lugliu", u"%d d'aostu", u"%d di settembre", u"%d d'uttrovi", u"%d di nuvembri", u"%d di decembre" ])
+addFmt( dayMnthFmts, 'cs', False,		makeMonthNamedList( 'cs', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'csb',False,		makeMonthNamedList( 'csb', u"%%d %sa", False ))
+addFmt( dayMnthFmts, 'cv', False,		makeMonthNamedList( 'cv', u"%s, %%d", True ))
+addFmt( dayMnthFmts, 'cy', False,		makeMonthNamedList( 'cy', u"%%d %s", True ))
+addFmt( dayMnthFmts, 'da', False,		makeMonthNamedList( 'da', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'de', False,		makeMonthNamedList( 'de', u"%%d. %s", True ))
+addFmt( dayMnthFmts, 'el', False,		[ u"%d Ιανουαρίου", u"%d Φεβρουαρίου", u"%d Μαρτίου", u"%d Απριλίου", u"%d Μαΐου", u"%d Ιουνίου", u"%d Ιουλίου", u"%d Αυγούστου", u"%d Σεπτεμβρίου", u"%d Οκτωβρίου", u"%d Νοεμβρίου", u"%d Δεκεμβρίου" ])
+addFmt( dayMnthFmts, 'en', False,		makeMonthNamedList( 'en', u"%s %%d", True ))
+addFmt( dayMnthFmts, 'eo', False,		makeMonthNamedList( 'eo', u"%%d-a de %s", False ))
+addFmt( dayMnthFmts, 'es', False,		makeMonthNamedList( 'es', u"%%d de %s", False ))
+addFmt( dayMnthFmts, 'et', False,		makeMonthNamedList( 'et', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'eu', False,		makeMonthNamedList( 'eu', u"%saren %%d", True ))
+addFmt( dayMnthFmts, 'fi', False,		makeMonthNamedList( 'fi', u"%%d. %sta", False ))
+addFmt( dayMnthFmts, 'fo', False,		makeMonthNamedList( 'fo', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'fr', False,		[ u"%d janvier", u"%d février", u"%d mars", u"%d avril", u"%d mai", u"%d juin", u"%d juillet", u"%d août", u"%d septembre", u"%d octobre", u"%d novembre", u"%d décembre" ])
+addFmt( dayMnthFmts, 'fy', False,		makeMonthNamedList( 'fy', u"%%d %s", False ))
+addFmt( dayMnthFmts, 'ga', False,		[ u"%d Eanáir", u"%d Feabhra", u"%d Márta", u"%d Aibreán", u"%d Bealtaine", u"%d Meitheamh", u"%d Iúil", u"%d Lúnasa", u"%d Meán Fómhair", u"%d Deireadh Fómhair", u"%d Samhain", u"%d Mí na Nollag" ])
+addFmt( dayMnthFmts, 'gl', False,		makeMonthNamedList( 'gl', u"%%d de %s", False ))
+addFmt( dayMnthFmts, 'he', False,		makeMonthNamedList( 'he', u"%%d ב%s"))		# [ u"%d בינואר", u"%d בפברואר", u"%d במרץ", u"%d באפריל", u"%d במאי", u"%d ביוני", u"%d ביולי", u"%d באוגוסט", u"%d בספטמבר", u"%d באוקטובר", u"%d בנובמבר", u"%d בדצמבר" ])
+addFmt( dayMnthFmts, 'hr', False,		[ u"%d. siječnja", u"%d. veljače", u"%d. ožujka", u"%d. travnja", u"%d. svibnja", u"%d. lipnja", u"%d. srpnja", u"%d. kolovoza", u"%d. rujna", u"%d. listopada", u"%d studenog", u"%d prosinca" ])
+addFmt( dayMnthFmts, 'hu', False,		makeMonthNamedList( 'hu', u"%s %%d", True ))
+addFmt( dayMnthFmts, 'ia', False,		makeMonthNamedList( 'ia', u"%%d de %s", False ))
+addFmt( dayMnthFmts, 'id', False,		makeMonthNamedList( 'id', u"%%d %s", True ))
+addFmt( dayMnthFmts, 'ie', False,		makeMonthNamedList( 'ie', u"%%d %s", False ))
+addFmt( dayMnthFmts, 'io', False,		makeMonthNamedList( 'io', u"%%d di %s", False ))
+addFmt( dayMnthFmts, 'is', False,		[ u"%d. janúar", u"%d. febrúar", u"%d. mars", u"%d. apríl", u"%d. maí", u"%d. júní", u"%d. júlí", u"%d. ágúst", u"%d. september", u"%d. október", u"%d. nóvember", u"%d. desember" ])
+addFmt( dayMnthFmts, 'it', False,		makeMonthNamedList( 'it', u"%%d %s", False ))
+addFmt( dayMnthFmts, 'ja', False,		makeMonthList( u"%d月%%d日" ))
+addFmt( dayMnthFmts, 'jv', False,		makeMonthNamedList( 'jv', u"%%d %s", True ))
+addFmt( dayMnthFmts, 'ka', False,		makeMonthNamedList( 'ka', u"%%d %s" ))
+addFmt( dayMnthFmts, 'ko', False,		makeMonthList( u"%d월 %%d일" ))
+addFmt( dayMnthFmts, 'ku', False,		[ u"%d'ê rêbendanê", u"%d'ê reşemiyê", u"%d'ê adarê", u"%d'ê avrêlê", u"%d'ê gulanê", u"%d'ê pûşperê", u"%d'ê tîrmehê", u"%d'ê gelawêjê", u"%d'ê rezberê", u"%d'ê kewçêrê", u"%d'ê sermawezê", u"%d'ê berfanbarê" ])
+addFmt( dayMnthFmts, 'la', False,		[ u"%d Ianuarii", u"%d Februarii", u"%d Martii", u"%d Aprilis", u"%d Maii", u"%d Iunii", u"%d Iulii", u"%d Augusti", u"%d Septembris", u"%d Octobris", u"%d Novembris", u"%d Decembris" ])
+addFmt( dayMnthFmts, 'lb', False,		makeMonthNamedList( 'lb', u"%%d. %s", True ))
+addFmt( dayMnthFmts, 'li', False,		[ u"%d januari", u"%d februari", u"%d miert", u"%d april", u"%d mei", u"%d juni", u"%d juli", u"%d augustus", u"%d september", u"%d oktober", u"%d november", u"%d december" ])
+addFmt( dayMnthFmts, 'lt', False,		[ u"Sausio %d", u"Vasario %d", u"Kovo %d", u"Balandžio %d", u"Gegužės %d", u"Birželio %d", u"Liepos %d", u"Rugpjūčio %d", u"Rugsėjo %d", u"Spalio %d", u"Lapkričio  %d", u"Gruodžio %d" ])
+addFmt( dayMnthFmts, 'mk', False,		[ u"%d јануари", u"%d февруари", u"%d март", u"%d април", u"%d мај", u"%d јуни", u"%d јули", u"%d август", u"%d септември", u"%d октомври", u"%d ноември", u"%d декември" ])
+addFmt( dayMnthFmts, 'ml', False,		makeMonthNamedList( 'ml', u"%s %%d" ))
+addFmt( dayMnthFmts, 'nds',False,		[ u"%d Januar", u"%d Februar", u"%d März", u"%d April", u"%d Mai", u"%d Juni", u"%d Juli", u"%d August", u"%d September", u"%d Oktober", u"%d November", u"%d Dezember" ])
+addFmt( dayMnthFmts, 'nl', False,		[ u"%d januari", u"%d februari", u"%d maart", u"%d april", u"%d mei", u"%d juni", u"%d juli", u"%d augustus", u"%d september", u"%d oktober", u"%d november", u"%d december" ])
+addFmt( dayMnthFmts, 'nn', False,		makeMonthNamedList( 'nn', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'no', False,		makeMonthNamedList( 'no', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'oc', False,		[ u"%d de genièr", u"%d de febrièr", u"%d de març", u"%d d'abril", u"%d de mai", u"%d de junh", u"%d de julhet", u"%d d'agost", u"%d de setembre", u"%d d'octobre", u"%d de novembre", u"%d de decembre" ])
+addFmt( dayMnthFmts, 'os', False,		[ None, None, u"%d мартъийы", None, None, None, u"%d июлы", None, None, None, None, None ])
+addFmt( dayMnthFmts, 'pl', False,		[ u"%d stycznia", u"%d lutego", u"%d marca", u"%d kwietnia", u"%d maja", u"%d czerwca", u"%d lipca", u"%d sierpnia", u"%d września", u"%d października", u"%d listopada", u"%d grudnia" ])
+addFmt( dayMnthFmts, 'pt', False,		makeMonthNamedList( 'pt', u"%%d de %s", True ))
+addFmt( dayMnthFmts, 'ro', False,		makeMonthNamedList( 'ro', u"%%d %s", False ))
+addFmt( dayMnthFmts, 'ru', False,		[ u"%d января", u"%d февраля", u"%d марта", u"%d апреля", u"%d мая", u"%d июня", u"%d июля", u"%d августа", u"%d сентября", u"%d октября", u"%d ноября", u"%d декабря" ])
+addFmt( dayMnthFmts, 'scn',False,		makeMonthNamedList( 'scn', u"%%d di %s", False ))
+addFmt( dayMnthFmts, 'se', False,		[ u"ođđajagimánu %d.", u"guovvamánu %d.", u"njukčamánu %d.", u"cuoŋománu %d.", u"miessemánu %d.", u"geassemánu %d.", u"suoidnemánu %d.", u"borgemánu %d.", u"čakčamánu %d.", u"golggotmánu %d.", u"skábmamánu %d.", u"juovlamánu %d." ])
+addFmt( dayMnthFmts, 'simple',False,		makeMonthNamedList( 'simple', u"%s %%d", True ))
+addFmt( dayMnthFmts, 'sk', False,		makeMonthNamedList( 'sk', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'sl', False,		makeMonthNamedList( 'sl', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'sq', False,		[ u"%d Janar", u"%d Shkurt", u"%d Mars", u"%d Prill", u"%d Maj", u"%d Qershor", u"%d Korrik", u"%d Gusht", u"%d Shtator", u"%d Tetor", u"%d Nëntor", u"%d Dhjetor" ])
+addFmt( dayMnthFmts, 'sr', False,		makeMonthNamedList( 'sr', u"%%d. %s", False ))
+addFmt( dayMnthFmts, 'sv', False,		makeMonthNamedList( 'sv', u"%%d %s", False ))
+addFmt( dayMnthFmts, 'te', False,		makeMonthNamedList( 'te', u"%s %%d" ))
+addFmt( dayMnthFmts, 'th', False,		makeMonthNamedList( 'th', u"%%d %s" ))
+addFmt( dayMnthFmts, 'tl', False,		[ u"Enero %d", u"Pebrero %d", u"Marso %d", u"Abríl %d", u"Mayo %d", u"Hunyo %d", u"Hulyo %d", u"Agosto %d", u"Setyembre %d", u"Oktubre %d", u"Nobyembre %d", u"Disyembre %d" ])
+addFmt( dayMnthFmts, 'tr', False,		makeMonthNamedList( 'tr', u"%%d %s", True ))
+addFmt( dayMnthFmts, 'tt', False,		makeMonthNamedList( 'tt', u"%%d. %s", True ))
+addFmt( dayMnthFmts, 'uk', False,		[ u"%d січня", u"%d лютого", u"%d березня", u"%d квітня", u"%d травня", u"%d червня", u"%d липня", u"%d серпня", u"%d вересня", u"%d жовтня", u"%d листопада", u"%d грудня" ])
+addFmt( dayMnthFmts, 'ur', False,		[ u"%d جنوری", u"%d فروری", u"%d مارچ", u"%d اپریل", u"%d مئ", u"%d جون", u"%d جلائ", u"%d اگست", u"%d ستمب", u"%d اکتوبر", u"%d نومب", u"%d دسمب" ])
+addFmt( dayMnthFmts, 'vi', False,		makeMonthList( u"%%d tháng %d" ))
+
+# Walloon names depend on the day number; taking the most common form
+addFmt( dayMnthFmts, 'wa', False,		[ u"%d di djanvî", u"%d di fevrî", u"%d di måss", u"%d di avri", u"%d di may", u"%d di djun", u"%d di djulete", u"%d d' awousse", u"%d di setimbe", u"%d d' octôbe", u"%d di nôvimbe", u"%d di decimbe" ])
+addFmt( dayMnthFmts, 'zh', False,		makeMonthList( u"%d月%%d日" ))
+
+
+#
+# Month of the Year: "en:May 1976"
+#
+addFmt( yrMnthFmts, 'af', True,		makeMonthNamedList( 'af', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'ang',True,		[ None, None, None, None, None, None, None, None, None, None, None, u"Gēolmōnaþ %d" ])
+addFmt( yrMnthFmts, 'de', True,		makeMonthNamedList( 'de', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'el', True,		makeMonthNamedList( 'el', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'en', True,		makeMonthNamedList( 'en', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'es', True,		makeMonthNamedList( 'es', u"%s de %%d", True ))
+addFmt( yrMnthFmts, 'et', True,		makeMonthNamedList( 'et', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'fi', True,		[ None, None, None, None, None, u"Huhtikuu %d", None, None, None, None, None, None ])
+addFmt( yrMnthFmts, 'fr', True,		[ u"Janvier %d", u"Février %d", u"Mars %d", u"Avril %d", u"Mai %d", u"Juin %d", u"Juillet %d", u"Août %d", u"Septembre %d", u"Octobre %d", u"Novembre %d", u"Décembre %d" ])
+addFmt( yrMnthFmts, 'it', True,		makeMonthNamedList( 'it', u"Attualità/Anno %%d - %s", True ))
+addFmt( yrMnthFmts, 'ja', True,		[ u"「最近の出来事」%%d年%d月" % mm for mm in range(1,13)])
+addFmt( yrMnthFmts, 'ka', True,		makeMonthNamedList( 'ka', u"%s, %%d" ))
+addFmt( yrMnthFmts, 'ko', True,		[ u"%d년 1월", u"%d년 2월", u"%d년 3월", u"%d년 4월", u"%d년 5월", u"%d년 6월", u"%d년 7월", u"%d년 8월", u"%d년 9월", u"%d년 10월", u"%d년 11월", u"%d년 12월" ])
+addFmt( yrMnthFmts, 'nl', True,		[ u"Januari %d", u"Februari %d", u"Maart %d", u"April %d", u"Mei %d", u"Juni %d", u"Juli %d", u"Augustus %d", u"September %d", u"Oktober %d", u"November %d", u"December %d" ])
+addFmt( yrMnthFmts, 'pl', True,		makeMonthNamedList( 'pl', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'scn',True,		[ None, None, u"Marzu %d", None, None, None, None, None, None, None, None, None ])
+addFmt( yrMnthFmts, 'simple', True,	makeMonthNamedList( 'simple', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'sv', True,		makeMonthNamedList( 'sv', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'tt', True,		makeMonthNamedList( 'tt', u"%s, %%d", True ))
+addFmt( yrMnthFmts, 'ur', True,		[ u"%d01مبم", u"%d02مبم", u"%d03مبم", u"%d04مبم", u"%d05مبم", u"%d06مبم", u"%d07مبم", u"%d08مبم", u"%d09مبم", u"%d10مبم", u"%d11مبم", u"%d12مبم" ])
+addFmt( yrMnthFmts, 'vi', True,		makeMonthList( u"Tháng %d năm %%d" ))
+addFmt( yrMnthFmts, 'zh', True,		makeMonthList( u"%%d年%d月" ))
+addFmt( yrMnthFmts, 'zh-min-nan',True,	makeMonthList( u"%%d nî %d goe̍h" ))
 
 
 def getDictionaryYear( lang, title ):
-    """Returns (dictName,value), where value can be a year, date, etc, and dictName is 'yearsBC','december',etc."""
+    """Returns (dictName,value), where value can be a year, date, etc, and dictName is 'YearBC', 'December', etc."""
     for dictName, dict in dateFormats.iteritems():
         try:
             year = dict[ lang ]( title )
@@ -1790,60 +893,89 @@ def getDictionaryYear( lang, title ):
             pass
     return (None,None)
 
-
 class FormatDate(object):
     def __init__(self, site):
         self.site = site
 
     def __call__(self, m, d):
-        return dateFormats[monthNames[m-1]][self.site.lang](d)
+        return dateFormats[enMonthNames[m-1]][self.site.lang](d)
 
-    
+
 def formatYear(lang, year):
     if year < 0:
-        return dateFormats['yearsBC'][lang](-year)
+        return dateFormats['YearBC'][lang](-year)
     else:
-        return dateFormats['yearsAD'][lang](year)
+        return dateFormats['YearAD'][lang](year)
 
 
-def testYearMap( m, year, testYear ):
+
+#
+#
+#  Map testing methods
+#
+#
+
+def printMonthArray( lang, pattern, capitalize ):
+    """
+    """
+    import wikipedia
+    for s in makeMonthNamedList( lang, pattern, capitalize ):
+        wikipedia.output( s )
+
+
+def testMapEntry( showAll, m, year, testYear ):
     """This is a test function, to be used interactivelly to test the validity of the above maps.
     To test, run this function with the map name, year to be tested, and the final year expected.
     Usage example:
         run python interpreter
         >>> import date
-        >>> date.testYearMap( 'decadesAD', 1992, 1990 )
-        >>> date.testYearMap( 'centuriesAD', 20, 20 )
+        >>> date.testMapEntry( 'DecadeAD', 1992, 1990 )
+        >>> date.testMapEntry( 'CenturyAD', 20, 20 )
     """
     import wikipedia
     for code, value in dateFormats[m].iteritems():
-        wikipedia.output(u"%s: %d -> '%s' -> %d" % (code, year, value(year), value(value(year))))
+        if showAll:
+            wikipedia.output(u"%s[%s](%d)" % (m, code, year))
+            wikipedia.output(u"                      -> '%s' -> %d" % (value(year), value(value(year))))
         if value(value(year)) != testYear:
-            raise ValueError("assert failed, years didn't match")
+            raise ValueError("%s[%s](%d) != %d: assert failed, years didn't match" % (m,code,year,testYear))
 
-def testAll():
+
+def testAll(showAll = False):
     """This is a test function, to be used interactivelly to test all year maps at once
     Usage example:
         run python interpreter
         >>> import date
         >>> date.testAll()
     """
-    testYearMap( 'yearsAD', 1992, 1992 )
-    testYearMap( 'yearsBC', 1992, 1992 )
-    testYearMap( 'decadesAD', 1990, 1990 )
-    testYearMap( 'decadesBC', 1990, 1990 )
-    testYearMap( 'decadesAD', 1991, 1990 )
-    testYearMap( 'decadesBC', 1991, 1990 )
-    testYearMap( 'decadesAD', 1992, 1990 )
-    testYearMap( 'decadesBC', 1992, 1990 )
-    testYearMap( 'decadesAD', 1998, 1990 )
-    testYearMap( 'decadesBC', 1998, 1990 )
-    testYearMap( 'decadesAD', 1999, 1990 )
-    testYearMap( 'decadesBC', 1999, 1990 )
-    testYearMap( 'centuriesAD', 20, 20 )
-    testYearMap( 'centuriesBC', 20, 20 )
-    testYearMap( 'milleniumsAD', 2, 2 )
-    testYearMap( 'milleniumsBC', 2, 2 )
 
     for d in dateFormats.keys():
-        testYearMap( d, 30, 30 )
+        
+        if d in yearFormats:
+            testMapEntry( showAll, d, 1992, 1992 )
+        elif d in decadeFormats:
+            testMapEntry( showAll, d, 1990, 1990 )
+            testMapEntry( showAll, d, 1991, 1990 )
+            testMapEntry( showAll, d, 1992, 1990 )
+            testMapEntry( showAll, d, 1998, 1990 )
+            testMapEntry( showAll, d, 1999, 1990 )
+        elif d in centuryFormats:
+            testMapEntry( showAll, d, 20, 20 )
+        elif d in millFormats:
+            testMapEntry( showAll, d, 2, 2 )
+        elif d in dayMnthFmts:
+            testMapEntry( showAll, d, 1, 1 )
+            testMapEntry( showAll, d, 29, 29 )
+        elif d in yrMnthFmts:
+            testMapEntry( showAll, d, 2000, 2000 )
+        elif d in snglValsFormats:
+            testMapEntry( showAll, d, 0, 0 )
+        elif d == 'MonthName':
+            for v in range(1,12):
+                testMapEntry( showAll, d, v, v )
+        elif d == 'Cat_Year_MusicAlbums':
+            testMapEntry( showAll, d, 2001, 2001 )
+        elif d == 'Number':
+            testMapEntry( showAll, d, 0, 0 )
+        else:
+            raise ValueError("unknown format %s" % d)
