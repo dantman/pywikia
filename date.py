@@ -543,6 +543,7 @@ dateFormats = {
         'sl' :      lambda v: dh_dec( v, u'%d.' ),
         'sv' :      lambda v: dh_dec( v, u'%d-talet' ),
         'tt' :      lambda v: dh_dec( v, u'%d. yıllar' ),
+        'wa' :      lambda v: dh_dec( v, u'Anêyes %d' ),
         'zh' :      lambda v: dh_dec( v, u'%d年代' ),
     },
 
@@ -628,6 +629,7 @@ dateFormats = {
         'it' :      lambda v: dh_roman( v, u'%s secolo AC' ),
         'ja' :      lambda v: dh_noConv( v, u'紀元前%d世紀' ),
         'la' :      lambda v: dh_noConv( v, u'Saeculum %d a.C.n.' ),
+        'lb' :      lambda v: dh_noConv( v, u'%d. Joerhonnert v. Chr.' ),
         'nl' :      lambda v: dh_noConv( v, u'%de eeuw v. Chr.' ),
         'pl' :      lambda v: dh_roman( v, u'%s wiek p.n.e.' ),
         'ru' :      lambda v: dh_roman( v, u'%s век до н. э.' ),
