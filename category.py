@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -407,7 +407,7 @@ class CategoryTidyRobot:
                 if current_cat == original_cat:
                     print 'No changes necessary.'
                 else:
-                    catlib.change_category(article, original_cat.titleWithoutNamespace(), current_cat.titleWithoutNamespace())
+                    catlib.change_category(article, original_cat, current_cat.titleWithoutNamespace())
                 flag = True
             elif choice == 'j':
                 newCatTitle = wikipedia.input(u'Please enter the category the article should be moved to:')
