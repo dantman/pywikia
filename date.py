@@ -111,9 +111,9 @@ def dh( value, pattern, encf, decf, filter = None ):
             dh() interprets %d as a decimal and %s as a roman numeral number.
 
         Usage scenarios:
-            map['DecadeAD']['en'](1980) => u'1980s'
-            map['DecadeAD']['en'](u'1980s') => 1980
-            map['DecadeAD']['en'](u'anything else') => raise ValueError (or some other exception?)
+            formats['DecadeAD']['en'](1980) => u'1980s'
+            formats['DecadeAD']['en'](u'1980s') => 1980
+            formats['DecadeAD']['en'](u'anything else') => raise ValueError (or some other exception?)
     """
     if type(value) is int:
         # Encode an integer value into a textual form.
@@ -178,9 +178,9 @@ def slh( value, lst ):
             lambda v: slh( v, [u'January',u'February',...] )
 
         Usage scenarios:
-            map['MonthName']['en'](1) => u'January'
-            map['MonthName']['en'](u'January') => 1
-            map['MonthName']['en'](u'anything else') => raise ValueError
+            formats['MonthName']['en'](1) => u'January'
+            formats['MonthName']['en'](u'January') => 1
+            formats['MonthName']['en'](u'anything else') => raise ValueError
     """
     if type(value) is int:
         return lst[value-1]
@@ -189,8 +189,8 @@ def slh( value, lst ):
 
 def dh_singVal( value, match ):
     """This function helps with matching a single value.
-            map['CurrEvents']['en'](0) => u'Current Events'
-            map['CurrEvents']['en'](u'Current Events') => 0"""
+            formats['CurrEvents']['en'](0) => u'Current Events'
+            formats['CurrEvents']['en'](u'Current Events') => 0"""
     if type(value) is int:
         if value == 0:
             return match
@@ -204,7 +204,7 @@ def dh_singVal( value, match ):
         
 
 def monthName(lang,ind):
-    return dateFormats['MonthName'][lang](ind)    
+    return formats['MonthName'][lang](ind)    
 
 # Helper for KN: digits representation
 _knDigits=u'೦೧೨೩೪೫೬೭೮೯'
@@ -228,13 +228,13 @@ def dh_knYearConverter( value ):
 # All years/decades/centuries/millenniums are designed in such a way
 # as to allow for easy date to string and string to date conversion.
 # For example, using any map with either an integer or a string will produce its oposite value:
-#            map['DecadeBC']['en'](1980) => u'1980s BC'
-#            map['DecadeBC']['en'](u'1980s BC') => 1980
+#            formats['DecadeBC']['en'](1980) => u'1980s BC'
+#            formats['DecadeBC']['en'](u'1980s BC') => 1980
 # This is useful when trying to decide if a certain article is a localized date or not, or generating dates.
 # See dh() for additional information.
 #
 
-dateFormats = {
+formats = {
     'January': {},
     'February': {},
     'March': {},
@@ -316,6 +316,7 @@ dateFormats = {
             'ml' :      lambda v: slh( v, [u'ജനുവരി', u'ഫെബ്രുവരി', u'മാര്ച്', u'ഏപ്രില്', u'മേയ്', u'ജൂണ്‍', u'ജൂലൈ', u'ആഗസ്റ്റ്‌', u'സപ്തന്പര്', u'ഒക്ടോബര്', u'നവന്പര്', u'ഡിസന്പര്'] ),
             'mr' :      lambda v: slh( v, [u'जानेवारी', u'फेब्रुवारी', u'मार्च', u'एप्रिल', u'मे', u'जून', u'जुलै', u'ऑगस्ट', u'सप्टेंबर', u'ऑक्टोबर', u'नोव्हेंबर', u'डिसेंबर'] ),
             'ms' :      lambda v: slh( v, [u'Januari', u'Februari', u'Mac', u'April', u'Mei', u'Jun', u'Julai', u'Ogos', u'September', u'Oktober', u'November', u'Disember'] ),
+            'nds':      lambda v: slh( v, [u'Januar', u'Februar', u'März', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
             'nl' :      lambda v: slh( v, [u'Januari', u'Februari', u'Maart', u'April', u'Mei', u'Juni', u'Juli', u'Augustus (maand)', u'September', u'Oktober', u'November', u'December'] ),
             'nn' :      lambda v: slh( v, [u'Januar', u'Februar', u'Mars', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Desember'] ),
             'no' :      lambda v: slh( v, [u'Januar', u'Februar', u'Mars', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Desember'] ),
@@ -325,7 +326,7 @@ dateFormats = {
             'ro' :      lambda v: slh( v, [u'Ianuarie', u'Februarie', u'Martie', u'Aprilie', u'Mai', u'Iunie', u'Iulie', u'August', u'Septembrie', u'Octombrie', u'Noiembrie', u'Decembrie'] ),
             'ru' :      lambda v: slh( v, [u'Январь', u'Февраль', u'Март', u'Апрель', u'Май', u'Июнь', u'Июль', u'Август', u'Сентябрь', u'Октябрь', u'Ноябрь', u'Декабрь'] ),
             'sc' :      lambda v: slh( v, [u'Ghennarzu', u'Frearzu', u'Martzu', u'Abrile', u'Maju', u'Làmpadas', u'Triulas', u'Aùstu', u'Cabudanni', u'Santugaìne', u'Santadria', u'Nadale'] ),
-            'scn':      lambda v: slh( v, [u'Jinnaru', u'Frivaru', u'Marzu', u'Aprili', u'Maiu', u'Giugnu', u'Giugnettu', u'Austu', u'Sittemmiru', u'Uttuviru', u'Nuvemmiru', u'Dicemmiru'] ),
+            'scn':      lambda v: slh( v, [u'Jinnaru', u'Frivaru', u'Marzu', u'Aprili', u'Maiu', u'Giugnu', u'Giugnettu', u'Austu', u'Sittèmmiru', u'Uttùviru', u'Nuvèmmiru', u'Dicèmmiru'] ),
             'sco':      lambda v: slh( v, [u'Januar', u'Februar', u'Mairch', u'Aprile', u'Mey', u'Juin', u'Julie', u'Augist', u'September', u'October', u'November', u'December'] ),
             'se' :      lambda v: slh( v, [u'Ođđajagimánnu', u'Guovvamánnu', u'Njukčamánnu', u'Cuoŋománnu', u'Miessemánnu', u'Geassemánnu', u'Suoidnemánnu', u'Borgemánnu', u'Čakčamánnu', u'Golggotmánnu', u'Skábmamánnu', u'Juovlamánnu'] ),
             'simple':   lambda v: slh( v, enMonthNames ),
@@ -415,6 +416,7 @@ dateFormats = {
         'mi' :      dh_simpleInt,
         'minnan' :  lambda v: dh_noConv( v, u'%d nî' ),
         'mk' :      dh_simpleInt,
+        'ms' :      dh_simpleInt,
         'nb' :      dh_simpleInt,
         'nds':      dh_simpleInt,
         'nl' :      dh_simpleInt,
@@ -460,6 +462,7 @@ dateFormats = {
         'fi' :      lambda v: dh_noConv( v, u'%d eaa' ),
         'fo' :      lambda v: dh_noConv( v, u'%d f. Kr.' ),
         'fr' :      lambda v: dh_noConv( v, u'-%d' ),
+        'gl' :      lambda v: dh_noConv( v, u'-%d' ),
         'he' :      lambda v: dh_noConv( v, u'%d לפנה"ס' ),
         'hr' :      lambda v: dh_noConv( v, u'%d p.n.e.' ),
         'id' :      lambda v: dh_noConv( v, u'%d SM' ),
@@ -469,6 +472,7 @@ dateFormats = {
         'ko' :      lambda v: dh_noConv( v, u'기원전 %d년' ),
         'la' :      lambda v: dh_noConv( v, u'%d a.C.n.' ),
         'lb' :      lambda v: dh_noConv( v, u'-%d' ),
+        'ms' :      lambda v: dh_noConv( v, u'%d SM' ),
         'nds':      lambda v: dh_noConv( v, u'%d v. Chr.' ),
         'nl' :      lambda v: dh_noConv( v, u'%d v. Chr.' ),
         'nn' :      lambda v: dh_noConv( v, u'-%d' ),
@@ -501,6 +505,9 @@ dateFormats = {
         'fi' :      lambda v: dh_dec( v, u'%d-luku' ),
         'fo' :      lambda v: dh_dec( v, u'%d-árini' ),
         'fr' :      lambda v: dh_dec( v, u'Années %d' ),
+
+		#1970s => 1970-1979
+        'hr' :      lambda v: dh( v, u'%d-%d',                   lambda i: (encDec0(i),encDec0(i)+9), lambda v: v[0] ),
         'io' :      lambda v: dh_dec( v, u'%da yari' ),
 
         #1970s => '1971–1980'
@@ -552,6 +559,7 @@ dateFormats = {
         'en' :      lambda v: dh_dec( v, u'%ds BC' ),
         'es' :      lambda v: dh_dec( v, u'Años %d adC' ),
         'fr' :      lambda v: dh_dec( v, u'Années -%d' ),
+        'hr' :      lambda v: dh_dec( v, u'%dih p.n.e.' ),
         'it' :      lambda v: dh_dec( v, u'Anni %d AC' ),
         'pt' :      lambda v: dh_dec( v, u'Década de %d a.C.' ),
         'ru' :      lambda v: dh_dec( v, u'%d-е до н. э.' ),
@@ -583,6 +591,7 @@ dateFormats = {
         'he' :      lambda v: dh_noConv( v, u'המאה ה-%d' ),
         #'hi' : u'बीसवी शताब्दी'
         'hr' :      lambda v: dh_noConv( v, u'%d. stoljeće' ),
+        'id' :      lambda v: dh_noConv( v, u'Abad ke-%d' ),
         'io' :      lambda v: dh_noConv( v, u'%dma yar-cento' ),
         'it' :      lambda v: dh_roman( v, u'%s secolo' ),
         'is' :      lambda v: dh_noConv( v, u'%d. öldin' ),
@@ -597,13 +606,14 @@ dateFormats = {
         'mi' :      lambda v: dh_noConv( v, u'Tua %d rau tau' ),
         'mk' :      lambda v: dh_noConv( v, u'%d век' ),
         'nl' :      lambda v: dh_noConv( v, u'%de eeuw' ),
+        'nn' :      lambda v: dh( v, u'%d00-talet',                   lambda i: i-1, lambda v: v[0]+1 ),
         'no' :      lambda v: dh_noConv( v, u'%d. århundre' ),
         'pl' :      lambda v: dh_roman( v, u'%s wiek' ),
         'pt' :      lambda v: dh_roman( v, u'Século %s' ),
         'ro' :      lambda v: dh_roman( v, u'Secolul al %s-lea' ),
         'ru' :      lambda v: dh_roman( v, u'%s век' ),
         'scn':      lambda v: dh_roman( v, u'Seculu %s' ),
-        'simple' :  lambda v: dh_noConv( v, u'%dth century' ),			##################### '21st century' !!!
+        'simple' :  lambda v: dh_noConv( v, u'%dth century' ),
         'sk' :      lambda v: dh_noConv( v, u'%d. storočie' ),
         'sl' :      lambda v: dh_noConv( v, u'%d. stoletje' ),
         'sv' :      lambda v: dh( v, u'%d00-talet',                   lambda i: i-1, lambda v: v[0]+1 ),
@@ -625,6 +635,8 @@ dateFormats = {
         'es' :      lambda v: dh_roman( v, u'Siglo %s adC' ),
         'fr' :      lambda v: dh_roman( v, u'%se siècle av. J.-C.' ),
         'he' :      lambda v: dh_noConv( v, u'המאה ה-%d לפנה"ס' ),
+        'hr' :      lambda v: dh_noConv( v, u'%d. stoljeće p.n.e.' ),
+        'id' :      lambda v: dh_noConv( v, u'Abad ke-%d SM' ),
         'io' :      lambda v: dh_noConv( v, u'%dma yar-cento aK' ),
         'it' :      lambda v: dh_roman( v, u'%s secolo AC' ),
         'ja' :      lambda v: dh_noConv( v, u'紀元前%d世紀' ),
@@ -751,9 +763,9 @@ def addFmt( type, lang, isMnthOfYear, patterns ):
     for i in range(12):
         if patterns[i] != None:
             if isMnthOfYear:
-                dateFormats[type[i]][lang] = eval(u'lambda v: dh_MnthOfYear( v, u"%s" )' % patterns[i])
+                formats[type[i]][lang] = eval(u'lambda v: dh_MnthOfYear( v, u"%s" )' % patterns[i])
             else:
-                dateFormats[type[i]][lang] = eval(u'lambda v: dh_dayOfMnth( v, u"%s" )' % patterns[i])
+                formats[type[i]][lang] = eval(u'lambda v: dh_dayOfMnth( v, u"%s" )' % patterns[i])
             
 def makeMonthList( pattern ):
     return [ pattern % m for m in range(1,13) ]
@@ -806,7 +818,7 @@ addFmt( dayMnthFmts, 'fy', False,		makeMonthNamedList( 'fy', u"%%d %s", False ))
 addFmt( dayMnthFmts, 'ga', False,		[ u"%d Eanáir", u"%d Feabhra", u"%d Márta", u"%d Aibreán", u"%d Bealtaine", u"%d Meitheamh", u"%d Iúil", u"%d Lúnasa", u"%d Meán Fómhair", u"%d Deireadh Fómhair", u"%d Samhain", u"%d Mí na Nollag" ])
 addFmt( dayMnthFmts, 'gl', False,		makeMonthNamedList( 'gl', u"%%d de %s", False ))
 addFmt( dayMnthFmts, 'he', False,		makeMonthNamedList( 'he', u"%%d ב%s"))		# [ u"%d בינואר", u"%d בפברואר", u"%d במרץ", u"%d באפריל", u"%d במאי", u"%d ביוני", u"%d ביולי", u"%d באוגוסט", u"%d בספטמבר", u"%d באוקטובר", u"%d בנובמבר", u"%d בדצמבר" ])
-addFmt( dayMnthFmts, 'hr', False,		[ u"%d. siječnja", u"%d. veljače", u"%d. ožujka", u"%d. travnja", u"%d. svibnja", u"%d. lipnja", u"%d. srpnja", u"%d. kolovoza", u"%d. rujna", u"%d. listopada", u"%d studenog", u"%d prosinca" ])
+addFmt( dayMnthFmts, 'hr', False,		[ u"%d. siječnja", u"%d. veljače", u"%d. ožujka", u"%d. travnja", u"%d. svibnja", u"%d. lipnja", u"%d. srpnja", u"%d. kolovoza", u"%d. rujna", u"%d. listopada", u"%d. studenog", u"%d. prosinca" ])
 addFmt( dayMnthFmts, 'hu', False,		makeMonthNamedList( 'hu', u"%s %%d", True ))
 addFmt( dayMnthFmts, 'ia', False,		makeMonthNamedList( 'ia', u"%%d de %s", False ))
 addFmt( dayMnthFmts, 'id', False,		makeMonthNamedList( 'id', u"%%d %s", True ))
@@ -822,9 +834,10 @@ addFmt( dayMnthFmts, 'ku', False,		[ u"%d'ê rêbendanê", u"%d'ê reşemiyê", 
 addFmt( dayMnthFmts, 'la', False,		[ u"%d Ianuarii", u"%d Februarii", u"%d Martii", u"%d Aprilis", u"%d Maii", u"%d Iunii", u"%d Iulii", u"%d Augusti", u"%d Septembris", u"%d Octobris", u"%d Novembris", u"%d Decembris" ])
 addFmt( dayMnthFmts, 'lb', False,		makeMonthNamedList( 'lb', u"%%d. %s", True ))
 addFmt( dayMnthFmts, 'li', False,		[ u"%d januari", u"%d februari", u"%d miert", u"%d april", u"%d mei", u"%d juni", u"%d juli", u"%d augustus", u"%d september", u"%d oktober", u"%d november", u"%d december" ])
-addFmt( dayMnthFmts, 'lt', False,		[ u"Sausio %d", u"Vasario %d", u"Kovo %d", u"Balandžio %d", u"Gegužės %d", u"Birželio %d", u"Liepos %d", u"Rugpjūčio %d", u"Rugsėjo %d", u"Spalio %d", u"Lapkričio  %d", u"Gruodžio %d" ])
+addFmt( dayMnthFmts, 'lt', False,		[ u"Sausio %d", u"Vasario %d", u"Kovo %d", u"Balandžio %d", u"Gegužės %d", u"Birželio %d", u"Liepos %d", u"Rugpjūčio %d", u"Rugsėjo %d", u"Spalio %d", u"Lapkričio %d", u"Gruodžio %d" ])
 addFmt( dayMnthFmts, 'mk', False,		[ u"%d јануари", u"%d февруари", u"%d март", u"%d април", u"%d мај", u"%d јуни", u"%d јули", u"%d август", u"%d септември", u"%d октомври", u"%d ноември", u"%d декември" ])
 addFmt( dayMnthFmts, 'ml', False,		makeMonthNamedList( 'ml', u"%s %%d" ))
+addFmt( dayMnthFmts, 'ms', False,		makeMonthNamedList( 'ms', u"%%d %s", True ))
 addFmt( dayMnthFmts, 'nds',False,		[ u"%d Januar", u"%d Februar", u"%d März", u"%d April", u"%d Mai", u"%d Juni", u"%d Juli", u"%d August", u"%d September", u"%d Oktober", u"%d November", u"%d Dezember" ])
 addFmt( dayMnthFmts, 'nl', False,		[ u"%d januari", u"%d februari", u"%d maart", u"%d april", u"%d mei", u"%d juni", u"%d juli", u"%d augustus", u"%d september", u"%d oktober", u"%d november", u"%d december" ])
 addFmt( dayMnthFmts, 'nn', False,		makeMonthNamedList( 'nn', u"%%d. %s", False ))
@@ -887,7 +900,7 @@ addFmt( yrMnthFmts, 'zh-min-nan',True,	makeMonthList( u"%%d nî %d goe̍h" ))
 
 def getDictionaryYear( lang, title ):
     """Returns (dictName,value), where value can be a year, date, etc, and dictName is 'YearBC', 'December', etc."""
-    for dictName, dict in dateFormats.iteritems():
+    for dictName, dict in formats.iteritems():
         try:
             year = dict[ lang ]( title )
             return (dictName,year)
@@ -900,14 +913,14 @@ class FormatDate(object):
         self.site = site
 
     def __call__(self, m, d):
-        return dateFormats[enMonthNames[m-1]][self.site.lang](d)
+        return formats[enMonthNames[m-1]][self.site.lang](d)
 
 
 def formatYear(lang, year):
     if year < 0:
-        return dateFormats['YearBC'][lang](-year)
+        return formats['YearBC'][lang](-year)
     else:
-        return dateFormats['YearAD'][lang](year)
+        return formats['YearAD'][lang](year)
 
 
 
@@ -935,7 +948,7 @@ def testMapEntry( showAll, m, year, testYear ):
         >>> date.testMapEntry( 'CenturyAD', 20, 20 )
     """
     import wikipedia
-    for code, value in dateFormats[m].iteritems():
+    for code, value in formats[m].iteritems():
         if showAll:
             wikipedia.output(u"%s[%s](%d)" % (m, code, year))
             wikipedia.output(u"                      -> '%s' -> %d" % (value(year), value(value(year))))
@@ -951,7 +964,7 @@ def testAll(showAll = False):
         >>> date.testAll()
     """
 
-    for d in dateFormats.keys():
+    for d in formats.keys():
         
         if d in yearFormats:
             testMapEntry( showAll, d, 1992, 1992 )

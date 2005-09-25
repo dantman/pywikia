@@ -85,7 +85,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         if dictName:
            if not (dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and year > date.maxyearBC[pl.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(pl.site().language()) and year > date.maxyearAD[pl.site().language()]):
                 wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (pl.title(),dictName,year))
-                for entryLang, entry in date.dateFormats[dictName].iteritems():
+                for entryLang, entry in date.formats[dictName].iteritems():
                     if entryLang != pl.site().language():
                         if dictName == 'yearsBC' and date.maxyearBC.has_key(entryLang) and year > date.maxyearBC[entryLang]:
                             pass
@@ -98,14 +98,9 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                                 arr[x] = None   # add new page
 
 bcDateErrors = [u'[[ko:%d년]]']
-bcFormats = ['centuriesBC', 'decadesBC', 'milleniumsBC', 'yearsBC']
-adFormats = ['centuriesAD','decadesAD','milleniumsAD','yearsAD']
-monthFormats = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-decadeFormats = ['decadesAD','decadesBC']
-
 
 def appendFormatedDates( result, dictName, year ):
-    for code, value in date.dateFormats[dictName].iteritems():
+    for code, value in date.formats[dictName].iteritems():
         result.append( u'[[%s:%s]]' % (code,value(year)) )
     
 def getPoisonedLinks(pl):
@@ -120,7 +115,7 @@ def getPoisonedLinks(pl):
         wikipedia.output( u'date found in %s' % dictName )
         
         # errors in year BC
-        if dictName in bcFormats:
+        if dictName in date.bcFormats:
             for fmt in bcDateErrors:
                 result.append( fmt % year )
 
