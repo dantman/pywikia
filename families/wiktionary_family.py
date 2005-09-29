@@ -39,9 +39,9 @@ class Family(family.Family):
         # letter on some Wiktionaries.
 
         self.nocapitalize = ['af', 'bg', 'cs', 'de', 'en', 'eo', 'es',
-                        'fa', 'fr', 'gu', 'hi', 'hr', 'hu', 'it',
-                        'ja', 'ka', 'kn', 'ku', 'ml', 'nds', 'nl', 'pl', 'fi',
-                        'sa', 'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona',
+                        'fa', 'fi', 'fr', 'gu', 'hi', 'hr', 'hu', 'is', 'it',
+                        'ja', 'ka', 'kn', 'ku', 'ml', 'nds', 'nl', 'pl',
+                        'sa', 'scn', 'sq', 'sv', 'sw', 'tg', 'tlh', 'tokipona',
                         'tr', 'vi']
     
         self.obsolete = {'nb':'no',
@@ -68,19 +68,13 @@ class Family(family.Family):
             
         # group of languages that we might want to do at once
     
-        self.biglangs = ['bg', 'bg', 'fr', 'gl', 'hu', 'io', 'it', 'nl', 'pl', 'scn']
-                    
-        self.biglangs2 = self.biglangs + [
-            'de', 'es', 'et', 'fi', 'hi', 'ku', 'ja', 'la', 'pt', 'sv']
-        
-        self.biglangs3 = self.biglangs2 + [
-            'ang', 'co', 'da', 'gu', 'hr', 'ko', 'no', 'ru', 'tr', 'zh']
-        
-        self.biglangs4 = self.biglangs3 + [
+        self.languages_by_size = [
+            'bg', 'bg', 'fr', 'gl', 'hu', 'io', 'it', 'nl', 'pl', 'scn',
+            'de', 'es', 'et', 'fi', 'hi', 'ku', 'ja', 'la', 'pt', 'sv',
+            'ang', 'co', 'da', 'gu', 'hr', 'ko', 'no', 'ru', 'tr', 'zh',
             'ar', 'bs', 'ca', 'cs', 'el', 'eo', 'eu', 'he', 'ia', 'id',
-            'ie', 'ro', 'sr', 'ta', 'th', 'uk', 'vi']
-        
-        self.seriouslangs = self.biglangs4
+            'ie', 'ro', 'sr', 'ta', 'th', 'uk', 'vi'
+        ]
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
 
