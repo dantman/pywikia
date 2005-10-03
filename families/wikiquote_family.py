@@ -45,7 +45,10 @@ class Family(family.Family):
         self.interwiki_on_one_line = ['fr', 'pl']
         
         # Similar for category
-        self.category_attop = ['fr', 'pl']
+        self.category_attop = ['pl']
+
+        # List of languages that want the category on_one_line.
+        self.category_on_one_line = ['fr']
         
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
