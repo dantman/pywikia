@@ -46,6 +46,7 @@ Site: a MediaWiki site
     getUrl(): Retrieve an URL from the site
     allpages(): Load allpages special page
     newpages(): Load newpages special page
+    longpages(): Load longpages special page
     ...
     
 Other functions:
@@ -1881,6 +1882,25 @@ class Site(object):
                     yield page, date, length, loggedIn, username, comment
             if not repeat:
                 break
+
+    def longpages(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.longpages_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\)</li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                length = int(m.group('length'))
+                   
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page, length
+            if not repeat:
+                break
     
     def allpages(self, start = '!', namespace = 0, throttle = True):
         """Generator which yields all articles in the home language in
@@ -2017,6 +2037,9 @@ class Site(object):
 
     def newpages_address(self, n=50):
         return self.family.newpages_address(self.lang, n)
+
+    def longpages_address(self, n=500):
+        return self.family.longpages_address(self.lang, n)
 
     def references_address(self, s):
         return self.family.references_address(self.lang, s)

@@ -12,6 +12,8 @@ spellcheck.py -start:Title
     Go through the wiki, starting at title 'Title'.
 spellcheck.py -newpages
     Go through the pages on [[Special:Newpages]]
+spellcheck.py -longpages
+    Go through the pages on [[Special:Longpages]]
 
 For each unknown word, you get a couple of options:
     numbered options: replace by known alternatives
@@ -372,6 +374,7 @@ try:
     newwords = []
     start = None
     newpages = False
+    longpages = False
     correct_html_codes = False
     rebuild = False
     for arg in sys.argv[1:]:
@@ -381,6 +384,8 @@ try:
                 start = arg[7:]
             elif arg.startswith("-newpages"):
                 newpages = True
+            elif arg.startswith("-longpages"):
+                longpages = True
             elif arg.startswith("-html"):
                 correct_html_codes = True
             elif arg.startswith("-rebuild"):
@@ -438,6 +443,18 @@ try:
                 text = spellcheck(text)
                 if text != page.get():
                     page.put(text)
+
+    if longpages:
+        for (page, length) in wikipedia.getSite().longpages(500):
+            try:
+                text = page.get()
+            except wikipedia.Error:
+                pass
+            else:
+                text = spellcheck(text)
+                if text != page.get():
+                    page.put(text)
+    
     else:
         title = ' '.join(title)
         while title != '':

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -815,6 +815,9 @@ class Family:
 
     def newpages_address(self, code, limit=50):
         return "%s?title=%s:Newpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
+    def longpages_address(self, code, limit=500):
+        return "%s?title=%s:Longpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
     def code2encoding(self, code):
         """Return the encoding for a specific language wiki"""
