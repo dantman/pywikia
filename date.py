@@ -414,10 +414,8 @@ formats = {
         'lt' :      dh_simpleInt,
         'lv' :      dh_simpleInt,
         'mi' :      dh_simpleInt,
-        'minnan' :  lambda v: dh_noConv( v, u'%d nî' ),
         'mk' :      dh_simpleInt,
         'ms' :      dh_simpleInt,
-        'nb' :      dh_simpleInt,
         'nds':      dh_simpleInt,
         'nl' :      dh_simpleInt,
         'nn' :      dh_simpleInt,
@@ -446,6 +444,7 @@ formats = {
         'vi' :      dh_simpleInt,
         'wa' :      dh_simpleInt,
         'zh' :      lambda v: dh_noConv( v, u'%d年' ),
+        'zh-min-nan' :  lambda v: dh_noConv( v, u'%d nî' ),
     },
 
     'YearBC': {
