@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -496,8 +496,10 @@ class Family:
             'da'  :       [u'flertydig'],
             'de'  :       [u'begriffsklärung'],
             'el'  :       [u'disambig'],
-            'en'  :       [u'disambig', u'LND', u'2LA', u'TLAdisambig', u'disambiguation', u'2LCdisambig',
-                           u'4LA', u'acrocandis', u'hndis', u'numberdis', u'roadis'],
+            'en'  :       [u'disambig', u'lND', u'2LA', u'tLAdisambig', u'disambiguation', u'2LCdisambig',
+                           u'4LA', u'acrocandis', u'hndis', u'numberdis', u'roadis', u'wiktionarypar',
+                           u'wiktionarypar2', 'wiktionarypar3', 'wiktionaryAbbr', u'geodis',
+                           u'listdis', u'interstatedis'],
             'eo'  :       [u'apartigilo'],
             'es'  :       [u'desambiguacion', u'desambiguación', u'desambig'],
             'et'  :       [u'täpsustuslehekülg'],
