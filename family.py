@@ -24,10 +24,10 @@ class Family:
             'to','tpi','tr','ts','tt','tum','tw','ty','ug','uk','ur','uz','ve',
             'vi','vo','wa','wo','xh','yi','yo','za','zh','zh-min-nan','zu']
         self.alphabetic = [
-            'aa','ab','af','am','ang','ar','an','roa-rup','as','ast','av','ay',
+            'aa','ab','af','als','am','ang','ar','an','roa-rup','as','ast','av','ay',
             'az','bg','bm','minnan','zh-min-nan','ba','be','bn','bh','bi','bo',
             'bs','br','ca','cv','ch','chr','ny','sn','cho','co','cs','cy','da','de',
-            'dv','dz','et','el','als','en','es','eo','eu','ee','fa','fo','fj','fr',
+            'dv','dz','et','el','en','es','eo','eu','ee','fa','fo','fj','fr',
             'fy','ff','fur','ga','gv','gd','gl','got','gn','gu','ko','ht','ha','haw',
             'hy','hi','hr','io','ik','id','ia','ie','iu','xh','zu','is','it','he',
             'jv','kl','kn','ka','kk','csb','ks','kw','km','ky','rn','sw','ku','lo','la',
