@@ -14,30 +14,30 @@ class Family:
             'fj','fo','fr','fur','fy','ga','gd','gl','gn','got','gu','gv','ha',
             'haw','he','hi','ho','hr','ht','hu','hy','hz','ia','id','ie','ig',
             'ii','ik','io','is','it','iu','ja','jbo','jv','ka','kg','ki','kj',
-            'kk','kl','km','kn','ko','kr','ks','ku','kv','kw','ky','la','lb',
+            'kk','kl','km','kn','ko','kr','ks','ku','kv','kw','ky','la','lad','lb',
             'lg','li','ln','lo','lt','lv','mg','mh','mi','mk','ml','mn','mo',
-            'mr','ms','mt','mus','my','na','nah','nds','ne','ng','nl','nn',
+            'mr','ms','mt','mus','my','na','nah','nap','nds','ne','ng','nl','nn',
             'no','nv','ny','oc','om','or','os','pa','pam','pi','pl','ps','pt',
             'qu','rm','rn','ro','roa-rup','ru','rw','sa','sc','scn','sco','sd',
             'se','sg','sh','si','simple','sk','sl','sm','sn','so','sq','sr',
             'ss','st','su','sv','sw','ta','te','tg','th','ti','tk','tl','tn',
             'to','tpi','tr','ts','tt','tum','tw','ty','ug','uk','ur','uz','ve',
-            'vi','vo','wa','wo','xh','yi','yo','za','zh','zh-min-nan','zu']
+            'vi','vo','wa','war','wo','xh','yi','yo','za','zh','zh-min-nan','zu']
         self.alphabetic = [
-            'aa','ab','af','als','am','ang','ar','an','roa-rup','as','ast','av','ay',
+            'aa','ab','af','als','am','ang','ar','an','roa-rup','as','arc','ast','av','ay',
             'az','bg','bm','minnan','zh-min-nan','ba','be','bn','bh','bi','bo',
-            'bs','br','ca','cv','ch','chr','ny','sn','cho','co','cs','cy','da','de',
+            'bs','br','ca','ceb','cv','ch','chr','ny','sn','cho','co','cs','cy','da','de',
             'dv','dz','et','el','en','es','eo','eu','ee','fa','fo','fj','fr',
             'fy','ff','fur','ga','gv','gd','gl','got','gn','gu','ko','ht','ha','haw',
             'hy','hi','hr','io','ik','id','ia','ie','iu','xh','zu','is','it','he',
-            'jv','kl','kn','ka','kk','csb','ks','kw','km','ky','rn','sw','ku','lo','la',
+            'jv','kl','kn','ka','kap','kk','csb','ks','kw','km','ky','rn','sw','ku','lad','lo','la',
             'lv','lt','lb','li','ln','jbo','hu','mk','mg','ml','mt','mi','mr','ms',
-            'mn','mo','mus','my','nah','na','nv','cr','ng','nl','ne','nds','ja',
+            'mn','mo','mus','my','nah','na','nv','nap','ng','nl','cr','ne','nds','ja',
             'no','nb','nn','oc','or','om','os','ug','pi','ps','nds','pl','pt','pa',
             'ro','rm','qu','ru','se','sm','sa','sg','sc','sco','st','sq','sh','scn',
             'si','simple','sd','ss','sk','sl','sr','su','fi','sv','tl','tg','ta',
             'tt','te','th','ti','tlh','vi','tokipona','tpi','to','ts','tk','tum','tr',
-            'tw','uk','ur','ug','uz','ve','vo','wa','wo','ts','yi','yo','za','zh',
+            'tw','uk','ur','ug','uz','ve','vo','wa','war','wo','ts','yi','yo','za','zh',
             'zh-cn','zh-tw']
 
 

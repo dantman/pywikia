@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -2264,6 +2264,8 @@ def altlang(code):
         return ['es','fr']
     if code=='gl':
         return ['es','pt']
+    if code=='lad':
+        return ['es','he']
     if code in ['br','ht','ln','lo','vi','wa']:
         return ['fr']
     if code in ['ie','oc']:
@@ -2272,7 +2274,7 @@ def altlang(code):
         return ['fr','de']
     if code=='co':
         return ['fr','it']
-    if code in ['sc','scn']:
+    if code in ['nap','sc','scn']:
         return ['it']
     if code=='rm':
         return ['it','de','fr']
@@ -2310,6 +2312,8 @@ def altlang(code):
         return ['hi']
     if code=='yi':
         return ['he']
+    if code in ['ceb','war']:
+        return ['tl']
     if code=='bi':
         return ['tpi']
     if code=='tpi':
