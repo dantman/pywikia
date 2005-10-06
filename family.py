@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 # Parent class for all wiki families
@@ -81,6 +81,7 @@ class Family:
                 'is': u'Kerfissíða',
                 'it': u'Speciale',
                 'ja': u'特別',
+                'ka': u'სპეციალური',
                 'ko': u'특수기능',
                 'ku': u'Taybet',
                 'la': u'Specialis',
@@ -141,6 +142,7 @@ class Family:
                 'is': u'Spjall',
                 'it': u'Discussione',
                 'ja': u'ノート',
+                'ka': u'განხილვა',
                 'ko': u'토론',
                 'ku': u'Nîqaş',
                 'la': u'Disputatio',
@@ -245,6 +247,7 @@ class Family:
                 'de': u'Benutzer Diskussion',
                 'es': u'Usuario Discusión',
                 'hu': u'User vita',
+                'ka': u'მომხმარებელი განხილვა',
                 'pl': u'Dyskusja Wikipedysty',
                 'pt': u'Usuário Discussão',
                 'sk': u'Diskusia s redaktorom',
@@ -285,6 +288,7 @@ class Family:
                 'is': u'Mynd',
                 'it': u'Immagine',
                 'ja': u'画像',
+                'ka': u'სურათი',
                 'ko': u'그림',
                 'ku': u'Wêne',
                 'la': u'Imago',
@@ -317,11 +321,13 @@ class Family:
                 'de': u'Bild Diskussion',
                 'es': u'Imagen Discusión',
                 'hu': u'Kép vita',
+                'ka': u'სურათი განხილვა',
                 'pt': u'Imagem Discussão',
             },
             8: {
                 '_default': u'MediaWiki',
                 'bg': u'МедияУики',
+                'ka': u'მედიავიკი',
             },
             9: {
                 '_default': u'MediaWiki talk',
@@ -329,6 +335,7 @@ class Family:
                 'de': u'MediaWiki Diskussion',
                 'es': u'MediaWiki Discusión',
                 'hu': u'MediaWiki vita',
+                'ka': u'მედიავიკი განხილვა',
                 'pt': u'MediaWiki Discussão',
             },
             10: {
@@ -354,6 +361,7 @@ class Family:
                 'hu': u'Sablon',
                 'id': u'Templat',
                 'is': u'Snið',
+                'ka': u'თარგი',
                 'ku': u'Şablon',
                 'la': u'Formula',
                 'li': u'Sjabloon',
@@ -379,6 +387,7 @@ class Family:
                 'de': u'Vorlage Diskussion',
                 'es': u'Plantilla Discusión',
                 'hu': u'Sablon vita',
+                'ka': u'თარგი განხილვა',
                 'pt': u'Predefinição Discussão',
             },
             12: {
@@ -390,6 +399,7 @@ class Family:
                 'el': u'Βοήθεια',
                 'es': u'Ayuda',
                 'hu': u'Segítség',
+                'ka': u'დახმარება',
                 'nds': u'Hülp',
                 'pt': u'Ajuda',
                 'uk': u'Довідка',
@@ -399,6 +409,7 @@ class Family:
                 'da': u'Hjælp diskussion',
                 'de': u'Hilfe Diskussion',
                 'es': u'Ayuda Discusión',
+                'ka': u'დახმარება განხილვა',
                 'pt': u'Ajuda Discussão',
             },
             14: {
@@ -469,6 +480,7 @@ class Family:
                 'hu'  :     u'Kategória vita',
                 'is'  :     u'Flokkaspjall',
                 'it'  :     u'Discussioni categoria',
+                'ka'  :     u'კატეგორია განხილვა',
                 'nl'  :     u'Overleg categorie',
                 'no'  :     u'Kategoridiskusjon',
                 'pl'  :     u'Dyskusja kategorii',
@@ -498,7 +510,7 @@ class Family:
             'el'  :       [u'disambig'],
             'en'  :       [u'disambig', u'lND', u'2LA', u'tLAdisambig', u'disambiguation', u'2LCdisambig',
                            u'4LA', u'acrocandis', u'hndis', u'numberdis', u'roadis', u'wiktionarypar',
-                           u'wiktionarypar2', 'wiktionarypar3', 'wiktionaryAbbr', u'geodis',
+                           u'wiktionarypar2', u'wiktionarypar3', u'wiktionaryAbbr', u'geodis',
                            u'listdis', u'interstatedis'],
             'eo'  :       [u'apartigilo'],
             'es'  :       [u'desambiguacion', u'desambiguación', u'desambig'],
