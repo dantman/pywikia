@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -44,10 +44,22 @@ Page: A MediaWiki page
 Site: a MediaWiki site
     forceLogin(): Does not continue until the user has logged in to the site
     getUrl(): Retrieve an URL from the site
-    allpages(): Load allpages special page
-    newpages(): Load newpages special page
-    longpages(): Load longpages special page
-    ...
+
+    Special pages:
+        Dinamic pages: 
+            allpages(): Special:Allpages
+            newpages(): Special:Newpages
+            longpages(): Special:Longpages
+            shortpages(): Special:Shortpages
+            categories(): Special:Categories
+
+        Cached pages:
+            deadendpages(): Special:Deadendpages
+            ancientpages(): Special:Ancientpages
+            lonelypages(): Special:Lonelypages
+            uncategorizedcategories(): Special:Uncategorizedcategories
+            uncategorizedpages(): Special:Uncategorizedpages
+            unusedcategories(): Special:Unusuedcategories
     
 Other functions:
 getall(): Load pages via Special:Export
@@ -1901,6 +1913,152 @@ class Site(object):
                     yield page, length
             if not repeat:
                 break
+            
+    def shortpages(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.shortpages_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\)</li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                length = int(m.group('length'))
+                   
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page, length
+            if not repeat:
+                break
+
+    def categories(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.categories_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                                   
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page
+            if not repeat:
+                break
+
+    def deadendpages(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.deadendpages_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                                   
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page
+            if not repeat:
+                break
+
+    def ancientpages(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.ancientpages_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> (?P<date>.+?)</li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                date = m.group('date')
+                                                  
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page, date
+            if not repeat:
+                break
+    
+    def lonelypages(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.lonelypages_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                                   
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page
+            if not repeat:
+                break
+
+    def uncategorizedcategories(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.uncategorizedcategories_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                                   
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page
+            if not repeat:
+                break
+
+    def uncategorizedpages(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.uncategorizedpages_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                                   
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page
+            if not repeat:
+                break
+
+    def unusedcategories(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.unusedcategories_address()
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                                   
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page
+            if not repeat:
+                break
     
     def allpages(self, start = '!', namespace = 0, throttle = True):
         """Generator which yields all articles in the home language in
@@ -2040,6 +2198,30 @@ class Site(object):
 
     def longpages_address(self, n=500):
         return self.family.longpages_address(self.lang, n)
+
+    def shortpages_address(self, n=500):
+        return self.family.shortpages_address(self.lang, n)
+
+    def categories_address(self, n=500):
+        return self.family.categories_address(self.lang, n)
+
+    def deadendpages_address(self, n=500):
+        return self.family.deadendpages_address(self.lang, n)
+
+    def ancientpages_address(self, n=500):
+        return self.family.ancientpages_address(self.lang, n)
+
+    def lonelypages_address(self, n=500):
+        return self.family.lonelypages_address(self.lang, n)
+
+    def uncategorizedcategories_address(self, n=500):
+        return self.family.uncategorizedcategories_address(self.lang, n)
+
+    def uncategorizedpages_address(self, n=500):
+        return self.family.uncategorizedpages_address(self.lang, n)
+
+    def unusedcategories_address(self, n=500):
+        return self.family.unusedcategories_address(self.lang, n)
 
     def references_address(self, s):
         return self.family.references_address(self.lang, s)

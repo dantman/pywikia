@@ -819,6 +819,30 @@ class Family:
     def longpages_address(self, code, limit=500):
         return "%s?title=%s:Longpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
+    def shortpages_address(self, code, limit=500):
+        return "%s?title=%s:Shortpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
+    def categories_address(self, code, limit=500):
+        return "%s?title=%s:Categories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
+    def deadendpages_address(self, code, limit=500):
+        return "%s?title=%s:Deadendpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
+    def ancientpages_address(self, code, limit=500):
+        return "%s?title=%s:Ancientpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
+    def lonelypages_address(self, code, limit=500):
+        return "%s?title=%s:Lonelypages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
+    def uncategorizedcategories_address(self, code, limit=500):
+        return "%s?title=%s:Uncategorizedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+    
+    def uncategorizedpages_address(self, code, limit=500):
+        return "%s?title=%s:Uncategorizedpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+    
+    def unusedcategories_address(self, code, limit=500):
+        return "%s?title=%s:Unusedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
     def code2encoding(self, code):
         """Return the encoding for a specific language wiki"""
         return 'utf-8'
