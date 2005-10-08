@@ -421,6 +421,7 @@ class Family:
                 'be': u'Катэгорыя',
                 'bg': u'Категория',
                 'bm': u'Catégorie',
+                'br': u'Rummad',
                 'ca': u'Categoria',
                 'csb': u'Kategòrëjô',
                 'cs': u'Kategorie',
