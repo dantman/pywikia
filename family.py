@@ -105,6 +105,7 @@ class Family:
                 'th': u'พิเศษ',
                 'tt': u'Maxsus',
                 'uk': u'Спеціальні',
+                'vi': u'Đặc biệt',
                 'wa': u'Sipeciås',
             },
             0: {
@@ -168,6 +169,7 @@ class Family:
                 'th': u'พูดคุย',
                 'tt': u'Bäxäs',
                 'uk': u'Обговорення',
+                'vi': u'Thảo luận',
                 'wa': u'Copene',
             },
             2: {
@@ -316,6 +318,7 @@ class Family:
                 'th': u'ภาพ',
                 'tt': u'Räsem',
                 'uk': u'Зображення',
+                'vi': u'Hình',
                 'wa': u'Imådje',
             },
             7: {
@@ -388,6 +391,7 @@ class Family:
                 'sv': u'Mall',
                 'tt': u'Ürnäk',
                 'uk': u'Шаблон',
+                'vi': u'Tiêu bản',
                 'wa': u'Modele',
             },
             11: {
@@ -418,6 +422,7 @@ class Family:
                 'nds': u'Hülp',
                 'pt': u'Ajuda',
                 'uk': u'Довідка',
+                'vi': u'Trợ giúp',
             },
             13: {
                 '_default': u'Help talk',
@@ -483,6 +488,7 @@ class Family:
                 'tr': u'Kategori',
                 'tt': u'Törkem',
                 'uk': u'Категорія',
+                'vi': u'Thể loại',
                 'wa': u'Categoreye',
                 },
 
