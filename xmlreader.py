@@ -178,7 +178,7 @@ class XmlDump(object):
             lines += line
             if line == '':
                 eof = True
-            elif line == u'</page>\n':
+            elif line.endswith(u'</page>\n'):
                 # unescape characters
                 lines = lines.replace('&gt;', '>')
                 lines = lines.replace('&lt;', '<')
