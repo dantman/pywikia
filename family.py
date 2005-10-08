@@ -455,6 +455,7 @@ class Family:
                 'ga': u'Rang',
                 'he': u'קטגוריה',
                 'hi': u'श्रेणी',
+                'hr': u'Kategorija',
                 'hu': u'Kategória',
                 'id': u'Kategori',
                 'is': u'Flokkur',
