@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to work with category pages on Wikipedia
 """
@@ -75,7 +75,7 @@ class _Category(wikipedia.Page):
            This should not be used outside of this module.
         """
         if site is None:
-            site = wikipedia.getSite()
+            site = self.site()
         import re
         if site.version() < "1.4":
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')

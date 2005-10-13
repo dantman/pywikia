@@ -573,6 +573,8 @@ class Page(object):
                 txt = m.group(1) + m.group(2)
         Rref = re.compile('li>a href.*="([^"]*)"')
         refTitles = Rref.findall(txt)
+        if self.site().lang == 'eo':
+            refTistles = map(resolveEsperantoXConvention,refTitles[:])
         refTitles.sort()
         refPages = []
         # create list of Page objects, removing duplicates
@@ -798,7 +800,10 @@ class Page(object):
 
         Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
-            page = Page(getSite(), match.group('title'))
+            title = match.group('title')
+            if self.site().lang == 'eo':
+                title = resolveEsperantoXConvention(title)
+            page = Page(self.site(), title)
             result.append(page)
         return result
 
@@ -915,13 +920,12 @@ class Page(object):
         if prompt:
             answer = inputChoice(u'Do you want to delete %s?' % self.title(), ['Yes', 'No'], ['y', 'N'], 'N')
         if answer in ['y', 'Y']:
-            token = self.site().getToken(self, sysop = True)
-            # put_throttle()
             host = self.site().hostname()
             address = self.site().delete_address(self.urlname())
 
             self.site().forceLogin(sysop = True)
 
+            token = self.site().getToken(self, sysop = True)
             predata = [
                 ('wpReason', reason),
                 ('wpConfirmB', '1')]
