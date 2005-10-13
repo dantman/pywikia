@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Script to resolve double redirects, and to delete broken redirects.
 Requires access to MediaWiki's maintenance pages or to a XML dump file. Delete function requires
@@ -219,7 +219,7 @@ class RedirectRobot:
                 except wikipedia.NoPage:
                     wikipedia.output(u'%s doesn\'t exist.' % second_redir.title())
                 else:
-                    txt = "#REDIRECT [[%s]]" % second_target
+                    txt = redir.get(get_redirect=True).replace('[['+target,'[['+second_target)
                     try:
                         status, reason, data = redir.put(txt)
                     except wikipedia.LockedPage:
