@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -729,10 +729,6 @@ class Page(object):
         result = []
         ll = getLanguageLinks(self.get(), insite = self.site(), pageLink = self.aslink())
         for newsite,newname in ll.iteritems():
-            if newname[0] == ':':
-                output(u"ERROR: link from %s to [[%s:%s]] has leading colon?!" % (self.aslink(), newsite, newname))
-            if newname[0] == ' ':
-                output(u"ERROR: link from %s to [[%s:%s]] has leading space?!" % (self.aslink(), newsite, newname))
             for pagenametext in self.site().family.pagenamecodes(self.site().language()):
                 newname = newname.replace("{{"+pagenametext+"}}",self.title())
             try:
@@ -1340,7 +1336,7 @@ def getLanguageLinks(text, insite = None, getPageObjects = False, pageLink = "[[
     # interwiki link.
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
-    interwikiR = re.compile(r'\[\[([a-z\-]+):([^\[\]\n]*)\]\]')
+    interwikiR = re.compile(r'\[\[([a-z\-]+)\s?:([^\[\]\n]*)\]\]')
     for lang, pagetitle in interwikiR.findall(text):
         # Check if it really is in fact an interwiki link to a known
         # language, or if it's e.g. a category tag or an internal link
@@ -1371,7 +1367,7 @@ def removeLanguageLinks(text, site = None):
     # This regular expression will find every interwiki link, plus trailing
     # whitespace.
     languageR = '|'.join(site.family.langs)
-    interwikiR = re.compile(r'\[\[(%s):[^\]]*\]\][\s]*' % languageR)
+    interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*' % languageR)
     text = replaceExceptNowikiAndComments(text, interwikiR, '')
     return normalWhitespace(text)
 
