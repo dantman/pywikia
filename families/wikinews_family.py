@@ -3,6 +3,8 @@
 import urllib
 import family, config
 
+__version__ = ''
+
 # The Wikimedia family that is known as WikiNews
 
 # Known WikiNews languages, given as a dictionary mapping the language code

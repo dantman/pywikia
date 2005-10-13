@@ -1,7 +1,9 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
+
+__version__ = ''
 
 # The Wikimedia family that is known as Wikipedia, the Free Encyclopedia
 

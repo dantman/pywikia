@@ -1,3 +1,6 @@
+
+__version__ = ''
+
 import time
 import re, sys, threading
 import tkMessageBox, tkSimpleDialog

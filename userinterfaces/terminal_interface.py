@@ -1,5 +1,7 @@
 import config, re, sys
 
+__version__ = ''
+
 # TODO: other colors
 unixColors = {
     10: '\x1b[92;1m%s\x1b[0m',  # Light Green

@@ -2,6 +2,8 @@
 import urllib
 import family, config
 
+__version__ = ''
+
 # The wikimedia family that is known as Wikisource
 
 class Family(family.Family):

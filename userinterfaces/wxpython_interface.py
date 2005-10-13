@@ -1,4 +1,5 @@
 
+__version__ = ''
 
 import sys; sys.path.append('..')
 

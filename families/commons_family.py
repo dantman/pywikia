@@ -1,5 +1,7 @@
 # -*- coding: utf-8  -*-
 
+__version__ = ''
+
 import family
 
 # The Wikimedia Commons family
