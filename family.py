@@ -1,5 +1,7 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
+
+__version__=''
 
 # Parent class for all wiki families
 

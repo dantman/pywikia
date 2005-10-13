@@ -23,9 +23,9 @@ Options:
 Features, not bugs:
 * Won't d/l images of an article if you set -overwrite:A
 
-
-$Id$
 """
+__version__ = '$Id$'
+
 
 import wikipedia,httplib,StringIO,re,sys,md5,os, string
 from htmlentitydefs import *

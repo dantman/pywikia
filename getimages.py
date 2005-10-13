@@ -13,6 +13,8 @@ Arguments:
 The first other argument is taken to be the name of the file you get
 the links from; other arguments are ignored.
 """
+
+__version__=''
 #
 # (C) Andre Engels 2004
 #

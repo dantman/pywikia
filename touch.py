@@ -28,6 +28,8 @@ will only touch a single page.
 import wikipedia, pagegenerators, catlib
 import sys
 
+__version__ = ''
+
 class TouchBot:
     def __init__(self, generator):
         self.generator = generator

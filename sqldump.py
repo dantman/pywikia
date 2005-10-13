@@ -27,6 +27,8 @@ Where action can be one of these:
 # Distributed under the terms of the PSF license.
 # 
 
+__version__ = ''
+
 from __future__ import generators
 import re, time
 import wikipedia, config

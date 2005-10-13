@@ -27,6 +27,8 @@ file check_extern.txt
 # Distribute under the terms of the PSF license.
 #
 
+__version__=''
+
 import wikipedia, urllib, re, sys, httplib
 
 class URLerrorFinder(urllib.FancyURLopener):

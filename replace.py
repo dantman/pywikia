@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
@@ -65,6 +65,7 @@ syntax, use:
 #
 # Distributed under the terms of the PSF license.
 #
+__version__=''
 
 from __future__ import generators
 import sys, re

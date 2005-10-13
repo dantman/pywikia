@@ -1,4 +1,4 @@
-﻿# -*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 """
 This bot takes as its argument (or, if no argument is given, asks for it), the
 name of a new or existing category. It will then try to find new articles for
@@ -29,6 +29,8 @@ L(ist) - show current list of pages to include or to check
 #
 # Distribute under the terms of the PSF license.
 #
+
+__version__=''
 
 import sys, codecs, re
 import wikipedia, date, catlib

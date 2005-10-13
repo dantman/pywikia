@@ -9,6 +9,8 @@ There must be A LOT of bugs ! Use with caution and verify what
 it is doing !
 """
 
+__version__=''
+
 import sys
 import wikipedia
 import datetime

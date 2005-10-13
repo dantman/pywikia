@@ -8,6 +8,8 @@ import re, codecs
 import wikipedia, date
 import config
 
+__version__=''
+
 class AllpagesPageGenerator:
     '''
     Using the Allpages special page, retrieves all articles, loads them (60 at

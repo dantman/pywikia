@@ -16,6 +16,8 @@ Other options:
 -justshown  Choose _only_ images shown on the page, not those linked
 """
 
+__version__=''
+
 import re, sys, os
 import wikipedia, upload
 

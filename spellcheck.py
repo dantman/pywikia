@@ -45,6 +45,8 @@ Command-line options:
 # Distribute under the terms of the PSF license
 #
 
+__version__ = ''
+
 import re,sys
 import wikipedia
 import string,codecs

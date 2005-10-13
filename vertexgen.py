@@ -2,6 +2,8 @@
 # -*- coding: utf-8  -*-
 import codecs
 
+__version__ = ''
+
 vertfile = None
 
 def openFile(filename):

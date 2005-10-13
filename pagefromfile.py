@@ -30,6 +30,8 @@ operating systems is unclear.
 import wikipedia
 import re, sys
 
+__version__=''
+
 msg={
     'en':u'Automated import of articles',
     'nl':u'Geautomatiseerde import'

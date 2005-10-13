@@ -10,6 +10,8 @@ The XmlDump class reads a pages_current XML dump (like the ones offered on
 http://download.wikimedia.org/wikipedia/de/) and offers a generator over
 XmlEntry objects which can be used by other bots.
 """
+__version__ = ''
+
 import threading, time
 import xml.sax
 import codecs, re

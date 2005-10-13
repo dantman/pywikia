@@ -1,4 +1,4 @@
-﻿#coding: utf-8
+#coding: utf-8
 
 '''
 A window with a unicode textfield where the user can e.g. edit
@@ -12,7 +12,7 @@ the contents of an article
 #
 # Distribute under the terms of the PSF license.
 #
-# version: 1.3
+__version__=''
 
 from Tkinter import *
 

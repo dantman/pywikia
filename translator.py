@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 '''
 This module translates a string from one language to another, using
@@ -25,6 +25,8 @@ For each table type, there can be three lists:
 # Distribute under the terms of the PSF license.
 #
 #
+
+__version__ = ''
 
 types = {
     # translations for images (inside other tables)

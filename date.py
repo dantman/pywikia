@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -17,7 +17,7 @@ lists which are required by some other programs.
 import types
 import re
 import wikipedia
-
+__version__=''
 
 #
 # Different collections of well known formats

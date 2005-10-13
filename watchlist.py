@@ -22,6 +22,7 @@ import wikipedia
 import re, sys, pickle
 import os.path
 import time
+__version__ = ''
 
 cache = {}
 
