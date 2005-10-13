@@ -16,7 +16,7 @@ Other options:
 -justshown  Choose _only_ images shown on the page, not those linked
 """
 
-__version__=''
+__version__='$Id:'
 
 import re, sys, os
 import wikipedia, upload

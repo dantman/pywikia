@@ -3,7 +3,7 @@
 import urllib
 import family, config
 
-__version__ = ''
+__version__ = '$Id$'
 
 # The Wikimedia family that is known as Wikipedia, the Free Encyclopedia
 

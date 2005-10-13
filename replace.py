@@ -65,7 +65,7 @@ syntax, use:
 #
 # Distributed under the terms of the PSF license.
 #
-__version__=''
+__version__='$Id'
 
 from __future__ import generators
 import sys, re

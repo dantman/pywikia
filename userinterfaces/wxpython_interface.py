@@ -1,5 +1,5 @@
 
-__version__ = ''
+__version__ = '$Id$'
 
 import sys; sys.path.append('..')
 

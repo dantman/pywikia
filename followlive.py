@@ -9,7 +9,7 @@ There must be A LOT of bugs ! Use with caution and verify what
 it is doing !
 """
 
-__version__=''
+__version__='$Id$'
 
 import sys
 import wikipedia

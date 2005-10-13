@@ -30,7 +30,7 @@ L(ist) - show current list of pages to include or to check
 # Distribute under the terms of the PSF license.
 #
 
-__version__=''
+__version__='$Id:'
 
 import sys, codecs, re
 import wikipedia, date, catlib

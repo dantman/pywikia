@@ -36,7 +36,7 @@ Syntax examples:
 #
 # Distributed under the terms of the PSF license.
 #
-__version__ = ''
+__version__='$Id$'
 
 import wikipedia, config, pagegenerators
 import sys, re

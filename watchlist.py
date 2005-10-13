@@ -18,11 +18,12 @@ Command line options:
 #
 # Distributed under the terms of the PSF license.
 
+__version__='$Id$'
+
 import wikipedia
 import re, sys, pickle
 import os.path
 import time
-__version__ = ''
 
 cache = {}
 

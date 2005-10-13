@@ -1,6 +1,7 @@
-import config, re, sys
 
-__version__ = ''
+__version__ = '$Id$'
+
+import config, re, sys
 
 # TODO: other colors
 unixColors = {

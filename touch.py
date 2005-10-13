@@ -25,10 +25,11 @@ This script understands various command-line arguments:
 All other parameters will be regarded as a page title; in this case, the bot
 will only touch a single page.
 """
+
+__version__='$Id:  Exp $'
+
 import wikipedia, pagegenerators, catlib
 import sys
-
-__version__ = ''
 
 class TouchBot:
     def __init__(self, generator):

@@ -45,7 +45,7 @@ Command-line options:
 # Distribute under the terms of the PSF license
 #
 
-__version__ = ''
+__version__ = '$Id:'
 
 import re,sys
 import wikipedia

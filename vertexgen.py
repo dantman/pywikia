@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 import codecs
 
-__version__ = ''
+__version__='$Id$'
 
 vertfile = None
 

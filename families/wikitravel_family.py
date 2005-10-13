@@ -5,7 +5,7 @@ import family, config
 # Translation used on all wikitravels for the 'article' text.
 # A language not mentioned here is not known by the robot
 
-__version__ = ''
+__version__ = '$Id$'
 
 class Family(family.Family):
     name = 'wikitravel'

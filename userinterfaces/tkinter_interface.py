@@ -1,5 +1,5 @@
 
-__version__ = ''
+__version__ = '$Id$'
 
 import time
 import re, sys, threading

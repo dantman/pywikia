@@ -12,7 +12,7 @@ the contents of an article
 #
 # Distribute under the terms of the PSF license.
 #
-__version__=''
+__version__='$Id$'
 
 from Tkinter import *
 

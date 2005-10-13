@@ -2,7 +2,7 @@
 import urllib
 import family, config
 
-__version__ = ''
+__version__ = '$Id$'
 
 # The wikimedia family that is known as Wikiquote
 

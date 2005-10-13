@@ -26,7 +26,7 @@ For each table type, there can be three lists:
 #
 #
 
-__version__ = ''
+__version__='$Id$'
 
 types = {
     # translations for images (inside other tables)

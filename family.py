@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import config, urllib
 
-__version__=''
+__version__='$Id$'
 
 # Parent class for all wiki families
 

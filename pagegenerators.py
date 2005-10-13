@@ -1,14 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
+__version__='$Id:'
+
 # Standard library imports
 import re, codecs
 
 # Application specific imports
 import wikipedia, date
 import config
-
-__version__=''
 
 class AllpagesPageGenerator:
     '''

@@ -27,10 +27,10 @@ operating systems is unclear.
 # Distribute under the terms of the PSF license.
 #
 
+__version__='$Id:'
+
 import wikipedia
 import re, sys
-
-__version__=''
 
 msg={
     'en':u'Automated import of articles',

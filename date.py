@@ -12,12 +12,13 @@ lists which are required by some other programs.
 #
 # Distribute under the terms of the PSF license.
 #
+__version__='$Id$'
 
 # used for date recognition
 import types
 import re
 import wikipedia
-__version__=''
+
 
 #
 # Different collections of well known formats

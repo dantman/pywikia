@@ -27,7 +27,7 @@ file check_extern.txt
 # Distribute under the terms of the PSF license.
 #
 
-__version__=''
+__version__='$Id$'
 
 import wikipedia, urllib, re, sys, httplib
 
