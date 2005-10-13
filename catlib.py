@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to work with category pages on Wikipedia
 """
@@ -247,7 +247,7 @@ def Category(code, name):
     # Prepend it
     return _Category(code, "%s:%s" % (ns, name))
 
-def change_category(article, oldCat, newCatTitle):
+def change_category(article, oldCat, newCatTitle, comment=None):
     """
     Given an article which is in category oldCat, moves it to
     category called newCatTitle. Moves subcategories of oldCat as well.
@@ -259,13 +259,12 @@ def change_category(article, oldCat, newCatTitle):
     site = article.site()
     sort_key = ''
     removed = False
-    for cat in cats:
+    # Iterate over a copy of the list of categories, as we may
+    # remove elements from the original list while iterating
+    for cat in cats[:]:
         # get the category title without the namespace, but possibly with a
         # "|" sign followed by a sortkey
         if cat == oldCat:
-            # because a list element is removed, the iteration will skip the 
-            # next element. this might lead to forgotten categories, but
-            # usually each category should only appear once per article.
             cats.remove(cat)
             removed = True
         elif cat.title().startswith(oldCat.title() + '|'):
@@ -283,7 +282,7 @@ def change_category(article, oldCat, newCatTitle):
         cats.append(newCat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)
-    article.put(text)
+    article.put(text, comment)
 
 
 def test():
