@@ -574,7 +574,7 @@ class Family:
             'pt'  :       [u'desambiguação'],
             'ro'  :       [u'dezambiguizare'],
             'ru'  :       [u'disambig',u'значения'],
-            'scn' :       [u'disambigua']
+            'scn' :       [u'disambigua'],
             'simple':     [u'disambig', u'disambiguation'],
             'sk'  :       [u'disambiguation'],
             'sl'  :       [u'disambig'],
