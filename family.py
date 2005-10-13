@@ -568,7 +568,7 @@ class Family:
             'mt'  :       [u'diżambigwazzjoni'],
             'no'  :       [u'peker', u'etternavn'],
             'nds' :       [u'begreepkloren'],
-            'nl'  :       [u'dp','dP'],
+            'nl'  :       [u'dp','dP','dp2'],
             'nn'  :       [u'fleirtyding'],
             'pl'  :       [u'disambig',u'disambRulers',u'disambigC'],
             'pt'  :       [u'desambiguação'],

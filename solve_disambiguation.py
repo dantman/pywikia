@@ -148,6 +148,7 @@ ignore_title = {
             'Gebruiker:Ucucha/Doorverwijspagina',
             'Gebruiker:CyeZ/Klad2',
             'Wikipedia:De kroeg/Archief.+',
+            'Overleg gebruiker:*Archief*',
          ],
          'en': [
             'Wikipedia:Links to disambiguating pages',
