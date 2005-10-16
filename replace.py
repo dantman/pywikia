@@ -433,7 +433,7 @@ def main():
         gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
     elif source == 'ref':
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
-        gen = pagegenerators.ReferringPageGenerator(referredPage)
+        gen = pagegenerators.AllReferringPageGenerator(referredPage)
     elif source == None or len(commandline_replacements) not in [0, 2]:
         # syntax error, show help text from the top of this file
         wikipedia.output(__doc__, 'utf-8')
