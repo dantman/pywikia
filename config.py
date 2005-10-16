@@ -36,6 +36,7 @@ mylang = 'language'
 # sysopnames['wiktionary']['en'] = 'myEnglishUsername'
 usernames = {}
 sysopnames = {}
+disambiguation_comment = {}
 
 # Get the names of all known families, and initialize
 # with empty dictionaries
@@ -46,6 +47,7 @@ for filename in os.listdir('families'):
         familyName = m.group('name')
         usernames[familyName] = {}
         sysopnames[familyName] = {}
+        disambiguation_comment[familyName] = {}
 
 ############## USER INTERFACE SETTINGS ##############
 
@@ -96,6 +98,16 @@ interwiki_graph_format = 'png'
 
 # Save file with local articles without interwikis.
 without_interwiki = False
+
+############## SOLVE_DISAMBIGUATION SETTINGS ############
+#
+# Set disambiguation_comment[FAMILY][LANG] to a non-empty string to override
+# the default edit comment for the solve_disambiguation bot.
+# Use %s to represent the name of the disambiguation page being treated.
+# Example:
+#
+# disambiguation_comment['wikipedia']['en'] = \
+#    "Robot-assisted disambiguation ([[WP:DPL|you can help!]]): %s"
 
 ############## IMAGE RELATED SETTINGS ##############
 # If you set this to True, images will be uploaded to Wikimedia
