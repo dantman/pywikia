@@ -339,14 +339,13 @@ class DisambiguationRobot(object):
     }
     
     def __init__(self, always, alternatives, getAlternatives, solve_redirect,
-                 page_list, primary, edit_comment, main_only):
+                 page_list, primary, main_only):
         self.always = always
         self.alternatives = alternatives
         self.getAlternatives = getAlternatives
         self.solve_redirect = solve_redirect
         self.page_list = page_list
         self.primary = primary
-        self.edit_comment = edit_comment
         self.main_only = main_only
 
         self.mysite = wikipedia.getSite()
@@ -721,7 +720,6 @@ def main():
     # if -file is not used, this temporary array is used to read the page title.
     page_title = []
     primary = False
-    edit_comment = False
     main_only = False
 
     for arg in sys.argv[1:]:
@@ -766,8 +764,6 @@ u'Possibility %s does not actually exist. Use it anyway?'
                 getAlternatives = False
             elif arg == '-redir':
                 solve_redirect = True
-            elif arg == '-comment':
-                edit_comment = True
             elif arg == '-main':
                 main_only = True
             elif arg.startswith("-"):
@@ -790,8 +786,7 @@ u'Possibility %s does not actually exist. Use it anyway?'
         page_list.append(pagename)
                 
     bot = DisambiguationRobot(always, alternatives, getAlternatives,
-                              solve_redirect, page_list, primary, edit_comment,
-                              main_only)
+                              solve_redirect, page_list, primary, main_only)
     bot.run()
 
 if __name__ == "__main__":
