@@ -1,15 +1,17 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
 
-Specify the disambiguation page on the command line. The program will
-pick up the page, and look for all alternative links, and show them with
-a number adjacent to them. It will then automatically loop over all pages
-referring to the disambiguation page, and show 30 characters of context on
-each side of the reference to help you make the decision between the
-alternatives. It will ask you to type the number of the appropriate
-replacement, and perform the change.
+Specify the disambiguation page on the command line, or enter it at the
+prompt after starting the program. (If the disambiguation page title starts
+with a '-', you cannot name it on the command line, but you can enter it at
+the prompt.)  The program will pick up the page, and look for all
+alternative links, and show them with a number adjacent to them.  It will
+then automatically loop over all pages referring to the disambiguation page,
+and show 30 characters of context on each side of the reference to help you
+make the decision between the alternatives.  It will ask you to type the
+number of the appropriate replacement, and perform the change.
 
 It is possible to choose to replace only the link (just type the number) or
 replace both link and link-text (type 'r' followed by the number).
@@ -331,13 +333,15 @@ class DisambiguationRobot(object):
             )
     }
     
-    def __init__(self, always, alternatives, getAlternatives, solve_redirect, page_list, primary, main_only):
+    def __init__(self, always, alternatives, getAlternatives, solve_redirect,
+                 page_list, primary, edit_comment, main_only):
         self.always = always
         self.alternatives = alternatives
         self.getAlternatives = getAlternatives
         self.solve_redirect = solve_redirect
         self.page_list = page_list
         self.primary = primary
+        self.edit_comment = edit_comment
         self.main_only = main_only
 
         self.mysite = wikipedia.getSite()
@@ -618,18 +622,29 @@ class DisambiguationRobot(object):
                 ignore_title[self.mysite.family.name] = {}
             if not ignore_title[self.mysite.family.name].has_key(self.mylang):
                 ignore_title[self.mysite.family.name][self.mylang] = []
-            ignore_title[self.mysite.family.name][self.mylang] += [u'%s:' % namespace for namespace in self.mysite.namespaces()]
+            ignore_title[self.mysite.family.name][self.mylang] += [
+                u'%s:' % namespace for namespace in self.mysite.namespaces()]
     
         for disambTitle in self.page_list:
-            # when run with -redir argument, there's another summary message
-            if self.solve_redirect:
-                wikipedia.setAction(wikipedia.translate(self.mysite,msg_redir) % disambTitle)
+            # first check whether user has customized the edit comment
+            if wikipedia.config.disambiguation_comment[
+                    self.mysite.family.name][self.mylang]:
+                comment = wikipedia.translate(self.mysite,
+                              wikipedia.config.disambiguation_comment[
+                              self.mysite.family.name]
+                              ) % disambTitle
+            elif self.solve_redirect:
+                # when run with -redir argument, there's another summary message
+                comment = wikipedia.translate(self.mysite, msg_redir) \
+                          % disambTitle
             else:
-                wikipedia.setAction(wikipedia.translate(self.mysite,msg) % disambTitle)
-    
+                comment = wikipedia.translate(self.mysite, msg) % disambTitle
+
+            wikipedia.setAction(comment)
             disambPl = wikipedia.Page(self.mysite, disambTitle)
             
-            self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl, enabled = self.primary)
+            self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl,
+                                            enabled=self.primary)
     
             if self.solve_redirect:
                 try:
@@ -637,23 +652,30 @@ class DisambiguationRobot(object):
                     self.alternatives.append(target)
                 except wikipedia.NoPage:
                     wikipedia.output(u"The specified page was not found.")
-                    user_input = wikipedia.input(u"Please enter the name of the page where the redirect should have pointed at, or press enter to quit:")
+                    user_input = wikipedia.input(u"""\
+Please enter the name of the page where the redirect should have pointed at,
+or press enter to quit:""")
                     if user_input == "":
                         sys.exit(1)
                     else:
                         self.alternatives.append(user_input)
                 except wikipedia.IsNotRedirectPage:
-                    wikipedia.output(u"The specified page is not a redirect. Skipping.")
+                    wikipedia.output(
+                        u"The specified page is not a redirect. Skipping.")
                     continue
             elif self.getAlternatives:
                 try:
                     if self.primary:
-                        disamb_pl = wikipedia.Page(self.mysite, primary_topic_format[self.mylang] % disambTitle)
+                        disamb_pl = wikipedia.Page(self.mysite,
+                                        primary_topic_format[self.mylang]
+                                            % disambTitle
+                                    )
                         thistxt = disamb_pl.get(throttle=False)
                     else:
                         thistxt = disambPl.get(throttle=False)
                 except wikipedia.IsRedirectPage,arg:
-                    thistxt = wikipedia.Page(self.mysite, str(arg)).get(throttle=False)
+                    thistxt = wikipedia.Page(self.mysite, str(arg)
+                                             ).get(throttle=False)
                 except wikipedia.NoPage:
                     wikipedia.output(u"Page does not exist?!")
                     thistxt = ""
@@ -694,6 +716,7 @@ def main():
     # if -file is not used, this temporary array is used to read the page title.
     page_title = []
     primary = False
+    edit_comment = False
     main_only = False
 
     for arg in sys.argv[1:]:
@@ -727,7 +750,9 @@ def main():
                     if pl.exists():
                         alternatives.append(pl.title())
                     else:
-                        answer = wikipedia.inputChoice(u'Possibility %s does not actually exist. Use it anyway?' % pl.title(), ['yes', 'no'], ['y', 'N'], 'N')
+                        answer = wikipedia.inputChoice(
+u'Possibility %s does not actually exist. Use it anyway?'
+                                 % pl.title(), ['yes', 'no'], ['y', 'N'], 'N')
                         if answer in ('Y', 'y'):
                             alternatives.append(pl.title())
                 else:
@@ -736,8 +761,14 @@ def main():
                 getAlternatives = False
             elif arg == '-redir':
                 solve_redirect = True
+            elif arg == '-comment':
+                edit_comment = True
             elif arg == '-main':
                 main_only = True
+            elif arg.startswith("-"):
+                print "Unrecognized command line argument: %s" % arg
+                # show help text and exit
+                wikipedia.argHandler("-help", "solve_disambiguation")
             else:
                 page_title.append(arg)
                 
@@ -754,7 +785,8 @@ def main():
         page_list.append(pagename)
                 
     bot = DisambiguationRobot(always, alternatives, getAlternatives,
-                              solve_redirect, page_list, primary, main_only)
+                              solve_redirect, page_list, primary, edit_comment,
+                              main_only)
     bot.run()
 
 if __name__ == "__main__":
