@@ -86,7 +86,9 @@ msg = {
     'de': u'Bot-unterstützte Begriffsklärung: %s',
     'nl': u'Robot-geholpen doorverwijzing: %s',
     'fr': u'Homonymie résolue à l\'aide du robot: %s',
-    'pt': u'Desambiguação assistida por bot: %s'
+    'pt': u'Desambiguação assistida por bot: %s',
+    'he': u'פתרון הפניה לפירושונים על ידי בוט: %s'
+,
     }
 
 # Summary message when run with -redir parameter
@@ -94,9 +96,11 @@ msg_redir = {
     'en': u'Robot-assisted disambiguation: %s',
     'da': u'Retter flertydigt link til: %s',
     'de': u'Bot-unterstützte Redirectauflösung: %s',
-    'nl': u'Robot-geholpen doorverwijzing: %s',
+    'nl': u'Robot-geholpen redirect-oplossing: %s',
     'fr': u'Correction de lien vers redirect: %s',
-    'pt': u'Desambiguação assistida por bot: %s'
+    'pt': u'Desambiguação assistida por bot: %s',
+    'he': u'פתרון הפניה לפירושונים על ידי בוט: %s'
+,
     }
 
 # disambiguation page name format for "primary topic" disambiguations
@@ -105,7 +109,8 @@ primary_topic_format = {
     'de': u'%s_(Begriffsklärung)',
     'en': u'%s_(disambiguation)',
     'nl': u'%s_(doorverwijspagina)',
-    'pt': u'%s_(desambiguação)'
+    'pt': u'%s_(desambiguação)',
+    'he': u'%s_(פירושונים)',
     }
 
 # letters that can follow a wikilink and are regarded as part of this link
