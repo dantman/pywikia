@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import sys
-import wikipedia, catlib
 
-import re
+__version__ = '$Id$'
+
+import sys, re
+import wikipedia, catlib
 
 def CAT(site,name):
     cat=catlib._Category(site, name)
@@ -21,6 +22,11 @@ def LINKS(site,name, ignore=[]):
             links.remove(n)
     links.sort()
     return links
+
+msg = {
+    'en': u'Featured article link for [[%s:%s]]',
+    'pt': u'Ligando artigos destacados para [[%s:%s]]',
+    }
 
 featured_name = {
     'cs': (LINKS, u"Wikipedie:Nejlepší články", [u"Seznam", u"Wikipedie"]),
@@ -141,7 +147,7 @@ def featuredWithInterwiki(fromsite, tosite):
     re_this_iw=re.compile(ur"\[\[%s:[^]]+\]\]" % fromsite.lang)
 
     arts=featuredArticles(fromsite)
-    
+        
     pairs=[]
     for a in arts:
         if a.title()<afterpage:
@@ -173,11 +179,12 @@ def featuredWithInterwiki(fromsite, tosite):
                         if not m:
                             wikipedia.output(u"no interwiki record, very strange")
                             continue
+                        ex = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
                         text=(text[:m.end()] 
                             + u" {{Link FA|%s}}"%fromsite.lang
                             + text[m.end():])
-                        atrans.put(text,
-                        comment=u"Featured article link for [[%s:%s]]"%(fromsite.lang, a.title()))
+                        atrans.put(text, ex)
+                                                
                 cc[a.title()]=atrans.title()
         except wikipedia.PageNotSaved, e:
             wikipedia.output(u"Page not saved")
@@ -208,7 +215,7 @@ if __name__=="__main__":
 featured [-interactive] [-nocache] [-fromlang:xx,yy|-fromall]"""
         sys.exit(1)
     
-    fromlang.sort()                                                                                                    
+    fromlang.sort()
     try:
         for ll in fromlang:
             fromsite=wikipedia.Site(ll)
