@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 __version__='$Id$'
@@ -540,7 +540,7 @@ class Family:
             'el'  :       [u'disambig'],
             'en'  :       [u'disambig', u'lND', u'2LA', u'tLAdisambig', u'disambiguation', u'2LCdisambig',
                            u'4LA', u'acrocandis', u'hndis', u'numberdis', u'roadis', u'geodis',
-                           u'listdis', u'interstatedis'],
+                           u'listdis', u'interstatedis', u'dab'],
             'eo'  :       [u'apartigilo'],
             'es'  :       [u'desambiguacion', u'desambiguación', u'desambig'],
             'et'  :       [u'täpsustuslehekülg'],
@@ -570,7 +570,7 @@ class Family:
             'mt'  :       [u'diżambigwazzjoni'],
             'no'  :       [u'peker', u'etternavn'],
             'nds' :       [u'begreepkloren'],
-            'nl'  :       [u'dp','dP','dp2'],
+            'nl'  :       [u'dp','dP','dp2','dpintro'],
             'nn'  :       [u'fleirtyding'],
             'pl'  :       [u'disambig',u'disambRulers',u'disambigC'],
             'pt'  :       [u'desambiguação'],
