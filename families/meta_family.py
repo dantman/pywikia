@@ -7,8 +7,11 @@ import family
 # The meta family
 
 class Family(family.Family):
-    name = 'meta'
     def __init__(self):
+
+        self.name = 'meta'
+
+        family.Family.__init__(self)
         self.langs = {
             'meta': 'meta.wikimedia.org',
         }
