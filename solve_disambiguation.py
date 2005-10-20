@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -631,8 +631,7 @@ class DisambiguationRobot(object):
     
         for disambTitle in self.page_list:
             # first check whether user has customized the edit comment
-            if wikipedia.config.disambiguation_comment[
-                    self.mysite.family.name][self.mylang]:
+            if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
                 comment = wikipedia.translate(self.mysite,
                               wikipedia.config.disambiguation_comment[
                               self.mysite.family.name]
