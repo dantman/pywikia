@@ -28,6 +28,16 @@ msg = {
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
     }
 
+template = {
+    'ca': 'Enllaç AD',
+    'en': 'Link FA',
+    'es': 'Destacado',
+    'fr': 'Lien_AdQ',
+    'it': 'Link AdQ',
+    'no': 'Link UA',
+    'vi': 'Liên kết chọn lọc',
+    }
+    
 featured_name = {
     'cs': (LINKS, u"Wikipedie:Nejlepší články", [u"Seznam", u"Wikipedie"]),
     'da': (CAT, u"Kategori:Artikler nomineret til Ugens Artikel"),
@@ -143,7 +153,8 @@ def featuredWithInterwiki(fromsite, tosite):
     if nocache:
         cc={}
 
-    re_Link_FA=re.compile(ur"\{\{[lL]ink[ _]FA\|%s\}\}" % fromsite.lang)
+    findtemplate = wikipedia.translate(wikipedia.getSite(), template)
+    re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate, fromsite.lang))
     re_this_iw=re.compile(ur"\[\[%s:[^]]+\]\]" % fromsite.lang)
 
     arts=featuredArticles(fromsite)
@@ -176,14 +187,16 @@ def featuredWithInterwiki(fromsite, tosite):
                         wikipedia.input(u'Connecting %s -> %s. Proceed? [YN]'%(a.title(), atrans.title())) in ['Y','y']
                         ):
                         m=re_this_iw.search(text)
+                        if m:
+                            wikipedia.output(u"(already done)")
                         if not m:
                             wikipedia.output(u"no interwiki record, very strange")
                             continue
-                        ex = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
-                        text=(text[:m.end()] 
-                            + u" {{Link FA|%s}}"%fromsite.lang
-                            + text[m.end():])
-                        atrans.put(text, ex)
+                        comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
+                        text=(text[:m.end()]
+                              + (u"{{%s|%s}}" % (findtemplate, fromsite.lang))
+                              + text[m.end():])
+                        atrans.put(text, comment)
                                                 
                 cc[a.title()]=atrans.title()
         except wikipedia.PageNotSaved, e:
@@ -210,11 +223,12 @@ if __name__=="__main__":
             fromlang=featured_name.keys()
         elif arg.startswith('-after:'):
             afterpage=arg[7:]
+
     if not fromlang:
         print """usage:
 featured [-interactive] [-nocache] [-fromlang:xx,yy|-fromall]"""
         sys.exit(1)
-    
+
     fromlang.sort()
     try:
         for ll in fromlang:
