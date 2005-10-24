@@ -88,6 +88,7 @@ msg = {
     'fr': u'Homonymie résolue à l\'aide du robot: %s',
     'pt': u'Desambiguação assistida por bot: %s',
     'he': u'פתרון הפניה לפירושונים על ידי בוט: %s'
+    'ru': u'Разрешение значений с помощью бота: %s',
 ,
     }
 
@@ -100,6 +101,7 @@ msg_redir = {
     'fr': u'Correction de lien vers redirect: %s',
     'pt': u'Desambiguação assistida por bot: %s',
     'he': u'פתרון הפניה לפירושונים על ידי בוט: %s'
+    'ru': u'Разрешение значений с помощью бота: %s',
 ,
     }
 
@@ -111,6 +113,7 @@ primary_topic_format = {
     'nl': u'%s_(doorverwijspagina)',
     'pt': u'%s_(desambiguação)',
     'he': u'%s_(פירושונים)',
+    'ru': u'%s_(значения)',
     }
 
 # letters that can follow a wikilink and are regarded as part of this link
@@ -124,7 +127,8 @@ link_trail = {
    'en': u'[a-z]*',
    'fr': u'[a-zàâçéèêîôû]*',
    'nl': u'[a-zäöüïëéèéàç]*',
-   'pt': u'[a-záâàãéêíóôõúüç]*'
+   'pt': u'[a-záâàãéêíóôõúüç]*',
+   'ru': u'[a-zа-я]*',
    }
 
 # List pages that will be ignored if they got a link to a disambiguation
@@ -233,6 +237,9 @@ ignore_title = {
         'fy': [
             u'Wikipedy:Fangnet',
         ],
+		'ru': [
+			u'Категория:Disambig',
+		],
     },
     'memoryalpha': {
         'en': [
@@ -335,7 +342,10 @@ class DisambiguationRobot(object):
     ignore_contents = {
         'de':(u'{{[Ii]nuse}}',
               u'{{[Ll]öschen}}',
-            )
+            ),
+        'ru':(u'{{[Ii]nuse}}',
+              u'{{[Pp]rocessing}}',
+            ),
     }
     
     def __init__(self, always, alternatives, getAlternatives, solve_redirect,
