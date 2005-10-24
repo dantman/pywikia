@@ -2494,7 +2494,7 @@ def altlang(code):
         return ['cs']
     if code=='nds':
         return ['de','nl']
-    if code=='lb':
+    if code in ['als','lb']:
         return ['de','fr']
     if code in ['an','ast','ay','ca','gn','nah','qu']:
         return ['es']
@@ -2508,11 +2508,9 @@ def altlang(code):
         return ['fr']
     if code in ['ie','oc']:
         return ['ie','oc','fr']
-    if code=='als':
-        return ['fr','de']
     if code=='co':
         return ['fr','it']
-    if code in ['nap','sc','scn']:
+    if code in ['lmo','nap','sc','scn','vec']:
         return ['it']
     if code=='rm':
         return ['it','de','fr']
@@ -2524,7 +2522,7 @@ def altlang(code):
         return ['pl']
     if code in ['mo','roa-rup']:
         return ['ro']
-    if code in ['av','be','cv','hy','lt','lv','tt','uk']:
+    if code in ['av','be','cv','hy','lt','lv','tt','udm','uk']:
         return ['ru']
     if code=='got':
         return ['ru','uk']
@@ -2540,10 +2538,10 @@ def altlang(code):
         return ['da','no','nb']
     if code=='se':
         return ['no','nb','sv','nn','fi','da']
-    if code in ['id','jv','ms','su']:
-        return ['id','ms','jv','su']
+    if code in ['bug','id','jv','ms','su']:
+        return ['id','ms','jv']
     if code in ['bs','hr','mk','sh','sr']:
-        return ['hr','sr','bs']
+        return ['sh','hr','sr','bs']
     if code=='ia':
         return ['la','es','fr','it']
     if code=='sa':

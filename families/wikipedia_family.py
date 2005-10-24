@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -83,12 +83,12 @@ class Family(family.Family):
            'gay','ki','gu','got','ko','ha','haw','hy','hi','ho','hr','io','ig','ia','ie',
            'iu','ik','os','xh','zu','is','it','he','kl','kn','kr','ka','ks','csb','kw',
            'rw','ky','rn','sw','kv','kg','ht','kj','ku','lad','lo','la','lv','lb','lt','li',
-           'ln','jbo','lg','hu','mk','mg','ml','mi','mr','chm','mo','mn','mus','my',
-           'nah','fj','nap','nl','cr','ne','ja','ce','no','nn','oc','or','om','ng','hz','ug',
+           'ln','jbo','lg','lmo','hu','mk','mg','ml','mi','mr','chm','mo','mn','mus','my',
+           'nah','fj','nap','nl','cr','ne','ja','ce','pih','no','nn','oc','or','om','ng','hz','ug',
            'uz','pa','kk','pi','pam','ps','km','nds','pl','pt','ty','ro','rm','qu','ru',
            'se','sa','sg','sc','sco','st','tn','sq','scn','si','simple','sd','ss','sk',
            'sl','so','sr','sh','fi','sv','tl','ta','tt','te','th','vi','ti','tlh','tg',
-           'tpi','chr','chy','ve','tr','tk','tw','udm','uk','ur','vo','fiu-vro','wa','war',
+           'tpi','chr','chy','ve','tr','tk','tw','udm','uk','ur','vec','vo','fiu-vro','wa','war',
            'wo','ts','ii','yi','yo','zh','zh-tw','zh-cn']
 
         # Which languages have a special order for putting interlanguage links,
