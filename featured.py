@@ -4,7 +4,7 @@
 __version__ = '$Id$'
 
 import sys, re
-import wikipedia, catlib
+import wikipedia, catlib, config
 
 def CAT(site,name):
     cat=catlib._Category(site, name)
@@ -28,10 +28,11 @@ msg = {
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
     }
 
+# default is en:Link FA
 template = {
     'ca': 'Enllaç AD',
     'en': 'Link FA',
-    'es': 'Destacado',
+    'es': 'destacado',
     'fr': 'Lien_AdQ',
     'it': 'Link AdQ',
     'no': 'Link UA',
@@ -203,6 +204,10 @@ def featuredWithInterwiki(fromsite, tosite):
             wikipedia.output(u"Page not saved")
 
 if __name__=="__main__":
+    if config.usernames.has_key('wikipedia') and config.usernames['wikipedia'].has_key('de') or config.usernames['wikipedia'].has_key('nl'):
+        print "Bot is not to be used at the DE and NL Wikipedias."
+        sys.exit()
+        
     fromlang=[]
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'featured')
