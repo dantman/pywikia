@@ -352,23 +352,26 @@ class Subject(object):
                 try:
                     iw = pl.interwiki()
                 except wikipedia.IsRedirectPage,arg:
-                    pl3 = wikipedia.Page(pl.site(),arg.args[0])
-                    wikipedia.output(u"NOTE: %s is redirect to %s" % (pl.aslink(forceInterwiki = True), pl3.aslink(forceInterwiki = True)))
-                    if pl == self.inpl:
-                        # This is a redirect page itself. We don't need to
-                        # follow the redirection.
-                        isredirect = 1
-                        # In this case we can also stop all hints!
-                        for pl2 in self.todo:
-                            counter.minus(pl2.site())
-                        self.todo = {}
-                        pass
-                    elif not globalvar.followredirect:
-                        print "NOTE: not following redirects."
-                    else:
-                        if self.conditionalAdd(pl3, counter, pl):
-                            if globalvar.shownew:
-                                wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.aslink(), pl.aslink(forceInterwiki = True), pl3.aslink(forceInterwiki = True)))
+                    try:
+                        pl3 = wikipedia.Page(pl.site(),arg.args[0])
+                        wikipedia.output(u"NOTE: %s is redirect to %s" % (pl.aslink(forceInterwiki = True), pl3.aslink(forceInterwiki = True)))
+                        if pl == self.inpl:
+                            # This is a redirect page itself. We don't need to
+                            # follow the redirection.
+                            isredirect = 1
+                            # In this case we can also stop all hints!
+                            for pl2 in self.todo:
+                                counter.minus(pl2.site())
+                            self.todo = {}
+                            pass
+                        elif not globalvar.followredirect:
+                            print "NOTE: not following redirects."
+                        else:
+                            if self.conditionalAdd(pl3, counter, pl):
+                                if globalvar.shownew:
+                                    wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.aslink(), pl.aslink(forceInterwiki = True), pl3.aslink(forceInterwiki = True)))
+                    except UnicodeDecodeError:
+                        wikipedia.output(u"BUG>>> processing %s: could not decode redirect to %s:%s" % (pl.aslink(forceInterwiki=True),pl.site(),arg.args[0]))
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % pl.aslink(forceInterwiki = True))
                     #print "DBG> ",pl.urlname()
