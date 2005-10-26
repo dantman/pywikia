@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -87,9 +87,8 @@ msg = {
     'nl': u'Robot-geholpen doorverwijzing: %s',
     'fr': u'Homonymie résolue à l\'aide du robot: %s',
     'pt': u'Desambiguação assistida por bot: %s',
-    'he': u'פתרון הפניה לפירושונים על ידי בוט: %s'
+    'he': u'פתרון הפניה לפירושונים על ידי בוט: %s',
     'ru': u'Разрешение значений с помощью бота: %s',
-,
     }
 
 # Summary message when run with -redir parameter
@@ -100,9 +99,8 @@ msg_redir = {
     'nl': u'Robot-geholpen redirect-oplossing: %s',
     'fr': u'Correction de lien vers redirect: %s',
     'pt': u'Desambiguação assistida por bot: %s',
-    'he': u'פתרון הפניה לפירושונים על ידי בוט: %s'
+    'he': u'פתרון הפניה לפירושונים על ידי בוט: %s',
     'ru': u'Разрешение значений с помощью бота: %s',
-,
     }
 
 # disambiguation page name format for "primary topic" disambiguations
