@@ -46,7 +46,7 @@ Site: a MediaWiki site
     getUrl(): Retrieve an URL from the site
 
     Special pages:
-        Dinamic pages: 
+        Dynamic pages: 
             allpages(): Special:Allpages
             newpages(): Special:Newpages
             longpages(): Special:Longpages
