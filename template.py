@@ -71,12 +71,14 @@ class TemplateRobot:
     msg_change={
         'en':u'Robot: Changing template: %s',
         'de':u'Bot: Ändere Vorlage: %s',
+		'fr':u'Robot: Changement de modèle: %s',
         'pt':u'Bot: Alterando predefinição: %s',
         }
     
     msg_remove={
         'en':u'Robot: Removing template: %s',
         'de':u'Bot: Entferne Vorlage: %s',
+		'fr':u'Robot: Enlève le modèle: %s',
         'pt':u'Bot: Removendo predefinição: %s',
         }
 
