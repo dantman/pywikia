@@ -189,9 +189,6 @@ class Page(object):
         title = html2unicode(title)
         # Convert URL-encoded characters to unicode
         title = url2unicode(title, site = site)
-        # replace cx by ĉ etc.
-        if site.lang == 'eo':
-            title = doubleXForEsperanto(resolveEsperantoXConvention(title))
         # Remove double spaces
         while '  ' in title:
             title = title.replace('  ', ' ')
@@ -829,9 +826,9 @@ class Page(object):
         othertitle = other.title()
         # In Esperanto X-Convention, Bordeauxx is the same as BordeauxX, and
         # CxefpagXo is the same as Ĉefpaĝo.
-        if self.site().lang == 'eo':
-            owntitle = doubleXForEsperanto(resolveEsperantoXConvention(owntitle))
-            othertitle = doubleXForEsperanto(resolveEsperantoXConvention(othertitle))
+        #if self.site().lang == 'eo':
+        #    owntitle = doubleXForEsperanto(resolveEsperantoXConvention(owntitle))
+        #    othertitle = doubleXForEsperanto(resolveEsperantoXConvention(othertitle))
         return cmp(owntitle, othertitle)
 
     def __hash__(self):
@@ -1076,8 +1073,10 @@ class GetAll(object):
         editRestriction = entry.editRestriction
         moveRestriction = entry.moveRestriction
         # Edit-pages on eo: use X-convention, XML export does not.
+        # Internally we keep titles without X convention, but text with X
+        # convention.
         if self.site.lang == 'eo':
-            title = doubleXForEsperanto(title)
+            #title = doubleXForEsperanto(title)
             text = doubleXForEsperanto(text)
         pl = Page(self.site, title)
         for pl2 in self.pages:
@@ -1131,9 +1130,9 @@ class GetAll(object):
             return
         address = self.site.export_address()
         pagenames = [page.sectionFreeTitle() for page in self.pages]
-        #if self.site.lang == 'eo':
-        #    for i in range(len(pagenames)):
-        #        pagenames[i] = doubleXForEsperanto(pagenames[i])
+        # We need to use X convention for requested page titles.
+        if self.site.lang == 'eo':
+            pagenames = [doubleXForEsperanto(pagetitle) for pagetitle in pagenames]
         pagenames = u'\r\n'.join(pagenames)
         if type(pagenames) != type(u''):
             print 'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
