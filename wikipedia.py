@@ -618,7 +618,8 @@ class Page(object):
                 item = redirectpattern.search(line)
                 if item:
                     # this is a double-redirect
-                    output(u"WARNING: [[%s]] is a double-redirect.")
+                    output(u"WARNING: [[%s]] is a double-redirect."
+                           % item.group(1))
                     if follow_redirects:
                         refTitles.add(item.group(1))
                         redirTitles.add(item.group(1))
