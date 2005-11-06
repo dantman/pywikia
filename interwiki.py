@@ -386,7 +386,14 @@ class Subject(object):
                 #except wikipedia.SectionError:
                 #    wikipedia.output(u"NOTE: section %s does not exist" % pl.aslink())
                 else:
-                    if not globalvar.autonomous:
+                    if globalvar.autonomous:
+                        if self.inpl.isDisambig() and not pl.isDisambig():
+			    wikipedia.output(u"NOTE: Ignoring link from disambiguation page %s to non-disambiguation %s" % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)))
+                            del self.done[pl]
+                        elif not self.inpl.isDisambig() and pl.isDisambig():
+			    wikipedia.output(u"NOTE: Ignoring link from non-disambiguation page %s to disambiguation %s" % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)))
+                            del self.done[pl]
+		    else:
                         if self.inpl.isDisambig() and not pl.isDisambig():
                             choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
                         elif not self.inpl.isDisambig() and pl.isDisambig():
