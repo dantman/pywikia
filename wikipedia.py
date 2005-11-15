@@ -1716,9 +1716,21 @@ def UnicodeToAsciiHtml(s):
     return ''.join(html)
 
 def url2unicode(title, site):
-    title = title.encode(site.encoding())
-    title = urllib.unquote(title)
-    return unicode(title, site.encoding())
+    try:
+        t = title.encode(site.encoding())
+        t = urllib.unquote(t)
+        return unicode(t, site.encoding())
+    except UnicodeError:
+        # try to handle all encodings (will probably retry utf-8)
+        for enc in site.encodings():
+            try:
+                t = title.encode(enc)
+                t = urllib.unquote(t)
+                return unicode(t, enc)
+            except UnicodeError:
+                pass
+        # Couldn't convert, raise the original exception
+        raise
 
 def unicode2html(x, encoding):
     """
