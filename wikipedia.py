@@ -442,10 +442,12 @@ class Page(object):
             if self._editTime == "0":
                 output(u"DBG> page may be locked?!")
                 editRestriction = 'sysop'
-            if m and not get_redirect:
-                output(u"DBG> %s is redirect to %s" % (self.title(), m.group(1)))
-                raise IsRedirectPage(m.group(1))
-    
+            if m:
+                if get_redirect:
+                    self._redirarg = m.group(1)
+                else:
+                    output(u"DBG> %s is redirect to %s" % (self.title(), m.group(1)))
+                    raise IsRedirectPage(m.group(1))
             x = text[i1:i2]
             x = unescape(x)
             while x and x[-1] in '\n ':
