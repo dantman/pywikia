@@ -250,18 +250,18 @@ ignore_title = {
 }
 
 class ReferringPageGenerator:
-    def __init__(self, disambPl, primary=False):
-        self.disambPl = disambPl
+    def __init__(self, disambPage, primary=False):
+        self.disambPage = disambPage
         # if run with the -primary argument, enable the ignore manager
-        self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl,
+        self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
                                                          enabled=primary)
         
     def __iter__(self):
-        refs = self.disambPl.getReferences(follow_redirects=False)
+        refs = self.disambPage.getReferences(follow_redirects=False)
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
-        if ignore_title.has_key(self.disambPl.site().family.name) and ignore_title[self.disambPl.site().family.name].has_key(self.disambPl.site().lang):
-            for ig in ignore_title[self.disambPl.site().family.name][self.disambPl.site().lang]:
+        if ignore_title.has_key(self.disambPage.site().family.name) and ignore_title[self.disambPage.site().family.name].has_key(self.disambPage.site().lang):
+            for ig in ignore_title[self.disambPage.site().family.name][self.disambPage.site().lang]:
                 for i in range(len(refs)-1, -1, -1):
                     if re.match(ig, refs[i].title()):
                         wikipedia.output('Ignoring page %s' % refs[i].title())
@@ -279,12 +279,12 @@ class PrimaryIgnoreManager(object):
     not be worked on; these are the ones where the user pressed n last time.
     If run without the -primary argument, doesn't ignore any pages.
     '''
-    def __init__(self, disambPl, enabled = False):
-        self.disambPl = disambPl
+    def __init__(self, disambPage, enabled = False):
+        self.disambPage = disambPage
         self.enabled = enabled
         
         self.ignorelist = []
-        filename = 'disambiguations/' + self.disambPl.urlname() + '.txt'
+        filename = 'disambiguations/' + self.disambPage.urlname() + '.txt'
         try:
             # The file is stored in the disambiguation/ subdir. Create if necessary.
             f = open(self.makepath(filename), 'r')
@@ -305,7 +305,7 @@ class PrimaryIgnoreManager(object):
     def ignore(self, refpl):
         if self.enabled:
             # Skip this occurence next time.
-            filename = 'disambiguations/' + self.disambPl.urlname() + '.txt'
+            filename = 'disambiguations/' + self.disambPage.urlname() + '.txt'
             try:
                 # Open file for appending. If none exists yet, create a new one.
                 # The file is stored in the disambiguation/ subdir. Create if necessary.
@@ -415,12 +415,12 @@ class DisambiguationRobot(object):
         # note that the definition of 'letter' varies from language to language.
         self.linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
         
-    def treat(self, refpl, disambPl):
+    def treat(self, refpl, disambPage):
         """
         Parameters:
-            disambPl - The disambiguation page or redirect we don't want anything
+            disambPage - The disambiguation page or redirect we don't want anything
                      to link on
-            refpl - A page linking to disambPl
+            refpl - A page linking to disambPage
         Returns False if the user pressed q to completely quit the program.
         Otherwise, returns True.
         """
@@ -434,7 +434,7 @@ class DisambiguationRobot(object):
             else:
                 include = True
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u'%s is a redirect to %s' % (refpl.title(), disambPl.title()))
+            wikipedia.output(u'%s is a redirect to %s' % (refpl.title(), disambPage.title()))
             if self.solve_redirect:
                 target = self.alternatives[0]
                 choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refpl.title(), target), ['yes', 'no'], ['y', 'N'], 'N')
@@ -481,9 +481,9 @@ class DisambiguationRobot(object):
                 if m.group('title') == '' or wikipedia.isInterwikiLink(m.group('title')):
                     continue
                 else:
-                    linkpl=wikipedia.Page(disambPl.site(), m.group('title'))
-                # Check whether the link found is to disambPl.
-                if linkpl != disambPl:
+                    linkpl=wikipedia.Page(disambPage.site(), m.group('title'))
+                # Check whether the link found is to disambPage.
+                if linkpl != disambPage:
                     continue
     
                 n += 1
@@ -513,7 +513,7 @@ class DisambiguationRobot(object):
                         self.alternatives.append(newAlternative)
                         self.listAlternatives()
                     elif choice == 'e':
-                        newtxt = wikipedia.ui.editText(text, search=disambPl.title())
+                        newtxt = wikipedia.ui.editText(text, search=disambPage.title())
                         # if user didn't press Cancel
                         if newtxt:
                             text = newtxt
@@ -593,7 +593,7 @@ class DisambiguationRobot(object):
                         curpos -= 1
                         continue
                     new_page_title = self.alternatives[choice]
-                    reppl = wikipedia.Page(disambPl.site(), new_page_title)
+                    reppl = wikipedia.Page(disambPage.site(), new_page_title)
                     new_page_title = reppl.title()
                     # There is a function that uncapitalizes the link target's first letter
                     # if the link description starts with a small letter. This is useful on
@@ -652,14 +652,14 @@ class DisambiguationRobot(object):
                 comment = wikipedia.translate(self.mysite, msg) % disambTitle
 
             wikipedia.setAction(comment)
-            disambPl = wikipedia.Page(self.mysite, disambTitle)
+            disambPage = wikipedia.Page(self.mysite, disambTitle)
             
-            self.primaryIgnoreManager = PrimaryIgnoreManager(disambPl,
+            self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
                                             enabled=self.primary)
     
             if self.solve_redirect:
                 try:
-                    target = disambPl.getRedirectTarget()
+                    target = disambPage.getRedirectTarget()
                     self.alternatives.append(target)
                 except wikipedia.NoPage:
                     wikipedia.output(u"The specified page was not found.")
@@ -677,19 +677,19 @@ or press enter to quit:""")
             elif self.getAlternatives:
                 try:
                     if self.primary:
-                        disamb_pl = wikipedia.Page(self.mysite,
+                        disambPage2 = wikipedia.Page(self.mysite,
                                         primary_topic_format[self.mylang]
                                             % disambTitle
                                     )
-                        thistxt = disamb_pl.get(throttle=False)
+                        thistxt = disambPage2.get(throttle=False)
                     else:
-                        thistxt = disambPl.get(throttle=False)
-                except wikipedia.IsRedirectPage,arg:
-                    thistxt = wikipedia.Page(self.mysite, str(arg)
-                                             ).get(throttle=False)
+                        thistxt = disambPage.get(throttle=False)
+                except wikipedia.IsRedirectPage:
+                    wikipedia.output(u"Page is a redirect, skipping.")
+                    continue
                 except wikipedia.NoPage:
-                    wikipedia.output(u"Page does not exist?!")
-                    thistxt = ""
+                    wikipedia.output(u"Page does not exist, skipping.")
+                    continue
                 thistxt = wikipedia.removeLanguageLinks(thistxt)
                 thistxt = wikipedia.removeCategoryLinks(thistxt, self.mysite)
                 # regular expression matching a wikilink
@@ -703,12 +703,12 @@ or press enter to quit:""")
             self.alternatives.sort()
             self.listAlternatives()
     
-            gen = ReferringPageGenerator(disambPl, self.primary)
+            gen = ReferringPageGenerator(disambPage, self.primary)
             preloadingGen = pagegenerators.PreloadingGenerator(gen)
             for refpl in preloadingGen:
                 if not self.primaryIgnoreManager.isIgnored(refpl):
                     # run until the user selected 'quit'
-                    if not self.treat(refpl, disambPl):
+                    if not self.treat(refpl, disambPage):
                         break
     
             # clear alternatives before working on next disambiguation page
