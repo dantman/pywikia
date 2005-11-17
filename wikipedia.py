@@ -95,7 +95,7 @@ stopme(): Put this on a bot when it is not or not communicating with the Wiki
 """
 from __future__ import generators
 #
-# (C) Rob W.W. Hooft, Andre Engels, 2003-2004
+# (C) Rob W.W. Hooft, Andre Engels, 2003-2005
 #
 # Distribute under the terms of the PSF license.
 #
@@ -915,22 +915,15 @@ class Page(object):
             return arg[0]
         else:
             raise IsNotRedirectPage(self)
-            
-            
-    def getVersionHistory(self, forceReload = False):
+
+    def getVersionHistory(self, forceReload = False, reverseOrder = False, getAll = False):
         """
         Loads the version history page and returns a list of tuples, where each
         tuple represents one edit and is built of edit date/time, user name, and edit
-        summary.
+        summary.  Defaults to getting the first 500 edits.
         """
         site = self.site()
-        path = site.family.version_history_address(self.site().language(), self.urlname())
 
-        if not hasattr(self, '_versionhistory') or forceReload:
-            output(u'Getting version history of %s' % self.title())
-            txt = site.getUrl(path)
-            self._versionhistory = txt
-            
         # regular expression matching one edit in the version history.
         # results will have 3 groups: edit date/time, user name, and edit
         # summary.
@@ -938,16 +931,183 @@ class Page(object):
             editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
         else:
             editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
-        edits = editR.findall(self._versionhistory)
-        return edits
-    
-    def getVersionHistoryTable(self, forceReload = False):
+
+        startFromPage = None
+        thisHistoryDone = False
+        skip = False # Used in determining whether we need to skip the first page
+
+        RLinkToNextPage = re.compile('&amp;offset=(.*?)&amp;')
+
+        # Are we getting by Earliest first?
+        if reverseOrder:
+            # Check if _versionhistoryearliest exists
+            if not hasattr(self, '_versionhistoryearliest') or forceReload:
+                self._versionhistoryearliest = []
+            elif getAll and len(self._versionhistoryearliest) == 500:
+                # Cause a reload, or at least make the loop run
+                thisHistoryDone = False
+                skip = True
+            else:
+                thisHistoryDone = True
+        elif not hasattr(self, '_versionhistory') or forceReload:
+            self._versionhistory = []
+        elif getAll and len(self._versionhistory) == 500:
+            # Cause a reload, or at least make the loop run
+            thisHistoryDone = False
+            skip = True
+        else:
+            thisHistoryDone = True
+
+        while not thisHistoryDone:
+            path = site.family.version_history_address(self.site().language(), self.urlname())
+
+            if reverseOrder:
+                if len(self._versionhistoryearliest) >= 500:
+                    path += '&dir=prev'
+                else:
+                    path += '&go=first'
+
+            if startFromPage:
+                path += '&offset=' + startFromPage
+
+            # this loop will run until the page could be retrieved
+            # Try to retrieve the page until it was successfully loaded (just in case
+            # the server is down or overloaded)
+            # wait for retry_idle_time minutes (growing!) between retries.
+            retry_idle_time = 1
+
+            # The principle being applied here is the same idea from the catlib
+            while True:
+                try:
+                    if startFromPage:
+                        output(u'Continuing to get version history of %s' % self.title())
+                    else:
+                        output(u'Getting version history of %s' % self.title())
+
+                    txt = site.getUrl(path)
+                except:
+                    # We assume that the server is down. Wait some time, then try again.
+                    raise
+                    print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (self.title(), retry_idle_time)
+                    time.sleep(retry_idle_time * 60)
+                    # Next time wait longer, but not longer than half an hour
+                    if retry_idle_time < 32:
+                        retry_idle_time *= 2
+                        continue
+                break
+
+            # save a copy of the text
+            self_txt = txt
+
+            if reverseOrder:
+                # If we are getting all of the page history...
+                if getAll:
+                    if len(self._versionhistoryearliest) == 0:
+                        matchObj = RLinkToNextPage.search(self_txt)
+                        if matchObj:
+                            startFromPage = matchObj.group(1)
+                        else:
+                            thisHistoryDone = True
+
+                        edits = editR.findall(self_txt)
+                        edits.reverse()
+                        for edit in edits:
+                            self._versionhistoryearliest.append(edit)
+                        if len(edits) < 500:
+                            thisHistoryDone = True
+                    else:
+                        if not skip:
+                            edits = editR.findall(self_txt)
+                            edits.reverse()
+                            for edit in edits:
+                                self._versionhistoryearliest.append(edit)
+                            if len(edits) < 500:
+                                thisHistoryDone = True
+
+                            matchObj = RLinkToNextPage.search(self_txt)
+                            if matchObj:
+                                startFromPage = matchObj.group(1)
+                            else:
+                                thisHistoryDone = True
+
+                        else:
+                            # Skip the first page only,
+                            skip = False
+
+                            matchObj = RLinkToNextPage.search(self_txt)
+                            if matchObj:
+                                startFromPage = matchObj.group(1)
+                            else:
+                                thisHistoryDone = True
+                else:
+                    # If we are not getting all, we stop on the first page.
+                    for edit in editR.findall(self_txt):
+                        self._versionhistoryearliest.append(edit)
+                    self._versionhistoryearliest.reverse()
+
+                    thisHistoryDone = True
+            else:
+                # If we are getting all of the page history...
+                if getAll:
+                    if len(self._versionhistory) == 0:
+                        matchObj = RLinkToNextPage.search(self_txt)
+                        if matchObj:
+                            startFromPage = matchObj.group(1)
+                        else:
+                            thisHistoryDone = True
+
+                        edits = editR.findall(self_txt)
+                        for edit in edits:
+                            self._versionhistory.append(edit)
+                        if len(edits) < 500:
+                            thisHistoryDone = True
+                    else:
+                        if not skip:
+                            edits = editR.findall(self_txt)
+                            for edit in edits:
+                                self._versionhistory.append(edit)
+                            if len(edits) < 500:
+                                thisHistoryDone = True
+
+                            matchObj = RLinkToNextPage.findall(self_txt)
+                            if len(matchObj) >= 2:
+                                startFromPage = matchObj[1]
+                            else:
+                                thisHistoryDone = True
+                        else:
+                            # Skip the first page only,
+                            skip = False
+
+                            matchObj = RLinkToNextPage.search(self_txt)
+                            if matchObj:
+                                startFromPage = matchObj.group(1)
+                            else:
+                                thisHistoryDone = True
+                else:
+                    # If we are not getting all, we stop on the first page.
+                    for edit in editR.findall(self_txt):
+                        self._versionhistory.append(edit)
+
+                    thisHistoryDone = True
+
+        if reverseOrder:
+            # Return only 500 edits, even if the version history is extensive
+            if len(self._versionhistoryearliest) > 500 and not getAll:
+                return self._versionhistoryearliest[0:500]
+            return self._versionhistoryearliest
+
+        # Return only 500 edits, even if the version history is extensive
+        if len(self._versionhistory) > 500 and not getAll:
+            return self._versionhistory[0:500]
+        return self._versionhistory
+            
+    def getVersionHistoryTable(self, forceReload = False, reverseOrder = False, getAll = False):
         """
         Returns the version history as a wiki table.
         """
         result = '{| border="1"\n'
         result += '! date/time || username || edit summary\n'
-        for time, username, summary in self.getVersionHistory(forceReload = forceReload):
+        for time, username, summary in self.getVersionHistory(forceReload = forceReload, reverseOrder = reverseOrder, getAll = getAll):
             result += '|----\n'
             result += '| %s || %s || <nowiki>%s</nowiki>\n' % (time, username, summary)
         result += '|}\n'
