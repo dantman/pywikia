@@ -367,6 +367,15 @@ class Subject(object):
                         elif not globalvar.followredirect:
                             print "NOTE: not following redirects."
                         else:
+                            if globalvar.same=='wiktionary':
+                                # In this case only follow the redirect if we would have
+                                # followed an interwiki to that same page
+                                if pl3.title().lower()!=self.inpl.title().lower():
+                                    print "NOTE: Ignoring %s for %s in wiktionary mode"% (pl3, self.inpl)
+                                    continue
+                                elif pl3.title() != self.inpl.title() and self.inpl.site().nocapitalize and pl3.site().nocapitalize:
+                                    print "NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized."% (pl3, self.inpl)
+                                    continue
                             if self.conditionalAdd(pl3, counter, pl):
                                 if globalvar.shownew:
                                     wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.aslink(), pl.aslink(forceInterwiki = True), pl3.aslink(forceInterwiki = True)))
