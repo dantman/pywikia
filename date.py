@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -536,6 +536,7 @@ formats = {
         'mi' :      dh_simpleInt,
         'mk' :      dh_simpleInt,
         'ms' :      dh_simpleInt,
+        'nap':      dh_simpleInt,
         'nds':      dh_simpleInt,
         'nl' :      dh_simpleInt,
         'nn' :      dh_simpleInt,
@@ -592,6 +593,7 @@ formats = {
         'la' :      lambda v: dh_noConv( v, u'%d a.C.n.' ),
         'lb' :      lambda v: dh_noConv( v, u'-%d' ),
         'ms' :      lambda v: dh_noConv( v, u'%d SM' ),
+        'nap':      lambda v: dh_noConv( v, u'%d AC' ),
         'nds':      lambda v: dh_noConv( v, u'%d v. Chr.' ),
         'nl' :      lambda v: dh_noConv( v, u'%d v. Chr.' ),
         'nn' :      lambda v: dh_noConv( v, u'-%d' ),
