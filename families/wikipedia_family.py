@@ -106,14 +106,10 @@ class Family(family.Family):
             'he': ['en'],
             'hu': ['en'],
             'lb': self.alphabetic,
-            'nn': self.alphabetic,
+            'nn': ['no','nb','sv','da'] + self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
             'vi': self.alphabetic_revised
-            }
-
-        self.interwiki_putfirst_doubled = {
-            'nn': [7, ['no','nb','sv','da']]
             }
 
         self.obsolete = {'dk':'da',

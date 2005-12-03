@@ -197,9 +197,6 @@ class LinkMustBeRemoved(wikipedia.Error):
     preferences or because the user chose not to change the page.
     """
 
-class NynorskException(wikipedia.Error):
-    """Do not do interwiki on the Nynorsk Wikipedia."""
-
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
@@ -1276,10 +1273,6 @@ if __name__ == "__main__":
                     globalvar.showtextlink += globalvar.showtextlinkadd
                 else:
                     inname.append(arg)
-
-        if config.usernames.has_key('wikipedia') and config.usernames['wikipedia'].has_key('nn'):
-            print "Bot is not to be used at the Nynorsk Wikipedia."
-            raise NynorskException
         
         # ensure that we don't try to change main page
         try:
