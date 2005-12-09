@@ -71,7 +71,7 @@ To complete a move of a page, one can use:
 __version__='$Id$'
 #
 # Standard library imports
-import re, sys
+import re, sys, codecs
 
 # Application specific imports
 import wikipedia, pagegenerators
@@ -137,58 +137,58 @@ link_trail = {
 ignore_title = {
     'wikipedia': {
         'nl': [
-            'Wikipedia:Onderhoudspagina',
-            'Wikipedia:Doorverwijspagina',
-            'Wikipedia:Lijst van alle tweeletter-combinaties',
-            'Gebruiker:Hooft/robot/Interwiki/lijst van problemen',
-            'Wikipedia:Woorden die niet als zoekterm gebruikt kunnen worden',
-            'Gebruiker:Puckly/Bijdragen',
-            'Gebruiker:Waerth/bijdragen',
-            "Wikipedia:Project aanmelding bij startpagina's",
-            'Gebruiker:Gustar/aantekeningen denotatie annex connotatie',
-            'Wikipedia:Protection log',
-            'Gebruiker:Pven/Romeinse cijfers',
-            'Categorie:Doorverwijspagina',
-            'Wikipedia:Ongelijke redirects',
-            'Gebruiker:Cars en travel',
-            'Wikipedia:Archief*',
-            'Overleg Wikipedia:Logboek*',
-            'Gebruiker:Rex/Gestarte artikelen',
-            'Gebruiker:Ucucha/Doorverwijspagina',
-            'Gebruiker:CyeZ/Klad2',
-            'Wikipedia:De kroeg/Archief.+',
-            'Overleg gebruiker:*Archief*',
+            u'Wikipedia:Onderhoudspagina',
+            u'Wikipedia:Doorverwijspagina',
+            u'Wikipedia:Lijst van alle tweeletter-combinaties',
+            u'Gebruiker:Hooft/robot/Interwiki/lijst van problemen',
+            u'Wikipedia:Woorden die niet als zoekterm gebruikt kunnen worden',
+            u'Gebruiker:Puckly/Bijdragen',
+            u'Gebruiker:Waerth/bijdragen',
+            u"Wikipedia:Project aanmelding bij startpagina's",
+            u'Gebruiker:Gustar/aantekeningen denotatie annex connotatie',
+            u'Wikipedia:Protection log',
+            u'Gebruiker:Pven/Romeinse cijfers',
+            u'Categorie:Doorverwijspagina',
+            u'Wikipedia:Ongelijke redirects',
+            u'Gebruiker:Cars en travel',
+            u'Wikipedia:Archief*',
+            u'Overleg Wikipedia:Logboek*',
+            u'Gebruiker:Rex/Gestarte artikelen',
+            u'Gebruiker:Ucucha/Doorverwijspagina',
+            u'Gebruiker:CyeZ/Klad2',
+            u'Wikipedia:De kroeg/Archief.+',
+            u'Overleg gebruiker:*Archief*',
          ],
          'en': [
-            'Wikipedia:Links to disambiguating pages',
-            'Wikipedia:Disambiguation pages with links',
-            'Wikipedia:Multiple-place names \([A-Z]\)',
-            'Wikipedia:Non-unique personal name',
-            "User:Jerzy/Disambiguation Pages i've Editted",
-            'User:Gareth Owen/inprogress',
-            'TLAs from [A-Z][A-Z][A-Z] to [A-Z][A-Z][A-Z]',
-            'List of all two-letter combinations',
-            'User:Daniel Quinlan/redirects.+',
-            'User:Oliver Pereira/stuff',
-            'Wikipedia:French Wikipedia language links',
-            'Wikipedia:Polish language links',
-            'Wikipedia:Undisambiguated abbreviations/.+',
-            'List of acronyms and initialisms',
-            'Wikipedia:Usemod article histories',
-            'User:Pizza Puzzle/stuff',
-            'List of generic names of political parties',
-            'Talk:List of initialisms/marked',
-            'Talk:List of initialisms/sorted',
-            'Talk:Programming language',
-            'Talk:SAMPA/To do',
-            "Wikipedia:Outline of Roget's Thesaurus",
-            'User:Wik/Articles',
-            'User:Egil/Sandbox',
-            'Wikipedia talk:Make only links relevant to the context',
-            'Wikipedia:Common words, searching for which is not possible'
+            u'Wikipedia:Links to disambiguating pages',
+            u'Wikipedia:Disambiguation pages with links',
+            u'Wikipedia:Multiple-place names \([A-Z]\)',
+            u'Wikipedia:Non-unique personal name',
+            u"User:Jerzy/Disambiguation Pages i've Editted",
+            u'User:Gareth Owen/inprogress',
+            u'TLAs from [A-Z][A-Z][A-Z] to [A-Z][A-Z][A-Z]',
+            u'List of all two-letter combinations',
+            u'User:Daniel Quinlan/redirects.+',
+            u'User:Oliver Pereira/stuff',
+            u'Wikipedia:French Wikipedia language links',
+            u'Wikipedia:Polish language links',
+            u'Wikipedia:Undisambiguated abbreviations/.+',
+            u'List of acronyms and initialisms',
+            u'Wikipedia:Usemod article histories',
+            u'User:Pizza Puzzle/stuff',
+            u'List of generic names of political parties',
+            u'Talk:List of initialisms/marked',
+            u'Talk:List of initialisms/sorted',
+            u'Talk:Programming language',
+            u'Talk:SAMPA/To do',
+            u"Wikipedia:Outline of Roget's Thesaurus",
+            u'User:Wik/Articles',
+            u'User:Egil/Sandbox',
+            u'Wikipedia talk:Make only links relevant to the context',
+            u'Wikipedia:Common words, searching for which is not possible'
         ],
         'da': [
-            'Wikipedia:Links til sider med flertydige titler'
+            u'Wikipedia:Links til sider med flertydige titler'
         ],
         'fr': [
             u'Wikipédia:Liens aux pages d\'homonymie',
@@ -287,7 +287,7 @@ class PrimaryIgnoreManager(object):
         filename = 'disambiguations/' + self.disambPage.urlname() + '.txt'
         try:
             # The file is stored in the disambiguation/ subdir. Create if necessary.
-            f = open(self.makepath(filename), 'r')
+            f = codecs.open(self.makepath(filename), 'r', 'utf-8')
             for line in f.readlines():
                 # remove trailing newlines and carriage returns
                 while line[-1] in ['\n', '\r']:
@@ -309,7 +309,7 @@ class PrimaryIgnoreManager(object):
             try:
                 # Open file for appending. If none exists yet, create a new one.
                 # The file is stored in the disambiguation/ subdir. Create if necessary.
-                f = open(self.makepath(filename), 'a')
+                f = codecs.open(self.makepath(filename), 'a', 'utf-8')
                 f.write(refpl.urlname() + '\n')
                 f.close()
             except IOError:
@@ -748,7 +748,7 @@ def main():
                 else:
                     fn = arg[6:]
                 # open file and read page titles out of it
-                f = open(fn)
+                f = codecs.open(fn, 'r', 'utf-8')
                 for line in f.readlines():
                     if line != '\n':
                         page_list.append(line)
