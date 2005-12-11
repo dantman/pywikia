@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 __version__='$Id$'
@@ -607,7 +607,7 @@ class Family:
             'sq'  :       [u'kthjellim'],
             'sr'  :       [u'вишезначна одредница'],
             'su'  :       [u'disambig'],
-            'sv'  :       [u'betydelselista', u'disambig', u'gaffel', u'efternamn'],
+            'sv'  :       [u'betydelselista', u'disambig', u'gaffel', u'efternamn', 'gren'],
             'th'  :       [u'แก้กำกวม'],
             'tl'  :       [u'paglilinaw'],
             'tr'  :       [u'anlam ayrım'],
