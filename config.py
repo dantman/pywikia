@@ -58,6 +58,9 @@ for filename in os.listdir('families'):
 # windows, and iso-8859-1 on other systems
 console_encoding = None
 
+# The encoding in which textfiles are stored, which contain lists of page titles.
+textfile_encoding = 'utf-8'
+
 # tkinter isn't yet ready
 userinterface = 'terminal'
 
