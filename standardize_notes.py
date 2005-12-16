@@ -40,13 +40,24 @@ NOTE: Only use either -sql or -file or -page, but don't mix them.
 #
 __version__ = '$Id$'
 #
+# 2005-07-15: Find name of section containing citations: doFindRefSection(). (SEWilco)
+# 2005-07-15: Obey robots.txt restrictions. (SEWilco)
+# 2005-07-15: Build list of all sections which may contain citations: doFindAllCitationSections(). (SEWilco)
+#
 
 from __future__ import generators
-import sys, re, random
-import socket, urllib2
+import subprocess, sys, re, random
+import socket, urllib, robotparser
 import wikipedia, pagegenerators, config
 
 from datetime import date
+
+# httpcache is optional
+have_httpcache = True
+try:
+    from httpcache import HTTPCache
+except ImportError:
+    have_httpcache = False
 
 # Summary messages in different languages
 msg = {
@@ -65,30 +76,59 @@ fixes = {
         'regex': True,
         # We don't want to mess up pages which discuss HTML tags, so we skip
         # all pages which contain nowiki tags.
-        'exceptions':  ['<nowiki>'],
+        'exceptions':  ['<nowiki>[^<]{3,}</nowiki>'],
         'msg': {
-               'en':u'Robot: converting/fixing footnotes',
+               'en':u'Robot: fixing/standardizing footnotes',
               },
         'replacements': [
             # Everything case-insensitive (?i)
             # These translate variations of footnote templates to ref|note format.
-            (r'(?i){{an\|(.*?)}}':              r"{{ref|\1}}"),
-            (r'(?i){{anb\|(.*?)}}':             r"{{note|\1}}"),
-            (r'(?i){{endnote\|(.*?)}}':         r"{{note|\1}}"),
-            (r'(?i){{fn\|(.*?)}}':              r"{{ref|fn\1}}"),
-            (r'(?i){{fnb\|(.*?)}}':             r"{{note|fn\1}}"),
-            r'(?i){{mn\|(.*?)\|(.*?)}}':              r"{{ref|mn\1_\2}}"),
-            r'(?i){{mnb\|(.*?)\|(.*?)}}':             r"{{note|mn\1_\2}}"),
+            (r'(?i){{an\|(.*?)}}',              r"{{ref|\1}}"),
+            (r'(?i){{anb\|(.*?)}}',             r"{{note|\1}}"),
+            (r'(?i){{endnote\|(.*?)}}',         r"{{note|\1}}"),
+            (r'(?i){{fn\|(.*?)}}',              r"{{ref|fn\1}}"),
+            (r'(?i){{fnb\|(.*?)}}',             r"{{note|fn\1}}"),
+            (r'(?i){{namedref\|(.*?)\|.*?}}',             r"{{ref|fn\1}}"),
+            (r'(?i){{namednote\|(.*?)\|.*?}}',             r"{{note|fn\1}}"),
+            # subst: fn and fnb
+            (r'(?i)<sup id=".*?">[[][[]#fn(.*?)[|][0-9a-z]*[]][]]</sup>',              r"{{ref|fn\1}}"),
+            (r'(?i)<cite id="fn_(.*?)">[[][[]#fn.*?[]][]]</cite>',             r"{{note|fn_\1}}"),
+            (r'(?i){{mn\|(.*?)\|(.*?)}}',              r"{{ref|mn\1_\2}}"),
+            (r'(?i){{mnb\|(.*?)\|(.*?)}}',             r"{{note|mn\1_\2}}"),
             # a header where only spaces are in the same line
-            r'(?i)([\r\n]) *<h1> *([^<]+?) *</h1> *([\r\n])':  r"\1= \2 =\3"),
-            r'(?i)([\r\n]) *<h2> *([^<]+?) *</h2> *([\r\n])':  r"\1== \2 ==\3"),
-            r'(?i)([\r\n]) *<h3> *([^<]+?) *</h3> *([\r\n])':  r"\1=== \2 ===\3"),
-            r'(?i)([\r\n]) *<h4> *([^<]+?) *</h4> *([\r\n])':  r"\1==== \2 ====\3"),
-            r'(?i)([\r\n]) *<h5> *([^<]+?) *</h5> *([\r\n])':  r"\1===== \2 =====\3"),
-            r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])':  r"\1====== \2 ======\3"),
+            (r'(?i)([\r\n]) *<h1> *([^<]+?) *</h1> *([\r\n])',  r"\1= \2 =\3"),
+            (r'(?i)([\r\n]) *<h2> *([^<]+?) *</h2> *([\r\n])',  r"\1== \2 ==\3"),
+            (r'(?i)([\r\n]) *<h3> *([^<]+?) *</h3> *([\r\n])',  r"\1=== \2 ===\3"),
+            (r'(?i)([\r\n]) *<h4> *([^<]+?) *</h4> *([\r\n])',  r"\1==== \2 ====\3"),
+            (r'(?i)([\r\n]) *<h5> *([^<]+?) *</h5> *([\r\n])',  r"\1===== \2 =====\3"),
+            (r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])',  r"\1====== \2 ======\3"),
+            # A bare http URL; does not recognize all formats
+            #(r'(?i) http://([^ ]*)',              r" [http://\1]"),
         ]
     }
 }
+
+newssites = [
+    # news sites for which to generate 'news reference' citations, the org name, and prefix to strip
+    ( 'books.guardian.co.uk', 'The Guardian', 'Guardian Unlimited : The Guardian : ' ),
+    ( 'edition.cnn.com', 'CNN', 'CNN.com - ' ),
+    ( 'news.bbc.co.uk', 'BBC', 'BBC NEWS : ' ),
+    ( 'news.scotsman.com', 'The Scotsman', 'Scotsman.com News - ' ),
+    ( 'observer.guardian.co.uk', 'The Guardian', 'The Observer  : ' ),
+    ( 'politics.guardian.co.uk', 'The Guardian', 'Guardian Unlimited Politics : ' ),
+    ( 'thescotsman.scotsman.com', 'The Scotsman', 'The Scotsman - ' ),
+    ( 'today.reuters.com', 'Reuters', 'Latest News and Financial Information : ' ),
+    ( 'today.reuters.co.uk', 'Reuters', 'Latest News and Financial Information : ' ),
+    ( 'www.boston.com', 'The Boston Globe', 'Boston.com / ' ),
+    ( 'www.cnn.com', 'CNN', 'CNN.com - ' ),
+    ( 'www.csmonitor.com', 'Christian Science Monitor', '' ),
+    ( 'www.gnn.com', 'Government News Network', 'GNN - ' ),
+    ( 'www.guardian.co.uk', 'The Guardian', 'Guardian Unlimited : The Guardian : ' ),
+    ( 'www.socialistworker.co.uk', 'Socialist Worker', '' ),
+    ( 'www.spectator.org', 'The American Spectator', '' ),
+    ( 'www.telegraph.co.uk', 'The Daily Telegraph', 'Telegraph newspaper online - ' ),
+    ( 'www.timesonline.co.uk', 'The Times', 'World news from The Times and the Sunday Times - ' ),
+]
 
 class ReplacePageGenerator:
     """
@@ -279,9 +319,15 @@ class ReplaceRobot:
             else:
                 new_text = new_text.replace(old, new)
 
-        # Read existing References section contents into references list
-        wikipedia.output( u"Reading existing References section" )
-        self.doReadReferencesSection( new_text )
+        # Find name of Notes section.
+        refsectionname = self.doFindRefSection( new_text )
+        # Get list of all sections which may contain citations.
+        refsectionlist = self.doFindAllCitationSections( new_text, refsectionname )
+        # Read existing Notes section contents into references list
+        wikipedia.output( u"Reading existing Notes section" )
+        self.doReadReferencesSection( new_text, refsectionname )
+        while self.references and self.references[len(self.references)-1] == u'\n':
+                del self.references[len(self.references)-1]	# delete trailing empty lines
         # Convert any external links to footnote references
         wikipedia.output( u"Converting external links" )
         new_text = self.doConvertExternalLinks( new_text )
@@ -290,13 +336,13 @@ class ReplaceRobot:
         (duplicatefound, self.refusage) = self.doBuildSequenceListOfReferences( new_text )
         # Rewrite references, including dealing with duplicates.
         wikipedia.output( u"Rewriting references" )
-        new_text = self.doRewriteReferences( new_text, self.refusage )
-        # Reorder References to match sequence of ordered list
+        new_text = self.doRewriteReferences( new_text, self.refusage, refsectionname )
+        # Reorder Notes to match sequence of ordered list
         wikipedia.output( u"Collating references" )
         self.references = self.doReorderReferences( self.references, self.refusage)
-        # Rebuild References section
+        # Rebuild Notes section
         wikipedia.output( u"Rebuilding References section" )
-        new_text = self.doUpdateReferencesSection( new_text, self.refusage )
+        new_text = self.doUpdateReferencesSection( new_text, self.refusage, refsectionname )
         return new_text
         
     def doConvertExternalLinks(self, original_text):
@@ -309,11 +355,11 @@ class ReplaceRobot:
         for text_line in original_text.splitlines(True):  # Scan all text line by line
             # Check for protected sections
             m = re.search("== *(?P<sectionname>[^\]\|=]*) *==", text_line)
-            # TODO: support subheadings within References section
-            # TODO: support References in alphabetic order
-            # TODO: support References in other orders
+            # TODO: support subheadings within Notes section
+            # TODO: support Notes in alphabetic order
+            # TODO: support Notes in other orders
             if m:	# if in a section, check if should skip this section
-                if m.group('sectionname').lower().strip() in [ 'external link', 'external links', 'links', 'reference', 'references', 'external links and references', 'notes' ]:
+                if m.group('sectionname').lower().strip() in [ 'external link', 'external links', 'links', 'reference', 'references', 'external links and references', 'notes', 'notes and references' ]:
                     skipsection = True		# skipsection left True so no further links converted
             if skipsection:
                 new_text = new_text + text_line		# skip section, so retain text.
@@ -333,7 +379,9 @@ class ReplaceRobot:
                 # Regular expression to look for external link [linkname linktext] - linktext is optional.
                 # Also accepts erroneous pipe symbol as separator.
                 # Accepts wikilinks within <linktext>
-                Rextlink = re.compile(r'[^\[]\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\][^\]]')
+                #Rextlink = re.compile(r'[^\[]\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\][^\]]')
+                #Rextlink = re.compile(r'\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
+                Rextlink = re.compile(r'(?i)\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
                 # TODO: compiling the regex each time might be inefficient
                 text_lineR = re.compile(Rextlink)
                 MOextlink = text_lineR.search(text_line)
@@ -345,9 +393,9 @@ class ReplaceRobot:
                     self.references.append( reftext )	# append new entry to References
                     if extlink_linktext:
                         # If there was text as part of link, reinsert text before footnote.
-                        text_line=text_line[:MOextlink.start(0)+1] + '%s{{ref|%s}}' % (extlink_linktext, refname) + text_line[MOextlink.end(0):]
+                        text_line=text_line[:MOextlink.start(0)] + '%s{{ref|%s}}' % (extlink_linktext, refname) + text_line[MOextlink.end(0):]
                     else:
-                        text_line=text_line[:MOextlink.start(0)+1] + '{{ref|%s}}' % refname + text_line[MOextlink.end(0)-1:]
+                        text_line=text_line[:MOextlink.start(0)] + '{{ref|%s}}' % refname + text_line[MOextlink.end(0):]
                     MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
                 # Search for {{doi}}
                 Rdoi = re.compile(r'(?i){{doi\|(?P<doilink>[^}|]*)}}')
@@ -366,8 +414,47 @@ class ReplaceRobot:
         if new_text == '':
             new_text = original_text	# If somehow no new text, return original text
         return new_text
-        
-    def doRewriteReferences(self, original_text, refusage):
+
+    def doFindRefSection(self, original_text):
+        """
+        Returns name of section which contains citations.
+        Finds first section with reference note template.
+        """
+        refsectionname = ''
+        sectionname = ''
+        for text_line in original_text.splitlines(True):  # Scan all text line by line
+            if refsectionname == '':	# if ref section not found
+                # Check if line has a section name
+                m = re.search( r'==+(?P<sectionname>[^=]+)==', text_line )
+                if m:	# if in a section, remember section name
+                    sectionname = m.group('sectionname').strip()
+                    wikipedia.output( u'Section: %s' % sectionname )
+                else:	# else not a section name so look for reference
+                    n = re.search( r'(i?){{(note|ibid)[|]', text_line )
+                    if n:	# if reference found
+                        refsectionname = sectionname	# found reference section
+                        wikipedia.output( u'Ref section: %s' % refsectionname )
+                        break	# stop looking
+        return refsectionname
+
+    def doFindAllCitationSections(self, original_text, refsectionname):
+
+        """
+        Returns list of sections which may contain citations.
+        """
+        refsectionlist = [ ( refsectionname) ]
+        sectionname = ''
+        for text_line in original_text.splitlines(True):  # Scan all text line by line
+            # Check if line has a section name
+            m = re.search( "==[ ]*(?P<sectionname>[^=]+)[ ]*==", text_line )
+            if m:	# if in a section, remember section name
+                sectionname = m.group('sectionname').strip()
+                if sectionname.lower().strip() in [ 'reference', 'references', 'notes', 'citation', 'citations', 'bibliography', 'source', 'sources', 'notes and references', 'footnotes' ]:
+                    if sectionname not in refsectionlist:	# if not already in list, add to list.
+                        refsectionlist.extend( sectionname )
+        return refsectionlist
+
+    def doRewriteReferences(self, original_text, refusage, refsectionname):
         """
         Returns the text which is generated by rewriting references, including duplicate refs.
         """
@@ -375,10 +462,18 @@ class ReplaceRobot:
         skipsection = False
         for text_line in original_text.splitlines(True):  # Scan all text line by line
             # Check for protected sections
-            m = re.search("== *(?P<sectionname>[^\]\|=]*) *==", text_line)
+            m = re.search( r'==+(?P<sectionname>[^=]+)==', text_line )
             if m:	# if in a section, check if should skip this section
-                if m.group('sectionname').lower().strip() in [ 'external link', 'external links', 'links', 'reference', 'references', 'external links and references', 'notes' ]:
-                    skipsection = True		# skipsection left True so no further links converted
+                if refsectionname != '':	# if a certain section name has been identified
+                    m_section = m.group('sectionname')
+                    wikipedia.output( u'Looking for "%s": "%s"' % (refsectionname,unicode(m_section)) )
+                    if unicode(m_section.strip()) == unicode(refsectionname):
+                        wikipedia.output( u'Found Ref section.' )
+                        skipsection = True		# skipsection left True so no further links converted
+                else:				# else grab all possible sections
+                    if m.group('sectionname').lower().strip() in [ 'external link', 'external links', 'links', 'reference', 'references', 'external links and references', 'notes', 'notes and references' ]:
+                        wikipedia.output( 'RefSection found by default names: %s' % m.group('sectionname') )
+                        skipsection = True		# skipsection left True so no further links converted
             if skipsection:
                 new_text = new_text + text_line		# skip section, so retain text.
             else:
@@ -415,66 +510,201 @@ class ReplaceRobot:
     def doGetTitleFromURL(self, extlink_linkname ):
         """
         Returns text derived from between <title>...</title> tags through a URL.
+        Obeys robots.txt restrictions.
         """
         # if no descriptive text get from web site, if not PDF
         urltitle = u''
-        if len(extlink_linkname) > 5 and extlink_linkname[-4:] != '.pdf':
+        urlfile = None
+        urlheaders = None
+        if len(extlink_linkname) > 5:
             socket.setdefaulttimeout( 20 )	# timeout in seconds
             wikipedia.get_throttle()	# throttle down to Wikipedia rate
-            try: 
-                urlobj = urllib2.urlopen( extlink_linkname )
-            except IOError, e:
-                if e and e.code:
-                    wikipedia.output( u'Error accessing URL, %s' % e.code )
-                else:
-                    wikipedia.output( u'Error accessing URL.' )
+            # Obey robots.txt restrictions
+            rp = robotparser.RobotFileParser()
+            rp.set_url( extlink_linkname )
+            try:
+                rp.read()	# read robots.txt
+            except (IOError, socket.timeout):
+                wikipedia.output( u'Error accessing URL: %s' % unicode(extlink_linkname) )
             else:
-                if urlobj is not None:
-                    wikipedia.output( u':::URL: ' + extlink_linkname )
-                    # urlinfo = urlobj.info()
-                    aline = urlobj.read()
-                    while aline and urltitle == '':
-                        titleRE = re.search("(?i)<title>(?P<HTMLtitle>[^<>]+)", aline)
-                        if titleRE:
-                            urltitle = unicode(titleRE.group('HTMLtitle'), 'utf-8')
-                            urltitle = u' '.join(urltitle.split())	# merge whitespace
-                            break	# found a title so stop looking
+                urlobj = None
+                if not rp.can_fetch( "*", extlink_linkname ):
+                    wikipedia.output( u'Robot prohibited: %s' % unicode(extlink_linkname) )
+                else:	# else access allowed
+                    try: 
+                        if have_httpcache:
+                            cache = HTTPCache( extlink_linkname )
+                            urlfile = cache.filename()	# filename of cached date
+                            urlheaders = cache.info()
                         else:
-                            aline = urlobj.read()
-                    if urltitle != '': wikipedia.output( u'title: ' + urltitle )
+                            (urlfile, urlheaders) = urllib.urlretrieve( extlink_linkname )
+                    except IOError:
+                        wikipedia.output( u'Error accessing URL. %s' % unicode(extlink_linkname) )
+                    except (socket.herror, socket.gaierror), (err, msg):
+                        wikipedia.output( u'Error %i accessing URL, %s. %s' % (err, unicode(msg), unicode(extlink_linkname)) )
+                    except socket.timeout, msg:
+                        wikipedia.output( u'Error accessing URL, %s. %s' % (unicode(msg), unicode(extlink_linkname)) )
+                    except:	# Ignore other errors
+                        pass
+                if urlfile != None:
+                    urlobj = open( urlfile )
+                    if extlink_linkname.lower().endswith('.pdf'):
+                        # If file has a PDF suffix
+                        wikipedia.output( u'PDF file.' )
+                        try:
+                            pdfinfo_out = subprocess.Popen([r"pdfinfo","/dev/stdin"], stdin=urlobj, stdout=subprocess.PIPE, shell=False).communicate()[0]
+                            for aline in pdfinfo_out.splitlines():
+                                if aline.lower().startswith('title'):
+                                    urltitle = aline.split(None)[1:]
+                                    urltitle = ' '.join(urltitle)
+                                    if urltitle != '': wikipedia.output(u'title: ' +urltitle )
+                                else:
+                                    if aline.lower().startswith('author'):
+                                        urlauthor = aline.split(None)[1:]
+                                        urlauthor = ' '.join(urlauthor)
+                                        if urlauthor != '': wikipedia.output(u'author: ' +urlauthor )
+                        except ValueError:
+                            wikipedia.output( u'pdfinfo value error.' )
+                        except OSError:
+                            wikipedia.output( u'pdfinfo OS error.' )
+                        except:	# Ignore errors
+                            wikipedia.output( u'PDF processing error.' )
+                            pass
+                        wikipedia.output( u'PDF done.' )
+                        if urlobj:
+                            urlobj.close()
+                    else:
+                        # urlinfo = urlobj.info()
+                        aline = urlobj.read()
+                        maxalines = 100
+                        while maxalines > 0 and aline and urltitle == '':
+                            maxalines -= 1	# reduce number of lines left to consider
+                            titleRE = re.search("(?i)<title>(?P<HTMLtitle>[^<>]+)", aline)
+                            if titleRE:
+                                try: 
+                                    urltitle = unicode(titleRE.group('HTMLtitle'), 'utf-8')
+                                except:
+                                    urltitle = u' '	# error, no title
+                                urltitle = u' '.join(urltitle.split())	# merge whitespace
+                                wikipedia.output( u'::::Title: %s' % urltitle )
+                                break	# found a title so stop looking
+                            else:
+                                if maxalines < 1:
+                                    wikipedia.output( u'No title in URL. %s' % unicode(extlink_linkname) )
+                        else:
+                            if urlobj != None:
+                                wikipedia.output( u'::+URL: ' + extlink_linkname )
+                                # urlinfo = urlobj.info()
+                                aline = urlobj.read()
+                                full_page = ''
+                                # while aline and urltitle == '':
+                                while aline:
+                                    full_page = full_page + aline
+                                    titleRE = re.search("(?i)<title>(?P<HTMLtitle>[^<>]+)", aline)
+                                    if titleRE:
+                                        if titleRE.group('HTMLtitle'):
+                                            urltitle = u''
+                                            try: 
+                                                urltitle = unicode(titleRE.group('HTMLtitle'), 'utf-8')
+                                                urltitle = u' '.join(urltitle.split())	# merge whitespace
+                                                wikipedia.output( u'::::Title: %s' % urltitle )
+                                            except:
+                                                aline = urlobj.read()
+                                                continue
+                                            else: 
+                                                aline = urlobj.read()
+                                                continue
+                                            break	# found a title so stop looking
+                                        else:
+                                            aline = urlobj.read()
+                                    else:
+                                        aline = urlobj.read()
+                                if urltitle != '': wikipedia.output( u'title: ' + urltitle )
+                                # Try a more advanced search
+                                ##from nltk.parser.probabilistic import *
+                                ##from nltk.tokenizer import *
+                                #from nltk.tagger import *
+                                #from nltk.tagger.brill import *
+                                #from nltk.corpus import brown
+                                ##pcfg_parser = ViterbiPCFGParser(grammar)
+                                ##text_token = Token(TEXT=full_page)
+                                ##WhitespaceTokenizer(SUBTOKENS='WORDS').tokenize(text_token)
+                                ##tree = pcfg_parser.get_parse(sent_token)
+                                ##print tree.prob()
+                                # Train tagger
+                                #train_tokens = []
+                                #for item in brown.items()[:10]: train_tokens.append(brown.read(item))
+                                #unitagger = UnigramTagger(SUBTOKENS='WORDS')
+                                #brilltemplates = ()
+                                #britaggerrules = BrillTaggerTrainer(initial_tagger=unitagger, templates=brilltemplates, trace=True, SUBTOKENS='WORDS', max_rules=200, min_score=2)
+                                #for tok in train_tokens: unitagger.train(tok)
+                                #for tok in train_tokens: britaggerrules.train(tok, max_rules=200, min_score=2)
+                                # brittaggerrul = britaggerrules.train(train_tokens, max_rules=200, min_score=2)
+                                #britaggerrul = ()
+                                #britagger = BrillTagger(initial_tagger=unitagger, rules=britaggerrul, SUBTOKENS='WORDS' )
+                                # Training completed
+                                # Examine text
+                                ##text_token = Token(TEXT=full_page)
+                                ##WhitespaceTokenizer(SUBTOKENS='WORDS').tokenize(text_token)
+                                #unitagger.tag(text_token)
+                                #britagger.tag(text_token)
+                                ### wikipedia.output( unicode(text_token) )
+                else:
+                    wikipedia.output( u'No data retrieved.' )
             socket.setdefaulttimeout( 200 )	# timeout in seconds
-        return urltitle
+            urltitle = urltitle.replace(u'|',u':')
+        return urltitle.strip()
 
     def doConvertLinkTextToReference(self, refsequence, extlink_linkname, extlink_linktext):
         """
         Returns the text which is generated by converting a link to
         a format suitable for the References section.
         """
-        now = date.today()
         refname = u'refbot.%d' % refsequence
         m = re.search("[\w]+://([\w]\.)*(?P<siteend>[\w.]+)[/\Z]", extlink_linkname)
         if m:
             refname = m.group('siteend') + u'.%d' % refsequence	# use end of site URL as reference name
-        if extlink_linktext == None or len(extlink_linktext) < 20:
+        new_text = u'# {{note|%s}} %s' % (refname, self.doConvertRefToCitation( extlink_linktext, extlink_linkname, refname ) ) + '\n'
+        return (refname, new_text)
+
+    def doConvertRefToCitation(self, extlink_linktext, extlink_linkname, refname ):
+        """
+        Returns text with a citation created from link information
+        """
+        new_text = u''
+        now = date.today()
+        if extlink_linktext == None or len(extlink_linktext.strip()) < 20:
+            wikipedia.output( u'Fetching URL: %s' % unicode(extlink_linkname) )
             urltitle = self.doGetTitleFromURL( extlink_linkname )	# try to get title from URL
+            if urltitle == None or urltitle == '':
+                urltitle = extlink_linkname	# Assume linkname for title
+            wikipedia.output( u'Title is: %s' % urltitle )
+            extlink_linktext = urltitle
             for newref in self.references:		# scan through all references
                 if extlink_linkname in newref:		# if undescribed linkname same as a previous entry
                     if urltitle:
                         extlink_linktext = urltitle + ' (See above)'
                     else:
                         extlink_linktext = extlink_linkname + ' (See above)'
+                    break	# found a matching previous linkname so stop looking
             if extlink_linktext == None or len(extlink_linktext) < 20:
-                new_text = u'# {{note|%s}} {{Web reference_simple | title=%s | URL=%s | date= %s %d | year= %s }}' % ( refname, urltitle, extlink_linkname, now.strftime('%B'), now.month, now.strftime('%Y') ) + '\n'
-            else:
-                new_text = u'# {{note|%s}} {{Web reference_simple | title=%s | URL=%s | date= %s %d | year= %s }}' % ( refname, extlink_linktext, extlink_linkname, now.strftime('%B'), now.month, now.strftime('%Y') ) + '\n'
-        else:
-            new_text = u'# {{note|%s}} {{Web reference_simple | title=%s | URL=%s | date= %s %d | year= %s }}' % ( refname, extlink_linktext, extlink_linkname, now.strftime('%B'), now.month, now.strftime('%Y') ) + '\n'
-        return (refname, new_text)
+                exlink_linktext = urltitle
+	# Look for a news web site
+        for (sitename, newscompany, stripprefix) in newssites:
+	    if refname.startswith( sitename ):
+		# If there is a prefix to strip from the title
+                if stripprefix and extlink_linktext.startswith( stripprefix ):
+		    extlink_linktext = extlink_linktext[len(stripprefix):]
+	        new_text = u'{{news reference | title=%s | url=%s | urldate=%s | org=%s }}' % ( extlink_linktext, extlink_linkname, now.isoformat(), newscompany ) + '\n'
+		break
+	else:		# else no special site found
+            new_text = u'{{Web reference | title=%s | url=%s | date=%s }}' % ( extlink_linktext, extlink_linkname, now.isoformat() ) + '\n'
+        return (new_text)
 
     def doConvertDOIToReference(self, refsequence, doi_linktext):
         """
         Returns the text which is generated by converting a DOI reference to
-        a format suitable for the References section.
+        a format suitable for the Notes section.
         """
         # TODO: look up DOI info and create full reference
         urltitle = self.doGetTitleFromURL( 'http://dx.doi.org/' + doi_linktext ) # try to get title from URL
@@ -508,37 +738,50 @@ class ReplaceRobot:
                 m = Rtext_line.search( text_line, m.end() )
         return (duplicatefound, refusage)
 
-    def doReadReferencesSection(self, original_text):
+    def doReadReferencesSection(self, original_text, refsectionname):
         """
-        Returns the text which is generated by reading the References section.
+        Returns the text which is generated by reading the Notes section.
         Also appends references to self.references.
-        Contents of all References sections will be read.
+        Contents of all Notes sections will be read.
         """
+        # TODO: support subsections within Notes
         new_text = ''		# Default is no text
         intargetsection = False
         for text_line in original_text.splitlines(True):  # Scan all text line by line
             # Check for target section
-            m = re.search("== *(?P<sectionname>[^\]\|=]*) *==", text_line)
-            if m:	# if in a section, check if References section
-                if m.group('sectionname').lower().strip() in ( 'reference', 'references', 'notes' ):
-                    intargetsection = True			# flag as being in section
-                    new_text = new_text + text_line
-                else:
-                    intargetsection = False			# flag as not being in section
+            m = re.search( r'==+(?P<sectionname>[^=]+)==', text_line )
+            if m:	# if in a section, check if Notes section
+                if refsectionname != '':	# if a certain section name has been identified
+                    m_section = m.group('sectionname')
+                    wikipedia.output( u'Looking for "%s": "%s"' % (refsectionname,m_section) )
+                    if unicode(m_section.strip()) == unicode(refsectionname):
+                        wikipedia.output( u'Read Ref section.' )
+                        intargetsection = True			# flag as being in section
+                        new_text = new_text + text_line
+                    else:
+                        intargetsection = False			# flag as not being in section
+                else:				# else grab all possible sections
+                    if m.group('sectionname').lower().strip() in ( 'reference', 'references', 'notes', 'notes and references', 'footnotes' ):
+                        intargetsection = True			# flag as being in section
+                        new_text = new_text + text_line
+                    else:
+                        intargetsection = False			# flag as not being in section
             else:
                 if intargetsection:	# if inside target section, remember this reference line
                     if text_line.strip() != '':
                         if text_line.lstrip()[0] in u'[{':	# if line starts with non-Ref WikiSyntax
                             intargetsection = False		# flag as not being in section
                         # TODO: need better way to handle special cases at end of refs
-                        if text_line.strip() == u'<!--READ ME!! PLEASE DO NOT JUST ADD NEW NOTES AT THE BOTTOM. See the instructions above on ordering. -->':	# This line ends some References sections
+                        if text_line.strip() == u'<!--READ ME!! PLEASE DO NOT JUST ADD NEW NOTES AT THE BOTTOM. See the instructions above on ordering. -->':	# This line ends some Notes sections
+                            intargetsection = False		# flag as not being in section
+                        if text_line.strip() == u'</div>':	# This line ends some Notes sections
                             intargetsection = False		# flag as not being in section
                     if intargetsection:	# if still inside target section
                         # Convert any # wiki list to *; will be converted later if a reference
                         if text_line[0] == '#':
                             text_line = '*' + text_line[1:]	# replace # with * wiki
-                        self.references.append( text_line.rstrip() + '\n' )	# Append line to references
-                        new_text = new_text + text_line
+                        self.references.append( text_line.rstrip() + u'\n' )	# Append line to references
+                        new_text = new_text + text_line.rstrip() + u'\n'
         return new_text
 
     def doReorderReferences(self, references, refusage):
@@ -547,13 +790,15 @@ class ReplaceRobot:
         Non-references are moved to top, unused references to bottom.
         """
         # TODO: add tests for duplicate references/Ibid handling.
-        newreferences = []
+        newreferences = references
         if references != [] and refusage != {}:
+            newreferences = []
             for i in range(len(references)):		# move nonrefs to top of list
                 text_line = references[i]
                 # TODO: compile search?
                 m = re.search(r'(?i)[*#][\s]*{{(?P<reftype>note)\|(?P<refname>[^}|]+?)}}', text_line)
-                if not m:	# if no ref found
+                # Special test to ignore Footnote instructions comment.
+                if text_line.startswith(u'     4) Add ') or not m:	# if no ref found
                     newreferences.append(text_line)	# add nonref to new list
                     references[i] = None
             refsort = {}
@@ -582,58 +827,79 @@ class ReplaceRobot:
             newreferences = newreferences + references		# append any unused references
         return newreferences
 
-    def doUpdateReferencesSection(self, original_text, refusage):
+    def doUpdateReferencesSection(self, original_text, refusage, refsectionname):
         """
-        Returns the text which is generated by rebuilding the References section.
-        Rewrite References section from references list.
+        Returns the text which is generated by rebuilding the Notes section.
+        Rewrite Notes section from references list.
         """
         new_text = ''		# Default is no text
         intargetsection = False
         for text_line in original_text.splitlines(True):  # Scan all text line by line
             # Check for target section
-            m = re.search("== *(?P<sectionname>[^\]\|=]*) *==", text_line)
-            if m:	# if in a section, check if References section
-                if m.group('sectionname').lower().strip() in ( 'reference', 'references', 'notes' ):
-                    intargetsection = True			# flag as being in section
-                    new_text = new_text + text_line	# copy section headline
+            m = re.search( r'==+(?P<sectionname>[^=]+)==', text_line )
+            if m:	# if in a section, check if Notes section
+                if refsectionname != '':	# if a certain section name has been identified
+                    m_section = m.group('sectionname')
+                    wikipedia.output( u'Looking for "%s": "%s"' % (refsectionname,m_section) )
+                    if unicode(m_section.strip()) == unicode(refsectionname):
+                        wikipedia.output( u'Updating Ref section.' )
+                        intargetsection = True		# flag as being in section
+                    else:
+                        intargetsection = False		# flag as not being in section
+                else:				# else grab all possible sections
+                    if m.group('sectionname').lower().strip() in ( 'reference', 'references', 'notes', 'notes and references' ):
+                        intargetsection = True		# flag as being in section
+                    else:
+                        intargetsection = False		# flag as not being in section
+                if intargetsection:
+                    new_text = new_text + text_line	# append new line to new text
                     if self.references != []:
                         for newref in self.references:		# scan through all references
-                            if newref is not None:
-                                new_text = new_text + newref    # insert references
+                            if newref != None:
+                                new_text = new_text + newref.rstrip() + u'\n'    # insert references
+                        new_text = new_text + u'\n'    # one trailing blank line
                         self.references = []			# empty references
                 else:
-                    intargetsection = False			# flag as not being in section
-                    new_text = new_text + text_line	# append new line to new text
+                    new_text = new_text + text_line	# copy section headline
             else:
                 if intargetsection:
                     if text_line.strip() != '':
                         if text_line.lstrip()[0] in u'[{':	# if line starts with non-Ref WikiSyntax
                             intargetsection = False		# flag as not being in section
                         # TODO: need better way to handle special cases at end of refs
-                        if text_line.strip() == u'<!--READ ME!! PLEASE DO NOT JUST ADD NEW NOTES AT THE BOTTOM. See the instructions above on ordering. -->':	# This line ends some References sections
+                        if text_line.strip() == u'<!--READ ME!! PLEASE DO NOT JUST ADD NEW NOTES AT THE BOTTOM. See the instructions above on ordering. -->':	# This line ends some Notes sections
                             intargetsection = False		# flag as not being in section
-                if not intargetsection:			# if not in References section, remember line
+                        if text_line.strip() == u'</div>':	# This line ends some Notes sections
+                            intargetsection = False		# flag as not being in section
+                if not intargetsection:			# if not in Notes section, remember line
                     new_text = new_text + text_line	# append new line to new text
-        # If references list not emptied, there was no References section found
+        # If references list not emptied, there was no Notes section found
         if self.references != []:			# empty references
-            # New References section needs to be created at bottom.
+            # New Notes section needs to be created at bottom.
             text_line_counter = 0		# current line
             last_text_line_counter_value = 0	# number of last line of possible text
             for text_line in original_text.splitlines(True):  # Search for last normal text line
                 text_line_counter += 1		# count this line
                 if text_line.strip() != '':
-                    if text_line.lstrip()[0].isalpha():	# if line starts with alpha
+                    if text_line.lstrip()[0].isalnum():	# if line starts with alphanumeric
                         last_text_line_counter = text_line_counter	# number of last line of possible text
+                    else:
+                        if text_line.lstrip()[0] in u'<=!|*#':	# if line starts with recognized wiki char
+                            if not text_line.startswith(u'<!--'):	# if line not start with a comment
+                                last_text_line_counter = text_line_counter	# number of last line of possible content
+            new_text = ''			# erase previous new_text
             text_line_counter = 0		# current line
             for text_line in original_text.splitlines(True):  # Search for last normal text line
                 text_line_counter += 1		# count this line
                 if last_text_line_counter == text_line_counter:	# if found insertion point
                     new_text = new_text + text_line	# append new line to new text
-                    new_text = new_text + '== References ==\n'	# set to standard name
+                    new_text = new_text + '\n== Notes ==\n'	# set to standard name
+                    new_text = new_text + u'{{subst:Footnote3text}}\n'
                     if self.references != []:
                         for newref in self.references:		# scan through all references
                             if newref is not None:
                                 new_text = new_text + newref    # insert references
+                        new_text = new_text + u'\n'    # one trailing blank line
                         self.references = []			# empty references
                 else:
                     new_text = new_text + text_line	# append new line to new text
@@ -710,9 +976,9 @@ def main():
     namespace = -1
     # Load default summary message.
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
-    # List of references in References section
+    # List of references in Notes section
     references = []
-    # Reference sequence number
+    # Notes sequence number
     refsequence = random.randrange(1000)
     # Dictionary of references used in sequence
     refusage = {}
