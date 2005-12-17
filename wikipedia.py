@@ -2378,7 +2378,7 @@ class Site(object):
         except KeyError:
             pass
         txt = '(?:'+'|'.join(redirKeywords)+')'
-        return re.compile(r'\#'+txt+':? *\[\[(.*?)(\]|\|)', re.IGNORECASE)
+        return re.compile(r'\#'+txt+'[^[]*\[\[(.*?)(\]|\|)', re.IGNORECASE)
 
     def category_namespace(self):
         return self.family.category_namespace(self.lang)
