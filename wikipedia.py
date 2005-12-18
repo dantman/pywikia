@@ -2546,7 +2546,7 @@ class Site(object):
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
-                Page(self, "Non-existing page").get(force = True, sysop = sysop)
+                Page(self, "Wikipedia:Sandbox").get(force = True, sysop = sysop)
             except Error:
                 pass
         if sysop:
