@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
@@ -159,7 +159,97 @@ fixes = {
             (r'{{([^}]+?)}(?!})',       r'{{\1}}'),      # template closed by single bracket
         ],
         'exceptions':  ['<math>'],
-    }
+    },
+    # some disambiguation stuff for de:
+    # python replace.py -fix:music -ref:Vorlage:Musikalbum
+    'music': {
+        'regex': False,
+        'msg': {
+               'de':u'Bot: korrigiere Links auf Begriffsklärungen',
+              },
+        'replacements': [
+            (u'[[CD]]', u'[[Audio-CD|CD]]'),
+            (u'[[LP]]', u'[[Langspielplatte|LP]]'),
+            (u'[[EP]]', u'[[Extended Play|EP]]'),
+            (u'[[MC]]', u'[[Musikkassette|MC]]'),
+        ]
+    },
+    # python replace.py -fix:music -ref:Vorlage:Musikalbum
+    'flags-de': {
+        'regex': True,
+        'msg': {
+               'de':u'Bot: ersetze Flaggen durch SVG-Versionen',
+              },
+        'replacements': [
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]afghanistan[_ ]2004.png'   ,            u'[[Bild:Flag of Afghanistan.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]gypt[_ ]flag[_ ]300.png',                      u'[[Bild:Flag of Egypt.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]lbania[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Albania.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]lgeria[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Algeria.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]ndorra[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Andorra.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]ngola[_ ]flag[_ ]300.png',                     u'[[Bild:Flag of Angola.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]quatorial[_ ]guinea[_ ]flag[_ ]300.png',       u'[[Bild:Flag of Equatorial Guinea.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]ntigua[_ ]and[_ ]barbuda[_ ]flag[_ ]300.png',  u'[[Bild:Flag of Antigua and Barbuda.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]rgentina[_ ]flag[_ ]large.png',                u'[[Bild:Flag of Argentina.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]rmenia[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Armenia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]zerbaijan[_ ]flag[_ ]300.png',                 u'[[Bild:Flag of Azerbaijan.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Ethiopia.png',                    u'[[Bild:Flag of Ethiopia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]ustralia[_ ]flag[_ ]300.png',                  u'[[Bild:Flag of Australia.svg'),
+
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]ahamas[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of the Bahamas.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]ahrain[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Bahrain.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]angladesh[_ ]flag[_ ]300.png',                 u'[[Bild:Flag of Bangladesh.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]arbados[_ ]flag[_ ]300.png',                   u'[[Bild:Flag of Barbados.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]elgium[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Belgium.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]elize[_ ]flag[_ ]300.png',                     u'[[Bild:Flag of Belize.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]enin[_ ]flag[_ ]300.png',                      u'[[Bild:Flag of Benin.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]hutan[_ ]flag[_ ]300.png',                     u'[[Bild:Flag of Bhutan.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]olivia[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Bolivia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]osnia[_ ]flag[_ ]300.png',                     u'[[Bild:Flag of Bosnia and Herzegovina.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]otswana[_ ]flag[_ ]300.png',                   u'[[Bild:Flag of Botswana.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]razil[_ ]flag[_ ]300.png',                     u'[[Bild:Flag of Brazil.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]runei[_ ]flag[_ ]300.png',                     u'[[Bild:Flag of Brunei.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]ulgaria[_ ]flag[_ ]300.png',                   u'[[Bild:Flag of Bulgaria.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]urkina faso[_ ]flag[_ ]300.png',               u'[[Bild:Flag of Burkina Faso.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]urundi[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Burundi.svg'),
+
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Cc]hile[_ ]flag[_ ]300.png',                      u'[[Bild:Flag of Chile.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Cc]hina[_ ]flag[_ ]300.png',                      u'[[Bild:Flag of the People\'s Republic of China.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Cc]ook[_ ]islands[_ ]flag[_ ]300.png',            u'[[Bild:Flag of the Cook Islands.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Cc]osta[_ ]rica[_ ]flag[_ ]300.png',              u'[[Bild:Flag of Costa Rica.svg'),
+
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Denmark.png',                     u'[[Bild:Flag of Denmark.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]ermany[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Germany.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Dd]ominica[_ ]flag[_ ]300.png',                   u'[[Bild:Flag of Dominica.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Dd]ominican[_ ]republic[_ ]flag[_ ]300.png'    ,  u'[[Bild:Flag of the Dominican Republic.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Dd]jibouti[_ ]flag[_ ]300.png',                   u'[[Bild:Flag of Djibouti.svg'),
+
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]cuador[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Ecuador.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]l[_ ]salvador[_ ]flag[_ ]300.png',             u'[[Bild:Flag of El Salvador.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Cote[_ ]d\'Ivoire.png',           u'[[Bild:Flag of Cote d\'Ivoire.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]ritrea[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Eritrea.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Estonia.png',                     u'[[Bild:Flag of Estonia.svg'),
+
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]iji[_ ]flag[_ ]large.png',                     u'[[Bild:Flag of Fiji.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]inland[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Finland.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Finland.png',                     u'[[Bild:Flag of Finland.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]France.png',                      u'[[Bild:Flag of France.svg'),
+
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]abun[_ ]flagge[_ ]gross.png',                  u'[[Bild:Flag of Gabun.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]ambia[_ ]flagge[_ ]gross.png',                 u'[[Bild:Flag of Gambia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lagge[_ ]Georgien[_ ]neu.png',                 u'[[Bild:Flag of Georgia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]hana[_ ]flag[_ ]medium.png',                   u'[[Bild:Flag of Ghana.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]reece[_ ]flag[_ ]300.png',                     u'[[Bild:Flag of Greece.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]renada[_ ]flag[_ ]medium.png',                 u'[[Bild:Flag of Grenada.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]ouatemala[_ ]flagge[_ ]gross.png',             u'[[Bild:Flag of Gouatemala.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]uyana[_ ]flagge[_ ]gross.png',                 u'[[Bild:Flag of Guyana.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]uinea[_ ]flagge[_ ]gross.png',                 u'[[Bild:Flag of Guinea.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]uinea[_ ]bissau[_ ]flagge[_ ]gross.png',       u'[[Bild:Flag of Guinea Bissau.svg'),
+            
+        ]
+    },
+    
+    
+    
 }
 
 class XmlDumpReplacePageGenerator:
