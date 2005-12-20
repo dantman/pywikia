@@ -136,29 +136,35 @@ link_trail = {
 
 ignore_title = {
     'wikipedia': {
-        'nl': [
-            u'Wikipedia:Onderhoudspagina',
-            u'Wikipedia:Doorverwijspagina',
-            u'Wikipedia:Lijst van alle tweeletter-combinaties',
-            u'Gebruiker:Hooft/robot/Interwiki/lijst van problemen',
-            u'Wikipedia:Woorden die niet als zoekterm gebruikt kunnen worden',
-            u'Gebruiker:Puckly/Bijdragen',
-            u'Gebruiker:Waerth/bijdragen',
-            u"Wikipedia:Project aanmelding bij startpagina's",
-            u'Gebruiker:Gustar/aantekeningen denotatie annex connotatie',
-            u'Wikipedia:Protection log',
-            u'Gebruiker:Pven/Romeinse cijfers',
-            u'Categorie:Doorverwijspagina',
-            u'Wikipedia:Ongelijke redirects',
-            u'Gebruiker:Cars en travel',
-            u'Wikipedia:Archief*',
-            u'Overleg Wikipedia:Logboek*',
-            u'Gebruiker:Rex/Gestarte artikelen',
-            u'Gebruiker:Ucucha/Doorverwijspagina',
-            u'Gebruiker:CyeZ/Klad2',
-            u'Wikipedia:De kroeg/Archief.+',
-            u'Overleg gebruiker:*Archief*',
-         ],
+        'da': [
+            u'Wikipedia:Links til sider med flertydige titler'
+        ],
+        'de': [
+            u'100 Wörter des 21. Jahrhunderts',
+            u'Abkürzungen/[A-Z]',
+            u'Benutzer:Achim Raschka/Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
+            u'Benutzer:Achim Raschka/Liste aller 2-Buchstaben-Kombinationen',
+            u'Benutzer:Katharina/Begriffsklärungen',
+            u'Benutzer:Noisper/Dingliste/[A-Z]',
+            u'Benutzer:SirJective/Klammerzusatz',
+            u'Benutzer:Tsor/Begriffsklärungen',
+            u'Benutzer:Zwobot/Probleme',
+            u'Benutzer Diskussion:.+',
+            u'GISLexikon \([A-Z]\)',
+            u'Lehnwort',
+            u'Liste aller 2-Buchstaben-Kombinationen',
+            u'Wikipedia:Archiv:.+',
+            u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
+            u'Wikipedia:Begriffsklärung.*',
+            u'Wikipedia:Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
+            u'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
+            u'Wikipedia:Kurze Artikel',
+            u'Wikipedia:Liste mathematischer Themen/BKS',
+            u'Wikipedia:Liste mathematischer Themen/Redirects',
+            u'Wikipedia:Löschkandidaten/.+',
+            u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
+            u'Wikipedia:WikiProjekt Altertumswissenschaft/.+'
+        ],
          'en': [
             u'Wikipedia:Links to disambiguating pages',
             u'Wikipedia:Disambiguation pages with links',
@@ -187,9 +193,6 @@ ignore_title = {
             u'Wikipedia talk:Make only links relevant to the context',
             u'Wikipedia:Common words, searching for which is not possible'
         ],
-        'da': [
-            u'Wikipedia:Links til sider med flertydige titler'
-        ],
         'fr': [
             u'Wikipédia:Liens aux pages d\'homonymie',
             u'Wikipédia:Homonymie',
@@ -200,32 +203,32 @@ ignore_title = {
             u'Sigles de trois lettres de [A-Z]AA à [A-Z]ZZ',
             u'Wikipédia:Pages sans interwiki,.'
         ],
-        'de': [
-            u'100 Wörter des 21. Jahrhunderts',
-            u'Abkürzungen/[A-Z]',
-            u'Benutzer:Achim Raschka/Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
-            u'Benutzer:Achim Raschka/Liste aller 2-Buchstaben-Kombinationen',
-            u'Benutzer:Katharina/Begriffsklärungen',
-            u'Benutzer:Noisper/Dingliste/[A-Z]',
-            u'Benutzer:SirJective/Klammerzusatz',
-            u'Benutzer:Tsor/Begriffsklärungen',
-            u'Benutzer:Zwobot/Probleme',
-            u'Benutzer Diskussion:.+',
-            u'GISLexikon \([A-Z]\)',
-            u'Lehnwort',
-            u'Liste aller 2-Buchstaben-Kombinationen',
-            u'Wikipedia:Archiv:.+',
-            u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
-            u'Wikipedia:Begriffsklärung.*',
-            u'Wikipedia:Dreibuchstabenkürzel von [A-Z][A-Z][A-Z] bis [A-Z][A-Z][A-Z]',
-            u'Wikipedia:Geographisch mehrdeutige Bezeichnungen',
-            u'Wikipedia:Kurze Artikel',
-            u'Wikipedia:Liste mathematischer Themen/BKS',
-            u'Wikipedia:Liste mathematischer Themen/Redirects',
-            u'Wikipedia:Löschkandidaten/.+',
-            u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
-            u'Wikipedia:WikiProjekt Altertumswissenschaft/.+'
+        'fy': [
+            u'Wikipedy:Fangnet',
         ],
+        'nl': [
+            u'Wikipedia:Onderhoudspagina',
+            u'Wikipedia:Doorverwijspagina',
+            u'Wikipedia:Lijst van alle tweeletter-combinaties',
+            u'Gebruiker:Hooft/robot/Interwiki/lijst van problemen',
+            u'Wikipedia:Woorden die niet als zoekterm gebruikt kunnen worden',
+            u'Gebruiker:Puckly/Bijdragen',
+            u'Gebruiker:Waerth/bijdragen',
+            u"Wikipedia:Project aanmelding bij startpagina's",
+            u'Gebruiker:Gustar/aantekeningen denotatie annex connotatie',
+            u'Wikipedia:Protection log',
+            u'Gebruiker:Pven/Romeinse cijfers',
+            u'Categorie:Doorverwijspagina',
+            u'Wikipedia:Ongelijke redirects',
+            u'Gebruiker:Cars en travel',
+            u'Wikipedia:Archief*',
+            u'Overleg Wikipedia:Logboek*',
+            u'Gebruiker:Rex/Gestarte artikelen',
+            u'Gebruiker:Ucucha/Doorverwijspagina',
+            u'Gebruiker:CyeZ/Klad2',
+            u'Wikipedia:De kroeg/Archief.+',
+            u'Overleg gebruiker:*Archief*',
+         ],
         'pt': [
             u'Categoria:Desambiguação',
             u'Wikipedia:Links para desambiguar páginas',
@@ -233,12 +236,13 @@ ignore_title = {
             u'Wikipedia:Lista de páginas de desambiguação',
             u'Usuário:Nuno Tavares/Stats/Ambiguações',
         ],
-        'fy': [
-            u'Wikipedy:Fangnet',
+        'ru': [
+            u'Категория:Disambig',
+            u'Википедия:Страницы разрешения неоднозначностей',
+            u'Википедия:Вики-уборка/Статьи без языковых ссылок',
+            u'Википедия:Страницы с пометкой «(значения)»',
+            u'Список общерусских фамилий',
         ],
-		'ru': [
-			u'Категория:Disambig',
-		],
     },
     'memoryalpha': {
         'en': [
