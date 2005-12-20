@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -153,7 +153,7 @@ class CategoryDatabase:
             'superclassDB': self.superclassDB
         }
         # store dump to disk in binary format
-        pickle.dump(databases, f, bin=1)
+        pickle.dump(databases, f, protocol=pickle.HIGHEST_PROTOCOL)
         f.close()
         
 def sorted_by_last_name(catlink, pagelink):
