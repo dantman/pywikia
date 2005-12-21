@@ -156,6 +156,12 @@ class PageNotSaved(Error):
 class EditConflict(PageNotSaved):
     """There has been an edit conflict while uploading the page"""
 
+# UserBlocked exceptions should in general not be catched. If the bot has been
+# blocked, the bot operator has possibly done a mistake and should take care of
+# the issue before continuing.
+class UserBlocked(Error):
+    """Your username or IP has been blocked"""
+
 class PageInList(LookupError):
     """Trying to add page to list that is already included"""
 
@@ -427,14 +433,18 @@ class Page(object):
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
             except AttributeError:
-                # We assume that the server is down. Wait some time, then try again.
-                print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site().hostname(), path, retry_idle_time)
-                time.sleep(retry_idle_time * 60)
-                # Next time wait longer, but not longer than half an hour
-                retry_idle_time *= 2
-                if retry_idle_time > 30:
-                    retry_idle_time = 30
-                continue
+                # find out if the username or IP has been blocked
+                if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
+                    raise UserBlocked(self.site(), self.title())
+                else:
+                    # We assume that the server is down. Wait some time, then try again.
+                    print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site().hostname(), path, retry_idle_time)
+                    time.sleep(retry_idle_time * 60)
+                    # Next time wait longer, but not longer than half an hour
+                    retry_idle_time *= 2
+                    if retry_idle_time > 30:
+                        retry_idle_time = 30
+                        continue
             i2 = re.search('</textarea>', text).start()
             if i2-i1 < 2:
                 raise NoPage(self.site(), self.title())
@@ -2008,13 +2018,14 @@ class Site(object):
             output(u'Getting a page to check if we\'re logged in on %s' % self)
             path = self.get_address('Non-existing_page')
             text = self.getUrl(path, sysop = sysop)
+            # Search for the "my talk" link at the top
             mytalkR = re.compile('<a href=".+?">(?P<username>.+?)</a></li><li id="pt-mytalk">')
             m = mytalkR.search(text)
             if m:
                 self.loginStatusKnown = True
                 self.loggedInAs = m.group('username')
                 # print m.group('username')
-                # also check if we have new messages
+                # While we're at it, check if we have got unread messages
                 if '<div class="usermessage">' in text:
                     output(u'NOTE: You have unread messages on %s' % self)
         return (self.loggedInAs is not None)
@@ -2547,6 +2558,8 @@ class Site(object):
             output(u"Getting page to get a token.")
             try:
                 Page(self, "Wikipedia:Sandbox").get(force = True, sysop = sysop)
+            except UserBlocked:
+                raise
             except Error:
                 pass
         if sysop:
