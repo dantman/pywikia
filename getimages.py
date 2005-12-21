@@ -17,7 +17,7 @@ the links from; other arguments are ignored.
 #
 # (C) Andre Engels 2004
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 # Modified by Gerrit Holl, 01-11-2004
 __version__='$Id$'

@@ -32,7 +32,7 @@ Article_Name:  Name of the article where a table should be inserted
 #
 # (C) Daniel Herding, 2004
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
 #

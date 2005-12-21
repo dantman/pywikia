@@ -23,9 +23,9 @@ Command line options:
 #
 # (C) Daniel Herding, 2004
 #
-# Distributed under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
-__version__='$Id: windows_chars.py,v 1.25 2005/07/05 19:59:29 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.26 2005/07/23 20:23:30 wikipedian Exp $'
 #
 import wikipedia, config
 import replace, pagegenerators

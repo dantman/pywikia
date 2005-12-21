@@ -19,7 +19,7 @@ a simple framework at least for the moment.
 #
 # (C) Rob Hooft, 2005
 #
-# Distributed under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
 #

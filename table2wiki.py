@@ -38,7 +38,7 @@ Please check every article you change.
 
 # (C) 2003 Thomas R. Koll, <tomk32@tomk32.de>
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 __version__='$Id$'
 
 import re, sys, time

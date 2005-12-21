@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 """
 (C) 2004 Thomas R. Koll, <tomk32@tomk32.de>
- Distribute under the terms of the PSF license.
+ Distributed under the terms of the MIT license.
 
 This bot downloads the HTML-pages of articles and images
 and saves the interesting parts, i.e. the article-text

@@ -42,7 +42,7 @@ Command-line options:
 #
 # (C) Andre Engels, 2005
 #
-# Distribute under the terms of the PSF license
+# Distributed under the terms of the MIT license.
 #
 
 __version__ = '$Id:'

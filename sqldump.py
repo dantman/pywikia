@@ -24,7 +24,7 @@ Where action can be one of these:
 #
 # (C) Daniel Herding, 2004
 #
-# Distributed under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 # 
 
 __version__ = '$Id:'

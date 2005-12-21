@@ -66,7 +66,7 @@ To complete a move of a page, one can use:
 # (C) Andre Engels, 2003-2004
 # (C) WikiWichtel, 2004
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
 #

@@ -3,7 +3,7 @@
 #
 # (C) Rob W.W. Hooft, 2003
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
 #

@@ -33,7 +33,7 @@ and follow the on-screen instructions.
 #
 __version__ = '$Id$'
 #
-# Distributed under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 # 
 import re, sys, string, pickle, bz2
 import wikipedia, catlib, config, interwiki

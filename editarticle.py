@@ -3,7 +3,7 @@
 # Edit a Wikipedia article with your favourite editor. Requires Python 2.3.
 #
 # (C) Gerrit Holl 2004
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 
 # Version 0.3.
 #

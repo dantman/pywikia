@@ -26,7 +26,7 @@ Use find.py 1.3, version without bug
 #
 __version__ = '$Id$'
 #
-# Distributed under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 
 from __future__ import generators

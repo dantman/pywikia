@@ -22,7 +22,7 @@ For each table type, there can be three lists:
 
 # (C) Daniel Herding, 2004
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 #
 

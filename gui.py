@@ -10,7 +10,7 @@ the contents of an article
 # (C) Daniel Herding, 2004
 #     Wikiwichtel
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
 

@@ -24,7 +24,7 @@ operating systems is unclear.
 #
 # (C) Andre Engels, 2004
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 
 __version__='$Id:'

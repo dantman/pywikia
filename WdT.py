@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 """
 (C) 2004 Thomas R. Koll, <tomk32@tomk32.de>
- Distribute under the terms of the PSF license.
+ Distributed under the terms of the MIT license.
 
 This bot consists of WdT.py and WdTXMLpaser.py and
 imports XML-files into Wikipedia.

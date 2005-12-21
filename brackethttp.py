@@ -5,7 +5,7 @@ to have correct generation of links in Wikipedia
 '''
 
 __author__ = '(C) 2003 Thomas R. Koll, <tomk32@tomk32.de>'
-__license__ = 'Distribute under the terms of the PSF license.'
+__license__ = 'Distributed under the terms of the MIT license.'
 __version__='$Id$'
 
 import re, sys

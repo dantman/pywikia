@@ -17,7 +17,7 @@ and for a description.
 #
 # (C) Rob W.W. Hooft, Andre Engels 2003-2004
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
 

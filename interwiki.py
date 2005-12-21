@@ -174,7 +174,7 @@ next time.
 # (C) Daniel Herding, 2004
 # (C) Yuri Astrakhan, 2005
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
 #

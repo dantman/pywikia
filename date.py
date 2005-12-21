@@ -10,7 +10,7 @@ lists which are required by some other programs.
 # © Andre Engels, 2005
 # © Yuri Astrakhan, 2005 (years/decades/centuries/millenniums  str <=> int  conversions)
 #
-# Distribute under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
 

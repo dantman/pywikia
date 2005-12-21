@@ -36,7 +36,7 @@ NOTE: Only use either -sql or -file or -page, but don't mix them.
 # (C) Daniel Herding, 2004
 # Copyright Scot E. Wilcoxon 2005
 #
-# Distributed under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
 #

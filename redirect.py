@@ -31,7 +31,7 @@ NOTE: For resolving redirects, please use solve_disambiguation.py -redir.
 #
 # (C) Daniel Herding, 2004
 #
-# Distributed under the terms of the PSF license.
+# Distributed under the terms of the MIT license.
 #
 __version__='$Id$'
 #
