@@ -216,7 +216,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]rmenia[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Armenia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]zerbaijan[_ ]flag[_ ]300.png',                 u'[[Bild:Flag of Azerbaijan.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Ethiopia.png',                    u'[[Bild:Flag of Ethiopia.svg'),
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]ustralia[_ ]flag[_ ]300.png',                  u'[[Bild:Flag of Australia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]ustralia[_ ]flag[_ ](medium|300).png',         u'[[Bild:Flag of Australia.svg'),
 
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]ahamas[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of the Bahamas.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]ahrain[_ ]flag[_ ]300.png',                    u'[[Bild:Flag of Bahrain.svg'),
@@ -359,7 +359,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]the[_ ]Netherlands.png',          u'[[Bild:Flag of the Netherlands.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]etherlands[_ ]flag[_ ]300.png',                u'[[Bild:Flag of the Netherlands.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]iger[_ ]flag[_ ]medium.png',                   u'[[Bild:Flag of Niger.svg'),
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]igeria[_ ]flag[_ ]medium.png',                 u'[[Bild:Flag of Nigeria.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]igeria[_ ]flag[_ ](medium|300).png',           u'[[Bild:Flag of Nigeria.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]iue[_ ]flag[_ ]medium.png',                    u'[[Bild:Flag of Niue.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]North[_ ]Korea.png',              u'[[Bild:Flag of North Korea.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Norway.png',                      u'[[Bild:Flag of Norway.svg'),
@@ -395,7 +395,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]chweden[_ ]flagge.png',                        u'[[Bild:Flag of Sweden.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]weden[_ ]flag[_ ]300.png',                        u'[[Bild:Flag of Sweden.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]witzerland[_ ]flag[_ ]medium.png',             u'[[Bild:Flag of Switzerland.svg'),
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]enegal[_ ]flag[_ ]medium.png',                 u'[[Bild:Flag of Senegal.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]enegal[_ ]flag[_ ](medium|300).png',                 u'[[Bild:Flag of Senegal.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Yugoslavia[_ ]1992.png',          u'[[Bild:Flag of Serbia and Montenegro.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]eychelles[_ ]flag[_ ]medium.png',              u'[[Bild:Flag of the Seychelles.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]ierra[_ ]leone[_ ]flag[_ ]medium.png',         u'[[Bild:Flag of Sierra Leone.svg'),
@@ -403,6 +403,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]ingapore[_ ]flag[_ ]medium.png',               u'[[Bild:Flag of Singapore.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Slovakia.png',                    u'[[Bild:Flag of Slovakia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]lowenien[_ ]flagge[_ ]gross[_ ]korr.png',      u'[[Bild:Flag of Slovenia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]lovenia[_ ]flag[_ ]300.png',                   u'[[Bild:Flag of Slovenia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lagge[_ ]von[_ ]Somalia.png',                  u'[[Bild:Flag of Somalia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]pain[_ ]flag[_ ](medium|300).png',                   u'[[Bild:Flag of Spain.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Spain.png',                       u'[[Bild:Flag of Spain.svg'),
@@ -511,7 +512,6 @@ class XmlDumpReplacePageGenerator:
             skip_page = False
             for exception in self.exceptions:
                 if self.regex:
-                    exception = re.compile(exception, re.UNICODE)
                     if exception.search(entry.text):
                         skip_page = True
                         break
@@ -522,7 +522,6 @@ class XmlDumpReplacePageGenerator:
             if not skip_page:
                 for old, new in self.replacements:
                     if self.regex:
-                        old = re.compile(old, re.UNICODE)
                         if old.search(entry.text):
                             yield wikipedia.Page(mysite, entry.title)
                             break
@@ -547,7 +546,6 @@ class ReplaceRobot:
         """
         for exception in self.exceptions:
             if self.regex:
-                exception = re.compile(exception, re.UNICODE)
                 hit = exception.search(original_text)
                 if hit:
                     return hit.group(0)
@@ -565,9 +563,7 @@ class ReplaceRobot:
         new_text = original_text
         for old, new in self.replacements:
             if self.regex:
-                # TODO: compiling the regex each time might be inefficient
-                oldR = re.compile(old, re.UNICODE)
-                new_text = oldR.sub(new, new_text)
+                new_text = old.sub(new, new_text)
             else:
                 new_text = new_text.replace(old, new)
         return new_text
@@ -579,7 +575,6 @@ class ReplaceRobot:
         # Run the generator which will yield Pages which might need to be
         # changed.
         for page in self.generator:
-            print ''
             try:
                 # Load the page's text from the wiki
                 original_text = page.get()
@@ -739,6 +734,18 @@ def main():
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
+    
+    if regex:
+        # already compile all regular expressions here to save time later
+        for i in range(len(replacements)):
+            old, new = replacements[i]
+            oldR = re.compile(old, re.UNICODE)
+            replacements[i] = oldR, new
+        for i in range(len(exceptions)):
+            exception = exceptions[i]
+            exceptionR = re.compile(exception, re.UNICODE)
+            replacements[i] = exceptionR
+    
     if source == 'textfile':
         gen = pagegenerators.TextfilePageGenerator(textfilename)
     elif source == 'category':
