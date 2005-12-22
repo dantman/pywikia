@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 __version__='$Id$'
@@ -119,9 +119,11 @@ class Family:
                 'af': u'BronnemateriaalEnBespreking',
                 'als': u'Diskussion',
                 'ar': u'نقاش',
+                'ay': u'Discusión',
                 'be': u'Абмеркаваньне',
                 'bg': u'Беседа',
                 'bn': u'আলাপ',
+                'br': u'Kaozeal',
                 'ca': u'Discussió',
                 'cs': u'Diskuse',
                 'csb': u'Diskùsëjô',
@@ -217,6 +219,7 @@ class Family:
                 'li': u'Gebroeker',
                 'mk': u'Корисник',
                 'ms': u'Pengguna',
+                'nap': u'Utente',
                 'nds': u'Bruker',
                 'nl': u'Gebruiker',
                 'nn': u'Brukar',
@@ -241,6 +244,7 @@ class Family:
                 'uk': u'Користувач',
                 'vi': u'Thành viên',
                 'wa': u'Uzeu',
+                'yi': u'באַניצער',
             },
             3: {
                 '_default': u'User talk',
@@ -249,6 +253,7 @@ class Family:
                 'ast': u'Usuariu discusión',
                 'be': u'Гутаркі ўдзельніка',
                 'bg': u'Потребител беседа',
+                'br': u'Kaozeadenn Implijer',
                 'ca': u'Usuari Discussió',
                 'cs': u'Wikipedista diskuse',
                 'csb': u'Diskùsëjô brëkòwnika',
@@ -256,14 +261,19 @@ class Family:
                 'de': u'Benutzer Diskussion',
                 'el': u'Συζήτηση χρήστη',
                 'es': u'Usuario Discusión',
+                'et': u'Kasutaja arutelu',
                 'hu': u'User vita',
+                'ia': u'Discussion Usator',
                 'ka': u'მომხმარებელი განხილვა',
+                'la': u'Disputatio Usoris',
                 'li': u'Euverlik gebroeker',
+                'nap': u'Discussioni utente',
                 'nl': u'Overleg gebruiker',
                 'pl': u'Dyskusja Wikipedysty',
                 'pt': u'Usuário Discussão',
                 'sk': u'Diskusia s redaktorom',
                 'sl': u'Uporabniški pogovor',
+                'yi': u'באַניצער רעדן',
             },
             4: {
                 '_default': u'Project',
@@ -278,6 +288,7 @@ class Family:
                 'ar': u'صورة',
                 'be': u'Выява',
                 'bg': u'Картинка',
+                'br': u'Skeudenn',
                 'ca': u'Imatge',
                 'cbs': u'Òbrôzk',
                 'cs': u'Soubor',
@@ -307,6 +318,7 @@ class Family:
                 'la': u'Imago',
                 'li': u'Aafbeilding',
                 'ms': u'Imej',
+                'nap': u'Immagine',
                 'nds': u'Bild',
                 'nl': u'Afbeelding',
                 'nn': u'Fil',
@@ -328,6 +340,7 @@ class Family:
                 'uk': u'Зображення',
                 'vi': u'Hình',
                 'wa': u'Imådje',
+                'yi': u'בילד',
             },
             7: {
                 '_default': u'Image talk',
@@ -856,4 +869,3 @@ class Family:
             return cmp(self.name, otherfamily.name)
         except AttributeError:
             return cmp(id(self), id(otherfamily))
-
