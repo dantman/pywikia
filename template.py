@@ -102,9 +102,14 @@ class TemplateRobot:
         # regular expression to find the original template.
         # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
         # The new syntax, {{vfd}}, will also be found.
-        # The group 'sortkey' will either match a sortkey led by a pipe, or an
-        # empty string.
-        templateR=re.compile(r'\{\{([mM][sS][gG]:)?[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:] + '(?P<parameters>\|[^}]+|)}}')
+        # The group 'parameters' will either match the parameters, or an
+        # empty string if there are none.
+        if not wikipedia.getSite().nocapitalize:
+            old = '[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:]
+        else:
+            old = self.old
+        old = re.sub('[_ ]', '[_ ]', old)
+        templateR=re.compile(r'\{\{([mM][sS][gG]:)?' + old + '(?P<parameters>\|[^}]+|)}}')
         replacements = []
         if self.remove:
             replacements.append((templateR, ''))
