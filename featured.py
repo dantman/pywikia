@@ -58,7 +58,7 @@ featured_name = {
     'no': (CAT, u"Kategori:Utmerkede artikler"),
     'pl': (CAT, u"Kategoria:Artykuły na medal"),
     'pt': (CAT, u"Categoria:!Artigos destacados"),
-    'ro': (LINKS, u"Wikipedia:Articole de calitate"),
+    'ro': (LINKS, u"Wikipedia:Articole fructuoase"),
     'ru': (CAT, u"Категория:Википедия:Избранные статьи"),
     'sk': (LINKS, u"Wikipédia:Najlepšie články", [u"Wikipédia",u"Hlavná stránka"]),
     'sl': (CAT, u"Category:Izbrani članki"),
