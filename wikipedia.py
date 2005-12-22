@@ -544,7 +544,7 @@ class Page(object):
         locdis = self.site().family.disambig( self._site.lang )
 
         for tn in self.templates():
-            tn = tn[:1].lower() + tn[1:]
+            tn = tn[0].upper() + tn[1:]
             tn = tn.replace('_', ' ')
             if tn in defdis or tn in locdis:
                 return True

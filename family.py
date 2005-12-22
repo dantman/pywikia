@@ -546,75 +546,8 @@ class Family:
         }
         
         # A list of disambiguation template names in different languages
-        # First character must be lower case!
-        self.disambigs = {
-            '_default':   [u'disambig'],
-            'af'  :       [u'dubbelsinnig'],
-            'als' :       [u'begriffsklärung'],
-            'ang' :       [u'disambig'],
-            'ar'  :       [u'disambig',u'توضيح'],
-            'be'  :       [u'неадназначнасьць'],
-            'bg'  :       [u'пояснение'],
-            'ca'  :       [u'desambiguació'],
-            'cs'  :       [u'rozcestník'],
-            'cy'  :       [u'anamrwysedd'],
-            'da'  :       [u'flertydig'],
-            'de'  :       [u'begriffsklärung'],
-            'el'  :       [u'disambig'],
-            'en'  :       [u'disambig', u'lND', u'2LA', u'tLAdisambig', u'disambiguation', u'2LCdisambig',
-                           u'4LA', u'acrocandis', u'hndis', u'numberdis', u'roadis', u'geodis',
-                           u'listdis', u'interstatedis', u'dab',u'disambig-cleanup', u'disamb'],
-            'eo'  :       [u'apartigilo'],
-            'es'  :       [u'desambiguacion', u'desambiguación', u'desambig'],
-            'et'  :       [u'täpsustuslehekülg'],
-            'eu'  :       [u'argipen'],
-            'fa'  :       [u'ابهام‌زدایی'],
-            'fi'  :       [u'täsmennyssivu'],
-            'fr'  :       [u'homonymie'],
-            'fy'  :       [u'tfs'],
-            'ga'  :       [u'idirdhealú'],
-            'gl'  :       [u'homónimos'],
-            'he'  :       [u'disambiguationAfter', u'פירושונים'],
-            'hr'  :       [u'disambig'],
-            'hu'  :       [u'egyert'],
-            'ia'  :       [u'disambiguation'],
-            'id'  :       [u'disambig'],
-            'io'  :       [u'homonimo'],
-            'is'  :       [u'aðgreining'],
-            'it'  :       [u'disambigua'],
-            'ja'  :       [u'aimai'],
-            'ka'  :       [u'არაორაზროვნება'],
-            'ko'  :       [u'disambig'],
-            'ku'  :       [u'cudakirin'],
-            'la'  :       [u'discretiva'],
-            'lb'  :       [u'homonymie'],
-            'li'  :       [u'verdudeliking'],
-            'ln'  :       [u'bokokani'],
-            'lt'  :       [u'disambig'],
-            'mt'  :       [u'diżambigwazzjoni'],
-            'no'  :       [u'peker', u'etternavn'],
-            'nds' :       [u'begreepkloren'],
-            'nl'  :       [u'dp','dP','dp2','dpintro'],
-            'nn'  :       [u'fleirtyding'],
-            'pl'  :       [u'disambig',u'disambRulers',u'disambigC'],
-            'pt'  :       [u'desambiguação'],
-            'ro'  :       [u'dezambiguizare'],
-            'ru'  :       [u'disambig',u'значения'],
-            'scn' :       [u'disambigua'],
-            'simple':     [u'disambig', u'disambiguation'],
-            'sk'  :       [u'disambiguation'],
-            'sl'  :       [u'disambig'],
-            'sq'  :       [u'kthjellim'],
-            'sr'  :       [u'вишезначна одредница'],
-            'su'  :       [u'disambig'],
-            'sv'  :       [u'betydelselista', u'disambig', u'gaffel', u'efternamn', 'gren'],
-            'th'  :       [u'แก้กำกวม'],
-            'tl'  :       [u'paglilinaw'],
-            'tr'  :       [u'anlam ayrım'],
-            'vi'  :       [u'trang định hướng'],
-            'wa'  :       [u'omonimeye'],
-            'zh'  :       [u'disambig', u'消歧义', u'消歧义页'],
-            'zh-min-nan': [u'khu-pia̍t-ia̍h','khPI'],
+        self.disambiguationTemplates = {
+            '_default': []
         }
 
         # On most wikis page names must start with a capital letter, but some
@@ -694,10 +627,10 @@ class Family:
             raise KeyError('ERROR: title for namespace %d in language %s unknown' % (namespace_number, code))  
     
     def disambig(self, code, fallback = '_default'):
-        if self.disambigs.has_key(code):
-            return self.disambigs[code]
+        if self.disambiguationTemplates.has_key(code):
+            return self.disambiguationTemplates[code]
         elif fallback:
-            return self.disambigs[fallback]
+            return self.disambiguationTemplates[fallback]
         else:
             raise KeyError('ERROR: title for disambig template in language %s unknown' % code)  
 
