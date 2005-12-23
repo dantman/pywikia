@@ -197,14 +197,14 @@ fixes = {
             (u'[[MC]]', u'[[Musikkassette|MC]]'),
         ]
     },
-    # python replace.py -fix:music -ref:Vorlage:Musikalbum
     'flags-de': {
         'regex': True,
         'msg': {
                'de':u'Bot: ersetze Flaggen durch SVG-Versionen',
               },
         'replacements': [
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]afghanistan[_ ]2004.png'   ,                           u'[[Bild:Flag of Afghanistan.svg'),
+            # coat of arms has wrong color.
+            #(u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]afghanistan[_ ]2004.png'   ,                           u'[[Bild:Flag of Afghanistan.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]gypt[_ ]flag[_ ](medium|large|300).png',                      u'[[Bild:Flag of Egypt.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]lbania[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Albania.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]lgeria[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Algeria.svg'),
@@ -216,6 +216,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]rmenia[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Armenia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]zerbaijan[_ ]flag[_ ](medium|large|300).png',                 u'[[Bild:Flag of Azerbaijan.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Ethiopia.png',                                   u'[[Bild:Flag of Ethiopia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]thiopia[_ ]flag[_ ](medium|large|300).png',                   u'[[Bild:Flag of Ethiopia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Aa]ustralia[_ ]flag[_ ](medium|large|300).png',                  u'[[Bild:Flag of Australia.svg'),
 
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]ahamas[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of the Bahamas.svg'),
@@ -229,6 +230,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]hutan[_ ]flag[_ ](medium|large|300).png',                     u'[[Bild:Flag of Bhutan.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]olivia[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Bolivia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]osnia[_ ]flag[_ ](medium|large|300).png',                     u'[[Bild:Flag of Bosnia and Herzegovina.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Bosnia[_ ]Herzegowina.png',                      u'[[Bild:Flag of Bosnia and Herzegovina.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]otswana[_ ]flag[_ ](medium|large|300).png',                   u'[[Bild:Flag of Botswana.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]razil[_ ]flag[_ ](medium|large|300).png',                     u'[[Bild:Flag of Brazil.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]rasilien[_ ]flagge[_ ]gross.png',                             u'[[Bild:Flag of Brazil.svg'),
@@ -245,7 +247,7 @@ fixes = {
 
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Denmark.png',                                    u'[[Bild:Flag of Denmark.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Dd]enmark[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Denmark.svg'),
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]ermany[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Germany.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]ermany[_ ]flag[_ ](mittel|medium|large|300).png',             u'[[Bild:Flag of Germany.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Germany.png',                                    u'[[Bild:Flag of Germany.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Dd]ominica[_ ]flag[_ ](medium|large|300).png',                   u'[[Bild:Flag of Dominica.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Dd]ominican[_ ]republic[_ ]flag[_ ](medium|large|300).png'    ,  u'[[Bild:Flag of the Dominican Republic.svg'),
@@ -273,12 +275,14 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Greece.png',                                     u'[[Bild:Flag of Greece.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]renada[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Grenada.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]uatemala[_ ]flagge[_ ]gross.png',                             u'[[Bild:Flag of Guatemala.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]uatemala[_ ]flag[_ ](medium|large|300).png',                  u'[[Bild:Flag of Guatemala.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]uyana[_ ]flagge[_ ]gross.png',                                u'[[Bild:Flag of Guyana.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]uinea[_ ]flagge[_ ]gross.png',                                u'[[Bild:Flag of Guinea.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Gg]uinea[_ ]bissau[_ ]flagge[_ ]gross.png',                      u'[[Bild:Flag of Guinea-Bissau.svg'),
             
             # Haiti ausgelassen: Wappenfrage
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Hh]onduras[_ ]flagge[_ ]gross.png',                              u'[[Bild:Flag of Honduras.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Hh]onduras[_ ]flag[_ ](medium|large|300).png',                   u'[[Bild:Flag of Honduras.svg'),
 
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ii]ndia[_ ]flag[_ ](medium|large|300).png',                      u'[[Bild:Flag of India.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ii]ndonesien[_ ]flagge[_ ]gross.png',                            u'[[Bild:Flag of Indonesia.svg'),
@@ -288,6 +292,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ii]ran[_ ]flag[_ ](medium|large|300).png',                       u'[[Bild:Flag of Iran.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ii]reland[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Ireland.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Ireland.png',                                    u'[[Bild:Flag of Ireland.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ii]celand[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Iceland.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ii]sland[_ ]flag.png',                                           u'[[Bild:Flag of Iceland.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ii]srael[_ ]flagge[_ ]gross.png',                                u'[[Bild:Flag of Israel.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ii]srael[_ ]flag[_ ](medium|large|300).png',                     u'[[Bild:Flag of Israel.svg'),
@@ -297,6 +302,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Italy.png',                                      u'[[Bild:Flag of Italy.svg'),
 
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Jj]amaika[_ ]flagge[_ ]gross.png',                               u'[[Bild:Flag of Jamaica.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Jj]amaika[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Jamaica.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Jj]apan[_ ]flag[_ ](medium|large|300).png',                      u'[[Bild:Flag of Japan.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Jj]emen[_ ]flagge[_ ]gross.png',                                 u'[[Bild:Flag of Yemen.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Jj]ordanien[_ ]flagge[_ ]gross.png',                             u'[[Bild:Flag of Jordan.svg'),
@@ -308,6 +314,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Cc]anada[_ ]flag[_ ](medium|large|300).png',                     u'[[Bild:Flag of Canada.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Cc]ape[_ ]verde[_ ]flag[_ ](medium|large|300).png',              u'[[Bild:Flag of Cape Verde.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Kk]azakhstan[_ ]flag[_ ](medium|large|300).png',                 u'[[Bild:Flag of Kazakhstan.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Kazakhstan.png',                                 u'[[Bild:Flag of Kazakhstan.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Qatar.png',                                      u'[[Bild:Flag of Qatar.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Qq]atar[_ ]flag[_ ](medium|large|300).png',                      u'[[Bild:Flag of Qatar.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Kk]enya[_ ]flag[_ ](medium|large|300).png',                      u'[[Bild:Flag of Kenya.svg'),
@@ -346,9 +353,12 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Mauritania.png',                                 u'[[Bild:Flag of Mauritania.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Mm]auritius[_ ]flag[_ ](medium|large|300).png',                  u'[[Bild:Flag of Mauritius.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Macedonia.png',                                  u'[[Bild:Flag of Macedonia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Mm]acedonia[_ ]flag[_ ](medium|large|300).png',                  u'[[Bild:Flag of Macedonia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Mexico.png',                                     u'[[Bild:Flag of Mexico.svg'),
+            # coat of arms too undetailed in SVG
+            # (u'\[\[(?:[Bb]ild|[Ii]mage):[Mm]exico[_ ]flag[_ ](medium|large|300).png',                     u'[[Bild:Flag of Mexico.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Mm]icronesia[_ ]flag[_ ](medium|large|300).png',                 u'[[Bild:Flag of Micronesia.svg'),
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Mm]oldova[_ ]flag[_ ](large|large-02|300).png',                        u'[[Bild:Flag of Moldova.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Mm]oldova[_ ]flag[_ ](large|large-02|300).png',                  u'[[Bild:Flag of Moldova.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Mm]onaco[_ ]flag.png',                                           u'[[Bild:Flag of Monaco.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Mongolia.png',                                   u'[[Bild:Flag of Mongolia.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Mm]ozambique[_ ]flag[_ ](medium|large|300).png',                 u'[[Bild:Flag of Mozambique.svg'),
@@ -365,6 +375,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]igeria[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Nigeria.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]iue[_ ]flag[_ ](medium|large|300).png',                       u'[[Bild:Flag of Niue.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]North[_ ]Korea.png',                             u'[[Bild:Flag of North Korea.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lagge[_ ]von[_ ]Norwegen.png',                                u'[[Bild:Flag of Norway.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Norway.png',                                     u'[[Bild:Flag of Norway.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]orway[_ ]flag[_ ](medium|large|300).png',                     u'[[Bild:Flag of Norway.svg'),
 
@@ -419,6 +430,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]ri[_ ]lanka[_ ]flag[_ ](medium|large|300).png',               u'[[Bild:Flag of Sri Lanka.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lagge[_ ]Südafrika.png',                                      u'[[Bild:Flag of South Africa.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]South[_ ]Africa.png',                            u'[[Bild:Flag of South Africa.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]outh[_ ]africa[_ ]flag[_ ](medium|large|300).png',            u'[[Bild:Flag of South Africa.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]udan[_ ]flag[_ ](medium|large|300).png',                      u'[[Bild:Flag of Sudan.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]South[_ ]Korea.png',                             u'[[Bild:Flag of South Korea.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ss]uriname[_ ]flag[_ ](medium|large|300).png',                   u'[[Bild:Flag of Suriname.svg'),
@@ -437,6 +449,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Cc]had[_ ]flag[_ ](medium|large|300).png',                       u'[[Bild:Flag of Chad.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Cc]zech[_ ]republic[_ ]flag[_ ](medium|large|300).png',          u'[[Bild:Flag of the Czech Republic.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Tt]unisia[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Tunisia.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Tt]uerkei[_ ]flagge[_ ]gross.png',                               u'[[Bild:Flag of Turkey.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Tt]urkey[_ ]flag[_ ](medium|large|300).png',                     u'[[Bild:Flag of Turkey.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Turkey.png',                                     u'[[Bild:Flag of Turkey.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Tt]urkmenistan[_ ]flag[_ ](medium|large|300).png',               u'[[Bild:Flag of Turkmenistan.svg'),
@@ -475,13 +488,18 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]the[_ ]Soviet[_ ]Union.png',                     u'[[Bild:Flag of the Soviet Union.svg'),
             
             # Non-souvereign regions
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]ermuda[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Bermuda.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]ngland[_ ]Flagge.PNG',                                        u'[[Bild:Flag of England.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]ngland[_ ]flag.png',                                          u'[[Bild:Flag of England.svg'),
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Hh]ong[_ ]kong[_ ]flag[_ ](medium|large|300).png',               u'[[Bild:Flag of Hong Kong SAR.png'),
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Hong[_ ]Kong[_ ]SAR.png',                        u'[[Bild:Flag of Hong Kong SAR.png'),
-            
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]ngland[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of England.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Hh]ong[_ ]kong[_ ]flag[_ ](medium|large|300).png',               u'[[Bild:Flag of Hong Kong SAR.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Hong[_ ]Kong[_ ]SAR.png',                        u'[[Bild:Flag of Hong Kong SAR.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Nn]orthern[_ ]ireland[_ ]flag[_ ](medium|large|300).png',        u'[[Bild:Flag of Northern Ireland.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]the[_ ]Faroe[_ ]Islands.png',                    u'[[Bild:Flag of the Faroe Islands.svg'),
             # Tibet TibetFlaggeGross.png
-            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Europe.png',                                     u'[[Bild:European Flag.svg'),
+
+            # Organizations
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Europe.png',                                     u'[[Bild:European flag.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]speranto[_ ]flagge.png',                                      u'[[Bild:Flag of Esperanto.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]NATO.jpg',                                       u'[[Bild:Flag of NATO.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]the[_ ]United[_ ]Nations.png',                   u'[[Bild:Flag of the United Nations.svg'),
