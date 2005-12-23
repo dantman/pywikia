@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -106,7 +106,7 @@ class Family(family.Family):
             'ln':  [u'Bokokani'],
             'lt':  [u'Disambig'],
             'mt':  [u'Diżambigwazzjoni'],
-            'nds': [u'Begreepkloren'],
+            'nds': [u'Mehrdüdig Begreep'],
             'nl':  [u'Dp', 'DP', 'Dp2', 'Dpintro'],
             'nn':  [u'Fleirtyding'],
             'no':  [u'Peker', u'Etternavn'],
