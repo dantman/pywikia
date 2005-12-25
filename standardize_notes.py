@@ -62,7 +62,7 @@ except ImportError:
 # Summary messages in different languages
 msg = {
        'de':u'Bot: Automatisierte Textersetzung %s',
-       'en':u'Robot: Automated reference formatting %s',
+       'en':u'Robot: Automated reference processing %s',
        'es':u'Robot: Reemplazo automático de texto %s',
        'fr':u'Bot : Remplacement de texte automatisé %s',
        'hu':u'Robot: Automatikus szövegcsere %s',
@@ -78,7 +78,7 @@ fixes = {
         # all pages which contain nowiki tags.
         'exceptions':  ['<nowiki>[^<]{3,}</nowiki>'],
         'msg': {
-               'en':u'Robot: fixing/standardizing footnotes',
+               'en':u'Robot: Adding/sorting references.',
               },
         'replacements': [
             # Everything case-insensitive (?i)
@@ -108,26 +108,65 @@ fixes = {
     }
 }
 
+# names of reference section names
+referencesectionnames = [ 
+    'bibliography',
+    'citation',
+    'citations',
+    'external link',
+    'external links',
+    'external links and references',
+    'footnotes',
+    'links',
+    'notes',
+    'notes and references',
+    'reference',
+    'references',
+    'source',
+    'sources',
+ ]
+
+# news sites for which to generate 'news reference' citations, the org name, and prefix to strip
 newssites = [
-    # news sites for which to generate 'news reference' citations, the org name, and prefix to strip
+    ( 'abcnews.go.com', 'ABC News', 'ABC News: ' ),
     ( 'books.guardian.co.uk', 'The Guardian', 'Guardian Unlimited : The Guardian : ' ),
     ( 'edition.cnn.com', 'CNN', 'CNN.com - ' ),
     ( 'news.bbc.co.uk', 'BBC', 'BBC NEWS : ' ),
     ( 'news.scotsman.com', 'The Scotsman', 'Scotsman.com News - ' ),
+    ( 'nyobserver.com', 'New York Observer', '' ),
     ( 'observer.guardian.co.uk', 'The Guardian', 'The Observer  : ' ),
     ( 'politics.guardian.co.uk', 'The Guardian', 'Guardian Unlimited Politics : ' ),
+    ( 'seattletimes.nwsource.com', 'The Seattle Times', 'The Seattle Times: ' ),
+    ( 'service.spiegel.de', 'Der Spiegel', '' ),
     ( 'thescotsman.scotsman.com', 'The Scotsman', 'The Scotsman - ' ),
     ( 'today.reuters.com', 'Reuters', 'Latest News and Financial Information : ' ),
     ( 'today.reuters.co.uk', 'Reuters', 'Latest News and Financial Information : ' ),
     ( 'www.boston.com', 'The Boston Globe', 'Boston.com / ' ),
+    ( 'www.cbsnews.com', 'CBS News', 'CBS News : ' ),
     ( 'www.cnn.com', 'CNN', 'CNN.com - ' ),
+    ( 'www.cnsnews.com', 'Cybercast News Service', '' ),
     ( 'www.csmonitor.com', 'Christian Science Monitor', '' ),
+    ( 'www.dallasnews.com', 'The Dallas Morning News', '' ),
+    ( 'www.forbes.com', 'Forbes', '' ),
+    ( 'www.foxnews.com', 'Fox News Channel', 'FOXNews.com - ' ),
     ( 'www.gnn.com', 'Government News Network', 'GNN - ' ),
     ( 'www.guardian.co.uk', 'The Guardian', 'Guardian Unlimited : The Guardian : ' ),
+    ( 'www.latimes.com', 'Los Angeles Times', '' ),
+    ( 'www.msnbc.msn.com', 'MSNBC', '' ),
+    ( 'www.nationalreview.com', 'National Review', '' ),
+    ( 'www.nytimes.com', 'The New York Times', '' ),
+    ( 'www.sfgate.com', 'San Francisco Chronicle', '' ),
     ( 'www.socialistworker.co.uk', 'Socialist Worker', '' ),
     ( 'www.spectator.org', 'The American Spectator', '' ),
     ( 'www.telegraph.co.uk', 'The Daily Telegraph', 'Telegraph newspaper online - ' ),
+    ( 'www.time.com', 'TIME', '' ),
     ( 'www.timesonline.co.uk', 'The Times', 'World news from The Times and the Sunday Times - ' ),
+    ( 'www.usatoday.com', 'USA Today', 'USATODAY.com - ' ),
+    ( 'www.washingtonpost.com', 'The Washington Post', '' ),
+    ( 'www.washtimes.com', 'The Washington Times', '' ),
+    ( 'www.weeklystandard.com', 'The Weekly Standard', '' ),
+    ( 'www.wired.com', 'Wired magazine', 'Wired News: ' ),
+    ( 'wwwimage.cbsnews.com', 'CBS News', 'CBS News : ' ),
 ]
 
 class ReplacePageGenerator:
@@ -359,57 +398,59 @@ class ReplaceRobot:
             # TODO: support Notes in alphabetic order
             # TODO: support Notes in other orders
             if m:	# if in a section, check if should skip this section
-                if m.group('sectionname').lower().strip() in [ 'external link', 'external links', 'links', 'reference', 'references', 'external links and references', 'notes', 'notes and references' ]:
+                if m.group('sectionname').lower().strip() in referencesectionnames:
                     skipsection = True		# skipsection left True so no further links converted
             if skipsection:
                 new_text = new_text + text_line		# skip section, so retain text.
             else:
                 # TODO: recognize {{inline}} invisible footnotes when something can be done with them
-                #
-                # Fix erroneous external links in double brackets
-                Rextlink = re.compile(r'(?i)\[\[(?P<linkname>http://[^\]]+?)\]\]')
-                # TODO: compiling the regex each time might be inefficient
-                text_lineR = re.compile(Rextlink)
-                MOextlink = text_lineR.search(text_line)
-                while MOextlink:	# find all links on line
-                    extlink_linkname = MOextlink.group('linkname')
-                    # Rewrite double brackets to single ones
-                    text_line=text_line[:MOextlink.start()] + '[%s]' % extlink_linkname + text_line[MOextlink.end(0):]
-                    MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
-                # Regular expression to look for external link [linkname linktext] - linktext is optional.
-                # Also accepts erroneous pipe symbol as separator.
-                # Accepts wikilinks within <linktext>
-                #Rextlink = re.compile(r'[^\[]\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\][^\]]')
-                #Rextlink = re.compile(r'\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
-                Rextlink = re.compile(r'(?i)\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
-                # TODO: compiling the regex each time might be inefficient
-                text_lineR = re.compile(Rextlink)
-                MOextlink = text_lineR.search(text_line)
-                while MOextlink:	# find all links on line
-                    extlink_linkname = MOextlink.group('linkname')
-                    extlink_linktext = MOextlink.group('linktext')
-                    self.refsequence += 1
-                    ( refname, reftext ) = self.doConvertLinkTextToReference(self.refsequence, extlink_linkname, extlink_linktext)
-                    self.references.append( reftext )	# append new entry to References
-                    if extlink_linktext:
-                        # If there was text as part of link, reinsert text before footnote.
-                        text_line=text_line[:MOextlink.start(0)] + '%s{{ref|%s}}' % (extlink_linktext, refname) + text_line[MOextlink.end(0):]
-                    else:
-                        text_line=text_line[:MOextlink.start(0)] + '{{ref|%s}}' % refname + text_line[MOextlink.end(0):]
-                    MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
-                # Search for {{doi}}
-                Rdoi = re.compile(r'(?i){{doi\|(?P<doilink>[^}|]*)}}')
-                # TODO: compiling the regex each time might be inefficient
-                doiR = re.compile(Rdoi)
-                MOdoi = doiR.search(text_line)
-                while MOdoi:		# find all doi on line
-                    doi_link = MOdoi.group('doilink')
-                    if doi_link:
-                        self.refsequence += 1
-                        ( refname, reftext ) = self.doConvertDOIToReference( self.refsequence, doi_link )
-                        self.references.append( reftext )		# append new entry to References
-                        text_line=text_line[:MOdoi.start(0)] + '{{ref|%s}}' % refname + text_line[MOdoi.end(0):]
-                        MOdoi = doiR.search(text_line, MOdoi.start(0)+1)
+		#
+		# Ignore lines within comments
+		if not text_line.startswith( u'<!--' ):
+			# Fix erroneous external links in double brackets
+			Rextlink = re.compile(r'(?i)\[\[(?P<linkname>http://[^\]]+?)\]\]')
+			# TODO: compiling the regex each time might be inefficient
+			text_lineR = re.compile(Rextlink)
+			MOextlink = text_lineR.search(text_line)
+			while MOextlink:	# find all links on line
+			    extlink_linkname = MOextlink.group('linkname')
+			    # Rewrite double brackets to single ones
+			    text_line=text_line[:MOextlink.start()] + '[%s]' % extlink_linkname + text_line[MOextlink.end(0):]
+			    MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
+			# Regular expression to look for external link [linkname linktext] - linktext is optional.
+			# Also accepts erroneous pipe symbol as separator.
+			# Accepts wikilinks within <linktext>
+			#Rextlink = re.compile(r'[^\[]\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\][^\]]')
+			#Rextlink = re.compile(r'\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
+			Rextlink = re.compile(r'(?i)\[(?P<linkname>[h]*[ft]+tp:[^ [\]\|]+?)(?P<linktext>[ \|]+(( *[^\]\|]*)|( *\[\[.+?\]\])*)+)*\]')
+			# TODO: compiling the regex each time might be inefficient
+			text_lineR = re.compile(Rextlink)
+			MOextlink = text_lineR.search(text_line)
+			while MOextlink:	# find all links on line
+			    extlink_linkname = MOextlink.group('linkname')
+			    extlink_linktext = MOextlink.group('linktext')
+			    self.refsequence += 1
+			    ( refname, reftext ) = self.doConvertLinkTextToReference(self.refsequence, extlink_linkname, extlink_linktext)
+			    self.references.append( reftext )	# append new entry to References
+			    if extlink_linktext:
+				# If there was text as part of link, reinsert text before footnote.
+				text_line=text_line[:MOextlink.start(0)] + '%s{{ref|%s}}' % (extlink_linktext, refname) + text_line[MOextlink.end(0):]
+			    else:
+				text_line=text_line[:MOextlink.start(0)] + '{{ref|%s}}' % refname + text_line[MOextlink.end(0):]
+			    MOextlink = text_lineR.search(text_line,MOextlink.start(0)+1)
+			# Search for {{doi}}
+			Rdoi = re.compile(r'(?i){{doi\|(?P<doilink>[^}|]*)}}')
+			# TODO: compiling the regex each time might be inefficient
+			doiR = re.compile(Rdoi)
+			MOdoi = doiR.search(text_line)
+			while MOdoi:		# find all doi on line
+			    doi_link = MOdoi.group('doilink')
+			    if doi_link:
+				self.refsequence += 1
+				( refname, reftext ) = self.doConvertDOIToReference( self.refsequence, doi_link )
+				self.references.append( reftext )		# append new entry to References
+				text_line=text_line[:MOdoi.start(0)] + '{{ref|%s}}' % refname + text_line[MOdoi.end(0):]
+				MOdoi = doiR.search(text_line, MOdoi.start(0)+1)
                 new_text = new_text + text_line	# append new line to new text
         if new_text == '':
             new_text = original_text	# If somehow no new text, return original text
@@ -449,7 +490,7 @@ class ReplaceRobot:
             m = re.search( "==[ ]*(?P<sectionname>[^=]+)[ ]*==", text_line )
             if m:	# if in a section, remember section name
                 sectionname = m.group('sectionname').strip()
-                if sectionname.lower().strip() in [ 'reference', 'references', 'notes', 'citation', 'citations', 'bibliography', 'source', 'sources', 'notes and references', 'footnotes' ]:
+                if sectionname.lower().strip() in referencesectionnames:
                     if sectionname not in refsectionlist:	# if not already in list, add to list.
                         refsectionlist.extend( sectionname )
         return refsectionlist
@@ -471,7 +512,7 @@ class ReplaceRobot:
                         wikipedia.output( u'Found Ref section.' )
                         skipsection = True		# skipsection left True so no further links converted
                 else:				# else grab all possible sections
-                    if m.group('sectionname').lower().strip() in [ 'external link', 'external links', 'links', 'reference', 'references', 'external links and references', 'notes', 'notes and references' ]:
+                    if m.group('sectionname').lower().strip() in referencesectionnames:
                         wikipedia.output( 'RefSection found by default names: %s' % m.group('sectionname') )
                         skipsection = True		# skipsection left True so no further links converted
             if skipsection:
@@ -698,7 +739,7 @@ class ReplaceRobot:
 	        new_text = u'{{news reference | title=%s | url=%s | urldate=%s | org=%s }}' % ( extlink_linktext, extlink_linkname, now.isoformat(), newscompany ) + '\n'
 		break
 	else:		# else no special site found
-            new_text = u'{{Web reference | title=%s | url=%s | date=%s }}' % ( extlink_linktext, extlink_linkname, now.isoformat() ) + '\n'
+            new_text = u'{{web reference | title=%s | url=%s | date=%s }}' % ( extlink_linktext, extlink_linkname, now.isoformat() )
         return (new_text)
 
     def doConvertDOIToReference(self, refsequence, doi_linktext):
@@ -736,6 +777,7 @@ class ReplaceRobot:
                         else:
                             refusage[refkey] = [len(refusage),0,0]	# remember this reference
                 m = Rtext_line.search( text_line, m.end() )
+        wikipedia.output( u'Number of refs: %d' % (len(refusage)) )
         return (duplicatefound, refusage)
 
     def doReadReferencesSection(self, original_text, refsectionname):
@@ -761,7 +803,7 @@ class ReplaceRobot:
                     else:
                         intargetsection = False			# flag as not being in section
                 else:				# else grab all possible sections
-                    if m.group('sectionname').lower().strip() in ( 'reference', 'references', 'notes', 'notes and references', 'footnotes' ):
+                    if m.group('sectionname').lower().strip() in referencesectionnames:
                         intargetsection = True			# flag as being in section
                         new_text = new_text + text_line
                     else:
@@ -798,7 +840,8 @@ class ReplaceRobot:
                 # TODO: compile search?
                 m = re.search(r'(?i)[*#][\s]*{{(?P<reftype>note)\|(?P<refname>[^}|]+?)}}', text_line)
                 # Special test to ignore Footnote instructions comment.
-                if text_line.startswith(u'     4) Add ') or not m:	# if no ref found
+                text_line_stripped = text_line.strip()
+                if text_line_stripped.startswith(u'4) Add ') or not m:	# if no ref found
                     newreferences.append(text_line)	# add nonref to new list
                     references[i] = None
             refsort = {}
@@ -847,7 +890,7 @@ class ReplaceRobot:
                     else:
                         intargetsection = False		# flag as not being in section
                 else:				# else grab all possible sections
-                    if m.group('sectionname').lower().strip() in ( 'reference', 'references', 'notes', 'notes and references' ):
+                    if m.group('sectionname').lower().strip() in referencesectionnames:
                         intargetsection = True		# flag as being in section
                     else:
                         intargetsection = False		# flag as not being in section
