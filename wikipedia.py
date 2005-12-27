@@ -2019,12 +2019,11 @@ class Site(object):
             path = self.get_address('Non-existing_page')
             text = self.getUrl(path, sysop = sysop)
             # Search for the "my talk" link at the top
-            mytalkR = re.compile('<a href=".+?">(?P<username>.+?)</a></li><li id="pt-mytalk">')
+            mytalkR = re.compile('<a href=".+?">(?P<username>.+?)</a></li>\s*<li id="pt-mytalk">')
             m = mytalkR.search(text)
             if m:
                 self.loginStatusKnown = True
                 self.loggedInAs = m.group('username')
-                # print m.group('username')
                 # While we're at it, check if we have got unread messages
                 if '<div class="usermessage">' in text:
                     output(u'NOTE: You have unread messages on %s' % self)
