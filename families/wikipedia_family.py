@@ -159,6 +159,29 @@ class Family(family.Family):
            'tpi','chr','chy','ve','tr','tk','tw','udm','uk','ur','vec','vo','fiu-vro','wa','war',
            'wo','ts','ii','yi','yo','zh','zh-tw','zh-cn']
 
+        # A sorting order for lb.wikipedia worked out by http://lb.wikipedia.org/wiki/User_talk:Otets
+        self.alphabetic_lb = ['aa', 'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar',
+            'an', 'roa-rup', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'id', 'ms', 'bm',
+            'bn', 'zh-min-nan', 'ban', 'jv', 'su', 'bug', 'ba', 'be', 'bh', 'mt',
+            'bi', 'bo', 'bs', 'br', 'bg', 'ca', 'ceb', 'cs', 'ch', 'chr', 'chy',
+            'ny', 'sn', 'tum', 've', 'cho', 'co', 'za', 'cy', 'da', 'de', 'dv',
+            'nv', 'dz', 'mh', 'et', 'na', 'el', 'en', 'es', 'eo', 'eu', 'ee', 'to',
+            'fa', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm', 'gd', 'gl',
+            'gay', 'ki', 'gu', 'got', 'ha', 'haw', 'hy', 'he', 'hi', 'ho',
+            'hr', 'io', 'ig', 'ilo', 'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it',
+            'ja', 'kl', 'kn', 'kr', 'ka', 'ks', 'csb', 'kw', 'rw', 'ky', 'rn', 'sw',
+            'kv', 'kg', 'ko', 'ht', 'kj', 'ku', 'lad', 'lo', 'la', 'lv', 'lb', 'lt', 'li',
+            'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mi', 'mr', 'chm',
+            'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nap', 'nl', 'cr', 'ne', 'ce',
+            'pih', 'no', 'nn', 'oc', 'or', 'om', 'ng', 'hz', 'ug', 'uz', 'pa', 'kk',
+            'pi', 'pam', 'ps', 'km', 'nds', 'pl', 'pt', 'ty', 'ro', 'rm', 'qu',
+            'ru', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'scn', 'si',
+            'simple', 'sd', 'ss', 'sk', 'sl', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
+            'ta', 'tt', 'te', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
+            'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'war',
+            'wo', 'ts', 'ii', 'yi', 'yo', 'zh', 'zh-tw', 'zh-cn']
+
+
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
         # alphabetical order on language code is used. For languages that are in
@@ -173,7 +196,7 @@ class Family(family.Family):
             'fi': self.alphabetic_revised,
             'he': ['en'],
             'hu': ['en'],
-            'lb': self.alphabetic,
+            'lb': self.alphabetic_lb,
             'nn': ['no','nb','sv','da'] + self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
