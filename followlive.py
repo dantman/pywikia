@@ -59,6 +59,7 @@ blanking = {
 # do nothing if this is in it
 done = {
     'en':('{{delete}}', '{{speedy}}', '{{VfD}}', '{{cleanup}}', '{{nonsense}}'),
+	'fr':('{{suppression}}', u'{{à vérifier}}'),
 }
 # TODO: merge 'done' with 'templates' above
 
