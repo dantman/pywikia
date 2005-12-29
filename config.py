@@ -124,14 +124,14 @@ upload_to_commons = False
 # but never more than 'maxthrottle' seconds. However - if you are running
 # more than one bot in parallel the times are lengthened.
 minthrottle = 2
-maxthrottle = 60
+maxthrottle = 5
 
 # Slow down the robot such that it never makes a second change within
 # 'put_throttle' seconds.
-put_throttle = 60
+put_throttle = 10
 # Sometimes you want to know when a delay is inserted. If a delay is larger
 # than 'noisysleep' seconds, it is logged on the screen.
-noisysleep = 5.0
+noisysleep = 3.0
 
 # Maximum of pages which can be retrieved by special pages. Increase this if
 # you heavily use boilerplate.py, double_redirect.py, and especially if you're
