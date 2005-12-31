@@ -64,7 +64,7 @@ class Family(family.Family):
                     'el','en','es','eo','eu','fa','fr','fy','ga','gv',
                     'gd','gl','ko','hi','hr','io','id','ia','is','it',
                     'he','jv','ka','csb','ks','sw','la','lt','hu',
-                    'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
+                    'mk','mg','ml','mi','mr','zh-cfr','mn','nah','na',
                     'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
                     'sa','st','sq','si','simple','sk','sl','sr','su',
                     'fi','sv','ta','tt','th','tlh','ur','vi','tokipona',
