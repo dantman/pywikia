@@ -41,7 +41,7 @@ if __name__ == "__main__":
 				wikipedia.output( u'Error processing language %s' % lang )
 				wikipedia.output( u''.join(traceback.format_exception(*sys.exc_info())))
 
-		if false:
+		if False:
 			# skip until the family gets global fixing
 			
 			wikipedia.output(u"\n\n------------------ namespace table -------------------\n");
