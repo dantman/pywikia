@@ -52,14 +52,29 @@ class XmlEntry:
         self.moveRestriction = moveRestriction
         self.revisionid = revisionid
 
+class XmlHeaderEntry:
+    """
+    Represents a header entry
+    """
+    def __init__(self):
+        self.sitename = u''
+        self.base = u''
+        self.generator = u''
+        self.case = u''
+        self.namespaces = {}
+
 class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
     def __init__(self):
         xml.sax.handler.ContentHandler.__init__(self)
         self.inRevisionTag = False
         self.inContributorTag = False
+        self.headercallback = None
         
     def setCallback(self, callback):
         self.callback = callback
+        
+    def setHeaderCallback(self, headercallback):
+        self.headercallback = headercallback
         
     def startElement(self, name, attrs):
         self.destination = None
@@ -92,6 +107,15 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         elif name == 'timestamp':
             self.destination = 'timestamp'
             self.timestamp=u''
+        elif self.headercallback:
+            if name == 'siteinfo':
+                self.header = XmlHeaderEntry()
+            elif name in ['sitename', 'base', 'generator', 'case']:
+                self.destination = name
+            elif name == 'namespace':
+                self.destination = 'namespace'
+                self.namespace = u''
+                self.namespaceid = int(attrs['key'])
 
     def endElement(self, name):
         if name == 'contributor':
@@ -122,6 +146,12 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             entry = XmlEntry(self.title, self.id, text, timestamp, self.editRestriction, self.moveRestriction, self.revisionid)
             self.inRevisionTag = False
             self.callback(entry)
+        elif self.headercallback:
+            if name == 'namespace':
+                self.header.namespaces[self.namespaceid] = self.namespace
+            elif name == 'siteinfo':
+                self.headercallback(self.header)
+                self.header = None
             
     def characters(self, data):
         if self.destination == 'text':
@@ -136,6 +166,18 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.title += data
         elif self.destination == 'timestamp':
             self.timestamp += data
+        elif self.headercallback:
+            if self.destination == 'sitename':
+                self.header.sitename += data
+            elif self.destination == 'base':
+                self.header.base += data
+            elif self.destination == 'generator':
+                self.header.generator += data
+            elif self.destination == 'case':
+                self.header.case += data
+            elif self.destination == 'namespace':
+                self.namespace += data
+        
 
 class XmlParserThread(threading.Thread):
     """

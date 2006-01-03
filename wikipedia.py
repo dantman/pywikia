@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -1224,6 +1224,7 @@ class GetAll(object):
             return
         handler = xmlreader.MediaWikiXmlHandler()
         handler.setCallback(self.oneDone)
+        handler.setHeaderCallback(self.headerDone)
         try:
             xml.sax.parseString(data, handler)
         except xml.sax._exceptions.SAXParseException:
@@ -1298,6 +1299,31 @@ class GetAll(object):
             # Store the time stamp
             pl2._editTime = timestamp
 
+    def headerDone(self, header):
+        # Verify our family data
+        lang = self.site.lang
+        ids = header.namespaces.keys()
+        ids.sort()
+        for id in ids:
+            nshdr = header.namespaces[id]
+            if self.site.family.namespaces.has_key(id):
+                ns = self.site.namespace(id)
+                if ns == None:
+                    ns = u''
+                if ns != nshdr:
+                    dflt = self.site.family.namespaces[id]['_default']
+                    if dflt == ns:
+                        flag = u"is set to default ('%s'), but should be '%s'" % (ns, nshdr)
+                    elif dflt == nshdr:
+                        flag = u"is '%s', but should be removed (default value '%s')" % (ns, nshdr)
+                    else:
+                        flag = u"is '%s', but should be '%s'" % (ns, nshdr)
+                        
+                    output(u"WARNING: Outdated family file %s: namespace['%s'][%i] %s" % (self.site.family.name, lang, id, flag))
+                    self.site.family.namespaces[id][lang] = nshdr
+            else:
+                output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
+    
     def getData(self):
         if self.pages == []:
             return
