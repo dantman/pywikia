@@ -44,6 +44,7 @@ import re, sys
 msg_double={
     'en':u'Robot: Fixing double redirect',
     'de':u'Bot: Korrigiere doppelten Redirect',
+	'fr':u'Robot : répare double redirection',
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     'pt':u'Bot: Corrigido duplo redirecionamento',
     }
@@ -52,6 +53,7 @@ msg_double={
 reason_broken={
     'en':u'Robot: Redirect target doesn\'t exist',
     'de':u'Bot: Weiterleitungsziel existiert nicht',
+	'fr':u'Robot : Cible du redirect inexistante',
     'pt':u'Bot: Redirecionamento não existe',
     }
 
