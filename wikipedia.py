@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -255,9 +255,10 @@ class Page(object):
         return self._title
 
     def titleWithoutNamespace(self):
-        """The name of the page without the namespace part. Gives an error
-        if the page is from the main namespace. Note that this is a raw way
-        of doing things - it simply looks for a : in the name."""
+        """The name of the page without the namespace part.
+        Returns the sectionFreeTitle if the page is from the main namespace.
+        Note that this is a raw way of doing things - it simply looks for
+        a : in the name."""
         t=self.sectionFreeTitle()
         p=t.split(':', 1)
         if len(p) == 1:
@@ -318,7 +319,7 @@ class Page(object):
             NoPage: The page does not exist
 
             IsRedirectPage: The page is a redirect. The argument of the
-                            exception is the page it redirects to.
+                            exception is the title of the page it redirects to.
 
             SectionError: The subject does not exist on a page with a # link
         """
@@ -359,7 +360,7 @@ class Page(object):
             except NoPage:
                 self._getexception = NoPage
                 raise
-            except IsRedirectPage,arg:
+            except IsRedirectPage, arg:
                 self._getexception = IsRedirectPage
                 self._redirarg = arg
                 if not get_redirect:
@@ -404,7 +405,7 @@ class Page(object):
                 if retry_idle_time > 30:
                     retry_idle_time = 30
                 continue
-            get_throttle.setDelay(time.time() - starttime)\
+#            get_throttle.setDelay(time.time() - starttime)
     
             # Look for the edit token
             R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
@@ -550,103 +551,99 @@ class Page(object):
                 return True
         return False
 
-    def getReferences(self, follow_redirects=True, offset=0):
+    def getReferences(self, follow_redirects=True):
         """
         Return a list of pages that link to the page.
         If follow_redirects is True, also returns pages
           that link to a redirect pointing to the page.
-        If offset is non-zero, skips that many references before loading.
         """
         site = self.site()
-        path = site.references_address(self.urlname())
-        if offset:
-            path = path + "&offset=%i" % offset
+        basepath = site.references_address(self.urlname())
+        _from = "0"
         
         output(u'Getting references to %s' % self.aslink())
         delay = 1
-        while True:
-            txt = site.getUrl(path)
-            # trim irrelevant portions of page
-            # NOTE: this code relies on the way MediaWiki 1.5 formats the
-            #       "Whatlinkshere" special page; if future versions change the
-            #       format, they may break this code.
-            startmarker = u"<!-- start content -->"
-            endmarker = u"<!-- end content -->"
-            try:
-                start = txt.index(startmarker) + len(startmarker)
-                end = txt.index(endmarker)
-            except ValueError:
-                output(
-            u"Invalid page received from server.... Retrying in %i minutes."
-                       % delay)
-                time.sleep(delay * 60.)
-                delay *= 2
-                if delay > 30:
-                    delay = 30
-                continue
-            txt = txt[start:end]
-            break
-        try:
-            start = txt.index(u"<ul>")
-            end = txt.rindex(u"</ul>")
-        except ValueError:
-            # No incoming links found on page
-            return []
-        txt = txt[start:end+5]
-
-        txtlines = txt.split(u"\n")
-        listitempattern = re.compile(r"<li><a href=.*>(.*)</a></li>")
-        redirectpattern = re.compile(r"<li><a href=.*>(.*)</a> \(.*\)")
-        redirect = 0
         refTitles = set()  # use a set to avoid duplications
         redirTitles = set()
-        for num, line in enumerate(txtlines):
-            if line == u"</ul>":
-                continue
-            if not redirect:
-                item = listitempattern.search(line)
-                if item:
-                    refTitles.add(item.group(1))
+
+        # NOTE: this code relies on the way MediaWiki 1.6 formats the
+        #       "Whatlinkshere" special page; if future versions change the
+        #       format, they may break this code.
+        startmarker = u"<!-- start content -->"
+        endmarker = u"<!-- end content -->"
+        listitempattern = re.compile(r"<li><a href=.*>(.*)</a></li>")
+        redirectpattern = re.compile(r"<li><a href=.*>(.*)</a> \(.*\)")
+        nextpattern = re.compile(
+r'&amp;limit=[0-9]+&amp;from=([0-9]+)" title="Special:Whatlinkshere/[^"]*">next [0-9]+</a>')
+        more = True
+
+        while more:
+            path = basepath + "&from=%s" % _from
+            while True:
+                txt = site.getUrl(path)
+                # trim irrelevant portions of page
+                try:
+                    start = txt.index(startmarker) + len(startmarker)
+                    end = txt.index(endmarker)
+                except ValueError:
+                    output(
+                u"Invalid page received from server.... Retrying in %i minutes."
+                           % delay)
+                    time.sleep(delay * 60.)
+                    delay *= 2
+                    if delay > 30:
+                        delay = 30
                     continue
-                item = redirectpattern.search(line)
-                if item:
-                    refTitles.add(item.group(1))
-                    redirTitles.add(item.group(1))
-                    redirect += 1
-                else:
-                    output(u"DBG> Unparsed line:")
-                    output(u"(%i) %s" % (num, line))
+                txt = txt[start:end]
+                break
+            m = nextpattern.search(txt)
+            if m:
+                _from = m.group(1)
             else:
-                if line == u"</li>":
+                _from = "0"
+                more = False
+            try:
+                start = txt.index(u"<ul>")
+                end = txt.rindex(u"</ul>")
+            except ValueError:
+                # No incoming links found on page
+                return []
+            txt = txt[start:end+5]
+
+            txtlines = txt.split(u"\n")
+            redirect = 0
+            for num, line in enumerate(txtlines):
+                if line == u"</ul>":
                     # end of list of references to redirect page
-                    redirect -= 1
+                    if redirect:
+                        redirect -= 1
                     continue
-                item = listitempattern.search(line)
-                if item:
-                    # this is a reference to a redirect page
-                    if follow_redirects:
-                        refTitles.add(item.group(1))
+                if line == u"</li>":
                     continue
                 item = redirectpattern.search(line)
                 if item:
-                    # this is a double-redirect
-                    output(u"WARNING: [[%s]] is a double-redirect."
-                           % item.group(1))
-                    if follow_redirects:
+                    if redirect:
+                        output(u"WARNING: [[%s]] is a double-redirect."
+                               % item.group(1))
+                    if follow_redirects or not redirect:
                         refTitles.add(item.group(1))
                         redirTitles.add(item.group(1))
                     redirect += 1
                 else:
-                    output(u"DBG> Unparsed line:")
-                    output(u"(%i) %s" % (num, line))
+                    item = listitempattern.search(line)
+                    if item:
+                        if follow_redirects or not redirect:
+                            refTitles.add(item.group(1))
+                            continue
+                    else:
+                        output(u"DBG> Unparsed line:")
+                        output(u"(%i) %s" % (num, line))
         refTitles = list(refTitles)
         refTitles.sort()
         refPages = []
         # create list of Page objects
         for refTitle in refTitles:
             page = Page(site, refTitle)
-            if refTitle in redirTitles:
-                page._redirarg = self.title()
             refPages.append(page)
         return refPages
 
@@ -1190,6 +1187,7 @@ class Page(object):
                         data = data[ibegin:iend]
                     output(data)
                     return False
+
 
 class GetAll(object):
     def __init__(self, site, pages, throttle, force):

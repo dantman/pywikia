@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
@@ -611,7 +611,7 @@ class ReplaceRobot:
                 wikipedia.output(u'Page %s not found' % page.title())
                 continue
             except wikipedia.IsRedirectPage:
-                continue
+                original_text = page.get(get_redirect=True)
             match = self.checkExceptions(original_text)
             # skip all pages that contain certain texts
             if match:
@@ -787,7 +787,7 @@ def main():
         gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
     elif source == 'ref':
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
-        gen = pagegenerators.AllReferringPageGenerator(referredPage)
+        gen = pagegenerators.ReferringPageGenerator(referredPage)
     elif source == None or len(commandline_replacements) not in [0, 2]:
         # syntax error, show help text from the top of this file
         wikipedia.output(__doc__, 'utf-8')
