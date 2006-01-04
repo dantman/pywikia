@@ -33,7 +33,7 @@ template = {
     'ca': 'Enllaç AD',
     'en': 'Link FA',
     'es': 'destacado',
-    'fr': 'Lien_AdQ',
+    'fr': 'lien AdQ',
     'it': 'Link AdQ',
     'no': 'Link UA',
     'vi': 'Liên kết chọn lọc',
