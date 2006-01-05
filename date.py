@@ -1038,12 +1038,19 @@ addFmt( dayMnthFmts, 'vi', False,       makeMonthList( u"%%d tháng %d" ))
 addFmt( dayMnthFmts, 'zh', False,       makeMonthList( u"%d月%%d日" ))
 
 # Walloon names depend on the day number, thus we must generate various different patterns
-for i in range(12):
+# For month names begining with a consonant...
+for i in [0,1,2,4,5,6,8,10,11]:
     formats[dayMnthFmts[i]]['wa'] = eval(
         (u'lambda v: multi( v, [' +
             u'(lambda x: dh_noConv( x, u"%%dî d\' %s" ), lambda x: x == 1),' +
             u'(lambda x: dh_noConv( x, u"%%d d\' %s" ), lambda x: x in [2,3,20,22,23]),' +
             u'(lambda x: dh_noConv( x, u"%%d di %s" ), lambda x: True)])') % (waMonthNames[i],waMonthNames[i],waMonthNames[i]))
+# For month names begining with a vowel...
+for i in [3,7,9]:
+    formats[dayMnthFmts[i]]['wa'] = eval(
+        (u'lambda v: multi( v, [' +
+            u'(lambda x: dh_noConv( x, u"%%dî d\' %s" ), lambda x: x == 1),' +
+            u'(lambda x: dh_noConv( x, u"%%d d\' %s" ), lambda x: True)])') % (waMonthNames[i],waMonthNames[i]))
 
 
 #
