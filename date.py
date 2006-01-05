@@ -672,7 +672,7 @@ formats = {
         'tt' :      lambda v: dh_dec( v, u'%d. yıllar' ),
         'uk' :  lambda v: multi( v, [
             (lambda x: dh_noConv( x, u'%d-ві' ), lambda x: x == 0 or (x % 100 == 40)),
-            (lambda x: dh_noConv( x, u'%d-ні' ), lambda x: x == 1000),
+            (lambda x: dh_noConv( x, u'%d-ні' ), lambda x: x % 1000 == 0),
             (lambda x: dh_noConv( x, u'%d-ті' ), lambda x: True)]),
         'wa' :      lambda v: dh_dec( v, u'Anêyes %d' ),
         'zh' :      lambda v: dh_dec( v, u'%d年代' ),
@@ -782,6 +782,7 @@ formats = {
         'scn':      lambda v: dh_roman( v, u'Seculu %s a. C.' ),
         'sl' :      lambda v: dh_noConv( v, u'%d. stoletje pr. n. št.' ),
         'tt' :      lambda v: dh_noConv( v, u'MA %d. yöz' ),
+        'uk' :      lambda v: dh_noConv( v, u'%d століття до Р.Х.' ),
         'zh' :      lambda v: dh_noConv( v, u'前%d世纪' ),
     },
 

@@ -151,6 +151,17 @@ class Family(family.Family):
             'wa': u'Wikipedia copene',
             'yi': u'װיקיפּעדיע רעדן',
         }
+		
+
+        self.namespaces[102] = {
+			'_default': u'WikiProject',
+			'es': u'Wikiproyecto',
+		}
+            
+        self.namespaces[103] = {
+			'_default': u'WikiProject talk',
+			'es': u'Wikiproyecto Discusión',
+		}
             
         self.disambiguationTemplates = {
             '_default': [u'Disambig'],

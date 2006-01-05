@@ -32,7 +32,6 @@ if __name__ == "__main__":
 		site = wikipedia.getSite()
 		fam = site.family
 
-		i = 1
 		for lang in fam.knownlanguages:
 			try:
 				langsite = wikipedia.getSite(lang)
