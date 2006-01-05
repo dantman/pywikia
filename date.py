@@ -24,7 +24,7 @@ import wikipedia
 # Different collections of well known formats
 #
 enMonthNames    = [ u'January', u'February', u'March', u'April', u'May', u'June', u'July', u'August', u'September', u'October', u'November', u'December' ]
-
+waMonthNames    = [ u"djanvî", u"fevrî", u"måss", u"avri", u"may", u"djun", u"djulete", u"awousse", u"setimbe", u"octôbe", u"nôvimbe", u"decimbe" ]
 dayMnthFmts     = [ str(s) for s in enMonthNames ]      # convert to ascii
 yrMnthFmts      = [ 'Year_' + s for s in dayMnthFmts ]  # e.g. 'Year_January'
 adFormats       = [ 'MillenniumAD', 'CenturyAD', 'DecadeAD', 'YearAD' ]
@@ -378,7 +378,7 @@ formats = {
             'ur' :      lambda v: slh( v, [u"جنوری", u"فروری", u"مارچ", u"اپريل", u"مئ", u"جون", u"جولائ", u"اگست", u"ستمبر", u"اکتوبر", u"نومبر", u"دسمبر"] ),
             'vi' :      lambda v: slh( v, [u"tháng một", u"tháng hai", u"tháng ba", u"tháng tư", u"tháng năm", u"tháng sáu", u"tháng bảy", u"tháng tám", u"tháng chín", u"tháng mười", u"tháng mười một", u"tháng 12"] ),
             'vo' :      lambda v: slh( v, [u"Yanul", u"Febul", u"Mäzul", u"Prilul", u"Mayul", u"Yunul", u"Yulul", u"Gustul", u"Setul", u"Tobul", u"Novul", u"Dekul"] ),
-            'wa' :      lambda v: slh( v, [u"djanvî", u"fevrî", u"måss", u"avri", u"may", u"djun", u"djulete", u"awousse", u"setimbe", u"octôbe", u"nôvimbe", u"decimbe"] ),
+            'wa' :      lambda v: slh( v, waMonthNames ),
             'zh' :      lambda v: slh( v, makeMonthList( u"%d月" )),
             'zh-min-nan': lambda v: slh( v, [u"It-goe̍h", u"Jī-goe̍h", u"Saⁿ-goe̍h", u"Sì-goe̍h", u"Gō·-goe̍h", u"La̍k-goe̍h", u"Chhit-goe̍h", u"Peh-goe̍h", u"Káu-goe̍h", u"Cha̍p-goe̍h", u"Cha̍p-it-goe̍h", u"Cha̍p-jī-goe̍h"] ),
             #'af' :      lambda v: slh( v, [u'Januarie', u'Februarie', u'Maart', u'April', u'Mei', u'Junie', u'Julie', u'Augustus', u'September', u'Oktober', u'November', u'Desember'] ),
@@ -673,6 +673,7 @@ formats = {
         'tt' :      lambda v: dh_dec( v, u'%d. yıllar' ),
         'wa' :      lambda v: dh_dec( v, u'Anêyes %d' ),
         'zh' :      lambda v: dh_dec( v, u'%d年代' ),
+        'zh-min-nan' : lambda v: dh_dec( v, u'%d nî-tāi' ),
     },
 
     'DecadeBC': {
@@ -748,6 +749,7 @@ formats = {
         'uk' :      lambda v: dh_noConv( v, u'%d століття' ),
         'wa' :      lambda v: dh_noConv( v, u'%dinme sieke' ),
         'zh' :      lambda v: dh_noConv( v, u'%d世纪' ),
+        'zh-min-nan' : lambda v: dh_noConv( v, u'%d sè-kí' ),
     },
 
     'CenturyBC': {
@@ -1033,10 +1035,15 @@ addFmt( dayMnthFmts, 'tt', False,       makeMonthNamedList( 'tt', u"%%d. %s", Tr
 addFmt( dayMnthFmts, 'uk', False,       [ u"%d січня", u"%d лютого", u"%d березня", u"%d квітня", u"%d травня", u"%d червня", u"%d липня", u"%d серпня", u"%d вересня", u"%d жовтня", u"%d листопада", u"%d грудня" ])
 addFmt( dayMnthFmts, 'ur', False,       [ u"%d جنوری", u"%d فروری", u"%d مارچ", u"%d اپریل", u"%d مئ", u"%d جون", u"%d جلائ", u"%d اگست", u"%d ستمب", u"%d اکتوبر", u"%d نومب", u"%d دسمب" ])
 addFmt( dayMnthFmts, 'vi', False,       makeMonthList( u"%%d tháng %d" ))
-
-# Walloon names depend on the day number; taking the most common form
-addFmt( dayMnthFmts, 'wa', False,       [ u"%d di djanvî", u"%d di fevrî", u"%d di måss", u"%d di avri", u"%d di may", u"%d di djun", u"%d di djulete", u"%d d' awousse", u"%d di setimbe", u"%d d' octôbe", u"%d di nôvimbe", u"%d di decimbe" ])
 addFmt( dayMnthFmts, 'zh', False,       makeMonthList( u"%d月%%d日" ))
+
+# Walloon names depend on the day number, thus we must generate various different patterns
+for i in range(12):
+    formats[dayMnthFmts[i]]['wa'] = eval(
+        (u'lambda v: multi( v, [' +
+            u'(lambda x: dh_noConv( x, u"%%dî d\' %s" ), lambda x: x == 1),' +
+            u'(lambda x: dh_noConv( x, u"%%d d\' %s" ), lambda x: x in [2,3,20,22,23]),' +
+            u'(lambda x: dh_noConv( x, u"%%d di %s" ), lambda x: True)])') % (waMonthNames[i],waMonthNames[i],waMonthNames[i]))
 
 
 #
