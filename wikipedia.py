@@ -571,8 +571,10 @@ class Page(object):
         #       format, they may break this code.
         startmarker = u"<!-- start content -->"
         endmarker = u"<!-- end content -->"
-        listitempattern = re.compile(r"<li><a href=.*>(.*)</a></li>")
-        redirectpattern = re.compile(r"<li><a href=.*>(.*)</a> \(.*\)")
+        listitempattern = re.compile(
+            r"<li><a href=.*>(.*)</a>(?: \(.*\) )?</li>")
+        redirectpattern = re.compile(
+            r"<li><a href=.*>(.*)</a> \(.*\) <ul>")
         nextpattern = re.compile(
 r'&amp;limit=[0-9]+&amp;from=([0-9]+)" title="Special:Whatlinkshere/[^"]*">next [0-9]+</a>')
         more = True
@@ -612,32 +614,49 @@ r'&amp;limit=[0-9]+&amp;from=([0-9]+)" title="Special:Whatlinkshere/[^"]*">next 
 
             txtlines = txt.split(u"\n")
             redirect = 0
+            ignore_redirect = False
             for num, line in enumerate(txtlines):
                 if line == u"</ul>":
                     # end of list of references to redirect page
-                    if redirect:
+                    if ignore_redirect:
+                        ignore_redirect = False
+                    elif redirect:
                         redirect -= 1
                     continue
                 if line == u"</li>":
                     continue
-                item = redirectpattern.search(line)
-                if item:
-                    if redirect:
-                        output(u"WARNING: [[%s]] is a double-redirect."
-                               % item.group(1))
-                    if follow_redirects or not redirect:
-                        refTitles.add(item.group(1))
-                        redirTitles.add(item.group(1))
-                    redirect += 1
-                else:
-                    item = listitempattern.search(line)
-                    if item:
-                        if follow_redirects or not redirect:
-                            refTitles.add(item.group(1))
-                            continue
+                if ignore_redirect:
+                    continue
+                lmatch = None
+                rmatch = redirectpattern.search(line)
+                if rmatch:
+                    # make sure this is really a redirect to this page
+                    # (MediaWiki will mark as a redirect any link that follows
+                    # a #REDIRECT marker, not just the first one).
+                    linkpage = Page(site, rmatch.group(1))
+                    if linkpage.getRedirectTarget() != self.sectionFreeTitle():
+                        ignore_redirect = True
+                        lmatch = rmatch
                     else:
-                        output(u"DBG> Unparsed line:")
-                        output(u"(%i) %s" % (num, line))
+                        if redirect:
+                            output(u"WARNING: [[%s]] is a double-redirect."
+                                   % rmatch.group(1))
+                        if follow_redirects or not redirect:
+                            refTitles.add(rmatch.group(1))
+                            redirTitles.add(rmatch.group(1))
+                        redirect += 1
+                # the same line may match both redirectpattern and
+                # listitempattern, because there is no newline after
+                # a redirect link
+                if not lmatch:
+                    lmatch = listitempattern.search(line)
+                if lmatch:
+                    if follow_redirects or not redirect:
+                        refTitles.add(lmatch.group(1))
+                        continue
+                if rmatch is None and lmatch is None:
+                    output(u"DBG> Unparsed line:")
+                    output(u"(%i) %s" % (num, line))
         refTitles = list(refTitles)
         refTitles.sort()
         refPages = []
@@ -1187,7 +1206,6 @@ r'&amp;limit=[0-9]+&amp;from=([0-9]+)" title="Special:Whatlinkshere/[^"]*">next 
                         data = data[ibegin:iend]
                     output(data)
                     return False
-
 
 class GetAll(object):
     def __init__(self, site, pages, throttle, force):
