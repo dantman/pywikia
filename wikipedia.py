@@ -405,31 +405,6 @@ class Page(object):
                 if retry_idle_time > 30:
                     retry_idle_time = 30
                 continue
-#            get_throttle.setDelay(time.time() - starttime)
-    
-            # Look for the edit token
-            R = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
-            tokenloc = R.search(text)
-            if tokenloc:
-                self.site().putToken(tokenloc.group(1), sysop = sysop)
-            elif not self.site().getToken(getalways = False):
-                self.site().putToken('', sysop = sysop)
-    
-            # Look if the page is on our watchlist
-            R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
-            matchWatching = R.search(text)
-            if matchWatching:
-                isWatched = True
-            m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
-            if m:
-                self._editTime = m.group(1)
-            else:
-                self._editTime = "0"
-            m = re.search('value="(\d+)" name=["\']wpStarttime["\']', text)
-            if m:
-                self._startTime = m.group(1)
-            else:
-                self._startTime = "0"
             # Extract the actual text from the textedit field
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
@@ -447,8 +422,38 @@ class Page(object):
                         retry_idle_time = 30
                         continue
             i2 = re.search('</textarea>', text).start()
-            if i2-i1 < 2:
-                raise NoPage(self.site(), self.title())
+            # We now know that there is a textarea.
+            # Look for the edit token
+            Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+            tokenloc = Rwatch.search(text)
+            if tokenloc:
+                self.site().putToken(tokenloc.group(1), sysop = sysop)
+            elif not self.site().getToken(getalways = False):
+                self.site().putToken('', sysop = sysop)
+    
+            # Find out if page actually exists. Only existing pages have a 
+            # version history tab. 
+            RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
+            matchVersionTab = RversionTab.search(text)
+            if not matchVersionTab:
+                raise NoPage(self.site(), self.title())                
+            # Look if the page is on our watchlist
+            R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
+            matchWatching = R.search(text)
+            if matchWatching:
+                isWatched = True
+            # Get timestamps
+            m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
+            if m:
+                self._editTime = m.group(1)
+            else:
+                self._editTime = "0"
+            m = re.search('value="(\d+)" name=["\']wpStarttime["\']', text)
+            if m:
+                self._startTime = m.group(1)
+            else:
+                self._startTime = "0"
+            # Now process the contents of the textarea
             m = self.site().redirectRegex().match(text[i1:i2])
             if self._editTime == "0":
                 output(u"DBG> page may be locked?!")
