@@ -325,7 +325,7 @@ class Page(object):
         """
         # \ufffd represents a badly encoded character, the other characters are
         # disallowed by MediaWiki.
-        for illegalChar in ['#', '+', '<', '>', '[', ']', '|', '{', '}', '\n', u'\ufffd']:
+        for illegalChar in ['#', '<', '>', '[', ']', '|', '{', '}', '\n', u'\ufffd']:
             if illegalChar in self.sectionFreeTitle():
                 output(u'Illegal character in %s!' % self.aslink())
                 raise NoPage('Illegal character in %s!' % self.aslink())
