@@ -33,7 +33,11 @@ You can run the bot with the following commandline parameters:
                you use -fix.
                Currently available predefined fixes are:
                    * HTML - convert HTML tags to wiki syntax, and fix XHTML
--namespace:n - Number of namespace to process.
+-namespace:n - Number of namespace to process. The parameter can be used
+               multiple times. It works in combination with all other
+               parameters, except for the -start parameter. If you e.g. want to
+               iterate over all user pages starting at User:M, use
+               -start:User:M.
 -always      - Don't prompt you for each replacement
 other:       - First argument is the old text, second argument is the new text.
                If the -regex argument is given, the first argument will be
