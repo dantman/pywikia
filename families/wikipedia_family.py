@@ -147,6 +147,7 @@ class Family(family.Family):
             'ty': u'Discussion Wikipedia',
             'udm': u'0',
             'uk': u'Обговорення Wikipedia',
+            'vec':u'Discussion Wikipedia',
             'vi': u'Thảo luận Wikipedia',
             'wa': u'Wikipedia copene',
             'yi': u'װיקיפּעדיע רעדן',
