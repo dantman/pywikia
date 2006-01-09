@@ -215,4 +215,4 @@ class UI:
         d = CustomMessageBox(self.parent, question, options, hotkeys)
         self.parent.wait_window(d.top)
         answer = d.ask()
-        return answer
+        return answer.lower()

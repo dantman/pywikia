@@ -80,7 +80,7 @@ class UI:
             prompt = '%s (%s)' % (question, ', '.join(options))
             answer = self.input(prompt)
             if answer.lower() in hotkeys or answer.upper() in hotkeys:
-                return answer
+                return answer.lower()
             elif default and answer=='':		# empty string entered
                 return default
 
