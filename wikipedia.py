@@ -546,15 +546,19 @@ class Page(object):
         return self.namespace() == 6
 
     def isDisambig(self):
-        defdis = self.site().family.disambig( "_default" )
-        locdis = self.site().family.disambig( self._site.lang )
+        if not hasattr(self, '_isDisambig'):
+            defdis = self.site().family.disambig( "_default" )
+            locdis = self.site().family.disambig( self._site.lang )
 
-        for tn in self.templates():
-            tn = tn[0].upper() + tn[1:]
-            tn = tn.replace('_', ' ')
-            if tn in defdis or tn in locdis:
-                return True
-        return False
+            for tn in self.templates():
+                tn = tn[0].upper() + tn[1:]
+                tn = tn.replace('_', ' ')
+                if tn in defdis or tn in locdis:
+                    _isDisambig = True
+                    break
+            else:
+                _isDisambig = False
+        return _isDisambig
 
     def getReferences(self, follow_redirects=True):
         """
