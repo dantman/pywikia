@@ -408,6 +408,7 @@ class Page(object):
             # Extract the actual text from the textedit field
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
+                i2 = re.search('</textarea>', text).start()
             except AttributeError:
                 # find out if the username or IP has been blocked
                 if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
@@ -420,8 +421,7 @@ class Page(object):
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
-                        continue
-            i2 = re.search('</textarea>', text).start()
+                    continue
             # We now know that there is a textarea.
             # Look for the edit token
             Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
