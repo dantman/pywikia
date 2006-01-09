@@ -567,8 +567,7 @@ class Page(object):
           that link to a redirect pointing to the page.
         """
         site = self.site()
-        basepath = site.references_address(self.urlname())
-        _from = "0"
+        path = site.references_address(self.urlname())
         
         output(u'Getting references to %s' % self.aslink())
         delay = 1
@@ -585,12 +584,12 @@ class Page(object):
         redirectpattern = re.compile(
             r"<li><a href=.*>(.*)</a> \(.*\) <ul>")
         nextpattern = re.compile(
-r'&amp;limit=[0-9]+&amp;from=([0-9]+)" title="Special:Whatlinkshere/[^"]*">next [0-9]+</a>')
+            r'\(<a href="([^"]*)" title="Special:Whatlinkshere/[^"]*">next [0-9]+</a>\)')
         more = True
 
         while more:
-            path = basepath + "&from=%s" % _from
             while True:
+                print path
                 txt = site.getUrl(path)
                 # trim irrelevant portions of page
                 try:
@@ -607,18 +606,17 @@ r'&amp;limit=[0-9]+&amp;from=([0-9]+)" title="Special:Whatlinkshere/[^"]*">next 
                     continue
                 txt = txt[start:end]
                 break
-            m = nextpattern.search(txt)
-            if m:
-                _from = m.group(1)
+            nexturl = nextpattern.search(txt)
+            if nexturl:
+                path = nexturl.group(1).replace("&amp;", "&")
             else:
-                _from = "0"
                 more = False
             try:
                 start = txt.index(u"<ul>")
                 end = txt.rindex(u"</ul>")
             except ValueError:
                 # No incoming links found on page
-                return []
+                continue
             txt = txt[start:end+5]
 
             txtlines = txt.split(u"\n")
