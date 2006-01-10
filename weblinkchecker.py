@@ -304,10 +304,10 @@ class WeblinkCheckerRobot:
         # often come from templates where URLs are parameters, so as a
         # workaround we won't allow them inside links here.
         linkR = re.compile(r'http[s]?://[^\]\s<>}"]*[^\]\s\)\.:;,<>}"]')
+        # Remove HTML comments in URLs as well as URLs in HTML comments
+        text = re.sub('(?s)<!--.*?-->', '', text)
         urls = linkR.findall(text)
         for url in urls:
-            # Remove HTML comments in URLs
-            url = re.sub('<!--.*?-->', '', url)
             # Limit the number of threads started at the same time. Each
             # thread will check one page, then die.
             while threading.activeCount() >= config.max_external_links:
