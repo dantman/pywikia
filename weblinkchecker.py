@@ -80,7 +80,7 @@ class LinkChecker(object):
         #header = {'User-agent': 'PythonWikipediaBot/1.0'}
         # we fake being Firefox because some webservers block
         # unknown clients
-        self.header = {'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050511 Firefox/1.0.4 SUSE/1.0.4-0.3'}
+        self.header = {'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5'}
 
 
     def resolveRedirect(self):
@@ -330,7 +330,7 @@ def main():
         pageTitle = ' '.join(pageTitle)
         page = wikipedia.Page(wikipedia.getSite(), pageTitle)
         gen = iter([page])
-    gen = pagegenerators.PreloadingGenerator(gen)
+    gen = pagegenerators.PreloadingGenerator(gen, pageNumber = 240)
     gen = pagegenerators.RedirectFilterPageGenerator(gen)
     bot = WeblinkCheckerRobot(gen)
     try:
