@@ -51,7 +51,7 @@ def rawtoclean(c):
 def isdate(s):
     """returns true iff s is a date or year
     """
-    dict,val = date.getDictionaryYear( wikipedia.getSite().language(), s ) 
+    dict,val = date.getAutoFormat( wikipedia.getSite().language(), s ) 
     return dict is not None
 
 def needcheck(pl):

@@ -332,7 +332,7 @@ class Subject(object):
 
             # make sure that none of the linked items is an auto item
             if globalvar.skipauto:
-                dictName, year = date.getDictionaryYear(pl.site().language(), pl.title())
+                dictName, year = date.getAutoFormat(pl.site().language(), pl.title())
                 if dictName != None:
                     wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.inpl.site().language(), self.inpl.title(), pl.site().language(),pl.title(),dictName,year))                
 
@@ -969,7 +969,7 @@ class InterwikiBot(object):
                         wikipedia.output(u'Skipping: %s is in the skip list' % page.title())
                         continue
                     if globalvar.skipauto:
-                        dictName, year = date.getDictionaryYear(page.site().language(), page.title())
+                        dictName, year = date.getAutoFormat(page.site().language(), page.title())
                         if dictName != None:
                             wikipedia.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
                             continue

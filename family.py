@@ -1180,6 +1180,7 @@ class Family:
             
             101: {
                 '_default': u'Portal talk',
+                'ca': u'Portal Discussió',
                 'cs': u'Portál diskuse',
                 'de': u'Portal Diskussion',
                 'eo': u'Portala diskuto',

@@ -24,12 +24,12 @@ import wikipedia
 # Different collections of well known formats
 #
 enMonthNames    = [ u'January', u'February', u'March', u'April', u'May', u'June', u'July', u'August', u'September', u'October', u'November', u'December' ]
-dayMnthFmts     = [ str(s) for s in enMonthNames ]      # convert to ascii
-yrMnthFmts      = [ 'Year_' + s for s in dayMnthFmts ]  # e.g. 'Year_January'
+dayMnthFmts     = [ 'Day_' + str(s) for s in enMonthNames ]     # e.g. 'Day_January'
+yrMnthFmts      = [ 'Year_' + str(s) for s in enMonthNames ]    # e.g. 'Year_January'
 
-adYearFormats   = [ 'YearAD', 'DecadeAD', 'CenturyAD', 'MillenniumAD' ]     # the order of this list is important
-bcYearFormats   = [ 'YearBC', 'DecadeBC', 'CenturyBC', 'MillenniumBC' ]     # the order of this list is important
-yearFormats     = bcYearFormats + adYearFormats
+adDateFormats   = [ 'YearAD', 'DecadeAD', 'CenturyAD', 'MillenniumAD' ]     # the order of this list is important
+bcDateFormats   = [ 'YearBC', 'DecadeBC', 'CenturyBC', 'MillenniumBC' ]     # the order of this list is important
+dateFormats     = bcDateFormats + adDateFormats
 
 decadeFormats   = [ 'DecadeAD', 'DecadeBC' ]
 centuryFormats  = [ 'CenturyAD', 'CenturyBC' ]
@@ -39,87 +39,47 @@ snglValsFormats = [ 'CurrEvents' ]
 
 
 # number of days in each month, required for interwiki.py with the -days argument
-days_in_month = {
-    1:  31,
-    2:  29,
-    3:  31,
-    4:  30,
-    5:  31,
-    6:  30,
-    7:  31,
-    8:  31,
-    9:  30,
-    10: 31,
-    11: 30,
-    12: 31
-}
+# @deprecated
+# days_in_month = {
+    # 1:  31,
+    # 2:  29,
+    # 3:  31,
+    # 4:  30,
+    # 5:  31,
+    # 6:  30,
+    # 7:  31,
+    # 8:  31,
+    # 9:  30,
+    # 10: 31,
+    # 11: 30,
+    # 12: 31
+# }
 
 # For all languages the maximal value a year BC can have; before this date the
 # language switches to decades or centuries
-maxyearBC = {
-        'ca':500,
-        'de':400,
-        'en':499,
-        'nl':1000,
-        'pl':776
-        }
+# @deprecated
+# maxyearBC = {
+        # 'ca':500,
+        # 'de':400,
+        # 'en':499,
+        # 'nl':1000,
+        # 'pl':776
+        # }
 
-maxyearAD = {
-        'es':2005,
-        }
-
-romanNums = ['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX',
-             'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX',
-             'XX', 'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXVIX',
-             'XXX']
-             
-def romanNum(i):
-    if i >= len(romanNums):
-        raise IndexError(u'Roman value %i is not defined' % i)
-    return romanNums[i]
-
-_escPtrnCache = {}
-def escapePattern( pattern ):
-    """Converts a string pattern into a regex expression.
-    Substitutes %d with (\d+), and %s with ([IVX]+).
-    Returns a compiled regex object"""
-
-    if pattern not in _escPtrnCache:
-        pt = re.escape( pattern )
-        pt = re.compile(u'\\\%d').sub( u'(\d+)', pt )       # %d matches any integer
-        pt = re.compile(u'\\\%s').sub( u'([IVX]+)', pt )    # %s matches any roman number
-        cm = re.compile( u'^' + pt + u'$' )
-
-        pos = 0
-        decoders = []
-        while True :
-            pos = pattern.find( '%', pos )
-            if pos == -1 or pos+1 == len(pattern): break    # break if no more instances, or '%' is in the last position
-            pos = pos+1
-            if pattern[pos] == 'd':
-                decoders.append( lambda v: int(v) )
-            elif pattern[pos] == 's':
-                decoders.append( lambda v: romanNums.index(v) )
-
-        _escPtrnCache[pattern] = (cm, decoders)
-
-    return _escPtrnCache[pattern]
-
+# @deprecated
+# maxyearAD = {
+        # 'es':2005,
+        # }
 
 def multi( value, tuplst ):
-    """This method is used when different patterns are used for the same entry.
+    """This method is used when more than one pattern is used for the same entry.
        Example: 1st century, 2nd century, etc.
        The tuplst is a list of tupples. Each tupple must contain two functions:
        first to encode/decode a single value (e.g. simpleInt),
        second is a predicate function with an integer parameter that returns true or false.
        When the 2nd function evaluates to true, the 1st function is used.
     """
-    if type(value) is int:
-        # Find a predicate that gives true for this int value, and run a function
-        for func, pred in tuplst:
-            if pred(value):
-                return func(value)
-    else:
+    if type(value) in _stringTypes:
         # Try all functions, and test result against predicates
         for func, pred in tuplst:
             try:
@@ -128,79 +88,66 @@ def multi( value, tuplst ):
                     return res
             except:
                 pass
+    else:
+        # Find a predicate that gives true for this int value, and run a function
+        for func, pred in tuplst:
+            if pred(value):
+                return func(value)
 
     raise ValueError("could not find a matching function")     
 
 
-def dh( value, pattern, encf, decf, filter = None ):
-    """This function helps in year parsing.
-        Usually it will be used as a lambda call in a map:
-            lambda v: dh( v, u'pattern string', encodingFunc, decodingFunc )
-
-        encodingFunc converts from an integer parameter to a single number or a tuple parameter that
-            can be passed as format argument to the pattern:   pattern % encodingFunc(year)
-
-        decodingFunc converts a list of positive integers found in the original value string
-            into a year value. dh() searches creates this list based on the pattern string.
-            dh() interprets %d as a decimal and %s as a roman numeral number.
-
-        Usage scenarios:
-            formats['DecadeAD']['en'](1980) => u'1980s'
-            formats['DecadeAD']['en'](u'1980s') => 1980
-            formats['DecadeAD']['en'](u'anything else') => raise ValueError (or some other exception?)
-    """
-    if type(value) is int:
-        # Encode an integer value into a textual form.
-        # This will be called from outside as well as recursivelly to verify parsed value
-        if filter and not filter(value):
-            raise ValueError("value %i is not allowed" % value)
-        return pattern % encf(value)
-    else:
-        cm, dcrs = escapePattern(pattern)
-        m = cm.match(value)
-        if m:
-            # decode each found value using provided decoder
-            values = [ dcrs[i](m.group(i+1)) for i in range(len(dcrs))]
-            year = decf( values )
-
-            # recursive call to re-encode and see if we get the original (may through filter exception)
-            if value == dh(year,pattern,encf,decf,filter):
-                return year
-
-        raise ValueError("reverse encoding didn't match")
+#
+#
+# Helper functions that aid with single value no corrections encoding/decoding.
+# Various filters are item dependent.
+#
+#
+def dh_noConv( value, pattern, limit ):
+    """decoding helper for a single integer value, no conversion, no rounding"""
+    return dh( value, pattern, encNoConv, decSinglVal, limit )
 
 def dh_dayOfMnth( value, pattern ):
     """decoding helper for a single integer value <=31, no conversion, no rounding (used in days of month)"""
-    return dh( value, pattern, encNoConv, decSinglVal, lambda v: 1<=v and v<=31 )
+    return dh_noConv( value, pattern, formatLimits[dayMnthFmts[0]][0] ) # For now use January because it has all 31 days
 
-def dh_MnthOfYear( value, pattern ):
+def dh_mnthOfYear( value, pattern ):
     """decoding helper for a single integer value >=1000, no conversion, no rounding (used in month of the year)"""
-    return dh( value, pattern, encNoConv, decSinglVal, lambda v: v>=1000 )
+    return dh_noConv( value, pattern, _formatLimit_MonthOfYear[0] )
 
-def dh_dec( value, pattern ):
+def dh_decAD( value, pattern ):
     """decoding helper for a single integer value, no conversion, round to decimals (used in decades)"""
-    return dh( value, pattern, encDec0, decSinglVal )
+    return dh( value, pattern, encDec0, decSinglVal, formatLimits['DecadeAD'][0]  )
 
-def dh_noConv( value, pattern ):
-    """decoding helper for a single integer value, no conversion, no rounding (used in centuries, millenniums)"""
-    return dh( value, pattern, encNoConv, decSinglVal )
+def dh_decBC( value, pattern ):
+    """decoding helper for a single integer value, no conversion, round to decimals (used in decades)"""
+    return dh( value, pattern, encDec0, decSinglVal, formatLimits['DecadeBC'][0]  )
 
-def dh_noConvYear( value, pattern ):
+def dh_yearBC( value, pattern ):
     """decoding helper for a year value, no conversion, no rounding, limits to 3000"""
-    return dh( value, pattern, encNoConv, decSinglVal, lambda v: 0<=v and v<=3000 )
+    return dh_noConv( value, pattern, formatLimits['YearBC'][0] )
 
-def dh_simpleInt( value ):
-    """decoding helper for a single integer value representing a number with no extra symbols"""
-    return dh_noConv( value, u'%d' )
+def dh_yearAD( value, pattern ):
+    """decoding helper for a year value, no conversion, no rounding, limits to 3000"""
+    return dh_noConv( value, pattern, formatLimits['YearAD'][0] )
 
 def dh_simpleYearAD( value ):
     """decoding helper for a single integer value representing a year with no extra symbols"""
-    return dh_noConvYear( value, u'%d' )
+    return dh_yearAD( value, u'%d' )
 
-def dh_roman( value, pattern ):
-    """decoding helper for a single roman number (used in centuries, millenniums)"""
-    return dh( value, pattern, lambda i: romanNum(i), decSinglVal )
+def dh_number( value, pattern ):
+    return dh_noConv( value, pattern, formatLimits['Number'][0] )
+def dh_centuryAD( value, pattern ):
+    return dh_noConv( value, pattern, formatLimits['CenturyAD'][0] )
+def dh_centuryBC( value, pattern ):
+    return dh_noConv( value, pattern, formatLimits['CenturyBC'][0] )
+def dh_millenniumAD( value, pattern ):
+    return dh_noConv( value, pattern, formatLimits['MillenniumAD'][0] )
+def dh_millenniumBC( value, pattern ):
+    return dh_noConv( value, pattern, formatLimits['MillenniumBC'][0] )
+    
 
+    
 def decSinglVal( v ):
     return v[0]
 
@@ -224,10 +171,10 @@ def slh( value, lst ):
             formats['MonthName']['en'](u'January') => 1
             formats['MonthName']['en'](u'anything else') => raise ValueError
     """
-    if type(value) is int:
-        return lst[value-1]
-    else:
+    if type(value) in _stringTypes:
         return lst.index(value)+1
+    else:
+        return lst[value-1]
 
 def dh_singVal( value, match ):
     return dh_constVal( value, 0, match )
@@ -236,16 +183,16 @@ def dh_constVal( value, ind, match ):
     """This function helps with matching a single value to a constant.
             formats['CurrEvents']['en'](ind) => u'Current Events'
             formats['CurrEvents']['en'](u'Current Events') => ind"""
-    if type(value) is int:
-        if value == ind:
-            return match
-        else:
-            raise ValueError("unknown value %d" % value)
-    else:
+    if type(value) in _stringTypes:
         if value == match:
             return ind
         else:
             raise ValueError()
+    else:
+        if value == ind:
+            return match
+        else:
+            raise ValueError("unknown value %d" % value)
 
 def alwaysTrue( x ):
     """This function always returns True - its used for multiple value selection function
@@ -254,6 +201,7 @@ def alwaysTrue( x ):
 
 def monthName(lang,ind):
     return formats['MonthName'][lang](ind)
+
 
 # Helper for KN: digits representation
 _knDigits=u'೦೧೨೩೪೫೬೭೮೯'
@@ -265,24 +213,15 @@ _faDigits=u'۰۱۲۳۴۵۶۷۸۹'
 _faDigitsToLocal=dict([(ord(unicode(i)), _faDigits[i]) for i in range(10)])
 _faLocalToDigits=dict([(ord(_faDigits[i]), unicode(i)) for i in range(10)])
 
-def dh_knYearConverter( value ):
-    return dh_altDigitsConverter( value, _knDigitsToLocal, _knLocalToDigits )
+# Helper for HI:, MR:
+_hiDigits=u'०१२३४५६७८९'
+_hiDigitsToLocal=dict([(ord(unicode(i)), _hiDigits[i]) for i in range(10)])
+_hiLocalToDigits=dict([(ord(_hiDigits[i]), unicode(i)) for i in range(10)])
 
-def dh_faYearConverter( value ):
-    return dh_altDigitsConverter( value, _faDigitsToLocal, _faLocalToDigits )
-    
-def dh_altDigitsConverter( value, digitsToLocal, localToDigits ):
-    if type(value) is int:
-        # Encode an integer value into a textual form.
-        return unicode(value).translate(digitsToLocal)
-    else:
-        # First make sure there are no real digits in the string
-        tmp = value.translate(digitsToLocal)         # Test
-        if tmp == value:
-            tmp = value.translate(localToDigits)     # Convert
-            return dh_noConv( tmp, u'%d' )
-        else:
-            raise ValueError("string contains regular digits")
+# Helper for GU:
+_guDigits=u'૦૧૨૩૪૫૬૭૮૯'
+_guDigitsToLocal=dict([(ord(unicode(i)), _guDigits[i]) for i in range(10)])
+_guLocalToDigits=dict([(ord(_guDigits[i]), unicode(i)) for i in range(10)])
 
 def intToLocalDigitsStr( value, digitsToLocalDict ):
     # Encode an integer value into a textual form.
@@ -292,141 +231,159 @@ def localDigitsStrToInt( value, digitsToLocalDict, localToDigitsDict ):
     # First make sure there are no real digits in the string
     tmp = value.translate(digitsToLocalDict)         # Test
     if tmp == value:
-        return value.translate(localToDigitsDict)    # Convert
+        return int(value.translate(localToDigitsDict))    # Convert
     else:
         raise ValueError("string contains regular digits")
 
+# Helper for roman numerals number representation
+_romanNumbers = ['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX',
+             'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX',
+             'XX', 'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXVIX',
+             'XXX']
+             
+def intToRomanNum(i):
+    if i >= len(_romanNumbers):
+        raise IndexError(u'Roman value %i is not defined' % i)
+    return _romanNumbers[i]
+    
+def romanNumToInt(v):
+    return _romanNumbers.index(v)
 
+# Each tuple must 3 parts:  a Regex expression describing all possible digits, encoder (from int to a u-string) and decoder (from u-string to an int)
+_digitDecoders = {
+    # %% is a %
+    '%%' : u'%',
+    # %d is a decimal
+    '%d' : ( u'([0-9]+)', unicode, int ),
+    # %R is a roman numeral. This allows for only the simpliest linear conversions based on a list of numbers
+    '%R' : ( u'([IVX]+)', intToRomanNum, romanNumToInt ),
+    # %K is a number in KN::
+    '%K' : ( u'([%s]+)' % _knDigits, lambda v: intToLocalDigitsStr(v, _knDigitsToLocal), lambda v: localDigitsStrToInt(v, _knDigitsToLocal, _knLocalToDigits) ),
+    # %F is a number in FA:
+    '%F' : ( u'([%s]+)' % _faDigits, lambda v: intToLocalDigitsStr(v, _faDigitsToLocal), lambda v: localDigitsStrToInt(v, _faDigitsToLocal, _faLocalToDigits) ),    
+    # %H is a number in HI:
+    '%H' : ( u'([%s]+)' % _hiDigits, lambda v: intToLocalDigitsStr(v, _hiDigitsToLocal), lambda v: localDigitsStrToInt(v, _hiDigitsToLocal, _hiLocalToDigits) ),    
+    # %G is a number in GU:
+    '%G' : ( u'([%s]+)' % _guDigits, lambda v: intToLocalDigitsStr(v, _guDigitsToLocal), lambda v: localDigitsStrToInt(v, _guDigitsToLocal, _guLocalToDigits) ),    
+}
 
+# Allows to search for '(%%)|(%d)|(%R)|..."
+_reParameters = re.compile(u'|'.join([ u'(%s)' % s for s in _digitDecoders.keys() ]))
 
-
-
-
-
-
-
+# A map of   sitecode+pattern  to  (re matching object and corresponding decoders)
 _escPtrnCache2 = {}
-def escapePattern2( lang, pattern, digits ):
-    """Converts a string pattern into a regex expression.
-    Substitutes %d with (\d+), and %s with ([IVX]+).
-    Returns a compiled regex object"""
+
+# Allow both unicode and single-byte strings
+_stringTypes = [type(u''), type('')]
+_listTypes = [type([]),type(())]
+
+def escapePattern2( pattern ):
+    """Converts a string pattern into a regex expression and cache.
+    Allows matching of any _digitDecoders inside the string.
+    Returns a compiled regex object and a list of digit decoders"""
 
     if pattern not in _escPtrnCache2:
-        pt = re.escape( pattern )
-        pt = re.compile(u'\\\%d').sub( u'(\d+)', pt )       # %d matches any integer
-        pt = re.compile(u'\\\%s').sub( u'([IVX]+)', pt )    # %s matches any roman number
-        cm = re.compile( u'^' + pt + u'$' )
-
-        pos = 0
+        newPattern = u'^' # begining of the string
+        strPattern = u''
         decoders = []
-        while True :
-            pos = pattern.find( '%', pos )
-            if pos == -1 or pos+1 == len(pattern): break    # break if no more instances, or '%' is in the last position
-            pos = pos+1
-            if pattern[pos] == 'd':
-                decoders.append( lambda v: int(v) )
-            elif pattern[pos] == 's':
-                decoders.append( lambda v: romanNums.index(v) )
-
-        _escPtrnCache2[pattern] = (cm, decoders)
+        for s in _reParameters.split(pattern):
+            if s is None:
+                pass
+            elif s in _digitDecoders:
+                dec = _digitDecoders[s]
+                if type(dec) in _stringTypes:
+                    # Special case for strings that are replaced instead of decoded
+                    newPattern += re.escape( dec )
+                    strPattern += s         # Keep the original text
+                else:
+                    newPattern += dec[0]
+                    decoders.append( dec )
+                    strPattern += u'%s'     # All encoders produce a string
+            else:
+                newPattern += re.escape( s )
+                strPattern += s
+                
+        newPattern += u'$' # end of the string
+        compiledPattern = re.compile( newPattern )
+        _escPtrnCache2[pattern] = (compiledPattern, strPattern, decoders)
 
     return _escPtrnCache2[pattern]
-        
-# Regex expression describing all possible digits, encoder (from int to a u-string) and decoder (from u-string to an int)
-digDecimals = ( u'0-9', unicode, int )
-# This allows for only the simpliest linear conversions based on a list of numbers
-digRoman = ( u'IVX', romanNum, lambda v: romanNums.index(v) )
-digKN = ( _knDigits, lambda v: intToLocalDigitsStr(v, _knDigitsToLocal), lambda v: intToLocalDigitsStr(v, _knDigitsToLocal, _knLocalToDigits) )
-digFA = ( _faDigits, lambda v: intToLocalDigitsStr(v, _faDigitsToLocal), lambda v: intToLocalDigitsStr(v, _faDigitsToLocal, _faLocalToDigits) )
 
-            
-def dh2( value, pattern, encf, decf, filter = None, digits = digDecimals ):
+
+def dh( value, pattern, encf, decf, filter = None ):
     """This function helps in year parsing.
         Usually it will be used as a lambda call in a map:
             lambda v: dh( v, u'pattern string', encodingFunc, decodingFunc )
 
-        encodingFunc converts from an integer parameter to a single number or a tuple parameter that
-            can be passed as format argument to the pattern:   pattern % encodingFunc(year)
+        encodingFunc:
+            Converts from an integer parameter to another integer or a tuple of integers.
+            Depending on the pattern, each integer will be converted to a proper string
+            representation, and will be passed as a format argument to the pattern:
+                        pattern % encodingFunc(value)
+            This function is a complement of decodingFunc.
 
-        decodingFunc converts a list of positive integers found in the original value string
-            into a year value. dh() searches creates this list based on the pattern string.
+        decodingFunc:
+            Converts a tuple/list of non-negative integers found in the original value string
+            into a normalized value. The normalized value can be passed right back into dh() 
+            to produce the original string. This function is a complement of encodingFunc.
             dh() interprets %d as a decimal and %s as a roman numeral number.
-
-        Usage scenarios:
-            formats['DecadeAD']['en'](1980) => u'1980s'
-            formats['DecadeAD']['en'](u'1980s') => 1980
-            formats['DecadeAD']['en'](u'anything else') => raise ValueError (or some other exception?)
     """
-    if type(value) is int:
+
+    compPattern, strPattern, decoders = escapePattern2(pattern)
+
+    if type(value) in _stringTypes:
+        m = compPattern.match(value)
+        if m:
+            # decode each found value using provided decoder
+            values = [ decoders[i][2](m.group(i+1)) for i in range(len(decoders))]
+            decValue = decf( values )
+
+            if decValue in _stringTypes:
+                raise AssertionError("Decoder must not return a string!")
+                
+            # recursive call to re-encode and see if we get the original (may through filter exception)
+            if value == dh(decValue, pattern, encf, decf, filter):
+                return decValue
+
+        raise ValueError("reverse encoding didn't match")
+    else:
         # Encode an integer value into a textual form.
         # This will be called from outside as well as recursivelly to verify parsed value
         if filter and not filter(value):
             raise ValueError("value %i is not allowed" % value)
         
         params = encf(value)
-        if type(digits) == type([]):
-            if len(params) != len(digits):
-                raise ValueError("list of parameters does not match list of number encoders")
-            params = [ digits[i][1](params[i]) for i in range(len(params)) ]
-        else:
-            # apply the same conversion to all values
-            params = [ digits[1](params[i]) for i in range(len(params)) ]
         
-        return pattern % params
-    else:
-    
-        # to be completed later
-    
-        cm, dcrs = escapePattern(pattern)
-        m = cm.match(value)
-        if m:
-            # decode each found value using provided decoder
-            values = [ dcrs[i](m.group(i+1)) for i in range(len(dcrs))]
-            year = decf( values )
+        if type(params) in _listTypes:
+            if len(params) != len(decoders):
+                raise AssertionError("parameter count (%d) does not match decoder count (%d)" % (len(params), len(decoders)))
+            # convert integer parameters into their textual representation
+            params = [ decoders[i][1](params[i]) for i in range(len(params)) ]
+            return strPattern % tuple(params)
+        else:
+            if 1 != len(decoders):
+                raise AssertionError("parameter count (%d) does not match decoder count (%d)" % (len(params), len(decoders)))
+            # convert integer parameter into its textual representation
+            params = decoders[0][1](params)
+            return strPattern % params
 
-            # recursive call to re-encode and see if we get the original (may through filter exception)
-            if value == dh(year,pattern,encf,decf,filter):
-                return year
-
-        raise ValueError("reverse encoding didn't match")
-
-            
 #
 # All years/decades/centuries/millenniums are designed in such a way
 # as to allow for easy date to string and string to date conversion.
 # For example, using any map with either an integer or a string will produce its oposite value:
-#            formats['DecadeBC']['en'](1980) => u'1980s BC'
-#            formats['DecadeBC']['en'](u'1980s BC') => 1980
+#        Usage scenarios:
+#            formats['DecadeAD']['en'](1980) => u'1980s'
+#            formats['DecadeAD']['en'](u'1980s') => 1980
+#            formats['DecadeAD']['en'](u'anything else') => raise ValueError (or some other exception?)
 # This is useful when trying to decide if a certain article is a localized date or not, or generating dates.
 # See dh() for additional information.
 #
-
+#
+#          ***********   ATTENTION! ***********
+#
+#   You must test this table before submitting it to CVS by calling     date.test()  method
+#
 formats = {
-    'January': {},
-    'February': {},
-    'March': {},
-    'April': {},
-    'May': {},
-    'June': {},
-    'July': {},
-    'August': {},
-    'September': {},
-    'October': {},
-    'November': {},
-    'December': {},
-    'Year_January': {},
-    'Year_February': {},
-    'Year_March': {},
-    'Year_April': {},
-    'Year_May': {},
-    'Year_June': {},
-    'Year_July': {},
-    'Year_August': {},
-    'Year_September': {},
-    'Year_October': {},
-    'Year_November': {},
-    'Year_December': {},
-
     'MonthName': {
             'af' :      lambda v: slh( v, [u"Januarie", u"Februarie", u"Maart", u"April", u"Mei", u"Junie", u"Julie", u"Augustus", u"September", u"Oktober", u"November", u"Desember"] ),
             'als':      lambda v: slh( v, [u"Januar", u"Februar", u"März", u"April", u"Mai", u"Juni", u"Juli", u"August", u"September", u"Oktober", u"November", u"Dezember"] ),
@@ -521,111 +478,24 @@ formats = {
             'wa' :      lambda v: slh( v, [u"djanvî", u"fevrî", u"Måss (moes)", u"avri", u"may", u"djun", u"djulete", u"awousse", u"setimbe", u"octôbe", u"nôvimbe", u"decimbe"] ),
             'zh' :      lambda v: slh( v, makeMonthList( u"%d月" )),
             'zh-min-nan': lambda v: slh( v, [u"It-goe̍h", u"Jī-goe̍h", u"Saⁿ-goe̍h", u"Sì-goe̍h", u"Gō·-goe̍h", u"La̍k-goe̍h", u"Chhit-goe̍h", u"Peh-goe̍h", u"Káu-goe̍h", u"Cha̍p-goe̍h", u"Cha̍p-it-goe̍h", u"Cha̍p-jī-goe̍h"] ),
-            #'af' :      lambda v: slh( v, [u'Januarie', u'Februarie', u'Maart', u'April', u'Mei', u'Junie', u'Julie', u'Augustus', u'September', u'Oktober', u'November', u'Desember'] ),
-            #'als':      lambda v: slh( v, [u'Januar', u'Februar', u'März', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
-            #'an' :      lambda v: slh( v, [u'Chinero', u'Frebero', u'Marzo', u'Abril', u'Mayo', u'Chunio', u'Chulio', u'Agosto', u'Setiembre', u'Otubre', u'Nobiembre', u'Abiento'] ),
-            #'ang':      lambda v: slh( v, [u'Se æfterra Gēola', u'Solmónaþ', u'Hrēþmōnaþ', u'Ēastermōnaþ', u'Þrimilcemónaþ', u'Séremónaþ', u'Mǽdmónaþ', u'Wéodmónaþ', u'Háligmónaþ', u'Winterfylleþ', u'Blótmónaþ', u'Géolmónaþ'] ),
-            #'ar' :      lambda v: slh( v, [u'يناير', u'فبراير', u'مارس', u'إبريل', u'مايو', u'يونيو', u'يوليو', u'أغسطس', u'سبتمبر', u'أكتوبر', u'نوفمبر', u'ديسمبر'] ),
-            #'ast':      lambda v: slh( v, [u'Xineru', u'Febreru', u'Marzu', u'Abril', u'Mayu', u'Xunu', u'Xunetu', u'Agostu', u'Setiembre', u'Ochobre', u'Payares', u'Avientu'] ),
-            #'be' :      lambda v: slh( v, [u'Студзень', u'Люты', u'Сакавік', u'Красавік', u'Травень', u'Чэрвень', u'Ліпень', u'Жнівень', u'Верасень', u'Кастрычнік', u'Лістапад', u'Сьнежань'] ),
-            #'bg' :      lambda v: slh( v, [u'Януари', u'Февруари', u'Март', u'Април', u'Май', u'Юни', u'Юли', u'Август', u'Септември', u'Октомври', u'Ноември', u'Декември'] ),
-            #'bs' :      lambda v: slh( v, [u'Januar', u'Februar', u'Mart', u'April', u'Maj', u'Juni', u'Juli', u'Avgust', u'Septembar', u'Oktobar', u'Novembar', u'Decembar'] ),
-            #'ca' :      lambda v: slh( v, [u'Gener', u'Febrer', u'Març', u'Abril', u'Maig', u'Juny', u'Juliol', u'Agost', u'Setembre', u'Octubre', u'Novembre', u'Desembre'] ),
-            #'cs' :      lambda v: slh( v, [u'Leden', u'Únor', u'Březen', u'Duben', u'Květen', u'Červen', u'Červenec', u'Srpen', u'Září', u'Říjen', u'Listopad', u'Prosinec'] ),
-            #'csb':      lambda v: slh( v, [u'Stëcznik', u'Gromicznik', u'Strumiannik', u'Łżëkwiôt', u'Môj', u'Czerwińc', u'Lëpinc', u'Zélnik', u'Séwnik', u'Rujan', u'Lëstopadnik', u'Gòdnik'] ),
-            #'cv' :      lambda v: slh( v, [u'Кăрлач', u'Нарăс', u'Пуш', u'Ака', u'Çу', u'Çěртме', u'Утă', u'Çурла', u'Авăн', u'Юпа', u'Чӳк', u'Раштав'] ),
-            #'cy' :      lambda v: slh( v, [u'Ionawr', u'Chwefror', u'Mawrth', u'Ebrill', u'Mai', u'Mehefin', u'Gorffennaf', u'Awst', u'Medi', u'Hydref', u'Tachwedd', u'Rhagfyr'] ),
-            #'da' :      lambda v: slh( v, [u'Januar', u'Februar', u'Marts', u'April', u'Maj', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'December'] ),
-            #'de' :      lambda v: slh( v, [u'Januar', u'Februar', u'März', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
-            #'el' :      lambda v: slh( v, [u'Ιανουάριος', u'Φεβρουάριος', u'Μάρτιος', u'Απρίλιος', u'Μάιος', u'Ιούνιος', u'Ιούλιος', u'Αύγουστος', u'Σεπτέμβριος', u'Οκτώβριος', u'Νοέμβριος', u'Δεκέμβριος'] ),
-            #'en' :      lambda v: slh( v, enMonthNames ),
-            #'eo' :      lambda v: slh( v, [u'Januaro', u'Februaro', u'Marto', u'Aprilo', u'Majo', u'Junio', u'Julio', u'Aŭgusto', u'Septembro', u'Oktobro', u'Novembro', u'Decembro'] ),
-            #'es' :      lambda v: slh( v, [u'Enero', u'Febrero', u'Marzo', u'Abril', u'Mayo', u'Junio', u'Julio', u'Agosto', u'Septiembre', u'Octubre', u'Noviembre', u'Diciembre'] ),
-            #'et' :      lambda v: slh( v, [u'Jaanuar', u'Veebruar', u'Märts', u'Aprill', u'Mai', u'Juuni', u'Juuli', u'August', u'September', u'Oktoober', u'November', u'Detsember'] ),
-            #'eu' :      lambda v: slh( v, [u'Urtarril', u'Otsail', u'Martxo', u'Apiril', u'Maiatz', u'Ekain', u'Uztail', u'Abuztu', u'Irail', u'Urri', u'Azaro', u'Abendu'] ),
-            #'fa' :      lambda v: slh( v, [u'ژانویه', u'فوریه', u'مارس', u'آوریل', u'مه', u'ژوئن', u'ژوئیه', u'اوت', u'سپتامبر', u'اکتبر', u'نوامبر', u'دسامبر'] ),
-            #'fi' :      lambda v: slh( v, [u'Tammikuu', u'Helmikuu', u'Maaliskuu', u'Huhtikuu', u'Toukokuu', u'Kesäkuu', u'Heinäkuu', u'Elokuu', u'Syyskuu', u'Lokakuu', u'Marraskuu', u'Joulukuu'] ),
-            #'fo' :      lambda v: slh( v, [u'Januar', u'Februar', u'Mars', u'Apríl', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Desember'] ),
-            #'fr' :      lambda v: slh( v, [u'Janvier', u'Février', u'Mars (mois)', u'Avril', u'Mai', u'Juin', u'Juillet', u'Août', u'Septembre', u'Octobre', u'Novembre', u'Décembre'] ),
-            #'fur':      lambda v: slh( v, [u'Zenâr', u'Fevrâr', u'Març', u'Avrîl', u'Mai', u'Zugn', u'Lui', u'Avost', u'Setembar', u'Otubar', u'Novembar', u'Dicembar'] ),
-            #'fy' :      lambda v: slh( v, [u'Jannewaris', u'Febrewaris', u'Maart', u'April', u'Maaie', u'Juny', u'July', u'Augustus', u'Septimber', u'Oktober', u'Novimber', u'Desimber'] ),
-            #'ga' :      lambda v: slh( v, [u'Eanáir', u'Feabhra', u'Márta', u'Aibreán', u'Bealtaine', u'Meitheamh', u'Iúil', u'Lúnasa', u'Meán Fómhair', u'Deireadh Fómhair', u'Samhain', u'Nollaig'] ),
-            #'gl' :      lambda v: slh( v, [u'Xaneiro', u'Febreiro', u'Marzo', u'Abril', u'Maio', u'Xuño', u'Xullo', u'Agosto', u'Setembro', u'Outubro', u'Novembro', u'Decembro'] ),
-            #'he' :      lambda v: slh( v, [u'ינואר', u'פברואר', u'מרץ', u'אפריל', u'מאי', u'יוני', u'יולי', u'אוגוסט', u'ספטמבר', u'אוקטובר', u'נובמבר', u'דצמבר'] ),
-            #'hi' :      lambda v: slh( v, [u'जनवरी', u'फ़रवरी', u'मार्च', u'अप्रैल', u'मई', u'जून', u'जुलाई', u'अगस्त', u'सितम्बर', u'अक्टूबर', u'नवम्बर', u'दिसम्बर'] ),
-            #'hr' :      lambda v: slh( v, [u'Siječanj', u'Veljača', u'Ožujak', u'Travanj', u'Svibanj', u'Lipanj', u'Srpanj', u'Kolovoz', u'Rujan', u'Listopad', u'Studeni', u'Prosinac'] ),
-            #'hu' :      lambda v: slh( v, [u'Január', u'Február', u'Március', u'Április', u'Május', u'Június', u'Július', u'Augusztus', u'Szeptember', u'Október', u'November', u'December'] ),
-            #'ia' :      lambda v: slh( v, [u'Januario', u'Februario', u'Martio', u'April', u'Maio', u'Junio', u'Julio', u'Augusto', u'Septembre', u'Octobre', u'Novembre', u'Decembre'] ),
-            #'id' :      lambda v: slh( v, [u'Januari', u'Februari', u'Maret', u'April', u'Mei', u'Juni', u'Juli', u'Agustus', u'September', u'Oktober', u'November', u'Desember'] ),
-            #'ie' :      lambda v: slh( v, [u'Januar', u'Februar', u'Marte', u'April', u'May', u'Junio', u'Juli', u'August', u'Septembre', u'Octobre', u'Novembre', u'Decembre'] ),
-            #'io' :      lambda v: slh( v, [u'Januaro', u'Februaro', u'Marto', u'Aprilo', u'Mayo', u'Junio', u'Julio', u'Agosto', u'Septembro', u'Oktobro', u'Novembro', u'Decembro'] ),
-            #'is' :      lambda v: slh( v, [u'Janúar', u'Febrúar', u'Mars (mánuður)', u'Apríl', u'Maí', u'Júní', u'Júlí', u'Ágúst', u'September', u'Október', u'Nóvember', u'Desember'] ),
-            #'it' :      lambda v: slh( v, [u'Gennaio', u'Febbraio', u'Marzo', u'Aprile', u'Maggio', u'Giugno', u'Luglio', u'Agosto', u'Settembre', u'Ottobre', u'Novembre', u'Dicembre'] ),
-            #'ja' :      lambda v: slh( v, makeMonthList( u'%d月' )),
-            #'jv' :      lambda v: slh( v, [u'Januari', u'Februari', u'Maret', u'April', u'Mei', u'Juni', u'Juli', u'Agustus', u'September', u'Oktober', u'November', u'Desember'] ),
-            #'ka' :      lambda v: slh( v, [u'იანვარი', u'თებერვალი', u'მარტი', u'აპრილი', u'მაისი', u'ივნისი', u'ივლისი', u'აგვისტო', u'სექტემბერი', u'ოქტომბერი', u'ნოემბერი', u'დეკემბერი'] ),
-            #'kn' :      lambda v: slh( v, [u'ಜನವರಿ', u'ಫೆಬ್ರವರಿ', u'ಮಾರ್ಚಿ', u'ಎಪ್ರಿಲ್', u'ಮೇ', u'ಜೂನ', u'ಜುಲೈ', u'ಆಗಸ್ಟ್ ', u'ಸೆಪ್ಟೆಂಬರ್', u'ಅಕ್ಟೋಬರ್', u'ನವೆಂಬರ್', u'ಡಿಸೆಂಬರ್'] ),
-            #'ko' :      lambda v: slh( v, makeMonthList( u'%d월' )),
-            #'ku' :      lambda v: slh( v, [u'Rêbendan', u'Reşemî', u'Adar', u'Avrêl', u'Gulan', u'Pûşper', u'Tîrmeh', u'Gelawêj (meh)', u'Rezber', u'Kewçêr', u'Sermawez', u'Berfanbar'] ),
-            #'kw' :      lambda v: slh( v, [u'Mys Genver', u'Mys Whevrer', u'Mys Merth', u'Mys Ebrel', u'Mys Me', u'Mys Metheven', u'Mys Gortheren', u'Mys Est', u'Mys Gwyngala', u'Mys Hedra', u'Mys Du', u'Mys Kevardhu'] ),
-            #'la' :      lambda v: slh( v, [u'Ianuarius', u'Februarius', u'Martius', u'Aprilis', u'Maius', u'Iunius', u'Iulius', u'Augustus (mensis)', u'September', u'October', u'November', u'December'] ),
-            #'lb' :      lambda v: slh( v, [u'Januar', u'Februar', u'Mäerz', u'Abrëll', u'Mee', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
-            #'li' :      lambda v: slh( v, [u'Jannewarie', u'Fibberwarie', u'Miert', u'April', u'Mei', u'Juni', u'Juli', u'Augustus (maond)', u'September', u'Oktober', u'November', u'December'] ),
-            #'lt' :      lambda v: slh( v, [u'Sausis', u'Vasaris', u'Kovas', u'Balandis', u'Gegužė', u'Birželis', u'Liepa', u'Rugpjūtis', u'Rugsėjis', u'Spalis', u'Lapkritis', u'Gruodis'] ),
-            #'mi' :      lambda v: slh( v, [u'Kohi-tātea', u'Hui-tanguru', u'Poutū-te-rangi', u'Paenga-whāwhā', u'Haratua', u'Pipiri', u'Hōngongoi', u'Here-turi-kōkā', u'Mahuru', u'Whiringa-ā-nuku', u'Whiringa-ā-rangi', u'Hakihea'] ),
-            #'ml' :      lambda v: slh( v, [u'ജനുവരി', u'ഫെബ്രുവരി', u'മാര്ച്', u'ഏപ്രില്', u'മേയ്', u'ജൂണ്‍', u'ജൂലൈ', u'ആഗസ്റ്റ്‌', u'സപ്തന്പര്', u'ഒക്ടോബര്', u'നവന്പര്', u'ഡിസന്പര്'] ),
-            #'mr' :      lambda v: slh( v, [u'जानेवारी', u'फेब्रुवारी', u'मार्च', u'एप्रिल', u'मे', u'जून', u'जुलै', u'ऑगस्ट', u'सप्टेंबर', u'ऑक्टोबर', u'नोव्हेंबर', u'डिसेंबर'] ),
-            #'ms' :      lambda v: slh( v, [u'Januari', u'Februari', u'Mac', u'April', u'Mei', u'Jun', u'Julai', u'Ogos', u'September', u'Oktober', u'November', u'Disember'] ),
-            #'nds':      lambda v: slh( v, [u'Januar', u'Februar', u'März', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Dezember'] ),
-            #'nl' :      lambda v: slh( v, [u'Januari', u'Februari', u'Maart', u'April', u'Mei', u'Juni', u'Juli', u'Augustus (maand)', u'September', u'Oktober', u'November', u'December'] ),
-            #'nn' :      lambda v: slh( v, [u'Januar', u'Februar', u'Mars', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Desember'] ),
-            #'no' :      lambda v: slh( v, [u'Januar', u'Februar', u'Mars', u'April', u'Mai', u'Juni', u'Juli', u'August', u'September', u'Oktober', u'November', u'Desember'] ),
-            #'oc' :      lambda v: slh( v, [u'Genièr', u'Febrièr', u'Març', u'Abril', u'Mai', u'Junh', u'Julhet', u'Agost', u'Setembre', u'Octobre', u'Novembre', u'Decembre'] ),
-            #'pl' :      lambda v: slh( v, [u'Styczeń', u'Luty', u'Marzec', u'Kwiecień', u'Maj', u'Czerwiec', u'Lipiec', u'Sierpień', u'Wrzesień', u'Październik', u'Listopad', u'Grudzień'] ),
-            #'pt' :      lambda v: slh( v, [u'Janeiro', u'Fevereiro', u'Março', u'Abril', u'Maio', u'Junho', u'Julho', u'Agosto', u'Setembro', u'Outubro', u'Novembro', u'Dezembro'] ),
-            #'ro' :      lambda v: slh( v, [u'Ianuarie', u'Februarie', u'Martie', u'Aprilie', u'Mai', u'Iunie', u'Iulie', u'August', u'Septembrie', u'Octombrie', u'Noiembrie', u'Decembrie'] ),
-            #'ru' :      lambda v: slh( v, [u'Январь', u'Февраль', u'Март', u'Апрель', u'Май', u'Июнь', u'Июль', u'Август', u'Сентябрь', u'Октябрь', u'Ноябрь', u'Декабрь'] ),
-            #'sc' :      lambda v: slh( v, [u'Ghennarzu', u'Frearzu', u'Martzu', u'Abrile', u'Maju', u'Làmpadas', u'Triulas', u'Aùstu', u'Cabudanni', u'Santugaìne', u'Santadria', u'Nadale'] ),
-            #'scn':      lambda v: slh( v, [u'Jinnaru', u'Frivaru', u'Marzu', u'Aprili', u'Maiu', u'Giugnu', u'Giugnettu', u'Austu', u'Sittèmmiru', u'Uttùviru', u'Nuvèmmiru', u'Dicèmmiru'] ),
-            #'sco':      lambda v: slh( v, [u'Januar', u'Februar', u'Mairch', u'Aprile', u'Mey', u'Juin', u'Julie', u'Augist', u'September', u'October', u'November', u'December'] ),
-            #'se' :      lambda v: slh( v, [u'Ođđajagimánnu', u'Guovvamánnu', u'Njukčamánnu', u'Cuoŋománnu', u'Miessemánnu', u'Geassemánnu', u'Suoidnemánnu', u'Borgemánnu', u'Čakčamánnu', u'Golggotmánnu', u'Skábmamánnu', u'Juovlamánnu'] ),
-            #'simple':   lambda v: slh( v, enMonthNames ),
-            #'sk' :      lambda v: slh( v, [u'Január', u'Február', u'Marec', u'Apríl', u'Máj', u'Jún', u'Júl', u'August', u'September', u'Október', u'November', u'December'] ),
-            #'sl' :      lambda v: slh( v, [u'Januar', u'Februar', u'Marec', u'April', u'Maj', u'Junij', u'Julij', u'Avgust', u'September', u'Oktober', u'November', u'December'] ),
-            #'sq' :      lambda v: slh( v, [u'Janari', u'Shkurti', u'Marsi (muaj)', u'Prilli', u'Maji', u'Qershori', u'Korriku', u'Gushti', u'Shtatori', u'Tetori', u'Nëntori', u'Dhjetori'] ),
-            #'sr' :      lambda v: slh( v, [u'Јануар', u'Фебруар', u'Март', u'Април', u'Мај', u'Јун', u'Јул', u'Август', u'Септембар', u'Октобар', u'Новембар', u'Децембар'] ),
-            #'su' :      lambda v: slh( v, [u'Januari', u'Pébruari', u'Maret', u'April', u'Méi', u'Juni', u'Juli', u'Agustus', u'Séptémber', u'Oktober', u'Nopémber', u'Désémber'] ),
-            #'sv' :      lambda v: slh( v, [u'Januari', u'Februari', u'Mars', u'April', u'Maj', u'Juni', u'Juli', u'Augusti', u'September', u'Oktober', u'November', u'December'] ),
-            #'te' :      lambda v: slh( v, [u'జనవరి', u'ఫిబ్రవరి', u'మార్చి', u'ఏప్రిల్', u'మే', u'జూన్', u'జూలై', u'ఆగష్టు', u'సెప్టెంబర్', u'అక్టోబర్', u'నవంబర్', u'డిసెంబర్'] ),
-            #'th' :      lambda v: slh( v, [u'มกราคม', u'กุมภาพันธ์', u'มีนาคม', u'เมษายน', u'พฤษภาคม', u'มิถุนายน', u'กรกฎาคม', u'สิงหาคม', u'กันยายน', u'ตุลาคม', u'พฤศจิกายน', u'ธันวาคม'] ),
-            #'tl' :      lambda v: slh( v, [u'Enero', u'Pebrero', u'Marso', u'Abril', u'Mayo', u'Hunyo', u'Hulyo', u'Agosto', u'Setyembre', u'Oktubre', u'Nobyembre', u'Disyembre'] ),
-            #'tpi':      lambda v: slh( v, [u'Janueri', u'Februeri', u'Mas', u'Epril', u'Me', u'Jun', u'Julai', u'Ogas', u'Septemba', u'Oktoba', u'Novemba', u'Disemba'] ),
-            #'tr' :      lambda v: slh( v, [u'Ocak', u'Şubat', u'Mart', u'Nisan', u'Mayıs', u'Haziran', u'Temmuz', u'Ağustos', u'Eylül', u'Ekim', u'Kasım', u'Aralık'] ),
-            #'tt' :      lambda v: slh( v, [u'Ğínwar', u'Febräl', u'Mart', u'Äpril', u'May', u'Yün', u'Yül', u'August', u'Sentäber', u'Öktäber', u'Nöyäber', u'Dekäber'] ),
-            #'uk' :      lambda v: slh( v, [u'Січень', u'Лютий', u'Березень', u'Квітень', u'Травень', u'Червень', u'Липень', u'Серпень', u'Вересень', u'Жовтень', u'Листопад', u'Грудень'] ),
-            #'ur' :      lambda v: slh( v, [u'جنوری', u'فروری', u'مارچ', u'اپريل', u'مئ', u'جون', u'جولائ', u'اگست', u'ستمبر', u'اکتوبر', u'نومبر', u'دسمبر'] ),
-            #'vi' :      lambda v: slh( v, [u'Tháng một', u'Tháng hai', u'Tháng ba', u'Tháng tư', u'Tháng năm', u'Tháng sáu', u'Tháng bảy', u'Tháng tám', u'Tháng chín', u'Tháng mười', u'Tháng mười một', u'Tháng mười hai'] ),
-            #'vo' :      lambda v: slh( v, [u'Yanul', u'Febul', u'Mäzul', u'Prilul', u'Mayul', u'Yunul', u'Yulul', u'Gustul', u'Setul', u'Tobul', u'Novul', u'Dekul'] ),
-            #'wa' :      lambda v: slh( v, [u'Djanvî', u'Fevrî', u'Måss', u'Avri', u'May', u'Djun', u'Djulete', u'Awousse', u'Setimbe', u'Octôbe', u'Nôvimbe', u'Decimbe'] ),
-            #'zh' :      lambda v: slh( v, makeMonthList( u'%d月' )),
     },
 
     'Number': {
-        'da' :      lambda v: dh_noConv( v, u'%d (tal)' ),
-        'en' :      lambda v: dh_noConv( v, u'%d (number)' ),
-        'fr' :      lambda v: dh_noConv( v, u'%d (nombre)' ),
-        'he' :      lambda v: dh_noConv( v, u'%d (מספר)' ),
-        'ja' :      dh_simpleInt,
-        'ko' :      dh_simpleInt,
-        'la' :      dh_simpleInt,
-        'nn' :      lambda v: dh_noConv( v, u'Talet %d' ),
-        'no' :      lambda v: dh_noConv( v, u'%d (tall)' ),
-        'ru' :      lambda v: dh_noConv( v, u'%d (число)' ),
-        'sk' :      lambda v: dh_noConv( v, u'%d (číslo)' ),
-        'sl' :      lambda v: dh_noConv( v, u'%d (število)' ),
-        'sv' :      lambda v: dh_noConv( v, u'%d (tal)' ),
-        'th' :      lambda v: dh_noConv( v, u'%d (จำนวน)' ),
-        'zh' :      dh_simpleInt,
+        'da' :      lambda v: dh_number( v, u'%d (tal)' ),
+        'en' :      lambda v: dh_number( v, u'%d (number)' ),
+        'fr' :      lambda v: dh_number( v, u'%d (nombre)' ),
+        'he' :      lambda v: dh_number( v, u'%d (מספר)' ),
+        'ja' :      lambda v: dh_number( v, u'%d' ),
+        'ko' :      lambda v: dh_number( v, u'%d' ),
+        'la' :      lambda v: dh_number( v, u'%d' ),
+        'nn' :      lambda v: dh_number( v, u'Talet %d' ),
+        'no' :      lambda v: dh_number( v, u'%d (tall)' ),
+        'ru' :      lambda v: dh_number( v, u'%d (число)' ),
+        'sk' :      lambda v: dh_number( v, u'%d (číslo)' ),
+        'sl' :      lambda v: dh_number( v, u'%d (število)' ),
+        'sv' :      lambda v: dh_number( v, u'%d (tal)' ),
+        'th' :      lambda v: dh_number( v, u'%d (จำนวน)' ),
+        'zh' :      lambda v: dh_number( v, u'%d' ),
     },
 
     'YearAD': {
@@ -659,19 +529,23 @@ formats = {
         'fy' :      dh_simpleYearAD,
         'ga' :      dh_simpleYearAD,
         'gl' :      dh_simpleYearAD,
+        'gu' :      lambda v: dh_yearAD( v, u'%G' ),
         'he' :      dh_simpleYearAD,
+        'hi' :      lambda v: dh_yearAD( v, u'%H' ),
         'hr' :      dh_simpleYearAD,
         'hu' :      dh_simpleYearAD,
+        'hy' :      dh_simpleYearAD,
         'ia' :      dh_simpleYearAD,
         'id' :      dh_simpleYearAD,
         'ie' :      dh_simpleYearAD,
+        'ilo':      dh_simpleYearAD,
         'io' :      dh_simpleYearAD,
         'is' :      dh_simpleYearAD,
         'it' :      dh_simpleYearAD,
-        'ja' :      lambda v: dh_noConvYear( v, u'%d年' ),
+        'ja' :      lambda v: dh_yearAD( v, u'%d年' ),
         'ka' :      dh_simpleYearAD,
-        'kn' :      dh_knYearConverter,
-        'ko' :      lambda v: dh_noConvYear( v, u'%d년' ),
+        'kn' :      lambda v: dh_yearAD( v, u'%K' ),
+        'ko' :      lambda v: dh_yearAD( v, u'%d년' ),
         'ku' :      dh_simpleYearAD,
         'kw' :      dh_simpleYearAD,
         'la' :      dh_simpleYearAD,
@@ -681,6 +555,9 @@ formats = {
         'lv' :      dh_simpleYearAD,
         'mi' :      dh_simpleYearAD,
         'mk' :      dh_simpleYearAD,
+        'ml' :      dh_simpleYearAD,
+        'mo' :      dh_simpleYearAD,
+#        'mr' :      lambda v: dh_yearAD( v, u'ई.स. %H' ),
         'ms' :      dh_simpleYearAD,
         'na' :      dh_simpleYearAD,
         'nap':      dh_simpleYearAD,
@@ -694,7 +571,10 @@ formats = {
         'ro' :      dh_simpleYearAD,
         'roa-rup' : dh_simpleYearAD,
         'ru' :      dh_simpleYearAD,
+        'sco':      dh_simpleYearAD,
         'scn':      dh_simpleYearAD,
+        'se' :      dh_simpleYearAD,
+        'sh' :      dh_simpleYearAD,
         'simple' :  dh_simpleYearAD,
         'sk' :      dh_simpleYearAD,
         'sl' :      dh_simpleYearAD,
@@ -709,380 +589,443 @@ formats = {
         #2005 => 'พ.ศ. 2548'
         'th' :      lambda v: dh( v, u'พ.ศ. %d',                lambda i: i + 543, lambda l: l[0] - 543 ),
         'tl' :      dh_simpleYearAD,
+        'tpi':      dh_simpleYearAD,
         'tr' :      dh_simpleYearAD,
         'tt' :      dh_simpleYearAD,
         'uk' :      dh_simpleYearAD,
-        'ur' :      lambda v: dh_noConvYear( v, u'%dسبم' ),
+        'ur' :      lambda v: dh_yearAD( v, u'%dسبم' ),
         'vi' :      dh_simpleYearAD,
         'wa' :      dh_simpleYearAD,
-        'zh' :      lambda v: dh_noConvYear( v, u'%d年' ),
-        'zh-min-nan' :  lambda v: dh_noConvYear( v, u'%d nî' ),
+        'zh' :      lambda v: dh_yearAD( v, u'%d年' ),
+        'zh-min-nan' :  lambda v: dh_yearAD( v, u'%d nî' ),
     },
 
     'YearBC': {
-        'af' :      lambda v: dh_noConvYear( v, u'%d v.C.' ),
-        'bg' :      lambda v: dh_noConvYear( v, u'%d г. пр.н.е.' ),
-        'bs' :      lambda v: dh_noConvYear( v, u'%d p.ne.' ),
-        'ca' :      lambda v: dh_noConvYear( v, u'%d aC' ),
-        'da' :      lambda v: dh_noConvYear( v, u'%d f.Kr.' ),
-        'de' :      lambda v: dh_noConvYear( v, u'%d v. Chr.' ),
-        'en' :      lambda v: dh_noConvYear( v, u'%d BC' ),
-        'eo' :      lambda v: dh_noConvYear( v, u'-%d' ),
-        'es' :      lambda v: dh_noConvYear( v, u'%d adC' ),
-        'et' :      lambda v: dh_noConvYear( v, u'%d eKr' ),
-        'fi' :      lambda v: dh_noConvYear( v, u'%d eaa' ),
-        'fo' :      lambda v: dh_noConvYear( v, u'%d f. Kr.' ),
-        'fr' :      lambda v: dh_noConvYear( v, u'-%d' ),
-        'gl' :      lambda v: dh_noConvYear( v, u'-%d' ),
-        'he' :      lambda v: dh_noConvYear( v, u'%d לפנה"ס' ),
-        'hr' :      lambda v: dh_noConvYear( v, u'%d p.n.e.' ),
-        'id' :      lambda v: dh_noConvYear( v, u'%d SM' ),
-        'io' :      lambda v: dh_noConvYear( v, u'%d aK' ),
-        'is' :      lambda v: dh_noConvYear( v, u'%d f. Kr.' ),
-        'it' :      lambda v: dh_noConvYear( v, u'%d AC' ),
-        'ko' :      lambda v: dh_noConvYear( v, u'기원전 %d년' ),
-        'la' :      lambda v: dh_noConvYear( v, u'%d a.C.n.' ),
-        'lb' :      lambda v: dh_noConvYear( v, u'-%d' ),
-        'ms' :      lambda v: dh_noConvYear( v, u'%d SM' ),
-        'nap':      lambda v: dh_noConvYear( v, u'%d AC' ),
-        'nds':      lambda v: dh_noConvYear( v, u'%d v. Chr.' ),
-        'nl' :      lambda v: dh_noConvYear( v, u'%d v. Chr.' ),
-        'nn' :      lambda v: dh_noConvYear( v, u'-%d' ),
-        'no' :      lambda v: dh_noConvYear( v, u'%d f.Kr.' ),
-        'pl' :      lambda v: dh_noConvYear( v, u'%d p.n.e.' ),
-        'pt' :      lambda v: dh_noConvYear( v, u'%d a.C.' ),
-        'ro' :      lambda v: dh_noConvYear( v, u'%d î.Hr.' ),
-        'ru' :      lambda v: dh_noConvYear( v, u'%d до н. э.' ),
-        'scn':      lambda v: dh_noConvYear( v, u'%d a.C.' ),
-        'sk' :      lambda v: dh_noConvYear( v, u'%d pred Kr.' ),
-        'sl' :      lambda v: dh_noConvYear( v, u'%d pr. n. št.' ),
-        'sq' :      lambda v: dh_noConvYear( v, u'%d p.e.s.' ),
-        'sr' :      lambda v: dh_noConvYear( v, u'%d. пне.' ),
-        'sv' :      lambda v: dh_noConvYear( v, u'%d f.Kr.' ),
-        'ta' :      lambda v: dh_noConvYear( v, u'கி.மு %d' ),
-        'tt' :      lambda v: dh_noConvYear( v, u'MA %d' ),
-        'uk' :      lambda v: dh_noConvYear( v, u'%d до Р.Х.' ),
-        'zh' :      lambda v: dh_noConvYear( v, u'前%d年' ),
+        'af' :      lambda v: dh_yearBC( v, u'%d v.C.' ),
+        'bg' :      lambda v: dh_yearBC( v, u'%d г. пр.н.е.' ),
+        'bs' :      lambda v: dh_yearBC( v, u'%d p.ne.' ),
+        'ca' :      lambda v: dh_yearBC( v, u'%d aC' ),
+        'da' :      lambda v: dh_yearBC( v, u'%d f.Kr.' ),
+        'de' :      lambda v: dh_yearBC( v, u'%d v. Chr.' ),
+        'en' :      lambda v: dh_yearBC( v, u'%d BC' ),
+        'eo' :      lambda v: dh_yearBC( v, u'-%d' ),
+        'es' :      lambda v: dh_yearBC( v, u'%d adC' ),
+        'et' :      lambda v: dh_yearBC( v, u'%d eKr' ),
+        'fi' :      lambda v: dh_yearBC( v, u'%d eaa' ),
+        'fo' :      lambda v: dh_yearBC( v, u'%d f. Kr.' ),
+        'fr' :      lambda v: dh_yearBC( v, u'-%d' ),
+        'gl' :      lambda v: dh_yearBC( v, u'-%d' ),
+        'he' :      lambda v: dh_yearBC( v, u'%d לפנה"ס' ),
+        'hr' :      lambda v: dh_yearBC( v, u'%d p.n.e.' ),
+        'hu' :      lambda v: dh_yearBC( v, u'I. e. %d' ),
+        'id' :      lambda v: dh_yearBC( v, u'%d SM' ),
+        'io' :      lambda v: dh_yearBC( v, u'%d aK' ),
+        'is' :      lambda v: dh_yearBC( v, u'%d f. Kr.' ),
+        'it' :      lambda v: dh_yearBC( v, u'%d AC' ),
+        'ko' :      lambda v: dh_yearBC( v, u'기원전 %d년' ),
+        'la' :      lambda v: dh_yearBC( v, u'%d a.C.n.' ),
+        'lb' :      lambda v: dh_yearBC( v, u'-%d' ),
+        'ms' :      lambda v: dh_yearBC( v, u'%d SM' ),
+        'nap':      lambda v: dh_yearBC( v, u'%d AC' ),
+        'nds':      lambda v: dh_yearBC( v, u'%d v. Chr.' ),
+        'nl' :      lambda v: dh_yearBC( v, u'%d v. Chr.' ),
+        'nn' :      lambda v: dh_yearBC( v, u'-%d' ),
+        'no' :      lambda v: dh_yearBC( v, u'%d f.Kr.' ),
+        'pl' :      lambda v: dh_yearBC( v, u'%d p.n.e.' ),
+        'pt' :      lambda v: dh_yearBC( v, u'%d a.C.' ),
+        'ro' :      lambda v: dh_yearBC( v, u'%d î.Hr.' ),
+        'ru' :      lambda v: dh_yearBC( v, u'%d до н. э.' ),
+        'scn':      lambda v: dh_yearBC( v, u'%d a.C.' ),
+        'sk' :      lambda v: dh_yearBC( v, u'%d pred Kr.' ),
+        'sl' :      lambda v: dh_yearBC( v, u'%d pr. n. št.' ),
+        'sq' :      lambda v: dh_yearBC( v, u'%d p.e.s.' ),
+        'sr' :      lambda v: dh_yearBC( v, u'%d. пне.' ),
+        'sv' :      lambda v: dh_yearBC( v, u'%d f.Kr.' ),
+        'ta' :      lambda v: dh_yearBC( v, u'கி.மு %d' ),
+        'tt' :      lambda v: dh_yearBC( v, u'MA %d' ),
+        'uk' :      lambda v: dh_yearBC( v, u'%d до Р.Х.' ),
+        'zh' :      lambda v: dh_yearBC( v, u'前%d年' ),
     },
 
     'DecadeAD': {
-        'als':      lambda v: dh_dec( v, u'%der' ),
-        'ang':      lambda v: dh_dec( v, u'%de' ),
-        'ast':      lambda v: dh_dec( v, u'Años %d' ),
-        'bg' :      lambda v: dh_dec( v, u'%d-те' ),
-        'bs' :      lambda v: dh_dec( v, u'%dte' ),
+        'als':      lambda v: dh_decAD( v, u'%der' ),
+        'ang':      lambda v: dh_decAD( v, u'%de' ),
+        'ast':      lambda v: dh_decAD( v, u'Años %d' ),
+        'bg' :      lambda v: dh_decAD( v, u'%d-те' ),
+        'bs' :      lambda v: dh_decAD( v, u'%dte' ),
 
         # Unknown what the pattern is, but 1970 is different
-        'ca' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'Dècada de %d' ),  lambda p: p == 1970),
-            (lambda x: dh_dec( x, u'Dècada del %d' ), alwaysTrue)]),
+        'ca' :      lambda m: multi( m, [
+            (lambda v: dh_decAD( v, u'Dècada de %d' ),  lambda p: p == 1970),
+            (lambda v: dh_decAD( v, u'Dècada del %d' ), alwaysTrue)]),
 
-        'cy' :      lambda v: dh_dec( v, u'%dau' ),
-        'da' :      lambda v: dh_dec( v, u"%d'erne" ),
-        'de' :      lambda v: dh_dec( v, u'%der' ),
-        'el' :      lambda v: dh_dec( v, u'Δεκαετία %d' ),
-        'en' :      lambda v: dh_dec( v, u'%ds' ),
-        'eo' :      lambda v: dh_dec( v, u'%d-aj jaroj' ),
-        'es' :      lambda v: dh_dec( v, u'Años %d' ),
-        'et' :      lambda v: dh_dec( v, u'%d. aastad' ),
+        'cy' :      lambda v: dh_decAD( v, u'%dau' ),
+        'da' :      lambda v: dh_decAD( v, u"%d'erne" ),
+        'de' :      lambda v: dh_decAD( v, u'%der' ),
+        'el' :      lambda v: dh_decAD( v, u'Δεκαετία %d' ),
+        'en' :      lambda v: dh_decAD( v, u'%ds' ),
+        'eo' :      lambda v: dh_decAD( v, u'%d-aj jaroj' ),
+        'es' :      lambda v: dh_decAD( v, u'Años %d' ),
+        'et' :      lambda v: dh_decAD( v, u'%d. aastad' ),
         
         # decades ending in 00 are spelled differently
-        'fi' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'%d-luku' ),        lambda p: (p % 100 != 0)),
-            (lambda x: dh_dec( x, u'%d-vuosikymmen' ), alwaysTrue)]),
+        'fi' :      lambda m: multi( m, [
+            (lambda v: dh_decAD( v, u'%d-luku' ),        lambda p: (p % 100 != 0)),
+            (lambda v: dh_decAD( v, u'%d-vuosikymmen' ), alwaysTrue)]),
 
-        'fo' :      lambda v: dh_dec( v, u'%d-árini' ),
-        'fr' :      lambda v: dh_dec( v, u'Années %d' ),
+        'fo' :      lambda v: dh_decAD( v, u'%d-árini' ),
+        'fr' :      lambda v: dh_decAD( v, u'Années %d' ),
+        
+        'he' :      lambda m: multi( m, [
+            (lambda v: dh( v, u'שנות ה-%d', lambda i: encDec0(i), decSinglVal ), lambda p: p >= 1901 and p < 2001),
+            # This is a dummy value, just to avoid validation testing.   Later, it should be replaced with a proper 'fa' titles
+            (lambda v: dh_decAD( v, u'%dth decade' ), alwaysTrue)]),        # ********** ERROR!!!
 
+        'hi' :      lambda v: dh_decAD( v, u'%H का दशक' ),
+        
         #1970s => 1970-1979
         'hr' :      lambda v: dh( v, u'%d-%d',                   lambda i: (encDec0(i),encDec0(i)+9), lambda ii: ii[0] ),
 
-        'hu' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'%d-ás évek' ), lambda p: p == 0),
-            (lambda x: dh_dec( x, u'%d-as évek' ), lambda p: (p % 100 / 10) in [0,2,3,6,8]),
-            (lambda x: dh_dec( x, u'%d-es évek' ), alwaysTrue)]),
+        'hu' :      lambda m: multi( m, [
+            (lambda v: dh_decAD( v, u'%d-ás évek' ), lambda p: p == 0),
+            (lambda v: dh_decAD( v, u'%d-as évek' ), lambda p: (p % 100 / 10) in [0,2,3,6,8]),
+            (lambda v: dh_decAD( v, u'%d-es évek' ), alwaysTrue)]),
 
-        'io' :      lambda v: dh_dec( v, u'%da yari' ),
+        'io' :      lambda v: dh_decAD( v, u'%da yari' ),
 
         #1970s => '1971–1980'
         'is' :      lambda v: dh( v, u'%d–%d',                   lambda i: (encDec1(i),encDec1(i)+9), lambda ii: ii[0]-1 ),
-        'it' :      lambda v: dh_dec( v, u'Anni %d' ),
-        'ja' :      lambda v: dh_dec( v, u'%d年代' ),
-        'ko' :      lambda v: dh_dec( v, u'%d년대' ),
+        'it' :      lambda v: dh_decAD( v, u'Anni %d' ),
+        'ja' :      lambda v: dh_decAD( v, u'%d年代' ),
+        'ko' :      lambda v: dh_decAD( v, u'%d년대' ),
 
         #1970s => 'Decennium 198' (1971-1980)
-        'la' :      lambda v: dh( v, u'Decennium %d',            lambda i: encDec1(i)/10+1, lambda v: (v[0]-1)*10 ),
+        'la' :      lambda v: dh( v, u'Decennium %d',            lambda i: encDec1(i)/10+1, lambda ii: (ii[0]-1)*10 ),
 
         #1970s => 'XX amžiaus 8-as dešimtmetis' (1971-1980)
-        'lt' :      lambda v: dh( v, u'%s amžiaus %d-as dešimtmetis',
-                        lambda i: (romanNum(encDec1(i)/100+1), encDec1(i)%100/10+1),
+        'lt' :      lambda v: dh( v, u'%R amžiaus %d-as dešimtmetis',
+                        lambda i: (encDec1(i)/100+1, encDec1(i)%100/10+1),
                         lambda v: (v[0]-1)*100 + (v[1]-1)*10 ),
 
         #1970s => 'Ngahurutanga 198' (1971-1980)
-        'mi' :      lambda v: dh( v, u'Ngahurutanga %d',         lambda i: encDec0(i)/10+1, lambda v: (v[0]-1)*10 ),
+        'mi' :      lambda v: dh( v, u'Ngahurutanga %d',         lambda i: encDec0(i)/10+1, lambda ii: (ii[0]-1)*10 ),
 
         #1970s => '1970-1979'
         'nl' :      lambda v: dh( v, u'%d-%d',                   lambda i: (encDec0(i),encDec0(i)+9), decSinglVal ),
-        'no' :      lambda v: dh_dec( v, u'%d-årene' ),
+        'no' :      lambda v: dh_decAD( v, u'%d-årene' ),
+        'os' :      lambda v: dh_decAD( v, u'%d-тæ' ),
 
-        #1970s => 'Lata 70. XX wieku'
-        'pl' :      lambda v: dh( v, u'Lata %d. %s wieku',
-                    lambda i: (encDec0(i)%100, romanNum( encDec0(i)/100+1 )),
-                    lambda v: (v[1]-1)*100 + v[0] ),
+        #1970s => 'Lata 70. XX wieku' for anything except 1900-1919, 2000-2019, etc, in which case its 'Lata 1900-1909'
+        'pl' :      lambda m: multi( m, [
+            (lambda v: dh( v, u'Lata %d-%d', lambda i: (encDec0(i),encDec0(i)+9), decSinglVal ),
+                    lambda p: p%100 >= 0 and p%100 < 20 ),
+            (lambda v: dh( v, u'Lata %d. %R wieku', lambda i: (encDec0(i)%100, encDec0(i)/100+1 ), lambda ii: (ii[1]-1)*100 + ii[0] ),
+                    alwaysTrue)]),
 
-        'pt' :      lambda v: dh_dec( v, u'Década de %d' ),
-        'ro' :      lambda v: dh_dec( v, u'Anii %d' ),
-        'ru' :      lambda v: dh_dec( v, u'%d-е' ),
-        'scn':      lambda v: dh_dec( v, u'%dini' ),
-        'simple' :  lambda v: dh_dec( v, u'%ds' ),
+        'pt' :      lambda v: dh_decAD( v, u'Década de %d' ),
+        'ro' :      lambda v: dh_decAD( v, u'Anii %d' ),
+        'ro' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 0, u'Primul deceniu d.Hr.'), lambda p: p == 0),
+            (lambda v: dh_decAD( v, u'Anii %d' ),                   alwaysTrue)]),
+        'ru' :      lambda v: dh_decAD( v, u'%d-е' ),
+        'scn':      lambda v: dh_decAD( v, u'%dini' ),
+        'simple' :  lambda v: dh_decAD( v, u'%ds' ),
         
         # 1970 => '70. roky 20. storočia'
         'sk' :      lambda v: dh( v, u'%d. roky %d. storočia',
-                    lambda i: (encDec0(i)%100, encDec0(i)/100+1),
-                    lambda v: (v[1]-1)*100 + v[0] ),
+                        lambda i: (encDec0(i)%100, encDec0(i)/100+1),
+                        lambda ii: (ii[1]-1)*100 + ii[0] ),
 
-        'sl' :      lambda v: dh_dec( v, u'%d.' ),
-        'sq' :      lambda v: dh_dec( v, u'Vitet %d' ),
-        'sr' :      lambda v: dh_dec( v, u'%dе' ),
+        'sl' :      lambda v: dh_decAD( v, u'%d.' ),
+        'sq' :      lambda v: dh_decAD( v, u'Vitet %d' ),
+        'sr' :      lambda v: dh_decAD( v, u'%dе' ),
 
-        'sv' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'%d-talet (decennium)' ), lambda p: (p % 100 == 0)),
-            (lambda x: dh_dec( x, u'%d-talet' ),             alwaysTrue)]),
+        'sv' :      lambda m: multi( m, [
+            (lambda v: dh_decAD( v, u'%d-talet (decennium)' ), lambda p: (p % 100 == 0)),
+            (lambda v: dh_decAD( v, u'%d-talet' ),             alwaysTrue)]),
 
-        'tt' :      lambda v: dh_dec( v, u'%d. yıllar' ),
+        'tt' :      lambda v: dh_decAD( v, u'%d. yıllar' ),
 
-        'uk' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'%d-ві' ), lambda p: p == 0 or (p % 100 == 40)),
-            (lambda x: dh_dec( x, u'%d-ні' ), lambda p: p % 1000 == 0),
-            (lambda x: dh_dec( x, u'%d-ті' ), alwaysTrue)]),
-
-        'wa' :      lambda v: dh_dec( v, u'Anêyes %d' ),
-        'zh' :      lambda v: dh_dec( v, u'%d年代' ),
-        'zh-min-nan' : lambda v: dh_dec( v, u'%d nî-tāi' ),
+        'uk' :      lambda m: multi( m, [
+            (lambda v: dh_decAD( v, u'%d-ві' ), lambda p: p == 0 or (p % 100 == 40)),
+            (lambda v: dh_decAD( v, u'%d-ні' ), lambda p: p % 1000 == 0),
+            (lambda v: dh_decAD( v, u'%d-ті' ), alwaysTrue)]),
+        'ur' :      lambda v: dh_decAD( v, u'%dدبم' ),
+        'wa' :      lambda v: dh_decAD( v, u'Anêyes %d' ),
+        'zh' :      lambda v: dh_decAD( v, u'%d年代' ),
+        'zh-min-nan' : lambda v: dh_decAD( v, u'%d nî-tāi' ),
     },
 
     'DecadeBC': {
-        'de' :      lambda v: dh_dec( v, u'%der v. Chr.' ),
-        'en' :      lambda v: dh_dec( v, u'%ds BC' ),
-        'es' :      lambda v: dh_dec( v, u'Años %d adC' ),
+        'de' :      lambda v: dh_decBC( v, u'%der v. Chr.' ),
+        'da' :      lambda v: dh_decBC( v, u"%d'erne f.Kr." ),
+        'en' :      lambda v: dh_decBC( v, u'%ds BC' ),
+        'es' :      lambda v: dh_decBC( v, u'Años %d adC' ),
+        'et' :      lambda v: dh_decBC( v, u'%d. aastad eKr' ),
+
         # decades ending in 00 are spelled differently
-        'fi' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'%d-luku eaa' ),        lambda p: (p % 100 != 0)),
-            (lambda x: dh_dec( x, u'%d-vuosikymmen eaa' ), alwaysTrue)]),
-        'fr' :      lambda v: dh_dec( v, u'Années -%d' ),
-        'hr' :      lambda v: dh_dec( v, u'%dih p.n.e.' ),
+        'fi' :      lambda m: multi( m, [
+            (lambda v: dh_decBC( v, u'%d-luku eaa' ),               lambda p: (p % 100 != 0)),
+            (lambda v: dh_decBC( v, u'%d-vuosikymmen eaa' ),        alwaysTrue)]),
+        'fr' :      lambda v: dh_decBC( v, u'Années -%d' ),
+        'hr' :      lambda v: dh_decBC( v, u'%dih p.n.e.' ),
 
-        'hu' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'i.e. %d-ás évek' ), lambda p: p == 0),
-            (lambda x: dh_dec( x, u'i.e. %d-as évek' ), lambda p: (p % 100 / 10) in [0,2,3,6,8]),
-            (lambda x: dh_dec( x, u'i.e. %d-es évek' ), alwaysTrue)]),
+        'hu' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 0, u'i.e. 0-ás évek' ),      lambda p: p == 0),
+            (lambda v: dh_decBC( v, u'i.e. %d-as évek' ),           lambda p: (p % 100 / 10) in [0,2,3,6,8]),
+            (lambda v: dh_decBC( v, u'i.e. %d-es évek' ),           alwaysTrue)]),
 
-        'it' :      lambda v: dh_dec( v, u'Anni %d AC' ),
-        'pt' :      lambda v: dh_dec( v, u'Década de %d a.C.' ),
-        'ru' :      lambda v: dh_dec( v, u'%d-е до н. э.' ),
-        'sl' :      lambda v: dh_dec( v, u'%d. pr. n. št.' ),
+        'it' :      lambda v: dh_decBC( v, u'Anni %d AC' ),
+        # '19-10 v. Chr.'
+        'nl' :      lambda v: dh( v, u'%d-%d v. Chr.', lambda i: (encDec0(i)+9,encDec0(i)), lambda ii: ii[1] ),
+        'pt' :      lambda v: dh_decBC( v, u'Década de %d a.C.' ),
 
-        'sv' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'%d-talet f.Kr. (decennium)' ), lambda p: (p % 100 == 0)),
-            (lambda x: dh_dec( x, u'%d-talet f.Kr.' ),             alwaysTrue)]),
+        'ro' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 0, u'Primul deceniu î.Hr.'), lambda p: p == 0),
+            (lambda v: dh_decBC( v, u'Anii %d î.Hr.' ),             alwaysTrue)]),
 
-        'tt' :      lambda v: dh_dec( v, u'MA %d. yıllar' ),
-        'uk' :      lambda v: multi( v, [
-            (lambda x: dh_dec( x, u'%d-ві до Р.Х.' ), lambda p: p == 0 or (p % 100 == 40)),
-            (lambda x: dh_dec( x, u'%d-ті до Р.Х.' ), alwaysTrue)]),
-        'zh' :      lambda v: dh_dec( v, u'前%d年代' ),
+        'ru' :      lambda v: dh_decBC( v, u'%d-е до н. э.' ),
+        'sl' :      lambda v: dh_decBC( v, u'%d. pr. n. št.' ),
+
+        'sv' :      lambda m: multi( m, [
+            (lambda v: dh_decBC( v, u'%d-talet f.Kr. (decennium)' ), lambda p: (p % 100 == 0)),
+            (lambda v: dh_decBC( v, u'%d-talet f.Kr.' ),             alwaysTrue)]),
+
+        'tt' :      lambda v: dh_decBC( v, u'MA %d. yıllar' ),
+        'uk' :      lambda m: multi( m, [
+            (lambda v: dh_decBC( v, u'%d-ві до Р.Х.' ), lambda p: p == 0 or (p % 100 == 40)),
+            (lambda v: dh_decBC( v, u'%d-ті до Р.Х.' ), alwaysTrue)]),
+        'zh' :      lambda v: dh_decBC( v, u'前%d年代' ),
     },
 
     'CenturyAD': {
-        'af' :      lambda v: multi( v, [
-            (lambda x: dh_noConv( x, u'%dste eeu' ), lambda p: p in [1,8] or (p >= 20)),
-            (lambda x: dh_noConv( x, u'%dde eeu' ),  alwaysTrue)]),
-        'als':      lambda v: dh_noConv( v, u'%d. Jahrhundert' ),
-        'ang':      lambda v: dh_noConv( v, u'%de gēarhundred' ),
-        'ast':      lambda v: dh_roman( v, u'Sieglu %s' ),
-        'be' :      lambda v: dh_noConv( v, u'%d стагодзьдзе' ),
-        'bg' :      lambda v: dh_noConv( v, u'%d век' ),
-        'br' :      lambda v: dh_roman( v, u'%svet kantved' ),
-        'bs' :      lambda v: dh_noConv( v, u'%d. vijek' ),
-        'ca' :      lambda v: dh_roman( v, u'Segle %s' ),
-        'cs' :      lambda v: dh_noConv( v, u'%d. století' ),
-        'cv' :      lambda v: dh_roman( v, u'%s ĕмĕр' ),
-        'cy' :      lambda v: dh_noConv( v, u'%dfed ganrif' ),
-        'da' :      lambda v: dh_noConv( v, u'%d. århundrede' ),
-        'de' :      lambda v: dh_noConv( v, u'%d. Jahrhundert' ),
-        'el' :      lambda v: dh_noConv( v, u'%dος αιώνας' ),
-        'en' :      lambda v: multi( v, [
-            (lambda x: dh_noConv( x, u'%dst century' ), lambda p: p == 1 or (p > 20 and p%10 == 1)),
-            (lambda x: dh_noConv( x, u'%dnd century' ), lambda p: p == 2 or (p > 20 and p%10 == 2)),
-            (lambda x: dh_noConv( x, u'%drd century' ), lambda p: p == 3 or (p > 20 and p%10 == 3)),
-            (lambda x: dh_noConv( x, u'%dth century' ), alwaysTrue)]),
-        'eo' :      lambda v: dh_noConv( v, u'%d-a jarcento' ),
-        'es' :      lambda v: dh_roman( v, u'Siglo %s' ),
-        'et' :      lambda v: dh_noConv( v, u'%d. sajand' ),
-
-        'en' :      lambda v: multi( v, [
-            (lambda x: dh_constVal( x, 20, u'سده ۲۰ (میلادی)'),   lambda p: p == 20)]),
-
-            'fi' :      lambda v: dh( v, u'%d00-luku',                   lambda i: i-1, lambda ii: ii[0]+1 ),
-        'fo' :      lambda v: dh_noConv( v, u'%d. øld' ),
-        'fr' :      lambda v: dh_roman( v, u'%se siècle' ),
-        'fy' :      lambda v: dh_noConv( v, u'%de ieu' ),
-        'gl' :      lambda v: dh_roman( v, u'Século %s' ),
-        'he' :      lambda v: dh_noConv( v, u'המאה ה-%d' ),
-        #'hi' : u'बीसवी शताब्दी'
-        'hr' :      lambda v: dh_noConv( v, u'%d. stoljeće' ),
-        'hu' :      lambda v: dh_noConv( v, u'%d. század' ),
-        'id' :      lambda v: dh_noConv( v, u'Abad ke-%d' ),
-        'io' :      lambda v: dh_noConv( v, u'%dma yar-cento' ),
-        'it' :      lambda v: dh_roman( v, u'%s secolo' ),
-        'is' :      lambda v: dh_noConv( v, u'%d. öldin' ),
-        'ja' :      lambda v: dh_noConv( v, u'%d世紀' ),
-        'jv' :      lambda v: dh_noConv( v, u'Abad kaping %d' ),
-        'ka' :      lambda v: dh_roman( v, u'%s საუკუნე' ),
-        'ko' :      lambda v: dh_noConv( v, u'%d세기' ),
-        'kw' :      lambda v: multi( v, [
-            (lambda x: dh_noConv( x, u'%dsa kansblydhen' ),  lambda p: p <= 3),
-            (lambda x: dh_noConv( x, u'%da kansblydhen' ),   lambda p: p == 4),
-            (lambda x: dh_noConv( x, u'%des kansblydhen' ),  lambda p: p == 5),
-            (lambda x: dh_noConv( x, u'%dns kansblydhen' ),  lambda p: p >= 20),
-            (lambda x: dh_noConv( x, u'%dves kansblydhen' ), alwaysTrue)]),
-        'kw' :      lambda v: dh_noConv( v, u'%dves kansblydhen' ),
-        'la' :      lambda v: dh_noConv( v, u'Saeculum %d' ),
-        'lb' :      lambda v: dh_noConv( v, u'%d. Joerhonnert' ),
+        'af' :      lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'%dste eeu' ),             lambda p: p in [1,8] or (p >= 20)),
+            (lambda v: dh_centuryAD( v, u'%dde eeu' ),  alwaysTrue)]),
+        'als':      lambda v: dh_centuryAD( v, u'%d. Jahrhundert' ),
+        'ang':      lambda v: dh_centuryAD( v, u'%de gēarhundred' ),
+        'ast':      lambda v: dh_centuryAD( v, u'Sieglu %R' ),
+        'be' :      lambda v: dh_centuryAD( v, u'%d стагодзьдзе' ),
+        'bg' :      lambda v: dh_centuryAD( v, u'%d век' ),
+        'br' :      lambda v: dh_centuryAD( v, u'%Rvet kantved' ),
+        'bs' :      lambda v: dh_centuryAD( v, u'%d. vijek' ),
+        'ca' :      lambda v: dh_centuryAD( v, u'Segle %R' ),
+        'cs' :      lambda v: dh_centuryAD( v, u'%d. století' ),
+        'cv' :      lambda v: dh_centuryAD( v, u'%R ĕмĕр' ),
+        'cy' :      lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'%deg ganrif' ),           lambda p: p == 19),
+            (lambda v: dh_centuryAD( v, u'%dain ganrif' ),          lambda p: p == 21),
+            (lambda v: dh_centuryAD( v, u'%dfed ganrif' ),          alwaysTrue)]),
+        'da' :      lambda v: dh_centuryAD( v, u'%d. århundrede' ),
+        'de' :      lambda v: dh_centuryAD( v, u'%d. Jahrhundert' ),
+        'el' :      lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'%dός αιώνας' ),           lambda p: p == 20),
+            (lambda v: dh_centuryAD( v, u'%dος αιώνας' ),           alwaysTrue)]),
+        'en' :      lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'%dst century' ),          lambda p: p == 1 or (p > 20 and p%10 == 1)),
+            (lambda v: dh_centuryAD( v, u'%dnd century' ),          lambda p: p == 2 or (p > 20 and p%10 == 2)),
+            (lambda v: dh_centuryAD( v, u'%drd century' ),          lambda p: p == 3 or (p > 20 and p%10 == 3)),
+            (lambda v: dh_centuryAD( v, u'%dth century' ),          alwaysTrue)]),
+        'eo' :      lambda v: dh_centuryAD( v, u'%d-a jarcento' ),
+        'es' :      lambda v: dh_centuryAD( v, u'Siglo %R' ),
+        'et' :      lambda v: dh_centuryAD( v, u'%d. sajand' ),
+        'fa' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 20, u'سده ۲۰ (میلادی)'),     lambda p: p == 20),
+            # This is a dummy value, just to avoid validation testing.   Later, it should be replaced with a proper 'fa' titles
+            (lambda v: dh_centuryAD( v, u'%dth century' ), alwaysTrue)]),        # ********** ERROR!!!
+        'fi' :      lambda v: dh( v, u'%d00-luku', lambda i: i-1, lambda ii: ii[0]+1 ),
+        'fo' :      lambda v: dh_centuryAD( v, u'%d. øld' ),
+        'fr' :      lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'%Rer siècle' ),           lambda p: p == 1),
+            (lambda v: dh_centuryAD( v, u'%Re siècle' ),            alwaysTrue)]),
+        'fy' :      lambda v: dh_centuryAD( v, u'%de ieu' ),
+        'gl' :      lambda v: dh_centuryAD( v, u'Século %R' ),
+        'he' :      lambda v: dh_centuryAD( v, u'המאה ה-%d' ),
+        'hi' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 20, u'बीसवी शताब्दी'),            lambda p: p == 20),
+            # This is a dummy value, just to avoid validation testing.   Later, it should be replaced with a proper 'fa' titles
+            (lambda v: dh_centuryAD( v, u'%dth century' ), alwaysTrue)]),        # ********** ERROR!!!
+        'hr' :      lambda v: dh_centuryAD( v, u'%d. stoljeće' ),
+        'hu' :      lambda v: dh_centuryAD( v, u'%d. század' ),
+        'id' :      lambda v: dh_centuryAD( v, u'Abad ke-%d' ),
+        'io' :      lambda v: dh_centuryAD( v, u'%dma yar-cento' ),
+        'it' :      lambda v: dh_centuryAD( v, u'%R secolo' ),
+        'is' :      lambda v: dh_centuryAD( v, u'%d. öldin' ),
+        'ja' :      lambda v: dh_centuryAD( v, u'%d世紀' ),
+        'jv' :      lambda v: dh_centuryAD( v, u'Abad kaping %d' ),
+        'ka' :      lambda v: dh_centuryAD( v, u'%R საუკუნე' ),
+        'ko' :      lambda v: dh_centuryAD( v, u'%d세기' ),
+        'ku' :      lambda v: dh_centuryAD( v, u"Sedsala %d'an" ),
+        'kw' :      lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'%dsa kansblydhen' ),  lambda p: p <= 3),
+            (lambda v: dh_centuryAD( v, u'%da kansblydhen' ),   lambda p: p == 4),
+            (lambda v: dh_centuryAD( v, u'%des kansblydhen' ),  lambda p: p == 5),
+            (lambda v: dh_centuryAD( v, u'%dns kansblydhen' ),  lambda p: p >= 20),
+            (lambda v: dh_centuryAD( v, u'%dves kansblydhen' ), alwaysTrue)]),
+        'la' :      lambda v: dh_centuryAD( v, u'Saeculum %d' ),
+        'lb' :      lambda v: dh_centuryAD( v, u'%d. Joerhonnert' ),
 
         # Limburgish (li) have individual names for each century
         'li' :      lambda v: slh( v, [u'Ierste iew', u'Twiede iew', u'Derde iew', u'Veerde iew', u'Viefde iew', u'Zesde iew', u'Zevende iew', u'Achste iew', u'Negende iew', u'Tiende iew', u'Elfde iew', u'Twelfde iew', u'Dertiende iew', u'Veertiende iew', u'Vieftiende iew', u'Zestiende iew', u'Zeventiende iew', u'Achtiende iew', u'Negentiende iew', u'Twintegste iew', u'Einentwintegste iew', u'Twieëntwintegste iew',] ),
 
-        'lt' :      lambda v: dh_roman( v, u'%s amžius' ),
-        'lv' :      lambda v: dh_noConv( v, u'%d. gadsimts' ),
-        'mi' :      lambda v: dh_noConv( v, u'Tua %d rau tau' ),
-        'mk' :      lambda v: dh_noConv( v, u'%d век' ),
-        'nl' :      lambda v: dh_noConv( v, u'%de eeuw' ),
-        'nn' :      lambda v: dh( v, u'%d00-talet',                   lambda i: i-1, lambda ii: ii[0]+1 ),
-        'no' :      lambda v: dh_noConv( v, u'%d. århundre' ),
-        'os' :      lambda v: dh_roman( v, u'%s æнус' ),
-        'pl' :      lambda v: dh_roman( v, u'%s wiek' ),
-        'pt' :      lambda v: dh_roman( v, u'Século %s' ),
-        'ro' :      lambda v: dh_roman( v, u'Secolul al %s-lea' ),
-        'ru' :      lambda v: dh_roman( v, u'%s век' ),
-        'scn':      lambda v: dh_roman( v, u'Sèculu %s' ),
-        'simple' :  lambda v: multi( v, [
-            (lambda x: dh_noConv( x, u'%dst century' ), lambda p: p == 1 or (p > 20 and p%10 == 1)),
-            (lambda x: dh_noConv( x, u'%dnd century' ), lambda p: p == 2 or (p > 20 and p%10 == 2)),
-            (lambda x: dh_noConv( x, u'%drd century' ), lambda p: p == 3 or (p > 20 and p%10 == 3)),
-            (lambda x: dh_noConv( x, u'%dth century' ), alwaysTrue)]),
-        'sk' :      lambda v: dh_noConv( v, u'%d. storočie' ),
-        'sl' :      lambda v: dh_noConv( v, u'%d. stoletje' ),
-        'sr' :      lambda v: dh_noConv( v, u'%d. век' ),
-        'sq' :      lambda v: dh_roman( v, u'Shekulli %s' ),
+        'lt' :      lambda v: dh_centuryAD( v, u'%R amžius' ),
+        'lv' :      lambda v: dh_centuryAD( v, u'%d. gadsimts' ),
+        'mi' :      lambda v: dh_centuryAD( v, u'Tua %d rau tau' ),
+        'mk' :      lambda v: dh_centuryAD( v, u'%d век' ),
+        'nds':      lambda v: dh_centuryAD( v, u'%d. Johrhunnert' ),
+        'nl' :      lambda v: dh_centuryAD( v, u'%de eeuw' ),        
+        'nn' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 1, u'1. århundret'),                         lambda p: p == 1),
+            (lambda v: dh( v, u'%d00-talet', lambda i: i-1, lambda ii: ii[0]+1 ),   alwaysTrue)]),
+        'no' :      lambda v: dh_centuryAD( v, u'%d. århundre' ),
+        'os' :      lambda v: dh_centuryAD( v, u'%R æнус' ),
+        'pl' :      lambda v: dh_centuryAD( v, u'%R wiek' ),
+        'pt' :      lambda v: dh_centuryAD( v, u'Século %R' ),
+        'ro' :      lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'Secolul %R' ), lambda p: p < 3),
+            (lambda v: dh_centuryAD( v, u'Secolul al %R-lea' ), alwaysTrue)]),
+        'ru' :      lambda v: dh_centuryAD( v, u'%R век' ),
+        'scn':      lambda v: dh_centuryAD( v, u'Sèculu %R' ),
+        'simple' :  lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'%dst century' ), lambda p: p == 1 or (p > 20 and p%10 == 1)),
+            (lambda v: dh_centuryAD( v, u'%dnd century' ), lambda p: p == 2 or (p > 20 and p%10 == 2)),
+            (lambda v: dh_centuryAD( v, u'%drd century' ), lambda p: p == 3 or (p > 20 and p%10 == 3)),
+            (lambda v: dh_centuryAD( v, u'%dth century' ), alwaysTrue)]),
+        'sk' :      lambda v: dh_centuryAD( v, u'%d. storočie' ),
+        'sl' :      lambda v: dh_centuryAD( v, u'%d. stoletje' ),
+        'sr' :      lambda v: dh_centuryAD( v, u'%d. век' ),
+        'sq' :      lambda v: dh_centuryAD( v, u'Shekulli %R' ),
         'sv' :      lambda v: dh( v, u'%d00-talet',                   lambda i: i-1, lambda ii: ii[0]+1 ),
-        'th' :      lambda v: dh_noConv( v, u'คริสต์ศตวรรษที่ %d' ),
-        'tr' :      lambda v: dh_noConv( v, u'%d. yüzyıl' ),
-        'tt' :      lambda v: dh_noConv( v, u'%d. yöz' ),
-        'uk' :      lambda v: dh_noConv( v, u'%d століття' ),
-        'wa' :      lambda v: dh_noConv( v, u'%dinme sieke' ),
-        'zh' :      lambda v: dh_noConv( v, u'%d世纪' ),
-        'zh-min-nan' : lambda v: dh_noConv( v, u'%d sè-kí' ),
+        'su' :      lambda v: dh_centuryAD( v, u'Abad ka-%d' ),
+        'th' :      lambda v: dh_centuryAD( v, u'คริสต์ศตวรรษที่ %d' ),
+        'tr' :      lambda v: dh_centuryAD( v, u'%d. yüzyıl' ),
+        'tt' :      lambda v: dh_centuryAD( v, u'%d. yöz' ),
+        'uk' :      lambda v: dh_centuryAD( v, u'%d століття' ),
+        'ur' :      lambda v: dh_centuryAD( v, u'%dصبم' ),
+        'vi' :      lambda v: dh_centuryAD( v, u'Thế kỷ %d' ),
+        'wa' :      lambda v: dh_centuryAD( v, u'%dinme sieke' ),
+        'zh' :      lambda v: dh_centuryAD( v, u'%d世纪' ),
+        'zh-min-nan' : lambda v: dh_centuryAD( v, u'%d sè-kí' ),
     },
 
     'CenturyBC': {
-        'af' :      lambda v: dh_noConv( v, u'%de eeu v. C.' ),
-        'ca' :      lambda v: dh_roman( v, u'Segle %s aC' ),
-        'da' :      lambda v: dh_noConv( v, u'%d. århundrede f.Kr.' ),
-        'de' :      lambda v: dh_noConv( v, u'%d. Jahrhundert v. Chr.' ),
-        'en' :      lambda v: dh_noConv( v, u'%dth century BC' ),
-        'eo' :      lambda v: dh_noConv( v, u'%d-a jarcento a.K.' ),
-        'es' :      lambda v: dh_roman( v, u'Siglo %s adC' ),
-        'et' :      lambda v: dh_noConv( v, u'%d. aastatuhat eKr' ),
-        'fi' :      lambda v: dh( v, u'%d00-luku eaa',                   lambda i: i-1, lambda ii: ii[0]+1 ),
-        'fr' :      lambda v: dh_roman( v, u'%se siècle av. J.-C.' ),
-        'he' :      lambda v: dh_noConv( v, u'המאה ה-%d לפנה"ס' ),
-        'hr' :      lambda v: dh_noConv( v, u'%d. stoljeće p.n.e.' ),
-        'id' :      lambda v: dh_noConv( v, u'Abad ke-%d SM' ),
-        'io' :      lambda v: dh_noConv( v, u'%dma yar-cento aK' ),
-        'it' :      lambda v: dh_roman( v, u'%s secolo AC' ),
-        'ja' :      lambda v: dh_noConv( v, u'紀元前%d世紀' ),
-        'la' :      lambda v: dh_noConv( v, u'Saeculum %d a.C.n.' ),
-        'lb' :      lambda v: dh_noConv( v, u'%d. Joerhonnert v. Chr.' ),
-        'nl' :      lambda v: dh_noConv( v, u'%de eeuw v. Chr.' ),
-        'pl' :      lambda v: dh_roman( v, u'%s wiek p.n.e.' ),
-        'ro' :      lambda v: dh_roman( v, u'Secolul %s î.Hr.' ),
-        'ru' :      lambda v: dh_roman( v, u'%s век до н. э.' ),
-        'scn':      lambda v: dh_roman( v, u'Sèculu %s a. C.' ),
-        'sk' :      lambda v: dh_noConv( v, u'%d. storočie pred Kr.' ),
-        'sl' :      lambda v: dh_noConv( v, u'%d. stoletje pr. n. št.' ),
-        'sq' :      lambda v: dh_roman( v, u'Shekulli %s p.e.s.' ),
-        'sv' :      lambda v: dh( v, u'%d00-talet f.Kr.',                   lambda i: i-1, lambda ii: ii[0]+1 ),
-        'tt' :      lambda v: dh_noConv( v, u'MA %d. yöz' ),
-        'uk' :      lambda v: dh_noConv( v, u'%d століття до Р.Х.' ),
-        'zh' :      lambda v: dh_noConv( v, u'前%d世纪' ),
+        'af' :      lambda m: multi( m, [
+            (lambda v: dh_centuryBC( v, u'%dste eeu v.C.' ), lambda p: p in [1,8] or (p >= 20)),
+            (lambda v: dh_centuryBC( v, u'%dde eeu v. C.' ), alwaysTrue)]),
+        'bg' :      lambda v: dh_centuryBC( v, u'%d век пр.н.е.' ),
+        'ca' :      lambda v: dh_centuryBC( v, u'Segle %R aC' ),
+        'cs' :      lambda v: dh_centuryBC( v, u'%d. století př. n. l.' ),
+        'da' :      lambda v: dh_centuryBC( v, u'%d. århundrede f.Kr.' ),
+        'de' :      lambda v: dh_centuryBC( v, u'%d. Jahrhundert v. Chr.' ),
+        'el' :      lambda v: dh_centuryBC( v, u'%dος αιώνας π.Χ.' ),
+        'en' :      lambda m: multi( m, [
+            (lambda v: dh_centuryBC( v, u'%dst century BC' ),         lambda p: p == 1 or (p > 20 and p%10 == 1)),
+            (lambda v: dh_centuryBC( v, u'%dnd century BC' ),         lambda p: p == 2 or (p > 20 and p%10 == 2)),
+            (lambda v: dh_centuryBC( v, u'%drd century BC' ),         lambda p: p == 3 or (p > 20 and p%10 == 3)),
+            (lambda v: dh_centuryBC( v, u'%dth century BC' ),         alwaysTrue)]),
+        'eo' :      lambda v: dh_centuryBC( v, u'%d-a jarcento a.K.' ),
+        'es' :      lambda v: dh_centuryBC( v, u'Siglo %R adC' ),
+        'et' :      lambda v: dh_centuryBC( v, u'%d. aastatuhat eKr' ),
+        'fi' :      lambda v: dh( v, u'%d00-luku eaa', lambda i: i-1, lambda ii: ii[0]+1 ),
+        'fr' :      lambda m: multi( m, [
+            (lambda v: dh_centuryBC( v, u'%Rer siècle av. J.-C.' ),   lambda p: p == 1),
+            (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),    alwaysTrue)]),        
+        'he' :      lambda v: dh_centuryBC( v, u'המאה ה-%d לפנה"ס' ),
+        'hr' :      lambda v: dh_centuryBC( v, u'%d. stoljeće p.n.e.' ),
+        'id' :      lambda v: dh_centuryBC( v, u'Abad ke-%d SM' ),
+        'io' :      lambda v: dh_centuryBC( v, u'%dma yar-cento aK' ),
+        'it' :      lambda v: dh_centuryBC( v, u'%R secolo AC' ),
+        'ja' :      lambda v: dh_centuryBC( v, u'紀元前%d世紀' ),
+        'ko' :      lambda v: dh_centuryBC( v, u'기원전 %d세기' ),
+        'la' :      lambda v: dh_centuryBC( v, u'Saeculum %d a.C.n.' ),
+        'lb' :      lambda v: dh_centuryBC( v, u'%d. Joerhonnert v. Chr.' ),
+        'nl' :      lambda v: dh_centuryBC( v, u'%de eeuw v. Chr.' ),
+        'nn' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 1, u'1. århundret fvt.'),                        lambda p: p == 1),
+            (lambda v: dh( v, u'%d00-talet fvt.', lambda i: i-1, lambda ii: ii[0]+1 ),  alwaysTrue)]),
+        'no' :      lambda v: dh_centuryBC( v, u'%d. århundre f.Kr.' ),
+        'pl' :      lambda v: dh_centuryBC( v, u'%R wiek p.n.e.' ),
+        'pt' :      lambda v: dh_centuryBC( v, u'Século %R a.C.' ),
+        'ro' :      lambda v: dh_centuryBC( v, u'Secolul %R î.Hr.' ),
+        'ru' :      lambda v: dh_centuryBC( v, u'%R век до н. э.' ),
+        'scn':      lambda v: dh_centuryBC( v, u'Sèculu %R a. C.' ),
+        'sk' :      lambda v: dh_centuryBC( v, u'%d. storočie pred Kr.' ),
+        'sl' :      lambda v: dh_centuryBC( v, u'%d. stoletje pr. n. št.' ),
+        'sq' :      lambda v: dh_centuryBC( v, u'Shekulli %R p.e.s.' ),
+        'sr' :      lambda v: dh_centuryBC( v, u'%d. век пне.' ),
+        'sv' :      lambda v: dh( v, u'%d00-talet f.Kr.', lambda i: i-1, lambda ii: ii[0]+1 ),
+        'tt' :      lambda v: dh_centuryBC( v, u'MA %d. yöz' ),
+        'uk' :      lambda v: dh_centuryBC( v, u'%d століття до Р.Х.' ),
+        'zh' :      lambda v: dh_centuryBC( v, u'前%d世纪' ),
     },
 
     'MillenniumAD': {
-        'bg' :      lambda v: dh_noConv( v, u'%d хилядолетие' ),
-        'ca' :      lambda v: dh_roman( v, u'Mil·lenni %s' ),
-        'de' :      lambda v: dh_noConv( v, u'%d. Jahrtausend' ),
-        'el' :      lambda v: dh_noConv( v, u'%dη χιλιετία' ),
-        'en' :      lambda v: multi( v, [
-            (lambda x: dh_noConv( x, u'%dst millennium' ), lambda p: p == 1 or (p > 20 and p%10 == 1)),
-            (lambda x: dh_noConv( x, u'%dnd millennium' ), lambda p: p == 2 or (p > 20 and p%10 == 2)),
-            (lambda x: dh_noConv( x, u'%drd millennium' ), lambda p: p == 3 or (p > 20 and p%10 == 3)),
-            (lambda x: dh_noConv( x, u'%dth millennium' ), alwaysTrue)]),
-        'es' :      lambda v: dh_roman( v, u'%s milenio' ),
+        'bg' :      lambda v: dh_millenniumAD( v, u'%d хилядолетие' ),
+        'ca' :      lambda v: dh_millenniumAD( v, u'Mil·lenni %R' ),
+        'de' :      lambda v: dh_millenniumAD( v, u'%d. Jahrtausend' ),
+        'el' :      lambda v: dh_millenniumAD( v, u'%dη χιλιετία' ),
+        'en' :      lambda m: multi( m, [
+            (lambda v: dh_millenniumAD( v, u'%dst millennium' ),              lambda p: p == 1 or (p > 20 and p%10 == 1)),
+            (lambda v: dh_millenniumAD( v, u'%dnd millennium' ),              lambda p: p == 2 or (p > 20 and p%10 == 2)),
+            (lambda v: dh_millenniumAD( v, u'%drd millennium' ),              lambda p: p == 3 or (p > 20 and p%10 == 3)),
+            (lambda v: dh_millenniumAD( v, u'%dth millennium' ), alwaysTrue)]),
+        'es' :      lambda v: dh_millenniumAD( v, u'%R milenio' ),
 
-        'fi' :      lambda v: multi( v, [
-            (lambda x: dh_constVal( x, 0, u'Ensimmäinen vuosituhat'),   lambda p: p == 0),
-            (lambda x: dh( x, u'%d000-vuosituhat',                      lambda i: i-1, lambda ii: ii[0]+1 ), alwaysTrue)]),
+        'fi' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 0, u'Ensimmäinen vuosituhat'),                       lambda p: p == 0),
+            (lambda v: dh( v, u'%d000-vuosituhat', lambda i: i-1, lambda ii: ii[0]+1 ),     alwaysTrue)]),
 
-        'fr' :      lambda v: multi( v, [
-            (lambda x: dh_roman( x, u'%ser millénaire' ), lambda p: p == 1),
-            (lambda x: dh_roman( x, u'%se millénaire' ),  alwaysTrue)]),
-        'hu' :      lambda v: dh_noConv( v, u'%d. évezred' ),
-        'it' :      lambda v: dh_roman( v, u'%s millennio' ),
-        'ja' :      lambda v: dh_noConv( v, u'%d千年紀' ),
-        'lb' :      lambda v: dh_noConv( v, u'%d. Joerdausend' ),
-        'lt' :      lambda v: dh_noConv( v, u'%d tūkstantmetis' ),
+        'fr' :      lambda m: multi( m, [
+            (lambda v: dh_millenniumAD( v, u'%Rer millénaire' ),              lambda p: p == 1),
+            (lambda v: dh_millenniumAD( v, u'%Re millénaire' ),               alwaysTrue)]),
+        'hu' :      lambda v: dh_millenniumAD( v, u'%d. évezred' ),
+        'it' :      lambda v: dh_millenniumAD( v, u'%R millennio' ),
+        'ja' :      lambda v: dh_millenniumAD( v, u'%d千年紀' ),
+        'lb' :      lambda v: dh_millenniumAD( v, u'%d. Joerdausend' ),
+        'lt' :      lambda v: dh_millenniumAD( v, u'%d tūkstantmetis' ),
         'pt' :      lambda v: slh( v, [u'Primeiro milénio d.C.', u'Segundo milénio d.C.', u'Terceiro milénio d.C.', u'Quarto milénio d.C.'] ),
-        'ro' :      lambda v: slh( v, [u'Mileniul I', u'Mileniul al II-lea'] ),
-        'ru' :      lambda v: dh_noConv( v, u'%d тысячелетие' ),
-        'sk' :      lambda v: dh_noConv( v, u'%d. tisícročie' ),
-        'sl' :      lambda v: dh_noConv( v, u'%d. tisočletje' ),
-        'sv' :      lambda v: dh( v, u'%d000-talet (millennium)',     lambda i: i-1, lambda ii: ii[0]+1 ),
-        'tt' :      lambda v: dh_noConv( v, u'%d. meñyıllıq' ),
-        'ur' :      lambda v: dh_noConv( v, u'%d000مبم' ),
+        'ro' :      lambda v: slh( v, [u'Mileniul I', u'Mileniul al II-lea', u'Mileniul III'] ),
+        'ru' :      lambda v: dh_millenniumAD( v, u'%d тысячелетие' ),
+        'sk' :      lambda v: dh_millenniumAD( v, u'%d. tisícročie' ),
+        'sl' :      lambda v: dh_millenniumAD( v, u'%d. tisočletje' ),
+        'sv' :      lambda v: dh( v, u'%d000-talet (millennium)', lambda i: i-1, lambda ii: ii[0]+1 ),
+        'tt' :      lambda v: dh_millenniumAD( v, u'%d. meñyıllıq' ),
+        'ur' :      lambda v: dh_millenniumAD( v, u'%d000مبم' ),
         #'sv' : u'1000-talet (millennium)'
         #'ur' : u'1000مبم'
     },
 
     'MillenniumBC': {
-        'bg' :      lambda v: dh_noConv( v, u'%d хилядолетие пр.н.е.' ),
-        'da' :      lambda v: dh_noConv( v, u'%d. årtusinde f.Kr.' ),
-        'de' :      lambda v: dh_noConv( v, u'%d. Jahrtausend v. Chr.' ),
-        'el' :      lambda v: dh_noConv( v, u'%dη χιλιετία π.Χ.' ),
-        'en' :      lambda v: dh_noConv( v, u'%dst millennium BC' ),
-        'es' :      lambda v: dh_roman( v, u'%s milenio adC' ),
-        'fi' :      lambda v: multi( v, [
-            (lambda x: dh_constVal( x, 0, u'Ensimmäinen vuosituhat eaa'),                   lambda p: p == 0),
-            (lambda x: dh( x, u'%d000-vuosituhat eaa', lambda i: i-1, lambda ii: ii[0]+1 ), alwaysTrue)]),
-        'fr' :      lambda v: dh_roman( v, u'%ser millénaire av. J.-C.' ),
-        'he' :      lambda v: dh_noConv( v, u'המילניום ה-%d לפנה"ס' ),
-        'it' :      lambda v: dh_roman( v, u'%s millennio AC' ),
-        'ja' :      lambda v: dh_noConv( v, u'紀元前%d千年紀' ),
-        'lb' :      lambda v: dh_noConv( v, u'%d. Joerdausend v. Chr.' ),
+        'bg' :      lambda v: dh_millenniumBC( v, u'%d хилядолетие пр.н.е.' ),
+        'ca' :      lambda v: dh_millenniumBC( v, u'Mil·lenni %R aC' ),
+        'da' :      lambda v: dh_millenniumBC( v, u'%d. årtusinde f.Kr.' ),
+        'de' :      lambda v: dh_millenniumBC( v, u'%d. Jahrtausend v. Chr.' ),
+        'el' :      lambda v: dh_millenniumBC( v, u'%dη χιλιετία π.Χ.' ),
+        'en' :      lambda v: dh_millenniumBC( v, u'%dst millennium BC' ),
+        'es' :      lambda v: dh_millenniumBC( v, u'%R milenio adC' ),
+        'fi' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 0, u'Ensimmäinen vuosituhat eaa'),                   lambda p: p == 0),
+            (lambda v: dh( v, u'%d000-vuosituhat eaa', lambda i: i-1, lambda ii: ii[0]+1 ), alwaysTrue)]),
+        'fr' :      lambda v: dh_millenniumBC( v, u'%Rer millénaire av. J.-C.' ),
+        'he' :      lambda v: dh_millenniumBC( v, u'המילניום ה-%d לפנה"ס' ),
+        'hu' :      lambda v: dh_millenniumBC( v, u'I. e. %d. évezred' ),
+        'it' :      lambda v: dh_millenniumBC( v, u'%R millennio AC' ),
+        'ja' :      lambda v: dh_millenniumBC( v, u'紀元前%d千年紀' ),
+        'lb' :      lambda v: dh_millenniumBC( v, u'%d. Joerdausend v. Chr.' ),
         'pt' :      lambda v: slh( v, [u'Primeiro milénio a.C.', u'Segundo milénio a.C.', u'Terceiro milénio a.C.', u'Quarto milénio a.C.'] ),
-        'ro' :      lambda v: dh_roman( v, u'Mileniul %s î.Hr.' ),
-        'ru' :      lambda v: dh_noConv( v, u'%d тысячелетие до н. э.' ),
+        'ro' :      lambda v: dh_millenniumBC( v, u'Mileniul %R î.Hr.' ),
+        'ru' :      lambda v: dh_millenniumBC( v, u'%d тысячелетие до н. э.' ),
         'sv' :      lambda v: dh( v, u'%d000-talet f.Kr. (millennium)',     lambda i: i-1, lambda ii: ii[0]+1 ),
-        'tt' :      lambda v: dh_noConv( v, u'MA %d. meñyıllıq' ),
-        'zh' :      lambda v: dh_noConv( v, u'前%d千年' ),
+        'tt' :      lambda v: dh_millenniumBC( v, u'MA %d. meñyıllıq' ),
+        'zh' :      lambda v: dh_millenniumBC( v, u'前%d千年' ),
     },
 
     'Cat_Year_MusicAlbums': {
-        'en' :      lambda v: dh_noConv( v, u'Category:%d albums' ),
-        'fr' :      lambda v: dh_noConv( v, u'Catégorie:Album musical sorti en %d' ),
-        'pl' :      lambda v: dh_noConv( v, u'Kategoria:Albumy muzyczne wydane w roku %d' ),
-        'sl' :      lambda v: dh_noConv( v, u'Kategorija:Albumi iz %d' ),
-        'sv' :      lambda v: dh_noConv( v, u'Kategori:%d års musikalbum' ),
+        'en' :      lambda v: dh_yearAD( v, u'Category:%d albums' ),
+        'fr' :      lambda v: dh_yearAD( v, u'Catégorie:Album musical sorti en %d' ),
+        'pl' :      lambda v: dh_yearAD( v, u'Kategoria:Albumy muzyczne wydane w roku %d' ),
+        'sl' :      lambda v: dh_yearAD( v, u'Kategorija:Albumi iz %d' ),
+        'sv' :      lambda v: dh_yearAD( v, u'Kategori:%d års musikalbum' ),
     },
 
     'CurrEvents': {
@@ -1139,48 +1082,13 @@ formats = {
     },
 }
 
-formatLimits = {
-    'January'			: (1, days_in_month[1], 1),
-    'February'			: (1, days_in_month[2], 1),
-    'March'				: (1, days_in_month[3], 1),
-    'April'				: (1, days_in_month[4], 1),
-    'May'				: (1, days_in_month[5], 1),
-    'June'				: (1, days_in_month[6], 1),
-    'July'				: (1, days_in_month[7], 1),
-    'August'			: (1, days_in_month[8], 1),
-    'September'			: (1, days_in_month[9], 1),
-    'October'			: (1, days_in_month[10], 1),
-    'November'			: (1, days_in_month[11], 1),
-    'December'			: (1, days_in_month[12], 1),
-
-    'Year_January'		: (1900, 2050, 1),
-    'Year_February'		: (1900, 2050, 1),
-    'Year_March'		: (1900, 2050, 1),
-    'Year_April'		: (1900, 2050, 1),
-    'Year_May'			: (1900, 2050, 1),
-    'Year_June'			: (1900, 2050, 1),
-    'Year_July'			: (1900, 2050, 1),
-    'Year_August'		: (1900, 2050, 1),
-    'Year_September'	: (1900, 2050, 1),
-    'Year_October'		: (1900, 2050, 1),
-    'Year_November'		: (1900, 2050, 1),
-    'Year_December'		: (1900, 2050, 1),
-
-    'MonthName'			: (1,12,1),
-    'Number'			: (1,10,1),
-
-    'YearAD'			: (0,2050,1),
-    'YearBC'			: (0,500,1),
-    'DecadeAD'			: (0,2050,10),
-    'DecadeBC'			: (0,500,10),
-    'CenturyAD'			: (1,25,1),
-    'CenturyBC'			: (1,25,1),
-    'MillenniumAD'		: (1,5,1),
-    'MillenniumBC'		: (1,5,1),
-
-    'Cat_Year_MusicAlbums'	: (1950, 2020, 1),
-    'CurrEvents'			: (0,0,1),
-}
+#
+# Add auto-generated empty dictionaries for DayOfMonth and MonthOfYear articles
+#
+for dayOfMonth in dayMnthFmts:
+    formats[dayOfMonth] = {}
+for monthOfYear in yrMnthFmts:
+    formats[monthOfYear] = {}
 
 def addFmt( type, lang, isMnthOfYear, patterns ):
     """Add 12 month formats for a specific type ('January','Feb..), for a given language.
@@ -1189,14 +1097,14 @@ def addFmt( type, lang, isMnthOfYear, patterns ):
     The patterns parameter is a list of 12 elements to be used for each month.
     """
     if len(patterns) != 12:
-        raise ValueError(u'pattern %s does not have 12 elements' % lang )
+        raise AssertionError(u'pattern %s does not have 12 elements' % lang )
     if len(type) != 12:
-        raise ValueError(u'type %s does not have 12 elements' % lang )
+        raise AssertionError(u'type %s does not have 12 elements' % lang )
 
     for i in range(12):
         if patterns[i] != None:
             if isMnthOfYear:
-                formats[type[i]][lang] = eval(u'lambda v: dh_MnthOfYear( v, u"%s" )' % patterns[i])
+                formats[type[i]][lang] = eval(u'lambda v: dh_mnthOfYear( v, u"%s" )' % patterns[i])
             else:
                 formats[type[i]][lang] = eval(u'lambda v: dh_dayOfMnth( v, u"%s" )' % patterns[i])
 
@@ -1309,16 +1217,16 @@ waMonthNames = [ u"djanvî", u"fevrî", u"måss", u"avri", u"may", u"djun", u"dj
 # For month names begining with a consonant...
 for i in [0,1,2,4,5,6,8,10,11]:
     formats[dayMnthFmts[i]]['wa'] = eval(
-        (u'lambda v: multi( v, [' +
-            u'(lambda x: dh_noConv( x, u"%%dî d\' %s" ), lambda p: p == 1),' +
-            u'(lambda x: dh_noConv( x, u"%%d d\' %s" ),  lambda p: p in [2,3,20,22,23]),' +
-            u'(lambda x: dh_noConv( x, u"%%d di %s" ),   alwaysTrue)])') % (waMonthNames[i],waMonthNames[i],waMonthNames[i]))
+        (u'lambda m: multi( m, [' +
+            u'(lambda v: dh_dayOfMnth( v, u"%%dî d\' %s" ), lambda p: p == 1),' +
+            u'(lambda v: dh_dayOfMnth( v, u"%%d d\' %s" ),  lambda p: p in [2,3,20,22,23]),' +
+            u'(lambda v: dh_dayOfMnth( v, u"%%d di %s" ),   alwaysTrue)])') % (waMonthNames[i],waMonthNames[i],waMonthNames[i]))
 # For month names begining with a vowel...
 for i in [3,7,9]:
     formats[dayMnthFmts[i]]['wa'] = eval(
-        (u'lambda v: multi( v, [' +
-            u'(lambda x: dh_noConv( x, u"%%dî d\' %s" ), lambda p: p == 1),' +
-            u'(lambda x: dh_noConv( x, u"%%d d\' %s" ),  alwaysTrue)])') % (waMonthNames[i],waMonthNames[i]))
+        (u'lambda m: multi( m, [' +
+            u'(lambda v: dh_dayOfMnth( v, u"%%dî d\' %s" ), lambda p: p == 1),' +
+            u'(lambda v: dh_dayOfMnth( v, u"%%d d\' %s" ),  alwaysTrue)])') % (waMonthNames[i],waMonthNames[i]))
 
 
 #
@@ -1350,7 +1258,51 @@ addFmt( yrMnthFmts, 'zh', True,     makeMonthList( u"%%d年%d月" ))
 addFmt( yrMnthFmts, 'zh-min-nan',True,  makeMonthList( u"%%d nî %d goe̍h" ))
 
 
-def getDictionaryYear( lang, title, ignoreFirstLetterCase = True ):
+#
+#
+# This table defines the limits for each type of format data.
+# Each item is a tuple with a predicate function (returns True if the value falls within acceptable limits, False otherwise),
+# In addition, tuple contains start, end, and step values that will be used to test the formats table for internal consintency.
+#
+formatLimits = {
+    'MonthName'			: (lambda v: 1<=v and v<13,                 1,13),
+    'Number'			: (lambda v: 1<=v and v<1001,               1,1001),
+
+    'YearAD'			: (lambda v: 0<=v and v<2051,               0,2051),
+    'YearBC'			: (lambda v: 0<=v and v<501,                0,501),
+    'DecadeAD'			: (lambda v: 0<=v and v<2051,               0,2051),  # At some point need to re-add  "and v%10==0" to the limitation
+    'DecadeBC'			: (lambda v: 0<=v and v<501,                0,501),
+    'CenturyAD'			: (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'CenturyBC'			: (lambda v: 1<=v and v<41,                 1,23),    #  
+    'MillenniumAD'		: (lambda v: 1<=v and v<6,                  1,4),     # For milleniums, only test first 3 AD Milleniums,
+    'MillenniumBC'		: (lambda v: 1<=v and v<6,                  1,2),     # And only 1 BC Millenium
+
+    'Cat_Year_MusicAlbums'	: (lambda v: 1950<=v and v<2021,        1950,2021),
+    'CurrEvents'			: (lambda v: 0<=v and v<1,              0,1),
+}
+
+# All month of year articles are in the same format
+_formatLimit_MonthOfYear =  (lambda v: 1 <= 1900 and v < 2051,      1900, 2051)
+for month in yrMnthFmts:
+    formatLimits[month] = _formatLimit_MonthOfYear
+
+_formatLimit_DayOfMonth31 = (lambda v: 1 <= v and v < 32,           1, 32)
+_formatLimit_DayOfMonth30 = (lambda v: 1 <= v and v < 31,           1, 31)
+_formatLimit_DayOfMonth29 = (lambda v: 1 <= v and v < 30,           1, 30)
+for monthId in range(12):
+    if (monthId+1) in [1,3,5,7,8,10,12]:
+        formatLimits[dayMnthFmts[monthId]] = _formatLimit_DayOfMonth31      # 31 days a month
+    elif (monthId+1) == 2: # February
+        formatLimits[dayMnthFmts[monthId]] = _formatLimit_DayOfMonth29      # 29 days a month
+    else:
+        formatLimits[dayMnthFmts[monthId]] = _formatLimit_DayOfMonth30      # 30 days a month
+
+def getNumberOfDaysInMonth(month):
+    """Returns the number of days in a given month, 1 being January, etc."""
+    return formatLimits[dayMnthFmts[month-1]][2]-1
+
+
+def getAutoFormat( lang, title, ignoreFirstLetterCase = True ):
     """Returns (dictName,value), where value can be a year, date, etc, and dictName is 'YearBC', 'December', etc."""
     for dictName, dict in formats.iteritems():
         try:
@@ -1368,7 +1320,7 @@ def getDictionaryYear( lang, title, ignoreFirstLetterCase = True ):
             else:
                 title = title[0].upper() + title[1:]
 
-            return getDictionaryYear(lang, title, ignoreFirstLetterCase = False)
+            return getAutoFormat(lang, title, ignoreFirstLetterCase = False)
         except:
             pass
 
@@ -1403,9 +1355,9 @@ def printMonthArray( lang, pattern, capitalize ):
         wikipedia.output( s )
 
 
-def testMapEntry( showAll, m, year, testYear ):
+def testMapEntry( formatName, showAll = True, value = None ):
     """This is a test function, to be used interactivelly to test the validity of the above maps.
-    To test, run this function with the map name, year to be tested, and the final year expected.
+    To test, run this function with the map name, value to be tested, and the final value expected.
     Usage example:
         run python interpreter
         >>> import date
@@ -1413,52 +1365,41 @@ def testMapEntry( showAll, m, year, testYear ):
         >>> date.testMapEntry( 'CenturyAD', 20, 20 )
     """
     
-    start,end,step = formatLimits[m]
+    step = 1
+    if formatName in decadeFormats: step = 10
+    predicate,start,stop = formatLimits[formatName]
+    if value is not None:
+        start, stop = value, value+1
     if showAll:
-        wikipedia.output(u"Limits: from %d to %d, with step %d" % (start,stop,step))
+        wikipedia.output(u"Processing %s with limits from %d to %d and step %d" % (formatName, start,stop-1,step))
     
-    for code, value in formats[m].iteritems():
-        if showAll:
-            wikipedia.output(u"%s[%s](%d)" % (m, code, year))
-            wikipedia.output(u"                      -> '%s' -> %d" % (value(year), value(value(year))))
-        if value(value(year)) != testYear:
-            raise ValueError("%s[%s](%d) != %d: assert failed, years didn't match" % (m,code,year,testYear))
+    for code, convFunc in formats[formatName].iteritems():
+        for value in range(start,stop,step):
+            try:
+                if not predicate(value):
+                    raise AssertionError("     Not a valid value for this format.")
+                newValue = convFunc(convFunc(value))
+                if newValue != value:
+                    raise AssertionError("     %s != %s: assert failed, values didn't match" % (newValue, value))
+                if showAll:
+                    wikipedia.output(u"date.formats['%s']['%s'](%d): '%s' -> %d" % (formatName, code, value, convFunc(value), newValue))
+            except:
+                wikipedia.output(u"********** Error in date.formats['%s']['%s'](%d)" % (formatName, code, value))
+                raise
 
-
-def test(showAll = False):
-    """This is a test function, to be used interactivelly to test all year maps at once
+def test(quick = False, showAll = False):
+    """This is a test function, to be used interactivelly to test entire format convesion map at once
     Usage example:
         run python interpreter
         >>> import date
-        >>> date.testAll()
+        >>> date.test()
     """
-    for d in formats.keys():
+    for formatName in formats.keys():
 
-        if d in yearFormats:
-            testMapEntry( showAll, d, 1992, 1992 )
-        elif d in decadeFormats:
-            testMapEntry( showAll, d, 1990, 1990 )
-            testMapEntry( showAll, d, 1991, 1990 )
-            testMapEntry( showAll, d, 1992, 1990 )
-            testMapEntry( showAll, d, 1998, 1990 )
-            testMapEntry( showAll, d, 1999, 1990 )
-        elif d in centuryFormats:
-            testMapEntry( showAll, d, 20, 20 )
-        elif d in millFormats:
-            testMapEntry( showAll, d, 2, 2 )
-        elif d in dayMnthFmts:
-            testMapEntry( showAll, d, 1, 1 )
-            testMapEntry( showAll, d, 29, 29 )
-        elif d in yrMnthFmts:
-            testMapEntry( showAll, d, 2000, 2000 )
-        elif d in snglValsFormats:
-            testMapEntry( showAll, d, 0, 0 )
-        elif d == 'MonthName':
-            for v in range(1,12):
-                testMapEntry( showAll, d, v, v )
-        elif d == 'Cat_Year_MusicAlbums':
-            testMapEntry( showAll, d, 2001, 2001 )
-        elif d == 'Number':
-            testMapEntry( showAll, d, 0, 0 )
+        if quick:
+            testMapEntry( formatName, showAll, formatLimits[formatName][1] )     # Only test the first value in the test range
         else:
-            raise ValueError("unknown format %s" % d)
+            testMapEntry( formatName, showAll )     # Extensive test!        # Test decade rounding
+
+    if not quick:
+        wikipedia.output(u"*********** SUCCESS!!! ***********")

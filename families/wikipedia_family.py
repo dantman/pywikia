@@ -156,11 +156,13 @@ class Family(family.Family):
 
         self.namespaces[102] = {
 			'_default': u'WikiProject',
+            'ca': u'Viquiprojecte',
 			'es': u'Wikiproyecto',
 		}
             
         self.namespaces[103] = {
 			'_default': u'WikiProject talk',
+            'ca': u'Viquiprojecte Discussió',
 			'es': u'Wikiproyecto Discusión',
 		}
             

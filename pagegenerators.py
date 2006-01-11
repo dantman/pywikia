@@ -117,7 +117,7 @@ class DayPageGenerator:
         firstPage = wikipedia.Page(wikipedia.getSite(), fd(self.startMonth, 1))
         wikipedia.output(u"Starting with %s" % firstPage.aslink())
         for month in range(self.startMonth, self.endMonth+1):
-            for day in range(1, date.days_in_month[month]+1):
+            for day in range(1, date.getNumberOfDaysInMonth(month)+1):
                 yield wikipedia.Page(wikipedia.getSite(), fd(month, day))
 
 class NamespaceFilterPageGenerator:

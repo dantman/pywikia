@@ -81,9 +81,9 @@ def translate(pl, arr, same = False, hints = None, auto = True):
     # Autotranslate dates into all other languages, the rest will come from existing interwiki links.
     if auto:
         # search inside all dictionaries for this link
-        dictName, year = date.getDictionaryYear( pl.site().language(), pl.title() )
+        dictName, value = date.getAutoFormat( pl.site().language(), pl.title() )
         if dictName:
-           if not (dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and year > date.maxyearBC[pl.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(pl.site().language()) and year > date.maxyearAD[pl.site().language()]):
+            if not (dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and year > date.maxyearBC[pl.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(pl.site().language()) and year > date.maxyearAD[pl.site().language()]):
                 wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (pl.title(),dictName,year))
                 for entryLang, entry in date.formats[dictName].iteritems():
                     if entryLang != pl.site().language():
@@ -91,7 +91,7 @@ def translate(pl, arr, same = False, hints = None, auto = True):
                             pass
                         elif dictName == 'yearsAD' and date.maxyearAD.has_key(entryLang) and year > date.maxyearAD[entryLang]:
                             pass
-                        else:
+            else:
                             newname = entry(year)
                             x = wikipedia.Page( wikipedia.getSite(code=entryLang, fam=site.family), newname )
                             if x not in arr:
@@ -110,7 +110,7 @@ def getPoisonedLinks(pl):
     
     wikipedia.output( u'getting poisoned links for %s' % pl.title() )
 
-    dictName, year = date.getDictionaryYear( pl.site().language(), pl.title() )
+    dictName, year = date.getAutoFormat( pl.site().language(), pl.title() )
     if dictName is not None:
         wikipedia.output( u'date found in %s' % dictName )
         
