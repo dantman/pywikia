@@ -10,8 +10,9 @@ people can fix or remove the links themselves.
 The bot will store all links found dead in a .dat file in the deadlinks
 subdirectory. To avoid the removing of links which are only temporarily
 unavailable, the bot only reports links which were reported dead at least
-two times, with a time lag of at least one week. Such links will be stored
-in a .txt file in the deadlinks subdirectory.
+two times, with a time lag of at least one week. Such links will be logged to a .txt file in the deadlinks subdirectory.
+
+In addition to the logging step, it is possible to automatically report dead links to the talk page of the article where the link was found.
 
 When a link is found alive, it will be removed from the .dat file.
 
@@ -26,9 +27,6 @@ Syntax examples:
     
     python weblinkchecker.py Example page
         Only checks links found in the wiki page "Example page"
-
-    python weblinkchecker.py -xml:20050713_pages_current.xml
-        Checks all links found in an XML dump.
 """
 
 #
@@ -316,7 +314,7 @@ class WeblinkCheckerRobot:
             thread.start()
 
 def main():
-    start = None
+    start = u'!'
     pageTitle = []
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'weblinkchecker')
@@ -326,7 +324,7 @@ def main():
             else:
                 pageTitle.append(arg)
 
-    if start:
+    if pageTitle == []:
         gen = pagegenerators.AllpagesPageGenerator(start)
     else:
         pageTitle = ' '.join(pageTitle)
