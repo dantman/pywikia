@@ -52,6 +52,12 @@ talk_report = {
     'en': u'\n\n== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n\n--~~~~',
 }
 
+ignorelist = [
+    re.compile('.*[\./]example.com/.*'),
+    re.compile('.*[\./]example.net/.*'),
+    re.compile('.*[\./]example.org/.*'),
+]
+
 class LinkChecker(object):
     '''
     Given a HTTP URL, tries to load the page from the Internet and checks if it
@@ -206,6 +212,20 @@ class History:
             # no saved history exists yet, or history dump broken
             self.historyDict = {}
 
+    def report(self, url, error, containingPage):
+        if config.report_dead_links_on_talk and not containingPage.isTalkPage():
+            wikipedia.output(u"** Reporting dead link on talk page...")
+            talk = containingPage.switchTalkPage()
+            try:
+                content = talk.get()
+                if url in content:
+                    wikipedia.output(u"** Dead link seems to have already been reported.")
+                    return
+            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                content = u''
+            content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorMessage
+            talk.put(content)
+        
     def log(self, url, error, containingPage):
         site = wikipedia.getSite()
         errorMessage = u'* %s\n' % url
@@ -220,15 +240,7 @@ class History:
             txtfile.write('=== %s ===\n' % containingPage.title()[:3])
         txtfile.write(errorMessage)
         txtfile.close()
-        if config.report_dead_links_on_talk and not page.isTalkPage():
-            wikipedia.output(u"** Reporting dead link on talk page.")
-            talk = page.switchTalkPage()
-            try:
-                content = talk.get()
-            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
-                content = u''
-            content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorMessage
-            talk.put(content)
+        self.report(url, error, containingPage)
             
             
     def setLinkDead(self, url, error, page):
@@ -243,7 +255,7 @@ class History:
             # if the first time we found this link longer than a week ago,
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
-            if timeSinceFirstFound > 60 * 60 * 24 * 7:
+            if timeSinceFirstFound > 60 * 60 * 24 * 7 * 0:
                 self.log(url, error, page)
             
         else:
@@ -303,15 +315,20 @@ class WeblinkCheckerRobot:
         text = re.sub('(?s)<!--.*?-->', '', text)
         urls = linkR.findall(text)
         for url in urls:
-            # Limit the number of threads started at the same time. Each
-            # thread will check one page, then die.
-            while threading.activeCount() >= config.max_external_links:
-                # wait 100 ms
-                time.sleep(0.1)
-            thread = LinkCheckThread(page, url, self.history)
-            # thread dies when program terminates
-            thread.setDaemon(True)
-            thread.start()
+            ignoreUrl = False
+            for ignoreR in ignorelist:
+                if ignoreR.match(url):
+                    ignoreUrl = True
+            if not ignoreUrl:
+                # Limit the number of threads started at the same time. Each
+                # thread will check one page, then die.
+                while threading.activeCount() >= config.max_external_links:
+                    # wait 100 ms
+                    time.sleep(0.1)
+                thread = LinkCheckThread(page, url, self.history)
+                # thread dies when program terminates
+                thread.setDaemon(True)
+                thread.start()
 
 def main():
     start = u'!'
