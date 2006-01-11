@@ -430,18 +430,6 @@ class Page(object):
                 self.site().putToken(tokenloc.group(1), sysop = sysop)
             elif not self.site().getToken(getalways = False):
                 self.site().putToken('', sysop = sysop)
-    
-            # Find out if page actually exists. Only existing pages have a 
-            # version history tab. 
-            RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
-            matchVersionTab = RversionTab.search(text)
-            if not matchVersionTab:
-                raise NoPage(self.site(), self.title())                
-            # Look if the page is on our watchlist
-            R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
-            matchWatching = R.search(text)
-            if matchWatching:
-                isWatched = True
             # Get timestamps
             m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
             if m:
@@ -453,6 +441,17 @@ class Page(object):
                 self._startTime = m.group(1)
             else:
                 self._startTime = "0"
+            # Find out if page actually exists. Only existing pages have a 
+            # version history tab. 
+            RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
+            matchVersionTab = RversionTab.search(text)
+            if not matchVersionTab:
+                raise NoPage(self.site(), self.title())                
+            # Look if the page is on our watchlist
+            R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
+            matchWatching = R.search(text)
+            if matchWatching:
+                isWatched = True
             # Now process the contents of the textarea
             m = self.site().redirectRegex().match(text[i1:i2])
             if self._editTime == "0":
@@ -519,7 +518,11 @@ class Page(object):
             return True
         else:
             return False
-
+    
+    def isTalkPage(self):
+        ns = self.namespace()
+        return ns >= 0 and ns % 2 == 1
+    
     def namespace(self):
         """Gives the number of the namespace of the page. Does not work for
            all namespaces in all languages, only when defined in family.py.
@@ -808,6 +811,20 @@ class Page(object):
             # We don't have a user account for that wiki, or the
             # page is locked and we don't have a sysop account.
             return False
+    
+    def switchTalkPage(self):
+        """
+        If self is a talk page, returns the associated content page; otherwise,
+        returns the associated talk page. Returns None if self is a special
+        page.
+        """
+        ns = self.namespace()
+        if ns < 0: # Special page
+            return None
+        if self.isTalkPage():
+            return Page(self.site(), self.site().namespace(ns - 1) + ':' + self.titleWithoutNamespace())
+        else:
+            return Page(self.site(), self.site().namespace(ns + 1) + ':' + self.titleWithoutNamespace())
         
     def interwiki(self):
         """A list of interwiki links in the page. This will retrieve
