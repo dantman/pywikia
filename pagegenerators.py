@@ -130,6 +130,15 @@ class NamespaceFilterPageGenerator:
             if page.namespace() in self.namespaces:
                 yield page
 
+class RedirectFilterPageGenerator:
+    def __init__(self, generator):
+        self.generator = generator
+
+    def __iter__(self):
+        for page in self.generator:
+            if not page.isRedirectPage():
+                yield page
+
 class CombinedGenerator:
     def __init__(self,generator1,generator2):
         self.gen1 = generator1
