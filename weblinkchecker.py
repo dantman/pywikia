@@ -212,7 +212,7 @@ class History:
             # no saved history exists yet, or history dump broken
             self.historyDict = {}
 
-    def report(self, url, error, containingPage):
+    def report(self, url, errorMessage, containingPage):
         if config.report_dead_links_on_talk and not containingPage.isTalkPage():
             wikipedia.output(u"** Reporting dead link on talk page...")
             talk = containingPage.switchTalkPage()
@@ -255,7 +255,7 @@ class History:
             # if the first time we found this link longer than a week ago,
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
-            if timeSinceFirstFound > 60 * 60 * 24 * 7 * 0:
+            if timeSinceFirstFound > 60 * 60 * 24 * 7:
                 self.log(url, error, page)
             
         else:
