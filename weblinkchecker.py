@@ -44,32 +44,15 @@ import codecs, pickle
 import httplib, socket, urlparse
 import threading, time
 
-class AllpagesPageContentGenerator:
-    def __init__(self, start):
-        self.start = start
-    
-    def __iter__(self):
-        gen = pagegenerators.AllpagesPageGenerator(self.start)
-        preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        for page in preloadingGen:
-            try:
-                text = page.get()
-            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
-                continue
-            yield page.title(), text
+talk_report_msg = {
+    'de': u'Bot: Berichte nicht verfügbaren Weblink',
+    'en': u'robot: Reporting unavailable external link',
+}
 
-class XmlPageContentGenerator:
-    '''
-    Using an Xml dump file, retrieves all pages that are not redirects (doesn't
-    load them from the live wiki), and yields title/text pairs.
-    '''
-    def __init__(self, xmlfilename):
-        import xmlreader
-        self.dump = xmlreader.XmlDump(xmlfilename)
-
-    def __iter__(self):
-        for entry in self.dump.parse():
-            yield entry.title, entry.text
+talk_report = {
+    'de': u'\n\n== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich down ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n\n--~~~~',
+    'en': u'\n\n== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n\n--~~~~',
+}
 
 class LinkChecker(object):
     '''
@@ -97,7 +80,7 @@ class LinkChecker(object):
             self.query = '?' + self.query
         self.protocol = url.split(':', 1)[0]
         #header = {'User-agent': 'PythonWikipediaBot/1.0'}
-        # we fake being Opera because some webservers block
+        # we fake being Firefox because some webservers block
         # unknown clients
         self.header = {'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050511 Firefox/1.0.4 SUSE/1.0.4-0.3'}
 
@@ -170,9 +153,9 @@ class LinkCheckThread(threading.Thread):
     A thread responsible for checking one page. After checking the page, it
     will die.
     '''
-    def __init__(self, title, url, history):
+    def __init__(self, page, url, history):
         threading.Thread.__init__(self)
-        self.title = title
+        self.page = page
         self.url = url
         self.history = history
         
@@ -181,14 +164,14 @@ class LinkCheckThread(threading.Thread):
         try:
             ok, message = linkChecker.check()
         except:
-            wikipedia.output('Exception while processing URL %s in page %s' % (self.url, self.title))
+            wikipedia.output('Exception while processing URL %s in page %s' % (self.url, self.page.title()))
             raise
         if ok:
             if self.history.setLinkAlive(self.url):
-                wikipedia.output('*Link to %s in [[%s]] is back alive.' % (self.url, self.title))
+                wikipedia.output('*Link to %s in [[%s]] is back alive.' % (self.url, self.page.title()))
         else:
-            wikipedia.output('*[[%s]] links to %s - %s.' % (self.title, self.url, message))
-            self.history.setLinkDead(self.url, message, self.title)
+            wikipedia.output('*[[%s]] links to %s - %s.' % (self.page.title(), self.url, message))
+            self.history.setLinkDead(self.url, message, self.page)
 
 class History:
     '''
@@ -219,59 +202,69 @@ class History:
         self.logCount = 0
         try:
             datfile = open(self.datfilename, 'r')
-            self.dict = pickle.load(datfile)
+            self.historyDict = pickle.load(datfile)
             datfile.close()
         except (IOError, EOFError):
             # no saved history exists yet, or history dump broken
-            self.dict = {}
+            self.historyDict = {}
 
     def log(self, url, error, containingPage):
         site = wikipedia.getSite()
+        errorMessage = u'* %s\n' % url
+        for (page, date, error) in self.historyDict[url]:
+            errorMessage += "** In [[%s]] on %s, %s\n" % (page.title(), time.ctime(date), error)
         wikipedia.output(u"** Logging page for deletion.")
         txtfilename = 'deadlinks/results-%s-%s.txt' % (site.family.name, site.lang)
         txtfile = codecs.open(txtfilename, 'a', 'utf-8')
         self.logCount += 1
         if self.logCount % 30 == 0:
             # insert a caption
-            containingPageTitle = self.dict[url][0][0]
-            txtfile.write('=== %s ===\n' % containingPageTitle[:3])
-        txtfile.write("* %s\n" % url)
-        for (title, date, error) in self.dict[url]:
-            txtfile.write("** In [[%s]] on %s, %s\n" % (title, time.ctime(date), error))
+            txtfile.write('=== %s ===\n' % containingPage.title()[:3])
+        txtfile.write(errorMessage)
         txtfile.close()
+        if config.report_dead_links_on_talk and not page.isTalkPage():
+            wikipedia.output(u"** Reporting dead link on talk page.")
+            talk = page.switchTalkPage()
+            try:
+                content = talk.get()
+            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                content = u''
+            content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorMessage
+            talk.put(content)
             
-    def setLinkDead(self, url, error, containingPage):
+            
+    def setLinkDead(self, url, error, page):
         now = time.time()
-        if self.dict.has_key(url):
-            timeSinceFirstFound = now - self.dict[url][0][1]
-            timeSinceLastFound= now - self.dict[url][-1][1]
+        if self.historyDict.has_key(url):
+            timeSinceFirstFound = now - self.historyDict[url][0][1]
+            timeSinceLastFound= now - self.historyDict[url][-1][1]
             # if the last time we found this dead link is less than an hour
             # ago, we won't save it in the history this time.
             if timeSinceLastFound > 60 * 60:
-                self.dict[url].append((containingPage, now, error))
+                self.historyDict[url].append((page, now, error))
             # if the first time we found this link longer than a week ago,
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
             if timeSinceFirstFound > 60 * 60 * 24 * 7:
-                self.log(url, error, containingPage)
+                self.log(url, error, page)
             
         else:
-            self.dict[url] = [(containingPage, now, error)]
+            self.historyDict[url] = [(page, now, error)]
 
     def setLinkAlive(self, url):
         """
         If the link was previously found dead, removes it from the .dat file
         and returns True, else returns False.
         """
-        if self.dict.has_key(url):
-            del self.dict[url]
+        if self.historyDict.has_key(url):
+            del self.historyDict[url]
             return True
         else:
             return False
             
     def save(self):
         datfile = open(self.datfilename, 'w')
-        self.dict = pickle.dump(self.dict, datfile)
+        self.historyDict = pickle.dump(self.historyDict, datfile)
         datfile.close()
 
                         
@@ -286,10 +279,14 @@ class WeblinkCheckerRobot:
         self.history = History()
         
     def run(self):
-        for (title, text) in self.generator:
-           self.checkLinksIn(title, text)
+        comment = wikipedia.translate(wikipedia.getSite(), talk_report_msg)
+        wikipedia.setAction(comment)
+        
+        for page in self.generator:
+           self.checkLinksIn(page)
     
-    def checkLinksIn(self, title, text):
+    def checkLinksIn(self, page):
+        text = page.get()
         # RFC 2396 says that URLs may only contain certain characters.
         # For this regex we also accept non-allowed characters, so that the bot
         # will later show these links as broken ('Non-ASCII Characters in URL').
@@ -313,41 +310,30 @@ class WeblinkCheckerRobot:
             while threading.activeCount() >= config.max_external_links:
                 # wait 100 ms
                 time.sleep(0.1)
-            thread = LinkCheckThread(title, url, self.history)
+            thread = LinkCheckThread(page, url, self.history)
             # thread dies when program terminates
             thread.setDaemon(True)
             thread.start()
 
 def main():
-    start = '!'
-    source = None
-    xmlfilename = None
+    start = None
     pageTitle = []
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'weblinkchecker')
         if arg:
-            if arg.startswith('-xml'):
-                if len(arg) == 4:
-                    xmlfilename = wikipedia.input(u'Please enter the Xml dump\'s filename: ')
-                else:
-                    xmlfilename = arg[5:]
-                source = 'xmldump'
-            elif arg.startswith('-start:'):
+            if arg.startswith('-start:'):
                 start = arg[7:]
             else:
                 pageTitle.append(arg)
-                source = 'page'
 
-    if source == 'xmldump':
-        # Bot will read all wiki pages from the dump and won't access the wiki.
-        wikipedia.stopme()
-        gen = XmlPageContentGenerator(xmlfilename)
-    elif source == 'page':
-        pageTitle = ' '.join(pageTitle)
-        pageContents = wikipedia.Page(wikipedia.getSite(), pageTitle).get()
-        gen = iter([(pageTitle, pageContents)])
+    if start:
+        gen = pagegenerators.AllpagesPageGenerator(start)
     else:
-        gen = AllpagesPageContentGenerator(start)
+        pageTitle = ' '.join(pageTitle)
+        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+        gen = iter([page])
+    gen = pagegenerators.PreloadingGenerator(gen)
+    gen = pagegenerators.RedirectFilterPageGenerator(gen)
     bot = WeblinkCheckerRobot(gen)
     try:
         bot.run()

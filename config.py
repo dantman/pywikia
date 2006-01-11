@@ -157,6 +157,8 @@ table2wikiSkipWarnings = False
 # that slow servers won't slow you down.
 max_external_links = 50
 
+report_dead_links_on_talk = False
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.
