@@ -212,7 +212,7 @@ class History:
             # no saved history exists yet, or history dump broken
             self.historyDict = {}
 
-    def report(self, url, errorMessage, containingPage):
+    def report(self, url, errorReport, containingPage):
         if config.report_dead_links_on_talk and not containingPage.isTalkPage():
             wikipedia.output(u"** Reporting dead link on talk page...")
             talk = containingPage.switchTalkPage()
@@ -223,14 +223,14 @@ class History:
                     return
             except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                 content = u''
-            content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorMessage
+            content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorReport
             talk.put(content)
         
     def log(self, url, error, containingPage):
         site = wikipedia.getSite()
-        errorMessage = u'* %s\n' % url
-        for (page, date, error) in self.historyDict[url]:
-            errorMessage += "** In [[%s]] on %s, %s\n" % (page.title(), time.ctime(date), error)
+        errorReport = u'* %s\n' % url
+        for (pageTitle, date, error) in self.historyDict[url]:
+            errorReport += "** In [[%s]] on %s, %s\n" % (pageTitle, time.ctime(date), error)
         wikipedia.output(u"** Logging page for deletion.")
         txtfilename = 'deadlinks/results-%s-%s.txt' % (site.family.name, site.lang)
         txtfile = codecs.open(txtfilename, 'a', 'utf-8')
@@ -238,10 +238,10 @@ class History:
         if self.logCount % 30 == 0:
             # insert a caption
             txtfile.write('=== %s ===\n' % containingPage.title()[:3])
-        txtfile.write(errorMessage)
+        txtfile.write(errorReport)
         txtfile.close()
-        self.report(url, error, containingPage)
-            
+        self.report(url, errorReport, containingPage)
+    
             
     def setLinkDead(self, url, error, page):
         now = time.time()
@@ -251,7 +251,7 @@ class History:
             # if the last time we found this dead link is less than an hour
             # ago, we won't save it in the history this time.
             if timeSinceLastFound > 60 * 60:
-                self.historyDict[url].append((page, now, error))
+                self.historyDict[url].append((page.title(), now, error))
             # if the first time we found this link longer than a week ago,
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
@@ -259,7 +259,7 @@ class History:
                 self.log(url, error, page)
             
         else:
-            self.historyDict[url] = [(page, now, error)]
+            self.historyDict[url] = [(page.title(), now, error)]
 
     def setLinkAlive(self, url):
         """
