@@ -268,7 +268,7 @@ class Family(family.Family):
             'bn', 'zh-min-nan', 'ban', 'jv', 'su', 'bug', 'ba', 'be', 'bh', 'mt',
             'bi', 'bo', 'bs', 'br', 'bg', 'ca', 'ceb', 'cs', 'ch', 'chr', 'chy',
             'ny', 'sn', 'tum', 've', 'cho', 'co', 'za', 'cy', 'da', 'de', 'dv',
-            'nv', 'dz', 'mh', 'et', 'na', 'el', 'en', 'es', 'eo', 'eu', 'ee', 'to',
+            'nv', 'dz', 'mh', 'na', 'el', 'en', 'es', 'eo', 'et', 'eu', 'ee', 'to',
             'fa', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm', 'gd', 'gl',
             'gay', 'ki', 'gu', 'got', 'ha', 'haw', 'hy', 'he', 'hi', 'ho',
             'hr', 'io', 'ig', 'ilo', 'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it',
@@ -278,10 +278,10 @@ class Family(family.Family):
             'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nap', 'nl', 'cr', 'ne', 'ce',
             'pih', 'no', 'nn', 'oc', 'or', 'om', 'ng', 'hz', 'ug', 'uz', 'pa', 'kk',
             'pi', 'pam', 'ps', 'km', 'nds', 'pl', 'pt', 'ty', 'ro', 'rm', 'qu',
-            'ru', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'scn', 'si',
+            'ru', 'war', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'scn', 'si',
             'simple', 'sd', 'ss', 'sk', 'sl', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
             'ta', 'tt', 'te', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
-            'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'war',
+            'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 
             'wo', 'ts', 'ii', 'yi', 'yo', 'zh', 'zh-tw', 'zh-cn']
 
 
