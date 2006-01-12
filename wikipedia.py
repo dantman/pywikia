@@ -7,39 +7,42 @@ late August 2004)
 
 Classes:
 Page: A MediaWiki page
-    __init__: Page(xx,Title) - the page with title Title on language xx:
-    title: The name of the page, in a form suitable for an interwiki link
-    urlname: The name of the page, in a form suitable for a URL
-    titleWithoutNamespace: The name of the page, with the namespace part removed
-    section: The section of the page (the part of the name after '#')
-    sectionFreeTitle: The name without the section part
-    aslink: The name of the page in the form [[Title]] or [[lang:Title]]
-    site: The wiki where this page is in
-    encoding: The encoding the page is in
+    __init__              : Page(xx,Title) - the page with title Title on language xx:
+    title                 : The name of the page, in a form suitable for an interwiki link
+    urlname               : The name of the page, in a form suitable for a URL
+    titleWithoutNamespace : The name of the page, with the namespace part removed
+    section               : The section of the page (the part of the name after '#')
+    sectionFreeTitle      : The name without the section part
+    aslink                : The name of the page in the form [[Title]] or [[lang:Title]]
+    site                  : The wiki where this page is in
+    encoding              : The encoding the page is in
+    isAutoTitle           : If the title is a well known, auto-translatable title
+    autoFormat            : Returns (dictName, value), where value can be a year, date, etc.,
+                            and dictName is 'YearBC', 'December', etc.
+    isCategory            : True if the page is a category, false otherwise
+    isImage               : True if the page is an image, false otherwise
 
-    get (*): The text of the page
-    exists (*): True if the page actually exists, false otherwise
-    isRedirectPage (*): True if the page is a redirect, false otherwise
-    isEmpty (*): True if the page has 4 characters or less content, not
-        counting interwiki and category links
-    interwiki (*): The interwiki links from the page (list of Pages)
-    categories (*): The categories the page is in (list of Pages)
-    linkedPages (*): The normal pages linked from the page (list of Pages)
-    imagelinks (*): The pictures on the page (list of Pages)
-    templates (*): All templates referenced on the page (list of strings)
-    getRedirectTarget (*): The page the page redirects to
-    isCategory: True if the page is a category, false otherwise
-    isImage: True if the page is an image, false otherwise
-    isDisambig (*): True if the page is a disambiguation page
-    getReferences: List of pages linking to the page
-    namespace: The namespace in which the page is
-    permalink (*): The url of the permalink of the current version
+    get (*)               : The text of the page
+    exists (*)            : True if the page actually exists, false otherwise
+    isRedirectPage (*)    : True if the page is a redirect, false otherwise
+    isEmpty (*)           : True if the page has 4 characters or less content, not
+                            counting interwiki and category links
+    interwiki (*)         : The interwiki links from the page (list of Pages)
+    categories (*)        : The categories the page is in (list of Pages)
+    linkedPages (*)       : The normal pages linked from the page (list of Pages)
+    imagelinks (*)        : The pictures on the page (list of Pages)
+    templates (*)         : All templates referenced on the page (list of strings)
+    getRedirectTarget (*) : The page the page redirects to
+    isDisambig (*)        : True if the page is a disambiguation page
+    getReferences         : List of pages linking to the page
+    namespace             : The namespace in which the page is
+    permalink (*)         : The url of the permalink of the current version
 
-    put(newtext): Saves the page
-    delete: Deletes the page (requires being logged in)
+    put(newtext)          : Saves the page
+    delete                : Deletes the page (requires being logged in)
 
-    (*): This loads the page if it has not been loaded before; permalink might
-         even reload it if it has been loaded before
+    (*) : This loads the page if it has not been loaded before; permalink might
+          even reload it if it has been loaded before
 
 Site: a MediaWiki site
     forceLogin(): Does not continue until the user has logged in to the site
@@ -310,6 +313,23 @@ class Page(object):
             return '[[%s:%s]]' % (self.site().lang, self.title())
         else:
             return '[[%s]]' % self.title()
+
+    def isAutoTitle(self):
+        """If the title is a well known, auto-translatable title
+        """
+        return self.autoFormat()[0] is not None
+        
+    def autoFormat(self):
+        """Returns (dictName, value), where value can be a year, date, etc.,
+           and dictName is 'YearBC', 'Year_December', or another dictionary name.
+           Please note that two entries may have exactly the same autoFormat,
+           but be in two different namespaces, as some sites have categories with the same names.
+           Regular titles return (None,None)."""
+        if not hasattr(self, '_autoFormat'):
+            import date
+            _autoFormat = date.getAutoFormat(self.site().language(), self.titleWithoutNamespace())
+        return _autoFormat
+            
 
     def get(self, force = False, get_redirect=False, throttle = True, sysop = False):
         """The wiki-text of the page. This will retrieve the page if it has not
