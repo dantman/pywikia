@@ -235,6 +235,9 @@ def localDigitsStrToInt( value, digitsToLocalDict, localToDigitsDict ):
     else:
         raise ValueError("string contains regular digits")
 
+# Decimal digits used for various matchings
+_decimalDigits = '0123456789'
+
 # Helper for roman numerals number representation
 _romanNumbers = ['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX',
              'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX',
@@ -249,26 +252,26 @@ def intToRomanNum(i):
 def romanNumToInt(v):
     return _romanNumbers.index(v)
 
-# Each tuple must 3 parts:  a Regex expression describing all possible digits, encoder (from int to a u-string) and decoder (from u-string to an int)
+# Each tuple must 3 parts:  a list of all possible digits (symbols), encoder (from int to a u-string) and decoder (from u-string to an int)
 _digitDecoders = {
     # %% is a %
-    '%%' : u'%',
+    '%' : u'%',
     # %d is a decimal
-    '%d' : ( u'([0-9]+)', unicode, int ),
+    'd' : ( _decimalDigits, unicode, int ),
     # %R is a roman numeral. This allows for only the simpliest linear conversions based on a list of numbers
-    '%R' : ( u'([IVX]+)', intToRomanNum, romanNumToInt ),
+    'R' : ( u'IVX', intToRomanNum, romanNumToInt ),
     # %K is a number in KN::
-    '%K' : ( u'([%s]+)' % _knDigits, lambda v: intToLocalDigitsStr(v, _knDigitsToLocal), lambda v: localDigitsStrToInt(v, _knDigitsToLocal, _knLocalToDigits) ),
+    'K' : ( _knDigits, lambda v: intToLocalDigitsStr(v, _knDigitsToLocal), lambda v: localDigitsStrToInt(v, _knDigitsToLocal, _knLocalToDigits) ),
     # %F is a number in FA:
-    '%F' : ( u'([%s]+)' % _faDigits, lambda v: intToLocalDigitsStr(v, _faDigitsToLocal), lambda v: localDigitsStrToInt(v, _faDigitsToLocal, _faLocalToDigits) ),    
+    'F' : ( _faDigits, lambda v: intToLocalDigitsStr(v, _faDigitsToLocal), lambda v: localDigitsStrToInt(v, _faDigitsToLocal, _faLocalToDigits) ),    
     # %H is a number in HI:
-    '%H' : ( u'([%s]+)' % _hiDigits, lambda v: intToLocalDigitsStr(v, _hiDigitsToLocal), lambda v: localDigitsStrToInt(v, _hiDigitsToLocal, _hiLocalToDigits) ),    
+    'H' : ( _hiDigits, lambda v: intToLocalDigitsStr(v, _hiDigitsToLocal), lambda v: localDigitsStrToInt(v, _hiDigitsToLocal, _hiLocalToDigits) ),    
     # %G is a number in GU:
-    '%G' : ( u'([%s]+)' % _guDigits, lambda v: intToLocalDigitsStr(v, _guDigitsToLocal), lambda v: localDigitsStrToInt(v, _guDigitsToLocal, _guLocalToDigits) ),    
+    'G' : ( _guDigits, lambda v: intToLocalDigitsStr(v, _guDigitsToLocal), lambda v: localDigitsStrToInt(v, _guDigitsToLocal, _guLocalToDigits) ),    
 }
 
-# Allows to search for '(%%)|(%d)|(%R)|..."
-_reParameters = re.compile(u'|'.join([ u'(%s)' % s for s in _digitDecoders.keys() ]))
+# Allows to search for '(%%)|(%d)|(%R)|...", and allows one digit 1-9  too set the size of zero-padding for numbers
+_reParameters = re.compile(u'|'.join([ u'(%%[1-9]?%s)' % s for s in _digitDecoders.keys() ]))
 
 # A map of   sitecode+pattern  to  (re matching object and corresponding decoders)
 _escPtrnCache2 = {}
@@ -289,16 +292,22 @@ def escapePattern2( pattern ):
         for s in _reParameters.split(pattern):
             if s is None:
                 pass
-            elif s in _digitDecoders:
-                dec = _digitDecoders[s]
+            elif len(s) in [2,3] and s[0]=='%' and s[-1] in _digitDecoders and (len(s)==2 or s[1] in _decimalDigits):
+                # Must match a "%2d" or "%d" style
+                dec = _digitDecoders[s[-1]]
                 if type(dec) in _stringTypes:
                     # Special case for strings that are replaced instead of decoded
+                    if len(s) == 3: raise AssertionError("Invalid pattern %s: Cannot use zero padding size in %s!" % (pattern, s))
                     newPattern += re.escape( dec )
                     strPattern += s         # Keep the original text
                 else:
-                    newPattern += dec[0]
+                    if len(s) == 3:
+                        raise AssertionError("Invalid pattern %s: Zero padding size is not yet implemented!" % pattern)
+                        newPattern += u'([%s]{%s})' % (dec[0], s[1])    # enforce mandatory field size
+                    else:
+                        newPattern += u'([%s]+)' % dec[0]
                     decoders.append( dec )
-                    strPattern += u'%s'     # All encoders produce a string
+                    strPattern += u'%s'     # All encoders produce a string   # this causes problem with the zero padding. Need to rethink
             else:
                 newPattern += re.escape( s )
                 strPattern += s
@@ -510,6 +519,7 @@ formats = {
         'br' :      dh_simpleYearAD,
         'bs' :      dh_simpleYearAD,
         'ca' :      dh_simpleYearAD,
+        'ceb':      dh_simpleYearAD,
         'cs' :      dh_simpleYearAD,
         'csb':      dh_simpleYearAD,
         'cv' :      dh_simpleYearAD,
@@ -522,6 +532,7 @@ formats = {
         'es' :      dh_simpleYearAD,
         'et' :      dh_simpleYearAD,
         'eu' :      dh_simpleYearAD,
+        'fa' :      lambda v: dh_yearAD( v, u'%F (میلادی)' ),
         'fi' :      dh_simpleYearAD,
         'fo' :      dh_simpleYearAD,
         'fr' :      dh_simpleYearAD,
@@ -543,6 +554,7 @@ formats = {
         'is' :      dh_simpleYearAD,
         'it' :      dh_simpleYearAD,
         'ja' :      lambda v: dh_yearAD( v, u'%d年' ),
+        'jbo':      lambda v: dh_yearAD( v, u'%dmoi nanca' ),
         'ka' :      dh_simpleYearAD,
         'kn' :      lambda v: dh_yearAD( v, u'%K' ),
         'ko' :      lambda v: dh_yearAD( v, u'%d년' ),
@@ -557,7 +569,7 @@ formats = {
         'mk' :      dh_simpleYearAD,
         'ml' :      dh_simpleYearAD,
         'mo' :      dh_simpleYearAD,
-#        'mr' :      lambda v: dh_yearAD( v, u'ई.स. %H' ),
+        'mr' :      lambda v: dh_yearAD( v, u'ई.स. %H' ),
         'ms' :      dh_simpleYearAD,
         'na' :      dh_simpleYearAD,
         'nap':      dh_simpleYearAD,
@@ -605,6 +617,7 @@ formats = {
         'bg' :      lambda v: dh_yearBC( v, u'%d г. пр.н.е.' ),
         'bs' :      lambda v: dh_yearBC( v, u'%d p.ne.' ),
         'ca' :      lambda v: dh_yearBC( v, u'%d aC' ),
+        'cs' :      lambda v: dh_yearBC( v, u'%d př. n. l.' ),
         'da' :      lambda v: dh_yearBC( v, u'%d f.Kr.' ),
         'de' :      lambda v: dh_yearBC( v, u'%d v. Chr.' ),
         'en' :      lambda v: dh_yearBC( v, u'%d BC' ),
@@ -677,8 +690,8 @@ formats = {
         'fr' :      lambda v: dh_decAD( v, u'Années %d' ),
         
         'he' :      lambda m: multi( m, [
-            (lambda v: dh( v, u'שנות ה-%d', lambda i: encDec0(i), decSinglVal ), lambda p: p >= 1901 and p < 2001),
-            # This is a dummy value, just to avoid validation testing.   Later, it should be replaced with a proper 'fa' titles
+            (lambda v: dh( v, u'שנות ה-%d', lambda i: encDec0(i)%100, lambda ii: 1900 + ii[0] ), lambda p: p >= 1900 and p < 2000),
+            # This is a dummy value, just to avoid validation testing.
             (lambda v: dh_decAD( v, u'%dth decade' ), alwaysTrue)]),        # ********** ERROR!!!
 
         'hi' :      lambda v: dh_decAD( v, u'%H का दशक' ),
@@ -901,7 +914,9 @@ formats = {
         'tr' :      lambda v: dh_centuryAD( v, u'%d. yüzyıl' ),
         'tt' :      lambda v: dh_centuryAD( v, u'%d. yöz' ),
         'uk' :      lambda v: dh_centuryAD( v, u'%d століття' ),
-        'ur' :      lambda v: dh_centuryAD( v, u'%dصبم' ),
+        'ur' :  lambda m: multi( m, [
+            (lambda v: dh_centuryAD( v, u'0%d00صبم' ), lambda p: p < 10),
+            (lambda v: dh_centuryAD( v, u'%d00صبم' ), alwaysTrue)]),
         'vi' :      lambda v: dh_centuryAD( v, u'Thế kỷ %d' ),
         'wa' :      lambda v: dh_centuryAD( v, u'%dinme sieke' ),
         'zh' :      lambda v: dh_centuryAD( v, u'%d世纪' ),
@@ -911,7 +926,7 @@ formats = {
     'CenturyBC': {
         'af' :      lambda m: multi( m, [
             (lambda v: dh_centuryBC( v, u'%dste eeu v.C.' ), lambda p: p in [1,8] or (p >= 20)),
-            (lambda v: dh_centuryBC( v, u'%dde eeu v. C.' ), alwaysTrue)]),
+            (lambda v: dh_centuryBC( v, u'%dde eeu v.C.' ), alwaysTrue)]),
         'bg' :      lambda v: dh_centuryBC( v, u'%d век пр.н.е.' ),
         'ca' :      lambda v: dh_centuryBC( v, u'Segle %R aC' ),
         'cs' :      lambda v: dh_centuryBC( v, u'%d. století př. n. l.' ),
@@ -946,9 +961,11 @@ formats = {
         'no' :      lambda v: dh_centuryBC( v, u'%d. århundre f.Kr.' ),
         'pl' :      lambda v: dh_centuryBC( v, u'%R wiek p.n.e.' ),
         'pt' :      lambda v: dh_centuryBC( v, u'Século %R a.C.' ),
-        'ro' :      lambda v: dh_centuryBC( v, u'Secolul %R î.Hr.' ),
+        'ro' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 1, u'Secolul I î.Hr.'),                          lambda p: p == 1),
+            (lambda v: dh_centuryBC( v, u'Secolul al %R-lea î.Hr.' ),                   alwaysTrue)]),
         'ru' :      lambda v: dh_centuryBC( v, u'%R век до н. э.' ),
-        'scn':      lambda v: dh_centuryBC( v, u'Sèculu %R a. C.' ),
+        'scn':      lambda v: dh_centuryBC( v, u'Sèculu %R a.C.' ),
         'sk' :      lambda v: dh_centuryBC( v, u'%d. storočie pred Kr.' ),
         'sl' :      lambda v: dh_centuryBC( v, u'%d. stoletje pr. n. št.' ),
         'sq' :      lambda v: dh_centuryBC( v, u'Shekulli %R p.e.s.' ),
@@ -956,7 +973,9 @@ formats = {
         'sv' :      lambda v: dh( v, u'%d00-talet f.Kr.', lambda i: i-1, lambda ii: ii[0]+1 ),
         'tt' :      lambda v: dh_centuryBC( v, u'MA %d. yöz' ),
         'uk' :      lambda v: dh_centuryBC( v, u'%d століття до Р.Х.' ),
-        'zh' :      lambda v: dh_centuryBC( v, u'前%d世纪' ),
+        'zh' :      lambda m: multi( m, [
+            (lambda v: dh_centuryBC( v, u'前%d世纪' ),                                 lambda p: p < 4),
+            (lambda v: dh_centuryBC( v, u'前%d世紀' ),                                 alwaysTrue)]),
     },
 
     'MillenniumAD': {
@@ -965,10 +984,10 @@ formats = {
         'de' :      lambda v: dh_millenniumAD( v, u'%d. Jahrtausend' ),
         'el' :      lambda v: dh_millenniumAD( v, u'%dη χιλιετία' ),
         'en' :      lambda m: multi( m, [
-            (lambda v: dh_millenniumAD( v, u'%dst millennium' ),              lambda p: p == 1 or (p > 20 and p%10 == 1)),
-            (lambda v: dh_millenniumAD( v, u'%dnd millennium' ),              lambda p: p == 2 or (p > 20 and p%10 == 2)),
-            (lambda v: dh_millenniumAD( v, u'%drd millennium' ),              lambda p: p == 3 or (p > 20 and p%10 == 3)),
-            (lambda v: dh_millenniumAD( v, u'%dth millennium' ), alwaysTrue)]),
+            (lambda v: dh_millenniumAD( v, u'%dst millennium' ),                lambda p: p == 1 or (p > 20 and p%10 == 1)),
+            (lambda v: dh_millenniumAD( v, u'%dnd millennium' ),                lambda p: p == 2 or (p > 20 and p%10 == 2)),
+            (lambda v: dh_millenniumAD( v, u'%drd millennium' ),                lambda p: p == 3 or (p > 20 and p%10 == 3)),
+            (lambda v: dh_millenniumAD( v, u'%dth millennium' ),                alwaysTrue)]),
         'es' :      lambda v: dh_millenniumAD( v, u'%R milenio' ),
 
         'fi' :      lambda m: multi( m, [
@@ -976,8 +995,8 @@ formats = {
             (lambda v: dh( v, u'%d000-vuosituhat', lambda i: i-1, lambda ii: ii[0]+1 ),     alwaysTrue)]),
 
         'fr' :      lambda m: multi( m, [
-            (lambda v: dh_millenniumAD( v, u'%Rer millénaire' ),              lambda p: p == 1),
-            (lambda v: dh_millenniumAD( v, u'%Re millénaire' ),               alwaysTrue)]),
+            (lambda v: dh_millenniumAD( v, u'%Rer millénaire' ),                lambda p: p == 1),
+            (lambda v: dh_millenniumAD( v, u'%Re millénaire' ),                 alwaysTrue)]),
         'hu' :      lambda v: dh_millenniumAD( v, u'%d. évezred' ),
         'it' :      lambda v: dh_millenniumAD( v, u'%R millennio' ),
         'ja' :      lambda v: dh_millenniumAD( v, u'%d千年紀' ),
@@ -990,9 +1009,9 @@ formats = {
         'sl' :      lambda v: dh_millenniumAD( v, u'%d. tisočletje' ),
         'sv' :      lambda v: dh( v, u'%d000-talet (millennium)', lambda i: i-1, lambda ii: ii[0]+1 ),
         'tt' :      lambda v: dh_millenniumAD( v, u'%d. meñyıllıq' ),
-        'ur' :      lambda v: dh_millenniumAD( v, u'%d000مبم' ),
-        #'sv' : u'1000-talet (millennium)'
-        #'ur' : u'1000مبم'
+        'ur' :      lambda m: multi( m, [
+            (lambda v: dh_constVal( v, 0, u'0000مبم'),                          lambda p: p == 0),
+            (lambda v: dh_millenniumAD( v, u'%d000مبم' ),                       alwaysTrue)]),
     },
 
     'MillenniumBC': {
