@@ -302,10 +302,11 @@ def escapePattern2( pattern ):
                     strPattern += s         # Keep the original text
                 else:
                     if len(s) == 3:
-                        raise AssertionError("Invalid pattern %s: Zero padding size is not yet implemented!" % pattern)
                         newPattern += u'([%s]{%s})' % (dec[0], s[1])    # enforce mandatory field size
+                        dec += (int(s[1]),)   # add the number of required digits as the last (4th) part of the tuple
                     else:
                         newPattern += u'([%s]+)' % dec[0]
+
                     decoders.append( dec )
                     strPattern += u'%s'     # All encoders produce a string   # this causes problem with the zero padding. Need to rethink
             else:
@@ -367,14 +368,21 @@ def dh( value, pattern, encf, decf, filter = None ):
             if len(params) != len(decoders):
                 raise AssertionError("parameter count (%d) does not match decoder count (%d)" % (len(params), len(decoders)))
             # convert integer parameters into their textual representation
-            params = [ decoders[i][1](params[i]) for i in range(len(params)) ]
+            params = [ MakeParameter(decoders[i], params[i]) for i in range(len(params)) ]
             return strPattern % tuple(params)
         else:
             if 1 != len(decoders):
-                raise AssertionError("parameter count (%d) does not match decoder count (%d)" % (len(params), len(decoders)))
+                raise AssertionError("A single parameter does not match %d decoders." % len(decoders))
             # convert integer parameter into its textual representation
-            params = decoders[0][1](params)
-            return strPattern % params
+            return strPattern % MakeParameter(decoders[0], params)
+            
+def MakeParameter( decoder, param ):
+    newValue = decoder[1](param)
+    if len(decoder) == 4 and len(newValue) < decoder[3]:
+        # force parameter length by taking the first digit in the list and repeating it required number of times
+        # This converts "205" into "0205" for "%4d"
+        newValue = decoder[0][0] * (decoder[3]-len(newValue)) + newValue
+    return newValue
 
 #
 # All years/decades/centuries/millenniums are designed in such a way
@@ -914,9 +922,7 @@ formats = {
         'tr' :      lambda v: dh_centuryAD( v, u'%d. yüzyıl' ),
         'tt' :      lambda v: dh_centuryAD( v, u'%d. yöz' ),
         'uk' :      lambda v: dh_centuryAD( v, u'%d століття' ),
-        'ur' :  lambda m: multi( m, [
-            (lambda v: dh_centuryAD( v, u'0%d00صبم' ), lambda p: p < 10),
-            (lambda v: dh_centuryAD( v, u'%d00صبم' ), alwaysTrue)]),
+        'ur' :      lambda v: dh_centuryAD( v, u'%2d00صبم' ),
         'vi' :      lambda v: dh_centuryAD( v, u'Thế kỷ %d' ),
         'wa' :      lambda v: dh_centuryAD( v, u'%dinme sieke' ),
         'zh' :      lambda v: dh_centuryAD( v, u'%d世纪' ),
@@ -1419,6 +1425,19 @@ def test(quick = False, showAll = False):
             testMapEntry( formatName, showAll, formatLimits[formatName][1] )     # Only test the first value in the test range
         else:
             testMapEntry( formatName, showAll )     # Extensive test!        # Test decade rounding
+            wikipedia.output(u"'%s' complete." % formatName)
 
-    if not quick:
-        wikipedia.output(u"*********** SUCCESS!!! ***********")
+    wikipedia.output(u'Date module consintency passed')
+        
+
+        
+        
+        
+#
+#
+# Do a quick test upon module loading!
+# Make sure the date file is correct
+#
+#
+test(quick=True)
+
