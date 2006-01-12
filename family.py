@@ -417,6 +417,7 @@ class Family:
                 'sl': u'Uporabniški pogovor',
                 'sq': u'Përdoruesi diskutim',
                 'sr': u'Разговор са корисником',
+                'su': u'Obrolan pamaké',
                 'sv': u'Användardiskussion',
                 'ta': u'பயனர் பேச்சு',
                 'th': u'คุยเกี่ยวกับผู้ใช้',
