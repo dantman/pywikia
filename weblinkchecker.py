@@ -53,9 +53,9 @@ talk_report = {
 }
 
 ignorelist = [
-    re.compile('.*[\./]example.com/.*'),
-    re.compile('.*[\./]example.net/.*'),
-    re.compile('.*[\./]example.org/.*'),
+    re.compile('.*[\./@]example.com(/.*)?'),
+    re.compile('.*[\./@]example.net(/.*)?'),
+    re.compile('.*[\./@]example.org(/.*)?'),
 ]
 
 class LinkChecker(object):
@@ -201,7 +201,7 @@ class History:
     def __init__(self):
         site = wikipedia.getSite()
         self.datfilename = 'deadlinks/deadlinks-%s-%s.dat' % (site.family.name, site.lang)
-        # count the number of logged links, so that we can insert captions
+        # Count the number of logged links, so that we can insert captions
         # from time to time
         self.logCount = 0
         try:
@@ -213,6 +213,9 @@ class History:
             self.historyDict = {}
 
     def report(self, url, errorReport, containingPage):
+        """
+        Tries to add an error report to the talk page belonging to the page containing the dead link.
+        """
         if config.report_dead_links_on_talk and not containingPage.isTalkPage():
             wikipedia.output(u"** Reporting dead link on talk page...")
             talk = containingPage.switchTalkPage()
@@ -227,6 +230,9 @@ class History:
             talk.put(content)
         
     def log(self, url, error, containingPage):
+        """
+        Logs an error report to a text file in the deadlinks subdirectory.
+        """
         site = wikipedia.getSite()
         errorReport = u'* %s\n' % url
         for (pageTitle, date, error) in self.historyDict[url]:
@@ -244,6 +250,9 @@ class History:
     
             
     def setLinkDead(self, url, error, page):
+        """
+        Adds the fact that the link was found dead to the .dat file.
+        """
         now = time.time()
         if self.historyDict.has_key(url):
             timeSinceFirstFound = now - self.historyDict[url][0][1]
@@ -273,6 +282,9 @@ class History:
             return False
             
     def save(self):
+        """
+        Saves the .dat file to disk.
+        """
         datfile = open(self.datfilename, 'w')
         self.historyDict = pickle.dump(self.historyDict, datfile)
         datfile.close()
@@ -311,8 +323,9 @@ class WeblinkCheckerRobot:
         # often come from templates where URLs are parameters, so as a
         # workaround we won't allow them inside links here.
         linkR = re.compile(r'http[s]?://[^\]\s<>}"]*[^\]\s\)\.:;,<>}"]')
-        # Remove HTML comments in URLs as well as URLs in HTML comments
-        text = re.sub('(?s)<!--.*?-->', '', text)
+        # Remove HTML comments in URLs as well as URLs in HTML comments.
+        # Also remove text inside nowiki links
+        text = re.sub('(?s)<nowiki>.*?</nowiki>|<!--.*?-->', '', text)
         urls = linkR.findall(text)
         for url in urls:
             ignoreUrl = False
