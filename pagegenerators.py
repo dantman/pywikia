@@ -61,14 +61,16 @@ class LinkedPageGenerator:
 class TextfilePageGenerator:
     '''
     Read a file of page links between double-square-brackets, and return
-    them as a list of Page objects. 'filename' is the name of the file that
-    should be read.
+    them as a list of Page objects. filename is the name of the file that
+    should be read. If no name is given, the generator prompts the user.
     '''
-    def __init__(self, filename):
+    def __init__(self, filename = None):
         self.filename = filename
 
     def __iter__(self):
         site = wikipedia.getSite()
+        if not self.filename:
+            self.filename = wikipedia.input(u'Please enter the filename:')
         f = codecs.open(self.filename, 'r', config.textfile_encoding)
         R = re.compile(r'\[\[(.+?)\]\]')
         for pageTitle in R.findall(f.read()):

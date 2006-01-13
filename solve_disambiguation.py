@@ -40,11 +40,9 @@ Command line options:
                searching for alternatives in [[Keyword (disambiguation)]].
                Note: this is the same as -primary -just -pos:XY
 
-   -file:XYZ   reads a list of pages, which can for example be gotten through
-               extract_names.py. XYZ is the name of the file from which the
-               list is taken. If XYZ is not given, the user is asked for a
-               filename.
-               Page titles should be saved one per line, without [[brackets]].
+   -file:XYZ   reads a list of pages from a text file. XYZ is the name of the
+               file from which the list is taken. If XYZ is not given, the user is asked for a filename.
+               Page titles should be inside [[double brackets]].
                The -pos parameter won't work if -file is used.
 
    -always:XY  instead of asking the user what to do, always perform the same
@@ -345,12 +343,12 @@ class DisambiguationRobot(object):
     }
     
     def __init__(self, always, alternatives, getAlternatives, solve_redirect,
-                 page_list, primary, main_only):
+                 generator, primary, main_only):
         self.always = always
         self.alternatives = alternatives
         self.getAlternatives = getAlternatives
         self.solve_redirect = solve_redirect
-        self.page_list = page_list
+        self.generator = generator
         self.primary = primary
         self.main_only = main_only
 
@@ -635,22 +633,21 @@ class DisambiguationRobot(object):
             ignore_title[self.mysite.family.name][self.mylang] += [
                 u'%s:' % namespace for namespace in self.mysite.namespaces()]
     
-        for disambTitle in self.page_list:
+        for disambPage in self.generator:
             # first check whether user has customized the edit comment
             if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
                 comment = wikipedia.translate(self.mysite,
                               wikipedia.config.disambiguation_comment[
                               self.mysite.family.name]
-                              ) % disambTitle
+                              ) % disambPage.title()
             elif self.solve_redirect:
                 # when run with -redir argument, there's another summary message
                 comment = wikipedia.translate(self.mysite, msg_redir) \
-                          % disambTitle
+                          % disambPage.title()
             else:
-                comment = wikipedia.translate(self.mysite, msg) % disambTitle
+                comment = wikipedia.translate(self.mysite, msg) % disambPage.title()
 
             wikipedia.setAction(comment)
-            disambPage = wikipedia.Page(self.mysite, disambTitle)
             
             self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
                                             enabled=self.primary)
@@ -677,7 +674,7 @@ or press enter to quit:""")
                     if self.primary:
                         disambPage2 = wikipedia.Page(self.mysite,
                                         primary_topic_format[self.mylang]
-                                            % disambTitle
+                                            % disambPage.title()
                                     )
                         thistxt = disambPage2.get(throttle=False)
                     else:
@@ -721,9 +718,9 @@ def main():
     solve_redirect = False
     # if the -file argument is used, page titles are dumped in this array.
     # otherwise it will only contain one page.
-    page_list = []
+    generator = None
     # if -file is not used, this temporary array is used to read the page title.
-    page_title = []
+    pageTitle = []
     primary = False
     main_only = False
 
@@ -740,17 +737,9 @@ def main():
                 always = arg[8:]
             elif arg.startswith('-file'):
                 if len(arg) == 5:
-                    # todo: check for console encoding to allow special
-                    # characters in filenames, as done below with pagename
-                    fn = wikipedia.input(u'Please enter the list\'s filename:')
+                    generator = pagegenerators.TextfilePageGenerator(filename = None)
                 else:
-                    fn = arg[6:]
-                # open file and read page titles out of it
-                f = codecs.open(fn, 'r', 'utf-8')
-                for line in f.readlines():
-                    if line != '\n':
-                        page_list.append(line)
-                f.close()
+                    generator = pagegenerators.TextfilePageGenerator(filename = arg[6:])
             elif arg.startswith('-pos:'):
                 if arg[5]!=':':
                     mysite = wikipedia.getSite()
@@ -776,22 +765,24 @@ u'Possibility %s does not actually exist. Use it anyway?'
                 # show help text and exit
                 wikipedia.argHandler("-help", "solve_disambiguation")
             else:
-                page_title.append(arg)
+                pageTitle.append(arg)
                 
     # if the disambiguation page is given as a command line argument,
     # connect the title's parts with spaces
-    if page_title != []:
-        page_title = ' '.join(page_title)
-        page_list.append(page_title)
+    if pageTitle != []:
+        pageTitle = ' '.join(pageTitle)
+        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+        generator = iter([page])
 
     # if no disambiguation pages was given as an argument, and none was
     # read from a file, query the user
-    if page_list == []:
-        pagename = wikipedia.input(u'Which page to check:')
-        page_list.append(pagename)
+    if not generator:
+        pageTitle = wikipedia.input(u'Which page to check:')
+        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+        generator = iter([page])
                 
     bot = DisambiguationRobot(always, alternatives, getAlternatives,
-                              solve_redirect, page_list, primary, main_only)
+                              solve_redirect, generator, primary, main_only)
     bot.run()
 
 if __name__ == "__main__":
