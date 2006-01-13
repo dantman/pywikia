@@ -1300,7 +1300,7 @@ if __name__ == "__main__":
                     nextPage = "!"
                     namespace = 0
                 # old generator is used up, create a new one
-                hintlessPageGen = pagegenerators.CombinedGenerator(pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace))
+                hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace)])
 
         if start:
             if start == '_':
