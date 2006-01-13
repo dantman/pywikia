@@ -374,8 +374,10 @@ def main():
             time.sleep(1)
             i += 1
         if threading.activeCount() > 1:
-            wikipedia.output(u"Killing remaining %i threads..." % (threading.activeCount() - 1))
-            # Threads will die automatically because they are daemonic
+            wikipedia.output(u"Killing remaining %i threads, please wait..." % (threading.activeCount() - 1))
+            # Threads will die automatically because they are daemonic. But the
+            # killing might lag, so we wait 1 second.
+            time.sleep(1)
 
         bot.history.save()
     
