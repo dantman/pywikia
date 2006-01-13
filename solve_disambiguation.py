@@ -601,8 +601,8 @@ class DisambiguationRobot(object):
                     
                     # Disabled after someone else complained about this
                     # 'feature' in [ 1294811 ].
-                    if self.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
-                        new_page_title = new_page_title[0].lower() + new_page_title[1:]
+                    #if self.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
+                    #    new_page_title = new_page_title[0].lower() + new_page_title[1:]
                     if replaceit and trailing_chars:
                         newlink = "[[%s%s]]%s" % (new_page_title, section, trailing_chars)
                     elif replaceit or (new_page_title == link_text and not section):
