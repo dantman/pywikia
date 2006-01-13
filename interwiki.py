@@ -153,18 +153,26 @@ This script understands various command-line arguments:
                    site is updated. This option is useful to quickly set two way
                    links without updating all of wiki's sites.
 
-A configuration option can be used to change the working of this robot:
+Some configuration option can be used to change the working of this robot:
 
 interwiki_backlink: if set to True, all problems in foreign wikis will
                     be reported
 
-Both these options are set to True by default. They can be changed through
-the user-config.py configuration file.
 
-If interwiki.py is terminated before it is finished, it will write a file
-"interwiki_lang.dump" where the lang is the site code set by -lang parameter;
-the program will read it if invoked with the "-restore" or "-continue" option,
-and finish all the subjects in that list.
+interwiki_shownew:  should interwiki.py display every new link it discovers?
+
+interwiki_graph:    output a graph PNG file on conflicts? You need pydot for
+                    this: http://dkbza.org/pydot.html
+
+interwiki_graph_format: the file format for interwiki graphs 
+
+without_interwiki:  save file with local articles without interwikis
+
+All these options can be changed through the user-config.py configuration file.
+
+If interwiki.py is terminated before it is finished, it will write a dump file
+to the interwiki-dumps subdirectory. The program will read it if invoked with
+the "-restore" or "-continue" option, and finish all the subjects in that list.
 To run the interwiki-bot on all pages on a language, run it with option
 "-start:!", and if it takes so long you have to break it off, use "-continue"
 next time.
@@ -1269,8 +1277,11 @@ if __name__ == "__main__":
                         globalvar.maxquerysize = globalvar.minarraysize
                 elif arg.startswith('-neverlink:'):
                     globalvar.neverlink += arg[11:].split(",")
-                elif arg.startswith('-showpage'):
+                elif arg == '-showpage':
                     globalvar.showtextlink += globalvar.showtextlinkadd
+                elif arg == '-graph':
+                    # override configuration
+                    config.interwiki_graph = True
                 else:
                     inname.append(arg)
         
