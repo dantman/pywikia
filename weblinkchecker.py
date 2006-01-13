@@ -105,8 +105,16 @@ class LinkChecker(object):
                     newURL = redirTarget
                 elif redirTarget.startswith('/'):
                     newURL = '%s://%s%s' % (self.protocol, self.host, redirTarget)
-                else:
-                    newURL = '%s://%s/%s' % (self.protocol, self.host, redirTarget)
+                else: # redirect to relative position
+                    # cut off filename
+                    directory = self.path[:self.path.rindex('/') + 1]
+                    # handle redirect to parent directory
+                    while redirTarget.startswith('../'):
+                        redirTarget = redirTarget[3:]
+                        # change /foo/bar/ to /foo/
+                        directory = directory[:-1]
+                        directory = directory[:directory.rindex('/') + 1]
+                    newURL = '%s://%s%s%s' % (self.protocol, self.host, directory, redirTarget)                            
             # wikipedia.output(u'%s is a redirect to %s' % (self.url, newURL))
             return newURL
 
