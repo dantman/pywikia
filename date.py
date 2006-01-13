@@ -1324,7 +1324,7 @@ addFmt( yrMnthFmts, 'zh-min-nan',True,  makeMonthList( u"%%d nî %d goe̍h" ))
 #
 # This table defines the limits for each type of format data.
 # Each item is a tuple with a predicate function (returns True if the value falls within acceptable limits, False otherwise),
-# In addition, tuple contains start, end, and step values that will be used to test the formats table for internal consintency.
+# In addition, tuple contains start, end, and step values that will be used to test the formats table for internal consistency.
 #
 formatLimits = {
     'MonthName'			: (lambda v: 1<=v and v<13,                 1,13),
@@ -1468,7 +1468,8 @@ def test(quick = False, showAll = False):
             wikipedia.output(u"'%s' complete." % formatName)
     
     if quick:
-        wikipedia.output(u'Date module quick consintency test passed')
+        #wikipedia.output(u'Date module quick consistency test passed')
+        pass
     else:
         wikipedia.output(u'Date module has been fully tested')
 
