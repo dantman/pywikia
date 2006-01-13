@@ -2166,6 +2166,8 @@ class Site(object):
             try:
                 f = uo.open('http://%s%s' % (self.hostname(), path))
                 retrieved = True
+            except KeyboardInterrupt:
+                raise
             except Exception, e:
                 if retry:
                     # We assume that the server is down. Wait some time, then try again.
