@@ -83,25 +83,25 @@ def translate(pl, arr, same = False, hints = None, auto = True):
         # search inside all dictionaries for this link
         dictName, value = date.getAutoFormat( pl.site().language(), pl.title() )
         if dictName:
-            if not (dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and year > date.maxyearBC[pl.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(pl.site().language()) and year > date.maxyearAD[pl.site().language()]):
-                wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (pl.title(),dictName,year))
+            if not (dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and value > date.maxyearBC[pl.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(pl.site().language()) and value > date.maxyearAD[pl.site().language()]):
+                wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (pl.title(),dictName,value))
                 for entryLang, entry in date.formats[dictName].iteritems():
                     if entryLang != pl.site().language():
-                        if dictName == 'yearsBC' and date.maxyearBC.has_key(entryLang) and year > date.maxyearBC[entryLang]:
+                        if dictName == 'yearsBC' and date.maxyearBC.has_key(entryLang) and value > date.maxyearBC[entryLang]:
                             pass
-                        elif dictName == 'yearsAD' and date.maxyearAD.has_key(entryLang) and year > date.maxyearAD[entryLang]:
+                        elif dictName == 'yearsAD' and date.maxyearAD.has_key(entryLang) and value > date.maxyearAD[entryLang]:
                             pass
             else:
-                            newname = entry(year)
+                            newname = entry(value)
                             x = wikipedia.Page( wikipedia.getSite(code=entryLang, fam=site.family), newname )
                             if x not in arr:
                                 arr[x] = None   # add new page
 
 bcDateErrors = [u'[[ko:%d년]]']
 
-def appendFormatedDates( result, dictName, year ):
-    for code, value in date.formats[dictName].iteritems():
-        result.append( u'[[%s:%s]]' % (code,value(year)) )
+def appendFormatedDates( result, dictName, value ):
+    for code, func in date.formats[dictName].iteritems():
+        result.append( u'[[%s:%s]]' % (code,func(value)) )
     
 def getPoisonedLinks(pl):
     """Returns a list of known corrupted links that should be removed if seen
@@ -110,31 +110,31 @@ def getPoisonedLinks(pl):
     
     wikipedia.output( u'getting poisoned links for %s' % pl.title() )
 
-    dictName, year = date.getAutoFormat( pl.site().language(), pl.title() )
+    dictName, value = date.getAutoFormat( pl.site().language(), pl.title() )
     if dictName is not None:
         wikipedia.output( u'date found in %s' % dictName )
         
         # errors in year BC
         if dictName in date.bcFormats:
             for fmt in bcDateErrors:
-                result.append( fmt % year )
+                result.append( fmt % value )
 
         # i guess this is like friday the 13th for the years
-        if year == 398 and dictName == 'yearsBC':
+        if value == 398 and dictName == 'yearsBC':
             appendFormatedDates( result, dictName, 399 )
         
         if dictName == 'yearsBC':
-            appendFormatedDates( result, 'decadesBC', year )
-            appendFormatedDates( result, 'yearsAD', year )
+            appendFormatedDates( result, 'decadesBC', value )
+            appendFormatedDates( result, 'yearsAD', value )
 
         if dictName == 'yearsAD':
-            appendFormatedDates( result, 'decadesAD', year )
-            appendFormatedDates( result, 'yearsBC', year )
+            appendFormatedDates( result, 'decadesAD', value )
+            appendFormatedDates( result, 'yearsBC', value )
 
         if dictName == 'centuriesBC':
-            appendFormatedDates( result, 'decadesBC', year*100+1 )
+            appendFormatedDates( result, 'decadesBC', value*100+1 )
 
         if dictName == 'centuriesAD':
-            appendFormatedDates( result, 'decadesAD', year*100+1 )
+            appendFormatedDates( result, 'decadesAD', value*100+1 )
 
     return result
