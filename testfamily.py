@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/python
-# -*- coding: utf-8  -*-
+# -*- coding: utf-8	 -*-
 """
 This utility runs through all known languages in a family.
 Its primary use is to find all mismatches between the namespace naming in the family files
@@ -36,6 +36,8 @@ if __name__ == "__main__":
 			try:
 				langsite = wikipedia.getSite(lang)
 				wikipedia.getall( langsite, [wikipedia.Page( langsite, 'Any page name' )])
+			except KeyboardInterrupt:
+				raise
 			except:
 				wikipedia.output( u'Error processing language %s' % lang )
 				wikipedia.output( u''.join(traceback.format_exception(*sys.exc_info())))
@@ -45,15 +47,15 @@ if __name__ == "__main__":
 			
 			wikipedia.output(u"\n\n------------------ namespace table -------------------\n");
 
-			wikipedia.output(u"        self.namespaces = {")
+			wikipedia.output(u"		   self.namespaces = {")
 			for k,v in sorted(fam.namespaces.iteritems()):
-				wikipedia.output(u"            %i: {" % k)
+				wikipedia.output(u"			   %i: {" % k)
 				for k2,v2 in sorted(v.iteritems()):
 					if v2 is not None:
 						v2 = u"u'%s'" % v2
-					wikipedia.output(u"                '%s': %s," % (k2,v2))
-				wikipedia.output(u"            },")
-			wikipedia.output(u"        }")
+					wikipedia.output(u"				   '%s': %s," % (k2,v2))
+				wikipedia.output(u"			   },")
+			wikipedia.output(u"		   }")
 
 	finally:
 		wikipedia.stopme()
