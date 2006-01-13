@@ -409,6 +409,7 @@ class Page(object):
         if throttle:
             get_throttle()
         textareaFound = False
+        retry_idle_time = 1
         while not textareaFound:
             text = self.site().getUrl(path, sysop = sysop)
             # Extract the actual text from the textarea
