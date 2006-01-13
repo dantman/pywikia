@@ -598,6 +598,9 @@ class DisambiguationRobot(object):
                     # know if other languages don't want this feature either.
                     # We might want to introduce a list of languages that don't want to use
                     # this feature.
+                    
+                    # Disabled after someone else complained about this
+                    # 'feature' in [ 1294811 ].
                     if self.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
                         new_page_title = new_page_title[0].lower() + new_page_title[1:]
                     if replaceit and trailing_chars:
