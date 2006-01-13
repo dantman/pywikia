@@ -107,29 +107,11 @@ class _Category(wikipedia.Page):
                     path += '&from=' + startFromPage
                 if purge:
                     path += '&action=purge'
-                # this loop will run until the page could be retrieved
-                # Try to retrieve the page until it was successfully loaded (just in case
-                # the server is down or overloaded)
-                # wait for retry_idle_time minutes (growing!) between retries.
-                retry_idle_time = 1
-                while True:
-                    try:
-                        if startFromPage:
-                            wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), startFromPage))
-                        else:
-                            wikipedia.output('Getting [[%s]]...' % cat.title())
-                        txt = site.getUrl(path)
-                    except:
-                        # We assume that the server is down. Wait some time, then try again.
-                        raise
-                        print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (cat.title(), retry_idle_time)
-                        time.sleep(retry_idle_time * 60)
-                        # Next time wait longer, but not longer than half an hour
-                        if retry_idle_time < 32:
-                            retry_idle_time *= 2
-                        continue
-                    break
-                
+                if startFromPage:
+                    wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), startFromPage))
+                else:
+                    wikipedia.output('Getting [[%s]]...' % cat.title())
+                txt = site.getUrl(path)             
                 # save a copy of this text to find out self's supercategory.
                 # if recurse is true, this function should only return self's
                 # supercategory, not the ones of its subcats.

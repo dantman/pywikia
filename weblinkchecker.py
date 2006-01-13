@@ -123,7 +123,7 @@ class LinkChecker(object):
         except socket.error, arg:
             return False, u'Socket Error: %s' % arg
         except UnicodeEncodeError, arg:
-            return False, u'Non-ASCII Characters in URL'
+            return False, u'Non-ASCII Characters in URL: %s' % arg
         if url:
             if url in self.redirectChain:
                 return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [url])
@@ -142,7 +142,7 @@ class LinkChecker(object):
             except socket.error, arg:
                 return False, u'Socket Error: %s' % arg
             except UnicodeEncodeError, arg:
-                return False, u'Non-ASCII Characters in URL'
+                return False, u'Non-ASCII Characters in URL: %s' % arg
             try:
                 response = conn.getresponse()
             except Exception, arg:

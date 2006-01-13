@@ -408,27 +408,14 @@ class Page(object):
         # was retrieved was not long enough ago.
         if throttle:
             get_throttle()
-        # Try to retrieve the page until it was successfully loaded (just in case
-        # the server is down or overloaded)
-        # wait for retry_idle_time minutes (growing!) between retries.
-        retry_idle_time = 1
-        while True:
-            starttime = time.time()
-            try:
-                text = self.site().getUrl(path, sysop = sysop)
-            except AttributeError:
-                # We assume that the server is down. Wait some time, then try again.
-                print "WARNING: Could not load %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site().hostname(), path, retry_idle_time)
-                time.sleep(retry_idle_time * 60)
-                # Next time wait longer, but not longer than half an hour
-                retry_idle_time *= 2
-                if retry_idle_time > 30:
-                    retry_idle_time = 30
-                continue
-            # Extract the actual text from the textedit field
+        textareaFound = False
+        while not textareaFound:
+            text = self.site().getUrl(path, sysop = sysop)
+            # Extract the actual text from the textarea
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
                 i2 = re.search('</textarea>', text).start()
+                textareaFound = True
             except AttributeError:
                 # find out if the username or IP has been blocked
                 if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
@@ -441,54 +428,53 @@ class Page(object):
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
-                    continue
-            # We now know that there is a textarea.
-            # Look for the edit token
-            Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
-            tokenloc = Rwatch.search(text)
-            if tokenloc:
-                self.site().putToken(tokenloc.group(1), sysop = sysop)
-            elif not self.site().getToken(getalways = False):
-                self.site().putToken('', sysop = sysop)
-            # Get timestamps
-            m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
-            if m:
-                self._editTime = m.group(1)
+        # We now know that there is a textarea.
+        # Look for the edit token
+        Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+        tokenloc = Rwatch.search(text)
+        if tokenloc:
+            self.site().putToken(tokenloc.group(1), sysop = sysop)
+        elif not self.site().getToken(getalways = False):
+            self.site().putToken('', sysop = sysop)
+        # Get timestamps
+        m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
+        if m:
+            self._editTime = m.group(1)
+        else:
+            self._editTime = "0"
+        m = re.search('value="(\d+)" name=["\']wpStarttime["\']', text)
+        if m:
+            self._startTime = m.group(1)
+        else:
+            self._startTime = "0"
+        # Find out if page actually exists. Only existing pages have a 
+        # version history tab. 
+        RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
+        matchVersionTab = RversionTab.search(text)
+        if not matchVersionTab:
+            raise NoPage(self.site(), self.title())                
+        # Look if the page is on our watchlist
+        R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
+        matchWatching = R.search(text)
+        if matchWatching:
+            isWatched = True
+        # Now process the contents of the textarea
+        m = self.site().redirectRegex().match(text[i1:i2])
+        if self._editTime == "0":
+            output(u"DBG> page may be locked?!")
+            editRestriction = 'sysop'
+        if m:
+            if get_redirect:
+                self._redirarg = m.group(1)
             else:
-                self._editTime = "0"
-            m = re.search('value="(\d+)" name=["\']wpStarttime["\']', text)
-            if m:
-                self._startTime = m.group(1)
-            else:
-                self._startTime = "0"
-            # Find out if page actually exists. Only existing pages have a 
-            # version history tab. 
-            RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
-            matchVersionTab = RversionTab.search(text)
-            if not matchVersionTab:
-                raise NoPage(self.site(), self.title())                
-            # Look if the page is on our watchlist
-            R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
-            matchWatching = R.search(text)
-            if matchWatching:
-                isWatched = True
-            # Now process the contents of the textarea
-            m = self.site().redirectRegex().match(text[i1:i2])
-            if self._editTime == "0":
-                output(u"DBG> page may be locked?!")
-                editRestriction = 'sysop'
-            if m:
-                if get_redirect:
-                    self._redirarg = m.group(1)
-                else:
-                    output(u"DBG> %s is redirect to %s" % (self.title(), m.group(1)))
-                    raise IsRedirectPage(m.group(1))
-            x = text[i1:i2]
-            x = unescape(x)
-            while x and x[-1] in '\n ':
-                x = x[:-1]
-    
-            return x, isWatched, editRestriction
+                output(u"DBG> %s is redirect to %s" % (self.title(), m.group(1)))
+                raise IsRedirectPage(m.group(1))
+        x = text[i1:i2]
+        x = unescape(x)
+        while x and x[-1] in '\n ':
+            x = x[:-1]
+
+        return x, isWatched, editRestriction
 
     def permalink(self):
         """
@@ -1046,25 +1032,12 @@ class Page(object):
             # wait for retry_idle_time minutes (growing!) between retries.
             retry_idle_time = 1
 
-            # The principle being applied here is the same idea from the catlib
-            while True:
-                try:
-                    if startFromPage:
-                        output(u'Continuing to get version history of %s' % self.title())
-                    else:
-                        output(u'Getting version history of %s' % self.title())
+            if startFromPage:
+                output(u'Continuing to get version history of %s' % self.title())
+            else:
+                output(u'Getting version history of %s' % self.title())
 
-                    txt = site.getUrl(path)
-                except:
-                    # We assume that the server is down. Wait some time, then try again.
-                    raise
-                    print "WARNING: There was a problem retrieving %s. Maybe the server is down. Retrying in %d minutes..." % (self.title(), retry_idle_time)
-                    time.sleep(retry_idle_time * 60)
-                    # Next time wait longer, but not longer than half an hour
-                    if retry_idle_time < 32:
-                        retry_idle_time *= 2
-                        continue
-                break
+            txt = site.getUrl(path)
 
             # save a copy of the text
             self_txt = txt
@@ -2168,12 +2141,14 @@ class Site(object):
                 self._cookies = '; '.join([x.strip() for x in f.readlines()])
                 f.close()
 
-    def getUrl(self, path, sysop = False):
+    def getUrl(self, path, retry = True, sysop = False):
         """
         Low-level routine to get a URL from the wiki.
            
         Parameters:
-            path  - The absolute path.
+            path  - The absolute path, without the hostname.
+            retry - If True, retries loading the page when a network error
+                    occurs.
             sysop - If True, the sysop account's cookie will be used.
     
            Returns the HTML text of the page converted to unicode.
@@ -2181,7 +2156,28 @@ class Site(object):
         uo = MyURLopener()
         if self.cookies(sysop = sysop):
             uo.addheader('Cookie', self.cookies(sysop = sysop))
-        f = uo.open('http://%s%s' % (self.hostname(), path))
+        # Try to retrieve the page until it was successfully loaded (just in
+        # case the server is down or overloaded).
+        # Wait for retry_idle_time minutes (growing!) between retries.
+        retry_idle_time = 1
+        starttime = time.time()
+        retrieved = False
+        while not retrieved:
+            try:
+                f = uo.open('http://%s%s' % (self.hostname(), path))
+                retrieved = True
+            except Exception, e:
+                if retry:
+                    # We assume that the server is down. Wait some time, then try again.
+                    output(u"%s" % e)
+                    output(u"WARNING: Could not load 'http://%s%s'. Maybe the server or your connection is down. Retrying in %i minutes..." % (self.hostname(), path, retry_idle_time))
+                    time.sleep(retry_idle_time * 60)
+                    # Next time wait longer, but not longer than half an hour
+                    retry_idle_time *= 2
+                    if retry_idle_time > 30:
+                        retry_idle_time = 30
+                else:
+                    raise
         text = f.read()
         # Find charset in the content-type meta tag
         contentType = f.info()['Content-Type']
@@ -2416,6 +2412,8 @@ class Site(object):
            it starts at '!', so it should yield all pages.
     
            The objects returned by this generator are all Page()s.
+           
+           It is advised not to use this directly, but to use the AllpagesPageGenerator from pagegenerators.py instead.
         """
         while True:
             # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
