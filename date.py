@@ -514,9 +514,11 @@ formats = {
         'nl' :      lambda v: dh_number( v, u'%d (getal)' ),
         'nn' :      lambda v: dh_number( v, u'Talet %d' ),
         'no' :      lambda v: dh_number( v, u'%d (tall)' ),
+        'pl' :      lambda v: dh_number( v, u'%d (liczba)' ),
         'ru' :      lambda v: dh_number( v, u'%d (число)' ),
         'sk' :      lambda v: dh_number( v, u'%d (číslo)' ),
         'sl' :      lambda v: dh_number( v, u'%d (število)' ),
+        'sr' :      lambda v: dh_number( v, u'%d (број)' ),
         'sv' :      lambda v: dh_number( v, u'%d (tal)' ),
         'th' :      lambda v: dh_number( v, u'%d' ),    # was %d (จำนวน)
         'tr' :      lambda v: dh_number( v, u'%d (sayı)' ),
@@ -708,7 +710,7 @@ formats = {
 
         'fo' :      lambda v: dh_decAD( v, u'%d-árini' ),
         'fr' :      lambda v: dh_decAD( v, u'Années %d' ),
-        
+        'ga' :      lambda v: dh_decAD( v, u'%dí' ),
         'he' :      lambda m: multi( m, [
             (lambda v: dh( v, u'שנות ה-%d', lambda i: encDec0(i)%100, lambda ii: 1900 + ii[0] ), lambda p: p >= 1900 and p < 2000),
             # This is a dummy value, just to avoid validation testing.
@@ -861,7 +863,7 @@ formats = {
         'cs' :      lambda v: dh_centuryAD( v, u'%d. století' ),
         'cv' :      lambda v: dh_centuryAD( v, u'%R ĕмĕр' ),
         'cy' :      lambda m: multi( m, [
-            (lambda v: dh_centuryAD( v, u'%deg ganrif' ),           lambda p: p == 19),
+            (lambda v: dh_centuryAD( v, u'%deg ganrif' ),           lambda p: p in [17,19]),
             (lambda v: dh_centuryAD( v, u'%dain ganrif' ),          lambda p: p == 21),
             (lambda v: dh_centuryAD( v, u'%dfed ganrif' ),          alwaysTrue)]),
         'da' :      lambda v: dh_centuryAD( v, u'%d. århundrede' ),
@@ -889,6 +891,7 @@ formats = {
             (lambda v: dh_centuryAD( v, u'%Rer siècle' ),           lambda p: p == 1),
             (lambda v: dh_centuryAD( v, u'%Re siècle' ),            alwaysTrue)]),
         'fy' :      lambda v: dh_centuryAD( v, u'%de ieu' ),
+        'ga' :      lambda v: dh_centuryAD( v, u'%dú haois' ),
         'gl' :      lambda v: dh_centuryAD( v, u'Século %R' ),
         'he' :      lambda v: dh_centuryAD( v, u'המאה ה-%d' ),
         'hi' :      lambda m: multi( m, [
@@ -966,8 +969,8 @@ formats = {
 		'br' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'Iañ kantved kt JK'),      	lambda p: p == 1),
             (lambda v: dh_constVal( v, 2, u'Eil kantved kt JK'),      	lambda p: p == 2),
-            (lambda v: dh_centuryAD( v, u'%Re kantved kt JK'),        	lambda p: p in [2,3]),
-            (lambda v: dh_centuryAD( v, u'%Rvet kantved kt JK'),      	alwaysTrue)]),
+            (lambda v: dh_centuryBC( v, u'%Re kantved kt JK'),        	lambda p: p in [2,3]),
+            (lambda v: dh_centuryBC( v, u'%Rvet kantved kt JK'),      	alwaysTrue)]),
         'ca' :      lambda v: dh_centuryBC( v, u'Segle %R aC' ),
         'cs' :      lambda v: dh_centuryBC( v, u'%d. století př. n. l.' ),
         'da' :      lambda v: dh_centuryBC( v, u'%d. århundrede f.Kr.' ),
@@ -1021,6 +1024,15 @@ formats = {
             (lambda v: dh_centuryBC( v, u'前%d世紀' ),                                 alwaysTrue)]),
     },
 
+    'CenturyAD_Cat':{
+        'no' :      lambda v: dh( v, u'%d-tallet', lambda i: (i-1)*100, lambda ii: ii[0]/100+1 ),
+    },
+    
+    'CenturyBC_Cat':{
+        'de' :      lambda v: dh_centuryBC( v, u'Jahr (%d. Jh. v. Chr.)' ),
+        'no' :      lambda v: dh( v, u'%d-tallet f.Kr.', lambda i: (i-1)*100, lambda ii: ii[0]/100+1 ),
+    },
+    
     'MillenniumAD': {
         'bg' :      lambda v: dh_millenniumAD( v, u'%d хилядолетие' ),
         'ca' :      lambda v: dh_millenniumAD( v, u'Mil·lenni %R' ),
@@ -1083,11 +1095,11 @@ formats = {
     },
 
     'Cat_Year_MusicAlbums': {
-        'en' :      lambda v: dh_yearAD( v, u'Category:%d albums' ),
-        'fr' :      lambda v: dh_yearAD( v, u'Catégorie:Album musical sorti en %d' ),
-        'pl' :      lambda v: dh_yearAD( v, u'Kategoria:Albumy muzyczne wydane w roku %d' ),
-        'sl' :      lambda v: dh_yearAD( v, u'Kategorija:Albumi iz %d' ),
-        'sv' :      lambda v: dh_yearAD( v, u'Kategori:%d års musikalbum' ),
+        'en' :      lambda v: dh_yearAD( v, u'%d albums' ),
+        'fr' :      lambda v: dh_yearAD( v, u'Album musical sorti en %d' ),
+        'pl' :      lambda v: dh_yearAD( v, u'Albumy muzyczne wydane w roku %d' ),
+        'sl' :      lambda v: dh_yearAD( v, u'Albumi iz %d' ),
+        'sv' :      lambda v: dh_yearAD( v, u'%d års musikalbum' ),
     },
 
     'CurrEvents': {
@@ -1331,14 +1343,15 @@ formatLimits = {
     'Number'			: (lambda v: 1<=v and v<1001,               1,1001),
 
     'YearAD'			: (lambda v: 0<=v and v<2051,               0,2051),
-    'YearBC'			: (lambda v: 0<=v and v<2000,               0,501),     # zh: has years as old as 前1700年
+    'YearBC'			: (lambda v: 0<=v and v<2000,               0,501),   # zh: has years as old as 前1700年
     'DecadeAD'			: (lambda v: 0<=v and v<2051,               0,2051),  # At some point need to re-add  "and v%10==0" to the limitation
-    'DecadeBC'			: (lambda v: 0<=v and v<2000,               0,501),     # zh: has decades as old as 前1700年代
+    'DecadeBC'			: (lambda v: 0<=v and v<2000,               0,501),   # zh: has decades as old as 前1700年代
     'CenturyAD'			: (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'CenturyBC'			: (lambda v: 1<=v and v<41,                 1,23),    #  
+    'CenturyBC'			: (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
     'MillenniumAD'		: (lambda v: 1<=v and v<6,                  1,4),     # For milleniums, only test first 3 AD Milleniums,
     'MillenniumBC'		: (lambda v: 1<=v and v<6,                  1,2),     # And only 1 BC Millenium
-
+    'CenturyAD_Cat'     : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'CenturyBC_Cat'     : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
     'Cat_Year_MusicAlbums'	: (lambda v: 1950<=v and v<2021,        1950,2021),
     'CurrEvents'			: (lambda v: 0<=v and v<1,              0,1),
 }

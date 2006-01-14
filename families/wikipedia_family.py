@@ -165,6 +165,17 @@ class Family(family.Family):
             'ca': u'Viquiprojecte Discussió',
 			'es': u'Wikiproyecto Discusión',
 		}
+        
+        self.namespaces[104] = {
+			'_default': u'Reference',
+            'fr': u'Référence',
+            
+        }
+        
+        self.namespaces[105] = {
+			'_default': u'Reference talk',
+            'fr' : u'Discussion Référence',
+        }
             
         self.disambiguationTemplates = {
             '_default': [u'Disambig'],
