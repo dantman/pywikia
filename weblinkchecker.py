@@ -321,7 +321,11 @@ class WeblinkCheckerRobot:
            self.checkLinksIn(page)
     
     def checkLinksIn(self, page):
-        text = page.get()
+        try:
+            text = page.get()
+        except wikipedia.NoPage:
+            wikipedia.output(u'%s does not exist.' % page.title())
+            return
         # RFC 2396 says that URLs may only contain certain characters.
         # For this regex we also accept non-allowed characters, so that the bot
         # will later show these links as broken ('Non-ASCII Characters in URL').
