@@ -75,7 +75,15 @@ class LinkChecker(object):
         resolveRedirect(). This is needed to detect redirect loops.
         """
         self.url = url
-        self.redirectChain = redirectChain + [self.url]
+        self.redirectChain = redirectChain + [url]
+        self.changeUrl(url)
+        #header = {'User-agent': 'PythonWikipediaBot/1.0'}
+        # we fake being Firefox because some webservers block
+        # unknown clients
+        self.header = {'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5'}
+
+    def changeUrl(self, url):
+        self.url = url
         # we ignore the fragment
         self.scheme, self.host, self.path, self.query, self.fragment = urlparse.urlsplit(self.url)
         if not self.path:
@@ -83,11 +91,7 @@ class LinkChecker(object):
         if self.query:
             self.query = '?' + self.query
         self.protocol = url.split(':', 1)[0]
-        #header = {'User-agent': 'PythonWikipediaBot/1.0'}
-        # we fake being Firefox because some webservers block
-        # unknown clients
-        self.header = {'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5'}
-
+        
 
     def resolveRedirect(self):
         '''
@@ -97,14 +101,15 @@ class LinkChecker(object):
         conn = httplib.HTTPConnection(self.host)
         conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
         response = conn.getresponse()
-        newURL = None
         if response.status >= 300 and response.status <= 399:
             redirTarget = response.getheader('Location')
             if redirTarget:
                 if redirTarget.startswith('http://') or redirTarget.startswith('https://'):
-                    newURL = redirTarget
+                    self.changeUrl(redirTarget)
+                    return True
                 elif redirTarget.startswith('/'):
-                    newURL = '%s://%s%s' % (self.protocol, self.host, redirTarget)
+                    self.changeUrl('%s://%s%s' % (self.protocol, self.host, redirTarget))
+                    return True
                 else: # redirect to relative position
                     # cut off filename
                     directory = self.path[:self.path.rindex('/') + 1]
@@ -114,31 +119,31 @@ class LinkChecker(object):
                         # change /foo/bar/ to /foo/
                         directory = directory[:-1]
                         directory = directory[:directory.rindex('/') + 1]
-                    newURL = '%s://%s%s%s' % (self.protocol, self.host, directory, redirTarget)                            
-            # wikipedia.output(u'%s is a redirect to %s' % (self.url, newURL))
-            return newURL
-
-        
+                    self.changeUrl('%s://%s%s%s' % (self.protocol, self.host, directory, redirTarget))
+                    return True
+        else:
+            return False # not a redirect
+            
     def check(self):
         """
         Returns True and the server status message if the page is alive.
         Otherwise returns false
         """
         try:
-            url = self.resolveRedirect()
+            wasRedirected = self.resolveRedirect()
         except httplib.error, arg:
             return False, u'HTTP Error: %s' % arg
         except socket.error, arg:
             return False, u'Socket Error: %s' % arg
         except UnicodeEncodeError, arg:
             return False, u'Non-ASCII Characters in URL: %s' % arg
-        if url:
-            if url in self.redirectChain:
-                return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [url])
+        if wasRedirected:
+            if self.url in self.redirectChain:
+                return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [self.url])
             elif len(self.redirectChain) >= 19:
-                return False, u'Long Chain of Redirects: %s' % ' -> '.join(self.redirectChain + [url])
+                return False, u'Long Chain of Redirects: %s' % ' -> '.join(self.redirectChain + [self.url])
             else:
-                redirChecker = LinkChecker(url, self.redirectChain)
+                redirChecker = LinkChecker(self.url, self.redirectChain)
                 return redirChecker.check()
         else:
             try:
