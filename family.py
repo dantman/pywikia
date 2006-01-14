@@ -43,8 +43,6 @@ class Family:
             'ug','uz','ve','vec','vo','wa','war','wo','ts','yi','yo','za','zh',
             'zh-cn','zh-tw']
 
-
-        # Note that if mylang is 'commons', it is automatically added.
         self.langs = {}
         
         # Translation used on all wikis for the different namespaces.
@@ -1188,6 +1186,7 @@ class Family:
                 'cs': u'Portál',
                 'eo': u'Portalo',
                 'fr': u'Portail',
+                'he': u'פורטל',
                 'it': u'Portale',
                 'sk': u'Portál',
                 'sr': u'Портал',
@@ -1201,6 +1200,7 @@ class Family:
                 'eo': u'Portala diskuto',
                 'es': u'Portal Discusión',
                 'fr': u'Discussion Portail',
+                'he': u'שיחת פורטל',
                 'hr': u'Razgovor o portalu',
                 'id': u'Pembicaraan Portal',
                 'it': u'Discussioni portale',
