@@ -27,12 +27,14 @@ class ReferringPageGenerator:
     '''
     Yields all pages referring to a specific page.
     '''
-    def __init__(self, referredPage, followRedirects = False):
+    def __init__(self, referredPage, followRedirects = False, withTemplateInclusion = True, onlyTemplateInclusion = False):
         self.referredPage = referredPage
         self.followRedirects = followRedirects
+        self.withTemplateInclusion = withTemplateInclusion
+        self.onlyTemplateInclusion = onlyTemplateInclusion
 
     def __iter__(self):
-        for page in self.referredPage.getReferences(follow_redirects = self.followRedirects):
+        for page in self.referredPage.getReferences(follow_redirects = self.followRedirects, withTemplateInclusion = self.withTemplateInclusion, onlyTemplateInclusion = self.onlyTemplateInclusion):
             yield page
 
 class CategorizedPageGenerator:
