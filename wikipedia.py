@@ -570,11 +570,17 @@ class Page(object):
                 _isDisambig = False
         return _isDisambig
 
-    def getReferences(self, follow_redirects=True):
+    def getReferences(self, follow_redirects=True, withTemplateInclusion = True, onlyTemplateInclusion = False):
         """
         Return a list of pages that link to the page.
-        If follow_redirects is True, also returns pages
-          that link to a redirect pointing to the page.
+        
+        Parameters:
+        * follow_redirects      - if True, also returns pages that link to a
+                                  redirect pointing to the page.
+        * withTemplateInclusion - if True, also returns pages where self is
+                                  used as a template.
+        * onlyTemplateInclusion - if True, only returns pages where self is
+                                  used as a template.
         """
         site = self.site()
         path = site.references_address(self.urlname())
@@ -590,25 +596,22 @@ class Page(object):
         startmarker = u"<!-- start content -->"
         endmarker = u"<!-- end content -->"
         listitempattern = re.compile(
-            r"<li><a href=.*>(.*)</a>(?: \(.*\) )?</li>")
+            r"<li><a href=.*>(?P<title>.*)</a>(?: \((?P<templateInclusion>.*)\) )?</li>")
         redirectpattern = re.compile(
-            r"<li><a href=.*>(.*)</a> \(.*\) <ul>")
+            r"<li><a href=.*>(?P<title>.*)</a> \((?P<redirText>.*)\) <ul>")
         nextpattern = re.compile(
-            r'\(<a href="([^"]*)" title="Special:Whatlinkshere/[^"]*">next [0-9]+</a>\)')
+            r'\(<a href="(?P<url>[^"]*)" title="Special:Whatlinkshere/[^"]*">next [0-9]+</a>\)')
         more = True
 
         while more:
             while True:
-                print path
                 txt = site.getUrl(path)
                 # trim irrelevant portions of page
                 try:
                     start = txt.index(startmarker) + len(startmarker)
                     end = txt.index(endmarker)
                 except ValueError:
-                    output(
-                u"Invalid page received from server.... Retrying in %i minutes."
-                           % delay)
+                    output(u"Invalid page received from server.... Retrying in %i minutes." % delay)
                     time.sleep(delay * 60.)
                     delay *= 2
                     if delay > 30:
@@ -618,7 +621,7 @@ class Page(object):
                 break
             nexturl = nextpattern.search(txt)
             if nexturl:
-                path = nexturl.group(1).replace("&amp;", "&")
+                path = nexturl.group("url").replace("&amp;", "&")
             else:
                 more = False
             try:
@@ -650,17 +653,17 @@ class Page(object):
                     # make sure this is really a redirect to this page
                     # (MediaWiki will mark as a redirect any link that follows
                     # a #REDIRECT marker, not just the first one).
-                    linkpage = Page(site, rmatch.group(1))
+                    linkpage = Page(site, rmatch.group("title"))
                     if linkpage.getRedirectTarget() != self.sectionFreeTitle():
                         ignore_redirect = True
                         lmatch = rmatch
                     else:
                         if redirect:
                             output(u"WARNING: [[%s]] is a double-redirect."
-                                   % rmatch.group(1))
+                                   % rmatch.group("title"))
                         if follow_redirects or not redirect:
-                            refTitles.add(rmatch.group(1))
-                            redirTitles.add(rmatch.group(1))
+                            refTitles.add(rmatch.group("title"))
+                            redirTitles.add(rmatch.group("title"))
                         redirect += 1
                 # the same line may match both redirectpattern and
                 # listitempattern, because there is no newline after
@@ -669,7 +672,11 @@ class Page(object):
                     lmatch = listitempattern.search(line)
                 if lmatch:
                     if follow_redirects or not redirect:
-                        refTitles.add(lmatch.group(1))
+                        isTemplateInclusion = (lmatch.group("templateInclusion") != None)
+                        if (isTemplateInclusion and withTemplateInclusion) or (not isTemplateInclusion and not onlyTemplateInclusion):
+                            refTitles.add(lmatch.group("title"))
+                            # There might be cases where both a template and a link is used on the same page.
+                            # TODO: find out how MediaWiki reacts in this situation.
                         continue
                 if rmatch is None and lmatch is None:
                     output(u"DBG> Unparsed line:")
