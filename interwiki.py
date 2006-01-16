@@ -197,7 +197,6 @@ except NameError:
 
 import wikipedia, config, pagegenerators
 import titletranslate
-import vertexgen
 
 class LinkMustBeRemoved(wikipedia.Error):
     """
@@ -625,16 +624,6 @@ class Subject(object):
             if config.interwiki_graph:
                 self.createGraph()
             
-            # Save all the found interwikies as a "article  from  to"  file
-            if vertexgen.vertfile:
-                for k,v in new.items():
-                    for pl2 in v:
-                        for pl3 in self.foundin[pl2]:
-                            if pl3 is None:
-                                vertexgen.add( self.formatPl(self.inpl), u':hint:', self.formatPl(pl2) )
-                            else:
-                                vertexgen.add( self.formatPl(self.inpl), self.formatPl(pl3), self.formatPl(pl2) )
-                    
             # First loop over the ones that have more solutions
             for k,v in new.items():
                 if len(v) > 1:
@@ -1188,8 +1177,6 @@ if __name__ == "__main__":
             if arg:
                 if arg == '-noauto':
                     globalvar.auto = False
-                elif arg.startswith('-vertfile:'):
-                    vertexgen.openFile(arg[10:])
                 elif arg.startswith('-hint:'):
                     hints.append(arg[6:])
                 elif arg == '-force':
