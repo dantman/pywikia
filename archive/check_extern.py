@@ -27,7 +27,7 @@ file check_extern.txt
 # Distributed under the terms of the MIT license.
 #
 
-__version__='$Id$'
+__version__='$Id: check_extern.py,v 1.16 2005/12/21 17:51:26 wikipedian Exp $'
 
 import wikipedia, urllib, re, sys, httplib
 

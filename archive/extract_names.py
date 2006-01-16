@@ -11,7 +11,7 @@ as captured from one of the wikipedia servers.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: extract_names.py,v 1.9 2005/12/21 17:51:26 wikipedian Exp $'
 #
 import sys,re
 R=re.compile('/wiki/(.*?)" *')

@@ -34,7 +34,7 @@ Article_Name:  Name of the article where a table should be inserted
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: copy_table.py,v 1.31 2005/12/21 17:51:26 wikipedian Exp $'
 #
 import wikipedia, translator, lib_images
 import re, sys, string

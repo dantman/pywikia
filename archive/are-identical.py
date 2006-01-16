@@ -21,7 +21,7 @@ a simple framework at least for the moment.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: are-identical.py,v 1.3 2005/12/21 17:51:26 wikipedian Exp $'
 #
 from __future__ import generators
 

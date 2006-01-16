@@ -6,7 +6,7 @@ to have correct generation of links in Wikipedia
 
 __author__ = '(C) 2003 Thomas R. Koll, <tomk32@tomk32.de>'
 __license__ = 'Distributed under the terms of the MIT license.'
-__version__='$Id$'
+__version__='$Id: brackethttp.py,v 1.13 2005/12/21 17:51:26 wikipedian Exp $'
 
 import re, sys
 import wikipedia

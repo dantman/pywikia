@@ -20,7 +20,7 @@ the links from; other arguments are ignored.
 # Distributed under the terms of the MIT license.
 #
 # Modified by Gerrit Holl, 01-11-2004
-__version__='$Id$'
+__version__='$Id: getimages.py,v 1.15 2005/12/21 17:51:26 wikipedian Exp $'
 
 import sys
 import wikipedia, lib_images, pagegenerators
