@@ -245,7 +245,7 @@ ignore_title = {
     },
 }
 
-class ReferringPageGenerator:
+class ReferringPageGeneratorWithIgnore:
     def __init__(self, disambPage, primary=False):
         self.disambPage = disambPage
         # if run with the -primary argument, enable the ignore manager
@@ -253,7 +253,7 @@ class ReferringPageGenerator:
                                                          enabled=primary)
         
     def __iter__(self):
-        refs = self.disambPage.getReferences(follow_redirects=False)
+        refs = self.disambPage.getReferences(follow_redirects = False, withTemplateInclusion = False)
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
         if ignore_title.has_key(self.disambPage.site().family.name) and ignore_title[self.disambPage.site().family.name].has_key(self.disambPage.site().lang):
@@ -443,7 +443,7 @@ class DisambiguationRobot(object):
             else:
                 choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refpl.title(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
                 if choice in ('y', 'Y'):
-                    gen = ReferringPageGenerator(refpl, self.primary)
+                    gen = ReferringPageGeneratorWithIgnore(refpl, self.primary)
                     preloadingGen = pagegenerators.PreloadingGenerator(gen)
                     for refpl2 in preloadingGen:
                         # run until the user selected 'quit'
@@ -701,7 +701,7 @@ or press enter to quit:""")
             self.alternatives.sort()
             self.listAlternatives()
     
-            gen = ReferringPageGenerator(disambPage, self.primary)
+            gen = ReferringPageGeneratorWithIgnore(disambPage, self.primary)
             preloadingGen = pagegenerators.PreloadingGenerator(gen)
             for refpl in preloadingGen:
                 if not self.primaryIgnoreManager.isIgnored(refpl):

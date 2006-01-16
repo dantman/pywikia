@@ -155,7 +155,7 @@ def main():
     if xmlfilename:
         gen = XmlTemplatePageGenerator(oldTemplate, xmlfilename)
     else:
-        gen = pagegenerators.ReferringPageGenerator(oldTemplate)
+        gen = pagegenerators.ReferringPageGenerator(oldTemplate, onlyTemplateInclusion = True)
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
     bot = TemplateRobot(preloadingGen, old, new, remove)
     bot.run()
