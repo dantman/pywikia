@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -32,7 +32,7 @@ class Family(family.Family):
             'ast':u'Uiquipedia',
             'be': u'Вікіпэдыя',
             'bg': u'Уикипедия',
-            'bn': u'উইকিপেডিয়া',
+            'bn': u'উইকিপেডিয়া',
             'ca': u'Viquipèdia',
             'cs': u'Wikipedie',
             'csb': u'Wiki',
@@ -78,7 +78,7 @@ class Family(family.Family):
             'be': u'Абмеркаваньне Вікіпэдыя',
             'bg': u'Уикипедия беседа',
             'bm': u'Discussion Wikipedia',
-            'bn': u'উইকিপেডিয়া আলাপ',
+            'bn': u'উইকিপেডিয়া আলাপ',
             'br': u'Kaozeadenn Wikipedia',
             'ca': u'Viquipèdia Discussió',
             'ce': u'Обсуждение Wikipedia',
