@@ -532,6 +532,7 @@ formats = {
         'ang':      dh_simpleYearAD,
         'ar' :      dh_simpleYearAD,
         'ast':      dh_simpleYearAD,
+        'az' :      dh_simpleYearAD,
         'be' :      dh_simpleYearAD,
         'bg' :      dh_simpleYearAD,
         'br' :      dh_simpleYearAD,
@@ -557,6 +558,7 @@ formats = {
         'fur':      dh_simpleYearAD,
         'fy' :      dh_simpleYearAD,
         'ga' :      dh_simpleYearAD,
+        'gd' :      dh_simpleYearAD,
         'gl' :      dh_simpleYearAD,
         'gu' :      lambda v: dh_yearAD( v, u'%G' ),
         'he' :      dh_simpleYearAD,
@@ -598,6 +600,7 @@ formats = {
         'os' :      dh_simpleYearAD,
         'pl' :      dh_simpleYearAD,
         'pt' :      dh_simpleYearAD,
+        'rm' :      dh_simpleYearAD,
         'ro' :      dh_simpleYearAD,
         'roa-rup' : dh_simpleYearAD,
         'ru' :      dh_simpleYearAD,
@@ -1340,7 +1343,7 @@ addFmt( yrMnthFmts, 'zh-min-nan',True,  makeMonthList( u"%%d nî %d goe̍h" ))
 #
 formatLimits = {
     'MonthName'			: (lambda v: 1<=v and v<13,                 1,13),
-    'Number'			: (lambda v: 1<=v and v<1001,               1,1001),
+    'Number'			: (lambda v: 1<=v and v<1000000,            1,1001),
 
     'YearAD'			: (lambda v: 0<=v and v<2051,               0,2051),
     'YearBC'			: (lambda v: 0<=v and v<2000,               0,501),   # zh: has years as old as 前1700年
