@@ -211,7 +211,8 @@ class History:
         ]
     '''
    
-    def __init__(self):
+    def __init__(self, reportThread):
+        self.reportThread = reportThread
         site = wikipedia.getSite()
         self.datfilename = 'deadlinks/deadlinks-%s-%s.dat' % (site.family.name, site.lang)
         # Count the number of logged links, so that we can insert captions
@@ -225,23 +226,6 @@ class History:
             # no saved history exists yet, or history dump broken
             self.historyDict = {}
 
-    def report(self, url, errorReport, containingPage):
-        """
-        Tries to add an error report to the talk page belonging to the page containing the dead link.
-        """
-        if config.report_dead_links_on_talk and not containingPage.isTalkPage():
-            wikipedia.output(u"** Reporting dead link on talk page...")
-            talk = containingPage.switchTalkPage()
-            try:
-                content = talk.get() + "\n\n"
-                if url in content:
-                    wikipedia.output(u"** Dead link seems to have already been reported.")
-                    return
-            except (wikipedia.NoPage, wikipedia.IsRedirectPage):
-                content = u''
-            content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorReport
-            talk.put(content)
-        
     def log(self, url, error, containingPage):
         """
         Logs an error report to a text file in the deadlinks subdirectory.
@@ -259,7 +243,8 @@ class History:
             txtfile.write('=== %s ===\n' % containingPage.title()[:3])
         txtfile.write(errorReport)
         txtfile.close()
-        self.report(url, errorReport, containingPage)
+        if self.reportThread and not containingPage.isTalkPage():
+            self.reportThread.report(url, errorReport, containingPage)
     
             
     def setLinkDead(self, url, error, page):
@@ -272,14 +257,13 @@ class History:
             timeSinceLastFound= now - self.historyDict[url][-1][1]
             # if the last time we found this dead link is less than an hour
             # ago, we won't save it in the history this time.
-            if timeSinceLastFound > 60 * 60:
+            if timeSinceLastFound > 60 : # * 60:
                 self.historyDict[url].append((page.title(), now, error))
             # if the first time we found this link longer than a week ago,
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
-            if timeSinceFirstFound > 60 * 60 * 24 * 7:
+            if timeSinceFirstFound > 60 : # * 60 * 24 * 7:
                 self.log(url, error, page)
-            
         else:
             self.historyDict[url] = [(page.title(), now, error)]
 
@@ -302,7 +286,55 @@ class History:
         self.historyDict = pickle.dump(self.historyDict, datfile)
         datfile.close()
 
-                        
+class DeadLinkReportThread(threading.Thread):
+    '''
+    A Thread that is responsible for posting error reports on talk pages. There
+    will only be one DeadLinkReportThread, and it is using a semaphore to make
+    sure that two LinkCheckerThreads can't access the queue at the same time.
+    '''
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.semaphore = threading.Semaphore()
+        self.queue =  [];
+        self.finishing = False
+    
+    def report(self, url, errorReport, containingPage):
+        """
+        Tries to add an error report to the talk page belonging to the page containing the dead link.
+        """
+        self.semaphore.acquire()
+        self.queue.append((url, errorReport, containingPage))
+        self.semaphore.release()
+
+    def shutdown(self):
+        self.finishing = True
+    
+    def run(self):
+        while True:
+            # print 'RUN, queue length: %i' % len(self.queue)
+            if len(self.queue) == 0:
+                if self.finishing:
+                    break
+                else:
+                    time.sleep(0.1)
+            else:
+                self.semaphore.acquire()
+                (url, errorReport, containingPage) = self.queue[0]
+                self.queue = self.queue[1:]
+                # print 'QUEUE:', self.queue
+                wikipedia.output(u"** Reporting dead link on talk page...")
+                talk = containingPage.switchTalkPage()
+                try:
+                    content = talk.get() + "\n\n"
+                    if url in content:
+                        wikipedia.output(u"** Dead link seems to have already been reported.")
+                        continue
+                except (wikipedia.NoPage, wikipedia.IsRedirectPage):
+                    content = u''
+                content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorReport
+                talk.put(content)
+                self.semaphore.release()
+
 class WeblinkCheckerRobot:
     '''
     Robot which will use several LinkCheckThreads at once to search for dead
@@ -311,7 +343,14 @@ class WeblinkCheckerRobot:
     def __init__(self, generator, start ='!'):
         self.generator = generator
         self.start = start
-        self.history = History()
+        if config.report_dead_links_on_talk:
+            reportThread = DeadLinkReportThread()
+            # thread dies when program terminates
+            # reportThread.setDaemon(True)
+            reportThread.start()
+        else:
+            reportThread = None
+        self.history = History(reportThread)
         
     def run(self):
         comment = wikipedia.translate(wikipedia.getSite(), talk_report_msg)
@@ -383,19 +422,22 @@ def main():
     try:
         bot.run()
     finally:
-        i = 0
+        waitTime = 0
         # Don't wait longer than 30 seconds for threads to finish.
-        while threading.activeCount() > 1 and i < 30:
-            wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 1)) # don't count the main thread
+        while threading.activeCount() > 2 and waitTime < 30:
+            wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 2)) # don't count the main thread and report thread
             # wait 1 second
             time.sleep(1)
-            i += 1
-        if threading.activeCount() > 1:
-            wikipedia.output(u"Killing remaining %i threads, please wait..." % (threading.activeCount() - 1))
+            waitTime += 1
+        if threading.activeCount() > 2:
+            wikipedia.output(u"Killing remaining %i threads, please wait..." % (threading.activeCount() - 2))
             # Threads will die automatically because they are daemonic. But the
-            # killing might lag, so we wait 1 second.
-            time.sleep(1)
-
+            # killing might lag, so we wait some time. Also, we'll wait until
+            # the report thread is shut down.
+        if bot.history.reportThread:
+            bot.history.reportThread.shutdown()
+        while bot.history.reportThread.isAlive():
+            time.sleep(0.1)
         bot.history.save()
     
 if __name__ == "__main__":
