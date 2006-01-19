@@ -214,6 +214,7 @@ class History:
     def __init__(self, reportThread):
         self.reportThread = reportThread
         site = wikipedia.getSite()
+        self.semaphore = threading.Semaphore()
         self.datfilename = 'deadlinks/deadlinks-%s-%s.dat' % (site.family.name, site.lang)
         # Count the number of logged links, so that we can insert captions
         # from time to time
@@ -251,21 +252,23 @@ class History:
         """
         Adds the fact that the link was found dead to the .dat file.
         """
+        self.semaphore.acquire()
         now = time.time()
         if self.historyDict.has_key(url):
             timeSinceFirstFound = now - self.historyDict[url][0][1]
             timeSinceLastFound= now - self.historyDict[url][-1][1]
             # if the last time we found this dead link is less than an hour
             # ago, we won't save it in the history this time.
-            if timeSinceLastFound > 60 : # * 60:
+            if timeSinceLastFound > 60 * 60:
                 self.historyDict[url].append((page.title(), now, error))
             # if the first time we found this link longer than a week ago,
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
-            if timeSinceFirstFound > 60 : # * 60 * 24 * 7:
+            if timeSinceFirstFound > 60 * 60 * 24 * 7:
                 self.log(url, error, page)
         else:
             self.historyDict[url] = [(page.title(), now, error)]
+        self.semaphore.release()
 
     def setLinkAlive(self, url):
         """
@@ -273,11 +276,13 @@ class History:
         and returns True, else returns False.
         """
         if self.historyDict.has_key(url):
+            self.semaphore.acquire()
             del self.historyDict[url]
+            self.semaphore.release()
             return True
         else:
             return False
-            
+        
     def save(self):
         """
         Saves the .dat file to disk.
