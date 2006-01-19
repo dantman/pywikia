@@ -48,8 +48,8 @@ talk_report_msg = {
 }
 
 talk_report = {
-    'de': u'\n\n== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich down ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n\n--~~~~',
-    'en': u'\n\n== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n\n--~~~~',
+    'de': u'== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich down ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n--~~~~',
+    'en': u'== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n--~~~~',
 }
 
 ignorelist = [
@@ -233,7 +233,7 @@ class History:
             wikipedia.output(u"** Reporting dead link on talk page...")
             talk = containingPage.switchTalkPage()
             try:
-                content = talk.get()
+                content = talk.get() + "\n\n"
                 if url in content:
                     wikipedia.output(u"** Dead link seems to have already been reported.")
                     return
