@@ -2,7 +2,7 @@
 """
 This bot is used for checking external links found at the wiki. It checks
 several pages at once, with a limit set by the config variable
-max_external_links.
+max_external_links, which defaults to 50.
 
 The bot won't change any wiki pages, it will only report dead links such that
 people can fix or remove the links themselves.
@@ -10,9 +10,12 @@ people can fix or remove the links themselves.
 The bot will store all links found dead in a .dat file in the deadlinks
 subdirectory. To avoid the removing of links which are only temporarily
 unavailable, the bot only reports links which were reported dead at least
-two times, with a time lag of at least one week. Such links will be logged to a .txt file in the deadlinks subdirectory.
+two times, with a time lag of at least one week. Such links will be logged to a
+.txt file in the deadlinks subdirectory.
 
-In addition to the logging step, it is possible to automatically report dead links to the talk page of the article where the link was found.
+In addition to the logging step, it is possible to automatically report dead
+links to the talk page of the article where the link was found. To use this
+feature, set report_dead_links_on_talk = True in your user-config.py.
 
 When a link is found alive, it will be removed from the .dat file.
 
