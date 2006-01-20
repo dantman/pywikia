@@ -1332,37 +1332,41 @@ class GetAll(object):
 
         pl2.editRestriction = entry.editRestriction
         pl2.moveRestriction = entry.moveRestriction
-        pl2._permalink = entry.revisionid
-        m = self.site.redirectRegex().match(text)
-        if m:
-            pl._editTime = timestamp
-            redirectto=m.group(1)
-            pl2._getexception = IsRedirectPage
-            pl2._redirarg = redirectto
-        # There's no possibility to read the wpStarttime argument from the XML.
-        # This argument makes sure an edit conflict is raised if the page is
-        # deleted between retrieval and saving of the page. It contains the
-        # UTC timestamp (server time) of the moment we first retrieved the edit
-        # page. As we can't use server time, we simply use client time. Please
-        # make sure your system clock is correct. If it's too slow, the bot might
-        # recreate pages someone deleted. If it's too fast, the bot will raise
-        # EditConflict exceptions although there's no conflict.
-        pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
-        section = pl2.section()
-        if section:
-            m = re.search("== *%s *==" % section, text)
-            if not m:
-                output(u"WARNING: Section not found: %s" % pl2.title())
+        if editRestriction == 'autoconfirmed':
+            output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % pl2.title())
+            pl2.get()
+        else:
+            pl2._permalink = entry.revisionid
+            m = self.site.redirectRegex().match(text)
+            if m:
+                pl._editTime = timestamp
+                redirectto=m.group(1)
+                pl2._getexception = IsRedirectPage
+                pl2._redirarg = redirectto
+            # There's no possibility to read the wpStarttime argument from the XML.
+            # This argument makes sure an edit conflict is raised if the page is
+            # deleted between retrieval and saving of the page. It contains the
+            # UTC timestamp (server time) of the moment we first retrieved the edit
+            # page. As we can't use server time, we simply use client time. Please
+            # make sure your system clock is correct. If it's too slow, the bot might
+            # recreate pages someone deleted. If it's too fast, the bot will raise
+            # EditConflict exceptions although there's no conflict.
+            pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
+            section = pl2.section()
+            if section:
+                m = re.search("== *%s *==" % section, text)
+                if not m:
+                    output(u"WARNING: Section not found: %s" % pl2.title())
+                else:
+                    # Store the content
+                    pl2._contents = text
+                    # Store the time stamp
+                    pl2._editTime = timestamp
             else:
                 # Store the content
                 pl2._contents = text
                 # Store the time stamp
                 pl2._editTime = timestamp
-        else:
-            # Store the content
-            pl2._contents = text
-            # Store the time stamp
-            pl2._editTime = timestamp
 
     def headerDone(self, header):
         # Verify our family data
