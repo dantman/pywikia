@@ -139,11 +139,23 @@ class Family(family.Family):
             'yi': u'װיקיװערטערבוך רעדן',
         }
 
-        # Override defaults
-        self.namespaces[2]['cs'] = u'Uživatel'
-        self.namespaces[3]['cs'] = u'Uživatel diskuse'
-        self.namespaces[100]['pl'] = u'Aneks'
-        self.namespaces[101]['pl'] = u'Dyskusja aneksu'
+        self.namespaces[100] = {
+            '_default': u'Annex',
+            'pl': u'Aneks'
+        }
+        self.namespaces[101] = {
+            
+            '_default': u'Annex talk',
+            'pl': u'Dyskusja aneksu'
+        }
+        self.namespaces[102] = {
+            '_default': u'Index',
+            'pl': u'Indeks'
+        }
+        self.namespaces[103] = {
+            '_default': u'Index talk',
+            'pl': u'Dyskusja indeksu'
+        }
 
 
         # Other than most Wikipedias, page names must not start with a capital

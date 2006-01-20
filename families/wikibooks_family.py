@@ -34,11 +34,13 @@ class Family(family.Family):
         # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': u'Wikibooks',
+            'cs': u'Wikiknihy',
         }
 
         self.namespaces[5] = {
             '_default': u'Wikibooks talk',
-            'pt': u'Wikibooks DiscussÃ£o',
+            'cs': u'Wikiknihy diskuse',
+            'pt': u'Wikibooks Discussão',
         }
 
         # Which languages have a special order for putting interlanguage links,

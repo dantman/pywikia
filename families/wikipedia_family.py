@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -24,6 +24,10 @@ class Family(family.Family):
             }
         for lang in self.knownlanguages:
             self.langs[lang] = lang+'.wikipedia.org'
+
+        # Override defaults
+        self.namespaces[2]['cs'] = u'Wikipedista'
+        self.namespaces[3]['cs'] = u'Wikipedista diskuse'
 
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
@@ -154,7 +158,38 @@ class Family(family.Family):
             'wa': u'Wikipedia copene',
             'yi': u'װיקיפּעדיע רעדן',
         }
-		
+        
+        self.namespaces[100] = {
+            '_default': u'Portal',
+            'cs': u'Portál',
+            'eo': u'Portalo',
+            'fr': u'Portail',
+            'he': u'פורטל',
+            'it': u'Portale',
+            'nl': u'Portaal',
+            'sk': u'Portál',
+            'sr': u'Портал',
+        }
+        
+        self.namespaces[101] = {
+            '_default': u'Portal talk',
+            'ca': u'Portal Discussió',
+            'cs': u'Portál diskuse',
+            'de': u'Portal Diskussion',
+            'eo': u'Portala diskuto',
+            'es': u'Portal Discusión',
+            'fr': u'Discussion Portail',
+            'he': u'שיחת פורטל',
+            'hr': u'Razgovor o portalu',
+            'id': u'Pembicaraan Portal',
+            'it': u'Discussioni portale',
+            'nl': u'Overleg portaal',
+            'no': u'Portaldiskusjon',
+            'pl': u'Dyskusja portalu',
+            'pt': u'Discussão Portal',
+            'sk': u'Diskusia k portálu',
+            'sr': u'Разговор о порталу',
+        }
 
         self.namespaces[102] = {
 			'_default': u'WikiProject',
