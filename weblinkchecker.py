@@ -435,15 +435,18 @@ def main():
             time.sleep(1)
             waitTime += 1
         if threading.activeCount() > 2:
-            wikipedia.output(u"Killing remaining %i threads, please wait..." % (threading.activeCount() - 2))
-            # Threads will die automatically because they are daemonic. But the
-            # killing might lag, so we wait some time. Also, we'll wait until
-            # the report thread is shut down.
+            wikipedia.output(u'Remaining %i thread will be killed.' % (threading.activeCount() - 2))
+            # Threads will die automatically because they are daemonic.
+        wikipedia.output(u'Saving history...')
+        bot.history.save()
         if bot.history.reportThread:
             bot.history.reportThread.shutdown()
-        while bot.history.reportThread.isAlive():
-            time.sleep(0.1)
-        bot.history.save()
+            # wait until the report thread is shut down.
+            while bot.history.reportThread.isAlive():
+                time.sleep(0.1)
+        #else:
+        # Killing the daemonic threads might lag, so we wait some time.
+        #    time.sleep(1.0)
     
 if __name__ == "__main__":
     try:
