@@ -101,7 +101,10 @@ class LinkChecker(object):
         Requests the header from the server. If the page is an HTTP redirect,
         returns the redirect target URL as a string. Otherwise returns None.
         '''
-        conn = httplib.HTTPConnection(self.host)
+        if self.scheme == 'http':
+            conn = httplib.HTTPConnection(self.host)
+        elif self.scheme == 'https':
+            conn = httplib.HTTPSConnection(self.host)
         conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
         response = conn.getresponse()
         if response.status >= 300 and response.status <= 399:
@@ -150,7 +153,10 @@ class LinkChecker(object):
                 return redirChecker.check()
         else:
             try:
-                conn = httplib.HTTPConnection(self.host)
+                if self.scheme == 'http':
+                    conn = httplib.HTTPConnection(self.host)
+                elif self.scheme == 'https':
+                    conn = httplib.HTTPSConnection(self.host)
             except httplib.error, arg:
                 return False, u'HTTP Error: %s' % arg
             try:
