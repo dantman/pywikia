@@ -336,6 +336,7 @@ class DeadLinkReportThread(threading.Thread):
                     content = talk.get() + "\n\n"
                     if url in content:
                         wikipedia.output(u"** Dead link seems to have already been reported.")
+                        self.semaphore.release()
                         continue
                 except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                     content = u''
