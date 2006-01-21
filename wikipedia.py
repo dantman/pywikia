@@ -1301,9 +1301,22 @@ class GetAll(object):
         except PageNotFound:
             return
         # All of the ones that have not been found apparently do not exist
+        allNotFound = True
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
                 pl._getexception = NoPage
+            else:
+                allNotFound = False
+        if allNotFound:
+            f = codecs.open('pageNotFound.txt', 'a', 'utf-8')
+            f.write('##################################################\n')
+            f.write('##################################################\n')
+            f.write('##################################################\n')
+            f.write('%s\n' % self.pages)
+            f.write('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n')
+            f.write('%s\n' % data)
+            f.write('##################################################\n')
+            f.close()
 
     def oneDone(self, entry):
         title = entry.title
@@ -1334,7 +1347,10 @@ class GetAll(object):
         pl2.moveRestriction = entry.moveRestriction
         if editRestriction == 'autoconfirmed':
             output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % pl2.title())
-            pl2.get()
+            try:
+                pl2.get()
+            except:
+                pass
         else:
             pl2._permalink = entry.revisionid
             m = self.site.redirectRegex().match(text)
