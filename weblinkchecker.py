@@ -48,11 +48,13 @@ import threading, time
 talk_report_msg = {
     'de': u'Bot: Berichte nicht verfügbaren Weblink',
     'en': u'robot: Reporting unavailable external link',
+    'pt': u'Bot: Link externo nã funcionando',
 }
 
 talk_report = {
     'de': u'== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich down ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n--~~~~',
     'en': u'== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n--~~~~',
+    'pt': u'== Link quebrado ==\n\nChecando links externos com o bot por vários minutos verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou remova-o!\n\n%s\n -- ~~~~ ',
 }
 
 ignorelist = [

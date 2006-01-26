@@ -26,7 +26,7 @@ import re, sys, pickle
 import os.path
 import time
 
-__version__='$Id:'
+__version__='$Id$'
 
 loaded = {}
 

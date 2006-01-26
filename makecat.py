@@ -30,7 +30,7 @@ L(ist) - show current list of pages to include or to check
 # Distributed under the terms of the MIT license.
 #
 
-__version__='$Id:'
+__version__='$Id$'
 
 import sys, codecs, re
 import wikipedia, date, catlib

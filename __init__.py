@@ -9,7 +9,7 @@
 The Python Wikipedia Robot Framework is a set of bots to do things on Wikipedia or other
 Mediawiki projects. It has been written by several people using the language Python.
 
-license: Python Software Foundation
+license: MIT license
 copyright: (C) 2003 Rob W.W. Hooft.
 
 Operating System:
@@ -26,4 +26,4 @@ __docformat__ = 'epytext en'
 __version__ = '1.0'
 __author__ = 'Rob W.W. Hooft <rob@hooft.net>'
 __url__ = 'http://pywikipediabot.sourceforge.net'
-__license__ = 'Python Software Foundation'
+__license__ = 'MIT license'

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -221,7 +221,7 @@ msg = {
     'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
     'no': (u'robot ', u'Tilføyer', u'Fjerner', u'Endrer'),
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
-    'pt': (u'robot ', u'Adicionando', u'Removendo',u'Modificando'),
+    'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
     'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),    
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
@@ -465,8 +465,6 @@ class Subject(object):
                 f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
                 f.write("* %s \n" % pl.aslink())
                 f.close()
-            else:
-                pass
         if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isredirect:
             # Only once! 
             self.hintsasked = True

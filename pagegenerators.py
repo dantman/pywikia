@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 
-__version__='$Id:'
+__version__='$Id$'
 
 # Standard library imports
 import re, codecs
