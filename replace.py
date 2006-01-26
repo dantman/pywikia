@@ -69,7 +69,7 @@ syntax, use:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id'
+__version__='$Id$'
 
 from __future__ import generators
 import sys, re
@@ -102,6 +102,7 @@ fixes = {
         'msg': {
                'en':u'Robot: converting/fixing HTML',
                'de':u'Bot: konvertiere/korrigiere HTML',
+               'pt':u'Bot: Corrigindo HTML'
               },
         'replacements': [
             # Everything case-insensitive (?i)
@@ -154,6 +155,7 @@ fixes = {
         'msg': {
                'de':u'Bot: Korrigiere Wiki-Syntax',
                'en':u'Bot: Fixing wiki syntax',
+               'pt':u'Bot: Corrigindo sintax wiki',
               },
         'replacements': [
             (r'\[\[(http://.+?)\]\]',   r'[\1]'),        # external link in double brackets
@@ -510,6 +512,47 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Uu]nicef[_ ]flag.png',                                           u'[[Bild:Flag of UNICEF.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Uu]NESCO[_ ]flag.png',                                           u'[[Bild:Flag of UNESCO.svg'),
             
+        ]
+    },
+    # Add tag Wiktionary Interproject
+    # By de:Benutzer:Melancholie - http://de.wikipedia.org/w/index.php?title=Benutzer:MelancholieBot/Skripte&oldid=10856865
+    # python replace.py -fix:interproject -ref:Template:Wiktionary
+    'interproject':{
+        'regex': True,
+        'exceptions': ['\{\{(W|w)iktionary'],
+        'msg': {
+            'de':u'InterProjekt: +wikt',
+            'pt':u'Interprojetos: +wikcionário',
+            },
+        'replacements': [
+            (r'(?i)([\r\n]+?)\*?:?;? *?(Siehe ?:|\'\'Siehe\'\' ?:|\'\'Siehe ?: ?\'\'|\'\'\'Siehe\'\'\' ?:|\'\'\'Siehe ?: ?\'\'\'|Siehe auch ?:|\'\'Siehe auch\'\' ?:|\'\'Siehe auch ?: ?\'\'|\'\'\'Siehe auch\'\'\' ?:|\'\'\'Siehe auch ?: ?\'\'\')(.*?)([\r\n]+?)(=+? *?Literatur|=+? *?Weblinks|\[\[Kat)',  r"\1== Siehe auch ==\r\n\3\4\5"),
+            (r'(?i)([\r\n]+?) *?=+? *?Siehe *?auch *?=+?([^\r\n=]*?)([\r\n]+?) *?([A-ZÄÖÜa-zäöü\[]+?)',  r"\1== Siehe auch ==\2\3* \4"),
+            (r'(ommons|ikibooks|ikiquote|iktionary)1\|(.*?)\|\2\}',  r"\11|\2}"),
+            (r'(ommons|ikibooks|ikiquote|iktionary)1\|(.*?)\|([^\2]+?)\}',  r"\12|\2|\3}"),
+            (r'(?i)([\r\n]+?)\**?:*?;*? *?\{\{(Commons|Wikibooks|Wikiquote|Wikinews|Wikipedia|Wikisource|Wikispecies|Wiktionary)',  r"\1{{\2"),
+            (r'(?i)([\r\n]+?)\{\{(Commons|Wikibooks|Wikiquote|Wikinews|Wikipedia|Wikisource|Wikispecies|Wiktionary)([^\{\}]+?)\}\}([^\r\n\{\}]+?)\{\{',  r"\1{{\2\3}}\4\r\n{{"),
+            (r'(?i)([\r\n]+?)\{\{(Commons|Wikibooks|Wikipedia|Wikiquote|Wikinews|Wikisource|Wiktionary)(.*?)\}\}(.*?)([\r\n]+?)',  r"\1{{\2\3}}\4\r\n{{Wiktionary1|{{subst:PAGENAME}}}}"),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1<--entfWikt-->\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->\5<--entfWikt-->\6<--entfWikt-->\7{{Wiktionary1|{{subst:PAGENAME}}}}'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1<--entfWikt-->\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->\5<--entfWikt-->\6{{Wiktionary1|{{subst:PAGENAME}}}}'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1<--entfWikt-->\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->\5{{Wiktionary1|{{subst:PAGENAME}}}}'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1<--entfWikt-->\2<--entfWikt-->\3<--entfWikt-->\4{{Wiktionary1|{{subst:PAGENAME}}}}'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1<--entfWikt-->\2<--entfWikt-->\3{{Wiktionary1|{{subst:PAGENAME}}}}'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1<--entfWikt-->\2{{Wiktionary1|{{subst:PAGENAME}}}}'),
+            (r'([\r\n])([^:\r\n]+?)([\r\n])\[\[([a-z]{2,3}):',  r"\1\2\r\n\n{{Wiktionary1|{{subst:PAGENAME}}}}\r\n\n[[\4:"),
+            (r'([\r\n]{3,9})\[\[([a-z]{2,3}):',  r"\r\n\n{{Wiktionary1|{{subst:PAGENAME}}}}\r\n\n[[\2:"),
+            (r'^((?:.*?\r\n+?)+?)(.*?)$',  r"\1\2\r\n\n{{Wiktionary1|{{subst:PAGENAME}}}}"),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1{{Wiktionary1|{{subst:PAGENAME}}}}\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->\5<--entfWikt-->\6<--entfWikt-->\7<--entfWikt-->\8<--entfWikt-->\9<--entfWikt-->'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1{{Wiktionary1|{{subst:PAGENAME}}}}\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->\5<--entfWikt-->\6<--entfWikt-->\7<--entfWikt-->\8<--entfWikt-->'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1{{Wiktionary1|{{subst:PAGENAME}}}}\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->\5<--entfWikt-->\6<--entfWikt-->\7<--entfWikt-->'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1{{Wiktionary1|{{subst:PAGENAME}}}}\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->\5<--entfWikt-->\6<--entfWikt-->'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1{{Wiktionary1|{{subst:PAGENAME}}}}\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->\5<--entfWikt-->'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1{{Wiktionary1|{{subst:PAGENAME}}}}\2<--entfWikt-->\3<--entfWikt-->\4<--entfWikt-->'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1{{Wiktionary1|{{subst:PAGENAME}}}}\2<--entfWikt-->\3<--entfWikt-->'),
+            (u'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([^ï¿½]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}',  r'\1{{Wiktionary1|{{subst:PAGENAME}}}}\2<--entfWikt-->'),
+            (r'(?i)([\r\n]{1,2}) *?<--entfWikt--> *?',  r""),
+            (r'(?i) *?<--entfWikt--> *?',  r""),
+            (r'(?i)([\r\n]+?)\{\{Wiktionary1\|\{\{subst:PAGENAME\}\}\}\}([\r\n]+?)\[\[([a-z]{2,3}):',  r"\r\n\n\n{{Wiktionary1|{{subst:PAGENAME}}}}\2[[\3:"),
+            (r'(?i)\{\{Wiktionary(.*?)([\r\n]+?)\{\{Wiktionary',  r"{{Wiktionary\1\r\n{{Wiktionary"),
         ]
     },
 }
