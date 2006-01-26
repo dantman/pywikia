@@ -241,6 +241,7 @@ def change_category(article, oldCat, newCatTitle, comment=None):
     site = article.site()
     sort_key = ''
     removed = False
+    catWithSortkeyR = re.compile(r'%s\s*\|\s*(?P<sortkey>.*)' % oldCat.title())
     # Iterate over a copy of the list of categories, as we may
     # remove elements from the original list while iterating
     for cat in cats[:]:
@@ -249,10 +250,12 @@ def change_category(article, oldCat, newCatTitle, comment=None):
         if cat == oldCat:
             cats.remove(cat)
             removed = True
-        elif cat.title().startswith(oldCat.title() + '|'):
-            sort_key = cat.titleWithoutNamespace().split('|', 1)[1]
-            cats.remove(cat)
-            removed = True
+        else:
+            match = catWithSortkeyR.match(cat.title())
+            if match:
+                sort_key = match.group('sortkey')
+                cats.remove(cat)
+                removed = True
     if not removed:
         wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
         return

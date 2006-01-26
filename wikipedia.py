@@ -199,8 +199,7 @@ class Page(object):
         # Convert URL-encoded characters to unicode
         title = url2unicode(title, site = site)
         # Remove double spaces
-        while '  ' in title:
-            title = title.replace('  ', ' ')
+        title = re.sub('  +', ' ', title)
         # Remove leading colon
         if title.startswith(':'):
              title = title[1:]
@@ -877,9 +876,7 @@ class Page(object):
         This means that the Category can't be retrieved, but as long as we
         just use title() and such, that won't matter.
         """
-        import catlib
-        categoryTitles = getCategoryLinks(self.get(), self.site(), withSortKeys = withSortKeys)
-        return [catlib.Category(self.site(), ':'.join(title.split(':')[1:])) for title in categoryTitles]
+        return getCategoryLinks(self.get(), self.site(), withSortKeys = withSortKeys)
 
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
@@ -1717,11 +1714,8 @@ def replaceLanguageLinks(oldtext, new, site = None):
             newtext = s + site.family.interwiki_text_separator + s2
         elif site.language() in site.family.categories_last:
             cats = getCategoryLinks(s2, site = site)
-            s3 = []
-            for catname in cats:
-                s3.append(Page(site, catname))
             s2 = removeCategoryLinks(s2, site) + site.family.interwiki_text_separator + s
-            newtext = replaceCategoryLinks(s2, s3, site=site)
+            newtext = replaceCategoryLinks(s2, cats, site=site)
         else:
             newtext = s2 + site.family.interwiki_text_separator + s
     else:
@@ -1802,6 +1796,7 @@ def normalWhitespace(text):
 # Categories
 
 def getCategoryLinks(text, site, withSortKeys = False):
+    import catlib
     """Returns a list of category links.
        in the form {code:pagename}. Do not call this routine directly, use
        Page objects instead"""
@@ -1812,14 +1807,14 @@ def getCategoryLinks(text, site, withSortKeys = False):
     while match:
         text = text[:match.start()] + text[match.end():]    
         match = nowikiOrHtmlCommentR.search(text)
-    namespaces = site.category_namespaces()
-    for prefix in namespaces:
-        if withSortKeys:
-            R = re.compile(r'\[\[(%s:[^\]]+)\]' % prefix)
-        else:
-            R = re.compile(r'\[\[(%s:[^\]\|]+)(?:\||\])'  % prefix)
-        for title in R.findall(text):
-            result.append(title)
+    catNamespace = '|'.join(site.category_namespaces())
+    if withSortKeys:
+        R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:(?P<catName>.+?)\]\]' % catNamespace)
+    else:
+        R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:(?P<catName>.+?)(?:\||\]\])' % catNamespace)
+    for match in R.finditer(text):
+        cat = catlib.Category(site, match.group('catName')) 
+        result.append(cat)
     return result
 
 def removeCategoryLinks(text, site):
@@ -1830,15 +1825,15 @@ def removeCategoryLinks(text, site):
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
     catNamespace = '|'.join(site.category_namespaces())
-    categoryR = re.compile(r'\[\[(%s):.*?\]\][\s]*' % catNamespace)
-    text = replaceExceptNowikiAndComments(text, categoryR, '') 
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace)
+    text = replaceExceptNowikiAndComments(text, categoryR, '')
     return normalWhitespace(text)
 
 def replaceCategoryLinks(oldtext, new, site = None):
     """Replace the category links given in the wikitext given
        in oldtext by the new links given in new.
 
-       'new' should be a list of category pagelink objects.
+       'new' should be a list of Category objects.
     """
     if site is None:
         site = getSite()
