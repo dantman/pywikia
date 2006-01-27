@@ -584,7 +584,6 @@ class Page(object):
         site = self.site()
         path = site.references_address(self.urlname())
         
-        output(u'Getting references to %s' % self.aslink())
         delay = 1
         refTitles = set()  # use a set to avoid duplications
         redirTitles = set()
@@ -603,6 +602,7 @@ class Page(object):
         more = True
 
         while more:
+            output(u'Getting references to %s' % self.aslink())
             while True:
                 txt = site.getUrl(path)
                 # trim irrelevant portions of page
@@ -671,7 +671,10 @@ class Page(object):
                     lmatch = listitempattern.search(line)
                 if lmatch:
                     if follow_redirects or not redirect:
-                        isTemplateInclusion = (lmatch.group("templateInclusion") != None)
+                        try:
+                            isTemplateInclusion = (lmatch.group("templateInclusion") != None)
+                        except IndexError:
+                            isTemplateInclusion = False
                         if (isTemplateInclusion and withTemplateInclusion) or (not isTemplateInclusion and not onlyTemplateInclusion):
                             refTitles.add(lmatch.group("title"))
                             # There might be cases where both a template and a link is used on the same page.
