@@ -154,10 +154,13 @@ class SectionError(ValueError):
     """The section specified by # does not exist"""
 
 class PageNotSaved(Error):
-    """ Saving the page has failed """
+    """ Saving the page has failed"""
 
 class EditConflict(PageNotSaved):
     """There has been an edit conflict while uploading the page"""
+
+class ServerError(Error):
+    """Got unexpected server response"""
 
 # UserBlocked exceptions should in general not be catched. If the bot has been
 # blocked, the bot operator has possibly done a mistake and should take care of
@@ -707,6 +710,11 @@ class Page(object):
                 raise LockedPage()
         else:
             self.site().forceLogin()
+        if config.cosmetic_changes:
+            import cosmetic_changes
+            ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), newtext)
+            ccToolkit.change()
+            newtext = ccToolkit.text
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
@@ -1274,7 +1282,7 @@ class GetAll(object):
         while True:
             try:
                 data = self.getData()
-            except (socket.error, httplib.BadStatusLine):
+            except (socket.error, httplib.BadStatusLine, ServerError):
                 # Print the traceback of the caught exception
                 print ''.join(traceback.format_exception(*sys.exc_info()))
                 output(u'DBG> got network error in GetAll.run. Sleeping for %d seconds'%dt)
@@ -1303,6 +1311,12 @@ class GetAll(object):
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
+                # the following 4 lines are just for debugging purposes and will
+                # be removed later. --Daniel
+                f=open('ALLNOTFOUND.dat','w')
+                f.write(data)
+                f.close()
+                sys.exit(1)
                 pl._getexception = NoPage
 
     def oneDone(self, entry):
@@ -1430,6 +1444,8 @@ class GetAll(object):
         conn.endheaders()
         conn.send(data)
         response = conn.getresponse()
+        if (response.status >= 300):
+            raise ServerError(response.status, response.reason)
         data = response.read()
         conn.close()
         get_throttle.setDelay(time.time() - now)
@@ -1627,7 +1643,8 @@ def replaceExceptNowikiAndComments(text, old, new):
         old  - a compiled regular expression
         new  - a string
     """
-    
+    if type(old) == type('') or type(old) == type(u''):
+        old = re.compile(old)
     nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
     # How much of the text we have looked at so far
     index = 0
@@ -1641,9 +1658,9 @@ def replaceExceptNowikiAndComments(text, old, new):
             index = nowikiOrHtmlCommentMatch.end()
         else:
             # We found a valid match. Replace it.
-            text = text[:match.start()] + new + text[match.end():]
+            text = text[:match.start()] + old.sub(new, text[match.start():])
             # continue the search on the remaining text
-            index = match.start()
+            index = match.start() + 1
     return text
 
 # Part of library dealing with interwiki links
@@ -1706,7 +1723,7 @@ def replaceLanguageLinks(oldtext, new, site = None):
        in oldtext by the new links given in new.
 
        'new' should be a dictionary with the language names as keys, and
-       either Page objects or the link-names of the pages as values.
+       Page objects as values.
     """
     if site == None:
         site = getSite()
