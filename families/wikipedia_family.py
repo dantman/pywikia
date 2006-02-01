@@ -231,7 +231,7 @@ class Family(family.Family):
             'en':  [u'Disambig', u'LND', u'2LA', u'TLAdisambig', u'Disambiguation', u'2LCdisambig', u'4LA', u'Acrocandis', u'Hndis', u'Numberdis', u'Roadis', u'Geodis', u'Listdis', u'Interstatedis', u'Dab', u'Disambig-cleanup', u'Disamb'],
             'eo':  [u'Apartigilo'],
             'es':  [u'Desambiguacion', u'Desambiguación', u'Desambig'],
-            'et':  [u'Täpsustuslehekülg'],
+            'et':  [u'Täpsustuslehekülg', u'Täpsustus'],
             'eu':  [u'Argipen'],
             'fa':  [u'ابهام‌زدایی'],
             'fi':  [u'Täsmennyssivu'],
