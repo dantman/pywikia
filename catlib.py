@@ -28,7 +28,7 @@ def unique(l):
     l.sort()
     return l
     
-class _Category(wikipedia.Page):
+class Category(wikipedia.Page):
     """Subclass of Page that has some special tricks that only work for
        category: pages"""
 
@@ -108,7 +108,7 @@ class _Category(wikipedia.Page):
                 txt = txt[ibegin:iend]
                 for title in Rtitle.findall(txt):
                     if isCatTitle(title, self.site()):
-                        ncat = _Category(self.site(), title)
+                        ncat = Category(self.site(), title)
                         if recurse and ncat not in catsdone:
                             catstodo.append(ncat)
                         subcats.append(title)
@@ -150,7 +150,7 @@ class _Category(wikipedia.Page):
         """
         subcats = []
         for title in self.catlist(recurse)[1]:
-            ncat = _Category(self.site(), title)
+            ncat = Category(self.site(), title)
             subcats.append(ncat)
         return unique(subcats)
     
@@ -177,7 +177,7 @@ class _Category(wikipedia.Page):
         """
         supercats = []
         for title in self.catlist(recurse)[2]:
-            ncat = _Category(self.site(), title)
+            ncat = Category(self.site(), title)
             supercats.append(ncat)
         return unique(supercats)
     
@@ -208,7 +208,7 @@ def Category(code, name):
     # Standardized namespace
     ns = wikipedia.getSite().category_namespaces()[0]
     # Prepend it
-    return _Category(code, "%s:%s" % (ns, name))
+    return Category(code, "%s:%s" % (ns, name))
 
 def change_category(article, oldCat, newCatTitle, comment=None):
     """

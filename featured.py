@@ -7,7 +7,7 @@ import sys, re
 import wikipedia, catlib, config
 
 def CAT(site,name):
-    cat=catlib._Category(site, name)
+    cat=catlib.Category(site, name)
     return cat.articles()
 
 def BACK(site,name):
