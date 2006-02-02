@@ -19,7 +19,7 @@ class CosmeticChangesToolkit:
     
     def change(self):
         self.standardizeInterwiki()
-        #self.standardizeCategories()
+        self.standardizeCategories()
         self.cleanUpSectionHeaders()
         self.translateNamespaces()
         self.removeDeprecatedTemplates()

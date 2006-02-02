@@ -1877,28 +1877,26 @@ def replaceCategoryLinks(oldtext, new, site = None):
         newtext = replaceLanguageLinks(newtext, interwiki_links)
     return newtext
     
-def categoryFormat(links, insite = None):
-    """Create a suitable string encoding all category links for a wikipedia
+def categoryFormat(categories, insite = None):
+    """Create a suitable string with all category links for a wiki
        page.
 
-       'links' should be a list of category pagelink objects.
+       'categories' should be a list of Category objects.
 
        The string is formatted for inclusion in insite.
     """
-    if not links:
+    if not categories:
         return ''
     if insite is None:
         insite = getSite()
-    s = []
-    for pl in links:
-        s.append(pl.aslink())
+    catLinks = [category.aslink() for category in categories]
     if insite.category_on_one_line():
         sep = ' '
     else:
         sep = '\r\n'
-    s.sort()
-    s=sep.join(s) + '\r\n'
-    return s 
+    # Some people don't like the categories sorted
+    #catLinks.sort()
+    return sep.join(catLinks) + '\r\n'
 
 # end of category specific code
 
