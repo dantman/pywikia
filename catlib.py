@@ -18,25 +18,9 @@ msg_created_for_renaming = {
     'fr':u'Robot : déplacé depuis %s. Auteurs: %s',
     }
 
-class CatTitleRecognition(object):
-    """Special object to recognize categories in a certain language.
+def isCatTitle(title, site):
+    return ':' in title and title[:title.index(':')] in site.category_namespaces()
 
-       Purpose is to construct an object using a language code, and
-       to call the object as a function to see whether a title represents
-       a category page.
-    """
-    def __init__(self, site):
-        self.ns = site.category_namespaces()
-
-    def check(self, s):
-        """True if s points to a category page."""
-        # try different possibilities for namespaces
-        # (first letter lowercase, English 'category')
-        for ins in self.ns:
-            if s.startswith(ins + ':'):
-                return True
-        return False
-        
 def unique(l):
     """Given a list of hashable object, return an alphabetized unique list.
     """
@@ -48,9 +32,6 @@ class _Category(wikipedia.Page):
     """Subclass of Page that has some special tricks that only work for
        category: pages"""
 
-    def iscattitle(self, title):
-        return CatTitleRecognition(wikipedia.getSite()).check(title)
-        
     def catlist(self, recurse = False, purge = False):
         """Cache result of make_catlist for a second call
 
@@ -126,7 +107,7 @@ class _Category(wikipedia.Page):
                     iend = txt.index('<!-- end content -->')
                 txt = txt[ibegin:iend]
                 for title in Rtitle.findall(txt):
-                    if self.iscattitle(title):
+                    if isCatTitle(title, self.site()):
                         ncat = _Category(self.site(), title)
                         if recurse and ncat not in catsdone:
                             catstodo.append(ncat)
@@ -156,7 +137,7 @@ class _Category(wikipedia.Page):
                 Rsupercat = re.compile('title="([^"]*)"')
             for title in Rsupercat.findall(self_txt):
                 # There might be a link to Special:Categories we don't want
-                if self.iscattitle(title):
+                if isCatTitle(title, self.site()):
                     supercats.append(title)
         return (articles, subcats, supercats)
     
