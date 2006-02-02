@@ -58,9 +58,10 @@ talk_report = {
 }
 
 ignorelist = [
-    re.compile('.*[\./@]example.com(/.*)?'),
-    re.compile('.*[\./@]example.net(/.*)?'),
-    re.compile('.*[\./@]example.org(/.*)?'),
+    re.compile('.*[\./@]example.com(/.*)?'), # reserved for documentation
+    re.compile('.*[\./@]example.net(/.*)?'), # reserved for documentation
+    re.compile('.*[\./@]example.org(/.*)?'), # reserved for documentation
+    re.compile('.*[\./@]gso.gbv.de(/.*)?'),  # bot somehow can't handle their redirects 
 ]
 
 class LinkChecker(object):
@@ -110,7 +111,9 @@ class LinkChecker(object):
         conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
         response = conn.getresponse()
         if response.status >= 300 and response.status <= 399:
+            #print response.getheaders()
             redirTarget = response.getheader('Location')
+            #print "redirTarget:", redirTarget
             if redirTarget:
                 if redirTarget.startswith('http://') or redirTarget.startswith('https://'):
                     self.changeUrl(redirTarget)
@@ -146,6 +149,7 @@ class LinkChecker(object):
         except UnicodeEncodeError, arg:
             return False, u'Non-ASCII Characters in URL: %s' % arg
         if wasRedirected:
+            #print "NEW TARGET:", self.url, '\n'
             if self.url in self.redirectChain:
                 return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [self.url])
             elif len(self.redirectChain) >= 19:
@@ -447,18 +451,19 @@ def main():
             time.sleep(1)
             waitTime += 1
         if threading.activeCount() > 2:
-            wikipedia.output(u'Remaining %i thread will be killed.' % (threading.activeCount() - 2))
+            wikipedia.output(u'Remaining %i threads will be killed.' % (threading.activeCount() - 2))
             # Threads will die automatically because they are daemonic.
         wikipedia.output(u'Saving history...')
         bot.history.save()
         if bot.history.reportThread:
             bot.history.reportThread.shutdown()
-            # wait until the report thread is shut down.
-            while bot.history.reportThread.isAlive():
-                time.sleep(0.1)
-        #else:
-        # Killing the daemonic threads might lag, so we wait some time.
-        #    time.sleep(1.0)
+            # wait until the report thread is shut down; the user can interrupt
+            # it by pressing CTRL-C.
+            try:
+                while bot.history.reportThread.isAlive():
+                    time.sleep(0.1)
+            except KeyboardInterrupt:
+                pass
     
 if __name__ == "__main__":
     try:
