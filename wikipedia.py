@@ -1823,7 +1823,7 @@ def getCategoryLinks(text, site):
         text = text[:match.start()] + text[match.end():]    
         match = nowikiOrHtmlCommentR.search(text)
     catNamespace = '|'.join(site.category_namespaces())
-    R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:(?P<catName>.+?)(?:\|(?P<sortKey>.+?)\]\])' % catNamespace)
+    R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:(?P<catName>.+?)(?:\|(?P<sortKey>.+?))?\]\]' % catNamespace)
     for match in R.finditer(text):
         cat = catlib.Category(site, '%s:%s' % (match.group('namespace'), match.group('catName')), sortKey = match.group('sortKey'))
         result.append(cat)
