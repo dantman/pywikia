@@ -596,12 +596,10 @@ class Page(object):
         #       format, they may break this code.
         startmarker = u"<!-- start content -->"
         endmarker = u"<!-- end content -->"
-        listitempattern = re.compile(
-            r"<li><a href=.*>(?P<title>.*)</a>(?: \((?P<templateInclusion>.*)\) )?</li>")
-        redirectpattern = re.compile(
-            r"<li><a href=.*>(?P<title>.*)</a> \((?P<redirText>.*)\) <ul>")
-        nextpattern = re.compile(
-            r'\(<a href="(?P<url>[^"]*)" title="Special:Whatlinkshere/[^"]*">next [0-9]+</a>\)')
+        listitempattern = re.compile(r"<li><a href=.*>(?P<title>.*)</a>(?: \((?P<templateInclusion>.*)\) )?</li>")
+        redirectpattern = re.compile(r"<li><a href=.*>(?P<title>.*)</a> \((?P<redirText>.*)\) <ul>")
+        # to tell the previous and next link apart, we rely on the closing ) at the end of the "previous" label.
+        nextpattern = re.compile(r'\) \(<a href="(?P<url>.*?)" title="%s:Whatlinkshere/.*?">.*? [0-9]+</a>\)' % self.site().namespace(-1))
         more = True
 
         while more:
@@ -688,11 +686,8 @@ class Page(object):
                     output(u"(%i) %s" % (num, line))
         refTitles = list(refTitles)
         refTitles.sort()
-        refPages = []
         # create list of Page objects
-        for refTitle in refTitles:
-            page = Page(site, refTitle)
-            refPages.append(page)
+        refPages = [Page(site, refTitle) for refTitle in refTitles]
         return refPages
 
     def put(self, newtext, comment=None, watchArticle = None, minorEdit = True):
@@ -1805,7 +1800,7 @@ def normalWhitespace(text):
         else:
             break
     # Add final newline back in
-    text += '\n'
+    # text += '\n'
     return text
 
 # Categories
@@ -2016,49 +2011,42 @@ def unicode2html(x, encoding):
     except UnicodeError:
         x = UnicodeToAsciiHtml(x)
     return x
-    
-def removeEntity(name):
-    Rentity = re.compile(r'&([A-Za-z]+);')
+
+def html2unicode(text, ignore = []):
+    """
+    Given a string, replaces all HTML entities by the equivalent unicode
+    characters.
+    """
+    # This regular expression will match any decimal and hexadecimal entity and
+    # also entities that might be named entities.
+    entityR = re.compile(r'&(#(?P<decimal>\d+)|#x(?P<hex>[0-9a-fA-F]+)|(?P<name>[A-Za-z]+));')
     result = u''
     i = 0
-    while i < len(name):
-        m = Rentity.match(name[i:])
-        if m:
-            if htmlentitydefs.name2codepoint.has_key(m.group(1)):
-                x = htmlentitydefs.name2codepoint[m.group(1)]
-                result = result + unichr(x)
-                i += m.end()
+    found = True
+    while found:
+        text = text[i:]
+        match = entityR.search(text)
+        if match:
+            unicodeCodepoint = None
+            if match.group('decimal'):
+                unicodeCodepoint = int(match.group('decimal'))
+            elif match.group('hex'):
+                unicodeCodepoint = int(match.group('hex'), 16)
+            elif match.group('name'):
+                name = match.group('name')
+                if htmlentitydefs.name2codepoint.has_key(name):
+                    # We found a known HTML entity.
+                    unicodeCodepoint = htmlentitydefs.name2codepoint[name]
+            result += text[:match.start()]
+            if unicodeCodepoint and unicodeCodepoint not in ignore:
+                result += unichr(unicodeCodepoint)
             else:
-                result += name[i]
-                i += 1
+                # Leave the entity unchanged
+                result += text[match.start():match.end()]
+            i = match.end()
         else:
-            result += name[i]
-            i += 1
-    return result
-
-def html2unicode(name):
-    name = removeEntity(name)
-
-    Runi = re.compile('&#(\d+);')
-    Runi2 = re.compile('&#x([0-9a-fA-F]+);')
-    result = u''
-    i=0
-    while i < len(name):
-        m = Runi.match(name[i:])
-        m2 = Runi2.match(name[i:])
-        if m:
-            result += unichr(int(m.group(1)))
-            i += m.end()
-        elif m2:
-            result += unichr(int(m2.group(1),16))
-            i += m2.end()
-        else:
-            try:
-                result += name[i]
-                i += 1
-            except UnicodeDecodeError:
-                print repr(name)
-                raise
+            result += text
+            found = False
     return result
 
 def Family(fam = None, fatal = True):

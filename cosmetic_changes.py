@@ -23,6 +23,8 @@ class CosmeticChangesToolkit:
         self.cleanUpSectionHeaders()
         self.translateNamespaces()
         self.removeDeprecatedTemplates()
+        self.resolveHtmlEntities()
+        self.validXhtml()
         return self.text
 
     def standardizeInterwiki(self):
@@ -44,6 +46,15 @@ class CosmeticChangesToolkit:
     def removeWhitespaceFromLinks(self):
         pass # TODO
 
+    def resolveHtmlEntities(self):
+        ignore = [
+            160,      # Non-breaking space (&nbsp;)
+        ]
+        self.text = wikipedia.html2unicode(self.text, ignore = ignore)
+
+    def validXhtml(self):
+        self.text = wikipedia.replaceExceptNowikiAndComments(self.text, r'<br>', r'<br />')
+
     def cleanUpSectionHeaders(self):
         for level in range(1, 7):
             equals = '=' * level
@@ -63,8 +74,9 @@ class CosmeticChangesBot:
     def run(self):
         for page in self.generator:
             ccToolkit = CosmeticChangesToolkit(page.site(), page.get())
-            
-            page.put(ccToolkit.change())
+            changedText = ccToolkit.change()
+            if changedText != page.get():
+                page.put(changedText)
 
 
 def main():
