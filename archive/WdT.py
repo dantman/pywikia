@@ -13,7 +13,7 @@ articles will be saved on wikipedia.
 
 """
 
-__version__='$Id$'
+__version__='$Id: WdT.py,v 1.9 2005/12/21 17:51:26 wikipedian Exp $'
 
 
 import WdTXMLParser,wikipedia,re,datetime,xml.sax,fileinput

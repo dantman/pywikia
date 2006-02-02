@@ -4,7 +4,7 @@
  Distributed under the terms of the MIT license.
 """
 
-__version__='$Id$'
+__version__='$Id: WdTXMLParser.py,v 1.3 2005/12/21 17:51:26 wikipedian Exp $'
 
 DEBUG = 0
 import re
