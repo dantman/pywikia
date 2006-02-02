@@ -239,30 +239,31 @@ class Category(wikipedia.Page):
 def change_category(article, oldCat, newCat, comment=None):
     """
     Given an article which is in category oldCat, moves it to
-    category called newCatTitle. Moves subcategories of oldCat as well.
-    oldCat should be a Category object, newCatTitle should be
-    the new name as a string, without namespace.
-    If newCatTitle is None, the category will be removed.
+    category newCat. Moves subcategories of oldCat as well.
+    oldCat and newCat should be Category objects.
+    If newCat is None, the category will be removed.
     """
     cats = article.categories()
     site = article.site()
     removed = False
-    # Iterate over a copy of the list of categories, as we may
-    # remove elements from the original list while iterating
-    for cat in cats[:]:
+    # This loop will stop after the first occurence of the category was found
+    # and replaced. There might also be cases where a category was inserted
+    # twice in an article; the bot would then only replace the first occurence.
+    for i in range(len(cats)):
+        cat = cats[i]
         if cat == oldCat:
-	    sortKey = cat.sortKey
-            cats.remove(cat)
-            removed = True
-    if not removed:
-        wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
-        return
-    if newCat is not None:
-        newCat = Category(site, newCat.title(), sortKey = sortKey)
-        cats.append(newCat)
-    text = article.get()
-    text = wikipedia.replaceCategoryLinks(text, cats)
-    article.put(text, comment)
+            sortKey = cat.sortKey
+            if not newCat:
+                cats = cats[:i] + cats[i+1:]
+            else:
+                newCat = Category(site, newCat.title(), sortKey = sortKey)
+                cats = cats[:i] + [newCat] + cats[i+1:]
+            text = article.get()
+            text = wikipedia.replaceCategoryLinks(text, cats)
+            article.put(text, comment)
+	    return
+    wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
+    return
 
 
 def test():
