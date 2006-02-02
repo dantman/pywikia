@@ -248,7 +248,7 @@ class Family(family.Family):
             'is':  [u'Aðgreining'],
             'it':  [u'Disambigua'],
             'ja':  [u'Aimai'],
-            'ka':  [u'არაორაზროვნება'],
+            'ka':  [u'მრავალმნიშვნელოვანი'],
             'ko':  [u'Disambig'],
             'ku':  [u'Cudakirin'],
             'la':  [u'Discretiva'],
