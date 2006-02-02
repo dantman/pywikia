@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -94,7 +94,7 @@ class CategoryDatabase:
             except:
                 # If something goes wrong, just rebuild the database
                 self.rebuild()
-        
+
     def rebuild(self):
         self.catContentDB={}
         self.superclassDB={}
@@ -234,7 +234,6 @@ def add_category(sort_by_last_name = False):
             if answer == 'y' or answer == 'a':
                 try:
                     cats = page.categories()
-                    catsWithSortKeys = page.categories(withSortKeys = True)
                 except wikipedia.NoPage:
                     wikipedia.output(u"%s doesn't exist yet. Ignoring." % (page.title()))
                     pass
@@ -252,32 +251,33 @@ def add_category(sort_by_last_name = False):
                         wikipedia.output(u"%s is already in %s." % (page.title(), catpl.title()))
                     else:
                         wikipedia.output(u'Adding %s' % catpl.aslink())
-                        catsWithSortKeys.append(catpl)
+                        cats.append(catpl)
                         text = page.get()
-                        text = wikipedia.replaceCategoryLinks(text, catsWithSortKeys)
+                        text = wikipedia.replaceCategoryLinks(text, cats)
                         page.put(text)
 
 class CategoryMoveRobot:
     def __init__(self, oldCatTitle, newCatTitle):
-        self.oldCat = catlib.Category(wikipedia.getSite(), oldCatTitle)
+        self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
         # get edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % oldCatTitle)
 
     def run(self):
         articles = self.oldCat.articles(recurse = 0)
+	newCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.newCatTitle)
         if len(articles) == 0:
             wikipedia.output(u'There are no articles in category ' + self.oldCat.title())
         else:
             for article in articles:
-                catlib.change_category(article, self.oldCat, self.newCatTitle)
+                catlib.change_category(article, self.oldCat, newCat)
         
         subcategories = self.oldCat.subcategories(recurse = 0)
         if len(subcategories) == 0:
             wikipedia.output(u'There are no subcategories in category ' + self.oldCat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.oldCat, self.newCatTitle)
+                catlib.change_category(subcategory, self.oldCat, newCat)
         if self.oldCat.exists():
             # try to copy page contents to new cat page
             if self.oldCat.copyTo(newCatTitle):
@@ -309,7 +309,7 @@ class CategoryRemoveRobot:
     }
     
     def __init__(self, catTitle):
-        self.cat = catlib.Category(wikipedia.getSite(), catTitle)
+        self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())
         
@@ -411,7 +411,7 @@ class CategoryTidyRobot:
                 flag = True
             elif choice == 'j':
                 newCatTitle = wikipedia.input(u'Please enter the category the article should be moved to:')
-                newCat = catlib.Category(wikipedia.getSite(), newCatTitle)
+                newCat = catlib.Category(wikipedia.getSite(), 'Category:' + newCatTitle)
                 # recurse into chosen category
                 self.move_to_category(article, original_cat, newCat)
                 flag = True
@@ -453,7 +453,7 @@ class CategoryTidyRobot:
                 flag = True
     
     def run(self):
-        catlink = catlib.Category(wikipedia.getSite(), self.catTitle)
+        catlink = catlib.Category(wikipedia.getSite(), 'Category:' + self.catTitle)
         
         # get edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_change) % self.catTitle)
@@ -547,7 +547,7 @@ class CategoryTreeRobot:
             * catTitle - the title of the category which will be the tree's root
             * maxDepth - the limit beyond which no subcategories will be listed
         """
-        cat = catlib.Category(wikipedia.getSite(), self.catTitle)
+        cat = catlib.Category(wikipedia.getSite(), 'Category:' + self.catTitle)
         tree = self.treeview(cat)
         if filename:
             wikipedia.output(u'Saving results in %s' % filename)

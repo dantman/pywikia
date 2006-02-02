@@ -32,6 +32,32 @@ class Category(wikipedia.Page):
     """Subclass of Page that has some special tricks that only work for
        category: pages"""
 
+    def __init__(self, site, title = None, insite = None, tosite = None, sortKey = None):
+        wikipedia.Page.__init__(self, site = site, title = title, insite = insite, tosite = tosite)
+        self.sortKey = sortKey
+        if self.namespace() != 14:
+            raise ValueError(u'BUG: %s is not in the category namespace!' % title)
+
+    def aslink(self, forceInterwiki = False):
+        """
+        A string representation in the form of a link. The link will
+        be an interwiki link if needed.
+
+        If you set forceInterwiki to True, the link will have the format
+        of an interwiki link even if it points to the home wiki.
+
+        Note that the family is never included.
+        """
+	if self.sortKey:
+	    titleWithSortKey = '%s|%s' % (self.title(), self.sortKey)
+	else:
+            titleWithSortKey = self.title()
+        if forceInterwiki or self.site() != wikipedia.getSite():
+            return '[[%s:%s]]' % (self.site().lang, titleWithSortKey)
+        else:
+            return '[[%s]]' % titleWithSortKey
+
+	
     def catlist(self, recurse = False, purge = False):
         """Cache result of make_catlist for a second call
 
@@ -203,14 +229,14 @@ class Category(wikipedia.Page):
             targetCat.put(self.get(), creationSummary)
             return True
     
-def Category(code, name):
-    """Factory method to create category link objects from the category name"""
-    # Standardized namespace
-    ns = wikipedia.getSite().category_namespaces()[0]
-    # Prepend it
-    return Category(code, "%s:%s" % (ns, name))
+#def Category(code, name):
+#    """Factory method to create category link objects from the category name"""
+#    # Standardized namespace
+#    ns = wikipedia.getSite().category_namespaces()[0]
+#    # Prepend it
+#    return Category(code, "%s:%s" % (ns, name))
 
-def change_category(article, oldCat, newCatTitle, comment=None):
+def change_category(article, oldCat, newCat, comment=None):
     """
     Given an article which is in category oldCat, moves it to
     category called newCatTitle. Moves subcategories of oldCat as well.
@@ -218,33 +244,21 @@ def change_category(article, oldCat, newCatTitle, comment=None):
     the new name as a string, without namespace.
     If newCatTitle is None, the category will be removed.
     """
-    cats = article.categories(withSortKeys = True)
+    cats = article.categories()
     site = article.site()
-    sort_key = ''
     removed = False
-    catWithSortkeyR = re.compile(r'%s\s*\|\s*(?P<sortkey>.*)' % oldCat.title())
     # Iterate over a copy of the list of categories, as we may
     # remove elements from the original list while iterating
     for cat in cats[:]:
-        # get the category title without the namespace, but possibly with a
-        # "|" sign followed by a sortkey
         if cat == oldCat:
+	    sortKey = cat.sortKey
             cats.remove(cat)
             removed = True
-        else:
-            match = catWithSortkeyR.match(cat.title())
-            if match:
-                sort_key = match.group('sortkey')
-                cats.remove(cat)
-                removed = True
     if not removed:
         wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
         return
-    if newCatTitle is not None:
-        if sort_key == '':
-            newCat = Category(site, newCatTitle)
-        else:
-            newCat = Category(site, newCatTitle + '|' + sort_key)
+    if newCat is not None:
+        newCat = Category(site, newCat.title(), sortKey = sortKey)
         cats.append(newCat)
     text = article.get()
     text = wikipedia.replaceCategoryLinks(text, cats)

@@ -873,21 +873,16 @@ class Page(object):
                 output(u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!" % (self.aslink(), newsite, newname))
         return result
 
-    def categories(self, withSortKeys = False):
+    def categories(self):
         """
         A list of categories that the article is in. This will retrieve
         the page text to do its work, so it can raise the same exceptions
         that are raised by the get() method.
-        
+
         The return value is a list of Category objects, one for each of the
         category links in the page text.
-
-        If withSortKeys is False, sort keys will be omitted. If it's true, the
-        | and the sort key following it will be included in the category title.
-        This means that the Category can't be retrieved, but as long as we
-        just use title() and such, that won't matter.
         """
-        return getCategoryLinks(self.get(), self.site(), withSortKeys = withSortKeys)
+        return getCategoryLinks(self.get(), self.site())
 
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
@@ -1815,7 +1810,7 @@ def normalWhitespace(text):
 
 # Categories
 
-def getCategoryLinks(text, site, withSortKeys = False):
+def getCategoryLinks(text, site):
     import catlib
     """Returns a list of category links.
        in the form {code:pagename}. Do not call this routine directly, use
@@ -1828,12 +1823,9 @@ def getCategoryLinks(text, site, withSortKeys = False):
         text = text[:match.start()] + text[match.end():]    
         match = nowikiOrHtmlCommentR.search(text)
     catNamespace = '|'.join(site.category_namespaces())
-    if withSortKeys:
-        R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:(?P<catName>.+?)\]\]' % catNamespace)
-    else:
-        R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:(?P<catName>.+?)(?:\||\]\])' % catNamespace)
+    R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:(?P<catName>.+?)(?:\|(?P<sortKey>.+?)\]\])' % catNamespace)
     for match in R.finditer(text):
-        cat = catlib.Category(site, match.group('catName')) 
+        cat = catlib.Category(site, '%s:%s' % (match.group('namespace'), match.group('catName')), sortKey = match.group('sortKey'))
         result.append(cat)
     return result
 

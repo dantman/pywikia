@@ -30,7 +30,7 @@ class CosmeticChangesToolkit:
         self.text = wikipedia.replaceLanguageLinks(self.text, interwikiLinks, site = self.site)
 
     def standardizeCategories(self):
-        categories = wikipedia.getCategoryLinks(self.text, site = self.site, withSortKeys = True)
+        categories = wikipedia.getCategoryLinks(self.text, site = self.site)
         self.text = wikipedia.replaceCategoryLinks(self.text, categories, site = self.site)
 
     def translateNamespaces(self):
