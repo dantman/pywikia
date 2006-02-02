@@ -60,6 +60,8 @@ licenseTemplates = {
         u'Bild-GFDL':                u'GFDL',
         u'Bild-GFDL-OpenGeoDB':      u'GFDL-OpenGeoDB',
         u'Bild-PD':                  u'PD',
+        u'Bild-PD-alt':              u'PD-old',
+        u'Bild-PD-Kunst':            u'PD-Art',
         u'Bild-PD-US':               u'PD-USGov',
     },
     ('wikipedia:fr', 'commons:commons'): {
