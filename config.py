@@ -159,6 +159,13 @@ max_external_links = 50
 
 report_dead_links_on_talk = False
 
+############## FURTHER SETTINGS ##############
+
+# Experimental feature; handle with care and consider re-checking each bot
+# change if enabling this!
+cosmetic_changes = False
+
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.
