@@ -705,7 +705,7 @@ class Page(object):
                 raise LockedPage()
         else:
             self.site().forceLogin()
-        if config.cosmetic_changes:
+        if config.cosmetic_changes and not self.isTalkPage():
             import cosmetic_changes
             ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), newtext)
             ccToolkit.change()
