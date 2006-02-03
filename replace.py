@@ -173,8 +173,10 @@ fixes = {
               },
         'replacements': [
             (r'\batlantische(r|n|) Ozean', r'Atlantische\1 Ozean'),
-            (r'\bdeutsche(r|n|) Bundestag', r'Deutsche\1 Bundestag'),
-            (r'\bdeutsche(s|n|) Reich', r'Deutsche\1 Reich'),
+            (r'\bdeutsche(r|n|) Bundestag\b', r'Deutsche\1 Bundestag'),
+            (r'\bdeutschen Bundestags\b', r'Deutschen Bundestags'), # Aufpassen, z. B. 'deutsche Bundestagswahl'
+            (r'\bdeutsche(r|n|) Reich\b', r'Deutsche\1 Reich'),
+            (r'\bdeutschen Reichs\b', r'Deutschen Reichs'), # Aufpassen, z. B. 'deutsche Reichsgrenzen'
             (r'\bdritte(n|) Welt', r'Dritte\1 Welt'),
             (r'\bdreißigjährige(r|n|) Krieg', r'Dreißigjährige\1 Krieg'),
             (r'\beuropäische(n|) Gemeinschaft', r'Europäische\1 Gemeinschaft'),
@@ -201,6 +203,29 @@ fixes = {
             (u'[[LP]]', u'[[Langspielplatte|LP]]'),
             (u'[[EP]]', u'[[Extended Play|EP]]'),
             (u'[[MC]]', u'[[Musikkassette|MC]]'),
+        ]
+    },
+    # for de.wikipedia
+    'schwesterprojekte': {
+        'regex': True,
+        'msg': {
+               'de':u'Bot: ersetze Schwesterprojekt-Vorlagen',
+              },
+        'replacements': [
+            (u'{{[Cc]ommons1', u'{{Commons'),
+            (u'{{[Cc]ommons2', u'{{Commons'),
+            (u'{{[Ww]iktionary1', u'{{Wiktionary'),
+            (u'{{[Ww]iktionary2', u'{{Wiktionary'),
+            (u'{{[Ww]iktionary1', u'{{Wiktionary'),
+            (u'{{[Ww]iktionary2', u'{{Wiktionary'),
+            (u'{{[Ww]ikibooks1', u'{{Wikibooks'),
+            (u'{{[Ww]ikibooks2', u'{{Wikibooks'),
+            (u'{{[Ww]ikiquote1', u'{{Wikiquote'),
+            (u'{{[Ww]ikiquote2', u'{{Wikiquote'),
+            (u'{{[Ww]ikisource1', u'{{Wikisource'),
+            (u'{{[Ww]ikisource2', u'{{Wikisource'),
+            (u'{{[Ww]ikinews1', u'{{Wikinews'),
+            (u'{{[Ww]ikinews2', u'{{Wikinews'),
         ]
     },
     'flags-de': {
@@ -817,7 +842,7 @@ def main():
         for i in range(len(exceptions)):
             exception = exceptions[i]
             exceptionR = re.compile(exception, re.UNICODE)
-            replacements[i] = exceptionR
+            exceptions[i] = exceptionR
     
     if source == 'textfile':
         gen = pagegenerators.TextfilePageGenerator(textfilename)
