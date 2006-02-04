@@ -1855,7 +1855,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
         newtext = s2
     # now re-add interwiki links
     if not site.lang in site.family.categories_last:
-        newtext = replaceLanguageLinks(newtext, interwiki_links)
+        newtext = replaceLanguageLinks(newtext, interwiki_links, site = site)
     return newtext
     
 def categoryFormat(categories, insite = None):
