@@ -1301,12 +1301,6 @@ class GetAll(object):
         # All of the ones that have not been found apparently do not exist
         for pl in self.pages:
             if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
-                # the following 4 lines are just for debugging purposes and will
-                # be removed later. --Daniel
-                f=open('ALLNOTFOUND.dat','w')
-                f.write(data)
-                f.close()
-                sys.exit(1)
                 pl._getexception = NoPage
 
     def oneDone(self, entry):
