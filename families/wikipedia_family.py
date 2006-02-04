@@ -189,6 +189,7 @@ class Family(family.Family):
             'pt': u'Discussão Portal',
             'sk': u'Diskusia k portálu',
             'sr': u'Разговор о порталу',
+            'sv': u'Portaldiskussion',
         }
 
         self.namespaces[102] = {
@@ -228,7 +229,7 @@ class Family(family.Family):
             'da':  [u'Flertydig'],
             'de':  [u'Begriffsklärung'],
             'el':  [u'Disambig'],
-            'en':  [u'Disambig', u'LND', u'2LA', u'TLAdisambig', u'Disambiguation', u'2LCdisambig', u'4LA', u'Acrocandis', u'Hndis', u'Numberdis', u'Roadis', u'Geodis', u'Listdis', u'Interstatedis', u'Dab', u'Disambig-cleanup', u'Disamb'],
+            'en':  [u'Disambig', u'Disambiguation', u'LND', u'2LA', u'2LC', u'2LCdisambig', u'3LC', u'4LC', u'4LA', u'TLAdisambig', u'Acrocandis', u'Albumdis', u'Hndis', u'Numberdis', u'Roadis', u'Geodis', u'Hurricanedis', u'Interstatedis', u'Listdis', 'Townshipdis', u'Dab', u'Disambig-cleanup', u'Disamb'],
             'eo':  [u'Apartigilo'],
             'es':  [u'Desambiguacion', u'Desambiguación', u'Desambig'],
             'et':  [u'Täpsustuslehekülg', u'Täpsustus'],
