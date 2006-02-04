@@ -149,7 +149,7 @@ def main():
         new = template_names[1]
 
     mysite = wikipedia.getSite()
-    ns = mysite.template_namespace(fallback = None)
+    ns = mysite.template_namespace()
     oldTemplate = wikipedia.Page(mysite, ns + ':' + old)
 
     if xmlfilename:
