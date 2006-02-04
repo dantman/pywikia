@@ -38,24 +38,17 @@ class Category(wikipedia.Page):
         if self.namespace() != 14:
             raise ValueError(u'BUG: %s is not in the category namespace!' % title)
 
-    def aslink(self, forceInterwiki = False):
+    def aslink(self):
         """
-        A string representation in the form of a link. The link will
-        be an interwiki link if needed.
-
-        If you set forceInterwiki to True, the link will have the format
-        of an interwiki link even if it points to the home wiki.
-
-        Note that the family is never included.
+        A string representation in the form of a link. This method is different
+        from Page.aslink() as the link will never have the form of an an
+        interwiki link.
         """
-	if self.sortKey:
-	    titleWithSortKey = '%s|%s' % (self.title(), self.sortKey)
-	else:
-            titleWithSortKey = self.title()
-        if forceInterwiki or self.site() != wikipedia.getSite():
-            return '[[%s:%s]]' % (self.site().lang, titleWithSortKey)
+        if self.sortKey:
+            titleWithSortKey = '%s|%s' % (self.title(), self.sortKey)
         else:
-            return '[[%s]]' % titleWithSortKey
+            titleWithSortKey = self.title()
+        return '[[%s]]' % titleWithSortKey
 
 	
     def catlist(self, recurse = False, purge = False):
