@@ -1212,7 +1212,7 @@ class Family:
         self.interwiki_on_one_line = []
         
         # String used as separator between interwiki links and the text
-        self.interwiki_text_separator = '\r\n'
+        self.interwiki_text_separator = '\r\n\r\n'
         
         # Similar for category
         self.category_attop = []
@@ -1221,7 +1221,7 @@ class Family:
         self.category_on_one_line = []
         
         # String used as separator between category links and the text
-        self.category_text_separator = '\r\n'
+        self.category_text_separator = '\r\n\r\n'
         
         # When both at the bottom should categories come after interwikilinks?
         self.categories_last = []
