@@ -40,26 +40,26 @@ import wikipedia, catlib, config, interwiki
 
 # Summary messages
 msg_add={
-    'da':u'Robot: Tilføjer [[Kategori:%s]]',
-    'de':u'Bot: Ergänze [[Kategorie:%s]]',
-    'en':u'Robot: Adding [[Category:%s]]',
-    'es':u'Bot: Añadida [[Categoría:%s]]',
-    'fr':u'Robot : ajoute [[Catégorie:%s]]',
-    'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
-    'no':u'Robot: Legger til [[Kategori:%s]]',
-    'pt':u'Bot: Adicionando [[Categoria:%s]]',
+    'da':u'Robot: Tilføjer [[%s]]',
+    'de':u'Bot: Ergänze [[%s]]',
+    'en':u'Robot: Adding [[%s]]',
+    'es':u'Bot: Añadida [[%s]]',
+    'fr':u'Robot : ajoute [[%s]]',
+    'is':u'Vélmenni: Bæti við [[%s]]',
+    'no':u'Robot: Legger til [[%s]]',
+    'pt':u'Bot: Adicionando [[%s]]',
     }
 
 msg_change={
-    'da':u'Robot: Ændrer kategori %s',
-    'de':u'Bot: Ändere Kategorie %s',
-    'en':u'Robot: Changing category %s',
-    'es':u'Bot: Cambiada categoría %s',
-    'fr':u'Robot : modifie catégorie %s',
-    'is':u'Vélmenni: Breyti flokknum [[Flokkur:%s]]',
-    'nl':u'Bot: Wijziging Categorie %s',
-    'no':u'Robot: Endrer kategori %s',
-    'pt':u'Bot: Modificando [[Categoria:%s]]',
+    'da':u'Robot: Ændrer %s',
+    'de':u'Bot: Ändere %s',
+    'en':u'Robot: Changing %s',
+    'es':u'Bot: Cambiada %s',
+    'fr':u'Robot : modifie %s',
+    'is':u'Vélmenni: Breyti flokknum [[%s]]',
+    'nl':u'Bot: Wijziging %s',
+    'no':u'Robot: Endrer %s',
+    'pt':u'Bot: Modificando [[%s]]',
     }
 
 deletion_reason_move = {
@@ -299,13 +299,13 @@ class CategoryRemoveRobot:
     }
     
     msg_remove={
-        'da':u'Robot: Fjerner fra kategori %s',
-        'de':u'Bot: Entferne aus Kategorie %s',
-        'en':u'Robot: Removing from category %s',
-        'es':u'Bot: Eliminada de la categoría %s',
-        'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
-        'nl':u'Bot: Verwijderd uit Categorie %s',
-        'pt':u'Bot: Removendo [[Categoria:%s]]',
+        'da':u'Robot: Fjerner fra %s',
+        'de':u'Bot: Entferne aus %s',
+        'en':u'Robot: Removing from %s',
+        'es':u'Bot: Eliminada de la %s',
+        'is':u'Vélmenni: Fjarlægi [[%s]]',
+        'nl':u'Bot: Verwijderd uit %s',
+        'pt':u'Bot: Removendo [[%s]]',
     }
     
     def __init__(self, catTitle):
@@ -329,7 +329,7 @@ class CategoryRemoveRobot:
                 catlib.change_category(subcategory, self.cat.title(), None)
         if self.cat.exists() and self.cat.isEmpty():
             reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
-            cat.delete(reason)
+            self.cat.delete(reason)
 
 class CategoryTidyRobot:
     """
