@@ -52,6 +52,7 @@ class Family(family.Family):
             'gu': u'વિકિપીડિયા',
             'he': u'ויקיפדיה',
             'hi': u'विकिपीडिया',
+            'hr': u'Wikipedija',
             'hu': u'Wikipédia',
             'ka': u'ვიკიპედია',
             'ko': u'위키백과',
@@ -108,7 +109,7 @@ class Family(family.Family):
             'gu': u'વિકિપીડિયા talk',
             'he': u'שיחת ויקיפדיה',
             'hi': u'विकिपीडिया वार्ता',
-            'hr': u'Razgovor Wikipedia',
+            'hr': u'Razgovor Wikipedija',
             'hu': u'Wikipédia vita',
             'ia': u'Discussion Wikipedia',
             'id': u'Pembicaraan Wikipedia',
@@ -161,18 +162,21 @@ class Family(family.Family):
         
         self.namespaces[100] = {
             '_default': u'Portal',
+            'ar': u'بوابة',
             'cs': u'Portál',
             'eo': u'Portalo',
             'fr': u'Portail',
             'he': u'פורטל',
             'it': u'Portale',
             'nl': u'Portaal',
+            'ru': u'Портал',
             'sk': u'Portál',
             'sr': u'Портал',
         }
         
         self.namespaces[101] = {
             '_default': u'Portal talk',
+            'ar': u'نقاش البوابة',
             'ca': u'Portal Discussió',
             'cs': u'Portál diskuse',
             'de': u'Portal Diskussion',
@@ -187,9 +191,12 @@ class Family(family.Family):
             'no': u'Portaldiskusjon',
             'pl': u'Dyskusja portalu',
             'pt': u'Discussão Portal',
+            'ro': u'Discuţie Portal',
+            'ru': u'Обсуждение портала',
             'sk': u'Diskusia k portálu',
             'sr': u'Разговор о порталу',
             'sv': u'Portaldiskussion',
+            'tr': u'Portal tartışma',
         }
 
         self.namespaces[102] = {
