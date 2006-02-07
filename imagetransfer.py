@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to copy images to Wikimedia Commons, or to another wiki.
 
@@ -14,6 +14,9 @@ Arguments:
 
   -tofamily:yy Copy the image to a wiki in the family yy
 
+  -file:zz     Upload many files from textfile: [[Image:xx]]
+                                                [[Image:yy]]
+
 If pagename is an image description page, offers to copy the image to the
 target site. If it is a normal page, it will offer to copy any of the images
 used on that page, or if the -interwiki argument is used, any of the images
@@ -27,7 +30,7 @@ used on a page reachable via interwiki links.
 __version__='$Id$'
 
 import re, sys, md5, urllib
-import wikipedia, upload, config
+import wikipedia, upload, config, pagegenerators
 
 copy_message = {
     'en':u"This image was copied from %s. The original description was:\r\n\r\n%s",
@@ -223,7 +226,7 @@ def main():
                     filename = wikipedia.input(u'Please enter the list\'s filename: ')
                 else:
                     filename = arg[6:]
-                gen = pagegenerators.TextfileGenerator(filename)
+                gen = pagegenerators.TextfilePageGenerator(filename)
             else:
                 pageTitle.append(arg)
 
