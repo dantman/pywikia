@@ -407,7 +407,7 @@ class CategoryTidyRobot:
                 if current_cat == original_cat:
                     print 'No changes necessary.'
                 else:
-                    catlib.change_category(article, original_cat, current_cat.titleWithoutNamespace())
+                    catlib.change_category(article, original_cat, current_cat)
                 flag = True
             elif choice == 'j':
                 newCatTitle = wikipedia.input(u'Please enter the category the article should be moved to:')
@@ -453,19 +453,19 @@ class CategoryTidyRobot:
                 flag = True
     
     def run(self):
-        catlink = catlib.Category(wikipedia.getSite(), 'Category:' + self.catTitle)
+        cat = catlib.Category(wikipedia.getSite(), 'Category:' + self.catTitle)
         
         # get edit summary message
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_change) % self.catTitle)
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_change) % cat.title())
         
-        articles = catlink.articles(recurse = 0)
+        articles = cat.articles(recurse = 0)
         if len(articles) == 0:
             wikipedia.output(u'There are no articles in category ' + catTitle)
         else:
             for article in articles:
                 print
                 print '==================================================================='
-                self.move_to_category(article, catlink, catlink)
+                self.move_to_category(article, cat, cat)
 
 class CategoryTreeRobot:
     '''
