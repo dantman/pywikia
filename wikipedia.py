@@ -706,10 +706,11 @@ class Page(object):
         else:
             self.site().forceLogin()
         if config.cosmetic_changes and not self.isTalkPage():
-            import cosmetic_changes
-            ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), newtext)
-            ccToolkit.change()
-            newtext = ccToolkit.text
+            if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
+                import cosmetic_changes
+                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), newtext)
+                ccToolkit.change()
+                newtext = ccToolkit.text
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
@@ -1793,8 +1794,6 @@ def normalWhitespace(text):
             text=text[:-1]
         else:
             break
-    # Add final newline back in
-    # text += '\n'
     return text
 
 # Categories

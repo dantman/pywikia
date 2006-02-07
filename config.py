@@ -161,10 +161,20 @@ report_dead_links_on_talk = False
 
 ############## FURTHER SETTINGS ##############
 
-# Experimental feature; handle with care and consider re-checking each bot
-# change if enabling this!
+# The bot can make some additional changes to each page it edits, e.g. fix
+# whitespace or positioning of interwiki and category links.
+
+# This is an experimental feature; handle with care and consider re-checking 
+# each bot edit if enabling this!
 cosmetic_changes = False
 
+# If cosmetic changes are switched on, and you also have several accounts at
+# projects where you're not familiar with the local conventions, you probably
+# only want the bot to do cosmetic changes on your "home" wiki which you
+# specified in config.mylang and config.family.
+# If you want the bot to also do cosmetic changes when editing a page on a
+# foreign wiki, set cosmetic_changes_mylang_only to False, but be careful!
+cosmetic_changes_mylang_only = True
 
 # End of configuration section
 # ============================
