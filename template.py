@@ -72,6 +72,7 @@ class TemplateRobot:
         'en':u'Robot: Changing template: %s',
         'de':u'Bot: Ändere Vorlage: %s',
 		'fr':u'Robot: Changement de modèle: %s',
+        'hu':u'Robot: Sablon csere: %s',
         'pt':u'Bot: Alterando predefinição: %s',
         }
     
@@ -79,6 +80,7 @@ class TemplateRobot:
         'en':u'Robot: Removing template: %s',
         'de':u'Bot: Entferne Vorlage: %s',
 		'fr':u'Robot: Enlève le modèle: %s',
+        'hu':u'Robot: Sablon eltávolítása: %s',
         'pt':u'Bot: Removendo predefinição: %s',
         }
 
@@ -114,7 +116,7 @@ class TemplateRobot:
         if self.remove:
             replacements.append((templateR, ''))
         elif self.resolve:
-            replacements.append((templateR, '{{subst:' + self.old + '}}'))
+            replacements.append((templateR, '{{subst:' + self.old + '\g<parameters>}}'))
         else:
             replacements.append((templateR, '{{' + self.new + '\g<parameters>}}'))
         replaceBot = replace.ReplaceRobot(self.generator, replacements, regex = True)
