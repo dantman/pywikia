@@ -227,6 +227,7 @@ class Family(family.Family):
             'af':  [u'Dubbelsinnig'],
             'als': [u'Begriffsklärung', 'BKL'],
             'ang': [u'Disambig'],
+            'ast': [u'Dixebra'],
             'ar':  [u'Disambig', u'توضيح'],
             'be':  [u'Неадназначнасьць'],
             'bg':  [u'Пояснение'],
@@ -264,6 +265,7 @@ class Family(family.Family):
             'li':  [u'Verdudeliking'],
             'ln':  [u'Bokokani'],
             'lt':  [u'Disambig'],
+            'ms':  [u'Nyahkekaburan'],
             'mt':  [u'Diżambigwazzjoni'],
             'nds': [u'Mehrdüdig Begreep'],
             'nl':  [u'Dp', 'DP', 'Dp2', 'Dpintro'],
@@ -275,7 +277,7 @@ class Family(family.Family):
             'ru':  [u'Disambig', u'Значения'],
             'scn': [u'Disambigua'],
             'simple': [u'Disambig', u'Disambiguation'],
-            'sk':  [u'Disambiguation'],
+            'sk':  [u'Disambig', u'Rozlišovacia stránka', u'Disambiguation'],
             'sl':  [u'Disambig'],
             'sq':  [u'Kthjellim'],
             'sr':  [u'Вишезначна одредница'],
@@ -287,7 +289,7 @@ class Family(family.Family):
             'vi':  [u'Trang định hướng'],
             'wa':  [u'Omonimeye'],
             'zh':  [u'Disambig', u'消歧义', u'消歧义页'],
-            'zh-min-nan': [u'Khu-piat-iah', 'KhPI'],
+            'zh-min-nan': [u'Khu-piat-iah', 'KhPI', u'Disambig'],
         }
         
         # On most Wikipedias page names must start with a capital letter, but some
