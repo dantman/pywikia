@@ -48,7 +48,10 @@ class CosmeticChangesToolkit:
 
     def resolveHtmlEntities(self):
         ignore = [
-            160,      # Non-breaking space (&nbsp;)
+             38,     # Ampersand (&amp;)
+             60,     # Less than (&lt;)
+             62,     # Less than (&lt;)
+            160,     # Non-breaking space (&nbsp;) - not supported by Firefox textareas
         ]
         self.text = wikipedia.html2unicode(self.text, ignore = ignore)
 
