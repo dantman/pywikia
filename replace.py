@@ -847,7 +847,7 @@ def main():
     if source == 'textfile':
         gen = pagegenerators.TextfilePageGenerator(textfilename)
     elif source == 'category':
-        cat = catlib.Category(wikipedia.getSite(), categoryname)
+        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
         gen = pagegenerators.CategorizedPageGenerator(cat)
     elif source == 'xmldump':
         gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions, regex)
