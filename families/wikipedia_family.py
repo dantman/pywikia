@@ -283,6 +283,7 @@ class Family(family.Family):
             'sr':  [u'Вишезначна одредница'],
             'su':  [u'Disambig'],
             'sv':  [u'Betydelselista', u'Disambig', u'Förgrening', u'Gaffel', u'Efternamn', 'Gren'],
+            'sw':  [u'Maana'],
             'th':  [u'แกกำกวม'],
             'tl':  [u'Paglilinaw'],
             'tr':  [u'Anlam ayrım'],
