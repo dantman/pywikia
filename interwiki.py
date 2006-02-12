@@ -1021,7 +1021,7 @@ class InterwikiBot(object):
                 while timeout<3600:
                     try:
                         self.generateMore(globalvar.maxquerysize - mycount)
-                    except wikipedia.NoPage:
+                    except wikipedia.ServerError:
                         # Could not extract allpages special page?
                         wikipedia.output(u'ERROR: could not retrieve more pages. Will try again in %d seconds'%timeout)
                         time.sleep(timeout)

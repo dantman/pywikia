@@ -2438,7 +2438,7 @@ class Site(object):
                 ibegin = returned_html.index(begin_s)
                 iend = returned_html.index(end_s)
             except ValueError:
-                raise NoPage('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
+                raise ServerError('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
             # remove the irrelevant sections
             returned_html = returned_html[ibegin:iend]
             if self.version()=="1.2":
@@ -2577,6 +2577,21 @@ class Site(object):
     def references_address(self, s):
         return self.family.references_address(self.lang, s)
 
+    def allmessages_address(self):
+        return self.family.allmessages_address(self.lang)
+
+    def upload_address(self):
+        return self.family.upload_address(self.lang)
+
+    def maintenance_address(self, sub, default_limit = True):
+        return self.family.maintenance_address(self.lang, sub, default_limit)
+
+    def double_redirects_address(self, default_limit = True):
+        return self.family.double_redirects_address(self.lang, default_limit)
+
+    def broken_redirects_address(self, default_limit = True):
+        return self.family.broken_redirects_address(self.lang, default_limit)
+
     def __hash__(self):
         return hash(repr(self))
 
@@ -2636,20 +2651,8 @@ class Site(object):
                 list += (self.family.namespace(self.lang, n),)
         return list
 
-    def allmessages_address(self):
-        return self.family.allmessages_address(self.lang)
-
-    def upload_address(self):
-        return self.family.upload_address(self.lang)
-
-    def maintenance_address(self, sub, default_limit = True):
-        return self.family.maintenance_address(self.lang, sub, default_limit)
-
-    def double_redirects_address(self, default_limit = True):
-        return self.family.double_redirects_address(self.lang, default_limit)
-
-    def broken_redirects_address(self, default_limit = True):
-        return self.family.broken_redirects_address(self.lang, default_limit)
+    def linktrail(self):
+        return self.family.linktrail(self.lang)
 
     def language(self):
         return self.lang

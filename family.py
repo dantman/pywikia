@@ -1194,6 +1194,22 @@ class Family:
                 },
         }
         
+        # letters that can follow a wikilink and are regarded as part of this link
+        # This depends on the linktrail setting in LanguageXx.php and on
+        # [[MediaWiki:Linktrail]].
+        # See http://meta.wikipedia.org/wiki/Locales_for_the_Wikipedia_Software
+        # to find out the setting for your wiki.
+        # Note: this is a regular expression.
+        self.linktrails = {
+           '_default': u'[a-z]*',
+           'de': u'[a-zäöüß]*',
+           'da': u'[a-zæøå]*',
+           'fr': u'[a-zàâçéèêîôû]*',
+           'nl': u'[a-zäöüïëéèéàç]*',
+           'pt': u'[a-záâàãéêíóôõúüç]*',
+           'ru': u'[a-zа-я]*',
+        }
+           
         # A list of disambiguation template names in different languages
         self.disambiguationTemplates = {
             '_default': []
@@ -1266,7 +1282,15 @@ class Family:
         
         for num, val in namespaces.items():
             self.namespaces[num][code]=val
-        
+    
+    def linktrail(self, code, fallback = '_default'):
+        if self.linktrails.has_key(code):
+            return self.linktrails[code]
+        elif fallback:
+            return self.linktrails[fallback]
+        else:
+            raise KeyError('ERROR: linktrail in language %s unknown' % code)  
+
     def namespace(self, code, namespace_number, fallback = '_default'):
         if self.namespaces[namespace_number].has_key(code):
             return self.namespaces[namespace_number][code]

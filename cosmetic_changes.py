@@ -1,3 +1,4 @@
+# -*- coding: utf-8  -*-
 # WARNING: needs more testing!
 
 import wikipedia, pagegenerators
@@ -13,18 +14,23 @@ deprecatedTemplates = {
 }
 
 class CosmeticChangesToolkit:
-    def __init__(self, site, text):
+    def __init__(self, site, text, debug = False):
         self.site = site
         self.text = text
+        self.debug = debug
     
     def change(self):
+        oldText = self.text
         self.standardizeInterwiki()
         self.standardizeCategories()
+        self.cleanUpLinks()
         self.cleanUpSectionHeaders()
         self.translateNamespaces()
         self.removeDeprecatedTemplates()
         self.resolveHtmlEntities()
         self.validXhtml()
+        if self.debug:
+            wikipedia.showDiff(oldText, self.text)
         return self.text
 
     def standardizeInterwiki(self):
@@ -45,6 +51,53 @@ class CosmeticChangesToolkit:
 
     def removeWhitespaceFromLinks(self):
         pass # TODO
+
+    def cleanUpLinks(self):
+        trailR = re.compile(self.site.linktrail())
+        # The regular expression which finds links. Results consist of four groups:
+        # group title is the target page title, that is, everything before | or ].
+        # group section is the page section. It'll include the # to make life easier for us.
+        # group label is the alternative link title, that's everything between | and ].
+        # group linktrail is the link trail, that's letters after ]] which are part of the word.
+        # note that the definition of 'letter' varies from language to language.
+        self.linkR = re.compile(r'\[\[(?P<titleWithSection>[^\]\|]+)(\|(?P<label>[^\]\|]*))?\]\](?P<linktrail>' + self.site.linktrail() + ')')
+        curpos = 0
+        # This loop will run until we have finished the current page
+        while True:
+            m = self.linkR.search(self.text, pos = curpos)
+            if not m:
+                break
+            # Make sure that next time around we will not find this same hit.
+            curpos = m.start() + 1
+            titleWithSection = m.group('titleWithSection')
+            if not wikipedia.isInterwikiLink(titleWithSection):
+                # The link looks like this:
+                # [[page_title|link_text]]trailing_chars
+                # We only work on namespace 0 because pipes and linktrails work
+                # differently for images and categories.
+                page = wikipedia.Page(self.site, titleWithSection)
+                if page.namespace() == 0:
+                    # Replace underlines by spaces, also multiple underlines
+                    titleWithSection = re.sub('_+', ' ', titleWithSection)
+                    # Remove double spaces
+                    titleWithSection = re.sub('  +', ' ', titleWithSection)
+                    label = m.group('label') or titleWithSection
+                    trailingChars = m.group('linktrail')
+                    if trailingChars:
+                        label += trailingChars
+                    if titleWithSection == label:
+                        newLink = "[[%s]]" % titleWithSection
+                    # Check if we can create a link with trailing characters instead of a pipelink
+                    elif len(titleWithSection) <= len(label) and label[:len(titleWithSection)] == titleWithSection and re.sub(trailR, '', label[len(titleWithSection):]) == '':
+                        newLink = "[[%s]]%s" % (label[:len(titleWithSection)], label[len(titleWithSection):])
+                    else:
+                        if not self.site.nocapitalize:
+                            if len(titleWithSection) == 1:
+                                titleWithSection = titleWithSection[0].upper()
+                            else:
+                                titleWithSection = titleWithSection[0].upper() + titleWithSection[1:]
+                        newLink = "[[%s|%s]]" % (titleWithSection, label)
+                    self.text = self.text[:m.start()] + newLink + self.text[m.end():]
 
     def resolveHtmlEntities(self):
         ignore = [
@@ -76,7 +129,7 @@ class CosmeticChangesBot:
     
     def run(self):
         for page in self.generator:
-            ccToolkit = CosmeticChangesToolkit(page.site(), page.get())
+            ccToolkit = CosmeticChangesToolkit(page.site(), page.get(), debug = True)
             changedText = ccToolkit.change()
             if changedText != page.get():
                 page.put(changedText)

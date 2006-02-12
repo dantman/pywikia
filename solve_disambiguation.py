@@ -112,21 +112,6 @@ primary_topic_format = {
     'ru': u'%s_(значения)',
     }
 
-# letters that can follow a wikilink and are regarded as part of this link
-# This depends on the linktrail setting in LanguageXx.php.
-# See http://meta.wikipedia.org/wiki/Locales_for_the_Wikipedia_Software
-# to find out the setting for your Wikipedia.
-# Note: this is a regular expression.
-link_trail = {
-   'de': u'[a-zäöüß]*',
-   'da': u'[a-zæøå]*',
-   'en': u'[a-z]*',
-   'fr': u'[a-zàâçéèêîôû]*',
-   'nl': u'[a-zäöüïëéèéàç]*',
-   'pt': u'[a-záâàãéêíóôõúüç]*',
-   'ru': u'[a-zа-я]*',
-   }
-
 # List pages that will be ignored if they got a link to a disambiguation
 # page. An example is a page listing disambiguations articles.
 # Special chars should be encoded with unicode (\x##) and space used
@@ -398,10 +383,7 @@ class DisambiguationRobot(object):
             for ig in self.ignore_contents[self.mylang]:
                 self.ignore_contents_regexes.append(re.compile(ig))
 
-        if self.mylang in link_trail:
-            linktrail = link_trail[self.mylang]
-        else:
-            linktrail = '[a-z]*'
+        linktrail = self.mysite.linktrail()
         self.trailR = re.compile(linktrail)
         # The regular expression which finds links. Results consist of four groups:
         # group title is the target page title, that is, everything before | or ].
