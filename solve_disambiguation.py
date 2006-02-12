@@ -675,18 +675,23 @@ or press enter to quit:""")
             elif self.getAlternatives:
                 try:
                     if self.primary:
-                        disambPage2 = wikipedia.Page(self.mysite,
-                                        primary_topic_format[self.mylang]
-                                            % disambPage.title()
-                                    )
-                        thistxt = disambPage2.get(throttle=False)
+                        try:
+                            disambPage2 = wikipedia.Page(self.mysite,
+                                            primary_topic_format[self.mylang]
+                                                % disambPage.title()
+                                        )
+                            thistxt = disambPage2.get(throttle=False)
+                        except wikipedia.NoPage:
+                            wikipedia.output(u"Page does not exist, using the first link in page %s." % disambPage.title())
+                            thistxt = disambPage.linkedPages()[0].aslink()
                     else:
-                        thistxt = disambPage.get(throttle=False)
+                        try:
+                            thistxt = disambPage.get(throttle=False)
+                        except wikipedia.NoPage:
+                            wikipedia.output(u"Page does not exist, skipping.")
+                            continue
                 except wikipedia.IsRedirectPage:
                     wikipedia.output(u"Page is a redirect, skipping.")
-                    continue
-                except wikipedia.NoPage:
-                    wikipedia.output(u"Page does not exist, skipping.")
                     continue
                 thistxt = wikipedia.removeLanguageLinks(thistxt)
                 thistxt = wikipedia.removeCategoryLinks(thistxt, self.mysite)
