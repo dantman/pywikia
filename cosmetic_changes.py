@@ -18,7 +18,7 @@ class CosmeticChangesToolkit:
         self.site = site
         self.text = text
         self.debug = debug
-    
+
     def change(self):
         oldText = self.text
         self.standardizeInterwiki()
@@ -49,9 +49,6 @@ class CosmeticChangesToolkit:
             if thisNs != defaultNs:
                 self.text = wikipedia.replaceExceptNowikiAndComments(self.text, r'\[\[\s*' + defaultNs + '\s*:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]')
 
-    def removeWhitespaceFromLinks(self):
-        pass # TODO
-
     def cleanUpLinks(self):
         trailR = re.compile(self.site.linktrail())
         # The regular expression which finds links. Results consist of four groups:
@@ -81,6 +78,8 @@ class CosmeticChangesToolkit:
                     titleWithSection = re.sub('_+', ' ', titleWithSection)
                     # Remove double spaces
                     titleWithSection = re.sub('  +', ' ', titleWithSection)
+                    # Convert URL-encoded characters to unicode
+                    titleWithSection = wikipedia.url2unicode(titleWithSection, site = self.site)
                     label = m.group('label') or titleWithSection
                     trailingChars = m.group('linktrail')
                     if trailingChars:
