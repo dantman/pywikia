@@ -929,7 +929,8 @@ class Page(object):
             if self.site().lang == 'eo':
                 title = resolveEsperantoXConvention(title)
             page = Page(self.site(), title)
-            result.append(page)
+            if not isInterwikiLink(page.title()):
+                result.append(page)
         return result
 
     def imagelinks(self, followRedirects = False):
@@ -1955,6 +1956,7 @@ def isInterwikiLink(s, site = None):
         return False
     site = site or getSite()
     first, rest = s.split(':',1)
+    # interwiki codes are case-insensitive
     first = first.lower()
     if first in site.family.langs or first in site.family.known_families:
         return True
