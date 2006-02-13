@@ -14,7 +14,6 @@
 #       - correct encoding
 #       - use cookies to remember login
 #       - edit conflicts
-#       - difflib
 #       - minor edits
 #       - watch/unwatch
 #       - ...
@@ -32,12 +31,10 @@ import httplib
 import urllib
 import string
 import getpass
-import difflib
 import optparse
 import tempfile
 
 import wikipedia
-import login
 import config
 
 class EditArticle:
@@ -47,28 +44,12 @@ class EditArticle:
         """Takes one argument, usually this is sys.argv[1:]"""
         self.all_args = args
         self.set_options()
+        self.site = wikipedia.getSite()
 
     def initialise_data(self):
-        """Login, set editor, page and pagelink attributes"""
-        self.login() #anonymous=self.options.anonymous)
+        """Set editor, page and pagelink attributes"""
         self.editor = self.options.editor or wikipedia.input(u"Editor to use:")
         self.setpage()
-
-    def login(self):#, anonymous):
-        """Initialises site and username data"""#, or anonymous"""
-        if False:#anonymous:
-            self.site = wikipedia.getSite(user=None)
-        else:
-            self.username = self.options.username or wikipedia.input(u"Username:")
-            self.site = wikipedia.getSite(user=self.username)
-            self.site._loadCookies() # load cookies
-            if not self.site._loggedin:
-                password = getpass.getpass("Password: ")
-                cookie = login.LoginManager(self.username, password, self.site)
-                if not cookie:
-                    sys.exit("Login failed")
-                #login.storecookiedata(cookie, self.site, self.username)
-                wikipedia.output(u"Login succesful")
 
     def set_options(self):
         """Parse commandline and set options attribute"""
@@ -80,7 +61,6 @@ class EditArticle:
         parser = optparse.OptionParser()
 ##        parser.add_option("-a", "--anonymous", action="store_true", default=False, help="Login anonymously")
         parser.add_option("-r", "--edit_redirect", action="store_true", default=False, help="Ignore/edit redirects")
-        parser.add_option("-u", "--username", help="Username to login with (ignored with -a)")
         parser.add_option("-p", "--page", help="Page to edit")
         parser.add_option("-e", "--editor", help="Editor to use")
         parser.add_option("-j", "--join_lines", action="store_true", default=False, help="Join consecutive lines if possible")
@@ -137,15 +117,14 @@ class EditArticle:
 #            ofp.write(oldcontent.encode('utf-8')+'\n===========\n'+self.options.new_data) # FIXME: encoding of wiki
             ofp.write(oldcontent.encode(config.console_encoding)+'\n===========\n'+self.options.new_data) # FIXME: encoding of wiki
         ofp.close()
-        os.system("%s %s" % (self.options.editor, ofn))
+        os.system("%s %s" % (self.editor, ofn))
         newcontent = open(ofn).read().decode(config.console_encoding)
         os.unlink(ofn)
         return oldcontent, newcontent
 
     def getcomment(self):
         comment = wikipedia.input(u"What did you change? ") + sig
-        comment = wikipedia.unicode2html(comment, self.site.encoding())
-        return wikipedia.unicode2html(comment, self.site.encoding())
+        return comment
 
     def handle_edit_conflict(self):
         fn = os.path.join(tempfile.gettempdir(), self.page)
@@ -154,16 +133,12 @@ class EditArticle:
         fp.close()
         wikipedia.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
     
-    def showdiff(self,old, new):
-        diff = difflib.context_diff(old.splitlines(), new.splitlines())
-        wikipedia.output(u"\n".join(diff))
-
     def run(self):
         self.initialise_data()
         old, new = self.edit()
         if old != new:
             new = self.repair(new)
-            self.showdiff(old, new)
+            wikipedia.showDiff(old, new)
             comment = self.getcomment()
             try:
                 self.pagelink.put(new, comment=comment, minorEdit=False, watchArticle=self.options.watch)#, anon=self.options.anonymous)
