@@ -345,6 +345,10 @@ class Page(object):
 
             SectionError: The subject does not exist on a page with a # link
         """
+        # NOTE: The following few NoPage exceptions could already be thrown at
+        # the Page() constructor. They are raised here instead for convenience,
+        # because all scripts are prepared for NoPage exceptions raised by
+        # get(), but not for such raised by the constructor.
         # \ufffd represents a badly encoded character, the other characters are
         # disallowed by MediaWiki.
         for illegalChar in ['#', '<', '>', '[', ']', '|', '{', '}', '\n', u'\ufffd']:
@@ -352,7 +356,9 @@ class Page(object):
                 output(u'Illegal character in %s!' % self.aslink())
                 raise NoPage('Illegal character in %s!' % self.aslink())
         if self.namespace() == -1:
-                raise NoPage('%s is in the Special namespace!' % self.aslink())
+            raise NoPage('%s is in the Special namespace!' % self.aslink())
+        if isInterwikiLink(self.title()):
+            raise NoPage('%s is not a local page on %s!' % (self.aslink(), self.site()))
         if force:
             # When forcing, we retry the page no matter what. Old exceptions
             # and contents do not apply any more.
@@ -1940,17 +1946,20 @@ def doubleXForEsperanto(text):
     return text
 
 def isInterwikiLink(s, site = None):
-    """Try to check whether s is in the form "xx:link" where xx: is a
-       known language. In such a case we are dealing with an interwiki link."""
+    """
+    Try to check whether s is in the form "foo:bar" where foo is a known
+    language code or family. In such a case we are dealing with an interwiki
+    link.
+    """
     if not ':' in s:
         return False
-    if site is None:
-        site = getSite()
-    l,k=s.split(':',1)
-    if l in site.family.langs:
+    site = site or getSite()
+    first, rest = s.split(':',1)
+    first = first.lower()
+    if first in site.family.langs or first in site.family.known_families:
         return True
     return False
-    
+
 ######## Unicode library functions ########
 
 def UnicodeToAsciiHtml(s):
