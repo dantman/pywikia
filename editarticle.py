@@ -5,10 +5,7 @@
 # (C) Gerrit Holl 2004
 # Distributed under the terms of the MIT license.
 
-# Version 0.3.
-#
-# Features:
-#       - logging in
+# Version 0.4.
 #
 # TODO: - non existing pages
 #       - correct encoding
@@ -23,14 +20,11 @@
 
 __metaclass__ = type
 __version__ = "$Id$"
-sig = u" (edited with editarticle.py 0.3)"
+sig = u" (edited with editarticle.py 0.4)"
 
 import sys
 import os
-import httplib
-import urllib
 import string
-import getpass
 import optparse
 import tempfile
 

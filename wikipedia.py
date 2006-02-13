@@ -861,17 +861,17 @@ class Page(object):
         """
         result = []
         ll = getLanguageLinks(self.get(), insite = self.site(), pageLink = self.aslink())
-        for newsite,newname in ll.iteritems():
+        for newSite, newPage in ll.iteritems():
             for pagenametext in self.site().family.pagenamecodes(self.site().language()):
-                newname = newname.replace("{{"+pagenametext+"}}",self.title())
+                newTitle = newPage.title().replace("{{" + pagenametext + "}}", self.title())
             try:
-                result.append(self.__class__(newsite, newname, insite = self.site()))
+                result.append(self.__class__(newSite, newTitle, insite = self.site()))
             except UnicodeError:
-                output(u"ERROR: link from %s to [[%s:%s]] is invalid encoding?!" % (self.aslink(), newsite, newname))
+                output(u"ERROR: link from %s to [[%s:%s]] is invalid encoding?!" % (self.aslink(), newSite, newTitle))
             except NoSuchEntity:
-                output(u"ERROR: link from %s to [[%s:%s]] contains invalid character?!" % (self.aslink(), newsite, newname))
+                output(u"ERROR: link from %s to [[%s:%s]] contains invalid character?!" % (self.aslink(), newSite, newTitle))
             except ValueError:
-                output(u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!" % (self.aslink(), newsite, newname))
+                output(u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!" % (self.aslink(), newSite, newTitle))
         return result
 
     def categories(self):
