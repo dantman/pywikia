@@ -195,8 +195,8 @@ class Page(object):
         else:
             self._tosite = getSite() # Default to home wiki
         # Clean up the name, it can come from anywhere.
-        # Replace underlines by spaces
-        title = underline2space(title)
+        # Replace underlines by spaces, also multiple underlines
+        title = re.sub('_+', ' ', title)
         # Convert HTML entities to unicode
         title = html2unicode(title)
         # Convert URL-encoded characters to unicode
@@ -374,7 +374,7 @@ class Page(object):
                 self._contents, self._isWatched, self.editRestriction = self.getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop)
                 hn = self.section()
                 if hn:
-                    hn = underline2space(hn)
+                    titleWithSection = titleWithSection.replace('_', ' ')
                     m = re.search("=+ *%s *=+" % hn, self._contents)
                     if not m:
                         output(u"WARNING: Section does not exist: %s" % self.title())
@@ -1472,18 +1472,6 @@ def urlencode(query):
         l.append(k + '=' + v)
     return '&'.join(l)
 
-Rmorespaces = re.compile('  +')
-
-def space2underline(name):
-    name = Rmorespaces.sub(' ', name)
-    return name.replace(' ', '_')
-
-Rmoreunderlines = re.compile('__+')
-
-def underline2space(name):
-    name = Rmoreunderlines.sub('_', name)
-    return name.replace('_', ' ')
-
 # Mechanics to slow down page download rate.
 
 class Throttle(object):
@@ -1888,7 +1876,7 @@ def url2link(percentname, insite, site):
     """Convert a url-name of a page into a proper name for an interwiki link
        the argument 'insite' specifies the target wiki
        """
-    percentname = underline2space(percentname)
+    percentname = percentname.replace('_', ' ')
     x = url2unicode(percentname, site = site)
     return unicode2html(x, insite.encoding())
 
