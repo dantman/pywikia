@@ -1,5 +1,11 @@
 # -*- coding: utf-8  -*-
-# WARNING: needs more testing!
+"""
+This module can do slight modifications to a wiki page source code such that
+the code looks cleaner. The changes are not supposed to change the look of the
+rendered wiki page.
+
+WARNING: This module needs more testing!
+"""
 
 import wikipedia, pagegenerators
 import sys
@@ -14,42 +20,63 @@ deprecatedTemplates = {
 }
 
 class CosmeticChangesToolkit:
-    def __init__(self, site, text, debug = False):
+    def __init__(self, site, debug = False):
         self.site = site
-        self.text = text
         self.debug = debug
 
-    def change(self):
-        oldText = self.text
-        self.standardizeInterwiki()
-        self.standardizeCategories()
-        self.cleanUpLinks()
-        self.cleanUpSectionHeaders()
-        self.translateNamespaces()
-        self.removeDeprecatedTemplates()
-        self.resolveHtmlEntities()
-        self.validXhtml()
+    def change(self, text):
+        """
+        Given a wiki source code text, returns the cleaned up version.
+        """
+        oldText = text
+        text = self.standardizeInterwiki(text)
+        text = self.standardizeCategories(text)
+        text = self.cleanUpLinks(text)
+        text = self.cleanUpSectionHeaders(text)
+        text = self.translateAndCapitalizeNamespaces(text)
+        text = self.removeDeprecatedTemplates(text)
+        text = self.resolveHtmlEntities(text)
+        text = self.validXhtml(text)
         if self.debug:
-            wikipedia.showDiff(oldText, self.text)
-        return self.text
+            wikipedia.showDiff(oldText, text)
+        return text
 
-    def standardizeInterwiki(self):
-        interwikiLinks = wikipedia.getLanguageLinks(self.text, insite = self.site, getPageObjects = True)
-        self.text = wikipedia.replaceLanguageLinks(self.text, interwikiLinks, site = self.site)
+    def standardizeInterwiki(self, text):
+        """
+        Makes sure that interwiki links are put to the correct position and
+        into the right order.
+        """
+        interwikiLinks = wikipedia.getLanguageLinks(text, insite = self.site)
+        text = wikipedia.replaceLanguageLinks(text, interwikiLinks, site = self.site)
+        return text
 
-    def standardizeCategories(self):
-        categories = wikipedia.getCategoryLinks(self.text, site = self.site)
-        self.text = wikipedia.replaceCategoryLinks(self.text, categories, site = self.site)
+    def standardizeCategories(self, text):
+        """
+        Makes sure that interwiki links are put to the correct position, but
+        does not sort them.
+        """
+        categories = wikipedia.getCategoryLinks(text, site = self.site)
+        text = wikipedia.replaceCategoryLinks(text, categories, site = self.site)
+        return text
 
-    def translateNamespaces(self):
+    def translateAndCapitalizeNamespaces(self, text):
+        """
+        Makes sure that localized namespace names are used.
+        """
         family = self.site.family
         for nsNumber in family.namespaces:
             thisNs = family.namespace(self.site.lang, nsNumber)
             defaultNs = family.namespace('_default', nsNumber)
             if thisNs != defaultNs:
-                self.text = wikipedia.replaceExceptNowikiAndComments(self.text, r'\[\[\s*' + defaultNs + '\s*:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]')
+                text = wikipedia.replaceExceptNowikiAndComments(text, r'\[\[\s*' + defaultNs + '\s*:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]')
+        if self.site.nocapitalize: 
+            for nsNumber in family.namespaces:
+                thisNs = family.namespace(self.site.lang, nsNumber)
+                lowerNs = thisNs[0].lower() + thisNs[1:] # this assumes that all NS names have length at least 2
+                text = wikipedia.replaceExceptNowikiAndComments(text, r'\[\[\s*' + lowerNs + '\s*:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]')
+        return text
 
-    def cleanUpLinks(self):
+    def cleanUpLinks(self, text):
         trailR = re.compile(self.site.linktrail())
         # The regular expression which finds links. Results consist of four groups:
         # group title is the target page title, that is, everything before | or ].
@@ -61,7 +88,7 @@ class CosmeticChangesToolkit:
         curpos = 0
         # This loop will run until we have finished the current page
         while True:
-            m = self.linkR.search(self.text, pos = curpos)
+            m = self.linkR.search(text, pos = curpos)
             if not m:
                 break
             # Make sure that next time around we will not find this same hit.
@@ -96,31 +123,36 @@ class CosmeticChangesToolkit:
                             else:
                                 titleWithSection = titleWithSection[0].upper() + titleWithSection[1:]
                         newLink = "[[%s|%s]]" % (titleWithSection, label)
-                    self.text = self.text[:m.start()] + newLink + self.text[m.end():]
+                    text = text[:m.start()] + newLink + text[m.end():]
+        return text
 
-    def resolveHtmlEntities(self):
+    def resolveHtmlEntities(self, text):
         ignore = [
              38,     # Ampersand (&amp;)
              60,     # Less than (&lt;)
              62,     # Less than (&lt;)
             160,     # Non-breaking space (&nbsp;) - not supported by Firefox textareas
         ]
-        self.text = wikipedia.html2unicode(self.text, ignore = ignore)
+        text = wikipedia.html2unicode(text, ignore = ignore)
+        return text
 
-    def validXhtml(self):
-        self.text = wikipedia.replaceExceptNowikiAndComments(self.text, r'<br>', r'<br />')
+    def validXhtml(self, text):
+        text = wikipedia.replaceExceptNowikiAndComments(text, r'<br>', r'<br />')
+        return text
 
-    def cleanUpSectionHeaders(self):
+    def cleanUpSectionHeaders(self, text):
         for level in range(1, 7):
             equals = '=' * level
-            self.text = wikipedia.replaceExceptNowikiAndComments(self.text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', r'\n' + equals + ' \g<title> ' + equals + '\r\n')
+            text = wikipedia.replaceExceptNowikiAndComments(text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', r'\n' + equals + ' \g<title> ' + equals + '\r\n')
+        return text
 
-    def removeDeprecatedTemplates(self):
+    def removeDeprecatedTemplates(self, text):
         if deprecatedTemplates.has_key(self.site.family.name) and deprecatedTemplates[self.site.family.name].has_key(self.site.lang):
             for template in deprecatedTemplates[self.site.family.name][self.site.lang]:
                 if not self.site.nocapitalize:
                     template = '[' + template[0].upper() + template[0].lower() + ']' + template[1:]
-                self.text = wikipedia.replaceExceptNowikiAndComments(self.text, r'\{\{([mM][sS][gG]:)?' + template + '(?P<parameters>\|[^}]+|)}}', '')
+                text = wikipedia.replaceExceptNowikiAndComments(text, r'\{\{([mM][sS][gG]:)?' + template + '(?P<parameters>\|[^}]+|)}}', '')
+        return text
 
 class CosmeticChangesBot:
     def __init__(self, generator):
@@ -128,8 +160,8 @@ class CosmeticChangesBot:
     
     def run(self):
         for page in self.generator:
-            ccToolkit = CosmeticChangesToolkit(page.site(), page.get(), debug = True)
-            changedText = ccToolkit.change()
+            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True)
+            changedText = ccToolkit.change(page.get())
             if changedText != page.get():
                 page.put(changedText)
 

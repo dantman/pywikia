@@ -714,9 +714,8 @@ class Page(object):
         if config.cosmetic_changes and not self.isTalkPage():
             if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
                 import cosmetic_changes
-                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site(), newtext)
-                ccToolkit.change()
-                newtext = ccToolkit.text
+                ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site())
+                newtext = ccToolkit.change(newtext)
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
@@ -1645,10 +1644,11 @@ def replaceExceptNowikiAndComments(text, old, new):
 
 # Part of library dealing with interwiki links
 
-def getLanguageLinks(text, insite = None, getPageObjects = False, pageLink = "[[]]"):
-    """Returns a dictionary of other language links mentioned in the text
-       in the form {code:pagename}. Do not call this routine directly, use
-       Page objects instead"""
+def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
+    """
+    Returns a dictionary with language codes as keys and Page objects as values
+    for each interwiki link found in the text. Do not call this routine
+    directly, use Page objects instead"""
     if insite == None:
         insite = getSite()
     result = {}
@@ -1661,14 +1661,15 @@ def getLanguageLinks(text, insite = None, getPageObjects = False, pageLink = "[[
         
     # This regular expression will find every link that is possibly an
     # interwiki link.
-    # NOTE: This assumes that language codes only consist of non-capital
-    # ASCII letters and hyphens.
-    interwikiR = re.compile(r'\[\[([a-z\-]+)\s?:([^\[\]\n]*)\]\]')
+    # NOTE: language codes are case-insensitive and only consist of basic latin
+    # letters and hyphens.
+    interwikiR = re.compile(r'\[\[([a-zA-Z\-]+)\s?:([^\[\]\n]*)\]\]')
     for lang, pagetitle in interwikiR.findall(text):
+        lang = lang.lower()
         # Check if it really is in fact an interwiki link to a known
         # language, or if it's e.g. a category tag or an internal link
         if lang in insite.family.obsolete:
-            lang=insite.family.obsolete[lang]
+            lang = insite.family.obsolete[lang]
         if lang in insite.family.langs:
             if '|' in pagetitle:
                 # ignore text after the pipe
@@ -1678,11 +1679,8 @@ def getLanguageLinks(text, insite = None, getPageObjects = False, pageLink = "[[
             if not pagetitle:
                 output(u"ERROR: %s - ignoring impossible link to %s:%s" % (pageLink, lang, pagetitle))
             else:
-                if getPageObjects:
-                    # if getPageObjects is true, we want the actual page objects rather than the titles
-                    result[insite.getSite(code=lang)] = Page(insite.getSite(code=lang),pagetitle)
-                else:
-                    result[insite.getSite(code=lang)] = pagetitle
+                # we want the actual page objects rather than the titles
+                result[insite.getSite(code = lang)] = Page(insite.getSite(code = lang), pagetitle)
     return result
 
 def removeLanguageLinks(text, site = None):
@@ -1694,7 +1692,7 @@ def removeLanguageLinks(text, site = None):
     # This regular expression will find every interwiki link, plus trailing
     # whitespace.
     languageR = '|'.join(site.family.langs)
-    interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*' % languageR)
+    interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*' % languageR, re.IGNORECASE)
     text = replaceExceptNowikiAndComments(text, interwikiR, '')
     return normalWhitespace(text)
 
@@ -1836,7 +1834,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
     # interwiki tags appear below category tags if both are set
     # to appear at the bottom of the article
     if not site.lang in site.family.categories_last:
-        interwiki_links = getLanguageLinks(oldtext, insite = site, getPageObjects = True)
+        interwiki_links = getLanguageLinks(oldtext, insite = site)
         oldtext = removeLanguageLinks(oldtext, site = site)
     s = categoryFormat(new, insite = site)
     s2 = removeCategoryLinks(oldtext, site = site)
@@ -2415,7 +2413,8 @@ class Site(object):
     
            The objects returned by this generator are all Page()s.
            
-           It is advised not to use this directly, but to use the AllpagesPageGenerator from pagegenerators.py instead.
+           It is advised not to use this directly, but to use the
+           AllpagesPageGenerator from pagegenerators.py instead.
         """
         while True:
             # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
