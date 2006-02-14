@@ -26,11 +26,6 @@ Command line options:
    -just       only use the alternatives given on the command line, do not
                read the page for other possibilities
 
-   -redir      if the page is a redirect page, use the page redirected to as
-               the (only) alternative; if not set, the pages linked to from
-               the page redirected to are used. If the page is not a redirect
-               page, this will raise an error
-
    -primary    "primary topic" disambiguation (Begriffsklärung nach Modell 2).
                That's titles where one topic is much more important, the
                disambiguation page is saved somewhere else, and the important
@@ -77,7 +72,7 @@ import wikipedia, pagegenerators
 # This is a purely interactive robot. We set the delays lower.
 wikipedia.put_throttle.setDelay(4)
 
-# Summary message when run without -redir parameter
+# Summary message when working on disambiguation pages
 msg = {
     'en': u'Robot-assisted disambiguation: %s',
     'da': u'Retter flertydigt link til: %s',
@@ -89,7 +84,7 @@ msg = {
     'ru': u'Разрешение значений с помощью бота: %s',
     }
 
-# Summary message when run with -redir parameter
+# Summary message when working on redirects
 msg_redir = {
     'en': u'Robot-assisted disambiguation: %s',
     'da': u'Retter flertydigt link til: %s',
@@ -327,12 +322,10 @@ class DisambiguationRobot(object):
             ),
     }
     
-    def __init__(self, always, alternatives, getAlternatives, solve_redirect,
-                 generator, primary, main_only):
+    def __init__(self, always, alternatives, getAlternatives, generator, primary, main_only):
         self.always = always
         self.alternatives = alternatives
         self.getAlternatives = getAlternatives
-        self.solve_redirect = solve_redirect
         self.generator = generator
         self.primary = primary
         self.main_only = main_only
@@ -413,7 +406,7 @@ class DisambiguationRobot(object):
                 include = True
         except wikipedia.IsRedirectPage:
             wikipedia.output(u'%s is a redirect to %s' % (refpl.title(), disambPage.title()))
-            if self.solve_redirect:
+            if disambPage.isRedirectPage():
                 target = self.alternatives[0]
                 choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refpl.title(), target), ['yes', 'no'], ['y', 'N'], 'N')
                 if choice in ('y', 'Y'):
@@ -625,10 +618,9 @@ class DisambiguationRobot(object):
                               wikipedia.config.disambiguation_comment[
                               self.mysite.family.name]
                               ) % disambPage.title()
-            elif self.solve_redirect:
-                # when run with -redir argument, there's another summary message
-                comment = wikipedia.translate(self.mysite, msg_redir) \
-                          % disambPage.title()
+            elif disambPage.isRedirectPage():
+                # when working on redirects, there's another summary message
+                comment = wikipedia.translate(self.mysite, msg_redir) % disambPage.title()
             else:
                 comment = wikipedia.translate(self.mysite, msg) % disambPage.title()
 
@@ -637,7 +629,7 @@ class DisambiguationRobot(object):
             self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
                                             enabled=self.primary)
     
-            if self.solve_redirect:
+            if disambPage.isRedirectPage():
                 try:
                     target = disambPage.getRedirectTarget()
                     self.alternatives.append(target)
@@ -705,7 +697,6 @@ def main():
     always = None
     alternatives = []
     getAlternatives = True
-    solve_redirect = False
     # if the -file argument is used, page titles are dumped in this array.
     # otherwise it will only contain one page.
     generator = None
@@ -746,8 +737,6 @@ u'Possibility %s does not actually exist. Use it anyway?'
                     alternatives.append(arg[5:])
             elif arg == '-just':
                 getAlternatives = False
-            elif arg == '-redir':
-                solve_redirect = True
             elif arg == '-main':
                 main_only = True
             elif arg.startswith("-"):
@@ -771,8 +760,7 @@ u'Possibility %s does not actually exist. Use it anyway?'
         page = wikipedia.Page(wikipedia.getSite(), pageTitle)
         generator = iter([page])
                 
-    bot = DisambiguationRobot(always, alternatives, getAlternatives,
-                              solve_redirect, generator, primary, main_only)
+    bot = DisambiguationRobot(always, alternatives, getAlternatives, generator, primary, main_only)
     bot.run()
 
 if __name__ == "__main__":
