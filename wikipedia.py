@@ -1613,6 +1613,10 @@ class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
 
 def replaceExceptNowikiAndComments(text, old, new):
+    """ Deprecated. """
+    return replaceExceptMathNowikiAndComments(text, old, new)
+
+def replaceExceptMathNowikiAndComments(text, old, new):
     """
     Replaces old by new in text, skipping occurences of old within nowiki tags
     and HTML comments.
@@ -1624,7 +1628,7 @@ def replaceExceptNowikiAndComments(text, old, new):
     """
     if type(old) == type('') or type(old) == type(u''):
         old = re.compile(old)
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<math>.*?</math>', re.IGNORECASE | re.DOTALL)
     # How much of the text we have looked at so far
     index = 0
     while True:

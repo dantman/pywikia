@@ -617,6 +617,7 @@ class XmlDumpReplacePageGenerator:
                     skip_page = True
                     break
             if not skip_page:
+                # TODO: leave out pages that only have old inside nowiki, comments, math
                 for old, new in self.replacements:
                     if old.search(entry.text):
                         yield wikipedia.Page(mysite, entry.title)
@@ -663,7 +664,7 @@ class ReplaceRobot:
         """
         new_text = original_text
         for old, new in self.replacements:
-            new_text = old.sub(new, new_text)
+            new_text = wikipedia.replaceExceptMathNowikiAndComments(new_text, old, new)
         return new_text
         
     def run(self):
