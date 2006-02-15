@@ -686,13 +686,13 @@ class Subject(object):
                 result[k] = v[0]
         return result
     
-    def finish(self, sa = None):
+    def finish(self, bot = None):
         """Round up the subject, making any necessary changes. This method
            should be called exactly once after the todo list has gone empty.
 
            This contains a shortcut: if a subject array is given in the argument
-           sa, just before submitting a page change to the live wiki it is
-           checked whether we will have to wait. If that is the case, the sa will
+           bot, just before submitting a page change to the live wiki it is
+           checked whether we will have to wait. If that is the case, the bot will
            be told to make another get request first."""
         if not self.isDone():
             raise "Bugcheck: finish called before done"
@@ -717,7 +717,7 @@ class Subject(object):
         if not new.has_key(self.inpl.site()):
             new[self.inpl.site()] = self.inpl
 
-        #self.replaceLinks(self.inpl, new, True, sa)
+        #self.replaceLinks(self.inpl, new, True, bot)
 
         updatedSites = []
         notUpdatedSites = []
@@ -737,7 +737,7 @@ class Subject(object):
                     if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
                         wikipedia.output(u"Found pair match between %s and %s" % (lclSite, site))
                         try:
-                            if self.replaceLinks(new[site], new, sa):
+                            if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
                             if site != lclSite:
                                 frgnSiteDone = True
@@ -754,7 +754,7 @@ class Subject(object):
                 if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
                     # Try to do the changes
                     try:
-                        if self.replaceLinks(page, new, sa):
+                        if self.replaceLinks(page, new, bot):
                             # Page was changed
                             updatedSites.append(site)
                     except LinkMustBeRemoved:
@@ -769,7 +769,7 @@ class Subject(object):
         if globalvar.backlink:
             self.reportBacklinks(new, updatedSites)
 
-    def replaceLinks(self, pl, new, sa):
+    def replaceLinks(self, pl, new, bot):
         """
         Returns True if saving was successful.
         """
@@ -839,10 +839,10 @@ class Subject(object):
                     if answer == 'y':
                         # Check whether we will have to wait for wikipedia. If so, make
                         # another get-query first.
-                        if sa:
+                        if bot:
                             while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
                                 print "NOTE: Performing a recursive query first to save time...."
-                                qdone = sa.oneQuery()
+                                qdone = bot.oneQuery()
                                 if not qdone:
                                     # Nothing more to do
                                     break
@@ -1137,7 +1137,7 @@ def compareLanguages(old, new, insite):
         mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([x.lang for x in modifying]))
     return mods, removing
 
-def readWarnfile(filename, sa):
+def readWarnfile(filename, bot):
     import warnfile
     reader = warnfile.WarnfileReader(filename)
     # we won't use removeHints
@@ -1147,7 +1147,7 @@ def readWarnfile(filename, sa):
         # The WarnfileReader gives us a list of pagelinks, but titletranslate.py expects a list of strings, so we convert it back.
         # TODO: This is a quite ugly hack, in the future we should maybe make titletranslate expect a list of pagelinks.
         hintStrings = ['%s:%s' % (hintedPage.site().language(), hintedPage.title()) for hintedPage in hints[page]]
-        sa.add(page, hints = hintStrings)
+        bot.add(page, hints = hintStrings)
 
 #===========
         
@@ -1155,7 +1155,7 @@ globalvar=Global()
     
 if __name__ == "__main__":
     try:
-        inname = []
+        singlePageTitle = []
         hints = []
         start = None
         number = None
@@ -1248,10 +1248,10 @@ if __name__ == "__main__":
                 elif arg.startswith('-file:'):
                     hintlessPageGen = pagegenerators.TextfilePageGenerator(arg[6:])
                 elif arg == '-start':
-                    start = '_'                     # start page will be entered interactively
+                    start = wikipedia.input(u'Which page to start from: ')
                 elif arg.startswith('-start:'):
                     if len(arg) == 7:
-                        start = '_'                 # start page will be entered interactively
+                        start = wikipedia.input(u'Which page to start from: ')
                     else:
                         start = arg[7:]
                 elif arg.startswith('-number:'):
@@ -1268,7 +1268,7 @@ if __name__ == "__main__":
                     # override configuration
                     config.interwiki_graph = True
                 else:
-                    inname.append(arg)
+                    singlePageTitle.append(arg)
         
         # ensure that we don't try to change main page
         try:
@@ -1299,28 +1299,20 @@ if __name__ == "__main__":
                 hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace)])
 
         if start:
-            if start == '_':
-                start = wikipedia.input(u'Which page to start from: ')
- 
-            firstPageName = start
-            namespace = wikipedia.Page(wikipedia.getSite(), firstPageName).namespace()
-            hintlessPageGen = pagegenerators.AllpagesPageGenerator(firstPageName, namespace)
-
+            namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
+            hintlessPageGen = pagegenerators.AllpagesPageGenerator(start, namespace)
 
         if hintlessPageGen:
             # we'll use iter() to create make a next() function available.
             bot.setPageGenerator(iter(hintlessPageGen),number = number)
-
-        if warnfile:
+        elif warnfile:
             readWarnfile(warnfile, bot)
-
-        inname = '_'.join(inname)
-        if bot.isDone() and not inname:
-            inname = wikipedia.input(u'Which page to check: ')
-
-        if inname:
-            inpl = wikipedia.Page(wikipedia.getSite(), inname)
-            bot.add(inpl, hints = hints)
+        else:
+            singlePageTitle = ' '.join(singlePageTitle)
+            if not singlePageTitle:
+                singlePageTitle = wikipedia.input(u'Which page to check:')
+            singlePage = wikipedia.Page(wikipedia.getSite(), singlePageTitle)
+            bot.add(singlePage, hints = hints)
         
         try:
             bot.run()
