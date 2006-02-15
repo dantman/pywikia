@@ -261,7 +261,7 @@ class CategoryMoveRobot:
         self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
         # get edit summary message
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % oldCatTitle)
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % oldCat.title())
 
     def run(self):
         articles = self.oldCat.articles(recurse = 0)
