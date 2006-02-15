@@ -484,10 +484,13 @@ class DisambiguationRobot(object):
                         self.alternatives.append(newAlternative)
                         self.listAlternatives()
                     elif choice == 'e':
-                        newtxt = wikipedia.ui.editText(text, search=disambPage.title())
+                        import editarticle
+                        editor = editarticle.TextEditor()
+                        newText = editor.edit(text, search = disambPage.title())
+                        #newText = wikipedia.ui.editText(text, search=disambPage.title())
                         # if user didn't press Cancel
-                        if newtxt:
-                            text = newtxt
+                        if newText and newText != text:
+                            text = newText
                             break
                     elif choice == 'l':
                         self.listAlternatives()

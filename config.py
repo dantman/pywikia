@@ -74,6 +74,19 @@ ring_bell = True
 # ANSI colors.
 colorized_output = (sys.stdout.isatty() and sys.platform != 'win32')
 
+############## EXTERNAL EDITOR SETTINGS ##############
+# The command for the editor you want to use. If set to None, a simple Tkinter
+# editor will be used.
+editor = None
+
+# Warning: DO NOT use an editor which doesn't support Unicode to edit pages!
+# You will BREAK non-ASCII symbols!
+editor_encoding = 'utf-8'
+
+# The temporary file name extension can be set in order to use syntax
+# highlighting in your text editor.
+editor_filename_extension = 'wiki'
+
 ############## LOGFILE SETTINGS ##############
 
 # Should all bots keep a logfile?
