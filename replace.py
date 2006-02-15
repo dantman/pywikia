@@ -141,13 +141,14 @@ fixes = {
                'de':u'Bot: korrigiere Grammatik',
               },
         'replacements': [
-            (u'([Ss]owohl) ([^,\.]+?), als auch',                                                            r'\1 \2 als auch'),
+            #(u'([Ss]owohl) ([^,\.]+?), als auch',                                                            r'\1 \2 als auch'),
             #(u'([Ww]eder) ([^,\.]+?), noch', r'\1 \2 noch'),
             (u'(\d+)(minütig|stündig|tägig|wöchig|jährig|minütlich|stündlich|täglich|wöchentlich|jährlich)', r'\1-\2'),
-            (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB)(?=\W|$)',          r'\1 \2'),
+            (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB|W|kW|MW|PS|Hz|kHz|MHz|GHz)(?=-\w)',           r'\1-\2'),
+            (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB|W|kW|MW|PS|Hz|kHz|MHz|GHz)(?=\W|$)',          r'\1 \2'),
             (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
             (u'([a-z],)([a-zA-Z])',                                                                          r'\1 \2'),
-            (u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
+            #(u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
         ]
     },
     'syntax': {
@@ -159,8 +160,9 @@ fixes = {
               },
         'replacements': [
             (r'\[\[(http://.+?)\]\]',   r'[\1]'),        # external link in double brackets
+            (r'\[\[(http://.+?)\]',   r'[\1]'),          # external starting with double bracket
             (r'\[(http://[^\|\] ]+?)\s*\|\s*([^\|\]]+?)\]',
-                r'[\1 \2]'),                      # external link and description separated by dash
+                r'[\1 \2]'),                             # external link and description separated by dash
             (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),    # wiki link closed by single bracket
             (r'{{([^}]+?)}(?!})',       r'{{\1}}'),      # template closed by single bracket
         ],
@@ -587,20 +589,22 @@ class XmlDumpReplacePageGenerator:
     Generator which will yield Pages to pages that might contain text to
     replace. These pages will be retrieved from a local XML dump file
     (cur table).
-
-    Arguments:
-        * xmlfilename  - The dump's path, either absolute or relative
-        * replacements - A list of 2-tuples of original text and replacement text.
-        * exceptions   - A list of strings; pages which contain one of these
-                         won't be changed.
-        * regex        - If the entries of replacements and exceptions should
-                         be interpreted as regular expressions
     """
-    def __init__(self, xmlfilename, replacements, exceptions, regex):
+    def __init__(self, xmlfilename, replacements, exceptions):
+        """
+        Arguments:
+            * xmlfilename  - The dump's path, either absolute or relative
+            * replacements - A list of 2-tuples of original text (as a compiled
+                             regular expression) and replacement text (as a
+                             string).
+            * exceptions   - A list of compiled regular expression; pages which
+                             contain text that matches one of these won't be
+                             changed.
+        """
+
         self.xmlfilename = xmlfilename
         self.replacements = replacements
         self.exceptions = exceptions
-        self.regex = regex
     
     def __iter__(self):
         import xmlreader
@@ -609,32 +613,36 @@ class XmlDumpReplacePageGenerator:
         for entry in dump.parse():
             skip_page = False
             for exception in self.exceptions:
-                if self.regex:
-                    if exception.search(entry.text):
-                        skip_page = True
-                        break
-                else:
-                    if entry.text.find(exception) != -1:
-                        skip_page = True
-                        break
+                if exception.search(entry.text):
+                    skip_page = True
+                    break
             if not skip_page:
                 for old, new in self.replacements:
-                    if self.regex:
-                        if old.search(entry.text):
-                            yield wikipedia.Page(mysite, entry.title)
-                            break
-                    else:
-                        if entry.text.find(old) != -1:
-                            yield wikipedia.Page(mysite, entry.title)
-                            break
+                    if old.search(entry.text):
+                        yield wikipedia.Page(mysite, entry.title)
+                        break
     
 
 class ReplaceRobot:
-    def __init__(self, generator, replacements, exceptions = [], regex = False, acceptall = False):
+    """
+    A bot that can do text replacements.
+    """
+    def __init__(self, generator, replacements, exceptions = [], acceptall = False):
+        """
+        Arguments:
+            * generator    - A generator that yields Page objects.
+            * replacements - A list of 2-tuples of original text (as a compiled
+                             regular expression) and replacement text (as a 
+                             string).
+            * exceptions   - A list of compiled regular expression; pages which
+                             contain text that matches one of these won't be
+                             changed.
+            * acceptall    - If True, the user won't be prompted before changes
+                             are made.
+        """
         self.generator = generator
         self.replacements = replacements
         self.exceptions = exceptions
-        self.regex = regex
         self.acceptall = acceptall
 
     def checkExceptions(self, original_text):
@@ -643,14 +651,9 @@ class ReplaceRobot:
         substring which matches the exception. Otherwise it returns None.
         """
         for exception in self.exceptions:
-            if self.regex:
-                hit = exception.search(original_text)
-                if hit:
-                    return hit.group(0)
-            else:
-                hit = original_text.find(exception)
-                if hit != -1:
-                    return original_text[hit:hit + len(exception)]
+            hit = exception.search(original_text)
+            if hit:
+                return hit.group(0)
         return None
 
     def doReplacements(self, original_text):
@@ -660,10 +663,7 @@ class ReplaceRobot:
         """
         new_text = original_text
         for old, new in self.replacements:
-            if self.regex:
-                new_text = old.sub(new, new_text)
-            else:
-                new_text = new_text.replace(old, new)
+            new_text = old.sub(new, new_text)
         return new_text
         
     def run(self):
@@ -693,7 +693,7 @@ class ReplaceRobot:
                 if new_text == original_text:
                     wikipedia.output('No changes were necessary in %s' % page.title())
                 else:
-                    wikipedia.output(u'>>> %s <<<' % page.title())
+                    wikipedia.output(u'\n>>> %s <<<' % page.title())
                     wikipedia.showDiff(original_text, new_text)
                     if not self.acceptall:
                         choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
@@ -833,16 +833,19 @@ def main():
         replacements = fix['replacements']
 
     
-    if regex:
-        # already compile all regular expressions here to save time later
-        for i in range(len(replacements)):
-            old, new = replacements[i]
-            oldR = re.compile(old, re.UNICODE)
-            replacements[i] = oldR, new
-        for i in range(len(exceptions)):
-            exception = exceptions[i]
-            exceptionR = re.compile(exception, re.UNICODE)
-            exceptions[i] = exceptionR
+    # already compile all regular expressions here to save time later
+    for i in range(len(replacements)):
+        old, new = replacements[i]
+        if not regex:
+            old = re.escape(old)
+        oldR = re.compile(old, re.UNICODE)
+        replacements[i] = oldR, new
+    for i in range(len(exceptions)):
+        exception = exceptions[i]
+        if not regex:
+            exception = re.escape(exception)
+        exceptionR = re.compile(exception, re.UNICODE)
+        exceptions[i] = exceptionR
     
     if source == 'textfile':
         gen = pagegenerators.TextfilePageGenerator(textfilename)
@@ -850,7 +853,7 @@ def main():
         cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
         gen = pagegenerators.CategorizedPageGenerator(cat)
     elif source == 'xmldump':
-        gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions, regex)
+        gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions)
     elif source == 'singlepage':
         pages = [wikipedia.Page(wikipedia.getSite(), pageName) for pageName in pageNames]
         gen = iter(pages)
@@ -868,7 +871,7 @@ def main():
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
-    bot = ReplaceRobot(preloadingGen, replacements, exceptions, regex, acceptall)
+    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall)
     bot.run()
 
 
