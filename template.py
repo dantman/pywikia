@@ -119,7 +119,7 @@ class TemplateRobot:
             replacements.append((templateR, '{{subst:' + self.old + '\g<parameters>}}'))
         else:
             replacements.append((templateR, '{{' + self.new + '\g<parameters>}}'))
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, regex = True)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements)
         replaceBot.run()
     
 def main():
