@@ -146,8 +146,8 @@ class UploadRobot:
                         print "Invalid character: %s. Please try again" % c
                         ok = False
                 if ext not in allowed_formats and ok:
-                    ans = wikipedia.input(u"File format is not %s but %s. Continue [y/N]? " % (allowed_formats, ext))
-                    if not ans.lower().startswith('y'):
+                    choice = wikipedia.inputChoice(u"File format is not %s but %s. Continue [y/N]? " % (allowed_formats, ext))
+                    if choice == 'n':
                         ok = False
             if newfn != '':
                 filename = newfn
@@ -161,9 +161,11 @@ class UploadRobot:
         wikipedia.output(u"The suggested description is:")
         wikipedia.output(self.description)
         choice = wikipedia.inputChoice(u'Do you want to change this description?', ['Yes', 'No'], ['y', 'N'], 'n')
-        if choice not in ['n', 'N']:
-            newDescription = wikipedia.ui.editText(self.description)
-            # if user didn't press Cancel:
+        if choice == 'y':
+            import editarticle
+            editor = editarticle.TextEditor()
+            newDescription = editor.edit(self.description)
+            # if user saved / didn't press Cancel
             if newDescription:
                 self.description = newDescription
     
