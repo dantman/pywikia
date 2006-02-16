@@ -45,16 +45,21 @@ class TextEditor:
             tempFile.close()
             creationDate = os.stat(tempFilename).st_atime
             command = "%s %s" % (config.editor, tempFilename)
-            # Some editors make it possible to mark occurences of substrings, or
-            # to jump to the line of the first occurence.
-            # TODO: Find a better solution than hardcoding these, e.g. a config
-            # option.
+            if search:
+                # Some editors make it possible to mark occurences of substrings, or
+                # to jump to the line of the first occurence.
+                # TODO: Find a better solution than hardcoding these, e.g. a config
+                # option.
+                index = text.lower().index(search.lower())
+                line = text[:index].count('\n')
+                column = index - (text[:index].rfind('\n') + 1)
+            else:
+                line = column = 0
             if config.editor == 'kate':
-                lineOfFirstOccurence = text[:text.index(search)].count('\n')
-                command += " -l %i" % lineOfFirstOccurence
+                command += " -l %i -c %i" % (line, column)
             elif config.editor == 'jedit':
-                lineOfFirstOccurence = text[:text.index(search)].count('\n') + 1
-                command += " +line:%i" % lineOfFirstOccurence
+                lineOfFirstOccurence += 1
+                command += " +line:%i" % line # seems not to support columns
             #print command
             os.system(command)
             lastChangeDate = os.stat(tempFilename).st_atime
@@ -75,11 +80,8 @@ class ArticleEditor:
         """Takes one argument, usually this is sys.argv[1:]"""
         self.all_args = args
         self.set_options()
-        self.site = wikipedia.getSite()
-
-    def initialise_data(self):
-        """Set editor, page and pagelink attributes"""
         self.setpage()
+        self.site = wikipedia.getSite()
 
     def set_options(self):
         """Parse commandline and set options attribute"""
@@ -95,12 +97,13 @@ class ArticleEditor:
         #parser.add_option("-n", "--new_data", default="", help="Automatically generated content")
         self.options = parser.parse_args(args=my_args)[0]
 
-    def setpage(self, new):
-        """Sets page and pagelink"""
+    def setpage(self):
+        """Sets page and page title"""
+        site = wikipedia.getSite()
         pageTitle = self.options.page or wikipedia.input(u"Page to edit:")
-        self.page = wikipedia.Page(self.site, pageTitle)
+        self.page = wikipedia.Page(site, pageTitle)
         if not self.options.edit_redirect and self.page.isRedirectPage():
-            self.page = wikipedia.Page(self.site, self.page.getRedirectTarget())
+            self.page = wikipedia.Page(site, self.page.getRedirectTarget())
 
     def repair(self, content):
         """
@@ -139,12 +142,11 @@ class ArticleEditor:
         wikipedia.output(u"An edit conflict has arisen. Your edit has been saved to %s. Please try again." % fn)
     
     def run(self):
-        self.initialise_data()
         try:
             old = self.page.get(get_redirect = self.options.edit_redirect)
         except wikipedia.NoPage:
             old = ""
-        textEditor = TextEditor(self.options)
+        textEditor = TextEditor()
         new = textEditor.edit(old)
         if new and old != new:
             new = self.repair(new)
