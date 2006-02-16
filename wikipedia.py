@@ -703,6 +703,8 @@ class Page(object):
 
            If watchArticle is None, leaves the watchlist status unchanged.
         """
+        # If no comment is given for the change, use the default
+        comment = comment or action
         if self.editRestriction:
             try:
                 self.site().forceLogin(sysop = True)
@@ -712,10 +714,13 @@ class Page(object):
         else:
             self.site().forceLogin()
         if config.cosmetic_changes and not self.isTalkPage():
+            old = newtext
             if not config.cosmetic_changes_mylang_only or (self.site().family.name == config.family and self.site().lang == config.mylang):
                 import cosmetic_changes
                 ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site())
                 newtext = ccToolkit.change(newtext)
+                if comment and old != newtext:
+                    comment += translate(self.site(), cosmetic_changes.msg_append)
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
@@ -748,9 +753,6 @@ class Page(object):
         host = self.site().hostname()
         # Get the address of the page on that host.
         address = self.site().put_address(self.urlname())
-        # If no comment is given for the change, use the default
-        if comment is None:
-            comment=action
         # Use the proper encoding for the comment
         comment = comment.encode(self.site().encoding())
         # Encode the text into the right encoding for the wiki
@@ -1635,15 +1637,15 @@ def replaceExceptMathNowikiAndComments(text, old, new):
         match = old.search(text, index)
         if not match:
             break
-        nowikiOrHtmlCommentMatch = nowikiOrHtmlCommentR.search(text, index)
-        if nowikiOrHtmlCommentMatch and nowikiOrHtmlCommentMatch.start() < match.start():
+        noTouchMatch = nowikiOrHtmlCommentR.search(text, index)
+        if noTouchMatch and noTouchMatch.start() < match.start():
             # an HTML comment or text in nowiki tags stands before the next valid match. Skip.
-            index = nowikiOrHtmlCommentMatch.end()
+            index = noTouchMatch.end()
         else:
             # We found a valid match. Replace it.
-            text = text[:match.start()] + old.sub(new, text[match.start():])
+            text = text[:match.start()] + old.sub(new, text[match.start():match.end()]) + text[match.end():]
             # continue the search on the remaining text
-            index = match.start() + 1
+            index = match.start() + len(new)
     return text
 
 # Part of library dealing with interwiki links
@@ -1697,7 +1699,7 @@ def removeLanguageLinks(text, site = None):
     # whitespace.
     languageR = '|'.join(site.family.langs)
     interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*' % languageR, re.IGNORECASE)
-    text = replaceExceptNowikiAndComments(text, interwikiR, '')
+    text = replaceExceptMathNowikiAndComments(text, interwikiR, '')
     return normalWhitespace(text)
 
 def replaceLanguageLinks(oldtext, new, site = None):
@@ -1823,7 +1825,7 @@ def removeCategoryLinks(text, site):
     # ASCII letters and hyphens.
     catNamespace = '|'.join(site.category_namespaces())
     categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace)
-    text = replaceExceptNowikiAndComments(text, categoryR, '')
+    text = replaceExceptMathNowikiAndComments(text, categoryR, '')
     return normalWhitespace(text)
 
 def replaceCategoryLinks(oldtext, new, site = None):

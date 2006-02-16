@@ -11,6 +11,20 @@ import wikipedia, pagegenerators
 import sys
 import re
 
+# Summary message when using this module as a stand-alone script
+msg_standalone = {
+    'de': u'Bot: Kosmetische Änderungen',
+    'en': u'Robot: Cosmetic changes',
+    }
+
+# Summary message  that will be appended to the normal message when
+# cosmetic changes are made on the fly
+msg_append = {
+    'de': u'; kosmetische Änderungen',
+    'en': u'; cosmetic changes',
+    }
+
+
 deprecatedTemplates = {
     'wikipedia': {
         'de': [
@@ -157,6 +171,8 @@ class CosmeticChangesToolkit:
 class CosmeticChangesBot:
     def __init__(self, generator):
         self.generator = generator
+        # Load default summary message.
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_standalone))
     
     def run(self):
         for page in self.generator:
