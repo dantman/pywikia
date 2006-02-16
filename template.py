@@ -47,26 +47,50 @@ import wikipedia, config
 import replace, pagegenerators
 import re, sys, string
 
-class XmlTemplatePageGenerator:
+class XmlDumpTemplatePageGenerator:
+    """
+    Generator which will yield Pages to pages that might contain the chosen
+    template. These pages will be retrieved from a local XML dump file
+    (cur table).
+    """
     def __init__(self, template, xmlfilename):
+        """
+        Arguments:
+            * template    - A Page object representing the searched template
+            * xmlfilename - The dump's path, either absolute or relative
+        """
         self.template = template
         self.xmlfilename = xmlfilename
 
     def __iter__(self):
+        """
+        Yield page objects until the entire XML dump has been read.
+        """
         import xmlreader
         mysite = wikipedia.getSite()
         dump = xmlreader.XmlDump(self.xmlfilename)
         # regular expression to find the original template.
-        # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
-        # The new syntax, {{vfd}}, will also be found.
-        templateName = self.template.title().split(':', 1)[1]
-        templateRegex = re.compile('\{\{([mM][sS][gG]:)?[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:] + '}}')
+        # {{vfd}} does the same thing as {{Vfd}}, so both will be found.
+        # The old syntax, {{msg:vfd}}, will also be found.
+        # TODO: check site.nocapitalize()
+        templateName = self.template.titleWithoutNamespace()
+        if wikipedia.getSite().nocapitalize:
+            old = self.old
+        else:
+            templateName = '[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:]
+        templateName = re.sub(' ', '[_ ]', templateName)
+        templateRegex = re.compile(r'\{\{([mM][sS][gG]:)?' + templateName + '(?P<parameters>\|[^}]+|)}}')
         for entry in dump.parse():
             if templateRegex.search(entry.text):
                 page = wikipedia.Page(mysite, entry.title)
                 yield page
 
 class TemplateRobot:
+    """
+    This robot will load all pages yielded by a page generator and replace or
+    remove all occurences of the old template, or substitute them with the
+    template's text.
+    """
     # Summary messages
     msg_change={
         'en':u'Robot: Changing template: %s',
@@ -85,6 +109,15 @@ class TemplateRobot:
         }
 
     def __init__(self, generator, old, new = None, remove = False):
+        """
+        Arguments:
+            * generator - A page generator.
+            * old       - The title of the old template (without namespace)
+            * new       - The title of the new template (without namespace), or
+                          None if you want to substitute the template with its
+                          text.
+            * remove    - True if the template should be removed.
+        """
         self.generator = generator
         self.old = old
         self.new = new
@@ -101,24 +134,27 @@ class TemplateRobot:
             wikipedia.setAction(wikipedia.translate(mysite, self.msg_change) % old)
 
     def run(self):
+        """
+        Starts the robot's action.
+        """
         # regular expression to find the original template.
-        # {{msg:vfd}} does the same thing as {{msg:Vfd}}, so both will be found.
-        # The new syntax, {{vfd}}, will also be found.
+        # {{vfd}} does the same thing as {{Vfd}}, so both will be found.
+        # The old syntax, {{msg:vfd}}, will also be found.
         # The group 'parameters' will either match the parameters, or an
         # empty string if there are none.
-        if not wikipedia.getSite().nocapitalize:
-            old = '[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:]
-        else:
+        if wikipedia.getSite().nocapitalize:
             old = self.old
+        else:
+            old = '[' + self.old[0].upper() + self.old[0].lower() + ']' + self.old[1:]
         old = re.sub('[_ ]', '[_ ]', old)
-        templateR=re.compile(r'\{\{([mM][sS][gG]:)?' + old + '(?P<parameters>\|[^}]+|)}}')
+        templateRegex = re.compile(r'\{\{([mM][sS][gG]:)?' + old + '(?P<parameters>\|[^}]+|)}}')
         replacements = []
         if self.remove:
-            replacements.append((templateR, ''))
+            replacements.append((templateRegex, ''))
         elif self.resolve:
-            replacements.append((templateR, '{{subst:' + self.old + '\g<parameters>}}'))
+            replacements.append((templateRegex, '{{subst:' + self.old + '\g<parameters>}}'))
         else:
-            replacements.append((templateR, '{{' + self.new + '\g<parameters>}}'))
+            replacements.append((templateRegex, '{{' + self.new + '\g<parameters>}}'))
         replaceBot = replace.ReplaceRobot(self.generator, replacements)
         replaceBot.run()
     
@@ -155,7 +191,7 @@ def main():
     oldTemplate = wikipedia.Page(mysite, ns + ':' + old)
 
     if xmlfilename:
-        gen = XmlTemplatePageGenerator(oldTemplate, xmlfilename)
+        gen = XmlDumpTemplatePageGenerator(oldTemplate, xmlfilename)
     else:
         gen = pagegenerators.ReferringPageGenerator(oldTemplate, onlyTemplateInclusion = True)
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
