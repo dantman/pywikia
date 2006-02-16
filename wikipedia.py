@@ -260,17 +260,13 @@ class Page(object):
         return self._title
 
     def titleWithoutNamespace(self):
-        """The name of the page without the namespace part.
-        Returns the sectionFreeTitle if the page is from the main namespace.
-        Note that this is a raw way of doing things - it simply looks for
-        a : in the name."""
-        t=self.sectionFreeTitle()
-        p=t.split(':', 1)
-        if len(p) == 1:
-            # page is in the main namespace
-            return p[0]
+        """
+        Returns the name of the page without the namespace and without section.
+        """
+        if self.namespace() == 0:
+            return self.title()
         else:
-            return p[1]
+            return self.sectionFreeTitle().split(':', 1)[1]
 
     def section(self):
         """The name of the section this Page refers to. Sections are
