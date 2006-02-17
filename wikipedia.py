@@ -2528,6 +2528,9 @@ class Site(object):
     def get_address(self, s):
         return self.family.get_address(self.lang, s)
 
+    def nice_get_address(self, s):
+        return self.family.nice_get_address(self.lang, s)
+
     def edit_address(self, s):
         return self.family.edit_address(self.lang, s)
     

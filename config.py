@@ -189,6 +189,11 @@ cosmetic_changes = False
 # foreign wiki, set cosmetic_changes_mylang_only to False, but be careful!
 cosmetic_changes_mylang_only = True
 
+# Some scripts allow using the Google Web API. To use this feature, you must
+# install the pyGoogle module from http://pygoogle.sf.net/ and get a Google
+# Web API license key from http://www.google.com/apis/index.html .
+google_key = ''
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.

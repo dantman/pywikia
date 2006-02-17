@@ -143,11 +143,17 @@ fixes = {
         'replacements': [
             #(u'([Ss]owohl) ([^,\.]+?), als auch',                                                            r'\1 \2 als auch'),
             #(u'([Ww]eder) ([^,\.]+?), noch', r'\1 \2 noch'),
-            (u'(\d+)(minütig|stündig|tägig|wöchig|jährig|minütlich|stündlich|täglich|wöchentlich|jährlich)', r'\1-\2'),
+            (u'(\d+)(minütig|stündig|tägig|wöchig|jährig|minütlich|stündlich|täglich|wöchentlich|jährlich|fach|mal|malig|köpfig|teilig|gliedrig|geteilt|elementig|dimensional|bändig|eckig|farbig|stimmig)', r'\1-\2'),
             (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB|W|kW|MW|PS|Hz|kHz|MHz|GHz)(?=-\w)',           r'\1-\2'),
             (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB|W|kW|MW|PS|Hz|kHz|MHz|GHz)(?=\W|$)',          r'\1 \2'),
+            # Kein Leerzeichen zwischen Tag und Monat
             (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
+            # Keine führende Null beim Datum
+            (u'0(\d+)\. (Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
+            # Kein Leerzeichen nach Komma
             (u'([a-z],)([a-zA-Z])',                                                                          r'\1 \2'),
+            # Leerzeichen und Komma vertauscht
+            (u'([a-z]) ,([a-zA-Z])',                                                                          r'\1, \2'),
             #(u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
         ]
     },
@@ -161,12 +167,14 @@ fixes = {
         'replacements': [
             (r'\[\[(http://.+?)\]\]',   r'[\1]'),        # external link in double brackets
             (r'\[\[(http://.+?)\]',   r'[\1]'),          # external starting with double bracket
-            (r'\[(http://[^\|\] ]+?)\s*\|\s*([^\|\]]+?)\]',
-                r'[\1 \2]'),                             # external link and description separated by dash
+            (r'\[(http://[^\|\] ]+?)\s*\|\s*([^\|\]]+?)\]', r'[\1 \2]'), # external link and description separated by a dash.
+            # Attention: while this is a mistake in most cases, there are some valid URLs that contain dashes.
             (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),    # wiki link closed by single bracket
             (r'{{([^}]+?)}(?!})',       r'{{\1}}'),      # template closed by single bracket
         ],
-        'exceptions':  ['<math>'],
+        'exceptions': [
+            r'http://.*?object=tx\|', # regular dash in URL
+        ]
     },
     'case-de': { # German upper / lower case issues
         'regex': True,
@@ -740,6 +748,8 @@ def main():
     namespaces = []
     # Which page to start
     startpage = None
+    # Google query
+    googleQuery = None
     # Load default summary message.
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
@@ -750,9 +760,7 @@ def main():
             if arg == '-regex':
                 regex = True
             elif arg.startswith('-file'):
-                if len(arg) == 5:
-                    textfilename = wikipedia.input(u'Please enter the filename:')
-                else:
+                if len(arg) >= 6:
                     textfilename = arg[6:]
                 source = 'textfile'
             elif arg.startswith('-cat'):
@@ -785,6 +793,10 @@ def main():
                 else:
                     firstPageTitle = arg[7:]
                 source = 'allpages'
+            elif arg.startswith('-google'):
+                if len(arg) >= 8:
+                    googleQuery = arg[8:]
+                source = 'google'
             elif arg.startswith('-except:'):
                 exceptions.append(arg[8:])
             elif arg.startswith('-fix:'):
@@ -864,6 +876,8 @@ def main():
     elif source == 'ref':
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
+    elif source == 'google':
+        gen = pagegenerators.GoogleSearchPageGenerator(googleQuery)
     elif source == None or len(commandline_replacements) not in [0, 2]:
         # syntax error, show help text from the top of this file
         wikipedia.output(__doc__, 'utf-8')

@@ -4,7 +4,7 @@
 __version__='$Id$'
 
 # Standard library imports
-import re, codecs
+import re, codecs, sys
 
 # Application specific imports
 import wikipedia, date
@@ -67,12 +67,10 @@ class TextfilePageGenerator:
     should be read. If no name is given, the generator prompts the user.
     '''
     def __init__(self, filename = None):
-        self.filename = filename
+        self.filename = filename or wikipedia.input(u'Please enter the filename:')
 
     def __iter__(self):
         site = wikipedia.getSite()
-        if not self.filename:
-            self.filename = wikipedia.input(u'Please enter the filename:')
         f = codecs.open(self.filename, 'r', config.textfile_encoding)
         R = re.compile(r'\[\[(.+?)\]\]')
         for pageTitle in R.findall(f.read()):
@@ -92,6 +90,45 @@ class TextfilePageGenerator:
             site = wikipedia.getSite(code = code, fam = fam)
             yield wikipedia.Page(site, pagename)
         f.close()
+
+class GoogleSearchPageGenerator:
+    '''
+    This 
+    To use this generator, you must install the pyGoogle module from
+    http://pygoogle.sf.net/ and get a Google Web API license key from
+    http://www.google.com/apis/index.html . The google_key must be set to your
+    license key in your configuration.
+    '''
+    def __init__(self, query = None):
+        self.query = query or wikipedia.input(u'Please enter the search query:')
+    
+    def queryGoogle(self, query):
+        import google
+        google.LICENSE_KEY = config.google_key
+        offset = 0
+        estimatedTotalResultsCount = sys.maxint
+        while offset < estimatedTotalResultsCount:
+            wikipedia.output(u'Querying Google, offset %i' % offset) 
+            data = google.doGoogleSearch(query, start = offset, filter = False)
+            for result in data.results:
+                print 'DBG: ', result.URL
+                yield result.URL
+            estimatedTotalResultsCount = data.meta.estimatedTotalResultsCount
+            print estimatedTotalResultsCount
+            offset += 10
+        
+    def __iter__(self):
+        site = wikipedia.getSite()
+        # restrict query to local site
+        localQuery = '%s site:%s' % (self.query, site.hostname())
+        base = 'http://%s%s' % (site.hostname(), site.nice_get_address(''))
+        print base
+        for url in self.queryGoogle(localQuery):
+            print url[:len(base)]
+            if url[:len(base)] == base:
+                title = url[len(base):]
+                page = wikipedia.Page(site, title)
+                yield page
 
 class YearPageGenerator:
     def __init__(self, start = 1, end = 2050):

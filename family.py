@@ -1814,6 +1814,10 @@ class Family:
     def get_address(self, code, name):
         return '%s?title=%s&redirect=no' % (self.path(code), name)
 
+    # The URL to get a page, in the format indexed by Google.
+    def nice_get_address(self, code, name):
+        return '/wiki/%s' % (name)
+        
     def edit_address(self, code, name):
         return '%s?title=%s&action=edit' % (self.path(code), name)
 
