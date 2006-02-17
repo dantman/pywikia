@@ -106,15 +106,18 @@ class GoogleSearchPageGenerator:
         import google
         google.LICENSE_KEY = config.google_key
         offset = 0
-        estimatedTotalResultsCount = sys.maxint
-        while offset < estimatedTotalResultsCount:
+        estimatedTotalResultsCount = None
+        while not estimatedTotalResultsCount or offset < estimatedTotalResultsCount:
             wikipedia.output(u'Querying Google, offset %i' % offset) 
             data = google.doGoogleSearch(query, start = offset, filter = False)
             for result in data.results:
-                print 'DBG: ', result.URL
+                #print 'DBG: ', result.URL
                 yield result.URL
+            # give an estimate of pages to work on, but only once.
+            if not estimatedTotalResultsCount:
+                wikipedia.output(u'Estimated total result count: %i pages.' % data.meta.estimatedTotalResultsCount)
             estimatedTotalResultsCount = data.meta.estimatedTotalResultsCount
-            print estimatedTotalResultsCount
+            #print 'estimatedTotalResultsCount: ', estimatedTotalResultsCount
             offset += 10
         
     def __iter__(self):
@@ -122,9 +125,7 @@ class GoogleSearchPageGenerator:
         # restrict query to local site
         localQuery = '%s site:%s' % (self.query, site.hostname())
         base = 'http://%s%s' % (site.hostname(), site.nice_get_address(''))
-        print base
         for url in self.queryGoogle(localQuery):
-            print url[:len(base)]
             if url[:len(base)] == base:
                 title = url[len(base):]
                 page = wikipedia.Page(site, title)
