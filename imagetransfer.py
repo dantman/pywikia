@@ -35,6 +35,7 @@ import wikipedia, upload, config, pagegenerators
 copy_message = {
     'en':u"This image was copied from %s. The original description was:\r\n\r\n%s",
     'de':u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
+    'ia':u'Iste imagine esseva copiate de %s. Le description original esseva:\r\n\r\n%s",
     'lt':u"Šis paveikslėlis buvo įkeltas iš %s. Originalus aprašymas buvo:\r\n\r\n%s",
     'nl':u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
     'pt':u"Esta imagem foi copiada de %s. A descrição original foi:\r\n\r\n%s",
@@ -44,6 +45,7 @@ nowCommonsTemplate = {
     'de': u'{{NowCommons|%s}}',
     'fr': u'{{Désormais sur Commons|%s}}',
     'en': u'{{NowCommons|Image:%s}}',
+    'ia': u'{{OraInCommons|Imagine:%s}}',
     'lt': u'{{NowCommons|Image:%s}}',
     'nl': u'{{NuCommons|%s}}',
     'pt': u'{{NowCommons|%s}}',
@@ -52,6 +54,7 @@ nowCommonsTemplate = {
 nowCommonsMessage = {
     'de': u'Datei ist jetzt auf Wikimedia Commons verfügbar.',
     'en': u'File is now available on Wikimedia Commons.',
+    'ia': u'Le file es ora disponibile in Wikimedia Commons.'
     'lt': u'Failas įkeltas į Wikimedia Commons projektą.',
     'pt': u'Arquivo está agora na Wikimedia Commons.',
 }

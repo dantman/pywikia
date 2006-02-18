@@ -47,6 +47,7 @@ import wikipedia, config, pagegenerators
 msg_no_warnings = {'de':'Bot: Tabellensyntax konvertiert',
                    'en':'User-controlled Bot: table syntax updated',
                    'es':'Bot controlado: actualizada sintaxis de tabla',
+                   'ia': Robot controlate: Syntaxe del tabella cambiate de HTML a Wiki',
                    'nl':'Tabel gewijzigd van HTML- naar Wikisyntax',
                    'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada',
                   }
@@ -54,6 +55,7 @@ msg_no_warnings = {'de':'Bot: Tabellensyntax konvertiert',
 msg_one_warning = {'de':'Bot: Tabellensyntax konvertiert - %d Warnung!',
                    'en':'User-controlled Bot: table syntax updated - %d warning!',
                    'es':'Bot controlado: actualizada sintaxis de tabla - %d aviso!',
+                   'ia':'Robot controlate: Syntaxe del tabella cambiate - %d advertimento!',
                    'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
                    'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
                   }
@@ -61,6 +63,7 @@ msg_one_warning = {'de':'Bot: Tabellensyntax konvertiert - %d Warnung!',
 msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
                          'en':'User-controlled Bot: table syntax updated - %d warnings!',
                          'es':'Bot controlado: actualizada sintaxis de tabla - %d avisos!',
+                         'ia':'Robot controlate: Syntaxe del tabella cambiate - %d advertimentos!',
                          'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!',
                          'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
                         }

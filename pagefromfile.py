@@ -34,6 +34,7 @@ import re, sys
 
 msg={
     'en':u'Automated import of articles',
+    'ia':u'Importation automatic de articulos',
     'nl':u'Geautomatiseerde import'
     }
 

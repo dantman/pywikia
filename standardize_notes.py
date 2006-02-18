@@ -65,6 +65,7 @@ msg = {
        'en':u'Robot: Automated reference processing %s',
        'es':u'Robot: Reemplazo automático de texto %s',
        'fr':u'Bot : Remplacement de texte automatisé %s',
+       'ia':u'Robot: Reimplaciamento automatic de texto %s',
        'hu':u'Robot: Automatikus szövegcsere %s',
        'is':u'Vélmenni: breyti texta %s',
        'pt':u'Bot: Mudança automática %s',
@@ -79,6 +80,7 @@ fixes = {
         'exceptions':  ['<nowiki>[^<]{3,}</nowiki>'],
         'msg': {
                'en':u'Robot: Adding/sorting references.',
+               'ia':u'Robot: Addition/assortimento de referentias',
               },
         'replacements': [
             # Everything case-insensitive (?i)

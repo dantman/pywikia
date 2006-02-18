@@ -129,6 +129,16 @@ langnames = {
         'eo' : u'Esperanto',
         'es' : u'Hispana',
         },
+     'ia':    {
+        'translingual' : u'translingual',
+        'nl' : u'nederlandese',
+        'en' : u'anglese',
+        'de' : u'germano',
+        'fr' : u'francese',
+        'it' : u'italiano',
+        'eo' : u'esperanto',
+        'es' : u'espaniol',
+        },
     'it':    {
         'translingual' : u'???',
         'nl' : u'olandese',

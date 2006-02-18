@@ -358,6 +358,7 @@ class Family(family.Family):
             'fi': self.alphabetic_revised,
             'he': ['en'],
             'hu': ['en'],
+            'ia': ['en','fr','it','es','pt','de','ru','la'],
             'lb': self.alphabetic_lb,
             'nn': ['no','nb','sv','da'] + self.alphabetic,
             'pl': self.alphabetic,

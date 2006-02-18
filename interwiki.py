@@ -213,6 +213,7 @@ msg = {
     'en': (u'robot ', u'Adding', u'Removing', u'Modifying'),
     'es': (u'robot ', u'Añadido', u'Eliminado', u'Modificado'),
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
+    'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),
     'ka': (u'რობოტი ', u'დამატება', u'წაშლა', u'შეცვლა'),

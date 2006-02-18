@@ -84,6 +84,7 @@ msg = {
        'es':u'Robot: Reemplazo automático de texto %s',
        'fr':u'Bot : Remplacement de texte automatisé %s',
        'hu':u'Robot: Automatikus szövegcsere %s',
+       'ia':u'Robot: Reimplaciamento automatic de texto %s',
        'is':u'Vélmenni: breyti texta %s',
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
        'lt':u'Botas: Automatinis teksto keitimas %s',       
@@ -102,6 +103,7 @@ fixes = {
         'msg': {
                'en':u'Robot: converting/fixing HTML',
                'de':u'Bot: konvertiere/korrigiere HTML',
+               'ia':u'Robot: conversion/reparation de HTML',
                'pt':u'Bot: Corrigindo HTML'
               },
         'replacements': [
@@ -162,6 +164,7 @@ fixes = {
         'msg': {
                'de':u'Bot: Korrigiere Wiki-Syntax',
                'en':u'Bot: Fixing wiki syntax',
+               'ia':u'Robot: Reparation de syntaxe wiki',
                'pt':u'Bot: Corrigindo sintax wiki',
               },
         'replacements': [

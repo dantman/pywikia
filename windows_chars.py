@@ -25,7 +25,7 @@ Command line options:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id: windows_chars.py,v 1.26 2005/07/23 20:23:30 wikipedian Exp $'
+__version__='$Id: windows_chars.py,v 1.27 2005/12/21 17:51:26 wikipedian Exp $'
 #
 import wikipedia, config
 import replace, pagegenerators
@@ -35,6 +35,7 @@ import re, sys
 msg={
     'en':u'robot: changing Windows-1252 characters to HTML entities',
     'de':u'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
+    'ia':u'Robot: modification de characteres Windows-1252 a entitates HTML',
     }
 
 # characters that are in Windows-1252), but not in ISO 8859-1

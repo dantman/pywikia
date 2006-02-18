@@ -24,6 +24,7 @@ wikipedia.put_throttle.setDelay(10)
 
 msg={
     'en': 'Changing categories',
+    'ia': 'Alteration de categorias',
     'nl': 'Verandering van categorieen',
     'pt': 'Alterando categoria'
     }

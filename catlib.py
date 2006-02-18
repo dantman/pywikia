@@ -15,6 +15,7 @@ import wikipedia
 msg_created_for_renaming = {
     'de':u'Bot: Verschoben von %s. Autoren: %s',
     'en':u'Robot: Moved from %s. Authors: %s',
+    'ia':u'Robot: Transferite de %s. Autores: %s',
     'fr':u'Robot : déplacé depuis %s. Auteurs: %s',
     }
 

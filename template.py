@@ -96,6 +96,7 @@ class TemplateRobot:
         'en':u'Robot: Changing template: %s',
         'de':u'Bot: Ändere Vorlage: %s',
 		'fr':u'Robot: Changement de modèle: %s',
+		'ia':u'Robot: Modification del template: %s',
         'hu':u'Robot: Sablon csere: %s',
         'pt':u'Bot: Alterando predefinição: %s',
         }
@@ -104,6 +105,7 @@ class TemplateRobot:
         'en':u'Robot: Removing template: %s',
         'de':u'Bot: Entferne Vorlage: %s',
 		'fr':u'Robot: Enlève le modèle: %s',
+		'ia':u'Robot: Elimination del template: %s',
         'hu':u'Robot: Sablon eltávolítása: %s',
         'pt':u'Bot: Removendo predefinição: %s',
         }

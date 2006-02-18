@@ -77,6 +77,7 @@ msg = {
     'en': u'Robot-assisted disambiguation: %s',
     'da': u'Retter flertydigt link til: %s',
     'de': u'Bot-unterstützte Begriffsklärung: %s',
+    'ia': u'Disambiguation assistite per robot: %s',
     'nl': u'Robot-geholpen doorverwijzing: %s',
     'fr': u'Homonymie résolue à l\'aide du robot: %s',
     'pt': u'Desambiguação assistida por bot: %s',
@@ -89,6 +90,7 @@ msg_redir = {
     'en': u'Robot-assisted disambiguation: %s',
     'da': u'Retter flertydigt link til: %s',
     'de': u'Bot-unterstützte Redirectauflösung: %s',
+    'ia': u'Resolution de redirectiones assistite per robot: %s',
     'nl': u'Robot-geholpen redirect-oplossing: %s',
     'fr': u'Correction de lien vers redirect: %s',
     'pt': u'Desambiguação assistida por bot: %s',
@@ -101,6 +103,7 @@ msg_redir = {
 primary_topic_format = {
     'de': u'%s_(Begriffsklärung)',
     'en': u'%s_(disambiguation)',
+    'ia': u'%s_(disambiguation)',
     'nl': u'%s_(doorverwijspagina)',
     'pt': u'%s_(desambiguação)',
     'he': u'%s_(פירושונים)',
@@ -177,6 +180,12 @@ ignore_title = {
         ],
         'fy': [
             u'Wikipedy:Fangnet',
+        ],
+        'ia': [
+            u'Categoria:Disambiguation',
+            u'Wikipedia:.+',
+            u'Usator:.+',
+            u'Discussion_Usator:.+',
         ],
         'nl': [
             u'Wikipedia:Onderhoudspagina',

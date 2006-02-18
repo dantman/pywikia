@@ -47,6 +47,13 @@ templates = {
           u'{{ébauche}}'     :{ 'msg': u'Cet article est une ébauche',
                                 'pos': 'bottom'},
           },
+	'ia':{'{{Eliminar}}' :{ 'msg' : 'Iste articulo debe esser eliminate' ,
+                          'pos': 'top'},
+          '{{Revision}}':{ 'msg' : 'Iste articulo require revision',
+                          'pos': 'top'},
+          '{{Stub}}'   :{ 'msg' : 'Iste articulo es in stato embryonic',
+                          'pos': 'bottom'},
+          },
     }
 
 # Message used when blanking an article

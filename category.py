@@ -45,6 +45,7 @@ msg_add={
     'en':u'Robot: Adding [[%s]]',
     'es':u'Bot: Añadida [[%s]]',
     'fr':u'Robot : ajoute [[%s]]',
+    'ia':u'Robot: Addition de [[%s]]',
     'is':u'Vélmenni: Bæti við [[%s]]',
     'no':u'Robot: Legger til [[%s]]',
     'pt':u'Bot: Adicionando [[%s]]',
@@ -56,6 +57,7 @@ msg_change={
     'en':u'Robot: Changing %s',
     'es':u'Bot: Cambiada %s',
     'fr':u'Robot : modifie %s',
+    'ia':u'Robot: Modification de %s',
     'is':u'Vélmenni: Breyti flokknum [[%s]]',
     'nl':u'Bot: Wijziging %s',
     'no':u'Robot: Endrer %s',
@@ -66,6 +68,7 @@ deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach %s verschoben',
     'en':u'Robot: Category was moved to %s',
     'fr':u'Robot : catégorie déplacée sur %s',
+    'ia':u'Robot: Categoria transferite a %s',
     'no':u'Robot: Kategorien ble flyttet til %s',
     'pt':u'Bot: Categoria %s foi movida',
     }
@@ -296,6 +299,7 @@ class CategoryRemoveRobot:
     deletion_reason_remove = {
         'de':u'Bot: Kategorie wurde aufgelöst',
         'en':u'Robot: Category was disbanded',
+        'ia':u'Robot: Categoria esseva dissolvite',
     }
     
     msg_remove={
@@ -303,6 +307,7 @@ class CategoryRemoveRobot:
         'de':u'Bot: Entferne aus %s',
         'en':u'Robot: Removing from %s',
         'es':u'Bot: Eliminada de la %s',
+        'ia':u'Robot: Eliminate de %s',
         'is':u'Vélmenni: Fjarlægi [[%s]]',
         'nl':u'Bot: Verwijderd uit %s',
         'pt':u'Bot: Removendo [[%s]]',
@@ -506,6 +511,7 @@ class CategoryTreeRobot:
             'de': u'(auch in %s)',
             'en': u'(also in %s)',
             'fr': u'(également dans %s)',
+            'ia': u'(equalmente in %s)',
             'is': u'(einnig í %s)',
             'pt': u'(também em %s)',
             }
