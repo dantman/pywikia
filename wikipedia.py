@@ -380,6 +380,8 @@ class Page(object):
                     m = re.search("=+ *%s *=+" % hn, self._contents)
                     if not m:
                         output(u"WARNING: Section does not exist: %s" % self.title())
+                if self.site().lang == 'eo':
+                    self._contents = resolveEsperantoXConvention(self._contents)
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
@@ -726,6 +728,10 @@ class Page(object):
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
         sysop = (self.editRestriction is not None)
+        # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
+        # of Bordeaux
+        if self.site().lang == 'eo':
+            newtext = doubleXForEsperanto(newtext)
         return self.putPage(newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
     def putPage(self, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None, gettoken = False, sysop = False):
@@ -893,11 +899,6 @@ class Page(object):
             return cmp(self.site(), other.site())
         owntitle = self.title()
         othertitle = other.title()
-        # In Esperanto X-Convention, Bordeauxx is the same as BordeauxX, and
-        # CxefpagXo is the same as Ĉefpaĝo.
-        #if self.site().lang == 'eo':
-        #    owntitle = doubleXForEsperanto(resolveEsperantoXConvention(owntitle))
-        #    othertitle = doubleXForEsperanto(resolveEsperantoXConvention(othertitle))
         return cmp(owntitle, othertitle)
 
     def __hash__(self):
@@ -923,8 +924,6 @@ class Page(object):
         Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
             title = match.group('title')
-            if self.site().lang == 'eo':
-                title = resolveEsperantoXConvention(title)
             page = Page(self.site(), title)
             if not isInterwikiLink(page.title()):
                 result.append(page)
@@ -1314,12 +1313,6 @@ class GetAll(object):
         text = entry.text
         editRestriction = entry.editRestriction
         moveRestriction = entry.moveRestriction
-        # Edit-pages on eo: use X-convention, XML export does not.
-        # Internally we keep titles without X convention, but text with X
-        # convention.
-        if self.site.lang == 'eo':
-            #title = doubleXForEsperanto(title)
-            text = doubleXForEsperanto(text)
         pl = Page(self.site, title)
         for pl2 in self.pages:
             if Page(self.site, pl2.sectionFreeTitle()) == pl:
@@ -1676,8 +1669,6 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
             if '|' in pagetitle:
                 # ignore text after the pipe
                 pagetitle = pagetitle[:pagetitle.index('|')]
-            if insite.lang == 'eo':
-                pagetitle = resolveEsperantoXConvention(pagetitle)
             if not pagetitle:
                 output(u"ERROR: %s - ignoring impossible link to %s:%s" % (pageLink, lang, pagetitle))
             else:
@@ -1759,10 +1750,6 @@ def interwikiFormat(links, insite = None):
     for site in ar:
         try:
             link = links[site].aslink(forceInterwiki = True)
-            # if linking from Esperanto, we must e.g. write Bordeauxx instead
-            # of Bordeaux
-            if insite.lang == 'eo':
-                link = doubleXForEsperanto(link)
             s.append(link)
         except AttributeError:
             s.append(site.linkto(links[site],othersite=insite))
@@ -1888,6 +1875,7 @@ def url2link(percentname, insite, site):
     return unicode2html(x, insite.encoding())
 
 def resolveEsperantoXConvention(text):
+        
     """
     Resolves the x convention used to encode Esperanto special characters,
     e.g. Cxefpagxo and CXefpagXo will both be converted to Ĉefpaĝo.
@@ -1895,55 +1883,69 @@ def resolveEsperantoXConvention(text):
     double x, i.e. Bordeauxx or BordeauxX.
     """
     chars = {
-        u'cx': u'ĉ',
-        u'Cx': u'Ĉ',
-        u'gx': u'ĝ',
-        u'Gx': u'Ĝ',
-        u'hx': u'ĥ',
-        u'Hx': u'Ĥ',
-        u'jx': u'ĵ',
-        u'Jx': u'Ĵ',
-        u'sx': u'ŝ',
-        u'Sx': u'Ŝ',
-        u'ux': u'ŭ',
-        u'Ux': u'Ŭ',
-        u'xx': u'x',
-        u'Xx': u'X',
-        u'cX': u'ĉ',
-        u'CX': u'Ĉ',
-        u'gX': u'ĝ',
-        u'GX': u'Ĝ',
-        u'hX': u'ĥ',
-        u'HX': u'Ĥ',
-        u'jX': u'ĵ',
-        u'JX': u'Ĵ',
-        u'sX': u'ŝ',
-        u'SX': u'Ŝ',
-        u'uX': u'ŭ',
-        u'UX': u'Ŭ',
-        u'xX': u'x',
-        u'XX': u'X'
+        u'c': u'ĉ',
+        u'C': u'Ĉ',
+        u'g': u'ĝ',
+        u'G': u'Ĝ',
+        u'h': u'ĥ',
+        u'H': u'Ĥ',
+        u'j': u'ĵ',
+        u'J': u'Ĵ',
+        u's': u'ŝ',
+        u'S': u'Ŝ',
+        u'u': u'ŭ',
+        u'U': u'Ŭ',
     }
-    # Run backwards through the text. Post fun stuff like
-    # cx, cxx, cxxx, cxxxx, cxxxxx to an eo: wiki and you will know why.
-    i = len(text) - 1
-    while i > 0:
-        if text[i-1 : i+1] in chars.keys():
-            # We found two characters that should be replaced either by an x
-            # or by an Esperanto special character.
-            text = text[:i-1] + chars[text[i-1 : i+1]] + text[i+1:]
-            i -= 2
-        else:
-            i -= 1
+    for latin, esperanto in chars.iteritems():
+        # A regular expression that matches a letter combination which IS
+        # encoded using x-convention.
+        xConvR = re.compile(latin + '[xX]+')
+        pos = 0
+        result = ''
+        # Each matching substring will be regarded exactly once.
+        while True:
+            match = xConvR.search(text[pos:])
+            if match:
+                old = match.group()
+                if len(old) % 2 == 0:
+                    # The first two chars represent an Esperanto letter.
+                    # Following x's are doubled.
+                    new = esperanto + ''.join([old[2 * i] for i in range(1, len(old)/2)])
+                else:
+                    # The first character stays latin; only the x's are doubled.
+                    new = latin + ''.join([old[2 * i + 1] for i in range(0, len(old)/2)])
+                result += text[pos : match.start() + pos] + new
+                pos += match.start() + len(old)
+            else:
+                result += text[pos:]
+                text = result
+                break
     return text
 
 def doubleXForEsperanto(text):
-    # Double X-es where necessary so that we can submit a changed
-    # page later.
-    for c in 'CGHJSU':
-        for c2 in c,c.lower():
-            text = text.replace(c2 + 'x', c2 + 'xx')
-            text = text.replace(c2 + 'X', c2 + 'Xx')
+    """
+    Doubles X-es where necessary so that we can submit a page to an Esperanto
+    wiki. Again, we have to keep stupid stuff like cXxXxxX in mind. Maybe
+    someone wants to write about the Sony Cyber-shot DSC-Uxx camera series on
+    eo: ;)
+    """
+    # A regular expression that matches a letter combination which is NOT
+    # encoded in x-convention.
+    notXConvR = re.compile('[cghjsuCGHJSU][xX]+')
+    pos = 0
+    result = ''
+    while True:
+        match = notXConvR.search(text[pos:])
+        if match:
+            old = match.group()
+            # the first letter stays; add an x after each X or x.
+            new = old[0] + ''.join([old[i] + 'x' for i in range(1, len(old))])
+            result += text[pos : match.start() + pos] + new
+            pos += match.start() + len(old)
+        else:
+            result += text[pos:]
+            text = result
+            break
     return text
 
 def isInterwikiLink(s, site = None):
