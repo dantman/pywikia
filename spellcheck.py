@@ -436,7 +436,7 @@ try:
                 if text != page.get():
                     page.put(text)
     elif start:
-        for page in wikipedia.allpages(start = start, site = mysite):
+        for page in mysite.allpages(start = start):
             try:
                 text = page.get()
             except wikipedia.Error:
