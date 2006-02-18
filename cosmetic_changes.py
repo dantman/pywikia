@@ -135,7 +135,7 @@ class CosmeticChangesToolkit:
                         # Maybe this feature is not useful for languages that
                         # don't capitalize nouns...
                         #if not self.site.nocapitalize:
-                        if site.sitename() == 'wikipedia:de':
+                        if self.site.sitename() == 'wikipedia:de':
                             titleWithSection = titleWithSection[0].upper() + titleWithSection[1:]
                         newLink = "[[%s|%s]]" % (titleWithSection, label)
                     text = text[:m.start()] + newLink + text[m.end():]
