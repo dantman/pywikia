@@ -131,11 +131,12 @@ class CosmeticChangesToolkit:
                     elif len(titleWithSection) <= len(label) and label[:len(titleWithSection)] == titleWithSection and re.sub(trailR, '', label[len(titleWithSection):]) == '':
                         newLink = "[[%s]]%s" % (label[:len(titleWithSection)], label[len(titleWithSection):])
                     else:
-                        if not self.site.nocapitalize:
-                            if len(titleWithSection) == 1:
-                                titleWithSection = titleWithSection[0].upper()
-                            else:
-                                titleWithSection = titleWithSection[0].upper() + titleWithSection[1:]
+                        # Try to capitalize the first letter of the title.
+                        # Maybe this feature is not useful for languages that
+                        # don't capitalize nouns...
+                        #if not self.site.nocapitalize:
+                        if site.sitename() == 'wikipedia:de':
+                            titleWithSection = titleWithSection[0].upper() + titleWithSection[1:]
                         newLink = "[[%s|%s]]" % (titleWithSection, label)
                     text = text[:m.start()] + newLink + text[m.end():]
         return text
