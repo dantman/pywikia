@@ -851,7 +851,10 @@ class Page(object):
         if ns < 0: # Special page
             return None
         if self.isTalkPage():
-            return Page(self.site(), self.site().namespace(ns - 1) + ':' + self.titleWithoutNamespace())
+            if self.namespace() == 1:
+                return Page(self.site(), self.titleWithoutNamespace())
+            else:
+                return Page(self.site(), self.site().namespace(ns - 1) + ':' + self.titleWithoutNamespace())
         else:
             return Page(self.site(), self.site().namespace(ns + 1) + ':' + self.titleWithoutNamespace())
         
