@@ -14,12 +14,6 @@ Specific arguments:
 -file:xxx   Give the filename we are getting our material from
 -include    The beginning and end text should be included in the
             page.
--utf        The input file is UTF-8
--log        Add logging to file "pagefromfile.log"
-
-Note the '-utf' option is necessary on older versions of Windows;
-whether it's necessary or useful on Windows XP and/or other
-operating systems is unclear.
 """
 #
 # (C) Andre Engels, 2004
@@ -29,56 +23,54 @@ operating systems is unclear.
 
 __version__='$Id:'
 
-import wikipedia
-import re, sys
+import wikipedia, config
+import re, sys, codecs
 
 msg={
-    'en':u'Automated import of articles',
-    'ia':u'Importation automatic de articulos',
-    'nl':u'Geautomatiseerde import'
+    'de': u'Automatischer Import von Artikeln',
+    'en': u'Automated import of articles',
+    'ia': u'Importation automatic de articulos',
+    'nl': u'Geautomatiseerde import'
     }
 
 # Adapt these to the file you are using. 'starttext' and 'endtext' are
 # the beginning and end of each entry. Take text that should be included
 # and does not occur elsewhere in the text.
+# TODO: Why not use the entire file contents?
 starttext = "{{-start-}}"
 endtext = "{{-stop-}}"
 filename = "dict.txt"
 include = False
-utf = False
 
 def findpage(t):
     try:
         location = re.search(starttext+"([^\Z]*?)"+endtext,t)
         if include:
-            page = location.group()
+            contents = location.group()
         else:
-            page = location.group(1)
+            contents = location.group(1)
     except AttributeError:
+        print 'Start or end marker not found.'
         return
     try:
-        title = re.search("'''(.*?)'''",page).group(1)
+        title = re.search("'''(.*?)'''", contents).group(1)
     except AttributeError:
         wikipedia.output(u"No title found - skipping a page.")
+        return
     else:
-        pl = wikipedia.Page(mysite,wikipedia.UnicodeToAsciiHtml(title))
-        wikipedia.output(pl.title())
-        if pl.exists():
+        page = wikipedia.Page(mysite, title)
+        wikipedia.output(page.title())
+        if page.exists():
             wikipedia.output(u"Page %s already exists, not adding!"%title)
         else:
-            pl.put(page, comment = commenttext, minorEdit = False)
+            page.put(contents, comment = commenttext, minorEdit = False)
     findpage(t[location.end()+1:])
     return
 
 def main():
     text = []
-    if utf:
-        f=codecs.open(filename,'rb',encoding='utf-8')
-    else:
-        f=open(filename,'r')
-    for line in f.readlines():
-        text.append(line)
-    text=''.join(text)
+    f = codecs.open(filename,'r', encoding = config.textfile_encoding)
+    text = f.read()
     findpage(text)
 
 for arg in sys.argv[1:]:
@@ -92,12 +84,6 @@ for arg in sys.argv[1:]:
             filename=arg[6:]
         elif arg=="-include":
             include = True
-        elif arg=="-utf":
-            import codecs
-            utf = True
-        elif arg=="-log":
-            import logger
-            sys.stdout = logger.Logger(sys.stdout, filename = 'pagefromfile.log')
         else:
             wikipedia.output(u"Disregarding unknown argument %s."%arg)
 mysite = wikipedia.getSite()
