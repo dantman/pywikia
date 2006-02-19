@@ -25,8 +25,9 @@ def LINKS(site,name, ignore=[]):
 
 msg = {
     'en': u'Featured article link for [[%s:%s]]',
+    'fi': u'Suositeltu artikkeli -tähti: [[%s:%s]]',
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
-    }
+}
 
 # default is en:Link FA
 template = {
@@ -37,7 +38,7 @@ template = {
     'it': 'Link AdQ',
     'no': 'Link UA',
     'vi': 'Liên kết chọn lọc',
-    }
+}
     
 featured_name = {
     'cs': (LINKS, u"Wikipedie:Nejlepší články", [u"Seznam", u"Wikipedie"]),
