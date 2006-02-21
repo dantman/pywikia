@@ -195,7 +195,7 @@ try:
 except NameError:
     from sets import Set as set
 
-import wikipedia, config, pagegenerators
+import wikipedia, config, pagegenerators, catlib
 import titletranslate
 
 class LinkMustBeRemoved(wikipedia.Error):
@@ -1161,6 +1161,10 @@ if __name__ == "__main__":
         hints = []
         start = None
         number = None
+        # the category name which will be used when source is 'category'.
+        categoryName = None
+        # a page whose referrers will be processed when the -ref parameter is used
+        referredPageTitle = None
         warnfile = None
         # a PageGenerator (which doesn't give hints, only Pages)
         hintlessPageGen = None
@@ -1256,6 +1260,16 @@ if __name__ == "__main__":
                         start = wikipedia.input(u'Which page to start from: ')
                     else:
                         start = arg[7:]
+                elif arg.startswith('-ref'):
+                    if len(arg) == 4:
+                        referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
+                    else:
+                        referredPageTitle = arg[5:]
+                elif arg.startswith('-cat'):
+                    if len(arg) == 4:
+                        categoryName = wikipedia.input(u'Please enter the category name:')
+                    else:
+                        categoryName = arg[5:]
                 elif arg.startswith('-number:'):
                     number = int(arg[8:])
                 elif arg.startswith('-array:'):
@@ -1303,6 +1317,12 @@ if __name__ == "__main__":
         if start:
             namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
             hintlessPageGen = pagegenerators.AllpagesPageGenerator(start, namespace)
+        elif referredPageTitle:
+            referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
+            hintlessPageGen = pagegenerators.ReferringPageGenerator(referredPage)
+        elif categoryName:
+            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
+            hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat)
 
         if hintlessPageGen:
             # we'll use iter() to create make a next() function available.
