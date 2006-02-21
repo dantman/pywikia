@@ -90,8 +90,9 @@ def refresh_messages(site):
     if site.version() >= "1.5":
         itemR = re.compile("<tr class='def'>\n"                        # first possibility: original MediaWiki message used
                          + "\s*<td>\n"
-                         + "\s*<a href=.+?>(?P<key>.+?)<\/a><br \/>"   # message link
-                         + "\s*<a href=.+?>.+?<\/a>\n"                 # talk link
+                         + '\s*<a id=".+?" name=".+?"></a>'            # anchor
+                         + '\s*<a href=".+?" title=".+?">(?P<key>.+?)<\/a><br \/>'   # message link
+                         + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'          # talk link
                          + "\s*</td><td>"
                          + "\s*(?P<current>.+?)\n"                     # current message
                          + "\s*</td>"
@@ -99,8 +100,9 @@ def refresh_messages(site):
                          + "|"
                          + "<tr class='orig'>\n"                       # second possibility: custom message used
                          + "\s*<td rowspan='2'>"
-                         + "\s*<a href=.+?>(?P<key2>.+?)<\/a><br \/>"  # message link
-                         + "\s*<a href=.+?>.+?<\/a>\n"                 # talk link
+                         + '\s*<a id=".+?" name=".+?"></a>'            # anchor
+                         + '\s*<a href=".+?" title=".+?">(?P<key2>.+?)<\/a><br \/>'  # message link
+                         + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'                 # talk link
                          + "\s*</td><td>"
                          + "\s*.+?\n"                                  # original message
                          + "\s*</td>"
