@@ -143,8 +143,9 @@ class LoginManager:
 
     def login(self, retry = False):
         if not self.password:
-            # As we don't want the password to appear on the screen, we use getpass(). 
-            self.password = getpass.getpass('Password for user %s on %s: ' % (self.username, self.site))
+            # As we don't want the password to appear on the screen, we use getpass().
+            s = u'Password for user %s on %s: ' % (self.username, self.site)
+            self.password = getpass.getpass(s.encode(config.console_encoding))
             # Convert the password from the encoding your shell uses to the one your wiki
             # uses, via Unicode. This is the same as wikipedia.input() does with the 
             # username, but input() uses raw_input() instead of getpass().
