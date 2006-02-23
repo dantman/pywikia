@@ -159,13 +159,9 @@ class Family(family.Family):
 
 
         # Other than most Wikipedias, page names must not start with a capital
-        # letter on some Wiktionaries.
+        # letter on ALL Wiktionaries.
 
-        self.nocapitalize = ['af', 'bg', 'cs', 'de', 'en', 'eo', 'es',
-                        'fa', 'fi', 'fr', 'gu', 'hi', 'hr', 'hu', 'is', 'it',
-                        'ja', 'ka', 'kn', 'ku', 'ml', 'nds', 'nl', 'pl',
-                        'sa', 'scn', 'sq', 'sv', 'sw', 'tg', 'tlh', 'tokipona',
-                        'tr', 'vi']
+        self.nocapitalize = self.langs.keys()
     
         self.obsolete = {'nb':'no',
                     'minnan':'zh-min-nan',
