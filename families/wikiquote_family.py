@@ -32,11 +32,20 @@ class Family(family.Family):
         # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': u'Wikiquote',
+            'hu':       u'Wikidézet',
         }
         self.namespaces[5] = {
             '_default': u'Wikiquote talk',
-            'pt': u'Wikiquote DiscussÃ£o',
+            'ca':       u'Wikiquote Discussió',
+            'hu':       u'Wikidézet vita',
+            'nl':       u'Overleg Wikiquote',
+            'pt':       u'Wikiquote Discussão',
         }
+
+        self.disambiguationTemplates = {
+            '_default': [u''],
+            'pt':       [u'Desambiguação'],
+            }
 
         # attop is a list of languages that prefer to have the interwiki
         # links at the top of the page.
@@ -78,9 +87,23 @@ class Family(family.Family):
             'he': ['en'],
             'hu': ['en'],
             'pl': alphabetic,
-            'simple': alphabetic
+            'simple': alphabetic,
+            'pt': alphabetic,
             }
             
         # group of languages that we might want to do at once
             
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+
+    def code2encodings(self, code):
+        """
+        Return a list of historical encodings for a specific language wikipedia
+        """
+        # Historic compatibility
+        if code == 'pl':
+            return 'utf-8', 'iso8859-2'
+        if code == 'ru':
+            return 'utf-8', 'iso8859-5'
+        if code in self.latin1old:
+            return 'utf-8', 'iso-8859-1'
+        return self.code2encoding(code),
