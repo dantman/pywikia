@@ -45,7 +45,6 @@ class Family(family.Family):
             'he': u'ויקימילון',
             'hi': u'विक्षनरी',
             'hu': u'Wikiszótár',
-            'ia': u'Wikipedia',
             'is': u'Wikiorðabók',
             'ka': u'ვიქსიკონი',
             'ko': u'위키낱말사전',
@@ -58,6 +57,7 @@ class Family(family.Family):
             'sk': u'Wikislovník',
             'sl': u'Wikipedija',
             'sr': u'Викиречник',
+            'tr': u'Vikisözlük',
             'tt': u'Wikipedia',
             'yi': u'װיקיװערטערבוך',
         }
@@ -100,7 +100,7 @@ class Family(family.Family):
             'hi': u'विक्षनरी वार्ता',
             'hr': u'Razgovor Wiktionary',
             'hu': u'Wikiszótár vita',
-            'ia': u'Discussion Wikipedia',
+            'ia': u'Discussion Wiktionary',
             'id': u'Pembicaraan Wiktionary',
             'is': u'Wikiorðabókspjall',
             'it': u'Discussioni Wiktionary',
@@ -131,7 +131,7 @@ class Family(family.Family):
             'sr': u'Разговор о викиречнику',
             'sv': u'Wiktionarydiskussion',
             'ta': u'Wiktionary பேச்சு',
-            'tr': u'Wiktionary tartışma',
+            'tr': u'Vikisözlük tartışma',
             'tt': u'Wikipedia bäxäse',
             'uk': u'Обговорення Wiktionary',
             'vi': u'Thảo luận Wiktionary',
@@ -141,11 +141,13 @@ class Family(family.Family):
 
         self.namespaces[100] = {
             '_default': u'Annex',
+            'bg': u'Словоформи',
             'pl': u'Aneks'
         }
         self.namespaces[101] = {
             
             '_default': u'Annex talk',
+            'bg': u'Словоформи беседа',
             'pl': u'Dyskusja aneksu'
         }
         self.namespaces[102] = {
