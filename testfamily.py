@@ -49,7 +49,7 @@ def main():
     fam = mySite.family
 
     if all:
-        for lang in fam.knownlanguages:
+        for lang in fam.langs.iterkeys():
             testSite(wikipedia.getSite(lang))
     else:
         testSite(mySite)
