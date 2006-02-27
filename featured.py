@@ -42,7 +42,6 @@ template = {
     
 featured_name = {
     'cs': (LINKS, u"Wikipedie:Nejlepší články", [u"Seznam", u"Wikipedie"]),
-    'da': (CAT, u"Kategori:Artikler nomineret til Ugens Artikel"),
     'de': (CAT, u"Kategorie:Exzellenter Artikel"),
     'el': (BACK, u"Πρότυπο:ΕπιλεγμένοΆρθρο"),
     'eo': (LINKS, u"Vikipedio:Elstaraj artikoloj"),
