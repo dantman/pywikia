@@ -31,8 +31,7 @@ __version__='$Id$'
 loaded = {}
 
 def get(key, site = None):
-    if site is None:
-        site = wikipedia.getSite()
+    site = site or wikipedia.getSite()
     if loaded.has_key(site):
         # Use cached copy if it exists.
         dictionary = loaded[site]
@@ -78,7 +77,8 @@ def makepath(path):
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
     
-def refresh_messages(site):
+def refresh_messages(site = None):
+    site = site or wikipedia.getSite()
     # get 'all messages' special page's path
     path = site.allmessages_address()
     print 'Retrieving MediaWiki messages for %s' % repr(site)
@@ -88,25 +88,25 @@ def refresh_messages(site):
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
     if site.version() >= "1.5":
-        itemR = re.compile("<tr class='def'>\n"                        # first possibility: original MediaWiki message used
+        itemR = re.compile("<tr class='def' id='.*?'>\n"               # first possibility: original MediaWiki message used
                          + "\s*<td>\n"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?">(?P<key>.+?)<\/a><br \/>'   # message link
-                         + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'          # talk link
+                         + '\s*<a href=".+?" title=".+?"><span id=\'.*?\'>(?P<key>.+?)</span><\/a><br \/>'   # message link
+                         + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
                          + "\s*(?P<current>.+?)\n"                     # current message
                          + "\s*</td>"
                          + "\s*</tr>"
                          + "|"
-                         + "<tr class='orig'>\n"                       # second possibility: custom message used
+                         + "<tr class='orig' id='.*?'>\n"              # second possibility: custom message used
                          + "\s*<td rowspan='2'>"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?">(?P<key2>.+?)<\/a><br \/>'  # message link
-                         + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'                 # talk link
+                         + '\s*<a href=".+?" title=".+?"><span id=\'.*?\'>(?P<key2>.+?)</span><\/a><br \/>'  # message link
+                         + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
                          + "\s*.+?\n"                                  # original message
                          + "\s*</td>"
-                         + "\s*</tr><tr class='new'>"
+                         + "\s*</tr><tr class='new' id='.*?'>"
                          + "\s*<td>\n"
                          + "\s*(?P<current2>.+?)\n"                    # current message
                          + "\s*</td>"
