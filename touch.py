@@ -22,34 +22,39 @@ This script understands various command-line arguments:
     -cat:          used as -cat:category_name, specifies that the robot should
                    touch all pages in the named category.
 
+    -redir         specifies that the robot should touch redirect pages;
+                   otherwise, they will be skipped.
+
 All other parameters will be regarded as a page title; in this case, the bot
 will only touch a single page.
 """
 
-__version__='$Id:  Exp $'
+__version__='$Id: touch.py,v 1.12 2005/10/13 20:57:02 leogregianin Exp $'
 
 import wikipedia, pagegenerators, catlib
 import sys
 
 class TouchBot:
-    def __init__(self, generator):
+    def __init__(self, generator, touch_redirects):
         self.generator = generator
+        self.touch_redirects = touch_redirects
 
     def run(self):
         for page in self.generator:
             try:
-                text = page.get()
+                text = page.get(get_redirect=self.touch_redirects)
                 page.put(text)
             except wikipedia.NoPage:
                 print "Page %s does not exist?!" % page.aslink()
             except wikipedia.IsRedirectPage:
-                print "Page %s is a redirect?!" % page.aslink()
+                print "Page %s is a redirect; skipping." % page.aslink()
             except wikipedia.LockedPage:
                 print "Page %s is locked?!" % page.aslink()
 
 def main():
     #page generator
     gen = None
+    redirs = False
     pageTitle = []
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'touch')
@@ -67,6 +72,8 @@ def main():
             elif arg.startswith('-cat:'):
                 cat = catlib.Category(wikipedia.getSite(), arg[5:])
                 gen = pagegenerators.CategorizedPageGenerator(cat)
+            elif arg == '-redir':
+                redirs = True
             else:
                 pageTitle.append(arg)
 
@@ -77,7 +84,7 @@ def main():
         wikipedia.showHelp('touch')
     else:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = TouchBot(preloadingGen)
+        bot = TouchBot(preloadingGen, redirs)
         bot.run()
 
 if __name__ == "__main__":
