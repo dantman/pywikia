@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 __version__='$Id$'
@@ -1924,3 +1924,8 @@ class Family:
             return cmp(self.name, otherfamily.name)
         except AttributeError:
             return cmp(id(self), id(otherfamily))
+
+    def RversionTab(self, code):
+        """Change this to some regular expression that shows the page we
+        found is an existing page, in case the normal regexp does not work."""
+        return None

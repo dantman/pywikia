@@ -38,6 +38,20 @@ usernames = {}
 sysopnames = {}
 disambiguation_comment = {}
 
+# Some sites will require password identication to access the HTML pages at
+# the site. If you have any such site, add lines to your user-config.py of
+# the following form:
+#
+# authenticate['en.wikipedia.org'] = ('John','XXXXX')
+#
+# where John is your login name, and XXXXX your password.
+# Note:
+# 1. This is only for sites that use authentication in the form that gives
+#    you a popup for name and password when you try to access any data, NOT
+#    for, for example, wiki usernames
+# 2. You must use the hostname of the site, not its family/language pair
+authenticate = {}
+
 # Get the names of all known families, and initialize
 # with empty dictionaries
 RfamilyFile = re.compile('(?P<name>.+)_family.py$')

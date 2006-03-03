@@ -428,6 +428,7 @@ class Page(object):
                 if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
                     raise UserBlocked(self.site(), self.title())
                 else:
+                    print text
                     # We assume that the server is down. Wait some time, then try again.
                     print "WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site().hostname(), path, retry_idle_time)
                     time.sleep(retry_idle_time * 60)
@@ -455,8 +456,13 @@ class Page(object):
         else:
             self._startTime = "0"
         # Find out if page actually exists. Only existing pages have a 
-        # version history tab. 
-        RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
+        # version history tab.
+        if self.site().family.RversionTab(self.site().language()):
+            # In case a family does not have version history tabs, or in
+            # another form
+            RversionTab = re.compile(self.site().family.RversionTab(self.site().language()))
+        else:
+            RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
         matchVersionTab = RversionTab.search(text)
         if not matchVersionTab:
             raise NoPage(self.site(), self.title())                
@@ -778,32 +784,42 @@ class Page(object):
         # Give the token, but only if one is supplied.
         if token:
             predata.append(('wpEditToken', token))
-        # Encode all of this into a HTTP request
-        data = urlencode(tuple(predata))
         
         if newPage:
             output('Creating page %s' % self.aslink())
         else:
             output('Changing page %s' % self.aslink())
         # Submit the prepared information
-        conn = httplib.HTTPConnection(host)
+        if self.site().hostname() in config.authenticate.keys():
+            predata.append(("Content-type","application/x-www-form-urlencoded"))
+            predata.append(("User-agent", "PythonWikipediaBot/1.0"))
+            data = urlencode(tuple(predata))
+            response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+            # I'm not sure what to check in this case, so I just assume things went ok.
+            # Very naive, I agree.
+            data = u''
+        else:    
+            data = urlencode(tuple(predata))
+            conn = httplib.HTTPConnection(host)
+        
+            # Encode all of this into a HTTP request
+            data = urlencode(tuple(predata))    
+            conn.putrequest("POST", address)
+            conn.putheader('Content-Length', str(len(data)))
+            conn.putheader("Content-type", "application/x-www-form-urlencoded")
+            conn.putheader("User-agent", "PythonWikipediaBot/1.0")
+            if self.site().cookies():
+                conn.putheader('Cookie', self.site().cookies(sysop = sysop))
+            conn.endheaders()
+            conn.send(data)
     
-        conn.putrequest("POST", address)
-        conn.putheader('Content-Length', str(len(data)))
-        conn.putheader("Content-type", "application/x-www-form-urlencoded")
-        conn.putheader("User-agent", "PythonWikipediaBot/1.0")
-        if self.site().cookies():
-            conn.putheader('Cookie', self.site().cookies(sysop = sysop))
-        conn.endheaders()
-        conn.send(data)
-    
-        # Prepare the return values
-        try:
-            response = conn.getresponse()
-        except httplib.BadStatusLine, line:
-            raise PageNotSaved('Bad status line: %s' % line)
-        data = response.read().decode(self.site().encoding())
-        conn.close()
+            # Prepare the return values
+            try:
+                response = conn.getresponse()
+            except httplib.BadStatusLine, line:
+                raise PageNotSaved('Bad status line: %s' % line)
+            data = response.read().decode(self.site().encoding())
+            conn.close()
         if data != u'':
             # Saving unsuccessful. Possible reasons: edit conflict or invalid edit token.
             # A second text area means that an edit conflict has occured.
@@ -1606,6 +1622,20 @@ put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
 class MyURLopener(urllib.FancyURLopener):
     version="PythonWikipediaBot/1.0"
 
+# Special opener in case we are using a site with authentication
+if config.authenticate:
+    import urllib2, cookielib
+    COOKIEFILE = 'login-data/cookies.lwp'
+    cj = cookielib.LWPCookieJar()
+    if os.path.isfile(COOKIEFILE):
+        cj.load(COOKIEFILE)
+    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    for site in config.authenticate.keys():
+        passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
+    authhandler = urllib2.HTTPBasicAuthHandler(passman)
+    authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),authhandler)
+    urllib2.install_opener(authenticateURLopener)   
+
 def replaceExceptNowikiAndComments(text, old, new):
     """ Deprecated. """
     return replaceExceptMathNowikiAndComments(text, old, new)
@@ -2158,9 +2188,12 @@ class Site(object):
     
            Returns the HTML text of the page converted to unicode.
         """
-        uo = MyURLopener()
-        if self.cookies(sysop = sysop):
-            uo.addheader('Cookie', self.cookies(sysop = sysop))
+        if self.hostname() in config.authenticate.keys():
+            uo = authenticateURLopener
+        else:
+            uo = MyURLopener()
+            if self.cookies(sysop = sysop):
+                uo.addheader('Cookie', self.cookies(sysop = sysop))
         # Try to retrieve the page until it was successfully loaded (just in
         # case the server is down or overloaded).
         # Wait for retry_idle_time minutes (growing!) between retries.
@@ -2169,7 +2202,10 @@ class Site(object):
         retrieved = False
         while not retrieved:
             try:
-                f = uo.open('http://%s%s' % (self.hostname(), path))
+                if self.hostname() in config.authenticate.keys():
+                    f = urllib2.urlopen('http://%s%s' % (self.hostname(), path))
+                else:
+                    f = uo.open('http://%s%s' % (self.hostname(), path))
                 retrieved = True
             except KeyboardInterrupt:
                 raise

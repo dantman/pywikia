@@ -41,7 +41,7 @@ subdirectory.
 __version__='$Id$'
 
 import re, sys, getpass
-import httplib
+import httplib, urllib2
 import wikipedia, config
 
 def makepath(path):
@@ -109,25 +109,32 @@ class LoginManager:
             "User-agent": "RobHooftWikiRobot/1.0"
         }
         pagename = self.site.login_address()
-        conn = httplib.HTTPConnection(self.site.hostname())
-        conn.request("POST", pagename, data, headers)
-        response = conn.getresponse()
-        conn.close()
-        data = response.read()
-    
-        n=0
-        Reat=re.compile(': (.*?);')
-        L = []
-        for eat in response.msg.getallmatchingheaders('set-cookie'):
-            m = Reat.search(eat)
-            if m:
-                n += 1
-                L.append(m.group(1))
-
-        if len(L) == 4:
-            return "\n".join(L)
+        if self.site.hostname() in config.authenticate.keys():
+            response = urllib2.urlopen(urllib2.Request('http://'+self.site.hostname()+pagename, data))
+            data = response.read()
+            wikipedia.cj.save(wikipedia.COOKIEFILE)
+            return "Ok"
         else:
-            return None
+            conn = httplib.HTTPConnection(self.site.hostname())
+            conn.request("POST", pagename, data, headers)
+            response = conn.getresponse()
+            conn.close()
+
+            data = response.read()
+            n=0
+            Reat=re.compile(': (.*?);')
+            L = []
+
+            for eat in response.msg.getallmatchingheaders('set-cookie'):
+                m = Reat.search(eat)
+                if m:
+                    n += 1
+                    L.append(m.group(1))
+
+            if len(L) == 4:
+                return "\n".join(L)
+            else:
+                return None
 
     def storecookiedata(self, data):
         """
