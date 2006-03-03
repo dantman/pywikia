@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to resolve double redirects, and to delete broken redirects.
 Requires access to MediaWiki's maintenance pages or to a XML dump file. Delete function requires
@@ -25,8 +25,6 @@ and argument can be:
 * restart:n   - Number of redirect to restart with (see progress). Works only
                 with an XML dump. Currently not supported!
 
-
-NOTE: For resolving redirects, please use solve_disambiguation.py -redir.
 """
 #
 # (C) Daniel Herding, 2004

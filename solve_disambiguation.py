@@ -185,7 +185,7 @@ ignore_title = {
             u'Categoria:Disambiguation',
             u'Wikipedia:.+',
             u'Usator:.+',
-            u'Discussion_Usator:.+',
+            u'Discussion Usator:.+',
         ],
         'nl': [
             u'Wikipedia:Onderhoudspagina',
@@ -214,7 +214,7 @@ ignore_title = {
             u'Categoria:Desambiguação',
             u'Wikipedia:.+',
             u'Usuário:.+',
-            u'Usuário_Discussão:.+',
+            u'Usuário Discussão:.+',
         ],
         'ru': [
             u'Категория:Disambig',
