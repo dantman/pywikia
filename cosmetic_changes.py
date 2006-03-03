@@ -15,6 +15,7 @@ import re
 msg_standalone = {
     'de': u'Bot: Kosmetische Änderungen',
     'en': u'Robot: Cosmetic changes',
+    'pt': u'Bot: Mudanças triviais',
     }
 
 # Summary message  that will be appended to the normal message when
@@ -22,8 +23,8 @@ msg_standalone = {
 msg_append = {
     'de': u'; kosmetische Änderungen',
     'en': u'; cosmetic changes',
+    'pt': u'; mudanças triviais',
     }
-
 
 deprecatedTemplates = {
     'wikipedia': {
@@ -170,8 +171,9 @@ class CosmeticChangesToolkit:
         return text
 
 class CosmeticChangesBot:
-    def __init__(self, generator):
+    def __init__(self, generator, acceptall = False):
         self.generator = generator
+        self.acceptall = acceptall
         # Load default summary message.
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_standalone))
     
@@ -180,8 +182,12 @@ class CosmeticChangesBot:
             ccToolkit = CosmeticChangesToolkit(page.site(), debug = True)
             changedText = ccToolkit.change(page.get())
             if changedText != page.get():
-                page.put(changedText)
-
+                if not self.acceptall:
+                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                    if choice in ['a', 'A']:
+                        self.acceptall = True
+                if self.acceptall or choice in ['y', 'Y']:
+                    page.put(changedText)
 
 def main():
     #page generator
