@@ -75,25 +75,38 @@ class EditBoxWindow:
         # root.config(menu=menubar)
 
 
-    def edit(self, text, search = None):
+    def edit(self, text, jumpIndex = None, highlight = None):
+        """
+        Parameters:
+            * text      - a Unicode string
+            * jumpIndex - an integer: position at which to put the caret
+            * highlight - a substring; each occurence will be highlighted
+        """
         self.text = None
         # put given text into our textarea
         self.editbox.insert(END, text)
-        # start search if asked
-        if search:
-            self.textfield.insert(END, search)
-            self.find()
         # wait for user to push a button which will destroy (close) the window
         # enable word wrap
         self.editbox.tag_add('all', '1.0', END)
-        self.editbox.tag_config('all', wrap=WORD)
+        self.editbox.tag_config('all', wrap = WORD)
+        # start search if required
+        if highlight:
+            self.textfield.insert(END, highlight)
+            self.find()
+        if jumpIndex:
+            print jumpIndex
+            line = text[:jumpIndex].count('\n') + 1 # lines are indexed starting at 1
+            column = jumpIndex - (text[:jumpIndex].rfind('\n') + 1)
+            # don't know how to place the caret, but scrolling to the right line
+            # should already be helpful.
+            self.editbox.see('%d.%d' % (line, column))
         # wait for user to push a button which will destroy (close) the window
         self.myParent.mainloop()
         return self.text 
 
     def find(self):
         '''
-        Action-function for the Button: highlight all occurences of string.
+        Action-function for the Button: highlight all occurences of a string.
         Taken from O'Reilly's Python in a Nutshell.
         '''
         #remove previous uses of tag 'found', if any

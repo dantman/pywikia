@@ -84,10 +84,15 @@ class UI:
             elif default and answer=='':		# empty string entered
                 return default
 
-    def editText(self, text, search = None):
+    def editText(self, text, jumpIndex = None, highlight = None):
         """
         Uses a Tkinter edit box because we don't have a console editor
+        
+        Parameters:
+            * text      - a Unicode string
+            * jumpIndex - an integer: position at which to put the caret
+            * highlight - a substring; each occurence will be highlighted
         """
         import gui
         editor = gui.EditBoxWindow()
-        return editor.edit(text, search)
+        return editor.edit(text, jumpIndex = jumpIndex, highlight = highlight)

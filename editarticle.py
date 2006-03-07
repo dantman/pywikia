@@ -30,13 +30,18 @@ class TextEditor:
     def __init__(self):
         pass
 
-    def edit(self, text, search = None):
+    def edit(self, text, jumpIndex = None, highlight = None):
         """
         Calls the editor and thus allows the user to change the text.
         Returns the modified text. Halts the thread's operation until the editor
         is closed.
         
         Returns None if the user didn't save the text file in his text editor.
+        
+        Parameters:
+            * text      - a Unicode string
+            * jumpIndex - an integer: position at which to put the caret
+            * highlight - a substring; each occurence will be highlighted
         """
         if config.editor:
             tempFilename = '%s.%s' % (tempfile.mktemp(), config.editor_filename_extension)
@@ -45,14 +50,13 @@ class TextEditor:
             tempFile.close()
             creationDate = os.stat(tempFilename).st_atime
             command = "%s %s" % (config.editor, tempFilename)
-            if search:
+            if jumpIndex:
                 # Some editors make it possible to mark occurences of substrings, or
                 # to jump to the line of the first occurence.
                 # TODO: Find a better solution than hardcoding these, e.g. a config
                 # option.
-                index = text.lower().index(search.lower())
-                line = text[:index].count('\n')
-                column = index - (text[:index].rfind('\n') + 1)
+                line = text[:jumpIndex].count('\n')
+                column = jumpIndex - (text[:jumpIndex].rfind('\n') + 1)
             else:
                 line = column = 0
             if config.editor == 'kate':
@@ -71,7 +75,7 @@ class TextEditor:
                 os.unlink(tempFilename)
                 return newcontent
         else:
-            return wikipedia.ui.editText(text, search = search)
+            return wikipedia.ui.editText(text, jumpIndex = jumpIndex, highlight = highlight)
 
 class ArticleEditor:
     joinchars = string.letters + '[]' + string.digits # join lines if line starts with this ones

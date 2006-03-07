@@ -204,9 +204,9 @@ class UI:
         answer = tkSimpleDialog.askstring('title', question)
         return answer
 
-    def editText(self, text, search = None):
+    def editText(self, text, jumpIndex = None, highlight = None):
         editBoxWindow = EditBoxWindow(text)
-        editBoxWindow.highlight(search)
+        editBoxWindow.highlight(highlight)
         self.parent.wait_window(editBoxWindow.top)
         return editBoxWindow.text
 

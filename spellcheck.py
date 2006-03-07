@@ -202,6 +202,7 @@ def askAlternative(word,context=None):
     return correct
 
 def removeHTML(page):
+    # TODO: Consider removing this; this stuff can be done by cosmetic_changes.py
     result = page
     result = result.replace('&Auml;',u'Ä')
     result = result.replace('&auml;',u'ä')
@@ -265,9 +266,10 @@ def spellcheck(page):
         if not Word(smallword).isCorrect():
             replacement = askAlternative(smallword,context=text[max(0,loc-40):loc+len(match.group(2))+40])
             if replacement == edit:
-                import gui
-                edit_window = gui.EditBoxWindow()
-                newtxt = edit_window.edit(text,search=smallword)
+                import editarticle
+                editor = editarticle.TextEditor()
+                # TODO: Don't know to which index to jump
+                newtxt = editor.edit(text, jumpIndex = 0, highlight = smallword)
                 if newtxt:
                     text = newtxt
             elif replacement == endpage:

@@ -495,8 +495,7 @@ class DisambiguationRobot(object):
                     elif choice == 'e':
                         import editarticle
                         editor = editarticle.TextEditor()
-                        newText = editor.edit(text, search = disambPage.title())
-                        #newText = wikipedia.ui.editText(text, search=disambPage.title())
+                        newText = editor.edit(text, jumpIndex = m.start(), highlight = disambPage.title())
                         # if user didn't press Cancel
                         if newText and newText != text:
                             text = newText
