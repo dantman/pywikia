@@ -2718,8 +2718,8 @@ class Site(object):
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
-                #Page(self, "%s:Sandbox" % self.family.namespace(self.lang, 4)).get(force = True, sysop = sysop)
-                Page(self, "Non-existing page").get(force = True, sysop = sysop)
+                Page(self, "%s:Sandbox" % self.family.namespace(self.lang, 4)).get(force = True, sysop = sysop)
+                #Page(self, "Non-existing page").get(force = True, sysop = sysop)
             except UserBlocked:
                 raise
             except Error:
