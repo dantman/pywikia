@@ -1015,7 +1015,7 @@ class Family:
                 'ro': u'Discuţie Ajutor',
                 'ru': u'Обсуждение справки',
                 'sk': u'Diskusia k pomoci',
-                'sl': u'Pogovor o Pomoči',
+                'sl': u'Pogovor o pomoči',
                 'sq': u'Ndihmë diskutim',
                 'sr': u'Разговор о помоћи',
                 'su': u'Obrolan pitulung',
