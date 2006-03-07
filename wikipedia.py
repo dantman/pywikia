@@ -252,27 +252,31 @@ class Page(object):
     def urlname(self):
         """The name of the page this Page refers to, in a form suitable
            for the URL of the page."""
-        encodedTitle = self.title().encode(self.site().encoding())
+        title = self.title(underline = True)
+        encodedTitle = title.encode(self.site().encoding())
         return urllib.quote(encodedTitle)
 
-    def title(self):
+    def title(self, underline = False):
         """The name of this Page, as a Unicode string"""
-        return self._title
+        if underline:
+            return self._title.replace(' ', '_')
+        else:
+            return self._title
 
-    def titleWithoutNamespace(self):
+    def titleWithoutNamespace(self, underline = False):
         """
         Returns the name of the page without the namespace and without section.
         """
         if self.namespace() == 0:
-            return self.title()
+            return self.title(underline = underline)
         else:
-            return self.sectionFreeTitle().split(':', 1)[1]
+            return self.sectionFreeTitle(underline = underline).split(':', 1)[1]
 
-    def section(self):
+    def section(self, underline = False):
         """The name of the section this Page refers to. Sections are
            denominated by a # in the title(). If no section is referenced,
            None is returned."""
-        ln = self.title()
+        ln = self.title(underline = underline)
         ln = re.sub('&#', '&hash;', ln)
         if not '#' in ln:
             return None
@@ -281,9 +285,9 @@ class Page(object):
             hn = re.sub('&hash;', '&#', hn)
             return hn
 
-    def sectionFreeTitle(self):
-        sectionName = self.section()
-        title = self.title()
+    def sectionFreeTitle(self, underline = False):
+        sectionName = self.section(underline = underline)
+        title = self.title(underline = underline)
         if sectionName:
             return title[:-len(sectionName)-1]
         else:
@@ -2714,7 +2718,8 @@ class Site(object):
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
-                Page(self, "%s:Sandbox" % self.family.namespace(self.lang, 4)).get(force = True, sysop = sysop)
+                #Page(self, "%s:Sandbox" % self.family.namespace(self.lang, 4)).get(force = True, sysop = sysop)
+                Page(self, "Non-existing page").get(force = True, sysop = sysop)
             except UserBlocked:
                 raise
             except Error:
