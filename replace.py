@@ -15,10 +15,12 @@ You can run the bot with the following commandline parameters:
 -cat         - Work on all pages which are in a specific category.
                Argument can also be given as "-cat:categoryname".
 -page        - Only edit a single page.
-               Argument can also be given as "-page:pagename". You can give this
+               Argument can also be given as "-page:pagetitle". You can give this
                parameter multiple times to edit multiple pages.
 -ref         - Work on all pages that link to a certain page.
-               Argument can also be given as "-ref:referredpagename".
+               Argument can also be given as "-ref:referredpagetitle".
+-linked      - Work on all pages that are linked to from a certain page.
+               Argument can also be given as "-linked:linkingpagetitle".
 -start       - Work on all pages in the wiki, starting at a given page. Choose
                "-start:!" to start at the beginning.
                NOTE: You are advised to use -xml instead of this option; this is
@@ -535,6 +537,7 @@ fixes = {
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Bb]ermuda[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of Bermuda.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]ngland[_ ]Flagge.PNG',                                        u'[[Bild:Flag of England.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]ngland[_ ]flag.png',                                          u'[[Bild:Flag of England.svg'),
+            (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lagge[_ ]England.png',                                        u'[[Bild:Flag of England.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ee]ngland[_ ]flag[_ ](medium|large|300).png',                    u'[[Bild:Flag of England.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Hh]ong[_ ]kong[_ ]flag[_ ](medium|large|300).png',               u'[[Bild:Flag of Hong Kong SAR.svg'),
             (u'\[\[(?:[Bb]ild|[Ii]mage):[Ff]lag[_ ]of[_ ]Hong[_ ]Kong[_ ]SAR.png',                        u'[[Bild:Flag of Hong Kong SAR.svg'),
@@ -740,9 +743,11 @@ def main():
     # the category name which will be used when source is 'category'.
     categoryname = None
     # pages which will be processed when the -page parameter is used
-    pageNames = []
+    PageTitles = []
     # a page whose referrers will be processed when the -ref parameter is used
-    referredPageName = None
+    referredPageTitle = None
+    # a page whose links will be processed when the -linked parameter is used
+    linkingPageTitle = None
     # will become True when the user presses a ('yes to all') or uses the -always
     # commandline paramater.
     acceptall = False
@@ -780,16 +785,21 @@ def main():
                 source = 'xmldump'
             elif arg.startswith('-page'):
                 if len(arg) == 5:
-                    pageNames.append(wikipedia.input(u'Which page do you want to chage?'))
+                    PageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
                 else:
-                    pageNames.append(arg[6:])
+                    PageTitles.append(arg[6:])
                 source = 'singlepage'
             elif arg.startswith('-ref'):
                 if len(arg) == 4:
-                    referredPageName = wikipedia.input(u'Links to which page should be processed?')
+                    referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
                 else:
-                    referredPageName = arg[5:]
-                source = 'ref'
+                    referredPageTitle = arg[5:]
+            elif arg.startswith('-linked'):
+                if len(arg) == 7:
+                    linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
+                else:
+                    linkingPageTitle = arg[8:]
+                source = 'linked'
             elif arg.startswith('-start'):
                 if len(arg) == 6:
                     firstPageTitle = wikipedia.input(u'Which page do you want to chage?')
@@ -871,14 +881,17 @@ def main():
     elif source == 'xmldump':
         gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions)
     elif source == 'singlepage':
-        pages = [wikipedia.Page(wikipedia.getSite(), pageName) for pageName in pageNames]
+        pages = [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]
         gen = iter(pages)
     elif source == 'allpages':
         namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
         gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
     elif source == 'ref':
-        referredPage = wikipedia.Page(wikipedia.getSite(), referredPageName)
+        referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
+    elif source == 'linked':
+        linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
+        gen = pagegenerators.LinkedPageGenerator(linkingPage)
     elif source == 'google':
         gen = pagegenerators.GoogleSearchPageGenerator(googleQuery)
     elif source == None or len(commandline_replacements) not in [0, 2]:
