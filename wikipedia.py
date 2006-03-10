@@ -2779,6 +2779,7 @@ def setSite(site):
     
 def argHandler(arg, moduleName):
     '''
+    DEPRECATED - use handleArgs instead
     Takes a commandline parameter, converts it to unicode, and returns it unless
     it is one of the global parameters as -lang or -log. If it is a global
     parameter, processes it and returns None.
@@ -2816,6 +2817,53 @@ def argHandler(arg, moduleName):
     else:
         return arg
     return None
+
+def handleArgs():
+    '''
+    Takes the commandline arguments, converts them to Unicode, processes all
+    global parameters such as -lang or -log. Returns a list of all arguments
+    that are not global.
+    '''
+    global default_code, default_family
+    # get commandline arguemnts
+    args = sys.argv
+    # get the name of the module calling this function. This is
+    # required because the -help option loads the module's docstring and because
+    # the module name will be used for the filename of the log.
+    # TODO: check if the following line is platform-independent
+    moduleName = args[0][:args[0].rindex('.')]
+    nonGlobalArgs = []
+    for arg in args[1:]:
+        if sys.platform=='win32':
+            # stupid Windows gives parameters encoded as windows-1252, but input
+            # encoded as cp850
+            arg = unicode(arg, 'windows-1252')
+        else:
+            # Linux uses the same encoding for both
+            arg = unicode(arg, config.console_encoding)
+        if arg == '-help':
+            showHelp(moduleName)
+            sys.exit(0)
+        elif arg.startswith('-family:'):
+            global default_family 
+            default_family = arg[8:]
+        elif arg.startswith('-lang:'):
+            global default_code
+            default_code = arg[6:]
+        elif arg.startswith('-putthrottle:'):
+            put_throttle.setDelay(int(arg[13:]), absolute = True)
+        elif arg == '-log':
+            activateLog('%s.log' % moduleName)
+        elif arg.startswith('-log:'):
+            activateLog(arg[5:])
+        elif arg == '-nolog':
+            global logfile
+            logfile = None
+        else:
+            # the argument is not global. Let the specific bot script care
+            # about it.
+            nonGlobalArgs.append(arg)
+    return nonGlobalArgs
 
 #########################
 # Interpret configuration

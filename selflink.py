@@ -15,11 +15,14 @@ This script understands various command-line arguments:
                    from the named textfile. Page titles should be enclosed
                    in [[double-squared brackets]].
 
-    -ref:          used as -start:page_name, specifies that the robot should
-                   touch all pages referring to the named page.
+    -ref:          used as -ref:page_name, specifies that the robot should
+                   work on all pages referring to the named page.
+
+    -links:        used as -links:page_name, specifies that the robot should
+                   work on all pages referred to from the named page.
 
     -cat:          used as -cat:category_name, specifies that the robot should
-                   touch all pages in the named category.
+                   work on all pages in the named category.
 
 All other parameters will be regarded as a page title; in this case, the bot
 will only work on a single page.
@@ -104,24 +107,22 @@ def main():
     #page generator
     gen = None
     pageTitle = []
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'touch')
-        if arg:
-            if arg.startswith('-start:'):
-                gen = pagegenerators.AllpagesPageGenerator(arg[7:])
-            elif arg.startswith('-ref:'):
-                referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
-                gen = pagegenerators.ReferringPageGenerator(referredPage)
-            elif arg.startswith('-links:'):
-                linkingPage = wikipedia.Page(wikipedia.getSite(), arg[7:])
-                gen = pagegenerators.LinkedPageGenerator(linkingPage)
-            elif arg.startswith('-file:'):
-                gen = pagegenerators.TextfilePageGenerator(arg[6:])
-            elif arg.startswith('-cat:'):
-                cat = catlib.Category(wikipedia.getSite(), arg[5:])
-                gen = pagegenerators.CategorizedPageGenerator(cat)
-            else:
-                pageTitle.append(arg)
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-start:'):
+            gen = pagegenerators.AllpagesPageGenerator(arg[7:])
+        elif arg.startswith('-ref:'):
+            referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
+            gen = pagegenerators.ReferringPageGenerator(referredPage)
+        elif arg.startswith('-links:'):
+            linkingPage = wikipedia.Page(wikipedia.getSite(), arg[7:])
+            gen = pagegenerators.LinkedPageGenerator(linkingPage)
+        elif arg.startswith('-file:'):
+            gen = pagegenerators.TextfilePageGenerator(arg[6:])
+        elif arg.startswith('-cat:'):
+            cat = catlib.Category(wikipedia.getSite(), arg[5:])
+            gen = pagegenerators.CategorizedPageGenerator(cat)
+        else:
+            pageTitle.append(arg)
 
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
