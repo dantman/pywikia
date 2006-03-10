@@ -19,8 +19,8 @@ You can run the bot with the following commandline parameters:
                parameter multiple times to edit multiple pages.
 -ref         - Work on all pages that link to a certain page.
                Argument can also be given as "-ref:referredpagetitle".
--linked      - Work on all pages that are linked to from a certain page.
-               Argument can also be given as "-linked:linkingpagetitle".
+-links       - Work on all pages that are linked to from a certain page.
+               Argument can also be given as "-links:linkingpagetitle".
 -start       - Work on all pages in the wiki, starting at a given page. Choose
                "-start:!" to start at the beginning.
                NOTE: You are advised to use -xml instead of this option; this is
@@ -746,7 +746,7 @@ def main():
     PageTitles = []
     # a page whose referrers will be processed when the -ref parameter is used
     referredPageTitle = None
-    # a page whose links will be processed when the -linked parameter is used
+    # a page whose links will be processed when the -links parameter is used
     linkingPageTitle = None
     # will become True when the user presses a ('yes to all') or uses the -always
     # commandline paramater.
@@ -795,12 +795,12 @@ def main():
                 else:
                     referredPageTitle = arg[5:]
                 source = 'ref'
-            elif arg.startswith('-linked'):
-                if len(arg) == 7:
+            elif arg.startswith('-links'):
+                if len(arg) == 6:
                     linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
                 else:
-                    linkingPageTitle = arg[8:]
-                source = 'linked'
+                    linkingPageTitle = arg[7:]
+                source = 'links'
             elif arg.startswith('-start'):
                 if len(arg) == 6:
                     firstPageTitle = wikipedia.input(u'Which page do you want to chage?')
@@ -890,7 +890,7 @@ def main():
     elif source == 'ref':
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
-    elif source == 'linked':
+    elif source == 'links':
         linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
         gen = pagegenerators.LinkedPageGenerator(linkingPage)
     elif source == 'google':
