@@ -168,21 +168,19 @@ def main():
     xmlfilename = None
     new = None
     # read command line parameters
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'template')
-        if arg:
-            if arg == '-remove':
-                remove = True
-            elif arg.startswith('-xml'):
-                if len(arg) == 4:
-                    xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
-                else:
-                    xmlfilename = arg[5:]
+    for arg in wikipedia.handleArgs():
+        if arg == '-remove':
+            remove = True
+        elif arg.startswith('-xml'):
+            if len(arg) == 4:
+                xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
             else:
-                template_names.append(arg)
+                xmlfilename = arg[5:]
+        else:
+            template_names.append(arg)
 
     if len(template_names) == 0 or len(template_names) > 2:
-        wikipedia.showHelp('template')
+        wikipedia.showHelp()
         sys.exit()
     old = template_names[0]
     if len(template_names) == 2:
