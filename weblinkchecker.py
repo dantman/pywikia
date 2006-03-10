@@ -437,51 +437,52 @@ class WeblinkCheckerRobot:
                 thread.start()
 
 def main():
-    start = u'!'
+    gen = None
     pageTitle = []
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'weblinkchecker')
-        if arg:
-            if arg.startswith('-start:'):
-                start = arg[7:]
-            else:
-                pageTitle.append(arg)
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-start:'):
+            start = arg[7:]
+            gen = pagegenerators.AllpagesPageGenerator(start)
+        else:
+            pageTitle.append(arg)
 
-    if pageTitle == []:
-        gen = pagegenerators.AllpagesPageGenerator(start)
-    else:
+    if pageTitle:
         pageTitle = ' '.join(pageTitle)
         page = wikipedia.Page(wikipedia.getSite(), pageTitle)
         gen = iter([page])
-    gen = pagegenerators.PreloadingGenerator(gen, pageNumber = 240)
-    gen = pagegenerators.RedirectFilterPageGenerator(gen)
-    bot = WeblinkCheckerRobot(gen)
-    try:
-        bot.run()
-    finally:
-        waitTime = 0
-        # Don't wait longer than 30 seconds for threads to finish.
-        while threading.activeCount() > 2 and waitTime < 30:
-            wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 2)) # don't count the main thread and report thread
-            # wait 1 second
-            time.sleep(1)
-            waitTime += 1
-        if threading.activeCount() > 2:
-            wikipedia.output(u'Remaining %i threads will be killed.' % (threading.activeCount() - 2))
-            # Threads will die automatically because they are daemonic.
-        wikipedia.output(u'Saving history...')
-        bot.history.save()
-        if bot.history.reportThread:
-            bot.history.reportThread.shutdown()
-            # wait until the report thread is shut down; the user can interrupt
-            # it by pressing CTRL-C.
-            #try:
-            try:
-                while bot.history.reportThread.isAlive():
-                    time.sleep(0.1)
-            except KeyboardInterrupt:
-                print 'INTERRUPT'
-                bot.history.reportThread.kill()
+
+    if gen:
+        gen = pagegenerators.PreloadingGenerator(gen, pageNumber = 240)
+        gen = pagegenerators.RedirectFilterPageGenerator(gen)
+        bot = WeblinkCheckerRobot(gen)
+        try:
+            bot.run()
+        finally:
+            waitTime = 0
+            # Don't wait longer than 30 seconds for threads to finish.
+            while threading.activeCount() > 2 and waitTime < 30:
+                wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 2)) # don't count the main thread and report thread
+                # wait 1 second
+                time.sleep(1)
+                waitTime += 1
+            if threading.activeCount() > 2:
+                wikipedia.output(u'Remaining %i threads will be killed.' % (threading.activeCount() - 2))
+                # Threads will die automatically because they are daemonic.
+            wikipedia.output(u'Saving history...')
+            bot.history.save()
+            if bot.history.reportThread:
+                bot.history.reportThread.shutdown()
+                # wait until the report thread is shut down; the user can interrupt
+                # it by pressing CTRL-C.
+                #try:
+                try:
+                    while bot.history.reportThread.isAlive():
+                        time.sleep(0.1)
+                except KeyboardInterrupt:
+                    print 'INTERRUPT'
+                    bot.history.reportThread.kill()
+    else:
+        wikipedia.showHelp()
     
 if __name__ == "__main__":
     try:
