@@ -3089,7 +3089,9 @@ def input(question):
 def inputChoice(question, answers, hotkeys, default = None):
     return ui.inputChoice(question, answers, hotkeys, default)
 
-def showHelp(moduleName):
+def showHelp(moduleName = None):
+    # the parameter moduleName is deprecated and should be left out.
+    moduleName = moduleName or sys.argv[0][:sys.argv[0].rindex('.')]
     globalHelp =u'''
 Global arguments available for all bots:
 
