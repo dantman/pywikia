@@ -88,7 +88,14 @@ class LinkChecker(object):
         #header = {'User-agent': 'PythonWikipediaBot/1.0'}
         # we fake being Firefox because some webservers block
         # unknown clients
-        self.header = {'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5'}
+        self.header = {
+            'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5',
+            'Accept': 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
+            'Accept-Language': 'de-de,de;q=0.8,en-us;q=0.5,en;q=0.3',
+            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+            'Keep-Alive': '30',
+            'Connection': 'keep-alive',
+            }
 
     def changeUrl(self, url):
         self.url = url
@@ -319,6 +326,7 @@ class DeadLinkReportThread(threading.Thread):
         self.semaphore = threading.Semaphore()
         self.queue =  [];
         self.finishing = False
+        self.killed = False
     
     def report(self, url, errorReport, containingPage):
         """
@@ -331,8 +339,12 @@ class DeadLinkReportThread(threading.Thread):
     def shutdown(self):
         self.finishing = True
     
+    def kill(self):
+        # TODO: remove if unneeded
+        self.killed = True
+    
     def run(self):
-        while True:
+        while not self.killed:
             # print 'RUN, queue length: %i' % len(self.queue)
             if len(self.queue) == 0:
                 if self.finishing:
@@ -401,7 +413,9 @@ class WeblinkCheckerRobot:
         # MediaWiki allows closing curly braces inside links, but such braces
         # often come from templates where URLs are parameters, so as a
         # workaround we won't allow them inside links here.
-        linkR = re.compile(r'http[s]?://[^\]\s<>}"]*[^\]\s\)\.:;,<>}"]')
+        # The first half of this regular expression is required because '' is
+        # not allowed inside links.
+        linkR = re.compile(r'http[s]?://[^\]\s<>}"]*?[^\]\s\)\.:;,<>}"](?=\'\')|http[s]?://[^\]\s<>}"]*[^\]\s\)\.:;,<>}"]')
         # Remove HTML comments in URLs as well as URLs in HTML comments.
         # Also remove text inside nowiki links
         text = re.sub('(?s)<nowiki>.*?</nowiki>|<!--.*?-->', '', text)
@@ -461,11 +475,13 @@ def main():
             bot.history.reportThread.shutdown()
             # wait until the report thread is shut down; the user can interrupt
             # it by pressing CTRL-C.
+            #try:
             try:
                 while bot.history.reportThread.isAlive():
                     time.sleep(0.1)
             except KeyboardInterrupt:
-                pass
+                print 'INTERRUPT'
+                bot.history.reportThread.kill()
     
 if __name__ == "__main__":
     try:
