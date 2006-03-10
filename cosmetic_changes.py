@@ -179,44 +179,50 @@ class CosmeticChangesBot:
     
     def run(self):
         for page in self.generator:
-            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True)
-            changedText = ccToolkit.change(page.get())
-            if changedText != page.get():
-                if not self.acceptall:
-                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                    if choice in ['a', 'A']:
-                        self.acceptall = True
-                if self.acceptall or choice in ['y', 'Y']:
-                    page.put(changedText)
+            try:
+                ccToolkit = CosmeticChangesToolkit(page.site(), debug = True)
+                changedText = ccToolkit.change(page.get())
+                if changedText != page.get():
+                    if not self.acceptall:
+                        choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                        if choice in ['a', 'A']:
+                            self.acceptall = True
+                    if self.acceptall or choice in ['y', 'Y']:
+                        page.put(changedText)
+            except wikipedia.NoPage:
+                print "Page %s does not exist?!" % page.aslink()
+            except wikipedia.IsRedirectPage:
+                print "Page %s is a redirect; skipping." % page.aslink()
+            except wikipedia.LockedPage:
+                print "Page %s is locked?!" % page.aslink()
+            
 
 def main():
     #page generator
     gen = None
     pageTitle = []
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'cosmetic_changes')
-        if arg:
-            if arg.startswith('-start:'):
-                gen = pagegenerators.AllpagesPageGenerator(arg[7:])
-            elif arg.startswith('-ref:'):
-                referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
-                gen = pagegenerators.ReferringPageGenerator(referredPage)
-            elif arg.startswith('-links:'):
-                linkingPage = wikipedia.Page(wikipedia.getSite(), arg[7:])
-                gen = pagegenerators.LinkedPageGenerator(linkingPage)
-            elif arg.startswith('-file:'):
-                gen = pagegenerators.TextfilePageGenerator(arg[6:])
-            elif arg.startswith('-cat:'):
-                cat = catlib.Category(wikipedia.getSite(), arg[5:])
-                gen = pagegenerators.CategorizedPageGenerator(cat)
-            else:
-                pageTitle.append(arg)
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-start:'):
+            gen = pagegenerators.AllpagesPageGenerator(arg[7:])
+        elif arg.startswith('-ref:'):
+            referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
+            gen = pagegenerators.ReferringPageGenerator(referredPage)
+        elif arg.startswith('-links:'):
+            linkingPage = wikipedia.Page(wikipedia.getSite(), arg[7:])
+            gen = pagegenerators.LinkedPageGenerator(linkingPage)
+        elif arg.startswith('-file:'):
+            gen = pagegenerators.TextfilePageGenerator(arg[6:])
+        elif arg.startswith('-cat:'):
+            cat = catlib.Category(wikipedia.getSite(), arg[5:])
+            gen = pagegenerators.CategorizedPageGenerator(cat)
+        else:
+            pageTitle.append(arg)
 
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = iter([page])
     if not gen:
-        wikipedia.showHelp('cosmetic_changes')
+        wikipedia.showHelp()
     else:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = CosmeticChangesBot(preloadingGen)
