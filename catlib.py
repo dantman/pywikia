@@ -230,7 +230,7 @@ class Category(wikipedia.Page):
 #    # Prepend it
 #    return Category(code, "%s:%s" % (ns, name))
 
-def change_category(article, oldCat, newCat, comment=None):
+def change_category(article, oldCat, newCat, comment=None, sortKey=None):
     """
     Given an article which is in category oldCat, moves it to
     category newCat. Moves subcategories of oldCat as well.
@@ -246,7 +246,8 @@ def change_category(article, oldCat, newCat, comment=None):
     for i in range(len(cats)):
         cat = cats[i]
         if cat == oldCat:
-            sortKey = cat.sortKey
+            if not sortKey:
+                sortKey = cat.sortKey
             if not newCat:
                 cats = cats[:i] + cats[i+1:]
             else:
