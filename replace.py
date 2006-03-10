@@ -14,7 +14,7 @@ You can run the bot with the following commandline parameters:
                Argument can also be given as "-file:filename".
 -cat         - Work on all pages which are in a specific category.
                Argument can also be given as "-cat:categoryname".
--page        - Only edit a single page.
+-page        - Only edit a specific page.
                Argument can also be given as "-page:pagetitle". You can give this
                parameter multiple times to edit multiple pages.
 -ref         - Work on all pages that link to a certain page.
@@ -604,10 +604,10 @@ class XmlDumpReplacePageGenerator:
     replace. These pages will be retrieved from a local XML dump file
     (cur table).
     """
-    def __init__(self, xmlfilename, replacements, exceptions):
+    def __init__(self, xmlFilename, replacements, exceptions):
         """
         Arguments:
-            * xmlfilename  - The dump's path, either absolute or relative
+            * xmlFilename  - The dump's path, either absolute or relative
             * replacements - A list of 2-tuples of original text (as a compiled
                              regular expression) and replacement text (as a
                              string).
@@ -616,14 +616,14 @@ class XmlDumpReplacePageGenerator:
                              changed.
         """
 
-        self.xmlfilename = xmlfilename
+        self.xmlFilename = xmlFilename
         self.replacements = replacements
         self.exceptions = exceptions
     
     def __iter__(self):
         import xmlreader
         mysite = wikipedia.getSite()
-        dump = xmlreader.XmlDump(self.xmlfilename)
+        dump = xmlreader.XmlDump(self.xmlFilename)
         for entry in dump.parse():
             skip_page = False
             for exception in self.exceptions:
@@ -736,7 +736,7 @@ def main():
     fix = None
     # the dump's path, either absolute or relative, which will be used when source
     # is 'xmldump'.
-    xmlfilename = None
+    xmlFilename = None
     # the textfile's path, either absolute or relative, which will be used when
     # source is 'textfile'.
     textfilename = None
@@ -762,65 +762,67 @@ def main():
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
     # Read commandline parameters.
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'replace')
-        if arg:
-            if arg == '-regex':
-                regex = True
-            elif arg.startswith('-file'):
-                if len(arg) >= 6:
-                    textfilename = arg[6:]
-                source = 'textfile'
-            elif arg.startswith('-cat'):
-                if len(arg) == 4:
-                    categoryname = wikipedia.input(u'Please enter the category name:')
-                else:
-                    categoryname = arg[5:]
-                source = 'category'
-            elif arg.startswith('-xml'):
-                if len(arg) == 4:
-                    xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
-                else:
-                    xmlfilename = arg[5:]
-                source = 'xmldump'
-            elif arg.startswith('-page'):
-                if len(arg) == 5:
-                    PageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
-                else:
-                    PageTitles.append(arg[6:])
-                source = 'singlepage'
-            elif arg.startswith('-ref'):
-                if len(arg) == 4:
-                    referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
-                else:
-                    referredPageTitle = arg[5:]
-                source = 'ref'
-            elif arg.startswith('-links'):
-                if len(arg) == 6:
-                    linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
-                else:
-                    linkingPageTitle = arg[7:]
-                source = 'links'
-            elif arg.startswith('-start'):
-                if len(arg) == 6:
-                    firstPageTitle = wikipedia.input(u'Which page do you want to chage?')
-                else:
-                    firstPageTitle = arg[7:]
-                source = 'allpages'
-            elif arg.startswith('-google'):
-                if len(arg) >= 8:
-                    googleQuery = arg[8:]
-                source = 'google'
-            elif arg.startswith('-except:'):
-                exceptions.append(arg[8:])
-            elif arg.startswith('-fix:'):
-                fix = arg[5:]
-            elif arg == '-always':
-                acceptall = True
-            elif arg.startswith('-namespace:'):
-                namespaces.append(int(arg[11:]))
+    for arg in wikipedia.handleArgs():
+        if arg == '-regex':
+            regex = True
+        elif arg.startswith('-file'):
+            if len(arg) >= 6:
+                textfilename = arg[6:]
+            gen = pagegenerators.TextfilePageGenerator(textfilename)
+        elif arg.startswith('-cat'):
+            if len(arg) == 4:
+                categoryname = wikipedia.input(u'Please enter the category name:')
             else:
-                commandline_replacements.append(arg)
+                categoryname = arg[5:]
+            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
+            gen = pagegenerators.CategorizedPageGenerator(cat)
+        elif arg.startswith('-xml'):
+            if len(arg) == 4:
+                xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
+            else:
+                xmlFilename = arg[5:]
+        elif arg.startswith('-page'):
+            if len(arg) == 5:
+                PageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
+            else:
+                PageTitles.append(arg[6:])
+            source = 'specificPages'
+        elif arg.startswith('-ref'):
+            if len(arg) == 4:
+                referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
+            else:
+                referredPageTitle = arg[5:]
+            referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
+            gen = pagegenerators.ReferringPageGenerator(referredPage)
+        elif arg.startswith('-links'):
+            if len(arg) == 6:
+                linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
+            else:
+                linkingPageTitle = arg[7:]
+            linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
+            gen = pagegenerators.LinkedPageGenerator(linkingPage)
+        elif arg.startswith('-start'):
+            if len(arg) == 6:
+                firstPageTitle = wikipedia.input(u'Which page do you want to chage?')
+            else:
+                firstPageTitle = arg[7:]
+            namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
+            gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
+        elif arg.startswith('-google'):
+            if len(arg) >= 8:
+                googleQuery = arg[8:]
+            gen = pagegenerators.GoogleSearchPageGenerator(googleQuery)
+        elif arg.startswith('-except:'):
+            exceptions.append(arg[8:])
+        elif arg.startswith('-fix:'):
+            fix = arg[5:]
+        elif arg == '-always':
+            acceptall = True
+        elif arg.startswith('-namespace:'):
+            namespaces.append(int(arg[11:]))
+        else:
+            commandline_replacements.append(arg)
+
     if (len(commandline_replacements) == 2 and fix == None):
         replacements.append((commandline_replacements[0], commandline_replacements[1]))
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
@@ -874,28 +876,13 @@ def main():
         exceptionR = re.compile(exception, re.UNICODE)
         exceptions[i] = exceptionR
     
-    if source == 'textfile':
-        gen = pagegenerators.TextfilePageGenerator(textfilename)
-    elif source == 'category':
-        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
-        gen = pagegenerators.CategorizedPageGenerator(cat)
-    elif source == 'xmldump':
+    if xmlFilename:
         gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions)
-    elif source == 'singlepage':
+    elif PageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]
         gen = iter(pages)
-    elif source == 'allpages':
-        namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
-        gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
-    elif source == 'ref':
-        referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
-        gen = pagegenerators.ReferringPageGenerator(referredPage)
-    elif source == 'links':
-        linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
-        gen = pagegenerators.LinkedPageGenerator(linkingPage)
-    elif source == 'google':
-        gen = pagegenerators.GoogleSearchPageGenerator(googleQuery)
-    elif source == None or len(commandline_replacements) not in [0, 2]:
+
+    if not gen:
         # syntax error, show help text from the top of this file
         wikipedia.output(__doc__, 'utf-8')
         wikipedia.stopme()
