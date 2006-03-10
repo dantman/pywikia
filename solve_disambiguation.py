@@ -716,47 +716,45 @@ def main():
     primary = False
     main_only = False
 
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'solve_disambiguation')
-        if arg:
-            if arg.startswith('-primary:'):
-                primary = True
-                getAlternatives = False
-                alternatives.append(arg[9:])
-            elif arg == '-primary':
-                primary = True
-            elif arg.startswith('-always:'):
-                always = arg[8:]
-            elif arg.startswith('-file'):
-                if len(arg) == 5:
-                    generator = pagegenerators.TextfilePageGenerator(filename = None)
-                else:
-                    generator = pagegenerators.TextfilePageGenerator(filename = arg[6:])
-            elif arg.startswith('-pos:'):
-                if arg[5]!=':':
-                    mysite = wikipedia.getSite()
-                    pl = wikipedia.Page(mysite, arg[5:])
-                    if pl.exists():
-                        alternatives.append(pl.title())
-                    else:
-                        answer = wikipedia.inputChoice(
-u'Possibility %s does not actually exist. Use it anyway?'
-                                 % pl.title(), ['yes', 'no'], ['y', 'N'], 'N')
-                        if answer in ('Y', 'y'):
-                            alternatives.append(pl.title())
-                else:
-                    alternatives.append(arg[5:])
-            elif arg == '-just':
-                getAlternatives = False
-            elif arg == '-main':
-                main_only = True
-            elif arg.startswith("-"):
-                print "Unrecognized command line argument: %s" % arg
-                # show help text and exit
-                wikipedia.argHandler("-help", "solve_disambiguation")
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-primary:'):
+            primary = True
+            getAlternatives = False
+            alternatives.append(arg[9:])
+        elif arg == '-primary':
+            primary = True
+        elif arg.startswith('-always:'):
+            always = arg[8:]
+        elif arg.startswith('-file'):
+            if len(arg) == 5:
+                generator = pagegenerators.TextfilePageGenerator(filename = None)
             else:
-                pageTitle.append(arg)
-                
+                generator = pagegenerators.TextfilePageGenerator(filename = arg[6:])
+        elif arg.startswith('-pos:'):
+            if arg[5]!=':':
+                mysite = wikipedia.getSite()
+                pl = wikipedia.Page(mysite, arg[5:])
+                if pl.exists():
+                    alternatives.append(pl.title())
+                else:
+                    answer = wikipedia.inputChoice(
+u'Possibility %s does not actually exist. Use it anyway?'
+                             % pl.title(), ['yes', 'no'], ['y', 'N'], 'N')
+                    if answer in ('Y', 'y'):
+                        alternatives.append(pl.title())
+            else:
+                alternatives.append(arg[5:])
+        elif arg == '-just':
+            getAlternatives = False
+        elif arg == '-main':
+            main_only = True
+        elif arg.startswith("-"):
+            print "Unrecognized command line argument: %s" % arg
+            # show help text and exit
+            wikipedia.showHelp()
+        else:
+            pageTitle.append(arg)
+            
     # if the disambiguation page is given as a command line argument,
     # connect the title's parts with spaces
     if pageTitle != []:
