@@ -794,6 +794,7 @@ def main():
                     referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
                 else:
                     referredPageTitle = arg[5:]
+                source = 'ref'
             elif arg.startswith('-linked'):
                 if len(arg) == 7:
                     linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
