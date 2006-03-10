@@ -841,7 +841,11 @@ class Page(object):
                         token=None, gettoken=True, sysop=safetuple[5])
             else:
                 output(data)
-        return response.status, response.reason, data
+        if self.site().hostname() in config.authenticate.keys():
+            # No idea how to get the info now.
+            return None
+        else:
+            return response.status, response.reason, data
 
     def canBeEdited(self):
         """
@@ -1312,13 +1316,20 @@ class GetAll(object):
                 break
         if not data:
             return
+        # They're doing strange things with their XML on Lovetoknow...
+        R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
+        M = R.match(data)
+        if M:
+            data = M.group(2)
         handler = xmlreader.MediaWikiXmlHandler()
         handler.setCallback(self.oneDone)
         handler.setHeaderCallback(self.headerDone)
         try:
             xml.sax.parseString(data, handler)
-        except xml.sax._exceptions.SAXParseException:
+        except xml.sax._exceptions.SAXParseException, err:
             f=open('sax_parse_bug.dat','w')
+            f.write('Error reported: '+str(err))
+            f.write('\n')
             f.write(data)
             f.close()
             print >>sys.stderr, "Dumped invalid XML to sax_parse_bug.dat"
@@ -1429,30 +1440,38 @@ class GetAll(object):
             print pagenames
         # convert Unicode string to the encoding used on that wiki
         pagenames = pagenames.encode(self.site.encoding())
-        data = urlencode((
+        data = [
                     ('action', 'submit'),
                     ('pages', pagenames),
                     ('curonly', 'True'),
-                    ))
+                    ]
         #print repr(data)
         # Slow ourselves down
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
         now = time.time()
-        conn = httplib.HTTPConnection(self.site.hostname())
-        conn.putrequest("POST", address)
-        conn.putheader('Content-Length', str(len(data)))
-        conn.putheader("Content-type", "application/x-www-form-urlencoded")
-        conn.putheader("User-agent", "PythonWikipediaBot/1.0")
-        if self.site.cookies():
-            conn.putheader('Cookie', self.site.cookies())
-        conn.endheaders()
-        conn.send(data)
-        response = conn.getresponse()
-        if (response.status >= 300):
-            raise ServerError(response.status, response.reason)
-        data = response.read()
-        conn.close()
+        if self.site.hostname() in config.authenticate.keys():
+            data.append(("Content-type","application/x-www-form-urlencoded"))
+            data.append(("User-agent", "PythonWikipediaBot/1.0"))
+            data = urlencode(tuple(data))
+            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
+            data = response.read()
+        else:
+            data = urlencode(tuple(data))
+            conn = httplib.HTTPConnection(self.site.hostname())
+            conn.putrequest("POST", address)
+            conn.putheader('Content-Length', str(len(data)))
+            conn.putheader("Content-type", "application/x-www-form-urlencoded")
+            conn.putheader("User-agent", "PythonWikipediaBot/1.0")
+            if self.site.cookies():
+                conn.putheader('Cookie', self.site.cookies())
+            conn.endheaders()
+            conn.send(data)
+            response = conn.getresponse()
+            if (response.status >= 300):
+                raise ServerError(response.status, response.reason)
+            data = response.read()
+            conn.close()
         get_throttle.setDelay(time.time() - now)
         return data
     

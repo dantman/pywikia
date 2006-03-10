@@ -69,6 +69,11 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         self.inRevisionTag = False
         self.inContributorTag = False
         self.headercallback = None
+        # Older Mediawiki version sometimes do not have these elements.
+        # They are initialized here so they at least have some value when
+        # asked for
+        self.id = u''
+        self.revisionid = u''
         
     def setCallback(self, callback):
         self.callback = callback
