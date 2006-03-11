@@ -1762,13 +1762,13 @@ class Family:
         'bg': [u'СТРАНИЦА'],
         'nn': ['SIDENAMN','SIDENAVN'],
         'ru': [u'НАЗВАНИЕСТРАНИЦЫ'],
-        'sr': [u'СТРАНИЦА']
+        'sr': [u'СТРАНИЦА'],
         'tt': [u'BİTİSEME']
     }
 
     pagenamee = {
         'nn': ['SIDENAMNE','SIDENAVNE'],
-        'ru': [u'НАЗВАНИЕСТРАНИЦЫ2']
+        'ru': [u'НАЗВАНИЕСТРАНИЦЫ2'],
         'sr': [u'СТРАНИЦЕ']
     }
 
