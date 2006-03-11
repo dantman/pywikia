@@ -26,7 +26,7 @@ For each table type, there can be three lists:
 #
 #
 
-__version__='$Id$'
+__version__='$Id: translator.py,v 1.21 2005/12/21 17:51:26 wikipedian Exp $'
 
 types = {
     # translations for images (inside other tables)
