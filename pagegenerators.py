@@ -93,7 +93,6 @@ class TextfilePageGenerator:
 
 class GoogleSearchPageGenerator:
     '''
-    This 
     To use this generator, you must install the pyGoogle module from
     http://pygoogle.sf.net/ and get a Google Web API license key from
     http://www.google.com/apis/index.html . The google_key must be set to your
@@ -130,6 +129,33 @@ class GoogleSearchPageGenerator:
                 title = url[len(base):]
                 page = wikipedia.Page(site, title)
                 yield page
+
+class MySQLPageGenerator:
+    '''
+
+    '''
+    def __init__(self, query):
+        self.query = query
+    
+    def __iter__(self):
+        import MySQLdb as mysqldb
+        mysite = wikipedia.getSite()
+        conn = mysqldb.connect(config.db_hostname, db = mysite.dbName(), user = config.db_username, passwd = config.db_password)
+        cursor = conn.cursor()
+        cursor.execute(self.query)
+        result = True
+        i = 0
+        while result:
+            i += 1;
+            print i
+            p = cursor.fetchone()
+            ns = mysite.namespace(p[0])
+            if ns:
+                pageTitle = '%s:%s' % (ns, p[1])
+            else:
+                pageTitle = p[1]
+            page = wikipedia.Page(mysite, pageTitle)
+            yield page
 
 class YearPageGenerator:
     def __init__(self, start = 1, end = 2050):

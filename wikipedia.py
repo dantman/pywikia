@@ -2583,6 +2583,9 @@ class Site(object):
     def hostname(self):
         return self.family.hostname(self.lang)
 
+    def dbName(self):
+        return self.family.dbName(self.lang)
+
     def delete_address(self, s):
         return self.family.delete_address(self.lang, s)
 

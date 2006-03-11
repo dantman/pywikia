@@ -186,6 +186,11 @@ max_external_links = 50
 
 report_dead_links_on_talk = False
 
+############## DATABASE SETTINGS ##############
+db_hostname = 'localhost'
+db_username = 'wikiuser'
+db_password = ''
+
 ############## FURTHER SETTINGS ##############
 
 # The bot can make some additional changes to each page it edits, e.g. fix

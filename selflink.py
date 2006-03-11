@@ -55,7 +55,7 @@ class SelflinkBot:
         # note that the definition of 'letter' varies from language to language.
         linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
         # how many bytes should be displayed around the current link
-        context = 60
+        context = 90
         comment = wikipedia.translate(wikipedia.getSite(), msg)
         wikipedia.setAction(comment)
 
@@ -121,6 +121,17 @@ def main():
         elif arg.startswith('-cat:'):
             cat = catlib.Category(wikipedia.getSite(), arg[5:])
             gen = pagegenerators.CategorizedPageGenerator(cat)
+        elif arg == '-sql':
+            # NOT WORKING YET
+            query = """SELECT page_namespace, page_title FROM pagelinks STRAIGHT_JOIN page
+                       WHERE pl_from = page_id AND pl_title = page_title AND pl_namespace = page_namespace
+                       AND page_namespace = 0
+                       """
+#                       AND ( page_text LIKE concat('%[[',page_title,']]%') OR
+#                             page_text LIKE concat('%[[',page_title,'|%')
+#                       )
+                       #ORDER BY page_title asc
+            gen = pagegenerators.MySQLPageGenerator(query)
         else:
             pageTitle.append(arg)
 
@@ -130,7 +141,7 @@ def main():
     if not gen:
         wikipedia.showHelp('selflink')
     else:
-        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen, 1)
         bot = SelflinkBot(preloadingGen)
         bot.run()
 

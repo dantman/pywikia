@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 __version__='$Id$'
@@ -1805,6 +1805,10 @@ class Family:
     
     def path(self, code):
         return '/w/index.php'
+
+    def dbName(self, code):
+        # returns the name of the MySQL database
+        return '%s%s' % (code, self.name)
 
     # Which version of MediaWiki is used?
 

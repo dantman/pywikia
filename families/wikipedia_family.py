@@ -617,6 +617,13 @@ class Family(family.Family):
             'zu' :			u'Main Page',
         }
     
+    def dbName(self, code):
+        # returns the name of the MySQL database
+        # for historic reasons, the databases are called wikixx instead of
+        # wikipediaxx for Wikipedias.
+        return '%swiki' % code
+
+    
     def code2encodings(self, code):
         """Return a list of historical encodings for a specific language
            wikipedia"""
