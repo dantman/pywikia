@@ -1265,15 +1265,37 @@ class ImagePage(Page):
     # a Page in the Image namespace
     def __init__(self, site, title = None, insite = None, tosite = None):
         Page.__init__(self, site, title, insite, tosite)
+        self._imagePageContents = None
+    
+    def getImagePageContents(self):
+        if not self._imagePageContents:
+            path = self.site().get_address(self.urlname())
+            output(u'Getting %s...' % path)
+            self._imagePageContents = self.site().getUrl(path)
+        return self._imagePageContents
     
     def fileUrl(self):
-        filename = self.titleWithoutNamespace(underscore = True)
-        encodedFilename = filename.encode(self.site().encoding())
-        md5Sum = md5.new(encodedFilename).hexdigest()
-        encodedFilename = urllib.quote(encodedFilename)
-        # TODO: This probably doesn't work on all wiki families
-        url = 'http://%s/upload/%s/%s/%s' % (self.site().hostname(), md5Sum[0], md5Sum[:2], encodedFilename)
+        urlR = re.compile(r'<div class="fullImageLink" id="file"><a href="(?P<url1>.+?)">|<div class="fullImageLink" id="file"><img border="0" src="(?P<url2>.+?)"')
+        m = urlR.search(self.getImagePageContents())
+        url = m.group('url1') or m.group('url2')
+        print url
         return url
+        #filename = self.titleWithoutNamespace(underscore = True)
+        #encodedFilename = filename.encode(self.site().encoding())
+        #md5Sum = md5.new(encodedFilename).hexdigest()
+        #encodedFilename = urllib.quote(encodedFilename)
+        # TODO: This won't work for non-Wikimedia projects
+        #url = 'http://upload.wikimedia.org/%s/%s/%s/%s/%s' % (self.site().family.name, self.site().lang, md5Sum[0], md5Sum[:2], encodedFilename)
+        #return url
+    
+    def isOnCommons(self):
+        return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
+    
+    def getFileMd5Sum(self):
+        uo = MyURLopener()
+        f = uo.open(self.fileUrl())
+        md5Checksum = md5.new(f.read()).hexdigest()
+        print md5Checksum
 
 class XmlPage(Page):
     # In my opinion, this should be deleted. --Daniel Herding
