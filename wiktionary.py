@@ -169,6 +169,16 @@ langnames = {
         'eo' : u'esperanto',
         'es' : u'español',
         },
+    'sr':    {
+        'translingual' : u'Вишејезички',
+        'nl' : u'холандски',
+        'en' : u'енглески',
+        'de' : u'немачки',
+        'fr' : u'француски',
+        'it' : u'италијански',
+        'eo' : u'есперанто',
+        'es' : u'шпански',
+        },
 }
 
 def invertlangnames():

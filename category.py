@@ -50,6 +50,7 @@ msg_add={
     'is':u'Vélmenni: Bæti við [[%s]]',
     'no':u'Robot: Legger til [[%s]]',
     'pt':u'Bot: Adicionando [[%s]]',
+    'sr':u'Бот: Додаје [[Категорија:%s]]',
     }
 
 msg_change={
@@ -64,6 +65,7 @@ msg_change={
     'nl':u'Bot: Wijziging %s',
     'no':u'Robot: Endrer %s',
     'pt':u'Bot: Modificando [[%s]]',
+    'sr':u'Бот: Измена категорије %s',
     }
 
 deletion_reason_move = {
@@ -73,6 +75,7 @@ deletion_reason_move = {
     'ia':u'Robot: Categoria transferite a %s',
     'no':u'Robot: Kategorien ble flyttet til %s',
     'pt':u'Bot: Categoria %s foi movida',
+    'sr':u'Бот: Категорија премештена у %s',
     }
 
 class CategoryDatabase:
@@ -313,6 +316,7 @@ class CategoryRemoveRobot:
         'is':u'Vélmenni: Fjarlægi [[%s]]',
         'nl':u'Bot: Verwijderd uit %s',
         'pt':u'Bot: Removendo [[%s]]',
+        'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
     }
     
     def __init__(self, catTitle):
@@ -516,6 +520,7 @@ class CategoryTreeRobot:
             'ia': u'(equalmente in %s)',
             'is': u'(einnig í %s)',
             'pt': u'(também em %s)',
+            'ср': u'(такође у %s)',
             }
             
         result = u'#' * currentDepth

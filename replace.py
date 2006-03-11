@@ -91,6 +91,7 @@ msg = {
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
        'lt':u'Botas: Automatinis teksto keitimas %s',       
        'pt':u'Bot: Mudança automática %s',
+       'sr':u'Бот: Аутоматска замена текста %s',
        }
 
 # Predefined replacements tasks.
@@ -107,6 +108,7 @@ fixes = {
                'de':u'Bot: konvertiere/korrigiere HTML',
                'ia':u'Robot: conversion/reparation de HTML',
                'pt':u'Bot: Corrigindo HTML'
+               'sr':u'Бот: Поправка HTML-а'
               },
         'replacements': [
             # Everything case-insensitive (?i)
@@ -168,6 +170,7 @@ fixes = {
                'en':u'Bot: Fixing wiki syntax',
                'ia':u'Robot: Reparation de syntaxe wiki',
                'pt':u'Bot: Corrigindo sintax wiki',
+               'sr':u'Бот: Поправка вики синтаксе',
               },
         'replacements': [
             (r'\[\[(http://.+?)\]\]',   r'[\1]'),        # external link in double brackets

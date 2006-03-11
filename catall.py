@@ -27,6 +27,7 @@ msg={
     'ia': 'Alteration de categorias',
     'nl': 'Verandering van categorieen',
     'pt': 'Alterando categoria'
+    'sr': 'Измена категорија',
     }
 
 def choosecats(pagetext):

@@ -50,6 +50,7 @@ talk_report_msg = {
     'en': u'robot: Reporting unavailable external link',
     'ia': u'Robot: Reporto de un ligamine externe non functionante',
     'pt': u'Bot: Link externo nã funcionando',
+    'sr': u'Бот: Пријављивање непостојећих спољашњих повезница',
 }
 
 talk_report = {
@@ -57,6 +58,7 @@ talk_report = {
     'en': u'== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n--~~~~',
     'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n--~~~~',
     'pt': u'== Link quebrado ==\n\nChecando links externos com o bot por vários minutos verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou remova-o!\n\n%s\n -- ~~~~ ',
+    'sr': u'== Покварене спољашње повезнице ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n--~~~~',
 }
 
 ignorelist = [

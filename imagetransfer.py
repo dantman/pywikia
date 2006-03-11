@@ -39,6 +39,7 @@ copy_message = {
     'lt':u"Šis paveikslėlis buvo įkeltas iš %s. Originalus aprašymas buvo:\r\n\r\n%s",
     'nl':u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
     'pt':u"Esta imagem foi copiada de %s. A descrição original foi:\r\n\r\n%s",
+    'sr':u"Ова слика је копирана са %s. Оригинални опис је:\r\n\r\n%s",
 }
 
 nowCommonsTemplate = {
@@ -49,6 +50,7 @@ nowCommonsTemplate = {
     'lt': u'{{NowCommons|Image:%s}}',
     'nl': u'{{NuCommons|%s}}',
     'pt': u'{{NowCommons|%s}}',
+    'sr': u'{{NowCommons|%s}}',
 }
 
 nowCommonsMessage = {
@@ -57,6 +59,7 @@ nowCommonsMessage = {
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
     'lt': u'Failas įkeltas į Wikimedia Commons projektą.',
     'pt': u'Arquivo está agora na Wikimedia Commons.',
+    'sr': u'Слика је сада доступна и на Викимедија Остави.',
 }
 
 # Translations for license templates.

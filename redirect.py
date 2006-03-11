@@ -46,6 +46,7 @@ msg_double={
 	'ia':u'Robot: reparation de duple redirection',
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     'pt':u'Bot: Corrigido duplo redirecionamento',
+    'sr':u'Бот: Поправка дуплих преусмерења',
     }
 
 # Reason for deleting broken redirects
@@ -55,6 +56,7 @@ reason_broken={
 	'fr':u'Robot : Cible du redirect inexistante',
 	'ia':u'Robot: Scopo del redirection non existe',
     'pt':u'Bot: Redirecionamento não existe',
+    'sr':u'Бот: Преусмерење не постоји',
     }
 
 class RedirectGenerator:

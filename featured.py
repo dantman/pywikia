@@ -37,6 +37,7 @@ template = {
     'fr': 'lien AdQ',
     'it': 'Link AdQ',
     'no': 'Link UA',
+    'sr': 'Link FA',
     'vi': 'Liên kết chọn lọc',
 }
     

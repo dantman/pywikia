@@ -99,6 +99,7 @@ class TemplateRobot:
 		'ia':u'Robot: Modification del template: %s',
         'hu':u'Robot: Sablon csere: %s',
         'pt':u'Bot: Alterando predefinição: %s',
+        'sr':u'Бот: Измена шаблона: %s',
         }
     
     msg_remove={
@@ -108,6 +109,7 @@ class TemplateRobot:
 		'ia':u'Robot: Elimination del template: %s',
         'hu':u'Robot: Sablon eltávolítása: %s',
         'pt':u'Bot: Removendo predefinição: %s',
+        'sr':u'Бот: Уклањање шаблона: %s',
         }
 
     def __init__(self, generator, old, new = None, remove = False):

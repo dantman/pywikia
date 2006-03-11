@@ -1143,7 +1143,7 @@ formats = {
         'ru' :      lambda v: dh_singVal( v, u'Текущие события' ),
         'simple':   lambda v: dh_singVal( v, u'World news' ),
         'sl' :      lambda v: dh_singVal( v, u'Trenutni dogodki' ),
-        'sr' :      lambda v: dh_singVal( v, u'Тренутни догађаји' ),
+        'sr' :      lambda v: dh_singVal( v, u'Википедија:Актуелности' ),
         'sv' :      lambda v: dh_singVal( v, u'Aktuella händelser' ),
         'ta' :      lambda v: dh_singVal( v, u'நடப்பு நிகழ்வுகள்' ),
         'th' :      lambda v: dh_singVal( v, u'เหตุการณ์ปัจจุบัน' ),
