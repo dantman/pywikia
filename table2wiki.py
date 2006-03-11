@@ -10,6 +10,10 @@ Nifty script to convert HTML-tables to MediaWiki's own syntax.
                  Searches for pages with HTML tables, and tries to convert them
                  on the live wiki.
 
+-sql           - Retrieve information from a local mirror.
+                 Searches for pages with HTML tables, and tries to convert them
+                 on the live wiki.
+
 -file:filename - Will read any [[wikipedia link]] and use these articles
                  This SQL query might be helpful to generate this file, but
                  it doesn't work for MediaWiki version 1.5 and above.
@@ -47,7 +51,7 @@ import wikipedia, config, pagegenerators
 msg_no_warnings = {'de':'Bot: Tabellensyntax konvertiert',
                    'en':'User-controlled Bot: table syntax updated',
                    'es':'Bot controlado: actualizada sintaxis de tabla',
-                   'ia': Robot controlate: Syntaxe del tabella cambiate de HTML a Wiki',
+                   'ia':'Robot controlate: Syntaxe del tabella cambiate de HTML a Wiki',
                    'nl':'Tabel gewijzigd van HTML- naar Wikisyntax',
                    'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada',
                   }
@@ -458,43 +462,47 @@ def main():
     debug = False
     xmlfilename = None
     textfilename = None
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'table2wiki')
-        if arg:
-            if arg.startswith('-file:'):
-                if len(arg) == 5:
-                    textfilename = wikipedia.input(u'Please enter the textfile\'s name:')
-                else:
-                    textfilename = arg[6:]
-            elif arg.startswith('-xml'):
-                if len(arg) == 4:
-                    xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
-                else:
-                    xmlfilename = arg[5:]
-            elif arg.startswith('-skip:'):
-                articles = articles[articles.index(arg[6:]):]
-            elif arg.startswith('-auto'):
-                config.table2wikiAskOnlyWarnings = True
-                config.table2wikiSkipWarnings = True
-                print "Automatic mode!\n"
-            elif arg.startswith('-quiet'):
-                quietMode = True
-            elif arg.startswith('-debug'):
-                debug = True
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-file:'):
+            if len(arg) == 5:
+                textfilename = wikipedia.input(u'Please enter the textfile\'s name:')
             else:
-                page_title.append(arg)
+                textfilename = arg[6:]
+            gen = pagegenerators.TextfilePageGenerator(textfilename)        
+        elif arg.startswith('-xml'):
+            if len(arg) == 4:
+                xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
+            else:
+                xmlfilename = arg[5:]
+            gen = TableXmlDumpPageGenerator(xmlfilename)
+        elif arg == '-sql':
+            query = """
+SELECT page_namespace, page_title
+FROM page JOIN text ON (page_id = old_id)
+WHERE old_text LIKE '%<table%'
+LIMIT 200"""
+            query = query.encode(wikipedia.getSite().encoding())
+            gen = pagegenerators.MySQLPageGenerator(query)
+        elif arg.startswith('-skip:'):
+            articles = articles[articles.index(arg[6:]):]
+        elif arg.startswith('-auto'):
+            config.table2wikiAskOnlyWarnings = True
+            config.table2wikiSkipWarnings = True
+            print "Automatic mode!\n"
+        elif arg.startswith('-quiet'):
+            quietMode = True
+        elif arg.startswith('-debug'):
+            debug = True
+        else:
+            page_title.append(arg)
 
-    if xmlfilename:
-        gen = TableXmlDumpPageGenerator(xmlfilename)
-    elif textfilename:
-        gen = pagegenerators.TextfilePageGenerator(textfilename)        
     # if the page is given as a command line argument,
     # connect the title's parts with spaces
-    elif page_title != []:
+    if page_title != []:
         page_title = ' '.join(page_title)
         page = wikipedia.Page(wikipedia.getSite(), page_title)
         gen = iter([page])
-    else:
+    if not gen:
         # show help
         wikipedia.output(__doc__, 'utf-8')
         sys.exit(0)
