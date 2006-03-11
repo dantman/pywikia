@@ -107,7 +107,7 @@ fixes = {
                'en':u'Robot: converting/fixing HTML',
                'de':u'Bot: konvertiere/korrigiere HTML',
                'ia':u'Robot: conversion/reparation de HTML',
-               'pt':u'Bot: Corrigindo HTML'
+               'pt':u'Bot: Corrigindo HTML',
                'sr':u'Бот: Поправка HTML-а'
               },
         'replacements': [
@@ -719,7 +719,19 @@ class ReplaceRobot:
                             self.acceptall = True
                     if self.acceptall or choice in ['y', 'Y']:
                         page.put(new_text)
+
+def prepareRegexForMySQL(pattern):
+    pattern = pattern.replace('\s', '[:space:]')
+    pattern = pattern.replace('\d', '[:digit:]')
+    pattern = pattern.replace('\w', '[:alnum:]')
     
+    pattern = pattern.replace("'", "\\" + "'")
+    #pattern = pattern.replace('\\', '\\\\')
+    #for char in ['[', ']', "'"]:
+    #    pattern = pattern.replace(char, '\%s' % char)
+    return pattern
+    
+                        
 def main():
     gen = None
     # How we want to retrieve information on which pages need to be changed.
@@ -885,8 +897,19 @@ def main():
     if xmlFilename:
         gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions)
     elif useSql:
-        whereClause = ' OR '.join(["old_text RLIKE '%s'" % old.pattern for (old, new) in replacements]) 
-        query = u"""SELECT page_namespace, page_title FROM page JOIN text ON (page_id = old_id) WHERE %s LIMIT 20""" % whereClause
+        whereClause = 'WHERE (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(old.pattern) for (old, new) in replacements]) 
+        if exceptions:
+            exceptClause = 'AND NOT (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(exc.pattern) for exc in exceptions])
+        else:
+            exceptClause = ''
+        query = u"""
+SELECT page_namespace, page_title
+FROM page
+JOIN text ON (page_id = old_id)
+%s
+%s
+LIMIT 200""" % (whereClause, exceptClause)
+        query = query.encode(wikipedia.getSite().encoding())
         print query
         gen = pagegenerators.MySQLPageGenerator(query)
 
