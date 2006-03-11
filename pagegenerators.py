@@ -143,19 +143,20 @@ class MySQLPageGenerator:
         conn = mysqldb.connect(config.db_hostname, db = mysite.dbName(), user = config.db_username, passwd = config.db_password)
         cursor = conn.cursor()
         cursor.execute(self.query)
-        result = True
-        i = 0
-        while result:
-            i += 1;
-            print i
-            p = cursor.fetchone()
-            ns = mysite.namespace(p[0])
-            if ns:
-                pageTitle = '%s:%s' % (ns, p[1])
+        while True:
+            result = cursor.fetchone()
+            if result:
+                ns = mysite.namespace(result[0])
+                name = unicode(result[1], mysite.encoding())
+                if ns:
+                    pageTitle = '%s:%s' % (ns, name)
+                else:
+                    pageTitle = name
+                print repr(pageTitle)
+                page = wikipedia.Page(mysite, pageTitle)
+                yield page
             else:
-                pageTitle = p[1]
-            page = wikipedia.Page(mysite, pageTitle)
-            yield page
+                break
 
 class YearPageGenerator:
     def __init__(self, start = 1, end = 2050):

@@ -737,6 +737,7 @@ def main():
     # the dump's path, either absolute or relative, which will be used when source
     # is 'xmldump'.
     xmlFilename = None
+    useSql = False
     # the textfile's path, either absolute or relative, which will be used when
     # source is 'textfile'.
     textfilename = None
@@ -781,6 +782,8 @@ def main():
                 xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
             else:
                 xmlFilename = arg[5:]
+        elif arg =='-sql':
+            useSql = True
         elif arg.startswith('-page'):
             if len(arg) == 5:
                 PageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
@@ -878,6 +881,12 @@ def main():
     
     if xmlFilename:
         gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions)
+    elif useSql:
+        whereClause = ' OR '.join(["old_text RLIKE '%s'" % old.pattern for (old, new) in replacements]) 
+        query = u"""SELECT page_namespace, page_title FROM page JOIN text ON (page_id = old_id) WHERE %s LIMIT 20""" % whereClause
+        print query
+        gen = pagegenerators.MySQLPageGenerator(query)
+
     elif PageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]
         gen = iter(pages)
