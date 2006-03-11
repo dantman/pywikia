@@ -142,21 +142,27 @@ class MySQLPageGenerator:
         mysite = wikipedia.getSite()
         conn = mysqldb.connect(config.db_hostname, db = mysite.dbName(), user = config.db_username, passwd = config.db_password)
         cursor = conn.cursor()
+        print repr(self.query)
+        wikipedia.output(u'Executing query:\n%s' % self.query)
+        self.query = self.query.encode(wikipedia.getSite().encoding())
         cursor.execute(self.query)
         while True:
-            result = cursor.fetchone()
-            if result:
-                ns = mysite.namespace(result[0])
-                name = unicode(result[1], mysite.encoding())
-                if ns:
-                    pageTitle = '%s:%s' % (ns, name)
+            try:
+                namespaceNumber, pageName = cursor.fetchone()
+                print namespaceNumber, pageName
+            except TypeError:
+                # Limit reached or no more results
+                break
+            #print pageName
+            if pageName:
+                namespace = mysite.namespace(namespaceNumber)
+                pageName = unicode(pageName, mysite.encoding())
+                if namespace:
+                    pageTitle = '%s:%s' % (namespace, pageName)
                 else:
-                    pageTitle = name
-                print repr(pageTitle)
+                    pageTitle = pageName
                 page = wikipedia.Page(mysite, pageTitle)
                 yield page
-            else:
-                break
 
 class YearPageGenerator:
     def __init__(self, start = 1, end = 2050):

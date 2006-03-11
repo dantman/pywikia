@@ -120,17 +120,18 @@ def main():
             gen = pagegenerators.TextfilePageGenerator(arg[6:])
         elif arg.startswith('-cat:'):
             cat = catlib.Category(wikipedia.getSite(), arg[5:])
-            gen = pagegenerators.CategorizedPageGenerator(cat)
+            gen = pagegenerators.CategorizedPageGenerator(cat)   
         elif arg == '-sql':
             # NOT WORKING YET
-            query = """SELECT page_namespace, page_title FROM pagelinks STRAIGHT_JOIN page
-                       WHERE pl_from = page_id AND pl_title = page_title AND pl_namespace = page_namespace
-                       AND page_namespace = 0
-                       """
-#                       AND ( page_text LIKE concat('%[[',page_title,']]%') OR
-#                             page_text LIKE concat('%[[',page_title,'|%')
-#                       )
-                       #ORDER BY page_title asc
+            query = """
+SELECT page_namespace, page_title
+FROM page JOIN pagelinks JOIN text ON (page_id = pl_from AND page_id = old_id)
+WHERE pl_title = page_title
+AND pl_namespace = page_namespace
+AND page_namespace = 0
+AND (old_text LIKE concat('%[[', page_title, ']]%')
+    OR old_text LIKE concat('%[[', page_title, '|%'))
+LIMIT 100"""
             gen = pagegenerators.MySQLPageGenerator(query)
         else:
             pageTitle.append(arg)
@@ -141,7 +142,7 @@ def main():
     if not gen:
         wikipedia.showHelp('selflink')
     else:
-        preloadingGen = pagegenerators.PreloadingGenerator(gen, 1)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = SelflinkBot(preloadingGen)
         bot.run()
 

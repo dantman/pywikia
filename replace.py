@@ -909,8 +909,6 @@ JOIN text ON (page_id = old_id)
 %s
 %s
 LIMIT 200""" % (whereClause, exceptClause)
-        query = query.encode(wikipedia.getSite().encoding())
-        print query
         gen = pagegenerators.MySQLPageGenerator(query)
 
     elif PageTitles:

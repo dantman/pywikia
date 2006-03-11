@@ -476,12 +476,11 @@ def main():
                 xmlfilename = arg[5:]
             gen = TableXmlDumpPageGenerator(xmlfilename)
         elif arg == '-sql':
-            query = """
+            query = u"""
 SELECT page_namespace, page_title
 FROM page JOIN text ON (page_id = old_id)
 WHERE old_text LIKE '%<table%'
 LIMIT 200"""
-            query = query.encode(wikipedia.getSite().encoding())
             gen = pagegenerators.MySQLPageGenerator(query)
         elif arg.startswith('-skip:'):
             articles = articles[articles.index(arg[6:]):]
