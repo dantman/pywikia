@@ -109,7 +109,7 @@ import httplib, socket, urllib
 import traceback
 import time
 import math
-import re, codecs, difflib, locale
+import re, md5, codecs, difflib, locale
 import xml.sax, xml.sax.handler
 import htmlentitydefs
 import warnings
@@ -195,7 +195,7 @@ class Page(object):
         else:
             self._tosite = getSite() # Default to home wiki
         # Clean up the name, it can come from anywhere.
-        # Replace underlines by spaces, also multiple underlines
+        # Replace underscores by spaces, also multiple underscores
         title = re.sub('_+', ' ', title)
         # Convert HTML entities to unicode
         title = html2unicode(title)
@@ -252,31 +252,31 @@ class Page(object):
     def urlname(self):
         """The name of the page this Page refers to, in a form suitable
            for the URL of the page."""
-        title = self.title(underline = True)
+        title = self.title(underscore = True)
         encodedTitle = title.encode(self.site().encoding())
         return urllib.quote(encodedTitle)
 
-    def title(self, underline = False):
+    def title(self, underscore = False):
         """The name of this Page, as a Unicode string"""
-        if underline:
+        if underscore:
             return self._title.replace(' ', '_')
         else:
             return self._title
 
-    def titleWithoutNamespace(self, underline = False):
+    def titleWithoutNamespace(self, underscore = False):
         """
         Returns the name of the page without the namespace and without section.
         """
         if self.namespace() == 0:
-            return self.title(underline = underline)
+            return self.title(underscore = underscore)
         else:
-            return self.sectionFreeTitle(underline = underline).split(':', 1)[1]
+            return self.sectionFreeTitle(underscore = underscore).split(':', 1)[1]
 
-    def section(self, underline = False):
+    def section(self, underscore = False):
         """The name of the section this Page refers to. Sections are
            denominated by a # in the title(). If no section is referenced,
            None is returned."""
-        ln = self.title(underline = underline)
+        ln = self.title(underscore = underscore)
         ln = re.sub('&#', '&hash;', ln)
         if not '#' in ln:
             return None
@@ -285,9 +285,9 @@ class Page(object):
             hn = re.sub('&hash;', '&#', hn)
             return hn
 
-    def sectionFreeTitle(self, underline = False):
-        sectionName = self.section(underline = underline)
-        title = self.title(underline = underline)
+    def sectionFreeTitle(self, underscore = False):
+        sectionName = self.section(underscore = underscore)
+        title = self.title(underscore = underscore)
         if sectionName:
             return title[:-len(sectionName)-1]
         else:
@@ -971,7 +971,7 @@ class Page(object):
         galleryEntryR = re.compile('(?P<title>(%s|%s):.+?)(\|.+)?\n' % (self.site().image_namespace(), self.site().family.image_namespace(code = '_default')))
         for gallery in galleryR.findall(self.get()):
             for match in galleryEntryR.finditer(gallery):
-                page = Page(self.site(), match.group('title'))
+                page = ImagePage(self.site(), match.group('title'))
                 results.append(page)
         return results
 
@@ -1261,7 +1261,22 @@ class Page(object):
                     output(data)
                     return False
 
+class ImagePage(Page):
+    # a Page in the Image namespace
+    def __init__(self, site, title = None, insite = None, tosite = None):
+        Page.__init__(self, site, title, insite, tosite)
+    
+    def fileUrl(self):
+        filename = self.titleWithoutNamespace(underscore = True)
+        encodedFilename = filename.encode(self.site().encoding())
+        md5Sum = md5.new(encodedFilename).hexdigest()
+        encodedFilename = urllib.quote(encodedFilename)
+        # TODO: This probably doesn't work on all wiki families
+        url = 'http://%s/upload/%s/%s/%s' % (self.site().hostname(), md5Sum[0], md5Sum[:2], encodedFilename)
+        return url
+
 class XmlPage(Page):
+    # In my opinion, this should be deleted. --Daniel Herding
     '''A subclass of Page that wraps an XMLEntry object (from xmlreader.py).
 
     Sample usage:
@@ -1284,7 +1299,8 @@ class XmlPage(Page):
             self._redirarg = m.group(1)
             self._getexception = IsRedirectPage
 
-
+    
+    
 class GetAll(object):
     def __init__(self, site, pages, throttle, force):
         """First argument is Site object.

@@ -96,22 +96,7 @@ class ImageTransferBot:
         sourceSite = sourceImagePage.site()
         if debug: print "--------------------------------------------------"
         if debug: print "Found image: %s"% imageTitle
-        # need to strip off "Afbeelding:", "Image:" etc.
-        # we only need the substring following the first colon
-        filename = sourceImagePage.title().split(":", 1)[1]
-        # Spaces might occur, but internally they are represented by underscores.
-        # Change the name now, because otherwise we get the wrong MD5 hash.
-        filename = filename.replace(' ', '_')
-        # Also, the first letter should be capitalized
-        # TODO: Don't capitalize on non-capitalizing wikis
-        filename = filename[0].upper()+filename[1:]
-        if debug: print "Image filename is: %s " % filename
-        encodedFilename = filename.encode(sourceSite.encoding())
-        md5sum = md5.new(encodedFilename).hexdigest()
-        if debug: print "MD5 hash is: %s" % md5sum
-        encodedFilename = urllib.quote(encodedFilename)
-        # TODO: This probably doesn't work on all wiki families
-        url = 'http://%s/upload/%s/%s/%s' % (sourceSite.hostname(), md5sum[0], md5sum[:2], encodedFilename)
+        url = sourceImagePage.fileUrl()
         print "URL should be: %s" % url
         # localize the text that should be printed on the image description page
         try:
@@ -186,7 +171,8 @@ class ImageTransferBot:
                 for linkedPage in page.interwiki():
                     imagelist += linkedPage.imagelinks(followRedirects = True)
             elif page.isImage():
-                imagelist = [page]
+                imagePage = wikipedia.ImagePage(page.site(), page.title())
+                imagelist = [imagePage]
             else:
                 imagelist = page.imagelinks(followRedirects = True)
 
@@ -217,24 +203,21 @@ def main():
     targetLang = None
     targetFamily = None
 
-    for arg in sys.argv[1:]:
-    #for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'imagetransfer')
-        if arg:
-            if arg == '-interwiki':
-                interwiki = True
-            elif arg.startswith('-tolang:'):
-                targetLang = arg[8:]
-            elif arg.startswith('-tofamily:'):
-                targetFamily = arg[10:]
-            elif arg.startswith('-file'):
-                if len(arg) == 5:
-                    filename = wikipedia.input(u'Please enter the list\'s filename: ')
-                else:
-                    filename = arg[6:]
-                gen = pagegenerators.TextfilePageGenerator(filename)
+    for arg in wikipedia.handleArgs():
+        if arg == '-interwiki':
+            interwiki = True
+        elif arg.startswith('-tolang:'):
+            targetLang = arg[8:]
+        elif arg.startswith('-tofamily:'):
+            targetFamily = arg[10:]
+        elif arg.startswith('-file'):
+            if len(arg) == 5:
+                filename = wikipedia.input(u'Please enter the list\'s filename: ')
             else:
-                pageTitle.append(arg)
+                filename = arg[6:]
+            gen = pagegenerators.TextfilePageGenerator(filename)
+        else:
+            pageTitle.append(arg)
 
     if not gen:
         # if the page title is given as a command line argument,
