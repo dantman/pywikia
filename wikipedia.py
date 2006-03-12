@@ -380,7 +380,6 @@ class Page(object):
                 self._contents, self._isWatched, self.editRestriction = self.getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop)
                 hn = self.section()
                 if hn:
-                    titleWithSection = titleWithSection.replace('_', ' ')
                     m = re.search("=+ *%s *=+" % hn, self._contents)
                     if not m:
                         output(u"WARNING: Section does not exist: %s" % self.title())
@@ -1270,15 +1269,18 @@ class ImagePage(Page):
     def getImagePageContents(self):
         if not self._imagePageContents:
             path = self.site().get_address(self.urlname())
-            output(u'Getting %s...' % path)
+            output(u'Getting http://%s%s' % (self.site().hostname(), path))
             self._imagePageContents = self.site().getUrl(path)
         return self._imagePageContents
     
     def fileUrl(self):
         urlR = re.compile(r'<div class="fullImageLink" id="file"><a href="(?P<url1>.+?)">|<div class="fullImageLink" id="file"><img border="0" src="(?P<url2>.+?)"')
         m = urlR.search(self.getImagePageContents())
-        url = m.group('url1') or m.group('url2')
-        print url
+        try:
+            url = m.group('url1') or m.group('url2')
+        except AttributeError:
+            print self.getImagePageContents()
+            raise NoPage(u'Image page %s not found.' % self.title())
         return url
         #filename = self.titleWithoutNamespace(underscore = True)
         #encodedFilename = filename.encode(self.site().encoding())
@@ -1288,7 +1290,7 @@ class ImagePage(Page):
         #url = 'http://upload.wikimedia.org/%s/%s/%s/%s/%s' % (self.site().family.name, self.site().lang, md5Sum[0], md5Sum[:2], encodedFilename)
         #return url
     
-    def isOnCommons(self):
+    def fileIsOnCommons(self):
         return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
     
     def getFileMd5Sum(self):
