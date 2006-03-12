@@ -85,7 +85,7 @@ class NowCommonsDeleteBot:
                 else:
                     wikipedia.output(u'The image is not identical to the one on Commons!')                    
             except (wikipedia.NoPage, wikipedia.IsRedirectPage), e:
-                print e
+                wikipedia.output(u'%s' % e)
                 continue
 
 def main():
