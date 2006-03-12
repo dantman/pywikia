@@ -1319,7 +1319,7 @@ class ImagePage(Page):
         lines = []
         for (datetime, username, resolution, size, comment) in self.getFileVersionHistory():
             lines.append('%s || %s || %s || %s || <nowiki>%s</nowiki>' % (datetime, username, resolution, size, comment))
-        return u'{| border="1"\n' + u'\n|----\n'.join(lines) + '\n|}'
+        return u'{| border="1"\n! date/time || username || resolution || size || edit summary\n|----\n| ' + u'\n|----\n'.join(lines) + '\n|}'
 
 class XmlPage(Page):
     # In my opinion, this should be deleted. --Daniel Herding
@@ -2078,7 +2078,7 @@ def isInterwikiLink(s, site = None):
     first, rest = s.split(':',1)
     # interwiki codes are case-insensitive
     first = first.lower()
-    if first in site.family.langs or first in site.family.known_families:
+    if first in site.family.langs or (first in site.family.known_families and site.family.known_families[first] != site.family.name):
         return True
     return False
 
@@ -2802,7 +2802,7 @@ class Site(object):
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
-                Page(self, "%s:Sandbox" % self.family.namespace(self.lang, 4)).get(force = True, sysop = sysop)
+                Page(self, "%s:Sandbox" % self.family.namespace(self.lang, 4)).get(force = True, get_redirect = True, sysop = sysop)
                 #Page(self, "Non-existing page").get(force = True, sysop = sysop)
             except UserBlocked:
                 raise
