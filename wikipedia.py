@@ -194,13 +194,17 @@ class Page(object):
             self._tosite = tosite
         else:
             self._tosite = getSite() # Default to home wiki
+        
+        if not insite:
+            insite = site
+
         # Clean up the name, it can come from anywhere.
         # Replace underscores by spaces, also multiple underscores
         title = re.sub('_+', ' ', title)
         # Convert HTML entities to unicode
         title = html2unicode(title)
         # Convert URL-encoded characters to unicode
-        title = url2unicode(title, site = site)
+        title = url2unicode(title, site = insite)
         # Remove double spaces
         title = re.sub('  +', ' ', title)
         # Remove leading colon
@@ -1787,7 +1791,7 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
                 output(u"ERROR: %s - ignoring impossible link to %s:%s" % (pageLink, lang, pagetitle))
             else:
                 # we want the actual page objects rather than the titles
-                result[insite.getSite(code = lang)] = Page(insite.getSite(code = lang), pagetitle)
+                result[insite.getSite(code = lang)] = Page(insite.getSite(code = lang), pagetitle, insite=insite)
     return result
 
 def removeLanguageLinks(text, site = None):
