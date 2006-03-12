@@ -36,7 +36,7 @@ __version__ = '$Id$'
 # Distributed under the terms of the MIT license.
 # 
 import re, sys, string, pickle, bz2
-import wikipedia, catlib, config, interwiki
+import wikipedia, catlib, config, pagegenerators
 
 # Summary messages
 msg_add={
@@ -272,14 +272,13 @@ class CategoryMoveRobot:
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % self.oldCat.title())
 
     def run(self):
-        articles = self.oldCat.articles(recurse = 0)
-	newCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.newCatTitle)
-        if len(articles) == 0:
-            wikipedia.output(u'There are no articles in category ' + self.oldCat.title())
-        else:
-            for article in articles:
-                catlib.change_category(article, self.oldCat, newCat)
+        newCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.newCatTitle)
+        gen = pagegenerators.CategorizedPageGenerator(self.oldCat, recurse = False)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        for article in preloadingGen:
+            catlib.change_category(article, self.oldCat, newCat)
         
+        # TODO: create subcategory generator
         subcategories = self.oldCat.subcategories(recurse = 0)
         if len(subcategories) == 0:
             wikipedia.output(u'There are no subcategories in category ' + self.oldCat.title())
