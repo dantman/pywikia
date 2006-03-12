@@ -895,7 +895,7 @@ def main():
         exceptions[i] = exceptionR
     
     if xmlFilename:
-        gen = XmlDumpReplacePageGenerator(xmlfilename, replacements, exceptions)
+        gen = XmlDumpReplacePageGenerator(xmlFilename, replacements, exceptions)
     elif useSql:
         whereClause = 'WHERE (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(old.pattern) for (old, new) in replacements]) 
         if exceptions:
