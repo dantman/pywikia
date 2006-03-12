@@ -52,6 +52,7 @@ class CosmeticChangesToolkit:
         text = self.removeDeprecatedTemplates(text)
         text = self.resolveHtmlEntities(text)
         text = self.validXhtml(text)
+        text = self.removeUselessSpaces(text)
         if self.debug:
             wikipedia.showDiff(oldText, text)
         return text
@@ -155,6 +156,19 @@ class CosmeticChangesToolkit:
     def validXhtml(self, text):
         text = wikipedia.replaceExceptNowikiAndComments(text, r'<br>', r'<br />')
         return text
+    
+    def removeUselessSpaces(self, text):
+        result = []
+        multipleSpacesR = re.compile('  +')
+        spaceAtLineEndR = re.compile(' $')
+        preR = re.compile('<pre', re.IGNORECASE)
+        lines = text.split('\n')
+        for line in lines:
+            if len(line) > 0 and line[0] != ' ' and not preR.search(line):
+                line = wikipedia.replaceExceptMathNowikiAndComments(line, multipleSpacesR, ' ')
+                line = wikipedia.replaceExceptMathNowikiAndComments(line, spaceAtLineEndR, '')
+            result.append(line)
+        return '\n'.join(result)
 
     def cleanUpSectionHeaders(self, text):
         for level in range(1, 7):
