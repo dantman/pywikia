@@ -1568,6 +1568,7 @@ class Family:
             'wikinfo':          'wikinfo',
             'wikinurse':        'wikinurse',
             'wikipaltz':        'wikipaltz',
+            'wikipedia':        'wikipedia',
             'wikipediawikipedia':'wikipediawikipedia',
             'wikiquote':        'wikiquote',
             'wikireason':       'wikireason',
@@ -1600,7 +1601,7 @@ class Family:
             'zwiki':            'zwiki',
             'zzz wiki':         'zzz wiki',
         }
-                
+        
         # A list of disambiguation template names in different languages
         self.disambiguationTemplates = {
             '_default': []
