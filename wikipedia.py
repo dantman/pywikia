@@ -1305,13 +1305,13 @@ class ImagePage(Page):
     def getFileVersionHistory(self):
         result = []
         history = re.search('(?s)<ul class="special">.+?</ul>', self.getImagePageContents()).group()
-        lineR = re.compile('<li> \(.+?\) \(.+?\) <a href=".+?" title=".+?">(?P<datetime>.+?)</a> . . <a href=".+?" title=".+?">(?P<username>.+?)</a> \(<a href=".+?" title=".+?">.+?</a>\) . . (?P<resolution>\d+.+?\d+) \((?P<size>\d+) .+?\) <span class=\'comment\'>(?P<comment>.*?)</span></li>')
+        lineR = re.compile('<li> \(.+?\) \(.+?\) <a href=".+?" title=".+?">(?P<datetime>.+?)</a> . . <a href=".+?" title=".+?">(?P<username>.+?)</a> \(<a href=".+?" title=".+?">.+?</a>\) . . (?P<resolution>\d+.+?\d+) \((?P<size>\d+) .+?\)( <span class=\'comment\'>(?P<comment>.*?)</span>)?</li>')
         for match in lineR.finditer(history):
             datetime = match.group('datetime')
             username = match.group('username')
             resolution = match.group('resolution')
             size = match.group('size')
-            comment = match.group('comment')
+            comment = match.group('comment') or ''
             result.append((datetime, username, resolution, size, comment))
         return result
     
