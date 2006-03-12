@@ -1279,7 +1279,6 @@ class ImagePage(Page):
         try:
             url = m.group('url1') or m.group('url2')
         except AttributeError:
-            print self.getImagePageContents()
             raise NoPage(u'Image page %s not found.' % self.title())
         return url
         #filename = self.titleWithoutNamespace(underscore = True)
@@ -1297,7 +1296,26 @@ class ImagePage(Page):
         uo = MyURLopener()
         f = uo.open(self.fileUrl())
         md5Checksum = md5.new(f.read()).hexdigest()
-        print md5Checksum
+        return md5Checksum
+    
+    def getFileVersionHistory(self):
+        result = []
+        history = re.search('(?s)<ul class="special">.+?</ul>', self.getImagePageContents()).group()
+        lineR = re.compile('<li> \(.+?\) \(.+?\) <a href=".+?" title=".+?">(?P<datetime>.+?)</a> . . <a href=".+?" title=".+?">(?P<username>.+?)</a> \(<a href=".+?" title=".+?">.+?</a>\) . . (?P<resolution>\d+.+?\d+) \((?P<size>\d+) .+?\) <span class=\'comment\'>(?P<comment>.*?)</span></li>')
+        for match in lineR.finditer(history):
+            datetime = match.group('datetime')
+            username = match.group('username')
+            resolution = match.group('resolution')
+            size = match.group('size')
+            comment = match.group('comment')
+            result.append((datetime, username, resolution, size, comment))
+        return result
+    
+    def getFileVersionHistoryTable(self):
+        lines = []
+        for (datetime, username, resolution, size, comment) in self.getFileVersionHistory():
+            lines.append('%s || %s || %s || %s || <nowiki>%s</nowiki>' % (datetime, username, resolution, size, comment))
+        return u'{| border="1"\n' + u'\n|----\n'.join(lines) + '\n|}'
 
 class XmlPage(Page):
     # In my opinion, this should be deleted. --Daniel Herding

@@ -109,9 +109,7 @@ class ImageTransferBot:
                     description = wikipedia.replaceExceptNowikiAndComments(description, old, new)
             
             description = wikipedia.translate(self.targetSite, copy_message) % (sourceSite, description)
-            # TODO: Only the page's version history is shown, but the file's
-            # version history would be more helpful
-            description += '\n\n' + sourceImagePage.getVersionHistoryTable()
+            description += '\n\n' + sourceImagePage.getFileVersionHistoryTable()
             # add interwiki link
             if sourceSite.family == self.targetSite.family:
                 description += "\r\n\r\n" + sourceImagePage.aslink(forceInterwiki = True)
