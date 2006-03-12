@@ -110,7 +110,7 @@ class CosmeticChangesToolkit:
             # Make sure that next time around we will not find this same hit.
             curpos = m.start() + 1
             titleWithSection = m.group('titleWithSection')
-            if not wikipedia.isInterwikiLink(titleWithSection):
+            if not self.site.isInterwikiLink(titleWithSection):
                 # The link looks like this:
                 # [[page_title|link_text]]trailing_chars
                 # We only work on namespace 0 because pipes and linktrails work

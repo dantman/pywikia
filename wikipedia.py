@@ -361,7 +361,7 @@ class Page(object):
                 raise NoPage('Illegal character in %s!' % self.aslink())
         if self.namespace() == -1:
             raise NoPage('%s is in the Special namespace!' % self.aslink())
-        if isInterwikiLink(self.title()):
+        if self.site().isInterwikiLink(self.title()):
             raise NoPage('%s is not a local page on %s!' % (self.aslink(), self.site()))
         if force:
             # When forcing, we retry the page no matter what. Old exceptions
@@ -954,8 +954,8 @@ class Page(object):
         Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
             title = match.group('title')
-            page = Page(self.site(), title)
-            if not isInterwikiLink(page.title()):
+            if not self.site().isInterwikiLink(title):
+                page = Page(self.site(), title)
                 result.append(page)
         return result
 
@@ -2066,22 +2066,6 @@ def doubleXForEsperanto(text):
             break
     return text
 
-def isInterwikiLink(s, site = None):
-    """
-    Try to check whether s is in the form "foo:bar" where foo is a known
-    language code or family. In such a case we are dealing with an interwiki
-    link.
-    """
-    if not ':' in s:
-        return False
-    site = site or getSite()
-    first, rest = s.split(':',1)
-    # interwiki codes are case-insensitive
-    first = first.lower()
-    if first in site.family.langs or (first in site.family.known_families and site.family.known_families[first] != site.family.name):
-        return True
-    return False
-
 ######## Unicode library functions ########
 
 def UnicodeToAsciiHtml(s):
@@ -2598,6 +2582,21 @@ class Site(object):
             return '[[%s:%s]]' % (self.lang, title)
         else:
             return '[[%s]]' % title
+
+    def isInterwikiLink(self, s):
+        """
+        Try to check whether s is in the form "foo:bar" where foo is a known
+        language code or family. In such a case we are dealing with an interwiki
+        link.
+        """
+        if not ':' in s:
+            return False
+        first, rest = s.split(':',1)
+        # interwiki codes are case-insensitive
+        first = first.lower()
+        if first in self.family.langs or (first in self.family.known_families and self.family.known_families[first] != self.family.name):
+            return True
+        return False
 
     def encoding(self):
         return self.family.code2encoding(self.lang)

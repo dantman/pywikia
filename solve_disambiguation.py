@@ -461,7 +461,7 @@ class DisambiguationRobot(object):
                 # Make sure that next time around we will not find this same hit.
                 curpos = m.start() + 1
                 # ignore interwiki links and links to sections of the same page
-                if m.group('title') == '' or wikipedia.isInterwikiLink(m.group('title')):
+                if m.group('title') == '' or self.mysite.isInterwikiLink(m.group('title')):
                     continue
                 else:
                     linkpl=wikipedia.Page(disambPage.site(), m.group('title'))

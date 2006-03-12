@@ -72,7 +72,7 @@ class SelflinkBot:
                     # Make sure that next time around we will not find this same hit.
                     curpos = m.start() + 1
                     # ignore interwiki links and links to sections of the same page as well as section links
-                    if not m.group('title') or wikipedia.isInterwikiLink(m.group('title')) or m.group('section'):
+                    if not m.group('title') or page.site().isInterwikiLink(m.group('title')) or m.group('section'):
                         continue
                     else:
                         linkedPage = wikipedia.Page(page.site(), m.group('title'))
