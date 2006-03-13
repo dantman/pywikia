@@ -204,7 +204,8 @@ class Page(object):
         # Convert HTML entities to unicode
         title = html2unicode(title)
         # Convert URL-encoded characters to unicode
-        title = url2unicode(title, site = insite)
+        # Sometimes users copy the link to a site from one to another. Try both the source site and the destination site to decode.
+        title = url2unicode(title, site = insite, site2 = site)
         # Remove double spaces
         title = re.sub('  +', ' ', title)
         # Remove leading colon
@@ -1539,6 +1540,7 @@ class GetAll(object):
     
 def getall(site, pages, throttle = True, force = False):
     output(u'Getting %d pages from %s...' % (len(pages), site))
+#    output(u'\r\n'.join([pl.aslink(forceInterwiki=True) for pl in pages]))
     return GetAll(site, pages, throttle, force).run()
     
 # Library functions
@@ -1607,15 +1609,19 @@ class Throttle(object):
         else:
             now = time.time()
             for line in f.readlines():
-                line = line.split(' ')
-                pid = int(line[0])
-                ptime = int(line[1].split('.')[0])
-                if now - ptime <= self.releasepid:
-                    if now - ptime <= self.dropdelay and pid != self.pid:
-                        count += 1
-                    processes[pid] = ptime
-                    if pid >= my_pid:
-                        my_pid = pid+1
+                try:
+                    line = line.split(' ')
+                    pid = int(line[0])
+                    ptime = int(line[1].split('.')[0])
+                    if now - ptime <= self.releasepid:
+                        if now - ptime <= self.dropdelay and pid != self.pid:
+                            count += 1
+                        processes[pid] = ptime
+                        if pid >= my_pid:
+                            my_pid = pid+1
+                except IndexError:
+                    pass    # Sometimes the file gets corrupted - ignore that line
+                    
         if not self.pid:
             self.pid = my_pid
         self.checktime = time.time()
@@ -2079,22 +2085,25 @@ def UnicodeToAsciiHtml(s):
             html.append('&#%d;'%cord)
     return ''.join(html)
 
-def url2unicode(title, site):
-    try:
-        t = title.encode(site.encoding())
-        t = urllib.unquote(t)
-        return unicode(t, site.encoding())
-    except UnicodeError:
-        # try to handle all encodings (will probably retry utf-8)
-        for enc in site.encodings():
-            try:
-                t = title.encode(enc)
-                t = urllib.unquote(t)
-                return unicode(t, enc)
-            except UnicodeError:
-                pass
-        # Couldn't convert, raise the original exception
-        raise
+def url2unicode(title, site, site2 = None):
+    # create a list of all possible encodings for both hint sites
+    encList = [site.encoding()] + list(site.encodings())
+    if site2 and site2 <> site:
+        encList.append(site.encoding())
+        encList += list(site2.encodings())
+    firstException = None
+    # try to handle all encodings (will probably retry utf-8)
+    for enc in encList:
+        try:
+            t = title.encode(enc)
+            t = urllib.unquote(t)
+            return unicode(t, enc)
+        except UnicodeError, ex:
+            if not firstException:
+                firstException = ex
+            pass
+    # Couldn't convert, raise the original exception
+    raise firstException
 
 def unicode2html(x, encoding):
     """
