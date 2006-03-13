@@ -356,29 +356,40 @@ class Table2WikiRobot:
 
     def findTable(self, text):
         """
-        Finds an HTML table (which can contain nested tables) inside a text.
+        Finds the first HTML table (which can contain nested tables) inside a
+        text.
         Returns the table and the start and end position inside the text.
         """
-        start = text.find("<table")
-        if start == -1:
+        tableStartTagR = re.compile("<table", re.IGNORECASE)
+        tableEndTagR = re.compile("</table>", re.IGNORECASE)
+        m = tableStartTagR.search(text)
+        if not m:
             return None, 0, 0
         else:
+            start = m.start()
+            offset = m.end()
+            originalText = text
+            text = text[m.end():]
             # depth level of table nesting
             depth = 1
-            i = start + 1
+            #i = start + 1
             while depth > 0:
-                if text.find("</table>", i) == -1:
+                nextStarting = tableStartTagR.search(text)
+                nextEnding = tableEndTagR.search(text)
+                if not nextEnding:
                     print "More opening than closing table tags. Skipping."
                     return None, 0, 0
                 # if another table tag is opened before one is closed
-                if text.find("<table", i) > -1 and  text.find("<table", i) < text.find("</table>", i):
-                    i = text.find("<table", i) + 1
+                elif nextStarting and  nextStarting.start() < nextEnding.start():
+                    offset += nextStarting.end()
+                    text = text[nextStarting.end():]
                     depth += 1
                 else:
-                    i = text.find("</table>", i) + len("</table>") + 1
+                    offset += nextEnding.end()
+                    text = text[nextEnding.end():]
                     depth -= 1
-            end = i
-            return text[start:end], start, end
+            end = offset
+            return originalText[start:end], start, end
                         
     def convertAllHTMLTables(self, text):
         '''
