@@ -636,6 +636,7 @@ formats = {
 
     'YearBC': {
         'af' :      lambda v: dh_yearBC( v, u'%d v.C.' ),
+        'be' :      lambda v: dh_yearBC( v, u'%d да н.э.' ),
         'bg' :      lambda v: dh_yearBC( v, u'%d г. пр.н.е.' ),
         'bs' :      lambda v: dh_yearBC( v, u'%d p.ne.' ),
         'ca' :      lambda v: dh_yearBC( v, u'%d aC' ),
@@ -1345,9 +1346,9 @@ formatLimits = {
     'MonthName'			: (lambda v: 1<=v and v<13,                 1,13),
     'Number'			: (lambda v: 1<=v and v<1000000,            1,1001),
 
-    'YearAD'			: (lambda v: 0<=v and v<2051,               0,2051),
+    'YearAD'			: (lambda v: 0<=v and v<2501,               0,2501),
     'YearBC'			: (lambda v: 0<=v and v<2000,               0,501),   # zh: has years as old as 前1700年
-    'DecadeAD'			: (lambda v: 0<=v and v<2051,               0,2051),  # At some point need to re-add  "and v%10==0" to the limitation
+    'DecadeAD'			: (lambda v: 0<=v and v<2501,               0,2501),  # At some point need to re-add  "and v%10==0" to the limitation
     'DecadeBC'			: (lambda v: 0<=v and v<2000,               0,501),   # zh: has decades as old as 前1700年代
     'CenturyAD'			: (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
     'CenturyBC'			: (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
