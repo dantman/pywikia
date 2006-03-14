@@ -1321,6 +1321,14 @@ class ImagePage(Page):
         for (datetime, username, resolution, size, comment) in self.getFileVersionHistory():
             lines.append('%s || %s || %s || %s || <nowiki>%s</nowiki>' % (datetime, username, resolution, size, comment))
         return u'{| border="1"\n! date/time || username || resolution || size || edit summary\n|----\n| ' + u'\n|----\n'.join(lines) + '\n|}'
+    
+    def usingPages(self):
+        result = []
+        titleList = re.search('(?s)<h2 id="filelinks">.+?</ul>', self.getImagePageContents()).group()
+        lineR = re.compile('<li><a href=".+?" title=".+?">(?P<title>.+?)</a></li>')
+        for match in lineR.finditer(titleList):
+            result.append(Page(self.site(), match.group('title')))
+        return result
 
 class XmlPage(Page):
     # In my opinion, this should be deleted. --Daniel Herding

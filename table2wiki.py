@@ -149,9 +149,14 @@ class Table2WikiRobot:
         ##################
         # <th> often people don't write them within <tr>, be warned!
         # <th> with attributes
-        newTable = re.sub("(?i)[\r\n]+<th(?P<attr>[^>]*?)>(?P<header>[\w\W]*?)<\/th>",
+        newTable = re.sub("(?i)[\r\n]+<th(?P<attr> [^>]*?)>(?P<header>[\w\W]*?)<\/th>",
                          r"\r\n!\g<attr> | \g<header>\r\n", newTable)
-    
+
+        # <th> without attributes
+        newTable = re.sub("(?i)[\r\n]+<th>(?P<header>[\w\W]*?)<\/th>",
+                         r"\r\n! \g<header>\r\n", newTable)
+
+
         # fail save. sometimes people forget </th>
         # <th> without attributes, without closing </th>
         newTable, n = re.subn("(?i)[\r\n]+<th>(?P<header>[\w\W]*?)[\r\n]+",
@@ -161,7 +166,7 @@ class Table2WikiRobot:
             warnings += n
     
         # <th> with attributes, without closing </th>
-        newTable, n = re.subn("(?i)[\r\n]+<th(?P<attr>[^>]*?)>(?P<header>[\w\W]*?)[\r\n]+",
+        newTable, n = re.subn("(?i)[\r\n]+<th(?P<attr> [^>]*?)>(?P<header>[\w\W]*?)[\r\n]+",
                              r"\n!\g<attr> | \g<header>\r\n", newTable)
         if n>0:
             warning_messages.append(u'WARNING: found <th ...> without </th>. (%d occurences\n)' % n)
@@ -170,7 +175,7 @@ class Table2WikiRobot:
     
         ##################
         # <tr> with attributes
-        newTable = re.sub("(?i)[\r\n]*<tr(?P<attr>[^>]*?)>[\r\n]*",
+        newTable = re.sub("(?i)[\r\n]*<tr(?P<attr> [^>]*?)>[\r\n]*",
                          r"\r\n|-----\g<attr>\r\n", newTable)
         
         # <tr> without attributes
@@ -184,7 +189,7 @@ class Table2WikiRobot:
     
         ##################
         # normal <td> with arguments
-        newTable = re.sub("(?i)[\r\n]+<td(?P<attr>[^>]*?)>(?P<cell>[\w\W]*?)<\/td>",
+        newTable = re.sub("(?i)[\r\n]+<td(?P<attr> [^>]*?)>(?P<cell>[\w\W]*?)<\/td>",
                          r"\r\n|\g<attr> | \g<cell>", newTable)
     
         # WARNING: this sub might eat cells of bad HTML, but most likely it
@@ -218,8 +223,8 @@ class Table2WikiRobot:
         if n>0:
             warning_messages.append(u'NOTE: Found <td> without </td>. This shouldn\'t cause problems.\n')
     
-        # <td> with arguments, with missing </td> 
-        newTable, n = re.subn("(?i)[\r\n]*<td(?P<attr>[^>]*?)>(?P<cell>[\w\W]*?)[\r\n]+",
+        # <td> with attributes, with missing </td> 
+        newTable, n = re.subn("(?i)[\r\n]*<td(?P<attr> [^>]*?)>(?P<cell>[\w\W]*?)[\r\n]+",
                              r"\r\n|\g<attr> | \g<cell>\r\n", newTable)
         if n > 0:
             warning_messages.append(u'NOTE: Found <td> without </td>. This shouldn\'t cause problems.\n')
@@ -360,6 +365,7 @@ class Table2WikiRobot:
         text.
         Returns the table and the start and end position inside the text.
         """
+        # TODO: skip tables in HTML comments and nowiki tags
         tableStartTagR = re.compile("<table", re.IGNORECASE)
         tableEndTagR = re.compile("</table>", re.IGNORECASE)
         m = tableStartTagR.search(text)
