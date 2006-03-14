@@ -66,18 +66,24 @@ class NowCommonsDeleteBot:
                 match = self.nowCommonsR.search(localText)
                 if not match:
                     wikipedia.output(u'NowCommons template not found.')
-                    continue                    
-                filename = match.group('filename') or localImagePage.titleWithoutNamespace()
-                commonsImagePage = wikipedia.ImagePage(commons, 'Image:%s' % filename)
+                    continue
+                filenameOnCommons = match.group('filename') or localImagePage.titleWithoutNamespace()
+                commonsImagePage = wikipedia.ImagePage(commons, 'Image:%s' % filenameOnCommons)
                 if len(localImagePage.getFileVersionHistory()) > 1:
                     wikipedia.output(u'This image has a version history. Please manually delete it after making sure that the old versions aren\'t worth keeping.')
                     continue
+                if localImagePage.titleWithoutNamespace() != commonsImagePage.titleWithoutNamespace():
+                    if localImagePage.usingPages():
+                        wikipedia.output('%s is still used in %i pages. Please change them manually.' % (localImagePage.title(), len(localImagePage.usingPages())))
+                        continue
+                    else:
+                        wikipedia.output('No page is using %s anymore.' % localImagePage.title())
                 commonsText = commonsImagePage.get()
                 if md5 == commonsImagePage.getFileMd5Sum():
                     wikipedia.output(u'The image is identical to the one on Commons.')
-                    wikipedia.output(u'\n\n>>>>>>> Description on %s <<<<<<\n\n' % repr(self.site))
+                    wikipedia.output(u'\n>>>>>>> Description on %s <<<<<<\n' % localImagePage.aslink())
                     wikipedia.output(localText)
-                    wikipedia.output(u'\n\n>>>>>> Description on Commons <<<<<<\n\n')
+                    wikipedia.output(u'\n>>>>>> Description on %s <<<<<<\n' % commonsImagePage.aslink())
                     wikipedia.output(commonsText)
                     choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
                     if choice == 'y':
