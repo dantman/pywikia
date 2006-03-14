@@ -317,7 +317,10 @@ class Page(object):
         Note that the family is never included.
         """
         if forceInterwiki or self.site() != getSite():
-            return '[[%s:%s]]' % (self.site().lang, self.title())
+            if self.site().family != getSite().family:
+                return '[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, self.title())
+            else:
+                return '[[%s:%s]]' % (self.site().lang, self.title())
         else:
             return '[[%s]]' % self.title()
 
