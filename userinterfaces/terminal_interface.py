@@ -5,8 +5,8 @@ import config, re, sys
 
 # TODO: other colors
 unixColors = {
-    10: '\x1b[92;1m%s\x1b[0m',  # Light Green
-    12: '\x1b[91;1m%s\x1b[0m',  # Light Red
+    10: chr(27) + '[92;1m%s' + chr(27) + '[0m',  # Light Green
+    12: chr(27) + '[91;1m%s' + chr(27) + '[0m',  # Light Red
 }
 class UI:
     def __init__(self):
