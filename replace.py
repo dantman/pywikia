@@ -88,6 +88,7 @@ msg = {
        'hu':u'Robot: Automatikus szövegcsere %s',
        'ia':u'Robot: Reimplaciamento automatic de texto %s',
        'is':u'Vélmenni: breyti texta %s',
+       'it':u'Bot: Sostituzione automatica %s',
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
        'lt':u'Botas: Automatinis teksto keitimas %s',       
        'pt':u'Bot: Mudança automática %s',
