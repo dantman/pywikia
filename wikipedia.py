@@ -595,7 +595,10 @@ class Page(object):
 
     def getReferences(self, follow_redirects=True, withTemplateInclusion = True, onlyTemplateInclusion = False):
         """
-        Return a list of pages that link to the page.
+        Yield all pages that link to the page. If you need a full list of
+        referring pages, use this:
+        
+            pages = [page for page in s.getReferences()]
         
         Parameters:
         * follow_redirects      - if True, also returns pages that link to a
@@ -609,8 +612,6 @@ class Page(object):
         path = site.references_address(self.urlname())
         
         delay = 1
-        refTitles = set()  # use a set to avoid duplications
-        redirTitles = set()
 
         # NOTE: this code relies on the way MediaWiki 1.6 formats the
         #       "Whatlinkshere" special page; if future versions change the
@@ -624,6 +625,7 @@ class Page(object):
         more = True
 
         while more:
+            refTitles = set()  # use a set to avoid duplications
             output(u'Getting references to %s' % self.aslink())
             while True:
                 txt = site.getUrl(path)
@@ -684,7 +686,6 @@ class Page(object):
                                    % rmatch.group("title"))
                         if follow_redirects or not redirect:
                             refTitles.add(rmatch.group("title"))
-                            redirTitles.add(rmatch.group("title"))
                         redirect += 1
                 # the same line may match both redirectpattern and
                 # listitempattern, because there is no newline after
@@ -705,11 +706,11 @@ class Page(object):
                 if rmatch is None and lmatch is None:
                     output(u"DBG> Unparsed line:")
                     output(u"(%i) %s" % (num, line))
-        refTitles = list(refTitles)
-        refTitles.sort()
-        # create list of Page objects
-        refPages = [Page(site, refTitle) for refTitle in refTitles]
-        return refPages
+            refTitles = list(refTitles)
+            refTitles.sort()
+            for refTitle in refTitles:
+                # create Page objects
+                yield Page(site, refTitle)
 
     def put(self, newtext, comment=None, watchArticle = None, minorEdit = True):
         """Replace the new page with the contents of the first argument.

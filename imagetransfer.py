@@ -68,6 +68,7 @@ licenseTemplates = {
     ('wikipedia:de', 'commons:commons'): {
         u'Bild-GFDL':                u'GFDL',
         u'Bild-GFDL-OpenGeoDB':      u'GFDL-OpenGeoDB',
+        u'Bild-Innweb-Lizenz':       u'Map-Austria-GNU',
         u'Bild-PD':                  u'PD',
         u'Bild-PD-alt':              u'PD-old',
         u'Bild-PD-Kunst':            u'PD-Art',

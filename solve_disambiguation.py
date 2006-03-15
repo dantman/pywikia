@@ -245,7 +245,8 @@ class ReferringPageGeneratorWithIgnore:
                                                          enabled=primary)
         
     def __iter__(self):
-        refs = self.disambPage.getReferences(follow_redirects = False, withTemplateInclusion = False)
+        # TODO: start yielding before all referring pages have been found
+        refs = [page for page in self.disambPage.getReferences(follow_redirects = False, withTemplateInclusion = False)]
         wikipedia.output(u"Found %d references." % len(refs))
         # Remove ignorables
         if ignore_title.has_key(self.disambPage.site().family.name) and ignore_title[self.disambPage.site().family.name].has_key(self.disambPage.site().lang):

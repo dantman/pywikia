@@ -214,7 +214,7 @@ def add_category(sort_by_last_name = False):
     else:
         referredPage = wikipedia.input(u'Wikipedia page that is now linked to:')
         page = wikipedia.Page(wikipedia.getSite(), referredPage)
-        pages = page.getReferences()
+        pages = [p for p in page.getReferences()]
     wikipedia.output(u'  ==> %i pages to process\n' % len(pages))
     if len(pages) > 0:
         newcatTitle = wikipedia.input(u'Category to add (do not give namespace):')

@@ -12,7 +12,7 @@ def CAT(site,name):
 
 def BACK(site,name):
     p=wikipedia.Page(site, name)
-    return p.getReferences(follow_redirects=False)
+    return [page for page in p.getReferences(follow_redirects = False)]
 
 def LINKS(site,name, ignore=[]):
     p=wikipedia.Page(site, name)
