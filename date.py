@@ -8,7 +8,7 @@ lists which are required by some other programs.
 # © Daniel Herding, 2004
 # © Ævar Arnfjörð Bjarmason, 2004
 # © Andre Engels, 2005
-# © Yuri Astrakhan, 2005 (years/decades/centuries/millenniums  str <=> int  conversions)
+# © Yuri Astrakhan, 2005-2006  FirstnameLastname@gmail.com (years/decades/centuries/millenniums  str <=> int  conversions)
 #
 # Distributed under the terms of the MIT license.
 #
@@ -500,6 +500,7 @@ formats = {
     'Number': {
         'ar' :      lambda v: dh_number( v, u'%d (عدد)' ),
         'be' :      lambda v: dh_number( v, u'%d (лік)' ),
+        'bg' :      lambda v: dh_number( v, u'%d (число)' ),
         'da' :      lambda v: dh_number( v, u'%d (tal)' ),
         'en' :      lambda v: dh_number( v, u'%d (number)' ),
         'fi' :      lambda v: dh_number( v, u'%d (luku)' ),
@@ -515,6 +516,7 @@ formats = {
         'nn' :      lambda v: dh_number( v, u'Talet %d' ),
         'no' :      lambda v: dh_number( v, u'%d (tall)' ),
         'pl' :      lambda v: dh_number( v, u'%d (liczba)' ),
+        'ro' :      lambda v: dh_number( v, u'%d (cifră)' ),
         'ru' :      lambda v: dh_number( v, u'%d (число)' ),
         'sk' :      lambda v: dh_number( v, u'%d (číslo)' ),
         'sl' :      lambda v: dh_number( v, u'%d (število)' ),
@@ -690,6 +692,7 @@ formats = {
         'ang':      lambda v: dh_decAD( v, u'%de' ),
         'ast':      lambda v: dh_decAD( v, u'Años %d' ),
         'bg' :      lambda v: dh_decAD( v, u'%d-те' ),
+        'br' :      lambda v: dh_decAD( v, u'Bloavezhioù %d' ),
         'bs' :      lambda v: dh_decAD( v, u'%dte' ),
 
         # Unknown what the pattern is, but 1970 is different
@@ -870,7 +873,7 @@ formats = {
             (lambda v: dh_centuryAD( v, u'%deg ganrif' ),           lambda p: p in [17,19]),
             (lambda v: dh_centuryAD( v, u'%dain ganrif' ),          lambda p: p == 21),
             (lambda v: dh_centuryAD( v, u'%dfed ganrif' ),          alwaysTrue)]),
-        'da' :      lambda v: dh_centuryAD( v, u'%d. århundrede' ),
+        'da' :      lambda v: dh_centuryAD( v, u'%d00-tallet' ),
         'de' :      lambda v: dh_centuryAD( v, u'%d. Jahrhundert' ),
         'el' :      lambda m: multi( m, [
             (lambda v: dh_centuryAD( v, u'%dός αιώνας' ),           lambda p: p == 20),
@@ -1029,6 +1032,7 @@ formats = {
     },
 
     'CenturyAD_Cat':{
+        'da' :      lambda v: dh_centuryAD( v, u'%d. århundrede' ),
         'no' :      lambda v: dh( v, u'%d-tallet', lambda i: (i-1)*100, lambda ii: ii[0]/100+1 ),
     },
     
@@ -1217,6 +1221,7 @@ addFmt( dayMnthFmts, 'ar', False,       [ u"%d يناير", u"%d فبراير", 
 addFmt( dayMnthFmts, 'ast',False,       [ u"%d de xineru", u"%d de febreru", u"%d de marzu", u"%d d'abril", u"%d de mayu", u"%d de xunu", u"%d de xunetu", u"%d d'agostu", u"%d de setiembre", u"%d d'ochobre", u"%d de payares", u"%d d'avientu" ])
 addFmt( dayMnthFmts, 'be', False,       [ u"%d студзеня", u"%d лютага", u"%d сакавіка", u"%d красавіка", u"%d траўня", u"%d чэрвеня", u"%d ліпеня", u"%d жніўня", u"%d верасьня", u"%d кастрычніка", u"%d лістапада", u"%d сьнежня" ])
 addFmt( dayMnthFmts, 'bg', False,       makeMonthNamedList( 'bg', u"%%d %s", False ))
+addFmt( dayMnthFmts, 'br', False,       makeMonthNamedList( 'br', u"%%d %s", True ))
 addFmt( dayMnthFmts, 'bs', False,       makeMonthNamedList( 'bs', u"%%d. %s", False ))
 addFmt( dayMnthFmts, 'ca', False,       [ u"%d de gener", u"%d de febrer", u"%d de març", u"%d d'abril", u"%d de maig", u"%d de juny", u"%d de juliol", u"%d d'agost", u"%d de setembre", u"%d d'octubre", u"%d de novembre", u"%d de desembre" ])
 addFmt( dayMnthFmts, 'co', False,       [ u"%d di ghjennaghju", u"%d di frivaghju", u"%d di marzu", u"%d d'aprile", u"%d di maghju", u"%d di ghjugnu", u"%d di lugliu", u"%d d'aostu", u"%d di settembre", u"%d d'uttrovi", u"%d di nuvembri", u"%d di decembre" ])
@@ -1313,7 +1318,7 @@ for i in [3,7,9]:
 addFmt( yrMnthFmts, 'af', True,     makeMonthNamedList( 'af', u"%s %%d", True ))
 addFmt( yrMnthFmts, 'ang',True,     makeMonthNamedList( 'ang', u"%s %%d", True ))
 addFmt( yrMnthFmts, 'de', True,     makeMonthNamedList( 'de', u"%s %%d", True ))
-addFmt( yrMnthFmts, 'el', True,     makeMonthNamedList( 'el', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'el', True,     [ u"Ιανουάριος %d", u"Φεβρουάριος %d", u"Μάρτιος %d", u"Απρίλιος %d", u"Μάιος %d", u"Ιούνιος %d", u"Ιούλιος %d", u"Άυγουστος %d", u"Σεπτέμβριος %d", u"Οκτώβριος %d", u"Νοέμβριος %d", u"Δεκέμβριος %d" ])
 addFmt( yrMnthFmts, 'en', True,     makeMonthNamedList( 'en', u"%s %%d", True ))
 addFmt( yrMnthFmts, 'es', True,     makeMonthNamedList( 'es', u"%s de %%d", True ))
 addFmt( yrMnthFmts, 'et', True,     makeMonthNamedList( 'et', u"%s %%d", True ))
@@ -1347,13 +1352,13 @@ formatLimits = {
     'Number'			: (lambda v: 1<=v and v<1000000,            1,1001),
 
     'YearAD'			: (lambda v: 0<=v and v<2501,               0,2501),
-    'YearBC'			: (lambda v: 0<=v and v<2000,               0,501),   # zh: has years as old as 前1700年
+    'YearBC'			: (lambda v: 0<=v and v<4001,               0,501),   # zh: has years as old as 前1700年
     'DecadeAD'			: (lambda v: 0<=v and v<2501,               0,2501),  # At some point need to re-add  "and v%10==0" to the limitation
-    'DecadeBC'			: (lambda v: 0<=v and v<2000,               0,501),   # zh: has decades as old as 前1700年代
+    'DecadeBC'			: (lambda v: 0<=v and v<4001,               0,501),   # zh: has decades as old as 前1700年代
     'CenturyAD'			: (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
-    'CenturyBC'			: (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
+    'CenturyBC'			: (lambda v: 1<=v and v<91,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
     'MillenniumAD'		: (lambda v: 1<=v and v<6,                  1,4),     # For milleniums, only test first 3 AD Milleniums,
-    'MillenniumBC'		: (lambda v: 1<=v and v<6,                  1,2),     # And only 1 BC Millenium
+    'MillenniumBC'		: (lambda v: 1<=v and v<20,                 1,2),     # And only 1 BC Millenium
     'CenturyAD_Cat'     : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
     'CenturyBC_Cat'     : (lambda v: 1<=v and v<41,                 1,23),    # Some centuries use Roman numerals or a given list - do not exceed them in testing
     'Cat_Year_MusicAlbums'	: (lambda v: 1950<=v and v<2021,        1950,2021),
