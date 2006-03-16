@@ -11,6 +11,9 @@ Arguments:
    -forward  only check pages linked from pages already in the category,
              not pages linking to them. Is less precise but quite a bit
              faster.
+   -exist    only ask about pages that do actually exist; drop any
+             titles of non-existing pages silently. If -forward is chosen,
+             -exist is automatically implied.
 
 When running the bot, you will get one by one a number by pages. You can
 choose:
@@ -76,12 +79,11 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
         else:
             cats = pl.categories()
             if not workingcat in cats:
-                cats = pl.categories(withSortKeys = True)
+                cats = pl.categories()
                 for c in cats:
-                    if rawtoclean(c) in parentcats:
-                        cats.remove(c)
-                if linkterm:
-                    pl.put(wikipedia.replaceCategoryLinks(text, cats + [wikipedia.Page(mysite,"%s|%s"%(workingcat.title(),linkterm))]))
+                    if c in parentcats:
+                        catlib.change_category(pl,c,workingcat)
+                        break
                 else:
                     pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
     if cl:
@@ -112,8 +114,8 @@ def exclude(pl,real_exclude=True):
 
 def asktoadd(pl):
     ctoshow = 500
-    print
-    print("==%s==")%pl.title()
+    wikipedia.output(u'')
+    wikipedia.output(u"==%s=="%pl.title())
     while 1:
         answer = raw_input("y(es)/n(o)/i(gnore)/(o)ther options? ")
         if answer=='y':
@@ -137,12 +139,12 @@ def asktoadd(pl):
             exclude(pl,real_exclude=False)
             break
         elif answer=='o':
-            print("t: Give the beginning of the text of the page")
-            print("z: Add under another title (as [[Category|Title]])")
-            print("x: Add the page, but do not check links to and from it")
-            print("c: Do not add the page, but do check links")
-            print("a: Add another page")
-            print("l: Give a list of the pages to check")
+            wikipedia.output(u"t: Give the beginning of the text of the page")
+            wikipedia.output(u"z: Add under another title (as [[Category|Title]])")
+            wikipedia.output(u"x: Add the page, but do not check links to and from it")
+            wikipedia.output(u"c: Do not add the page, but do check links")
+            wikipedia.output(u"a: Add another page")
+            wikipedia.output(u"l: Give a list of the pages to check")
         elif answer=='a':
             pagetitle = raw_input("Specify page to add:")
             page=wikipedia.Page(wikipedia.getSite(),pagetitle)
@@ -151,34 +153,35 @@ def asktoadd(pl):
         elif answer=='x':
             if pl.exists():
                 if pl.isRedirectPage():
-                    print("Redirect page. Will be included normally.")
+                    wikipedia.output(u"Redirect page. Will be included normally.")
                     include(pl,realinclude=False)
                 else:
                     include(pl,checklinks=False)
             else:
-                print("Page does not exist; not added.")
+                wikipedia.output(u"Page does not exist; not added.")
                 exclude(pl,real_exclude=False)
             break
         elif answer=='l':
-            print("Number of pages still to check: %s")%len(tocheck)
-            print("Pages to be checked:")
-            print tocheck
-            print("==%s==")%pl.title()
+            wikipedia.output(u"Number of pages still to check: %s"%len(tocheck))
+            wikipedia.output(u"Pages to be checked:")
+            wikipedia.output(u" - ".join(page.title() for page in tocheck))
+            wikipedia.output(u"==%s=="%pl.title())
         elif answer=='t':
-            print("==%s==")%pl.title()
+            wikipedia.output(u"==%s=="%pl.title())
             try:
-                wikipedia.output(pl.get(get_redirect=True)[0:ctoshow])
+                wikipedia.output(u''+pl.get(get_redirect=True)[0:ctoshow])
             except wikipedia.NoPage:
-                print "Page does not exist."
+                wikipedia.output(u"Page does not exist.")
             ctoshow += 500
         else:
-            print("Not understood.")
+            wikipedia.output(u"Not understood.")
 
 try:
     checked = {}
     skipdates = False
     checkforward = True
     checkbackward = True
+    checkbroken = True
     workingcatname = []
     tocheck = []
     for arg in sys.argv[1:]:
@@ -188,6 +191,9 @@ try:
                 skipdates = True
             elif arg.startswith('-forward'):
                 checkbackward = False
+                checkbroken = False
+            elif arg.startswith('-exist'):
+                checkbroken = False
             else:
                 workingcatname.append(arg)
 
@@ -197,7 +203,7 @@ try:
         workingcatname = ' '.join(workingcatname)
     mysite = wikipedia.getSite()
     wikipedia.setAction(wikipedia.translate(mysite,msg) + ' ' + workingcatname)
-    workingcat = catlib.Category(mysite,workingcatname)
+    workingcat = catlib.Category(mysite,mysite.category_namespace()+':'+workingcatname)
     filename = 'category/' + wikipedia.UnicodeToAsciiHtml(workingcatname) + '_exclude.txt'
     try:
         f = codecs.open(filename, 'r', encoding = mysite.encoding())
@@ -232,7 +238,7 @@ try:
         answer = wikipedia.input(u"(Default is [[%s]]):"%workingcatname)
         if not answer:
             answer = workingcatname
-        print answer
+        wikipedia.output(u''+answer)
         pl = wikipedia.Page(mysite,answer)
         tocheck = []
         checked[pl] = pl
@@ -245,7 +251,7 @@ try:
             else:
                 loaded = 50
             wikipedia.getall(mysite,tocheck[:loaded])
-        if not checkbackward:
+        if not checkbroken:
             if not tocheck[0].exists():
                 pass
             else:
