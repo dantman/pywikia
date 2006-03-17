@@ -1834,6 +1834,8 @@ def replaceLanguageLinks(oldtext, new, site = None):
     """
     if site == None:
         site = getSite()
+    if site == Site('de', 'wikipedia'):
+        raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position')
     s = interwikiFormat(new, insite = site)
     s2 = removeLanguageLinks(oldtext, site = site)
     if s:
