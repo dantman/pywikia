@@ -363,7 +363,7 @@ class Family(family.Family):
             'ia': ['en','fr','it','es','pt','de','ru','la'],
             'lb': self.alphabetic_lb,
             'nn': ['no','nb','sv','da'] + self.alphabetic,
-            'no': self.alphabetic_revised,
+            'no': self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
             'vi': self.alphabetic_revised
