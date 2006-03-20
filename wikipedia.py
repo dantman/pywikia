@@ -127,6 +127,16 @@ try:
 except NameError:
     from sets import Set as set
 
+
+# Check Unicode support (is this a wide or narrow python build?)
+# See http://www.python.org/doc/peps/pep-0261/
+try:
+    unichr(66365)  # a character in th: alphabet, uses 32 bit encoding
+    WIDEBUILD = True
+except ValueError:
+    WIDEBUILD = False
+
+    
 # Local exceptions
 
 class Error(Exception):
@@ -1631,7 +1641,7 @@ class Throttle(object):
                         processes[pid] = ptime
                         if pid >= my_pid:
                             my_pid = pid+1
-                except IndexError:
+                except (IndexError,ValueError):
                     pass    # Sometimes the file gets corrupted - ignore that line
                     
         if not self.pid:
@@ -2157,7 +2167,7 @@ def html2unicode(text, ignore = []):
                     # We found a known HTML entity.
                     unicodeCodepoint = htmlentitydefs.name2codepoint[name]
             result += text[:match.start()]
-            if unicodeCodepoint and unicodeCodepoint not in ignore:
+            if unicodeCodepoint and unicodeCodepoint not in ignore and (WIDEBUILD or unicodeCodepoint < 65534):
                 result += unichr(unicodeCodepoint)
             else:
                 # Leave the entity unchanged

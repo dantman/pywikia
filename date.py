@@ -268,6 +268,8 @@ _digitDecoders = {
     'H' : ( _hiDigits, lambda v: intToLocalDigitsStr(v, _hiDigitsToLocal), lambda v: localDigitsStrToInt(v, _hiDigitsToLocal, _hiLocalToDigits) ),    
     # %G is a number in GU:
     'G' : ( _guDigits, lambda v: intToLocalDigitsStr(v, _guDigitsToLocal), lambda v: localDigitsStrToInt(v, _guDigitsToLocal, _guLocalToDigits) ),    
+    # %T is a year in TH: -- all years are shifted: 2005 => 'พ.ศ. 2548'
+    'T' : ( _decimalDigits, lambda v: unicode(v+543), lambda v: int(v)-543 ),
 }
 
 # Allows to search for '(%%)|(%d)|(%R)|...", and allows one digit 1-9  too set the size of zero-padding for numbers
@@ -512,6 +514,7 @@ formats = {
         'ko' :      lambda v: dh_number( v, u'%d' ),
         'la' :      lambda v: dh_number( v, u'%d' ),
         'lt' :      lambda v: dh_number( v, u'%d (skaičius)' ),
+        'nds':      lambda v: dh_number( v, u'%d (Tall)' ),
         'nl' :      lambda v: dh_number( v, u'%d (getal)' ),
         'nn' :      lambda v: dh_number( v, u'Talet %d' ),
         'no' :      lambda v: dh_number( v, u'%d (tall)' ),
@@ -599,6 +602,7 @@ formats = {
         'nl' :      dh_simpleYearAD,
         'nn' :      dh_simpleYearAD,
         'no' :      dh_simpleYearAD,
+        'oc' :      dh_simpleYearAD,
         'os' :      dh_simpleYearAD,
         'pl' :      dh_simpleYearAD,
         'pt' :      dh_simpleYearAD,
@@ -622,7 +626,7 @@ formats = {
         'te' :      dh_simpleYearAD,
 
         #2005 => 'พ.ศ. 2548'
-        'th' :      lambda v: dh( v, u'พ.ศ. %d',                lambda i: i + 543, lambda l: l[0] - 543 ),
+        'th' :      lambda v: dh_yearAD( v, u'พ.ศ. %T' ),
         'tl' :      dh_simpleYearAD,
         'tpi':      dh_simpleYearAD,
         'tr' :      dh_simpleYearAD,
@@ -941,9 +945,7 @@ formats = {
         'os' :      lambda v: dh_centuryAD( v, u'%R æнус' ),
         'pl' :      lambda v: dh_centuryAD( v, u'%R wiek' ),
         'pt' :      lambda v: dh_centuryAD( v, u'Século %R' ),
-        'ro' :      lambda m: multi( m, [
-            (lambda v: dh_centuryAD( v, u'Secolul %R' ), lambda p: p <= 3),
-            (lambda v: dh_centuryAD( v, u'Secolul al %R-lea' ), alwaysTrue)]),
+        'ro' :      lambda v: dh_centuryAD( v, u'Secolul %R' ),
         'ru' :      lambda v: dh_centuryAD( v, u'%R век' ),
         'scn':      lambda v: dh_centuryAD( v, u'Sèculu %R' ),
         'simple' :  lambda m: multi( m, [
@@ -1114,6 +1116,7 @@ formats = {
         'an' :      lambda v: dh_singVal( v, u'Autualidá' ),
         'ang':      lambda v: dh_singVal( v, u'Efenealde belimpas' ),
         'ar' :      lambda v: dh_singVal( v, u'الأحداث الجارية' ),
+        'be' :      lambda v: dh_singVal( v, u'Бягучыя падзеі' ),
         'bg' :      lambda v: dh_singVal( v, u'Текущи събития' ),
         'ca' :      lambda v: dh_singVal( v, u'Viquipèdia:Actualitat' ),
         'cs' :      lambda v: dh_singVal( v, u'Aktuality' ),
@@ -1146,6 +1149,7 @@ formats = {
         'pt' :      lambda v: dh_singVal( v, u'Eventos atuais' ),
         'ro' :      lambda v: dh_singVal( v, u'Actualităţi' ),
         'ru' :      lambda v: dh_singVal( v, u'Текущие события' ),
+        'scn':      lambda v: dh_singVal( v, u'Nutizzî' ),
         'simple':   lambda v: dh_singVal( v, u'World news' ),
         'sl' :      lambda v: dh_singVal( v, u'Trenutni dogodki' ),
         'sr' :      lambda v: dh_singVal( v, u'Википедија:Актуелности' ),
@@ -1265,16 +1269,17 @@ addFmt( dayMnthFmts, 'mk', False,       [ u"%d јануари", u"%d февру�
 addFmt( dayMnthFmts, 'ml', False,       makeMonthNamedList( 'ml', u"%s %%d" ))
 addFmt( dayMnthFmts, 'ms', False,       makeMonthNamedList( 'ms', u"%%d %s", True ))
 addFmt( dayMnthFmts, 'nap',False,       makeMonthNamedList( 'nap', u"%%d 'e %s", False ))
-addFmt( dayMnthFmts, 'nds',False,       [ u"%d Januar", u"%d Februar", u"%d März", u"%d April", u"%d Mai", u"%d Juni", u"%d Juli", u"%d August", u"%d September", u"%d Oktober", u"%d November", u"%d Dezember" ])
+addFmt( dayMnthFmts, 'nds',False,       makeMonthNamedList( 'nds', u"%%d. %s", True ))
 addFmt( dayMnthFmts, 'nl', False,       [ u"%d januari", u"%d februari", u"%d maart", u"%d april", u"%d mei", u"%d juni", u"%d juli", u"%d augustus", u"%d september", u"%d oktober", u"%d november", u"%d december" ])
 addFmt( dayMnthFmts, 'nn', False,       makeMonthNamedList( 'nn', u"%%d. %s", False ))
 addFmt( dayMnthFmts, 'no', False,       makeMonthNamedList( 'no', u"%%d. %s", False ))
 addFmt( dayMnthFmts, 'oc', False,       [ u"%d de genièr", u"%d de febrièr", u"%d de març", u"%d d'abril", u"%d de mai", u"%d de junh", u"%d de julhet", u"%d d'agost", u"%d de setembre", u"%d d'octobre", u"%d de novembre", u"%d de decembre" ])
-addFmt( dayMnthFmts, 'os', False,       [ None, None, u"%d мартъийы", None, None, None, u"%d июлы", None, None, None, None, None ])
+addFmt( dayMnthFmts, 'os', False,       [ u"%d январы", u"%d февралы", u"%d мартъийы", u"%d апрелы", u"%d майы", None, u"%d июлы", None, u"%d сентябры", None, u"%d ноябры", u"%d декабры" ])
 addFmt( dayMnthFmts, 'pl', False,       [ u"%d stycznia", u"%d lutego", u"%d marca", u"%d kwietnia", u"%d maja", u"%d czerwca", u"%d lipca", u"%d sierpnia", u"%d września", u"%d października", u"%d listopada", u"%d grudnia" ])
 addFmt( dayMnthFmts, 'pt', False,       makeMonthNamedList( 'pt', u"%%d de %s", True ))
 addFmt( dayMnthFmts, 'ro', False,       makeMonthNamedList( 'ro', u"%%d %s", False ))
 addFmt( dayMnthFmts, 'ru', False,       [ u"%d января", u"%d февраля", u"%d марта", u"%d апреля", u"%d мая", u"%d июня", u"%d июля", u"%d августа", u"%d сентября", u"%d октября", u"%d ноября", u"%d декабря" ])
+addFmt( dayMnthFmts, 'sco',False,       makeMonthNamedList( 'sco', u"%%d %s", True ))
 addFmt( dayMnthFmts, 'scn',False,       makeMonthNamedList( 'scn', u"%%d di %s", False ))
 addFmt( dayMnthFmts, 'se', False,       [ u"ođđajagimánu %d.", u"guovvamánu %d.", u"njukčamánu %d.", u"cuoŋománu %d.", u"miessemánu %d.", u"geassemánu %d.", u"suoidnemánu %d.", u"borgemánu %d.", u"čakčamánu %d.", u"golggotmánu %d.", u"skábmamánu %d.", u"juovlamánu %d." ])
 addFmt( dayMnthFmts, 'simple',False,        makeMonthNamedList( 'simple', u"%s %%d", True ))
@@ -1285,7 +1290,7 @@ addFmt( dayMnthFmts, 'sr', False,       makeMonthNamedList( 'sr', u"%%d. %s", Fa
 addFmt( dayMnthFmts, 'sv', False,       makeMonthNamedList( 'sv', u"%%d %s", False ))
 addFmt( dayMnthFmts, 'ta', False,       makeMonthNamedList( 'ta', u"%s %%d" ))
 addFmt( dayMnthFmts, 'te', False,       makeMonthNamedList( 'te', u"%s %%d" ))
-addFmt( dayMnthFmts, 'th', False,       makeMonthNamedList( 'th', u"%%d %s" ))
+addFmt( dayMnthFmts, 'th', False,       makeMonthNamedList( 'th', u"%%T %s" ))
 addFmt( dayMnthFmts, 'tl', False,       [ u"Enero %d", u"Pebrero %d", u"Marso %d", u"Abríl %d", u"Mayo %d", u"Hunyo %d", u"Hulyo %d", u"Agosto %d", u"Setyembre %d", u"Oktubre %d", u"Nobyembre %d", u"Disyembre %d" ])
 addFmt( dayMnthFmts, 'tr', False,       makeMonthNamedList( 'tr', u"%%d %s", True ))
 addFmt( dayMnthFmts, 'tt', False,       makeMonthNamedList( 'tt', u"%%d. %s", True ))
@@ -1333,6 +1338,7 @@ addFmt( yrMnthFmts, 'pl', True,     makeMonthNamedList( 'pl', u"%s %%d", True ))
 addFmt( yrMnthFmts, 'scn',True,     [ None, None, u"Marzu %d", None, None, None, None, None, None, None, None, None ])
 addFmt( yrMnthFmts, 'simple', True, makeMonthNamedList( 'simple', u"%s %%d", True ))
 addFmt( yrMnthFmts, 'sv', True,     makeMonthNamedList( 'sv', u"%s %%d", True ))
+addFmt( yrMnthFmts, 'th', True,     makeMonthNamedList( 'th', u"%s พ.ศ. %%T" ))
 addFmt( yrMnthFmts, 'tt', True,     makeMonthNamedList( 'tt', u"%s, %%d", True ))
 addFmt( yrMnthFmts, 'ur', True,     [ u"%d01مبم", u"%d02مبم", u"%d03مبم", u"%d04مبم", u"%d05مبم", u"%d06مبم", u"%d07مبم", u"%d08مبم", u"%d09مبم", u"%d10مبم", u"%d11مبم", u"%d12مبم" ])
 addFmt( yrMnthFmts, 'uk', True,     makeMonthNamedList( 'uk', u"%s %%d", True ))
@@ -1349,7 +1355,7 @@ addFmt( yrMnthFmts, 'zh-min-nan',True,  makeMonthList( u"%%d nî %d goe̍h" ))
 #
 formatLimits = {
     'MonthName'			: (lambda v: 1<=v and v<13,                 1,13),
-    'Number'			: (lambda v: 1<=v and v<1000000,            1,1001),
+    'Number'			: (lambda v: 0<=v and v<1000000,            0,1001),
 
     'YearAD'			: (lambda v: 0<=v and v<2501,               0,2501),
     'YearBC'			: (lambda v: 0<=v and v<4001,               0,501),   # zh: has years as old as 前1700年
