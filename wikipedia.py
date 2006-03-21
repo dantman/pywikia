@@ -483,7 +483,7 @@ class Page(object):
             RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
         matchVersionTab = RversionTab.search(text)
         if not matchVersionTab:
-            raise NoPage(self.site(), self.title())                
+            raise NoPage(self.site(), self.title())
         # Look if the page is on our watchlist
         R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
         matchWatching = R.search(text)
@@ -504,7 +504,7 @@ class Page(object):
         x = unescape(x)
         while x and x[-1] in '\n ':
             x = x[:-1]
-
+            
         return x, isWatched, editRestriction
 
     def permalink(self):
@@ -802,11 +802,17 @@ class Page(object):
         # Give the token, but only if one is supplied.
         if token:
             predata.append(('wpEditToken', token))
-        
+
+        # Sorry, single-site exception...
+        if self.site().fam().name == 'loveto' and self.site().language() == 'recipes':
+            predata.append(('masteredit','1'))
+            
         if newPage:
             output('Creating page %s' % self.aslink())
         else:
             output('Changing page %s' % self.aslink())
+
+            
         # Submit the prepared information
         if self.site().hostname() in config.authenticate.keys():
             predata.append(("Content-type","application/x-www-form-urlencoded"))
@@ -1558,7 +1564,6 @@ class GetAll(object):
     
 def getall(site, pages, throttle = True, force = False):
     output(u'Getting %d pages from %s...' % (len(pages), site))
-#    output(u'\r\n'.join([pl.aslink(forceInterwiki=True) for pl in pages]))
     return GetAll(site, pages, throttle, force).run()
     
 # Library functions
@@ -2817,7 +2822,7 @@ class Site(object):
     def language(self):
         return self.lang
 
-    def family(self):
+    def fam(self):
         return self.family
 
     def sitename(self):
