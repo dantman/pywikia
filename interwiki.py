@@ -227,7 +227,7 @@ msg = {
     'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
     'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),
-    'sr': (u'Áîò ', u'Додаје', u'Брише', u'Мења'),
+    'sr': (u'Бот', u'Додаје', u'Брише', u'Мења'),
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
     }
 
