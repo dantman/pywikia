@@ -229,9 +229,8 @@ class Page(object):
         # if the page is not in namespace 0:
         if len(title) > 1:
             # translate a default namespace name into the local namespace name
-            for ns in site.family.namespaces.keys():
-                if title[0] == site.family.namespace('_default', ns):
-                    title[0] = site.namespace(ns)
+            title[0] = site.normalizeNamespace(title[0])
+
             # Capitalize the first non-namespace part
             for ns in site.family.namespaces.keys():
                 if title[0] == site.namespace(ns):
@@ -242,7 +241,7 @@ class Page(object):
                         try:
                             title[1] = title[1][0].upper()+title[1][1:]
                         except IndexError: # title[1] is empty
-                            print "WARNING: Strange title %s"%'%3A'.join(title)
+                            output(u"WARNING: Strange title %s" % u'%3A'.join(title))
         # In case the part before the colon was not a namespace, we need to
         # remove leading and trailing whitespace now.
         title = ':'.join(title).strip()
@@ -808,11 +807,9 @@ class Page(object):
             predata.append(('masteredit','1'))
             
         if newPage:
-            output('Creating page %s' % self.aslink())
+            output('Creating page %s' % self.aslink(forceInterwiki=True))
         else:
-            output('Changing page %s' % self.aslink())
-
-            
+            output('Changing page %s' % self.aslink(forceInterwiki=True))
         # Submit the prepared information
         if self.site().hostname() in config.authenticate.keys():
             predata.append(("Content-type","application/x-www-form-urlencoded"))
@@ -1440,11 +1437,8 @@ class GetAll(object):
                 if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
                     break
         else:
-            print "BUG: page not found in list"
-            print 'Title:', repr(title)
-            print 'Page:', repr(pl)
-            print 'Expected one of:', repr(self.pages)
-
+            output(u"BUG>> title %s (%s) not found in list" % (title, pl.aslink(forceInterwiki=True)))
+            output(u'Expected one of: %s' % u','.join([pl2.aslink(forceInterwiki=True) for pl2 in self.pages]))
             raise PageNotFound
 
         pl2.editRestriction = entry.editRestriction
@@ -1523,7 +1517,7 @@ class GetAll(object):
             pagenames = [doubleXForEsperanto(pagetitle) for pagetitle in pagenames]
         pagenames = u'\r\n'.join(pagenames)
         if type(pagenames) != type(u''):
-            print 'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.'
+            wikipedia.output(u'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.')
             print pagenames
         # convert Unicode string to the encoding used on that wiki
         pagenames = pagenames.encode(self.site.encoding())
@@ -2807,6 +2801,9 @@ class Site(object):
 
     def namespace(self, num):
         return self.family.namespace(self.lang, num)
+
+    def normalizeNamespace(self, value):
+        return self.family.normalizeNamespace(self.lang, value)
 
     def namespaces(self):
         list=()
