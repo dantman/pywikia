@@ -305,7 +305,7 @@ class Family(family.Family):
         # one-after-another on a single line
         self.interwiki_on_one_line = ['hu']
         
-        # A revised sorting order worked out on http://meta.wikimedia.org/wiki/User_talk:ChongDae#Re:_Chobot
+        # A revised sorting order worked out on http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic_revised = ['aa','af','ak','als','am','ang','ab','ar',
            'an','roa-rup','as','ast','gn','av','ay','az','id','ms','bm',
            'bn','zh-min-nan','ban','jv','su','bug','ba','be','bh','mt',

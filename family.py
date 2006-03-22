@@ -8,42 +8,30 @@ __version__='$Id$'
 class Family:
     def __init__(self):
         self.name = None
-        
-        self.knownlanguages = [
-            'aa','ab','af','ak','als','am','an','ang','ar','arc','as','ast','av',
-            'ay','az','ba','be','bg','bh','bi','bm','bn','bo','br','bs','bug','ca','ce',
-            'ceb','ch','cho','chr','chy','co','cr','cs','csb','cv','cy','da','de',
-            'dv','dz','ee','el','en','eo','es','et','eu','fa','ff','fi','fiu-vro',
-            'fj','fo','fr','fur','fy','ga','gd','gl','gn','got','gu','gv','ha',
-            'haw','he','hi','ho','hr','ht','hu','hy','hz','ia','id','ie','ig',
-            'ii','ik','ilo','io','is','it','iu','ja','jbo','jv','ka','kg','ki','kj',
-            'kk','kl','km','kn','ko','kr','ks','ku','kv','kw','ky','la','lad','lb',
-            'lg','li','lmo','ln','lo','lt','lv','mg','mh','mi','mk','ml','mn','mo',
-            'mr','ms','mt','mus','my','na','nah','nap','nds','ne','ng','nl','nn',
-            'no','nv','ny','oc','om','or','os','pa','pam','pi','pih','pl','ps','pt',
-            'qu','rm','rn','ro','roa-rup','ru','rw','sa','sc','scn','sco','sd',
-            'se','sg','sh','si','simple','sk','sl','sm','sn','so','sq','sr',
-            'ss','st','su','sv','sw','ta','te','tg','th','ti','tk','tl','tn',
-            'to','tpi','tr','ts','tt','tum','tw','ty','udm','ug','uk','ur','uz','ve','vec',
-            'vi','vo','wa','war','wo','xh','yi','yo','za','zh','zh-min-nan','zu']
+                    
+        # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic = [
-            'aa','ab','af','als','am','ang','ar','an','roa-rup','as','arc','ast','av','ay',
-            'az','bg','bm','minnan','zh-min-nan','ba','be','bn','bh','bi','bo',
-            'bs','br','ca','ceb','cv','ch','chr','ny','sn','cho','co','cs','cy','da','de',
-            'dv','dz','et','el','en','es','eo','eu','ee','fa','fo','fj','fr',
-            'fy','ff','fur','ga','gv','gd','gl','got','gn','gu','ko','ht','ha','haw',
-            'hy','hi','hr','io','ik','ilo','id','ia','ie','iu','xh','zu','is','it','he',
-            'jv','kl','kn','ka','kap','kk','csb','ks','kw','km','ky','rn','sw','ku',
-            'lad','lo','la','lv','lt','lb','li','ln','jbo','lg','lmo','hu','mk','mg',
-            'ml','mt','mi','mr','ms','mn','mo','mus','my','nah','na','nv','nap','ng',
-            'nl','cr','ne','nds','ja','pih','no','nb','nn','oc','or','om','os','ug',
-            'pi','ps','nds','pl','pt','pa','ro','rm','qu','ru','se','sm','sa','sg',
-            'sc','sco','st','sq','sh','scn','si','simple','sd','ss','sk','sl','sr',
-            'su','fi','sv','tl','tg','ta','tt','te','th','ti','tlh','vi',
-            'tokipona','tpi','to','ts','tk','tum','tr','tw','udm','bug','uk','ur',
-            'ug','uz','ve','vec','vo','wa','war','wo','ts','yi','yo','za','zh',
-            'zh-cn','zh-tw']
-
+           'aa','af','ak','als','am','ang','ab','ar','an','roa-rup','as','ast',
+           'gn','av','ay','az','bm','bn','zh-min-nan','ba','be','bh','bi','bo',
+           'bs','br','bg','ca','cv','ceb','cs','ch','ny','sn','tum','cho','co','za',
+           'cy','da','de','dv','arc','nv','dz','mh','et','el','en','es','eo','eu',
+           'ee','fa','fo','fr','fy','ff','fur','ga','gv','gd','gl','ki','gu','got',
+           'ko','ha','haw','hy','hi','ho','hr','io','ig','ilo','id','ia','ie','iu',
+           'ik','os','xh','zu','is','it','he','jv','kl','kn','kr','ka','ks','csb',
+           'kk','kw','rw','ky','rn','sw','kv','kg','ht','kj','ku','lo','lad','la',
+           'lv','lb','lt','li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi',
+           'mr','ms','mo','mn','mus','my','nah','na','fj','nl','cr','ne','ja','nap',
+           'ce','pih','no','nn','oc','or','om','ng','hz','ug','pa','pi','pam','ps',
+           'km','nds','pl','pt','ty','ro','rm','qu','ru','war','se','sm','sa','sg',
+           'sc','sco','st','tn','sq','scn','si','simple','sd','ss','sk','sl','so',
+           'sr','sh','su','fi','sv','tl','ta','tt','te','th','vi','ti','tg','tpi',
+           'to','chr','chy','ve','tr','tk','tw','udm','bug','uk','ur','uz','vec',
+           'vo','fiu-vro','wa','wo','ts','ii','yi','yo','zh','zh-tw','zh-cn']
+        
+        # knownlanguages is the same list but sorted by code
+        self.knownlanguages = list(self.alphabetic)
+        self.knownlanguages.sort()
+        
         self.langs = {}
         
         # Translation used on all wikis for the different namespaces.
@@ -1063,7 +1051,7 @@ class Family:
                 'fr': u'Catégorie',
                 'fur': u'Categorie',
                 'fy': u'Kategory',
-                'ga': u'Catagóir',
+                'ga': [u'Catagóir', u'Rang'],
                 'gn': u'Categoría',
                 'he': u'קטגוריה',
                 'hi': u'श्रेणी',
@@ -1685,11 +1673,31 @@ class Family:
 
     def namespace(self, code, namespace_number, fallback = '_default'):
         if self.namespaces[namespace_number].has_key(code):
-            return self.namespaces[namespace_number][code]
+            v = self.namespaces[namespace_number][code]
+            if type(v) == type([]):
+                return v[0]
+            else:
+                return v
         elif fallback:
             return self.namespaces[namespace_number][fallback]
         else:
             raise KeyError('ERROR: title for namespace %d in language %s unknown' % (namespace_number, code))  
+    
+    def normalizeNamespace(self, code, value):
+        """Given a value, attempt to match it with all available namespaces, with default and localized versions.
+        Sites may have more than one way to write the same namespace - choose the first one in the list.
+        If nothing can be normalized, return the original value.
+        """
+        for ns, items in self.namespaces.iteritems():
+            if items.has_key(code):
+                v = items[code]
+                if type(v) == type([]):
+                    if value in v: return v[0]
+                else:
+                    if value == v: return v
+            if value == self.namespace('_default', ns):
+                return self.namespace(code, ns)
+        return value
     
     def disambig(self, code, fallback = '_default'):
         if self.disambiguationTemplates.has_key(code):
