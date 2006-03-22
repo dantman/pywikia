@@ -828,7 +828,7 @@ formats = {
             (lambda v: dh_decBC( v, u'i.e. %d-as évek' ),           lambda p: (p % 100 / 10) in [0,2,3,6,8]),
             (lambda v: dh_decBC( v, u'i.e. %d-es évek' ),           alwaysTrue)]),
 
-        'it' :      lambda v: dh_decBC( v, u'Anni %d AC' ),
+        'it' :      lambda v: dh_decBC( v, u'Anni %d a.C.' ),
         # '19-10 v. Chr.'
         'nl' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'9-1 v. Chr.'),                                                  lambda p: p == 1),
