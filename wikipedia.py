@@ -14,7 +14,7 @@ Page: A MediaWiki page
     section               : The section of the page (the part of the name after '#')
     sectionFreeTitle      : The name without the section part
     aslink                : The name of the page in the form [[Title]] or [[lang:Title]]
-    site                  : The wiki where this page is in
+    site                  : Thewiki where this page is in
     encoding              : The encoding the page is in
     isAutoTitle           : If the title is a well known, auto-translatable title
     autoFormat            : Returns (dictName, value), where value can be a year, date, etc.,
@@ -2587,7 +2587,6 @@ class Site(object):
                 raise ServerError('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
             # remove the irrelevant sections
             returned_html = returned_html[ibegin:iend]
-            print returned_html
             if self.version()=="1.2":
                 R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
             else:
@@ -2600,7 +2599,7 @@ class Site(object):
                 if self.version()=="1.2":
                     yield Page(self, url2link(hit, site = self, insite = self))
                 else:
-                    print "%s: %s"%(n,hit)
+                    yield Page(self, hit)
                 # save the last hit, so that we know where to continue when we
                 # finished all articles on the current page. Append a '!' so that
                 # we don't yield a page twice.
