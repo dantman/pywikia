@@ -2587,10 +2587,11 @@ class Site(object):
                 raise ServerError('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
             # remove the irrelevant sections
             returned_html = returned_html[ibegin:iend]
+            print returned_html
             if self.version()=="1.2":
                 R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
             else:
-                R = re.compile('(?:title ?="|/wiki/)(.*?)(?:\?.*?)?"')
+                R = re.compile('title ?="(.*?)"')
             # Count the number of useful links on this page
             n = 0
             for hit in R.findall(returned_html):
@@ -2599,7 +2600,7 @@ class Site(object):
                 if self.version()=="1.2":
                     yield Page(self, url2link(hit, site = self, insite = self))
                 else:
-                    yield Page(self, hit)
+                    print "%s: %s"%(n,hit)
                 # save the last hit, so that we know where to continue when we
                 # finished all articles on the current page. Append a '!' so that
                 # we don't yield a page twice.
