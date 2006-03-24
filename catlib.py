@@ -81,7 +81,7 @@ class Category(wikipedia.Page):
         if site.version() < "1.4":
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
         else:
-            Rtitle = re.compile('/wiki/\S* title\s?=\s?\"([^\"]*)\"')
+            Rtitle = re.compile('/wiki/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
         ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
@@ -112,7 +112,7 @@ class Category(wikipedia.Page):
                     wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), startFromPage))
                 else:
                     wikipedia.output('Getting [[%s]]...' % cat.title())
-                txt = site.getUrl(path)             
+                txt = site.getUrl(path)
                 # save a copy of this text to find out self's supercategory.
                 # if recurse is true, this function should only return self's
                 # supercategory, not the ones of its subcats.
@@ -124,7 +124,10 @@ class Category(wikipedia.Page):
                 try:
                     iend = txt.index('<div id="catlinks">')
                 except ValueError:
-                    iend = txt.index('<!-- end content -->')
+                    try:
+                        iend = txt.index('<!-- end content -->')
+                    except ValueError:
+                        iend = txt.index('<div class="printfooter">')
                 txt = txt[ibegin:iend]
                 for title in Rtitle.findall(txt):
                     if isCatTitle(title, self.site()):

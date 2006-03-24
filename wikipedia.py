@@ -1241,23 +1241,31 @@ class Page(object):
             token = self.site().getToken(self, sysop = True)
             predata = [
                 ('wpReason', reason),
+                ('wpConfirm', '1'),
                 ('wpConfirmB', '1')]
             if token:
                 predata.append(('wpEditToken', token))
-            data = urlencode(tuple(predata))
-            conn = httplib.HTTPConnection(host)
-            conn.putrequest("POST", address)
-            conn.putheader('Content-Length', str(len(data)))
-            conn.putheader("Content-type", "application/x-www-form-urlencoded")
-            conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
-            if self.site().cookies(sysop = True):
-                conn.putheader('Cookie', self.site().cookies(sysop = True))
-            conn.endheaders()
-            conn.send(data)
+            if self.site().hostname() in config.authenticate.keys():
+                predata.append(("Content-type","application/x-www-form-urlencoded"))
+                predata.append(("User-agent", "PythonWikipediaBot/1.0"))
+                data = urlencode(tuple(predata))
+                response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+                data = ''
+            else:    
+                data = urlencode(tuple(predata))
+                conn = httplib.HTTPConnection(host)
+                conn.putrequest("POST", address)
+                conn.putheader('Content-Length', str(len(data)))
+                conn.putheader("Content-type", "application/x-www-form-urlencoded")
+                conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
+                if self.site().cookies(sysop = True):
+                    conn.putheader('Cookie', self.site().cookies(sysop = True))
+                conn.endheaders()
+                conn.send(data)
         
-            response = conn.getresponse()
-            data = response.read()
-            conn.close()
+                response = conn.getresponse()
+                data = response.read()
+                conn.close()
         
             if data != '':
                 data = data.decode(myencoding())
@@ -2582,7 +2590,7 @@ class Site(object):
             if self.version()=="1.2":
                 R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
             else:
-                R = re.compile('title ?="(.*?)"')
+                R = re.compile('(?:title ?="|/wiki/)(.*?)(?:\?.*?)?"')
             # Count the number of useful links on this page
             n = 0
             for hit in R.findall(returned_html):
