@@ -450,7 +450,7 @@ class Page(object):
                 if hn:
                     m = re.search("=+ *%s *=+" % hn, self._contents)
                     if not m:
-                        output(u"WARNING: Section does not exist: %s" % self.title())
+                        output(u"WARNING: Section does not exist: %s" % self.aslink(forceInterwiki = True))
                 if self.site().lang == 'eo':
                     self._contents = resolveEsperantoXConvention(self._contents)
             # Store any exceptions for later reference
@@ -497,7 +497,7 @@ class Page(object):
             except AttributeError:
                 # find out if the username or IP has been blocked
                 if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
-                    raise UserBlocked(self.site(), self.title())
+                    raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
                 else:
                     output( unicode(text) )
                     # We assume that the server is down. Wait some time, then try again.
@@ -536,7 +536,7 @@ class Page(object):
             RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
         matchVersionTab = RversionTab.search(text)
         if not matchVersionTab:
-            raise NoPage(self.site(), self.title())
+            raise NoPage(self.site(), self.aslink(forceInterwiki = True))
         # Look if the page is on our watchlist
         R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
         matchWatching = R.search(text)
@@ -551,7 +551,7 @@ class Page(object):
             if get_redirect:
                 self._redirarg = m.group(1)
             else:
-                output(u"DBG> %s is redirect to %s" % (self.title(), m.group(1)))
+                output(u"DBG> %s is redirect to %s" % (self.aslink(forceInterwiki = True), m.group(1)))
                 raise IsRedirectPage(m.group(1))
         x = text[i1:i2]
         x = unescape(x)
@@ -1142,9 +1142,9 @@ class Page(object):
             retry_idle_time = 1
 
             if startFromPage:
-                output(u'Continuing to get version history of %s' % self.title())
+                output(u'Continuing to get version history of %s' % self.aslink(forceInterwiki = True))
             else:
-                output(u'Getting version history of %s' % self.title())
+                output(u'Getting version history of %s' % self.aslink(forceInterwiki = True))
 
             txt = site.getUrl(path)
 
@@ -1286,7 +1286,7 @@ class Page(object):
         reason = reason.encode(self.site().encoding())
         answer = 'y'
         if prompt:
-            answer = inputChoice(u'Do you want to delete %s?' % self.title(), ['Yes', 'No'], ['y', 'N'], 'N')
+            answer = inputChoice(u'Do you want to delete %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No'], ['y', 'N'], 'N')
         if answer in ['y', 'Y']:
             host = self.site().hostname()
             address = self.site().delete_address(self.urlname())
@@ -1360,7 +1360,7 @@ class ImagePage(Page):
         try:
             url = m.group('url1') or m.group('url2')
         except AttributeError:
-            raise NoPage(u'Image page %s not found.' % self.title())
+            raise NoPage(u'Image page %s not found.' % self.aslink(forceInterwiki = True))
         return url
         #filename = self.titleWithoutNamespace(underscore = True)
         #encodedFilename = filename.encode(self.site().encoding())
@@ -1507,7 +1507,7 @@ class GetAll(object):
         pl2.editRestriction = entry.editRestriction
         pl2.moveRestriction = entry.moveRestriction
         if editRestriction == 'autoconfirmed':
-            output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % pl2.title())
+            output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % pl2.aslink(forceInterwiki = True))
             try:
                 pl2.get()
             except:
@@ -1533,7 +1533,7 @@ class GetAll(object):
             if section:
                 m = re.search("== *%s *==" % section, text)
                 if not m:
-                    output(u"WARNING: Section not found: %s" % pl2.title())
+                    output(u"WARNING: Section not found: %s" % pl2.aslink(forceInterwiki = True))
                 else:
                     # Store the content
                     pl2._contents = text
