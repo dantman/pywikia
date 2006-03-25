@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -307,43 +307,43 @@ class Family(family.Family):
         
         # A revised sorting order worked out on http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic_revised = ['aa','af','ak','als','am','ang','ab','ar',
-           'an','roa-rup','as','ast','gn','av','ay','az','id','ms','bm',
-           'bn','zh-min-nan','ban','jv','su','bug','ba','be','bh','mt',
+           'an','roa-rup','frp','as','ast','gn','av','ay','az','id','ms','bm',
+           'bn','zh-min-nan','ban','map-bms','jv','su','bug','ba','be','bh','mt',
            'bi','bo','bs','br','bg','ca','ceb','cv','cs','ch','ny','sn','tum',
-           'cho','co','za','cy','da','de','dv','nv','dz','mh','et','na','el','en','es',
+           'cho','co','za','cy','da','pdc','de','dv','nv','dz','mh','et','na','el','en','es',
            'eo','eu','ee','to','fa','fo','fr','fy','ff','fur','ga','gv','sm','gd','gl',
            'gay','ki','gu','got','ko','ha','haw','hy','hi','ho','hr','io','ig','ia','ie',
-           'iu','ik','os','xh','zu','is','it','he','kl','kn','kr','ka','ks','csb','kw',
+           'iu','ik','os','xh','zu','is','it','he','kl','xal','kn','kr','ka','ks','csb','kw',
            'rw','ky','rn','sw','kv','kg','ht','kj','ku','lad','lo','la','lv','lb','lt','li',
            'ln','jbo','lg','lmo','hu','mk','mg','ml','mi','mr','chm','mo','mn','mus','my',
-           'nah','fj','nap','nl','cr','ne','ja','ce','pih','no','nn','oc','or','om','ng','hz','ug',
-           'uz','pa','kk','pi','pam','ps','km','nds','pl','pt','ty','ro','rm','qu','ru',
+           'nah','fj','nap','nds-nl','nl','cr','ne','ja','ce','pih','no','nn','nrm','oc','or','om','ng','hz','ug',
+           'uz','pa','kk','pi','pam','pap','ps','km','nds','pl','pt','ty','ksh','ro','rm','rmy','qu','ru',
            'se','sa','sg','sc','sco','st','tn','sq','scn','si','simple','sd','ss','sk',
-           'sl','so','sr','sh','fi','sv','tl','ta','tt','te','th','vi','ti','tlh','tg',
-           'tpi','chr','chy','ve','tr','tk','tw','udm','uk','ur','vec','vo','fiu-vro','wa','war',
-           'wo','ts','ii','yi','yo','zh','zh-tw','zh-cn']
+           'sl','so','sr','sh','fi','sv','tl','ta','tt','te','tet','th','vi','ti','tlh','tg',
+           'tpi','chr','chy','ve','tr','tk','tw','udm','uk','ur','vec','vo','fiu-vro','wa','war','vls',
+           'wo','ts','ii','yi','yo','zh-yue','bat-smg','zh','zh-tw','zh-cn']
 
         # A sorting order for lb.wikipedia worked out by http://lb.wikipedia.org/wiki/User_talk:Otets
         self.alphabetic_lb = ['aa', 'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar',
-            'an', 'roa-rup', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'id', 'ms', 'bm',
-            'bn', 'zh-min-nan', 'ban', 'jv', 'su', 'bug', 'ba', 'be', 'bh', 'mt',
+            'an', 'roa-rup', 'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'id', 'ms', 'bm',
+            'bn', 'zh-min-nan', 'ban', 'map-bms', 'jv', 'su', 'bug', 'ba', 'be', 'bh', 'mt',
             'bi', 'bo', 'bs', 'br', 'bg', 'ca', 'ceb', 'cs', 'ch', 'chr', 'chy',
-            'ny', 'sn', 'tum', 've', 'cho', 'co', 'za', 'cy', 'da', 'de', 'dv',
+            'ny', 'sn', 'tum', 've', 'cho', 'co', 'za', 'cy', 'da', 'pdc', 'de', 'dv',
             'nv', 'dz', 'mh', 'na', 'el', 'en', 'es', 'eo', 'et', 'eu', 'ee', 'to',
             'fa', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm', 'gd', 'gl',
             'gay', 'ki', 'gu', 'got', 'ha', 'haw', 'hy', 'he', 'hi', 'ho',
             'hr', 'io', 'ig', 'ilo', 'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it',
-            'ja', 'kl', 'kn', 'kr', 'ka', 'ks', 'csb', 'kw', 'rw', 'ky', 'rn', 'sw',
+            'ja', 'kl', 'xal', 'kn', 'kr', 'ka', 'ks', 'csb', 'kw', 'rw', 'ky', 'rn', 'sw',
             'kv', 'kg', 'ko', 'ht', 'kj', 'ku', 'lad', 'lo', 'la', 'lv', 'lb', 'lt', 'li',
             'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mi', 'mr', 'chm',
-            'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nap', 'nl', 'cr', 'ne', 'ce',
-            'pih', 'no', 'nn', 'oc', 'or', 'om', 'ng', 'hz', 'ug', 'uz', 'pa', 'kk',
-            'pi', 'pam', 'ps', 'km', 'nds', 'pl', 'pt', 'ty', 'ro', 'rm', 'qu',
+            'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nap', 'nds-nl', 'nl', 'cr', 'ne', 'ce',
+            'pih', 'no', 'nn', 'nrm', 'oc', 'or', 'om', 'ng', 'hz', 'ug', 'uz', 'pa', 'kk',
+            'pi', 'pam', 'pap', 'ps', 'km', 'nds', 'pl', 'pt', 'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu',
             'ru', 'war', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'scn', 'si',
             'simple', 'sd', 'ss', 'sk', 'sl', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
-            'ta', 'tt', 'te', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
-            'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 
-            'wo', 'ts', 'ii', 'yi', 'yo', 'zh', 'zh-tw', 'zh-cn']
+            'ta', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
+            'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'vls',
+            'wo', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'map-bsg', 'zh', 'zh-tw', 'zh-cn']
 
 
         # Which languages have a special order for putting interlanguage links,
