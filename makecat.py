@@ -113,6 +113,7 @@ def asktoadd(pl):
         if needcheck(pl2):
             tocheck.append(pl2)
             checked[pl2]=pl2
+        return
     ctoshow = 500
     wikipedia.output(u'')
     wikipedia.output(u"==%s=="%pl.title())
