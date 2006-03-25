@@ -113,6 +113,8 @@ def exclude(pl,real_exclude=True):
         excludefile.write('%s\n'%pl.title())
 
 def asktoadd(pl):
+    if pl.site() != mysite:
+        return
     ctoshow = 500
     wikipedia.output(u'')
     wikipedia.output(u"==%s=="%pl.title())
