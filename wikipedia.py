@@ -1547,7 +1547,7 @@ class GetAll(object):
             pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
             section = pl2.section()
             if section:
-                m = re.search("== *%s *==" % section, text)
+                m = re.search("== *%s *==" % re.escape(section), text)                    
                 if not m:
                     output(u"WARNING: Section not found: %s" % pl2.aslink(forceInterwiki = True))
                 else:
