@@ -239,24 +239,20 @@ class Page(object):
                 break
             p = m.group(1)
             lowerNs = p.lower()
-            #output( u"DBG>> %s - trying canonical namespace %s" % (title,lowerNs))
             ns = self.site().family.getCanonicalIndex(lowerNs)
             if ns:
                 # Canonical namespace - defined as _default in the family files
                 t = m.group(2)
                 self._namespace = ns
-                #output( u"DBG>> %s - canonical namespace %d" % (title,ns))
             else:
                 ns = self.site().family.getNsIndex( self.site().lang, lowerNs )
                 if ns:
                     # Ordinary namespace
                     t = m.group(2)
                     self._namespace = ns
-                    #output( u"DBG>> %s - ordinary namespace %d" % (title,ns))
                 elif lowerNs in self.site().family.alphabetic:
                     # Interwiki link
                     t = m.group(2)
-                    #output( u"DBG>> %s - interwiki %s" % (title, lowerNs))
 
                     # Redundant interwiki prefix to the local wiki
                     if lowerNs == self.site().lang:
@@ -302,8 +298,6 @@ class Page(object):
         self._userName = None
         self._ipedit = None
         self._editTime = None
-        
-        #output( u"DBG>>> interwiki: %s, namespace: %d, title: %s, section %s" % (self.site().lang, self.namespace(), self.title(), self.section()))
 
     def site(self):
         """The site of the page this Page refers to,
@@ -554,7 +548,6 @@ class Page(object):
             if get_redirect:
                 self._redirarg = m.group(1)
             else:
-                output(u"DBG> %s is redirect to %s" % (self.aslink(forceInterwiki = True), m.group(1)))
                 raise IsRedirectPage(m.group(1))
         x = text[i1:i2]
         x = unescape(x)
