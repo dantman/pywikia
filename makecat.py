@@ -70,6 +70,10 @@ def needcheck(pl):
 
 def include(pl,checklinks=True,realinclude=True,linkterm=None):
     cl = checklinks
+    if linkterm:
+        actualworkingcat = catlib.Category(mysite,workingcat.title(),sortKey=linkterm)
+    else:
+        actualworkingcat = workingcat
     if realinclude:
         try:
             text = pl.get()
@@ -85,10 +89,10 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
                 for c in cats:
                     if c in parentcats:
                         if removeparent:
-                            catlib.change_category(pl,c,workingcat)
+                            catlib.change_category(pl,c,actualworkingcat)
                             break
                 else:
-                    pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
+                    pl.put(wikipedia.replaceCategoryLinks(text, cats + [actualworkingcat]))
     if cl:
         if checkforward:
             for page2 in pl.linkedPages():
