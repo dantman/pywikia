@@ -14,6 +14,8 @@ Arguments:
    -exist    only ask about pages that do actually exist; drop any
              titles of non-existing pages silently. If -forward is chosen,
              -exist is automatically implied.
+   -keepparent  do not remove parent categories of the category to be
+             worked on.
 
 When running the bot, you will get one by one a number by pages. You can
 choose:
@@ -82,29 +84,20 @@ def include(pl,checklinks=True,realinclude=True,linkterm=None):
                 cats = pl.categories()
                 for c in cats:
                     if c in parentcats:
-                        catlib.change_category(pl,c,workingcat)
-                        break
+                        if removeparent:
+                            catlib.change_category(pl,c,workingcat)
+                            break
                 else:
                     pl.put(wikipedia.replaceCategoryLinks(text, cats + [workingcat]))
     if cl:
         if checkforward:
-            try:
-                pl.get()                
-            except wikipedia.IsRedirectPage:
-                pl2 = wikipedia.Page(mysite,pl.getRedirectTarget())
-                if needcheck(pl2):
-                    tocheck.append(pl2)
-                    checked[pl2]=pl2                
-            except wikipedia.Error:
-                pass
-            else:
-                for page2 in pl.linkedPages():
-                    if needcheck(page2):
-                        tocheck.append(page2)
-                        checked[page2] = page2
+            for page2 in pl.linkedPages():
+                if needcheck(page2):
+                    tocheck.append(page2)
+                    checked[page2] = page2
         if checkbackward:
             for refPage in pl.getReferences():
-                if needcheck(refPage):
+                 if needcheck(refPage):
                     tocheck.append(refPage)
                     checked[refPage] = refPage
 
@@ -115,6 +108,11 @@ def exclude(pl,real_exclude=True):
 def asktoadd(pl):
     if pl.site() != mysite:
         return
+    if pl.isRedirectPage():
+        pl2 = wikipedia.Page(mysite,pl.getRedirectTarget())
+        if needcheck(pl2):
+            tocheck.append(pl2)
+            checked[pl2]=pl2
     ctoshow = 500
     wikipedia.output(u'')
     wikipedia.output(u"==%s=="%pl.title())
@@ -184,6 +182,7 @@ try:
     checkforward = True
     checkbackward = True
     checkbroken = True
+    removeparent = True
     workingcatname = []
     tocheck = []
     for arg in sys.argv[1:]:
@@ -196,6 +195,8 @@ try:
                 checkbroken = False
             elif arg.startswith('-exist'):
                 checkbroken = False
+            elif arg.startswith('-keepparent'):
+                removeparent = False
             else:
                 workingcatname.append(arg)
 
