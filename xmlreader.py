@@ -42,11 +42,13 @@ class XmlEntry:
     """
     Represents a page.
     """
-    def __init__(self, title, id, text, timestamp, editRestriction, moveRestriction, revisionid):
+    def __init__(self, title, id, text, username, ipedit, timestamp, editRestriction, moveRestriction, revisionid):
         # TODO: there are more tags we can read.
         self.title = title
         self.id = id
         self.text = text
+        self.username = username.strip()
+        self.ipedit = ipedit
         self.timestamp = timestamp
         self.editRestriction = editRestriction
         self.moveRestriction = moveRestriction
@@ -86,6 +88,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
         if name == 'page':
             self.editRestriction = None
             self.moveRestriction = None
+            self.ipedit = None
         elif name == 'revision':
             self.inRevisionTag = True
         elif name == 'contributor':
@@ -103,6 +106,14 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             else:
                 self.destination = 'id'
                 self.id = u''
+        elif name == 'username':
+            self.destination = 'username'
+            self.username = u''
+            self.ipedit = False
+        elif name == 'ip':
+            self.destination = 'username'  # store it in the username
+            self.username = u''
+            self.ipedit = True
         elif name == 'restrictions':
                 self.destination = 'restrictions'
                 self.restrictions = u''
@@ -148,7 +159,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                          self.timestamp[17:19])
             self.title = self.title.strip()
             # Report back to the caller
-            entry = XmlEntry(self.title, self.id, text, timestamp, self.editRestriction, self.moveRestriction, self.revisionid)
+            entry = XmlEntry(self.title, self.id, text, self.username, self.ipedit, timestamp, self.editRestriction, self.moveRestriction, self.revisionid)
             self.inRevisionTag = False
             self.callback(entry)
         elif self.headercallback:
@@ -169,6 +180,8 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.restrictions += data
         elif self.destination == 'title':
             self.title += data
+        elif self.destination == 'username':
+            self.username += data
         elif self.destination == 'timestamp':
             self.timestamp += data
         elif self.headercallback:
@@ -243,6 +256,12 @@ class XmlDump(object):
                     text = m.group('text') or u''
                     restrictions = m.group('restrictions')
                     editRestriction, moveRestriction = parseRestrictions(restrictions)
+                    if m.group('username'):
+                        username = m.group('username')
+                        ipedit = False
+                    else:
+                        username = m.group('ip')
+                        ipedit = True
                     # we don't care about the revisionid.
-                    entry = XmlEntry(title = m.group('title'), id = m.group('pageid'), text = text, timestamp = m.group('timestamp'), editRestriction = editRestriction, moveRestriction = moveRestriction, revisionid = m.group('revisionid'))
+                    entry = XmlEntry(title = m.group('title'), id = m.group('pageid'), text = text, username = username, ipedit=idedit, timestamp = m.group('timestamp'), editRestriction = editRestriction, moveRestriction = moveRestriction, revisionid = m.group('revisionid'))
                     yield entry

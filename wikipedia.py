@@ -299,7 +299,10 @@ class Page(object):
         self._title = t
         self.editRestriction = None
         self._permalink = None
-
+        self._userName = None
+        self._ipedit = None
+        self._editTime = None
+        
         #output( u"DBG>>> interwiki: %s, namespace: %d, title: %s, section %s" % (self.site().lang, self.namespace(), self.title(), self.section()))
 
     def site(self):
@@ -612,6 +615,15 @@ class Page(object):
     def isTalkPage(self):
         ns = self.namespace()
         return ns >= 0 and ns % 2 == 1
+
+    def userName(self):
+        return self._userName
+        
+    def isIpEdit(self):
+        return self._ipedit
+
+    def editTime(self):
+        return self._editTime
 
     def namespace(self):
         """Gives the number of the namespace of the page. Does not work for
@@ -1490,6 +1502,8 @@ class GetAll(object):
 
     def oneDone(self, entry):
         title = entry.title
+        username = entry.username
+        ipedit = entry.ipedit
         timestamp = entry.timestamp
         text = entry.text
         editRestriction = entry.editRestriction
@@ -1514,9 +1528,11 @@ class GetAll(object):
                 pass
         else:
             pl2._permalink = entry.revisionid
+            pl2._userName = username
+            pl2._ipedit = ipedit
+            pl2._editTime = timestamp
             m = self.site.redirectRegex().match(text)
             if m:
-                pl._editTime = timestamp
                 redirectto=m.group(1)
                 pl2._getexception = IsRedirectPage
                 pl2._redirarg = redirectto
@@ -1537,14 +1553,10 @@ class GetAll(object):
                 else:
                     # Store the content
                     pl2._contents = text
-                    # Store the time stamp
-                    pl2._editTime = timestamp
             else:
                 # Store the content
                 pl2._contents = text
-                # Store the time stamp
-                pl2._editTime = timestamp
-
+ 
     def headerDone(self, header):
         # Verify our family data
         lang = self.site.lang
