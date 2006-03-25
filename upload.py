@@ -107,12 +107,12 @@ class UploadRobot:
         # Get file contents
         if '://' in self.url:
             uo = wikipedia.MyURLopener()
-            file = uo.open(self.url)
+            file = uo.open(self.url,"rb")
         else:
             # Opening local files with MyURLopener would be possible, but we
             # don't do it because it only accepts ASCII characters in the
             # filename.
-            file = open(self.url)
+            file = open(self.url,"rb")
         wikipedia.output(u'Reading file %s' % self.url)
         contents = file.read()
         if contents.find("The requested URL was not found on this server.") != -1:
