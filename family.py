@@ -1944,3 +1944,23 @@ class Family:
         """Change this to some regular expression that shows the page we
         found is an existing page, in case the normal regexp does not work."""
         return None
+
+    def getCanonicalIndex(self, title):
+        for n in self.namespaces.keys():
+            try:
+                if self.namespaces[n]['_default'].lower() == title.lower():
+                    return n
+            except AttributeError:
+                # n=0 gives value None, which has no lower() attribute
+                pass
+        return None
+
+    def getNsIndex(self, code, title):
+        for n in self.namespaces.keys():
+            try:
+                if self.namespaces[n][code].lower() == title.lower():
+                    return n
+            except KeyError:
+                # The namespace has no localized name defined
+                pass
+        return None
