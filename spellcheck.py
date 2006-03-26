@@ -38,6 +38,7 @@ Command-line options:
           This is done both before and after the normal check.
 -rebuild  save the complete wordlist, not just the changes, removing the
           old wordlist.
+-noname   skip all words that start with a capital
 """
 #
 # (C) Andre Engels, 2005
@@ -249,7 +250,7 @@ def removeHTML(page):
     result = result.replace('&deg;',u'°')
     return result
 
-def spellcheck(page):
+def spellcheck(page, checknames = True):
     text = page
     if correct_html_codes:
         text = removeHTML(text)
@@ -263,7 +264,7 @@ def spellcheck(page):
         loc += len(match.group(1))
         bigword = Word(match.group(2))
         smallword = bigword.derive()
-        if not Word(smallword).isCorrect():
+        if not Word(smallword).isCorrect() and (checknames or not smallword[0].isupper()):
             replacement = askAlternative(smallword,context=text[max(0,loc-40):loc+len(match.group(2))+40])
             if replacement == edit:
                 import editarticle
@@ -287,6 +288,12 @@ def spellcheck(page):
 class Word(object):
     def __init__(self,text):
         self.word = text
+
+    def __str__(self):
+        return self.word
+
+    def __cmp__(self,other):
+        return self.word.__cmp__(str(other))
 
     def derive(self):
         # Get the short form of the word, without punctuation, square
@@ -382,6 +389,7 @@ try:
     longpages = False
     correct_html_codes = False
     rebuild = False
+    checknames = True
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'spellcheck')
         if arg:
@@ -395,6 +403,8 @@ try:
                 correct_html_codes = True
             elif arg.startswith("-rebuild"):
                 rebuild = True
+            elif arg.startswith("-noname"):
+                checknames = False
             else:
                 title.append(arg)
     mysite = wikipedia.getSite()
@@ -435,7 +445,7 @@ try:
             except wikipedia.Error:
                 pass
             else:
-                text = spellcheck(text)
+                text = spellcheck(text,checknames=checknames)
                 if text != page.get():
                     page.put(text)
     elif start:
@@ -445,7 +455,7 @@ try:
             except wikipedia.Error:
                 pass
             else:
-                text = spellcheck(text)
+                text = spellcheck(text,checknames=checknames)
                 if text != page.get():
                     page.put(text)
 
@@ -456,7 +466,7 @@ try:
             except wikipedia.Error:
                 pass
             else:
-                text = spellcheck(text)
+                text = spellcheck(text, checknames = checknames)
                 if text != page.get():
                     page.put(text)
     
