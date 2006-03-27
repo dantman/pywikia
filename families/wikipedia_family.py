@@ -381,7 +381,7 @@ class Family(family.Family):
              'tet','tg','th','ti','ty','tk','tl','tn','to','tpi','tr','ts','tt',
              'tum','tw','udm','ug','uk','ur','uz','ve','vec','vi','vls','vo',
              'wa','war','ts','xh','za','zh','zh-cn','zh-min-nan','zh-tw',
-             'zh-yue','zu',]
+             'zh-yue','zu',],
             'he': ['en'],
             'hu': ['en'],
             'ia': ['en','fr','it','es','pt','de','ru','la'],
