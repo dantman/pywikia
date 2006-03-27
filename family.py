@@ -11,22 +11,24 @@ class Family:
                     
         # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic = [
-           'aa','af','ak','als','am','ang','ab','ar','an','roa-rup','frp','as','ast',
-           'gn','av','ay','az','bm','bn','zh-min-nan','map-mbs','ba','be','bh','bi','bo',
-           'bs','br','bg','ca','cv','ceb','cs','ch','ny','sn','tum','cho','co','za',
-           'cy','da','pdc','de','dv','arc','nv','dz','mh','et','el','en','es','eo','eu',
-           'ee','fa','fo','fr','fy','ff','fur','ga','gv','gd','gl','ki','gu','got',
-           'ko','ha','haw','hy','hi','ho','hr','io','ig','ilo','id','ia','ie','iu',
-           'ik','os','xh','zu','is','it','he','jv','kl','xal','kn','kr','ka','ks','csb',
-           'kk','kw','rw','ky','rn','sw','kv','kg','ht','kj','ku','lo','lad','la',
-           'lv','lb','lij','lt','li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi',
-           'mr','ms','mo','mn','mus','my','nah','na','fj','nl','nds-nl','cr','ne','ja','nap',
-           'ce','pih','no','nn','nrm','oc','or','om','ng','hz','ug','pa','pi','pam','pap','ps',
-           'km','nds','pl','pt','ty','ksh','ro','rmy','rm','qu','ru','war','se','sm','sa','sg',
-           'sc','sco','st','tn','sq','scn','si','simple','sd','ss','sk','sl','so',
-           'sr','sh','su','fi','sv','tl','ta','tt','te','tet','th','vi','ti','tg','tpi',
-           'to','chr','chy','ve','tr','tk','tw','udm','bug','uk','ur','uz','vec',
-           'vo','fiu-vro','wa','vls','wo','ts','ii','yi','yo','zh-yue','bat-smg','zh','zh-tw','zh-cn']
+           'aa','af','ak','als','am','ang','ab','ar','an','roa-rup','frp','as',
+           'ast','gn','av','ay','az','bm','bn','zh-min-nan','map-mbs','ba','be',
+           'bh','bi','bo','bs','br','bg','ca','cv','ceb','cs','ch','ny','sn',
+           'tum','cho','co','za','cy','da','pdc','de','dv','arc','nv','dz','mh',
+           'et','el','en','es','eo','eu','ee','fa','fo','fr','fy','ff','fur','ga',
+           'gv','gd','gl','ki','gu','got','ko','ha','haw','hy','hi','ho','hr',
+           'io','ig','ilo','id','ia','ie','iu','ik','os','xh','zu','is','it','he',
+           'jv','kl','xal','kn','kr','ka','ks','csb','kk','kw','rw','ky','rn',
+           'sw','kv','kg','ht','kj','ku','lo','lad','la','lv','lb','lij','lt',
+           'li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi','mr','ms',
+           'mo','mn','mus','my','nah','na','fj','nl','nds-nl','cr','ne','ja','nap',
+           'ce','pih','no','nn','nrm','oc','or','om','ng','hz','ug','pa','pi',
+           'pam','pap','ps','km','pms','nds','pl','pt','ty','ksh','ro','rmy','rm',
+           'qu','ru','war','se','sm','sa','sg','sc','sco','st','tn','sq','scn',
+           'si','simple','sd','ss','sk','sl','so','sr','sh','su','fi','sv','tl',
+           'ta','tt','te','tet','th','vi','ti','tg','tpi','to','chr','chy','ve',
+           'tr','tk','tw','udm','bug','uk','ur','uz','vec','vo','fiu-vro','wa',
+           'vls','wo','ts','ii','yi','yo','zh-yue','bat-smg','zh','zh-tw','zh-cn']
         
         # knownlanguages is the same list but sorted by code
         self.knownlanguages = list(self.alphabetic)

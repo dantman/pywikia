@@ -3095,7 +3095,7 @@ def altlang(code):
         return ['he']
     if code=='sa':
         return ['hi']
-    if code in ['lij','lmo','nap','sc','scn','vec']:
+    if code in ['lij','lmo','nap','pms','sc','scn','vec']:
         return ['it']
     if code=='rm':
         return ['it','de','fr']
