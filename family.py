@@ -1960,8 +1960,12 @@ class Family:
     def getNsIndex(self, code, title):
         for n in self.namespaces.keys():
             try:
-                if self.namespaces[n][code].lower() == title.lower():
-                    return n
+                nslist = self.namespaces[n][code]
+                if type(nslist) != type([]):
+                    nslist = [nslist]
+                for ns in nslist:
+                    if ns.lower() == title.lower():
+                        return n
             except KeyError:
                 # The namespace has no localized name defined
                 pass
