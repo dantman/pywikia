@@ -34,11 +34,14 @@ It is therefore expected to work on for example Russian and Korean, but not
 on for example Japanese.
 
 Command-line options:
--html	  change HTML-entities like &uuml; into their respective letters.
-          This is done both before and after the normal check.
--rebuild  save the complete wordlist, not just the changes, removing the
-          old wordlist.
--noname   skip all words that start with a capital
+-html	       change HTML-entities like &uuml; into their respective letters.
+               This is done both before and after the normal check.
+-rebuild       save the complete wordlist, not just the changes, removing the
+               old wordlist.
+-noname        skip all words that start with a capital
+-checklang:xx  use the file for language xx: instead of that for my local
+               language; for example on simple: one would use the language
+               file of en:
 """
 #
 # (C) Andre Engels, 2005
@@ -49,7 +52,7 @@ Command-line options:
 __version__ = '$Id$'
 
 import re,sys
-import wikipedia
+import wikipedia, pagegenerators
 import string,codecs
 
 msg={
@@ -390,6 +393,7 @@ try:
     correct_html_codes = False
     rebuild = False
     checknames = True
+    checklang = None
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'spellcheck')
         if arg:
@@ -405,11 +409,15 @@ try:
                 rebuild = True
             elif arg.startswith("-noname"):
                 checknames = False
+            elif arg.startswith("-checklang:"):
+                checklang = arg[11:]
             else:
                 title.append(arg)
     mysite = wikipedia.getSite()
+    if not checklang:
+        checklang = mysite.language()
     wikipedia.setAction(wikipedia.translate(mysite,msg))
-    filename = 'spelling/spelling-' + mysite.language() + '.txt'
+    filename = 'spelling/spelling-' + checklang + '.txt'
     print "Getting wordlist"
     try:
         f = codecs.open(makepath(filename), 'r', encoding = mysite.encoding())
@@ -449,7 +457,7 @@ try:
                 if text != page.get():
                     page.put(text)
     elif start:
-        for page in mysite.allpages(start = start):
+        for page in pagegenerators.PreloadingGenerator(pagegenerators.AllpagesPageGenerator(start=start)):
             try:
                 text = page.get()
             except wikipedia.Error:
@@ -487,7 +495,7 @@ try:
             title = wikipedia.input(u"Which page to check now? (enter to stop)")
 finally:
     wikipedia.stopme()
-    filename = 'spelling/spelling-' + mysite.language() + '.txt'
+    filename = 'spelling/spelling-' + checklang + '.txt'
     if rebuild:
         list = knownwords.keys()
         list.sort()
