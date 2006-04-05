@@ -1947,24 +1947,33 @@ class Family:
         found is an existing page, in case the normal regexp does not work."""
         return None
 
-    def getCanonicalIndex(self, title):
+    def getCanonicalIndex(self, namespace):
+        """Given a potential namespace, match it with _default values and return namespace index.
+        Returns None if not found
+        """
+        namespace = namespace.lower()
         for n in self.namespaces.keys():
             try:
-                if self.namespaces[n]['_default'].lower() == title.lower():
+                if self.namespaces[n]['_default'].lower() == namespace:
                     return n
             except AttributeError:
                 # n=0 gives value None, which has no lower() attribute
                 pass
         return None
 
-    def getNsIndex(self, code, title):
+    def getNsIndex(self, lang, namespace):
+        """Given a namespace, attempt to match it with all available namespaces.
+        Sites may have more than one way to write the same namespace - choose the first one in the list.
+        Returns namespace index or None
+        """
+        namespace = namespace.lower()
         for n in self.namespaces.keys():
             try:
-                nslist = self.namespaces[n][code]
+                nslist = self.namespaces[n][lang]
                 if type(nslist) != type([]):
                     nslist = [nslist]
                 for ns in nslist:
-                    if ns.lower() == title.lower():
+                    if ns.lower() == namespace:
                         return n
             except KeyError:
                 # The namespace has no localized name defined
