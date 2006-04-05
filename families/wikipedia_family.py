@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -570,6 +570,7 @@ class Family(family.Family):
             'na' :			u'Etang õgõg',
             'nah':			u'Main Page',
             'nds':			u'Hööftsiet',
+            'nds-nl':                   u'Heufdpagina',
             'ne' :			u'Main Page',
             'ng' :			u'Main Page',
             'nl' :			u'Hoofdpagina',
