@@ -197,6 +197,7 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
                 self.namespace += data
         
 
+
 class XmlParserThread(threading.Thread):
     """
     This XML parser will run as a single thread. This allows the XmlDump
@@ -230,7 +231,24 @@ class XmlDump(object):
         parses them to create XmlEntry objects. Stops when the end of file is
         reached.
         '''
-        Rpage = re.compile('<page>\s*<title>(?P<title>.+?)</title>\s*<id>(?P<pageid>\d+?)</id>\s*(<restrictions>(?P<restrictions>.+?)</restrictions>)?\s*<revision>\s*<id>(?P<revisionid>\d+?)</id>\s*<timestamp>(?P<timestamp>.+?)</timestamp>\s*<contributor>\s*(<username>(?P<username>.+?)</username>\s*<id>(?P<userid>\d+?)</id>|<ip>(?P<ip>.+?)</ip>)\s*</contributor>\s*(?P<minor>(<minor />))?\s*(?:<comment>(?P<comment>.+?)</comment>\s*)?(<text xml:space="preserve">(?P<text>.*?)</text>|<text xml:space="preserve" />)\s*</revision>\s*</page>', re.DOTALL)
+        Rpage = re.compile(
+            '<page>\s*'+
+            '<title>(?P<title>.+?)</title>\s*'+
+            '<id>(?P<pageid>\d+?)</id>\s*'+
+            '(<restrictions>(?P<restrictions>.+?)</restrictions>)?\s*'+
+            '<revision>\s*'+
+              '<id>(?P<revisionid>\d+?)</id>\s*'+
+              '<timestamp>(?P<timestamp>.+?)</timestamp>\s*'+
+              '<contributor>\s*'+
+                '(<username>(?P<username>.+?)</username>\s*'+
+                '<id>(?P<userid>\d+?)</id>|<ip>(?P<ip>.+?)</ip>)\s*'+
+              '</contributor>\s*'+
+              '(?P<minor>(<minor />))?\s*'+
+              '(?:<comment>(?P<comment>.+?)</comment>\s*)?'+
+              '(<text xml:space="preserve">(?P<text>.*?)</text>|<text xml:space="preserve" />)\s*'+
+            '</revision>\s*'+
+            '</page>',
+                re.DOTALL)
         f = codecs.open(self.filename, 'r', encoding = wikipedia.myencoding(), errors='replace')
         print 'Reading XML dump...'
         eof = False
@@ -263,5 +281,13 @@ class XmlDump(object):
                         username = m.group('ip')
                         ipedit = True
                     # we don't care about the revisionid.
-                    entry = XmlEntry(title = m.group('title'), id = m.group('pageid'), text = text, username = username, ipedit=idedit, timestamp = m.group('timestamp'), editRestriction = editRestriction, moveRestriction = moveRestriction, revisionid = m.group('revisionid'))
+                    entry = XmlEntry(title = m.group('title'),
+                                     id = m.group('pageid'),
+                                     text = text,
+                                     username = username,
+                                     ipedit=ipedit,
+                                     timestamp = m.group('timestamp'),
+                                     editRestriction = editRestriction,
+                                     moveRestriction = moveRestriction,
+                                     revisionid = m.group('revisionid'))
                     yield entry
