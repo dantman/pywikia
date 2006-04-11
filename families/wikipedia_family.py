@@ -281,7 +281,7 @@ class Family(family.Family):
             'nds': [u'Mehrdüdig Begreep','Disambig'],
             'nl':  [u'Dp', u'DP', u'Dp2', u'Dpintro'],
             'nn':  [u'Fleirtyding'],
-            'no':  [u'Peker', u'Etternavn', u'Disambig'],
+            'no':  [u'Peker', u'Etternavn', u'Disambig', u'Tobokstavsforkortelse'],
             'pl':  [u'Disambig', u'DisambRulers', u'DisambigC'],
             'pt':  [u'Desambiguação', u'Disambig'],
             'ro':  [u'Dezambiguizare', u'Disambig'],
