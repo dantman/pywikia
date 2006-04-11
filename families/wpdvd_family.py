@@ -209,10 +209,10 @@ class Family(family.Family):
 
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
-            '_default': u'Wikipedia',
+            '_default': [u'Wikipedia', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': u'Wikipedia talk',
+            '_default': [u'Wikipedia talk', self.namespaces[5]['_default']],
             'de': u'Wikipedia Diskussion',
             'pt': u'Wikipedia_Discussão',
             'es': u'Wikipedia Discusión',

@@ -29,7 +29,7 @@ class Family(family.Family):
         # Most namespaces are inherited from family.Family.
 
         self.namespaces[4] = {
-            '_default': u'Wiktionary',
+            '_default': [u'Wiktionary', self.namespaces[4]['_default']],
             'ar': u'ويكيبيديا',
             'bg': u'Уикиречник',
             'bn': u'উইকিপেডিয়া',
@@ -63,7 +63,7 @@ class Family(family.Family):
         }
         
         self.namespaces[5] = {
-            '_default': u'Wiktionary talk',
+            '_default': [u'Wiktionary talk', self.namespaces[5]['_default']],
             'ab': u'Обсуждение Wiktionary',
             'af': u'Wiktionarybespreking',
             'als': u'Wiktionary Diskussion',

@@ -16,10 +16,10 @@ class Family(family.Family):
         }
         
         self.namespaces[4] = {
-            '_default': 'Commons',
+            '_default': [u'Commons', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': 'Commons talk',
+            '_default': [u'Commons talk', self.namespaces[5]['_default']],
         }
 
     def version(self, code):

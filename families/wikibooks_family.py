@@ -33,12 +33,12 @@ class Family(family.Family):
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
-            '_default': u'Wikibooks',
+            '_default': [u'Wikibooks', self.namespaces[4]['_default']],
             'cs': u'Wikiknihy',
         }
 
         self.namespaces[5] = {
-            '_default': u'Wikibooks talk',
+            '_default': [u'Wikibooks talk', self.namespaces[5]['_default']],
             'cs': u'Wikiknihy diskuse',
             'pt': u'Wikibooks Discussão',
         }

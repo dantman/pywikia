@@ -16,10 +16,10 @@ class Family(family.Family):
 # Namespaces
         
         self.namespaces[4] = {
-	    '_default': u'Wikitech',
+	    '_default': [u'Wikitech', self.namespaces[4]['_default']],
 	    }
 	self.namespaces[5] = {
-	    '_default': u'Wikitech talk',
+	    '_default': [u'Wikitech talk', self.namespaces[5]['_default']],
 	    }
 	
     def version(self, code):

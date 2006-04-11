@@ -13,10 +13,10 @@ class Family(family.Family):
             'en': 'jediarchives.info',
 	}
 	self.namespaces[4] = {
-	    '_default': u'JediArchives',
+	    '_default': [u'JediArchives', self.namespaces[4]['_default']],
 	    }
 	self.namespaces[5] = {
-	    '_default': u'JediArchives talk',
+	    '_default': [u'JediArchives talk', self.namespaces[5]['_default']],
 	    }
 	
     def version(self, code):

@@ -31,11 +31,11 @@ class Family(family.Family):
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
-            '_default': u'Wikiquote',
+            '_default': [u'Wikiquote', self.namespaces[4]['_default']],
             'hu':       u'Wikidézet',
         }
         self.namespaces[5] = {
-            '_default': u'Wikiquote talk',
+            '_default': [u'Wikiquote talk', self.namespaces[5]['_default']],
             'ca':       u'Wikiquote Discussió',
             'hu':       u'Wikidézet vita',
             'nl':       u'Overleg Wikiquote',

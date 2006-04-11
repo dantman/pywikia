@@ -31,7 +31,7 @@ class Family(family.Family):
 
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
-            '_default': u'Wikipedia',
+            '_default': [u'Wikipedia', self.namespaces[4]['_default']],
             'ar': u'ويكيبيديا',
             'ast':u'Uiquipedia',
             'be': u'Вікіпэдыя',
@@ -71,7 +71,7 @@ class Family(family.Family):
             'yi': u'װיקיפּעדיע',
         }
         self.namespaces[5] = {
-            '_default': u'Wikipedia talk',
+            '_default': [u'Wikipedia talk', self.namespaces[5]['_default']],
             'ab': u'Обсуждение Wikipedia',
             'af': u'WikipediaBespreking',
             'af': u'Wikipediabespreking',

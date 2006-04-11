@@ -15,10 +15,10 @@ class Family(family.Family):
         # Most namespaces are inherited from family.Family.
         
         self.namespaces[4] = {
-            '_default': u'ZRHwiki',
+            '_default': [u'ZRHwiki', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': u'ZRHwiki Diskussion',
+            '_default': [u'ZRHwiki Diskussion', self.namespaces[5]['_default']],
         }
 
     def version(self, code):

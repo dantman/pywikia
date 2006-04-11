@@ -20,11 +20,11 @@ class Family(family.Family):
             'sv':'sv',
         }
         self.namespaces[4] = {
-            '_default': 'Wikitravel',
+            '_default': [u'Wikitravel', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': 'Wikitravel talk',
-            'de': 'Wikitravel Diskussion',
+            '_default': [u'Wikitravel talk', self.namespaces[5]['_default']],
+            'de': u'Wikitravel Diskussion',
         }
 
     # A few selected big languages for things that we do not want to loop over

@@ -13,10 +13,10 @@ class Family(family.Family):
             'en': 'wiki.mozilla.org',
 	}
 	self.namespaces[4] = {
-	    '_default': u'MozillaWiki',
+	    '_default': [u'MozillaWiki', self.namespaces[4]['_default']],
 	    }
 	self.namespaces[5] = {
-	    '_default': u'MozillaWiki talk',
+	    '_default': [u'MozillaWiki talk', self.namespaces[5]['_default']],
 	    }
 	
     def version(self, code):

@@ -17,10 +17,10 @@ class Family(family.Family):
     
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
-            '_default': u'Memory Alpha',
+            '_default': [u'Memory Alpha', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': u'Memory Alpha talk',
+            '_default': [u'Memory Alpha talk', self.namespaces[5]['_default']],
             'de': u'Memory Alpha Diskussion',
             'nl': u'Overleg Memory Alpha',
             'sv': u'Memory Alphadiskussion',

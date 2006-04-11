@@ -24,11 +24,11 @@ class Family(family.Family):
         
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
-            '_default': u'Wikinews',
+            '_default': [u'Wikinews', self.namespaces[4]['_default']],
             'pt': u'Wikinotícias',
         }
         self.namespaces[5] = {
-            '_default': u'Wikinews talk',
+            '_default': [u'Wikinews talk', self.namespaces[5]['_default']],
             'pt': u'Wikinotícias_Discussão',
         }   
         

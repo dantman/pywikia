@@ -15,10 +15,10 @@ class Family(family.Family):
             self.langs[lang] = lang+'.wikisource.org'
   
         self.namespaces[4] = {
-            '_default': u'Wikisource',
+            '_default': [u'Wikisource', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': u'Wikisource talk',
+            '_default': [u'Wikisource talk', self.namespaces[5]['_default']],
         }
         
         alphabetic = ['ar','da','de','el','en','es','fr','gl',

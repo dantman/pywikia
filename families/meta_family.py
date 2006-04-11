@@ -17,8 +17,8 @@ class Family(family.Family):
         }
         
         self.namespaces[4] = {
-            '_default': 'Meta',
+            '_default': [u'Meta', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': 'Meta talk',
+            '_default': [u'Meta talk', self.namespaces[5]['_default']],
         }

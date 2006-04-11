@@ -17,10 +17,10 @@ class Family(family.Family):
     
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
-            '_default': u'WikiMac',
+            '_default': [u'WikiMac', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': u'WikiMac talk',
+            '_default': [u'WikiMac talk', self.namespaces[5]['_default']],
             'de': u'WikiMac Diskussion',
         }
             

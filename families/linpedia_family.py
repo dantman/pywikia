@@ -16,10 +16,10 @@ class Family(family.Family):
 # Namespaces
         
         self.namespaces[4] = {
-	    '_default': u'Linpedia',
+	    '_default': [u'Linpedia', self.namespaces[4]['_default']],
 	    }
 	self.namespaces[5] = {
-	    '_default': u'Linpedia talk',
+	    '_default': [u'Linpedia talk', self.namespaces[5]['_default']],
 	    }
 	
     def version(self, code):

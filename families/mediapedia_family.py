@@ -15,10 +15,10 @@ class Family(family.Family):
         # Most namespaces are inherited from family.Family.
         
         self.namespaces[4] = {
-            '_default': u'MLPedia',
+            '_default': [u'MLPedia', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': u'MLPedia talk',
+            '_default': [u'MLPedia talk', self.namespaces[5]['_default']],
         }
 
     def version(self, code):
