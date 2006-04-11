@@ -113,6 +113,7 @@ import re, md5, codecs, difflib, locale
 import xml.sax, xml.sax.handler
 import htmlentitydefs
 import warnings
+import unicodedata
 
 import config, mediawiki_messages, login
 import xmlreader
@@ -215,9 +216,14 @@ class Page(object):
 
         # Convert HTML entities to unicode
         t = html2unicode(title)
+        
         # Convert URL-encoded characters to unicode
         # Sometimes users copy the link to a site from one to another. Try both the source site and the destination site to decode.
         t = url2unicode(t, site = insite, site2 = site)
+        
+        #Normalize unicode string to a NFC (composed) format to allow proper string comparisons
+        t = unicodedata.normalize('NFKC', t)       # TBD: The format may need to be NFC instead! More research is needed.
+        
         # Clean up the name, it can come from anywhere.
         # Replace underscores by spaces, also multiple spaces and underscores with a single space
         # Strip spaces at both ends
