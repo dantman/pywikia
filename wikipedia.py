@@ -1478,13 +1478,8 @@ class GetAll(object):
         handler.setHeaderCallback(self.headerDone)
         try:
             xml.sax.parseString(data, handler)
-        except xml.sax._exceptions.SAXParseException, err:
-            f=open('sax_parse_bug.dat','w')
-            f.write('Error reported: '+str(err))
-            f.write('\n')
-            f.write(data)
-            f.close()
-            print >>sys.stderr, "Dumped invalid XML to sax_parse_bug.dat"
+        except (xml.sax._exceptions.SAXParseException, ValueError), err:
+            debugDump( 'SaxParseBug', self.site, err, data )
             raise
         except PageNotFound:
             return
@@ -1557,12 +1552,12 @@ class GetAll(object):
         ids.sort()
         for id in ids:
             nshdr = header.namespaces[id]
-            if self.site.family.namespaces.has_key(id):
+            if self.site.family.isDefinedNS(id):
                 ns = self.site.namespace(id)
                 if ns == None:
                     ns = u''
                 if ns != nshdr:
-                    dflt = self.site.family.namespaces[id]['_default']
+                    dflt = self.site.family.namespace('_default', id)
                     if dflt == ns:
                         flag = u"is set to default ('%s'), but should be '%s'" % (ns, nshdr)
                     elif dflt == nshdr:
@@ -1571,7 +1566,7 @@ class GetAll(object):
                         flag = u"is '%s', but should be '%s'" % (ns, nshdr)
 
                     output(u"WARNING: Outdated family file %s: namespace['%s'][%i] %s" % (self.site.family.name, lang, id, flag))
-                    self.site.family.namespaces[id][lang] = nshdr
+#                    self.site.family.namespaces[id][lang] = nshdr
             else:
                 output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
 
@@ -3301,3 +3296,16 @@ def stopme():
        not slow down other bots any more.
     """
     get_throttle.drop()
+
+def debugDump(name, site, error, data):
+    import time
+    name = unicode(name)
+    error = unicode(error)
+    site = unicode(repr(site).replace(u':',u'_'))
+    filename = '%s_%s__%s.dump' % (name, site, time.asctime())
+    filename = filename.replace(' ','_').replace(':','-')
+    f = codecs.open(filename, 'w', 'utf-8')
+    f.write(u'Error reported: %s\n\n' % error)
+    f.write(data)
+    f.close()
+    output( u'ERROR: %s caused error %s. Dump %s created.' % (name,error,filename) )

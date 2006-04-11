@@ -131,16 +131,7 @@ def refresh_messages(site = None):
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
     if dictionary == {}:
-        print 'Error extracting MediaWiki messages for %s.' % repr(site)
-        print path
-        filename = 'MediaWiki_msg_%s.dat'%repr(site).replace(u':',u'_')
-        f = codecs.open(filename, 'w', 'utf-8')
-        f.write(u'Error URL: '+str(path))
-        f.write(u'\n')
-        f.write(allmessages)
-        f.close()
-        print >>sys.stderr, "Dumped invalid data to %s" % filename
-        
+        debugDump( 'MediaWiki_Msg', site, u'Error URL: '+unicode(path), allmessages )
         sys.exit()
     else:
         f = open(makepath('mediawiki-messages/mediawiki-messages-%s-%s.dat' % (site.family.name, site.lang)), 'w')

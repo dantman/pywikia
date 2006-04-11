@@ -1716,18 +1716,31 @@ class Family:
         else:
             raise KeyError('ERROR: linktrail in language %s unknown' % code)  
 
-    def namespace(self, code, namespace_number, fallback = '_default'):
-        if self.namespaces[namespace_number].has_key(code):
-            v = self.namespaces[namespace_number][code]
-            if type(v) == type([]):
-                return v[0]
-            else:
-                return v
+    def namespace(self, code, ns_number, fallback = '_default'):
+        if not self.isDefinedNS(ns_number):
+            raise KeyError('ERROR: Unknown namespace %d' % ns_number)  
+        elif self.isNsI18N(ns_number, code):
+            v = self.namespaces[ns_number][code]
         elif fallback:
-            return self.namespaces[namespace_number][fallback]
+            v = self.namespaces[ns_number][fallback]
         else:
-            raise KeyError('ERROR: title for namespace %d in language %s unknown' % (namespace_number, code))  
-    
+            raise KeyError('ERROR: title for namespace %d in language %s unknown' % (ns_number, code))  
+
+        if type(v) == type([]):
+            return v[0]
+        else:
+            return v
+
+    def isDefinedNS(self, ns_number):
+        """Return True if the namespace has been defined in this family.
+        """
+        return self.namespaces.has_key(ns_number)
+
+    def isNsI18N(self, ns_number, code):
+        """Return True if the namespace has been internationalized.
+        (it has a custom entry for a given language)"""
+        return self.namespaces[ns_number].has_key(code)
+
     def normalizeNamespace(self, code, value):
         """Given a value, attempt to match it with all available namespaces, with default and localized versions.
         Sites may have more than one way to write the same namespace - choose the first one in the list.
@@ -1994,15 +2007,7 @@ class Family:
         """Given a potential namespace, match it with _default values and return namespace index.
         Returns None if not found
         """
-        namespace = namespace.lower()
-        for n in self.namespaces.keys():
-            try:
-                if self.namespaces[n]['_default'].lower() == namespace:
-                    return n
-            except AttributeError:
-                # n=0 gives value None, which has no lower() attribute
-                pass
-        return None
+        return self.getNsIndex('_default', namespace)
 
     def getNsIndex(self, lang, namespace):
         """Given a namespace, attempt to match it with all available namespaces.
@@ -2018,7 +2023,7 @@ class Family:
                 for ns in nslist:
                     if ns.lower() == namespace:
                         return n
-            except KeyError:
+            except (KeyError,AttributeError):
                 # The namespace has no localized name defined
                 pass
         return None
