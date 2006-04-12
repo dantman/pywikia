@@ -202,7 +202,9 @@ class Page(object):
         the name; it is the wikimedia site where this link was found.
         """
         
-        if type(site) in [type(''), type(u'')]:
+        if site == None:
+            site = getSite()
+        elif type(site) in [type(''), type(u'')]:
             site = getSite(site)
         
         self._site = site

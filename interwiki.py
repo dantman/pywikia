@@ -137,6 +137,12 @@ This script understands various command-line arguments:
                    specify a list of languages to disregard, separated by
                    commas.
 
+    -ignore:       used as -ignore:xx:aaa where xx is a language code, and
+                   aaa is a page title to be ignored.
+
+    -ignorefile:   similar to -ignore, except that the pages are taken from
+                   the given file instead of the command line.
+    
     -showpage      when asking for hints, show the first bit of the text
                    of the page always, rather than doing so only when being
                    asked for (by typing '?'). Only useful in combination
@@ -180,14 +186,14 @@ next time.
 #
 # (C) Rob W.W. Hooft, 2003
 # (C) Daniel Herding, 2004
-# (C) Yuri Astrakhan, 2005
+# (C) Yuri Astrakhan, 2005-2006
 #
 # Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
 #
 import sys, copy, re
-import time, date
+import time
 import codecs
 import socket
 try:
@@ -257,6 +263,7 @@ class Global(object):
     showtextlinkadd = 300
     localonly = False
     limittwo = False
+    ignore = []
 
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -343,7 +350,7 @@ class Subject(object):
 
             # make sure that none of the linked items is an auto item
             if globalvar.skipauto:
-                dictName, year = date.getAutoFormat(pl.site().language(), pl.title())
+                dictName, year = pl.autoFormat()
                 if dictName != None:
                     wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.inpl.site().language(), self.inpl.title(), pl.site().language(),pl.title(),dictName,year))                
 
@@ -410,12 +417,12 @@ class Subject(object):
                 else:
                     if globalvar.autonomous:
                         if self.inpl.isDisambig() and not pl.isDisambig():
-			    wikipedia.output(u"NOTE: Ignoring link from disambiguation page %s to non-disambiguation %s" % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)))
+                            wikipedia.output(u"NOTE: Ignoring link from disambiguation page %s to non-disambiguation %s" % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)))
                             del self.done[pl]
                         elif not self.inpl.isDisambig() and pl.isDisambig():
-			    wikipedia.output(u"NOTE: Ignoring link from non-disambiguation page %s to disambiguation %s" % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)))
+                            wikipedia.output(u"NOTE: Ignoring link from non-disambiguation page %s to disambiguation %s" % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)))
                             del self.done[pl]
-		    else:
+                    else:
                         if self.inpl.isDisambig() and not pl.isDisambig():
                             choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(forceInterwiki = True), pl.aslink(forceInterwiki = True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
                         elif not self.inpl.isDisambig() and pl.isDisambig():
@@ -443,14 +450,17 @@ class Subject(object):
                             iw = ()
                     for page2 in iw:
                         if page2.site().language() in globalvar.neverlink:
-                            print "Skipping link %s to an ignored language"% page2
+                            wikipedia.output(u"Skipping link %s to an ignored language" % page2)
                             continue
+                        if page2 in globalvar.ignore:
+                            wikipedia.output(u"Skipping link %s to an ignored page" % page2)
+                            continue                            
                         if globalvar.same=='wiktionary':
                             if page2.title().lower()!=self.inpl.title().lower():
-                                print "NOTE: Ignoring %s for %s in wiktionary mode"% (page2, self.inpl)
+                                wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.inpl))
                                 continue
                             elif page2.title() != self.inpl.title() and self.inpl.site().nocapitalize and page2.site().nocapitalize:
-                                print "NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized."% (page2, self.inpl)
+                                wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized." % (page2, self.inpl))
                                 continue
                         if not globalvar.autonomous:
                             if self.inpl.namespace() != page2.namespace():
@@ -982,7 +992,7 @@ class InterwikiBot(object):
                         wikipedia.output(u'Skipping: %s is in the skip list' % page.title())
                         continue
                     if globalvar.skipauto:
-                        dictName, year = date.getAutoFormat(page.site().language(), page.title())
+                        dictName, year = page.autoFormat()
                         if dictName != None:
                             wikipedia.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
                             continue
@@ -1302,6 +1312,13 @@ if __name__ == "__main__":
                         globalvar.maxquerysize = globalvar.minarraysize
                 elif arg.startswith('-neverlink:'):
                     globalvar.neverlink += arg[11:].split(",")
+                elif arg.startswith('-ignore:'):
+                    globalvar.ignore += [wikipedia.Page(None,p) for p in arg[8:].split(",")]
+                elif arg.startswith('-ignorefile:'):
+                    ignorefile = arg[12:]
+                    ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
+                    for page in ignorePageGen:
+                        globalvar.ignore.add(page)
                 elif arg == '-showpage':
                     globalvar.showtextlink += globalvar.showtextlinkadd
                 elif arg == '-graph':
