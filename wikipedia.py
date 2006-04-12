@@ -224,7 +224,9 @@ class Page(object):
         t = url2unicode(t, site = insite, site2 = site)
         
         #Normalize unicode string to a NFC (composed) format to allow proper string comparisons
-        t = unicodedata.normalize('NFKC', t)       # TBD: The format may need to be NFC instead! More research is needed.
+        # According to http://svn.wikimedia.org/viewvc/mediawiki/branches/REL1_6/phase3/includes/normal/UtfNormal.php?view=markup
+        # the mediawiki code normalizes everything to NFC, not NFKC (which might result in information loss).
+        t = unicodedata.normalize('NFC', t)
         
         # Clean up the name, it can come from anywhere.
         # Replace underscores by spaces, also multiple spaces and underscores with a single space

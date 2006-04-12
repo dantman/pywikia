@@ -611,7 +611,7 @@ class Family:
                 'sr': u'Разговор о слици',
                 'su': u'Obrolan gambar',
                 'sv': u'Bilddiskussion',
-                'ta': u'படிமப் பேச்சு',
+                'ta': [u'படிமப் பேச்சு', u'உருவப் பேச்சு'],
                 'th': u'คุยเกี่ยวกับภาพ',
                 'tr': u'Resim tartışma',
                 'tt': u'Räsem bäxäse',

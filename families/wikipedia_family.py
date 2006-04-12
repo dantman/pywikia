@@ -67,6 +67,7 @@ class Family(family.Family):
             'sk': u'Wikipédia',
             'sl': u'Wikipedija',
             'sr': u'Википедија',
+            'ta': [u'Wikipedia', u'விக்கிபீடியா'],  # Very strange - the localized version is not the main one
             'tr': u'Vikipedi',
             'yi': u'װיקיפּעדיע',
         }
@@ -152,7 +153,7 @@ class Family(family.Family):
             'sr': u'Разговор о Википедији',
             'su': u'Obrolan Wikipedia',
             'sv': u'Wikipediadiskussion',
-            'ta': u'Wikipedia பேச்சு',
+            'ta': [u'Wikipedia பேச்சு', u'விக்கிபீடியா பேச்சு'],
             'tr': u'Vikipedi tartışma',
             'tt': u'Wikipedia bäxäse',
             'ty': u'Discussion Wikipedia',
