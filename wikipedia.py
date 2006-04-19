@@ -691,8 +691,12 @@ class Page(object):
         # NOTE: this code relies on the way MediaWiki 1.6 formats the
         #       "Whatlinkshere" special page; if future versions change the
         #       format, they may break this code.
-        startmarker = u"<!-- start content -->"
-        endmarker = u"<!-- end content -->"
+        if self.site().version() >= "1.5":
+            startmarker = u"<!-- start content -->"
+            endmarker = u"<!-- end content -->"
+        else:
+            startmarker = u"<body "
+            endmarker = "printfooter"
         listitempattern = re.compile(r"<li><a href=.*>(?P<title>.*)</a>(?: \((?P<templateInclusion>.*)\) )?</li>")
         redirectpattern = re.compile(r"<li><a href=.*>(?P<title>.*)</a> \((?P<redirText>.*)\) <ul>")
         # to tell the previous and next link apart, we rely on the closing ) at the end of the "previous" label.
@@ -1445,8 +1449,6 @@ class XmlPage(Page):
             self._redirarg = m.group(1)
             self._getexception = IsRedirectPage
 
-
-
 class GetAll(object):
     def __init__(self, site, pages, throttle, force):
         """First argument is Site object.
@@ -1486,6 +1488,9 @@ class GetAll(object):
         handler = xmlreader.MediaWikiXmlHandler()
         handler.setCallback(self.oneDone)
         handler.setHeaderCallback(self.headerDone)
+        f = open("backup.txt","w")
+        f.write(data)
+        f.close()
         try:
             xml.sax.parseString(data, handler)
         except (xml.sax._exceptions.SAXParseException, ValueError), err:
