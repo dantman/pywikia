@@ -287,7 +287,7 @@ class Family(family.Family):
             'ms':  [u'Nyahkekaburan'],
             'mt':  [u'Diżambigwazzjoni'],
             'nds': [u'Mehrdüdig Begreep','Disambig'],
-            'nds-n;': [u'Dv'],
+            'nds-nl': [u'Dv'],
             'nl':  [u'Dp', u'DP', u'Dp2', u'Dpintro'],
             'nn':  [u'Fleirtyding'],
             'no':  [u'Peker', u'Etternavn', u'Disambig', u'Tobokstavsforkortelse'],
