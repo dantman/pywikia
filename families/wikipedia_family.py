@@ -58,6 +58,7 @@ class Family(family.Family):
             'ko': u'위키백과',
             'ku': u'Wîkîpediya',
             'la': u'Vicipaedia',
+            'mk': u'Википедија',
             'ml': u'വിക്കിപീഡിയ',
             'mt': u'Wikipedija',
             'nv': u'Wikiibíídiiya',
@@ -69,6 +70,7 @@ class Family(family.Family):
             'sr': u'Википедија',
             'ta': [u'Wikipedia', u'விக்கிபீடியா'],  # Very strange - the localized version is not the main one
             'tr': u'Vikipedi',
+            'uk': u'Вікіпедія',
             'yi': u'װיקיפּעדיע',
         }
         self.namespaces[5] = {
@@ -126,7 +128,7 @@ class Family(family.Family):
             'la': u'Disputatio Vicipaediae',
             'li': u'Euverlik Wikipedia',
             'lt': u'Wikipedia aptarimas',
-            'mk': u'Wikipedia разговор',
+            'mk': u'Разговор за Википедија',
             'ml': u'വിക്കിപീഡിയ talk',
             'ms': u'Perbualan Wikipedia',
             'mt': u'Wikipedija talk',
@@ -142,6 +144,7 @@ class Family(family.Family):
             'os': u'0',
             'pa': u'ਵਿਕਿਪੀਡਿਆ ਚਰਚਾ',
             'pl': u'Dyskusja Wikipedii',
+            'pms':u'Discussioni Wikipedia',
             'pt': u'Wikipedia Discussão',
             'qu': u'Wikipedia Discusión',
             'ro': u'Discuţie Wikipedia',
@@ -158,7 +161,7 @@ class Family(family.Family):
             'tt': u'Wikipedia bäxäse',
             'ty': u'Discussion Wikipedia',
             'udm': u'0',
-            'uk': u'Обговорення Wikipedia',
+            'uk': u'Обговорення Вікіпедія',
             'vec':u'Discussion Wikipedia',
             'vi': u'Thảo luận Wikipedia',
             'wa': u'Wikipedia copene',
