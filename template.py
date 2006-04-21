@@ -18,6 +18,8 @@ Command line options:
              page of the live wiki.
              argument can also be given as "-xml:filename.xml".
 
+-namespace -Only process templates in the given template number (may be used multiple times)
+
 other:       First argument is the old template name, second one is the new
              name. If only one argument is given, the bot resolves the
              template by putting its text directly into the article.
@@ -34,6 +36,16 @@ change it to [[Template:Cities in Washington state]], start
     python template.py "Cities in Washington" "Cities in Washington state"
 
 Move the page [[Template:Cities in Washington]] manually afterwards.
+
+
+If you have a template called [[Template:test]] and want to substitute it only on pages
+in the User: and User talk: namespaces, do:
+
+    python template.py test -namespace:2 -namespace:3
+
+Note that, on the English Wikipedia, User: is namespace 2 and User talk: is namespace 3.
+This may differ on other projects so make sure to find out the appropriate namespace numbers.
+
 """
 #
 # (C) Daniel Herding, 2004
@@ -166,6 +178,7 @@ def main():
     template_names = []
     resolve = False
     remove = False
+    namespaces = []
     # If xmlfilename is None, references will be loaded from the live wiki.
     xmlfilename = None
     new = None
@@ -178,6 +191,8 @@ def main():
                 xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
             else:
                 xmlfilename = arg[5:]
+	elif arg.startswith('-namespace:'):
+	    namespaces.append(int(arg[len('-namespace:'):]))
         else:
             template_names.append(arg)
 
@@ -196,6 +211,10 @@ def main():
         gen = XmlDumpTemplatePageGenerator(oldTemplate, xmlfilename)
     else:
         gen = pagegenerators.ReferringPageGenerator(oldTemplate, onlyTemplateInclusion = True)
+
+    if namespaces != []:
+        gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
+
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
     bot = TemplateRobot(preloadingGen, old, new, remove)
     bot.run()
