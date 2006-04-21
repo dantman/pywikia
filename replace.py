@@ -719,7 +719,10 @@ class ReplaceRobot:
                         if choice in ['a', 'A']:
                             self.acceptall = True
                     if self.acceptall or choice in ['y', 'Y']:
-                        page.put(new_text)
+			try:
+                            page.put(new_text)
+			except wikipedia.EditConflict:
+			    wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
 
 def prepareRegexForMySQL(pattern):
     pattern = pattern.replace('\s', '[:space:]')
