@@ -18,7 +18,13 @@ Command line options:
              page of the live wiki.
              argument can also be given as "-xml:filename.xml".
 
--namespace -Only process templates in the given template number (may be used multiple times)
+-namespace - Only process templates in the given template number (may be used
+             multiple times).
+
+-summary   - Lets you pick a custom edit summary.  Use quotes if edit summary contains
+             spaces.
+
+-always    - Don't bother asking to confirm any of the changes, Just Do It.
 
 other:       First argument is the old template name, second one is the new
              name. If only one argument is given, the bot resolves the
@@ -28,7 +34,7 @@ other:       First argument is the old template name, second one is the new
              If you want to address a template which has spaces, put quotation
              marks around it.
              
-Example:
+Examples:
 
 If you have a template called [[Template:Cities in Washington]] and want to
 change it to [[Template:Cities in Washington state]], start
@@ -45,6 +51,14 @@ in the User: and User talk: namespaces, do:
 
 Note that, on the English Wikipedia, User: is namespace 2 and User talk: is namespace 3.
 This may differ on other projects so make sure to find out the appropriate namespace numbers.
+
+
+This next example substitutes the template lived with a supplied edit summary.  It only
+performs substitutions in main article namespace and doesn't prompt to start replacing.
+Note that -putthrottle: is a global pywikipedia parameter.
+
+    python template.py -putthrottle:30 -namespace:0 lived -always
+        -summary:"ROBOT: Substituting {{lived}}, see [[WP:SUBST]]."
 
 """
 #
@@ -124,7 +138,7 @@ class TemplateRobot:
         'sr':u'Бот: Уклањање шаблона: %s',
         }
 
-    def __init__(self, generator, old, new = None, remove = False):
+    def __init__(self, generator, old, new = None, remove = False, customSummary = False, editSummary = '', acceptAll = False):
         """
         Arguments:
             * generator - A page generator.
@@ -138,16 +152,23 @@ class TemplateRobot:
         self.old = old
         self.new = new
         self.remove = remove
+	self.customSummary = customSummary
+	self.editSummary = editSummary
+	self.acceptAll = acceptAll
         # if only one argument is given, don't replace the template with another
         # one, but resolve the template by putting its text directly into the
         # article.
         self.resolve = (new == None)
+
         # get edit summary message
-        mysite = wikipedia.getSite()
-        if self.remove:
-            wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % old)
-        else:
-            wikipedia.setAction(wikipedia.translate(mysite, self.msg_change) % old)
+	if self.customSummary:
+	    wikipedia.setAction(editSummary)
+	else:
+	    mysite = wikipedia.getSite()
+            if self.remove:
+            	wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % old)
+            else:
+                wikipedia.setAction(wikipedia.translate(mysite, self.msg_change) % old)
 
     def run(self):
         """
@@ -171,7 +192,9 @@ class TemplateRobot:
             replacements.append((templateRegex, '{{subst:' + self.old + '\g<parameters>}}'))
         else:
             replacements.append((templateRegex, '{{' + self.new + '\g<parameters>}}'))
-        replaceBot = replace.ReplaceRobot(self.generator, replacements)
+
+	#Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.acceptAll)
         replaceBot.run()
     
 def main():
@@ -179,6 +202,9 @@ def main():
     resolve = False
     remove = False
     namespaces = []
+    customSummary = False
+    editSummary = ''
+    acceptAll = False
     # If xmlfilename is None, references will be loaded from the live wiki.
     xmlfilename = None
     new = None
@@ -193,6 +219,11 @@ def main():
                 xmlfilename = arg[5:]
 	elif arg.startswith('-namespace:'):
 	    namespaces.append(int(arg[len('-namespace:'):]))
+	elif arg.startswith('-summary:'):
+	    customSummary = True
+	    editSummary = arg[len('-summary:'):]
+	elif arg.startswith('-always'):
+	    acceptAll = True
         else:
             template_names.append(arg)
 
@@ -216,7 +247,7 @@ def main():
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
 
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
-    bot = TemplateRobot(preloadingGen, old, new, remove)
+    bot = TemplateRobot(preloadingGen, old, new, remove, customSummary, editSummary, acceptAll)
     bot.run()
 
 if __name__ == "__main__":
