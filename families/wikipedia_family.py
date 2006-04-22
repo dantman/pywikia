@@ -280,7 +280,7 @@ class Family(family.Family):
             'kw': [u'Klerheans'],
             'ko':  [u'Disambig'],
             'ku':  [u'Cudakirin'],
-#            'la':  [u'Discretiva'],
+            'la':  [u'Discretiva'],
             'lb':  [u'Homonymie', u'Disambig'],
             'li':  [u'Verdudeliking'],
             'ln':  [u'Bokokani'],
