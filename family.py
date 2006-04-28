@@ -244,6 +244,7 @@ class Family:
                 'pt': u'Discussão',
                 'qu': u'Discusión',
                 'ro': u'Discuţie',
+                'rmy':u'Discuţie',
                 'ru': u'Обсуждение',
                 'sc': u'Contièndha',
                 'sk': u'Diskusia',
@@ -337,6 +338,7 @@ class Family:
                 'pt': u'Usuário',
                 'qu': u'Usuario',
                 'ro': u'Utilizator',
+                'rmy':u'Utilizator',
                 'ru': u'Участник',
                 'sc': u'Utente',
                 'sk': u'Redaktor',
@@ -431,6 +433,7 @@ class Family:
                 'pt': u'Usuário Discussão',
                 'qu': u'Usuario Discusión',
                 'ro': u'Discuţie Utilizator',
+                'rmy':u'Discuţie Utilizator',
                 'ru': u'Обсуждение участника',
                 'sc': u'Utente discussioni',
                 'sk': u'Diskusia s redaktorom',
@@ -530,6 +533,7 @@ class Family:
                 'pt': u'Imagem',
                 'qu': u'Imagen',
                 'ro': u'Imagine',
+                'rmy':u'Imagine',
                 'ru': u'Изображение',
                 'sc': u'Immàgini',
                 'sk': u'Obrázok',
@@ -623,6 +627,7 @@ class Family:
                 'pt': u'Imagem Discussão',
                 'qu': u'Imagen Discusión',
                 'ro': u'Discuţie Imagine',
+                'rmy':u'Discuţie Imagine',
                 'ru': u'Обсуждение изображения',
                 'sc': u'Immàgini contièndha',
                 'sk': u'Diskusia k obrázku',
@@ -733,6 +738,7 @@ class Family:
                 'pt': u'MediaWiki Discussão',
                 'qu': u'MediaWiki Discusión',
                 'ro': u'Discuţie MediaWiki',
+                'rmy':u'Discuţie MediaWiki',
                 'ru': u'Обсуждение MediaWiki',
                 'sk': u'Diskusia k MediaWiki',
                 'sl': u'Pogovor o MediaWiki',
@@ -817,6 +823,7 @@ class Family:
                 'pt': u'Predefinição',
                 'qu': u'Plantilla',
                 'ro': u'Format',
+                'rmy':u'Format',
                 'ru': u'Шаблон',
                 'sk': u'Šablóna',
                 'sl': u'Predloga',
@@ -903,6 +910,7 @@ class Family:
                 'pt': u'Predefinição Discussão',
                 'qu': u'Plantilla Discusión',
                 'ro': u'Discuţie Format',
+                'rmy':u'Discuţie Format',
                 'ru': u'Обсуждение шаблона',
                 'sk': u'Diskusia k šablóne',
                 'sl': u'Pogovor o predlogi',
@@ -989,6 +997,7 @@ class Family:
                 'pt': u'Ajuda',
                 'qu': u'Ayuda',
                 'ro': u'Ajutor',
+                'rmy':u'Ajutor',
                 'ru': u'Справка',
                 'sk': u'Pomoc',
                 'sl': u'Pomoč',
@@ -1077,6 +1086,7 @@ class Family:
                 'pt': u'Ajuda Discussão',
                 'qu': u'Ayuda Discusión',
                 'ro': u'Discuţie Ajutor',
+                'rmy':u'Discuţie Ajutor',
                 'ru': u'Обсуждение справки',
                 'sk': u'Diskusia k pomoci',
                 'sl': u'Pogovor o pomoči',
@@ -1166,6 +1176,7 @@ class Family:
                 'pt': u'Categoria',
                 'qu': u'Categoría',
                 'ro': u'Categorie',
+                'rmy':u'Categorie',
                 'ru': u'Категория',
                 'sk': u'Kategória',
                 'sl': u'Kategorija',
@@ -1256,6 +1267,7 @@ class Family:
                 'pt': u'Categoria Discussão',
                 'qu': u'Categoría Discusión',
                 'ro': u'Discuţie Categorie',
+                'rmy':u'Discuţie Categorie',
                 'ru': u'Обсуждение категории',
                 'sk': u'Diskusia ku kategórii',
                 'sl': u'Pogovor o kategoriji',
@@ -1836,7 +1848,7 @@ class Family:
     
     def template_namespace(self, code, fallback = '_default'):
         return self.namespace(code, 10, fallback)
-     
+    
     def category_namespace(self, code, fallback = '_default'):
         return self.namespace(code, 14, fallback)
     
@@ -1921,6 +1933,9 @@ class Family:
     def path(self, code):
         return '/w/index.php'
 
+    def querypath(self, code):
+        return '/w/query.php'
+
     def dbName(self, code):
         # returns the name of the MySQL database
         return '%s%s' % (code, self.name)
@@ -1990,6 +2005,9 @@ class Family:
 
     def export_address(self, code):
         return '%s?title=%s:Export' % (self.path(code), self.special_namespace_url(code))
+
+    def query_address(self, code):
+        return '%s?' % self.querypath(code)
 
     def allpages_address(self, code, start, namespace = 0):
         if self.version(code)=="1.2":
