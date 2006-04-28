@@ -264,7 +264,10 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None):
                 cats = cats[:i] + [newCat] + cats[i+1:]
             text = article.get()
             text = wikipedia.replaceCategoryLinks(text, cats)
-            article.put(text, comment)
+	    try:
+                article.put(text, comment)
+	    except wikipedia.EditConflict:
+                wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
 	    return
     wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
     return
