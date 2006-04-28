@@ -127,12 +127,12 @@ class Category(wikipedia.Page):
                 ibegin = txt.index('"clear:both;"')
                 # index where article listing ends
                 try:
-                    iend = txt.index('<div id="catlinks">')
+                    iend = txt.index('<div class="printfooter">')
                 except ValueError:
                     try:
-                        iend = txt.index('<!-- end content -->')
+                        iend = txt.index('<div id="catlinks">')
                     except ValueError:
-                        iend = txt.index('<div class="printfooter">')
+                        iend = txt.index('<!-- end content -->')
                 txt = txt[ibegin:iend]
                 for title in Rtitle.findall(txt):
                     if isCatTitle(title, self.site()):
@@ -149,6 +149,7 @@ class Category(wikipedia.Page):
                     wikipedia.output('There are more articles in %s.' % cat.title())
                 else:
                     thisCatDone = True
+                import sys
         # get supercategories
         try:
             ibegin = self_txt.index('<div id="catlinks">')
