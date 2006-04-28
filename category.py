@@ -8,13 +8,20 @@ Syntax: python category.py action [-option]
 where action can be one of these:
  * add    - mass-add a category to a list of pages
  * remove - remove category tag from all pages in a category
- * move - move all pages in a category to another category
+ * move   - move all pages in a category to another category
  * tidy   - tidy up a category by moving its articles into subcategories
  * tree   - show a tree of subcategories of a given category
 
 and option can be one of these:
- * person  - sort persons by their last name (for action 'add')
- * rebuild - reset the database
+ * -person    - sort persons by their last name (for action 'add')
+ * -rebuild   - reset the database
+ * -from:     - The category to move from (for the move option)
+                Also, the category to remove from in the remove option
+ * -to:       - The category to move to (for the move option)
+         NOTE: If the category names have spaces in them, surround the names with
+         single quotes, i.e. -to:Us -from:'United States'
+ * -batch    - Don't prompt to delete categories.  Also good to use if your bot
+               doesn't have administrator access.
 
 For the actions tidy and tree, the bot will store the category structure locally
 in category.dump. This saves time and server load, but if it uses these data
@@ -25,6 +32,14 @@ For example, to create a new category from a list of persons, type:
   python category.py add -person
     
 and follow the on-screen instructions.
+
+
+Or to do it all from the command-line, use the following syntax:
+
+  python category.py move -from:US -to:'United States'
+
+This will move all pages in the category US to the category United States.
+
 """
 
 #
@@ -262,10 +277,13 @@ def add_category(sort_by_last_name = False):
                         cats.append(catpl)
                         text = page.get()
                         text = wikipedia.replaceCategoryLinks(text, cats)
-                        page.put(text)
+			try:
+                            page.put(text)
+                        except wikipedia.EditConflict:
+                            wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
 
 class CategoryMoveRobot:
-    def __init__(self, oldCatTitle, newCatTitle):
+    def __init__(self, oldCatTitle, newCatTitle, batchMode = False):
         self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
         # set edit summary message
@@ -285,7 +303,7 @@ class CategoryMoveRobot:
         else:
             for subcategory in subcategories:
                 catlib.change_category(subcategory, self.oldCat, newCat)
-        if self.oldCat.exists():
+        if self.oldCat.exists() and batchMode == False:
             # try to copy page contents to new cat page
             if self.oldCat.copyTo(newCatTitle):
                 if self.oldCat.isEmpty():
@@ -318,7 +336,7 @@ class CategoryRemoveRobot:
         'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
     }
     
-    def __init__(self, catTitle):
+    def __init__(self, catTitle, batchMode = False):
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())
@@ -337,7 +355,7 @@ class CategoryRemoveRobot:
         else:
             for subcategory in subcategories:
                 catlib.change_category(subcategory, self.cat.title(), None)
-        if self.cat.exists() and self.cat.isEmpty():
+        if self.cat.exists() and self.cat.isEmpty() and batchMode == False:
             reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
             self.cat.delete(reason)
 
@@ -571,6 +589,9 @@ class CategoryTreeRobot:
             wikipedia.output(tree)
 
 if __name__ == "__main__":
+    fromGiven = False
+    toGiven = False
+    batchMode = False
     try:
         catDB = CategoryDatabase()
         action = None
@@ -593,17 +614,30 @@ if __name__ == "__main__":
                     sort_by_last_name = True
                 elif arg == '-rebuild':
                     catDB.rebuild()
+		elif arg.startswith('-from:'):
+		    oldCatTitle = arg[len('-from:'):]
+		    fromGiven = True
+		elif arg.startswith('-to:'):
+		    newCatTitle = arg[len('-to:'):]
+		    toGiven = True
+		elif arg == '-batch':
+		    batchMode = True
                 
         if action == 'add':
             add_category(sort_by_last_name)
         elif action == 'remove':
-            catTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
-            bot = CategoryRemoveRobot(catTitle)
+	    if (fromGiven == False):
+                catTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
+                bot = CategoryRemoveRobot(catTitle, batchMode)
+	    else:
+                bot = CategoryRemoveRobot(oldCatTitle, batchMode)
             bot.run()
         elif action == 'move':
-            oldCatTitle = wikipedia.input(u'Please enter the old name of the category:')
-            newCatTitle = wikipedia.input(u'Please enter the new name of the category:')
-            bot = CategoryMoveRobot(oldCatTitle, newCatTitle)
+	    if (fromGiven == False):
+                oldCatTitle = wikipedia.input(u'Please enter the old name of the category:')
+	    if (toGiven == False):
+                newCatTitle = wikipedia.input(u'Please enter the new name of the category:')
+            bot = CategoryMoveRobot(oldCatTitle, newCatTitle, batchMode)
             bot.run()
         elif action == 'tidy':
             catTitle = wikipedia.input(u'Which category do you want to tidy up?')
