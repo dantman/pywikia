@@ -1,23 +1,57 @@
 #!/usr/bin/perl
 
-#This Perl script takes a list of category moves to make and uses category.py to make them.
-#The input format is as follows:
-#    # Category:US to Category:United States
-#Just copy-paste the list of categories to move from the Wiki, put them in a text-file, and
-#redirect to stdin, i.e., perl catmove.pl < catmoves.txt
-#
-#Note that error-handling isn't nearly as good as it could be (this script is only 13 lines
-#long after all!).
+# This Perl script takes a list of category moves or removes to make and uses category.py.
+# The input format is as follows:
+#    * Category:US to Category:United States
+#  OR
+#    * Category:US
+# Just copy-paste the list of categories to move or remove from the Wiki, put them in a
+# text-file, and redirect to stdin, i.e., perl catmove.pl < catmoves.txt
+# If you want to use an edit summary, then pass it in as a parameter, i.e.,
+# perl catmove.pl "Emptying dead category" < catmoves.txt
+# Note that if your summary has multiple words in it then enclose it in quotes.
+
+my $editSummary = '';
+my $customSummary = 0;
+if ($#ARGV >= 0) {
+    $customSummary = 1;
+    $editSummary = shift;
+}
 
 while (<STDIN>) {
-    if ($_ =~ m/^\s*\#?\s*Category:(.*?)\s*to\s*Category:(.*?)\s*$/) {
-	print "Now executing: python category.py move -batch -from:\'$1\' -to:\'$2\'\n";
-	system("python category.py move -batch -from:\'$1\' -to:\'$2\'");
+    #Move articles from one category to another.
+    if ($_ =~ m/^\s*[\#\*]?\s*Category:(.*?)\s*to\s*Category:(.*?)\s*$/) {
+	my $from = $1;
+	my $to = $2;
+	if ($customSummary == 0) {
+	    print "Now executing: python category.py move -batch -from:\"$from\" -to:\"$to\"\n";
+	    system("python category.py move -batch -from:\"$from\" -to:\"$to\"");
+	}
+	else {
+	    print "Now executing: python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\"\n";
+	    system("python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\"");
+	}
 	if ( $? != 0) {
 	    print "Error or interrupted, program aborting.\n";
 	    exit 1;
 	}
     }
+    #Empty out a category.
+    elsif ($_ =~ m/^\s*[\#\*]?\s*Category:(.*?)\s*$/) {
+	my $from = $1;
+	if ($customSummary == 0) {
+	    print "Now executing: python category.py remove -batch -from:\"$from\"\n";
+	    system("python category.py remove -batch -from:\"$from\"");
+	}
+	else {
+	    print "Now executing: python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\"\n";
+	    system("python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\"");
+	}
+	if ( $? != 0) {
+	    print "Error or interrupted, program aborting.\n";
+	    exit 1;
+	}
+    }	
     else {
 	print "Invalid line: $_\n";
     }
