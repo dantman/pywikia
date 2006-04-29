@@ -263,7 +263,10 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None):
                 newCat = Category(site, newCat.title(), sortKey = sortKey)
                 cats = cats[:i] + [newCat] + cats[i+1:]
             text = article.get()
-            text = wikipedia.replaceCategoryLinks(text, cats)
+	    try:
+                text = wikipedia.replaceCategoryLinks(text, cats)
+            except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
+		wikipedia.output(u'Skipping %s because of interwiki link to self' % (article))
 	    try:
                 article.put(text, comment)
 	    except wikipedia.EditConflict:
