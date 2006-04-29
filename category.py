@@ -20,8 +20,9 @@ and option can be one of these:
  * -to:       - The category to move to (for the move option)
          NOTE: If the category names have spaces in them, surround the names with
          single quotes, i.e. -to:Us -from:'United States'
- * -batch    - Don't prompt to delete categories.  Also good to use if your bot
+ * -batch     - Don't prompt to delete categories.  Also good to use if your bot
                doesn't have administrator access.
+ * -summary:  - Pick a custom edit summary for the bot.
 
 For the actions tidy and tree, the bot will store the category structure locally
 in category.dump. This saves time and server load, but if it uses these data
@@ -283,11 +284,16 @@ def add_category(sort_by_last_name = False):
                             wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
 
 class CategoryMoveRobot:
-    def __init__(self, oldCatTitle, newCatTitle, batchMode = False):
+    def __init__(self, oldCatTitle, newCatTitle, batchMode = False, customSummary = False, editSummary = ''):
+        self.customSummary = customSummary
+        self.editSummary = editSummary
         self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
         # set edit summary message
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % self.oldCat.title())
+	if self.customSummary:
+	    wikipedia.setAction(self.editSummary)
+	else:
+            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % self.oldCat.title())
 
     def run(self):
         newCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.newCatTitle)
@@ -336,10 +342,15 @@ class CategoryRemoveRobot:
         'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
     }
     
-    def __init__(self, catTitle, batchMode = False):
+    def __init__(self, catTitle, batchMode = False, customSummary = False, editSummary = ''):
+	self.customSummary = customSummary
+	self.editSummary = editSummary
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())
+	if self.customSummary:
+	    wikipedia.setAction(self.editSummary)
+	else:
+            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())
         
     def run(self):
         articles = self.cat.articles(recurse = 0)
@@ -592,6 +603,8 @@ if __name__ == "__main__":
     fromGiven = False
     toGiven = False
     batchMode = False
+    customSummary = False
+    editSummary = ''
     try:
         catDB = CategoryDatabase()
         action = None
@@ -622,22 +635,25 @@ if __name__ == "__main__":
 		    toGiven = True
 		elif arg == '-batch':
 		    batchMode = True
+		elif arg.startswith('-summary:'):
+		    customSummary = True
+		    editSummary = arg[len('-summary:'):]
                 
         if action == 'add':
             add_category(sort_by_last_name)
         elif action == 'remove':
 	    if (fromGiven == False):
                 catTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
-                bot = CategoryRemoveRobot(catTitle, batchMode)
+                bot = CategoryRemoveRobot(catTitle, batchMode, customSummary, editSummary)
 	    else:
-                bot = CategoryRemoveRobot(oldCatTitle, batchMode)
+                bot = CategoryRemoveRobot(oldCatTitle, batchMode, customSummary, editSummary)
             bot.run()
         elif action == 'move':
 	    if (fromGiven == False):
                 oldCatTitle = wikipedia.input(u'Please enter the old name of the category:')
 	    if (toGiven == False):
                 newCatTitle = wikipedia.input(u'Please enter the new name of the category:')
-            bot = CategoryMoveRobot(oldCatTitle, newCatTitle, batchMode)
+            bot = CategoryMoveRobot(oldCatTitle, newCatTitle, batchMode, customSummary, editSummary)
             bot.run()
         elif action == 'tidy':
             catTitle = wikipedia.input(u'Which category do you want to tidy up?')
