@@ -162,7 +162,7 @@ class TemplateRobot:
 
         # get edit summary message
 	if self.customSummary:
-	    wikipedia.setAction(editSummary)
+	    wikipedia.setAction(self.editSummary)
 	else:
 	    mysite = wikipedia.getSite()
             if self.remove:
