@@ -309,14 +309,15 @@ class CategoryMoveRobot:
         else:
             for subcategory in subcategories:
                 catlib.change_category(subcategory, self.oldCat, newCat)
-        if self.oldCat.exists() and batchMode == False:
+        if self.oldCat.exists():
             # try to copy page contents to new cat page
             if self.oldCat.copyTo(newCatTitle):
-                if self.oldCat.isEmpty():
-                    reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % newCatTitle
-                    self.oldCat.delete(reason)
-                else:
-                    wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCatTitle, self.newCatTitle))
+		if batchMode == False:
+                    if self.oldCat.isEmpty():
+                        reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % newCatTitle
+                        self.oldCat.delete(reason)
+                    else:
+                        wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCatTitle, self.newCatTitle))
 
 class CategoryRemoveRobot:
     '''
