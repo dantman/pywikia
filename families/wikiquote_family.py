@@ -104,6 +104,4 @@ class Family(family.Family):
             return 'utf-8', 'iso8859-2'
         if code == 'ru':
             return 'utf-8', 'iso8859-5'
-        if code in self.latin1old:
-            return 'utf-8', 'iso-8859-1'
         return self.code2encoding(code),
