@@ -479,13 +479,20 @@ def main():
     debug = False
     xmlfilename = None
     textfilename = None
+    startpage = None
     for arg in wikipedia.handleArgs():
         if arg.startswith('-file:'):
             if len(arg) == 5:
                 textfilename = wikipedia.input(u'Please enter the textfile\'s name:')
             else:
                 textfilename = arg[6:]
-            gen = pagegenerators.TextfilePageGenerator(textfilename)        
+            gen = pagegenerators.TextfilePageGenerator(textfilename)
+        elif arg.startswith('-start:'):
+            if len(arg) == 7:
+                startpage = wikipedia.input(u'Please enter the article to start then:')
+            else:
+                startpage = arg[8:]
+            gen = pagegenerators.AllpagesPageGenerator(startpage)
         elif arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
