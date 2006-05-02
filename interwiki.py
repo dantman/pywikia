@@ -24,6 +24,12 @@ This script understands various command-line arguments:
                    text is given after the second ':', the name of the page
                    itself is used as the title for the hint.
 
+    -cat           Work on all pages which are in a specific category.
+                   Argument can also be given as "-cat:categoryname".
+
+    -ref           Work on all pages that link to a certain page.
+                   Argument can also be given as "-ref:referredpagetitle".
+
     There are some special hints, trying a number of languages at once:
     all:    Provides the hint for all languages with at least ca. 100 pages
     10:     Provides the hint for ca. 10 of the largest languages
