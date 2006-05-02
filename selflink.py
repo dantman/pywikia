@@ -39,6 +39,7 @@ import re, sys
 msg = {
           'de':u'Bot: Entferne Selbstlinks',
           'en':u'Robot: Removing selflinks',
+          'pt':u'Bot: Retirando link para o próprio artigo'
        }
 
 class SelflinkBot:
