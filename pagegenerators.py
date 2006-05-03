@@ -37,6 +37,29 @@ class ReferringPageGenerator:
         for page in self.referredPage.getReferences(follow_redirects = self.followRedirects, withTemplateInclusion = self.withTemplateInclusion, onlyTemplateInclusion = self.onlyTemplateInclusion):
             yield page
 
+class ReferringPagesGenerator:
+    '''
+    Yields all pages referring to a list of specific pages.
+    '''
+    def __init__(self, referredPages, followRedirects = False, withTemplateInclusion = True, onlyTemplateInclusion = False):
+        self.referredPages = referredPages
+        self.followRedirects = followRedirects
+        self.withTemplateInclusion = withTemplateInclusion
+        self.onlyTemplateInclusion = onlyTemplateInclusion
+
+    def __iter__(self):
+	allPages = []
+	for referredPage in self.referredPages:
+            for page in referredPage.getReferences(follow_redirects = self.followRedirects, withTemplateInclusion = self.withTemplateInclusion, onlyTemplateInclusion = self.onlyTemplateInclusion):
+		allPages.append(page)
+
+	#Remove duplicate pages.
+	allPages = list(set(allPages))
+
+	for page in allPages:
+            yield page
+
+
 class CategorizedPageGenerator:
     '''
     Yields all pages in a specific category.
