@@ -10,6 +10,11 @@
 # If you want to use an edit summary, then pass it in as a parameter, i.e.,
 # perl catmove.pl "Emptying dead category" < catmoves.txt
 # Note that if your summary has multiple words in it then enclose it in quotes.
+# 
+# To set edit summaries, you can also preface a line with a semicolon ;
+# That will be the edit summary for all subsequent executions ... unless you modify the
+# edit summary again with another semicolon.  In this way you can take care of many days
+# worth of WP:CFD backlog with a single execution.
 
 my $editSummary = '';
 my $customSummary = 0;
@@ -52,6 +57,10 @@ while (<STDIN>) {
 	    exit 1;
 	}
     }	
+    elsif ($_ =~ m/^\s*;\s*(.*)\s*$/) {
+	$customSummary = 1;
+	$editSummary = $1;
+    }
     else {
 	print "Invalid line: $_\n";
     }
