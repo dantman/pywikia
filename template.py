@@ -11,20 +11,24 @@ then automatically loop over them, and replace the template.
 
 Command line options:
 
--remove    - Remove every occurence of the template from every article
+-remove      Remove every occurence of the template from every article
 
--xml       - retrieve information from a local dump (http://download.wikimedia.org).
+-xml         retrieve information from a local dump (http://download.wikimedia.org).
              if this argument isn\'t given, info will be loaded from the maintenance
              page of the live wiki.
              argument can also be given as "-xml:filename.xml".
 
--namespace - Only process templates in the given template number (may be used
+-namespace:  Only process templates in the given namespace number (may be used
              multiple times).
 
--summary   - Lets you pick a custom edit summary.  Use quotes if edit summary contains
+-summary:    Lets you pick a custom edit summary.  Use quotes if edit summary contains
              spaces.
 
--always    - Don't bother asking to confirm any of the changes, Just Do It.
+-always      Don't bother asking to confirm any of the changes, Just Do It.
+
+-page:       Only edit a specific page.  You can use this argument multiple times to work
+             on multiple pages.  If the page title has spaces in it, enclose the entire
+             page name in quotes.
 
 other:       First argument is the old template name, second one is the new
              name. If only one argument is given, the bot resolves the
@@ -138,7 +142,7 @@ class TemplateRobot:
         'sr':u'Бот: Уклањање шаблона: %s',
         }
 
-    def __init__(self, generator, old, new = None, remove = False, customSummary = False, editSummary = '', acceptAll = False):
+    def __init__(self, generator, old, new = None, remove = False, editSummary = '', acceptAll = False):
         """
         Arguments:
             * generator - A page generator.
@@ -152,7 +156,6 @@ class TemplateRobot:
         self.old = old
         self.new = new
         self.remove = remove
-	self.customSummary = customSummary
 	self.editSummary = editSummary
 	self.acceptAll = acceptAll
         # if only one argument is given, don't replace the template with another
@@ -161,7 +164,7 @@ class TemplateRobot:
         self.resolve = (new == None)
 
         # get edit summary message
-	if self.customSummary:
+	if self.editSummary:
 	    wikipedia.setAction(self.editSummary)
 	else:
 	    mysite = wikipedia.getSite()
@@ -202,9 +205,9 @@ def main():
     resolve = False
     remove = False
     namespaces = []
-    customSummary = False
     editSummary = ''
     acceptAll = False
+    pageTitles = []
     # If xmlfilename is None, references will be loaded from the live wiki.
     xmlfilename = None
     new = None
@@ -220,10 +223,14 @@ def main():
 	elif arg.startswith('-namespace:'):
 	    namespaces.append(int(arg[len('-namespace:'):]))
 	elif arg.startswith('-summary:'):
-	    customSummary = True
 	    editSummary = arg[len('-summary:'):]
 	elif arg.startswith('-always'):
 	    acceptAll = True
+	elif arg.startswith('-page:'):
+	    if len(arg) == len('-page'):
+		pageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
+	    else:
+		pageTitles.append(arg[len('-page:'):])
         else:
             template_names.append(arg)
 
@@ -240,14 +247,17 @@ def main():
 
     if xmlfilename:
         gen = XmlDumpTemplatePageGenerator(oldTemplate, xmlfilename)
+    elif pageTitles:
+	pages = [wikipedia.Page(wikipedia.getSite(), pageTitle) for pageTitle in pageTitles]
+	gen = iter(pages)
     else:
         gen = pagegenerators.ReferringPageGenerator(oldTemplate, onlyTemplateInclusion = True)
 
-    if namespaces != []:
+    if namespaces:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
 
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
-    bot = TemplateRobot(preloadingGen, old, new, remove, customSummary, editSummary, acceptAll)
+    bot = TemplateRobot(preloadingGen, old, new, remove, editSummary, acceptAll)
     bot.run()
 
 if __name__ == "__main__":
