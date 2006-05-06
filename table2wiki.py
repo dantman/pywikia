@@ -14,6 +14,10 @@ Nifty script to convert HTML-tables to MediaWiki's own syntax.
                  Searches for pages with HTML tables, and tries to convert them
                  on the live wiki.
 
+-start:        - used as -start:pagename, specifies that the robot should
+                 go alphabetically through all pages on the home wiki,
+                 starting at the named page.
+
 -file:filename - Will read any [[wikipedia link]] and use these articles
                  This SQL query might be helpful to generate this file, but
                  it doesn't work for MediaWiki version 1.5 and above.
@@ -488,10 +492,10 @@ def main():
                 textfilename = arg[6:]
             gen = pagegenerators.TextfilePageGenerator(textfilename)
         elif arg.startswith('-start:'):
-            if len(arg) == 7:
+            if len(arg) == 6:
                 startpage = wikipedia.input(u'Please enter the article to start then:')
             else:
-                startpage = arg[8:]
+                startpage = arg[7:]
             gen = pagegenerators.AllpagesPageGenerator(startpage)
         elif arg.startswith('-xml'):
             if len(arg) == 4:
