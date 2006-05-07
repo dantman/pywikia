@@ -4,7 +4,8 @@ Script to upload images to wikipedia.
 
 Arguments:
 
-  -keep    Keep the filename as is
+  -keep         Keep the filename as is
+  -noverify     Do not ask for verification of the upload description if one is given
 
 If any other arguments are given, the first is the URL or filename
 to upload, and the rest is a proposed description to go with the
@@ -38,7 +39,6 @@ def post_multipart(host, selector, fields, files, cookies):
     conn.putheader('content-type', content_type)
     conn.putheader('content-length', str(len(body)))
     conn.putheader("User-agent", "RobHooftWikiRobot/1.0")
-    conn.putheader('Host', host)
     if cookies:
         conn.putheader('Cookie',cookies)
     conn.endheaders()
@@ -80,11 +80,12 @@ def get_content_type(filename):
 
 
 class UploadRobot:
-    def __init__(self, url, description = u'', keepFilename = False, targetSite = None, urlEncoding = None):
+    def __init__(self, url, description = u'', keepFilename = False, verifyDescription = True, targetSite = None, urlEncoding = None):
         self.url = url
         self.urlEncoding = urlEncoding
         self.description = description
         self.keepFilename = keepFilename
+        self.verifyDescription = verifyDescription
         if config.upload_to_commons:
             self.targetSite = targetSite or wikipedia.getSite('commons', 'commons')
         else:
@@ -160,14 +161,16 @@ class UploadRobot:
         # A proper description for the submission.
         wikipedia.output(u"The suggested description is:")
         wikipedia.output(self.description)
-        choice = wikipedia.inputChoice(u'Do you want to change this description?', ['Yes', 'No'], ['y', 'N'], 'n')
-        if choice == 'y':
-            import editarticle
-            editor = editarticle.TextEditor()
-            newDescription = editor.edit(self.description)
-            # if user saved / didn't press Cancel
-            if newDescription:
-                self.description = newDescription
+        if self.verifyDescription:
+                newDescription = u''
+                choice = wikipedia.inputChoice(u'Do you want to change this description?', ['Yes', 'No'], ['y', 'N'], 'n')
+                if choice == 'y':
+                        import editarticle
+                        editor = editarticle.TextEditor()
+                        newDescription = editor.edit(self.description)
+                # if user saved / didn't press Cancel
+                if newDescription:
+                        self.description = newDescription
     
         formdata = {}
         formdata["wpUploadDescription"] = self.description
@@ -232,18 +235,24 @@ def main(args):
     url = u''
     description = []
     keepFilename = False
+    verifyDescription = True
+
+    # call wikipedia.py function to process all global wikipedia args
+    # returns a list of non-global args, i.e. args for upload.py
+    args = wikipedia.handleArgs()
 
     for arg in args:
-        arg = wikipedia.argHandler(arg, 'upload')
         if arg:
             if arg.startswith('-keep'):
                 keepFilename = True
+            elif arg.startswith('-noverify'):
+                verifyDescription = False
             elif url == u'':
                 url = arg
             else:
                 description.append(arg)
     description = u' '.join(description)
-    bot = UploadRobot(url, description, keepFilename)
+    bot = UploadRobot(url, description, keepFilename, verifyDescription)
     bot.run()
 
 if __name__ == "__main__":
