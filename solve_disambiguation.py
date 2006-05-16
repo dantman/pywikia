@@ -84,6 +84,7 @@ msg = {
     'he': u'פתרון הפניה לפירושונים על ידי בוט: %s',
     'ru': u'Разрешение значений с помощью бота: %s',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s',
+    'sv': u'Länkar direkt till rätt artikel för: %s',
     }
 
 # Summary message when working on redirects
@@ -98,6 +99,7 @@ msg_redir = {
     'he': u'פתרון הפניה לפירושונים על ידי בוט: %s',
     'ru': u'Разрешение значений с помощью бота: %s',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s',
+    'sv': u'Länkar direkt till rätt artikel för: %s',
     }
 
 # disambiguation page name format for "primary topic" disambiguations
@@ -111,6 +113,7 @@ primary_topic_format = {
     'he': u'%s_(פירושונים)',
     'ru': u'%s_(значения)',
     'sr': u'%s_(вишезначна одредница)',
+    'sv': u'%s_(olika betydelser)',
     }
 
 # List pages that will be ignored if they got a link to a disambiguation
