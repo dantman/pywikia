@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """
 Script to extract all wiki page names a certain HTML file points to in
 interwiki-link format
