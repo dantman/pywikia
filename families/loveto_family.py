@@ -13,6 +13,7 @@ class Family(family.Family):
         self.langs = {
             '1911': 'sandbox2',
             'recipes': 'recipes',
+            'video': 'videogames',
             }
 
         self.namespaces[4]['1911'] = 'LoveToKnow Watches'
@@ -21,6 +22,15 @@ class Family(family.Family):
         self.namespaces[4]['recipes'] = 'LoveToKnow Recipes'
         self.namespaces[5]['recipes'] = 'Talk:LoveToKnow Recipes'
         
+    def path(self, code):
+        if code == 'video':
+            return '/w/index.php'
+        else:
+            return '/index.php'
+
+    def nice_get_address(self, code, name):
+        return '/%s' % (name)
+
     # Which version of MediaWiki is used?
 
     def version(self, code):
@@ -34,7 +44,6 @@ class Family(family.Family):
             return(r"action=history")
         else:
             return(r"table\>\s*\<script")
-
 
     def edit_address(self, code, name):
         if code == 'recipes':

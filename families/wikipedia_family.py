@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -144,7 +144,7 @@ class Family(family.Family):
             'no': u'Wikipedia-diskusjon',
             'nv': u"Wikiibíídiiya baa yinísht'į́",
             'oc': u'Discutida Oiquipedià',
-            'os': u'0',
+            'os': u'Дискусси Wikipedia',
             'pa': u'ਵਿਕਿਪੀਡਿਆ ਚਰਚਾ',
             'pl': u'Dyskusja Wikipedii',
             'pms':u'Discussioni Wikipedia',
