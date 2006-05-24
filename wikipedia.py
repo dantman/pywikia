@@ -37,6 +37,7 @@ Page: A MediaWiki page
     getReferences         : List of pages linking to the page
     namespace             : The namespace in which the page is
     permalink (*)         : The url of the permalink of the current version
+    move                  : Move the page to another title
 
     put(newtext)          : Saves the page
     delete                : Deletes the page (requires being logged in)
@@ -1295,6 +1296,66 @@ class Page(object):
         for edit in edits:
             users.add(edit[1])
         return users
+
+    def move(self, newtitle, reason = None, movetalkpage = True, sysop = False):
+        if reason == None:
+            reason = "Pagemove by bot"
+        if self.namespace() // 2 == 1:
+            movetalkpage = False
+        host = self.site().hostname()
+        address = self.site().move_address()
+        self.site().forceLogin(sysop = sysop)
+        token = self.site().getToken(self, sysop = sysop)
+        predata = [
+            ('wpOldTitle', self.title()),
+            ('wpNewTitle', newtitle),
+            ('wpReason', reason),
+            ]
+        if movetalkpage:
+            predata.append(('wpMovetalk','1'))
+        else:
+            predata.append(('wpMovetalk','0'))
+        if token:
+            predata.append(('wpEditToken', token))
+        if self.site().hostname() in config.authenticate.keys():
+            predata.append(("Content-type","application/x-www-form-urlencoded"))
+            predata.append(("User-agent", "PythonWikipediaBot/1.0"))
+            data = urlencode(tuple(predata))
+            response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+            data = ''
+        else:    
+            data = urlencode(tuple(predata))
+            conn = httplib.HTTPConnection(host)
+            conn.putrequest("POST", address)
+            conn.putheader('Content-Length', str(len(data)))
+            conn.putheader("Content-type", "application/x-www-form-urlencoded")
+            conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
+            if self.site().cookies(sysop = sysop):
+                conn.putheader('Cookie', self.site().cookies(sysop = sysop))
+            conn.endheaders()
+            conn.send(data)
+
+            response = conn.getresponse()
+            data = response.read()
+            conn.close()
+        if data != '':
+            data = data.decode(myencoding())
+            if mediawiki_messages.get('actioncomplete') in data:
+                output(u'Page %s moved to %s'%(self.title(), newtitle))
+                return True
+            else:
+                output(u'Page move failed.')
+                try:
+                    ibegin = data.index('<!-- start content -->') + 22
+                    iend = data.index('<!-- end content -->')
+                except ValueError:
+                    # if begin/end markers weren't found, show entire HTML file
+                    output(data)
+                else:
+                    # otherwise, remove the irrelevant sections
+                    data = data[ibegin:iend]
+                output(data)
+                return False
 
     def delete(self, reason = None, prompt = True):
         """Deletes the page from the wiki. Requires administrator status. If
@@ -2753,6 +2814,9 @@ class Site(object):
 
     def dbName(self):
         return self.family.dbName(self.lang)
+
+    def move_address(self):
+        return self.family.move_address(self.lang)
 
     def delete_address(self, s):
         return self.family.delete_address(self.lang, s)
