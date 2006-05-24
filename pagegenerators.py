@@ -15,9 +15,12 @@ class AllpagesPageGenerator:
     Using the Allpages special page, retrieves all articles, loads them (60 at
     a time) using XML export, and yields title/text pairs.
     '''
-    def __init__(self, start ='!', namespace = 0):
+    def __init__(self, start ='!', namespace = None):
         self.start = start
-        self.namespace = namespace
+        if namespace==None:
+            self.namespace = wikipedia.Page(wikipedia.getSite(),start).namespace()
+        else:
+            self.namespace = namespace
 
     def __iter__(self):
         for page in wikipedia.getSite().allpages(start = self.start, namespace = self.namespace):
