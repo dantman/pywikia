@@ -30,9 +30,8 @@ def workon(page):
 
 try:
     start = []
-    for arg in sys.argv[1:]:
-        if wikipedia.argHandler(arg,'basic'):
-            start.append(arg)
+    for arg in wikipedia.handleArgs:
+        start.append(arg)
     start = " ".join(start) + "!"
     mysite = wikipedia.getSite()
     # If anything needs to be prepared, you can do it here
