@@ -150,8 +150,8 @@ upload_to_commons = False
 # 'minthrottle' seconds. This can be lengthened if the server is slow,
 # but never more than 'maxthrottle' seconds. However - if you are running
 # more than one bot in parallel the times are lengthened.
-minthrottle = 2
-maxthrottle = 5
+minthrottle = 1
+maxthrottle = 10
 
 # Slow down the robot such that it never makes a second change within
 # 'put_throttle' seconds.
