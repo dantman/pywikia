@@ -144,7 +144,6 @@ class ImageTransferBot:
             try:
                 # Show the image description page's contents
                 wikipedia.output(image.get(throttle=False))
-            except wikipedia.NoPage:
                 try:
                     # Maybe the image is on the target site already
                     targetTitle = '%s:%s' % (self.targetSite.image_namespace(), image.title().split(':', 1)[1])
@@ -152,14 +151,18 @@ class ImageTransferBot:
                     if targetImage.get(throttle=False):
                         wikipedia.output(u"Image is already on %s." % self.targetSite)
                         wikipedia.output(targetImage.get(throttle=False))
+                        sys.exit()
                     else:
                         print "Description empty."
                 except wikipedia.NoPage:
                     print "Description empty."
                 except wikipedia.IsRedirectPage:
                     print "Description page on Wikimedia Commons is redirect?!"
-            except wikipedia.IsRedirectPage:
-                print "Description page is redirect?!"
+                except wikipedia.IsRedirectPage:
+                    print "Description page is redirect?!"
+
+            except wikipedia.NoPage:
+                break
 
         print "="*60
     
