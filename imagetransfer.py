@@ -110,7 +110,7 @@ class ImageTransferBot:
                     description = wikipedia.replaceExceptNowikiAndComments(description, old, new)
             
             description = wikipedia.translate(self.targetSite, copy_message) % (sourceSite, description)
-            description += '\n\n' + sourceImagePage.getFileVersionHistoryTable()
+            description += '\n\n' + sourceImagePage.getVersionHistoryTable()
             # add interwiki link
             if sourceSite.family == self.targetSite.family:
                 description += "\r\n\r\n" + sourceImagePage.aslink(forceInterwiki = True)
