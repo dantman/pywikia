@@ -234,6 +234,16 @@ try:
         parentcats = workingcat.categories()
     except wikipedia.Error:
         parentcats = []
+    # Do not include articles already in subcats; only checking direct subcats
+    subcatlist = workingcat.subcategories()
+    if subcatlist:
+        wikipedia.getall(mysite,subcatlist)
+        for cat in subcatlist:
+            list = cat.articles()
+            wikipedia.getall(mysite,list)
+            for page in list:
+                exclude(page.title(),real_exclude=False)
+                checked[page] = page   
     list = workingcat.articles()
     if list:
         for pl in list:
