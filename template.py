@@ -32,7 +32,7 @@ Command line options:
 
 -extras      Specify this to signal that all parameters are templates that should either be
              substituted or removed.  Allows you to input way more than just two.  Not
-             compatible with -xml ( (yet  Disables template replacement.
+             compatible with -xml (yet)  Disables template replacement.
 
 other:       First argument is the old template name, second one is the new
              name. If only one argument is given, the bot resolves the
@@ -128,7 +128,7 @@ class XmlDumpTemplatePageGenerator:
         else:
             templateName = '[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:]
         templateName = re.sub(' ', '[_ ]', templateName)
-        templateRegex = re.compile(r'\{\{([mM][sS][gG]:)?' + templateName + '(?P<parameters>\|[^}]+|)}}')
+        templateRegex = re.compile(r'\{\{ *([mM][sS][gG]:)?' + templateName + ' *(?P<parameters>\|[^}]+|) *}}')
         for entry in dump.parse():
             if templateRegex.search(entry.text):
                 page = wikipedia.Page(mysite, entry.title)
@@ -206,7 +206,10 @@ class TemplateRobot:
         self.resolve = (new == None)
 
         # get edit summary message
-	allTemplates = (', ').join(old)
+	if isinstance(self.old, list):
+	    allTemplates = (', ').join(old)
+	else:
+	    allTemplates = old
 	if self.editSummary:
 	    wikipedia.setAction(self.editSummary)
 	else:
@@ -246,7 +249,7 @@ class TemplateRobot:
             if not wikipedia.getSite().nocapitalize:
                 old = '[' + old[0].upper() + old[0].lower() + ']' + old[1:]
             old = re.sub('[_ ]', '[_ ]', old)
-            templateRegex = re.compile(r'\{\{([mM][sS][gG]:)?' + old + '(?P<parameters>\|[^}]+|)}}')
+            templateRegex = re.compile(r'\{\{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + old + ' *(?P<parameters>\|[^}]+|) *}}')
 
             if self.remove:
                 replacements.append((templateRegex, ''))
@@ -322,7 +325,7 @@ def main():
 	pages = [wikipedia.Page(wikipedia.getSite(), pageTitle) for pageTitle in pageTitles]
 	gen = iter(pages)
     elif extras:
-	gen =  pagegenerators.ReferringPagesGenerator(oldTemplate, onlyTemplateInclusion = True)
+	gen = pagegenerators.ReferringPagesGenerator(oldTemplate, onlyTemplateInclusion = True)
     else:
         gen = pagegenerators.ReferringPageGenerator(oldTemplate, onlyTemplateInclusion = True)
 
