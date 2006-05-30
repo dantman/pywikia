@@ -18,6 +18,7 @@
 
 my $editSummary = '';
 my $customSummary = 0;
+my $throttle = 10;
 if ($#ARGV >= 0) {
     $customSummary = 1;
     $editSummary = shift;
@@ -25,16 +26,16 @@ if ($#ARGV >= 0) {
 
 while (<STDIN>) {
     #Move articles from one category to another.
-    if ($_ =~ m/^\s*[\#\*]?\s*Category:(.*?)\s*to\s*Category:(.*?)\s*$/) {
+    if ($_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*to\s*[Cc]ategory:(.*?)\s*$/) {
 	my $from = $1;
 	my $to = $2;
 	if ($customSummary == 0) {
-	    print "Now executing: python category.py move -batch -from:\"$from\" -to:\"$to\"\n";
-	    system("python category.py move -batch -from:\"$from\" -to:\"$to\"");
+	    print "Now executing: python category.py move -batch -from:\"$from\" -to:\"$to\" -putthrottle:$throttle\n";
+	    system("python category.py move -batch -from:\"$from\" -to:\"$to\" -putthrottle:$throttle");
 	}
 	else {
-	    print "Now executing: python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\"\n";
-	    system("python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\"");
+	    print "Now executing: python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\" -putthrottle:$throttle\n";
+	    system("python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\" -putthrottle:$throttle");
 	}
 	if ( $? != 0) {
 	    print "Error or interrupted, program aborting.\n";
@@ -42,15 +43,15 @@ while (<STDIN>) {
 	}
     }
     #Empty out a category.
-    elsif ($_ =~ m/^\s*[\#\*]?\s*Category:(.*?)\s*$/) {
+    elsif ($_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*$/) {
 	my $from = $1;
 	if ($customSummary == 0) {
-	    print "Now executing: python category.py remove -batch -from:\"$from\"\n";
-	    system("python category.py remove -batch -from:\"$from\"");
+	    print "Now executing: python category.py remove -batch -from:\"$from\" -putthrottle:$throttle\n";
+	    system("python category.py remove -batch -from:\"$from\" -putthrottle:$throttle");
 	}
 	else {
-	    print "Now executing: python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\"\n";
-	    system("python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\"");
+	    print "Now executing: python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\" -putthrottle:$throttle\n";
+	    system("python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\" -putthrottle:$throttle");
 	}
 	if ( $? != 0) {
 	    print "Error or interrupted, program aborting.\n";
