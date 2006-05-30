@@ -255,12 +255,14 @@ class Page(object):
                 # Canonical namespace - defined as _default in the family files
                 t = m.group(2)
                 self._namespace = ns
+                break
             else:
                 ns = self.site().family.getNsIndex( self.site().lang, lowerNs )
                 if ns:
                     # Ordinary namespace
                     t = m.group(2)
                     self._namespace = ns
+                    break
                 elif lowerNs in self.site().family.alphabetic:
                     # Interwiki link
                     t = m.group(2)
