@@ -231,6 +231,29 @@ class Category(wikipedia.Page):
             creationSummary = wikipedia.translate(wikipedia.getSite(), msg_created_for_renaming) % (self.title(), authors)
             targetCat.put(self.get(), creationSummary)
             return True
+
+    #Like copyTo above, except this removes a list of templates (like deletion templates) that appear in
+    #the old category text.
+    def copyAndKeep(self, catname, cfdTemplates):
+        """
+        Returns true if copying was successful, false if target page already
+        existed.
+        """
+        catname = self.site().category_namespace() + ':' + catname
+        targetCat = wikipedia.Page(self.site(), catname)
+        if targetCat.exists():
+            wikipedia.output('Target page %s already exists!' % targetCat.title())
+            return False
+        else:
+            wikipedia.output('Moving text from %s to %s.' % (self.title(), targetCat.title()))
+            authors = ', '.join(self.contributingUsers())
+            creationSummary = wikipedia.translate(wikipedia.getSite(), msg_created_for_renaming) % (self.title(), authors)
+	    newtext = self.get()
+	    for regexName in cfdTemplates:
+	        matchcfd = re.compile(r"{{%s.*?}}" % regexName, re.IGNORECASE)
+	        newtext = matchcfd.sub('',newtext)
+	    targetCat.put(newtext, creationSummary)
+            return True
     
 #def Category(code, name):
 #    """Factory method to create category link objects from the category name"""
