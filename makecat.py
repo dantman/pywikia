@@ -240,7 +240,6 @@ try:
         wikipedia.getall(mysite,subcatlist)
         for cat in subcatlist:
             list = cat.articles()
-            wikipedia.getall(mysite,list)
             for page in list:
                 exclude(page.title(),real_exclude=False)
                 checked[page] = page   
