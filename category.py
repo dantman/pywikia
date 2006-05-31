@@ -20,8 +20,7 @@ and option can be one of these:
  * -to:       - The category to move to (for the move option)
          NOTE: If the category names have spaces in them, surround the names with
          single quotes, i.e. -to:Us -from:'United States'
- * -batch     - Don't prompt to delete categories.  Also good to use if your bot
-               doesn't have administrator access.
+ * -batch     - Don't prompt to delete emptied categories (do it automatically).
  * -summary:  - Pick a custom edit summary for the bot.
 
 For the actions tidy and tree, the bot will store the category structure locally
@@ -92,6 +91,10 @@ deletion_reason_move = {
     'no':u'Robot: Kategorien ble flyttet til %s',
     'pt':u'Bot: Categoria %s foi movida',
     'sr':u'Бот: Категорија премештена у %s',
+    }
+
+cfd_templates = {
+    'en':['cfd', 'cfr', 'cfru', 'cfr-speedy', 'cfm', 'cfdu'],
     }
 
 class CategoryDatabase:
@@ -311,13 +314,15 @@ class CategoryMoveRobot:
                 catlib.change_category(subcategory, self.oldCat, newCat)
         if self.oldCat.exists():
             # try to copy page contents to new cat page
-            if self.oldCat.copyTo(newCatTitle):
-		if batchMode == False:
-                    if self.oldCat.isEmpty():
-                        reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % newCatTitle
-                        self.oldCat.delete(reason)
+            if self.oldCat.copyAndKeep(newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
+                if self.oldCat.isEmpty():
+                    reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % newCatTitle
+                    if batchMode == True:
+                        self.oldCat.delete(reason, False)
                     else:
-                        wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCatTitle, self.newCatTitle))
+                        self.oldCat.delete(reason, True)
+                else:
+                    wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCatTitle, self.newCatTitle))
 
 class CategoryRemoveRobot:
     '''
@@ -367,9 +372,12 @@ class CategoryRemoveRobot:
         else:
             for subcategory in subcategories:
                 catlib.change_category(subcategory, self.cat.title(), None)
-        if self.cat.exists() and self.cat.isEmpty() and batchMode == False:
+        if self.cat.exists() and self.cat.isEmpty():
             reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
-            self.cat.delete(reason)
+            if batchMode == True:
+                self.cat.delete(reason, False)
+            else:
+                self.cat.delete(reason, True)
 
 class CategoryTidyRobot:
     """
