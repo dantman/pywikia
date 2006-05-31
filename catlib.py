@@ -86,7 +86,7 @@ class Category(wikipedia.Page):
         if site.version() < "1.4":
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
         else:
-            Rtitle = re.compile('/wiki/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
+            Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
         ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
