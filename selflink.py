@@ -57,6 +57,7 @@ class SelflinkBot:
         linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
         # how many bytes should be displayed around the current link
         context = 90
+        moreContext = 400
         comment = wikipedia.translate(wikipedia.getSite(), msg)
         wikipedia.setAction(comment)
 
@@ -83,13 +84,25 @@ class SelflinkBot:
                         # at the end of the link, reset the color to default
                         colors = [None for c in text[max(0, m.start() - context) : m.start()]] + [12 for c in text[m.start() : m.end()]] + [None for c in text[m.end() : m.end() + context]]
                         wikipedia.output(text[max(0, m.start() - context) : m.end() + context], colors = colors)
-                        choice = wikipedia.inputChoice(u'What shall be done with this selflink?',  ['unlink', 'make bold', 'skip'], ['U', 'b', 's'], 'u')
+                        choice = wikipedia.inputChoice(u'What shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'context?'], ['U', 'b', 's', '?'], 'u')
                         print
                         if choice != 's':
                             new = m.group('label') or m.group('title')
                             new += m.group('linktrail')
                             if choice == 'u':
                                 text = text[:m.start()] + new + text[m.end():]
+                            elif choice == '?':
+                                colors = [None for c in text[max(0, m.start() - moreContext) : m.start()]] + [12 for c in text[m.start() : m.end()]] + [None for c in text[m.end() : m.end() + moreContext]]
+                                wikipedia.output(text[max(0, m.start() - moreContext) : m.end() + moreContext], colors = colors)
+                                choice = wikipedia.inputChoice(u'What shall be done with this selflink?',  ['unlink', 'make bold', 'skip'], ['U', 'b', 's'], 'u')
+                                print
+                                if choice != 's':
+                                    new = m.group('label') or m.group('title')
+                                    new += m.group('linktrail')
+                                    if choice == 'u':
+                                        text = text[:m.start()] + new + text[m.end():]
+                                    else:
+                                        text = text[:m.start()] + "'''" + new + "'''" + text[m.end():]
                             else:
                                 text = text[:m.start()] + "'''" + new + "'''" + text[m.end():]
                 if oldText == text:
