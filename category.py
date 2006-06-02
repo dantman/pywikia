@@ -64,7 +64,7 @@ msg_add={
     'ia':u'Robot: Addition de [[%s]]',
     'is':u'Vélmenni: Bæti við [[%s]]',
     'no':u'Robot: Legger til [[%s]]',
-    'pt':u'Bot: Adicionando [[%s]]',
+    'pt':u'Bot: Adicionando [[Categoria:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     }
 
@@ -79,7 +79,7 @@ msg_change={
     'is':u'Vélmenni: Breyti flokknum [[%s]]',
     'nl':u'Bot: Wijziging %s',
     'no':u'Robot: Endrer %s',
-    'pt':u'Bot: Modificando [[%s]]',
+    'pt':u'Bot: Modificando [[Categoria:%s]]',
     'sr':u'Бот: Измена категорије %s',
     }
 
