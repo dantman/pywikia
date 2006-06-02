@@ -16,53 +16,61 @@
 # edit summary again with another semicolon.  In this way you can take care of many days
 # worth of WP:CFD backlog with a single execution.
 
+#Necessary for thread handling.
+use POSIX ":sys_wait_h";
+
+#Preliminary setup.
 my $editSummary = '';
 my $customSummary = 0;
-my $throttle = 10;
+my $throttle = 6;
+my $sysCall = '';
 if ($#ARGV >= 0) {
     $customSummary = 1;
     $editSummary = shift;
 }
 
+#Loop through all standard input.
 while (<STDIN>) {
-    #Move articles from one category to another.
-    if ($_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*to\s*[Cc]ategory:(.*?)\s*$/) {
-	my $from = $1;
-	my $to = $2;
-	if ($customSummary == 0) {
-	    print "Now executing: python category.py move -batch -from:\"$from\" -to:\"$to\" -putthrottle:$throttle\n";
-	    system("python category.py move -batch -from:\"$from\" -to:\"$to\" -putthrottle:$throttle");
+    #Matches category moves and category removals.
+    if ($_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*to\s*[Cc]ategory:(.*?)\s*$/ || $_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*$/) {
+	#Matches category moves.
+	if ($_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*to\s*[Cc]ategory:(.*?)\s*$/) {
+	    my $from = $1;
+	    my $to = $2;
+	    if ($customSummary == 0) {
+		$sysCall = "python category.py move -batch -from:\"$from\" -to:\"$to\" -putthrottle:$throttle";
+	    } else {
+		$sysCall = "python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\" -putthrottle:$throttle";
+	    }
 	}
-	else {
-	    print "Now executing: python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\" -putthrottle:$throttle\n";
-	    system("python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\" -putthrottle:$throttle");
+	#Matches category removals.
+	elsif ($_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*$/) {
+	    my $from = $1;
+	    if ($customSummary == 0) {
+		$sysCall = "python category.py remove -batch -from:\"$from\" -putthrottle:$throttle";
+	    } else {
+		$sysCall = "python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\" -putthrottle:$throttle";
+	    }
 	}
-	if ( $? != 0) {
-	    print "Error or interrupted, program aborting.\n";
-	    exit 1;
+
+	#Fork off the execution of the Python bot as its own thread.  Errors will be skipped and execution continues
+	#through the whole list.  Ctrl-C will quit everything immediately, though.  (This is why we can't use the
+	#much simpler system() function).
+	print "Executing: $sysCall\n";
+	defined (my $pid = fork) or die "Cannot fork: $!";
+	unless ($pid) {
+	    exec($sysCall);
+	}
+	#If the Python script terminates abnormally print something to that effect.
+	if (waitpid($pid, 0) == 256) {
+	    print "Error, python script terminated abnormally.\n";
 	}
     }
-    #Empty out a category.
-    elsif ($_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*$/) {
-	my $from = $1;
-	if ($customSummary == 0) {
-	    print "Now executing: python category.py remove -batch -from:\"$from\" -putthrottle:$throttle\n";
-	    system("python category.py remove -batch -from:\"$from\" -putthrottle:$throttle");
-	}
-	else {
-	    print "Now executing: python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\" -putthrottle:$throttle\n";
-	    system("python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\" -putthrottle:$throttle");
-	}
-	if ( $? != 0) {
-	    print "Error or interrupted, program aborting.\n";
-	    exit 1;
-	}
-    }	
+    #Setting the edit summary.
     elsif ($_ =~ m/^\s*;\s*(.*)\s*$/) {
 	$customSummary = 1;
 	$editSummary = $1;
-    }
-    else {
+    } else {
 	print "Invalid line: $_\n";
     }
 }
