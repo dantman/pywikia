@@ -26,7 +26,7 @@ msg={
     'en': 'Changing categories',
     'ia': 'Alteration de categorias',
     'nl': 'Verandering van categorieen',
-    'pt': 'Alterando categoria',
+    'pt': 'Categorizando',
     'sr': 'Измена категорија',
     }
 
@@ -37,7 +37,7 @@ def choosecats(pagetext):
     print ("Give the new categories, one per line.")
     print ("Empty line: if the first, don't change. Otherwise: Ready.")
     print ("-: I made a mistake, let me start over.")
-    print ("?: Give (more of) the text of the page.")
+    print ("?: Give the text of the page with gui.")
     print ("xx: if the first, remove all categories and add no new.")
     while flag == False:
         choice=wikipedia.input(u"?")
@@ -47,8 +47,9 @@ def choosecats(pagetext):
             chosen=choosecats(pagetext)
             flag=True
         elif choice=="?":
-            wikipedia.output(pagetext[0:length])
-            length = length+500
+            import editarticle
+            editor = editarticle.TextEditor()
+            newtext = editor.edit(pagetext)
         elif choice=="xx" and chosen==[]:
             chosen = None
             flag=True
