@@ -53,6 +53,11 @@ nowCommonsTemplate = {
     'sr': u'{{NowCommons|%s}}',
 }
 
+nowCommonsThis = {
+    'en': u'{{NowCommonsThis|%s}}',
+    'pt': u'{{NowCommonsThis|%s}}',
+}
+
 nowCommonsMessage = {
     'de': u'Datei ist jetzt auf Wikimedia Commons verfügbar.',
     'en': u'File is now available on Wikimedia Commons.',
@@ -60,6 +65,11 @@ nowCommonsMessage = {
     'lt': u'Failas įkeltas į Wikimedia Commons projektą.',
     'pt': u'Arquivo está agora na Wikimedia Commons.',
     'sr': u'Слика је сада доступна и на Викимедија Остави.',
+}
+
+nowCommonsThisMessage = {
+    'en': u'File is now available on Commons with the same name.',
+    'pt': u'Esta imagem está agora no Commons com o mesmo nome.',
 }
 
 # Translations for license templates.
@@ -110,7 +120,7 @@ class ImageTransferBot:
                     description = wikipedia.replaceExceptNowikiAndComments(description, old, new)
             
             description = wikipedia.translate(self.targetSite, copy_message) % (sourceSite, description)
-            description += '\n\n' + sourceImagePage.getVersionHistoryTable()
+            description += '\n\n' + sourceImagePage.getFileVersionHistoryTable()
             # add interwiki link
             if sourceSite.family == self.targetSite.family:
                 description += "\r\n\r\n" + sourceImagePage.aslink(forceInterwiki = True)
@@ -139,6 +149,7 @@ class ImageTransferBot:
     def showImageList(self, imagelist):
         for i in range(len(imagelist)):
             image = imagelist[i]
+            #sourceSite = sourceImagePage.site()
             print "-"*60
             wikipedia.output(u"%s. Found image: %s"% (i, image.aslink()))
             try:
@@ -150,7 +161,11 @@ class ImageTransferBot:
                     targetImage = wikipedia.Page(self.targetSite, targetTitle)
                     if targetImage.get(throttle=False):
                         wikipedia.output(u"Image is already on %s." % self.targetSite)
+                        print "-"*60
                         wikipedia.output(targetImage.get(throttle=False))
+                        # add the nowCommonsThis template.
+                        #wikipedia.output(u'Adding nowCommonsThis template to %s' % image.title())
+                        #image.put(image.get() + '\n\n' + nowCommonsThis['en'] % image.title(), comment = nowCommonsThisMessage['en'])
                         sys.exit()
                     else:
                         print "Description empty."
@@ -204,7 +219,7 @@ def main():
     interwiki = False
     targetLang = None
     targetFamily = None
-
+    
     for arg in wikipedia.handleArgs():
         if arg == '-interwiki':
             interwiki = True
