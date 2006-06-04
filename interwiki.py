@@ -558,6 +558,7 @@ class Subject(object):
             node.set_URL('http://%s%s' % (page.site().hostname(), page.site().get_address(page.urlname())))
             node.set_style('filled')
             node.set_fillcolor('white')
+            node.set_fontsize('11')
             if not page.exists():
                 node.set_fillcolor('red')
             elif page.isRedirectPage():
