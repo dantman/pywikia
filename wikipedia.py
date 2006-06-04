@@ -1981,8 +1981,6 @@ def replaceLanguageLinks(oldtext, new, site = None):
     """
     if site == None:
         site = getSite()
-    if site == Site('de', 'wikipedia'):
-        raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position')
     s = interwikiFormat(new, insite = site)
     s2 = removeLanguageLinks(oldtext, site = site)
     if s:
@@ -2104,6 +2102,8 @@ def replaceCategoryLinks(oldtext, new, site = None):
     """
     if site is None:
         site = getSite()
+    if site == Site('de', 'wikipedia'):
+        raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position')
     # first remove interwiki links and add them later, so that
     # interwiki tags appear below category tags if both are set
     # to appear at the bottom of the article
