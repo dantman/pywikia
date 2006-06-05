@@ -218,6 +218,7 @@ class LinkMustBeRemoved(wikipedia.Error):
 
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
+    'br': (u'Robot ', u'Ouzhpennet', u'Kemmet', u'Tennet'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
     'csb':(u'robot ', u'dodôwô', u'rëmô', u'pòprôwiô'),
     'da': (u'robot ', u'Tilføjer', u'Fjerner', u'Ændrer'),
@@ -235,6 +236,7 @@ msg = {
     'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
     'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
     'no': (u'robot ', u'Tilføyer', u'Fjerner', u'Endrer'),
+    'os': (u'Робот', u'баххæст кодта', u'Баивта', u'Аиуварс'),
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
     'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
