@@ -40,10 +40,11 @@ import re, sys
 
 # Summary message for fixing double redirects
 msg_double={
+    'br':u'Kempennet adkas doubl gant robot',
     'en':u'Robot: Fixing double redirect',
     'de':u'Bot: Korrigiere doppelten Redirect',
-	'fr':u'Robot : répare double redirection',
-	'ia':u'Robot: reparation de duple redirection',
+    'fr':u'Robot : répare double redirection',
+    'ia':u'Robot: reparation de duple redirection',
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     'pt':u'Bot: Corrigido duplo redirecionamento',
     'sr':u'Бот: Поправка дуплих преусмерења',
@@ -53,8 +54,8 @@ msg_double={
 reason_broken={
     'en':u'Robot: Redirect target doesn\'t exist',
     'de':u'Bot: Weiterleitungsziel existiert nicht',
-	'fr':u'Robot : Cible du redirect inexistante',
-	'ia':u'Robot: Scopo del redirection non existe',
+    'fr':u'Robot : Cible du redirect inexistante',
+    'ia':u'Robot: Scopo del redirection non existe',
     'pt':u'Bot: Redirecionamento não existe',
     'sr':u'Бот: Преусмерење не постоји',
     }
