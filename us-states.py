@@ -88,7 +88,7 @@ def main():
             elif arg == '-force':
                 force = True
             else:
-                print('Warning: argument "%s" not understood; ignoring.')%arg
+                wikipedia.output(u'Warning: argument "%s" not understood; ignoring.'%arg)
 
     mysite = wikipedia.getSite()
     for p in mysite.allpages(start = start):
@@ -101,23 +101,23 @@ def main():
                 try:
                     goal = pl.getRedirectTarget()
                     if wikipedia.Page(mysite, goal):
-                        print("Not creating %s - redirect already exists.") % goal
+                        wikipedia.output(u"Not creating %s - redirect already exists." % goal)
                     else:
-                        print("WARNING!!! %s already exists but redirects elsewhere!") % goal
+                        wikipedia.output(u"WARNING!!! %s already exists but redirects elsewhere!" % goal)
                 except wikipedia.IsNotRedirectPage:
-                    print("WARNING!!! Page %s already exists and is not a redirect. Please check page!") % goal
+                    wikipedia.output(u"WARNING!!! Page %s already exists and is not a redirect. Please check page!" % goal0
                 except wikipedia.NoPage:
                     change=''
                     if p.isRedirectPage():
                         p2 = wikipedia.Page(mysite, p.getRedirectTarget())
-                        print ('Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.')%p2.urlname().replace("%2C",",").replace("_"," ")
+                        wikipeda.ouput(u'Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.'%p2.urlname().replace("%2C",",").replace("_"," "))
                     else:
                         p2 = p
                     if force:
                         change='y'
                     else:
                         while not change in ['y','n']:
-                            print ("Create redirect %s")%pl.urlname().replace("%2C",",").replace("_"," ")
+                            wikipedia.output(u"Create redirect %s"%pl.urlname().replace("%2C",",").replace("_"," "))
                             change = raw_input("(y/n)? ")
                     if change=='y':
                         text = '#REDIRECT [['+p2.urlname().replace("%2C",",").replace("_"," ")+']]'
@@ -125,8 +125,5 @@ def main():
 
 try:
     main()
-except:
-    wikipedia.stopme()
-    raise
-else:
+finally:
     wikipedia.stopme()
