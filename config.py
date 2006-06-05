@@ -126,6 +126,10 @@ interwiki_graph = False
 # Supported formats include png, jpg, ps and svg.
 interwiki_graph_format = 'png'
 
+# If interwiki graphs are enabled, should we save the dot file
+# too ? Usefull to make another graph with the same data
+interwiki_graph_dumpdot = False
+
 # Save file with local articles without interwikis.
 without_interwiki = False
 

@@ -552,6 +552,7 @@ class Subject(object):
         # create empty graph
         graph = pydot.Dot()
         graph.add_node(pydot.Node('start', shape = 'point'))
+#        graph.set('concentrate', 'true')
         for page in self.foundin.iterkeys():
             # a node for each found page
             node = pydot.Node('"%s:%s"' % (page.site().language(), wikipedia.unicode2html(page.title(), 'ascii')), shape = 'rectangle')
@@ -606,6 +607,11 @@ class Subject(object):
         for forbiddenChar in ':*?/\\':
             filename = filename.replace(forbiddenChar, '_')
         filename = 'interwiki-graphs/' + filename
+        if config.interwiki_graph_dumpdot:
+            if graph.write(filename + '.dot', prog = 'dot' , format ='raw'):
+                wikipedia.output(u'Dot file saved as %s' % filename)
+            else:
+                wikipedia.output(u'Dot file could not be saved as %s' % filename)
         if graph.write(filename, prog = 'dot', format = config.interwiki_graph_format):
             wikipedia.output(u'Graph saved as %s' % filename)
         else:
