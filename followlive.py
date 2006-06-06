@@ -79,7 +79,8 @@ blanking = {
 # do nothing if this is in it
 done = {
     'en':('{{delete}}', '{{speedy}}', '{{VfD}}', '{{cleanup}}', '{{nonsense}}'),
-	'fr':('{{suppression}}', u'{{à vérifier}}'),
+    'fr':('{{suppression}}', u'{{à vérifier}}'),
+    'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}')
 }
 # TODO: merge 'done' with 'templates' above
 
@@ -105,13 +106,16 @@ class PageHandler:
     def handlebadpage(self):
         try:
             self.content = self.page.get()
-        except IsRedirectPage:
+        except wikipedia.IsRedirectPage:
             wikipedia.output(u'Already redirected, skipping.')
+            return
+        except wikipedia.NoPage:
+            wikipedia.output(u'Already deleted')
             return
 
         for d in wikipedia.translate(wikipedia.getSite(), done):
             if d in self.content:
-                wikipedia.output(u'Found: "',d, '" in content, nothing necessary')
+                wikipedia.output(u'Found: "%s" in content, nothing necessary'%d)
                 return
         print "---- Start content ----------------"
         wikipedia.output(u""+self.content)
