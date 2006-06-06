@@ -2505,21 +2505,23 @@ class Site(object):
             path = self.newpages_address()
             get_throttle()
             html = self.getUrl(path)
-
-            entryR = re.compile('<li>(?P<date>.+?) <a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\) \. \. (?P<loggedin><a href=".+?" title=".+?">)?(?P<username>.+?)(</a>)?( <em>\((?P<comment>.+?)\)</em>)?</li>')
+            
+            entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?" title="(?P<title>.+?)">.+?</a>.+?\((?P<length>\d+)(.+?)\) \. \. (.*?)(?P<loggedin><a href=".+?" title="(?P<username>.+?)">)')
             for m in entryR.finditer(html):
+                output(m.group('date'))
+                output(m.group('title'))
                 date = m.group('date')
                 title = m.group('title')
                 title = title.replace('&quot;', '"')
                 length = int(m.group('length'))
                 loggedIn = (m.group('loggedin') is not None)
                 username = m.group('username')
-                comment = m.group('comment')
 
                 if title not in seen:
                     seen.add(title)
                     page = Page(self, title)
-                    yield page, date, length, loggedIn, username, comment
+                    yield page, date, length, loggedIn, username, None
+
             if not repeat:
                 break
 
