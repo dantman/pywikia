@@ -71,11 +71,12 @@ syntax, use:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
 
 from __future__ import generators
 import sys, re
-import wikipedia, pagegenerators, catlib, config
+import wikipedia, pagegenerators,catlib, config
+
+__version__='$Id$'
 
 # Summary messages in different languages
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
