@@ -54,6 +54,19 @@ templates = {
           '{{Stub}}'   :{ 'msg' : 'Iste articulo es in stato embryonic',
                           'pos': 'bottom'},
           },
+        'nl':{u'{{weg}}' :{ 'msg' : '',
+                            'pos' : 'top'},
+              u'{{nuweg}}' :{ 'msg' : '',
+                              'pos' : 'top'},
+              u'{{wiu}}' :{ 'msg' : '',
+                            'pos' : 'top'},
+              u'{{beg}}' :{ 'msg' : '',
+                            'pos' : 'bottom'},
+              u'{{wikify}}' :{ 'msg' : '',
+                               'pos' : 'top'},
+              u'{{wb}}' :{ 'msg' : '',
+                           'pos' : 'top'},
+              },
     }
 
 # Message used when blanking an article
@@ -82,29 +95,26 @@ class PageHandler:
 
     # Display informations about an article    
     def showpageinfo(self):
-        print u'[[%s]] %s ' % (self.page.title(), self.date)
+        wikipedia.output(u'[[%s]] %s ' % (self.page.title(), self.date))
         print 'Length: %i bytes' % self.length
-        print 'User  : %s' % self.user
-        if self.comment == None:
-            print "no comment"
-        else:
-            print "Comment: %s" % self.comment
+        wikipedia.output(u'User  : %s' % self.user)
 
     def couldbebad(self):
         return self.length < 250 or not self.loggedIn
 
     def handlebadpage(self):
-        self.content = self.page.get()
-#        except IsRedirectPage:
-#            wikipedia.output(u'Already redirected, skipping.')
-#            return
+        try:
+            self.content = self.page.get()
+        except IsRedirectPage:
+            wikipedia.output(u'Already redirected, skipping.')
+            return
 
         for d in wikipedia.translate(wikipedia.getSite(), done):
             if d in self.content:
-                print 'Found: "',d, '" in content, nothing necessary'
+                wikipedia.output(u'Found: "',d, '" in content, nothing necessary')
                 return
         print "---- Start content ----------------"
-        print self.content
+        wikipedia.output(u""+self.content)
         print "---- End of content ---------------"
 
         # Loop other user answer
@@ -115,11 +125,11 @@ class PageHandler:
             if answer == 'q':
                 sys.exit("Exiting")
             if answer == 'd':
-                print u'Trying to delete page [[%s]].' % self.page.title()
+                wikipedia.output(u'Trying to delete page [[%s]].' % self.page.title())
                 self.page.delete()
                 return
             if answer == 'b':
-                print u'Blanking page [[%s]].' % self.page.title()
+                wikipedia.output(u'Blanking page [[%s]].' % self.page.title())
                 try:
                     self.page.put('', comment = wikipedia.translate(wikipedia.getSite(), blanking) % self.content )
                 except EditConflict:
@@ -127,7 +137,7 @@ class PageHandler:
                     handlebadpage(self)
                 return
             if answer == '':
-                print 'Page correct ! Proceding with next pages.'
+                print 'Page correct ! Proceeding with next pages.'
                 return
             # Check user input:
             if answer[0] == 'u':
@@ -136,7 +146,7 @@ class PageHandler:
                     answer=int(answer[1:])
                 except ValueError:
                     # User entered wrong value
-                    print 'ERROR: "%s" is not valid' % answer
+                    wikipedia.output(u'ERROR: "%s" is not valid' % answer)
                     continue
                 answered=True
             else:
@@ -144,25 +154,25 @@ class PageHandler:
                     answer=int(answer)
                 except ValueError:
                     # User entered wrong value
-                    print 'ERROR: "%s" is not valid' % answer
+                    wikipedia.output(u'ERROR: "%s" is not valid' % answer)
                     continue
                 answered=True
 
         # grab the template parameters
         tpl = wikipedia.translate(wikipedia.getSite(), templates)[questionlist[answer]]
         if tpl['pos'] == 'top':
-            print u'prepending %s...' % questionlist[answer]
+            wikipedia.output(u'prepending %s...' % questionlist[answer])
             newcontent = questionlist[answer] + '\n' + self.content
             self.page.put(newcontent, comment = tpl['msg'])
         elif tpl['pos'] == 'bottom':
-            print u'appending %s...' % questionlist[answer]
+            wikipedia.output(u'appending %s...' % questionlist[answer])
             newcontent = self.content + '\n' + questionlist[answer]
             self.page.put(newcontent, comment = tpl['msg'])
         else:
-            print 'ERROR: "pos" should be "top" or "bottom" for template %s. Contact a developer.' % questionlist[answer]
+            wikipedia.output(u'ERROR: "pos" should be "top" or "bottom" for template %s. Contact a developer.' % questionlist[answer])
             sys.exit("Exiting")
 
-        print 'Probably added %s with comment %s' % (questionlist[answer], tpl ['msg'])
+        wikipedia.output(u'Probably added %s with comment %s' % (questionlist[answer], tpl ['msg']))
 
 
     def run(self):
@@ -200,6 +210,8 @@ question = questions + question
 # MAIN
 if __name__ == "__main__":
     try:
+        for arg in sys.argv[1:]:
+            wikipedia.argHandler(arg, 'interwiki')
         bot = CleaningBot()
         bot.run()
     except:
