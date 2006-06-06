@@ -54,17 +54,17 @@ templates = {
           '{{Stub}}'   :{ 'msg' : 'Iste articulo es in stato embryonic',
                           'pos': 'bottom'},
           },
-        'nl':{u'{{weg}}' :{ 'msg' : '',
+        'nl':{u'{{weg}}' :{ 'msg' : '{weg}',
                             'pos' : 'top'},
-              u'{{nuweg}}' :{ 'msg' : '',
+              u'{{nuweg}}' :{ 'msg' : '{nuweg}',
                               'pos' : 'top'},
-              u'{{wiu}}' :{ 'msg' : '',
+              u'{{wiu}}' :{ 'msg' : '{wiu}',
                             'pos' : 'top'},
-              u'{{beg}}' :{ 'msg' : '',
+              u'{{beg}}' :{ 'msg' : '{beg}',
                             'pos' : 'bottom'},
-              u'{{wikify}}' :{ 'msg' : '',
+              u'{{wikify}}' :{ 'msg' : '{wikify}',
                                'pos' : 'top'},
-              u'{{wb}}' :{ 'msg' : '',
+              u'{{wb}}' :{ 'msg' : '{wb}',
                            'pos' : 'top'},
               },
     }
@@ -137,7 +137,7 @@ class PageHandler:
                 try:
                     self.page.put('', comment = wikipedia.translate(wikipedia.getSite(), blanking) % self.content )
                 except EditConflict:
-                    print "An edit conflict occured ! Automaticly retrying"
+                    print "An edit conflict occured ! Automatically retrying"
                     handlebadpage(self)
                 return
             if answer == '':
