@@ -215,7 +215,7 @@ question = questions + question
 if __name__ == "__main__":
     try:
         for arg in sys.argv[1:]:
-            wikipedia.argHandler(arg, 'interwiki')
+            wikipedia.argHandler(arg, 'followlive')
         bot = CleaningBot()
         bot.run()
     except:
