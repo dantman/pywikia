@@ -31,12 +31,13 @@ and argument can be:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
 #
 from __future__ import generators
 import wikipedia, config
 import xmlreader
 import re, sys
+
+__version__='$Id$'
 
 # Summary message for fixing double redirects
 msg_double={
