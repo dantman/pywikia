@@ -1,8 +1,5 @@
 # -*- coding: utf-8  -*-
 """
-(C) 2004 Thomas R. Koll, <tomk32@tomk32.de>
- Distributed under the terms of the MIT license.
-
 This bot downloads the HTML-pages of articles and images
 and saves the interesting parts, i.e. the article-text
 and the footer to a file like Hauptseite.txt.
@@ -24,8 +21,12 @@ Features, not bugs:
 * Won't d/l images of an article if you set -overwrite:A
 
 """
-__version__ = '$Id$'
 
+# (C) 2004 Thomas R. Koll, <tomk32@tomk32.de>
+#
+# Distributed under the terms of the MIT license.
+#
+__version__ = '$Id$'
 
 import wikipedia,httplib,StringIO,re,sys,md5,os, string
 from htmlentitydefs import *
@@ -156,7 +157,9 @@ def main():
                 overwrite_articles = True
             elif arg[11] == "B":
                 overwrite_images = True
-                overwrite_articles = True                
+                overwrite_articles = True
+        elif arg.startswith('-help'):
+            wikipedia.output(__doc__, 'utf-8')
         else:
 
             sa.append(arg.replace(" ", "_"))
