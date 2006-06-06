@@ -33,54 +33,48 @@ What is it? """
 #   languages code contains list of templates to be used
 #       templates contains a message and its position 
 templates = {
-	'en':{'{{delete}}' :{ 'msg' : 'This article should be deleted' ,
-                          'pos': 'top'},
-          '{{cleanup}}':{ 'msg' : 'This article need cleanup',
-                          'pos': 'top'},
-          '{{stub}}'   :{ 'msg' : 'This article is a stub',
-                          'pos': 'bottom'},
-          },
-    'fr':{u'{{suppression}}' :{ 'msg' : u'Cet article devrait être supprimé',
-                                'pos': 'top'},
-          u'{{à vérifier}}'  :{ 'msg': u'Cet article est à vérifier',
-                                'pos': 'top'},
-          u'{{ébauche}}'     :{ 'msg': u'Cet article est une ébauche',
-                                'pos': 'bottom'},
-          },
-	'ia':{'{{Eliminar}}' :{ 'msg' : 'Iste articulo debe esser eliminate' ,
-                          'pos': 'top'},
-          '{{Revision}}':{ 'msg' : 'Iste articulo require revision',
-                          'pos': 'top'},
-          '{{Stub}}'   :{ 'msg' : 'Iste articulo es in stato embryonic',
-                          'pos': 'bottom'},
-          },
-        'nl':{u'{{weg}}' :{ 'msg' : '{weg}',
-                            'pos' : 'top'},
-              u'{{nuweg}}' :{ 'msg' : '{nuweg}',
-                              'pos' : 'top'},
-              u'{{wiu}}' :{ 'msg' : '{wiu}',
-                            'pos' : 'top'},
-              u'{{beg}}' :{ 'msg' : '{beg}',
-                            'pos' : 'bottom'},
-              u'{{wikify}}' :{ 'msg' : '{wikify}',
-                               'pos' : 'top'},
-              u'{{wb}}' :{ 'msg' : '{wb}',
-                           'pos' : 'top'},
+	'en':{'{{delete}}' :{ 'msg' : 'This article should be deleted','pos': 'top'},
+              '{{cleanup}}':{ 'msg' : 'This article need cleanup','pos': 'top'},
+              '{{stub}}'   :{ 'msg' : 'This article is a stub','pos': 'bottom'},
               },
-    }
 
+        'fr':{u'{{suppression}}' :{ 'msg' : u'Cet article devrait être supprimé','pos': 'top'},
+              u'{{à vérifier}}'  :{ 'msg': u'Cet article est à vérifier','pos': 'top'},
+              u'{{ébauche}}'     :{ 'msg': u'Cet article est une ébauche','pos': 'bottom'},
+              },
+        
+	'ia':{'{{Eliminar}}' :{ 'msg' : 'Iste articulo debe esser eliminate','pos': 'top'},
+              '{{Revision}}' :{ 'msg' : 'Iste articulo require revision','pos': 'top'},
+              '{{Stub}}'     :{ 'msg' : 'Iste articulo es in stato embryonic','pos': 'bottom'},
+              },
+        
+        'nl':{u'{{weg}}' :{ 'msg' : '{weg}','pos' : 'top'},
+              u'{{nuweg}}' :{ 'msg' : '{nuweg}','pos' : 'top'},
+              u'{{wiu}}' :{ 'msg' : '{wiu}','pos' : 'top'},
+              u'{{beg}}' :{ 'msg' : '{beg}','pos' : 'bottom'},
+              u'{{wikify}}' :{ 'msg' : '{wikify}','pos' : 'top'},
+              u'{{wb}}' :{ 'msg' : '{wb}','pos' : 'top'},
+              },
+
+        'pt': {u'{{apagar}}'    : {'msg': '{{apagar}}', 'pos':'top'},
+               u'{{wikificar}}' : {'msg': '{{wikificar}}', 'pos':'top'},
+               u'{{reciclar}}'  : {'msg': '{{reciclar}}', 'pos':'top'},
+               u'{{lixo|~~~~}}' : {'msg': '{{lixo}}', 'pos':'top'},
+               },
+        }
+        
 # Message used when blanking an article
 blanking = {
     'en': 'blanked, content was "%s"',
     'fr': u'blanchit, le contenu était "%s"',
 }
 
-
 # do nothing if this is in it
 done = {
     'en':('{{delete}}', '{{speedy}}', '{{VfD}}', '{{cleanup}}', '{{nonsense}}'),
     'fr':('{{suppression}}', u'{{à vérifier}}'),
-    'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}')
+    'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}'),
+
 }
 # TODO: merge 'done' with 'templates' above
 
