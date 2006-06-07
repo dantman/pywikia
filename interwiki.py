@@ -465,7 +465,12 @@ class Subject(object):
                             continue                            
                         if globalvar.same=='wiktionary':
                             if page2.title().lower()!=self.inpl.title().lower():
-                                wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.inpl))
+                                wikipedia.output(self.inpl.title())
+                                wikipedia.output(page2.title())
+                                try:
+                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.inpl))
+                                except UnicodeDecodeError:
+                                    print("NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.inpl))
                                 continue
                             elif page2.title() != self.inpl.title() and self.inpl.site().nocapitalize and page2.site().nocapitalize:
                                 wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized." % (page2, self.inpl))
