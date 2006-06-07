@@ -1046,6 +1046,9 @@ class Page(object):
         Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
             title = match.group('title')
+            if title.strip().startswith("#"):
+                # this is an internal section link
+                continue
             if not self.site().isInterwikiLink(title):
                 page = Page(self.site(), title)
                 result.append(page)
