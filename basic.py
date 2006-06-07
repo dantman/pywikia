@@ -13,6 +13,9 @@ long to work in one stroke, run:
 python mybot.py Pagename
 
 to do all pages starting at pagename.
+
+There is one standard command line option:
+-test:  Ask for input after every change
 """
 import wikipedia
 import pagegenerators
@@ -21,17 +24,23 @@ import sys
 def workon(page):
     try:
         text = page.get()
-    except wikipedia.isRedirectPage:
+    except wikipedia.IsRedirectPage:
         return
     # Here go edit text in whatever way you want. If you find you do not
     # want to edit this page, just return
     if text != page.get():
        page.put(text) # Adding a summary text would be good
+       if test:
+           wikipedia.input(u"Changed [[%s]]. Press enter to continue."%page.title())
 
 try:
     start = []
-    for arg in wikipedia.handleArgs:
-        start.append(arg)
+    test = False
+    for arg in wikipedia.handleArgs():
+        if arg.startswith("-test"):
+            test = True
+        else:
+            start.append(arg)
     start = " ".join(start) + "!"
     mysite = wikipedia.getSite()
     # If anything needs to be prepared, you can do it here
