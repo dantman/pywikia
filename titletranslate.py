@@ -30,7 +30,7 @@ def sametranslate(pl, arr, same):
         try:
             x2=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname[0].lower() + newname[1:])
         except IndexError:
-            x2=ikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
+            x2=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
         if x not in arr:
             if same == "wiktionary":
                 if site.language() in site.family.nocapitalize:
