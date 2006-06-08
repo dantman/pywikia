@@ -1345,7 +1345,7 @@ class Page(object):
             conn.close()
         if data != '':
             data = data.decode(myencoding())
-            if mediawiki_messages.get('actioncomplete') in data:
+            if mediawiki_messages.get('pagemovedsub') in data:
                 output(u'Page %s moved to %s'%(self.title(), newtitle))
                 return True
             else:
