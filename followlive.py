@@ -36,6 +36,9 @@ templates = {
 	'en':{'{{delete}}' :{ 'msg' : 'This article should be deleted','pos': 'top'},
               '{{cleanup}}':{ 'msg' : 'This article need cleanup','pos': 'top'},
               '{{stub}}'   :{ 'msg' : 'This article is a stub','pos': 'bottom'},
+              '{{categorize}}' :{ 'msg' : 'This article needs to be [[Wikipedia:Categorization|categorized]]', 'pos' : 'top'},
+              '{{notability}}' :{'msg' : 'The [[Wikipedia:Notability|notability]] of this article is unclear.', 'pos': 'top'},
+              '{{verify}}' :{'msg' : 'This article needs to be checked for factuality.', 'pos': 'top'},
               },
 
         'fr':{u'{{suppression}}' :{ 'msg' : u'Cet article devrait être supprimé','pos': 'top'},
@@ -56,10 +59,12 @@ templates = {
               u'{{wb}}' :{ 'msg' : '{wb}','pos' : 'top'},
               },
 
-        'pt': {u'{{apagar}}'    : {'msg': '{{apagar}}', 'pos':'top'},
-               u'{{wikificar}}' : {'msg': '{{wikificar}}', 'pos':'top'},
+        'pt': {u'{{wikificar}}' : {'msg': '{{wikificar}}', 'pos':'top'},
                u'{{reciclar}}'  : {'msg': '{{reciclar}}', 'pos':'top'},
                u'{{lixo|~~~~}}' : {'msg': '{{lixo}}', 'pos':'top'},
+               u'{{revisão}}' : {'msg': '{{revisão}}', 'pos':'top'},
+               u'{{impróprio}}' : {'msg': '{{impróprio}}', 'pos':'top'},
+               u'{{apagar vaidade}}' : {'msg': '{{apagar vaidade}}', 'pos':'top'},
                },
         }
         
