@@ -58,7 +58,7 @@ class Family:
                 'fa': u'مدیا',
                 'fo': u'Miðil',
                 'ga': u'Meán',
-                'he': u'תמונה',
+                'he': u'מדיה',
                 'hr': u'Mediji',
                 'hu': u'Média',
                 'is': u'Miðill',
