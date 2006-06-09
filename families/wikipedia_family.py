@@ -310,9 +310,9 @@ class Family(family.Family):
             'sk':  [u'Disambig', u'Rozlišovacia stránka', u'Disambiguation'],
             'sl':  [u'Disambig'],
             'sq':  [u'Kthjellim', u'Disambig'],
-            'sr':  [u'Вишезначна одредница', 'Disambig'],
+            'sr':  [u'Вишезначна одредница', u'Disambig'],
             'su':  [u'Disambig'],
-            'sv':  [u'Betydelselista', u'Disambig', u'Förgrening', u'Gaffel', u'Efternamn', 'Gren'],
+            'sv':  [u'Betydelselista', u'Disambig', u'Förgrening', u'Gaffel', u'Efternamn', u'Gren'],
             'sw':  [u'Maana'],
             'th':  [u'แก้กำกวม', u'Disambig'],
             'tl':  [u'Paglilinaw', u'Disambig'],
@@ -320,7 +320,7 @@ class Family(family.Family):
             'vi':  [u'Trang định hướng', u'Định hướng', u'Disambig'],
             'wa':  [u'Omonimeye', u'Disambig'],
             'zh':  [u'Disambig', u'消歧义', u'消歧义页'],
-            'zh-min-nan': [u'Khu-piat-iah', 'KhPI', u'Disambig'],
+            'zh-min-nan': [u'Khu-piat-iah', u'KhPI', u'Disambig'],
         }
         
         # On most Wikipedias page names must start with a capital letter, but some
