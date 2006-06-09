@@ -254,7 +254,7 @@ class Family(family.Family):
             'be':  [u'Неадназначнасьць', u'Disambig'],
             'bg':  [u'Пояснение', u'Disambig'],
             'ca':  [u'Desambiguació', u'Disambig'],
-            'cs':  [u'Rozcestník', u'Disambig'],
+            'cs':  [u'Rozcestník', u'Rozcestník - 2 znaky', u'Rozcestník - Příjmení', u'Rozcestník - místopisné jméno', u'Disambig'],
             'cy':  [u'Anamrwysedd', u'Disambig'],
             'cz':  [u'Rozcestník', u'Rozcestník - 2 znaky', u'Rozcestník - Příjmení', u'Rozcestník - místopisné jméno'],
             'da':  [u'Flertydig'],
