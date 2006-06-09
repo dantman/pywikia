@@ -589,19 +589,11 @@ class DisambiguationRobot(object):
                         continue
                     new_page_title = self.alternatives[choice]
                     reppl = wikipedia.Page(disambPage.site(), new_page_title)
-                    new_page_title = reppl.title()
-                    # There is a function that uncapitalizes the link target's first letter
-                    # if the link description starts with a small letter. This is useful on
-                    # nl: but annoying on de:.
-                    # At the moment the de: exclusion is only a workaround because I don't
-                    # know if other languages don't want this feature either.
-                    # We might want to introduce a list of languages that don't want to use
-                    # this feature.
-                    
-                    # Disabled after someone else complained about this
-                    # 'feature' in [ 1294811 ].
-                    #if self.mylang != 'de' and link_text[0] in 'abcdefghijklmnopqrstuvwxyz':
-                    #    new_page_title = new_page_title[0].lower() + new_page_title[1:]
+                    if (new_page_title[0].isupper()) or (link_text[0].isupper()):
+                        new_page_title = reppl.title()
+                    else:
+                        new_page_title = reppl.title()
+                        new_page_title = new_page_title[0].lower() + new_page_title[1:]
                     if replaceit and trailing_chars:
                         newlink = "[[%s%s]]%s" % (new_page_title, section, trailing_chars)
                     elif replaceit or (new_page_title == link_text and not section):
