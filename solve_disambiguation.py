@@ -49,6 +49,11 @@ Command line options:
    -main       only check pages in the main namespace, not in the talk,
                wikipedia, user, etc. namespaces.
 
+   -start:XY   goes through all disambiguation pages in the category on your wiki
+               that is defined (to the bot) as the category containing disambiguation
+               pages, starting at XY. If only '-start' or '-start:' is given, it starts
+               at the beginning.
+
 To complete a move of a page, one can use:
 
     python solve_disambiguation.py -just -pos:New_Name Old_Name
@@ -215,6 +220,7 @@ ignore_title = {
             u'Gebruiker:CyeZ/Klad2',
             u'Wikipedia:De kroeg/Archief.+',
             u'Overleg gebruiker:*Archief*',
+            u'Wikipedia:Te verwijderend*',
          ],
         'pt': [
             u'Categoria:Desambiguação',
@@ -744,8 +750,7 @@ def main():
                 if pl.exists():
                     alternatives.append(pl.title())
                 else:
-                    answer = wikipedia.inputChoice(
-u'Possibility %s does not actually exist. Use it anyway?'
+                    answer = wikipedia.inputChoice(u'Possibility %s does not actually exist. Use it anyway?'
                              % pl.title(), ['yes', 'no'], ['y', 'N'], 'N')
                     if answer in ('Y', 'y'):
                         alternatives.append(pl.title())
@@ -755,6 +760,15 @@ u'Possibility %s does not actually exist. Use it anyway?'
             getAlternatives = False
         elif arg == '-main':
             main_only = True
+        elif arg.startswith('-start'):
+            try:
+                if len(arg) < 8:
+                    generator = pagegenerators.CategoryPartPageGenerator(wikipedia.getSite().disambcategory())
+                else:
+                    generator = pagegenerators.CategoryPartPageGenerator(wikipedia.getSite().disambcategory(),arg[7:])
+            except wikipedia.NoPage:
+                print "Disambiguation category for your wiki is not known."
+                raise
         elif arg.startswith("-"):
             print "Unrecognized command line argument: %s" % arg
             # show help text and exit

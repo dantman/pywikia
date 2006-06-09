@@ -1719,6 +1719,12 @@ class Family:
             '_default': []
         }
 
+        # A list with the name of the category containing disambiguation
+        # pages for the various languages. Only one category per language,
+        # and without the namespace, so add things like:
+        # 'en': "Disambiguation"
+        self.disambcatname = {}
+
         # On most wikis page names must start with a capital letter, but some
         # languages don't use this.
     

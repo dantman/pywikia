@@ -2978,6 +2978,12 @@ class Site(object):
     def languages(self):
         return self.family.langs.keys()
 
+    def disambcategory(self):
+        try:
+            return Page(self,self.namespace(14)+':'+self.family.disambcatname[self.lang])
+        except KeyError:
+            raise NoPage
+
     def getToken(self, getalways = True, getagain = False, sysop = False):
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")

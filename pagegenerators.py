@@ -5,6 +5,7 @@ __version__='$Id$'
 
 # Standard library imports
 import re, codecs, sys
+import urllib
 
 # Application specific imports
 import wikipedia, date
@@ -74,6 +75,56 @@ class CategorizedPageGenerator:
     def __iter__(self):
         for page in self.category.articles(recurse = self.recurse):
             yield page
+
+class CategoryPartPageGenerator:
+    '''
+    Yields 200 pages in a category; for categories with 1000s of articles
+    CategorizedPageGenerator is too slow.
+    '''
+    # The code is based on _make_catlist in catlib.py; probably the two should
+    # be merged, with this generator being moved to catlib.py and _make_catlist
+    # using it.
+    def __init__(self, category, start = None):
+        self.category = category
+        self.start = start
+        self.site = category.site()
+
+    def __iter__(self):
+        if self.site.version() < "1.4":
+            Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
+        else:
+            Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
+        RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
+        while True:
+            self.path = self.site.get_address(self.category.urlname())
+            if self.start:
+                self.path = self.path + '&from=%s'%urllib.quote(self.start)
+                wikipedia.output('Getting [[%s]] starting at %s...' % (self.category.title(), self.start))
+            else:
+                wikipedia.output('Getting [[%s]...' % self.category.title())
+            txt = self.site.getUrl(self.path)
+            self_txt = txt
+            # index where subcategory listing begins
+            # this only works for the current version of the MonoBook skin
+            ibegin = txt.index('"clear:both;"')
+            # index where article listing ends
+            try:
+                iend = txt.index('<div class="printfooter">')
+            except ValueError:
+                try:
+                    iend = txt.index('<div id="catlinks">')
+                except ValueError:
+                    iend = txt.index('<!-- end content -->')
+            txt = txt[ibegin:iend]
+            for title in Rtitle.findall(txt):
+                page = wikipedia.Page(self.site, title)
+                if page.namespace() != 14:
+                    yield page
+            matchObj = RLinkToNextPage.search(txt)
+            if matchObj:
+                self.start = matchObj.group(1)
+            else:
+                break
 
 class LinkedPageGenerator:
     '''
