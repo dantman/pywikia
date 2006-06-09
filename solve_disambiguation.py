@@ -223,10 +223,10 @@ ignore_title = {
             u'Wikipedia:Te verwijderend*',
          ],
         'pt': [
-            u'Categoria:Desambiguação',
             u'Wikipedia:.+',
             u'Usuário:.+',
             u'Usuário Discussão:.+',
+            u'Lista de combinações de duas letras',
         ],
         'ru': [
             u'Категория:Disambig',
