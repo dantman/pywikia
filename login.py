@@ -99,7 +99,7 @@ class LoginManager:
         
         Returns cookie data if succesful, None otherwise."""
     
-        data = {"wpName": self.username,
+        data = {"wpName": self.username.encode(self.site.encoding()),
                 "wpPassword": self.password,
                 "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
                 "wpRemember": str(int(bool(remember)))}
