@@ -1733,7 +1733,7 @@ def urlencode(query):
     l=[]
     for k, v in query:
         k = urllib.quote(k)
-        v = urllib.quote(v)
+        v = urllib.quote(v.encode('utf8'))
         l.append(k + '=' + v)
     return '&'.join(l)
 
