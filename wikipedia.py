@@ -1312,8 +1312,8 @@ class Page(object):
         self.site().forceLogin(sysop = sysop)
         token = self.site().getToken(self, sysop = sysop)
         predata = [
-            ('wpOldTitle', self.title()),
-            ('wpNewTitle', newtitle),
+            ('wpOldTitle', self.title().encode(self.site().encoding())),
+            ('wpNewTitle', newtitle.encode(self.site().encoding())),
             ('wpReason', reason),
             ]
         if movetalkpage:
@@ -1733,7 +1733,7 @@ def urlencode(query):
     l=[]
     for k, v in query:
         k = urllib.quote(k)
-        v = urllib.quote(v.encode('utf8'))
+        v = urllib.quote(v)
         l.append(k + '=' + v)
     return '&'.join(l)
 
