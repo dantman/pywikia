@@ -24,10 +24,14 @@ my $editSummary = '';
 my $customSummary = 0;
 my $throttle = 6;
 my $sysCall = '';
+my $errorLog = "";
 if ($#ARGV >= 0) {
     $customSummary = 1;
     $editSummary = shift;
 }
+
+#my $args = "-batch -putthrottle:$throttle -inplace";
+my $args = "-batch -putthrottle:$throttle";
 
 #Loop through all standard input.
 while (<STDIN>) {
@@ -38,32 +42,33 @@ while (<STDIN>) {
 	    my $from = $1;
 	    my $to = $2;
 	    if ($customSummary == 0) {
-		$sysCall = "python category.py move -batch -from:\"$from\" -to:\"$to\" -putthrottle:$throttle";
+		$sysCall = "python category.py move -from:\"$from\" -to:\"$to\"";
 	    } else {
-		$sysCall = "python category.py move -batch -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\" -putthrottle:$throttle";
+		$sysCall = "python category.py move -from:\"$from\" -to:\"$to\" -summary:\"$editSummary\"";
 	    }
 	}
 	#Matches category removals.
 	elsif ($_ =~ m/^\s*[\#\*]?\s*[Cc]ategory:(.*?)\s*$/) {
 	    my $from = $1;
 	    if ($customSummary == 0) {
-		$sysCall = "python category.py remove -batch -from:\"$from\" -putthrottle:$throttle";
+		$sysCall = "python category.py remove -from:\"$from\"";
 	    } else {
-		$sysCall = "python category.py remove -batch -from:\"$from\" -summary:\"$editSummary\" -putthrottle:$throttle";
+		$sysCall = "python category.py remove -from:\"$from\" -summary:\"$editSummary\"";
 	    }
 	}
 
 	#Fork off the execution of the Python bot as its own thread.  Errors will be skipped and execution continues
 	#through the whole list.  Ctrl-C will quit everything immediately, though.  (This is why we can't use the
 	#much simpler system() function).
-	print "Executing: $sysCall\n";
+	print "Executing: $sysCall $args\n";
 	defined (my $pid = fork) or die "Cannot fork: $!";
 	unless ($pid) {
-	    exec($sysCall);
+	    exec("$sysCall $args");
 	}
+	waitpid($pid, 0);
 	#If the Python script terminates abnormally print something to that effect.
-	if (waitpid($pid, 0) == 256) {
-	    print "Error, python script terminated abnormally.\n";
+	if ($? == 256) {
+	    $errorLog .= "* $sysCall $args\n";
 	}
     }
     #Setting the edit summary.
@@ -73,4 +78,8 @@ while (<STDIN>) {
     } else {
 	print "Invalid line: $_\n";
     }
+}
+
+if ($errorLog ne "") {
+    print "Errors detected with the following commands:\n$errorLog";
 }
