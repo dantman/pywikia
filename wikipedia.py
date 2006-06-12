@@ -2097,6 +2097,22 @@ def removeCategoryLinks(text, site):
     text = replaceExceptMathNowikiAndComments(text, categoryR, '')
     return normalWhitespace(text)
 
+def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
+    """Replaces the category oldcat with the category newcat and then returns
+       the modified Wiki source.
+    """
+    #Note that this doesn't work yet and it has some very strange side-effects.
+
+    if site is None:
+        site = getSite()
+
+    #print "oldcat: %s  newcat: %s" % (oldcat, newcat)
+
+    catNamespace = '|'.join(site.category_namespaces())
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\][\s]*' % (catNamespace, oldcat))
+    text = replaceExceptMathNowikiAndComments(oldtext, categoryR, newcat)
+    return normalWhitespace(text)
+
 def replaceCategoryLinks(oldtext, new, site = None):
     """Replace the category links given in the wikitext given
        in oldtext by the new links given in new.
@@ -2107,6 +2123,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
         site = getSite()
     if site == Site('de', 'wikipedia'):
         raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position')
+
     # first remove interwiki links and add them later, so that
     # interwiki tags appear below category tags if both are set
     # to appear at the bottom of the article

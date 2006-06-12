@@ -262,7 +262,7 @@ class Category(wikipedia.Page):
 #    # Prepend it
 #    return Category(code, "%s:%s" % (ns, name))
 
-def change_category(article, oldCat, newCat, comment=None, sortKey=None):
+def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace=False):
     """
     Given an article which is in category oldCat, moves it to
     category newCat. Moves subcategories of oldCat as well.
@@ -287,13 +287,16 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None):
                 cats = cats[:i] + [newCat] + cats[i+1:]
             text = article.get()
 	    try:
-                text = wikipedia.replaceCategoryLinks(text, cats)
+                if (inPlace == True):
+                    text = wikipedia.replaceCategoryInPlace(text, oldCat, newCat)
+                else:
+                    text = wikipedia.replaceCategoryLinks(text, cats)
             except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
 		wikipedia.output(u'Skipping %s because of interwiki link to self' % (article))
 	    try:
                 article.put(text, comment)
 	    except wikipedia.EditConflict:
-                wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
+                wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
 	    return
     wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
     return
