@@ -372,7 +372,7 @@ class CategoryRemoveRobot:
             wikipedia.output(u'There are no subcategories in category %s' % self.cat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.cat.title(), None)
+                catlib.change_category(subcategory, self.cat, None)
         if self.cat.exists() and self.cat.isEmpty():
             reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
             if batchMode == True:
