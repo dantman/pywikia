@@ -794,6 +794,79 @@ class Page(object):
                 # create Page objects
                 yield Page(site, refTitle)
 
+    def getFileLinks(self):
+        """
+        Yield all pages that link to the page. If you need a full list of
+        referring pages, use this:
+
+            pages = [page for page in s.getReferences()]
+
+        """
+        site = self.site()
+        #path = site.references_address(self.urlname())
+	path = site.get_address(self.urlname())
+
+        delay = 1
+
+        # NOTE: this code relies on the way MediaWiki 1.6 formats the
+        #       "Whatlinkshere" special page; if future versions change the
+        #       format, they may break this code.
+        if self.site().version() >= "1.5":
+            startmarker = u"<!-- start content -->"
+            endmarker = u"<!-- end content -->"
+        else:
+            startmarker = u"<body "
+            endmarker = "printfooter"
+        listitempattern = re.compile(r"<li><a href=.*>(?P<title>.*)</a></li>")
+        # to tell the previous and next link apart, we rely on the closing ) at the end of the "previous" label.
+        more = True
+
+        while more:
+	    more = False #Kill after one loop because MediaWiki will only display up to the first 500 File links.
+            fileLinks = set()  # use a set to avoid duplications
+            output(u'Getting references to %s' % self.aslink())
+            while True:
+                txt = site.getUrl(path)
+                # trim irrelevant portions of page
+                try:
+                    start = txt.index(startmarker) + len(startmarker)
+                    end = txt.index(endmarker)
+                except ValueError:
+                    output(u"Invalid page received from server.... Retrying in %i minutes." % delay)
+                    time.sleep(delay * 60.)
+                    delay *= 2
+                    if delay > 30:
+                        delay = 30
+                    continue
+                txt = txt[start:end]
+                break
+            try:
+                start = txt.index(u"<ul>")
+                end = txt.rindex(u"</ul>")
+            except ValueError:
+                # No incoming links found on page
+                continue
+            txt = txt[start:end+5]
+
+            txtlines = txt.split(u"\n")
+            for num, line in enumerate(txtlines):
+                if line == u"</ul>":
+                    # end of list of references to redirect page
+                    continue
+                if line == u"</li>":
+                    continue
+                lmatch = listitempattern.search(line)
+		if lmatch:
+                    fileLinks.add(lmatch.group("title"))
+                if lmatch is None:
+                    output(u"DBG> Unparsed line:")
+                    output(u"(%i) %s" % (num, line))
+            fileLinks = list(fileLinks)
+            fileLinks.sort()
+            for fileLink in fileLinks:
+                # create Page objects
+                yield Page(site, fileLink)
+
     def put(self, newtext, comment=None, watchArticle = None, minorEdit = True):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the

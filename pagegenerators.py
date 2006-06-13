@@ -27,6 +27,14 @@ class AllpagesPageGenerator:
         for page in wikipedia.getSite().allpages(start = self.start, namespace = self.namespace):
             yield page
 
+class FileLinksGenerator:
+    def __init__(self, referredPage):
+        self.referredPage = referredPage
+
+    def __iter__(self):
+        for page in self.referredPage.getFileLinks():
+            yield page
+
 class ReferringPageGenerator:
     '''
     Yields all pages referring to a specific page.

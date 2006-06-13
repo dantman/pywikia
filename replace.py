@@ -19,6 +19,8 @@ You can run the bot with the following commandline parameters:
                parameter multiple times to edit multiple pages.
 -ref         - Work on all pages that link to a certain page.
                Argument can also be given as "-ref:referredpagetitle".
+-filelinks   - Works on all pages that link to a certain image.
+               Argument can also be given as "-filelinks:ImageName".
 -links       - Work on all pages that are linked to from a certain page.
                Argument can also be given as "-links:linkingpagetitle".
 -start       - Work on all pages in the wiki, starting at a given page. Choose
@@ -767,6 +769,8 @@ def main():
     PageTitles = []
     # a page whose referrers will be processed when the -ref parameter is used
     referredPageTitle = None
+    # an image page whose file links will be processed when the -filelinks parameter is used
+    fileLinksPageTitle = None
     # a page whose links will be processed when the -links parameter is used
     linkingPageTitle = None
     # will become True when the user presses a ('yes to all') or uses the -always
@@ -786,6 +790,14 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg == '-regex':
             regex = True
+        elif arg.startswith('-filelinks'):
+            if len(arg) == 10:
+                fileLinksPageTitle = wikipedia.input(u'Links to which image page should be processed?')
+            else:
+                fileLinksPageTitle = arg[11:]
+            #TODO: Replace 'Image:' with something that automatically gets the name of images based on the language.
+            fileLinksPage = wikipedia.Page(wikipedia.getSite(), 'Image:' + fileLinksPageTitle)
+            gen = pagegenerators.FileLinksGenerator(fileLinksPage)
         elif arg.startswith('-file'):
             if len(arg) >= 6:
                 textfilename = arg[6:]
