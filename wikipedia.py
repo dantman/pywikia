@@ -1116,6 +1116,22 @@ class Page(object):
             raise
         thistxt = removeCategoryLinks(thistxt, self.site())
 
+        # remove HTML comments from text before processing
+        Rcomment = re.compile("<!--.*?-->")
+        while True:
+            comment = Rcomment.search(thistxt)
+            if not comment:
+                break
+            thistxt = thistxt[:comment.start()] + thistxt[comment.end():]
+
+        # remove nowiki sections from text before processing
+        Rnowiki = re.compile("<nowiki>*?</nowiki>")
+        while True:
+            nowiki = Rnowiki.search(thistxt)
+            if not nowiki:
+                break
+            thistxt = thistxt[:nowiki.start()] + thistxt[nowiki.end():]
+
         Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
             title = match.group('title')
