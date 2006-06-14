@@ -1125,7 +1125,7 @@ class Page(object):
             thistxt = thistxt[:comment.start()] + thistxt[comment.end():]
 
         # remove nowiki sections from text before processing
-        Rnowiki = re.compile("<nowiki>*?</nowiki>")
+        Rnowiki = re.compile("<nowiki>.*?</nowiki>")
         while True:
             nowiki = Rnowiki.search(thistxt)
             if not nowiki:
