@@ -149,7 +149,7 @@ ignore_title = {
             u'Wikipedia:Liste mathematischer Themen/Redirects',
             u'Wikipedia:Löschkandidaten/.+',
             u'Wikipedia:Qualitätsoffensive/UNO', #requested by Benutzer:Addicted 
-            u'Wikipedia:WikiProjekt Altertumswissenschaft/.+'
+            u'Wikipedia:WikiProjekt Altertumswissenschaft/.+',
         ],
          'en': [
             u'Wikipedia:Links to disambiguating pages',
@@ -177,7 +177,7 @@ ignore_title = {
             u'User:Wik/Articles',
             u'User:Egil/Sandbox',
             u'Wikipedia talk:Make only links relevant to the context',
-            u'Wikipedia:Common words, searching for which is not possible'
+            u'Wikipedia:Common words, searching for which is not possible',
         ],
         'fr': [
             u'Wikipédia:Liens aux pages d\'homonymie',
@@ -219,8 +219,18 @@ ignore_title = {
             u'Gebruiker:Ucucha/Doorverwijspagina',
             u'Gebruiker:CyeZ/Klad2',
             u'Wikipedia:De kroeg/Archief.+',
-            u'Overleg gebruiker:*Archief*',
-            u'Wikipedia:Te verwijderend*',
+            u'Overleg gebruiker:.*Archief.*',
+            u'Wikipedia:Te verwijderen.*',
+            u'Gebruiker:IIVQ.*',
+            u"Gebruiker:Rex/Meest storende doorverwijspagina's",
+            u'Gebruiker:Mystro82',
+            u'Overleg:Lage Landen (staatkunde)',
+            u'Overleg gebruiker:Sybren/test.*',
+            u'Gebruiker:Verrekijker/Alle edits',
+            u'Gebruiker:Verrekijker/Bijdragen',
+            u'Gebruiker:Sybren/Verwijzingen',
+            u'Overleg Wikipedia:Doorverwijspagina',
+            u'Gebruiker:Al/Bijdragen',
          ],
         'pt': [
             u'Wikipedia:.+',
