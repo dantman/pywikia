@@ -414,10 +414,11 @@ class WeblinkCheckerRobot:
         # character disallowed by MediaWiki.
         # MediaWiki allows closing curly braces inside links, but such braces
         # often come from templates where URLs are parameters, so as a
-        # workaround we won't allow them inside links here.
+        # workaround we won't allow them inside links here. The same is true
+        # for the vertical bar.
         # The first half of this regular expression is required because '' is
         # not allowed inside links.
-        linkR = re.compile(r'http[s]?://[^\]\s<>}"]*?[^\]\s\)\.:;,<>}"](?=\'\')|http[s]?://[^\]\s<>}"]*[^\]\s\)\.:;,<>}"]')
+        linkR = re.compile(r'http[s]?://[^\]\s<>}"]*?[^\]\s\)\.:;,<>}\|"](?=\'\')|http[s]?://[^\]\s<>}"]*[^\]\s\)\.:;,<>}"\|]')
         # Remove HTML comments in URLs as well as URLs in HTML comments.
         # Also remove text inside nowiki links
         text = re.sub('(?s)<nowiki>.*?</nowiki>|<!--.*?-->', '', text)
