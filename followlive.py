@@ -33,12 +33,15 @@ What is it? """
 #   languages code contains list of templates to be used
 #       templates contains a message and its position 
 templates = {
-	'en':{'{{delete}}' :{ 'msg' : 'This article should be deleted','pos': 'top'},
-              '{{cleanup}}':{ 'msg' : 'This article need cleanup','pos': 'top'},
-              '{{stub}}'   :{ 'msg' : 'This article is a stub','pos': 'bottom'},
-              '{{categorize}}' :{ 'msg' : 'This article needs to be [[Wikipedia:Categorization|categorized]]', 'pos' : 'top'},
-              '{{notability}}' :{'msg' : 'The [[Wikipedia:Notability|notability]] of this article is unclear.', 'pos': 'top'},
-              '{{verify}}' :{'msg' : 'This article needs to be checked for factuality.', 'pos': 'top'},
+	'en':{'{{delete}}'      :{ 'msg' : 'This article should be deleted','pos': 'top'},
+              '{{cleanup}}'     :{ 'msg' : 'This article need cleanup','pos': 'top'},
+              '{{stub}}'        :{ 'msg' : 'This article is a stub','pos': 'bottom'},
+              '{{categorize}}'  :{ 'msg' : 'This article needs to be [[Wikipedia:Categorization|categorized]]', 'pos' : 'top'},
+              '{{notability}}'  :{'msg' : 'The [[Wikipedia:Notability|notability]] of this article is unclear.', 'pos': 'top'},
+              '{{verify}}'      :{'msg' : 'This article needs to be checked for factuality.', 'pos': 'top'},
+              '{{copyedit}}'    :{ 'msg' : 'The writing of this article needs to be [[Wikipedia:How to copy-edit|copyeditted]] and improved.','pos' : 'top'},
+              '{{unreferenced}}':{ 'msg' : 'This article needs [[Wikipedia:Citing sources|references]] so it can be verified.', 'pos': 'bottom'},
+              '{{wikify}}'      :{ 'msg' : 'This article needs to be wikified per the [[Wikipedia:Manual of Style|Manual of Style]]', 'pos' : 'top'},
               },
 
         'fr':{u'{{suppression}}' :{ 'msg' : u'Cet article devrait être supprimé','pos': 'top'},
