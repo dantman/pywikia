@@ -23,13 +23,16 @@ class Family(family.Family):
         self.namespaces[5]['recipes'] = 'Talk:LoveToKnow Recipes'
         
     def path(self, code):
-        if code == 'video':
-            return '/w/index.php'
-        else:
+        if code == '1911':
             return '/index.php'
+        else:
+            return '/w/index.php'
 
     def nice_get_address(self, code, name):
-        return '/%s' % (name)
+        if code == 'recipes':
+            return '/wiki/%s' % (name)
+        else:
+            return '/%s' % (name)
 
     # Which version of MediaWiki is used?
 
@@ -50,4 +53,3 @@ class Family(family.Family):
             return '%s?title=%s&action=edit&masteredit=1' % (self.path(code), name)
         else:
             return '%s?title=%s&action=edit' % (self.path(code), name)
-        
