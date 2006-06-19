@@ -21,6 +21,12 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Commons talk', self.namespaces[5]['_default']],
         }
+        self.namespaces[100] = {
+            '_default': [u'Creator', self.namespaces[5]['_default']],
+        }
+        self.namespaces[101] = {
+            '_default': [u'Creator talk', self.namespaces[5]['_default']],
+        }
 
     def version(self, code):
         return "1.5"
