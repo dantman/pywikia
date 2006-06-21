@@ -79,11 +79,13 @@ blanking = {
 
 # do nothing if this is in it
 done = {
-    'en':('{{delete}}', '{{speedy}}', '{{VfD}}', '{{cleanup}}', '{{nonsense}}'),
+    'en':('{{delete}}', '{{deletedpage}}', '{{disambig}}', '{{verify}}', '{{speedy}}',
+          '{{VfD}}', '{{AfD}}', '{{cleanup}}', '{{nonsense}}'),
     'fr':('{{suppression}}', u'{{à vérifier}}'),
     'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}'),
+    'pt':('{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}'),
+    }
 
-}
 # TODO: merge 'done' with 'templates' above
 
 class PageHandler:
