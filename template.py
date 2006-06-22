@@ -289,7 +289,7 @@ def main():
 	    editSummary = arg[len('-summary:'):]
 	elif arg.startswith('-always'):
 	    acceptAll = True
-	elif arg.startswith('-page:'):
+	elif arg.startswith('-page'):
 	    if len(arg) == len('-page'):
 		pageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
 	    else:
