@@ -79,7 +79,7 @@ class ImageRobot:
 
         old = re.sub('[_ ]', '[_ ]', old)
         #TODO: Add internationalization of Image namespace name.
-        ImageRegex = re.compile(r'\[\[ *[Ii]mage:' + old + ' *(?P<parameters>\|[^}]+|) *\]\]')
+        ImageRegex = re.compile(r'\[\[ *[Ii]mage:' + old + ' *(?P<parameters>\|[^\n]+|) *\]\]')
 
         if self.newImage:
             replacements.append((ImageRegex, '[[Image:' + self.newImage + '\g<parameters>]]'))
