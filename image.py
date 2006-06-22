@@ -7,6 +7,13 @@ Syntax: python image.py image_name [new_image_name]
 If only one command-line parameter is provided then that image will be removed; if
 two are provided, then the first image will be replaced by the second one on all pages.
 
+Command line options:
+
+-summary:  Provide a custom edit summary.  If the summary includes spaces, surround
+           it with single quotes, such as:  -summary:'My edit summary'
+
+-always    Don't prompt to make changes, just do them.
+
 Examples:
 
 The image "FlagrantCopyvio.jpg" is about to be deleted, so let's first remove it from
@@ -41,7 +48,7 @@ class ImageRobot:
         'en':u'Robot - Removing image %s',
     }
 
-    def __init__(self, generator, oldImage, newImage = None):
+    def __init__(self, generator, oldImage, newImage = None, summary = '', always = False):
         """
         Arguments:
             * generator - A page generator.
@@ -52,10 +59,14 @@ class ImageRobot:
         self.generator = generator
         self.oldImage = oldImage
         self.newImage = newImage
+        self.summary = summary
+        self.always = always
 
         # get edit summary message
         mysite = wikipedia.getSite()
-        if self.newImage:
+        if summary:
+            wikipedia.setAction(summary)
+        elif self.newImage:
             wikipedia.setAction(wikipedia.translate(mysite, self.msg_replace) % (self.oldImage, self.newImage))
         else:
             wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % self.oldImage)
@@ -87,29 +98,42 @@ class ImageRobot:
             replacements.append((ImageRegex, ''))
 
 	#Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, [], False)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.always)
         replaceBot.run()
     
 def main():
     oldImage = None
     newImage = None
+    summary = ''
+    always = False
     # read command line parameters
     for arg in wikipedia.handleArgs():
-        if oldImage:
-            newImage = arg
+        if arg == '-always':
+            always = True
+        elif arg.startswith('-summary'):
+            if len(arg) == len('-summary'):
+                summary = wikipedia.input(u'Choose an edit summary: ')
+            else:
+                summary = arg[len('-summary:'):]
         else:
-            oldImage = arg
+            if oldImage:
+                newImage = arg
+            else:
+                oldImage = arg
 
-    mysite = wikipedia.getSite()
-    ns = mysite.image_namespace()
+    if not oldImage:
+        wikipedia.output(u'You did not give me anything to do, quitting.')
+    else:
+        mysite = wikipedia.getSite()
+        ns = mysite.image_namespace()
 
-    oldImagePage = wikipedia.Page(mysite, ns + ':' + oldImage)
+        oldImagePage = wikipedia.Page(mysite, ns + ':' + oldImage)
 
-    gen = pagegenerators.FileLinksGenerator(oldImagePage)
-    preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        gen = pagegenerators.FileLinksGenerator(oldImagePage)
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
 
-    bot = ImageRobot(preloadingGen, oldImage, newImage)
-    bot.run()
+        bot = ImageRobot(preloadingGen, oldImage, newImage, summary, always)
+        bot.run()
 
 if __name__ == "__main__":
     try:
