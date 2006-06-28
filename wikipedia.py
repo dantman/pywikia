@@ -1117,7 +1117,7 @@ class Page(object):
         thistxt = removeCategoryLinks(thistxt, self.site())
 
         # remove HTML comments from text before processing
-        Rcomment = re.compile("<!--.*?-->")
+        Rcomment = re.compile("<!--.*?-->", re.M)
         while True:
             comment = Rcomment.search(thistxt)
             if not comment:
@@ -1125,7 +1125,7 @@ class Page(object):
             thistxt = thistxt[:comment.start()] + thistxt[comment.end():]
 
         # remove nowiki sections from text before processing
-        Rnowiki = re.compile("<nowiki>.*?</nowiki>")
+        Rnowiki = re.compile("<nowiki>.*?</nowiki>", re.M)
         while True:
             nowiki = Rnowiki.search(thistxt)
             if not nowiki:
