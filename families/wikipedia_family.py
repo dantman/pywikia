@@ -308,7 +308,7 @@ class Family(family.Family):
             'scn': [u'Disambigua', u'Disambig'],
             'simple': [u'Disambig', u'Disambiguation'],
             'sk':  [u'Disambig', u'Rozlišovacia stránka', u'Disambiguation'],
-            'sl':  [u'Disambig'],
+            'sl':  [u'Disambig',u'Razločitev'],
             'sq':  [u'Kthjellim', u'Disambig'],
             'sr':  [u'Вишезначна одредница', u'Disambig'],
             'su':  [u'Disambig'],
