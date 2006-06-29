@@ -134,6 +134,7 @@ class Family(family.Family):
             'la': u'Disputatio Vicipaediae',
             'li': u'Euverlik Wikipedia',
             'lt': u'Wikipedia aptarimas',
+            'lv': u'Wikipedia diskusija',
             'mk': u'Разговор за Википедија',
             'ml': u'വിക്കിപീഡിയ talk',
             'ms': u'Perbualan Wikipedia',
