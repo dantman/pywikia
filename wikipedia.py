@@ -296,8 +296,8 @@ class Page(object):
         if len(t) > 0:
             if not self.site().nocapitalize:
                 t = t[0].upper() + t[1:]
-        else:
-            output( u"DBG>>> Strange title: %s:%s" % (site.lang, title) )
+#        else:
+#            output( u"DBG>>> Strange title: %s:%s" % (site.lang, title) )
 
         if self._namespace != 0:
             t = self.site().namespace(self._namespace) + u':' + t
@@ -1117,20 +1117,10 @@ class Page(object):
         thistxt = removeCategoryLinks(thistxt, self.site())
 
         # remove HTML comments from text before processing
-        Rcomment = re.compile("<!--.*?-->", re.M)
-        while True:
-            comment = Rcomment.search(thistxt)
-            if not comment:
-                break
-            thistxt = thistxt[:comment.start()] + thistxt[comment.end():]
+        thistxt = re.sub("(?ms)<!--.*?-->", "", thistxt)
 
         # remove nowiki sections from text before processing
-        Rnowiki = re.compile("<nowiki>.*?</nowiki>", re.M)
-        while True:
-            nowiki = Rnowiki.search(thistxt)
-            if not nowiki:
-                break
-            thistxt = thistxt[:nowiki.start()] + thistxt[nowiki.end():]
+        thistxt = re.sub("(?ms)<nowiki>.*?</nowiki>", "", thistxt)
 
         Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
@@ -1140,7 +1130,8 @@ class Page(object):
                 continue
             if not self.site().isInterwikiLink(title):
                 page = Page(self.site(), title)
-                result.append(page)
+                if page.sectionFreeTitle():
+                    result.append(page)
         return result
 
     def imagelinks(self, followRedirects = False):
