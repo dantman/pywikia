@@ -80,7 +80,7 @@ blanking = {
 # do nothing if this is in it
 done = {
     'en':('{{delete}}', '{{deletedpage}}', '{{disambig}}', '{{verify}}', '{{speedy}}',
-          '{{VfD}}', '{{AfD}}', '{{cleanup}}', '{{nonsense}}'),
+          '{{VfD}}', '{{AfD}}', '{{cleanup}}', '{{nonsense}}', '{{deletedpage}}'),
     'fr':('{{suppression}}', u'{{à vérifier}}'),
     'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}'),
     'pt':('{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}'),
