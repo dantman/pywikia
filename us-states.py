@@ -94,8 +94,8 @@ def main():
     for p in mysite.allpages(start = start):
         for sn in abbrev:
             R=re.compile('[^[]]*' + '\%2C_' + sn)
-            for res in R.findall(p.urlname()):
-                pl=wikipedia.Page(mysite, p.urlname().replace(sn,abbrev[sn]))
+            for res in R.findall(p.title()):
+                pl=wikipedia.Page(mysite, p.title().replace(sn,abbrev[sn]))
                 # A bit hacking here - the real work is done in the 'except wikipedia.NoPage'
                 # part rather than the 'try'.
                 try:
@@ -110,17 +110,17 @@ def main():
                     change=''
                     if p.isRedirectPage():
                         p2 = wikipedia.Page(mysite, p.getRedirectTarget())
-                        wikipeda.ouput(u'Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.'%p2.urlname().replace("%2C",",").replace("_"," "))
+                        wikipeda.ouput(u'Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.'%p2.title().replace("%2C",",").replace("_"," "))
                     else:
                         p2 = p
                     if force:
                         change='y'
                     else:
                         while not change in ['y','n']:
-                            wikipedia.output(u"Create redirect %s"%pl.urlname().replace("%2C",",").replace("_"," "))
+                            wikipedia.output(u"Create redirect %s"%pl.title().replace("%2C",",").replace("_"," "))
                             change = raw_input("(y/n)? ")
                     if change=='y':
-                        text = '#REDIRECT [['+p2.urlname().replace("%2C",",").replace("_"," ")+']]'
+                        text = '#REDIRECT [['+p2.title().replace("%2C",",").replace("_"," ")+']]'
                         pl.put(text, comment = wikipedia.translate(mysite, msg), minorEdit = '0')
 
 try:
