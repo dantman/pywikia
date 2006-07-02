@@ -18,7 +18,8 @@ def LINKS(site,name, ignore=[]):
     p=wikipedia.Page(site, name)
     links=p.linkedPages()
     for n in links[:]:
-        if n.titleWithoutNamespace() in ignore:
+        t=n.titleWithoutNamespace()
+        if t[0] in u"/#" or t in ignore:
             links.remove(n)
     links.sort()
     return links
@@ -50,7 +51,7 @@ featured_name = {
     'es': (CAT, u"Categoría:Wikipedia:Artículos destacados"),
     'fi': (BACK, u"Malline:Suositeltu"),
     'fr': (CAT, u"Catégorie:Articles de qualité"),
-    'he': (LINKS, u"ויקיפדיה:מאמרים מומלצים", [u"ויקיפדיה"]),
+#    'he': (LINKS, u"ויקיפדיה:מאמרים מומלצים", [u"ויקיפדיה"]),
     'id': (BACK, u"Templat:Pilihan"),
     'is': (CAT, u"Flokkur:Úrvalsgreinar"),
     'it': (CAT, u"Categoria:Articoli in vetrina"),
@@ -59,7 +60,7 @@ featured_name = {
     'no': (CAT, u"Kategori:Utmerkede artikler"),
     'pl': (CAT, u"Kategoria:Artykuły na medal"),
     'pt': (CAT, u"Categoria:!Artigos destacados"),
-    'ro': (LINKS, u"Articole fructuoase"),
+    'ro': (CAT, u"Categorie:Articole de calitate"),
     'ru': (CAT, u"Категория:Википедия:Избранные статьи"),
     'sk': (LINKS, u"Wikipédia:Najlepšie články", [u"Wikipédia",u"Hlavná stránka"]),
     'sl': (CAT, u"Category:Izbrani članki"),
@@ -126,7 +127,13 @@ def findTranslated(page, oursite=None):
     if ourpage.isRedirectPage(): 
         wikipedia.output(u"double redirect, skipping")
         return None
-    iw=ourpage.interwiki()
+	if not ourpage.exists():
+	    wikipedia.output(u"page doesn't exist, skipping")
+        return None
+    try:
+        iw=ourpage.interwiki()
+    except:
+	    return None
     backpage=None
     for p in iw:
         if p.site()==page.site():
