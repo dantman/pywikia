@@ -202,10 +202,32 @@ import sys, copy, re
 import time
 import codecs
 import socket
+
 try:
     set # introduced in Python 2.4: faster and future
 except NameError:
     from sets import Set as set
+
+try: sorted ## Introduced in 2.4
+except NameError:
+    def sorted(seq, cmp=None, key=None, reverse=False):
+        """Copy seq and sort and return it.
+        >>> sorted([3, 1, 2])
+        [1, 2, 3]
+        """
+        seq2 = copy.copy(seq)
+        if key:
+            if cmp == None:
+                cmp = __builtins__.cmp
+            seq2.sort(lambda x,y: cmp(key(x), key(y)))
+        else:
+            if cmp == None:
+                seq2.sort()
+            else:
+                seq2.sort(cmp)
+        if reverse:
+            seq2.reverse()
+        return seq2
 
 import wikipedia, config, pagegenerators, catlib
 import titletranslate
