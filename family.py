@@ -148,7 +148,6 @@ class Family:
                 'os': u'Сæрмагонд',
                 'pa': u'ਖਾਸ',
                 'pl': u'Specjalna',
-                'pms':u'Speciale',
                 'pt': u'Especial',
                 'qu': u'Especial',
                 'ru': u'Служебная',
