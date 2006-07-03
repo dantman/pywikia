@@ -151,7 +151,7 @@ class Family(family.Family):
             'os': u'Дискусси Wikipedia',
             'pa': u'ਵਿਕਿਪੀਡਿਆ ਚਰਚਾ',
             'pl': u'Dyskusja Wikipedii',
-            'pms':u'Discussioni Wikipedia',
+            'pms':u'Discussion ant sla Wikipedia',
             'pt': u'Wikipedia Discussão',
             'qu': u'Wikipedia Discusión',
             'rmy':u'Discuţie Vikipidiya',
