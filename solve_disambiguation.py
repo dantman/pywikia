@@ -231,6 +231,9 @@ ignore_title = {
             u'Gebruiker:Sybren/Verwijzingen',
             u'Overleg Wikipedia:Doorverwijspagina',
             u'Gebruiker:Al/Bijdragen',
+            u'Gebruiker:Ellywa/kladblok',
+            u'Gebruiker:Yorian/oud',
+            u'Lijst van Nederlandse namen van pausen',
          ],
         'pt': [
             u'Wikipedia:.+',
