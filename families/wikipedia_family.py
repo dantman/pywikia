@@ -318,7 +318,7 @@ class Family(family.Family):
             'th':  [u'แก้กำกวม', u'Disambig'],
             'tl':  [u'Paglilinaw', u'Disambig'],
             'tr':  [u'Anlam ayrım', u'Disambig'],
-            'vi':  [u'Trang định hướng', u'Định hướng', u'Disambig'],
+            'vi':  [u'Trang định hướng', u'Định hướng', u'Disambig', u'Hndis'],
             'wa':  [u'Omonimeye', u'Disambig'],
             'zh':  [u'Disambig', u'消歧义', u'消歧义页'],
             'zh-min-nan': [u'Khu-pia̍t-ia̍h', 'KhPI', u'Disambig'],
