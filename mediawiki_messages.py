@@ -114,7 +114,7 @@ def refresh_messages(site = None):
                          + "\s*</tr>", re.DOTALL)
     else:
         itemR = re.compile("<tr bgcolor=\"#[0-9a-f]{6}\"><td>\n"
-                         + "\s*<a href=.+?>(?P<key>.+?)<\/a><br \/>\n"
+                         + "\s*(?:<script[^<>]+>[^<>]+<[^<>]+script>)?[^+<a href=.+?>(?P<key>.+?)<\/a><br \/>\n"
                          + "\s*<a href=.+?>.+?<\/a>\n"
                          + "\s*</td><td>\n"
                          + "\s*.+?\n"
