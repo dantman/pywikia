@@ -247,6 +247,7 @@ msg = {
     'de': (u'Bot: ', u'Ergänze', u'Entferne', u'Ändere'),
     'en': (u'robot ', u'Adding', u'Removing', u'Modifying'),
     'es': (u'robot ', u'Añadido', u'Eliminado', u'Modificado'),
+    'fa': (u'ربات ', u'افزودن', u'حذف', u'اصلاح'),
     'fi': (u'Botti ', u'lisäsi', u'poisti', u'muokkasi'),
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
     'hr': (u'robot', u'Dodaje', u'Uklanja', u'Mijenja'),
