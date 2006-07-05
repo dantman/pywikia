@@ -131,7 +131,7 @@ def refresh_messages(site = None):
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
     if dictionary == {}:
-        debugDump( 'MediaWiki_Msg', site, u'Error URL: '+unicode(path), allmessages )
+        wikipedia.debugDump( 'MediaWiki_Msg', site, u'Error URL: '+unicode(path), allmessages )
         sys.exit()
     else:
         f = open(makepath('mediawiki-messages/mediawiki-messages-%s-%s.dat' % (site.family.name, site.lang)), 'w')
