@@ -29,9 +29,9 @@ def workon(page):
     # Here go edit text in whatever way you want. If you find you do not
     # want to edit this page, just return
     if text != page.get():
-       page.put(text) # Adding a summary text would be good
-       if test:
-           wikipedia.input(u"Changed [[%s]]. Press enter to continue."%page.title())
+        page.put(text) # Adding a summary text would be good
+        if test:
+            wikipedia.input(u"Changed [[%s]]. Press enter to continue."%page.title())
 
 try:
     start = []
@@ -41,7 +41,10 @@ try:
             test = True
         else:
             start.append(arg)
-    start = " ".join(start) + "!"
+    if start:
+        start = " ".join(start)
+    else:
+        start = "!"
     mysite = wikipedia.getSite()
     # If anything needs to be prepared, you can do it here
     basicgenerator = pagegenerators.AllpagesPageGenerator(start=start)
@@ -50,5 +53,5 @@ try:
         workon(page)
 
 finally:
-   wikipedia.stopme()
+    wikipedia.stopme()
 
