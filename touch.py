@@ -61,7 +61,8 @@ def main():
     pageTitle = []
     for arg in wikipedia.handleArgs():
         if arg.startswith('-start:'):
-            gen = pagegenerators.AllpagesPageGenerator(arg[7:])
+            page = wikipedia.Page(wikipedia.getSite(),arg[7:])
+            gen = pagegenerators.AllpagesPageGenerator(page.titleWithoutNamespace(),namespace=page.namespace())
         elif arg.startswith('-ref:'):
             referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
             gen = pagegenerators.ReferringPageGenerator(referredPage)
