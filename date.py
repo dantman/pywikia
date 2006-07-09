@@ -465,6 +465,7 @@ formats = {
             'lb' :      lambda v: slh( v, [u"Januar", u"Februar", u"Mäerz", u"Abrëll", u"Mee", u"Juni", u"Juli", u"August", u"September", u"Oktober", u"November", u"Dezember"] ),
             'li' :      lambda v: slh( v, [u"jannewarie", u"fibberwarie", u"miert", u"april", u"mei", u"juni", u"juli", u"augustus (maond)", u"september", u"oktober", u"november", u"december"] ),
             'lt' :      lambda v: slh( v, [u"Sausis", u"Vasaris", u"Kovas", u"Balandis", u"Gegužė", u"Birželis", u"Liepa", u"Rugpjūtis", u"Rugsėjis", u"Spalis", u"Lapkritis", u"Gruodis"] ),
+            'lv' :      lambda v: slh( v, [u"Janvāris", u"Februāris", u"Marts", u"Aprīlis", u"Maijs", u"Jūnijs", u"Jūlijs", u"Augusts", u"Septembris", u"Oktobris", u"Novembris", u"Decembris"] ),
             'mi' :      lambda v: slh( v, [u"Kohi-tātea", u"Hui-tanguru", u"Poutū-te-rangi", u"Paenga-whāwhā", u"Haratua", u"Pipiri", u"Hōngongoi", u"Here-turi-kōkā", u"Mahuru", u"Whiringa-ā-nuku", u"Whiringa-ā-rangi", u"Hakihea"] ),
             'ml' :      lambda v: slh( v, [u"ജനുവരി", u"ഫെബ്രുവരി", u"മാര്ച്", u"ഏപ്രില്", u"മേയ്", u"ജൂണ്‍", u"ജൂലൈ", u"ആഗസ്റ്റ്‌", u"സപ്തന്പര്", u"ഒക്ടോബര്", u"നവന്പര്", u"ഡിസന്പര്"] ),
             'mr' :      lambda v: slh( v, [u"जानेवारी", u"फेब्रुवारी", u"मार्च", u"एप्रिल", u"मे", u"जून", u"जुलै", u"ऑगस्ट", u"सप्टेंबर", u"ऑक्टोबर", u"नोव्हेंबर", u"डिसेंबर"] ),
@@ -500,6 +501,7 @@ formats = {
             'tt' :      lambda v: slh( v, [u"Ğínwar", u"Febräl", u"Mart", u"Äpril", u"May", u"Yün", u"Yül", u"August", u"Sentäber", u"Öktäber", u"Nöyäber", u"Dekäber"] ),
             'uk' :      lambda v: slh( v, [u"січень", u"лютий", u"березень", u"квітень", u"травень", u"червень", u"липень", u"серпень", u"вересень", u"жовтень", u"листопад", u"грудень"] ),
             'ur' :      lambda v: slh( v, [u"جنوری", u"فروری", u"مارچ", u"اپريل", u"مئ", u"جون", u"جولائ", u"اگست", u"ستمبر", u"اکتوبر", u"نومبر", u"دسمبر"] ),
+            'vec':      lambda v: slh( v, [u"genaro", u"febraro", u"marzso", u"apriłe", u"majo", u"giugno", u"lujo", u"agosto", u"setenbre", u"otobre", u"novenbre", u"diçenbre"] ),
             'vi' :      lambda v: slh( v, [u"tháng một", u"tháng hai", u"tháng ba", u"tháng tư", u"tháng năm", u"tháng sáu", u"tháng bảy", u"tháng tám", u"tháng chín", u"tháng mười", u"tháng mười một", u"tháng 12"] ),
             'vo' :      lambda v: slh( v, [u"Yanul", u"Febul", u"Mäzul", u"Prilul", u"Mayul", u"Yunul", u"Yulul", u"Gustul", u"Setul", u"Tobul", u"Novul", u"Dekul"] ),
             'wa' :      lambda v: slh( v, [u"djanvî", u"fevrî", u"Måss (moes)", u"avri", u"may", u"djun", u"djulete", u"awousse", u"setimbe", u"octôbe", u"nôvimbe", u"decimbe"] ),
@@ -534,6 +536,7 @@ formats = {
         'sr' :      lambda v: dh_number( v, u'%d (број)' ),
         'sv' :      lambda v: dh_number( v, u'%d (tal)' ),
         'th' :      lambda v: dh_number( v, u'%d' ),    # was %d (จำนวน)
+        'tl' :      lambda v: dh_number( v, u'%d (bilang)' ),
         'tr' :      lambda v: dh_number( v, u'%d (sayı)' ),
         'zh' :      lambda v: dh_number( v, u'%d' ),
     },
@@ -548,6 +551,7 @@ formats = {
         'az' :      dh_simpleYearAD,
         'be' :      dh_simpleYearAD,
         'bg' :      dh_simpleYearAD,
+        'bn' :      lambda v: dh_yearAD( v, u'%B' ),
         'br' :      dh_simpleYearAD,
         'bs' :      dh_simpleYearAD,
         'ca' :      dh_simpleYearAD,
@@ -642,6 +646,7 @@ formats = {
         'uk' :      dh_simpleYearAD,
         'ur' :      lambda v: dh_yearAD( v, u'%dسبم' ),
         'uz' :      dh_simpleYearAD,
+        'vec':      dh_simpleYearAD,
         'vi' :      dh_simpleYearAD,
         'wa' :      dh_simpleYearAD,
         'zh' :      lambda v: dh_yearAD( v, u'%d年' ),
@@ -696,6 +701,7 @@ formats = {
         'tt' :      lambda v: dh_yearBC( v, u'MA %d' ),
         'uk' :      lambda v: dh_yearBC( v, u'%d до Р.Х.' ),
         'uz' :      lambda v: dh_yearBC( v, u'-%d' ),
+        'vec':      lambda v: dh_yearBC( v, u'%d a.C.' ),
         'zh' :      lambda v: dh_yearBC( v, u'前%d年' ),
     },
 
@@ -1283,6 +1289,7 @@ addFmt ('la', False,       [ u"%d Ianuarii", u"%d Februarii", u"%d Martii", u"%d
 addFmt2('lb', False, u"%%d. %s", True )
 addFmt ('li', False,       [ u"%d januari", u"%d februari", u"%d miert", u"%d april", u"%d mei", u"%d juni", u"%d juli", u"%d augustus", u"%d september", u"%d oktober", u"%d november", u"%d december" ])
 addFmt ('lt', False,       [ u"Sausio %d", u"Vasario %d", u"Kovo %d", u"Balandžio %d", u"Gegužės %d", u"Birželio %d", u"Liepos %d", u"Rugpjūčio %d", u"Rugsėjo %d", u"Spalio %d", u"Lapkričio %d", u"Gruodžio %d" ])
+addFmt2('lv', False, u"%%d. %s", False )
 addFmt ('mk', False,       [ u"%d јануари", u"%d февруари", u"%d март", u"%d април", u"%d мај", u"%d јуни", u"%d јули", u"%d август", u"%d септември", u"%d октомври", u"%d ноември", u"%d декември" ])
 addFmt2('ml', False, u"%s %%d" )
 addFmt2('ms', False, u"%%d %s", True )
@@ -1300,6 +1307,7 @@ addFmt ('ru', False,       [ u"%d января", u"%d февраля", u"%d ма
 addFmt2('sco',False, u"%%d %s", True )
 addFmt2('scn',False, u"%%d di %s", False )
 addFmt ('se', False,       [ u"ođđajagimánu %d.", u"guovvamánu %d.", u"njukčamánu %d.", u"cuoŋománu %d.", u"miessemánu %d.", u"geassemánu %d.", u"suoidnemánu %d.", u"borgemánu %d.", u"čakčamánu %d.", u"golggotmánu %d.", u"skábmamánu %d.", u"juovlamánu %d." ])
+addFmt ('sh', False,       makeMonthList( u"%%d.%d." ))
 addFmt2('simple', False, u"%s %%d", True )
 addFmt2('sk', False, u"%%d. %s", False )
 addFmt2('sl', False, u"%%d. %s", False )
@@ -1315,6 +1323,7 @@ addFmt2('tr', False, u"%%d %s", True )
 addFmt2('tt', False, u"%%d. %s", True )
 addFmt ('uk', False,       [ u"%d січня", u"%d лютого", u"%d березня", u"%d квітня", u"%d травня", u"%d червня", u"%d липня", u"%d серпня", u"%d вересня", u"%d жовтня", u"%d листопада", u"%d грудня" ])
 addFmt ('ur', False,       [ u"%d جنوری", u"%d فروری", u"%d مارچ", u"%d اپریل", u"%d مئ", u"%d جون", u"%d جلائ", u"%d اگست", u"%d ستمب", u"%d اکتوبر", u"%d نومب", u"%d دسمب" ])
+addFmt2('vec',False, u"%%d de %s", False )
 addFmt ('vi', False,       makeMonthList( u"%%d tháng %d" ))
 addFmt ('zh', False,       makeMonthList( u"%d月%%d日" ))
 
