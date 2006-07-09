@@ -218,6 +218,11 @@ _hiDigits=u'०१२३४५६७८९'
 _hiDigitsToLocal=dict([(ord(unicode(i)), _hiDigits[i]) for i in range(10)])
 _hiLocalToDigits=dict([(ord(_hiDigits[i]), unicode(i)) for i in range(10)])
 
+# Helper for BN:
+_bnDigits=u'০১২৩৪৫৬৭৮৯'
+_bnDigitsToLocal=dict([(ord(unicode(i)), _bnDigits[i]) for i in range(10)])
+_bnLocalToDigits=dict([(ord(_bnDigits[i]), unicode(i)) for i in range(10)])
+
 # Helper for GU:
 _guDigits=u'૦૧૨૩૪૫૬૭૮૯'
 _guDigitsToLocal=dict([(ord(unicode(i)), _guDigits[i]) for i in range(10)])
@@ -266,6 +271,8 @@ _digitDecoders = {
     'F' : ( _faDigits, lambda v: intToLocalDigitsStr(v, _faDigitsToLocal), lambda v: localDigitsStrToInt(v, _faDigitsToLocal, _faLocalToDigits) ),    
     # %H is a number in HI:
     'H' : ( _hiDigits, lambda v: intToLocalDigitsStr(v, _hiDigitsToLocal), lambda v: localDigitsStrToInt(v, _hiDigitsToLocal, _hiLocalToDigits) ),    
+    # %B is a number in BN:
+    'B' : ( _bnDigits, lambda v: intToLocalDigitsStr(v, _bnDigitsToLocal), lambda v: localDigitsStrToInt(v, _bnDigitsToLocal, _bnLocalToDigits) ),    
     # %G is a number in GU:
     'G' : ( _guDigits, lambda v: intToLocalDigitsStr(v, _guDigitsToLocal), lambda v: localDigitsStrToInt(v, _guDigitsToLocal, _guLocalToDigits) ),    
     # %T is a year in TH: -- all years are shifted: 2005 => 'พ.ศ. 2548'
@@ -412,6 +419,7 @@ formats = {
             'ast':      lambda v: slh( v, [u"xineru", u"febreru", u"marzu", u"abril", u"mayu", u"xunu", u"xunetu", u"agostu", u"setiembre", u"ochobre", u"payares", u"avientu"] ),
             'be' :      lambda v: slh( v, [u"студзень", u"люты", u"сакавік", u"красавік", u"травень", u"чэрвень", u"ліпень", u"жнівень", u"верасень", u"кастрычнік", u"лістапад", u"сьнежань"] ),
             'bg' :      lambda v: slh( v, [u"януари", u"февруари", u"март", u"април", u"май", u"юни", u"юли", u"август", u"септември", u"октомври", u"ноември", u"декември"] ),
+            'bn' :      lambda v: slh( v, [u"জানুয়ারি", u"ফেব্রুয়ারি", u"মার্চ", u"এপ্রিল", u"মে", u"জুন", u"জুলাই", u"আগস্ট", u"সেপ্টেম্বর", u"অক্টোবর", u"নভেম্বর", u"ডিসেম্বর"] ),
             'br' :      lambda v: slh( v, [u"Genver", u"C'hwevrer", u"Meurzh", u"Ebrel", u"Mae", u"Mezheven", u"Gouere", u"Eost", u"Gwengolo", u"Here", u"Du", u"Kerzu"] ),
             'bs' :      lambda v: slh( v, [u"januar", u"februar", u"mart", u"april", u"maj", u"juni", u"juli", u"avgust", u"septembar", u"oktobar", u"novembar", u"decembar"] ),
             'ca' :      lambda v: slh( v, [u"gener", u"febrer", u"març", u"abril", u"maig", u"juny", u"juliol", u"agost", u"setembre", u"octubre", u"novembre", u"desembre"] ),
@@ -432,7 +440,7 @@ formats = {
             'fi' :      lambda v: slh( v, [u"tammikuu", u"helmikuu", u"maaliskuu", u"huhtikuu", u"toukokuu", u"kesäkuu", u"heinäkuu", u"elokuu", u"syyskuu", u"lokakuu", u"marraskuu", u"joulukuu"] ),
             'fo' :      lambda v: slh( v, [u"januar", u"februar", u"mars", u"apríl", u"mai", u"juni", u"juli", u"august", u"september", u"oktober", u"november", u"desember"] ),
             'fr' :      lambda v: slh( v, [u"janvier", u"février", u"mars (mois)", u"avril", u"mai", u"juin", u"juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre"] ),
-            'fur':      lambda v: slh( v, [u"Zenâr", u"Fevrâr", u"Març", u"Avrîl", u"Mai", u"Zugn", u"Lui", u"Avost", u"Setembar", u"Otubar", u"Novembar", u"Dicembar"] ),
+            'fur':      lambda v: slh( v, [u"Zenâr", u"Fevrâr", u"Març", u"Avrîl", u"Mai", u"Jugn", u"Lui", u"Avost", u"Setembar", u"Otubar", u"Novembar", u"Dicembar"] ),
             'fy' :      lambda v: slh( v, [u"jannewaris", u"febrewaris", u"maart", u"april", u"maaie", u"juny", u"july", u"augustus", u"septimber", u"oktober", u"novimber", u"desimber"] ),
             'ga' :      lambda v: slh( v, [u"Eanáir", u"Feabhra", u"Márta", u"Aibreán", u"Bealtaine", u"Meitheamh", u"Iúil", u"Lúnasa", u"Meán Fómhair", u"Deireadh Fómhair", u"Samhain", u"Nollaig"] ),
             'gl' :      lambda v: slh( v, [u"xaneiro", u"febreiro", u"marzo", u"abril", u"maio", u"xuño", u"xullo", u"agosto", u"setembro", u"outubro", u"novembro", u"decembro"] ),
@@ -1234,6 +1242,7 @@ addFmt ('ast',False,       [ u"%d de xineru", u"%d de febreru", u"%d de marzu", 
 addFmt ('be', False,       [ u"%d студзеня", u"%d лютага", u"%d сакавіка", u"%d красавіка", u"%d траўня", u"%d чэрвеня", u"%d ліпеня", u"%d жніўня", u"%d верасьня", u"%d кастрычніка", u"%d лістапада", u"%d сьнежня" ])
 addFmt2('bg', False, u"%%d %s", False )
 #addFmt2('br', False, u"%%d %s", True ) # See bellow for br initialization
+addFmt2('bn', False, u"%s %%B" )
 addFmt2('bs', False, u"%%d. %s", False )
 addFmt ('ca', False,       [ u"%d de gener", u"%d de febrer", u"%d de març", u"%d d'abril", u"%d de maig", u"%d de juny", u"%d de juliol", u"%d d'agost", u"%d de setembre", u"%d d'octubre", u"%d de novembre", u"%d de desembre" ])
 addFmt ('co', False,       [ u"%d di ghjennaghju", u"%d di frivaghju", u"%d di marzu", u"%d d'aprile", u"%d di maghju", u"%d di ghjugnu", u"%d di lugliu", u"%d d'aostu", u"%d di settembre", u"%d d'uttrovi", u"%d di nuvembri", u"%d di decembre" ])
@@ -1252,6 +1261,7 @@ addFmt2('eu', False, u"%saren %%d", True )
 addFmt2('fi', False, u"%%d. %sta", False )
 addFmt2('fo', False, u"%%d. %s", False )
 addFmt ('fr', False,       [ u"%d janvier", u"%d février", u"%d mars", u"%d avril", u"%d mai", u"%d juin", u"%d juillet", u"%d août", u"%d septembre", u"%d octobre", u"%d novembre", u"%d décembre" ])
+addFmt2('fur',False, u"%%d di %s", True )
 addFmt2('fy', False, u"%%d %s", False )
 addFmt ('ga', False,       [ u"%d Eanáir", u"%d Feabhra", u"%d Márta", u"%d Aibreán", u"%d Bealtaine", u"%d Meitheamh", u"%d Iúil", u"%d Lúnasa", u"%d Meán Fómhair", u"%d Deireadh Fómhair", u"%d Samhain", u"%d Mí na Nollag" ])
 addFmt2('gl', False, u"%%d de %s", False )
