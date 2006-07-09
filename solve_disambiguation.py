@@ -219,7 +219,7 @@ ignore_title = {
             u'Gebruiker:Ucucha/Doorverwijspagina',
             u'Gebruiker:CyeZ/Klad2',
             u'Wikipedia:De kroeg/Archief.+',
-            u'Overleg gebruiker:.*Archief.*',
+            u'Overleg gebruiker:.+rchief.*',
             u'Wikipedia:Te verwijderen.*',
             u'Gebruiker:IIVQ.*',
             u"Gebruiker:Rex/Meest storende doorverwijspagina's",
@@ -234,6 +234,7 @@ ignore_title = {
             u'Gebruiker:Ellywa/kladblok',
             u'Gebruiker:Yorian/oud',
             u'Lijst van Nederlandse namen van pausen',
+            u"Gebruiker:Henna/Ucacha's redirects",
          ],
         'pt': [
             u'Wikipedia:.+',
