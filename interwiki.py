@@ -1392,7 +1392,7 @@ if __name__ == "__main__":
                 for page in hintlessPageGen:
                     pass
                 try:
-                    nextPage = page.title() + '!'
+                    nextPage = page.titleWithoutNamespace() + '!'
                     namespace = page.namespace()
                 except NameError:
                     print "Dump file is empty?! Starting at the beginning."
@@ -1403,6 +1403,7 @@ if __name__ == "__main__":
 
         if start:
             namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
+            start = wikipedia.Page(wikipedia.getSite(), start).titleWithoutNamespace()
             hintlessPageGen = pagegenerators.AllpagesPageGenerator(start, namespace)
         elif referredPageTitle:
             referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
