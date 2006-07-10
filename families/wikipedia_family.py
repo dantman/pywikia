@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -263,7 +263,7 @@ class Family(family.Family):
             'cs':  [u'Rozcestník', u'Rozcestník - 2 znaky', u'Rozcestník - Příjmení', u'Rozcestník - místopisné jméno', u'Disambig'],
             'cy':  [u'Anamrwysedd', u'Disambig', u'Gwahaniaethu'],
             'da':  [u'Flertydig'],
-            'de':  [u'Begriffsklärung', u'Disambig', u'Begriffsklärung Schweizer Kanton'],
+            'de':  [u'Begriffsklärung', u'Disambig'],
             'el':  [u'Disambig'],
             'en':  [u'Disambig', u'Disambiguation', u'LND', u'2LA', u'2LC',
                     u'2LCdisambig', u'3LC', u'4LC', u'4LA', u'TLAdisambig',
