@@ -250,6 +250,7 @@ msg = {
     'fa': (u'ربات ', u'افزودن', u'حذف', u'اصلاح'),
     'fi': (u'Botti ', u'lisäsi', u'poisti', u'muokkasi'),
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
+    'he': (u'רובוט ', u'מוסיף', u'מוריד', u'משנה'),
     'hr': (u'robot', u'Dodaje', u'Uklanja', u'Mijenja'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
@@ -684,6 +685,11 @@ class Subject(object):
             if config.interwiki_graph:
                 self.createGraph()
             
+            # We don't need to continue with the rest if we're in autonomous
+            # mode.
+            if globalvar.autonomous:
+                return None
+
             # First loop over the ones that have more solutions
             for k,v in new.items():
                 if len(v) > 1:
