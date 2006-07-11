@@ -299,6 +299,7 @@ class Family(family.Family):
             'li':  [u'Verdudeliking'],
             'ln':  [u'Bokokani'],
             'lt':  [u'Disambig'],
+            'mk':  [u'Никулец'],
             'ms':  [u'Nyahkekaburan'],
             'mt':  [u'Diżambigwazzjoni'],
             'nds': [u'Mehrdüdig Begreep','Disambig'],
