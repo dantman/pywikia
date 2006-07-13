@@ -1201,7 +1201,7 @@ class Page(object):
         if self.site().version() < "1.4":
             editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
         else:
-            editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
+            editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a>.*?</span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
 
         startFromPage = None
         thisHistoryDone = False
