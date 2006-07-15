@@ -421,7 +421,7 @@ formats = {
             'bg' :      lambda v: slh( v, [u"януари", u"февруари", u"март", u"април", u"май", u"юни", u"юли", u"август", u"септември", u"октомври", u"ноември", u"декември"] ),
             'bn' :      lambda v: slh( v, [u"জানুয়ারি", u"ফেব্রুয়ারি", u"মার্চ", u"এপ্রিল", u"মে", u"জুন", u"জুলাই", u"আগস্ট", u"সেপ্টেম্বর", u"অক্টোবর", u"নভেম্বর", u"ডিসেম্বর"] ),
             'br' :      lambda v: slh( v, [u"Genver", u"C'hwevrer", u"Meurzh", u"Ebrel", u"Mae", u"Mezheven", u"Gouere", u"Eost", u"Gwengolo", u"Here", u"Du", u"Kerzu"] ),
-            'bs' :      lambda v: slh( v, [u"januar", u"februar", u"mart", u"april", u"maj", u"juni", u"juli", u"avgust", u"septembar", u"oktobar", u"novembar", u"decembar"] ),
+            'bs' :      lambda v: slh( v, [u"januar", u"februar", u"mart", u"april", u"maj", u"juni", u"juli", u"august", u"septembar", u"oktobar", u"novembar", u"decembar"] ),
             'ca' :      lambda v: slh( v, [u"gener", u"febrer", u"març", u"abril", u"maig", u"juny", u"juliol", u"agost", u"setembre", u"octubre", u"novembre", u"desembre"] ),
             'co' :      lambda v: slh( v, [u"ghjennaghju", u"frivaghju", u"marzu", u"aprile", u"maghju", u"ghjugnu", u"lugliu", u"aostu", u"settembre", u"uttrovi", u"nuvembri", u"decembre"] ),
             'cs' :      lambda v: slh( v, [u"leden", u"únor", u"březen", u"duben", u"květen", u"červen", u"červenec", u"srpen", u"září", u"říjen", u"listopad", u"prosinec"] ),
@@ -1317,7 +1317,7 @@ addFmt2('su', False, u"%%d %s", True )
 addFmt2('sv', False, u"%%d %s", False )
 addFmt2('ta', False, u"%s %%d" )
 addFmt2('te', False, u"%s %%d" )
-addFmt2('th', False, u"%%T %s" )
+addFmt2('th', False, u"%%d %s" )	# %%T
 addFmt2('tl', False, u"%s %%d" )
 addFmt2('tr', False, u"%%d %s", True )
 addFmt2('tt', False, u"%%d. %s", True )
