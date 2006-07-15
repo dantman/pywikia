@@ -272,13 +272,18 @@ class Page(object):
                         if t == '':
                             raise Error("Can't have an empty self-link")
                     else:
-                        self._site = getSite(lowerNs)
+                        self._site = getSite(lowerNs, self.site().family.name)
 
                     # If there's an initial colon after the interwiki, that also
                     # resets the default namespace
                     if t != '' and t[0] == ':':
                         self._namespace = 0
                         t = t[1:]
+                elif lowerNs in self.site().family.known_families:
+                    # This page is from a different family
+                    output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
+                    self._site = getSite(self.site().lang, self.site().family.known_families[lowerNs])
+                    t = m.group(2)
                 else:
                     # If there's no recognized interwiki or namespace,
                     # then let the colon expression be part of the title.
@@ -804,7 +809,7 @@ class Page(object):
         """
         site = self.site()
         #path = site.references_address(self.urlname())
-	path = site.get_address(self.urlname())
+        path = site.get_address(self.urlname())
 
         delay = 1
 
@@ -822,7 +827,7 @@ class Page(object):
         more = True
 
         while more:
-	    more = False #Kill after one loop because MediaWiki will only display up to the first 500 File links.
+            more = False #Kill after one loop because MediaWiki will only display up to the first 500 File links.
             fileLinks = set()  # use a set to avoid duplications
             output(u'Getting references to %s' % self.aslink())
             while True:
@@ -856,11 +861,11 @@ class Page(object):
                 if line == u"</li>":
                     continue
                 lmatch = listitempattern.search(line)
-		if lmatch:
-                    fileLinks.add(lmatch.group("title"))
-                if lmatch is None:
-                    output(u"DBG> Unparsed line:")
-                    output(u"(%i) %s" % (num, line))
+        if lmatch:
+            fileLinks.add(lmatch.group("title"))
+            if lmatch is None:
+                output(u"DBG> Unparsed line:")
+                output(u"(%i) %s" % (num, line))
             fileLinks = list(fileLinks)
             fileLinks.sort()
             for fileLink in fileLinks:
@@ -2913,6 +2918,9 @@ class Site(object):
     def export_address(self):
         return self.family.export_address(self.lang)
 
+    def query_address(self):
+        return self.family.query_address(self.lang)
+
     def hostname(self):
         return self.family.hostname(self.lang)
 
@@ -3494,7 +3502,7 @@ def debugDump(name, site, error, data):
     site = unicode(repr(site).replace(u':',u'_'))
     filename = '%s_%s__%s.dump' % (name, site, time.asctime())
     filename = filename.replace(' ','_').replace(':','-')
-    f = codecs.open(filename, 'w', 'utf-8')
+    f = file(filename, 'wb') #trying to write it in binary   #f = codecs.open(filename, 'w', 'utf-8')
     f.write(u'Error reported: %s\n\n' % error)
     f.write(data)
     f.close()
