@@ -31,28 +31,29 @@ comment={
     }
 
 def Movepages(page):
-    try:
-        mysite = wikipedia.getSite()
-        pagetitle = page.title()
-        wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
-        pagemove = wikipedia.input(u'Another title:')
-        titleroot = wikipedia.Page(mysite, pagetitle)
-        msg = wikipedia.translate(mysite, comment)
+    pagetitle = page.title()
+    wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
+    ask = wikipedia.input('What do you do: (c)hange page name, (n)ext page or (q)uit?')
+    if ask == 'c':
+        pagemove = wikipedia.input(u'New page name:')
+        titleroot = wikipedia.Page(wikipedia.getSite(), pagetitle)
+        msg = wikipedia.translate(wikipedia.getSite(), comment)
         titleroot.move(pagemove, msg)
-
-        # if titleroot don't have referred pages, delete.
-        # pagedel = wikipedia.Page(mysite, pagetitle)
-        # pagedel.delete(pagetitle)
-        
-    except:
-        pass #ctrl-c: next page
+        wikipedia.output('Page %s move successful to %s.' % (pagetitle, pagemove))
+        pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
+        pagedel.delete(pagetitle)
+    elif ask == 'n':
+        pass
+    elif ask == 'q':
+        sys.exit()
+    else:
+        wikipedia.output('Input certain code.')
+        sys.exit()
 
 def main():
-    mysite = wikipedia.getSite()
     categoryName = None
     singlePageTitle = []
     referredPageTitle = None
-    preTitle = None
     
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'movepages')
@@ -71,21 +72,22 @@ def main():
                 singlePageTitle.append(arg)
 
     if categoryName:
-        cat = catlib.Category(mysite, 'Category:%s' % categoryName)
+        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
         gen = pagegenerators.CategorizedPageGenerator(cat)
         generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
         for page in generator: Movepages(page)
 
     elif referredPageTitle:
-        referredPage = wikipedia.Page(mysite, referredPageTitle)
-        generator = pagegenerators.ReferringPageGenerator(referredPage)
+        referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
+        gen = pagegenerators.ReferringPageGenerator(referredPage)
+        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
         for page in generator: Movepages(page)
-
+        
     else:
         singlePageTitle = ' '.join(singlePageTitle)
         if not singlePageTitle:
             singlePageTitle = wikipedia.input(u'Which page to move:')
-        singlePage = wikipedia.Page(mysite, singlePageTitle)
+        singlePage = wikipedia.Page(wikipedia.getSite(), singlePageTitle)
         Movepages(singlePage)
 
 if __name__ == '__main__':
