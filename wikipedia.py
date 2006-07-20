@@ -2044,7 +2044,10 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
                 output(u"ERROR: %s - ignoring impossible link to %s:%s" % (pageLink, lang, pagetitle))
             else:
                 # we want the actual page objects rather than the titles
-                result[insite.getSite(code = lang)] = Page(insite.getSite(code = lang), pagetitle, insite=insite)
+                try:
+                    result[insite.getSite(code = lang)] = Page(insite.getSite(code = lang), pagetitle, insite=insite)
+                except:
+                    output(u"ERROR: %s - %s:%s is could not be parsed as a page name" % (pageLink, lang, pagetitle))
     return result
 
 def removeLanguageLinks(text, site = None):
@@ -2434,6 +2437,8 @@ def Family(fam = None, fatal = True):
         if fatal:
             print "Error importing the %s family. This probably means the family"%fam
             print "does not exist. Also check your configuration file"
+            import traceback
+            traceback.print_stack()
             sys.exit(1)
         else:
             raise ValueError("Family does not exist")
@@ -2449,7 +2454,7 @@ class Site(object):
 
         self.lang = code.lower()
         if isinstance(fam, basestring) or fam is None:
-            self.family = Family(fam)
+            self.family = Family(fam, fatal = False)
         else:
             self.family = fam
         if self.lang not in self.family.langs:
@@ -2568,7 +2573,7 @@ class Site(object):
         text = f.read()
         # Find charset in the content-type meta tag
         contentType = f.info()['Content-Type']
-        R = re.compile('charset=([^\'\"]+)')
+        R = re.compile('charset=([^\'\";]+)')
         m = R.search(contentType)
         if m:
             charset = m.group(1)
@@ -2951,9 +2956,9 @@ class Site(object):
     def checkCharset(self, charset):
         if not hasattr(self,'charset'):
             self.charset = charset
-        assert self.charset.lower() == charset.lower(), "charset for %s changed from %s to %s"%(repr(self),self.charset,charset)
+        assert self.charset.lower() == charset.lower(), "charset for %s changed from %s to %s" % (repr(self), self.charset, charset)
         if self.encoding().lower() != charset.lower():
-            raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s"%(repr(self),charset, self.encoding()))
+            raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s" % (repr(self), charset, self.encoding()))
 
     def allpages_address(self, s, ns = 0):
         return self.family.allpages_address(self.lang, start = s, namespace = ns)

@@ -433,6 +433,8 @@ class Subject(object):
                                     wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.aslink(), pl.aslink(True), pl3.aslink(True)))
                     except UnicodeDecodeError:
                         wikipedia.output(u"BUG>>> processing %s: could not decode redirect to %s:%s" % (pl.aslink(forceInterwiki=True),pl.site(),arg.args[0]))
+                    except ValueError:
+                        wikipedia.output(u"WARNING>>> processing %s: redirect to %s:%s, possibly unsuported family" % (pl.aslink(forceInterwiki=True),pl.site(),arg.args[0]))
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % pl.aslink(True))
                     #print "DBG> ",pl.urlname()
@@ -1027,6 +1029,7 @@ class InterwikiBot(object):
         for subj in self.subjects:
             f.write(subj.pl().aslink(None)+'\n')
         f.close()
+        wikipedia.output(u'Dump %s (%s) saved' % (site.lang, site.family.name))
         
     def generateMore(self, number):
         """Generate more subjects. This is called internally when the
@@ -1263,6 +1266,26 @@ if __name__ == "__main__":
             wikipedia.activateLog('interwiki.log')
 
         for arg in sys.argv[1:]:
+            # This code needs to be cleaned up to allow file name passage, and documented at the top
+            if arg == "-mult":
+                f = file("codelist.txt")
+                lang = f.readline().strip()
+                if len(lang) < 2:
+                    raise u"No more items in the list"
+                print "Processing " + lang
+                f2 = file("codelist2.txt", "w")
+                for s in f:
+                    f2.write(s)
+                f.close()
+                f2.close()
+                import os
+                os.remove("codelist.txt")
+                os.rename("codelist2.txt", "codelist.txt")
+                
+                wikipedia.argHandler("-lang:" + lang, 'interwiki')
+                wikipedia.argHandler("-log:mult_%s.log" % lang, 'interwiki')
+                continue
+
             arg = wikipedia.argHandler(arg, 'interwiki')
             if arg:
                 if arg == '-noauto':
