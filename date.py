@@ -666,6 +666,7 @@ formats = {
         'eo' :      lambda v: dh_yearBC( v, u'-%d' ),
         'es' :      lambda v: dh_yearBC( v, u'%d adC' ),
         'et' :      lambda v: dh_yearBC( v, u'%d eKr' ),
+        'eu' :      lambda v: dh_yearBC( v, u'K. a. %d' ),
         'fi' :      lambda v: dh_yearBC( v, u'%d eaa' ),
         'fo' :      lambda v: dh_yearBC( v, u'%d f. Kr.' ),
         'fr' :      lambda v: dh_yearBC( v, u'-%d' ),
@@ -777,6 +778,7 @@ formats = {
             (lambda v: dh_constVal( v, 1, u'1-9'),                                              lambda p: p == 1),
             (lambda v: dh( v, u'%d-%d', lambda i: (encDec0(i),encDec0(i)+9), decSinglVal ),     alwaysTrue)]),
 
+        'nn' :      lambda v: dh_decAD( v, u'%d0-åra' ),	# FIXME: not sure of this one			
         'no' :      lambda v: dh_decAD( v, u'%d-årene' ),
         'os' :      lambda v: dh_decAD( v, u'%d-тæ' ),
 
@@ -827,6 +829,7 @@ formats = {
         'en' :      lambda v: dh_decBC( v, u'%ds BC' ),
         'es' :      lambda v: dh_decBC( v, u'Años %d adC' ),
         'et' :      lambda v: dh_decBC( v, u'%d. aastad eKr' ),
+        'eu' :      lambda v: dh_decBC( v, u'K. a. %dko hamarkada' ),
 
         # decades ending in 00 are spelled differently
         'fi' :      lambda m: multi( m, [
@@ -904,7 +907,7 @@ formats = {
         'eo' :      lambda v: dh_centuryAD( v, u'%d-a jarcento' ),
         'es' :      lambda v: dh_centuryAD( v, u'Siglo %R' ),
         'et' :      lambda v: dh_centuryAD( v, u'%d. sajand' ),
-        'eu' :      lambda v: dh_centuryAD( v, u'%R. mende' ),
+        'eu' :      lambda v: dh_centuryAD( v, u'%R. mendea' ),  # %R. mende
         'fa' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 20, u'سده ۲۰ (میلادی)'),     lambda p: p == 20),
             # This is a dummy value, just to avoid validation testing.   Later, it should be replaced with a proper 'fa' titles
@@ -1295,8 +1298,8 @@ addFmt2('ml', False, u"%s %%d" )
 addFmt2('ms', False, u"%%d %s", True )
 addFmt2('nap',False, u"%%d 'e %s", False )
 addFmt2('nds',False, u"%%d. %s", True )
-addFmt ('nl', False,       [ u"%d januari", u"%d februari", u"%d maart", u"%d april", u"%d mei", u"%d juni", u"%d juli", u"%d augustus", u"%d september", u"%d oktober", u"%d november", u"%d december" ])
-addFmt2('nn', False, u"%%d. %s", False )
+addFmt ('nl', False,       [ u"%%d %s" % v for v in [ u"januari", u"februari", u"maart", u"april", u"mei", u"juni", u"juli", u"augustus", u"september", u"oktober", u"november", u"december" ]])
+addFmt ('nn', False,       [ u"%%d. %s" % v for v in [u"januar", u"februar", u"mars", u"april", u"mai", u"juni", u"juli", u"august", u"september", u"oktober", u"november", u"desember"]])
 addFmt2('no', False, u"%%d. %s", False )
 addFmt ('oc', False,       [ u"%d de genièr", u"%d de febrièr", u"%d de març", u"%d d'abril", u"%d de mai", u"%d de junh", u"%d de julhet", u"%d d'agost", u"%d de setembre", u"%d d'octobre", u"%d de novembre", u"%d de decembre" ])
 addFmt ('os', False,       [ u"%d январы", u"%d февралы", u"%d мартъийы", u"%d апрелы", u"%d майы", None, u"%d июлы", None, u"%d сентябры", None, u"%d ноябры", u"%d декабры" ])
