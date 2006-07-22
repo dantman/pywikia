@@ -433,7 +433,7 @@ class Subject(object):
                                     wikipedia.output(u"%s: %s gives new redirect %s" %  (self.inpl.aslink(), pl.aslink(True), pl3.aslink(True)))
                     except UnicodeDecodeError:
                         wikipedia.output(u"BUG>>> processing %s: could not decode redirect to %s:%s" % (pl.aslink(forceInterwiki=True),pl.site(),arg.args[0]))
-                    except ValueError:
+                    except (KeyError, ValueError):
                         wikipedia.output(u"WARNING>>> processing %s: redirect to %s:%s, possibly unsuported family" % (pl.aslink(forceInterwiki=True),pl.site(),arg.args[0]))
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % pl.aslink(True))
