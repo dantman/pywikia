@@ -36,7 +36,8 @@ try:
         params = {'apnamespace' : apnamespace, 
                   'aplimit' : aplimit, 
                   'apfrom' : apfrom,
-                  'apfilterredir' : 'nonredirects'}
+                  'apfilterredir' : 'nonredirects',
+                  'noprofile':''}
         if links:
             params['what'] = 'allpages|links';
         else:
@@ -52,15 +53,21 @@ try:
         for pageID, page in data['pages'].iteritems():
             title = page['title']
             m = pattern.search(title)
+            printed = False
             if m is not None:
-                wikipedia.output(u'%d: [[%s]]' % (m.span()[0]+2, title))
+                wikipedia.output(u'* [[%s]] @ %d' % (title, m.span()[0]+2))
+                printed = True
                 
             if links:
                 if 'links' in page:
                     for l in page['links']:
                         m = pattern.search(l['*'])
                         if m is not None:
-                            wikipedia.output(u'  [[%s]]: %d link to [[%s]]' % (title, m.span()[0]+2, l['*']))
+                            if not printed:
+                                wikipedia.output(u'* [[%s]]: link to [[%s]] @ %d' % (title, l['*'], m.span()[0]+2))
+                                printed = True
+                            else:
+                                wikipedia.output(u'** link to [[%s]] @ %d' % (l['*'], m.span()[0]+2))
     
         if apfrom is None:
             break
