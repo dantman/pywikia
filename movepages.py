@@ -12,6 +12,7 @@ Command-line arguments:
                    Argument can also be given as "-ref:referredpagetitle".
                    
     -pre           Automatic move pages in category with prefix name of the pages.
+                   Argument can also be given as "-pre:Python/Pywikipediabot/".
 
 Single pages use: movepages.py Helen_Keller
 
@@ -45,7 +46,8 @@ def Movepages(page, deletedPages):
         if deletedPages == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
             pagedel.delete(pagetitle)
-            wikipedia.output('Page %s deleted successful.' % pagetitle)
+        else:
+            wikipedia.output('Do you need sysop rights')
     elif ask == 'n':
         pass
     elif ask == 'q':
@@ -65,7 +67,8 @@ def MovepageswithPrefix(page, prefixPageTitle, deletedPages):
     if deletedPages == True:
         pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
         pagedel.delete(pagetitle)
-        wikipedia.output('Page %s deleted successful.' % pagetitle)
+    else:
+        wikipedia.output('Do you need sysop rights')
 
 def main():
     categoryName = None
