@@ -10,6 +10,8 @@ Command-line arguments:
 
     -ref           Work on all pages that link to a certain page.
                    Argument can also be given as "-ref:referredpagetitle".
+                   
+    -pre           Automatic move pages in category with prefix name of the pages.
 
 Single pages use: movepages.py Helen_Keller
 
@@ -30,7 +32,7 @@ comment={
     'pt': u'Página movida por bot',
     }
 
-def Movepages(page):
+def Movepages(page, deletedPages):
     pagetitle = page.title()
     wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
     ask = wikipedia.input('What do you do: (c)hange page name, (n)ext page or (q)uit?')
@@ -40,8 +42,10 @@ def Movepages(page):
         msg = wikipedia.translate(wikipedia.getSite(), comment)
         titleroot.move(pagemove, msg)
         wikipedia.output('Page %s move successful to %s.' % (pagetitle, pagemove))
-        pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
-        pagedel.delete(pagetitle)
+        if deletedPages == True:
+            pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
+            pagedel.delete(pagetitle)
+            wikipedia.output('Page %s deleted successful.' % pagetitle)
     elif ask == 'n':
         pass
     elif ask == 'q':
@@ -50,10 +54,25 @@ def Movepages(page):
         wikipedia.output('Input certain code.')
         sys.exit()
 
+def MovepageswithPrefix(page, prefixPageTitle, deletedPages):
+    pagetitle = page.title()
+    wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
+    pagemove = ('%s%s' % (prefixPageTitle, pagetitle))
+    titleroot = wikipedia.Page(wikipedia.getSite(), pagetitle)
+    msg = wikipedia.translate(wikipedia.getSite(), comment)
+    titleroot.move(pagemove, msg)
+    wikipedia.output('Page %s move successful to %s.' % (pagetitle, pagemove))
+    if deletedPages == True:
+        pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
+        pagedel.delete(pagetitle)
+        wikipedia.output('Page %s deleted successful.' % pagetitle)
+
 def main():
     categoryName = None
     singlePageTitle = []
     referredPageTitle = None
+    prefixPageTitle = None
+    deletedPages = False
     
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'movepages')
@@ -68,6 +87,13 @@ def main():
                     referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
                 else:
                     referredPageTitle = arg[5:]
+            elif arg.startswith('-pre'):
+                if len(arg) == 4:
+                    prefixPageTitle = wikipedia.input(u'Enter the prefix name of the pages in category: ')
+                else:
+                    prefixPageTitle = arg[5:]
+            elif arg.startswith('-del'):
+                deletedPages = True
             else:
                 singlePageTitle.append(arg)
 
@@ -75,20 +101,27 @@ def main():
         cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
         gen = pagegenerators.CategorizedPageGenerator(cat)
         generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
-        for page in generator: Movepages(page)
+        for page in generator: Movepages(page, deletedPages)
 
     elif referredPageTitle:
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
         generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
-        for page in generator: Movepages(page)
-        
+        for page in generator: Movepages(page, deletedPages)
+
+    elif prefixPageTitle:
+        categoryName = wikipedia.input('Category:')
+        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
+        gen = pagegenerators.CategorizedPageGenerator(cat)
+        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
+        for page in generator: MovepageswithPrefix(page, prefixPageTitle, deletedPages)
+    
     else:
         singlePageTitle = ' '.join(singlePageTitle)
         if not singlePageTitle:
             singlePageTitle = wikipedia.input(u'Which page to move:')
         singlePage = wikipedia.Page(wikipedia.getSite(), singlePageTitle)
-        Movepages(singlePage)
+        Movepages(singlePage, deletedPages)
 
 if __name__ == '__main__':
     try:
