@@ -11,8 +11,12 @@ Command-line arguments:
     -ref           Work on all pages that link to a certain page.
                    Argument can also be given as "-ref:referredpagetitle".
                    
-    -pre           Automatic move pages in category with prefix name of the pages.
-                   Argument can also be given as "-pre:Python/Pywikipediabot/".
+    -prefix        Automatic move pages in category with prefix name of the pages.
+                   Argument can also be given as "-prefix:Python/Pywikipediabot/".
+
+    -del           Argument can be given also together with other arguments,
+                   its functionality is delete old page that was moved.
+                   For example: "movepages.py Helen_Keller -del".
 
 Single pages use: movepages.py Helen_Keller
 
@@ -47,7 +51,7 @@ def Movepages(page, deletedPages):
             pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
             pagedel.delete(pagetitle)
         else:
-            wikipedia.output('Do you need sysop rights')
+            wikipedia.output('Do you need sysop right.')
     elif ask == 'n':
         pass
     elif ask == 'q':
@@ -68,7 +72,7 @@ def MovepageswithPrefix(page, prefixPageTitle, deletedPages):
         pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
         pagedel.delete(pagetitle)
     else:
-        wikipedia.output('Do you need sysop rights')
+        wikipedia.output('Do you need sysop right.')
 
 def main():
     categoryName = None
@@ -80,21 +84,21 @@ def main():
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'movepages')
         if arg:
-            if arg.startswith('-cat'):
-                if len(arg) == 4:
+            if arg.startswith('-cat:'):
+                if len(arg) == 5:
                     categoryName = wikipedia.input(u'Enter the category name:')
                 else:
-                    categoryName = arg[5:]
-            elif arg.startswith('-ref'):
-                if len(arg) == 4:
+                    categoryName = arg[6:]
+            elif arg.startswith('-ref:'):
+                if len(arg) == 5:
                     referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
                 else:
-                    referredPageTitle = arg[5:]
-            elif arg.startswith('-pre'):
-                if len(arg) == 4:
+                    referredPageTitle = arg[6:]
+            elif arg.startswith('-prefix:'):
+                if len(arg) == 8:
                     prefixPageTitle = wikipedia.input(u'Enter the prefix name of the pages in category: ')
                 else:
-                    prefixPageTitle = arg[5:]
+                    prefixPageTitle = arg[9:]
             elif arg.startswith('-del'):
                 deletedPages = True
             else:
