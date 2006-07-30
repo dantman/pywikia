@@ -4,12 +4,26 @@
 with mixed latin and cyrilic alphabets.
 """
 
-import sys, query, wikipedia, re
+### Permutations code was taken from http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/190465
+from __future__ import generators
+
+def xuniqueCombinations(items, n):
+    if n==0: yield []
+    else:
+        for i in xrange(len(items)):
+            for cc in xuniqueCombinations(items[i+1:],n-1):
+                yield [items[i]]+cc
+### End of permutation code
+
+import sys, query, wikipedia, re, codecs
+
 
 class CaseChecker( object ):
 
-    cyrSuspects = u'АаВЕеКкМмНОоРрСсТУуХх'
-    latSuspects = u'AaBEeKkMmHOoPpCcTYyXx'
+    knownWords = set([u'Zемфира', u'KoЯn'])
+    
+    cyrSuspects = u'АаВЕеКкМмНОоРрСсТуХх'
+    latSuspects = u'AaBEeKkMmHOoPpCcTyXx'
 
     cyrToLatDict = dict([(ord(cyrSuspects[i]), latSuspects[i]) for i in range(len(cyrSuspects))])
     latToCyrDict = dict([(ord(latSuspects[i]), cyrSuspects[i]) for i in range(len(cyrSuspects))])
@@ -28,9 +42,12 @@ class CaseChecker( object ):
     titles = True
     links = False
     aplimit = 500
-    apfrom = ''
+    apfrom = u''
     title = None
     replace = False
+    stopAfter = 0
+    verbose = False
+    wikilog = None
     
     def __init__(self, args):    
         
@@ -41,8 +58,8 @@ class CaseChecker( object ):
                     self.apfrom = arg[6:]
                 elif arg.startswith('-from'):
                     self.apfrom = wikipedia.input(u'Which page to start from: ')
-                elif arg.startswith('-limit:'):
-                    self.aplimit = int(arg[7:])
+                elif arg.startswith('-reqsize:'):
+                    self.aplimit = int(arg[9:])
                 elif arg == '-links':
                     self.links = True
                 elif arg == '-linksonly':
@@ -50,6 +67,15 @@ class CaseChecker( object ):
                     self.titles = False
                 elif arg == '-replace':
                     self.replace = True
+                elif arg.startswith('-limit:'):
+                    self.stopAfter = int(arg[7:])
+                elif arg == '-verbose':
+                    self.verbose = True
+                elif arg.startswith('-wikilog:'):
+                    try:
+                        self.wikilog = codecs.open(arg[9:], 'a', 'utf-8')
+                    except IOError:
+                        self.wikilog = codecs.open(arg[9:], 'w', 'utf-8')
                 else:
                     wikipedia.output(u'Unknown argument %s' % arg)
                     sys.exit()
@@ -66,6 +92,7 @@ class CaseChecker( object ):
         
     def Run(self):
         try:
+            count = 0
             for namespace in [0, 10, 12, 14]:
                 self.params['apnamespace'] = namespace
                 self.apfrom = self.apfrom
@@ -74,7 +101,7 @@ class CaseChecker( object ):
                 while True:                
                     # Get data
                     self.params['apfrom'] = self.apfrom
-                    data = query.GetData( self.site.lang, self.params)
+                    data = query.GetData(self.site.lang, self.params, self.verbose)
                     try:
                         self.apfrom = data['query']['allpages']['next']
                     except:
@@ -89,16 +116,15 @@ class CaseChecker( object ):
                                 err = self.ProcessTitle(title)
                                 if err:
                                     changed = False
-                                    if self.replace and namespace != 14 and len(err) == 2:
-                                        src = wikipedia.Page(self.site, title)
-                                        dst = wikipedia.Page(self.site, err[1])
-                                        if not dst.exists():
-                                            # choice = wikipedia.inputChoice(u'Move %s to %s?' % (title, err[1]), ['Yes', 'No'], ['y', 'n'])
-                                            src.move( err[1], u'mixed case rename')
+                                    if self.replace and namespace != 14:
+                                        newTitle = self.PickTarget(False, err[1])
+                                        if newTitle:
+                                            src = wikipedia.Page(self.site, title)
+                                            src.move( newTitle, u'mixed case rename')
                                             changed = True
                                     
                                     if not changed:
-                                        wikipedia.output(u"* " + err[0])
+                                        self.WikiLog(u"* " + err[0])
                                         printed = True
                                                                     
                             if self.links:
@@ -110,29 +136,40 @@ class CaseChecker( object ):
                                         ltxt = l['*']
                                         err = self.ProcessTitle(ltxt)
                                         if err:
-                                            if self.replace and len(err) == 2:
-                                                if pageObj is None:
-                                                    pageObj = wikipedia.Page(self.site, title)
-                                                    pageTxt = pageObj.get()
-                                                # choice = wikipedia.inputChoice(u'Rename link from %s to %s?' % (title, err[1]), ['Yes', 'No'], ['y', 'n'])
-                                                msg.append(u'[[%s]] => [[%s]]' % (ltxt, err[1]))
-                                                pageTxt = pageTxt.replace(ltxt, err[1])
-                                                pageTxt = pageTxt.replace(ltxt[0].lower() + ltxt[1:], err[1][0].lower() + err[1][1:])
-                                            else:
+                                            newTitle = None
+                                            if self.replace:
+                                                newTitle = self.PickTarget(True, err[1])
+                                                if newTitle:
+                                                    if pageObj is None:
+                                                        pageObj = wikipedia.Page(self.site, title)
+                                                        pageTxt = pageObj.get()
+                                                    msg.append(u'[[%s]] => [[%s]]' % (ltxt, newTitle))
+                                                    pageTxt = pageTxt.replace(ltxt, newTitle)
+                                                    pageTxt = pageTxt.replace(ltxt[0].lower() + ltxt[1:], newTitle[0].lower() + newTitle[1:])
+                                            
+                                            if not newTitle:
                                                 if not printed:
-                                                    wikipedia.output(u"* [[%s]]: link to %s" % (title, err[0]))
+                                                    self.WikiLog(u"* [[%s]]: link to %s" % (title, err[0]))
                                                     printed = True
                                                 else:
-                                                    wikipedia.output(u"** link to %s" % err[0])
+                                                    self.WikiLog(u"** link to %s" % err[0])
                                                 
         
                                     if pageObj is not None:
                                         if pageObj.get() == pageTxt:
-                                            wikipedia.output(u"* Error: Could not auto-replace [[%s]]" % title)
+                                            self.WikiLog(u"* Error: Text replacement failed in [[%s]] (%s)" % (title, u', '.join(msg)))
                                         else:
                                             wikipedia.output(u'Case Replacements: %s' % u', '.join(msg))
-                                            pageObj.put(pageTxt, u'Case Replacements: %s' % u', '.join(msg))
-                
+                                            try:
+                                                pageObj.put(pageTxt, u'Case Replacements: %s' % u', '.join(msg))
+                                            except:
+                                                self.WikiLog(u"* Error: Could not save updated page [[%s]] (%s)" % (title, u', '.join(msg)))
+                                                
+                        
+                            count += 1
+                            if self.stopAfter > 0 and count == self.stopAfter:
+                                raise "Stopping because we are done"
+                        
                     if self.apfrom is None:
                         break
 
@@ -143,16 +180,34 @@ class CaseChecker( object ):
                 wikipedia.output(u'Exception at Title = %s, Next = %s' % (title, self.apfrom))
             wikipedia.stopme()
             raise
+
+    def WikiLog(self, text):
+        wikipedia.output(text)
+        if self.wikilog:
+            self.wikilog.write(text + u'\n')
+            self.wikilog.flush()
         
     def ProcessTitle(self, title):
         
-        possibleWords = []
-        tempWords = []
-        count = 0
-        
+        found = False
         for m in self.badWordPtrn.finditer(title):
-        
+            
             badWord = title[m.span()[0] : m.span()[1]]
+            if badWord in self.knownWords:
+                continue
+
+            if not found:
+                # lazy-initialization of the local variables
+                possibleWords = []
+                tempWords = []
+                count = 0
+                duplWordCount = 0
+                ambigBadWords = set()
+                ambigBadWordsCount = 0
+                mapCyr = {}
+                mapLat = {}
+                found = True
+                                        
             # See if it would make sense to treat the whole word as either cyrilic or latin
             mightBeLat = mightBeCyr = True
             for l in badWord:
@@ -165,32 +220,98 @@ class CaseChecker( object ):
                     if l not in self.latLtr: raise "Assert failed"
             
             if mightBeCyr:
-                possibleWords.append(badWord.translate(self.latToCyrDict))
+                mapCyr[badWord] = badWord.translate(self.latToCyrDict)
             if mightBeLat:
-                possibleWords.append(badWord.translate(self.cyrToLatDict))
-            
-            if count == 0:
-                # There is only one bad word, create links
-                alternativeLines = [ title[0:m.span()[0]] + t + title[m.span()[1]:] for t in possibleWords ]
-
+                mapLat[badWord] = badWord.translate(self.cyrToLatDict)
+            if mightBeCyr and mightBeLat:
+                ambigBadWords.add(badWord)
+                ambigBadWordsCount += 1    # Cannot do len(ambigBadWords) because they might be duplicates
             count += 1
 
-        if count == 0:
+        if not found:
             return None
         
-        res = self.MakeLink(title)
-        if len(possibleWords) > 0:
-            res += u", sugestions: "
-            if count == 1:
-                res += u', '.join([self.MakeLink(t) for t in alternativeLines])
-            else:
-                res += u', '.join([self.ColorCodeWord(t) for t in possibleWords])
-
-        if count == 1 and len(alternativeLines) > 0:
-            return [res] + alternativeLines
+        infoText = self.MakeLink(title)
+        possibleAlternatives = []
+        
+        if len(mapCyr) + len(mapLat) - ambigBadWordsCount < count:
+            # We cannot auto-translate - offer a list of suggested words
+            infoText += u", word sugestions: " + u', '.join([self.ColorCodeWord(t) for t in mapCyr.values() + mapLat.values()])
         else:
-            return [res]
+            
+            # Replace all unambiguous bad words
+            for k,v in mapLat.items() + mapCyr.items():
+                if k not in ambigBadWords:
+                    title = title.replace(k,v)
+
+            if len(ambigBadWords) == 0:
+                # There are no ambiguity, we can safelly convert
+                possibleAlternatives.append(title)
+                infoText += u", will convert to " + self.ColorCodeWord(title)
+            else:
+                # Try to pick 0, 1, 2, ..., len(ambiguous words) unique combinations
+                # from the bad words list, and convert just the picked words to cyrilic,
+                # whereas making all other words as latin character.
+                for itemCntToPick in range(0, len(ambigBadWords)+1):
+                    title2 = title
+                    for uc in xuniqueCombinations(list(ambigBadWords), itemCntToPick):
+                        wordsToLat = ambigBadWords.copy()
+                        for bw in uc:
+                            title2 = title2.replace(bw, mapCyr[bw])
+                            wordsToLat.remove(bw)
+                        for bw in wordsToLat:
+                            title2 = title2.replace(bw, mapLat[bw])
+                        possibleAlternatives.append(title2)
+
+                infoText += u", can be converted to " + u', '.join([self.ColorCodeWord(t) for t in possibleAlternatives])
+
+        return (infoText, possibleAlternatives)
     
+    def PickTarget(self, isLink, candidates):
+        if isLink:
+            # choice = wikipedia.inputChoice(u'Rename link from %s to %s?' % (title, newTitle), ['Yes', 'No'], ['y', 'n'])
+
+            if len(candidates) == 1:
+                return candidates[0]
+            
+            pagesDontExist = []
+            pagesRedir = {}
+            pagesExist = []
+            
+            for newTitle in candidates:
+                dst = wikipedia.Page(self.site, newTitle)
+                if not dst.exists():
+                    pagesDontExist.append(newTitle)
+                elif dst.isRedirectPage():
+                    pagesRedir[newTitle] = dst.getRedirectTarget()
+                else:
+                    pagesExist.append(newTitle)
+            
+            if len(pagesExist) == 1:
+                return pagesExist[0]
+            elif len(pagesExist) == 0 and len(pagesRedir) > 0:
+                if len(pagesRedir) == 1:
+                    return pagesRedir.keys()[0]
+                t = None
+                for k,v in pagesRedir.iteritems():
+                    if not t:
+                        t = v # first item
+                    elif t != v:
+                        break
+                else:
+                    # all redirects point to the same target
+                    # pick the first one, doesn't matter what it is
+                    return pagesRedir.keys()[0]
+        else:
+            if len(candidates) == 1:
+                newTitle = candidates[0]
+                dst = wikipedia.Page(self.site, newTitle)
+                if not dst.exists():
+                    # choice = wikipedia.inputChoice(u'Move %s to %s?' % (title, newTitle), ['Yes', 'No'], ['y', 'n'])
+                    return newTitle
+        
+        return None
+
     def ColorCodeWord(self, word):
         
         res = u"<b>"
