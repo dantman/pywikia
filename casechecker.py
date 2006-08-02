@@ -48,16 +48,16 @@ import sys, query, wikipedia, re, codecs
 
 class CaseChecker( object ):
 
-    knownWords = set([u'Zемфира', u'KoЯn', u'Deadушки', u'ENTERМУЗЫКА'])
+    knownWords = set([u'Zемфира', u'KoЯn', u'Deadушки', u'ENTERМУЗЫКА', u'Юz', u'Lюк'])
     
     cyrLtr = u'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя'
     latLtr = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     ukrLtr = u'АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЮюЯяЬь'
 
-    cyrSuspects    = u'АаВЕеКкМмНОоРрСсТуХх'
-    cyrLatSuspects = u'AaBEeKkMmHOoPpCcTyXx'
-    ukrSuspects    = u'АаВвЕеІіКкМмНОоРрСсТтУуХх'
-    ukrLatSuspects = u'AaBbEeIiKkMmHOoPpCcTtYyXx'
+    cyrSuspects    = u'АаВЕеКкМНОоРрСсТуХх'
+    cyrLatSuspects = u'AaBEeKkMHOoPpCcTyXx'
+    ukrSuspects    = u'АаВЕеІіКкМНОоРрСсТУуХх'
+    ukrLatSuspects = u'AaBEeIiKkMHOoPpCcTYyXx'
 
     cyrClrFnt = u'<font color=green>'
     latClrFnt = u'<font color=brown>'
@@ -72,6 +72,7 @@ class CaseChecker( object ):
     stopAfter = 0
     verbose = False
     wikilog = None
+    autonomous = False
     
     def __init__(self, args):    
         
@@ -95,6 +96,8 @@ class CaseChecker( object ):
                     self.stopAfter = int(arg[7:])
                 elif arg == '-verbose':
                     self.verbose = True
+                elif arg == '-autonomous':
+                    self.autonomous = True
                 elif arg.startswith('-wikilog:'):
                     try:
                         self.wikilog = codecs.open(arg[9:], 'a', 'utf-8')
@@ -192,6 +195,7 @@ class CaseChecker( object ):
                                                     msg.append(u'[[%s]] => [[%s]]' % (ltxt, newTitle))
                                                     pageTxt = pageTxt.replace(ltxt, newTitle)
                                                     pageTxt = pageTxt.replace(ltxt[0].lower() + ltxt[1:], newTitle[0].lower() + newTitle[1:])
+                                                    pageTxt = pageTxt.replace(ltxt.replace(u' ', '_'), newTitle)
                                             
                                             if not newTitle:
                                                 if not printed:
@@ -282,7 +286,11 @@ class CaseChecker( object ):
         
         if len(mapCyr) + len(mapLat) - ambigBadWordsCount < count:
             # We cannot auto-translate - offer a list of suggested words
-            infoText += u", word sugestions: " + u', '.join([self.ColorCodeWord(t) for t in mapCyr.values() + mapLat.values()])
+            suggestions = mapCyr.values() + mapLat.values()
+            if len(suggestions) > 0:
+                infoText += u", word suggestions: " + u', '.join([self.ColorCodeWord(t) for t in suggestions])
+            else:
+                infoText += u", no suggestions"
         else:
             
             # Replace all unambiguous bad words
@@ -293,7 +301,7 @@ class CaseChecker( object ):
             if len(ambigBadWords) == 0:
                 # There are no ambiguity, we can safelly convert
                 possibleAlternatives.append(title)
-                infoText += u", will convert to " + self.MakeLink(title)
+                infoText += u", convert to " + self.MakeLink(title)
             else:
                 # Try to pick 0, 1, 2, ..., len(ambiguous words) unique combinations
                 # from the bad words list, and convert just the picked words to cyrilic,
@@ -309,7 +317,10 @@ class CaseChecker( object ):
                             title2 = title2.replace(bw, mapLat[bw])
                         possibleAlternatives.append(title2)
 
-                infoText += u", can be converted to " + u', '.join([self.MakeLink(t) for t in possibleAlternatives])
+                if len(possibleAlternatives) > 0:
+                    infoText += u", can be converted to " + u', '.join([self.MakeLink(t) for t in possibleAlternatives])
+                else:
+                    infoText += u", no suggestions"
 
         return (infoText, possibleAlternatives)
     
@@ -350,20 +361,22 @@ class CaseChecker( object ):
                     # pick the first one, doesn't matter what it is
                     return pagesRedir.keys()[0]
                 
-            wikipedia.output(u'Could not auto-decide. Which should be chosen?')
-            self.ColorCodeWord(original, True)
-            count = 1
-            for t in candidates:
-                if t in pagesDontExist: msg = u'missing'
-                elif t in pagesRedir: msg = u'Redirect to ' + pagesRedir[t]
-                else: msg = u'page exists'
-                self.ColorCodeWord(u'  %d: %s (%s)\n' % (count, t, msg), True)
-                count += 1
-            
-            answers = [str(i) for i in range(0, count)]
-            choice = int(wikipedia.inputChoice(u'Which link to choose? (0 to skip)', answers, [a[0] for a in answers]))
-            if choice > 0:
-                return candidates[choice-1]
+            if not self.autonomous:
+                wikipedia.output(u'Could not auto-decide. Which should be chosen?')
+                wikipedia.output(u'Original title: ', newline=False)
+                self.ColorCodeWord(original + "\n", True)
+                count = 1
+                for t in candidates:
+                    if t in pagesDontExist: msg = u'missing'
+                    elif t in pagesRedir: msg = u'Redirect to ' + pagesRedir[t]
+                    else: msg = u'page exists'
+                    self.ColorCodeWord(u'  %d: %s (%s)\n' % (count, t, msg), True)
+                    count += 1
+                
+                answers = [str(i) for i in range(0, count)]
+                choice = int(wikipedia.inputChoice(u'Which link to choose? (0 to skip)', answers, [a[0] for a in answers]))
+                if choice > 0:
+                    return candidates[choice-1]
 
         else:
             if len(candidates) == 1:
