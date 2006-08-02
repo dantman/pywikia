@@ -1399,7 +1399,7 @@ class Page(object):
         predata = [
             ('wpOldTitle', self.title().encode(self.site().encoding())),
             ('wpNewTitle', newtitle.encode(self.site().encoding())),
-            ('wpReason', reason),
+            ('wpReason', reason.encode(self.site().encoding())),
             ]
         if movetalkpage:
             predata.append(('wpMovetalk','1'))
