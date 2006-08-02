@@ -423,6 +423,7 @@ formats = {
             'br' :      lambda v: slh( v, [u"Genver", u"C'hwevrer", u"Meurzh", u"Ebrel", u"Mae", u"Mezheven", u"Gouere", u"Eost", u"Gwengolo", u"Here", u"Du", u"Kerzu"] ),
             'bs' :      lambda v: slh( v, [u"januar", u"februar", u"mart", u"april", u"maj", u"juni", u"juli", u"august", u"septembar", u"oktobar", u"novembar", u"decembar"] ),
             'ca' :      lambda v: slh( v, [u"gener", u"febrer", u"març", u"abril", u"maig", u"juny", u"juliol", u"agost", u"setembre", u"octubre", u"novembre", u"desembre"] ),
+            'ceb':      lambda v: slh( v, [u"Enero", u"Pebrero", u"Marso", u"Abril", u"Mayo", u"Hunyo", u"Hulyo", u"Agosto", u"Septiyembre", u"Oktubre", u"Nobiyembre", u"Disyembre"] ),
             'co' :      lambda v: slh( v, [u"ghjennaghju", u"frivaghju", u"marzu", u"aprile", u"maghju", u"ghjugnu", u"lugliu", u"aostu", u"settembre", u"uttrovi", u"nuvembri", u"decembre"] ),
             'cs' :      lambda v: slh( v, [u"leden", u"únor", u"březen", u"duben", u"květen", u"červen", u"červenec", u"srpen", u"září", u"říjen", u"listopad", u"prosinec"] ),
             'csb':      lambda v: slh( v, [u"stëcznik", u"gromicznik", u"strumiannik", u"łżëkwiôt", u"môj", u"czerwińc", u"lëpinc", u"zélnik", u"séwnik", u"rujan", u"lëstopadnik", u"gòdnik"] ),
@@ -1254,6 +1255,7 @@ addFmt2('bg', False, u"%%d %s", False )
 addFmt2('bn', False, u"%s %%B" )
 addFmt2('bs', False, u"%%d. %s", False )
 addFmt ('ca', False,       [ u"%d de gener", u"%d de febrer", u"%d de març", u"%d d'abril", u"%d de maig", u"%d de juny", u"%d de juliol", u"%d d'agost", u"%d de setembre", u"%d d'octubre", u"%d de novembre", u"%d de desembre" ])
+addFmt2('ceb',False, u"%s %%d", True )
 addFmt ('co', False,       [ u"%d di ghjennaghju", u"%d di frivaghju", u"%d di marzu", u"%d d'aprile", u"%d di maghju", u"%d di ghjugnu", u"%d di lugliu", u"%d d'aostu", u"%d di settembre", u"%d d'uttrovi", u"%d di nuvembri", u"%d di decembre" ])
 addFmt2('cs', False, u"%%d. %s", False )
 addFmt2('csb',False, u"%%d %sa", False )

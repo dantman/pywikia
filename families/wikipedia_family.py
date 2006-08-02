@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -213,6 +213,7 @@ class Family(family.Family):
             'it': u'Discussioni portale',
             'ja': u'Portal‐ノート',
             'ka': u'პორტალი განხილვა',
+            'nds':u'Portal Diskuschoon',
             'nl': u'Overleg portaal',
             'no': u'Portaldiskusjon',
             'pl': u'Dyskusja portalu',
