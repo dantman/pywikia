@@ -48,18 +48,30 @@ import sys, query, wikipedia, re, codecs
 
 class CaseChecker( object ):
 
-    knownWords = set([u'Zемфира', u'KoЯn', u'Deadушки', u'ENTERМУЗЫКА', u'Юz', u'Lюк'])
-    
-    cyrLtr = u'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя'
+    langs = {
+        'ru': {
+           'exceptions': [u'Zемфира', u'KoЯn', u'Deadушки', u'ENTERМУЗЫКА', u'Юz', u'Lюк', u'Яndex'],
+           'alphabet'  : u'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя',
+           'localsuspects': u'АаВЕеКкМНОоРрСсТуХх',
+           'latinsuspects': u'AaBEeKkMHOoPpCcTyXx',
+           },
+        'uk': {
+           'exceptions': [],
+           'alphabet'  : u'АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЮюЯяЬь',
+           'localsuspects': u'АаВЕеІіКкМНОоРрСсТУуХх',
+           'latinsuspects': u'AaBEeIiKkMHOoPpCcTYyXx',
+           },
+        'bg': {
+           'exceptions': [],
+           'alphabet'  : u'АаБбВвГгДдЕеЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЬьЮюЯя',
+           'localsuspects': u'АаВЕеКкМНОоРрСсТуХх',
+           'latinsuspects': u'AaBEeKkMHOoPpCcTyXx',
+           },
+        }
+        
     latLtr = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    ukrLtr = u'АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЮюЯяЬь'
-
-    cyrSuspects    = u'АаВЕеКкМНОоРрСсТуХх'
-    cyrLatSuspects = u'AaBEeKkMHOoPpCcTyXx'
-    ukrSuspects    = u'АаВЕеІіКкМНОоРрСсТУуХх'
-    ukrLatSuspects = u'AaBEeIiKkMHOoPpCcTYyXx'
-
-    cyrClrFnt = u'<font color=green>'
+    
+    lclClrFnt = u'<font color=green>'
     latClrFnt = u'<font color=brown>'
     suffixClr = u'</font>'
 
@@ -73,6 +85,7 @@ class CaseChecker( object ):
     verbose = False
     wikilog = None
     autonomous = False
+    namespaces = [0, 10, 12, 14]
     
     def __init__(self, args):    
         
@@ -98,6 +111,8 @@ class CaseChecker( object ):
                     self.verbose = True
                 elif arg == '-autonomous':
                     self.autonomous = True
+                elif arg.startswith('-namespace:'):
+                    self.namespaces = [int(arg[11:])]
                 elif arg.startswith('-wikilog:'):
                     try:
                         self.wikilog = codecs.open(arg[9:], 'a', 'utf-8')
@@ -117,22 +132,20 @@ class CaseChecker( object ):
             
         self.site = wikipedia.getSite()
         
-        if self.site.lang == 'ru':
-            self.localSuspects = self.cyrSuspects
-            self.latinSuspects = self.cyrLatSuspects
-            self.localLtr = self.cyrLtr
-        elif self.site.lang == 'uk':
-            self.localSuspects = self.ukrSuspects
-            self.latinSuspects = self.ukrLatSuspects
-            self.localLtr = self.ukrLtr
+        if self.site.lang in self.langs:
+            l = self.langs[self.site.lang]
+            self.knownWords = set(l['exceptions'])
+            self.localSuspects = l['localsuspects']
+            self.latinSuspects = l['latinsuspects']
+            self.localLtr = l['alphabet']
         else:
             raise u'Unsupported site ' + self.site.lang
     
         if len(self.localSuspects) != len(self.latinSuspects):
             raise u'Suspects must be the same size'
 
-        self.cyrToLatDict = dict([(ord(self.localSuspects[i]), self.latinSuspects[i]) for i in range(len(self.localSuspects))])
-        self.latToCyrDict = dict([(ord(self.latinSuspects[i]), self.localSuspects[i]) for i in range(len(self.localSuspects))])
+        self.lclToLatDict = dict([(ord(self.localSuspects[i]), self.latinSuspects[i]) for i in range(len(self.localSuspects))])
+        self.latToLclDict = dict([(ord(self.latinSuspects[i]), self.localSuspects[i]) for i in range(len(self.localSuspects))])
     
         badPtrnStr = u'([%s][%s]|[%s][%s])' % (self.latLtr, self.localLtr, self.localLtr, self.latLtr)
         self.badPtrn = re.compile(badPtrnStr)
@@ -142,7 +155,7 @@ class CaseChecker( object ):
     def Run(self):
         try:
             count = 0
-            for namespace in [0, 10, 12, 14]:
+            for namespace in self.namespaces:
                 self.params['apnamespace'] = namespace
                 self.apfrom = self.apfrom
                 title = None
@@ -254,26 +267,26 @@ class CaseChecker( object ):
                 duplWordCount = 0
                 ambigBadWords = set()
                 ambigBadWordsCount = 0
-                mapCyr = {}
+                mapLcl = {}
                 mapLat = {}
                 found = True
                                         
             # See if it would make sense to treat the whole word as either cyrilic or latin
-            mightBeLat = mightBeCyr = True
+            mightBeLat = mightBeLcl = True
             for l in badWord:
                 if l in self.localLtr:
                     if mightBeLat and l not in self.localSuspects:
                         mightBeLat = False
                 else:
-                    if mightBeCyr and l not in self.latinSuspects:
-                        mightBeCyr = False
+                    if mightBeLcl and l not in self.latinSuspects:
+                        mightBeLcl = False
                     if l not in self.latLtr: raise "Assert failed"
             
-            if mightBeCyr:
-                mapCyr[badWord] = badWord.translate(self.latToCyrDict)
+            if mightBeLcl:
+                mapLcl[badWord] = badWord.translate(self.latToLclDict)
             if mightBeLat:
-                mapLat[badWord] = badWord.translate(self.cyrToLatDict)
-            if mightBeCyr and mightBeLat:
+                mapLat[badWord] = badWord.translate(self.lclToLatDict)
+            if mightBeLcl and mightBeLat:
                 ambigBadWords.add(badWord)
                 ambigBadWordsCount += 1    # Cannot do len(ambigBadWords) because they might be duplicates
             count += 1
@@ -284,9 +297,9 @@ class CaseChecker( object ):
         infoText = self.MakeLink(title)
         possibleAlternatives = []
         
-        if len(mapCyr) + len(mapLat) - ambigBadWordsCount < count:
+        if len(mapLcl) + len(mapLat) - ambigBadWordsCount < count:
             # We cannot auto-translate - offer a list of suggested words
-            suggestions = mapCyr.values() + mapLat.values()
+            suggestions = mapLcl.values() + mapLat.values()
             if len(suggestions) > 0:
                 infoText += u", word suggestions: " + u', '.join([self.ColorCodeWord(t) for t in suggestions])
             else:
@@ -294,7 +307,7 @@ class CaseChecker( object ):
         else:
             
             # Replace all unambiguous bad words
-            for k,v in mapLat.items() + mapCyr.items():
+            for k,v in mapLat.items() + mapLcl.items():
                 if k not in ambigBadWords:
                     title = title.replace(k,v)
 
@@ -311,7 +324,7 @@ class CaseChecker( object ):
                     for uc in xuniqueCombinations(list(ambigBadWords), itemCntToPick):
                         wordsToLat = ambigBadWords.copy()
                         for bw in uc:
-                            title2 = title2.replace(bw, mapCyr[bw])
+                            title2 = title2.replace(bw, mapLcl[bw])
                             wordsToLat.remove(bw)
                         for bw in wordsToLat:
                             title2 = title2.replace(bw, mapLat[bw])
@@ -394,7 +407,7 @@ class CaseChecker( object ):
         lastIsCyr = word[0] in self.localLtr
         if lastIsCyr:
             if toScreen: SetColor(FOREGROUND_GREEN)
-            else: res += self.cyrClrFnt
+            else: res += self.lclClrFnt
         else:
             if toScreen: SetColor(FOREGROUND_RED)
             else: res += self.latClrFnt
@@ -403,7 +416,7 @@ class CaseChecker( object ):
             if l in self.localLtr:
                 if not lastIsCyr:
                     if toScreen: SetColor(FOREGROUND_GREEN)
-                    else: res += self.suffixClr + self.cyrClrFnt
+                    else: res += self.suffixClr + self.lclClrFnt
                     lastIsCyr = True
             elif l in self.latLtr:
                 if lastIsCyr:
@@ -421,5 +434,8 @@ class CaseChecker( object ):
         return u"[[:%s|««« %s »»»]]" % (title, self.ColorCodeWord(title))
         
 if __name__ == "__main__":
-    bot = CaseChecker(sys.argv[1:])
-    bot.Run()
+    try:
+        bot = CaseChecker(sys.argv[1:])
+        bot.Run()
+    finally:
+        wikipedia.stopme()
