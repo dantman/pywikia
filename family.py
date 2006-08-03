@@ -1958,6 +1958,7 @@ class Family:
     # Redirect code can be translated.
 
     redirect = {
+        'be': [u'перанакіраваньне'],
         'bg': [u'виж'],
         'cs': [u'přesměruj'],
         'cy': [u'ail-cyfeirio'],
