@@ -11,7 +11,7 @@ Command-line arguments:
     -ref           Work on all pages that link to a certain page.
                    Argument can also be given as "-ref:referredpagetitle".
                    
-    -prefix        Automatic move pages in category with prefix name of the pages.
+    -prefix        Automatic move pages in specific page with prefix name of the pages.
                    Argument can also be given as "-prefix:Python/Pywikipediabot/".
 
     -del           Argument can be given also together with other arguments,
@@ -50,8 +50,6 @@ def Movepages(page, deletedPages):
         if deletedPages == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
             pagedel.delete(pagetitle)
-        else:
-            wikipedia.output('Do you need sysop right.')
     elif ask == 'n':
         pass
     elif ask == 'q':
@@ -71,8 +69,6 @@ def MovepageswithPrefix(page, prefixPageTitle, deletedPages):
     if deletedPages == True:
         pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
         pagedel.delete(pagetitle)
-    else:
-        wikipedia.output('Do you need sysop right.')
 
 def main():
     categoryName = None
@@ -96,7 +92,7 @@ def main():
                     referredPageTitle = arg[6:]
             elif arg.startswith('-prefix:'):
                 if len(arg) == 8:
-                    prefixPageTitle = wikipedia.input(u'Enter the prefix name of the pages in category: ')
+                    prefixPageTitle = wikipedia.input(u'Enter the prefix name of the pages in specific page: ')
                 else:
                     prefixPageTitle = arg[9:]
             elif arg.startswith('-del'):
@@ -117,9 +113,9 @@ def main():
         for page in generator: Movepages(page, deletedPages)
 
     elif prefixPageTitle:
-        categoryName = wikipedia.input('Category:')
-        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
-        gen = pagegenerators.CategorizedPageGenerator(cat)
+        listpageTitle = wikipedia.input(u'List of pages:')
+        listpage = wikipedia.Page(wikipedia.getSite(), listpageTitle)
+        gen = pagegenerators.LinkedPageGenerator(listpage)
         generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
         for page in generator: MovepageswithPrefix(page, prefixPageTitle, deletedPages)
     
