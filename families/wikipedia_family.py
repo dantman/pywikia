@@ -169,6 +169,7 @@ class Family(family.Family):
             'sv': u'Wikipediadiskussion',
             'ta': [u'Wikipedia பேச்சு', u'விக்கிபீடியா பேச்சு'],
             'te': u'Wikipedia చర్చ',
+            'tg': u'Баҳси Wikipedia',
             'th': u'คุยเรื่องWikipedia',
             'tr': u'Vikipedi tartışma',
             'tt': u'Wikipedia bäxäse',
