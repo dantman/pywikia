@@ -240,6 +240,7 @@ class LinkMustBeRemoved(wikipedia.Error):
 
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
+    'ar': (u'روبوت ', u'إضافة', u'مسح', u'تعديل'),
     'br': (u'Robot ', u'Ouzhpennet', u'Kemmet', u'Tennet'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
     'csb':(u'robot ', u'dodôwô', u'rëmô', u'pòprôwiô'),
@@ -521,7 +522,7 @@ class Subject(object):
             wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.inpl.aslink(True))
             if config.without_interwiki:
                 f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
-                f.write("* %s \n" % pl.aslink())
+                f.write("# %s \n" % pl.aslink())
                 f.close()
         if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isredirect:
             # Only once! 
