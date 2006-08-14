@@ -110,7 +110,7 @@ class LoginManager:
         }
         pagename = self.site.login_address()
         if self.site.hostname() in config.authenticate.keys():
-            response = urllib2.urlopen(urllib2.Request('http://'+self.site.hostname()+pagename, data))
+            response = urllib2.urlopen(urllib2.Request('http://'+self.site.hostname()+pagename, data, headers))
             data = response.read()
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
