@@ -2,7 +2,7 @@ import wikipedia
 import simplejson
 import urllib
 
-def GetData( lang, params ):
+def GetData( lang, params, verbose = False ):
     """Get data from the query api, and convert it into a data object
     """
     site = wikipedia.getSite( lang )
@@ -19,7 +19,9 @@ def GetData( lang, params ):
             params[k] = ToUtf8(v)
 
     path = u"/w/query.php?" + wikipedia.urlencode( params.iteritems() )
-    # wikipedia.output( u"Requesting %s:%s" % (lang, path) )
+    
+    if verbose:
+        wikipedia.output( u"Requesting %s:%s" % (lang, path) )
     
     url = site.family.querypath(lang)
     
