@@ -71,7 +71,7 @@ class CaseChecker( object ):
            },
         }
         
-    knownWords = set([u'Zемфира', u'KoЯn', u'Deadушки', u'ENTERМУЗЫКА', u'Юz', u'Lюк', u'Яndex', u'КариZма'])
+    knownWords = set([u'Zемфира', u'KoЯn', u'Deadушки', u'ENTERМУЗЫКА', u'Юz', u'Lюк', u'Яndex', u'КариZма', u'Стогoff', u'UltraВожык', u'Hardcoreманія', u'БМАgroup', u'Tviй', u'Undergroўnd', u'recordц', u'Bэzu'])
     latLtr = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     
     lclClrFnt = u'<font color=green>'
