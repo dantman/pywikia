@@ -7,6 +7,7 @@ from imagetransfer import nowCommonsMessage
 nowCommons = {
     '_default': u'NowCommons',
     'fr':       u'Désormais sur Commons',
+    'he':       u'תמונת ויקישיתוף',
     'ia':       u'OraInCommons',
     'nl':       u'NuCommons',
 }
@@ -20,6 +21,7 @@ nowCommonsRedirects = {
 
 namespaceInTemplate = [
     'en',
+    'he',
     'ia',
     'lt',
 ]

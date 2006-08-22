@@ -1,4 +1,4 @@
-#coding: iso-8859-1
+#coding: utf-8
 """
 This bot takes its input from a file that contains a number of
 pages to be put on the wiki. The pages should all have the same
@@ -44,23 +44,27 @@ import re, sys, codecs
 msg={
     'de': u'Automatischer Import von Artikeln',
     'en': u'Automated import of articles',
+    'he': u'ייבוא ערכים אוטומטי',
     'ia': u'Importation automatic de articulos',
     'it': u'Caricamento automatico',
     'nl': u'Geautomatiseerde import',
-    'pt': u'Importa��o autom�tica de artigos'
+    'pt': u'Importação automática de artigos'
     }
 
 # The following messages are added to topic when the page already exists
 msg_top={
     'en': u'append on top',
+    'he': u'הצמד בהתחלה',
     'it': u'aggiungo in cima'
     }
 msg_bottom={
     'en': u'append on bottom',
+    'he': u'הצמד בסוף',
     'it': u'aggiungo in fondo'
     }
 msg_force={
     'en': u'existing text overwritten',
+    'he': u'הטקסט הקיים נדרס',
     'it': u'sovrascritto il testo esistente'
     }
 

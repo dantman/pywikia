@@ -1,4 +1,4 @@
-#coding: iso-8859-1
+#coding: utf-8
 """
 Check pages on the English Wikipedia whether they are in the form
 Something, State, and if so, create a redirect from Something, ST.
@@ -25,7 +25,8 @@ import re,wikipedia,sys
 def main():
     start = '0'
     force = False
-    msg = {'en':'Creating state abbreviation redirect'
+    msg = {'en':'Creating state abbreviation redirect',
+           'he':'יוצר הפניה מראשי התיבות של המדינה',
            }
 
     abbrev = {

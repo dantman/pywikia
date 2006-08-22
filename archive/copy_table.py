@@ -1,4 +1,4 @@
-# -*- coding: iso8859-1 -*-
+# -*- coding: utf-8 -*-
 """
 Script to copy a table from one Wikipedia to another one, translating it
 on-the-fly. 
@@ -41,9 +41,10 @@ import re, sys, string
 
 # Summary message
 msg={
-    "en":"robot: copying table from ",
-    "de":"Bot: Kopiere Tabelle von ",
-    "pt":"Bot: Copiando tabela de ",
+    "en":u"robot: copying table from ",
+    "de":u"Bot: Kopiere Tabelle von ",
+    "he":u"רובוט: מעתיק טבלה מתוך ",
+    "pt":u"Bot: Copiando tabela de ",
     }
 
 # Prints text on the screen only if in -debug mode.

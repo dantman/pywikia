@@ -27,6 +27,7 @@ def LINKS(site,name, ignore=[]):
 msg = {
     'en': u'Featured article link for [[%s:%s]]',
     'fi': u'Suositeltu artikkeli -tähti: [[%s:%s]]',
+    'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
 }
 
@@ -51,7 +52,7 @@ featured_name = {
     'es': (CAT, u"Categoría:Wikipedia:Artículos destacados"),
     'fi': (BACK, u"Malline:Suositeltu"),
     'fr': (CAT, u"Catégorie:Articles de qualité"),
-#    'he': (LINKS, u"ויקיפדיה:מאמרים מומלצים", [u"ויקיפדיה"]),
+    'he': (CAT, u"קטגוריה:ערכים מומלצים"),
     'id': (BACK, u"Templat:Pilihan"),
     'is': (CAT, u"Flokkur:Úrvalsgreinar"),
     'it': (CAT, u"Categoria:Articoli in vetrina"),

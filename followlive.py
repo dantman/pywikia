@@ -48,6 +48,13 @@ templates = {
               u'{{à vérifier}}'  :{ 'msg': u'Cet article est à vérifier','pos': 'top'},
               u'{{ébauche}}'     :{ 'msg': u'Cet article est une ébauche','pos': 'bottom'},
               },
+
+        'he':{'{{מחק}}'          :{ 'msg' : 'יש למחוק ערך זה','pos': 'top'},
+              '{{לשכתב}}'        :{ 'msg' : 'ערך זה דורש שכתוב','pos': 'top'},
+              '{{קצרמר}}'        :{ 'msg' : 'ערך זה הוא קצרמר','pos': 'bottom'},
+              '{{הבהרת חשיבות}}' :{'msg' : 'חשיבותו של ערך זה אינה ברורה.', 'pos': 'top'},
+              '{{עריכה}}'        :{ 'msg' : 'ערך זה דורש עריכה','pos': 'top'},
+              },
         
 	'ia':{'{{Eliminar}}' :{ 'msg' : 'Iste articulo debe esser eliminate','pos': 'top'},
               '{{Revision}}' :{ 'msg' : 'Iste articulo require revision','pos': 'top'},
@@ -75,6 +82,7 @@ templates = {
 blanking = {
     'en': 'blanked, content was "%s"',
     'fr': u'blanchit, le contenu était "%s"',
+    'he': 'רוקן, תוכן היה "%s"',
 }
 
 # do nothing if this is in it
@@ -82,6 +90,7 @@ done = {
     'en':('{{delete}}', '{{deletedpage}}', '{{disambig}}', '{{verify}}', '{{speedy}}',
           '{{VfD}}', '{{AfD}}', '{{cleanup}}', '{{nonsense}}', '{{deletedpage}}'),
     'fr':('{{suppression}}', u'{{à vérifier}}'),
+    'he':('{{מחק}}', '{{פירושונים}}', '{{הצבעת מחיקה}}'),
     'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}'),
     'pt':('{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}'),
     }

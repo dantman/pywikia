@@ -41,11 +41,13 @@ class ImageRobot:
     # Summary messages for replacing images
     msg_replace={
         'en':u'Robot - Replacing image %s with %s',
+        'he':u'רובוט - מחליף את התמונה %s בתמונה %s',
     }
 
     # Summary messages for removing images
     msg_remove={
         'en':u'Robot - Removing image %s',
+        'he':u'רובוט - מסיר את התמונה %s',
     }
 
     def __init__(self, generator, oldImage, newImage = None, summary = '', always = False):

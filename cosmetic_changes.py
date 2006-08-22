@@ -15,6 +15,7 @@ import re
 msg_standalone = {
     'de': u'Bot: Kosmetische Änderungen',
     'en': u'Robot: Cosmetic changes',
+    'he': u'רובוט: שינויים קוסמטיים',
     'pt': u'Bot: Mudanças triviais',
     }
 
@@ -23,6 +24,7 @@ msg_standalone = {
 msg_append = {
     'de': u'; kosmetische Änderungen',
     'en': u'; cosmetic changes',
+    'he': u'; שינויים קוסמטיים',
     'pt': u'; mudanças triviais',
     }
 

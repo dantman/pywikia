@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Script to correct URLs like
 (http://www.example.org) to [http://www.example.org example.org]
@@ -11,8 +12,9 @@ __version__='$Id: brackethttp.py,v 1.13 2005/12/21 17:51:26 wikipedian Exp $'
 import re, sys
 import wikipedia
 
-myComment = {'en':'Bot: URL fixed',
-             'pt':'Bot: URL corrigido'
+myComment = {'en':u'Bot: URL fixed',
+             'he':u'בוט: תוקנה כתובת URL',
+             'pt':u'Bot: URL corrigido',
              }
 
 if __name__ == "__main__":

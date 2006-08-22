@@ -38,6 +38,7 @@ import re, sys
 # below.
 msg = {
           'de':u'Bot: Entferne Selbstlinks',
+          'he':u'רובוט: מסיר קישורים של הדף לעצמו',
           'en':u'Robot: Removing selflinks',
           'pt':u'Bot: Retirando link para o próprio artigo'
        }

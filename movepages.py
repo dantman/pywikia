@@ -34,6 +34,7 @@ import sys
 
 comment={
     'en': u'Pagemove by bot',
+    'he': u'העברת דף באמצעות בוט',
     'pt': u'Página movida por bot',
     }
 

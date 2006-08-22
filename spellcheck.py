@@ -59,6 +59,7 @@ msg={
     'en':u'Bot-aided spell checker',
     'es':u'Bot asistido de correción ortográfica',
     'fr':u'Correction orthographique par robot',
+    'he':u'בדיקת איות באמצעות בוט',
     'ia':u'Correction de orthographia per robot',
     'nl':u'Spellingscontrole',
     'pt':u'Bot de correção ortográfica',

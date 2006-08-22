@@ -1,4 +1,4 @@
-# -*- coding: cp1252 -*-
+﻿# -*- coding: cp1252 -*-
 """
 Add or change categories on a number of pages. Usage:
 catall.py name - goes through pages, starting at 'name'. Provides
@@ -24,10 +24,11 @@ wikipedia.put_throttle.setDelay(10)
 
 msg={
     'en': 'Changing categories',
+    'he': 'משנה קטגוריות',
     'ia': 'Alteration de categorias',
     'nl': 'Verandering van categorieen',
     'pt': 'Categorizando',
-    'sr': 'Измена категорија',
+    'sr': 'Ð˜Ð·Ð¼ÐµÐ½Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ˜Ð°',
     }
 
 def choosecats(pagetext):

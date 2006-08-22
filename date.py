@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -672,7 +672,7 @@ formats = {
         'fo' :      lambda v: dh_yearBC( v, u'%d f. Kr.' ),
         'fr' :      lambda v: dh_yearBC( v, u'-%d' ),
         'gl' :      lambda v: dh_yearBC( v, u'-%d' ),
-        'he' :      lambda v: dh_yearBC( v, u'%d לפנה"ס' ),
+        'he' :      lambda v: dh_yearBC( v, u'%d לפני הספירה' ),
         'hr' :      lambda v: dh_yearBC( v, u'%d p.n.e.' ),
         'hu' :      lambda v: dh_yearBC( v, u'I. e. %d' ),
         'id' :      lambda v: dh_yearBC( v, u'%d SM' ),
@@ -739,7 +739,7 @@ formats = {
         'fr' :      lambda v: dh_decAD( v, u'Années %d' ),
         'ga' :      lambda v: dh_decAD( v, u'%dí' ),
         'he' :      lambda m: multi( m, [
-            (lambda v: dh( v, u'שנות ה-%d', lambda i: encDec0(i)%100, lambda ii: 1900 + ii[0] ), lambda p: p >= 1900 and p < 2000),
+            (lambda v: dh( v, u'שנות ה־%d', lambda i: encDec0(i)%100, lambda ii: 1900 + ii[0] ), lambda p: p >= 1900 and p < 2000),
             # This is a dummy value, just to avoid validation testing.
             (lambda v: dh_decAD( v, u'%dth decade' ), alwaysTrue)]),        # ********** ERROR!!!
 
@@ -839,6 +839,7 @@ formats = {
             (lambda v: dh_decBC( v, u'%d-vuosikymmen eaa' ),                alwaysTrue)]),
 
         'fr' :      lambda v: dh_decBC( v, u'Années -%d' ),
+        'he' :      lambda v: dh_decBC( v, u'שנות ה־%d לפני הספירה' ),
         'hr' :      lambda v: dh_decBC( v, u'%dih p.n.e.' ),
 
         'hu' :      lambda m: multi( m, [
@@ -923,7 +924,7 @@ formats = {
         'fy' :      lambda v: dh_centuryAD( v, u'%de ieu' ),
         'ga' :      lambda v: dh_centuryAD( v, u'%dú haois' ),
         'gl' :      lambda v: dh_centuryAD( v, u'Século %R' ),
-        'he' :      lambda v: dh_centuryAD( v, u'המאה ה-%d' ),
+        'he' :      lambda v: dh_centuryAD( v, u'המאה ה־%d' ),
         'hi' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 20, u'बीसवी शताब्दी'),            lambda p: p == 20),
             # This is a dummy value, just to avoid validation testing.   Later, it should be replaced with a proper 'fa' titles
@@ -1018,7 +1019,7 @@ formats = {
         'fr' :      lambda m: multi( m, [
             (lambda v: dh_centuryBC( v, u'%Rer siècle av. J.-C.' ),   					lambda p: p == 1),
             (lambda v: dh_centuryBC( v, u'%Re siècle av. J.-C.' ),    					alwaysTrue)]),        
-        'he' :      lambda v: dh_centuryBC( v, u'המאה ה-%d לפנה"ס' ),
+        'he' :      lambda v: dh_centuryBC( v, u'המאה ה־%d לפני הספירה' ),
         'hr' :      lambda v: dh_centuryBC( v, u'%d. stoljeće p.n.e.' ),
         'id' :      lambda v: dh_centuryBC( v, u'Abad ke-%d SM' ),
         'io' :      lambda v: dh_centuryBC( v, u'%dma yar-cento aK' ),
@@ -1081,6 +1082,18 @@ formats = {
         'fr' :      lambda m: multi( m, [
             (lambda v: dh_millenniumAD( v, u'%Rer millénaire' ),                lambda p: p == 1),
             (lambda v: dh_millenniumAD( v, u'%Re millénaire' ),                 alwaysTrue)]),
+        'he' :      lambda m: multi( m, [
+            (lambda v: dh_millenniumAD( v, u'האלף הראשון' ),                lambda p: p == 1),
+            (lambda v: dh_millenniumAD( v, u'האלף השני' ),                lambda p: p == 2),
+            (lambda v: dh_millenniumAD( v, u'האלף השלישי' ),                lambda p: p == 3),
+            (lambda v: dh_millenniumAD( v, u'האלף הרביעי' ),                lambda p: p == 4),
+            (lambda v: dh_millenniumAD( v, u'האלף החמישי' ),                lambda p: p == 5),
+            (lambda v: dh_millenniumAD( v, u'האלף השישי' ),                lambda p: p == 6),
+            (lambda v: dh_millenniumAD( v, u'האלף השביעי' ),                lambda p: p == 7),
+            (lambda v: dh_millenniumAD( v, u'האלף השמיני' ),                lambda p: p == 8),
+            (lambda v: dh_millenniumAD( v, u'האלף התשיעי' ),                lambda p: p == 9),
+            (lambda v: dh_millenniumAD( v, u'האלף העשירי' ),                lambda p: p == 10),
+            (lambda v: dh_millenniumAD( v, u'האלף ה־%d' ),                alwaysTrue)]),
         'hu' :      lambda v: dh_millenniumAD( v, u'%d. évezred' ),
         'it' :      lambda v: dh_millenniumAD( v, u'%R millennio' ),
         'ja' :      lambda v: dh_millenniumAD( v, u'%d千年紀' ),
@@ -1110,7 +1123,18 @@ formats = {
             (lambda v: dh_constVal( v, 0, u'Ensimmäinen vuosituhat eaa'),                   lambda p: p == 0),
             (lambda v: dh( v, u'%d000-vuosituhat eaa', lambda i: i-1, lambda ii: ii[0]+1 ), alwaysTrue)]),
         'fr' :      lambda v: dh_millenniumBC( v, u'%Rer millénaire av. J.-C.' ),
-        'he' :      lambda v: dh_millenniumBC( v, u'המילניום ה-%d לפנה"ס' ),
+        'he' :      lambda m: multi( m, [
+            (lambda v: dh_millenniumAD( v, u'האלף הראשון לפני הספירה' ),                lambda p: p == 1),
+            (lambda v: dh_millenniumAD( v, u'האלף השני לפני הספירה' ),                lambda p: p == 2),
+            (lambda v: dh_millenniumAD( v, u'האלף השלישי לפני הספירה' ),                lambda p: p == 3),
+            (lambda v: dh_millenniumAD( v, u'האלף הרביעי לפני הספירה' ),                lambda p: p == 4),
+            (lambda v: dh_millenniumAD( v, u'האלף החמישי לפני הספירה' ),                lambda p: p == 5),
+            (lambda v: dh_millenniumAD( v, u'האלף השישי לפני הספירה' ),                lambda p: p == 6),
+            (lambda v: dh_millenniumAD( v, u'האלף השביעי לפני הספירה' ),                lambda p: p == 7),
+            (lambda v: dh_millenniumAD( v, u'האלף השמיני לפני הספירה' ),                lambda p: p == 8),
+            (lambda v: dh_millenniumAD( v, u'האלף התשיעי לפני הספירה' ),                lambda p: p == 9),
+            (lambda v: dh_millenniumAD( v, u'האלף העשירי לפני הספירה' ),                lambda p: p == 10),
+            (lambda v: dh_millenniumAD( v, u'האלף ה־%d לפני הספירה' ),                alwaysTrue)]),
         'hu' :      lambda v: dh_millenniumBC( v, u'I. e. %d. évezred' ),
         'it' :      lambda v: dh_millenniumBC( v, u'%R millennio AC' ),
         'ja' :      lambda v: dh_millenniumBC( v, u'紀元前%d千年紀' ),
@@ -1127,6 +1151,7 @@ formats = {
     'Cat_Year_MusicAlbums': {
         'en' :      lambda v: dh_yearAD( v, u'%d albums' ),
         'fr' :      lambda v: dh_yearAD( v, u'Album musical sorti en %d' ),
+        'he' :      lambda v: dh_yearAD( v, u'אלבומי %d' ),
         'pl' :      lambda v: dh_yearAD( v, u'Albumy muzyczne wydane w roku %d' ),
         'sl' :      lambda v: dh_yearAD( v, u'Albumi iz %d' ),
         'sv' :      lambda v: dh_yearAD( v, u'%d års musikalbum' ),
@@ -1151,7 +1176,7 @@ formats = {
         'fi' :      lambda v: dh_singVal( v, u'Ajankohtaista' ),
         'fr' :      lambda v: dh_singVal( v, u'Actualités' ),
         'gl' :      lambda v: dh_singVal( v, u'Novas' ),
-        'he' :      lambda v: dh_singVal( v, u'ויקיפדיה:אקטואליה' ),
+        'he' :      lambda v: dh_singVal( v, u'אקטואליה' ),
         'hu' :      lambda v: dh_singVal( v, u'Friss események' ),
         'id' :      lambda v: dh_singVal( v, u'Wikipedia:Peristiwa terkini' ),
         'io' :      lambda v: dh_singVal( v, u'Current events' ),
@@ -1373,6 +1398,7 @@ addFmt2('es', True, u"%s de %%d", True )
 addFmt2('et', True, u"%s %%d", True )
 addFmt ('fi', True,     [ None, None, None, None, None, u"Huhtikuu %d", None, None, None, None, None, None ])
 addFmt ('fr', True,     [ u"Janvier %d", u"Février %d", u"Mars %d", u"Avril %d", u"Mai %d", u"Juin %d", u"Juillet %d", u"Août %d", u"Septembre %d", u"Octobre %d", u"Novembre %d", u"Décembre %d" ])
+addFmt2('he', True, u"%s %%d", True )
 addFmt2('it', True, u"Attualità/Anno %%d - %s", True )
 addFmt ('ja', True,     [ u"「最近の出来事」%%d年%d月" % mm for mm in range(1,13)])
 addFmt2('ka', True, u"%s, %%d" )

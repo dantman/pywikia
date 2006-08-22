@@ -145,6 +145,7 @@ class TemplateRobot:
         'en':u'Robot: Changing template: %s',
         'de':u'Bot: Ändere Vorlage: %s',
 	'fr':u'Robot: Changement de modèle: %s',
+        'he':u'רובוט: משנה תבנית: %s',
 	'ia':u'Robot: Modification del template: %s',
         'hu':u'Robot: Sablon csere: %s',
         'pt':u'Bot: Alterando predefinição: %s',
@@ -154,6 +155,8 @@ class TemplateRobot:
     #Needs more translations!
     msgs_change={
 	'en':u'Robot: Changing templates: %s',
+        'he':u'רובוט: משנה תבניות: %s',
+        'pt':u'Bot: Alterando predefinição: %s',
     }
     
     # Summary messages for removing templates
@@ -161,6 +164,7 @@ class TemplateRobot:
         'en':u'Robot: Removing template: %s',
         'de':u'Bot: Entferne Vorlage: %s',
 	'fr':u'Robot: Enlève le modèle: %s',
+        'he':u'רובוט: מסיר תבנית: %s',
 	'ia':u'Robot: Elimination del template: %s',
         'hu':u'Robot: Sablon eltávolítása: %s',
         'pt':u'Bot: Removendo predefinição: %s',
@@ -170,17 +174,23 @@ class TemplateRobot:
     #Needs more translations!
     msgs_remove={
         'en':u'Robot: Removing templates: %s',
+        'he':u'רובוט: מסיר תבניות: %s',
+        'pt':u'Bot: Removendo predefinição: %s',
     }
 
     # Summary messages for substituting templates
     #Needs more translations!
     msg_subst={
         'en':u'Robot: Substituting template: %s',
+        'he':u'רובוט: מכליל תבנית בקוד הדף: %s',
+        'pt':u'Bot: Substituindo predefinição: %s',
     }
 
     #Needs more translations!
     msgs_subst={
         'en':u'Robot: Substituting templates: %s',
+        'he':u'רובוט: מכליל תבניות בקוד הדף: %s',
+        'pt':u'Bot: Substituindo predefinição: %s',
     }
 
     def __init__(self, generator, old, new = None, remove = False, editSummary = '', acceptAll = False, extras = False):

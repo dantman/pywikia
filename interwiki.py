@@ -251,7 +251,7 @@ msg = {
     'fa': (u'ربات ', u'افزودن', u'حذف', u'اصلاح'),
     'fi': (u'Botti ', u'lisäsi', u'poisti', u'muokkasi'),
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
-    'he': (u'רובוט ', u'מוסיף', u'מוריד', u'משנה'),
+    'he': (u'רובוט ', u'מוסיף', u'מסיר', u'משנה'),
     'hr': (u'robot', u'Dodaje', u'Uklanja', u'Mijenja'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
