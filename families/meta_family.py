@@ -8,13 +8,11 @@ import family
 
 class Family(family.Family):
     def __init__(self):
-
-        self.name = 'meta'
-
         family.Family.__init__(self)
+        self.name = 'meta'
         self.langs = {
             'meta': 'meta.wikimedia.org',
-        }
+           }
         
         self.namespaces[4] = {
             '_default': [u'Meta', self.namespaces[4]['_default']],
