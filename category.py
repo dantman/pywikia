@@ -83,7 +83,7 @@ msg_change={
     'is':u'Vélmenni: Breyti flokknum [[%s]]',
     'nl':u'Bot: Wijziging %s',
     'no':u'Robot: Endrer %s',
-    'pt':u'Bot: Modificando [[Categoria:%s]]',
+    'pt':u'Bot: Modificando [[%s]]',
     'sr':u'Бот: Измена категорије %s',
     }
 
