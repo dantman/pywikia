@@ -194,11 +194,9 @@ def featuredWithInterwiki(fromsite, tosite):
                 else:
                     # insert just before interwiki
                     if (not interactive or 
-                        wikipedia.input(u'Connecting %s -> %s. Proceed? [YN]'%(a.title(), atrans.title())) in ['Y','y']
+                        wikipedia.input(u'Connecting %s -> %s. Proceed? [Y/N]'%(a.title(), atrans.title())) in ['Y','y']
                         ):
                         m=re_this_iw.search(text)
-                        if m:
-                            wikipedia.output(u"(already done)")
                         if not m:
                             wikipedia.output(u"no interwiki record, very strange")
                             continue
