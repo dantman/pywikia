@@ -157,7 +157,7 @@ class TextfilePageGenerator:
     def __iter__(self):
         site = wikipedia.getSite()
         f = codecs.open(self.filename, 'r', config.textfile_encoding)
-        R = re.compile(r'\[\[(.+?)\]\]')
+        R = re.compile(ur'\[\[(.+?)\]\]')
         for pageTitle in R.findall(f.read()):
             parts = pageTitle.split(':')
             i = 0
