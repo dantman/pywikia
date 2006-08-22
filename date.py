@@ -679,6 +679,7 @@ formats = {
         'io' :      lambda v: dh_yearBC( v, u'%d aK' ),
         'is' :      lambda v: dh_yearBC( v, u'%d f. Kr.' ),
         'it' :      lambda v: dh_yearBC( v, u'%d a.C.' ),
+        'ka' :      lambda v: dh_yearBC( v, u'ძვ. წ. %d' ),
         'ko' :      lambda v: dh_yearBC( v, u'기원전 %d년' ),
         'la' :      lambda v: dh_yearBC( v, u'%d a.C.n.' ),
         'lb' :      lambda v: dh_yearBC( v, u'-%d' ),
