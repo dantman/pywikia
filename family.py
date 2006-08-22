@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 __version__='$Id$'
@@ -95,7 +95,7 @@ class Family:
                 'ar': u'خاص',
                 'ast': u'Especial',
                 'av': u'Служебная',
-                'ay': u'Especial',
+                'ay': u'Special',
                 'az': u'Xüsusi',
                 'ba': u'Служебная',
                 'bat-smg':u'Specialus',
