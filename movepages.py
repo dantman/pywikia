@@ -10,6 +10,8 @@ Command-line arguments:
 
     -ref           Work on all pages that link to a certain page.
                    Argument can also be given as "-ref:referredpagetitle".
+
+    -start         Work on all pages on the home wiki, starting at the named page.
                    
     -prefix        Automatic move pages in specific page with prefix name of the pages.
                    Argument can also be given as "-prefix:Python/Pywikipediabot/".
@@ -75,6 +77,7 @@ def main():
     categoryName = None
     singlePageTitle = []
     referredPageTitle = None
+    startpage = None
     prefixPageTitle = None
     deletedPages = False
     
@@ -91,6 +94,11 @@ def main():
                     referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
                 else:
                     referredPageTitle = arg[6:]
+            elif arg.startswith('-start:'):
+                if len(arg) == 6:
+                    startpage = wikipedia.input(u'Please enter the article to start then:')
+                else:
+                    startpage = arg[7:]
             elif arg.startswith('-prefix:'):
                 if len(arg) == 8:
                     prefixPageTitle = wikipedia.input(u'Enter the prefix name of the pages in specific page: ')
@@ -110,6 +118,12 @@ def main():
     elif referredPageTitle:
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
+        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
+        for page in generator: Movepages(page, deletedPages)
+
+    elif startpage:
+        start = wikipedia.Page(wikipedia.getSite(), startpage)
+        gen = pagegenerators.AllpagesPageGenerator(startpage)
         generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
         for page in generator: Movepages(page, deletedPages)
 
