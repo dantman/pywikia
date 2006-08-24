@@ -280,10 +280,13 @@ class Page(object):
                         self._namespace = 0
                         t = t[1:]
                 elif lowerNs in self.site().family.known_families:
-                    # This page is from a different family
-                    output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
-                    self._site = getSite(self.site().lang, self.site().family.known_families[lowerNs])
-                    t = m.group(2)
+                    if self.site().family.known_families[lowerNs] == self.site().family.name:
+                        t = m.group(2)
+                    else:
+                        # This page is from a different family
+                        output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
+                        self._site = getSite(self.site().lang, self.site().family.known_families[lowerNs])
+                        t = m.group(2)
                 else:
                     # If there's no recognized interwiki or namespace,
                     # then let the colon expression be part of the title.
