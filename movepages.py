@@ -124,8 +124,7 @@ def main():
     elif startpage:
         start = wikipedia.Page(wikipedia.getSite(), startpage)
         gen = pagegenerators.AllpagesPageGenerator(startpage)
-        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
-        for page in generator: Movepages(page, deletedPages)
+        for page in gen: Movepages(page, deletedPages)
 
     elif prefixPageTitle:
         listpageTitle = wikipedia.input(u'List of pages:')
