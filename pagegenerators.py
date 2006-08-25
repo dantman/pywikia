@@ -67,6 +67,7 @@ class ReferringPagesGenerator:
 
 	#Remove duplicate pages.
 	allPages = list(set(allPages))
+        wikipedia.output(u'Page generator found %s pages.' % len(allPages))
 
 	for page in allPages:
             yield page
