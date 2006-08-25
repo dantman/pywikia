@@ -273,6 +273,16 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     cats = article.categories()
     site = article.site()
     removed = False
+
+    if inPlace == True:
+        text = article.get()
+        text = wikipedia.replaceCategoryInPlace(text, oldCat, newCat)
+        try:
+            article.put(text, comment)
+        except wikipedia.EditConflict:
+            wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
+        return
+
     # This loop will stop after the first occurence of the category was found
     # and replaced. There might also be cases where a category was inserted
     # twice in an article; the bot would then only replace the first occurence.
@@ -288,10 +298,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
                 cats = cats[:i] + [newCat] + cats[i+1:]
             text = article.get()
 	    try:
-                if (inPlace == True):
-                    text = wikipedia.replaceCategoryInPlace(text, oldCat, newCat)
-                else:
-                    text = wikipedia.replaceCategoryLinks(text, cats)
+                text = wikipedia.replaceCategoryLinks(text, cats)
             except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
 		wikipedia.output(u'Skipping %s because of interwiki link to self' % (article))
 	    try:

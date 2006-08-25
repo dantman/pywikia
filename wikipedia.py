@@ -2200,9 +2200,10 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
     #print "oldcat: %s  newcat: %s" % (oldcat, newcat)
 
     catNamespace = '|'.join(site.category_namespaces())
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\][\s]*' % (catNamespace, oldcat))
-    text = replaceExceptMathNowikiAndComments(oldtext, categoryR, newcat)
-    return normalWhitespace(text)
+    #print "Regex is [[(%s):%s]]" % (catNamespace, oldcat.titleWithoutNamespace())
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\][\s]*' % (catNamespace, oldcat.titleWithoutNamespace()))
+    text = replaceExceptMathNowikiAndComments(oldtext, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace())
+    return text
 
 def replaceCategoryLinks(oldtext, new, site = None):
     """Replace the category links given in the wikitext given
