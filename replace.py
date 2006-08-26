@@ -339,6 +339,7 @@ def main():
             else:
                 firstPageTitle = arg[7:]
             namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
+            firstPageTitle = wikipedia.Page(wikipedia.getSite(), firstPageTitle).titleWithoutNamespace()
             gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
         elif arg.startswith('-google'):
             if len(arg) >= 8:
