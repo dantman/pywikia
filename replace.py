@@ -437,7 +437,7 @@ LIMIT 200""" % (whereClause, exceptClause)
         sys.exit()
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-    preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
+    preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 50)
     bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall)
     bot.run()
 

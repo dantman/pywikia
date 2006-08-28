@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
@@ -497,7 +498,7 @@ class Page(object):
         """
         isWatched = False
         editRestriction = None
-        output(u'Getting page %s' % self.aslink())
+        #output(u'Getting page %s' % self.aslink())
         path = self.site().edit_address(self.urlname())
         # Make sure Brion doesn't get angry by waiting if the last time a page
         # was retrieved was not long enough ago.
@@ -716,7 +717,7 @@ class Page(object):
 
         while more:
             refTitles = set()  # use a set to avoid duplications
-            output(u'Getting references to %s' % self.aslink())
+            #output(u'Getting references to %s' % self.aslink())
             while True:
                 txt = site.getUrl(path)
                 # trim irrelevant portions of page
@@ -832,7 +833,7 @@ class Page(object):
         while more:
             more = False #Kill after one loop because MediaWiki will only display up to the first 500 File links.
             fileLinks = set()  # use a set to avoid duplications
-            output(u'Getting references to %s' % self.aslink())
+            #output(u'Getting references to %s' % self.aslink())
             while True:
                 txt = site.getUrl(path)
                 # trim irrelevant portions of page
@@ -1524,7 +1525,7 @@ class ImagePage(Page):
     def getImagePageContents(self):
         if not self._imagePageContents:
             path = self.site().get_address(self.urlname())
-            output(u'Getting http://%s%s' % (self.site().hostname(), path))
+            #output(u'Getting http://%s%s' % (self.site().hostname(), path))
             self._imagePageContents = self.site().getUrl(path)
         return self._imagePageContents
 
@@ -1635,7 +1636,6 @@ class GetAll(object):
                 break
         if not data:
             return
-        # They're doing strange things with their XML on Lovetoknow...
         R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
         M = R.match(data)
         if M:

@@ -165,6 +165,9 @@ This script understands various command-line arguments:
                    site is updated. This option is useful to quickly set two way
                    links without updating all of wiki's sites.
 
+    -bracket       only work on pages that have (in the home language) a bracket
+                   in their title. All other pages are skipped.
+
 Some configuration option can be used to change the working of this robot:
 
 interwiki_backlink: if set to True, all problems in foreign wikis will
@@ -297,6 +300,7 @@ class Global(object):
     localonly = False
     limittwo = False
     ignore = []
+    bracketonly = False
 
 class Subject(object):
     """Class to follow the progress of a single 'subject' (i.e. a page with
@@ -485,10 +489,10 @@ class Subject(object):
                             iw = ()
                     for page2 in iw:
                         if page2.site().language() in globalvar.neverlink:
-                            wikipedia.output(u"Skipping link %s to an ignored language" % page2)
+                            print("Skipping link %s to an ignored language"%page2)
                             continue
                         if page2 in globalvar.ignore:
-                            wikipedia.output(u"Skipping link %s to an ignored page" % page2)
+                            wikipedia.output("Skipping link %s to an ignored page"%page2)
                             continue                            
                         if globalvar.same=='wiktionary':
                             if page2.title().lower()!=self.inpl.title().lower():
@@ -1052,6 +1056,9 @@ class InterwikiBot(object):
                         if dictName != None:
                             wikipedia.output(u'Skipping: %s is an auto entry %s(%s)' % (page.title(),dictName,year))
                             continue
+                    if globalvar.bracketonly:
+                        if page.title().find("(") == -1:
+                            continue
                     break
 
                 self.add(page, hints = hints)
@@ -1400,6 +1407,8 @@ if __name__ == "__main__":
                 elif arg == '-graph':
                     # override configuration
                     config.interwiki_graph = True
+                elif arg == '-bracket':
+                    globalvar.bracketonly = True
                 else:
                     singlePageTitle.append(arg)
         

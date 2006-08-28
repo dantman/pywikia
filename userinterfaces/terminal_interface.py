@@ -1,7 +1,7 @@
 
 __version__ = '$Id$'
 
-import config, re, sys
+import config, re, sys, transliteration
 
 # TODO: other colors
 unixColors = {
@@ -44,11 +44,28 @@ class UI:
             for i in range(len(colors)-1, -1, -1):
                 if colors[i]:
                     text = text[:i] + unixColors[colors[i]] % text[i] + text[i+1:]
+        newtext = [letter.encode(config.console_encoding, 'replace') for letter in text]
+        if config.transliterate:
+            change = False
+            for i in xrange(len(newtext)):
+                if newtext[i] == '?':
+                    newtext[i] = transliteration.trans(newtext[i],default = '?')
+                    if newtext[i] != '?':
+                        change = True
+            if change:
+                newtext.append('***')
+        newtext = "".join(newtext)
         if newline:
-            print text.encode(config.console_encoding, 'replace')
+            try:
+                print newtext
+            except: # For example, if there is a character that is transliterated to a non-encoded character
+                print text.encode(config.console_encoding, 'replace')
         else:
             # comma at the end means "don't print newline"
-            print text.encode(config.console_encoding, 'replace'),
+            try:
+                print newtext,
+            except:
+                print text.encode(config.console_encoding, 'replace'),
 
     def input(self, question):
         """

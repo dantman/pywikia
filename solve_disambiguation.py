@@ -244,6 +244,8 @@ ignore_title = {
             u'Gebruiker:Yorian/oud',
             u'Lijst van Nederlandse namen van pausen',
             u"Gebruiker:Henna/Ucacha's redirects",
+            u"Gebruiker:Andre Engels/Haakjesproblemen.*",
+            u"Gebruiker:Dedalus/Namen/.",
          ],
         'pt': [
             u'Wikipedia:.+',

@@ -109,6 +109,7 @@ class LoginManager:
             "User-agent": "RobHooftWikiRobot/1.0"
         }
         pagename = self.site.login_address()
+
         if self.site.hostname() in config.authenticate.keys():
             response = urllib2.urlopen(urllib2.Request('http://'+self.site.hostname()+pagename, data, headers))
             data = response.read()
@@ -121,6 +122,7 @@ class LoginManager:
             conn.close()
 
             data = response.read()
+            print data
             n=0
             Reat=re.compile(': (.*?);')
             L = []
