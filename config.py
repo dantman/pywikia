@@ -82,7 +82,7 @@ userinterface = 'terminal'
 # True: whenever possible
 # False: never - always replace them by question marks
 # Currently only works if interface 'terminal' is set.
-transliterate = True
+transliterate = False # For now - I can't seem to save transliteration
 
 # Should the system bell be ringed if the bot expects user input?
 ring_bell = True
