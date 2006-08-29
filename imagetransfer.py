@@ -37,6 +37,7 @@ copy_message = {
     'de':u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
     'he':u"תמונה זו הועתקה מהאתר %s. תיאור הקובץ המקורי היה:\r\n\r\n%s",
     'ia':u"Iste imagine esseva copiate de %s. Le description original esseva:\r\n\r\n%s",
+    'it':u"Questa immagine è stata copiata da %s. La descrizione originale era:\r\n\r\n%s",
     'lt':u"Šis paveikslėlis buvo įkeltas iš %s. Originalus aprašymas buvo:\r\n\r\n%s",
     'nl':u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
     'pt':u"Esta imagem foi copiada de %s. A descrição original foi:\r\n\r\n%s",
@@ -49,6 +50,7 @@ nowCommonsTemplate = {
     'en': u'{{NowCommons|Image:%s}}',
     'he': u'{{תמונת ויקישיתוף|Image:%s}}',
     'ia': u'{{OraInCommons|Imagine:%s}}',
+    'it': u'{{NowCommons unlink|%s}}',
     'lt': u'{{NowCommons|Image:%s}}',
     'nl': u'{{NuCommons|%s}}',
     'pt': u'{{NowCommons|%s}}',
@@ -57,6 +59,7 @@ nowCommonsTemplate = {
 
 nowCommonsThis = {
     'en': u'{{NowCommonsThis|%s}}',
+    'it': u'{{NowCommons omonima|%s}}',
     'pt': u'{{NowCommonsThis|%s}}',
 }
 
@@ -65,6 +68,7 @@ nowCommonsMessage = {
     'en': u'File is now available on Wikimedia Commons.',
     'he': u'הקובץ זמין כעת בוויקישיתוף.',
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
+    'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
     'lt': u'Failas įkeltas į Wikimedia Commons projektą.',
     'pt': u'Arquivo está agora na Wikimedia Commons.',
     'sr': u'Слика је сада доступна и на Викимедија Остави.',
@@ -73,6 +77,7 @@ nowCommonsMessage = {
 nowCommonsThisMessage = {
     'en': u'File is now available on Commons with the same name.',
     'he': u'הקובץ זמין כעת בוויקישיתוף בשם זהה.',
+    'it': u'L\'immagine è adesso disponibile su Wikimedia Commons con lo stesso nome.',
     'pt': u'Esta imagem está agora no Commons com o mesmo nome.',
 }
 
