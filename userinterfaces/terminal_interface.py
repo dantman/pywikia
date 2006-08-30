@@ -49,7 +49,7 @@ class UI:
             change = False
             for i in xrange(len(newtext)):
                 if newtext[i] == '?':
-                    newtext[i] = transliteration.trans(newtext[i],default = '?')
+                    newtext[i] = transliteration.trans(text[i],default = '?')
                     if newtext[i] != '?':
                         change = True
             if change:

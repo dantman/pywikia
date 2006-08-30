@@ -78,11 +78,12 @@ textfile_encoding = 'utf-8'
 # tkinter isn't yet ready
 userinterface = 'terminal'
 
-# Should we try to transliterate characters we do not know?
+# Should we transliterate characters that do not exist in the console
+# character set?
 # True: whenever possible
 # False: never - always replace them by question marks
 # Currently only works if interface 'terminal' is set.
-transliterate = False # For now - I can't seem to save transliteration
+transliterate = True
 
 # Should the system bell be ringed if the bot expects user input?
 ring_bell = True
