@@ -286,7 +286,10 @@ class Page(object):
                     else:
                         # This page is from a different family
                         output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
-                        self._site = getSite(self.site().lang, self.site().family.known_families[lowerNs])
+                        otherlang = self.site().lang
+                        if lowerNs in ['commons']:
+                            otherlang = lowerNs
+                        self._site = getSite(otherlang, self.site().family.known_families[lowerNs])
                         t = m.group(2)
                 else:
                     # If there's no recognized interwiki or namespace,
