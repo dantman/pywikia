@@ -6,7 +6,7 @@ def trans(char, default = '?'):
         return "A"
     if char in u"ȀǞ":
         return "Ä"
-    if char in u"Ǻ":
+    if char == u"Ǻ":
         return "Å"
     if char == u"Ä":
         return "Ae"
@@ -688,5 +688,283 @@ def trans(char, default = '?'):
         return "zh"
     if char in u"گﮔﮕﮓ":
         return "g"
+
+    # Greek
+    if char == u"Α":
+        return "A"
+    if char == u"α":
+        return "a"
+    if char == u"Β":
+        return "B"
+    if char == u"β":
+        return "b"
+    if char == u"Γ":
+        return "G"
+    if char == u"γ":
+        return "g"
+    if char == u"Δ":
+        return "D"
+    if char == u"δ":
+        return "d"
+    if char == u"Ε":
+        return "E"
+    if char == u"ε":
+        return "e"
+    if char == u"Ζ":
+        return "Z"
+    if char == u"ζ":
+        return "z"
+    if char == u"Η":
+        return "I"
+    if char == u"η":
+        return "i"
+    if char == u"Θ":
+        return "Th"
+    if char == u"θ":
+        return "th"
+    if char == u"Ι":
+        return "I"
+    if char == u"ι":
+        return "i"
+    if char == u"Κ":
+        return "K"
+    if char == u"κ":
+        return "k"
+    if char == u"Λ":
+        return "L"
+    if char == u"λ":
+        return "l"
+    if char == u"Μ":
+        return "M"
+    if char == u"μ":
+        return "m"
+    if char == u"Ν":
+        return "N"
+    if char == u"ν":
+        return "n"
+    if char == u"Ξ":
+        return "X"
+    if char == u"ξ":
+        return "x"
+    if char == u"Ο":
+        return "O"
+    if char == u"ο":
+        return "o"
+    if char == u"Π":
+        return "P"
+    if char == u"π":
+        return "p"
+    if char == u"Ρ":
+        return "R"
+    if char == u"ρ":
+        return "r"
+    if char == u"Σ":
+        return "S"
+    if char in u"σς":
+        return "s"
+    if char == u"Τ":
+        return "T"
+    if char == u"τ":
+        return "t"
+    if char == u"Υ":
+        return "Y"
+    if char == u"υ":
+        return "y"
+    if char == u"Φ":
+        return "F"
+    if char == u"φ":
+        return "f"
+    if char == u"Ψ":
+        return "Ps"
+    if char == u"ψ":
+        return "ps"
+    if char == u"Ω":
+        return "O"
+    if char == u"ω":
+        return "o"
+    if char == u"ϗ":
+        return "&"
+    if char == u"Ϛ":
+        return "St"
+    if char == u"ϛ":
+        return "st"
+    if char in u"ϘϞ":
+        return "Q"
+    if char in u"ϙϟ":
+        return "q"
+    if char == u"Ϻ":
+        return "S"
+    if char == u"ϻ":
+        return "s"
+    if char == u"Ϡ":
+        return "Ss"
+    if char == u"ϡ":
+        return "ss"
+    if char == u"Ϸ":
+        return "Sh"
+    if char == u"ϸ":
+        return "sh"
+
+    # Japanese (katakana and hiragana)
+    if char in u"アあ":
+        return "a"
+    if char in u"イい":
+        return "i"
+    if char in u"ウう":
+        return "u"
+    if char in u"エえ":
+        return "e"
+    if char in u"オお":
+        return "o"
+    if char in u"ャや":
+        return "ya"
+    if char in u"ュゆ":
+        return "yu"
+    if char in u"ョよ":
+        return "yo"
+    if char in u"カか":
+        return "ka"
+    if char in u"キき":
+        return "ki"
+    if char in u"クく":
+        return "ku"
+    if char in u"ケけ":
+        return "ke"
+    if char in u"コこ":
+        return "ko"
+    if char in u"サさ":
+        return "sa"
+    if char in u"シし":
+        return "shi"
+    if char in u"スす":
+        return "su"
+    if char in u"セせ":
+        return "se"
+    if char in u"ソそ":
+        return "so"
+    if char in u"タた":
+        return "ta"
+    if char in u"チち":
+        return "chi"
+    if char in u"ツつ":
+        return "tsu"
+    if char in u"テて":
+        return "te"
+    if char in u"トと":
+        return "to"
+    if char in u"ナな":
+        return "na"
+    if char in u"ニに":
+        return "ni"
+    if char in u"ヌぬ":
+        return "nu"
+    if char in u"ネね":
+        return "ne"
+    if char in u"ノの":
+        return "no"
+    if char in u"ハは":
+        return "ha"
+    if char in u"ヒひ":
+        return "hi"
+    if char in u"フふ":
+        return "fu"
+    if char in u"ヘへ":
+        return "he"
+    if char in u"ホほ":
+        return "ho"
+    if char in u"マま":
+        return "ma"
+    if char in u"ミみ":
+        return "mi"
+    if char in u"ムむ":
+        return "mu"
+    if char in u"メめ":
+        return "me"
+    if char in u"モも":
+        return "mo"
+    if char in u"ラら":
+        return "ra"
+    if char in u"リり":
+        return "ri"
+    if char in u"ルる":
+        return "ru"
+    if char in u"レれ":
+        return "re"
+    if char in u"ロろ":
+        return "ro"
+    if char in u"ワわ":
+        return "wa"
+    if char in u"ヰゐ":
+        return "wi"
+    if char in u"ヱゑ":
+        return "we"
+    if char in u"ヲを":
+        return "wo"
+    if char in u"ンん":
+        return "n"
+    if char in u"ガが":
+        return "ga"
+    if char in u"ギぎ":
+        return "gi"
+    if char in u"グぐ":
+        return "gu"
+    if char in u"ゲげ":
+        return "ge"
+    if char in u"ゴご":
+        return "go"
+    if char in u"ザざ":
+        return "za"
+    if char in u"ジじ":
+        return "ji"
+    if char in u"ズず":
+        return "zu"
+    if char in u"ゼぜ":
+        return "ze"
+    if char in u"ゾぞ":
+        return "zo"
+    if char in u"ダだ":
+        return "da"
+    if char in u"ヂぢ":
+        return "dji"
+    if char in u"ヅづ":
+        return "dzu"
+    if char in u"デで":
+        return "de"
+    if char in u"ドど":
+        return "do"
+    if char in u"ドば":
+        return "ba"
+    if char in u"ビび":
+        return "bi"
+    if char in u"ブぶ":
+        return "bu"
+    if char in u"ベべ":
+        return "be"
+    if char in u"ボぼ":
+        return "bo"
+    if char in u"パぱ":
+        return "pa"
+    if char in u"ピぴ":
+        return "pi"
+    if char in u"プぷ":
+        return "pu"
+    if char in u"ペぺ":
+        return "pe"
+    if char in u"ポぽ":
+        return "po"
+    if char == u"ヷ":
+        return "va"
+    if char == u"ヸ":
+        return "vi"
+    if char == u"ヹ":
+        return "ve"
+    if char == u"ヺ":
+        return "vo"
+    
+    
+    
+    
+    
+    
     
     return default
