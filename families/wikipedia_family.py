@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -495,7 +495,6 @@ class Family(family.Family):
              'zh-yue','zu',],
             'he': ['en'],
             'hu': ['en'],
-            'ia': ['en','fr','it','es','pt','de','ru','la'],
             'lb': self.alphabetic_lb,
             'nn': ['no','nb','sv','da'] + self.alphabetic,
             'no': self.alphabetic,
