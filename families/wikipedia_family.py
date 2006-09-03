@@ -74,6 +74,7 @@ class Family(family.Family):
             'ta': [u'Wikipedia', u'விக்கிபீடியா'],  # Very strange - the localized version is not the main one
             'tr': u'Vikipedi',
             'uk': u'Вікіпедія',
+            'ur': u'منصوبہ',
             'yi': u'װיקיפּעדיע',
         }
         
@@ -317,7 +318,7 @@ class Family(family.Family):
             'oc':  [u'Omonimia',],
             'pl':  [u'Disambig', u'DisambRulers', u'DisambigC'],
             'pt':  [u'Desambiguação', u'Disambig'],
-            'ro':  [u'Dezambiguizare', u'Disambig'],
+            'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis'],
             'ru':  [u'Disambig', u'Значения'],
             'scn': [u'Disambigua', u'Disambig'],
             'simple': [u'Disambig', u'Disambiguation'],

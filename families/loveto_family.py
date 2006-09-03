@@ -61,6 +61,13 @@ class Family(family.Family):
 
         self.namespaces[4]['recipes'] = 'LoveToKnow Recipes'
         self.namespaces[5]['recipes'] = 'Talk:LoveToKnow Recipes'
+        self.disambiguationTemplates = {
+            '_default': [],
+            '1911': ['Disamb'],
+            }
+
+        self.disambcatname = {
+            '1911': 'Disambiguation',}
         
     def path(self, code):
         if code in ['1911','shoes','insurance','makeup','skincare','lingerie',
@@ -78,7 +85,6 @@ class Family(family.Family):
             return '/%s' % (name)
 
     # Which version of MediaWiki is used?
-
     def version(self, code):
         return "1.4.5"
 
