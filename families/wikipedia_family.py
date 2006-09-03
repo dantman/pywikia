@@ -328,7 +328,7 @@ class Family(family.Family):
             'sr':  [u'Вишезначна одредница', u'Disambig'],
             'su':  [u'Disambig'],
             'sv':  [u'Betydelselista', u'Disambig', u'Förgrening', u'Gaffel',
-                    u'Efternamn', u'Gren',u'Förgreningssida'],
+                    u'Efternamn', u'Gren',u'Förgreningssida',u'3LC'],
             'sw':  [u'Maana'],
             'th':  [u'แก้กำกวม', u'Disambig'],
             'tl':  [u'Paglilinaw', u'Disambig'],
