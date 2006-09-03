@@ -15,7 +15,7 @@ Page: A MediaWiki page
     section               : The section of the page (the part of the name after '#')
     sectionFreeTitle      : The name without the section part
     aslink                : The name of the page in the form [[Title]] or [[lang:Title]]
-    site                  : Thewiki where this page is in
+    site                  : Thewiki where this page isin
     encoding              : The encoding the page is in
     isAutoTitle           : If the title is a well known, auto-translatable title
     autoFormat            : Returns (dictName, value), where value can be a year, date, etc.,
@@ -342,12 +342,15 @@ class Page(object):
         encodedTitle = title.encode(self.site().encoding())
         return urllib.quote(encodedTitle)
 
-    def title(self, underscore = False):
+    def title(self, underscore = False, savetitle = False):
         """The name of this Page, as a Unicode string"""
+        title = self._title
+        if savetitle: # Ensure there's no wiki syntax in the title
+            if title.find("''") > -1:
+                title = urllib.quote(title).replace('%20',' ')
         if underscore:
-            return self._title.replace(' ', '_')
-        else:
-            return self._title
+            title = title.replace(' ', '_')
+        return title
 
     def titleWithoutNamespace(self, underscore = False):
         """
@@ -400,9 +403,9 @@ class Page(object):
         """
         if forceInterwiki or self.site() != getSite():
             if self.site().family != getSite().family:
-                return '[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, self.title())
+                return '[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, self.title(savetitle=True))
             else:
-                return '[[%s:%s]]' % (self.site().lang, self.title())
+                return '[[%s:%s]]' % (self.site().lang, self.title(savetitle=True))
         else:
             return '[[%s]]' % self.title()
 
@@ -489,7 +492,7 @@ class Page(object):
                 raise
         return self._contents
 
-    def getEditPage(self, get_redirect=False, throttle = True, sysop = False):
+    def getEditPage(self, get_redirect=False, throttle = True, sysop = False, oldid = None):
         """
         Get the contents of the Page via the edit page.
         Do not use this directly, use get() instead.
@@ -503,6 +506,8 @@ class Page(object):
         editRestriction = None
         #output(u'Getting page %s' % self.aslink())
         path = self.site().edit_address(self.urlname())
+        if oldid:
+            path = path + "&oldid="+oldid
         # Make sure Brion doesn't get angry by waiting if the last time a page
         # was retrieved was not long enough ago.
         if throttle:
@@ -1198,6 +1203,18 @@ class Page(object):
             return arg[0]
         else:
             raise IsNotRedirectPage(self)
+
+    def getPreviousVersion(self):
+        # Not for general use - if this is uploaded to CVS, it is by accident
+        site = self.site()
+        path = site.family.version_history_address(self.site().language(), self.urlname())
+        txt = site.getUrl(path)
+        loc = txt.find("cur</a>")
+        if txt.find("Some minor changes") > loc or txt.find("Some minor changes") == -1:
+            return self.get()
+        r = re.compile('oldid=(\d+)\"')
+        oldid = r.findall(txt)[0]
+        return self.getEditPage(oldid=oldid)[0]
 
     def getVersionHistory(self, forceReload = False, reverseOrder = False, getAll = False):
         """
