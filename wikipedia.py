@@ -3489,7 +3489,12 @@ def inputChoice(question, answers, hotkeys, default = None):
 def showHelp(moduleName = None):
     # the parameter moduleName is deprecated and should be left out.
     moduleName = moduleName or sys.argv[0][:sys.argv[0].rindex('.')]
+    try:
+        moduleName = moduleName[moduleName.rindex("\\")+1:]
+    except ValueError: # There was no \ in the module name, so presumably no problem
+        pass
     globalHelp =u'''
+    
 Global arguments available for all bots:
 
 -lang:xx          Set the language of the wiki you want to work on, overriding
