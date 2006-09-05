@@ -86,12 +86,14 @@ class Category(wikipedia.Page):
         import re
         if site.version() < "1.4":
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
-        else:
+        elif site.version() < "1.8":
             Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
+        else:
+            Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
         if site.version() < "1.8":
             Rsubcat = None
         else:
-            Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\"(?:[^\"\/]*\/)*([^\"\/]*)\"')
+            Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\"\>(?:[^\"\/]*\/)*([^\"\/]*)\"')
         ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
