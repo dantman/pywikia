@@ -74,3 +74,7 @@ class Family(family.Family):
         # group of languages that we might want to do at once
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+
+    def version(self, code):
+        return "1.8"
+    

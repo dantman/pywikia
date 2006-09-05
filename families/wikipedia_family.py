@@ -752,13 +752,15 @@ class Family(family.Family):
             'zh-min-nan':     u'Thâu-ia̍h',
             'zu' :            u'Main Page',
         }
+
+    def version(self, code):
+        return "1.8alpha"
     
     def dbName(self, code):
         # returns the name of the MySQL database
         # for historic reasons, the databases are called wikixx instead of
         # wikipediaxx for Wikipedias.
         return '%swiki' % code
-
     
     def code2encodings(self, code):
         """Return a list of historical encodings for a specific language

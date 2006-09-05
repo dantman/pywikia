@@ -95,6 +95,9 @@ class Family(family.Family):
             
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
 
+    def version(self, code):
+        return "1.8alpha"    
+
     def code2encodings(self, code):
         """
         Return a list of historical encodings for a specific language wikipedia

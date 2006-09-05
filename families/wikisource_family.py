@@ -26,3 +26,7 @@ class Family(family.Family):
                       'pt','ro','ru','sr','sv','zh']
         
         self.cyrilliclangs = ['ru', 'sr']
+
+    def version(self, code):
+        return "1.8"
+    

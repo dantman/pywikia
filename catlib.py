@@ -88,6 +88,10 @@ class Category(wikipedia.Page):
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
         else:
             Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
+        if site.version() < "1.8":
+            Rsubcat = None
+        else:
+            Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\"(?:[^\"\/]*\/)*([^\"\/]*)\"')
         ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
@@ -136,6 +140,7 @@ class Category(wikipedia.Page):
                         iend = txt.index('<!-- end content -->')
                 txt = txt[ibegin:iend]
                 for title in Rtitle.findall(txt):
+                    # For MediaWiki versions where subcats look like articles
                     if isCatTitle(title, self.site()):
                         ncat = Category(self.site(), title)
                         if recurse and ncat not in catsdone:
@@ -143,6 +148,13 @@ class Category(wikipedia.Page):
                         subcats.append(title)
                     else:
                         articles.append(title)
+                if Rsubcat:
+                    # For MediaWiki versions where subcats look differently
+                    for title in Rsubcat.findall(txt):
+                        ncat = Category(self.site(), title)
+                        if recurse and ncat not in catsdone:
+                            catstodo.append(ncat)
+                        subcats.append(title)                        
                 # try to find a link to the next list page
                 matchObj = RLinkToNextPage.search(txt)
                 if matchObj:

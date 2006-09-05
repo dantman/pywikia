@@ -73,3 +73,6 @@ class Family(family.Family):
     def code2encoding(self, code):
         return 'utf-8'
 
+    def version(self, code):
+        return "1.8"
+    

@@ -203,3 +203,8 @@ class Family(family.Family):
         self.interwiki_on_one_line = ['pl']
 
         self.interwiki_attop = ['pl']
+
+    def version(self, code):
+        return "1.8"
+    
+
