@@ -93,7 +93,7 @@ class Category(wikipedia.Page):
         if site.version() < "1.8":
             Rsubcat = None
         else:
-            Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\"\>(?:[^\"\/]*\/)*([^\"\/]*)\"')
+            Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\"(?:[^\"\/]*/)*([^\"/]*)\"')
         ns = site.category_namespaces()
         catsdone = []
         catstodo = [self]
