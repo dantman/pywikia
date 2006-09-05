@@ -246,6 +246,7 @@ ignore_title = {
             u"Gebruiker:Henna/Ucacha's redirects",
             u"Gebruiker:Andre Engels/Haakjesproblemen.*",
             u"Gebruiker:Dedalus/Namen/.",
+            u"Gebruiker:R.Koot/Unicode",
          ],
         'pt': [
             u'Wikipedia:.+',
@@ -270,6 +271,9 @@ ignore_title = {
         ],
     },
 }
+
+def firstcap(string):
+    return string[0].upper()+string[1:]
 
 class ReferringPageGeneratorWithIgnore:
     def __init__(self, disambPage, primary=False):
@@ -624,8 +628,8 @@ class DisambiguationRobot(object):
                     elif replaceit or (new_page_title == link_text and not section):
                         newlink = "[[%s]]" % new_page_title
                     # check if we can create a link with trailing characters instead of a pipelink
-                    elif len(new_page_title) <= len(link_text) and link_text[:len(new_page_title)] == new_page_title and re.sub(self.trailR, '', link_text[len(new_page_title):]) == '' and not section:
-                        newlink = "[[%s]]%s" % (new_page_title, link_text[len(new_page_title):])
+                    elif len(new_page_title) <= len(link_text) and firstcap(link_text[:len(new_page_title)]) == new_page_title and re.sub(self.trailR, '', link_text[len(new_page_title):]) == '' and not section:
+                        newlink = "[[%s]]%s" % (link_text[:len(new_page_title)], link_text[len(new_page_title):])
                     else:
                         newlink = "[[%s%s|%s]]" % (new_page_title, section, link_text)
                     text = text[:m.start()] + newlink + text[m.end():]
