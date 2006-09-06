@@ -44,7 +44,7 @@ def Movepages(page, deletedPages):
     pagetitle = page.title()
     wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
     ask = wikipedia.input('What do you do: (c)hange page name, (n)ext page or (q)uit?')
-    if ask == 'c':
+    if ask in ['c', 'C']:
         pagemove = wikipedia.input(u'New page name:')
         titleroot = wikipedia.Page(wikipedia.getSite(), pagetitle)
         msg = wikipedia.translate(wikipedia.getSite(), comment)
@@ -53,9 +53,9 @@ def Movepages(page, deletedPages):
         if deletedPages == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
             pagedel.delete(pagetitle)
-    elif ask == 'n':
+    elif ask in ['n', 'N']:
         pass
-    elif ask == 'q':
+    elif ask in ['q', 'Q']:
         sys.exit()
     else:
         wikipedia.output('Input certain code.')
