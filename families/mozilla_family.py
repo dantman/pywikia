@@ -5,10 +5,9 @@ import family
 # The official Mozilla Wiki.
 
 class Family(family.Family):
-    name = 'mozilla'
-    
     def __init__(self):
         family.Family.__init__(self)
+        name = 'mozilla'
 	self.langs = {
             'en': 'wiki.mozilla.org',
 	}

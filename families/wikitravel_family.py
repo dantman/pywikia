@@ -8,10 +8,9 @@ import family, config
 __version__ = '$Id$'
 
 class Family(family.Family):
-    name = 'wikitravel'
-    
     def __init__(self):
         family.Family.__init__(self)
+        name = 'wikitravel'
         self.langs = {
             'de':'de',
             'en':'en',

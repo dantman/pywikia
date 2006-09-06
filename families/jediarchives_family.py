@@ -5,10 +5,9 @@ import family
 # Jedi Archives, a Star Wars wiki.
 
 class Family(family.Family):
-    name = 'jediarchives'
-    
     def __init__(self):
         family.Family.__init__(self)
+        name = 'jediarchives'
 	self.langs = {
             'en': 'jediarchives.info',
 	}
