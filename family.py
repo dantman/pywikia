@@ -11,7 +11,7 @@ class Family:
             # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic = [
            'aa','af','ak','als','am','ang','ab','ar','an','roa-rup','frp','as',
-           'ast','gn','av','ay','az','bm','bn','zh-min-nan','map-mbs','ba','be',
+           'ast','gn','av','ay','az','bm','bn','zh-min-nan','map-bms','ba','be',
            'bh','bi','bo','bs','br','bg','ca','cv','ceb','cs','ch','ny','sn',
            'tum','cho','co','za','cy','da','pdc','de','dv','arc','nv','dz','mh',
            'et','el','en','es','eo','eu','ee','fa','fo','fr','fy','ff','fur','ga',
