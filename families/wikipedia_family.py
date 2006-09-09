@@ -64,7 +64,7 @@ class Family(family.Family):
             'mt': u'Wikipedija',
             'nds-nl': u'Wikipedie',
             'nv': u'Wikiibíídiiya',
-            'oc': u'Oiquipedià',
+            'oc': u'Wikipèdia',
             'pa': u'ਵਿਕਿਪੀਡਿਆ',
             'rmy':u'Vikipidiya',
             'ru': u'Википедия',
@@ -72,6 +72,7 @@ class Family(family.Family):
             'sl': u'Wikipedija',
             'sr': u'Википедија',
             'ta': [u'Wikipedia', u'விக்கிபீடியா'],  # Very strange - the localized version is not the main one
+            'tg': u'Википедиа',
             'tr': u'Vikipedi',
             'uk': u'Вікіпедія',
             'ur': u'منصوبہ',
@@ -88,7 +89,7 @@ class Family(family.Family):
             'ar': u'نقاش ويكيبيديا',
             'ast': u'Uiquipedia discusión',
             'av': u'Обсуждение Wikipedia',
-            'ay': u'Wikipedia Discusión',
+            'ay': u'Discussion Wikipedia',
             'az': u'Vikipediya müzakirəsi',
             'ba': u'Обсуждение Wikipedia',
             'bat-smg': u'Wikipedia aptarimas',
@@ -151,14 +152,14 @@ class Family(family.Family):
             'nn': u'Wikipedia-diskusjon',
             'no': u'Wikipedia-diskusjon',
             'nv': u"Wikiibíídiiya baa yinísht'į́",
-            'oc': u'Discutida Oiquipedià',
+            'oc': u'Discutida Wikipèdia',
             'os': u'Дискусси Wikipedia',
             'pa': u'ਵਿਕਿਪੀਡਿਆ ਚਰਚਾ',
             'pl': u'Dyskusja Wikipedii',
             'pms':u'Discussion ant sla Wikipedia',
             'pt': u'Wikipedia Discussão',
             'qu': u'Wikipedia Discusión',
-            'rmy':u'Discuţie Vikipidiya',
+            'rmy':u'Vikipidiyake vakyarimata',
             'ro': u'Discuţie Wikipedia',
             'ru': u'Обсуждение Википедии',
             'sc': u'Wikipedia discussioni',
@@ -170,13 +171,14 @@ class Family(family.Family):
             'sv': u'Wikipediadiskussion',
             'ta': [u'Wikipedia பேச்சு', u'விக்கிபீடியா பேச்சு'],
             'te': u'Wikipedia చర్చ',
-            'tg': u'Баҳси Wikipedia',
+            'tg': u'Баҳси Википедиа',
             'th': u'คุยเรื่องWikipedia',
             'tr': u'Vikipedi tartışma',
             'tt': u'Wikipedia bäxäse',
             'ty': u'Discussion Wikipedia',
             'udm': u'Wikipedia сярысь вераськон',
             'uk': u'Обговорення Вікіпедія',
+            'ur': u'تبادلۂ خیال منصوبہ',
             'vec':u'Discussion Wikipedia',
             'vi': u'Thảo luận Wikipedia',
             'wa': u'Wikipedia copene',
@@ -190,7 +192,7 @@ class Family(family.Family):
             'cs': u'Portál',
             'eo': u'Portalo',
             'fr': u'Portail',
-            'it': u'Progetto',
+            'it': u'Portale',
             'he': u'פורטל',
             'it': u'Portale',
             'ka': u'პორტალი',
@@ -214,7 +216,7 @@ class Family(family.Family):
             'he': u'שיחת פורטל',
             'hr': u'Razgovor o portalu',
             'id': u'Pembicaraan Portal',
-            'it': u'Discussioni progetto',
+            'it': u'Discussioni portale',
             'ja': u'Portal‐ノート',
             'ka': u'პორტალი განხილვა',
             'kk': u'Портал талқылауы',
@@ -237,6 +239,7 @@ class Family(family.Family):
             'ca': u'Viquiprojecte',
             'es': u'Wikiproyecto',
             'fr': u'Projet',
+            'it': u'Progetto',
         }
             
         self.namespaces[103] = {
@@ -244,6 +247,7 @@ class Family(family.Family):
             'ca': u'Viquiprojecte Discussió',
             'es': u'Wikiproyecto Discusión',
             'fr': u'Discussion Projet',
+            'it': u'Discussioni progetto',
         }
         
         self.namespaces[104] = {
@@ -517,29 +521,33 @@ class Family(family.Family):
             
         # Language codes of the largest wikis. They should be roughly sorted
         # by size.
+        # Note: currently they have been sorted by size, but with languages
+        # not in the Latin alphabet counted 1/3 lower
         
         self.languages_by_size = [
-            'en','de','fr','ja','sv','pl','nl','it','pt','es','zh','no','fi',
-            'ru','da','eo','he','uk','bg','ca','sl','hu','cs','sk','sr','ko',
-            'ro','id','et','nn','hr','gl','ms','lt','wa','lb','tr','ar','el',
-            'io','simple','fa','af','tt','th','ast','la','cy','eu','is','bs',
-            'ia','ka','mk','vi','scn','lv','fy','ku','nds','sq','be','ga','jv',
-            'tl','te','mr','fo','gd','ta','os','hi','zh-min-nan','li','kn',
-            'oc','su','cv','br','als','an','csb','se','sa','sh','co','hy',
-            'kw','bn','ur','ang','mi','ks','sco','mn','ceb','mo','ie','mt',
-            'ht','na','ml','yi','gu','tpi','nah','ln','rm','mg','fur','jbo',
-            'sc','bm','pam','sw','nv','az','ne','iu','vo','fiu-vro','yo','am',
-            'chr','qu','tk','roa-rup','ky','bo','haw','sn','uz','sm','tg','gn',
-            'xh','st','km','kk','ab','tum','ba','ug','ps','bi','gv','pa','so',
-            'kv','got','za','ay','as','ce','dz','fj','kl','lo','tn','zu','ik',
-            'my','ss','ty','wo','ch','tw','av','pi','ha','chy','dv','ff','si',
-            'ts','cho','ig','om','ve','aa','ak','arc','bh','ny','cr','ee','hz',
-            'ho','kr','ki','rw','rn','kg','kj','lg','mh','mus','ng','or','sg',
-            'sd','ti','to','ii']
+            'en','de','fr','pl','nl','it','sv','pt','ja','es',
+            'fi','no','ru','zh','eo','sk','da','cs','hu','ca',
+            'ro','sl','id','tr','lt','he','sr','et','hr','bg',
+            'uk','ko','gl','nn','ms','io','eu','nap','is','ar',
+            'bs','simple','lb','vi','th','fa','sq','el','br','wa',
+            'ka','ht','la','bn','sh','scn','af','ku','ast','mk',
+            'lv','cy','co','tl','ksh','te','an','tt','oc','ga',
+            'vec','gd','az','mr','uz','ia','be','nsd','cv','ta',
+            'fy','als','li','kn','jv','lmo','fo','zh-min-nan','sw','ilo',
+            'ur','su','frp','hy','sco','war','yi','pms','nrm','ceb',
+            'pam','tg','fur','nds-sl','kw','hi','os','se','ug','map-bms',
+            'lad','csb','pdc','ang','zh-yue','lij','ml','mt','vls','vo',
+            'fiu-vro','mi','sa','ps','bat-smg','jbo','qu','am','tpi','ky',
+            'mo','ie','na','wo','nah','ln','ks','rm','mn','mg',
+            'bo','tet','sc','my','udm','kg','gu','gv','bm','tk',
+            'kk','dv','got','roa-rup','av','ne','si','ba','chr','sm',
+            'my','nv','yo',]
 
         # other groups of language that we might want to do at once
             
-        self.cyrilliclangs = ['ab', 'be', 'bg', 'ce', 'cv', 'kk', 'ky', 'mk', 'mn', 'mo', 'ru', 'sr', 'tg', 'uk'] # languages in Cyrillic
+        self.cyrilliclangs = [
+            'ab', 'ba', 'be', 'bg', 'ce', 'cv', 'kk', 'kv', 'ky', 'mk',
+            'mn', 'mo', 'os', 'ru', 'sr', 'tg', 'tk', 'udm', 'uk', 'xal'] # languages in Cyrillic
         
         # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'en', 'et', 'es', 'ia', 'la', 'af', 'cs',
