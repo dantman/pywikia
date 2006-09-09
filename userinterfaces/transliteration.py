@@ -956,4 +956,73 @@ def trans(char, default = '?'):
         return "ve"
     if char == u"ヺ":
         return "vo"
+
+    # Georgian
+    if char == u"ა":
+        return "a"
+    if char == u"ბ":
+        return "b"
+    if char == u"გ":
+        return "g"
+    if char == u"დ":
+        return "d"
+    if char == u"ე":
+        return "e"
+    if char == u"ვ":
+        return "v"
+    if char == u"ზ":
+        return "z"
+    if char == u"თ":#
+        return "th"
+    if char == u"ი":
+        return "i"
+    if char == u"კ":#
+        return "k"
+    if char == u"ლ":
+        return "l"
+    if char == u"მ":
+        return "m"
+    if char == u"ნ":
+        return "n"
+    if char == u"ო":
+        return "o"
+    if char == u"პ":#
+        return "p"
+    if char == u"ჟ":#
+        return "zh"
+    if char == u"რ":
+        return "r"
+    if char == u"ს":
+        return "s"
+    if char == u"ტ":#
+        return "t"
+    if char == u"უ":
+        return "u"
+    if char == u"ფ":#
+        return "ph"
+    if char == u"ქ":#
+        return "q"
+    if char == u"ღ":#
+        return "gh"
+    if char == u"ყ":#
+        return "q'"
+    if char == u"შ":
+        return "sh"
+    if char == u"ჩ":
+        return "ch"
+    if char == u"ც":
+        return "ts"
+    if char == u"ძ":
+        return "dz"
+    if char == u"წ":#
+        return "ts'"
+    if char == u"ჭ":#
+        return "ch'"
+    if char == u"ხ":
+        return "kh"
+    if char == u"ჯ":#
+        return "j"
+    if char == u"ჰ":
+        return "h"
+    
     return default
