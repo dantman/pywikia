@@ -16,6 +16,7 @@ Arguments:
              -exist is automatically implied.
    -keepparent  do not remove parent categories of the category to be
              worked on.
+   -all      work on all pages (default: only main namespace)
 
 When running the bot, you will get one by one a number by pages. You can
 choose:
@@ -62,6 +63,9 @@ def isdate(s):
     return dict is not None
 
 def needcheck(pl):
+    if main:
+        if pl.namespace() != 0:
+            return False
     if checked.has_key(pl):
         return False
     if skipdates:
@@ -189,6 +193,7 @@ try:
     checkbackward = True
     checkbroken = True
     removeparent = True
+    main = True
     workingcatname = []
     tocheck = []
     for arg in sys.argv[1:]:
@@ -203,6 +208,8 @@ try:
                 checkbroken = False
             elif arg.startswith('-keepparent'):
                 removeparent = False
+            elif arg.startswith('-all'):
+                main = False
             else:
                 workingcatname.append(arg)
 
