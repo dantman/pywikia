@@ -1401,7 +1401,7 @@ if __name__ == "__main__":
                     ignorefile = arg[12:]
                     ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
                     for page in ignorePageGen:
-                        globalvar.ignore.add(page)
+                        globalvar.ignore.append(page)
                 elif arg == '-showpage':
                     globalvar.showtextlink += globalvar.showtextlinkadd
                 elif arg == '-graph':
