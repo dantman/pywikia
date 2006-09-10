@@ -873,11 +873,11 @@ class Page(object):
                 if line == u"</li>":
                     continue
                 lmatch = listitempattern.search(line)
-        if lmatch:
-            fileLinks.add(lmatch.group("title"))
-            if lmatch is None:
-                output(u"DBG> Unparsed line:")
-                output(u"(%i) %s" % (num, line))
+                if lmatch:
+                    fileLinks.add(lmatch.group("title"))
+                    if lmatch is None:
+                        output(u"DBG> Unparsed line:")
+                        output(u"(%i) %s" % (num, line))
             fileLinks = list(fileLinks)
             fileLinks.sort()
             for fileLink in fileLinks:
