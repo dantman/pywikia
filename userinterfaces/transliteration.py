@@ -1024,5 +1024,141 @@ def trans(char, default = '?'):
         return "j"
     if char == u"ჰ":
         return "h"
+
+    # Devanagari
+    if char in u"पप":
+        return "p"
+    if char in u"अ":
+        return "a"
+    if char in u"आा":
+        return "aa"
+    if char == u"प":
+        return "pa"
+    if char in u"इि":
+        return "i"
+    if char in u"ईी":
+        return "ii"
+    if char in u"उु":
+        return "u"
+    if char in u"ऊू":
+        return "uu"
+    if char in u"एे":
+        return "e"
+    if char in u"ऐै":
+        return "ai"
+    if char in u"ओो":
+        return "o"
+    if char in u"औौ":
+        return "au"
+    if char in u"ऋृर":
+        return "r"
+    if char in u"ॠॄ":
+        return "rr"
+    if char in u"ऌॢल":
+        return "l"
+    if char in u"ॡॣ":
+        return "ll"
+    if char == u"क":
+        return "k"
+    if char == u"ख":
+        return "kh"
+    if char == u"ग":
+        return "g"
+    if char == u"घ":
+        return "gh"
+    if char == u"ङ":
+        return "ng"
+    if char == u"च":
+        return "c"
+    if char == u"छ":
+        return "ch"
+    if char == u"ज":
+        return "j"
+    if char == u"झ":
+        return "jh"
+    if char == u"ञ":
+        return "ñ"
+    if char in u"टत":
+        return "t"
+    if char in u"ठथ":
+        return "th"
+    if char in u"डद":
+        return "d"
+    if char in u"ढध":
+        return "dh"
+    if char in u"णन":
+        return "n"
+    if char == u"फ":
+        return "ph"
+    if char == u"ब":
+        return "b"
+    if char == u"भ":
+        return "bh"
+    if char == u"म":
+        return "m"
+    if char == u"य":
+        return "y"
+    if char == u"व":
+        return "v"
+    if char == u"श":
+        return "sh"
+    if char in u"षस":
+        return "s"
+    if char == u"ह":
+        return "h"
+    if char == u"क":
+        return "x"
+    if char == u"त":
+        return "tr"
+    if char == u"ज":
+        return "gj"
+    if char == u"क़":
+        return "q"
+    if char == u"फ":
+        return "f"
+    if char == u"ख":
+        return "hh"
+    if char == u"H":
+        return "gh"
+    if char == u"ज":
+        return "z"
+    if char in u"डढ":
+        return "r"
+    # Devanagari ligatures (possibly incomplete and/or incorrect)
+    if char == u"ख्":
+        return "khn"
+    if char == u"त":
+        return "tn"
+    if char == u"द्":
+        return "dn"
+    if char == u"श":
+        return "cn"
+    if char == u"ह्":
+        return "fn"
+    if char in u"अँ":
+        return "m"
+    if char in u"॒॑":
+        return ""
+    if char == u"०":
+        return "0"
+    if char == u"१":
+        return "1"
+    if char == u"२":
+        return "2"
+    if char == u"३":
+        return "3"
+    if char == u"४":
+        return "4"
+    if char == u"५":
+        return "5"
+    if char == u"६":
+        return "6"
+    if char == u"७":
+        return "7"
+    if char == u"८":
+        return "8"
+    if char == u"९":
+        return "9"
+
     
     return default
