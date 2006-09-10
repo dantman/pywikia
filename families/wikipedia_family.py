@@ -467,6 +467,14 @@ class Family(family.Family):
             'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'vls',
             'wo', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'map-bsg', 'zh', 'zh-tw', 'zh-cn']
 
+        # Order for fy: alphabetical by code, but y counts as i
+
+        def fycomp(x,y):
+            x = x.replace("y","i")+x.count("y")*"!"
+            y = y.replace("y","i")+y.count("y")*"!"
+            return cmp(x,y)
+        self.fyinterwiki = self.alphabetic[:]
+        self.fyinterwiki.sort(fycomp)
 
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
@@ -474,33 +482,12 @@ class Family(family.Family):
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
-        
            
         self.interwiki_putfirst = {
             'en': self.alphabetic,
             'et': self.alphabetic_revised,
             'fi': self.alphabetic_revised,
-            'fy': # alphabetic by code, but 'y' is alphabetized as 'i'
-            ['aa','ab','af','ak','als','am','an','ang','ar','arc','as','ast',
-             'av','ay','az','bm','bn','ba','bat-smg','be','bg','bh','bi','bo',
-             'br','bs','bug','ca','ce','ceb','ch','cho','chy','chr','co','cr',
-             'cs','csb','cv','cy','da','de','dv','dz','ee','el','en','eo','es',
-             'et','eu','fa','ff','fi','fy','fiu-vro','fj','fo','fr','frp',
-             'fur','ga','gd','gl','gn','got','gu','gv','got','xal','ko','ha',
-             'haw','he','hi','hy','ho','hr','ht','hu','hz','ia','id','ie',
-             'ig','ii','yi','ik','ilo','io','yo','is','it','iu','ja','jbo','jv','ka','kg',
-             'ki','ky','kj','kk','kl','km','kn','kr','ks','ksh','ku','kv',
-             'kw','la','lad','lb','lg','lij','li','lmo','ln','lo','lt','lv',
-             'map-bms','mg','mh','mi','mk','ml','mn','mo','mr','ms','mt','mi',
-             'mus','my','na','nah','nap','nds','nds-nl','ne','ng','ny','nl',
-             'nn','no','nrm','nv','oc','om','or','os','pa','pam','pap','pdc',
-             'pih','pl','ps','pt','qu','rmy','rm','rn','ro','roa-rup','ru',
-             'rw','sa','sc','scn','sco','sd','se','sg','sh','si','simple','sk',
-             'sl','sm','sn','so','sq','sr','ss','st','su','sv','sw','ta','te',
-             'tet','tg','th','ti','ty','tk','tl','tn','to','tpi','tr','ts','tt',
-             'tum','tw','udm','ug','uk','ur','uz','ve','vec','vi','vls','vo',
-             'wa','war','ts','xh','za','zh','zh-cn','zh-min-nan','zh-tw',
-             'zh-yue','zu',],
+            'fy': self.fyinterwiki,
             'he': ['en'],
             'hu': ['en'],
             'lb': self.alphabetic_lb,
