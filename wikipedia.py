@@ -1139,6 +1139,9 @@ class Page(object):
         # remove nowiki sections from text before processing
         thistxt = re.sub("(?ms)<nowiki>.*?</nowiki>", "", thistxt)
 
+        # remove includeonly sections from text before processing
+        thistxt = re.sub("(?ms)<includeonly>.*?</includeonly>", "", thistxt)
+
         Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
             title = match.group('title')
@@ -2013,7 +2016,7 @@ def replaceExceptMathNowikiAndComments(text, old, new):
     """
     if type(old) == type('') or type(old) == type(u''):
         old = re.compile(old)
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<math>.*?</math>', re.IGNORECASE | re.DOTALL)
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<math>.*?</math>|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
     # How much of the text we have looked at so far
     index = 0
     while True:
@@ -2042,7 +2045,7 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
         insite = getSite()
     result = {}
     # Ignore interwiki links within nowiki tags and HTML comments
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
     match = nowikiOrHtmlCommentR.search(text)
     while match:
         text = text[:match.start()] + text[match.end():]
@@ -2100,12 +2103,23 @@ def replaceLanguageLinks(oldtext, new, site = None):
     if s:
         if site.language() in site.family.interwiki_attop:
             newtext = s + site.family.interwiki_text_separator + s2
-        elif site.language() in site.family.categories_last:
-            cats = getCategoryLinks(s2, site = site)
-            s2 = removeCategoryLinks(s2, site) + site.family.interwiki_text_separator + s
-            newtext = replaceCategoryLinks(s2, cats, site=site)
         else:
-            newtext = s2 + site.family.interwiki_text_separator + s
+            # calculate what was after the language links on the page
+            firstafter = 0
+            try:
+                while s2[firstafter-1] == oldtext[firstafter-1]:
+                    firstafter -= 1
+            except IndexError:
+                pass
+            # Is there any text in the 'after' part that means we should keep it after?
+            if "</noinclude>" in s2[firstafter:]:
+                newtext = s2[:firstafter+1] + s + s2[firstafter+1:]
+            elif site.language() in site.family.categories_last:
+                cats = getCategoryLinks(s2, site = site)
+                s2 = removeCategoryLinks(s2, site) + site.family.interwiki_text_separator + s
+                newtext = replaceCategoryLinks(s2, cats, site=site)
+            else:
+                newtext = s2 + site.family.interwiki_text_separator + s
     else:
         newtext = s2
     return newtext
@@ -2184,7 +2198,7 @@ def getCategoryLinks(text, site):
        Page objects instead"""
     result = []
     # Ignore interwiki links within nowiki tags and HTML comments
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->', re.IGNORECASE | re.DOTALL)
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
     match = nowikiOrHtmlCommentR.search(text)
     while match:
         text = text[:match.start()] + text[match.end():]
@@ -2236,24 +2250,28 @@ def replaceCategoryLinks(oldtext, new, site = None):
     if site == Site('de', 'wikipedia'):
         raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position')
 
-    # first remove interwiki links and add them later, so that
-    # interwiki tags appear below category tags if both are set
-    # to appear at the bottom of the article
-    if not site.lang in site.family.categories_last:
-        interwiki_links = getLanguageLinks(oldtext, insite = site)
-        oldtext = removeLanguageLinks(oldtext, site = site)
     s = categoryFormat(new, insite = site)
     s2 = removeCategoryLinks(oldtext, site = site)
     if s:
         if site.language() in site.family.category_attop:
             newtext = s + site.family.category_text_separator + s2
         else:
-            newtext = s2 + site.family.category_text_separator + s
-    else:
-        newtext = s2
-    # now re-add interwiki links
-    if not site.lang in site.family.categories_last:
-        newtext = replaceLanguageLinks(newtext, interwiki_links, site = site)
+            # calculate what was after the categories links on the page
+            firstafter = 0
+            try:
+                while s2[firstafter-1] == oldtext[firstafter-1]:
+                    firstafter -= 1
+            except IndexError:
+                pass
+            # Is there any text in the 'after' part that means we should keep it after?
+            if "</noinclude>" in s2[firstafter:]:
+                newtext = s2[:firstafter+1] + s + s2[firstafter+1:]
+            elif site.language() in site.family.categories_last:
+                newtext = s2 + site.family.category_text_separator + s
+            else:
+                interwiki = getLanguageLinks(s2)
+                s2 = removeLanguageLinks(s2, site) + site.family.category_text_separator + s
+                newtext = replaceLanguageLinks(s2, interwiki, site)
     return newtext
 
 def categoryFormat(categories, insite = None):
