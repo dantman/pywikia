@@ -247,6 +247,7 @@ ignore_title = {
             u"Gebruiker:Andre Engels/Haakjesproblemen.*",
             u"Gebruiker:Dedalus/Namen/.",
             u"Gebruiker:R.Koot/Unicode",
+            u"Gebruiker:Magalhães/Artikelen",
          ],
         'pt': [
             u'Wikipedia:.+',
