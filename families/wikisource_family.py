@@ -6,14 +6,6 @@ __version__ = '$Id$'
 
 # The wikimedia family that is known as Wikisource
 
-# -*- coding: utf-8  -*-
-import urllib
-import family, config
-
-__version__ = '$Id$'
-
-# The wikimedia family that is known as Wikisource
-
 class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
@@ -41,8 +33,8 @@ class Family(family.Family):
             'hu': u'Wikiforrás',
             'is': u'Wikiheimild',
             'la': u'Vicifons',
-            'lt': u'Vikišaltiniai'
-            'no': u'Wikikilden'
+            'lt': u'Vikišaltiniai',
+            'no': u'Wikikilden',
             'pl': u'Wikiźródła',
             'ru': u'Викитека',
             'sl': u'Wikivir',
