@@ -18,14 +18,23 @@ def GetData( lang, params, verbose = False ):
         if type(v) == type(u''):
             params[k] = ToUtf8(v)
 
+    # Titles param might be long, case convert it to post request
+    if 'titles' in params:
+        data = urllib.urlencode( {'titles' : params['titles']} )
+        titlecount = params['titles'].count('|')
+        del params['titles']
+    else:
+        data = None
+        titlecount = 0
+    
     path = u"/w/query.php?" + wikipedia.urlencode( params.iteritems() )
     
     if verbose:
-        wikipedia.output( u"Requesting %s:%s" % (lang, path) )
+        wikipedia.output( u"Requesting %d titles from %s:%s" % (titlecount, lang, path) )
     
     url = site.family.querypath(lang)
     
-    jsontext = site.getUrl( path, True )
+    jsontext = site.getUrl( path, retry=True, data=data )
 
 
     # This will also work, but all unicode strings will need to be converted from \u notation

@@ -2567,7 +2567,7 @@ class Site(object):
                 self._cookies = '; '.join([x.strip() for x in f.readlines()])
                 f.close()
 
-    def getUrl(self, path, retry = True, sysop = False):
+    def getUrl(self, path, retry = True, sysop = False, data = None):
         """
         Low-level routine to get a URL from the wiki.
 
@@ -2576,6 +2576,7 @@ class Site(object):
             retry - If True, retries loading the page when a network error
                     occurs.
             sysop - If True, the sysop account's cookie will be used.
+            data  - An optional dict providing extra post request parameters
 
            Returns the HTML text of the page converted to unicode.
         """
@@ -2594,9 +2595,9 @@ class Site(object):
         while not retrieved:
             try:
                 if self.hostname() in config.authenticate.keys():
-                    f = urllib2.urlopen('http://%s%s' % (self.hostname(), path))
+                    f = urllib2.urlopen('http://%s%s' % (self.hostname(), path), data)
                 else:
-                    f = uo.open('http://%s%s' % (self.hostname(), path))
+                    f = uo.open('http://%s%s' % (self.hostname(), path), data)
                 retrieved = True
             except KeyboardInterrupt:
                 raise
