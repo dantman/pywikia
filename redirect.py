@@ -46,6 +46,7 @@ msg_double={
     'de':u'Bot: Korrigiere doppelten Redirect',
     'fr':u'Robot : répare double redirection',
     'he':u'רובוט: מתקן הפניה כפולה',
+	'hr':u'Bot: Popravak dvostrukih preusmjeravanja',
     'ia':u'Robot: reparation de duple redirection',
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     'pt':u'Bot: Corrigido duplo redirecionamento',
@@ -230,9 +231,9 @@ class RedirectRobot:
                     txt = redir.get(get_redirect=True).replace('[['+target,'[['+second_target)
                     try:
                         status, reason, data = redir.put(txt)
+                        print status, reason
                     except wikipedia.LockedPage:
                         wikipedia.output(u'%s is locked.' % redir.title())
-                    print status, reason
 
     def run(self):
         if self.action == 'double':
