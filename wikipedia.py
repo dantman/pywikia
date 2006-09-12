@@ -2917,10 +2917,11 @@ class Site(object):
         if not ':' in s:
             return False
         first, rest = s.split(':',1)
+        # namespaces go for interwiki
+        if first in self.namespaces():
+            return False
         # interwiki codes are case-insensitive
         first = first.lower()
-        if first == "commons":
-            return False
         if first in self.family.langs or (first in self.family.known_families and self.family.known_families[first] != self.family.name):
             return True
         return False
@@ -3140,7 +3141,6 @@ class Site(object):
             raise NoPage
 
     def getToken(self, getalways = True, getagain = False, sysop = False):
-        print "Getting token..."
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
