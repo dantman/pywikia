@@ -2892,7 +2892,7 @@ class Site(object):
                 # save the last hit, so that we know where to continue when we
                 # finished all articles on the current page. Append a '!' so that
                 # we don't yield a page twice.
-                start = hit + '!'
+                start = Page(self,hit).titleWithoutNamespace() + '!'
             # A small shortcut: if there are less than 100 pages listed on this
             # page, there is certainly no next. Probably 480 would do as well,
             # but better be safe than sorry.
