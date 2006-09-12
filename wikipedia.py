@@ -457,7 +457,7 @@ class Page(object):
             # and contents do not apply any more.
             for attr in ['_redirarg','_getexception','_contents']:
                 if hasattr(self, attr):
-                    delattr(self, attr)
+                    print "Necessary!"
         else:
             # Make sure we re-raise an exception we got on an earlier attempt
             if hasattr(self, '_redirarg') and not get_redirect:
@@ -2919,6 +2919,8 @@ class Site(object):
         first, rest = s.split(':',1)
         # interwiki codes are case-insensitive
         first = first.lower()
+        if first == "commons":
+            return False
         if first in self.family.langs or (first in self.family.known_families and self.family.known_families[first] != self.family.name):
             return True
         return False
@@ -3138,6 +3140,7 @@ class Site(object):
             raise NoPage
 
     def getToken(self, getalways = True, getagain = False, sysop = False):
+        print "Getting token..."
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
@@ -3146,7 +3149,7 @@ class Site(object):
             except UserBlocked:
                 raise
             except Error:
-                pass
+                raise
         if sysop:
             if not self._sysoptoken:
                 return False
