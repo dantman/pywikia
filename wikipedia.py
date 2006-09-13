@@ -2062,7 +2062,7 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
         # language, or if it's e.g. a category tag or an internal link
         if lang in insite.family.obsolete:
             lang = insite.family.obsolete[lang]
-        if lang in insite.family.langs:
+        if lang in insite.validLanguageLinks():
             if '|' in pagetitle:
                 # ignore text after the pipe
                 pagetitle = pagetitle[:pagetitle.index('|')]
@@ -2084,7 +2084,7 @@ def removeLanguageLinks(text, site = None):
         site = getSite()
     # This regular expression will find every interwiki link, plus trailing
     # whitespace.
-    languageR = '|'.join(site.family.langs)
+    languageR = '|'.join(site.validLanguageLinks())
     interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*' % languageR, re.IGNORECASE)
     text = replaceExceptMathNowikiAndComments(text, interwikiR, '')
     return normalWhitespace(text)
@@ -2150,7 +2150,7 @@ def interwikiFormat(links, insite = None):
         ar2 = []
         for code in putfirst:
             # The code may not exist in this family?
-            if code in getSite().family.langs:
+            if code in getSite().validLanguageLinks():
                 site = insite.getSite(code = code)
                 if site in ar:
                     del ar[ar.index(site)]
@@ -2499,7 +2499,7 @@ class Site(object):
             self.family = Family(fam, fatal = False)
         else:
             self.family = fam
-        if self.lang not in self.family.langs:
+        if self.lang not in self.languages():
             raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
         self.nocapitalize = self.lang in self.family.nocapitalize
@@ -2917,12 +2917,9 @@ class Site(object):
         if not ':' in s:
             return False
         first, rest = s.split(':',1)
-        # namespaces go for interwiki
-        if first in self.namespaces():
-            return False
         # interwiki codes are case-insensitive
         first = first.lower()
-        if first in self.family.langs or (first in self.family.known_families and self.family.known_families[first] != self.family.name):
+        if first in self.validLanguageLinks() or (first in self.family.known_families and self.family.known_families[first] != self.family.name):
             return True
         return False
 
@@ -3112,12 +3109,12 @@ class Site(object):
         return self.family.normalizeNamespace(self.lang, value)
 
     def namespaces(self):
-        list=()
+        nslist=()
         for n in self.family.namespaces:
             ns = self.family.namespace(self.lang, n)
             if ns is not None:
-                list += (self.family.namespace(self.lang, n),)
-        return list
+                nslist += (self.family.namespace(self.lang, n),)
+        return nslist
 
     def linktrail(self):
         return self.family.linktrail(self.lang)
@@ -3133,6 +3130,13 @@ class Site(object):
 
     def languages(self):
         return self.family.langs.keys()
+    
+    def validLanguageLinks(self):
+        langlist = []
+        for language in self.languages():
+            if not language in self.namespaces():
+                langlist += language
+        return langlist
 
     def disambcategory(self):
         try:
