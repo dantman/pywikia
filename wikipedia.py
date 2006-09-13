@@ -3135,7 +3135,7 @@ class Site(object):
         langlist = []
         for language in self.languages():
             if not language in self.namespaces():
-                langlist += language
+                langlist += [language]
         return langlist
 
     def disambcategory(self):
@@ -3153,7 +3153,7 @@ class Site(object):
             except UserBlocked:
                 raise
             except Error:
-                raise
+                pass
         if sysop:
             if not self._sysoptoken:
                 return False
