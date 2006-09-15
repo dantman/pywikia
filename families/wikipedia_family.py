@@ -175,7 +175,7 @@ class Family(family.Family):
             'th': u'คุยเรื่องWikipedia',
             'tr': u'Vikipedi tartışma',
             'tt': u'Wikipedia bäxäse',
-            'ty': u'Discussion Wikipedia',
+            #'ty': u'Discussion Wikipedia',
             'udm': u'Wikipedia сярысь вераськон',
             'uk': u'Обговорення Вікіпедія',
             'ur': u'تبادلۂ خیال منصوبہ',
