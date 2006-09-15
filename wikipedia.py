@@ -203,6 +203,11 @@ class Page(object):
         The argument insite can be specified to help decode
         the name; it is the wikimedia site where this link was found.
         """
+
+        # if _editrestriction is True, it means that the page has been found
+        # to have an edit restriction, but we do not know yet whether the
+        # restriction affects us or not
+        self._editrestriction = False
         
         if site == None:
             site = getSite()
@@ -457,7 +462,7 @@ class Page(object):
             # and contents do not apply any more.
             for attr in ['_redirarg','_getexception','_contents']:
                 if hasattr(self, attr):
-                    print "Necessary!"
+                    delattr(self,attr)
         else:
             # Make sure we re-raise an exception we got on an earlier attempt
             if hasattr(self, '_redirarg') and not get_redirect:
@@ -891,6 +896,11 @@ class Page(object):
 
            If watchArticle is None, leaves the watchlist status unchanged.
         """
+        # If there is an unchecked edit restriction, we need to load the page
+        if self._editrestriction:
+            output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % self)
+            self.get(force = True)
+            self._editrestriction = False
         # If no comment is given for the change, use the default
         comment = comment or action
         if self.editRestriction:
@@ -1702,41 +1712,36 @@ class GetAll(object):
         pl2.editRestriction = entry.editRestriction
         pl2.moveRestriction = entry.moveRestriction
         if editRestriction == 'autoconfirmed':
-            output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % pl2.aslink(forceInterwiki = True))
-            try:
-                pl2.get()
-            except:
-                pass
-        else:
-            pl2._permalink = entry.revisionid
-            pl2._userName = username
-            pl2._ipedit = ipedit
-            pl2._editTime = timestamp
-            m = self.site.redirectRegex().match(text)
-            if m:
-                redirectto=m.group(1)
-                pl2._getexception = IsRedirectPage
-                pl2._redirarg = redirectto
-            # There's no possibility to read the wpStarttime argument from the XML.
-            # This argument makes sure an edit conflict is raised if the page is
-            # deleted between retrieval and saving of the page. It contains the
-            # UTC timestamp (server time) of the moment we first retrieved the edit
-            # page. As we can't use server time, we simply use client time. Please
-            # make sure your system clock is correct. If it's too slow, the bot might
-            # recreate pages someone deleted. If it's too fast, the bot will raise
-            # EditConflict exceptions although there's no conflict.
-            pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
-            section = pl2.section()
-            if section:
-                m = re.search("== *%s *==" % re.escape(section), text)                    
-                if not m:
-                    output(u"WARNING: Section not found: %s" % pl2.aslink(forceInterwiki = True))
-                else:
-                    # Store the content
-                    pl2._contents = text
+            pl2._editrestriction = True
+        pl2._permalink = entry.revisionid
+        pl2._userName = username
+        pl2._ipedit = ipedit
+        pl2._editTime = timestamp
+        m = self.site.redirectRegex().match(text)
+        if m:
+            redirectto=m.group(1)
+            pl2._getexception = IsRedirectPage
+            pl2._redirarg = redirectto
+        # There's no possibility to read the wpStarttime argument from the XML.
+        # This argument makes sure an edit conflict is raised if the page is
+        # deleted between retrieval and saving of the page. It contains the
+        # UTC timestamp (server time) of the moment we first retrieved the edit
+        # page. As we can't use server time, we simply use client time. Please
+        # make sure your system clock is correct. If it's too slow, the bot might
+        # recreate pages someone deleted. If it's too fast, the bot will raise
+        # EditConflict exceptions although there's no conflict.
+        pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
+        section = pl2.section()
+        if section:
+            m = re.search("== *%s *==" % re.escape(section), text)                    
+            if not m:
+                output(u"WARNING: Section not found: %s" % pl2.aslink(forceInterwiki = True))
             else:
                 # Store the content
                 pl2._contents = text
+        else:
+            # Store the content
+            pl2._contents = text
  
     def headerDone(self, header):
         # Verify our family data
