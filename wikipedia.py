@@ -2527,7 +2527,7 @@ class Site(object):
         self._loadCookies()
         if not self.loginStatusKnown:
             output(u'Getting a page to check if we\'re logged in on %s' % self)
-            path = self.get_address('Non-existing_page')
+            path = self.put_address('Non-existing_page')
             text = self.getUrl(path, sysop = sysop)
             # Search for the "my talk" link at the top
             mytalkR = re.compile('<a href=".+?">(?P<username>.+?)</a></li>\s*<li id="pt-mytalk">')
@@ -2538,6 +2538,11 @@ class Site(object):
                 # While we're at it, check if we have got unread messages
                 if '<div class="usermessage">' in text:
                     output(u'NOTE: You have unread messages on %s' % self)
+                # Check whether we found a token
+                Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+                tokenloc = Rwatch.search(text)
+                if tokenloc:
+                    self.putToken(tokenloc.group(1), sysop = sysop)
         return (self.loggedInAs is not None)
 
     def cookies(self, sysop = False):
