@@ -2272,6 +2272,8 @@ def replaceCategoryLinks(oldtext, new, site = None):
                 interwiki = getLanguageLinks(s2)
                 s2 = removeLanguageLinks(s2, site) + site.family.category_text_separator + s
                 newtext = replaceLanguageLinks(s2, interwiki, site)
+    else:
+        return s2
     return newtext
 
 def categoryFormat(categories, insite = None):
