@@ -2919,7 +2919,7 @@ class Site(object):
         first, rest = s.split(':',1)
         # interwiki codes are case-insensitive
         first = first.lower()
-        if first in self.validLanguageLinks() or (first in self.family.known_families and self.family.known_families[first] != self.family.name):
+        if first in self.validLanguageLinks() or (first in self.validLanguageLinks() and self.family.known_families[first] != self.family.name):
             return True
         return False
 
@@ -3134,7 +3134,7 @@ class Site(object):
     def validLanguageLinks(self):
         langlist = []
         for language in self.languages():
-            if not language in self.namespaces():
+            if not language[0].upper()+language[1:] in self.namespaces():
                 langlist += [language]
         return langlist
 
