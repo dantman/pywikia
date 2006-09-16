@@ -8,7 +8,7 @@ import re, codecs, sys
 import urllib
 
 # Application specific imports
-import wikipedia, date
+import wikipedia, date, catlib
 import config
 
 class AllpagesPageGenerator:
@@ -323,6 +323,18 @@ class CombinedPageGenerator:
         for generator in self.generators:
             for page in generator:
                 yield page
+
+class CategoryGenerator:
+    """
+    Wraps around another generator. Yields the same pages, but as Category
+    objects instead of Page objects. Makes sense only if it is ascertained
+    that only categories are being retrieved.
+    """
+    def __init__(self, generator):
+        self.generator = generator
+    def __iter__(self):
+        for page in self.generator:
+            yield catlib.Category(page.site(),page.title())
 
 class PreloadingGenerator:
     """
