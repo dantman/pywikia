@@ -2515,6 +2515,12 @@ class Site(object):
         self._sysoptoken = None
         self.loginStatusKnown = False
         self.loggedInAs = None
+        # Calculating valid languages took quite long, so we calculate it once
+        # in initialization instead of each time it is used.
+        self._validlanguages = []
+        for language in self.languages():
+            if not language[0].upper()+language[1:] in self.namespaces():
+                self._validlanguages += [language]
 
     def forceLogin(self, sysop = False):
         if not self.loggedin(sysop = sysop):
@@ -3144,11 +3150,7 @@ class Site(object):
         return self.family.langs.keys()
     
     def validLanguageLinks(self):
-        langlist = []
-        for language in self.languages():
-            if not language[0].upper()+language[1:] in self.namespaces():
-                langlist += [language]
-        return langlist
+        return self._validlanguages
 
     def disambcategory(self):
         try:
