@@ -89,6 +89,7 @@ __version__='$Id$'
 msg = {
        'de':u'Bot: Automatisierte Textersetzung %s',
        'en':u'Robot: Automated text replacement %s',
+       'el':u'Ρομπότ: Αυτόματη αντικατάσταση κειμένου %s',
        'es':u'Robot: Reemplazo automático de texto %s',
        'fr':u'Bot : Remplacement de texte automatisé %s',
        'he':u'רובוט: החלפת טקסט אוטומטית %s',
