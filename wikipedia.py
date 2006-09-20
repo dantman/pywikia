@@ -991,9 +991,9 @@ class Page(object):
             predata.append(('masteredit','1'))
 
         if newPage:
-            output('Creating page %s' % self.aslink(forceInterwiki=True))
+            output(u'Creating page %s' % self.aslink(forceInterwiki=True))
         else:
-            output('Changing page %s' % self.aslink(forceInterwiki=True))
+            output(u'Changing page %s' % self.aslink(forceInterwiki=True))
         # Submit the prepared information
         if self.site().hostname() in config.authenticate.keys():
             predata.append(("Content-type","application/x-www-form-urlencoded"))
