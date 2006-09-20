@@ -292,11 +292,13 @@ def add_category(sort_by_last_name = False):
                             wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
 
 class CategoryMoveRobot:
-    def __init__(self, oldCatTitle, newCatTitle, batchMode = False, editSummary = '', inPlace = False):
+    def __init__(self, oldCatTitle, newCatTitle, batchMode = False, editSummary = '', inPlace = False, moveCatPage = True):
         self.editSummary = editSummary
         self.inPlace = inPlace
         self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
+        self.inPlace = inPlace
+        self.moveCatPage = True
         # set edit summary message
 	if self.editSummary:
 	    wikipedia.setAction(self.editSummary)
@@ -308,7 +310,7 @@ class CategoryMoveRobot:
         gen = pagegenerators.CategorizedPageGenerator(self.oldCat, recurse = False)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for article in preloadingGen:
-            catlib.change_category(article, self.oldCat, newCat, inPlace=inPlace)
+            catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
         
         # TODO: create subcategory generator
         subcategories = self.oldCat.subcategories(recurse = 0)
@@ -317,11 +319,11 @@ class CategoryMoveRobot:
         else:
             for subcategory in subcategories:
                 catlib.change_category(subcategory, self.oldCat, newCat, inPlace=inPlace)
-        if self.oldCat.exists():
+        if self.oldCat.exists() and self.moveCatPage:
             # try to copy page contents to new cat page
-            if self.oldCat.copyAndKeep(newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
+            if self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
                 if self.oldCat.isEmpty():
-                    reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % newCatTitle
+                    reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % self.newCatTitle
                     if batchMode == True:
                         self.oldCat.delete(reason, False)
                     else:
