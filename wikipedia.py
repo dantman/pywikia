@@ -431,7 +431,7 @@ class Page(object):
         return _autoFormat
 
 
-    def get(self, force = False, get_redirect=False, throttle = True, sysop = False):
+    def get(self, force = False, get_redirect=False, throttle = True, sysop = False, nofollow_redirects=False):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -442,6 +442,10 @@ class Page(object):
                             exception is the title of the page it redirects to.
 
             SectionError: The subject does not exist on a page with a # link
+
+            Set get_redirect to True to follow redirects rather than raise an exception.
+            Set force to True to ignore all exceptions (including redirects).
+            Set nofollow_redirects to True to not follow redirects but obey all other exceptions.
         """
         # NOTE: The following few NoPage exceptions could already be thrown at
         # the Page() constructor. They are raised here instead for convenience,
@@ -465,10 +469,12 @@ class Page(object):
                     delattr(self,attr)
         else:
             # Make sure we re-raise an exception we got on an earlier attempt
-            if hasattr(self, '_redirarg') and not get_redirect:
+            if hasattr(self, '_redirarg') and not get_redirect and not nofollow_redirects:
                 raise IsRedirectPage, self._redirarg
             elif hasattr(self, '_getexception'):
                 if self._getexception == IsRedirectPage and get_redirect:
+                    pass
+                elif self._getexception == IsRedirectPage and nofollow_redirects:
                     pass
                 else:
                     raise self._getexception
@@ -490,7 +496,7 @@ class Page(object):
             except IsRedirectPage, arg:
                 self._getexception = IsRedirectPage
                 self._redirarg = arg
-                if not get_redirect:
+                if not get_redirect and not nofollow_redirects:
                     raise
             except SectionError:
                 self._getexception = SectionError
@@ -1100,7 +1106,7 @@ class Page(object):
                 output(u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!" % (self.aslink(), newSite, newTitle))
         return result
 
-    def categories(self):
+    def categories(self, nofollow_redirects=False):
         """
         A list of categories that the article is in. This will retrieve
         the page text to do its work, so it can raise the same exceptions
@@ -1109,7 +1115,7 @@ class Page(object):
         The return value is a list of Category objects, one for each of the
         category links in the page text.
         """
-        return getCategoryLinks(self.get(), self.site())
+        return getCategoryLinks(self.get(nofollow_redirects=nofollow_redirects), self.site())
 
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on

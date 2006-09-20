@@ -284,12 +284,12 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     oldCat and newCat should be Category objects.
     If newCat is None, the category will be removed.
     """
-    cats = article.categories()
+    cats = article.categories(nofollow_redirects=True)
     site = article.site()
     removed = False
 
     if inPlace == True:
-        text = article.get()
+        text = article.get(nofollow_redirects=True)
         text = wikipedia.replaceCategoryInPlace(text, oldCat, newCat)
         try:
             article.put(text, comment)
@@ -310,7 +310,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             else:
                 newCat = Category(site, newCat.title(), sortKey = sortKey)
                 cats = cats[:i] + [newCat] + cats[i+1:]
-            text = article.get()
+            text = article.get(nofollow_redirects=True)
 	    try:
                 text = wikipedia.replaceCategoryLinks(text, cats)
             except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
