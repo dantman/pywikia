@@ -298,7 +298,7 @@ class CategoryMoveRobot:
         self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
         self.inPlace = inPlace
-        self.moveCatPage = True
+        self.moveCatPage = moveCatPage
         # set edit summary message
 	if self.editSummary:
 	    wikipedia.setAction(self.editSummary)
