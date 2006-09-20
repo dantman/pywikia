@@ -2093,6 +2093,8 @@ def removeLanguageLinks(text, site = None):
        a warning is printed."""
     if site == None:
         site = getSite()
+    if not site.validLanguageLinks():
+        return text
     # This regular expression will find every interwiki link, plus trailing
     # whitespace.
     languageR = '|'.join(site.validLanguageLinks())
@@ -2256,6 +2258,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
 
        'new' should be a list of Category objects.
     """
+
     if site is None:
         site = getSite()
     if site == Site('de', 'wikipedia'):
@@ -2263,6 +2266,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
 
     s = categoryFormat(new, insite = site)
     s2 = removeCategoryLinks(oldtext, site = site)
+
     if s:
         if site.language() in site.family.category_attop:
             newtext = s + site.family.category_text_separator + s2
