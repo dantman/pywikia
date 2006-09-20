@@ -2947,7 +2947,7 @@ class Site(object):
         first, rest = s.split(':',1)
         # interwiki codes are case-insensitive
         first = first.lower()
-        if first in self.validLanguageLinks() or (first in self.validLanguageLinks() and self.family.known_families[first] != self.family.name):
+        if first in self.validLanguageLinks() or (first in self.family.known_families and self.family.known_families[first] != self.family.name):
             return True
         return False
 
