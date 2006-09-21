@@ -1165,7 +1165,10 @@ class Page(object):
                 # this is an internal section link
                 continue
             if not self.site().isInterwikiLink(title):
-                page = Page(self.site(), title)
+                try:
+                    page = Page(self.site(), title)
+                except:
+                    continue
                 if page.sectionFreeTitle():
                     result.append(page)
         return result
@@ -2938,16 +2941,19 @@ class Site(object):
 
     def isInterwikiLink(self, s):
         """
-        Try to check whether s is in the form "foo:bar" where foo is a known
-        language code or family. In such a case we are dealing with an interwiki
-        link.
+        Try to check whether s is in the form "foo:bar" or ":foo:bar"
+        where foo is a known language code or family. In such a case
+        we are dealing with an interwiki link.
         """
+        s = s.lstrip(":")
         if not ':' in s:
             return False
         first, rest = s.split(':',1)
         # interwiki codes are case-insensitive
         first = first.lower()
-        if first in self.validLanguageLinks() or (first in self.family.known_families and self.family.known_families[first] != self.family.name):
+        if first in self.validLanguageLinks() or (
+                first in self.family.known_families
+                and self.family.known_families[first] != self.family.name):
             return True
         return False
 
