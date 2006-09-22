@@ -2950,12 +2950,12 @@ class Site(object):
             return False
         first, rest = s.split(':',1)
         # interwiki codes are case-insensitive
-        first = first.lower()
+        first = first.lower().strip()
         if first in self.validLanguageLinks() or (
                 first in self.family.known_families
                 and self.family.known_families[first] != self.family.name):
             return True
-        return False
+        return self.isInterwikiLink(rest)
 
     def encoding(self):
         return self.family.code2encoding(self.lang)
