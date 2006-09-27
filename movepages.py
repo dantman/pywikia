@@ -43,7 +43,7 @@ comment={
 def Movepages(page, deletedPages):
     pagetitle = page.title()
     wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
-    ask = wikipedia.input('What do you do: (c)hange page name, (n)ext page or (q)uit?')
+    ask = wikipedia.input('What do you do: (c)hange page name (a)ppend to page name, (n)ext page or (q)uit?')
     if ask in ['c', 'C']:
         pagemove = wikipedia.input(u'New page name:')
         titleroot = wikipedia.Page(wikipedia.getSite(), pagetitle)
@@ -53,6 +53,19 @@ def Movepages(page, deletedPages):
         if deletedPages == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
             pagedel.delete(pagetitle)
+    elif ask in ['a', 'A']:
+        pagestart = wikipedia.input(u'Append This to the start:')
+        pageend = wikipedia.input(u'Append This to the end:')
+        pagemove = u'%s%s%s' % (pagestart,pagetitle,pageend)
+        ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o]' % pagemove)
+        if ask2 in ['y', 'Y']:
+            titleroot = wikipedia.Page(wikipedia.getSite(), pagetitle)
+            msg = wikipedia.translate(wikipedia.getSite(), comment)
+            titleroot.move(pagemove, msg)
+            wikipedia.output(u'Page %s move successful to %s.' % (pagetitle, pagemove))
+            if deletedPages == True:
+                pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
+                pagedel.delete(pagetitle)
     elif ask in ['n', 'N']:
         pass
     elif ask in ['q', 'Q']:
