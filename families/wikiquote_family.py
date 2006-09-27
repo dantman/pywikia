@@ -30,22 +30,123 @@ class Family(family.Family):
         # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
+
+        self.namespaces[2] = {
+            '_default': [u'User', self.namespaces[2]['_default']],
+            'da':       u'Brugerdiskussion',
+            'pl':       u'Wikipedysta',
+            }
+        
+        self.namespaces[3] = {
+            '_default': [u'User talk', self.namespaces[3]['_default']],
+            'pl':       u'Dyskusja Wikipedysty',
+            }
+
         self.namespaces[4] = {
             '_default': [u'Wikiquote', self.namespaces[4]['_default']],
+            'ar':       u'ويكي الاقتباس',
+            'bg':       u'Уикицитат',
+            'bs':       u'Wikicitati',
+            'eo':       u'Vikicitaro',
+            'fa':       u'ویکی‌گفتاورد',
+            'fi':       u'Wikisitaatit',
+            'he':       u'ויקיציטוט',
             'hu':       u'Wikidézet',
+            'hr':       u'Wikicitat',
+            'la':       u'Vicicitatio',
+            'no':       u'Wikiquote-diskusjon',
+            'pl':       u'Wikicytaty',
+            'ro':       u'Wikicitat',
+            'ru':       u'Викицитатник',
+            'sl':       u'Wikinavedek',
+            'sk':       u'Wikicitáty',
+            'tr':       u'Vikisöz',
+            
         }
         self.namespaces[5] = {
             '_default': [u'Wikiquote talk', self.namespaces[5]['_default']],
+            'ar':       u'نقاش ويكي الاقتباس',
+            'bg':       u'Уикицитат беседа',
+            'bs':       u'Razgovor s Wikicitatima',
             'ca':       u'Wikiquote Discussió',
+            'cs':       u'Wikiquote diskuse',
+            'da':       u'Wikiquote-diskussion',
+            'de':       u'Wikiquote Diskussion',
+            'eo':       u'Vikicitaro diskuto',
+            'el':       u'Wikiquote συζήτηση',
+            'es':       u'Wikiquote Discusión',
+            'et':       u'Wikiquote arutelu',
+            'eu':       u'Wikiquote eztabaida',
+            'fa':       u'بحث ویکی‌گفتاورد',
+            'fi':       u'Keskustelu Wikisitaateista',
+            'fr':       u'Discussion Wikiquote',
+            'he':       u'שיחת ויקיציטוט',
+            'hr':       u'Razgovor Wikicitat',
             'hu':       u'Wikidézet vita',
+            'it':       u'Discussioni Wikiquote',
+            'ja':       u'Wikiquote‐ノート',
+            'ko':       u'Wikiquote토론',
+            'ku':       u'Wikiquote nîqaş',
+            'la':       u'Disputatio Vicicitationis',
+            'lt':       u'Wikiquote aptarimas',
             'nl':       u'Overleg Wikiquote',
+            'no':       u'Wikiquote-diskusjon',
+            'pl':       u'Dyskusja Wikicytatów',
             'pt':       u'Wikiquote Discussão',
+            'ro':       u'Discuţie Wikicitat',
+            'ru':       u'Обсуждение Викицитатника',
+            'sk':       u'Diskusia k Wikicitátom',
+            'sl':       u'Pogovor o Wikinavedku',
+            'sr':       u'Разговор о Wikiquote',
+            'sv':       u'Wikiquotediskussion',
+            'tr':       u'Vikisöz tartışma',
+            'uk':       u'Обговорення Wikiquote',
         }
+
+        self.namespaces[7] = {
+            '_default': [u'Image talk', self.namespaces[7]['_default']],
+            'da':       u'Billeddiskussion',
+
+        }
+
+        self.namespaces[9] = {
+            '_default': [u'MediaWiki talk', self.namespaces[9]['_default']],
+            'da':       u'MediaWiki-diskussion',
+
+        }
+
+        self.namespaces[11] = {
+            '_default': [u'Template talk', self.namespaces[11]['_default']],
+            'da':       u'Skabelondiskussion',
+
+        }
+
+        self.namespaces[13] = {
+            '_default': [u'Help talk', self.namespaces[13]['_default']],
+            'da':       u'Hjælp-diskussion',
+
+        }
+
+        self.namespaces[15] = {
+            '_default': [u'Category talk', self.namespaces[15]['_default']],
+            'da':       u'Kategoridiskussion',
+
+        }
+           
+        self.namespaces[100] = {
+            '_default': [u'Portal', self.namespaces[100]['_default']],
+            'he':       u'פורטל',
+        }
+        
+        self.namespaces[101] = {
+            '_default': [u'Portal talk', self.namespaces[101]['_default']],
+            'he':       u'שיחת פורטל',
+            }
 
         self.disambiguationTemplates = {
             '_default': [u''],
             'pt':       [u'Desambiguação'],
-            }
+        }
 
         # attop is a list of languages that prefer to have the interwiki
         # links at the top of the page.
