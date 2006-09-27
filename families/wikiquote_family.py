@@ -132,16 +132,17 @@ class Family(family.Family):
             'da':       u'Kategoridiskussion',
 
         }
-           
+        
         self.namespaces[100] = {
-            '_default': [u'Portal', self.namespaces[100]['_default']],
+            '_default': u'Portal',
             'he':       u'פורטל',
         }
         
         self.namespaces[101] = {
-            '_default': [u'Portal talk', self.namespaces[101]['_default']],
+            '_default': u'Portal talk',
             'he':       u'שיחת פורטל',
-            }
+        }
+        
 
         self.disambiguationTemplates = {
             '_default': [u''],
