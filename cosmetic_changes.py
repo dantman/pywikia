@@ -73,8 +73,10 @@ class CosmeticChangesToolkit:
         Makes sure that interwiki links are put to the correct position, but
         does not sort them.
         """
-        categories = wikipedia.getCategoryLinks(text, site = self.site)
-        text = wikipedia.replaceCategoryLinks(text, categories, site = self.site)
+        # The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position
+        if self.site != wikipedia.Site('de', 'wikipedia'):
+            categories = wikipedia.getCategoryLinks(text, site = self.site)
+            text = wikipedia.replaceCategoryLinks(text, categories, site = self.site)
         return text
 
     def translateAndCapitalizeNamespaces(self, text):
