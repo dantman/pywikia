@@ -762,6 +762,7 @@ formats = {
         'is' :      lambda v: dh( v, u'%d–%d',                   lambda i: (encDec1(i),encDec1(i)+9), lambda ii: ii[0]-1 ),
         'it' :      lambda v: dh_decAD( v, u'Anni %d' ),
         'ja' :      lambda v: dh_decAD( v, u'%d年代' ),
+        'ka' :      lambda v: dh_decAD( v, u'%d-ები‎' ),
         'ko' :      lambda v: dh_decAD( v, u'%d년대' ),
 
         #1970s => 'Decennium 198' (1971-1980)
@@ -849,6 +850,9 @@ formats = {
             (lambda v: dh_decBC( v, u'i.e. %d-es évek' ),           alwaysTrue)]),
 
         'it' :      lambda v: dh_decBC( v, u'Anni %d a.C.' ),
+
+        'ka' :      lambda v: dh_decBC( v, u'ძვ. წ. %d-ები' ),
+
         # '19-10 v. Chr.'
         'nl' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'9-1 v. Chr.'),                                                  lambda p: p == 1),
@@ -1026,6 +1030,7 @@ formats = {
         'io' :      lambda v: dh_centuryBC( v, u'%dma yar-cento aK' ),
         'it' :      lambda v: dh_centuryBC( v, u'%R secolo AC' ),
         'ja' :      lambda v: dh_centuryBC( v, u'紀元前%d世紀' ),
+        'ka' :      lambda v: dh_centuryBC( v, u'ძვ. წ. %R საუკუნე' ),
         'ko' :      lambda v: dh_centuryBC( v, u'기원전 %d세기' ),
         'la' :      lambda v: dh_centuryBC( v, u'Saeculum %d a.C.n.' ),
         'lb' :      lambda v: dh_centuryBC( v, u'%d. Joerhonnert v. Chr.' ),
@@ -1098,6 +1103,7 @@ formats = {
         'hu' :      lambda v: dh_millenniumAD( v, u'%d. évezred' ),
         'it' :      lambda v: dh_millenniumAD( v, u'%R millennio' ),
         'ja' :      lambda v: dh_millenniumAD( v, u'%d千年紀' ),
+        'ka' :      lambda v: dh_millenniumAD( v, u'%R ათასწლეული' ),
         'lb' :      lambda v: dh_millenniumAD( v, u'%d. Joerdausend' ),
         'lt' :      lambda v: dh_millenniumAD( v, u'%d tūkstantmetis' ),
         'pt' :      lambda v: slh( v, [u'Primeiro milénio d.C.', u'Segundo milénio d.C.', u'Terceiro milénio d.C.', u'Quarto milénio d.C.'] ),
@@ -1139,6 +1145,7 @@ formats = {
         'hu' :      lambda v: dh_millenniumBC( v, u'I. e. %d. évezred' ),
         'it' :      lambda v: dh_millenniumBC( v, u'%R millennio AC' ),
         'ja' :      lambda v: dh_millenniumBC( v, u'紀元前%d千年紀' ),
+        'ka' :      lambda v: dh_millenniumBC( v, u'ძვ. წ. %R ათასწლეული' ),
         'lb' :      lambda v: dh_millenniumBC( v, u'%d. Joerdausend v. Chr.' ),
         'nl' :      lambda v: dh_millenniumBC( v, u'%de millennium v. Chr.' ),
         'pt' :      lambda v: slh( v, [u'Primeiro milénio a.C.', u'Segundo milénio a.C.', u'Terceiro milénio a.C.', u'Quarto milénio a.C.'] ),
