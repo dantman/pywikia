@@ -1572,10 +1572,15 @@ class ImagePage(Page):
         return self._imagePageContents
 
     def fileUrl(self):
-        urlR = re.compile(r'<div class="fullImageLink" id="file"><a href="(?P<url1>.+?)">|<div class="fullImageLink" id="file"><img border="0" src="(?P<url2>.+?)"')
+        # There are three types of image pages:
+        # * normal, small images with links like: filename.png (10KB, MIME type: image/png)
+        # * normal, large images with links like: Download high resolution version (1024x768, 200 KB)
+        # * SVG images with links like: filename.svg‎  (1KB, MIME type: image/svg)
+        # This regular expression seems to work with all of them.
+        urlR = re.compile(r'<div class="fullImageLink" id="file">.+?\n.*?<a href="(?P<url>.+?)"', re.DOTALL)
         m = urlR.search(self.getImagePageContents())
         try:
-            url = m.group('url1') or m.group('url2')
+            url = m.group('url')
         except AttributeError:
             raise NoPage(u'Image page %s not found.' % self.aslink(forceInterwiki = True))
         return url
