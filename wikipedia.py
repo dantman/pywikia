@@ -352,7 +352,11 @@ class Page(object):
         title = self._title
         if savetitle: # Ensure there's no wiki syntax in the title
             if title.find("''") > -1:
-                title = urllib.quote(title).replace('%20',' ')
+                try:
+                    title = urllib.quote(title).replace('%20',' ')
+                except KeyError:
+                    # We can't encode everything; to be on the safe side, we encode nothing
+                    pass
         if underscore:
             title = title.replace(' ', '_')
         return title
