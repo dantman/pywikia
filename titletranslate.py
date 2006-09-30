@@ -9,46 +9,10 @@ __version__ = '$Id$'
 #
 import re
 
-import wikipedia, date
+import wikipedia, date, time
 
-def sametranslate(pl, arr, same):
+def translate(pl, arr, hints = None, auto = True):
     site = pl.site()
-    for newcode in site.family.languages_by_size:
-        newsite = wikipedia.Site(newcode, site.family)
-        if pl.namespace() == 0:
-            newname = pl.title()
-        else:
-            # Translate the namespace
-            newname = '%s:%s' % (newsite.namespace(pl.namespace()), pl.titleWithoutNamespace())
-        # On the Esperanto Wikipedia given names are written in all-capital
-        # letters.
-        if newcode == 'eo' and same == 'name':
-            newname = newname.split(' ')
-            newname[-1] = newname[-1].upper()
-            newname = ' '.join(newname)
-        x=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
-        try:
-            x2=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname[0].lower() + newname[1:])
-        except IndexError:
-            x2=wikipedia.Page(wikipedia.getSite(code=newcode, fam=site.family), newname)
-        if x not in arr:
-            if same == "wiktionary":
-                if site.language() in site.family.nocapitalize:
-                    if newcode in site.family.nocapitalize:
-                        arr[x] = None
-                    elif pl.title()[0].upper() == pl.title()[0]:
-                        arr[x] = None
-                else:
-                    arr[x] = None
-                    if newcode in site.family.nocapitalize:
-                        arr[x2] = None
-            else:
-                arr[x] = None
-
-def translate(pl, arr, same = False, hints = None, auto = True):
-    site = pl.site()
-    if same:
-        return sametranslate(pl, arr, same)
     if hints:
         for h in hints:
             if h.find(':') == -1:

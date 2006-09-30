@@ -39,8 +39,6 @@ This script understands various command-line arguments:
     -same:         looks over all 'serious' languages for the same title.
                    -same is equivalent to -hint:all:
 
-    -name:         similar to -same, but UPPERCASE the last name for eo:
-
     -wiktionary:   similar to -same, but will ONLY accept names that are
                    identical to the original. Also, if the title is not
                    capitalized, it will only go through other wikis without
@@ -332,7 +330,13 @@ class Subject(object):
     def translate(self, hints = None):
         """Add the translation hints given to the todo list"""
         arr = {}
-        titletranslate.translate(self.inpl, arr, same = globalvar.same, hints = hints, auto = globalvar.auto)
+        if globalvar.same:
+            if hints:
+                titletranslate.translate(self.inpl, arr, hints = hints + ['all:'], auto = globalvar.auto)
+            else:
+                titletranslate.translate(self.inpl, arr, hints = ['all:'], auto = globalvar.auto)
+        else:
+            titletranslate.translate(self.inpl, arr, hints = hints, auto = globalvar.auto)
         for pl in arr.iterkeys():
             self.todo[pl] = pl.site()
             self.foundin[pl] = [None]
@@ -548,8 +552,7 @@ class Subject(object):
                         break
                     else:
                         arr = {}
-                        titletranslate.translate(pl, arr, same = False,
-                                                 hints = [newhint], auto = globalvar.auto)
+                        titletranslate.translate(pl, arr, hints = [newhint], auto = globalvar.auto)
                         for pl2 in arr.iterkeys():
                             self.todo[pl2] = pl2.site()
                             counter.plus(pl2.site())
@@ -1321,8 +1324,6 @@ if __name__ == "__main__":
                     pass
                 elif arg.startswith('-warnfile:'):
                     warnfile = arg[10:]
-                elif arg == '-name':
-                    globalvar.same = 'name'
                 elif arg == '-confirm':
                     globalvar.confirm = True
                 elif arg == '-select':
