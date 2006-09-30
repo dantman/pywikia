@@ -191,12 +191,16 @@ class Family(family.Family):
         # group of languages that we might want to do at once
     
         self.languages_by_size = [
-            'bg', 'bg', 'fr', 'gl', 'hu', 'io', 'it', 'nl', 'pl', 'scn',
-            'de', 'es', 'et', 'fi', 'hi', 'ku', 'ja', 'la', 'pt', 'sv',
-            'ang', 'co', 'da', 'gu', 'hr', 'ko', 'no', 'ru', 'tr', 'zh',
-            'ar', 'bs', 'ca', 'cs', 'el', 'eo', 'eu', 'he', 'ia', 'id',
-            'ie', 'ro', 'sr', 'ta', 'th', 'uk', 'vi'
-        ]
+            'en', 'fr', 'vi', 'zh', 'io', 'el', 'pl', 'it', 'de', 'hu',
+            'fi', 'nl', 'bg', 'pt', 'ku', 'es', 'gl', 'sr', 'id', 'sv',
+            'et', 'ru', 'ko', 'tr', 'ja', 'sl', 'scn', 'fa', 'ar', 'no',
+            'la', 'ta', 'zh-min-nan', 'he', 'hy', 'af', 'ro', 'da', 'ang', 'hi',
+            'cs', 'sk', 'is', 'uk', 'co', 'ca', 'simple', 'st', 'fy', 'hr',
+            'nds', 'csb', 'ky', 'kk', 'ia', 'gu', 'sq', 'sd', 'eo', 'lt',
+            'cy', 'vo', 'ml', 'ie', 'th', 'yi', 'mk', 'bs', 'qu', 'am',
+            'mr', 'be', 'rw', 'tl', 'eu', 'ms', 'ast', 'an', 'ga', 'pa',
+            'nah', 'ha', 'oc'
+            ]
         
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
 
