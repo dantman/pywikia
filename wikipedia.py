@@ -167,10 +167,13 @@ class SectionError(ValueError):
     """The section specified by # does not exist"""
 
 class PageNotSaved(Error):
-    """ Saving the page has failed"""
+    """Saving the page has failed"""
 
 class EditConflict(PageNotSaved):
     """There has been an edit conflict while uploading the page"""
+
+class SpamfilterError(PageNotSaved):
+    """Saving the page has failed because the MediaWiki spam filter detected a blacklisted URL."""
 
 class ServerError(Error):
     """Got unexpected server response"""
@@ -908,7 +911,7 @@ class Page(object):
         """
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
-            output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % self)
+            output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % self.aslink())
             self.get(force = True)
             self._editrestriction = False
         # If no comment is given for the change, use the default
@@ -1032,8 +1035,13 @@ class Page(object):
         if data != u'':
             # Saving unsuccessful. Possible reasons: edit conflict or invalid edit token.
             # A second text area means that an edit conflict has occured.
+            print mediawiki_messages.get('spamprotectiontitle', self.site())
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
+            elif mediawiki_messages.get('spamprotectiontitle', self.site()) in data:
+                reasonR = re.compile(re.escape(mediawiki_messages.get('spamprotectionmatch', self.site())).replace('\$1', '(?P<url>[^<]*)'))
+                url = reasonR.search(data).group('url')
+                raise SpamfilterError(url)
             elif '<label for=\'wpRecreate\'' in data:
                 # Make sure your system clock is correct if this error occurs
                 # without any reason!
@@ -1588,13 +1596,6 @@ class ImagePage(Page):
         except AttributeError:
             raise NoPage(u'Image page %s not found.' % self.aslink(forceInterwiki = True))
         return url
-        #filename = self.titleWithoutNamespace(underscore = True)
-        #encodedFilename = filename.encode(self.site().encoding())
-        #md5Sum = md5.new(encodedFilename).hexdigest()
-        #encodedFilename = urllib.quote(encodedFilename)
-        # TODO: This won't work for non-Wikimedia projects
-        #url = 'http://upload.wikimedia.org/%s/%s/%s/%s/%s' % (self.site().family.name, self.site().lang, md5Sum[0], md5Sum[:2], encodedFilename)
-        #return url
 
     def fileIsOnCommons(self):
         return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
