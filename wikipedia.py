@@ -3359,7 +3359,7 @@ def altlang(code):
         return ['ar','tr']
     if code=='sk':
         return ['cs']
-    if code=='ksh':
+    if code in ['bar','hsb','ksh']:
         return ['de']
     if code in ['als','lb']:
         return ['de','fr']
@@ -3367,8 +3367,12 @@ def altlang(code):
         return ['eo']
     if code in ['an','ast','ay','ca','gn','nah','qu']:
         return ['es']
+    if code == ['cbk-zam']:
+        return ['es','tl']
     if code=='eu':
         return ['es','fr']
+    if code in ['glk','mzn']:
+        return ['fa','ar']
     if code=='gl':
         return ['es','pt']
     if code=='lad':
@@ -3383,7 +3387,7 @@ def altlang(code):
         return ['he']
     if code=='sa':
         return ['hi']
-    if code in ['lij','lmo','nap','pms','sc','scn','vec']:
+    if code in ['eml','lij','lmo','nap','pms','roa-tará','sc','scn','vec']:
         return ['it']
     if code=='rm':
         return ['it','de','fr']
@@ -3395,7 +3399,7 @@ def altlang(code):
         return ['nds-nl','de']
     if code=='nds-nl':
         return ['nds','nl']
-    if code in ['fy','pap','vls']:
+    if code in ['fy','pap','vls','zea']:
         return ['nl']
     if code=='li':
         return ['nl','de']
@@ -3405,16 +3409,18 @@ def altlang(code):
         return ['pt']
     if code in ['mo','roa-rup']:
         return ['ro']
-    if code in ['av','be','cv','hy','tt','udm','uk','xal']:
+    if code in ['av','be','bxr','cv','hy','lbe','ru-sib','tt','udm','uk','xal']:
         return ['ru']
     if code=='got':
         return ['ru','uk']
     if code in ['kk','ky','tk','ug','uz']:
         return ['tr','ru']
+    if code == 'diq':
+        return ['tr']
     if code in ['ja','ko','minnan','zh','zh-cn']:
-        return ['zh','zh-tw','zh-cn']
-    if code in ['bo','za','zh-tw','zh-yue']:
-        return ['zh','zh-cn','zh-tw']
+        return ['zh','zh-tw','zh-classical','zh-cn']
+    if code in ['bo','cdo','wuu','za','zh-classical','zh-tw','zh-yue']:
+        return ['zh','zh-cn','zh-classical','zh-tw']
     if code=='da':
         return ['nb','no']
     if code in ['is','no','nb','nn']:
@@ -3427,12 +3433,16 @@ def altlang(code):
         return ['id','ms','jv']
     if code in ['bs','hr','mk','sh','sr']:
         return ['sh','hr','sr','bs']
-    if code in ['ceb','war']:
+    if code in ['ceb','pag','war']:
         return ['tl']
     if code=='bi':
         return ['tpi']
     if code=='tpi':
         return ['bi']
+    if code == 'new':
+        return ['ne']
+    if code == 'nov':
+        return ['io','eo']
     return []
 
 

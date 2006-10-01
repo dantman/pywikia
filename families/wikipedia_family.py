@@ -417,7 +417,7 @@ class Family(family.Family):
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
             
-        self.nocapitalize = ['jbo','tlh','tokipona']
+        self.nocapitalize = ['jbo','tlh']
             
 
         # on_one_line is a list of languages that want the interwiki links
@@ -428,44 +428,49 @@ class Family(family.Family):
         self.alphabetic_revised = ['aa','af','ak','als','am','ang','ab','ar','arc',
             'an','roa-rup','frp','as','ast','gn','av','ay','az','id','ms','bm',
             'bn','zh-min-nan','map-bms','jv','su','ban','ba','be','bh',
-            'bi','bo','bs','br','bug','bg','ca','ceb','cv','cs','ch','ny','sn',
+            'bi','bo','bs','br','bug','bg','bxr','ca','ceb','cv','cs','ch',
+            'cbk-zam','ny','sn',
             'tum','cho','co','za','cy','da','pdc','de','dv','nv','dz','mh','et',
-            'na','el','en','es','eo','eu','ee','to','fa','fo','fr','fy','ff',
-            'fur','ga','gv','sm','gd','gl','gay','ki','gu','got','ko','ha','haw',
-            'hy','hi','ho','hr','io','ig','ilo','ia','ie','iu','ik','os','xh','zu',
-            'is','it','he','kl','xal','kn','kr','ka','ks','csb','kk','kw','rw','ky',
-            'rn','sw','kv','kg','ht','kj','ku','lad','lo','la','lv','lb','lt','lij',
-            'li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi','mr','chm','mo',
-            'mn','mus','my','nah','fj','nl','nds-nl','cr','ne','ja','nap','ce',
-            'pih','no','nn','nrm','oc','or','om','ng','hz','ug','uz','pa',
-            'pi','pam','pap','ps','km','pms','nds','pl','pt','ty','ksh','ro',
-            'rmy','rm','qu','ru','war','se','sa','sg','sc','sco','st','tn','sq','scn',
-            'si','simple','sd','ss','sk','sl','so','sr','sh','fi','sv','tl',
-            'ta','tt','te','tet','th','vi','ti','tlh','tg','tpi','chr','chy',
+            'na','el','eml','en','es','eo','eu','ee','to','fa','fo','fr','fy','ff',
+            'fur','ga','gv','sm','gd','gl','gay','ki','glk','gu','got','ko','ha','haw',
+            'hy','hi','ho','hsb','hr','io','ig','ilo','ia','ie','iu','ik','os','xh','zu',
+            'is','it','he','kl','xal','kn','kr','ka','ks','csb','kk','kk-cn','kk-kz','kw','rw','ky',
+            'rn','sw','kv','kg','ht','kj','ku','lad','lbe','lo','la','lv','lb','lt','lij',
+            'li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi','mr','mzn','chm','mo',
+            'mn','mus','my','nah','fj','nl','nds-nl','cr','ne','new','ja','nap','ce',
+            'pih','no','nn','nrm','nov','oc','or','om','ng','hz','ug','uz','pa',
+            'pi','pam','pag','pap','ps','km','pms','nds','pl','pt','kk-tr','ty','ksh','ro',
+            'rmy','rm','qu','ru','war','se','sa','sg','sc','sco','st','tn','sq','ru-sib','scn',
+            'si','simple','sd','ss','sk','sl','cu','so','sr','sh','fi','sv','tl',
+            'ta','roa-tara','tt','te','tet','th','vi','ti','tlh','tg','tpi','chr','chy',
             've','tr','tk','tw','udm','uk','ur','vec','vo','fiu-vro','wa',
-            'vls','wo','ts','ii','yi','yo','zh-yue','bat-smg','zh','zh-tw','zh-cn']
+            'vls','wo','wuu','ts','ii','yi','yo','zh-yue','diq','zea','bat-smg',
+            'zh','zh-tw','zh-cn','zh-classical']
 
         # A sorting order for lb.wikipedia worked out by http://lb.wikipedia.org/wiki/User_talk:Otets
         self.alphabetic_lb = ['aa', 'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar', 'arc',
             'an', 'roa-rup', 'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'id', 'ms', 'bm',
             'bn', 'zh-min-nan', 'map-bms', 'jv', 'su', 'ban', 'bug', 'ba', 'be', 'bh', 'mt',
-            'bi', 'bo', 'bs', 'br', 'bg', 'ca', 'ceb', 'cs', 'ch', 'chr', 'chy',
+            'bi', 'bo', 'bs', 'br', 'bg', 'bxr', 'ca', 'ceb', 'cs', 'ch',
+            'cbk-zam', 'chr', 'chy',
             'ny', 'sn', 'tum', 've', 'cho', 'co', 'za', 'cy', 'da', 'pdc', 'de', 'dv',
-            'nv', 'dz', 'mh', 'na', 'el', 'en', 'es', 'eo', 'et', 'eu', 'ee', 'to',
+            'nv', 'dz', 'mh', 'na', 'el', 'eml', 'en', 'es', 'eo', 'et', 'eu', 'ee', 'to',
             'fa', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm', 'gd', 'gl',
-            'gay', 'ki', 'gu', 'got', 'ha', 'haw', 'hy', 'he', 'hi', 'ho',
+            'gay', 'ki', 'glk', 'gu', 'got', 'ha', 'haw', 'hy', 'he', 'hi', 'ho', 'hsb',
             'hr', 'io', 'ig', 'ilo', 'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it',
             'ja', 'kl', 'xal', 'kn', 'kr', 'ka', 'ks', 'csb', 'kw', 'rw', 'ky', 'rn', 'sw',
-            'kv', 'kg', 'ko', 'ht', 'kj', 'ku', 'lad', 'lo', 'la', 'lv', 'lb', 'lt', 'lij', 'li',
-            'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mi', 'mr', 'chm',
-            'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nap', 'nds-nl', 'nl', 'cr', 'ne', 'ce',
-            'pih', 'no', 'nn', 'nrm', 'oc', 'or', 'om', 'ng', 'hz', 'ug', 'uz', 'pa', 'kk',
-            'pi', 'pam', 'pap', 'ps', 'km', 'pms', 'nds', 'pl', 'pt', 'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu',
-            'ru', 'war', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'scn', 'si',
-            'simple', 'sd', 'ss', 'sk', 'sl', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
-            'ta', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
+            'kv', 'kg', 'ko', 'ht', 'kj', 'ku', 'lad', 'lbe', 'lo', 'la', 'lv', 'lb', 'lt', 'lij', 'li',
+            'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mi', 'mr', 'mzn', 'chm',
+            'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nap', 'nds-nl', 'nl', 'cr', 'ne', 'new', 'ce',
+            'pih', 'no', 'nn', 'nrm', 'nov', 'oc', 'or', 'om', 'ng', 'hz', 'ug', 'uz', 'pa', 'kk',
+            'kk-cn', 'kk-kz', 'kk-tr',
+            'pi', 'pam', 'pag', 'pap', 'ps', 'km', 'pms', 'nds', 'pl', 'pt', 'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu',
+            'ru', 'war', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'ru-sib', 'scn', 'si',
+            'simple', 'sd', 'ss', 'sk', 'sl', 'cu', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
+            'ta', 'roa-tara', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
             'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'vls',
-            'wo', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'map-bsg', 'zh', 'zh-tw', 'zh-cn']
+            'wo', 'wuu', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'diq', 'zea', 'bat-msg', 'zh',
+            'zh-tw', 'zh-cn', 'zh-classical']
 
         # Order for fy: alphabetical by code, but y counts as i
 
