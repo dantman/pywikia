@@ -224,7 +224,7 @@ class Family(family.Family):
             'nl': u'Overleg portaal',
             'no': u'Portaldiskusjon',
             'pl': u'Dyskusja portalu',
-            'pt': u'Discussão Portal',
+            'pt': u'Portal Discussão',
             'ro': u'Discuţie Portal',
             'ru': u'Обсуждение портала',
             'sk': u'Diskusia k portálu',
