@@ -1035,7 +1035,7 @@ class Page(object):
         if data != u'':
             # Saving unsuccessful. Possible reasons: edit conflict or invalid edit token.
             # A second text area means that an edit conflict has occured.
-            print mediawiki_messages.get('spamprotectiontitle', self.site())
+            output(u""+mediawiki_messages.get('spamprotectiontitle', self.site()))
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
             elif mediawiki_messages.get('spamprotectiontitle', self.site()) in data:
@@ -3387,7 +3387,7 @@ def altlang(code):
         return ['he']
     if code=='sa':
         return ['hi']
-    if code in ['eml','lij','lmo','nap','pms','roa-tará','sc','scn','vec']:
+    if code in ['eml','lij','lmo','nap','pms','roa-tara','sc','scn','vec']:
         return ['it']
     if code=='rm':
         return ['it','de','fr']
