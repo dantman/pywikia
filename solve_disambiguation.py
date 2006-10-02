@@ -631,7 +631,7 @@ class DisambiguationRobot(object):
                     elif replaceit or (new_page_title == link_text and not section):
                         newlink = "[[%s]]" % new_page_title
                     # check if we can create a link with trailing characters instead of a pipelink
-                    elif len(new_page_title) <= len(link_text) and firstcap(link_text[:len(new_page_title)]) == new_page_title and re.sub(self.trailR, '', link_text[len(new_page_title):]) == '' and not section:
+                    elif len(new_page_title) <= len(link_text) and firstcap(link_text[:len(new_page_title)]) == firstcap(new_page_title) and re.sub(self.trailR, '', link_text[len(new_page_title):]) == '' and not section:
                         newlink = "[[%s]]%s" % (link_text[:len(new_page_title)], link_text[len(new_page_title):])
                     else:
                         newlink = "[[%s%s|%s]]" % (new_page_title, section, link_text)
