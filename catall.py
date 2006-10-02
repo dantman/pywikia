@@ -1,4 +1,4 @@
-﻿# -*- coding: cp1252 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Add or change categories on a number of pages. Usage:
 catall.py name - goes through pages, starting at 'name'. Provides
@@ -38,7 +38,8 @@ def choosecats(pagetext):
     print ("Give the new categories, one per line.")
     print ("Empty line: if the first, don't change. Otherwise: Ready.")
     print ("-: I made a mistake, let me start over.")
-    print ("?: Give the text of the page with gui.")
+    print ("?: Give the text of the page with GUI.")
+    print ("??: Give the text of the page in console.") 
     print ("xx: if the first, remove all categories and add no new.")
     while flag == False:
         choice=wikipedia.input(u"?")
@@ -51,6 +52,9 @@ def choosecats(pagetext):
             import editarticle
             editor = editarticle.TextEditor()
             newtext = editor.edit(pagetext)
+        elif choice =="??":
+            wikipedia.output(pagetext[0:length])
+            length = length+500 
         elif choice=="xx" and chosen==[]:
             chosen = None
             flag=True
