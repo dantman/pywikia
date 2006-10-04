@@ -79,6 +79,7 @@ wikipedia.put_throttle.setDelay(4)
 
 # Summary message when working on disambiguation pages
 msg = {
+    'cs': u'Odstranění linku na rozcestník [[%s]] s použitím robota',
     'en': u'Robot-assisted disambiguation: %s',
     'da': u'Retter flertydigt link til: %s',
     'de': u'Bot-unterstützte Begriffsklärung: %s',
@@ -113,6 +114,7 @@ msg_redir = {
 # disambiguation page name format for "primary topic" disambiguations
 # (Begriffsklärungen nach Modell 2)
 primary_topic_format = {
+    'cs': u'%s_(rozcestník)',
     'de': u'%s_(Begriffsklärung)',
     'en': u'%s_(disambiguation)',
     'ia': u'%s_(disambiguation)',
@@ -132,6 +134,13 @@ primary_topic_format = {
 
 ignore_title = {
     'wikipedia': {
+        'cs': [
+            u'Wikipedie:Chybějící interwiki/.+',
+            u'Wikipedie:Rozcestníky',
+            u'Wikipedie diskuse:Rozcestníky',
+            u'Wikipedie:Seznam rozcestníků/první typ',
+            u'Wikipedie:Seznam rozcestníků/druhý typ',
+        ],
         'da': [
             u'Wikipedia:Links til sider med flertydige titler'
         ],
