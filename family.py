@@ -2132,7 +2132,7 @@ class Family:
         return '%s?title=%s&action=history&limit=%d' % (self.path(code), name, config.special_page_limit)
 
     def export_address(self, code):
-        return '%s?title=%s:Export' % (self.path(code), self.special_namespace_url(code))
+        return '%s?title=%s:Export' % (self.path(code), self.special_namespace_url('_default'))
 
     def query_address(self, code):
         return '%s?' % self.querypath(code)
