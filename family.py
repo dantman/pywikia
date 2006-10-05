@@ -1993,6 +1993,7 @@ class Family:
     # Redirect code can be translated.
 
     redirect = {
+        'ar': [u'تحويل'],
         'be': [u'перанакіраваньне'],
         'bg': [u'виж'],
         'cs': [u'přesměruj'],
