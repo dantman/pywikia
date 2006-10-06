@@ -90,22 +90,22 @@ class Family(family.Family):
             'yi': u'װיקיביבליאָטעק רעדן',
         }
         self.namespaces[100] = {
-            '_default': [u'Portal', self.namespaces[100]['_default']],
+            '_default': u'Portal',
             'nl': u'Hoofdportaal',
         }
         self.namespaces[101] = {
-            '_default': [u'Portal talk', self.namespaces[101]['_default']],
+            '_default': u'Portal talk',
             'nl': u'Overleg hoofdportaal',
             'pt': u'Portal Discussão',
         }
         self.namespaces[102] = {
-            '_default': [u'Author', self.namespaces[102]['_default']],
+            '_default': u'Author',
             'it': u'Autore',
             'la': u'Scriptor',
             'pt': u'Autor',
         }
         self.namespaces[103] = {
-            '_default': [u'Author talk', self.namespaces[103]['_default']],
+            '_default': u'Author talk',
             'it': u'Discussioni autore',
             'la': u'Disputatio Scriptoris',
             'pt': u'Autor Discussão',
