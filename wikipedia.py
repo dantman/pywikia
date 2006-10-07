@@ -2681,6 +2681,7 @@ class Site(object):
         """Generator which yields new articles subsequently.
            It starts with the article created 'number' articles
            ago (first argument). When these are all yielded
+           and repeat is True,
            it fetches NewPages again. If there is no new page,
            it blocks until there is one, sleeping between subsequent
            fetches of NewPages.
@@ -2690,30 +2691,28 @@ class Site(object):
            user_login (only if user is logged in, string), comment
            (string) and user_anon (if user is not logged in, string).
 
-           The throttling is important here, so always enabled.
         """
-        throttle = True
+        # The throttling is important here, so always enabled.
+        if repeat:
+            throttle = True
         seen = set()
         while True:
-            path = self.newpages_address()
+            path = self.newpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             
-            entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?" title="(?P<title>.+?)">.+?</a>.+?\((?P<length>\d+)(.+?)\) \. \. (.*?)(?P<loggedin><a href=".+?" title="(?P<username>.+?)">)')
+            entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?" title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>\d+)[^\)\]]*[\)\]] .?<a href=".+?" title=".+?:(?P<username>.+?)">')
             for m in entryR.finditer(html):
-                output(m.group('date'))
-                output(m.group('title'))
                 date = m.group('date')
                 title = m.group('title')
                 title = title.replace('&quot;', '"')
                 length = int(m.group('length'))
-                loggedIn = (m.group('loggedin') is not None)
                 username = m.group('username')
 
                 if title not in seen:
                     seen.add(title)
                     page = Page(self, title)
-                    yield page, date, length, loggedIn, username, None
+                    yield page, date, length, username
 
             if not repeat:
                 break

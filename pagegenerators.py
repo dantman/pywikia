@@ -27,6 +27,24 @@ class AllpagesPageGenerator:
         for page in wikipedia.getSite().allpages(start = self.start, namespace = self.namespace):
             yield page
 
+class NewpagesPageGenerator:
+    '''
+    Gets the latest pages. If repeat is true, after having gotten the last
+    <number> pages, it loads the newpages page again to see if there are
+    any new pages.
+    '''
+    def __init__(self, number = 100, repeat = False, site = None):
+        self.number = number
+        self.repeat = repeat
+        if site:
+            self.site = site
+        else:
+            self.site = wikipedia.getSite()
+
+    def __iter__(self):
+        for page in self.site.newpages(number = self.number, repeat = self.repeat):
+            yield page[0]
+
 class FileLinksGenerator:
     def __init__(self, referredPage):
         self.referredPage = referredPage

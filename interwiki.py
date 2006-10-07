@@ -24,17 +24,22 @@ This script understands various command-line arguments:
                    text is given after the second ':', the name of the page
                    itself is used as the title for the hint.
 
+    There are some special hints, trying a number of languages at once:
+    all:    Provides the hint for all languages with at least ca. 100 pages
+    10:     Provides the hint for ca. 10 of the largest languages
+    20:, 30:, 50: Analogous to 10: with ca. 20, 30 and 50 languages 
+    cyril:  Provides the hint for all languages that use the cyrillic alphabet
+
     -cat           Work on all pages which are in a specific category.
                    Argument can also be given as "-cat:categoryname".
 
     -ref           Work on all pages that link to a certain page.
                    Argument can also be given as "-ref:referredpagetitle".
 
-    There are some special hints, trying a number of languages at once:
-    all:    Provides the hint for all languages with at least ca. 100 pages
-    10:     Provides the hint for ca. 10 of the largest languages
-    20:, 30:, 50: Analogous to 10: with ca. 20, 30 and 50 languages 
-    cyril:  Provides the hint for all languages that use the cyrillic alphabet
+    -link          Work on all pages that are linked from a certain page.
+                   Argument can also be given as "-link:linkingpagetitle".
+
+    -new           Work on the most recent new pages on the wiki
                    
     -same:         looks over all 'serious' languages for the same title.
                    -same is equivalent to -hint:all:
@@ -1267,11 +1272,13 @@ if __name__ == "__main__":
         categoryName = None
         # a page whose referrers will be processed when the -ref parameter is used
         referredPageTitle = None
+        linkingPageTitle = None
         warnfile = None
         # a PageGenerator (which doesn't give hints, only Pages)
         hintlessPageGen = None
         optContinue = False
         optRestore = False
+        workNew = False
         
         bot=InterwikiBot()
         
@@ -1390,6 +1397,11 @@ if __name__ == "__main__":
                         categoryName = wikipedia.input(u'Please enter the category name:')
                     else:
                         categoryName = arg[5:]
+                elif arg.startswith('-link'):
+                    if len(arg) == 5:
+                        linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
+                    else:
+                        linkingPageTitle = arg[6:]
                 elif arg.startswith('-number:'):
                     number = int(arg[8:])
                 elif arg.startswith('-array:'):
@@ -1412,6 +1424,8 @@ if __name__ == "__main__":
                     config.interwiki_graph = True
                 elif arg == '-bracket':
                     globalvar.bracketonly = True
+                elif arg == '-new':
+                    workNew = True
                 else:
                     singlePageTitle.append(arg)
         
@@ -1450,9 +1464,16 @@ if __name__ == "__main__":
         elif referredPageTitle:
             referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
             hintlessPageGen = pagegenerators.ReferringPageGenerator(referredPage)
+        elif linkingPageTitle:
+            linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
+            hintlessPageGen = pagegenerators.LinkedPageGenerator(linkingPage)
         elif categoryName:
             cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
             hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat)
+        elif workNew:
+            if not number:
+                number = config.special_page_limit 
+            hintlessPageGen = pagegenerators.NewpagesPageGenerator(number = number)
 
         if hintlessPageGen:
             # we'll use iter() to create make a next() function available.
