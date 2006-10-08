@@ -248,7 +248,8 @@ class Category(wikipedia.Page):
             return True
 
     #Like copyTo above, except this removes a list of templates (like deletion templates) that appear in
-    #the old category text.
+    #the old category text.  It also removes all text between the two HTML comments BEGIN CFD TEMPLATE
+    #and END CFD TEMPLATE. (This is to deal with CFD templates that are substituted.)
     def copyAndKeep(self, catname, cfdTemplates):
         """
         Returns true if copying was successful, false if target page already
@@ -267,6 +268,8 @@ class Category(wikipedia.Page):
 	    for regexName in cfdTemplates:
 	        matchcfd = re.compile(r"{{%s.*?}}" % regexName, re.IGNORECASE)
 	        newtext = matchcfd.sub('',newtext)
+            matchcomment = re.compile(r"<!--BEGIN CFD TEMPLATE-->.*<!--END CFD TEMPLATE-->", re.IGNORECASE | re.MULTILINE | re.DOTALL)
+            newtext = matchcomment.sub('',newtext)
 	    targetCat.put(newtext, creationSummary)
             return True
     
