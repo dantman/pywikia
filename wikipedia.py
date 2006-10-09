@@ -522,7 +522,7 @@ class Page(object):
         """
         isWatched = False
         editRestriction = None
-        #output(u'Getting page %s' % self.aslink())
+        output(u'Getting page %s' % self.aslink())
         path = self.site().edit_address(self.urlname())
         if oldid:
             path = path + "&oldid="+oldid
@@ -743,7 +743,7 @@ class Page(object):
 
         while more:
             refTitles = set()  # use a set to avoid duplications
-            #output(u'Getting references to %s' % self.aslink())
+            output(u'Getting references to %s' % self.aslink())
             while True:
                 txt = site.getUrl(path)
                 # trim irrelevant portions of page
@@ -859,7 +859,7 @@ class Page(object):
         while more:
             more = False #Kill after one loop because MediaWiki will only display up to the first 500 File links.
             fileLinks = set()  # use a set to avoid duplications
-            #output(u'Getting references to %s' % self.aslink())
+            output(u'Getting references to %s' % self.aslink())
             while True:
                 txt = site.getUrl(path)
                 # trim irrelevant portions of page
