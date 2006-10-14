@@ -1996,6 +1996,7 @@ class Family:
         'ar': [u'تحويل'],
         'be': [u'перанакіраваньне'],
         'bg': [u'виж'],
+        'bs': [u'preusmjeri'],
         'cs': [u'přesměruj'],
         'cy': [u'ail-cyfeirio'],
         'et': [u'suuna'],
