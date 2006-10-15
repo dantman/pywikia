@@ -263,6 +263,7 @@ msg = {
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),
     'ka': (u'რობოტი ', u'დამატება', u'წაშლა', u'შეცვლა'),
+    'ksh': (u'Bot: ', u'dobëijedonn', u'erußjenumme', u'ußjewääßelt'),
     'lt': (u'robotas ', u'Pridedama', u'Šalinama', u'Keičiama'),
     'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
     'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
