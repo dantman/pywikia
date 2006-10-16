@@ -10,9 +10,9 @@ class Family:
         self.name = None
             # Updated from http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic = [
-           'aa','af','ak','als','am','ang','ab','ar','an','roa-rup','frp','as',
+           'aa','af','ak','als','fab','am','ang','ab','ar','an','roa-rup','frp','as',
            'ast','gn','av','ay','az','bm','bn','zh-min-nan','map-bms','ba','be',
-           'bh','bi','bar','bo','bs','br','bg','bxr','ca','cv','ceb','cs','ch',
+           'bh','bpy','bi','bar','bo','bs','br','bg','bxr','ca','cv','ceb','cs','ch',
            'cbk-zam','ny','sn',
            'tum','cho','co','za','cy','da','pdc','de','dv','arc','nv','dz','mh',
            'et','el','eml','en','es','eo','eu','ee','fa','fo','fr','fy','ff','fur','ga',
@@ -20,9 +20,9 @@ class Family:
            'io','ig','ilo','id','ia','ie','iu','ik','os','xh','zu','is','it','he',
            'jv','kl','xal','kn','kr','ka','ks','csb','kk','kk-cn','kk-kz','kk-tr',
            'kw','rw','ky','rn',
-           'sw','kv','kg','ht','kj','ku','lad','lbe','lo','la','lv','lb','lij','lt',
+           'sw','kv','kg','ht','kj','ku','lad','lbe','lo','ltg','la','lv','lb','lij','lt',
            'li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi','mr','mzn','ms',
-           'mo','mn','mus','my','nah','na','fj','nl','nds-nl','cr','ne','new','ja','nap',
+           'zh-cdo','mo','mn','mus','my','nah','na','fj','nl','nds-nl','cr','ne','new','ja','nap',
            'ce','pih','no','nn','nrm','nov','oc','or','om','ng','hz','ug','pa','pi',
            'pam','pag','pap','ps','km','pms','nds','pl','pt','ty','ksh','ro','rmy','rm',
            'qu','ru','war','se','sm','sa','sg','sc','sco','st','tn','sq','ru-sib','scn',
