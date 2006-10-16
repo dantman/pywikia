@@ -47,6 +47,7 @@ Page: A MediaWiki page
           even reload it if it has been loaded before
 
 Site: a MediaWiki site
+    messages              : There are new messages on the site
     forceLogin(): Does not continue until the user has logged in to the site
     getUrl(): Retrieve an URL from the site
 
@@ -2531,6 +2532,7 @@ class Site(object):
         if self.lang not in self.languages():
             raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
+        self.messages=False
         self.nocapitalize = self.lang in self.family.nocapitalize
         self.user = user
         self._token = None
@@ -2571,6 +2573,9 @@ class Site(object):
                 # While we're at it, check if we have got unread messages
                 if '<div class="usermessage">' in text:
                     output(u'NOTE: You have unread messages on %s' % self)
+                    messages=True
+                else:
+                    messages=False
                 # Check whether we found a token
                 Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
                 tokenloc = Rwatch.search(text)
