@@ -89,7 +89,7 @@ def main():
 			argsList.append(arg)
 
 	if operation == "None":
-		wikipedia.output(u'You did not give me anything to do, quitting.')
+		wikipedia.output(__doc__, 'utf-8')
 	else:
 		robot = TemplateCountRobot()
 		if not argsList:
