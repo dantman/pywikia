@@ -11,6 +11,9 @@ Command-line arguments:
     -ref           Work on all pages that link to a certain page.
                    Argument can also be given as "-ref:referredpagetitle".
 
+    -link          Work on all pages that are linked from a certain page.
+                   Argument can also be given as "-link:linkingpagetitle".
+
     -start         Work on all pages on the home wiki, starting at the named page.
                    
     -prefix        Automatic move pages in specific page with prefix name of the pages.
@@ -41,8 +44,17 @@ comment={
     }
 
 def Movepages(page, deletedPages):
-    pagetitle = page.title()
+    pagetitle = page.title()        
     wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
+    try:
+        getcontent = page.get()
+    except wikipedia.LockedPage:
+        wikipedia.output(u'Page is locked')
+        pass
+    except wikipedia.NoPage:
+        wikipedia.output(u'Page not exist')
+        pass
+    
     ask = wikipedia.input('What do you do: (c)hange page name (a)ppend to page name, (n)ext page or (q)uit?')
     if ask in ['c', 'C']:
         pagemove = wikipedia.input(u'New page name:')
@@ -52,7 +64,6 @@ def Movepages(page, deletedPages):
         wikipedia.output('Page %s move successful to %s.' % (pagetitle, pagemove))
         if deletedPages == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
-            pagedel.delete(pagetitle)
     elif ask in ['a', 'A']:
         pagestart = wikipedia.input(u'Append This to the start:')
         pageend = wikipedia.input(u'Append This to the end:')
@@ -71,7 +82,7 @@ def Movepages(page, deletedPages):
     elif ask in ['q', 'Q']:
         sys.exit()
     else:
-        wikipedia.output('Input certain code.')
+        wikipedia.output(u'Input certain code.')
         sys.exit()
 
 def MovepageswithPrefix(page, prefixPageTitle, deletedPages):
@@ -90,6 +101,7 @@ def main():
     categoryName = None
     singlePageTitle = []
     referredPageTitle = None
+    linkPage = None
     startpage = None
     prefixPageTitle = None
     deletedPages = False
@@ -107,6 +119,11 @@ def main():
                     referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
                 else:
                     referredPageTitle = arg[6:]
+            elif arg.startswith('-link:'):
+                if len(arg) == 6:
+                    linkPage = wikipedia.input(u'Links from which page should be processed?')
+                else:
+                    linkPage = arg[6:]
             elif arg.startswith('-start:'):
                 if len(arg) == 6:
                     startpage = wikipedia.input(u'Please enter the article to start then:')
@@ -131,6 +148,12 @@ def main():
     elif referredPageTitle:
         referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
         gen = pagegenerators.ReferringPageGenerator(referredPage)
+        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
+        for page in generator: Movepages(page, deletedPages)
+
+    elif linkPage:
+        linkingPage = wikipedia.Page(wikipedia.getSite(), linkPage)
+        gen = pagegenerators.LinkedPageGenerator(linkingPage)
         generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
         for page in generator: Movepages(page, deletedPages)
 
