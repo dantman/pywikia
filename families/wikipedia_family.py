@@ -91,7 +91,7 @@ class Family(family.Family):
             'av': u'Обсуждение Wikipedia',
             'ay': u'Discussion Wikipedia',
             'az': u'Vikipediya müzakirəsi',
-            'ba': u'Обсуждение Wikipedia',
+            'ba': u'Wikipedia б-са фекер алышыу',
             'bat-smg': u'Wikipedia aptarimas',
             'be': u'Абмеркаваньне Вікіпэдыя',
             'bg': u'Уикипедия беседа',
@@ -105,7 +105,7 @@ class Family(family.Family):
             'csb': u'Diskùsëjô Wiki',
             'cv': u'Wikipedia сӳтсе явмалли',
             'cy': u'Sgwrs Wicipedia',
-            'da': u'Wikipedia diskussion',
+            'da': u'Wikipedia-diskussion',
             'de': u'Wikipedia Diskussion',
             'el': u'Βικιπαίδεια συζήτηση',
             'eo': u'Vikipedia diskuto',
@@ -134,6 +134,7 @@ class Family(family.Family):
             'ka': u'ვიკიპედია განხილვა',
             'kn': u'Wikipedia ಚರ್ಚೆ',
             'ko': u'위키백과토론',
+            'ksh':u'Wikipedia Klaaf',
             'ku': u'Wîkîpediya nîqaş',
             'kv': u'Обсуждение Wikipedia',
             'la': u'Disputatio Vicipaediae',
@@ -191,6 +192,7 @@ class Family(family.Family):
             'ar': u'بوابة',
             'cs': u'Portál',
             'eo': u'Portalo',
+            'eu': u'Atari',
             'fr': u'Portail',
             'it': u'Portale',
             'he': u'פורטל',
@@ -201,6 +203,7 @@ class Family(family.Family):
             'ru': u'Портал',
             'sk': u'Portál',
             'sr': u'Портал',
+            'tg': u'Портал',
         }
         
         self.namespaces[101] = {
@@ -212,6 +215,7 @@ class Family(family.Family):
             'de': u'Portal Diskussion',
             'eo': u'Portala diskuto',
             'es': u'Portal Discusión',
+            'eu': u'Atari eztabaida', 
             'fr': u'Discussion Portail',
             'he': u'שיחת פורטל',
             'hr': u'Razgovor o portalu',
@@ -220,6 +224,7 @@ class Family(family.Family):
             'ja': u'Portal‐ノート',
             'ka': u'პორტალი განხილვა',
             'kk': u'Портал талқылауы',
+            'lmo': u'Descüssiú Portal',
             'nds':u'Portal Diskuschoon',
             'nl': u'Overleg portaal',
             'no': u'Portaldiskusjon',
@@ -231,6 +236,7 @@ class Family(family.Family):
             'sq': u'Portal diskutim',
             'sr': u'Разговор о порталу',
             'sv': u'Portaldiskussion',
+            'tg': u'Баҳси портал',
             'tr': u'Portal tartışma',
         }
 
@@ -238,16 +244,20 @@ class Family(family.Family):
             '_default': u'WikiProject',
             'ca': u'Viquiprojecte',
             'es': u'Wikiproyecto',
+            'eu': u'Wikiproiektu',
             'fr': u'Projet',
             'it': u'Progetto',
+            'lmo': u'Purtaal',
         }
             
         self.namespaces[103] = {
             '_default': u'WikiProject talk',
             'ca': u'Viquiprojecte Discussió',
             'es': u'Wikiproyecto Discusión',
+            'eu': u'Wikiproiektu eztabaida',
             'fr': u'Discussion Projet',
             'it': u'Discussioni progetto',
+            'lmo': u'Descüssiun Purtaal',
         }
         
         self.namespaces[104] = {

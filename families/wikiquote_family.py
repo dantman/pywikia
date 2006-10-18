@@ -31,17 +31,6 @@ class Family(family.Family):
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
 
-        self.namespaces[2] = {
-            '_default': [u'User', self.namespaces[2]['_default']],
-            'da':       u'Brugerdiskussion',
-            'pl':       u'Wikipedysta',
-            }
-        
-        self.namespaces[3] = {
-            '_default': [u'User talk', self.namespaces[3]['_default']],
-            'pl':       u'Dyskusja Wikipedysty',
-            }
-
         self.namespaces[4] = {
             '_default': [u'Wikiquote', self.namespaces[4]['_default']],
             'ar':       u'ويكي الاقتباس',
@@ -54,7 +43,6 @@ class Family(family.Family):
             'hu':       u'Wikidézet',
             'hr':       u'Wikicitat',
             'la':       u'Vicicitatio',
-            'no':       u'Wikiquote-diskusjon',
             'pl':       u'Wikicytaty',
             'ro':       u'Wikicitat',
             'ru':       u'Викицитатник',
@@ -85,6 +73,7 @@ class Family(family.Family):
             'hu':       u'Wikidézet vita',
             'it':       u'Discussioni Wikiquote',
             'ja':       u'Wikiquote‐ノート',
+            'ka':       u'ვიკიციტატა განხილვა',
             'ko':       u'Wikiquote토론',
             'ku':       u'Wikiquote nîqaş',
             'la':       u'Disputatio Vicicitationis',
@@ -102,36 +91,6 @@ class Family(family.Family):
             'tr':       u'Vikisöz tartışma',
             'uk':       u'Обговорення Wikiquote',
         }
-
-        self.namespaces[7] = {
-            '_default': [u'Image talk', self.namespaces[7]['_default']],
-            'da':       u'Billeddiskussion',
-
-        }
-
-        self.namespaces[9] = {
-            '_default': [u'MediaWiki talk', self.namespaces[9]['_default']],
-            'da':       u'MediaWiki-diskussion',
-
-        }
-
-        self.namespaces[11] = {
-            '_default': [u'Template talk', self.namespaces[11]['_default']],
-            'da':       u'Skabelondiskussion',
-
-        }
-
-        self.namespaces[13] = {
-            '_default': [u'Help talk', self.namespaces[13]['_default']],
-            'da':       u'Hjælp-diskussion',
-
-        }
-
-        self.namespaces[15] = {
-            '_default': [u'Category talk', self.namespaces[15]['_default']],
-            'da':       u'Kategoridiskussion',
-
-        }
         
         self.namespaces[100] = {
             '_default': u'Portal',
@@ -146,6 +105,7 @@ class Family(family.Family):
 
         self.disambiguationTemplates = {
             '_default': [u''],
+            'ka':       [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
             'pt':       [u'Desambiguação'],
         }
 
@@ -196,6 +156,10 @@ class Family(family.Family):
         # group of languages that we might want to do at once
             
         self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+
+        self.mainpages = {
+            'ka':   u'მთავარი გვერდი'
+            }
 
     def version(self, code):
         return "1.8alpha"    
