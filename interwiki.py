@@ -504,7 +504,7 @@ class Subject(object):
                             print("Skipping link %s to an ignored language"%page2)
                             continue
                         if page2 in globalvar.ignore:
-                            wikipedia.output(u"Skipping link %s to an ignored page"%page2)
+                            print("Skipping link %s to an ignored page"%page2)
                             continue                            
                         if globalvar.same=='wiktionary':
                             if page2.title().lower()!=self.inpl.title().lower():
