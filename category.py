@@ -294,7 +294,6 @@ def add_category(sort_by_last_name = False):
 class CategoryMoveRobot:
     def __init__(self, oldCatTitle, newCatTitle, batchMode = False, editSummary = '', inPlace = False, moveCatPage = True):
         self.editSummary = editSummary
-        self.inPlace = inPlace
         self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
         self.inPlace = inPlace
@@ -318,7 +317,7 @@ class CategoryMoveRobot:
             wikipedia.output(u'There are no subcategories in category ' + self.oldCat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.oldCat, newCat, inPlace=inPlace)
+                catlib.change_category(subcategory, self.oldCat, newCat, inPlace=self.inPlace)
         if self.oldCat.exists() and self.moveCatPage:
             # try to copy page contents to new cat page
             if self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
