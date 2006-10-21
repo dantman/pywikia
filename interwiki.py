@@ -168,6 +168,14 @@ This script understands various command-line arguments:
                    site is updated. This option is useful to quickly set two way
                    links without updating all of wiki's sites.
 
+    -whenneeded    works like limittwo, but other languages are changed in the
+                   following cases:
+                   * If there are no interwiki at all on the page
+                   * If an interwiki must be removed
+                   * If an interwiki must be changed, where the old interwiki
+                     does not go to a non-existing or redirect page (although
+                     some cases where it is are included too)
+                   
     -bracket       only work on pages that have (in the home language) a bracket
                    in their title. All other pages are skipped.
 
@@ -305,6 +313,7 @@ class Global(object):
     showtextlinkadd = 300
     localonly = False
     limittwo = False
+    strictlimittwo = False
     ignore = []
     bracketonly = False
 
@@ -830,9 +839,22 @@ class Subject(object):
                                 frgnSiteDone = True
                         except LinkMustBeRemoved:
                             notUpdatedSites.append(site)
-                    
-                    if lclSiteDone and frgnSiteDone:
-                        break
+                elif not globalvar.strictlimittwo and new.has_key(site):
+                    old={}
+                    try:
+                        for pl in new[site].interwiki():
+                            old[pl.site()] = pl
+                    except wikipedia.NoPage:
+                        wikipedia.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
+                        continue
+                    mods, adding, removing, modifying = compareLanguages(old, new, insite = lclSite)
+                    if len(removing) > 0 or (len(modifying) > 0 and self.problemfound) or len(old.keys()) == 0:
+                        try:
+                            if self.replaceLinks(new[site], new, bot):
+                                updatedSites.append(site)
+                        except LinkMustBeRemoved:
+                            notUpdatedSites.append(site)
+                        
             else:
                 wikipedia.output(u"Unable to find a suitable pair")
         else:
@@ -895,7 +917,7 @@ class Subject(object):
             return False
 
         # Check what needs to get done
-        mods, removing = compareLanguages(old, new, insite = pl.site())
+        mods, adding, removing, modifying = compareLanguages(old, new, insite = pl.site())
 
         # When running in autonomous mode without -force switch, make sure we don't remove any items, but allow addition of the new ones
         if globalvar.autonomous and not globalvar.force and len(removing) > 0:
@@ -904,7 +926,7 @@ class Subject(object):
                     new[rmpl.site()] = old[rmpl.site()]
                     wikipedia.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmpl.aslink(True))
             # Re-Check what needs to get done
-            mods, removing = compareLanguages(old, new, insite = pl.site())
+            mods, adding, removing, modifying = compareLanguages(old, new, insite = pl.site())
 
         if not mods and not globalvar.always:
             wikipedia.output(u'No changes needed' )
@@ -1247,7 +1269,7 @@ def compareLanguages(old, new, insite):
         mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[2], ", ".join([fmt(x) for x in removing]))
     if modifying:
         mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[3], ", ".join([fmt(x) for x in modifying]))
-    return mods, removing
+    return mods, adding, removing, modifying
 
 def readWarnfile(filename, bot):
     import warnfile
@@ -1352,6 +1374,10 @@ if __name__ == "__main__":
                     globalvar.localonly = True
                 elif arg == '-limittwo':
                     globalvar.limittwo = True
+                    globalvar.strictlimittwo = True
+                elif arg == '-whenneeded':
+                    globalvar.limittwo = True
+                    globalvar.strictlimittwo = False
                 elif arg.startswith('-years'):
                     # Look if user gave a specific year at which to start
                     # Must be a natural number or negative integer.
