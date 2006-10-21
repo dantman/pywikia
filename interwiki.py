@@ -841,7 +841,7 @@ class Subject(object):
                                 frgnSiteDone = True
                         except LinkMustBeRemoved:
                             notUpdatedSites.append(site)
-                elif not globalvar.strictlimittwo and new.has_key(site):
+                elif not globalvar.strictlimittwo and new.has_key(site) and site != lclSite:
                     old={}
                     try:
                         for pl in new[site].interwiki():
