@@ -754,10 +754,11 @@ class Subject(object):
             acceptall = False
             for k,v in new.items():
                 if len(v) == 1:
-                    print "="*30
-                    pl2 = v[0]
-                    wikipedia.output(u"Found link to %s in:" % pl2.aslink(True))
-                    self.whereReport(pl2, indent=4)
+                    if not acceptall:
+                        print "="*30
+                        pl2 = v[0]
+                        wikipedia.output(u"Found link to %s in:" % pl2.aslink(True))
+                        self.whereReport(pl2, indent=4)
                     while 1:
                         if acceptall: 
                             answer = 'a'
