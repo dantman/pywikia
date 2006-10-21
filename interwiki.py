@@ -832,7 +832,8 @@ class Subject(object):
                         lclSiteDone = True   # even if we fail the update
 
                     if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
-                        wikipedia.output(u"Found pair match between %s and %s" % (lclSite, site))
+                        if site != lclSite:
+                            wikipedia.output(u"Found pair match between %s and %s" % (lclSite, site))
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
