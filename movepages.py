@@ -103,6 +103,7 @@ class MovePagesBot:
             titleroot.move(pagemove, msg)
             if delete == True:
                 pagedel = wikipedia.Page(wikipedia.getSite(), page)
+                deletemsg = wikipedia.translate(wikipedia.getSite(), deletecomment)
                 pagedel.delete(page, deletemsg)
 
     def run(self):
