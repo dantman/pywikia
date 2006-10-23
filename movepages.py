@@ -43,139 +43,125 @@ comment={
     'pt': u'Página movida por bot',
     }
 
-def Movepages(page, deletedPages):
-    pagetitle = page.title()        
-    wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
-    try:
-        getcontent = page.get()
-    except wikipedia.LockedPage:
-        wikipedia.output(u'Page is locked')
-        pass
-    except wikipedia.NoPage:
-        wikipedia.output(u'Page not exist')
-        pass
-    
-    ask = wikipedia.input('What do you do: (c)hange page name (a)ppend to page name, (n)ext page or (q)uit?')
-    if ask in ['c', 'C']:
-        pagemove = wikipedia.input(u'New page name:')
-        titleroot = wikipedia.Page(wikipedia.getSite(), pagetitle)
+class MovePagesWithPrefix:
+    def __init__(self, generator, prefix, delete):
+        self.generator = generator
+        self.prefix = prefix
+        self.delete = delete
+
+    def PrefixMove(self, page, prefix, delete):
+        pagemove = wikipedia.output(u'%s%s' % (prefix, page))
+        titleroot = wikipedia.Page(wikipedia.getSite(), page)
         msg = wikipedia.translate(wikipedia.getSite(), comment)
         titleroot.move(pagemove, msg)
-        wikipedia.output('Page %s move successful to %s.' % (pagetitle, pagemove))
-        if deletedPages == True:
-            pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
-    elif ask in ['a', 'A']:
+        if delete == True:
+            pagedel = wikipedia.Page(wikipedia.getSite(), page)
+            pagedel.delete(page)
+
+    def run(self):
+        for page in self.generator:
+            try:
+                pagetitle = page.title()
+                wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
+                self.PrefixMove(page, prefix, self.delete)
+            except wikipedia.NoPage:
+                wikipedia.output(u'Page %s does not exist?!' % page.title())
+            except wikipedia.IsRedirectPage:
+                wikipedia.output(u'Page %s is a redirect; skipping.' % page.title())
+            except wikipedia.LockedPage:
+                wikipedia.output(u'Page %s is locked?!' % page.title())
+
+class MovePagesBot:
+    def __init__(self, generator, delete):
+        self.generator = generator
+        self.delete = delete
+
+    def ChangePageName(self, page, delete):
+        pagemove = wikipedia.input(u'New page name:')
+        titleroot = wikipedia.Page(wikipedia.getSite(), pagemove)
+        msg = wikipedia.translate(wikipedia.getSite(), comment)
+        titleroot.move(pagemove, msg)
+        if delete == True:
+            pagedel = wikipedia.Page(wikipedia.getSite(), page)
+            
+    def AppendPageName(self, page, delete):
         pagestart = wikipedia.input(u'Append This to the start:')
         pageend = wikipedia.input(u'Append This to the end:')
-        pagemove = u'%s%s%s' % (pagestart,pagetitle,pageend)
+        pagemove = (u'%s%s%s' % (pagestart, page, pageend))
         ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o]' % pagemove)
         if ask2 in ['y', 'Y']:
-            titleroot = wikipedia.Page(wikipedia.getSite(), pagetitle)
+            titleroot = wikipedia.Page(wikipedia.getSite(), page)
             msg = wikipedia.translate(wikipedia.getSite(), comment)
             titleroot.move(pagemove, msg)
-            wikipedia.output(u'Page %s move successful to %s.' % (pagetitle, pagemove))
-            if deletedPages == True:
-                pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
-                pagedel.delete(pagetitle)
-    elif ask in ['n', 'N']:
-        pass
-    elif ask in ['q', 'Q']:
-        sys.exit()
-    else:
-        wikipedia.output(u'Input certain code.')
-        sys.exit()
+            if delete == True:
+                pagedel = wikipedia.Page(wikipedia.getSite(), page)
+                pagedel.delete(page)
 
-def MovepageswithPrefix(page, prefixPageTitle, deletedPages):
-    pagetitle = page.title()
-    wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
-    pagemove = ('%s%s' % (prefixPageTitle, pagetitle))
-    titleroot = wikipedia.Page(wikipedia.getSite(), pagetitle)
-    msg = wikipedia.translate(wikipedia.getSite(), comment)
-    titleroot.move(pagemove, msg)
-    wikipedia.output('Page %s move successful to %s.' % (pagetitle, pagemove))
-    if deletedPages == True:
-        pagedel = wikipedia.Page(wikipedia.getSite(), pagetitle)
-        pagedel.delete(pagetitle)
+    def run(self):
+        for page in self.generator:
+            try:
+                pagetitle = page.title()
+                wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
+                ask = wikipedia.input('What do you do: (c)hange page name, (a)ppend to page name, (n)ext page or (q)uit?')
+                if ask in ['c', 'C']:
+                    self.ChangePageName(page, self.delete)
+                elif ask in ['a', 'A']:
+                    self.AppendPageName(page, self.delete)
+                elif ask in ['n', 'N']:
+                    pass
+                elif ask in ['q', 'Q']:
+                    sys.exit()
+                else:
+                    wikipedia.output(u'Input certain code.')
+                    self.run()
+            except wikipedia.NoPage:
+                wikipedia.output('Page %s does not exist?!' % page.title())
+            except wikipedia.IsRedirectPage:
+                wikipedia.output('Page %s is a redirect; skipping.' % page.title())
+            except wikipedia.LockedPage:
+                wikipedia.output('Page %s is locked?!' % page.title())
 
 def main():
-    categoryName = None
-    singlePageTitle = []
-    referredPageTitle = None
-    linkPage = None
-    startpage = None
-    prefixPageTitle = None
-    deletedPages = False
+    singlepage = []
+    gen = cat = ref = link = start = prefix = None
+    delete = False
     
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'movepages')
-        if arg:
-            if arg.startswith('-cat:'):
-                if len(arg) == 5:
-                    categoryName = wikipedia.input(u'Enter the category name:')
-                else:
-                    categoryName = arg[6:]
-            elif arg.startswith('-ref:'):
-                if len(arg) == 5:
-                    referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
-                else:
-                    referredPageTitle = arg[6:]
-            elif arg.startswith('-link:'):
-                if len(arg) == 6:
-                    linkPage = wikipedia.input(u'Links from which page should be processed?')
-                else:
-                    linkPage = arg[6:]
-            elif arg.startswith('-start:'):
-                if len(arg) == 6:
-                    startpage = wikipedia.input(u'Please enter the article to start then:')
-                else:
-                    startpage = arg[7:]
-            elif arg.startswith('-prefix:'):
-                if len(arg) == 8:
-                    prefixPageTitle = wikipedia.input(u'Enter the prefix name of the pages in specific page: ')
-                else:
-                    prefixPageTitle = arg[9:]
-            elif arg.startswith('-del'):
-                deletedPages = True
-            else:
-                singlePageTitle.append(arg)
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-cat:'):
+            cat = catlib.Category(wikipedia.getSite(), arg[5:])
+            gen = pagegenerators.CategorizedPageGenerator(cat)
+        elif arg.startswith('-ref:'):
+            ref = wikipedia.Page(wikipedia.getSite(), arg[5:])
+            gen = pagegenerators.ReferringPageGenerator(ref)
+        elif arg.startswith('-link:'):
+            link = wikipedia.Page(wikipedia.getSite(), arg[6:])
+            gen = pagegenerators.LinkedPageGenerator(link)
+        elif arg.startswith('-start:'):
+            start = wikipedia.Page(wikipedia.getSite(),arg[7:])
+            gen = pagegenerators.AllpagesPageGenerator(start.titleWithoutNamespace(),namespace=start.namespace())
+        elif arg == '-del':
+            delete = True
+        elif arg.startswith('-prefix:'):
+            prefix = wikipedia.Page(wikipedia.getSite(), arg[8:])
+            listpageTitle = wikipedia.input(u'List of pages:')
+            listpage = wikipedia.Page(wikipedia.getSite(), listpageTitle)
+            gen = pagegenerators.LinkedPageGenerator(listpage)
+            preloadingGen = pagegenerators.PreloadingGenerator(gen)
+            bot = MovePagesWithPrefix(preloadingGen, prefix, delete)
+            bot.run()
+        else:
+            singlepage.append(arg)
 
-    if categoryName:
-        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
-        gen = pagegenerators.CategorizedPageGenerator(cat)
-        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
-        for page in generator: Movepages(page, deletedPages)
-
-    elif referredPageTitle:
-        referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
-        gen = pagegenerators.ReferringPageGenerator(referredPage)
-        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
-        for page in generator: Movepages(page, deletedPages)
-
-    elif linkPage:
-        linkingPage = wikipedia.Page(wikipedia.getSite(), linkPage)
-        gen = pagegenerators.LinkedPageGenerator(linkingPage)
-        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
-        for page in generator: Movepages(page, deletedPages)
-
-    elif startpage:
-        start = wikipedia.Page(wikipedia.getSite(), startpage)
-        gen = pagegenerators.AllpagesPageGenerator(startpage)
-        for page in gen: Movepages(page, deletedPages)
-
-    elif prefixPageTitle:
-        listpageTitle = wikipedia.input(u'List of pages:')
-        listpage = wikipedia.Page(wikipedia.getSite(), listpageTitle)
-        gen = pagegenerators.LinkedPageGenerator(listpage)
-        generator = pagegenerators.PreloadingGenerator(gen, pageNumber = [])
-        for page in generator: MovepageswithPrefix(page, prefixPageTitle, deletedPages)
-    
+    if singlepage:
+        page = wikipedia.Page(wikipedia.getSite(), ' '.join(singlepage))
+        gen = iter([page])
+    if not gen:
+        wikipedia.showHelp('movepages')
     else:
-        singlePageTitle = ' '.join(singlePageTitle)
-        if not singlePageTitle:
-            singlePageTitle = wikipedia.input(u'Which page to move:')
-        singlePage = wikipedia.Page(wikipedia.getSite(), singlePageTitle)
-        Movepages(singlePage, deletedPages)
-
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        bot = MovePagesBot(preloadingGen, delete)
+        bot.run()
+                
 if __name__ == '__main__':
     try:
         main()
