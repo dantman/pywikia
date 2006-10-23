@@ -43,6 +43,11 @@ comment={
     'pt': u'Página movida por bot',
     }
 
+deletecomment={
+    'en': u'Delete page by bot',
+    'pt': u'Página apagada por bot',
+    }
+
 class MovePagesWithPrefix:
     def __init__(self, generator, prefix, delete):
         self.generator = generator
@@ -56,7 +61,8 @@ class MovePagesWithPrefix:
         titleroot.move(pagemove, msg)
         if delete == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), page)
-            pagedel.delete(page)
+            deletemsg = wikipedia.translate(wikipedia.getSite(), deletecomment)
+            pagedel.delete(page, deletemsg)
 
     def run(self):
         for page in self.generator:
@@ -83,6 +89,8 @@ class MovePagesBot:
         titleroot.move(pagemove, msg)
         if delete == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), page)
+            deletemsg = wikipedia.translate(wikipedia.getSite(), deletecomment)
+            pagedel.delete(page, deletemsg)
             
     def AppendPageName(self, page, delete):
         pagestart = wikipedia.input(u'Append This to the start:')
@@ -95,7 +103,7 @@ class MovePagesBot:
             titleroot.move(pagemove, msg)
             if delete == True:
                 pagedel = wikipedia.Page(wikipedia.getSite(), page)
-                pagedel.delete(page)
+                pagedel.delete(page, deletemsg)
 
     def run(self):
         for page in self.generator:
