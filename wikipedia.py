@@ -3617,6 +3617,6 @@ def debugDump(name, site, error, data):
     filename = filename.replace(' ','_').replace(':','-')
     f = file(filename, 'wb') #trying to write it in binary   #f = codecs.open(filename, 'w', 'utf-8')
     f.write(u'Error reported: %s\n\n' % error)
-    f.write(data)
+    f.write(data.encode("utf8"))
     f.close()
     output( u'ERROR: %s caused error %s. Dump %s created.' % (name,error,filename) )
