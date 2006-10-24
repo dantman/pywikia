@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import config, urllib
 
 __version__='$Id$'
@@ -2014,7 +2014,6 @@ class Family:
         'be': [u'перанакіраваньне'],
         'bg': [u'виж'],
         'bs': [u'preusmjeri'],
-        'cs': [u'přesměruj'],
         'cy': [u'ail-cyfeirio'],
         'et': [u'suuna'],
         'eu': [u'bidali'],

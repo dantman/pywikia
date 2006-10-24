@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -96,6 +96,7 @@ msg = {
 
 # Summary message when working on redirects
 msg_redir = {
+    'cs': u'Robot opravil přesměrování na %s',
     'en': u'Robot-assisted disambiguation: %s',
     'da': u'Retter flertydigt link til: %s',
     'de': u'Bot-unterstützte Redirectauflösung: %s',
