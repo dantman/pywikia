@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
@@ -2138,8 +2137,8 @@ def replaceLanguageLinks(oldtext, new, site = None):
             except IndexError:
                 pass
             # Is there any text in the 'after' part that means we should keep it after?
-            if "</noinclude>" in s2[firstafter:]:
-                newtext = s2[:firstafter+1] + s + s2[firstafter+1:]
+            if "</noinclude>" in s2[firstafter:] and firstafter < 0:
+                newtext = s2[:firstafter] + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 cats = getCategoryLinks(s2, site = site)
                 s2 = removeCategoryLinks(s2, site) + site.family.interwiki_text_separator + s
