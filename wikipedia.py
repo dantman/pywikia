@@ -2291,7 +2291,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
             except IndexError:
                 pass
             # Is there any text in the 'after' part that means we should keep it after?
-            if "</noinclude>" in s2[firstafter:]:
+            if "</noinclude>" in s2[firstafter:] and firstafter < 0:
                 newtext = s2[:firstafter+1] + s + s2[firstafter+1:]
             elif site.language() in site.family.categories_last:
                 newtext = s2 + site.family.category_text_separator + s
