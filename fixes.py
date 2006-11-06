@@ -1,7 +1,4 @@
 # -*- coding: utf-8  -*-
-import codecs
-import sys, re
-
 
 fixes = {
     # These replacements will convert HTML to wiki syntax where possible, and
