@@ -14,7 +14,7 @@ Syntax: python mediawiki_messages [-all] [-debug]
 Command line options:
     -all  -  Reloads messages for all wikis where messages are already present
     -debug  -  Shows example messages after loading
-    
+    -home  -  Reloads messages for the 'mylang'-language
 """
 
 # (C) Daniel Herding, 2004
@@ -88,51 +88,26 @@ def refresh_messages(site = None):
 
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
-    if site.version() >= "1.8":
-        itemR = re.compile('<tr class="def" id=".*?">'               # first possibility: original MediaWiki message used
-                         + '\s*<td>'
-                         + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?"><span id=\".*?\">(?P<key>.+?)</span></a><br />'   # message link
-                         + '\s*<a href=".+?"( class="new")? title=".+?">.+?</a>'   # talk link
-                         + '\s*</td><td>'
-                         + '\s*(?P<current>.+?)'                     # current message
-                         + '\s*</td>'
-                         + '\s*</tr>'
-                         + '|'
-                         + '<tr class="orig" id=".*?">'              # second possibility: custom message used
-                         + '\s*<td rowspan="2">'
-                         + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?"><span id=\".*?\">(?P<key2>.+?)</span></a><br />'  # message link
-                         + '\s*<a href=".+?"( class="new")? title=".+?">.+?</a>'   # talk link
-                         + '\s*</td><td>'
-                         + '\s*.+?'                                  # original message
-                         + '\s*</td>'
-                         + '\s*</tr><tr class="new" id=".*?">'
-                         + '\s*<td>'
-                         + '\s*(?P<current2>.+?)'                    # current message
-                         + '\s*</td>'
-                         + '\s*</tr>', re.DOTALL)
-    elif site.version() >= "1.5":
-        # MediaWiki 1.5 had single quotation marks in some places.
-        itemR = re.compile("<tr class='def' id='.*?'>\n"               # first possibility: original MediaWiki message used
+    if site.version() >= "1.5":
+        itemR = re.compile("<tr class=('|\")def('|\") id=('|\").*?('|\")>\n"               # first possibility: original MediaWiki message used
                          + "\s*<td>\n"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?"><span id=\'.*?\'>(?P<key>.+?)</span><\/a><br \/>'   # message link
+                         + '\s*<a href=".+?" title=".+?"><span id=(\'|").*?(\'|")>(?P<key>.+?)</span><\/a><br \/>'   # message link
                          + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
                          + "\s*(?P<current>.+?)\n"                     # current message
                          + "\s*</td>"
                          + "\s*</tr>"
                          + "|"
-                         + "<tr class='orig' id='.*?'>\n"              # second possibility: custom message used
-                         + "\s*<td rowspan='2'>"
+                         + "<tr class=('|\")orig('|\") id=('|\").*?('|\")>\n"              # second possibility: custom message used
+                         + "\s*<td rowspan=('|\")2('|\")>"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?"><span id=\'.*?\'>(?P<key2>.+?)</span><\/a><br \/>'  # message link
+                         + '\s*<a href=".+?" title=".+?"><span id=(\'|").*?(\'|")>(?P<key2>.+?)</span><\/a><br \/>'  # message link
                          + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
                          + "\s*.+?\n"                                  # original message
                          + "\s*</td>"
-                         + "\s*</tr><tr class='new' id='.*?'>"
+                         + "\s*</tr><tr class=('|\")new('|\") id=('|\").*?('|\")>"
                          + "\s*<td>\n"
                          + "\s*(?P<current2>.+?)\n"                    # current message
                          + "\s*</td>"
@@ -186,7 +161,8 @@ def main():
                 debug = True
             elif arg == '-all':
                 refresh_all = True
-                
+            elif arg == '-home':
+	    	refresh_messages()
     if refresh_all:
         refresh_all_messages()
     else:
