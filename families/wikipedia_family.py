@@ -211,7 +211,7 @@ class Family(family.Family):
             'ar': u'نقاش البوابة',
             'ca': u'Portal Discussió',
             'cs': u'Portál diskuse',
-            'da': u'Portal diskussion',
+            'da': u'Portaldiskussion',
             'de': u'Portal Diskussion',
             'eo': u'Portala diskuto',
             'es': u'Portal Discusión',
@@ -243,6 +243,7 @@ class Family(family.Family):
         self.namespaces[102] = {
             '_default': u'WikiProject',
             'ca': u'Viquiprojecte',
+            'cs': u'Rejstřík',
             'es': u'Wikiproyecto',
             'eu': u'Wikiproiektu',
             'fr': u'Projet',
@@ -253,6 +254,7 @@ class Family(family.Family):
         self.namespaces[103] = {
             '_default': u'WikiProject talk',
             'ca': u'Viquiprojecte Discussió',
+            'cs': u'Rejstřík diskuse',
             'es': u'Wikiproyecto Discusión',
             'eu': u'Wikiproiektu eztabaida',
             'fr': u'Discussion Projet',
@@ -321,7 +323,7 @@ class Family(family.Family):
             'ku':  [u'Cudakirin'],
             'la':  [u'Discretiva'],
             'lb':  [u'Homonymie', u'Disambig'],
-            'li':  [u'Verdudeliking', u'Verdudelikingpazjena'],
+            'li':  [u'Verdudeliking', u'Verdudelikingpazjena', u'Vp'],
             'ln':  [u'Bokokani'],
             'lt':  [u'Disambig'],
             'mk':  [u'Појаснување'],
