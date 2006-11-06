@@ -42,6 +42,7 @@ class Family(family.Family):
             'he':       u'ויקיציטוט',
             'hu':       u'Wikidézet',
             'hr':       u'Wikicitat',
+            'ka':       u'ვიკიციტატა',
             'la':       u'Vicicitatio',
             'pl':       u'Wikicytaty',
             'ro':       u'Wikicitat',
