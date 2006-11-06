@@ -2052,9 +2052,10 @@ def replaceExceptMathNowikiAndComments(text, old, new):
             index = noTouchMatch.end()
         else:
             # We found a valid match. Replace it.
-            text = text[:match.start()] + old.sub(new, text[match.start():match.end()]) + text[match.end():]
+            replace_text = old.sub(new, text[match.start():match.end()])
+            text = text[:match.start()] + replace_text + text[match.end():]
             # continue the search on the remaining text
-            index = match.start() + len(new)
+            index = match.start() + len(replace_text)
     return text
 
 # Part of library dealing with interwiki links
@@ -2725,7 +2726,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.longpages_address()
+            path = self.longpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\)</li>')
@@ -2763,7 +2764,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.categories_address()
+            path = self.categories_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
@@ -2781,7 +2782,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.deadendpages_address()
+            path = self.deadendpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
@@ -2799,7 +2800,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.ancientpages_address()
+            path = self.ancientpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> (?P<date>.+?)</li>')
@@ -2818,7 +2819,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.lonelypages_address()
+            path = self.lonelypages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
@@ -2836,7 +2837,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.uncategorizedcategories_address()
+            path = self.uncategorizedcategories_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
@@ -2854,7 +2855,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.uncategorizedpages_address()
+            path = self.uncategorizedpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
@@ -2872,7 +2873,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.unusedcategories_address()
+            path = self.unusedcategories_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')

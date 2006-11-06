@@ -89,7 +89,7 @@ class CosmeticChangesToolkit:
             defaultNs = family.namespace('_default', nsNumber)
             if thisNs != defaultNs:
                 text = wikipedia.replaceExceptNowikiAndComments(text, r'\[\[\s*' + defaultNs + '\s*:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]')
-        if self.site.nocapitalize: 
+        if self.site.nocapitalize:
             for nsNumber in family.namespaces:
                 thisNs = family.namespace(self.site.lang, nsNumber)
                 lowerNs = thisNs[0].lower() + thisNs[1:] # this assumes that all NS names have length at least 2
@@ -125,14 +125,35 @@ class CosmeticChangesToolkit:
                     titleWithSection = re.sub('_+', ' ', titleWithSection)
                     # Remove double spaces
                     titleWithSection = re.sub('  +', ' ', titleWithSection)
+                    # Remove unnecessary initial and final spaces from title
+                    initial_space=False
+                    while titleWithSection[0] == ' ':
+                        titleWithSection=titleWithSection[1:]
+                        initial_space=True
+                    final_space=False
+                    while titleWithSection[-1] == ' ':
+                        titleWithSection=titleWithSection[:-1]
+                        final_space=True
                     # Convert URL-encoded characters to unicode
                     titleWithSection = wikipedia.url2unicode(titleWithSection, site = self.site)
-                    label = m.group('label') or titleWithSection
+                    label = m.group('label')
+                    # Remove unnecessary initial and final spaces from label ([[Category:Title| Title]] unchanged)
+                    # But some editors prefer spaces around pipes. (See [[en:Wikipedia:Semi-bots]])
+                    if label and not page.isCategory():
+                       while label[0] == ' ':
+                             label=label[1:]
+                       final_label_space=False
+                       while label[-1] == ' ':
+                             label=label[:-1]
+                             final_label_space=True
+                    else:
+                       label = titleWithSection
+                       final_label_space=final_space
                     trailingChars = m.group('linktrail')
-                    if trailingChars:
+                    if trailingChars and not final_label_space:
                         label += trailingChars
-                    if titleWithSection == label:
-                        newLink = "[[%s]]" % titleWithSection
+                    if titleWithSection == label or titleWithSection[0].lower() + titleWithSection[1:] == label:
+                        newLink = "[[%s]]" % label
                     # Check if we can create a link with trailing characters instead of a pipelink
                     elif len(titleWithSection) <= len(label) and label[:len(titleWithSection)] == titleWithSection and re.sub(trailR, '', label[len(titleWithSection):]) == '':
                         newLink = "[[%s]]%s" % (label[:len(titleWithSection)], label[len(titleWithSection):])
@@ -144,6 +165,13 @@ class CosmeticChangesToolkit:
                         if self.site.sitename() == 'wikipedia:de':
                             titleWithSection = titleWithSection[0].upper() + titleWithSection[1:]
                         newLink = "[[%s|%s]]" % (titleWithSection, label)
+                    # Provides space fixes out wikilink. (text[[ title | name ]]text -> text [[title|name]] text)
+                    if initial_space:
+                       newLink = ' ' + newLink
+                    if final_label_space:
+                       newLink = newLink + ' '
+                       if trailingChars:
+                           newLink += trailingChars
                     text = text[:m.start()] + newLink + text[m.end():]
         return text
 
@@ -151,7 +179,7 @@ class CosmeticChangesToolkit:
         ignore = [
              38,     # Ampersand (&amp;)
              60,     # Less than (&lt;)
-             62,     # Less than (&lt;)
+             62,     # Great than (&gt;)
             160,     # Non-breaking space (&nbsp;) - not supported by Firefox textareas
         ]
         text = wikipedia.html2unicode(text, ignore = ignore)
@@ -208,11 +236,11 @@ class CosmeticChangesBot:
                     if self.acceptall or choice in ['y', 'Y']:
                         page.put(changedText)
             except wikipedia.NoPage:
-                print "Page %s does not exist?!" % page.aslink()
+                wikipedia.output("Page %s does not exist?!" % page.aslink())
             except wikipedia.IsRedirectPage:
-                print "Page %s is a redirect; skipping." % page.aslink()
+                wikipedia.output("Page %s is a redirect; skipping." % page.aslink())
             except wikipedia.LockedPage:
-                print "Page %s is locked?!" % page.aslink()
+                wikipedia.output("Page %s is locked?!" % page.aslink())
             
 
 def main():

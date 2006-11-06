@@ -224,6 +224,11 @@ cosmetic_changes_mylang_only = True
 # Web API license key from http://www.google.com/apis/index.html .
 google_key = ''
 
+# Some scripts allow using the Yahoo! Search Web Services. To use this feature,
+# you must install the pYsearch module from http://pysearch.sourceforge.net/
+# and get a Yahoo AppIP from http://developer.yahoo.com
+yahoo_appid = ''
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.
