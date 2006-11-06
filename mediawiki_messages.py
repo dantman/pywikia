@@ -89,25 +89,27 @@ def refresh_messages(site = None):
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
     if site.version() >= "1.5":
-        itemR = re.compile("<tr class=('|\")def('|\") id=('|\").*?('|\")>\n"               # first possibility: original MediaWiki message used
+        # In MediaWiki 1.5, there are some single quotes around attributes.
+        # Since about MediaWiki 1.8, there are only double quotes.
+        itemR = re.compile("<tr class=['\"]def['\"] id=['\"].*?['\"]>\n"               # first possibility: original MediaWiki message used
                          + "\s*<td>\n"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?"><span id=(\'|").*?(\'|")>(?P<key>.+?)</span><\/a><br \/>'   # message link
+                         + '\s*<a href=".+?" title=".+?"><span id=[\'"].*?[\'"]>(?P<key>.+?)</span><\/a><br \/>'   # message link
                          + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
                          + "\s*(?P<current>.+?)\n"                     # current message
                          + "\s*</td>"
                          + "\s*</tr>"
                          + "|"
-                         + "<tr class=('|\")orig('|\") id=('|\").*?('|\")>\n"              # second possibility: custom message used
-                         + "\s*<td rowspan=('|\")2('|\")>"
+                         + "<tr class=['\"]orig['\"] id=['\"].*?['\"]>\n"              # second possibility: custom message used
+                         + "\s*<td rowspan=['\"]2['\"]>"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?"><span id=(\'|").*?(\'|")>(?P<key2>.+?)</span><\/a><br \/>'  # message link
+                         + '\s*<a href=".+?" title=".+?"><span id=[\'"].*?[\'"]>(?P<key2>.+?)</span><\/a><br \/>'  # message link
                          + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
                          + "\s*.+?\n"                                  # original message
                          + "\s*</td>"
-                         + "\s*</tr><tr class=('|\")new('|\") id=('|\").*?('|\")>"
+                         + "\s*</tr><tr class=['\"]new['\"] id=['\"].*?['\"]>"
                          + "\s*<td>\n"
                          + "\s*(?P<current2>.+?)\n"                    # current message
                          + "\s*</td>"
