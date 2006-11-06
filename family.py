@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 import config, urllib
 
 __version__='$Id$'
@@ -1436,6 +1436,7 @@ class Family:
            'de': u'[a-zäöüß]*',
            'da': u'[a-zæøå]*',
            'fr': u'[a-zàâçéèêîôû]*',
+           'it': u'[a-zàèéìòù]*',
            'nl': u'[a-zäöüïëéèéàç]*',
            'pt': u'[a-záâàãéêíóôõúüç]*',
            'ru': u'[a-zа-я]*',
