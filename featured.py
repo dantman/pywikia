@@ -25,25 +25,39 @@ def LINKS(site,name, ignore=[]):
     return links
 
 msg = {
+    'bs': u'Interwiki za izabrane članke za [[%s:%s]]',
     'en': u'Featured article link for [[%s:%s]]',
     'fi': u'Suositeltu artikkeli -tähti: [[%s:%s]]',
     'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
+    'hr': u'Interwiki za izabrane članke za [[%s:%s]]',
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
+    'sr': u'Међувики за изабране чланке за [[%s:%s]]',
 }
 
 # default is en:Link FA
 template = {
+    'bg': 'Link FA',
+    'bs': 'Link FA',
     'ca': 'Enllaç AD',
+    'da': 'Link FA',
+    'de': 'Link FA',
     'en': 'Link FA',
     'es': 'destacado',
     'fr': 'lien AdQ',
+    'hr': 'Link FA',
     'it': 'Link AdQ',
+    'lv': 'Link FA',
     'no': 'Link UA',
+    'pt': 'Link FA',
+    'ru': 'Link FA',
+    'sl': 'Link FA',
     'sr': 'Link FA',
+    'tr': 'Link FA',
     'vi': 'Liên kết chọn lọc',
 }
     
 featured_name = {
+    'bs': (BACK, u"Šablon:Wiki članak"),
     'cs': (LINKS, u"Wikipedie:Nejlepší články", [u"Seznam", u"Wikipedie"]),
     'de': (CAT, u"Kategorie:Exzellenter Artikel"),
     'el': (BACK, u"Πρότυπο:ΕπιλεγμένοΆρθρο"),
@@ -53,6 +67,7 @@ featured_name = {
     'fi': (BACK, u"Malline:Suositeltu"),
     'fr': (CAT, u"Catégorie:Articles de qualité"),
     'he': (CAT, u"קטגוריה:ערכים מומלצים"),
+    'hr': (BACK, u"Predložak:Izdvojeni članak"),
     'id': (BACK, u"Templat:Pilihan"),
     'is': (CAT, u"Flokkur:Úrvalsgreinar"),
     'it': (CAT, u"Categoria:Articoli in vetrina"),
