@@ -8,6 +8,7 @@ Syntax: python delete.py [-category categoryName]
 Command line options:
 
 -category:   Delete all pages in the given category.
+-links:      Delete all pages linked from a given page.
 -always      Don't prompt to delete pages, just do it.
 -summary:    Supply a custom edit summary.
 
@@ -32,25 +33,33 @@ class DeletionRobot:
     msg_delete_category={
         'en':u'Robot - Deleting all pages from category %s',
     }
+    msg_delete_links={
+        'en':u'Robot - Deleting all pages linked from %s',
+    }
 
-    def __init__(self, generator, categoryName, summary, always = False):
+    def __init__(self, generator, pageName, summary, always = False, doCategory = False, doLinks = False):
         """
         Arguments:
             * generator - A page generator.
-            * categoryName - The name of the category the pages are collected from.
+            * pageName - The name of the page the pages to be deleted are collected from.
             * summary - A custom edit summary.
         """
         self.generator = generator
-        self.categoryName = categoryName
+        self.pageName = pageName
         self.summary = summary
         self.always = always
+        self.doCategory = doCategory
+        self.doLinks = doLinks
 
         # get edit summary message
         mysite = wikipedia.getSite()
         if self.summary:
             wikipedia.setAction(self.summary)
         else:
-            self.summary = wikipedia.translate(mysite, self.msg_delete_category) % self.categoryName
+            if self.doCategory:
+                self.summary = wikipedia.translate(mysite, self.msg_delete_category) % self.pageName
+            elif self.doLinks:
+                self.summary = wikipedia.translate(mysite, self.msg_delete_links) % self.pageName
             wikipedia.setAction(self.summary)
 
     def run(self):
@@ -63,35 +72,46 @@ class DeletionRobot:
             page.delete(self.summary, not self.always)
     
 def main():
-    categoryName = ''
+    pageName = ''
     summary = ''
     always = False
+    doCategory = False
+    doLinks = False
     # read command line parameters
     for arg in wikipedia.handleArgs():
         if arg == '-always':
             always = True
         elif arg.startswith('-summary'):
             if len(arg) == len('-summary'):
-                summary = wikipedia.input(u'Input an edit summary: ')
+                summary = wikipedia.input(u'Input an edit summary:')
             else:
                 summary = arg[len('-summary:'):]
         elif arg.startswith('-category'):
+            doCategory = True
             if len(arg) == len('-category'):
-                categoryName = wikipedia.input(u'Input the category to delete from: ')
+                pageName = wikipedia.input(u'Input the category to delete from:')
             else:
-                categoryName = arg[len('-category:'):]
+                pageName = arg[len('-category:'):]
+        elif arg.startswith('-links'):
+            doLinks = True
+            if len(arg) == len('-links'):
+                pageName = wikipedia.input(u'Input the page to delete from:')
+            else:
+                pageName = arg[len('-links:'):]
 
-    if not categoryName:
+    if not pageName:
         wikipedia.output(u'You did not give me anything to do, quitting.')
-    else:
+    elif doCategory:
         ns = wikipedia.getSite().category_namespace()
-
-        categoryPage = catlib.Category(wikipedia.getSite(), ns + ':' + categoryName)
-
+        categoryPage = catlib.Category(wikipedia.getSite(), ns + ':' + pageName)
         gen = pagegenerators.CategorizedPageGenerator(categoryPage, recurse=True)
+    elif doLinks:
+        linksPage = wikipedia.Page(wikipedia.getSite(), pageName)
+        gen = pagegenerators.LinkedPageGenerator(linksPage)
+        
+    if pageName:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-
-        bot = DeletionRobot(preloadingGen, categoryName, summary, always)
+        bot = DeletionRobot(preloadingGen, pageName, summary, always, doCategory=doCategory, doLinks=doLinks)
         bot.run()
 
 if __name__ == "__main__":
