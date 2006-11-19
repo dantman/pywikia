@@ -40,7 +40,11 @@ This script understands various command-line arguments:
                    Argument can also be given as "-link:linkingpagetitle".
 
     -new           Work on the most recent new pages on the wiki
-                   
+
+    -subcat        When the pages to work on have been chosen by -cat, pages in
+                   subcategories of the selected category are also included.
+                   When -cat has not been selected, this has no effect.
+    
     -same:         looks over all 'serious' languages for the same title.
                    -same is equivalent to -hint:all:
 
@@ -1306,6 +1310,7 @@ if __name__ == "__main__":
         optContinue = False
         optRestore = False
         workNew = False
+        catrecurse = False
         
         bot=InterwikiBot()
         
@@ -1428,6 +1433,8 @@ if __name__ == "__main__":
                         categoryName = wikipedia.input(u'Please enter the category name:')
                     else:
                         categoryName = arg[5:]
+                elif arg.startswith('-subcat'):
+                    catrecurse = True
                 elif arg.startswith('-link'):
                     if len(arg) == 5:
                         linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
@@ -1500,7 +1507,7 @@ if __name__ == "__main__":
             hintlessPageGen = pagegenerators.LinkedPageGenerator(linkingPage)
         elif categoryName:
             cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
-            hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat)
+            hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat, recurse = catrecurse)
         elif workNew:
             if not number:
                 number = config.special_page_limit 
