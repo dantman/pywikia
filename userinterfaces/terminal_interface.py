@@ -17,6 +17,7 @@ class UI:
 
     # NOTE: We use sys.stdout.write() instead of print because print adds a
     # newline.
+    
     def printColorizedInUnix(self, text, colors):
         result = ""
         lastColor = None
@@ -33,6 +34,9 @@ class UI:
         sys.stdout.write(result)
         
     def printColorizedInWindows(self, text, colors):
+        """
+        This only works in Python 2.5 or higher.
+        """
         try:
             import ctypes
             std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
@@ -115,12 +119,15 @@ class UI:
                         # could consist of multiple letters.
                         transliteratedTextList += [char for char in transliterated]
                         transLength = len(transliterated)
+                        # mark the transliterated letters in yellow.
                         color = colors[i + sizeIncrease] or 14
                         colors = colors[:i] + [color] * transLength + colors[i + 1:]
+                        # memorize if we replaced a single letter by multiple letters.
                         sizeIncrease += transLength - 1
                     else :
                         # transliteration failed
                         transliteratedTextList.append('?')
+                        # mark the replacement character in yellow.
                         color = colors[i + sizeIncrease] or 14
                         colors = colors[:i] + [color] + colors[i + 1:]
                 else:
