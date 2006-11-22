@@ -180,6 +180,7 @@ class CosmeticChangesToolkit:
              38,     # Ampersand (&amp;)
              60,     # Less than (&lt;)
              62,     # Great than (&gt;)
+            124,     # Vertical bar (??) - used intentionally in navigation bar templates on de:
             160,     # Non-breaking space (&nbsp;) - not supported by Firefox textareas
         ]
         text = wikipedia.html2unicode(text, ignore = ignore)
