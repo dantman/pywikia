@@ -68,6 +68,7 @@ ignorelist = [
     re.compile('.*[\./@]example.net(/.*)?'), # reserved for documentation
     re.compile('.*[\./@]example.org(/.*)?'), # reserved for documentation
     re.compile('.*[\./@]gso.gbv.de(/.*)?'),  # bot somehow can't handle their redirects 
+    re.compile('.*[\./@]berlinonline.de(/.*)?'), # a de: user wants to fix them by hand and doesn't want them to be deleted, see [[de:Benutzer:BLueFiSH.as/BZ]].
 ]
 
 class LinkChecker(object):
