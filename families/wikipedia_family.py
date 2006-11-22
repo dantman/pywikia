@@ -103,6 +103,7 @@ class Family(family.Family):
             'ce': u'Обсуждение Wikipedia',
             'cs': u'Wikipedie diskuse',
             'csb': u'Diskùsëjô Wiki',
+            'cu': u'Wikipedia бесѣда',
             'cv': u'Wikipedia сӳтсе явмалли',
             'cy': u'Sgwrs Wicipedia',
             'da': u'Wikipedia-diskussion',
