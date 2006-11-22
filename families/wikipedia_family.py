@@ -125,6 +125,7 @@ class Family(family.Family):
             'he': u'שיחת ויקיפדיה',
             'hi': u'विकिपीडिया वार्ता',
             'hr': u'Razgovor Wikipedija',
+            'hsb': u'Wikipedia Diskusija',
             'hu': u'Wikipédia vita',
             'ia': u'Discussion Wikipedia',
             'id': u'Pembicaraan Wikipedia',
