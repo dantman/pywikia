@@ -5,8 +5,9 @@ import config, re, sys, transliteration
 
 # TODO: other colors
 unixColors = {
-    10: chr(27) + '[92;1m%s' + chr(27) + '[0m',  # Light Green
-    12: chr(27) + '[91;1m%s' + chr(27) + '[0m',  # Light Red
+    None: chr(27) + '[0m',     # Unix end tag to switch back to default
+    10:   chr(27) + '[92;1m',  # Light Green start tag
+    12:   chr(27) + '[91;1m',  # Light Red start tag
 }
 class UI:
     def __init__(self):
@@ -39,12 +40,22 @@ class UI:
         15 = Bright White
         """
         # don't know how to colorize in a win32 command shell
+        newtext = ''
         if colors and config.colorized_output:
-            # 
-            for i in range(len(colors)-1, -1, -1):
-                if colors[i]:
-                    text = text[:i] + unixColors[colors[i]] % text[i] + text[i+1:]
-        newtext = [letter.encode(config.console_encoding, 'replace') for letter in text]
+            lastColor = None
+            for i in range(0, len(colors)):
+                if colors[i] != lastColor:
+                    # add an ANSI escape character
+                    newtext += unixColors[colors[i]]
+                # append one text character
+                newtext += text[i]
+                lastColor = colors[i]
+            if lastColor != None:
+                # reset the color to default at the end
+                newtext += unixColors[None]
+        else:
+            newtext = text
+        newtext = [letter.encode(config.console_encoding, 'replace') for letter in newtext]
         if config.transliterate:
             change = False
             for i in xrange(len(newtext)):
