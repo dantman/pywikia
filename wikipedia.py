@@ -2094,10 +2094,7 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
                 output(u"ERROR: %s - ignoring impossible link to %s:%s" % (pageLink, lang, pagetitle))
             else:
                 # we want the actual page objects rather than the titles
-                try:
-                    result[insite.getSite(code = lang)] = Page(insite.getSite(code = lang), pagetitle, insite=insite)
-                except:
-                    output(u"ERROR: %s - %s:%s is could not be parsed as a page name" % (pageLink, lang, pagetitle))
+                result[insite.getSite(code = lang)] = Page(insite.getSite(code = lang), pagetitle, insite=insite)
     return result
 
 def removeLanguageLinks(text, site = None):
