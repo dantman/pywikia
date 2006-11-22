@@ -98,7 +98,6 @@ class UI:
         encodedText = text.encode(config.console_encoding, 'replace')
         if config.transliterate:
             colors = colors or [None for char in encodedText]
-            encodedTextList = [char for char in encodedText]
             transliteratedTextList = []
                         # A transliteration replacement might be longer than the original
             # character, e.g. ? is transliterated to ch.
@@ -106,10 +105,10 @@ class UI:
             # entries. This variable counts how much the size has grown.
 
             sizeIncrease = 0
-            for i in xrange(len(encodedTextList)):
+            for i in xrange(len(encodedText)):
                 # work on characters that couldn't be encoded, but not on
                 # original question marks.
-                if encodedTextList[i] == '?' and text[i] != '?':
+                if encodedText[i] == '?' and text[i] != '?':
                     transliterated = transliteration.trans(text[i], default = '?')
                     if transliterated != '?':
                         # transliteration was successful. The replacement
@@ -126,7 +125,7 @@ class UI:
                         colors = colors[:i] + [color] + colors[i + 1:]
                 else:
                     # no need to try to transliterate.
-                    transliteratedTextList.append(encodedTextList[i])
+                    transliteratedTextList.append(encodedText[i])
             encodedText = "".join(transliteratedTextList)
         if newline:
             encodedText += '\n'
