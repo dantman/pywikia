@@ -9,6 +9,10 @@ unixColors = {
     10:   chr(27) + '[92;1m',  # Light Green start tag
     12:   chr(27) + '[91;1m',  # Light Red start tag
     14:   chr(27) + '[33;1m',  # Light Yellow start tag
+    #None: 'ESC' + '[0m',     # Unix end tag to switch back to default
+    #10:   'ESC' + '[92;1m',  # Light Green start tag
+    #12:   'ESC' + '[91;1m',  # Light Red start tag
+    #14:   'ESC' + '[33;1m',  # Light Yellow start tag
 }
 
 class UI:
@@ -31,8 +35,8 @@ class UI:
         if lastColor != None:
             # reset the color to default at the end
             result += unixColors[None]
-        sys.stdout.write(result)
-        
+        sys.stdout.write(result.encode(config.console_encoding, 'replace'))
+
     def printColorizedInWindows(self, text, colors):
         """
         This only works in Python 2.5 or higher.
@@ -49,7 +53,7 @@ class UI:
                     else:
                         ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, colors[i])
                 # print one text character.
-                sys.stdout.write(text[i])
+                sys.stdout.write(text[i].encode(config.console_encoding, 'replace'))
                 lastColor = colors[i]
             if lastColor != None:
                 # reset the color to default at the end
@@ -57,7 +61,7 @@ class UI:
         except ImportError:
             # ctypes is only available since Python 2.5, and we won't
             # try to colorize without it.
-            sys.stdout.write(text)
+            sys.stdout.write(text.encode(config.console_encoding, 'replace'))
         
         
         
@@ -68,7 +72,7 @@ class UI:
             else:
                 self.printColorizedInUnix(text, colors)
         else:
-            sys.stdout.write(text)
+            sys.stdout.write(text.encode(config.console_encoding, 'replace'))
 
     def output(self, text, colors = None, newline = True):
         """
@@ -98,26 +102,27 @@ class UI:
         14 = Light Yellow
         15 = Bright White
         """
-        # encode our unicode string in the encoding used by the user's console.
-        encodedText = text.encode(config.console_encoding, 'replace')
         if config.transliterate:
-            colors = colors or [None for char in encodedText]
-            transliteratedTextList = []
-                        # A transliteration replacement might be longer than the original
+            # Encode our unicode string in the encoding used by the user's console,
+            # and decode it back to unicode. Then we can see which characters
+            # can't be represented in the console encoding.
+            codecedText = text.encode(config.console_encoding, 'replace').decode(config.console_encoding)
+            colors = colors or [None for char in text]
+            transliteratedText = ''
+            # A transliteration replacement might be longer than the original
             # character, e.g. ? is transliterated to ch.
             # We need to reflect this growth in size by shifting the color list
             # entries. This variable counts how much the size has grown.
-
             sizeIncrease = 0
-            for i in xrange(len(encodedText)):
+            for i in xrange(len(codecedText)):
                 # work on characters that couldn't be encoded, but not on
                 # original question marks.
-                if encodedText[i] == '?' and text[i] != '?':
+                if codecedText[i] == '?' and text[i] != u'?':
                     transliterated = transliteration.trans(text[i], default = '?')
                     if transliterated != '?':
                         # transliteration was successful. The replacement
                         # could consist of multiple letters.
-                        transliteratedTextList += [char for char in transliterated]
+                        transliteratedText += transliterated
                         transLength = len(transliterated)
                         # mark the transliterated letters in yellow.
                         color = colors[i + sizeIncrease] or 14
@@ -126,25 +131,18 @@ class UI:
                         sizeIncrease += transLength - 1
                     else :
                         # transliteration failed
-                        transliteratedTextList.append('?')
+                        transliteratedText += '?'
                         # mark the replacement character in yellow.
                         color = colors[i + sizeIncrease] or 14
                         colors = colors[:i] + [color] + colors[i + 1:]
                 else:
                     # no need to try to transliterate.
-                    transliteratedTextList.append(encodedText[i])
-            encodedText = "".join(transliteratedTextList)
+                    transliteratedText += codecedText[i]
+            text = transliteratedText
         if newline:
-            encodedText += '\n'
+            text += u'\n'
             colors.append(None)
-        # comma at the end means "don't print newline"
-        #try:
-        self.printColorized(encodedText, colors)
-        #except: # For example, if there is a character that is transliterated to a non-encoded character
-        # TODO: consider re-enabling this. I couldn't reproduce a case where
-        # this was needed. -- Daniel, 2006-11-22.
-        
-        #    print text.encode(config.console_encoding, 'replace'),
+        self.printColorized(text, colors)
 
     def input(self, question):
         """
@@ -166,14 +164,16 @@ class UI:
         for i in range(len(options)):
             option = options[i]
             hotkey = hotkeys[i]
+            # try to mark a part of the option name as the hotkey
             m = re.search('[%s%s]' % (hotkey.lower(), hotkey.upper()), option)
             if m:
                 pos = m.start()
                 options[i] = '%s[%s]%s' % (option[:pos], hotkey, option[pos+1:])
             else:
                 options[i] = '%s [%s]' % (option, hotkey)
+        # loop until the user entered a valid choice
         while True:
-            prompt = '%s (%s)' % (question, ', '.join(options))
+            prompt = '%s (%s) ' % (question, ', '.join(options))
             answer = self.input(prompt)
             if answer.lower() in hotkeys or answer.upper() in hotkeys:
                 return answer.lower()
