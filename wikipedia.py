@@ -2290,7 +2290,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
                 pass
             # Is there any text in the 'after' part that means we should keep it after?
             if "</noinclude>" in s2[firstafter:] and firstafter < 0:
-                newtext = s2[:firstafter+1] + s + s2[firstafter+1:]
+                newtext = s2[:firstafter] + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 newtext = s2 + site.family.category_text_separator + s
             else:
@@ -3179,8 +3179,9 @@ class Site(object):
         return self._validlanguages
 
     def disambcategory(self):
+        import catlib
         try:
-            return Page(self,self.namespace(14)+':'+self.family.disambcatname[self.lang])
+            return catlib.Category(self,self.namespace(14)+':'+self.family.disambcatname[self.lang])
         except KeyError:
             raise NoPage
 
