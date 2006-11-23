@@ -125,33 +125,49 @@ class CosmeticChangesToolkit:
                     titleWithSection = re.sub('_+', ' ', titleWithSection)
                     # Remove double spaces
                     titleWithSection = re.sub('  +', ' ', titleWithSection)
-                    # Remove unnecessary initial and final spaces from title
-                    initial_space=False
-                    while titleWithSection[0] == ' ':
-                        titleWithSection=titleWithSection[1:]
-                        initial_space=True
-                    final_space=False
-                    while titleWithSection[-1] == ' ':
-                        titleWithSection=titleWithSection[:-1]
-                        final_space=True
+                    # Remove unnecessary leading spaces from title,
+                    # but remember if we did this because we eventually want
+                    # to re-add it outside of the link later.
+                    titleLength = len(titleWithSection)
+                    titleWithSection = titleWithSection.lstrip()
+                    hadLeadingSpaces = (len(titleWithSection) != titleLength)
+                    # Remove unnecessary trailing spaces from title,
+                    # but remember if we did this because it may affect
+                    # the linktrail and because we eventually want to
+                    # re-add it outside of the link later.
+                    titleLength = len(titleWithSection)
+                    titleWithSection = titleWithSection.rstrip()
+                    hadTrailingSpaces = (len(titleWithSection) != titleLength)
+
                     # Convert URL-encoded characters to unicode
                     titleWithSection = wikipedia.url2unicode(titleWithSection, site = self.site)
+
+                    if titleWithSection == '':
+                        # just skip empty links.
+                        continue
+
                     label = m.group('label')
-                    # Remove unnecessary initial and final spaces from label ([[Category:Title| Title]] unchanged)
-                    # But some editors prefer spaces around pipes. (See [[en:Wikipedia:Semi-bots]])
-                    if label and not page.isCategory():
-                       while label[0] == ' ':
-                             label=label[1:]
-                       final_label_space=False
-                       while label[-1] == ' ':
-                             label=label[:-1]
-                             final_label_space=True
+                    # Remove unnecessary initial and final spaces from label.
+                    # Please note that some editors prefer spaces around pipes. (See [[en:Wikipedia:Semi-bots]]). We remove them anyway.
+                    if label:
+                        # Remove unnecessary leading spaces from label,
+                        # but remember if we did this because we want
+                        # to re-add it outside of the link later.
+                        labelLength = len(label)
+                        label = label.lstrip()
+                        hadLeadingSpaces = (len(label) != labelLength)
+                        # Remove unnecessary trailing spaces from label,
+                        # but remember if we did this because it affects
+                        # the linktrail.
+                        labelLength = len(label)
+                        label = label.rstrip()
+                        hadTrailingSpaces = (len(label) != label)
                     else:
                        label = titleWithSection
-                       final_label_space=final_space
                     trailingChars = m.group('linktrail')
-                    if trailingChars and not final_label_space:
+                    if trailingChars and not hadTrailingSpaces:
                         label += trailingChars
+
                     if titleWithSection == label or titleWithSection[0].lower() + titleWithSection[1:] == label:
                         newLink = "[[%s]]" % label
                     # Check if we can create a link with trailing characters instead of a pipelink
@@ -165,13 +181,18 @@ class CosmeticChangesToolkit:
                         if self.site.sitename() == 'wikipedia:de':
                             titleWithSection = titleWithSection[0].upper() + titleWithSection[1:]
                         newLink = "[[%s|%s]]" % (titleWithSection, label)
-                    # Provides space fixes out wikilink. (text[[ title | name ]]text -> text [[title|name]] text)
-                    if initial_space:
-                       newLink = ' ' + newLink
-                    if final_label_space:
-                       newLink = newLink + ' '
-                       if trailingChars:
-                           newLink += trailingChars
+                    # re-add spaces that were pulled out of the link.
+                    # Examples: 
+                    #   text[[ title ]]text        -> text [[title]] text
+                    #   text[[ title | name ]]text -> text [[title|name]] text
+                    #   text[[ title |name]]text   -> text[[title|name]]text
+                    #   text[[title| name]]text    -> text [[title|name]]text
+                    if hadLeadingSpaces:
+                        newLink = ' ' + newLink
+                    if hadTrailingSpaces:
+                        newLink = newLink + ' '
+                        if trailingChars:
+                            newLink += trailingChars
                     text = text[:m.start()] + newLink + text[m.end():]
         return text
 
