@@ -213,10 +213,13 @@ class ReplaceRobot:
                 if new_text == original_text:
                     wikipedia.output('No changes were necessary in %s' % page.title())
                 else:
-                    wikipedia.output(u'\n>>> %s <<<' % page.title())
+                    # Show the title of the page where the link was found.
+                    # Highlight the title in blue.
+                    colors = [None] * 5 + [9] * len(page.title()) + [None] * 4
+                    wikipedia.output(u'\n>>> %s <<<' % page.title(), colors = colors)
                     wikipedia.showDiff(original_text, new_text)
                     if not self.acceptall:
-                        choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                        choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
                         if choice in ['a', 'A']:
                             self.acceptall = True
                     if self.acceptall or choice in ['y', 'Y']:
