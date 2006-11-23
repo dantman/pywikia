@@ -3,1162 +3,1162 @@ def trans(char, default = '?'):
     # Give a transliteration for char, or default if none is known
     # Accented etc. Latin characters
     if char in u"ÀÁÂẦẤẪẨẬÃĀĂẰẮẴẶẲȦǠẠḀȂĄǍẢ":
-        return "A"
+        return u"A"
     if char in u"ȀǞ":
-        return "Ä"
+        return u"Ä"
     if char == u"Ǻ":
-        return "Å"
+        return u"Å"
     if char == u"Ä":
-        return "Ae"
+        return u"Ae"
     if char == u"Å":
-        return "Aa"
+        return u"Aa"
     if char in u"àáâầấẫẩậãāăằắẵặẳȧǡạḁȃąǎảẚ":
-        return "a"
+        return u"a"
     if char in u"ȁǟ":
-        return "ä"
+        return u"ä"
     if char == u"ǻ":
-        return "å"
+        return u"å"
     if char == u"ä":
-        return "ae"
+        return u"ae"
     if char == u"å":
-        return "aa"
+        return u"aa"
     if char in u"ḂḄḆƁƂ":
-        return "B"
+        return u"B"
     if char in u"ḃḅḇƀɓƃ":
-        return "b"
+        return u"b"
     if char in u"ĆĈĊÇČƇ":
-        return "C"
+        return u"C"
     if char in u"ćĉċçčƈȼ":
-        return "c"
+        return u"c"
     if char == u"Ḉ":
-        return "Ç"
+        return u"Ç"
     if char == u"ḉ":
         return u"ç"
     if char == u"Ð":
-        return "Dh"
+        return u"Dh"
     if char == u"ð":
-        return "dh"    
+        return u"dh"    
     if char in u"ĎḊḌḎḐḒĐƉƊƋ":
-        return "D"
+        return u"D"
     if char in u"ďḋḍḏḑḓđɖɗƌ":
-        return "d"
+        return u"d"
     if char in u"ÈȄÉÊḚËĒḔḖĔĖẸE̩ȆȨḜĘĚẼḘẺ":
-        return "E"
+        return u"E"
     if char in u"ỀẾỄỆỂ":
-        return "Ê"
+        return u"Ê"
     if char in u"èȅéêḛëēḕḗĕėẹe̩ȇȩḝęěẽḙẻ":
-        return "e"
+        return u"e"
     if char in u"ềếễệể":
-        return "ê"
+        return u"ê"
     if char in u"ḞƑ":
-        return "F"
+        return u"F"
     if char in u"ḟƒ":
-        return "f"
+        return u"f"
     if char in u"ǴḠĞĠĢǦǤƓ":
-        return "G"
+        return u"G"
     if char in u"ǵḡğġģǧǥɠ":
-        return "g"
+        return u"g"
     if char == u"Ĝ":
-        return "Gx"
+        return u"Gx"
     if char == u"ĝ":
-        return "gx"
+        return u"gx"
     if char in u"ḢḤḦȞḨḪH̱ĦǶ":
-        return "H"
+        return u"H"
     if char in u"ḣḥḧȟḩḫ̱ẖħƕ":
-        return "h"
+        return u"h"
     if char in u"IÌȈÍÎĨḬÏḮĪĬȊĮǏİỊỈƗ":
-        return "I"
+        return u"I"
     if char in u"ıìȉíîĩḭïḯīĭȋįǐiịỉɨ":
-        return "i"
+        return u"i"
     if char in u"ĴJ":
-        return "J"
+        return u"J"
     if char in u"ɟĵ̌ǰ":
-        return "j"
+        return u"j"
     if char in u"ḰǨĶḲḴƘ":
-        return "K"
+        return u"K"
     if char in u"ḱǩķḳḵƙ":
-        return "k"
+        return u"k"
     if char in u"ĹĻĽḶḸḺḼȽŁ":
-        return "L"
+        return u"L"
     if char in u"ĺļľḷḹḻḽƚłɫ":
-        return "l"
+        return u"l"
     if char in u"ḾṀṂ":
-        return "M"
+        return u"M"
     if char in u"ḿṁṃɱ":
-        return "m"
+        return u"m"
     if char in u"ǸŃÑŅŇṄṆṈṊŊƝɲȠ":
-        return "N"
+        return u"N"
     if char in u"ǹńñņňṅṇṉṋŋɲƞ":
-        return "n"
+        return u"n"
     if char in u"ÒÓÔÕṌṎȬÖŌṐṒŎǑȮȰỌǪǬƠỜỚỠỢỞỎƟØǾ":
-        return "O"
+        return u"O"
     if char in u"òóôõṍṏȭöōṑṓŏǒȯȱọǫǭơờớỡợởỏɵøǿ":
-        return "o"
+        return u"o"
     if char in u"ȌŐȪ":
-        return "Ö"
+        return u"Ö"
     if char in u"ȍőȫ":
-        return "ö"
+        return u"ö"
     if char in u"ỒỐỖỘỔȎ":
-        return "Ô"
+        return u"Ô"
     if char in u"ồốỗộổȏ":
-        return "ô"
+        return u"ô"
     if char in u"ṔṖƤ":
-        return "P"
+        return u"P"
     if char in u"ṕṗƥ":
-        return "p"
+        return u"p"
     if char == u"ᵽ":
-        return "q"
+        return u"q"
     if char in u"ȐŔŖŘȒṘṚṜṞ":
-        return "R"
+        return u"R"
     if char in u"ȑŕŗřȓṙṛṝṟɽ":
-        return "r"
+        return u"r"
     if char in u"ŚṤŞȘŠṦṠṢṨ":
-        return "S"
+        return u"S"
     if char in u"śṥşșšṧṡṣṩȿ":
-        return "s"
+        return u"s"
     if char == u"Ŝ":
-        return "Sx"
+        return u"Sx"
     if char == u"ŝ":
-        return "sx"
+        return u"sx"
     if char in u"ŢȚŤṪṬṮṰŦƬƮ":
-        return "T"
+        return u"T"
     if char in u"ţțťṫṭṯṱŧȾƭʈ":
-        return "t"
+        return u"t"
     if char in u"ÙÚŨṸṴÜṲŪṺŬỤŮŲǓṶỦƯỮỰỬ":
-        return "U"
+        return u"U"
     if char in u"ùúũṹṵüṳūṻŭụůųǔṷủưữựửʉ":
-        return "u"
+        return u"u"
     if char in u"ȔŰǛǗǕǙ":
-        return "Ü"
+        return u"Ü"
     if char in u"ȕűǜǘǖǚ":
-        return "ü"
+        return u"ü"
     if char == u"Û":
-        return "Ux"
+        return u"Ux"
     if char == u"û":
-        return "ux"
+        return u"ux"
     if char == u"Ȗ":
-        return "Û"
+        return u"Û"
     if char == u"ȗ":
-        return "û"
+        return u"û"
     if char == u"Ừ":
-        return "Ù"
+        return u"Ù"
     if char == u"ừ":
-        return "ù"
+        return u"ù"
     if char == u"Ứ":
-        return "Ú"
+        return u"Ú"
     if char == u"ứ":
-        return "ú"
+        return u"ú"
     if char in u"ṼṾ":
-        return "V"
+        return u"V"
     if char in u"ṽṿ":
-        return "v"
+        return u"v"
     if char in u"ẀẂŴẄẆẈ":
-        return "W"
+        return u"W"
     if char in u"ẁẃŵẅẇẉ":
-        return "w"
+        return u"w"
     if char in u"ẊẌ":
-        return "X"
+        return u"X"
     if char in u"ẋẍ":
-        return "x"
+        return u"x"
     if char in u"ỲÝŶŸỸȲẎỴỶƳ":
-        return "Y"
+        return u"Y"
     if char in u"ỳýŷÿỹȳẏỵỷƴ":
-        return "y"
+        return u"y"
     if char in u"ŹẐŻẒŽẔƵȤ":
-        return "Z"
+        return u"Z"
     if char in u"źẑżẓžẕƶȥ":
-        return "z"
+        return u"z"
     if char == u"ɀ":
-        return "zv"
+        return u"zv"
     
     # Latin: extended Latin alphabet
     if char == u"ɑ":
-        return "a"
+        return u"a"
     if char in u"ÆǼǢ":
-        return "AE"
+        return u"AE"
     if char in u"æǽǣ":
-        return "ae"
+        return u"ae"
     if char == u"Ð":
-        return "Dh"
+        return u"Dh"
     if char == u"ð":
-        return "dh"
+        return u"dh"
     if char in u"ƎƏƐ":
-        return "E"
+        return u"E"
     if char in u"ǝəɛ":
-        return "e"
+        return u"e"
     if char in u"ƔƢ":
-        return "G"
+        return u"G"
     if char in u"ᵷɣƣᵹ":
-        return "g"
+        return u"g"
     if char == u"Ƅ":
-        return "H"
+        return u"H"
     if char == u"ƅ":
-        return "h"
+        return u"h"
     if char == u"Ƕ":
-        return "Wh"
+        return u"Wh"
     if char == u"ƕ":
-        return "wh"
+        return u"wh"
     if char == u"Ɩ":
-        return "I"
+        return u"I"
     if char == u"ɩ":
-        return "i"
+        return u"i"
     if char == u"Ŋ":
-        return "Ng"
+        return u"Ng"
     if char == u"ŋ":
-        return "ng"
+        return u"ng"
     if char == u"Œ":
-        return "OE"
+        return u"OE"
     if char == u"œ":
-        return "oe"
+        return u"oe"
     if char == u"Ɔ":
-        return "O"
+        return u"O"
     if char == u"ɔ":
-        return "o"
+        return u"o"
     if char == u"Ȣ":
-        return "Ou"
+        return u"Ou"
     if char == u"ȣ":
-        return "ou"
+        return u"ou"
     if char == u"Ƽ":
-        return "Q"
+        return u"Q"
     if char in u"ĸƽ":
-        return "q"
+        return u"q"
     if char == u"ȹ":
-        return "qp"
+        return u"qp"
     if char == u"":
-        return "r"
+        return u"r"
     if char == u"ſ":
-        return "s"
+        return u"s"
     if char == u"ß":
-        return "ss"
+        return u"ss"
     if char == u"Ʃ":
-        return "Sh"
+        return u"Sh"
     if char == u"ʃᶋ":
-        return "sh"
+        return u"sh"
     if char == u"Ʉ":
-        return "U"
+        return u"U"
     if char == u"ʉ":
-        return "u"
+        return u"u"
     if char == u"Ʌ":
-        return "V"
+        return u"V"
     if char == u"ʌ":
-        return "v"
+        return u"v"
     if char in u"ƜǷ":
-        return "W"
+        return u"W"
     if char in u"ɯƿ":
-        return "w"
+        return u"w"
     if char == u"Ȝ":
-        return "Y"
+        return u"Y"
     if char == u"ȝ":
-        return "y"
+        return u"y"
     if char == u"Ĳ":
-        return "IJ"
+        return u"IJ"
     if char == u"ĳ":
-        return "ij"
+        return u"ij"
     if char == u"Ƨ":
-        return "Z"
+        return u"Z"
     if char in u"ʮƨ":
-        return "z"
+        return u"z"
     if char == u"Ʒ":
-        return "Zh"
+        return u"Zh"
     if char == u"ʒ":
-        return "zh"
+        return u"zh"
     if char == u"Ǯ":
-        return "Dzh"
+        return u"Dzh"
     if char == u"ǯ":
-        return "dzh"
+        return u"dzh"
     if char in u"ƸƹʔˀɁɂ":
-        return "'"
+        return u"'"
     if char in u"Þ":
-        return "Th"
+        return u"Th"
     if char in u"þ":
-        return "th"
+        return u"th"
     if char in u"Cʗǃ":
-        return "!"
+        return u"!"
     
     #Cyrillic
     if char == u"А":
-        return "A"
+        return u"A"
     if char == u"а":
-        return "a"
+        return u"a"
     if char == u"Б":
-        return "B"
+        return u"B"
     if char == u"б":
-        return "b"
+        return u"b"
     if char == u"В":
-        return "V"
+        return u"V"
     if char == u"в":
-        return "v"
+        return u"v"
     if char == u"Г":
-        return "G"
+        return u"G"
     if char == u"г":
-        return "g"
+        return u"g"
     if char == u"Д":
-        return "D"
+        return u"D"
     if char == u"д":
-        return "d"
+        return u"d"
     if char == u"Е":
-        return "E"
+        return u"E"
     if char == u"е":
-        return "e"
+        return u"e"
     if char == u"Ж":
-        return "Zh"
+        return u"Zh"
     if char == u"ж":
-        return "zh"
+        return u"zh"
     if char == u"З":
-        return "Z"
+        return u"Z"
     if char == u"з":
-        return "z"
+        return u"z"
     if char == u"И":
-        return "I"
+        return u"I"
     if char == u"и":
-        return "i"
+        return u"i"
     if char == u"Й":
-        return "J"
+        return u"J"
     if char == u"й":
-        return "j"
+        return u"j"
     if char == u"К":
-        return "K"
+        return u"K"
     if char == u"к":
-        return "k"
+        return u"k"
     if char == u"Л":
-        return "L"
+        return u"L"
     if char == u"л":
-        return "l"
+        return u"l"
     if char == u"М":
-        return "M"
+        return u"M"
     if char == u"м":
-        return "m"
+        return u"m"
     if char == u"Н":
-        return "N"
+        return u"N"
     if char == u"н":
-        return "n"
+        return u"n"
     if char == u"О":
-        return "O"
+        return u"O"
     if char == u"о":
-        return "o"
+        return u"o"
     if char == u"П":
-        return "P"
+        return u"P"
     if char == u"п":
-        return "p"
+        return u"p"
     if char == u"Р":
-        return "R"
+        return u"R"
     if char == u"р":
-        return "r"
+        return u"r"
     if char == u"С":
-        return "S"
+        return u"S"
     if char == u"с":
-        return "s"
+        return u"s"
     if char == u"Т":
-        return "T"
+        return u"T"
     if char == u"т":
-        return "t"
+        return u"t"
     if char == u"У":
-        return "U"
+        return u"U"
     if char == u"у":
-        return "u"
+        return u"u"
     if char == u"Ф":
-        return "F"
+        return u"F"
     if char == u"ф":
-        return "f"
+        return u"f"
     if char == u"Х":
-        return "Kh"
+        return u"Kh"
     if char == u"х":
-        return "kh"
+        return u"kh"
     if char == u"Ц":
-        return "C"
+        return u"C"
     if char == u"ц":
-        return "c"
+        return u"c"
     if char == u"Ч":
-        return "Ch"
+        return u"Ch"
     if char == u"ч":
-        return "ch"
+        return u"ch"
     if char == u"Ш":
-        return "Sh"
+        return u"Sh"
     if char == u"ш":
-        return "sh"
+        return u"sh"
     if char == u"Щ":
-        return "Shch"
+        return u"Shch"
     if char == u"щ":
-        return "shch"
+        return u"shch"
     if char in u"Ьь":
-        return "'"
+        return u"'"
     if char in u"Ъъ":
         return '"'
     if char == u"Ю":
-        return "Yu"
+        return u"Yu"
     if char == u"ю":
-        return "yu"
+        return u"yu"
     if char == u"Я":
-        return "Ya"
+        return u"Ya"
     if char == u"я":
-        return "ya"
+        return u"ya"
     # Additional Cyrillic letters, most occuring in only one or a few languages
     if char == u"Ы":
-        return "Y"
+        return u"Y"
     if char == u"ы":
-        return "y"
+        return u"y"
     if char == u"Ё":
-        return "Ë"
+        return u"Ë"
     if char == u"ё":
-        return "ë"
+        return u"ë"
     if char == u"Э":
-        return "È"
+        return u"È"
     if char == u"э":
-        return "è"
+        return u"è"
     if char == u"І":
-        return "I"
+        return u"I"
     if char == u"і":
-        return "i"
+        return u"i"
     if char == u"Ї":
-        return "Ji"
+        return u"Ji"
     if char == u"ї":
-        return "ji"
+        return u"ji"
     if char == u"Є":
-        return "Je"
+        return u"Je"
     if char == u"є":
-        return "je"
+        return u"je"
     if char == u"Ґ":
-        return "G"
+        return u"G"
     if char == u"ґ":
-        return "g"
+        return u"g"
     if char == u"Ђ":
-        return "Dj"
+        return u"Dj"
     if char == u"ђ":
-        return "dj"
+        return u"dj"
     if char == u"Ј":
-        return "J"
+        return u"J"
     if char == u"ј":
-        return "j"
+        return u"j"
     if char == u"Љ":
-        return "Lj"
+        return u"Lj"
     if char == u"љ":
-        return "lj"
+        return u"lj"
     if char == u"Њ":
-        return "Nj"
+        return u"Nj"
     if char == u"њ":
-        return "nj"
+        return u"nj"
     if char == u"Ћ":
-        return "Cj"
+        return u"Cj"
     if char == u"ћ":
-        return "cj"
+        return u"cj"
     if char == u"Џ":
-        return "Dzh"
+        return u"Dzh"
     if char == u"џ":
-        return "dzh"
+        return u"dzh"
     if char == u"Ѕ":
-        return "Dz"
+        return u"Dz"
     if char == u"ѕ":
-        return "dz"
+        return u"dz"
     if char == u"Ѓ":
-        return "Gj"
+        return u"Gj"
     if char == u"ѓ":
-        return "gj"
+        return u"gj"
     if char == u"Ќ":
-        return "Kj"
+        return u"Kj"
     if char == u"ќ":
-        return "kj"
+        return u"kj"
     if char == u"Ғ":
-        return "G"
+        return u"G"
     if char == u"ғ":
-        return "g"
+        return u"g"
     if char == u"Ӣ":
-        return "Ii"
+        return u"Ii"
     if char == u"ӣ":
-        return "ii"
+        return u"ii"
     if char == u"Қ":
-        return "Q"
+        return u"Q"
     if char == u"қ":
-        return "q"
+        return u"q"
     if char == u"Ӯ":
-        return "U"
+        return u"U"
     if char == u"ӯ":
-        return "u"
+        return u"u"
     if char == u"Ҳ":
-        return "H"
+        return u"H"
     if char == u"ҳ":
-        return "h"
+        return u"h"
     if char == u"Ҷ":
-        return "Dz"
+        return u"Dz"
     if char == u"ҷ":
-        return "dz"
+        return u"dz"
     if char == u"Ө":
-        return "Oe"
+        return u"Oe"
     if char == u"ө":
-        return "oe"
+        return u"oe"
     if char == u"Ү":
-        return "Y"
+        return u"Y"
     if char == u"ү":
-        return "y"
+        return u"y"
     if char == u"Һ":
-        return "H"
+        return u"H"
     if char == u"һ":
-        return "h"
+        return u"h"
     if char == u"Ә":
-        return "AE"
+        return u"AE"
     if char == u"ә":
-        return "ae"
+        return u"ae"
     if char == u"Җ":
-        return "Zhj"
+        return u"Zhj"
     if char == u"җ":
-        return "zhj"
+        return u"zhj"
     if char == u"Ң":
-        return "Ng"
+        return u"Ng"
     if char == u"ң":
-        return "ng"
+        return u"ng"
     if char == u"Ұ":
-        return "U"
+        return u"U"
     if char == u"ұ":
-        return "u"
+        return u"u"
 
     # Hebrew alphabet
     if char in u"אע":
-        return "'"
+        return u"'"
     if char == u"ב":
-        return "b"
+        return u"b"
     if char == u"ג":
-        return "g"
+        return u"g"
     if char == u"ד":
-        return "d"
+        return u"d"
     if char == u"ה":
-        return "h"
+        return u"h"
     if char == u"ו":
-        return "v"
+        return u"v"
     if char == u"ז":
-        return "z"
+        return u"z"
     if char == u"ח":
-        return "kh"
+        return u"kh"
     if char == u"ט":
-        return "t"
+        return u"t"
     if char == u"י":
-        return "y"
+        return u"y"
     if char in u"ךכ":
-        return "k"
+        return u"k"
     if char == u"ל":
-        return "l"
+        return u"l"
     if char in u"םמ":
-        return "m"
+        return u"m"
     if char in u"ןנ":
-        return "n"
+        return u"n"
     if char == u"ס":
-        return "s"
+        return u"s"
     if char in u"ףפ":
-        return "ph"
+        return u"ph"
     if char in u"ץצ":
-        return "ts"
+        return u"ts"
     if char == u"ק":
-        return "q"
+        return u"q"
     if char == u"ר":
-        return "r"
+        return u"r"
     if char == u"ש":
-        return "sh"
+        return u"sh"
     if char == u"ת":
-        return "th"
+        return u"th"
     
     # Arab alphabet
     if char in u"اﺍﺎ":
-        return "a"
+        return u"a"
     if char in u"بﺏﺐﺒﺑ":
-        return "b"
+        return u"b"
     if char in u"تﺕﺖﺘﺗ":
-        return "t"
+        return u"t"
     if char in u"ثﺙﺚﺜﺛ":
-        return "th"
+        return u"th"
     if char in u"جﺝﺞﺠﺟ":
-        return "g"
+        return u"g"
     if char in u"حﺡﺢﺤﺣ":
-        return "h"
+        return u"h"
     if char in u"خﺥﺦﺨﺧ":
-        return "kh"
+        return u"kh"
     if char in u"دﺩﺪ":
-        return "d"
+        return u"d"
     if char in u"ذﺫﺬ":
-        return "dh"
+        return u"dh"
     if char in u"رﺭﺮ":
-        return "r"
+        return u"r"
     if char in u"زﺯﺰ":
-        return "z"
+        return u"z"
     if char in u"سﺱﺲﺴﺳ":
-        return "s"
+        return u"s"
     if char in u"شﺵﺶﺸﺷ":
-        return "sh"
+        return u"sh"
     if char in u"صﺹﺺﺼﺻ":
-        return "s"
+        return u"s"
     if char in u"ضﺽﺾﻀﺿ":
-        return "d"
+        return u"d"
     if char in u"طﻁﻂﻄﻃ":
-        return "t"
+        return u"t"
     if char in u"ظﻅﻆﻈﻇ":
-        return "z"
+        return u"z"
     if char in u"عﻉﻊﻌﻋ":
-        return "'"
+        return u"'"
     if char in u"غﻍﻎﻐﻏ":
-        return "gh"
+        return u"gh"
     if char in u"فﻑﻒﻔﻓ":
-        return "f"
+        return u"f"
     if char in u"قﻕﻖﻘﻗ":
-        return "q"
+        return u"q"
     if char in u"كﻙﻚﻜﻛ":
-        return "k"
+        return u"k"
     if char in u"لﻝﻞﻠﻟ":
-        return "l"
+        return u"l"
     if char in u"مﻡﻢﻤﻣ":
-        return "m"
+        return u"m"
     if char in u"نﻥﻦﻨﻧ":
-        return "n"
+        return u"n"
     if char in u"هﻩﻪﻬﻫ":
-        return "h"
+        return u"h"
     if char in u"وﻭﻮ":
-        return "w"
+        return u"w"
     if char in u"يﻱﻲﻴﻳ":
-        return "y"
+        return u"y"
     # Arabic - additional letters, modified letters and ligatures
     if char == u"ﺀ":
-        return "'"
+        return u"'"
     if char in u"آﺁﺂ":
-        return "'a"
+        return u"'a"
     if char in u"ةﺓﺔ":
-        return "th"
+        return u"th"
     if char in u"ىﻯﻰ":
-        return "á"
+        return u"á"
     if char in u"یﯼﯽﯿﯾ":
-        return "y"
+        return u"y"
     # Arabic - ligatures
     if char in u"ﻻﻼ":
-        return "la"
+        return u"la"
     if char == u"ﷲ":
-        return "llah"
+        return u"llah"
     if char in u"إأ":
-        return "a'"
+        return u"a'"
     if char == u"ؤ":
-        return "w'"
+        return u"w'"
     if char == u"ئ":
-        return "y'"
+        return u"y'"
     if char == u"◌":
-        return "-" # consonant doubling, no good transliteration for it
+        return u"-" # consonant doubling, no good transliteration for it
     if char in u"◌◌":
-        return "" # indicates absence of vowels
+        return u"" # indicates absence of vowels
     # Arabic vowels
     if char == u"◌":
-        return "a"
+        return u"a"
     if char == u"◌":
-        return "u"
+        return u"u"
     if char == u"◌":
-        return "i"
+        return u"i"
     if char == u"◌":
-        return "a"
+        return u"a"
     if char == u"◌":
-        return "ay"
+        return u"ay"
     if char == u"◌":
-        return "ay"
+        return u"ay"
     if char == u"◌":
-        return "u"
+        return u"u"
     if char == u"◌":
-        return "iy"
+        return u"iy"
     # Arab numerals
     if char in u"٠۰":
-        return "0"
+        return u"0"
     if char in u"١۱":
-        return "1"
+        return u"1"
     if char in u"٢۲":
-        return "2"
+        return u"2"
     if char in u"٣۳":
-        return "3"
+        return u"3"
     if char in u"٤۴":
-        return "4"
+        return u"4"
     if char in u"٥۵":
-        return "5"
+        return u"5"
     if char in u"٦۶":
-        return "6"
+        return u"6"
     if char in u"٧۷":
-        return "7"
+        return u"7"
     if char in u"٨۸":
-        return "8"
+        return u"8"
     if char in u"٩۹":
-        return "9"
+        return u"9"
     # Perso-Arabic
     if char in u"پﭙﭙپ":
-        return "p"
+        return u"p"
     if char in u"چچچچ":
-        return "ch"
+        return u"ch"
     if char in u"ژژ":
-        return "zh"
+        return u"zh"
     if char in u"گﮔﮕﮓ":
-        return "g"
+        return u"g"
 
     # Greek
     if char == u"Α":
-        return "A"
+        return u"A"
     if char == u"α":
-        return "a"
+        return u"a"
     if char == u"Β":
-        return "B"
+        return u"B"
     if char == u"β":
-        return "b"
+        return u"b"
     if char == u"Γ":
-        return "G"
+        return u"G"
     if char == u"γ":
-        return "g"
+        return u"g"
     if char == u"Δ":
-        return "D"
+        return u"D"
     if char == u"δ":
-        return "d"
+        return u"d"
     if char == u"Ε":
-        return "E"
+        return u"E"
     if char == u"ε":
-        return "e"
+        return u"e"
     if char == u"Ζ":
-        return "Z"
+        return u"Z"
     if char == u"ζ":
-        return "z"
+        return u"z"
     if char == u"Η":
-        return "I"
+        return u"I"
     if char == u"η":
-        return "i"
+        return u"i"
     if char == u"Θ":
-        return "Th"
+        return u"Th"
     if char == u"θ":
-        return "th"
+        return u"th"
     if char == u"Ι":
-        return "I"
+        return u"I"
     if char == u"ι":
-        return "i"
+        return u"i"
     if char == u"Κ":
-        return "K"
+        return u"K"
     if char == u"κ":
-        return "k"
+        return u"k"
     if char == u"Λ":
-        return "L"
+        return u"L"
     if char == u"λ":
-        return "l"
+        return u"l"
     if char == u"Μ":
-        return "M"
+        return u"M"
     if char == u"μ":
-        return "m"
+        return u"m"
     if char == u"Ν":
-        return "N"
+        return u"N"
     if char == u"ν":
-        return "n"
+        return u"n"
     if char == u"Ξ":
-        return "X"
+        return u"X"
     if char == u"ξ":
-        return "x"
+        return u"x"
     if char == u"Ο":
-        return "O"
+        return u"O"
     if char == u"ο":
-        return "o"
+        return u"o"
     if char == u"Π":
-        return "P"
+        return u"P"
     if char == u"π":
-        return "p"
+        return u"p"
     if char == u"Ρ":
-        return "R"
+        return u"R"
     if char == u"ρ":
-        return "r"
+        return u"r"
     if char == u"Σ":
-        return "S"
+        return u"S"
     if char in u"σς":
-        return "s"
+        return u"s"
     if char == u"Τ":
-        return "T"
+        return u"T"
     if char == u"τ":
-        return "t"
+        return u"t"
     if char == u"Υ":
-        return "Y"
+        return u"Y"
     if char == u"υ":
-        return "y"
+        return u"y"
     if char == u"Φ":
-        return "F"
+        return u"F"
     if char == u"φ":
-        return "f"
+        return u"f"
     if char == u"Ψ":
-        return "Ps"
+        return u"Ps"
     if char == u"ψ":
-        return "ps"
+        return u"ps"
     if char == u"Ω":
-        return "O"
+        return u"O"
     if char == u"ω":
-        return "o"
+        return u"o"
     if char == u"ϗ":
-        return "&"
+        return u"&"
     if char == u"Ϛ":
-        return "St"
+        return u"St"
     if char == u"ϛ":
-        return "st"
+        return u"st"
     if char in u"ϘϞ":
-        return "Q"
+        return u"Q"
     if char in u"ϙϟ":
-        return "q"
+        return u"q"
     if char == u"Ϻ":
-        return "S"
+        return u"S"
     if char == u"ϻ":
-        return "s"
+        return u"s"
     if char == u"Ϡ":
-        return "Ss"
+        return u"Ss"
     if char == u"ϡ":
-        return "ss"
+        return u"ss"
     if char == u"Ϸ":
-        return "Sh"
+        return u"Sh"
     if char == u"ϸ":
-        return "sh"
+        return u"sh"
 
     # Japanese (katakana and hiragana)
     if char in u"アあ":
-        return "a"
+        return u"a"
     if char in u"イい":
-        return "i"
+        return u"i"
     if char in u"ウう":
-        return "u"
+        return u"u"
     if char in u"エえ":
-        return "e"
+        return u"e"
     if char in u"オお":
-        return "o"
+        return u"o"
     if char in u"ャや":
-        return "ya"
+        return u"ya"
     if char in u"ュゆ":
-        return "yu"
+        return u"yu"
     if char in u"ョよ":
-        return "yo"
+        return u"yo"
     if char in u"カか":
-        return "ka"
+        return u"ka"
     if char in u"キき":
-        return "ki"
+        return u"ki"
     if char in u"クく":
-        return "ku"
+        return u"ku"
     if char in u"ケけ":
-        return "ke"
+        return u"ke"
     if char in u"コこ":
-        return "ko"
+        return u"ko"
     if char in u"サさ":
-        return "sa"
+        return u"sa"
     if char in u"シし":
-        return "shi"
+        return u"shi"
     if char in u"スす":
-        return "su"
+        return u"su"
     if char in u"セせ":
-        return "se"
+        return u"se"
     if char in u"ソそ":
-        return "so"
+        return u"so"
     if char in u"タた":
-        return "ta"
+        return u"ta"
     if char in u"チち":
-        return "chi"
+        return u"chi"
     if char in u"ツつ":
-        return "tsu"
+        return u"tsu"
     if char in u"テて":
-        return "te"
+        return u"te"
     if char in u"トと":
-        return "to"
+        return u"to"
     if char in u"ナな":
-        return "na"
+        return u"na"
     if char in u"ニに":
-        return "ni"
+        return u"ni"
     if char in u"ヌぬ":
-        return "nu"
+        return u"nu"
     if char in u"ネね":
-        return "ne"
+        return u"ne"
     if char in u"ノの":
-        return "no"
+        return u"no"
     if char in u"ハは":
-        return "ha"
+        return u"ha"
     if char in u"ヒひ":
-        return "hi"
+        return u"hi"
     if char in u"フふ":
-        return "fu"
+        return u"fu"
     if char in u"ヘへ":
-        return "he"
+        return u"he"
     if char in u"ホほ":
-        return "ho"
+        return u"ho"
     if char in u"マま":
-        return "ma"
+        return u"ma"
     if char in u"ミみ":
-        return "mi"
+        return u"mi"
     if char in u"ムむ":
-        return "mu"
+        return u"mu"
     if char in u"メめ":
-        return "me"
+        return u"me"
     if char in u"モも":
-        return "mo"
+        return u"mo"
     if char in u"ラら":
-        return "ra"
+        return u"ra"
     if char in u"リり":
-        return "ri"
+        return u"ri"
     if char in u"ルる":
-        return "ru"
+        return u"ru"
     if char in u"レれ":
-        return "re"
+        return u"re"
     if char in u"ロろ":
-        return "ro"
+        return u"ro"
     if char in u"ワわ":
-        return "wa"
+        return u"wa"
     if char in u"ヰゐ":
-        return "wi"
+        return u"wi"
     if char in u"ヱゑ":
-        return "we"
+        return u"we"
     if char in u"ヲを":
-        return "wo"
+        return u"wo"
     if char in u"ンん":
-        return "n"
+        return u"n"
     if char in u"ガが":
-        return "ga"
+        return u"ga"
     if char in u"ギぎ":
-        return "gi"
+        return u"gi"
     if char in u"グぐ":
-        return "gu"
+        return u"gu"
     if char in u"ゲげ":
-        return "ge"
+        return u"ge"
     if char in u"ゴご":
-        return "go"
+        return u"go"
     if char in u"ザざ":
-        return "za"
+        return u"za"
     if char in u"ジじ":
-        return "ji"
+        return u"ji"
     if char in u"ズず":
-        return "zu"
+        return u"zu"
     if char in u"ゼぜ":
-        return "ze"
+        return u"ze"
     if char in u"ゾぞ":
-        return "zo"
+        return u"zo"
     if char in u"ダだ":
-        return "da"
+        return u"da"
     if char in u"ヂぢ":
-        return "dji"
+        return u"dji"
     if char in u"ヅづ":
-        return "dzu"
+        return u"dzu"
     if char in u"デで":
-        return "de"
+        return u"de"
     if char in u"ドど":
-        return "do"
+        return u"do"
     if char in u"ドば":
-        return "ba"
+        return u"ba"
     if char in u"ビび":
-        return "bi"
+        return u"bi"
     if char in u"ブぶ":
-        return "bu"
+        return u"bu"
     if char in u"ベべ":
-        return "be"
+        return u"be"
     if char in u"ボぼ":
-        return "bo"
+        return u"bo"
     if char in u"パぱ":
-        return "pa"
+        return u"pa"
     if char in u"ピぴ":
-        return "pi"
+        return u"pi"
     if char in u"プぷ":
-        return "pu"
+        return u"pu"
     if char in u"ペぺ":
-        return "pe"
+        return u"pe"
     if char in u"ポぽ":
-        return "po"
+        return u"po"
     if char == u"ヷ":
-        return "va"
+        return u"va"
     if char == u"ヸ":
-        return "vi"
+        return u"vi"
     if char == u"ヹ":
-        return "ve"
+        return u"ve"
     if char == u"ヺ":
-        return "vo"
+        return u"vo"
 
     # Georgian
     if char == u"ა":
-        return "a"
+        return u"a"
     if char == u"ბ":
-        return "b"
+        return u"b"
     if char == u"გ":
-        return "g"
+        return u"g"
     if char == u"დ":
-        return "d"
+        return u"d"
     if char == u"ე":
-        return "e"
+        return u"e"
     if char == u"ვ":
-        return "v"
+        return u"v"
     if char == u"ზ":
-        return "z"
+        return u"z"
     if char == u"თ":#
-        return "th"
+        return u"th"
     if char == u"ი":
-        return "i"
+        return u"i"
     if char == u"კ":#
-        return "k"
+        return u"k"
     if char == u"ლ":
-        return "l"
+        return u"l"
     if char == u"მ":
-        return "m"
+        return u"m"
     if char == u"ნ":
-        return "n"
+        return u"n"
     if char == u"ო":
-        return "o"
+        return u"o"
     if char == u"პ":#
-        return "p"
+        return u"p"
     if char == u"ჟ":#
-        return "zh"
+        return u"zh"
     if char == u"რ":
-        return "r"
+        return u"r"
     if char == u"ს":
-        return "s"
+        return u"s"
     if char == u"ტ":#
-        return "t"
+        return u"t"
     if char == u"უ":
-        return "u"
+        return u"u"
     if char == u"ფ":#
-        return "ph"
+        return u"ph"
     if char == u"ქ":#
-        return "q"
+        return u"q"
     if char == u"ღ":#
-        return "gh"
+        return u"gh"
     if char == u"ყ":#
-        return "q'"
+        return u"q'"
     if char == u"შ":
-        return "sh"
+        return u"sh"
     if char == u"ჩ":
-        return "ch"
+        return u"ch"
     if char == u"ც":
-        return "ts"
+        return u"ts"
     if char == u"ძ":
-        return "dz"
+        return u"dz"
     if char == u"წ":#
-        return "ts'"
+        return u"ts'"
     if char == u"ჭ":#
-        return "ch'"
+        return u"ch'"
     if char == u"ხ":
-        return "kh"
+        return u"kh"
     if char == u"ჯ":#
-        return "j"
+        return u"j"
     if char == u"ჰ":
-        return "h"
+        return u"h"
 
     # Devanagari
     if char in u"पप":
-        return "p"
+        return u"p"
     if char in u"अ":
-        return "a"
+        return u"a"
     if char in u"आा":
-        return "aa"
+        return u"aa"
     if char == u"प":
-        return "pa"
+        return u"pa"
     if char in u"इि":
-        return "i"
+        return u"i"
     if char in u"ईी":
-        return "ii"
+        return u"ii"
     if char in u"उु":
-        return "u"
+        return u"u"
     if char in u"ऊू":
-        return "uu"
+        return u"uu"
     if char in u"एे":
-        return "e"
+        return u"e"
     if char in u"ऐै":
-        return "ai"
+        return u"ai"
     if char in u"ओो":
-        return "o"
+        return u"o"
     if char in u"औौ":
-        return "au"
+        return u"au"
     if char in u"ऋृर":
-        return "r"
+        return u"r"
     if char in u"ॠॄ":
-        return "rr"
+        return u"rr"
     if char in u"ऌॢल":
-        return "l"
+        return u"l"
     if char in u"ॡॣ":
-        return "ll"
+        return u"ll"
     if char == u"क":
-        return "k"
+        return u"k"
     if char == u"ख":
-        return "kh"
+        return u"kh"
     if char == u"ग":
-        return "g"
+        return u"g"
     if char == u"घ":
-        return "gh"
+        return u"gh"
     if char == u"ङ":
-        return "ng"
+        return u"ng"
     if char == u"च":
-        return "c"
+        return u"c"
     if char == u"छ":
-        return "ch"
+        return u"ch"
     if char == u"ज":
-        return "j"
+        return u"j"
     if char == u"झ":
-        return "jh"
+        return u"jh"
     if char == u"ञ":
-        return "ñ"
+        return u"ñ"
     if char in u"टत":
-        return "t"
+        return u"t"
     if char in u"ठथ":
-        return "th"
+        return u"th"
     if char in u"डद":
-        return "d"
+        return u"d"
     if char in u"ढध":
-        return "dh"
+        return u"dh"
     if char in u"णन":
-        return "n"
+        return u"n"
     if char == u"फ":
-        return "ph"
+        return u"ph"
     if char == u"ब":
-        return "b"
+        return u"b"
     if char == u"भ":
-        return "bh"
+        return u"bh"
     if char == u"म":
-        return "m"
+        return u"m"
     if char == u"य":
-        return "y"
+        return u"y"
     if char == u"व":
-        return "v"
+        return u"v"
     if char == u"श":
-        return "sh"
+        return u"sh"
     if char in u"षस":
-        return "s"
+        return u"s"
     if char == u"ह":
-        return "h"
+        return u"h"
     if char == u"क":
-        return "x"
+        return u"x"
     if char == u"त":
-        return "tr"
+        return u"tr"
     if char == u"ज":
-        return "gj"
+        return u"gj"
     if char == u"क़":
-        return "q"
+        return u"q"
     if char == u"फ":
-        return "f"
+        return u"f"
     if char == u"ख":
-        return "hh"
+        return u"hh"
     if char == u"H":
-        return "gh"
+        return u"gh"
     if char == u"ज":
-        return "z"
+        return u"z"
     if char in u"डढ":
-        return "r"
+        return u"r"
     # Devanagari ligatures (possibly incomplete and/or incorrect)
     if char == u"ख्":
-        return "khn"
+        return u"khn"
     if char == u"त":
-        return "tn"
+        return u"tn"
     if char == u"द्":
-        return "dn"
+        return u"dn"
     if char == u"श":
-        return "cn"
+        return u"cn"
     if char == u"ह्":
-        return "fn"
+        return u"fn"
     if char in u"अँ":
-        return "m"
+        return u"m"
     if char in u"॒॑":
-        return ""
+        return u""
     if char == u"०":
-        return "0"
+        return u"0"
     if char == u"१":
-        return "1"
+        return u"1"
     if char == u"२":
-        return "2"
+        return u"2"
     if char == u"३":
-        return "3"
+        return u"3"
     if char == u"४":
-        return "4"
+        return u"4"
     if char == u"५":
-        return "5"
+        return u"5"
     if char == u"६":
-        return "6"
+        return u"6"
     if char == u"७":
-        return "7"
+        return u"7"
     if char == u"८":
-        return "8"
+        return u"8"
     if char == u"९":
-        return "9"
+        return u"9"
 
     
     return default
