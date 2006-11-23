@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -339,10 +339,10 @@ class PrimaryIgnoreManager(object):
         except IOError:
             pass
 
-    def isIgnored(self, refpl):
-        return self.enabled and refpl.urlname() in self.ignorelist
+    def isIgnored(self, refPage):
+        return self.enabled and refPage.urlname() in self.ignorelist
         
-    def ignore(self, refpl):
+    def ignore(self, refPage):
         if self.enabled:
             # Skip this occurence next time.
             filename = 'disambiguations/' + self.disambPage.urlname() + '.txt'
@@ -350,7 +350,7 @@ class PrimaryIgnoreManager(object):
                 # Open file for appending. If none exists yet, create a new one.
                 # The file is stored in the disambiguation/ subdir. Create if necessary.
                 f = codecs.open(self.makepath(filename), 'a', 'utf-8')
-                f.write(refpl.urlname() + '\n')
+                f.write(refPage.urlname() + '\n')
                 f.close()
             except IOError:
                 pass
@@ -450,49 +450,50 @@ class DisambiguationRobot(object):
         # note that the definition of 'letter' varies from language to language.
         self.linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
         
-    def treat(self, refpl, disambPage):
+    def treat(self, refPage, disambPage):
         """
         Parameters:
             disambPage - The disambiguation page or redirect we don't want anything
                      to link on
-            refpl - A page linking to disambPage
+            refPage - A page linking to disambPage
         Returns False if the user pressed q to completely quit the program.
         Otherwise, returns True.
         """
+        # TODO: break this function up into subroutines!
 
         include = False
         try:
-            text=refpl.get(throttle=False)
+            text=refPage.get(throttle=False)
             ignoreReason = self.checkContents(text)
             if ignoreReason:
-                wikipedia.output('\n\nSkipping %s because it contains %s.\n\n' % (refpl.title(), ignoreReason))
+                wikipedia.output('\n\nSkipping %s because it contains %s.\n\n' % (refPage.title(), ignoreReason))
             else:
                 include = True
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u'%s is a redirect to %s' % (refpl.title(), disambPage.title()))
+            wikipedia.output(u'%s is a redirect to %s' % (refPage.title(), disambPage.title()))
             if disambPage.isRedirectPage():
                 target = self.alternatives[0]
-                choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refpl.title(), target), ['yes', 'no'], ['y', 'N'], 'N')
+                choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refPage.title(), target), ['yes', 'no'], ['y', 'N'], 'N')
                 if choice in ('y', 'Y'):
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     try:
-                        refpl.put(redir_text)
+                        refPage.put(redir_text)
                     except wikipedia.PageNotSaved, error:
                         wikipedia.output(u'Page not saved: %s' % error)
             else:
-                choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refpl.title(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
+                choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refPage.title(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
                 if choice in ('y', 'Y'):
-                    gen = ReferringPageGeneratorWithIgnore(refpl, self.primary)
+                    gen = ReferringPageGeneratorWithIgnore(refPage, self.primary)
                     preloadingGen = pagegenerators.PreloadingGenerator(gen)
-                    for refpl2 in preloadingGen:
+                    for refPage2 in preloadingGen:
                         # run until the user selected 'quit'
-                        if not self.treat(refpl2, refpl):
+                        if not self.treat(refPage2, refPage):
                             break
                 elif choice == 'c':
-                    text=refpl.get(throttle=False,get_redirect=True)
+                    text=refPage.get(throttle=False,get_redirect=True)
                     include = "redirect"
         except wikipedia.NoPage:
-            wikipedia.output(u'Page [[%s]] does not seem to exist?! Skipping.' % refpl.title())
+            wikipedia.output(u'Page [[%s]] does not seem to exist?! Skipping.' % refPage.title())
             include = False
         if include in (True, "redirect"):
             # make a backup of the original text so we can show the changes later
@@ -505,7 +506,7 @@ class DisambiguationRobot(object):
                 m = self.linkR.search(text, pos = curpos)
                 if not m:
                     if n == 0:
-                        wikipedia.output(u"No changes necessary in %s" % refpl.title())
+                        wikipedia.output(u"No changes necessary in %s" % refPage.title())
                         return True
                     else:
                         # stop loop and save page
@@ -516,10 +517,10 @@ class DisambiguationRobot(object):
                 if m.group('title') == '' or self.mysite.isInterwikiLink(m.group('title')):
                     continue
                 else:
-                    linkpl=wikipedia.Page(disambPage.site(), m.group('title'))
-                # Check whether the link found is to disambPage.
-                if linkpl != disambPage:
-                    continue
+                    linkPage = wikipedia.Page(disambPage.site(), m.group('title'))
+                    # Check whether the link found is to disambPage.
+                    if linkPage != disambPage:
+                        continue
     
                 n += 1
                 # how many bytes should be displayed around the current link
@@ -527,7 +528,12 @@ class DisambiguationRobot(object):
                 # This loop will run while the user doesn't choose an option
                 # that will actually change the page
                 while True:
-                    wikipedia.output(u"\n\n>>> %s <<<" % refpl.title())
+                    # Show the title of the page where the link was found.
+                    # Highlight the title in blue.
+                    colors = [None] * 6 + [9] * len(refPage.title()) + [None] * 4
+                    wikipedia.output(u"\n\n>>> %s <<<" % refPage.title(), colors = colors)
+                    
+                    
                     # at the beginning of the link, start red color.
                     # at the end of the link, reset the color to default
                     
@@ -572,7 +578,7 @@ class DisambiguationRobot(object):
                     # skip this page
                     if self.primary:
                         # If run with the -primary argument, skip this occurence next time.
-                        self.primaryIgnoreManager.ignore(refpl)
+                        self.primaryIgnoreManager.ignore(refPage)
                     return True
                 elif choice == 'q':
                     # quit the program
@@ -630,11 +636,11 @@ class DisambiguationRobot(object):
                         curpos -= 1
                         continue
                     new_page_title = self.alternatives[choice]
-                    reppl = wikipedia.Page(disambPage.site(), new_page_title)
+                    repPl = wikipedia.Page(disambPage.site(), new_page_title)
                     if (new_page_title[0].isupper()) or (link_text[0].isupper()):
-                        new_page_title = reppl.title()
+                        new_page_title = repPl.title()
                     else:
-                        new_page_title = reppl.title()
+                        new_page_title = repPl.title()
                         new_page_title = new_page_title[0].lower() + new_page_title[1:]
                     if replaceit and trailing_chars:
                         newlink = "[[%s%s]]%s" % (new_page_title, section, trailing_chars)
@@ -654,7 +660,7 @@ class DisambiguationRobot(object):
             wikipedia.output(u'')
             # save the page
             try:
-                refpl.put(text)
+                refPage.put(text)
             except wikipedia.PageNotSaved, error:
                 wikipedia.output(u'Page not saved: %s' % error)
         return True
@@ -740,10 +746,10 @@ or press enter to quit:""")
     
             gen = ReferringPageGeneratorWithIgnore(disambPage, self.primary)
             preloadingGen = pagegenerators.PreloadingGenerator(gen)
-            for refpl in preloadingGen:
-                if not self.primaryIgnoreManager.isIgnored(refpl):
+            for refPage in preloadingGen:
+                if not self.primaryIgnoreManager.isIgnored(refPage):
                     # run until the user selected 'quit'
-                    if not self.treat(refpl, disambPage):
+                    if not self.treat(refPage, disambPage):
                         break
     
             # clear alternatives before working on next disambiguation page
@@ -780,14 +786,14 @@ def main():
         elif arg.startswith('-pos:'):
             if arg[5]!=':':
                 mysite = wikipedia.getSite()
-                pl = wikipedia.Page(mysite, arg[5:])
-                if pl.exists():
-                    alternatives.append(pl.title())
+                page = wikipedia.Page(mysite, arg[5:])
+                if page.exists():
+                    alternatives.append(page.title())
                 else:
                     answer = wikipedia.inputChoice(u'Possibility %s does not actually exist. Use it anyway?'
-                             % pl.title(), ['yes', 'no'], ['y', 'N'], 'N')
+                             % page.title(), ['yes', 'no'], ['y', 'N'], 'N')
                     if answer in ('Y', 'y'):
-                        alternatives.append(pl.title())
+                        alternatives.append(page.title())
             else:
                 alternatives.append(arg[5:])
         elif arg == '-just':
