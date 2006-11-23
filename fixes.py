@@ -57,8 +57,9 @@ fixes = {
             #(u'([Ww]eder) ([^,\.]+?), noch', r'\1 \2 noch'),
             (u'(\d+)(minütig|stündig|tägig|wöchig|jährig|minütlich|stündlich|täglich|wöchentlich|jährlich|fach|mal|malig|köpfig|teilig|gliedrig|geteilt|elementig|dimensional|bändig|eckig|farbig|stimmig)', r'\1-\2'),
             # zusammengesetztes Wort, Bindestrich wird durchgeschleift
-            (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB|W|kW|MW|PS|Hz|kHz|MHz|GHz)(-[\w\[])',           r'\1-\2\3'),
-            (u'(\d+|\d+[\.,]\d+)(\$|€|DM|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB|W|kW|MW|PS|Hz|kHz|MHz|GHz)(?=\W|$)',          r'\1 \2'),
+            (u'(\d+|\d+[\.,]\d+)(\$|€|DM|£|¥|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB|W|kW|MW|PS|Nm|eV|J|kcal|mA|mV|kV|Ω|Hz|kHz|MHz|GHz|mol|Pa|Bq|Sv|mSv)([²³]?-[\w\[])',           r'\1-\2\3'),
+            (u'(\d+|\d+[\.,]\d+)(\$|€|DM|£|¥|mg|g|kg|ml|cl|l|t|ms|min|µm|mm|cm|dm|m|km|°C|kB|MB|TB|W|kW|MW|PS|Nm|eV|J|kcal|mA|mV|kV|Ω|Hz|kHz|MHz|GHz|mol|Pa|Bq|Sv|mSv)(?=\W|²|³|$)',          r'\1 \2'),
+            # weggelassen wegen vieler falsch Positiver: s, A, V, C, S, %
             # Kein Leerzeichen zwischen Tag und Monat
             (u'(\d+)\.(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
             # Keine führende Null beim Datum
