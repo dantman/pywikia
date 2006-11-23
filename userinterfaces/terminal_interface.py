@@ -6,6 +6,7 @@ import config, re, sys, transliteration
 # TODO: other colors
 unixColors = {
     None: chr(27) + '[0m',     # Unix end tag to switch back to default
+    9:    chr(27) + '[94;1m',  # Light Blue start tag
     10:   chr(27) + '[92;1m',  # Light Green start tag
     12:   chr(27) + '[91;1m',  # Light Red start tag
     14:   chr(27) + '[33;1m',  # Light Yellow start tag
@@ -155,7 +156,7 @@ class UI:
         # sound the terminal bell to notify the user
         if config.ring_bell:
             sys.stdout.write('\07')
-        self.output(question, newline=False)
+        self.output(question + ' ', newline=False)
         text = raw_input()
         text = unicode(text, config.console_encoding)
         return text
