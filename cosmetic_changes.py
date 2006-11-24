@@ -114,6 +114,9 @@ class CosmeticChangesToolkit:
             # Make sure that next time around we will not find this same hit.
             curpos = m.start() + 1
             titleWithSection = m.group('titleWithSection')
+            label = m.group('label')
+            trailingChars = m.group('linktrail')
+
             if not self.site.isInterwikiLink(titleWithSection):
                 # The link looks like this:
                 # [[page_title|link_text]]trailing_chars
@@ -135,9 +138,10 @@ class CosmeticChangesToolkit:
                     # but remember if we did this because it may affect
                     # the linktrail and because we eventually want to
                     # re-add it outside of the link later.
-                    titleLength = len(titleWithSection)
-                    titleWithSection = titleWithSection.rstrip()
-                    hadTrailingSpaces = (len(titleWithSection) != titleLength)
+                    if not trailingChars or label:
+                        titleLength = len(titleWithSection)
+                        titleWithSection = titleWithSection.rstrip()
+                        hadTrailingSpaces = (len(titleWithSection) != titleLength)
 
                     # Convert URL-encoded characters to unicode
                     titleWithSection = wikipedia.url2unicode(titleWithSection, site = self.site)
@@ -146,7 +150,6 @@ class CosmeticChangesToolkit:
                         # just skip empty links.
                         continue
 
-                    label = m.group('label')
                     # Remove unnecessary initial and final spaces from label.
                     # Please note that some editors prefer spaces around pipes. (See [[en:Wikipedia:Semi-bots]]). We remove them anyway.
                     if label:
@@ -159,13 +162,13 @@ class CosmeticChangesToolkit:
                         # Remove unnecessary trailing spaces from label,
                         # but remember if we did this because it affects
                         # the linktrail.
-                        labelLength = len(label)
-                        label = label.rstrip()
-                        hadTrailingSpaces = (len(label) != label)
+                        if not trailingChars:
+                            labelLength = len(label)
+                            label = label.rstrip()
+                            hadTrailingSpaces = (len(label) != labelLength)
                     else:
-                       label = titleWithSection
-                    trailingChars = m.group('linktrail')
-                    if trailingChars and not hadTrailingSpaces:
+                        label = titleWithSection
+                    if trailingChars:
                         label += trailingChars
 
                     if titleWithSection == label or titleWithSection[0].lower() + titleWithSection[1:] == label:
@@ -191,8 +194,6 @@ class CosmeticChangesToolkit:
                         newLink = ' ' + newLink
                     if hadTrailingSpaces:
                         newLink = newLink + ' '
-                        if trailingChars:
-                            newLink += trailingChars
                     text = text[:m.start()] + newLink + text[m.end():]
         return text
 
