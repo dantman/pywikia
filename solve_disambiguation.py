@@ -106,7 +106,6 @@ msg_redir = {
     'it': u'Sistemazione automatica del redirect: %s',
     'nl': u'Robot-geholpen redirect-oplossing: %s',
     'pt': u'Desambiguação assistida por bot: %s',
-    'he': u'פתרון הפניה לפירושונים על ידי בוט: %s',
     'ru': u'Разрешение значений с помощью бота: %s',
     'sr': u'Решавање вишезначних одредница помоћу бота: %s',
     'sv': u'Länkar direkt till rätt artikel för: %s',
