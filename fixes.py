@@ -118,6 +118,16 @@ fixes = {
         ],
         'exceptions':  ['sic!'],
     },
+    'vonbis': {
+        'regex': True,
+        'msg': {
+            'de':u'Bot: Ersetze Binde-/Gedankenstrich durch "bis"',
+        },
+        'replacements': [
+            # Bindestrich, Gedankenstrich, Geviertstrich
+            (u'(von \d{3,4}) *(-|&ndash;|–|&mdash;|—) *(\d{3,4})', r'\1 bis \3'),
+        ],
+    },
     # some disambiguation stuff for de:
     # python replace.py -fix:music -ref:Vorlage:Musikalbum
     'music': {
