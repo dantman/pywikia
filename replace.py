@@ -32,11 +32,14 @@ You can run the bot with the following commandline parameters:
 -except:XYZ  - Ignore pages which contain XYZ. If the -regex argument is given,
                XYZ will be regarded as a regular expression.
 -fix:XYZ     - Perform one of the predefined replacements tasks, which are given
-               in the dictionary 'fixes' defined inside this file.
+               in the dictionary 'fixes' defined inside the file fixes.py.
                The -regex argument and given replacements will be ignored if
                you use -fix.
                Currently available predefined fixes are:
                    * HTML - convert HTML tags to wiki syntax, and fix XHTML
+                   * syntax - try to fix bad wiki markup.
+                   * case-de - fix upper/lower case errors in German
+                   * grammar-de - fix grammar and typography in German
 -namespace:n - Number of namespace to process. The parameter can be used
                multiple times. It works in combination with all other
                parameters, except for the -start parameter. If you e.g. want to
@@ -214,8 +217,8 @@ class ReplaceRobot:
                     wikipedia.output('No changes were necessary in %s' % page.title())
                 else:
                     # Show the title of the page where the link was found.
-                    # Highlight the title in blue.
-                    colors = [None] * 5 + [9] * len(page.title()) + [None] * 4
+                    # Highlight the title in purple.
+                    colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
                     wikipedia.output(u'\n>>> %s <<<' % page.title(), colors = colors)
                     wikipedia.showDiff(original_text, new_text)
                     if not self.acceptall:

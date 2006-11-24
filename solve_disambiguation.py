@@ -529,8 +529,8 @@ class DisambiguationRobot(object):
                 # that will actually change the page
                 while True:
                     # Show the title of the page where the link was found.
-                    # Highlight the title in blue.
-                    colors = [None] * 6 + [9] * len(refPage.title()) + [None] * 4
+                    # Highlight the title in purple.
+                    colors = [None] * 6 + [13] * len(refPage.title()) + [None] * 4
                     wikipedia.output(u"\n\n>>> %s <<<" % refPage.title(), colors = colors)
                     
                     

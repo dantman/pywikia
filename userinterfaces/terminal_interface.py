@@ -8,12 +8,10 @@ unixColors = {
     None: chr(27) + '[0m',     # Unix end tag to switch back to default
     9:    chr(27) + '[94;1m',  # Light Blue start tag
     10:   chr(27) + '[92;1m',  # Light Green start tag
+    11:   chr(27) + '[36;1m',  # Light Aqua start tag
     12:   chr(27) + '[91;1m',  # Light Red start tag
+    13:   chr(27) + '[35;1m',  # Light Purple start tag
     14:   chr(27) + '[33;1m',  # Light Yellow start tag
-    #None: 'ESC' + '[0m',     # Unix end tag to switch back to default
-    #10:   'ESC' + '[92;1m',  # Light Green start tag
-    #12:   'ESC' + '[91;1m',  # Light Red start tag
-    #14:   'ESC' + '[33;1m',  # Light Yellow start tag
 }
 
 class UI:

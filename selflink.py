@@ -63,7 +63,10 @@ class SelflinkBot:
         wikipedia.setAction(comment)
 
         for page in self.generator:
-            wikipedia.output(u"\n\n>>> %s <<<" % page.title())
+            # Show the title of the page where the link was found.
+            # Highlight the title in purple.
+            colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
+            wikipedia.output(u"\n\n>>> %s <<<" % page.title(), colors = colors)
             try:
                 oldText = page.get()
                 text = oldText
