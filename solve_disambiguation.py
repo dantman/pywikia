@@ -560,7 +560,8 @@ class DisambiguationRobot(object):
                             break
                     elif choice in ['d', 'D']:
                         editor = editarticle.TextEditor()
-                        disambigText = editor.edit(disambPage.get(), jumpIndex = m.start())
+                        if not disambPage.isRedirectPage():
+                            disambigText = editor.edit(disambPage.get(), jumpIndex = m.start())
                     elif choice in ['l', 'L']:
                         self.listAlternatives()
                     elif choice in ['m', 'M']:
