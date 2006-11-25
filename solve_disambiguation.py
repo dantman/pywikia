@@ -72,7 +72,7 @@ __version__='$Id$'
 import re, sys, codecs
 
 # Application specific imports
-import wikipedia, pagegenerators
+import wikipedia, pagegenerators, editarticle
 
 # This is a purely interactive robot. We set the delays lower.
 wikipedia.put_throttle.setDelay(4)
@@ -261,7 +261,6 @@ ignore_title = {
             u"Portaal:.+[aA]rchief.*",
          ],
         'pt': [
-            u'Wikipedia:.+',
             u'Usuário:.+',
             u'Usuário Discussão:.+',
             u'Lista de combinações de duas letras',
@@ -473,7 +472,7 @@ class DisambiguationRobot(object):
             if disambPage.isRedirectPage():
                 target = self.alternatives[0]
                 choice = wikipedia.inputChoice(u'Do you want to make redirect %s point to %s?' % (refPage.title(), target), ['yes', 'no'], ['y', 'N'], 'N')
-                if choice in ('y', 'Y'):
+                if choice in ['y', 'Y']:
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     try:
                         refPage.put(redir_text)
@@ -481,14 +480,14 @@ class DisambiguationRobot(object):
                         wikipedia.output(u'Page not saved: %s' % error)
             else:
                 choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refPage.title(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
-                if choice in ('y', 'Y'):
+                if choice in ['y', 'Y']:
                     gen = ReferringPageGeneratorWithIgnore(refPage, self.primary)
                     preloadingGen = pagegenerators.PreloadingGenerator(gen)
                     for refPage2 in preloadingGen:
                         # run until the user selected 'quit'
                         if not self.treat(refPage2, refPage):
                             break
-                elif choice == 'c':
+                elif choice in ['c', 'C']:
                     text=refPage.get(throttle=False,get_redirect=True)
                     include = "redirect"
         except wikipedia.NoPage:
@@ -545,48 +544,50 @@ class DisambiguationRobot(object):
                                                "        q=quit, m=more context, l=list, a=add new, x=save in this form):")
                         else:
                             choice = wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
-                                               "        q=quit, m=more context, l=list, a=add new):")
+                                               "        q=quit, m=more context, d=show disambiguation page, l=list, a=add new):")
                     else:
                         choice = self.always
-                    if choice == 'a':
+                    if choice in ['a', 'A']:
                         newAlternative = wikipedia.input(u'New alternative:')
                         self.alternatives.append(newAlternative)
                         self.listAlternatives()
-                    elif choice == 'e':
-                        import editarticle
+                    elif choice in ['e', 'E']:
                         editor = editarticle.TextEditor()
                         newText = editor.edit(text, jumpIndex = m.start(), highlight = disambPage.title())
                         # if user didn't press Cancel
                         if newText and newText != text:
                             text = newText
                             break
-                    elif choice == 'l':
+                    elif choice in ['d', 'D']:
+                        editor = editarticle.TextEditor()
+                        disambigText = editor.edit(disambPage.get(), jumpIndex = m.start())
+                    elif choice in ['l', 'L']:
                         self.listAlternatives()
-                    elif choice == 'm':
+                    elif choice in ['m', 'M']:
                         # show more text around the link we're working on
                         context *= 2
                     else:
                         break
             
-                if choice == 'e':
+                if choice in ['e', 'E']:
                     # user has edited the page and then pressed 'OK'
                     edited = True
                     curpos = 0
                     continue
-                elif choice == 'n':
+                elif choice in ['n', 'N']:
                     # skip this page
                     if self.primary:
                         # If run with the -primary argument, skip this occurence next time.
                         self.primaryIgnoreManager.ignore(refPage)
                     return True
-                elif choice == 'q':
+                elif choice in ['q', 'Q']:
                     # quit the program
                     return False
-                elif choice == 's':
+                elif choice in ['s', 'S']:
                     # Next link on this page
                     n -= 1
                     continue
-                elif choice == 'x' and edited:
+                elif choice in ['x', 'X'] and edited:
                     # Save the page as is
                     break
     
@@ -606,7 +607,7 @@ class DisambiguationRobot(object):
                 if trailing_chars:
                     link_text += trailing_chars
     
-                if choice=='u':
+                if choice in ['u', 'U']:
                     # unlink - we remove the section if there's any
                     text = text[:m.start()] + link_text + text[m.end():]
                     continue
