@@ -138,7 +138,7 @@ class CosmeticChangesToolkit:
                     # but remember if we did this because it may affect
                     # the linktrail and because we eventually want to
                     # re-add it outside of the link later.
-                    if not trailingChars or label:
+                    if not (trailingChars or label):
                         titleLength = len(titleWithSection)
                         titleWithSection = titleWithSection.rstrip()
                         hadTrailingSpaces = (len(titleWithSection) != titleLength)
@@ -217,13 +217,13 @@ class CosmeticChangesToolkit:
         multipleSpacesR = re.compile('  +')
         spaceAtLineEndR = re.compile(' $')
         preR = re.compile('<pre', re.IGNORECASE)
-        lines = text.split('\n')
+        lines = text.split('\r\n')
         for line in lines:
             if len(line) > 0 and line[0] != ' ' and not preR.search(line):
                 line = wikipedia.replaceExceptMathNowikiAndComments(line, multipleSpacesR, ' ')
                 line = wikipedia.replaceExceptMathNowikiAndComments(line, spaceAtLineEndR, '')
             result.append(line)
-        return '\n'.join(result)
+        return '\r\n'.join(result)
 
     def cleanUpSectionHeaders(self, text):
         for level in range(1, 7):
