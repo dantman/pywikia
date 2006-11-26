@@ -101,7 +101,13 @@ class UI:
         14 = Light Yellow
         15 = Bright White
         """
-        colors = colors or [None for char in text]
+        if colors:
+            if len(colors) != len(text):
+                print "DBG> BUG: Text color list length different from text length!"
+                print traceback.print_stack()
+                print "DBG> Attempting to recover, but please report this problem"
+        else:
+            colors = [None for char in text]
         if config.transliterate:
             # Encode our unicode string in the encoding used by the user's console,
             # and decode it back to unicode. Then we can see which characters
