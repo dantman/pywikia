@@ -65,9 +65,9 @@ fixes = {
             # Keine führende Null beim Datum
             (u'0(\d+)\. (Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)', r'\1. \2'),
             # Kein Leerzeichen nach Komma
-            (u'([a-z],)([a-zA-Z])',                                                                          r'\1 \2'),
+            (u'([a-z](\]\])?,)((\[\[)?[a-zA-Z])',                                                                          r'\1 \3'),
             # Leerzeichen und Komma vertauscht
-            (u'([a-z]) ,([a-zA-Z])',                                                                          r'\1, \2'),
+            (u'([a-z](\]\])?) ,((\[\[)?[a-zA-Z])',                                                                          r'\1, \3'),
             #(u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
         ]
     },
