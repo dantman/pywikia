@@ -101,12 +101,12 @@ class UI:
         14 = Light Yellow
         15 = Bright White
         """
+        colors = colors or [None for char in text]
         if config.transliterate:
             # Encode our unicode string in the encoding used by the user's console,
             # and decode it back to unicode. Then we can see which characters
             # can't be represented in the console encoding.
             codecedText = text.encode(config.console_encoding, 'replace').decode(config.console_encoding)
-            colors = colors or [None for char in text]
             transliteratedText = ''
             # A transliteration replacement might be longer than the original
             # character, e.g. ? is transliterated to ch.
