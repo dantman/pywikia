@@ -134,11 +134,12 @@ class CosmeticChangesToolkit:
                     titleLength = len(titleWithSection)
                     titleWithSection = titleWithSection.lstrip()
                     hadLeadingSpaces = (len(titleWithSection) != titleLength)
+                    hadTrailingSpaces = False
                     # Remove unnecessary trailing spaces from title,
                     # but remember if we did this because it may affect
                     # the linktrail and because we eventually want to
                     # re-add it outside of the link later.
-                    if not (trailingChars or label):
+                    if not trailingChars:
                         titleLength = len(titleWithSection)
                         titleWithSection = titleWithSection.rstrip()
                         hadTrailingSpaces = (len(titleWithSection) != titleLength)
