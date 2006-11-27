@@ -9,6 +9,11 @@ as well as for XML dumps.
 The XmlDump class reads a pages_current XML dump (like the ones offered on
 http://download.wikimedia.org/wikipedia/de/) and offers a generator over
 XmlEntry objects which can be used by other bots.
+
+For fastest processing, XmlDump uses the cElementTree library if available
+(this comes included with Python 2.5, and can be downloaded from
+http://www.effbot.org/ for earlier versions). If not found, it falls back
+to the older method using regular expressions.
 """
 __version__='$Id$'
 
@@ -16,6 +21,14 @@ import threading, time
 import xml.sax
 import codecs, re
 import wikipedia
+
+try:
+    from xml.etree.cElementTree import iterparse
+except ImportError:
+    try:
+        from cElementTree import iterparse
+    except ImportError:
+        pass
 
 def parseRestrictions(restrictions):
     '''
@@ -214,6 +227,7 @@ class XmlParserThread(threading.Thread):
     def run(self):
         xml.sax.parse(self.filename, self.handler)
 
+
 class XmlDump(object):
     """
     Represents an XML dump file. Reads the local file at initialization,
@@ -225,7 +239,56 @@ class XmlDump(object):
     def __init__(self, filename):
         self.filename = filename
 
-    def parse(self): 
+    def parse(self):
+        '''Return a generator that will yield XmlEntry objects'''
+        print 'Reading XML dump...'
+        if not 'iterparse' in globals():
+            return self.regex_parse()
+        else:
+            return self.new_parse()
+
+    def new_parse(self):
+        '''Generator using cElementTree iterparse function'''
+        
+        context = iterparse(self.filename, events=("start", "end", "start-ns"))
+        root = None
+
+        for event, elem in context:
+            if event == "start-ns" and elem[0] == "":
+                uri = elem[1]
+                continue
+            if event == "start" and root is None:
+                root = elem
+                continue
+            if event == "end" and elem.tag == "{%s}page" % uri:
+                title = elem.findtext("{%s}title" % uri)
+                pageid = elem.findtext("{%s}id" % uri)
+                restrictions = elem.findtext("{%s}restrictions" % uri)
+                revision = elem.find("{%s}revision" % uri)
+                revisionid = revision.findtext("{%s}id" % uri)
+                timestamp = revision.findtext("{%s}timestamp" % uri)
+                contributor = revision.find("{%s}contributor" % uri)
+                ipeditor = contributor.findtext("{%s}ip" % uri)
+                username = ipeditor or contributor.findtext("{%s}username" % uri)
+                # could get comment, minor as well
+                text = revision.findtext("{%s}text" % uri)
+                editRestriction, moveRestriction \
+                        = parseRestrictions(restrictions)
+                
+                yield XmlEntry(title=title,
+                               id=pageid,
+                               text=text or u'',
+                               username=username,
+                               ipedit=bool(ipeditor),
+                               timestamp= timestamp,
+                               editRestriction=editRestriction,
+                               moveRestriction=moveRestriction,
+                               revisionid=revisionid
+                              )
+                root.clear()
+
+        
+    def regex_parse(self): 
         '''
         Generator which reads some lines from the XML dump file, and
         parses them to create XmlEntry objects. Stops when the end of file is
@@ -249,8 +312,8 @@ class XmlDump(object):
             '</revision>\s*'+
             '</page>',
                 re.DOTALL)
-        f = codecs.open(self.filename, 'r', encoding = wikipedia.myencoding(), errors='replace')
-        print 'Reading XML dump...'
+        f = codecs.open(self.filename, 'r', encoding = wikipedia.myencoding(),
+                        errors='replace')
         eof = False
         lines = u''
         while not eof:
@@ -274,20 +337,19 @@ class XmlDump(object):
                     text = m.group('text') or u''
                     restrictions = m.group('restrictions')
                     editRestriction, moveRestriction = parseRestrictions(restrictions)
+
                     if m.group('username'):
                         username = m.group('username')
                         ipedit = False
                     else:
                         username = m.group('ip')
                         ipedit = True
-                    # we don't care about the revisionid.
-                    entry = XmlEntry(title = m.group('title'),
-                                     id = m.group('pageid'),
-                                     text = text,
-                                     username = username,
-                                     ipedit=ipedit,
-                                     timestamp = m.group('timestamp'),
-                                     editRestriction = editRestriction,
-                                     moveRestriction = moveRestriction,
-                                     revisionid = m.group('revisionid'))
-                    yield entry
+                    yield XmlEntry(title = m.group('title'),
+                                   id = m.group('pageid'),
+                                   text = text,
+                                   username = username,
+                                   ipedit=ipedit,
+                                   timestamp = m.group('timestamp'),
+                                   editRestriction = editRestriction,
+                                   moveRestriction = moveRestriction,
+                                   revisionid = m.group('revisionid'))
