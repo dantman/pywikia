@@ -155,7 +155,7 @@ class Family(family.Family):
             'nn': u'Wikipedia-diskusjon',
             'no': u'Wikipedia-diskusjon',
             'nv': u"Wikiibíídiiya baa yinísht'į́",
-            'oc': u'Discutida Wikipèdia',
+            'oc': u'Discussion Wikipèdia',
             'os': u'Дискусси Wikipedia',
             'pa': u'ਵਿਕਿਪੀਡਿਆ ਚਰਚਾ',
             'pl': u'Dyskusja Wikipedii',
