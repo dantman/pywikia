@@ -113,17 +113,30 @@ class LinkChecker(object):
         self.protocol = url.split(':', 1)[0]
         
 
-    def resolveRedirect(self):
+    def resolveRedirect(self, useHEAD = True):
         '''
         Requests the header from the server. If the page is an HTTP redirect,
         returns the redirect target URL as a string. Otherwise returns None.
+        
+        If useHEAD is true, uses the HTTP HEAD method, which saves bandwidth
+        by not downloading the body. Otherwise, the HTTP GET method is used.
         '''
         if self.scheme == 'http':
             conn = httplib.HTTPConnection(self.host)
         elif self.scheme == 'https':
             conn = httplib.HTTPSConnection(self.host)
-        conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
-        response = conn.getresponse()
+        try:
+            if useHEAD:
+                conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
+            else:
+                conn.request('GET', '%s%s' % (self.path, self.query), None, self.header)
+            response = conn.getresponse()
+        except httplib.BadStatusLine:
+            # Some servers don't seem to handle HEAD requests properly,
+            # e.g. http://www.radiorus.ru/ which is running on a very old
+            # Apache server. Using GET instead works on these (but it uses
+            # more bandwidth).
+            return self.resolveRedirect(useHEAD = False)
         if response.status >= 300 and response.status <= 399:
             #print response.getheaders()
             redirTarget = response.getheader('Location')
