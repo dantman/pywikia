@@ -56,7 +56,10 @@ class NowCommonsDeleteBot:
         commons = wikipedia.Site('commons', 'commons')
         comment = wikipedia.translate(self.site, nowCommonsMessage)
         for page in self.getPageGenerator():
-            wikipedia.output(u'\n\n>> %s <<\n' % page.title())
+            # Show the title of the image page.
+            # Highlight the title in purple.
+            colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
+            wikipedia.output(u'\n\n>> %s <<\n' % page.title(), colors = colors)
             try:
                 localImagePage = wikipedia.ImagePage(self.site, page.title())
                 if localImagePage.fileIsOnCommons():
