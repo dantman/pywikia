@@ -373,13 +373,14 @@ class DeadLinkReportThread(threading.Thread):
                 self.semaphore.acquire()
                 (url, errorReport, containingPage) = self.queue[0]
                 self.queue = self.queue[1:]
-                # print 'QUEUE:', self.queue
-                wikipedia.output(u"** Reporting dead link on talk page...")
+                message = u'** Reporting dead link on ' + containingPage.switchTalkPage().aslink() + '...'
+                wikipedia.output(message, colors = [11] * len(message))
                 talk = containingPage.switchTalkPage()
                 try:
                     content = talk.get() + "\n\n"
                     if url in content:
-                        wikipedia.output(u"** Dead link seems to have already been reported.")
+                        message = u'** Dead link seems to have already been reported. on ' + containingPage.switchTalkPage().aslink() + '.'
+                        wikipedia.output(message, colors = [11] * len(message))
                         self.semaphore.release()
                         continue
                 except (wikipedia.NoPage, wikipedia.IsRedirectPage):
