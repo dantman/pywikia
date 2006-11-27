@@ -162,13 +162,13 @@ class LinkChecker(object):
         else:
             return False # not a redirect
             
-    def check(self):
+    def check(self, useHEAD = True):
         """
         Returns True and the server status message if the page is alive.
         Otherwise returns false
         """
         try:
-            wasRedirected = self.resolveRedirect()
+            wasRedirected = self.resolveRedirect(useHEAD = useHEAD)
         except httplib.error, arg:
             return False, u'HTTP Error: %s' % arg
         except socket.error, arg:
@@ -176,14 +176,29 @@ class LinkChecker(object):
         except UnicodeEncodeError, arg:
             return False, u'Non-ASCII Characters in URL: %s' % arg
         if wasRedirected:
-            #print "NEW TARGET:", self.url, '\n'
             if self.url in self.redirectChain:
-                return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [self.url])
+                if useHEAD:
+                    # Some servers don't seem to handle HEAD requests properly,
+                    # which leads to a cyclic list of redirects.
+                    # We simply start from the beginning, but this time,
+                    # we don't use HEAD, but GET requests.
+                    redirChecker = LinkChecker(self.redirectChain[0])
+                    return redirChecker.check(useHEAD = False)
+                else:
+                    return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [self.url])
             elif len(self.redirectChain) >= 19:
-                return False, u'Long Chain of Redirects: %s' % ' -> '.join(self.redirectChain + [self.url])
+                if useHEAD:
+                    # Some servers don't seem to handle HEAD requests properly,
+                    # which leads to a long (or infinite) list of redirects.
+                    # We simply start from the beginning, but this time,
+                    # we don't use HEAD, but GET requests.
+                    redirChecker = LinkChecker(self.redirectChain[0])
+                    return redirChecker.check(useHEAD = False)
+                else:
+                    return False, u'Long Chain of Redirects: %s' % ' -> '.join(self.redirectChain + [self.url])
             else:
                 redirChecker = LinkChecker(self.url, self.redirectChain)
-                return redirChecker.check()
+                return redirChecker.check(useHEAD = useHEAD)
         else:
             try:
                 if self.scheme == 'http':
