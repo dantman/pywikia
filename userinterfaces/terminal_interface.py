@@ -1,7 +1,8 @@
 
 __version__ = '$Id$'
 
-import config, re, sys, transliteration
+import config, transliteration
+import traceback, re, sys
 
 # TODO: other colors
 unixColors = {
