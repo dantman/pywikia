@@ -277,7 +277,7 @@ class History:
         errorReport = u'* %s\n' % url
         for (pageTitle, date, error) in self.historyDict[url]:
             errorReport += "** In [[%s]] on %s, %s\n" % (pageTitle, time.ctime(date), error)
-        wikipedia.output(u"** Logging page for deletion.")
+        wikipedia.output(u"** Logging link for deletion.")
         txtfilename = 'deadlinks/results-%s-%s.txt' % (site.family.name, site.lang)
         txtfile = codecs.open(txtfilename, 'a', 'utf-8')
         self.logCount += 1
@@ -379,7 +379,7 @@ class DeadLinkReportThread(threading.Thread):
                 try:
                     content = talk.get() + "\n\n"
                     if url in content:
-                        message = u'** Dead link seems to have already been reported. on ' + containingPage.switchTalkPage().aslink() + '.'
+                        message = u'** Dead link seems to have already been reported on ' + containingPage.switchTalkPage().aslink() + '.'
                         wikipedia.output(message, colors = [11] * len(message))
                         self.semaphore.release()
                         continue
