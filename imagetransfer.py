@@ -116,8 +116,8 @@ class ImageTransferBot:
         sourceSite = sourceImagePage.site()
         if debug: print "--------------------------------------------------"
         if debug: print "Found image: %s"% imageTitle
-        url = sourceImagePage.fileUrl()
-        print "URL should be: %s" % url
+        url = sourceImagePage.fileUrl().encode('utf-8')
+        wikipedia.output(u"URL should be: %s" % url)
         # localize the text that should be printed on the image description page
         try:
             description = sourceImagePage.get()
