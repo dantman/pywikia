@@ -407,7 +407,12 @@ class DeadLinkReportThread(threading.Thread):
                 except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                     content = u''
                 content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorReport
-                talk.put(content)
+                try:
+                    talk.put(content)
+                except SpamfilterError, url:
+                    message = u'** SpamfilterError while trying to change %s: %s' % (containingPage.switchTalkPage().aslink(), url)
+                    wikipedia.output(message, colors = [11] * len(message))
+                    
                 self.semaphore.release()
 
 class WeblinkCheckerRobot:
