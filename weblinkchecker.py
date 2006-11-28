@@ -409,7 +409,7 @@ class DeadLinkReportThread(threading.Thread):
                 content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorReport
                 try:
                     talk.put(content)
-                except SpamfilterError, url:
+                except wikipedia.SpamfilterError, url:
                     message = u'** SpamfilterError while trying to change %s: %s' % (containingPage.switchTalkPage().aslink(), url)
                     wikipedia.output(message, colors = [11] * len(message))
                     
