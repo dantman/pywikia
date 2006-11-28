@@ -334,7 +334,11 @@ class History:
         """
         if self.historyDict.has_key(url):
             self.semaphore.acquire()
-            del self.historyDict[url]
+            try:
+                del self.historyDict[url]
+            except KeyError:
+                # Not sure why this can happen, but I guess we can ignore this...
+                pass
             self.semaphore.release()
             return True
         else:
