@@ -220,7 +220,10 @@ class CosmeticChangesToolkit:
         preR = re.compile('<pre', re.IGNORECASE)
         lines = text.split('\r\n')
         for line in lines:
-            if len(line) > 0 and line[0] != ' ' and not preR.search(line):
+            # don't change fixed-font lines because whitespace matters there.
+            # don't change table and template contents because whitespace is
+            # sometimes used to make them more readable. 
+            if not (line.startswith(' ') or line.startswith('{') or line.startswith('|') or  preR.search(line)):
                 line = wikipedia.replaceExceptMathNowikiAndComments(line, multipleSpacesR, ' ')
                 line = wikipedia.replaceExceptMathNowikiAndComments(line, spaceAtLineEndR, '')
             result.append(line)
