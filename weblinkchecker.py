@@ -173,8 +173,8 @@ class LinkChecker(object):
             return False, u'HTTP Error: %s' % arg
         except socket.error, arg:
             return False, u'Socket Error: %s' % arg
-        except UnicodeEncodeError, arg:
-            return False, u'Non-ASCII Characters in URL: %s' % arg
+        #except UnicodeEncodeError, arg:
+        #    return False, u'Non-ASCII Characters in URL: %s' % arg
         if wasRedirected:
             if self.url in self.redirectChain:
                 if useHEAD:
@@ -440,17 +440,21 @@ class WeblinkCheckerRobot:
         # Note: While allowing parenthesis inside URLs, MediaWiki will regard
         # right parenthesis at the end of the URL as not part of that URL.
         # The same applies to dot, comma, colon and some other characters.
-        # So characters inside the URL can be anything except whitespace,
-        # closing squared brackets, quotation marks, greater than and less
-        # than, and the last character also can't be parenthesis or another
-        # character disallowed by MediaWiki.
         # MediaWiki allows closing curly braces inside links, but such braces
         # often come from templates where URLs are parameters, so as a
         # workaround we won't allow them inside links here. The same is true
         # for the vertical bar.
+        notAtEnd = '\]\s\)\.:;,<>}\|"'
+        # So characters inside the URL can be anything except whitespace,
+        # closing squared brackets, quotation marks, greater than and less
+        # than, and the last character also can't be parenthesis or another
+        # character disallowed by MediaWiki.
+        notInside = '\]\s<>}"'
         # The first half of this regular expression is required because '' is
-        # not allowed inside links.
-        linkR = re.compile(r'http[s]?://[^\]\s<>}"]*?[^\]\s\)\.:;,<>}\|"](?=\'\')|http[s]?://[^\]\s<>}"]*[^\]\s\)\.:;,<>}"\|]')
+        # not allowed inside links. For example, in this wiki text:
+        #       ''Please see http://www.example.org.''
+        # .'' shouldn't be considered as part of the link.
+        linkR = re.compile(r'http[s]?://[^' + notInside + ']*?[^' + notAtEnd + '](?=[' + notAtEnd+ ']*\'\')|http[s]?://[^' + notInside + ']*[^' + notAtEnd + ']')
         # Remove HTML comments in URLs as well as URLs in HTML comments.
         # Also remove text inside nowiki links
         text = re.sub('(?s)<nowiki>.*?</nowiki>|<!--.*?-->', '', text)
