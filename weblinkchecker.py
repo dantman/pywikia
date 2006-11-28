@@ -292,7 +292,7 @@ class History:
         errorReport = u'* %s\n' % url
         for (pageTitle, date, error) in self.historyDict[url]:
             # ISO 8601 formulation
-            isoDate = time.strftime('%Y-%m-%d %H:%M:%S', date)
+            isoDate = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(date))
             errorReport += "** In [[%s]] on %s, %s\n" % (pageTitle, isoDate, error)
         wikipedia.output(u"** Logging link for deletion.")
         txtfilename = 'deadlinks/results-%s-%s.txt' % (site.family.name, site.lang)
