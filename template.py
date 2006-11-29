@@ -163,9 +163,9 @@ class TemplateRobot:
     msg_remove={
         'en':u'Robot: Removing template: %s',
         'de':u'Bot: Entferne Vorlage: %s',
-	'fr':u'Robot: Enlève le modèle: %s',
-        'he':u'רובוט: מסיר תבנית: %s',
-	'ia':u'Robot: Elimination del template: %s',
+        'fr':u'Robot: Enlève le modèle: %s',
+        'he':u'רובוט: מסיר תבנית: %s', 
+        'ia':u'Robot: Elimination del template: %s',
         'hu':u'Robot: Sablon eltávolítása: %s',
         'pt':u'Bot: Removendo predefinição: %s',
         'sr':u'Бот: Уклањање шаблона: %s',
@@ -207,9 +207,9 @@ class TemplateRobot:
         self.old = old
         self.new = new
         self.remove = remove
-	self.editSummary = editSummary
-	self.acceptAll = acceptAll
-	self.extras = extras
+        self.editSummary = editSummary
+        self.acceptAll = acceptAll
+        self.extras = extras
         # if only one argument is given, don't replace the template with another
         # one, but resolve the template by putting its text directly into the
         # article.
@@ -268,10 +268,10 @@ class TemplateRobot:
             else:
                 replacements.append((templateRegex, '{{' + self.new + '\g<parameters>}}'))
 
-	#Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
+        #Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
         replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.acceptAll)
         replaceBot.run()
-    
+
 def main():
     template_names = []
     resolve = False
@@ -293,24 +293,24 @@ def main():
                 xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
             else:
                 xmlfilename = arg[5:]
-	elif arg.startswith('-namespace:'):
-	    namespaces.append(int(arg[len('-namespace:'):]))
-	elif arg.startswith('-summary:'):
-	    editSummary = arg[len('-summary:'):]
-	elif arg.startswith('-always'):
-	    acceptAll = True
-	elif arg.startswith('-page'):
-	    if len(arg) == len('-page'):
-		pageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
-	    else:
-		pageTitles.append(arg[len('-page:'):])
-	elif arg.startswith('-extras'):
-	    extras = True
+        elif arg.startswith('-namespace:'):
+            namespaces.append(int(arg[len('-namespace:'):]))
+        elif arg.startswith('-summary:'):
+            editSummary = arg[len('-summary:'):]
+        elif arg.startswith('-always'):
+            acceptAll = True
+        elif arg.startswith('-page'):
+            if len(arg) == len('-page'):
+                pageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
+            else:
+                pageTitles.append(arg[len('-page:'):])
+        elif arg.startswith('-extras'):
+            extras = True
         else:
             template_names.append(arg)
 
     if extras:
-	old = template_names
+        old = template_names
     elif len(template_names) == 0 or len(template_names) > 2:
         wikipedia.showHelp()
         sys.exit()
@@ -323,19 +323,19 @@ def main():
     ns = mysite.template_namespace()
 
     if extras:
-	oldTemplate = []
-	for thisPage in old:
-            oldTemplate.append(wikipedia.Page(mysite, ns + ':' + thisPage))
+        oldTemplate = []
+            for thisPage in old:
+                oldTemplate.append(wikipedia.Page(mysite, ns + ':' + thisPage))
     else:
         oldTemplate = wikipedia.Page(mysite, ns + ':' + old)
 
     if xmlfilename:
         gen = XmlDumpTemplatePageGenerator(oldTemplate, xmlfilename)
     elif pageTitles:
-	pages = [wikipedia.Page(wikipedia.getSite(), pageTitle) for pageTitle in pageTitles]
-	gen = iter(pages)
+        pages = [wikipedia.Page(wikipedia.getSite(), pageTitle) for pageTitle in pageTitles]
+        gen = iter(pages)
     elif extras:
-	gen = pagegenerators.ReferringPagesGenerator(oldTemplate, onlyTemplateInclusion = True)
+        gen = pagegenerators.ReferringPagesGenerator(oldTemplate, onlyTemplateInclusion = True)
     else:
         gen = pagegenerators.ReferringPageGenerator(oldTemplate, onlyTemplateInclusion = True)
 
