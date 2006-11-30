@@ -259,6 +259,10 @@ ignore_title = {
             u'Wikipedia:.+rchief.*',
             u"Gebruiker:R'n'B/DPL",
             u"Portaal:.+[aA]rchief.*",
+            u"Gebruiker:Erik Baas.*",
+            u"Gebruiker:Venullian/Aanvulverhaal",
+            u"Overleg gebruiker:Pven",
+            u"Wikipedia:Humor en onzin.*",
          ],
         'pt': [
             u'Usuário:.+',
