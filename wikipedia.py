@@ -940,7 +940,7 @@ class Page(object):
                 import watchlist
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
-        sysop = (not self.editRestriction)
+        sysop = not not self.editRestriction
         # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
         # of Bordeaux
         if self.site().lang == 'eo':
