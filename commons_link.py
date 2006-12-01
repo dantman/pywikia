@@ -67,7 +67,7 @@ class CommonsLinkBot:
                         text = oldText
                         template = wikipedia.translate(wikipedia.getSite(), commons_template)
                         # find if {{commons}} already in article
-                        findTemplate=re.compile(ur'\{\{[Cc]ommons\}\}')
+                        findTemplate=re.compile(ur'\{\{[Cc]ommons')
                         s = findTemplate.search(text)
                         if s:
                             wikipedia.output(u'** Already done.')
