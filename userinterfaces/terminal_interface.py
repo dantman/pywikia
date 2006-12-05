@@ -4,6 +4,12 @@ __version__ = '$Id$'
 import config, transliteration
 import traceback, re, sys
 
+try:
+    import ctypes
+    ctypes_found = True
+except ImportError:
+    ctypes_found = False
+
 # TODO: other colors
 unixColors = {
     None: chr(27) + '[0m',     # Unix end tag to switch back to default
@@ -41,8 +47,7 @@ class UI:
         """
         This only works in Python 2.5 or higher.
         """
-        try:
-            import ctypes
+        if ctypes_found:
             std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
             lastColor = None
             for i in range(0, len(colors)):
@@ -58,7 +63,7 @@ class UI:
             if lastColor != None:
                 # reset the color to default at the end
                 ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, 8)
-        except ImportError:
+        else:
             # ctypes is only available since Python 2.5, and we won't
             # try to colorize without it.
             sys.stdout.write(text.encode(config.console_encoding, 'replace'))
