@@ -66,8 +66,17 @@ class UI:
         else:
             # ctypes is only available since Python 2.5, and we won't
             # try to colorize without it.
-            sys.stdout.write(text.encode(config.console_encoding, 'replace'))
-        
+            somecolor = False
+            for i in colors:
+                if not i is None:
+                    somecolor = True
+            if somecolor:
+                if text[-1] == "\n":
+                    sys.stdout.write((text[:-1]+"***\n").encode(config.console_encoding, 'replace'))
+                else:
+                    sys.stdout.write((text+"***").encode(config.console_encoding, 'replace'))
+            else:
+                sys.stdout.write(text.encode(config.console_encoding, 'replace'))
         
         
     def printColorized(self, text, colors):
