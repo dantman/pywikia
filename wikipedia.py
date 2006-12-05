@@ -2910,7 +2910,7 @@ class Site(object):
                     end_s = '</table'
                 else:
                     begin_s = '</table><hr /><table'
-                    end_s = '</table><div class="printfooter">'
+                    end_s = '<div class="printfooter">'
                 ibegin = returned_html.index(begin_s)
                 iend = returned_html.index(end_s)
             except ValueError:
