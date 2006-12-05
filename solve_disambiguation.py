@@ -263,6 +263,10 @@ ignore_title = {
             u"Gebruiker:Venullian/Aanvulverhaal",
             u"Overleg gebruiker:Pven",
             u"Wikipedia:Humor en onzin.*",
+            u"Gebruiker:.+[aA]rchief.*",
+            u"Overleg gebruiker:.+[aA]rchief.*",
+            u"Wikipedia:Wikiproject Roemeense gemeenten/Doorverwijspagina's",
+            u"Gebruiker:Emiel/artikelen",
          ],
         'pt': [
             u'Usuário:.+',
