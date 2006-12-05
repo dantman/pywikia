@@ -1161,8 +1161,11 @@ class InterwikiBot(object):
                     else:
                         break
             # If we have a few, getting the home language is a good thing.
-            if self.counts[wikipedia.getSite()] > 4:
-                return wikipedia.getSite()
+            try:
+                if self.counts[wikipedia.getSite()] > 4:
+                    return wikipedia.getSite()
+            except KeyError:
+                pass
         # If getting the home language doesn't make sense, see how many 
         # foreign page queries we can find.
         return self.maxOpenSite()
