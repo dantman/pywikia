@@ -2910,9 +2910,9 @@ class Site(object):
                     end_s = '</table'
                 else:
                     begin_s = '</table><hr /><table'
-                    end_s = '<div class="printfooter">'
+                    end_s = '</table'
                 ibegin = returned_html.index(begin_s)
-                iend = returned_html.index(end_s)
+                iend = returned_html.index(end_s,ibegin + 3)
             except ValueError:
                 raise ServerError('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
             # remove the irrelevant sections
