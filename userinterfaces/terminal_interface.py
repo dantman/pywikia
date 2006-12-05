@@ -54,7 +54,7 @@ class UI:
                 if colors[i] != lastColor:
                     #sys.stdout.flush()
                     if colors[i] == None:
-                        ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, 8)
+                        ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, config.defaultcolor)
                     else:
                         ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, colors[i])
                 # print one text character.
@@ -62,10 +62,11 @@ class UI:
                 lastColor = colors[i]
             if lastColor != None:
                 # reset the color to default at the end
-                ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, 8)
+                ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, config.defaultcolor)
         else:
             # ctypes is only available since Python 2.5, and we won't
-            # try to colorize without it.
+            # try to colorize without it. Instead we add *** after the text as a whole
+            # if anything needed to be colorized.
             somecolor = False
             for i in colors:
                 if not i is None:
@@ -146,7 +147,7 @@ class UI:
                         transLength = len(transliterated)
                         # mark the transliterated letters in yellow.
                         color = colors[i + sizeIncrease] or 14
-                        colors = colors[:i] + [color] * transLength + colors[i + 1:]
+                        colors = colors[:i + sizeIncrease] + [color] * transLength + colors[i + sizeIncrease + 1:]
                         # memorize if we replaced a single letter by multiple letters.
                         sizeIncrease += transLength - 1
                     else :
@@ -154,7 +155,7 @@ class UI:
                         transliteratedText += '?'
                         # mark the replacement character in yellow.
                         color = colors[i + sizeIncrease] or 14
-                        colors = colors[:i] + [color] + colors[i + 1:]
+                        colors = colors[:i + sizeIncrease] + [color] + colors[i + sizeIncrease + 1:]
                 else:
                     # no need to try to transliterate.
                     transliteratedText += codecedText[i]
