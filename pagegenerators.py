@@ -27,6 +27,22 @@ class AllpagesPageGenerator:
         for page in wikipedia.getSite().allpages(start = self.start, namespace = self.namespace):
             yield page
 
+class PrefixingPageGenerator:
+    '''
+    Gets all pages starting with a certain text. This is the same functionality as
+    the prefixindex special page, but it actually uses allpages because that was
+    easier to program
+    '''
+    def __init__(self, prefix):
+        self.prefix = prefix
+
+    def __iter__(self):
+        for page in AllpagesPageGenerator(self.prefix):
+            if page.title().startswith(self.prefix):
+                yield page
+            else:
+                break
+
 class NewpagesPageGenerator:
     '''
     Gets the latest pages. If repeat is true, after having gotten the last
