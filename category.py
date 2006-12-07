@@ -57,16 +57,16 @@ import wikipedia, catlib, config, pagegenerators
 
 # Summary messages
 msg_add={
-    'da':u'Robot: Tilføjer [[%s]]',
-    'de':u'Bot: Ergänze [[%s]]',
-    'en':u'Robot: Adding [[%s]]',
-    'es':u'Bot: Añadida [[%s]]',
-    'fi':u'Botti lisäsi luokkaan [[%s]]',
-    'fr':u'Robot : ajoute [[%s]]',
-    'he':u'רובוט: מוסיף [[%s]]',
-    'ia':u'Robot: Addition de [[%s]]',
-    'is':u'Vélmenni: Bæti við [[%s]]',
-    'no':u'Robot: Legger til [[%s]]',
+    'da':u'Robot: Tilføjer [[Kategori:%s]]',
+    'de':u'Bot: Ergänze [[Kategorie:%s]]',
+    'en':u'Adding [[Category:%s]]',
+    'es':u'Bot: Añadida [[Categoría:%s]]',
+    'fi':u'Botti lisäsi luokkaan [[Luokka:%s]]',
+    'fr':u'Robot : ajoute [[Catégorie:%s]]',
+    'he':u'רובוט: מוסיף [[קטגוריה:%s]]',
+    'ia':u'Robot: Addition de [[Categoria:%s]]',
+    'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
+    'no':u'Robot: Legger til [[Kategori:%s]]',
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     }
