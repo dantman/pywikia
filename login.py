@@ -81,11 +81,11 @@ class LoginManager:
 
     def botAllowed(self):
         """
-        Checks whether the bot is listed on Wikipedia:Bots to comply with
+        Checks whether the bot is listed on Wikipedia:Registered bots to comply with
         the policy on the English and the Simple English Wikipedia.
         """
         if self.site in (wikipedia.getSite('en', 'wikipedia'), wikipedia.getSite('simple', 'wikipedia')):
-            pl = wikipedia.Page(self.site, "Wikipedia:Bots")
+            pl = wikipedia.Page(self.site, "Wikipedia:Registered bots")
             text = pl.get()
             return "[[user:%s" % self.username.lower() in text.lower()
         else:
