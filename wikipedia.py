@@ -2518,7 +2518,8 @@ class Site(object):
         """Constructor takes three arguments:
 
         code    language code for Site
-        fam     Wikimedia family (optional: defaults to configured)
+        fam     Wikimedia family (optional: defaults to configured).
+                Can either be a string or a Family object.
         user    User to use (optional: defaults to configured)"""
 
         self.lang = code.lower()
@@ -2528,6 +2529,10 @@ class Site(object):
             self.family = fam
         if self.lang not in self.languages():
             raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
+
+        # if we got an outdated language code, use the new one instead.
+        if self.lang in self.family.obsolete and self.family.obsolete[self.lang]:
+            self.lang = self.family.obsolete[self.lang]
 
         self.messages=False
         self.nocapitalize = self.lang in self.family.nocapitalize
@@ -3220,10 +3225,6 @@ def getSite(code = None, fam = None, user=None):
         code = default_code
     if fam == None:
         fam = default_family
-    # if we got an outdated code, use the new one instead.
-    family = Family(fam)
-    if code in family.obsolete and family.obsolete[code]:
-        code = family.obsolete[code]
     key = '%s:%s'%(fam,code)
     if not _sites.has_key(key):
         _sites[key] = Site(code=code, fam=fam, user=user)
