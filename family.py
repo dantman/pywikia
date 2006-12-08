@@ -19,7 +19,7 @@ class Family:
            'gv','gd','gl','ki','glk','gu','got','ko','ha','haw','hy','hi','ho','hsb','hr',
            'io','ig','ilo','id','ia','ie','iu','ik','os','xh','zu','is','it','he',
            'jv','kl','xal','kn','kr','ka','ks','csb','kk','kw','rw','ky','rn',
-           'sw','kv','kg','ht','kj','ku','lad','lbe','lo','ltg','la','lv','lb','lij','lt',
+           'sw','kv','kg','ht','kj','ku','lad','lbe','lo','la','lv','lb','lij','lt',
            'li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi','mr','mzn','ms',
            'mo','mn','mus','my','nah','na','fj','nl','nds-nl','cr','ne','new','ja','nap',
            'ce','pih','no','nn','nrm','nov','oc','or','om','ng','hz','ug','pa','pi',
@@ -210,7 +210,7 @@ class Family:
                 'bg': u'Беседа',
                 'bm': u'Discuter',
                 'bn': u'আলাপ',
-                'bpy': u'য়যারী',
+                'bpy': u'য়্যারী',
                 'br': u'Kaozeal',
                 'bs': u'Razgovor',
                 'ca': u'Discussió',
@@ -317,7 +317,7 @@ class Family:
                 'bg': u'Потребител',
                 'bm': u'Utilisateur',
                 'bn': u'ব\u09cdযবহারকারী',
-                'bpy': u'বযবহারকরেকরা',
+                'bpy': u'ব্যবহারকরেকুরা',
                 'br': u'Implijer',
                 'bs': u'Korisnik',
                 'ca': u'Usuari',
@@ -423,7 +423,7 @@ class Family:
                 'bg': u'Потребител беседа',
                 'bm': u'Discussion Utilisateur',
                 'bn': u'ব্যবহারকারী আলাপ',
-		'bpy': u'বযবহারকরেকরার য়যারী',
+                'bpy': u'ব্যবহারকরেকুরার য়্যারী',
                 'br': u'Kaozeadenn Implijer',
                 'bs': u'Razgovor sa korisnikom',
                 'ca': u'Usuari Discussió',
@@ -497,7 +497,7 @@ class Family:
                 'su': u'Obrolan pamaké',
                 'sv': u'Användardiskussion',
                 'ta': u'பயனர் பேச்சு',
-                'te': u'సభ్యునిపై చర్చ',
+                'te': u'సభయులప చరచ',
                 'tg': u'Баҳси корбар',
                 'th': u'คุยกับผู้ใช้',
                 'tr': u'Kullanıcı mesaj',
@@ -640,7 +640,7 @@ class Family:
                 'bg': u'Картинка беседа',
                 'bm': u'Discussion Image',
                 'bn': u'চিত্র আলাপ',
-                'bpy': u'ছবি য়যারী',
+                'bpy': u'ছবি য়্যারী',
                 'br': u'Kaozeadenn Skeudenn',
                 'bs': u'Razgovor o slici',
                 'ca': u'Imatge Discussió',
@@ -774,7 +774,7 @@ class Family:
                 'bg': u'МедияУики беседа',
                 'bm': u'Discussion MediaWiki',
                 'bn': u'MediaWiki আলাপ',
-                'bpy': u'MediaWiki য়যারী',
+                'bpy': u'MediaWiki য়্যারী',
                 'br': u'Kaozeadenn MediaWiki',
                 'bs': u'Razgovor o MedijaVikiju',
                 'ca': u'MediaWiki Discussió',
@@ -1321,7 +1321,7 @@ class Family:
                 'ku': u'Kategorî',
                 'kv': u'Категория',
                 'la': u'Categoria',
-                'li': u'Kategorie',
+                'li': u'Categorie',
                 'lt': u'Kategorija',
                 'lv': u'Kategorija',
                 'mk': u'Категорија',
@@ -1424,7 +1424,7 @@ class Family:
                 'ku': u'Kategorî nîqaş',
                 'kv': u'Обсуждение категории',
                 'la': u'Disputatio Categoriae',
-                'li': u'Euverlik kategorie',
+                'li': u'Euverlik categorie',
                 'lt': u'Kategorijos aptarimas',
                 'lv': u'Kategorijas diskusija',
                 'mk': u'Разговор за категорија',
@@ -1934,6 +1934,7 @@ class Family:
         # Which language codes do no longer exist and by which language code should
         # they be replaced. If for example the language with code xx: now should get
         # code yy:, add {'xx':'yy'} to obsolete.
+        # If all links to language xx: shall be removed, add {'xx': None}.
     
         self.obsolete = {}
         

@@ -99,7 +99,7 @@ class Family(family.Family):
             'bg': u'Уикипедия беседа',
             'bm': u'Discussion Wikipedia',
             'bn': u'উইকিপেডিয়া আলাপ',
-            'bpy': u'Wikipedia য়যারী',
+            'bpy': u'Wikipedia য়্যারী',
             'br': u'Kaozeadenn Wikipedia',
             'bs': u'Razgovor s Wikipediom',
             'ca': u'Viquipèdia Discussió',
@@ -527,7 +527,7 @@ class Family(family.Family):
                     'minnan':'zh-min-nan',
                     'nb':'no',
                     'jp':'ja',
-                    'tokipona':'none',
+                    'tokipona':None,
                     'zh-tw':'zh',
                     'zh-cn':'zh'}
             

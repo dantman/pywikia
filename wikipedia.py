@@ -3222,7 +3222,7 @@ def getSite(code = None, fam = None, user=None):
         fam = default_family
     # if we got an outdated code, use the new one instead.
     family = Family(fam)
-    if code in family.obsolete:
+    if code in family.obsolete and family.obsolete[code]:
         code = family.obsolete[code]
     key = '%s:%s'%(fam,code)
     if not _sites.has_key(key):
