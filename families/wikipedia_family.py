@@ -23,7 +23,8 @@ class Family(family.Family):
             'zh-tw':'zh.wikipedia.org'
             }
         for lang in self.knownlanguages:
-            self.langs[lang] = lang+'.wikipedia.org'
+	    if lang not in self.langs:
+                self.langs[lang] = lang+'.wikipedia.org'
 
         # Override defaults
         self.namespaces[2]['cs'] = u'Wikipedista'
