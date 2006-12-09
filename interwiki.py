@@ -1033,7 +1033,7 @@ class Subject(object):
         try:
             for site, page in new.iteritems():
                 if site not in updatedSites and not page.section():
-                    shouldlink = new.values() + [self.inpl]
+                    shouldlink = new.values()
                     try:
                         linked = page.interwiki()
                     except wikipedia.NoPage:
