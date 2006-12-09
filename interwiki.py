@@ -505,13 +505,13 @@ class Subject(object):
                     else:
                         if self.inpl.isDisambig() and not pl.isDisambig():
                             if self.hasdisambig(pl.site()):
-                                wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found."%(pl.aslink(True),self.inpl.aslink(True),self.hasdisambig(pl.site())))
+                                wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found."%(pl.aslink(True),self.inpl.aslink(True),self.hasdisambig(pl.site()).aslink(True)))
                                 choice = 'n'
                             else:
                                 choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(True), pl.aslink(True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
                         elif not self.inpl.isDisambig() and pl.isDisambig():
                             if self.hasnondisambig(pl.site()):
-                                wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found."%(pl.aslink(True),self.inpl.aslink(True),self.hasnondisambig(pl.site())))
+                                wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found."%(pl.aslink(True),self.inpl.aslink(True),self.hasnondisambig(pl.site()).aslink(True)))
                                 choice = 'n'
                             else:
                                 choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.inpl.aslink(True), pl.aslink(True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
