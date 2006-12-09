@@ -105,6 +105,7 @@ def refresh_all():
             family, lang = match.group(1).split('-')
             site = wikipedia.getSite(code = lang, fam = family)
             refresh(site)
+
 def main():
     all = False
     for arg in sys.argv[1:]:
@@ -117,6 +118,11 @@ def main():
         refresh_all()
     else:
         refresh(wikipedia.getSite())
+
+        watchlist = get(wikipedia.getSite())
+        wikipedia.output(u'%i pages in the watchlist.' % len(watchlist))
+        for pageName in watchlist:
+            wikipedia.output(u'* %' % pageName)
 
 if __name__ == "__main__":
     try:
