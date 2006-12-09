@@ -85,7 +85,7 @@ def refresh(site):
 
     print 'Parsing watchlist'
     watchlist = []
-    itemR = re.compile(r'<input type=\'checkbox\' name=\'id\[\]\' value=\"(.+?)\"')
+    itemR = re.compile(r'<li><input type="checkbox" name="id\[\]" value="(.+?)" />')
     for m in itemR.finditer(watchlistHTML):
         pageName = m.group(1)
         watchlist.append(pageName)
@@ -122,7 +122,7 @@ def main():
         watchlist = get(wikipedia.getSite())
         wikipedia.output(u'%i pages in the watchlist.' % len(watchlist))
         for pageName in watchlist:
-            wikipedia.output(u'* %' % pageName)
+            wikipedia.output(u'* %s' % pageName)
 
 if __name__ == "__main__":
     try:

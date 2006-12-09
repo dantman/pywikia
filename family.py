@@ -2231,7 +2231,7 @@ class Family:
         return '%s?title=%s:Userlogin&action=submit' % (self.path(code), self.special_namespace_url(code))
 
     def watchlist_address(self, code):
-        return '%s?title=%s:Watchlist&magic=yes' % (self.path(code), self.special_namespace_url(code))
+        return '%s?title=%s:Watchlist/edit' % (self.path(code), self.special_namespace_url(code))
     
     def move_address(self, code):
         return '%s?title=%s:Movepage&action=submit' % (self.path(code), self.special_namespace_url(code))
