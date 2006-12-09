@@ -347,6 +347,22 @@ class Subject(object):
     def pl(self):
         """Return the Page on the home wiki"""
         return self.inpl
+
+    def hasdisambig(self,site):
+        # Returns TRUE if a link to a disambiguation page on site site has been found
+        for pl in self.pending + self.done.keys():
+            if pl.site() == site:
+                if pl.isDisambig():
+                    return pl
+        return False
+
+    def hasnondisambig(self,site):
+        # Returns TRUE if a link to a disambiguation page on site site has been found
+        for pl in self.pending + self.done.keys():
+            if pl.site() == site:
+                if not pl.isDisambig():
+                    return pl
+        return False
     
     def translate(self, hints = None):
         """Add the translation hints given to the todo list"""
@@ -488,9 +504,17 @@ class Subject(object):
                             del self.done[pl]
                     else:
                         if self.inpl.isDisambig() and not pl.isDisambig():
-                            choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(True), pl.aslink(True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
+                            if self.hasdisambig(pl.site()):
+                                wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found."%(pl.aslink(True),self.inpl.aslink(True),self.hasdisambig(pl.site())))
+                                choice = 'n'
+                            else:
+                                choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.inpl.aslink(True), pl.aslink(True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
                         elif not self.inpl.isDisambig() and pl.isDisambig():
-                            choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.inpl.aslink(True), pl.aslink(True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
+                            if self.hasnondisambig(pl.site()):
+                                wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found."%(pl.aslink(True),self.inpl.aslink(True),self.hasnondisambig(pl.site())))
+                                choice = 'n'
+                            else:
+                                choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.inpl.aslink(True), pl.aslink(True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
                         else:
                             choice = 'y'
                         if choice not in ['y', 'Y']:
@@ -830,14 +854,10 @@ class Subject(object):
             frgnSiteDone = False
             for siteCode in lclSite.family.languages_by_size + [self.inpl.site().lang]:   #make sure there is always this site's code
                 site = wikipedia.getSite(code = siteCode)
-#                wikipedia.output(u"DBG> Searching for %s (code=%s)" % (site,siteCode))
                 if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and new.has_key(site)):
                     if site == lclSite:
                         lclSiteDone = True   # even if we fail the update
-
                     if config.usernames.has_key(site.family.name) and config.usernames[site.family.name].has_key(site.lang):
-                        if site != lclSite:
-                            wikipedia.output(u"Found pair match between %s and %s" % (lclSite, site))
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
@@ -860,9 +880,6 @@ class Subject(object):
                                 updatedSites.append(site)
                         except LinkMustBeRemoved:
                             notUpdatedSites.append(site)
-                        
-            else:
-                wikipedia.output(u"Unable to find a suitable pair")
         else:
             for (site, page) in new.iteritems():
                 # if we have an account for this site
