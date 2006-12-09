@@ -1003,7 +1003,7 @@ class Subject(object):
                         except (wikipedia.EditConflict, wikipedia.SpamfilterError), error:
                             # we can't resolve edit conflicts and spamfilter triggerings
                             # automatically.
-                            wikipedia.output(u'ERROR putting page: %s. Giving up.' % error)
+                            wikipedia.output(u'ERROR putting page: %s. Giving up.' % error.args[0])
                             return False
                         except (socket.error, IOError, wikipedia.PageNotSaved), error:
                             if timeout>3600:

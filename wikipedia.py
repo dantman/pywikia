@@ -1038,8 +1038,16 @@ class Page(object):
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
             elif mediawiki_messages.get('spamprotectiontitle', self.site()) in data:
-                reasonR = re.compile(re.escape(mediawiki_messages.get('spamprotectionmatch', self.site())).replace('\$1', '(?P<url>[^<]*)'))
-                url = reasonR.search(data).group('url')
+                try:
+                    reasonR = re.compile(re.escape(mediawiki_messages.get('spamprotectionmatch', self.site())).replace('\$1', '(?P<url>[^<]*)'))
+                    url = reasonR.search(data).group('url')
+                except AttributeError:
+                    # Some wikis have modified the spamprotectionmatch
+                    # template in a way that the above regex doesn't work,
+                    # e.g. on he.wikipedia the template includes a wikilink.
+                    # This is a workaround for this: it shows the region
+                    # which should contain the spamfilter report and the URL.
+                    url = data[data.find('<!-- start content -->')+22:data.find('<!-- end content -->')].strip()
                 raise SpamfilterError(url)
             elif '<label for=\'wpRecreate\'' in data:
                 # Make sure your system clock is correct if this error occurs
