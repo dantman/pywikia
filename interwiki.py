@@ -352,16 +352,22 @@ class Subject(object):
         # Returns TRUE if a link to a disambiguation page on site site has been found
         for pl in self.pending + self.done.keys():
             if pl.site() == site:
-                if pl.isDisambig():
-                    return pl
+                try:
+                    if pl.isDisambig():
+                        return pl
+                except wikipedia.NoPage:
+                    pass
         return False
 
     def hasnondisambig(self,site):
         # Returns TRUE if a link to a disambiguation page on site site has been found
         for pl in self.pending + self.done.keys():
             if pl.site() == site:
-                if not pl.isDisambig():
-                    return pl
+                try:
+                    if not pl.isDisambig():
+                        return pl
+                except wikipedia.NoPage:
+                    pass
         return False
     
     def translate(self, hints = None):
