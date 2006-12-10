@@ -1,5 +1,27 @@
+import threading
 import pydot
 import wikipedia, config
+
+class GraphSavingThread(threading.Thread):
+    """
+    Rendering a graph can take extremely long. We use
+    multithreading because of that.
+    
+    TODO: Find out if several threads running in parallel
+    can slow down the system too much. Consider adding a
+    mechanism to kill a thread if it takes too long.
+    """
+    
+    def __init__(self, graph, filename):
+        threading.Thread.__init__(self)
+        self.graph = graph
+        self.filename = filename
+
+    def run(self):
+        if self.graph.write(self.filename, prog = 'dot', format = config.interwiki_graph_format):
+            wikipedia.output(u'Graph saved as %s' % self.filename)
+        else:
+            wikipedia.output(u'Graph could not be saved as %s' % self.filename)
 
 class GraphDrawer:
     def __init__(self, subject):
@@ -56,20 +78,14 @@ class GraphDrawer:
                 self.graph.add_edge(edge)
 
     def saveGraphFile(self):
-        filename = '%s-%s-%s.%s' % (self.subject.originPage.site().family.name, self.subject.originPage.site().language(), self.subject.originPage.title(), config.interwiki_graph_format)
-        # replace characters that are not possible in file names on some systems
-        for forbiddenChar in ':*?/\\':
-            filename = filename.replace(forbiddenChar, '_')
-        filename = 'interwiki-graphs/' + filename
+        filename = 'interwiki-graphs/' + getFilename(self.subject.originPage)
         if config.interwiki_graph_dumpdot:
             if self.graph.write(filename + '.dot', prog = 'dot' , format ='raw'):
                 wikipedia.output(u'Dot file saved as %s' % filename)
             else:
                 wikipedia.output(u'Dot file could not be saved as %s' % filename)
-        if self.graph.write(filename, prog = 'dot', format = config.interwiki_graph_format):
-            wikipedia.output(u'Graph saved as %s' % filename)
-        else:
-            wikipedia.output(u'Graph could not be saved as %s' % filename)
+        thread = GraphSavingThread(self.graph, filename)
+        thread.start()
 
     def createGraph(self):
         """
@@ -90,3 +106,13 @@ class GraphDrawer:
             for refPage in referrers:
                 self.addDirectedEdge(page, refPage)
         self.saveGraphFile()
+
+def getFilename(page, withExtension = True):
+        filename = '%s-%s-%s' % (page.site().family.name, page.site().language(), page.title())
+        if withExtension:
+            filename += '.%s' % config.interwiki_graph_format
+        # Replace characters that are not possible in file names on some systems.
+        # Spaces are possible on most systems, but are bad for URLs.
+        for forbiddenChar in ':*?/\\ ':
+            filename = filename.replace(forbiddenChar, '_')
+        return filename

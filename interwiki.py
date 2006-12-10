@@ -622,11 +622,15 @@ class Subject(object):
         if globalvar.autonomous:
             try:
                 f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
-                f.write("* %s {%s}\n" % (self.originPage.aslink(True), txt))
+                f.write("* %s {%s}" % (self.originPage.aslink(True), txt))
+                if config.interwiki_graph_url:
+                    f.write(" [%s%s graph]" % (config.interwiki_graph_url, interwiki_graph.getFilename(self.originPage)))
+                f.write("\n")
                 f.close()
             except:
-                print 'File of autonomous_problem.dat open or corrupted! Try again with -restore.'
-                sys.exit()
+               #raise
+               print 'File autonomous_problem.dat open or corrupted! Try again with -restore.'
+               sys.exit()
 
     def whereReport(self, pl, indent=4):
         for pl2 in sorted(self.foundIn[pl]):

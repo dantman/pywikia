@@ -159,6 +159,14 @@ interwiki_graph_format = 'png'
 # too ? Usefull to make another graph with the same data
 interwiki_graph_dumpdot = False
 
+# You can post the contents of your autonomous_problems.dat to the wiki,
+# e.g. to http://de.wikipedia.org/wiki/Wikipedia:Interwiki-Konflikte .
+# This allows others to assist you in resolving interwiki problems.
+# To help these people, you can upload the interwiki graphs to your
+# webspace somewhere. Set the base URL here, e.g.:
+# 'http://www.example.org/~yourname/interwiki-graphs/'
+interwiki_graph_url = None
+
 # Save file with local articles without interwikis.
 without_interwiki = False
 
