@@ -914,7 +914,10 @@ class Subject(object):
             # This is not a page, but a subpage. Do not edit it.
             wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % pl.aslink(True))
             return False
-        wikipedia.output(u"Updating links on page %s." % pl.aslink(True))
+        # Show a message in purple.
+        text = u"Updating links on page %s." % pl.aslink(True)
+        colors = [13] * len(text)
+        wikipedia.output(text, colors = colors)
 
         # clone original newPages dictionary, so that we can modify it to the local page's needs
         new = dict(newPages)
