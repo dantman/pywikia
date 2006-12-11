@@ -42,7 +42,7 @@ class ImageRobot:
     msg_replace={
         'en':u'Robot - Replacing image %s with %s',
         'he':u'רובוט - מחליף את התמונה %s בתמונה %s',
-        'pt':u'Bot: Alterando uamgem %s com %s',
+        'pt':u'Bot: Alterando imagem %s para %s',
     }
 
     # Summary messages for removing images
@@ -126,7 +126,7 @@ def main():
                 oldImage = arg
 
     if not oldImage:
-        wikipedia.output(u'You did not give me anything to do, quitting.')
+        wikipedia.showHelp('image')
     else:
         mysite = wikipedia.getSite()
         ns = mysite.image_namespace()
