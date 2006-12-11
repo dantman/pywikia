@@ -46,7 +46,7 @@ msg_double={
     'de':u'Bot: Korrigiere doppelten Redirect',
     'fr':u'Robot : répare double redirection',
     'he':u'רובוט: מתקן הפניה כפולה',
-	'hr':u'Bot: Popravak dvostrukih preusmjeravanja',
+    'hr':u'Bot: Popravak dvostrukih preusmjeravanja',
     'ia':u'Robot: reparation de duple redirection',
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     'pt':u'Bot: Corrigido duplo redirecionamento',
@@ -276,7 +276,7 @@ def main():
                 print 'Unknown argument: %s' % arg
 
     if not action:
-        wikipedia.output(__doc__, 'utf-8')
+        wikipedia.showHelp('redirect')
     else:
         gen = RedirectGenerator(xmlFilename, namespace, restart)
         bot = RedirectRobot(action, gen)
