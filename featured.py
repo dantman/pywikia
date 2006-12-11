@@ -226,8 +226,8 @@ def featuredWithInterwiki(fromsite, tosite):
             wikipedia.output(u"Page not saved")
 
 if __name__=="__main__":
-    if config.usernames.has_key('wikipedia') and config.usernames['wikipedia'].has_key('de') or config.usernames['wikipedia'].has_key('nl'):
-        print "Bot is not to be used at the DE and NL Wikipedias."
+    if config.usernames['wikipedia'].has_key('nl'):
+        print "Bot is not to be used at the NL Wikipedia, changing your user-config.py."
         sys.exit()
         
     fromlang=[]
