@@ -110,14 +110,19 @@ class ReferringPagesGenerator:
 class CategorizedPageGenerator:
     '''
     Yields all pages in a specific category.
+    If recurse is True, pages in subcategories are included as well.
+    If start has a value, only pages whose title comes after start
+    alphabetically are included.
     '''
-    def __init__(self, category, recurse = False):
+    def __init__(self, category, recurse = False, start='!'):
         self.category = category
         self.recurse = recurse
+        self.start = start
 
     def __iter__(self):
         for page in self.category.articles(recurse = self.recurse):
-            yield page
+            if page.title() >= start:
+                yield page
 
 class CategoryPartPageGenerator:
     '''
