@@ -66,9 +66,7 @@ class CommonsLinkBot:
                         else:
                             # TODO: input template before categories and interwikis
                             text = (text+'{{commons|{{subst:PAGENAME}}}}')
-                            if oldText == text:
-                                continue
-                            else:
+                            if oldText != text:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
                                     choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
