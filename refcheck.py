@@ -60,7 +60,7 @@ def main():
 		else:
 			robot.countRefs(['ref', 'note', 'ref label', 'note label'], namespaces)
 	else:
-		wikipedia.output(u'You did not give me anything to do, quitting.')
+		wikipedia.showHelp('refcheck')
 
 if __name__ == "__main__":
 	try:
