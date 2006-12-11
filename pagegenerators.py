@@ -121,7 +121,7 @@ class CategorizedPageGenerator:
 
     def __iter__(self):
         for page in self.category.articles(recurse = self.recurse):
-            if page.title() >= start:
+            if page.title() >= self.start:
                 yield page
 
 class CategoryPartPageGenerator:
