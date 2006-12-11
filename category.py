@@ -341,6 +341,7 @@ class CategoryRemoveRobot:
         'en':u'Robot: Category was disbanded',
         'he':u'רובוט: הקטגוריה פורקה',
         'ia':u'Robot: Categoria esseva dissolvite',
+        'pt':u'Bot: Categoria foi unida',
     }
     
     msg_remove={
@@ -350,9 +351,9 @@ class CategoryRemoveRobot:
         'es':u'Bot: Eliminada de la %s',
         'he':u'רובוט: מסיר מהקטגוריה %s',
         'ia':u'Robot: Eliminate de %s',
-        'is':u'Vélmenni: Fjarlægi [[%s]]',
+        'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
         'nl':u'Bot: Verwijderd uit %s',
-        'pt':u'Bot: Removendo [[%s]]',
+        'pt':u'Bot: Removendo [[Categoria:%s]]',
         'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
     }
     
@@ -683,8 +684,7 @@ if __name__ == "__main__":
             bot = CategoryTreeRobot(catTitle, catDB, filename)
             bot.run()
         else:
-            # show help
-            wikipedia.output(__doc__, 'utf-8')
+            wikipedia.showHelp('category')
     finally:
         catDB.dump()
         wikipedia.stopme()
