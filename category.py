@@ -80,10 +80,10 @@ msg_change={
     'fr':u'Robot : modifie %s',
     'he':u'רובוט: משנה %s',
     'ia':u'Robot: Modification de %s',
-    'is':u'Vélmenni: Breyti flokknum [[%s]]',
+    'is':u'Vélmenni: Breyti flokknum [[Flokkur:%s]]',
     'nl':u'Bot: Wijziging %s',
     'no':u'Robot: Endrer %s',
-    'pt':u'Bot: Modificando [[%s]]',
+    'pt':u'Bot: Modificando [[Categoria:%s]]',
     'sr':u'Бот: Измена категорије %s',
     }
 
