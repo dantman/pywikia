@@ -818,6 +818,8 @@ class Subject(object):
                                 updatedSites.append(site)
                         except LinkMustBeRemoved:
                             notUpdatedSites.append(site)
+                        except wikipedia.NoUsername:
+                            pass
         else:
             for (site, page) in new.iteritems():
                 # if we have an account for this site
