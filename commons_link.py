@@ -4,6 +4,12 @@
 """
 Include commons template in home wiki.
 
+This bot functions mainly in the en.wikipedia, because it
+compares the names of articles and category in English
+language (standard language in Commons). If the name of
+an article in Commons will not be in English but with
+redirect, this also functions.
+
 Command-line arguments:
 
     -cat           Work on all pages which are in a specific category.
@@ -26,28 +32,12 @@ Single pages use: commons_link.py article
 
 __version__='$Id$'
 
-import wikipedia
-import pagegenerators
+import wikipedia, pagegenerators
 import re
 
 comment = {
-    'en': u'Robot: Template to Commons',
-    'pt': u'Bot: Link para o commons',
+    'en':'Robot: Include commons template'
     }
-
-commons_template = {
-    'en': '{{commons|{{subst:PAGENAME}}}}',
-    'pt': '{{commons|{{subst:PAGENAME}}}}',
-    }
-
-# TODO other templates:
-# {{Sisterlinks|}}
-# {{commons1|}}
-# {{Correlato|}} 
-# {{InterProjekt|}}
-# {{Autres projets|wikt= |commons= }}
-# {{Correlatos||commons= |wikisource= |wikiquote= |wikilivros= |wikinoticias= |wikcionario= |wikispecies= }}
-# {{Commonsbilder}}
 
 class CommonsLinkBot:
     def __init__(self, generator, acceptall = False):
@@ -65,17 +55,19 @@ class CommonsLinkBot:
                     if page.title() == commonspage.title():
                         oldText = page.get()
                         text = oldText
-                        template = wikipedia.translate(wikipedia.getSite(), commons_template)
-                        # find if {{commons}} already in article
+
+                        # find commons template
                         findTemplate=re.compile(ur'\{\{[Cc]ommons')
                         s = findTemplate.search(text)
-                        if s:
+                        findTemplate2=re.compile(ur'\{\{[Ss]isterlinks')
+                        s2 = findTemplate2.search(text)
+                        if s or s2:
                             wikipedia.output(u'** Already done.')
                         else:
                             # TODO: input template before categories and interwikis
-                            text = (text+('%s'%template))
+                            text = (text+'{{commons|{{subst:PAGENAME}}}}')
                             if oldText == text:
-                                wikipedia.output(u'** No changes necessary.')
+                                continue
                             else:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
@@ -88,7 +80,7 @@ class CommonsLinkBot:
                                         page.put(text, msg)
                                     except wikipedia.EditConflict:
                                         wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                        
+                            
                 except wikipedia.NoPage:
                     wikipedia.output(u'Page does not exist in Commons!')
                     
