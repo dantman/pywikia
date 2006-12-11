@@ -18,6 +18,7 @@ msg_created_for_renaming = {
     'ia':u'Robot: Transferite de %s. Autores: %s',
     'fr':u'Robot : déplacé depuis %s. Auteurs: %s',
     'he':u'רובוט: הועבר מהשם %s. מחברים: %s',
+    'pt':u'Bot: Movido de %s. Autor: %s,
     }
 
 def isCatTitle(title, site):
