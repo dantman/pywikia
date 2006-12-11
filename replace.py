@@ -101,7 +101,7 @@ msg = {
        'is':u'Vélmenni: breyti texta %s',
        'it':u'Bot: Sostituzione automatica %s',
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
-       'lt':u'Botas: Automatinis teksto keitimas %s',       
+       'lt':u'robotas: Automatinis teksto keitimas %s',       
        'pt':u'Bot: Mudança automática %s',
        'sr':u'Бот: Аутоматска замена текста %s',
        }

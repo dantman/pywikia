@@ -30,6 +30,7 @@ msg = {
     'fi': u'Suositeltu artikkeli -tähti: [[%s:%s]]',
     'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Interwiki za izabrane članke za [[%s:%s]]',
+    'lt': u'Pavyzdinis straipsnis [[%s:%s]]',
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
     'sr': u'Међувики за изабране чланке за [[%s:%s]]',
 }
@@ -46,6 +47,7 @@ template = {
     'fr': 'lien AdQ',
     'hr': 'Link FA',
     'it': 'Link AdQ',
+    'lt': 'Link FA',
     'lv': 'Link FA',
     'no': 'Link UA',
     'pt': 'Link FA',
@@ -72,6 +74,7 @@ featured_name = {
     'is': (CAT, u"Flokkur:Úrvalsgreinar"),
     'it': (CAT, u"Categoria:Articoli in vetrina"),
     'ja': (BACK, u"Template:秀逸"),
+    'lt': (CAT, u"Kategorija:Vikipedijos pavyzdiniai straipsniai"),
     'nl': (LINKS, u"Wikipedia:Etalage"),
     'no': (CAT, u"Kategori:Utmerkede artikler"),
     'pl': (CAT, u"Kategoria:Artykuły na medal"),

@@ -148,6 +148,7 @@ class TemplateRobot:
         'he':u'רובוט: משנה תבנית: %s',
 	'ia':u'Robot: Modification del template: %s',
         'hu':u'Robot: Sablon csere: %s',
+        'lt':u'robotas: Keičiamas šablonas: %s',
         'pt':u'Bot: Alterando predefinição: %s',
         'sr':u'Бот: Измена шаблона: %s',
     }
@@ -156,6 +157,7 @@ class TemplateRobot:
     msgs_change={
 	'en':u'Robot: Changing templates: %s',
         'he':u'רובוט: משנה תבניות: %s',
+        'lt':u'robotas: Keičiami šablonai: %s',
         'pt':u'Bot: Alterando predefinição: %s',
     }
     
@@ -167,6 +169,7 @@ class TemplateRobot:
         'he':u'רובוט: מסיר תבנית: %s', 
         'ia':u'Robot: Elimination del template: %s',
         'hu':u'Robot: Sablon eltávolítása: %s',
+        'lt':u'robotas: Šalinamas šablonas: %s',
         'pt':u'Bot: Removendo predefinição: %s',
         'sr':u'Бот: Уклањање шаблона: %s',
     }
@@ -175,6 +178,7 @@ class TemplateRobot:
     msgs_remove={
         'en':u'Robot: Removing templates: %s',
         'he':u'רובוט: מסיר תבניות: %s',
+        'lt':u'robotas: Šalinami šablonai: %s',
         'pt':u'Bot: Removendo predefinição: %s',
     }
 

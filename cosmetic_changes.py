@@ -16,6 +16,7 @@ msg_standalone = {
     'de': u'Bot: Kosmetische Änderungen',
     'en': u'Robot: Cosmetic changes',
     'he': u'רובוט: שינויים קוסמטיים',
+    'lt': u'robotas: smulkūs taisymai',
     'pt': u'Bot: Mudanças triviais',
     }
 
@@ -25,6 +26,7 @@ msg_append = {
     'de': u'; kosmetische Änderungen',
     'en': u'; cosmetic changes',
     'he': u'; שינויים קוסמטיים',
+    'lt': u'; smulkūs taisymai',
     'pt': u'; mudanças triviais',
     }
 

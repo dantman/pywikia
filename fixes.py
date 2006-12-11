@@ -13,6 +13,7 @@ fixes = {
                'de':u'Bot: konvertiere/korrigiere HTML',
                'he':u'רובוט: ממיר/מתקן HTML',
                'ia':u'Robot: conversion/reparation de HTML',
+               'lt':u'robotas: konvertuojamas/taisomas HTML',
                'pt':u'Bot: Corrigindo HTML',
                'sr':u'Бот: Поправка HTML-а'
               },
@@ -78,6 +79,7 @@ fixes = {
                'en':u'Bot: Fixing wiki syntax',
                'he':u'בוט: מתקן תחביר ויקי',
                'ia':u'Robot: Reparation de syntaxe wiki',
+               'lt':u'robotas: Taisoma wiki sintaksė',
                'pt':u'Bot: Corrigindo sintax wiki',
                'sr':u'Бот: Поправка вики синтаксе',
               },

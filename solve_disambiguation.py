@@ -87,6 +87,7 @@ msg = {
     'he': u'תיקון הפניה לדף פירושונים באמצעות בוט: %s',
     'ia': u'Disambiguation assistite per robot: %s',
     'it': u'Sistemazione automatica della disambigua: %s',
+    'lt': u'Nuorodų į nukrepiamąjį straipsnį keitimas: %s',
     'nl': u'Robot-geholpen doorverwijzing: %s',
     'pt': u'Desambiguação assistida por bot: %s',
     'ru': u'Разрешение значений с помощью бота: %s',
@@ -104,6 +105,7 @@ msg_redir = {
     'he': u'תיקון הפניה לדף פירושונים באמצעות בוט: %s',
     'ia': u'Resolution de redirectiones assistite per robot: %s',
     'it': u'Sistemazione automatica del redirect: %s',
+    'lt': u'Nuorodų į peradresavimo straipsnį keitimas: %s',
     'nl': u'Robot-geholpen redirect-oplossing: %s',
     'pt': u'Desambiguação assistida por bot: %s',
     'ru': u'Разрешение значений с помощью бота: %s',
@@ -119,6 +121,7 @@ primary_topic_format = {
     'en': u'%s_(disambiguation)',
     'ia': u'%s_(disambiguation)',
     'it': u'%s_(disambigua)',
+    'lt': u'%s_(reikšmės)',
     'nl': u'%s_(doorverwijspagina)',
     'pt': u'%s_(desambiguação)',
     'he': u'%s_(פירושונים)',
@@ -216,6 +219,9 @@ ignore_title = {
  	    u'Discussioni utente:.+',
  	    u'Utente:Civvi/disorfanamento',
  	],
+        'lt': [
+            u'Wikipedia:Rodomi nukreipiamieji straipsniai',
+        ],
         'nl': [
             u'Wikipedia:Onderhoudspagina',
             u'Wikipedia:Doorverwijspagina',
