@@ -100,7 +100,7 @@ def main():
                 pageName = arg[len('-links:'):]
 
     if not pageName:
-        wikipedia.output(u'You did not give me anything to do, quitting.')
+        wikipedia.showHelp(u'delete')
     elif doCategory:
         ns = wikipedia.getSite().category_namespace()
         categoryPage = catlib.Category(wikipedia.getSite(), ns + ':' + pageName)
