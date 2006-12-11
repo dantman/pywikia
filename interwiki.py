@@ -675,8 +675,11 @@ class Subject(object):
         if nerr > 0 or globalvar.select:
 
             if config.interwiki_graph:
-                graphDrawer = interwiki_graph.GraphDrawer(self)
-                graphDrawer.createGraph()
+                try:
+                    graphDrawer = interwiki_graph.GraphDrawer(self)
+                    graphDrawer.createGraph()
+                except GraphImpossible:
+                    pass
 
             # We don't need to continue with the rest if we're in autonomous
             # mode.

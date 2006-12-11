@@ -1,6 +1,13 @@
 import threading
-import pydot
+pydotfound = True
+try:
+    import pydot
+except ImportError:
+    pydotfound = False
 import wikipedia, config
+
+class GraphImpossible(Exception):
+    "Drawing a graph is not possible on your system."
 
 class GraphSavingThread(threading.Thread):
     """
@@ -25,6 +32,8 @@ class GraphSavingThread(threading.Thread):
 
 class GraphDrawer:
     def __init__(self, subject):
+        if not pydotfound:
+            raise GraphImpossible
         self.graph = None
         self.subject = subject
 
