@@ -475,10 +475,10 @@ class Subject(object):
                                 # In this case only follow the redirect if we would have
                                 # followed an interwiki to that same page
                                 if pl3.title().lower()!=self.originPage.title().lower():
-                                    print "NOTE: Ignoring %s for %s in wiktionary mode"% (pl3, self.originPage)
+                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode"% (pl3, self.originPage))
                                     continue
                                 elif pl3.title() != self.originPage.title() and self.originPage.site().nocapitalize and pl3.site().nocapitalize:
-                                    print "NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized."% (pl3, self.originPage)
+                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized."% (pl3, self.originPage))
                                     continue
                             if self.conditionalAdd(pl3, counter, pl):
                                 if globalvar.shownew:
@@ -544,10 +544,10 @@ class Subject(object):
                             iw = ()
                     for page2 in iw:
                         if page2.site().language() in globalvar.neverlink:
-                            print("Skipping link %s to an ignored language"%page2)
+                            wikipedia.output(u"Skipping link %s to an ignored language"%page2)
                             continue
                         if page2 in globalvar.ignore:
-                            print("Skipping link %s to an ignored page"%page2)
+                            wikipedia.output(u"Skipping link %s to an ignored page"%page2)
                             continue                            
                         if globalvar.same=='wiktionary':
                             if page2.title().lower()!=self.originPage.title().lower():
@@ -556,7 +556,7 @@ class Subject(object):
                                 try:
                                     wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.originPage))
                                 except UnicodeDecodeError:
-                                    print("NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.originPage))
+                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.originPage))
                                 continue
                             elif page2.title() != self.originPage.title() and self.originPage.site().nocapitalize and page2.site().nocapitalize:
                                 wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized." % (page2, self.originPage))
@@ -1047,7 +1047,7 @@ class InterwikiBot(object):
         fs = self.firstSubject()
         if fs:
             wikipedia.output(u"NOTE: The first unfinished subject is " + fs.pl().aslink(True))
-        print "NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number)
+        wikipedia.output(u"NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number))
         for i in range(number):
             try:
                 while True:
