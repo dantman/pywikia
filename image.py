@@ -40,18 +40,20 @@ class ImageRobot:
     """
     # Summary messages for replacing images
     msg_replace={
-        'en':u'Robot - Replacing image %s with %s',
-        'he':u'רובוט - מחליף את התמונה %s בתמונה %s',
-        'lt':u'robotas: vaizdas %s keičiamas į %s',
-        'pt':u'Bot: Alterando imagem %s para %s',
+        'de': u'Bot: Ersetze Bild %s durch %s',
+        'en': u'Robot - Replacing image %s with %s',
+        'he': u'רובוט - מחליף את התמונה %s בתמונה %s',
+        'lt': u'robotas: vaizdas %s keičiamas į %s',
+        'pt': u'Bot: Alterando imagem %s para %s',
     }
 
     # Summary messages for removing images
     msg_remove={
-        'en':u'Robot - Removing image %s',
-        'he':u'רובוט - מסיר את התמונה %s',
-        'lt':u'robotas: Šalinamas vaizdas %s',
-        'pt':u'Bot: Alterando imagem %s',
+        'de': u'Bot: Entferne Bild %s',
+        'en': u'Robot - Removing image %s',
+        'he': u'רובוט - מסיר את התמונה %s',
+        'lt': u'robotas: Šalinamas vaizdas %s',
+        'pt': u'Bot: Alterando imagem %s',
     }
 
     def __init__(self, generator, oldImage, newImage = None, summary = '', always = False):
@@ -103,7 +105,7 @@ class ImageRobot:
         else:
             replacements.append((ImageRegex, ''))
 
-	#Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
+        #Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
         replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.always)
         replaceBot.run()
     
