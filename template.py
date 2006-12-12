@@ -328,8 +328,8 @@ def main():
 
     if extras:
         oldTemplate = []
-            for thisPage in old:
-                oldTemplate.append(wikipedia.Page(mysite, ns + ':' + thisPage))
+        for thisPage in old:
+            oldTemplate.append(wikipedia.Page(mysite, ns + ':' + thisPage))
     else:
         oldTemplate = wikipedia.Page(mysite, ns + ':' + old)
 
