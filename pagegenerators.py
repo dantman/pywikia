@@ -5,7 +5,7 @@ __version__='$Id$'
 
 # Standard library imports
 import re, codecs, sys
-import urllib
+import urllib, time
 
 # Application specific imports
 import wikipedia, date, catlib
@@ -147,9 +147,9 @@ class CategoryPartPageGenerator:
             self.path = self.site.get_address(self.category.urlname())
             if self.start:
                 self.path = self.path + '&from=%s'%urllib.quote(self.start)
-                wikipedia.output('Getting [[%s]] starting at %s...' % (self.category.title(), self.start))
+                wikipedia.output(u'Getting [[%s]] starting at %s...' % (self.category.title(), self.start))
             else:
-                wikipedia.output('Getting [[%s]...' % self.category.title())
+                wikipedia.output(u'Getting [[%s]...' % self.category.title())
             txt = self.site.getUrl(self.path)
             self_txt = txt
             # index where subcategory listing begins
@@ -232,8 +232,21 @@ class GoogleSearchPageGenerator:
         offset = 0
         estimatedTotalResultsCount = None
         while not estimatedTotalResultsCount or offset < estimatedTotalResultsCount:
-            wikipedia.output(u'Querying Google, offset %i' % offset) 
-            data = google.doGoogleSearch(query, start = offset, filter = False)
+            while (True):
+                # Google often yields 502 errors. 
+                try:
+                    wikipedia.output(u'Querying Google, offset %i' % offset)
+                    data = google.doGoogleSearch(query, start = offset, filter = False)
+                    break
+                except:
+                    # SOAPpy.Errors.HTTPError or SOAP.HTTPError (502 Bad Gateway)
+                    # can happen here, depending on the module used. It's not easy
+                    # to catch this properly because pygoogle decides which one of
+                    # the soap modules to use.
+                    wikipedia.output(u"An error occured. Retrying in 10 seconds...")
+                    time.sleep(10)
+                    continue
+
             for result in data.results:
                 #print 'DBG: ', result.URL
                 yield result.URL
