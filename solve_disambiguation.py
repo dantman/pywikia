@@ -241,7 +241,6 @@ ignore_title = {
             u'Gebruiker:Rex/Gestarte artikelen',
             u'Gebruiker:Ucucha/Doorverwijspagina',
             u'Gebruiker:CyeZ/Klad2',
-            u'Overleg gebruiker:.+rchief.*',
             u'Wikipedia:Te verwijderen.*',
             u'Gebruiker:IIVQ.*',
             u"Gebruiker:Rex/Meest storende doorverwijspagina's",
@@ -273,6 +272,7 @@ ignore_title = {
             u"Overleg gebruiker:.+[aA]rchief.*",
             u"Wikipedia:Wikiproject Roemeense gemeenten/Doorverwijspagina's",
             u"Gebruiker:Emiel/artikelen",
+            u"Wikipedia:Links naar doorverwijspagina's/20060917 dump",
          ],
         'pt': [
             u'Usuário:.+',
@@ -554,11 +554,11 @@ class DisambiguationRobot(object):
 
                     if not self.always:
                         if edited:
-                            choice = wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
-                                               "        q=quit, m=more context, l=list, a=add new, x=save in this form):")
+                            choice = wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink, q=quit\n"
+                                               "        m=more context, l=list, a=add new, x=save in this form):")
                         else:
-                            choice = wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink,\n"
-                                               "        q=quit, m=more context, d=show disambiguation page, l=list, a=add new):")
+                            choice = wikipedia.input(u"Option (#, r#, s=skip link, e=edit page, n=next page, u=unlink, q=quit\n"
+                                               "        m=more context, d=show disambiguation page, l=list, a=add new):")
                     else:
                         choice = self.always
                     if choice in ['a', 'A']:
