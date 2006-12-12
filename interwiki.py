@@ -85,9 +85,11 @@ This script understands various command-line arguments:
 
     -nobacklink:   switch off the backlink warnings
 
-    -start:        used as -start:pagename, specifies that the robot should
+    -start:        used as -start:title, specifies that the robot should
                    go alphabetically through all pages on the home wiki,
-                   starting at the named page.
+                   starting at the named page. If -start:title and -cat:category
+                   are both added, go through category category, but start
+                   alphabetically at pagename title instead of the beginning.
 
     -number:       used as -number:#, specifies that the robot should process
                    that amount of pages and then stop. This is only useful in
@@ -1461,11 +1463,7 @@ if __name__ == "__main__":
                 # old generator is used up, create a new one
                 hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace)])
 
-        if start:
-            namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
-            start = wikipedia.Page(wikipedia.getSite(), start).titleWithoutNamespace()
-            hintlessPageGen = pagegenerators.AllpagesPageGenerator(start, namespace)
-        elif referredPageTitle:
+        if referredPageTitle:
             referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
             hintlessPageGen = pagegenerators.ReferringPageGenerator(referredPage)
         elif linkingPageTitle:
@@ -1473,11 +1471,19 @@ if __name__ == "__main__":
             hintlessPageGen = pagegenerators.LinkedPageGenerator(linkingPage)
         elif categoryName:
             cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
-            hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat, recurse = catrecurse)
+            if start:
+                hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat, recurse = catrecurse, start = start)
+            else:
+                hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat, recurse = catrecurse)
         elif workNew:
             if not number:
                 number = config.special_page_limit 
             hintlessPageGen = pagegenerators.NewpagesPageGenerator(number = number)
+        elif start:
+            namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
+            start = wikipedia.Page(wikipedia.getSite(), start).titleWithoutNamespace()
+            hintlessPageGen = pagegenerators.AllpagesPageGenerator(start, namespace)
+
 
         if hintlessPageGen:
             # we'll use iter() to create make a next() function available.
