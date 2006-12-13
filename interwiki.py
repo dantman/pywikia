@@ -546,10 +546,10 @@ class Subject(object):
                             iw = ()
                     for page2 in iw:
                         if page2.site().language() in globalvar.neverlink:
-                            wikipedia.output(u"Skipping link %s to an ignored language"%page2)
+                            wikipedia.output(u"Skipping link %s to an ignored language" % page2.aslink())
                             continue
                         if page2 in globalvar.ignore:
-                            wikipedia.output(u"Skipping link %s to an ignored page"%page2)
+                            wikipedia.output(u"Skipping link %s to an ignored page" % page2.aslink())
                             continue                            
                         if globalvar.same=='wiktionary':
                             if page2.title().lower()!=self.originPage.title().lower():
