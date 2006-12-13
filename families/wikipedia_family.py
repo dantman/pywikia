@@ -23,7 +23,7 @@ class Family(family.Family):
             'zh-tw':'zh.wikipedia.org'
             }
         for lang in self.knownlanguages:
-	    if lang not in self.langs:
+            if lang not in self.langs:
                 self.langs[lang] = lang+'.wikipedia.org'
 
         # Override defaults
@@ -299,12 +299,12 @@ class Family(family.Family):
             'da':  [u'Flertydig'],
             'de':  [u'Begriffsklärung', u'BKL', u'Disambig'],
             'el':  [u'Disambig', u'Αποσαφ'],
-            'en':  [u'Disambig', u'Disambiguation', u'LND', u'2CC', u'2LC',
-                    u'2LCdisambig', u'3LC', u'4CC', u'4LC', u'4LA', u'TLAdisambig',
-                    u'Acrocandis', u'Albumdis', u'Hndis', u'Numberdis',
-                    u'Roadis', u'Geodis', u'Hurricanedis', u'Interstatedis',
-                    u'Listdis', u'Townshipdis', u'Dab', u'Disambig-cleanup',
-                    u'Disamb', u'Schooldis', u'Shipindex'],
+            'en':  [u'Disambig', u'Disambiguation', u'2CC', u'2LC',
+                    u'2LCdisambig', u'3LC', u'4CC', u'4LC', u'4LA',
+                    u'5CC', u'TLAdisambig', u'Hndis', u'Numberdis',
+                    u'Roadis', u'Roaddis', u'Geodis',
+                    u'Dab', u'Disambig-cleanup', u'Disamb',
+                    u'Schooldis', u'Shipindex', u'Songdis'],
             'eo':  [u'Apartigilo',u'Disambig'],
             'es':  [u'Desambiguacion', u'Desambiguación', u'Desambig', u'Disambig',u'Des'],
             'et':  [u'Täpsustuslehekülg', u'Täpsustus', u'Disambig'],
