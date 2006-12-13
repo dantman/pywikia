@@ -10,33 +10,38 @@ language (standard language in Commons). If the name of
 an article in Commons will not be in English but with
 redirect, this also functions.
 
-Command-line arguments:
+Run:
+Syntax: python commons_link.py action [-option]
 
-    -cat           Work on all pages which are in a specific category.
-                   Argument can also be given as "-cat:categoryname".
+where action can be one of these:
+ * page     : Run over articles, include {{commons}}
+ * category : Run over categories, include {{commonscat}}
 
-    -ref           Work on all pages that link to a certain page.
-                   Argument can also be given as "-ref:referredpagetitle".
+and option can be one of these:
+ * -cat     : Work on all pages which are in a specific category.
+ * -ref     : Work on all pages that link to a certain page.
+ * -link    : Work on all pages that are linked from a certain page.
+ * -start   : Work on all pages on the home wiki, starting at the named page.
+ * -page    : Work on one page.
 
-    -link          Work on all pages that are linked from a certain page.
-                   Argument can also be given as "-link:linkingpagetitle".
-
-    -start         Work on all pages on the home wiki, starting at the named page.
-                   
-Single pages use: commons_link.py article
-
+TODO: input template before categories and interwikis.
 """
+#
+# (C) Leonardo Gregianin, 2006
 #
 # Distributed under the terms of the MIT license.
 #
 
 __version__='$Id$'
 
-import wikipedia, pagegenerators
+import wikipedia, pagegenerators, catlib
 import re
 
-comment = {
+comment1 = {
     'en':'Robot: Include commons template'
+    }
+comment2 = {
+    'en':'Robot: Include commonscat template'
     }
 
 class CommonsLinkBot:
@@ -44,14 +49,13 @@ class CommonsLinkBot:
         self.generator = generator
         self.acceptall = acceptall
             
-    def run(self):
+    def pages(self):
         for page in self.generator:
             try:
                 wikipedia.output(u'\n>>>> %s <<<<' % page.title())
                 commons = wikipedia.Site('commons', 'commons')
                 commonspage = wikipedia.Page(commons, page.title())
                 try:
-                    getcommons = commonspage.get(get_redirect=True)
                     if page.title() == commonspage.title():
                         oldText = page.get()
                         text = oldText
@@ -64,7 +68,6 @@ class CommonsLinkBot:
                         if s or s2:
                             wikipedia.output(u'** Already done.')
                         else:
-                            # TODO: input template before categories and interwikis
                             text = (text+'{{commons|{{subst:PAGENAME}}}}')
                             if oldText != text:
                                 wikipedia.showDiff(oldText, text)
@@ -74,7 +77,7 @@ class CommonsLinkBot:
                                         self.acceptall = True
                                 if self.acceptall or choice in ['y', 'Y']:
                                     try:
-                                        msg = wikipedia.translate(wikipedia.getSite(), comment)
+                                        msg = wikipedia.translate(wikipedia.getSite(), comment1)
                                         page.put(text, msg)
                                     except wikipedia.EditConflict:
                                         wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
@@ -88,41 +91,87 @@ class CommonsLinkBot:
                 wikipedia.output(u'Page %s is a redirect; skipping.' % page.title())
             except wikipedia.LockedPage:
                 wikipedia.output(u'Page %s is locked?!' % page.title())
+                
+    def categories(self):
+        for page in self.generator:
+            try:
+                wikipedia.output(u'\n>>>> %s <<<<' % page.title())
+                getCommons = wikipedia.Site('commons', 'commons')
+                commonsCategory = catlib.Category(getCommons,'Category:%s'%page.title())
+                try:
+                    commonsCategoryTitle = commonsCategory.title()
+                    categoryname = commonsCategoryTitle.split('Category:',1)[1]
+                    if page.title() == categoryname:
+                        oldText = page.get()
+                        text = oldText
 
-def main():
+                        # find commonscat template
+                        findTemplate=re.compile(ur'\{\{[Cc]ommonscat')
+                        s = findTemplate.search(text)
+                        if s:
+                            wikipedia.output(u'** Already done.')
+                        else:
+                            text = (text+'{{commonscat|{{subst:PAGENAME}}}}')
+                            if oldText != text:
+                                wikipedia.showDiff(oldText, text)
+                                if not self.acceptall:
+                                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                                    if choice in ['a', 'A']:
+                                        self.acceptall = True
+                                if self.acceptall or choice in ['y', 'Y']:
+                                    try:
+                                        msg = wikipedia.translate(wikipedia.getSite(), comment2)
+                                        page.put(text, msg)
+                                    except wikipedia.EditConflict:
+                                        wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
+                            
+                except wikipedia.NoPage:
+                    wikipedia.output(u'Category does not exist in Commons!')
+                    
+            except wikipedia.NoPage:
+                wikipedia.output(u'Page %s does not exist?!' % page.title())
+            except wikipedia.IsRedirectPage:
+                wikipedia.output(u'Page %s is a redirect; skipping.' % page.title())
+            except wikipedia.LockedPage:
+                wikipedia.output(u'Page %s is locked?!' % page.title())
+
+if __name__ == "__main__":
     singlepage = []
     gen = None
     start = None
-    
-    for arg in wikipedia.handleArgs():
-        if arg.startswith('-start:'):
-            start = wikipedia.Page(wikipedia.getSite(),arg[7:])
-            gen = pagegenerators.AllpagesPageGenerator(start.titleWithoutNamespace(),namespace=start.namespace())
-        elif arg.startswith('-cat:'):
-            import catlib
-            cat = catlib.Category(wikipedia.getSite(),'Category:%s'%arg[5:])
-            gen = pagegenerators.CategorizedPageGenerator(cat)
-        elif arg.startswith('-ref:'):
-            ref = wikipedia.Page(wikipedia.getSite(), arg[5:])
-            gen = pagegenerators.ReferringPageGenerator(ref)
-        elif arg.startswith('-link:'):
-            link = wikipedia.Page(wikipedia.getSite(), arg[6:])
-            gen = pagegenerators.LinkedPageGenerator(link)
-        else:
-            singlepage.append(arg)
-
-    if singlepage:
-        page = wikipedia.Page(wikipedia.getSite(), ' '.join(singlepage))
-        gen = iter([page])
-    if not gen:
-        wikipedia.showHelp(u'commons_link')
-    else:
-        preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = CommonsLinkBot(preloadingGen, acceptall=False)
-        bot.run()
-                
-if __name__ == '__main__':
     try:
-        main()
+        action = None
+        for arg in wikipedia.handleArgs():
+            if arg == ('pages'):
+                action = 'pages'
+            elif arg == ('categories'):
+                action = 'categories'
+            elif arg.startswith('-start:'):
+                start = wikipedia.Page(wikipedia.getSite(),arg[7:])
+                gen = pagegenerators.AllpagesPageGenerator(start.titleWithoutNamespace(),namespace=start.namespace())
+            elif arg.startswith('-cat:'):
+                cat = catlib.Category(wikipedia.getSite(),'Category:%s'%arg[5:])
+                gen = pagegenerators.CategorizedPageGenerator(cat)
+            elif arg.startswith('-ref:'):
+                ref = wikipedia.Page(wikipedia.getSite(), arg[5:])
+                gen = pagegenerators.ReferringPageGenerator(ref)
+            elif arg.startswith('-link:'):
+                link = wikipedia.Page(wikipedia.getSite(), arg[6:])
+                gen = pagegenerators.LinkedPageGenerator(link)
+            elif arg.startswith('-page:'):
+                singlepage = wikipedia.Page(wikipedia.getSite(), arg[6:])
+                gen = iter([singlepage])
+
+        if action == 'pages':
+            preloadingGen = pagegenerators.PreloadingGenerator(gen)
+            bot = CommonsLinkBot(preloadingGen, acceptall=False)
+            bot.pages()
+        elif action == 'categories':
+            preloadingGen = pagegenerators.PreloadingGenerator(gen)
+            bot = CommonsLinkBot(preloadingGen, acceptall=False)
+            bot.categories()
+        else:
+            wikipedia.showHelp(u'commons_link')
+                
     finally:
         wikipedia.stopme()
