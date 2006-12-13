@@ -311,7 +311,7 @@ class Family(family.Family):
             'eu':  [u'Argipen', u'Disambig'],
             'fa':  [u'ابهام‌زدایی'],
             'fi':  [u'Täsmennyssivu', u'Disambig'],
-            'fr':  [u'Homonymie',u'Paronymie'],
+            'fr':  [u'Homonymie', u'Homonymie dynastique', u'Paronymie'],
             'frp': [u'Homonimos'],
             'fy':  [u'Tfs',u'Neibetsjuttings'],
             'ga':  [u'Idirdhealú', u'Disambig'],
