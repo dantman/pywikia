@@ -14,8 +14,8 @@ Run:
 Syntax: python commons_link.py action [-option]
 
 where action can be one of these:
- * page     : Run over articles, include {{commons}}
- * category : Run over categories, include {{commonscat}}
+ * pages      : Run over articles, include {{commons}}
+ * categories : Run over categories, include {{commonscat}}
 
 and option can be one of these:
  * -cat     : Work on all pages which are in a specific category.
@@ -161,6 +161,8 @@ if __name__ == "__main__":
             elif arg.startswith('-page:'):
                 singlepage = wikipedia.Page(wikipedia.getSite(), arg[6:])
                 gen = iter([singlepage])
+            #else:
+                #bug
 
         if action == 'pages':
             preloadingGen = pagegenerators.PreloadingGenerator(gen)
