@@ -49,6 +49,7 @@ msg_double={
     'hr':u'Bot: Popravak dvostrukih preusmjeravanja',
     'ia':u'Robot: reparation de duple redirection',
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
+    'ksh':u'Bot: Dubbel Ömlëijdong fottjemaat',
     'lt':u'robotas: Taisomas dvigubas peradresavimas',
     'pt':u'Bot: Corrigido duplo redirecionamento',
     'sr':u'Бот: Поправка дуплих преусмерења',
@@ -61,6 +62,7 @@ reason_broken={
     'fr':u'Robot : Cible du redirect inexistante',
     'he':u'רובוט: יעד ההפניה אינו קיים',
     'ia':u'Robot: Scopo del redirection non existe',
+    'ksh':u'Bot: Dė Ömlëijdong jingk ennet Liiere',
     'lt':u'robotas: Peradresavimas į niekur',
     'pt':u'Bot: Redirecionamento não existe',
     'sr':u'Бот: Преусмерење не постоји',
@@ -289,3 +291,5 @@ try:
 finally:
     wikipedia.stopme()
 
+
+ 	  	 

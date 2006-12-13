@@ -47,6 +47,7 @@ msg={
     'he': u'ייבוא ערכים אוטומטי',
     'ia': u'Importation automatic de articulos',
     'it': u'Caricamento automatico',
+    'ksh': u'Automatesch aanjelaat',
     'nl': u'Geautomatiseerde import',
     'pt': u'Importação automática de artigos'
     }
@@ -55,17 +56,20 @@ msg={
 msg_top={
     'en': u'append on top',
     'he': u'הצמד בהתחלה',
-    'it': u'aggiungo in cima'
+    'it': u'aggiungo in cima',
+    'ksh': u'Automatesch füürjesaz'
     }
 msg_bottom={
     'en': u'append on bottom',
     'he': u'הצמד בסוף',
-    'it': u'aggiungo in fondo'
+    'it': u'aggiungo in fondo',
+    'ksh': u'Automatesch aanjehange'
     }
 msg_force={
     'en': u'existing text overwritten',
     'he': u'הטקסט הקיים נדרס',
-    'it': u'sovrascritto il testo esistente'
+    'it': u'sovrascritto il testo esistente',
+    'ksh': u'Automatesch ußjetuusch'
     }
 
 # Adapt these to the file you are using. 'starttext' and 'endtext' are
@@ -173,3 +177,5 @@ except:
 else:
     wikipedia.stopme()
 
+
+ 	  	 
