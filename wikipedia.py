@@ -1512,11 +1512,13 @@ class Page(object):
                 output(data)
                 return False
 
-    def delete(self, reason = None, prompt = True):
+    def delete(self, reason = None, prompt = True, throttle = False):
         """Deletes the page from the wiki. Requires administrator status. If
            reason is None, asks for a reason. If prompt is True, asks the user
            if he wants to delete the page.
         """
+	if throttle:
+		put_throttle()
         if reason == None:
             reason = input(u'Please enter a reason for the deletion:')
         reason = reason.encode(self.site().encoding())

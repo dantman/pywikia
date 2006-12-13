@@ -79,7 +79,7 @@ class DeletionRobot:
         #Loop through everything in the page generator and delete it.
         for page in self.generator:
             wikipedia.output(u'Processing page %s' % page.title())
-            page.delete(self.summary, not self.always)
+            page.delete(self.summary, not self.always, throttle=True)
     
 def main():
     pageName = ''
