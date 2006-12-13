@@ -44,6 +44,15 @@ import re, sys, getpass
 import httplib, urllib2
 import wikipedia, config
 
+# On some wikis you are only allowed to run a bot if there is a link to
+# the bot's user page in a specific list.
+botList = {
+    'wikipedia': {
+        'en': u'Wikipedia:Registered bots',
+        'simple': u'Wikipedia:Bots',
+    },
+}
+
 def makepath(path):
     """ creates missing directories for the given path and
         returns a normalized absolute version of the path.
@@ -81,13 +90,16 @@ class LoginManager:
 
     def botAllowed(self):
         """
-        Checks whether the bot is listed on Wikipedia:Registered bots to comply with
-        the policy on the English and the Simple English Wikipedia.
+        Checks whether the bot is listed on a specific page to comply with
+        the policy on the respective wiki.
         """
-        if self.site in (wikipedia.getSite('en', 'wikipedia'), wikipedia.getSite('simple', 'wikipedia')):
-            pl = wikipedia.Page(self.site, "Wikipedia:Registered bots")
-            text = pl.get()
-            return "[[user:%s" % self.username.lower() in text.lower()
+        if botList.has_key(self.site.family.name) and botList[self.site.family.name].has_key(self.site.language()):
+            botListPageTitle = botList[self.site.family.name][self.site.language()]
+            botListPage = wikipedia.Page(self.site, botListPageTitle)
+            for linkedPage in botListPage.linkedPages():
+                if linkedPage.titleWithoutNamespace() == self.username:
+                    return True
+            return False
         else:
             # No bot policies on other 
             return True
