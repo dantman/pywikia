@@ -55,6 +55,7 @@ class CommonsLinkBot:
                 commons = wikipedia.Site('commons', 'commons')
                 commonspage = wikipedia.Page(commons, page.title())
                 try:
+                    getcommons = commonspage.get(get_redirect=True)
                     if page.title() == commonspage.title():
                         oldText = page.get()
                         text = oldText
@@ -98,6 +99,7 @@ class CommonsLinkBot:
                 getCommons = wikipedia.Site('commons', 'commons')
                 commonsCategory = catlib.Category(getCommons,'Category:%s'%page.title())
                 try:
+                    getcommonscat = commonsCategory.get(get_redirect=True)
                     commonsCategoryTitle = commonsCategory.title()
                     categoryname = commonsCategoryTitle.split('Category:',1)[1]
                     if page.title() == categoryname:
