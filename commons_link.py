@@ -24,7 +24,6 @@ and option can be one of these:
  * -start   : Work on all pages on the home wiki, starting at the named page.
  * -page    : Work on one page.
 
-TODO: input template before categories and interwikis.
 """
 #
 # (C) Leonardo Gregianin, 2006
@@ -68,7 +67,7 @@ class CommonsLinkBot:
                         if s or s2:
                             wikipedia.output(u'** Already done.')
                         else:
-                            text = (text+'{{commons|{{subst:PAGENAME}}}}')
+                            text = wikipedia.replaceCategoryLinks(text+u'{{commons|{{subst:PAGENAME}}}}', page.categories()) 
                             if oldText != text:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
@@ -111,7 +110,7 @@ class CommonsLinkBot:
                         if s:
                             wikipedia.output(u'** Already done.')
                         else:
-                            text = (text+'{{commonscat|{{subst:PAGENAME}}}}')
+                            text = wikipedia.replaceCategoryLinks(text+u'{{commonscat|{{subst:PAGENAME}}}}', page.categories()) 
                             if oldText != text:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
