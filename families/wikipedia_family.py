@@ -300,7 +300,7 @@ class Family(family.Family):
             'de':  [u'Begriffsklärung', u'BKL', u'Disambig'],
             'el':  [u'Disambig', u'Αποσαφ'],
             'en':  [u'Disambig', u'Disambiguation', u'2CC', u'2LC',
-                    u'2LCdisambig', u'3LC', u'4CC', u'4LC', u'4LA',
+                    u'2LCdisambig', u'3CC', u'3LC', u'4CC', u'4LC', u'4LA',
                     u'5CC', u'TLAdisambig', u'Hndis', u'Numberdis',
                     u'Roadis', u'Roaddis', u'Geodis',
                     u'Dab', u'Disambig-cleanup', u'Disamb',
