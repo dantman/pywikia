@@ -338,10 +338,7 @@ class Subject(object):
         # start with an empty list for it.
         self.foundIn = {self.originPage:[]}
         self.translate(hints)
-        if globalvar.confirm:
-            self.confirm = True
-        else:
-            self.confirm = False
+        self.confirm = globalvar.confirm
         self.problemfound = False
         self.untranslated = None
         self.hintsasked = False
@@ -617,7 +614,7 @@ class Subject(object):
                 t = globalvar.showtextlink
                 if t:
                     wikipedia.output(page.get()[:t])
-                while 1:
+                while True:
                     newhint = wikipedia.input(u'Give a hint (? to see pagetext):')
                     if newhint == '?':
                         t += globalvar.showtextlinkadd
@@ -1165,47 +1162,42 @@ class InterwikiBot(object):
         return self.maxOpenSite()
     
     def oneQuery(self):
-        """Perform one step in the solution process"""
+        """
+        Perform one step in the solution process.
+
+        Returns True if pages could be preloaded, or false
+        otherwise.
+        """
         # First find the best language to work on
         site = self.selectQuerySite()
         if site == None:
             print "NOTE: Nothing left to do"
             return False
         # Now assemble a reasonable list of pages to get
-        group = []
-        plgroup = []
-        for subj in self.subjects:
+        subjectGroup = []
+        pageGroup = []
+        for subject in self.subjects:
             # Promise the subject that we will work on the site
             # We will get a list of pages we can do.
-            x = subj.willWorkOn(site)
-            if x:
-                plgroup.extend(x)
-                group.append(subj)
-                if len(plgroup)>=globalvar.maxquerysize:
+            pages = subject.willWorkOn(site)
+            if pages:
+                pageGroup.extend(pages)
+                subjectGroup.append(subject)
+                if len(pageGroup) >= globalvar.maxquerysize:
+                    # We have found enough pages to fill the bandwidth.
                     break
-        if len(plgroup) == 0:
+        if len(pageGroup) == 0:
             print "NOTE: Nothing left to do 2"
             return False
         # Get the content of the assembled list in one blow
-        retryCount = 2
-        timeout = 30
-        while True:
-            try:
-                wikipedia.getall(site, plgroup)
-            except wikipedia.SaxError:
-                if retryCount > 0:
-                    retryCount = retryCount - 1
-                    wikipedia.output(u'Sleeping %i seconds before trying again.' % timeout)
-                    time.sleep(timeout)
-                    timeout = timeout * 2
-                else:
-                    # Ignore this error, and get the pages the traditional way.
-                    break
-            else:
-                break
+        gen = pagegenerators.PreloadingGenerator(iter(pageGroup))
+        for page in gen:
+            # we don't want to do anything with them now. The
+            # page contents will be read via the Subject class.
+            pass
         # Tell all of the subjects that the promised work is done
-        for subj in group:
-            subj.workDone(self)
+        for subject in subjectGroup:
+            subject.workDone(self)
         return True
         
     def queryStep(self):
@@ -1317,6 +1309,7 @@ if __name__ == "__main__":
         for arg in sys.argv[1:]:
             # This code needs to be cleaned up to allow file name passage, and documented at the top
             if arg == "-mult":
+                # WTF is this? Can we kick it out? --Daniel
                 f = file("codelist.txt")
                 lang = f.readline().strip()
                 if len(lang) < 2:
