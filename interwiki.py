@@ -403,7 +403,8 @@ class Subject(object):
         for page in self.todo:
             if page.site() == site:
                 self.pending.append(page)
-                self.todo.remove(page)
+        for page in self.pending:
+            self.todo.remove(page)
         # If there are any, return them. Otherwise, nothing is in progress.
         return self.pending
 
