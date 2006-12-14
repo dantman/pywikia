@@ -19,6 +19,8 @@ Command-line arguments:
     -prefix        Automatic move pages in specific page with prefix name of the pages.
                    Argument can also be given as "-prefix:Python/Pywikipediabot/".
 
+    -new           Work on the most recent new pages on the wiki.
+
     -del           Argument can be given also together with other arguments,
                    its functionality is delete old page that was moved.
                    For example: "movepages.py Helen_Keller -del".
@@ -58,7 +60,7 @@ class MovePagesWithPrefix:
         pagemove = wikipedia.output(u'%s%s' % (prefix, page))
         titleroot = wikipedia.Page(wikipedia.getSite(), page)
         msg = wikipedia.translate(wikipedia.getSite(), comment)
-        titleroot.move(pagemove, msg)
+        titleroot.move(pagemove, msg, throttle=True)
         if delete == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), page)
             deletemsg = wikipedia.translate(wikipedia.getSite(), deletecomment)
@@ -86,7 +88,7 @@ class MovePagesBot:
         pagemove = wikipedia.input(u'New page name:')
         titleroot = wikipedia.Page(wikipedia.getSite(), pagemove)
         msg = wikipedia.translate(wikipedia.getSite(), comment)
-        titleroot.move(pagemove, msg)
+        titleroot.move(pagemove, msg, throttle=True)
         if delete == True:
             pagedel = wikipedia.Page(wikipedia.getSite(), page)
             deletemsg = wikipedia.translate(wikipedia.getSite(), deletecomment)
@@ -100,7 +102,7 @@ class MovePagesBot:
         if ask2 in ['y', 'Y']:
             titleroot = wikipedia.Page(wikipedia.getSite(), page)
             msg = wikipedia.translate(wikipedia.getSite(), comment)
-            titleroot.move(pagemove, msg)
+            titleroot.move(pagemove, msg, throttle=True)
             if delete == True:
                 pagedel = wikipedia.Page(wikipedia.getSite(), page)
                 deletemsg = wikipedia.translate(wikipedia.getSite(), deletecomment)
@@ -137,7 +139,7 @@ def main():
     
     for arg in wikipedia.handleArgs():
         if arg.startswith('-cat:'):
-            cat = catlib.Category(wikipedia.getSite(), arg[5:])
+            cat = catlib.Category(wikipedia.getSite(), 'Category:%s'%arg[5:])
             gen = pagegenerators.CategorizedPageGenerator(cat)
         elif arg.startswith('-ref:'):
             ref = wikipedia.Page(wikipedia.getSite(), arg[5:])
@@ -148,6 +150,10 @@ def main():
         elif arg.startswith('-start:'):
             start = wikipedia.Page(wikipedia.getSite(),arg[7:])
             gen = pagegenerators.AllpagesPageGenerator(start.titleWithoutNamespace(),namespace=start.namespace())
+        elif arg.startswith('-new'):
+            if not number:
+                number = config.special_page_limit
+            gen = pagegenerators.NewpagesPageGenerator(number)
         elif arg == '-del':
             delete = True
         elif arg.startswith('-prefix:'):
