@@ -14,10 +14,6 @@ This script understands various command-line arguments:
                    like removing a language because none of the found
                    alternatives actually exists.
 
-    -always:       make changes even when a single byte is changed in
-                   the page, not only when one of the links has a significant
-                   change.
-
     -hint:         used as -hint:de:Anweisung to give the robot a hint
                    where to start looking for translations. This is only
                    useful if you specify a single page to work on. If no
@@ -52,7 +48,7 @@ This script understands various command-line arguments:
                    identical to the original. Also, if the title is not
                    capitalized, it will only go through other wikis without
                    automatic capitalization.
-                   
+
     -askhints:     for each page one or more hints are asked. See hint: above
                    for the format, one can for example give "en:something" or
                    "20:" as hint.
@@ -68,7 +64,7 @@ This script understands various command-line arguments:
 
     -file:         used as -file:filename, read a list of pages to treat
                    from the named file
-                   
+
     -confirm:      ask for confirmation before any page is changed on the
                    live wiki. Without this argument, additions and
                    unambiguous modifications are made without confirmation.
@@ -296,7 +292,6 @@ msg = {
 class Global(object):
     """Container class for global settings.
        Use of globals outside of this is to be avoided."""
-    always = False
     autonomous = False
     backlink = config.interwiki_backlink
     confirm = False
@@ -331,17 +326,22 @@ class Subject(object):
            plus optionally a list of hints for translation"""
         # Remember the "origin page"
         self.originPage = originPage
+        # todo is a list of all pages that still need to be analyzed.
         # Mark the origin page as todo.
-        self.todo = {originPage:originPage.site()}
-        # Nothing has been done yet
-        self.done = {}
-        # Add the translations given in the hints.
+        self.todo = [originPage]
+        # done is a list of all pages that have been analyzed and that
+        # are known to belong to this subject.
+        self.done = []
+        # foundIn is a dictionary where pages are keys and lists of
+        # pages are values. It stores where we found each page.
+        # As we haven't yet found a page that links to the origin page, we
+        # start with an empty list for it.
         self.foundIn = {self.originPage:[]}
         self.translate(hints)
         if globalvar.confirm:
-            self.confirm = 1
+            self.confirm = True
         else:
-            self.confirm = 0
+            self.confirm = False
         self.problemfound = False
         self.untranslated = None
         self.hintsasked = False
@@ -353,7 +353,7 @@ class Subject(object):
         first one will be returned.
         Otherwise, None will be returned.
         """
-        for page in self.pending + self.done.keys():
+        for page in self.pending + self.done:
             if page.site() == site:
                 if page.exists() and page.isDisambig():
                     return page
@@ -366,7 +366,7 @@ class Subject(object):
         first one will be returned.
         Otherwise, None will be returned.
         """
-        for page in self.pending + self.done.keys():
+        for page in self.pending + self.done:
             if page.site() == site:
                 if page.exists and not not page.isDisambig():
                     return page
@@ -383,26 +383,26 @@ class Subject(object):
         else:
             titletranslate.translate(self.originPage, arr, hints = hints, auto = globalvar.auto)
         for page in arr.iterkeys():
-            self.todo[page] = page.site()
+            self.todo.append(page)
             self.foundIn[page] = [None]
 
     def openSites(self):
         """Return a list of sites for all things we still need to do"""
-        return self.todo.values()
+        return [page.site() for page in self.todo] # TODO: remove duplicates
 
     def willWorkOn(self, site):
         """By calling this method, you 'promise' this instance that you will
            work on any todo items for the wiki indicated by 'site'. This routine
            will return a list of pages that can be treated."""
         # Bug-check: Isn't there any work still in progress?
-        if hasattr(self,'pending'):
-            raise 'Cant start on %s; still working on %s'%(repr(site),self.pending)
+        if hasattr(self, 'pending'):
+            raise 'Can\'t start on %s; still working on %s'%(repr(site),self.pending)
         # Prepare a list of suitable pages
         self.pending=[]
-        for page in self.todo.keys():
+        for page in self.todo:
             if page.site() == site:
                 self.pending.append(page)
-                del self.todo[page]
+                self.todo.remove(page)
         # If there are any, return them. Otherwise, nothing is in progress.
         if self.pending:
             return self.pending
@@ -426,7 +426,7 @@ class Subject(object):
             return False
         else:
             self.foundIn[page] = [linkingPage]
-            self.todo[page] = page.site()
+            self.todo.append(page)
             counter.plus(page.site())
             return True
 
@@ -522,7 +522,7 @@ class Subject(object):
         # Loop over all the pages that should have been taken care of
         for page in self.pending:
             # Mark the page as done
-            self.done[page] = page.site()
+            self.done.append(page)
 
             # make sure that none of the linked items is an auto item
             if globalvar.skipauto:
@@ -552,7 +552,7 @@ class Subject(object):
                         # In this case we can also stop all hints!
                         for page2 in self.todo:
                             counter.minus(page2.site())
-                        self.todo = {}
+                        self.todo = []
                         pass
                     elif not globalvar.followredirect:
                         print "NOTE: not following redirects."
@@ -569,8 +569,8 @@ class Subject(object):
                         # Huh? I don't understand this. --Daniel
                         for page2 in self.todo:
                             counter.minus(page2.site())
-                        self.todo = {}
-                        self.done = {} # In some rare cases it might be we already did check some 'automatic' links
+                        self.todo = []
+                        self.done = [] # In some rare cases it might be we already did check some 'automatic' links
                         pass
                 #except wikipedia.SectionError:
                 #    wikipedia.output(u"NOTE: section %s does not exist" % page.aslink())
@@ -578,7 +578,7 @@ class Subject(object):
                     (skip, alternativePage) = self.disambigMismatch(page)
                     if skip:
                         wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
-                        del self.done[page]
+                        self.done.remove(page)
                         iw = ()
                         if alternativePage:
                             # add the page that was entered by the user
@@ -592,7 +592,7 @@ class Subject(object):
                     elif page.isEmpty() and not page.isCategory():
                         wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
                         # Ignore the interwiki links
-                        del self.done[page]
+                        self.done.remove(page)
                         iw = ()
                     for linkedPage in iw:
                         if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage) or self.wiktionaryMismatch(linkedPage)):
@@ -631,7 +631,7 @@ class Subject(object):
                         arr = {}
                         titletranslate.translate(page, arr, hints = [newhint], auto = globalvar.auto)
                         for page2 in arr.iterkeys():
-                            self.todo[page2] = page2.site()
+                            self.todo.append(page2)
                             counter.plus(page2.site())
                             self.foundIn[page2] = [None]
                             
@@ -643,7 +643,7 @@ class Subject(object):
     def problem(self, txt):
         """Report a problem with the resolution of this subject."""
         wikipedia.output(u"ERROR: %s" % txt)
-        self.confirm += 1
+        self.confirm = True
         self.problemfound = True
         if globalvar.autonomous:
             try:
@@ -674,7 +674,7 @@ class Subject(object):
         mysite = wikipedia.getSite()
         
         new = {}
-        for page in self.done.keys():
+        for page in self.done:
             site = page.site()
             if site == mysite and page.exists() and not page.isRedirectPage():
                 if page != self.originPage:
@@ -923,7 +923,7 @@ class Subject(object):
             # Re-Check what needs to get done
             mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
 
-        if not mods and not globalvar.always:
+        if not mods:
             wikipedia.output(u'No changes needed' )
         else:
             if mods:
@@ -1040,6 +1040,11 @@ class InterwikiBot(object):
     def __init__(self):
         """Constructor. We always start with empty lists."""
         self.subjects = []
+        # We count how many pages still need to be loaded per site.
+        # This allows us to find out from which site to retrieve pages next
+        # in a way that saves bandwidth.
+        # sites are keys, integers are values. 
+        # Modify this only via plus() and minus()!
         self.counts = {}
         self.pageGenerator = None
         self.generated = 0
@@ -1131,7 +1136,7 @@ class InterwikiBot(object):
     def selectQuerySite(self):
         """Select the site the next query should go out for."""
         # How many home-language queries we still have?
-        mycount = self.counts.get(wikipedia.getSite(),0)
+        mycount = self.counts.get(wikipedia.getSite(), 0)
         # Do we still have enough subjects to work on for which the
         # home language has been retrieved? This is rough, because
         # some subjects may need to retrieve a second home-language page!
@@ -1216,7 +1221,7 @@ class InterwikiBot(object):
         """Check whether there is still more work to do"""
         return len(self) == 0 and self.pageGenerator is None
 
-    def plus(self, site): 
+    def plus(self, site):
         """This is a routine that the Subject class expects in a counter"""
         try:
             self.counts[site] += 1
@@ -1338,8 +1343,6 @@ if __name__ == "__main__":
                     hints.append(arg[6:])
                 elif arg == '-force':
                     globalvar.force = True
-                elif arg == '-always':
-                    globalvar.always = True
                 elif arg == '-same':
                     globalvar.same = True
                 elif arg == '-wiktionary':
