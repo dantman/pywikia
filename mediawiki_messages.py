@@ -12,9 +12,14 @@ reloaded automatically once a month.
 Syntax: python mediawiki_messages [-all] [-debug]
 
 Command line options:
-    -all  -  Reloads messages for all wikis where messages are already present
-    -debug  -  Shows example messages after loading
-    -home  -  Reloads messages for the 'mylang'-language
+    -refresh - Reloads messages for the home wiki or for the one defined via
+               the -lang and -family parameters.
+
+    -all     - Reloads messages for all wikis where messages are already present
+
+    If another parameter is given, it will be interpreted as a MediaWiki key.
+    The script will then output the respective value, without refreshing..
+    
 """
 
 # (C) Daniel Herding, 2004
@@ -156,23 +161,26 @@ def refresh_all_messages():
 def main():
     debug = False
     refresh_all = False
+    refresh = False
+    key = None
     for arg in sys.argv[1:]:
         arg = wikipedia.argHandler(arg, 'mediawiki_messages')
         if arg:
-            if arg == '-debug':
-                debug = True
-            elif arg == '-all':
+            if arg == '-all':
                 refresh_all = True
-            elif arg == '-home':
-	    	refresh_messages()
-    if refresh_all:
+            elif arg == '-refresh':
+                refresh = True
+            else:
+                key = arg
+    if key:
+        wikipedia.output(get(key))
+    elif refresh_all:
         refresh_all_messages()
-    else:
+    elif refresh:
         refresh_messages(wikipedia.getSite())
-    if debug:
-        print "DBG> successfulupload contains %s" %  get('successfulupload')
-        print "DBG> deletedtext contains %s" % get('deletedtext')
-        
+    else:
+        wikipedia.showHelp('mediawiki_messages')
+
 if __name__ == "__main__":
     try:
         main()
