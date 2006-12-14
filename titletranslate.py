@@ -17,7 +17,7 @@ def translate(page, hints = None, auto = True):
     
     Does some magic stuff. Returns a list of pages.
     """
-    result = {}
+    result = []
     site = page.site()
     if hints:
         for h in hints:
