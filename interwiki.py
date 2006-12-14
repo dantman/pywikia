@@ -371,15 +371,14 @@ class Subject(object):
 
     def translate(self, hints = None):
         """Add the given translation hints to the todo list"""
-        arr = {}
         if globalvar.same:
             if hints:
-                titletranslate.translate(self.originPage, arr, hints = hints + ['all:'], auto = globalvar.auto)
+                pages = titletranslate.translate(self.originPage, hints = hints + ['all:'], auto = globalvar.auto)
             else:
-                titletranslate.translate(self.originPage, arr, hints = ['all:'], auto = globalvar.auto)
+                pages = titletranslate.translate(self.originPage, hints = ['all:'], auto = globalvar.auto)
         else:
-            titletranslate.translate(self.originPage, arr, hints = hints, auto = globalvar.auto)
-        for page in arr.iterkeys():
+            pages = titletranslate.translate(self.originPage, hints = hints, auto = globalvar.auto)
+        for page in pages:
             self.todo.append(page)
             self.foundIn[page] = [None]
 
@@ -625,9 +624,8 @@ class Subject(object):
                     elif not newhint:
                         break
                     else:
-                        arr = {}
-                        titletranslate.translate(page, arr, hints = [newhint], auto = globalvar.auto)
-                        for page2 in arr.iterkeys():
+                        pages = titletranslate.translate(page, hints = [newhint], auto = globalvar.auto)
+                        for page2 in pages:
                             self.todo.append(page2)
                             counter.plus(page2.site())
                             self.foundIn[page2] = [None]

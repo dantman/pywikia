@@ -11,8 +11,14 @@ import re
 
 import wikipedia, date, time
 
-def translate(pl, arr, hints = None, auto = True):
-    site = pl.site()
+def translate(page, hints = None, auto = True):
+    """
+    Please comment your source code! --Daniel
+    
+    Does some magic stuff. Returns a list of pages.
+    """
+    result = {}
+    site = page.site()
     if hints:
         for h in hints:
             if h.find(':') == -1:
@@ -25,7 +31,7 @@ def translate(pl, arr, hints = None, auto = True):
                 # if given as -hint:xy or -hint:xy:, assume that there should
                 # be a page in language xy with the same title as the page 
                 # we're currently working on
-                newname = pl.title()
+                newname = page.title()
             try:
                 number = int(codes)
                 codes = site.family.languages_by_size[:number]
@@ -40,20 +46,20 @@ def translate(pl, arr, hints = None, auto = True):
                 if newcode in site.languages():
                     if newcode != site.language():
                         x = wikipedia.Page(site.getSite(code=newcode), newname)
-                        if x not in arr:
-                            arr[x] = None
+                        if x not in result:
+                            result.append(x)
                 else:
                     wikipedia.output(u"Ignoring unknown language code %s"%newcode)
 
     # Autotranslate dates into all other languages, the rest will come from existing interwiki links.
     if auto:
         # search inside all dictionaries for this link
-        dictName, value = date.getAutoFormat( pl.site().language(), pl.title() )
+        dictName, value = date.getAutoFormat( page.site().language(), page.title() )
         if dictName:
-            if not (dictName == 'yearsBC' and date.maxyearBC.has_key(pl.site().language()) and value > date.maxyearBC[pl.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(pl.site().language()) and value > date.maxyearAD[pl.site().language()]):
-                wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (pl.title(),dictName,value))
+            if not (dictName == 'yearsBC' and date.maxyearBC.has_key(page.site().language()) and value > date.maxyearBC[page.site().language()]) or (dictName == 'yearsAD' and date.maxyearAD.has_key(page.site().language()) and value > date.maxyearAD[page.site().language()]):
+                wikipedia.output(u'TitleTranslate: %s was recognized as %s with value %d' % (page.title(),dictName,value))
                 for entryLang, entry in date.formats[dictName].iteritems():
-                    if entryLang != pl.site().language():
+                    if entryLang != page.site().language():
                         if dictName == 'yearsBC' and date.maxyearBC.has_key(entryLang) and value > date.maxyearBC[entryLang]:
                             pass
                         elif dictName == 'yearsAD' and date.maxyearAD.has_key(entryLang) and value > date.maxyearAD[entryLang]:
@@ -61,8 +67,9 @@ def translate(pl, arr, hints = None, auto = True):
             else:
                             newname = entry(value)
                             x = wikipedia.Page( wikipedia.getSite(code=entryLang, fam=site.family), newname )
-                            if x not in arr:
-                                arr[x] = None   # add new page
+                            if x not in result:
+                                result.append(x) # add new page
+    return result
 
 bcDateErrors = [u'[[ko:%d년]]']
 
