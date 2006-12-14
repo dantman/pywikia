@@ -319,8 +319,11 @@ class Global(object):
     bracketonly = False
 
 class Subject(object):
-    """Class to follow the progress of a single 'subject' (i.e. a page with
-       all its translations)"""
+    """
+    Class to follow the progress of a single 'subject' (i.e. a page with
+    all its translations)
+    """
+
     def __init__(self, originPage, hints = None):
         """Constructor. Takes as arguments the Page on the home wiki
            plus optionally a list of hints for translation"""
@@ -344,7 +347,7 @@ class Subject(object):
         self.confirm = globalvar.confirm
         self.problemfound = False
         self.untranslated = None
-        self.hintsasked = False
+        self.hintsAsked = False
 
     def getFoundDisambig(self, site):
         """
@@ -510,6 +513,40 @@ class Subject(object):
             return True
         return False
 
+    def reportInterwikilessPage(self, page):
+        wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
+        if config.without_interwiki:
+            f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
+            f.write("# %s \n" % page.aslink())
+            f.close()
+
+    def askForHints(self, counter):
+        if (self.untranslated or globalvar.askhints) and not self.hintsAsked and not self.originPage.isRedirectPage():
+            # Only once!
+            self.hintsAsked = True
+            if globalvar.untranslated:
+                newhint = None
+                t = globalvar.showtextlink
+                if t:
+                    wikipedia.output(self.originPage.get()[:t])
+                # loop 
+                while True:
+                    newhint = wikipedia.input(u'Give a hint (? to see pagetext):')
+                    if newhint == '?':
+                        t += globalvar.showtextlinkadd
+                        wikipedia.output(self.originPage.get()[:t])
+                    elif newhint and not ':' in newhint:
+                        wikipedia.output(u'Please enter a hint in the format language:pagename or type nothing if you do not have a hint.')
+                    elif not newhint:
+                        break
+                    else:
+                        pages = titletranslate.translate(self.originPage, hints = [newhint], auto = globalvar.auto)
+                        for page in pages:
+                            self.todo.append(page)
+                            counter.plus(page.site())
+                            self.foundIn[page] = [None]
+
+
     def workDone(self, counter):
         """
         This is called by a worker to tell us that the promised work
@@ -546,7 +583,6 @@ class Subject(object):
                     if page == self.originPage:
                         # This is a redirect page to the origin. We don't need to
                         # follow the redirection.
-                        isRedirect = True
                         # In this case we can also stop all hints!
                         for page2 in self.todo:
                             counter.minus(page2.site())
@@ -601,37 +637,9 @@ class Subject(object):
         # These pages are no longer 'in progress'
         self.pending = []
         # Check whether we need hints and the user offered to give them
-        if self.untranslated and not self.hintsasked:
-            wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
-            if config.without_interwiki:
-                f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
-                f.write("# %s \n" % page.aslink())
-                f.close()
-        if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isRedirect:
-            # Only once! 
-            self.hintsasked = True
-            if globalvar.untranslated:
-                newhint = None
-                t = globalvar.showtextlink
-                if t:
-                    wikipedia.output(page.get()[:t])
-                while True:
-                    newhint = wikipedia.input(u'Give a hint (? to see pagetext):')
-                    if newhint == '?':
-                        t += globalvar.showtextlinkadd
-                        wikipedia.output(page.get()[:t])
-                    elif newhint and not ':' in newhint:
-                        print "Please enter a hint like language:pagename"
-                        print "or type nothing if you do not have a hint"
-                    elif not newhint:
-                        break
-                    else:
-                        pages = titletranslate.translate(page, hints = [newhint], auto = globalvar.auto)
-                        for page2 in pages:
-                            self.todo.append(page2)
-                            counter.plus(page2.site())
-                            self.foundIn[page2] = [None]
-                            
+        if self.untranslated and not self.hintsAsked:
+            self.reportInterwikilessPage(page)
+        self.askForHints(counter)
 
     def isDone(self):
         """Return True if all the work for this subject has completed."""
