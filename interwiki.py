@@ -112,7 +112,7 @@ This script understands various command-line arguments:
                    This implies -noredirect.
 
     -noauto:       Do not use the automatic translation feature for years and
-                   dates, only use found links and hits.
+                   dates, only use found links and hints.
 
     -days:         Like -years, but runs through all date pages. Stops at
                    Dec 31.  If the argument is given in the form -days:X,
@@ -345,35 +345,35 @@ class Subject(object):
         self.problemfound = False
         self.untranslated = None
         self.hintsasked = False
-        
-    def pl(self):
-        """Return the Page on the home wiki"""
-        return self.originPage
 
-    def hasdisambig(self,site):
-        # Returns TRUE if a link to a disambiguation page on site site has been found
-        for pl in self.pending + self.done.keys():
-            if pl.site() == site:
-                try:
-                    if pl.isDisambig():
-                        return pl
-                except wikipedia.NoPage:
-                    pass
-        return False
+    def getFoundDisambig(self, site):
+        """
+        If we found a disambiguation on the given site while working on the
+        subject, this method returns it. If several ones have been found, the
+        first one will be returned.
+        Otherwise, None will be returned.
+        """
+        for page in self.pending + self.done.keys():
+            if page.site() == site:
+                if page.exists() and page.isDisambig():
+                    return page
+        return None
 
-    def hasnondisambig(self,site):
-        # Returns TRUE if a link to a disambiguation page on site site has been found
-        for pl in self.pending + self.done.keys():
-            if pl.site() == site:
-                try:
-                    if not pl.isDisambig():
-                        return pl
-                except wikipedia.NoPage:
-                    pass
-        return False
-    
+    def getFoundNonDisambig(self,site):
+        """
+        If we found a non-disambiguation on the given site while working on the
+        subject, this method returns it. If several ones have been found, the
+        first one will be returned.
+        Otherwise, None will be returned.
+        """
+        for page in self.pending + self.done.keys():
+            if page.site() == site:
+                if page.exists and not not page.isDisambig():
+                    return page
+        return None
+
     def translate(self, hints = None):
-        """Add the translation hints given to the todo list"""
+        """Add the given translation hints to the todo list"""
         arr = {}
         if globalvar.same:
             if hints:
@@ -382,9 +382,9 @@ class Subject(object):
                 titletranslate.translate(self.originPage, arr, hints = ['all:'], auto = globalvar.auto)
         else:
             titletranslate.translate(self.originPage, arr, hints = hints, auto = globalvar.auto)
-        for pl in arr.iterkeys():
-            self.todo[pl] = pl.site()
-            self.foundIn[pl] = [None]
+        for page in arr.iterkeys():
+            self.todo[page] = page.site()
+            self.foundIn[page] = [None]
 
     def openSites(self):
         """Return a list of sites for all things we still need to do"""
@@ -399,10 +399,10 @@ class Subject(object):
             raise 'Cant start on %s; still working on %s'%(repr(site),self.pending)
         # Prepare a list of suitable pages
         self.pending=[]
-        for pl in self.todo.keys():
-            if pl.site() == site:
-                self.pending.append(pl)
-                del self.todo[pl]
+        for page in self.todo.keys():
+            if page.site() == site:
+                self.pending.append(page)
+                del self.todo[page]
         # If there are any, return them. Otherwise, nothing is in progress.
         if self.pending:
             return self.pending
@@ -410,64 +410,108 @@ class Subject(object):
             del self.pending
             return None
 
-    def conditionalAdd(self, pl, counter, foundIn):
+    def conditionalAdd(self, page, counter, foundIn):
         """Add the pagelink given to the todo list, but only if we didn't know
            it before. If it is added, update the counter accordingly."""
-        # For each pl remember where it was found
-        if self.foundIn.has_key(pl):
-            self.foundIn[pl].append(foundIn)
+        # For each page remember where it was found
+        if self.foundIn.has_key(page):
+            self.foundIn[page].append(foundIn)
             return False
         else:
-            self.foundIn[pl]=[foundIn]
-            self.todo[pl] = pl.site()
-            counter.plus(pl.site())
-            # wikipedia.output("DBG> Found new to do: %s" % pl.aslink())
+            self.foundIn[page] = [foundIn]
+            self.todo[page] = page.site()
+            counter.plus(page.site())
+            # wikipedia.output("DBG> Found new to do: %s" % page.aslink())
             return True
-        
+    
+    def checkDisambigMismatch(self, page):
+        """
+        Checks whether or not the given page has the same disambiguation
+        status as the origin page.
+
+        Returns a tuple (skip, alternativePage).
+
+        skip is True iff the pages have mismatching statuses and the bot
+        is either in autonomous mode, or the user chose not to use the
+        given page.
+
+        alternativePage is either None, or a page that the user has
+        chosen to use instead of the given page.
+        """
+        if globalvar.autonomous:
+            if self.originPage.isDisambig() and not page.isDisambig():
+                wikipedia.output(u"NOTE: Ignoring link from disambiguation page %s to non-disambiguation %s" % (self.originPage.aslink(True), page.aslink(True)))
+                return (True, None)
+            elif not self.originPage.isDisambig() and page.isDisambig():
+                wikipedia.output(u"NOTE: Ignoring link from non-disambiguation page %s to disambiguation %s" % (self.originPage.aslink(True), page.aslink(True)))
+                return (True, None)
+        else:
+            choice = 'y'
+            if self.originPage.isDisambig() and not page.isDisambig():
+                if self.getFoundDisambig(page.site()):
+                    wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), self.getFoundDisambig(page.site()).aslink(True)))
+                    return (True, None)
+                else:
+                    choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative'], ['y', 'n', 'a'])
+            elif not self.originPage.isDisambig() and page.isDisambig():
+                if self.getFoundNonDisambig(page.site()):
+                    wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found." % (page.aslink(True), self.originPage.aslink(True), self.getFoundNonDisambig(page.site()).aslink(True)))
+                    return (True, None)
+                else:
+                    choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), page.aslink(True)), ['Yes', 'No', 'Add an alternative'], ['y', 'n', 'a'])
+            if choice == 'n':
+                return (True, None)
+            elif choice == 'a':
+                newHint = wikipedia.input(u'Give the alternative for language %s, not using a language code:' % page.site().language())
+                alternativePage = wikipedia.Page(page.site(), newHint)
+                return (True, alternativePage)
+        # We can follow the page.
+        return (False, None)
+
     def workDone(self, counter):
         """This is called by a worker to tell us that the promised work
            was completed as far as possible. The only argument is an instance
            of a counter class, that has methods minus() and plus() to keep
            counts of the total work todo."""
         # Loop over all the pages that should have been taken care of
-        for pl in self.pending:
+        for page in self.pending:
             # Mark the page as done
-            self.done[pl] = pl.site()
+            self.done[page] = page.site()
 
             # make sure that none of the linked items is an auto item
             if globalvar.skipauto:
-                dictName, year = pl.autoFormat()
+                dictName, year = page.autoFormat()
                 if dictName != None:
-                    wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.originPage.site().language(), self.originPage.title(), pl.site().language(),pl.title(),dictName,year))                
+                    wikipedia.output(u'WARNING: %s:%s relates to %s:%s, which is an auto entry %s(%s)' % (self.originPage.site().language(), self.originPage.title(), page.site().language(),page.title(),dictName,year))                
 
             # Register this fact at the todo-counter.
-            counter.minus(pl.site())
+            counter.minus(page.site())
             # Assume it's not a redirect
             isredirect = 0
             # Now check whether any interwiki links should be added to the
             # todo list.
-            if pl.section():
+            if page.section():
                 # We have been referred to a part of a page, not the whole page. Do not follow references.
                 pass
             else:
                 try:
-                    iw = pl.interwiki()
+                    iw = page.interwiki()
                 except UnicodeDecodeError, arg:
-                    wikipedia.output(u"BUG>>> UnicodeDecodeError exception processing %s: %s" % (pl.aslink(forceInterwiki=True), arg))
+                    wikipedia.output(u"BUG>>> UnicodeDecodeError exception processing %s: %s" % (page.aslink(forceInterwiki=True), arg))
                     print arg.args[1]
                 except ValueError, arg:
-                    wikipedia.output(u"BUG>>> ValueError exception processing %s: %s" % (pl.aslink(forceInterwiki=True), arg))
+                    wikipedia.output(u"BUG>>> ValueError exception processing %s: %s" % (page.aslink(forceInterwiki=True), arg))
                 except wikipedia.IsRedirectPage,arg:
                     try:
-                        pl3 = wikipedia.Page(pl.site(),arg.args[0])
-                        wikipedia.output(u"NOTE: %s is redirect to %s" % (pl.aslink(True), pl3.aslink(True)))
-                        if pl == self.originPage:
+                        page3 = wikipedia.Page(page.site(),arg.args[0])
+                        wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), page3.aslink(True)))
+                        if page == self.originPage:
                             # This is a redirect page itself. We don't need to
                             # follow the redirection.
                             isredirect = 1
                             # In this case we can also stop all hints!
-                            for pl2 in self.todo:
-                                counter.minus(pl2.site())
+                            for page2 in self.todo:
+                                counter.minus(page2.site())
                             self.todo = {}
                             pass
                         elif not globalvar.followredirect:
@@ -476,72 +520,49 @@ class Subject(object):
                             if globalvar.same=='wiktionary':
                                 # In this case only follow the redirect if we would have
                                 # followed an interwiki to that same page
-                                if pl3.title().lower()!=self.originPage.title().lower():
-                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode"% (pl3, self.originPage))
+                                if page3.title().lower()!=self.originPage.title().lower():
+                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode"% (page3, self.originPage))
                                     continue
-                                elif pl3.title() != self.originPage.title() and self.originPage.site().nocapitalize and pl3.site().nocapitalize:
-                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized."% (pl3, self.originPage))
+                                elif page3.title() != self.originPage.title() and self.originPage.site().nocapitalize and page3.site().nocapitalize:
+                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized."% (page3, self.originPage))
                                     continue
-                            if self.conditionalAdd(pl3, counter, pl):
+                            if self.conditionalAdd(page3, counter, page):
                                 if globalvar.shownew:
-                                    wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), pl.aslink(True), pl3.aslink(True)))
+                                    wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), page3.aslink(True)))
                     except UnicodeDecodeError:
-                        wikipedia.output(u"BUG>>> processing %s: could not decode redirect to %s:%s" % (pl.aslink(forceInterwiki=True),pl.site(),arg.args[0]))
+                        wikipedia.output(u"BUG>>> processing %s: could not decode redirect to %s:%s" % (page.aslink(forceInterwiki=True),page.site(),arg.args[0]))
                     except (KeyError, ValueError):
-                        wikipedia.output(u"WARNING>>> processing %s: redirect to %s:%s, possibly unsuported family" % (pl.aslink(forceInterwiki=True),pl.site(),arg.args[0]))
+                        wikipedia.output(u"WARNING>>> processing %s: redirect to %s:%s, possibly unsuported family" % (page.aslink(forceInterwiki=True),page.site(),arg.args[0]))
                 except wikipedia.NoPage:
-                    wikipedia.output(u"NOTE: %s does not exist" % pl.aslink(True))
-                    #print "DBG> ",pl.urlname()
-                    if pl == self.originPage:
+                    wikipedia.output(u"NOTE: %s does not exist" % page.aslink(True))
+                    #print "DBG> ",page.urlname()
+                    if page == self.originPage:
                         # This is the home subject page.
                         # In this case we can stop all hints!
-                        for pl2 in self.todo:
-                            counter.minus(pl2.site())
+                        for page2 in self.todo:
+                            counter.minus(page2.site())
                         self.todo = {}
                         self.done = {} # In some rare cases it might be we already did check some 'automatic' links
                         pass
                 #except wikipedia.SectionError:
-                #    wikipedia.output(u"NOTE: section %s does not exist" % pl.aslink())
+                #    wikipedia.output(u"NOTE: section %s does not exist" % page.aslink())
                 else:
-                    if globalvar.autonomous:
-                        if self.originPage.isDisambig() and not pl.isDisambig():
-                            wikipedia.output(u"NOTE: Ignoring link from disambiguation page %s to non-disambiguation %s" % (self.originPage.aslink(True), pl.aslink(True)))
-                            del self.done[pl]
-                        elif not self.originPage.isDisambig() and pl.isDisambig():
-                            wikipedia.output(u"NOTE: Ignoring link from non-disambiguation page %s to disambiguation %s" % (self.originPage.aslink(True), pl.aslink(True)))
-                            del self.done[pl]
-                    else:
-                        if self.originPage.isDisambig() and not pl.isDisambig():
-                            if self.hasdisambig(pl.site()):
-                                wikipedia.output(u"NOTE: Ignoring non-disambiguation page %s for %s because disambiguation page %s has already been found."%(pl.aslink(True),self.originPage.aslink(True),self.hasdisambig(pl.site()).aslink(True)))
-                                choice = 'n'
-                            else:
-                                choice = wikipedia.inputChoice('WARNING: %s is a disambiguation page, but %s doesn\'t seem to be one. Follow it anyway?' % (self.originPage.aslink(True), pl.aslink(True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
-                        elif not self.originPage.isDisambig() and pl.isDisambig():
-                            if self.hasnondisambig(pl.site()):
-                                wikipedia.output(u"NOTE: Ignoring disambiguation page %s for %s because non-disambiguation page %s has already been found."%(pl.aslink(True),self.originPage.aslink(True),self.hasnondisambig(pl.site()).aslink(True)))
-                                choice = 'n'
-                            else:
-                                choice = wikipedia.inputChoice('WARNING: %s doesn\'t seem to be a disambiguation page, but %s is one. Follow it anyway?' % (self.originPage.aslink(True), pl.aslink(True)), ['Yes', 'No', 'Add a hint'], ['y', 'n', 'a'])
-                        else:
-                            choice = 'y'
-                        if choice not in ['y', 'Y']:
-                            wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % pl.aslink(True))
-                            del self.done[pl]
-                            iw = ()
-                            if choice in ['a', 'A']:
-                                newhint = wikipedia.input(u'Give a hint for language %s, not using a language code:'%pl.site().language())
-                                if newhint:
-                                    page2 = wikipedia.Page(pl.site(),newhint)
-                                    self.conditionalAdd(page2, counter, None)
-                    if self.originPage == pl:
+                    (skip, alternativePage) = self.checkDisambigMismatch(page)
+                    if skip:
+                        wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
+                        del self.done[page]
+                        iw = ()
+                        if alternativePage:
+                            self.conditionalAdd(page2, counter, None)
+
+                    if self.originPage == page:
                         self.untranslated = (len(iw) == 0)
                         if globalvar.untranslatedonly:
                             # Ignore the interwiki links.
                             iw = ()
-                    elif pl.isEmpty():
-                        if not pl.isCategory():
-                            wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % pl.aslink(True))
+                    elif page.isEmpty():
+                        if not page.isCategory():
+                            wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
                             # Ignore the interwiki links
                             iw = ()
                     for page2 in iw:
@@ -550,7 +571,7 @@ class Subject(object):
                             continue
                         if page2 in globalvar.ignore:
                             wikipedia.output(u"Skipping link %s to an ignored page" % page2.aslink())
-                            continue                            
+                            continue
                         if globalvar.same=='wiktionary':
                             if page2.title().lower()!=self.originPage.title().lower():
                                 wikipedia.output(self.originPage.title())
@@ -569,13 +590,13 @@ class Subject(object):
                                     choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), page2.aslink(True), page2.namespace()), ['Yes', 'No'], ['y', 'n'])
                                     if choice not in ['y', 'Y']:
                                         # Fill up foundIn, so that we will not ask again
-                                        self.foundIn[page2] = [pl]
+                                        self.foundIn[page2] = [page]
                                         wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page2.aslink(True))
                                         continue
-                        if self.conditionalAdd(page2, counter, pl):
+                        if self.conditionalAdd(page2, counter, page):
                             if globalvar.shownew:
-                                wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), pl.aslink(True), page2.aslink(True)))
-                              
+                                wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), page2.aslink(True)))
+
         # These pages are no longer 'in progress'
         del self.pending
         # Check whether we need hints and the user offered to give them
@@ -583,7 +604,7 @@ class Subject(object):
             wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
             if config.without_interwiki:
                 f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
-                f.write("# %s \n" % pl.aslink())
+                f.write("# %s \n" % page.aslink())
                 f.close()
         if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isredirect:
             # Only once! 
@@ -592,12 +613,12 @@ class Subject(object):
                 newhint = None
                 t = globalvar.showtextlink
                 if t:
-                    wikipedia.output(pl.get()[:t])
+                    wikipedia.output(page.get()[:t])
                 while 1:
                     newhint = wikipedia.input(u'Give a hint (? to see pagetext):')
                     if newhint == '?':
                         t += globalvar.showtextlinkadd
-                        wikipedia.output(pl.get()[:t])
+                        wikipedia.output(page.get()[:t])
                     elif newhint and not ':' in newhint:
                         print "Please enter a hint like language:pagename"
                         print "or type nothing if you do not have a hint"
@@ -605,11 +626,11 @@ class Subject(object):
                         break
                     else:
                         arr = {}
-                        titletranslate.translate(pl, arr, hints = [newhint], auto = globalvar.auto)
-                        for pl2 in arr.iterkeys():
-                            self.todo[pl2] = pl2.site()
-                            counter.plus(pl2.site())
-                            self.foundIn[pl2] = [None]
+                        titletranslate.translate(page, arr, hints = [newhint], auto = globalvar.auto)
+                        for page2 in arr.iterkeys():
+                            self.todo[page2] = page2.site()
+                            counter.plus(page2.site())
+                            self.foundIn[page2] = [None]
                             
 
     def isDone(self):
@@ -634,12 +655,12 @@ class Subject(object):
                print 'File autonomous_problem.dat open or corrupted! Try again with -restore.'
                sys.exit()
 
-    def whereReport(self, pl, indent=4):
-        for pl2 in sorted(self.foundIn[pl]):
-            if pl2 is None:
+    def whereReport(self, page, indent=4):
+        for page2 in sorted(self.foundIn[page]):
+            if page2 is None:
                 wikipedia.output(u" "*indent + "Given as a hint.")
             else:
-                wikipedia.output(u" "*indent + pl2.aslink(True))
+                wikipedia.output(u" "*indent + page2.aslink(True))
 
 
     def assemble(self):
@@ -650,18 +671,18 @@ class Subject(object):
         mysite = wikipedia.getSite()
         
         new = {}
-        for pl in self.done.keys():
-            site = pl.site()
-            if site == mysite and pl.exists() and not pl.isRedirectPage():
-                if pl != self.originPage:
-                    self.problem("Found link to %s" % pl.aslink(True) )
-                    self.whereReport(pl)
+        for page in self.done.keys():
+            site = page.site()
+            if site == mysite and page.exists() and not page.isRedirectPage():
+                if page != self.originPage:
+                    self.problem("Found link to %s" % page.aslink(True) )
+                    self.whereReport(page)
                     nerr += 1
-            elif pl.exists() and not pl.isRedirectPage():
+            elif page.exists() and not page.isRedirectPage():
                 if site in new:
-                    new[site].append(pl)
+                    new[site].append(page)
                 else:
-                    new[site] = [pl]
+                    new[site] = [page]
         # See if new{} contains any problematic values
         result = {}
         for k, v in new.items():
@@ -727,9 +748,9 @@ class Subject(object):
                 if len(v) == 1:
                     if not acceptall:
                         print "="*30
-                        pl2 = v[0]
-                        wikipedia.output(u"Found link to %s in:" % pl2.aslink(True))
-                        self.whereReport(pl2, indent=4)
+                        page2 = v[0]
+                        wikipedia.output(u"Found link to %s in:" % page2.aslink(True))
+                        self.whereReport(page2, indent=4)
                     while 1:
                         if acceptall: 
                             answer = 'a'
@@ -811,8 +832,8 @@ class Subject(object):
                 elif not globalvar.strictlimittwo and new.has_key(site) and site != lclSite:
                     old={}
                     try:
-                        for pl in new[site].interwiki():
-                            old[pl.site()] = pl
+                        for page in new[site].interwiki():
+                            old[page.site()] = page
                     except wikipedia.NoPage:
                         wikipedia.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
                         continue
@@ -846,21 +867,21 @@ class Subject(object):
         if globalvar.backlink:
             self.reportBacklinks(new, updatedSites)
 
-    def replaceLinks(self, pl, newPages, bot):
+    def replaceLinks(self, page, newPages, bot):
         """
         Returns True if saving was successful.
         """
         if globalvar.localonly:
             # In this case only continue on the Page we started with
-            if pl != self.pl():
+            if page != self.originPage:
                 return False
 
-        if pl.title() != pl.sectionFreeTitle():
+        if page.title() != page.sectionFreeTitle():
             # This is not a page, but a subpage. Do not edit it.
-            wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % pl.aslink(True))
+            wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % page.aslink(True))
             return False
         # Show a message in purple.
-        text = u"Updating links on page %s." % pl.aslink(True)
+        text = u"Updating links on page %s." % page.aslink(True)
         colors = [13] * len(text)
         wikipedia.output(text, colors = colors)
 
@@ -868,52 +889,52 @@ class Subject(object):
         new = dict(newPages)
         
         # sanity check - the page we are fixing must be the only one for that site.
-        pltmp = new[pl.site()]
-        if pltmp != pl:
+        pltmp = new[page.site()]
+        if pltmp != page:
             s = "None"
             if pltmp != None: s = pltmp.aslink(True)
-            wikipedia.output(u"BUG>>> %s is not in the list of new links! Found %s." % (pl.aslink(True), s))
+            wikipedia.output(u"BUG>>> %s is not in the list of new links! Found %s." % (page.aslink(True), s))
             return False
         
         # Avoid adding an iw link back to itself
-        del new[pl.site()]
+        del new[page.site()]
 
         # Put interwiki links into a map
         old={}
         try:
-            for pl2 in pl.interwiki():
-                old[pl2.site()] = pl2
+            for page2 in page.interwiki():
+                old[page2.site()] = page2
         except wikipedia.NoPage:
-            wikipedia.output(u"BUG>>> %s no longer exists?" % pl.aslink(True))
+            wikipedia.output(u"BUG>>> %s no longer exists?" % page.aslink(True))
             return False
 
         # Check what needs to get done
-        mods, adding, removing, modifying = compareLanguages(old, new, insite = pl.site())
+        mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
 
         # When running in autonomous mode without -force switch, make sure we don't remove any items, but allow addition of the new ones
         if globalvar.autonomous and not globalvar.force and len(removing) > 0:
             for rmpl in removing:
-                if rmpl.site() != pl.site():   # Sometimes sites have an erroneous link to itself as an interwiki
+                if rmpl.site() != page.site():   # Sometimes sites have an erroneous link to itself as an interwiki
                     new[rmpl.site()] = old[rmpl.site()]
                     wikipedia.output(u"WARNING: %s is either deleted or has a mismatching disambiguation state." % rmpl.aslink(True))
             # Re-Check what needs to get done
-            mods, adding, removing, modifying = compareLanguages(old, new, insite = pl.site())
+            mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
 
         if not mods and not globalvar.always:
             wikipedia.output(u'No changes needed' )
         else:
             if mods:
                 wikipedia.output(u"Changes to be made: %s" % mods)
-            oldtext = pl.get()
-            newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = pl.site())
+            oldtext = page.get()
+            newtext = wikipedia.replaceLanguageLinks(oldtext, new, site = page.site())
             if globalvar.debug:
                 wikipedia.showDiff(oldtext, newtext)
             if newtext != oldtext:
-                # wikipedia.output(u"NOTE: Replace %s" % pl.aslink())
+                # wikipedia.output(u"NOTE: Replace %s" % page.aslink())
                 # Determine whether we need permission to submit
                 ask = False
-                if removing and removing != [pl]:   # Allow for special case of a self-pointing interwiki link
-                    self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), pl.aslink(True)))
+                if removing and removing != [page]:   # Allow for special case of a self-pointing interwiki link
+                    self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)))
                     ask = True
                 if globalvar.force:
                     ask = False
@@ -944,9 +965,9 @@ class Subject(object):
                     timeout=60
                     while 1:
                         try:
-                            status, reason, data = pl.put(newtext, comment = wikipedia.translate(pl.site().lang, msg)[0] + mods)
+                            status, reason, data = page.put(newtext, comment = wikipedia.translate(page.site().lang, msg)[0] + mods)
                         except wikipedia.LockedPage:
-                            wikipedia.output(u'Page %s is locked. Skipping.' % pl.title())
+                            wikipedia.output(u'Page %s is locked. Skipping.' % page.title())
                             return False
                         except (wikipedia.EditConflict, wikipedia.SpamfilterError), error:
                             # we can't resolve edit conflicts and spamfilter triggerings
@@ -967,7 +988,7 @@ class Subject(object):
                     else:
                         print status, reason
                 else:
-                    raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), pl.aslink(True)))
+                    raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)))
             return False
 
     def reportBacklinks(self, new, updatedSites):
@@ -1020,9 +1041,9 @@ class InterwikiBot(object):
         self.pageGenerator = None
         self.generated = 0
 
-    def add(self, pl, hints = None):
+    def add(self, page, hints = None):
         """Add a single subject to the list"""
-        subj = Subject(pl, hints = hints)
+        subj = Subject(page, hints = hints)
         self.subjects.append(subj)
         for site in subj.openSites():
             # Keep correct counters
@@ -1038,7 +1059,7 @@ class InterwikiBot(object):
         site = wikipedia.getSite()
         f = codecs.open(u'interwiki-dumps/interwikidump-%s-%s.txt' % (site.family.name, site.lang), 'w', 'utf-8')
         for subj in self.subjects:
-            f.write(subj.pl().aslink(None)+'\n')
+            f.write(subj.originPage.aslink(None)+'\n')
         f.close()
         wikipedia.output(u'Dump %s (%s) saved' % (site.lang, site.family.name))
         
@@ -1048,7 +1069,7 @@ class InterwikiBot(object):
            PageGenerator"""
         fs = self.firstSubject()
         if fs:
-            wikipedia.output(u"NOTE: The first unfinished subject is " + fs.pl().aslink(True))
+            wikipedia.output(u"NOTE: The first unfinished subject is " + fs.originPage.aslink(True))
         wikipedia.output(u"NOTE: Number of pages queued is %d, trying to add %d more."%(len(self.subjects), number))
         for i in range(number):
             try:
@@ -1232,10 +1253,10 @@ def compareLanguages(old, new, insite):
     
     if len(adding) + len(removing) + len(modifying) <= 3:
         # Use an extended format for the string linking to all added pages.
-        fmt = lambda pl: pl.aslink(forceInterwiki=True)
+        fmt = lambda page: page.aslink(forceInterwiki=True)
     else:
         # Use short format, just the language code
-        fmt = lambda pl: pl.site().lang
+        fmt = lambda page: page.site().lang
     
     if adding:
         mods += " %s: %s" % (wikipedia.translate(insite.lang, msg)[1], ", ".join([fmt(x) for x in adding]))
