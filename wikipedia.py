@@ -3168,12 +3168,16 @@ class Site(object):
         return self.family.normalizeNamespace(self.lang, value)
 
     def namespaces(self):
-        nslist=()
-        for n in self.family.namespaces:
-            ns = self.family.namespace(self.lang, n)
-            if ns is not None:
-                nslist += (self.family.namespace(self.lang, n),)
-        return nslist
+        if _namespaceCache.has_key(self):
+            return _namespaceCache[self]
+        else:
+            nslist = []
+            for n in self.family.namespaces:
+                ns = self.family.namespace(self.lang, n)
+                if ns is not None:
+                    nslist.append(self.family.namespace(self.lang, n))
+            _namespaceCache[self] = nslist
+            return nslist
 
     def linktrail(self):
         return self.family.linktrail(self.lang)
@@ -3228,7 +3232,9 @@ class Site(object):
             self._token = value
         return
 
+# Caches to provide faster access
 _sites = {}
+_namespaceCache = {}
 
 def getSite(code = None, fam = None, user=None):
     if code == None:
