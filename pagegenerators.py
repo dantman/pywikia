@@ -421,8 +421,9 @@ class PreloadingGenerator:
                     yield refpage
                 i = 0
                 somePages = []
-        # preload remaining pages
-        self.preload(somePages)
-        for refpage in somePages:
-            yield refpage
+        if len(somePages) > 0:
+            # preload remaining pages
+            self.preload(somePages)
+            for refpage in somePages:
+                yield refpage
 
