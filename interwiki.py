@@ -665,11 +665,10 @@ class Subject(object):
 
     def assemble(self):
         # No errors have been seen so far
-        nerr = 0
-        # Build up a dictionary of all links found, with the site as key.
-        # Each value will be a list.
+        errorCount = 0
         mysite = wikipedia.getSite()
-        
+        # Build up a dictionary of all pages found, with the site as key.
+        # Each value will be a list of pages.
         new = {}
         for page in self.done:
             site = page.site()
@@ -677,7 +676,7 @@ class Subject(object):
                 if page != self.originPage:
                     self.problem("Found link to %s" % page.aslink(True) )
                     self.whereReport(page)
-                    nerr += 1
+                    errorCount += 1
             elif page.exists() and not page.isRedirectPage():
                 if site in new:
                     new[site].append(page)
@@ -685,24 +684,17 @@ class Subject(object):
                     new[site] = [page]
         # See if new{} contains any problematic values
         result = {}
-        for k, v in new.items():
-            if len(v) > 1:
-                nerr += 1
-                self.problem("Found more than one link for %s"%k)
-        # The following two lines are no longer correct since multi-site
-        # editing is now possible
-        # if nerr == 0 and len( self.foundIn[self.originPage] ) == 0 and len(new) != 0:
-        #    self.problem(u'None of %i other languages refers back to %s' % (len(new), self.originPage.aslink()))
+        for site, pages in new.items():
+            if len(pages) > 1:
+                errorCount += 1
+                self.problem("Found more than one link for %s" % site)
         # If there are any errors, we need to go through all
         # items manually.
-        if nerr > 0 or globalvar.select:
+        if errorCount > 0 or globalvar.select:
 
             if config.interwiki_graph:
-                #try:
-                    graphDrawer = interwiki_graph.GraphDrawer(self)
-                    graphDrawer.createGraph()
-                #except GraphImpossible:
-                #    pass
+                graphDrawer = interwiki_graph.GraphDrawer(self)
+                graphDrawer.createGraph()
 
             # We don't need to continue with the rest if we're in autonomous
             # mode.
@@ -710,28 +702,28 @@ class Subject(object):
                 return None
 
             # First loop over the ones that have more solutions
-            for k,v in new.items():
-                if len(v) > 1:
-                    print "="*30
-                    print "Links to %s"%k
+            for site, pages in new.items():
+                if len(pages) > 1:
+                    print "=" * 30
+                    print "Links to %s" % site
                     i = 0
-                    for page2 in v:
+                    for page2 in pages:
                         i += 1
                         wikipedia.output(u"  (%d) Found link to %s in:" % (i, page2.aslink(True)))
-                        self.whereReport(page2, indent=8)
+                        self.whereReport(page2, indent = 8)
                     if not globalvar.autonomous:
-                        while 1:
+                        while True:
                             answer = wikipedia.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
                             if answer:
-                                if answer in 'gG':
+                                if answer == 'g':
                                     return None
-                                elif answer in 'nN':
+                                elif answer == 'n':
                                     # None acceptable
                                     break
-                                elif answer[0] in '0123456789':
+                                elif answer.isdigit():
                                     answer = int(answer)
                                     try:
-                                        result[k] = v[answer-1]
+                                        result[site] = pages[answer - 1]
                                     except IndexError:
                                         # user input is out of range
                                         pass
@@ -744,14 +736,14 @@ class Subject(object):
             # Loop over the ones that have one solution, so are in principle
             # not a problem.
             acceptall = False
-            for k,v in new.items():
-                if len(v) == 1:
+            for site, pages in new.items():
+                if len(pages) == 1:
                     if not acceptall:
-                        print "="*30
-                        page2 = v[0]
+                        print "=" * 30
+                        page2 = pages[0]
                         wikipedia.output(u"Found link to %s in:" % page2.aslink(True))
-                        self.whereReport(page2, indent=4)
-                    while 1:
+                        self.whereReport(page2, indent = 4)
+                    while True:
                         if acceptall: 
                             answer = 'a'
                         else: 
@@ -762,16 +754,16 @@ class Subject(object):
                             acceptall = True
                             answer = 'a'
                         if answer == 'a': # accept this one
-                            result[k] = v[0]
+                            result[site] = pages[0]
                             break
                         elif answer == 'g': # give up
                             return None
                         elif answer == 'r': # reject
                             # None acceptable
                             break
-        else: # nerr <= 0, hence there are no lists longer than one.
-            for k,v in new.items():
-                result[k] = v[0]
+        else: # errorCount <= 0, hence there are no lists longer than one.
+            for site, pages in new.items():
+                result[site] = pages[0]
         return result
     
     def finish(self, bot = None):
