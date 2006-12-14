@@ -400,7 +400,11 @@ class PreloadingGenerator:
 
     def preload(self, pages):
         try:
-            wikipedia.getall(wikipedia.getSite(), pages, throttle=False)
+            site = pages[0].site()
+            wikipedia.getall(site, pages, throttle=False)
+        except IndexError:
+            # Can happen if the pages list is empty. Don't care.
+            pass
         except wikipedia.SaxError:
             # Ignore this error, and get the pages the traditional way later.
             pass
