@@ -368,7 +368,7 @@ class Subject(object):
         """
         for page in self.done + self.pending:
             if page.site() == site:
-                if page.exists and not page.isDisambig():
+                if page.exists() and not page.isDisambig():
                     return page
         return None
 
