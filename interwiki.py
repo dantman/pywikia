@@ -337,6 +337,9 @@ class Subject(object):
         # As we haven't yet found a page that links to the origin page, we
         # start with an empty list for it.
         self.foundIn = {self.originPage:[]}
+        # This is a list of all pages that are currently scheduled for
+        # download.
+        self.pending = []
         self.translate(hints)
         self.confirm = globalvar.confirm
         self.problemfound = False
@@ -350,7 +353,7 @@ class Subject(object):
         first one will be returned.
         Otherwise, None will be returned.
         """
-        for page in self.pending + self.done:
+        for page in self.done + self.pending:
             if page.site() == site:
                 if page.exists() and page.isDisambig():
                     return page
@@ -363,7 +366,7 @@ class Subject(object):
         first one will be returned.
         Otherwise, None will be returned.
         """
-        for page in self.pending + self.done:
+        for page in self.done + self.pending:
             if page.site() == site:
                 if page.exists and not not page.isDisambig():
                     return page
@@ -387,24 +390,22 @@ class Subject(object):
         return [page.site() for page in self.todo] # TODO: remove duplicates
 
     def willWorkOn(self, site):
-        """By calling this method, you 'promise' this instance that you will
-           work on any todo items for the wiki indicated by 'site'. This routine
-           will return a list of pages that can be treated."""
-        # Bug-check: Isn't there any work still in progress?
-        if hasattr(self, 'pending'):
-            raise 'Can\'t start on %s; still working on %s'%(repr(site),self.pending)
+        """
+        By calling this method, you 'promise' this instance that you will
+        work on any todo items for the wiki indicated by 'site'. This routine
+        will return a list of pages that can be treated.
+        """
+        # Bug-check: Isn't there any work still in progress? We can't work on
+        # different sites at a time!
+        if self.pending != []:
+            raise 'BUG: Can\'t start to work on %s; still working on %s' % (repr(site), self.pending)
         # Prepare a list of suitable pages
-        self.pending=[]
         for page in self.todo:
             if page.site() == site:
                 self.pending.append(page)
                 self.todo.remove(page)
         # If there are any, return them. Otherwise, nothing is in progress.
-        if self.pending:
-            return self.pending
-        else:
-            del self.pending
-            return None
+        return self.pending
 
     def addIfNew(self, page, counter, linkingPage):
         """
@@ -597,7 +598,7 @@ class Subject(object):
                                     wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
-        del self.pending
+        self.pending = []
         # Check whether we need hints and the user offered to give them
         if self.untranslated and not self.hintsasked:
             wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
@@ -1175,7 +1176,7 @@ class InterwikiBot(object):
         subjectGroup = []
         pageGroup = []
         for subject in self.subjects:
-            # Promise the subject that we will work on the site
+            # Promise the subject that we will work on the site.
             # We will get a list of pages we can do.
             pages = subject.willWorkOn(site)
             if pages:
