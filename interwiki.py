@@ -410,24 +410,59 @@ class Subject(object):
             del self.pending
             return None
 
-    def conditionalAdd(self, page, counter, foundIn):
-        """Add the pagelink given to the todo list, but only if we didn't know
-           it before. If it is added, update the counter accordingly."""
-        # For each page remember where it was found
+    def addIfNew(self, page, counter, linkingPage):
+        """
+        Adds the pagelink given to the todo list, but only if we didn't know
+        it before. If it is added, update the counter accordingly.
+
+        Also remembers where we found the page, regardless of whether it had
+        already been found before or not.
+
+        Returns True iff the page is new.
+        """
         if self.foundIn.has_key(page):
-            self.foundIn[page].append(foundIn)
+            # not new
+            self.foundIn[page].append(linkingPage)
             return False
         else:
-            self.foundIn[page] = [foundIn]
+            self.foundIn[page] = [linkingPage]
             self.todo[page] = page.site()
             counter.plus(page.site())
-            # wikipedia.output("DBG> Found new to do: %s" % page.aslink())
             return True
-    
-    def checkDisambigMismatch(self, page):
+
+    def namespaceMismatch(self, linkingPage, linkedPage):
         """
-        Checks whether or not the given page has the same disambiguation
-        status as the origin page.
+        Checks whether or not the given page has another namespace
+        as the origin page.
+
+        Returns True iff the namespaces are different and the user
+        has selected not to follow the linked page.
+        """
+        if not globalvar.autonomous:
+            if self.originPage.namespace() != linkedPage.namespace():
+                if not self.foundIn.has_key(linkedPage):
+                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No'], ['y', 'n'])
+                    if choice != 'y':
+                        # Fill up foundIn, so that we will not ask again
+                        self.foundIn[linkedPage] = [linkingPage]
+                        wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % linkedPage.aslink(True))
+                        return True
+        return False
+
+    def wiktionaryMismatch(self, page):
+        if globalvar.same=='wiktionary':
+            if page.title().lower() != self.originPage.title().lower():
+                wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page.aslink(), self.originPage.aslink()))
+                return True
+            elif page.title() != self.originPage.title() and self.originPage.site().nocapitalize and page.site().nocapitalize:
+                wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized." % (page.aslink(), self.originPage.aslink()))
+                return True
+        return False
+
+    def disambigMismatch(self, page):
+        """
+        Checks whether or not the given page has the another disambiguation
+        status than the origin page.
 
         Returns a tuple (skip, alternativePage).
 
@@ -468,11 +503,22 @@ class Subject(object):
         # We can follow the page.
         return (False, None)
 
+    def isIgnored(self, page):
+        if page.site().language() in globalvar.neverlink:
+            wikipedia.output(u"Skipping link %s to an ignored language" % page.aslink())
+            return True
+        if page in globalvar.ignore:
+            wikipedia.output(u"Skipping link %s to an ignored page" % page.aslink())
+            return True
+        return False
+
     def workDone(self, counter):
-        """This is called by a worker to tell us that the promised work
-           was completed as far as possible. The only argument is an instance
-           of a counter class, that has methods minus() and plus() to keep
-           counts of the total work todo."""
+        """
+        This is called by a worker to tell us that the promised work
+        was completed as far as possible. The only argument is an instance
+        of a counter class, that has methods minus() and plus() to keep
+        counts of the total work todo.
+        """
         # Loop over all the pages that should have been taken care of
         for page in self.pending:
             # Mark the page as done
@@ -487,7 +533,7 @@ class Subject(object):
             # Register this fact at the todo-counter.
             counter.minus(page.site())
             # Assume it's not a redirect
-            isredirect = 0
+            isRedirect = False
             # Now check whether any interwiki links should be added to the
             # todo list.
             if page.section():
@@ -496,49 +542,31 @@ class Subject(object):
             else:
                 try:
                     iw = page.interwiki()
-                except UnicodeDecodeError, arg:
-                    wikipedia.output(u"BUG>>> UnicodeDecodeError exception processing %s: %s" % (page.aslink(forceInterwiki=True), arg))
-                    print arg.args[1]
-                except ValueError, arg:
-                    wikipedia.output(u"BUG>>> ValueError exception processing %s: %s" % (page.aslink(forceInterwiki=True), arg))
-                except wikipedia.IsRedirectPage,arg:
-                    try:
-                        page3 = wikipedia.Page(page.site(),arg.args[0])
-                        wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), page3.aslink(True)))
-                        if page == self.originPage:
-                            # This is a redirect page itself. We don't need to
-                            # follow the redirection.
-                            isredirect = 1
-                            # In this case we can also stop all hints!
-                            for page2 in self.todo:
-                                counter.minus(page2.site())
-                            self.todo = {}
-                            pass
-                        elif not globalvar.followredirect:
-                            print "NOTE: not following redirects."
-                        else:
-                            if globalvar.same=='wiktionary':
-                                # In this case only follow the redirect if we would have
-                                # followed an interwiki to that same page
-                                if page3.title().lower()!=self.originPage.title().lower():
-                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode"% (page3, self.originPage))
-                                    continue
-                                elif page3.title() != self.originPage.title() and self.originPage.site().nocapitalize and page3.site().nocapitalize:
-                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized."% (page3, self.originPage))
-                                    continue
-                            if self.conditionalAdd(page3, counter, page):
+                except wikipedia.IsRedirectPage, arg:
+                    redirectTargetPage = wikipedia.Page(page.site(), arg.args[0])
+                    wikipedia.output(u"NOTE: %s is redirect to %s" % (page.aslink(True), redirectTargetPage.aslink(True)))
+                    if page == self.originPage:
+                        # This is a redirect page to the origin. We don't need to
+                        # follow the redirection.
+                        isRedirect = True
+                        # In this case we can also stop all hints!
+                        for page2 in self.todo:
+                            counter.minus(page2.site())
+                        self.todo = {}
+                        pass
+                    elif not globalvar.followredirect:
+                        print "NOTE: not following redirects."
+                    else:
+                        if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage) or self.wiktionaryMismatch(redirectTargetPage)):
+                            if self.addIfNew(redirectTargetPage, counter, page):
                                 if globalvar.shownew:
-                                    wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), page3.aslink(True)))
-                    except UnicodeDecodeError:
-                        wikipedia.output(u"BUG>>> processing %s: could not decode redirect to %s:%s" % (page.aslink(forceInterwiki=True),page.site(),arg.args[0]))
-                    except (KeyError, ValueError):
-                        wikipedia.output(u"WARNING>>> processing %s: redirect to %s:%s, possibly unsuported family" % (page.aslink(forceInterwiki=True),page.site(),arg.args[0]))
+                                    wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % page.aslink(True))
-                    #print "DBG> ",page.urlname()
                     if page == self.originPage:
                         # This is the home subject page.
                         # In this case we can stop all hints!
+                        # Huh? I don't understand this. --Daniel
                         for page2 in self.todo:
                             counter.minus(page2.site())
                         self.todo = {}
@@ -547,55 +575,30 @@ class Subject(object):
                 #except wikipedia.SectionError:
                 #    wikipedia.output(u"NOTE: section %s does not exist" % page.aslink())
                 else:
-                    (skip, alternativePage) = self.checkDisambigMismatch(page)
+                    (skip, alternativePage) = self.disambigMismatch(page)
                     if skip:
                         wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
                         del self.done[page]
                         iw = ()
                         if alternativePage:
-                            self.conditionalAdd(page2, counter, None)
+                            # add the page that was entered by the user
+                            self.addIfNew(alternativePage, counter, None)
 
                     if self.originPage == page:
                         self.untranslated = (len(iw) == 0)
                         if globalvar.untranslatedonly:
                             # Ignore the interwiki links.
                             iw = ()
-                    elif page.isEmpty():
-                        if not page.isCategory():
-                            wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
-                            # Ignore the interwiki links
-                            iw = ()
-                    for page2 in iw:
-                        if page2.site().language() in globalvar.neverlink:
-                            wikipedia.output(u"Skipping link %s to an ignored language" % page2.aslink())
-                            continue
-                        if page2 in globalvar.ignore:
-                            wikipedia.output(u"Skipping link %s to an ignored page" % page2.aslink())
-                            continue
-                        if globalvar.same=='wiktionary':
-                            if page2.title().lower()!=self.originPage.title().lower():
-                                wikipedia.output(self.originPage.title())
-                                wikipedia.output(page2.title())
-                                try:
-                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.originPage))
-                                except UnicodeDecodeError:
-                                    wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode" % (page2, self.originPage))
-                                continue
-                            elif page2.title() != self.originPage.title() and self.originPage.site().nocapitalize and page2.site().nocapitalize:
-                                wikipedia.output(u"NOTE: Ignoring %s for %s in wiktionary mode because both languages are uncapitalized." % (page2, self.originPage))
-                                continue
-                        if not globalvar.autonomous:
-                            if self.originPage.namespace() != page2.namespace():
-                                if not self.foundIn.has_key(page2):
-                                    choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), page2.aslink(True), page2.namespace()), ['Yes', 'No'], ['y', 'n'])
-                                    if choice not in ['y', 'Y']:
-                                        # Fill up foundIn, so that we will not ask again
-                                        self.foundIn[page2] = [page]
-                                        wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page2.aslink(True))
-                                        continue
-                        if self.conditionalAdd(page2, counter, page):
-                            if globalvar.shownew:
-                                wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), page2.aslink(True)))
+                    elif page.isEmpty() and not page.isCategory():
+                        wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
+                        # Ignore the interwiki links
+                        del self.done[page]
+                        iw = ()
+                    for linkedPage in iw:
+                        if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage) or self.wiktionaryMismatch(linkedPage)):
+                            if self.addIfNew(linkedPage, counter, page):
+                                if globalvar.shownew:
+                                    wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
         del self.pending
@@ -606,7 +609,7 @@ class Subject(object):
                 f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
                 f.write("# %s \n" % page.aslink())
                 f.close()
-        if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isredirect:
+        if (self.untranslated or globalvar.askhints) and not self.hintsasked and not isRedirect:
             # Only once! 
             self.hintsasked = True
             if globalvar.untranslated:
@@ -758,15 +761,15 @@ class Subject(object):
                             answer = wikipedia.inputChoice(u'What should be done?', ['accept', 'reject', 'give up', 'accept all'], ['a', 'r', 'g', 'l'])
                             if not answer:
                                 answer = 'a'
-                        if answer in 'lL': # accept all
+                        if answer == 'l': # accept all
                             acceptall = True
                             answer = 'a'
-                        if answer in 'aA': # accept this one
+                        if answer == 'a': # accept this one
                             result[k] = v[0]
                             break
-                        elif answer in 'gG': # give up
+                        elif answer == 'g': # give up
                             return None
-                        elif answer in 'rR': # reject
+                        elif answer == 'r': # reject
                             # None acceptable
                             break
         else: # nerr <= 0, hence there are no lists longer than one.
