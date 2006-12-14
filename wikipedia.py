@@ -1452,7 +1452,9 @@ class Page(object):
             users.add(edit[1])
         return users
 
-    def move(self, newtitle, reason = None, movetalkpage = True, sysop = False):
+    def move(self, newtitle, reason = None, movetalkpage = True, sysop = False, throttle = False):
+        if throttle:
+            put_throttle()
         if reason == None:
             reason = "Pagemove by bot"
         if self.namespace() // 2 == 1:
@@ -1517,8 +1519,8 @@ class Page(object):
            reason is None, asks for a reason. If prompt is True, asks the user
            if he wants to delete the page.
         """
-	if throttle:
-		put_throttle()
+        if throttle:
+            put_throttle()
         if reason == None:
             reason = input(u'Please enter a reason for the deletion:')
         reason = reason.encode(self.site().encoding())
