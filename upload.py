@@ -81,6 +81,12 @@ def get_content_type(filename):
 
 class UploadRobot:
     def __init__(self, url, description = u'', keepFilename = False, verifyDescription = True, ignoreWarning = False, targetSite = None, urlEncoding = None):
+        """
+        ignoreWarning - Set this to True if you want to upload even if another
+                        file would be overwritten or another mistake would be
+                        risked.
+                        Attention: This parameter doesn't work yet for unknown reason.
+        """
         self.url = url
         self.urlEncoding = urlEncoding
         self.description = description
@@ -180,6 +186,7 @@ class UploadRobot:
     #         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
         formdata["wpUploadAffirm"] = "1"
         formdata["wpUpload"] = "upload bestand"
+        # This somehow doesn't work.
         if self.ignoreWarning:
             formdata["wpIgnoreWarning"] = "1"
         else:
@@ -220,8 +227,9 @@ class UploadRobot:
             #    wikipedia.output(u"Upload successful.")
             
             else:
-                # dump the HTML page
                 try:
+                    # Try to find the error message within the HTML page.
+                    # If we can't find it, we just dump the entire HTML page.
                     returned_html = returned_html[returned_html.index('<!-- start content -->') + 22: returned_html.index('<!-- end content -->')]
                 except:
                     pass
