@@ -1,6 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""
+This script understands various command-line arguments:
 
+* -interactive     : ask before changing page
+
+* -nocache         : doesn't include /featured/cache file to remembers if the
+                     article already was verified.
+
+* -fromlang:xx,yy  : xx is your language and yy the language was verified or
+                    using -fromall to verified all languages.
+
+usage: featured.py [-interactive] [-nocache] [-fromlang:xx,yy|-fromall]
+
+"""
 __version__ = '$Id$'
 
 import sys, re
@@ -220,9 +233,7 @@ def featuredWithInterwiki(fromsite, tosite):
                             wikipedia.output(u"no interwiki record, very strange")
                             continue
                         comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
-                        text=(text[:m.end()]
-                              + (u"{{%s|%s}}" % (findtemplate, fromsite.lang))
-                              + text[m.end():])
+                        text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(findtemplate, fromsite.lang)), atrans.categories()) 
                         atrans.put(text, comment)
                                                 
                 cc[a.title()]=atrans.title()
@@ -256,8 +267,7 @@ if __name__=="__main__":
             afterpage=arg[7:]
 
     if not fromlang:
-        print """usage:
-featured [-interactive] [-nocache] [-fromlang:xx,yy|-fromall]"""
+        wikipedia.showHelp('featured')
         sys.exit(1)
 
     fromlang.sort()
