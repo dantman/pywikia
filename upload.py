@@ -80,12 +80,13 @@ def get_content_type(filename):
 
 
 class UploadRobot:
-    def __init__(self, url, description = u'', keepFilename = False, verifyDescription = True, targetSite = None, urlEncoding = None):
+    def __init__(self, url, description = u'', keepFilename = False, verifyDescription = True, ignoreWarning = False, targetSite = None, urlEncoding = None):
         self.url = url
         self.urlEncoding = urlEncoding
         self.description = description
         self.keepFilename = keepFilename
         self.verifyDescription = verifyDescription
+        self.ignoreWarning = ignoreWarning
         if config.upload_to_commons:
             self.targetSite = targetSite or wikipedia.getSite('commons', 'commons')
         else:
@@ -179,8 +180,11 @@ class UploadRobot:
     #         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
         formdata["wpUploadAffirm"] = "1"
         formdata["wpUpload"] = "upload bestand"
-        formdata["wpIgnoreWarning"] = "1"
-    
+        if self.ignoreWarning:
+            formdata["wpIgnoreWarning"] = "1"
+        else:
+            formdata["wpIgnoreWarning"] = "0"
+
         # try to encode the strings to the encoding used by the target site.
         # if that's not possible (e.g. because there are non-Latin-1 characters and
         # the home Wikipedia uses Latin-1), convert all non-ASCII characters to
@@ -202,17 +206,19 @@ class UploadRobot:
                                   cookies = self.targetSite.cookies()
                                   )
             returned_html = returned_html.decode(self.targetSite.encoding())
+            # There are 2 ways MediaWiki can react on success: either it gives
+            # a 200 with a success message, or it gives a 302 (redirection).
             # Do we know how the "success!" HTML page should look like?
             # ATTENTION: if you changed your Wikimedia Commons account not to show
             # an English interface, this detection will fail!
             success_msg = mediawiki_messages.get('successfulupload', site = self.targetSite)
-            success_msgR = re.compile(re.escape(success_msg))
-            if success_msgR.search(returned_html):
+            if success_msg in returned_html or response.status == 302:
                  wikipedia.output(u"Upload successful.")
             # The following is not a good idea, because the server also gives a 200 when
             # something went wrong.
             #if response.status in [200, 302]:
             #    wikipedia.output(u"Upload successful.")
+            
             else:
                 # dump the HTML page
                 try:
