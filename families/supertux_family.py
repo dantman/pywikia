@@ -4,7 +4,7 @@ __version__ = '$Id$'
 
 import family
 
-# The Wikimedia Incubator family
+# The project wiki of SuperTux, an open source arcade game.
 
 class Family(family.Family):
     
@@ -16,10 +16,10 @@ class Family(family.Family):
         }
         
         self.namespaces[4] = {
-            '_default': [u'Incubator', self.namespaces[4]['_default']],
+            '_default': [u'SuperTux', self.namespaces[4]['_default']],
         }
         self.namespaces[5] = {
-            '_default': [u'Incubator talk', self.namespaces[5]['_default']],
+            '_default': [u'SuperTux talk', self.namespaces[5]['_default']],
         }
 
     def path(self, code):
