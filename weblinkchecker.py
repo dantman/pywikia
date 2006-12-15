@@ -71,6 +71,40 @@ ignorelist = [
     re.compile('.*[\./@]berlinonline.de(/.*)?'), # a de: user wants to fix them by hand and doesn't want them to be deleted, see [[de:Benutzer:BLueFiSH.as/BZ]].
 ]
 
+def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
+    # RFC 2396 says that URLs may only contain certain characters.
+    # For this regex we also accept non-allowed characters, so that the bot
+    # will later show these links as broken ('Non-ASCII Characters in URL').
+    # Note: While allowing parenthesis inside URLs, MediaWiki will regard
+    # right parenthesis at the end of the URL as not part of that URL.
+    # The same applies to dot, comma, colon and some other characters.
+    # MediaWiki allows closing curly braces inside links, but such braces
+    # often come from templates where URLs are parameters, so as a
+    # workaround we won't allow them inside links here. The same is true
+    # for the vertical bar.
+    notAtEnd = '\]\s\)\.:;,<>}\|"'
+    # So characters inside the URL can be anything except whitespace,
+    # closing squared brackets, quotation marks, greater than and less
+    # than, and the last character also can't be parenthesis or another
+    # character disallowed by MediaWiki.
+    notInside = '\]\s<>}"'
+    # The first half of this regular expression is required because '' is
+    # not allowed inside links. For example, in this wiki text:
+    #       ''Please see http://www.example.org.''
+    # .'' shouldn't be considered as part of the link.
+    regex = r'(?P<url>http[s]?://[^' + notInside + ']*?[^' + notAtEnd + '](?=[' + notAtEnd+ ']*\'\')|http[s]?://[^' + notInside + ']*[^' + notAtEnd + '])'
+    
+    if withoutBracketed:
+        regex = r'(?<!\[)' + regex
+    elif onlyBracketed:
+        regex = r'\[' + regex
+    linkR = re.compile(regex)
+    # Remove HTML comments in URLs as well as URLs in HTML comments.
+    # Also remove text inside nowiki links
+    text = re.sub('(?s)<nowiki>.*?</nowiki>|<!--.*?-->', '', text)
+    for m in linkR.finditer(text):
+        yield m.group('url')
+
 class LinkChecker(object):
     '''
     Given a HTTP URL, tries to load the page from the Internet and checks if it
@@ -431,7 +465,7 @@ class WeblinkCheckerRobot:
         else:
             reportThread = None
         self.history = History(reportThread)
-        
+
     def run(self):
         comment = wikipedia.translate(wikipedia.getSite(), talk_report_msg)
         wikipedia.setAction(comment)
@@ -445,32 +479,7 @@ class WeblinkCheckerRobot:
         except wikipedia.NoPage:
             wikipedia.output(u'%s does not exist.' % page.title())
             return
-        # RFC 2396 says that URLs may only contain certain characters.
-        # For this regex we also accept non-allowed characters, so that the bot
-        # will later show these links as broken ('Non-ASCII Characters in URL').
-        # Note: While allowing parenthesis inside URLs, MediaWiki will regard
-        # right parenthesis at the end of the URL as not part of that URL.
-        # The same applies to dot, comma, colon and some other characters.
-        # MediaWiki allows closing curly braces inside links, but such braces
-        # often come from templates where URLs are parameters, so as a
-        # workaround we won't allow them inside links here. The same is true
-        # for the vertical bar.
-        notAtEnd = '\]\s\)\.:;,<>}\|"'
-        # So characters inside the URL can be anything except whitespace,
-        # closing squared brackets, quotation marks, greater than and less
-        # than, and the last character also can't be parenthesis or another
-        # character disallowed by MediaWiki.
-        notInside = '\]\s<>}"'
-        # The first half of this regular expression is required because '' is
-        # not allowed inside links. For example, in this wiki text:
-        #       ''Please see http://www.example.org.''
-        # .'' shouldn't be considered as part of the link.
-        linkR = re.compile(r'http[s]?://[^' + notInside + ']*?[^' + notAtEnd + '](?=[' + notAtEnd+ ']*\'\')|http[s]?://[^' + notInside + ']*[^' + notAtEnd + ']')
-        # Remove HTML comments in URLs as well as URLs in HTML comments.
-        # Also remove text inside nowiki links
-        text = re.sub('(?s)<nowiki>.*?</nowiki>|<!--.*?-->', '', text)
-        urls = linkR.findall(text)
-        for url in urls:
+        for url in weblinksIn(text):
             ignoreUrl = False
             for ignoreR in ignorelist:
                 if ignoreR.match(url):
