@@ -147,7 +147,7 @@ class UploadRobot:
                         print "Invalid character: %s. Please try again" % c
                         ok = False
                 if ext not in allowed_formats and ok:
-                    choice = wikipedia.inputChoice(u"File format is not one of [%s], but %s. Continue?" % (u' '.join(allowed_formats), ext), ['yes', 'no'], ['y', 'n'], 'N')
+                    choice = wikipedia.inputChoice(u"File format is not one of [%s], but %s. Continue?" % (u' '.join(allowed_formats), ext), ['yes', 'no'], ['y', 'N'], 'N')
                     if choice == 'n':
                         ok = False
             if newfn != '':
@@ -205,21 +205,27 @@ class UploadRobot:
             # Do we know how the "success!" HTML page should look like?
             # ATTENTION: if you changed your Wikimedia Commons account not to show
             # an English interface, this detection will fail!
-            #success_msg = mediawiki_messages.get('successfulupload', site = self.targetSite)
-            #success_msgR = re.compile(re.escape(success_msg))
-            #if success_msgR.search(returned_html):
-            #     wikipedia.output(u"Upload successful.")
-            if response.status in [200, 302]:
+            success_msg = mediawiki_messages.get('successfulupload', site = self.targetSite)
+            success_msgR = re.compile(re.escape(success_msg))
+            if success_msgR.search(returned_html):
                  wikipedia.output(u"Upload successful.")
+            # The following is not a good idea, because the server also gives a 200 when
+            # something went wrong.
+            #if response.status in [200, 302]:
+            #    wikipedia.output(u"Upload successful.")
             else:
-                 # dump the HTML page
-                 wikipedia.output(u'%s\n\n' % returned_html)
-                 wikipedia.output(u'%i %s' % (response.status, response.reason))
-                 answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
-                 if answer in ["y", "Y"]:
-                     return upload_image(debug)
-                 else:
-                     return
+                # dump the HTML page
+                try:
+                    returned_html = returned_html[returned_html.index('<!-- start content -->') + 22: returned_html.index('<!-- end content -->')]
+                except:
+                    pass
+                wikipedia.output(u'%s\n\n' % returned_html)
+                wikipedia.output(u'%i %s' % (response.status, response.reason))
+                answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
+                if answer in ["y", "Y"]:
+                    return upload_image(debug)
+                else:
+                    return
         return filename
 
     def run(self):
