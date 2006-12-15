@@ -45,7 +45,10 @@ class TouchBot:
     def run(self):
         for page in self.generator:
             try:
-                text = page.get(get_redirect=self.touch_redirects)
+                # get the page, and save it using the unmodified text.
+                # whether or not getting a redirect throws an exception
+                # depends on the variable self.touch_redirects.
+                text = page.get(get_redirect = self.touch_redirects)
                 page.put(text)
             except wikipedia.NoPage:
                 print "Page %s does not exist?!" % page.aslink()
@@ -58,11 +61,14 @@ def main():
     #page generator
     gen = None
     redirs = False
+    # If the user chooses to work on a single page, this temporary array is
+    # used to read the words from the page title. The words will later be
+    # joined with spaces to retrieve the full title.
     pageTitle = []
     for arg in wikipedia.handleArgs():
         if arg.startswith('-start:'):
-            page = wikipedia.Page(wikipedia.getSite(),arg[7:])
-            gen = pagegenerators.AllpagesPageGenerator(page.titleWithoutNamespace(),namespace=page.namespace())
+            page = wikipedia.Page(wikipedia.getSite(), arg[7:])
+            gen = pagegenerators.AllpagesPageGenerator(page.titleWithoutNamespace(), namespace = page.namespace())
         elif arg.startswith('-ref:'):
             referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
             gen = pagegenerators.ReferringPageGenerator(referredPage)
@@ -80,6 +86,7 @@ def main():
             pageTitle.append(arg)
 
     if pageTitle:
+        # work on a single page
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = iter([page])
     if not gen:
