@@ -147,7 +147,7 @@ class UploadRobot:
                         print "Invalid character: %s. Please try again" % c
                         ok = False
                 if ext not in allowed_formats and ok:
-                    choice = wikipedia.inputChoice(u"File format is not %s but %s. Continue [y/N]? " % (allowed_formats, ext))
+                    choice = wikipedia.inputChoice(u"File format is not one of [%s], but %s. Continue?" % (u' '.join(allowed_formats), ext), ['yes', 'no'], ['y', 'n'], 'N')
                     if choice == 'n':
                         ok = False
             if newfn != '':
