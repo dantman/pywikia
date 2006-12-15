@@ -362,7 +362,7 @@ class Subject(object):
                     return page
         return None
 
-    def getFoundNonDisambig(self,site):
+    def getFoundNonDisambig(self, site):
         """
         If we found a non-disambiguation on the given site while working on the
         subject, this method returns it. If several ones have been found, the
@@ -374,6 +374,24 @@ class Subject(object):
                 if page.exists() and not page.isDisambig():
                     return page
         return None
+
+    def getFoundInCorrectNamespace(self, site):
+        """
+        If we found a page that has the expected namespace on the given site
+        while working on the subject, this method returns it. If several ones
+        have been found, the first one will be returned.
+        Otherwise, None will be returned.
+        """
+        # Hmmm... working on the todo list is quite risky,
+        # because we don't know yet if the pages there
+        # really exist...
+        for page in self.done + self.pending + self.todo:
+            print page
+            if page.site() == site:
+                if page.namespace() == self.originPage.namespace():
+                    return page
+        return None
+
 
     def translate(self, hints = None):
         """Add the given translation hints to the todo list"""
@@ -439,16 +457,30 @@ class Subject(object):
         Returns True iff the namespaces are different and the user
         has selected not to follow the linked page.
         """
-        if not globalvar.autonomous:
-            if self.originPage.namespace() != linkedPage.namespace():
-                if not self.foundIn.has_key(linkedPage):
+        if self.foundIn.has_key(linkedPage):
+            # We have seen this page before, don't ask again.
+            return False
+        elif self.originPage.namespace() != linkedPage.namespace():
+            if globalvar.autonomous:
+                wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()))
+                # Fill up foundIn, so that we will not write this notice
+                self.foundIn[linkedPage] = [linkingPage]
+                return True
+            else:
+                preferredPage = self.getFoundInCorrectNamespace(linkedPage.site())
+                if preferredPage:
+                    wikipedia.output(u"NOTE: Ignoring link from page %s in namespace %i to page %s in namespace %i because page %s in the correct namespace has already been found." % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace(), preferredPage.aslink(True)))
+                    return True
+                else:
                     choice = wikipedia.inputChoice('WARNING: %s is in namespace %i, but %s is in namespace %i. Follow it anyway?' % (self.originPage.aslink(True), self.originPage.namespace(), linkedPage.aslink(True), linkedPage.namespace()), ['Yes', 'No'], ['y', 'n'])
                     if choice != 'y':
                         # Fill up foundIn, so that we will not ask again
                         self.foundIn[linkedPage] = [linkingPage]
                         wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % linkedPage.aslink(True))
                         return True
-        return False
+        else:
+            # same namespaces, no problem
+            return False
 
     def wiktionaryMismatch(self, page):
         if globalvar.same=='wiktionary':
