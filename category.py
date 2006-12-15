@@ -82,6 +82,7 @@ msg_change={
     'he':u'רובוט: משנה %s',
     'ia':u'Robot: Modification de %s',
     'is':u'Vélmenni: Breyti flokknum [[Flokkur:%s]]',
+    'lt':u'robotas: Keičiama %s',
     'nl':u'Bot: Wijziging %s',
     'no':u'Robot: Endrer %s',
     'pt':u'Bot: Modificando [[Categoria:%s]]',

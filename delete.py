@@ -31,18 +31,24 @@ class DeletionRobot:
     This robot allows deletion of pages en masse.
     """
     # Summary messages for deleting from a category.
-    msg_delete_category={
-        'en':u'Robot - Deleting all pages from category %s',
-        'pt':u'Bot: Apagando todas as páginas da categoria %s',
-        }
-    msg_delete_links={
-        'en':u'Robot - Deleting all pages linked from %s',
-        'pt':u'Bot: Apagando todas as páginas ligadas a %s',
-        }
-    msg_delete_ref={
-        'en':u'Robot - Deleting all pages referring from %s',
-        'pt':u'Bot: Apagando todas as páginas afluentes a %s',
-        }
+    msg_delete_category = {
+        'de': u'Bot: Lösche alle Seiten in Kategorie %s',
+        'en': u'Robot - Deleting all pages from category %s',
+        'lt': u'robotas: Trinami visi puslapiai iš kategorijos %s',
+        'pt': u'Bot: Apagando todas as páginas da categoria %s',
+    }
+    msg_delete_links = {
+        'de': u'Bot: Lösche alle Seiten in %s verlinkten Seiten',
+        'en': u'Robot - Deleting all pages linked from %s',
+        'lt': u'robotas: Trinami visi puslapiai į kuriuos yra nuoroda iš %s',
+        'pt': u'Bot: Apagando todas as páginas ligadas a %s',
+    }
+    msg_delete_ref = {
+        'de': u'Bot: Lösche alle Seiten nach %s linkenden Seiten',
+        'en': u'Robot - Deleting all pages referring from %s',
+        'lt': u'robotas: Trinami visi puslapiai rodantys į %s',
+        'pt': u'Bot: Apagando todas as páginas afluentes a %s',
+    }
     
     def __init__(self, generator, pageName, summary, always = False, doCategory = False, doLinks = False, doRef = False):
         """

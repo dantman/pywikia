@@ -26,6 +26,7 @@ msg={
     'en': 'Bot: Changing categories',
     'he': 'Bot: משנה קטגוריות',
     'ia': 'Bot: Alteration de categorias',
+    'lt': 'robotas: Keičiamos kategorijos',
     'nl': 'Bot: Verandering van categorieen',
     'pt': 'Bot: Categorizando',
     'sr': 'Bot: Ð˜Ð·Ð¼ÐµÐ½Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ˜Ð°',
