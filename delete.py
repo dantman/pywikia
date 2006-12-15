@@ -44,7 +44,7 @@ class DeletionRobot:
         'pt': u'Bot: Apagando todas as páginas ligadas a %s',
     }
     msg_delete_ref = {
-        'de': u'Bot: Lösche alle Seiten nach %s linkenden Seiten',
+        'de': u'Bot: Lösche alle auf %s linkenden Seiten',
         'en': u'Robot - Deleting all pages referring from %s',
         'lt': u'robotas: Trinami visi puslapiai rodantys į %s',
         'pt': u'Bot: Apagando todas as páginas afluentes a %s',
