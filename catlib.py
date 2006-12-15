@@ -323,6 +323,8 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
                 article.put(text, comment)
 	    except wikipedia.EditConflict:
                 wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
+            except wikipedia.SpamfilterError:
+                wikipedia.output(u'Skipping %s because of spam filter error' % (article.title()))
 	    return
     wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
     return
