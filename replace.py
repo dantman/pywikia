@@ -31,6 +31,8 @@ You can run the bot with the following commandline parameters:
                isn't given, the bot will make simple text replacements.
 -except:XYZ  - Ignore pages which contain XYZ. If the -regex argument is given,
                XYZ will be regarded as a regular expression.
+-summary:XYZ - Set the summary message text for the edit to XYZ, bypassing the
+               predefined message texts with original and replacements inserted.
 -fix:XYZ     - Perform one of the predefined replacements tasks, which are given
                in the dictionary 'fixes' defined inside the file fixes.py.
                The -regex argument and given replacements will be ignored if
@@ -145,7 +147,6 @@ class XmlDumpReplacePageGenerator:
                     if old.search(entry.text):
                         yield wikipedia.Page(mysite, entry.title)
                         break
-    
 
 class ReplaceRobot:
     """
@@ -249,6 +250,8 @@ def main():
     # How we want to retrieve information on which pages need to be changed.
     # Can either be 'xmldump', 'textfile' or 'userinput'.
     source = None
+    # summary message
+    summary_commandline = None
     # Array which will collect commandline parameters.
     # First element is original text, second element is replacement text.
     commandline_replacements = []
@@ -361,12 +364,16 @@ def main():
             acceptall = True
         elif arg.startswith('-namespace:'):
             namespaces.append(int(arg[11:]))
+        elif arg.startswith('-summary:'):
+            wikipedia.setAction(arg[9:])
+            summary_commandline = True
         else:
             commandline_replacements.append(arg)
 
     if (len(commandline_replacements) == 2 and fix == None):
         replacements.append((commandline_replacements[0], commandline_replacements[1]))
-        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
+        if summary == None:
+            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
     elif fix == None:
         old = wikipedia.input(u'Please enter the text that should be replaced:')
         new = wikipedia.input(u'Please enter the new text:')
@@ -380,12 +387,14 @@ def main():
             new = wikipedia.input(u'Please enter the new text:')
             change = change + ' & -' + old + ' +' + new
             replacements.append((old, new))
-        default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
-        wikipedia.output(u'The summary message will default to: %s' % default_summary_message)
-        summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
-        if summary_message == '':
-            summary_message = default_summary_message
-        wikipedia.setAction(summary_message)
+        if not summary_commandline == True:
+            default_summary_message =  wikipedia.translate(wikipedia.getSite(), msg) % change
+            wikipedia.output(u'The summary message will default to: %s' % default_summary_message)
+            summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
+            if summary_message == '':
+                summary_message = default_summary_message
+                wikipedia.setAction(summary_message)
+            
     else:
         # Perform one of the predefined actions.
         try:
@@ -440,7 +449,7 @@ LIMIT 200""" % (whereClause, exceptClause)
 
     if not gen:
         # syntax error, show help text from the top of this file
-        wikipedia.output(__doc__, 'utf-8')
+        wikipedia.showHelp('replace')
         wikipedia.stopme()
         sys.exit()
     if namespaces != []:
