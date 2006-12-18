@@ -49,8 +49,12 @@ class DeletionRobot:
         'lt': u'robotas: Trinami visi puslapiai rodantys į %s',
         'pt': u'Bot: Apagando todas as páginas afluentes a %s',
     }
+    msg_delete_single = {
+        'en': u'Robot - Deleting %s',
+        'pt': u'Bot: Apagando %s',
+    }
     
-    def __init__(self, generator, pageName, summary, always = False, doCategory = False, doLinks = False, doRef = False):
+    def __init__(self, generator, pageName, summary, always = False, doCategory = False, doLinks = False, doRef = False, singlePage = False):
         """
         Arguments:
             * generator - A page generator.
@@ -64,6 +68,7 @@ class DeletionRobot:
         self.doCategory = doCategory
         self.doLinks = doLinks
         self.doRef = doRef
+        self.singlePage = singlePage
 
         # get edit summary message
         mysite = wikipedia.getSite()
@@ -76,6 +81,8 @@ class DeletionRobot:
                 self.summary = wikipedia.translate(mysite, self.msg_delete_links) % self.pageName
             elif self.doRef:
                 self.summary = wikipedia.translate(mysite, self.msg_delete_ref) % self.pageName
+            elif self.singlePage:
+                self.summary = wikipedia.translate(mysite, self.msg_delete_single) % self.singlePage
             wikipedia.setAction(self.summary)
 
     def run(self):
@@ -119,11 +126,20 @@ def main():
                 pageName = wikipedia.input(u'Input the page to delete from:')
             else:
                 pageName = arg[len('-ref:'):]
-        #elif arg.startswith('-page'):
-            # TODO: Delete only one page
+        elif arg.startswith('-page'):
+            singlePage = True
+            if len(arg) == len('-page'):
+                singlePage = wikipedia.input(u'Input the page to delete:')
+            else:
+                singlePage = arg[len('-page:'):]
 
-    if not pageName:
-        wikipedia.showHelp(u'delete')
+    if singlePage:
+        page = wikipedia.Page(wikipedia.getSite(), singlePage)
+        gen = iter([page])
+        preloadingGen = pagegenerators.PreloadingGenerator(gen)
+        bot = DeletionRobot(preloadingGen, pageName, summary, always, doCategory=doCategory, doLinks=doLinks, doRef=doRef, singlePage=singlePage)
+        bot.run()
+        
     elif doCategory:
         ns = wikipedia.getSite().category_namespace()
         categoryPage = catlib.Category(wikipedia.getSite(), ns + ':' + pageName)
@@ -134,11 +150,12 @@ def main():
     elif doRef:
         refPage = wikipedia.Page(wikipedia.getSite(), pageName)
         gen = pagegenerators.ReferringPageGenerator(refPage)
-        
     if pageName:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = DeletionRobot(preloadingGen, pageName, summary, always, doCategory=doCategory, doLinks=doLinks, doRef=doRef)
+        bot = DeletionRobot(preloadingGen, pageName, summary, always, doCategory=doCategory, doLinks=doLinks, doRef=doRef, singlePage=singlePage)
         bot.run()
+    elif pageName:
+        wikipedia.showHelp(u'delete')
 
 if __name__ == "__main__":
     try:
