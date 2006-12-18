@@ -19,6 +19,8 @@ Command-line arguments:
     -prefix        Automatic move pages in specific page with prefix name of the pages.
                    Argument can also be given as "-prefix:Python/Pywikipediabot/".
 
+    -from -to      The page to move from and the page to move to.
+
     -new           Work on the most recent new pages on the wiki.
 
     -del           Argument can be given also together with other arguments,
@@ -135,6 +137,7 @@ class MovePagesBot:
 def main():
     singlepage = []
     gen = cat = ref = link = start = prefix = None
+    FromName = ToName = None
     delete = False
     
     for arg in wikipedia.handleArgs():
@@ -156,6 +159,12 @@ def main():
             gen = pagegenerators.NewpagesPageGenerator(number)
         elif arg == '-del':
             delete = True
+        elif arg.startswith('-from:'):
+            oldName = arg[len('-from:'):]
+            FromName = True
+        elif arg.startswith('-to:'):
+            newName = arg[len('-to:'):]
+            ToName = True
         elif arg.startswith('-prefix:'):
             prefix = wikipedia.Page(wikipedia.getSite(), arg[8:])
             listpageTitle = wikipedia.input(u'List of pages:')
@@ -170,9 +179,18 @@ def main():
     if singlepage:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(singlepage))
         gen = iter([page])
-    if not gen:
-        wikipedia.showHelp('movepages')
+    elif ((FromName and ToName) == True):
+        wikipedia.output(u'Do you will move %s to %s' % (oldName, newName))
+        oldName = wikipedia.Page(wikipedia.getSite(), newName)
+        msg = wikipedia.setAction(comment)
+        oldName.move(newName, msg, throttle=True)
+        if delete == True:
+            pagedel = wikipedia.Page(wikipedia.getSite(), page)
+            deletemsg = wikipedia.setAction(deletecomment)
+            pagedel.delete(page, deletemsg)
     else:
+        wikipedia.showHelp('movepages')
+    if gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = MovePagesBot(preloadingGen, delete)
         bot.run()
