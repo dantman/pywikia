@@ -49,10 +49,6 @@ class DeletionRobot:
         'lt': u'robotas: Trinami visi puslapiai rodantys į %s',
         'pt': u'Bot: Apagando todas as páginas afluentes a %s',
     }
-    msg_delete_single = {
-        'en': u'Robot - Deleting %s',
-        'pt': u'Bot: Apagando %s',
-    }
     
     def __init__(self, generator, pageName, summary, always = False, doCategory = False, doLinks = False, doRef = False, singlePage = False):
         """
@@ -82,7 +78,8 @@ class DeletionRobot:
             elif self.doRef:
                 self.summary = wikipedia.translate(mysite, self.msg_delete_ref) % self.pageName
             elif self.singlePage:
-                self.summary = wikipedia.translate(mysite, self.msg_delete_single) % self.singlePage
+                reason = ''
+                self.summary = wikipedia.setAction(reason)
             wikipedia.setAction(self.summary)
 
     def run(self):
