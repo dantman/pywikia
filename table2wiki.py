@@ -488,6 +488,7 @@ def main():
     page_title = []
     debug = False
     xmlfilename = None
+    gen = None
     textfilename = None
     startpage = None
     for arg in wikipedia.handleArgs():
@@ -537,16 +538,14 @@ LIMIT 200"""
         gen = iter([page])
     if not gen:
         # show help
-        wikipedia.output(__doc__, 'utf-8')
+        wikipedia.showHelp('table2wiki')
         sys.exit(0)
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
     bot = Table2WikiRobot(preloadingGen, debug, quietMode)
     bot.run()
-            
-try:
-    main()
-except:
-    wikipedia.stopme()
-    raise
-else:
-    wikipedia.stopme()
+
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
