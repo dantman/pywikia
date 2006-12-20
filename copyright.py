@@ -3,8 +3,8 @@
 """
 
 from __future__ import generators
-import sys, re, codecs, os
-import wikipedia, pagegenerators, catlib, config
+import sys, re, codecs, os, time
+import wikipedia, pagegenerators, catlib, config, mediawiki_messages
 
 __version__='$Id$'
 
@@ -27,73 +27,70 @@ pages_for_exclusion_database = [
 ]
 
 def exclusion_file_list():
- import mediawiki_messages
- for i in pages_for_exclusion_database:
-  path = 'copyright/' + i[0] + '/' + i[2]
-  mediawiki_messages.makepath(path)
-  p = wikipedia.Page(wikipedia.getSite(i[0]),i[1])
-  yield p, path
+    for i in pages_for_exclusion_database:
+        path = 'copyright/' + i[0] + '/' + i[2]
+        mediawiki_messages.makepath(path)
+        p = wikipedia.Page(wikipedia.getSite(i[0]),i[1])
+        yield p, path
 
 def load_pages():
- import time, os
- write = False
- for page, path in exclusion_file_list():
-  try:
-    file_age = time.time() - os.path.getmtime(path)
-    if file_age > 24 * 60 * 60:
-      print 'Updating source pages to exclude new URLs...'
-      write = True
-  except OSError:
-      write = True
+    write = False
+    for page, path in exclusion_file_list():
+        try:
+            file_age = time.time() - os.path.getmtime(path)
+            if file_age > 24 * 60 * 60:
+                print 'Updating source pages to exclude new URLs...'
+                write = True
+        except OSError:
+            write = True
 
-  if write:
-      f = codecs.open(path, 'w', 'utf-8')
-      f.write(page.get())
-      f.close()
- return
+        if write:
+            f = codecs.open(path, 'w', 'utf-8')
+            f.write(page.get())
+            f.close()
+    return
 
 def check_list(text, cl):
-   for entry in cl:
-     if entry:
-       if text.find(entry) != -1:
-         print 'SKIP URL ' + text
-#         print 'DEBUG: ' + entry
-         return True
+    for entry in cl:
+        if entry:
+            if text.find(entry) != -1:
+                print 'SKIP URL ' + text
+                #print 'DEBUG: ' + entry
+                return True
 
 def exclusion_list():
-	import glob
-	prelist = []
-        load_pages()
-	for page, path in exclusion_file_list():
-		f = codecs.open(path, "r", 'utf-8')
-		data = f.read()
-		f.close()
-                # wikipedia:en:Wikipedia:Mirrors and forks
-		prelist += re.findall("(?i)url\s*=\s*<nowiki>(?:http://)?(.*?)</nowiki>", data)
-		prelist += re.findall("(?i)\*\s*Site:\s*\[?(?:http://)?(.*?)\]?", data)
-		# wikipedia:it:Wikipedia:Cloni
-                if 'copyright/it/Cloni.txt' in path:
-                  prelist += re.findall('(?i)^==(?!=)\s*\[?\s*(?:<nowiki>)?(?:http://)?(.*?)(?:</nowiki>)?\s*\]?\s*==', data)
-#		  prelist += re.findall("(?i)<h2>\s*(?:http://)?(.*?)\s*</h2>", data)
-	list1 = []
-	for entry in prelist:
-		list1 += entry.split(", ")
-	list2 = []
-	for entry in list1:
-		list2 += entry.split("and ")
-	list3 = []
-	for entry in list2:
-		entry = re.sub("http://", "", entry)
-		if entry:
-		        if '/' in entry:
-		          list3 += [re.sub(" .*", "", entry[:entry.rfind('/')])]
-                        else:
-                          list3 += [re.sub(" .*", "", entry)]
-#			list3 += [re.sub("/.*", "", entry)]
-	f = codecs.open('copyright/exclusion_list.txt', 'r','utf-8')
-          list3 += re.sub(" ?#.*","",f.read()).splitlines()
-	f.close()
-	return list3
+    prelist = []
+    load_pages()
+    for page, path in exclusion_file_list():
+        f = codecs.open(path, "r", 'utf-8')
+        data = f.read()
+        f.close()
+        # wikipedia:en:Wikipedia:Mirrors and forks
+        prelist += re.findall("(?i)url\s*=\s*<nowiki>(?:http://)?(.*?)</nowiki>", data)
+        prelist += re.findall("(?i)\*\s*Site:\s*\[?(?:http://)?(.*?)\]?", data)
+        # wikipedia:it:Wikipedia:Cloni
+        if 'copyright/it/Cloni.txt' in path:
+            prelist += re.findall('(?i)^==(?!=)\s*\[?\s*(?:<nowiki>)?(?:http://)?(.*?)(?:</nowiki>)?\s*\]?\s*==', data)
+            #prelist += re.findall("(?i)<h2>\s*(?:http://)?(.*?)\s*</h2>", data)
+    list1 = []
+    for entry in prelist:
+        list1 += entry.split(", ")
+    list2 = []
+    for entry in list1:
+        list2 += entry.split("and ")
+    list3 = []
+    for entry in list2:
+        entry = re.sub("http://", "", entry)
+        if entry:
+            if '/' in entry:
+                list3 += [re.sub(" .*", "", entry[:entry.rfind('/')])]
+            else:
+                list3 += [re.sub(" .*", "", entry)]
+                #list3 += [re.sub("/.*", "", entry)]
+    f = codecs.open('copyright/exclusion_list.txt', 'r','utf-8')
+    list3 += re.sub(" ?#.*","",f.read()).splitlines()
+    f.close()
+    return list3
 
 def write_log(text, filename = "copyright/output.txt"):
     file1=codecs.open(filename, 'a', 'utf-8')
@@ -102,19 +99,19 @@ def write_log(text, filename = "copyright/output.txt"):
 
 def cleanwikicode(text):
     if not text:
-      return ""
-#    wikipedia.output(text)
+        return ""
+    #wikipedia.output(text)
     text = text.replace("<br>", "")
     text = text.replace("<br/>", "")
     text = text.replace("<br />", "")
     text = re.sub('<!--.*?-->', '', text)
 
     if exclude_quote:
-      text = re.sub("(?i){{quote|.*?}}", "", text)
-      text = re.sub("^:''.*?''\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$", "", text)
-      text = re.sub('^[:*]?["][^"]+["]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
-      text = re.sub('^[:*]?[«][^»]+[»]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
-      text = re.sub('^[:*]?[“][^”]+[”]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
+        text = re.sub("(?i){{quote|.*?}}", "", text)
+        text = re.sub("^:''.*?''\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$", "", text)
+        text = re.sub('^[:*]?["][^"]+["]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
+        text = re.sub('^[:*]?[Â«][^Â»]+[Â»]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
+        text = re.sub('^[:*]?[â€œ][^â€]+[â€]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
 
     text = re.sub('http://[a-z/._%0-9]+ ', ' ', text)
     text = re.sub('\[\[[^\|]+\|(.*?)\]\]', '\\1', text)
@@ -133,77 +130,77 @@ def cleanwikicode(text):
 excl_list = exclusion_list()
 
 def query(lines = [], max_query_len = 1300):
-# Google max_query_len = 1480?
-# - '-Wikipedia ""' = 1467
- output = u""
- n_query = 0
+    # Google max_query_len = 1480?
+    # - '-Wikipedia ""' = 1467
+    output = u""
+    n_query = 0
 
- for line in lines:
-  line = cleanwikicode(line)
-  if len(line)>200:
-    n_query+=1
-    if n_query>max_query_for_page:
-      print "Max query limit for page reached"
-      return output
-    if len(line)>max_query_len:
-      line=line[:max_query_len]
-      glen=len(line)
-      while line[glen-1] != ' ':
-        glen -= 1
-        line = line[:glen]
-#    wikipedia.output(line)
-    results = get_results(line)
-    for url, engine in results:
-       output += '\n*%s - %s' % (engine, url)
-    if results:
-       output += '\n**' + line
- return output
+    for line in lines:
+        line = cleanwikicode(line)
+        if len(line)>200:
+            n_query+=1
+            if n_query>max_query_for_page:
+                print "Max query limit for page reached"
+                return output
+            if len(line)>max_query_len:
+                line=line[:max_query_len]
+                glen=len(line)
+                while line[glen-1] != ' ':
+                    glen -= 1
+                    line = line[:glen]
+                    # wikipedia.output(line)
+            results = get_results(line)
+            for url, engine in results:
+                output += '\n*%s - %s' % (engine, url)
+            if results:
+                output += '\n**' + line
+    return output
 
 def check_urllist(url, add_item):
     for i in range(len(url)):
-      if add_item in url[i]:
-         url[i] = (add_item, 'google, yahoo')
-         return True
+        if add_item in url[i]:
+            url[i] = (add_item, 'google, yahoo')
+            return True
     return False
 
 def get_results(query, numresults = 10):
-  url = list()
-  if search_in_google:
-    import google
-    google.LICENSE_KEY = config.google_key
-    print "  google query..."
-    search_request_retry = 6
-    while search_request_retry:
+    url = list()
+    if search_in_google:
+        import google
+        google.LICENSE_KEY = config.google_key
+        print "  google query..."
+        search_request_retry = 6
+        while search_request_retry:
 #SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object: Daily limit of 1000 queries exceeded for key xxx>
-     try:
-      data = google.doGoogleSearch('-Wikipedia "' + query + '"')
-      search_request_retry = 0
-      for entry in data.results:
-        url.append((entry.URL, 'google'))
-     except Exception, err:
-        print "Got an error ->", err
-        search_request_retry -= 1
-  if search_in_yahoo:
-    import yahoo.search.web
-    print "  yahoo query..."
-    data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"' + query.encode('utf_8')+'" -Wikipedia', results=numresults)
-    search_request_retry = 6
-    while search_request_retry:
-     try:
-      for entry in data.parse_results():
-        if not check_urllist(url, entry.Url):
-          url.append((entry.Url, 'yahoo'))
-      search_request_retry = 0
-     except Exception, err:
-        print "Got an error ->", err
-        search_request_retry -= 1
+            try:
+                data = google.doGoogleSearch('-Wikipedia "' + query + '"')
+                search_request_retry = 0
+                for entry in data.results:
+                    url.append((entry.URL, 'google'))
+            except Exception, err:
+                print "Got an error ->", err
+                search_request_retry -= 1
+    if search_in_yahoo:
+        import yahoo.search.web
+        print "  yahoo query..."
+        data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"' + query.encode('utf_8')+'" -Wikipedia', results=numresults)
+        search_request_retry = 6
+        while search_request_retry:
+            try:
+                for entry in data.parse_results():
+                    if not check_urllist(url, entry.Url):
+                        url.append((entry.Url, 'yahoo'))
+                search_request_retry = 0
+            except Exception, err:
+                print "Got an error ->", err
+                search_request_retry -= 1
 
-  offset = 0
-  for i in range(len(url)):
-    if check_list(url[i+offset][0], excl_list):
-       url.pop(i+offset)
-       offset+=-1
-  return url
+    offset = 0
+    for i in range(len(url)):
+        if check_list(url[i+offset][0], excl_list):
+            url.pop(i+offset)
+            offset+=-1
+    return url
 
 class CheckRobot:
     def __init__(self, generator):
