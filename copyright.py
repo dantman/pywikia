@@ -1,6 +1,15 @@
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
+This robot check copyright text in Google and Yahoo.
+
 """
+
+#
+# (C) Francesco Cosoleto, 2006
+#
+# Distributed under the terms of the MIT license.
+#
 
 from __future__ import generators
 import sys, re, codecs, os, time
@@ -171,7 +180,8 @@ def get_results(query, numresults = 10):
         print "  google query..."
         search_request_retry = 6
         while search_request_retry:
-#SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object: Daily limit of 1000 queries exceeded for key xxx>
+        #SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
+        # Daily limit of 1000 queries exceeded for key xxx>
             try:
                 data = google.doGoogleSearch('-Wikipedia "' + query + '"')
                 search_request_retry = 0
@@ -183,7 +193,9 @@ def get_results(query, numresults = 10):
     if search_in_yahoo:
         import yahoo.search.web
         print "  yahoo query..."
-        data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"' + query.encode('utf_8')+'" -Wikipedia', results=numresults)
+        data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"' +
+                                          query.encode('utf_8')+
+                                          '" -Wikipedia', results=numresults)
         search_request_retry = 6
         while search_request_retry:
             try:
