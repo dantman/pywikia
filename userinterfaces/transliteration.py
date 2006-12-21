@@ -274,8 +274,64 @@ def trans(char, default = '?'):
         return u"th"
     if char in u"Cʗǃ":
         return u"!"
+
+    #Punctuation and typography
+    if char in u"«»“”¨":
+        return u'"'
+    if char in u"‘’′":
+        return u"'"
+    if char == u"•":
+        return u"*"
+    if char == u"@":
+        return u"(at)"
+    if char == u"¤":
+        return u"$"
+    if char == u"¢":
+        return u"c"
+    if char == u"€":
+        return u"E"
+    if char == u"£":
+        return u"L"
+    if char == u"¥":
+        return u"yen"
+    if char == u"†":
+        return u"+"
+    if char == u"‡":
+        return u"++"
+    if char == u"°":
+        return u":"
+    if char == u"¡":
+        return u"!"
+    if char == u"¿":
+        return u"?"
+    if char == u"‰":
+        return u"o/oo"
+    if char == u"‱":
+        return u"o/ooo"
+    if char in u"¶§":
+        return u">"
+    if char in u"…":
+        return u"..."
+    if char in u"‒–—―":
+        return u"-"
+    if char in u"·":
+        return u" "
+    if char == u"¦":
+        return u"|"
+    if char == u"⁂":
+        return u"***"
+    if char == u"◊":
+        return u"<>"
+    if char == u"‽":
+        return u"?!"
+    if char == u"؟":
+        return u";-)"
     
-    #Cyrillic
+    
+        
+    
+
+    # Cyrillic
     if char == u"А":
         return u"A"
     if char == u"а":
@@ -622,6 +678,8 @@ def trans(char, default = '?'):
         return u"á"
     if char in u"یﯼﯽﯿﯾ":
         return u"y"
+    if char == u"؟":
+        return u"?"
     # Arabic - ligatures
     if char in u"ﻻﻼ":
         return u"la"
@@ -778,6 +836,7 @@ def trans(char, default = '?'):
         return u"O"
     if char == u"ω":
         return u"o"
+    # Greek: Special and old characters
     if char == u"ϗ":
         return u"&"
     if char == u"Ϛ":
@@ -800,6 +859,43 @@ def trans(char, default = '?'):
         return u"Sh"
     if char == u"ϸ":
         return u"sh"
+    if char == u"·":
+        return u":"
+    # Greek: Accented characters
+    if char == u"Ά":
+        return u"Á"
+    if char == u"ά":
+        return u"á"
+    if char in u"ΈΉ":
+        return u"É"
+    if char in u"έή":
+        return u"é"
+    if char == u"Ί":
+        return u"Í"
+    if char == u"ί":
+        return u"í"
+    if char == u"Ϊ":
+        return u"Ï"
+    if char in u"ϊΐ":
+        return u"ï"
+    if char == u"Ό":
+        return u"Ó"
+    if char == u"ό":
+        return u"ó"
+    if char == u"Ύ":
+        return u"Ý"
+    if char == u"ύ":
+        return u"ý"
+    if char == u"Ϋ":
+        return u"Y"
+    if char in u"ϋΰ":
+        return u"ÿ"
+    if char == u"Ώ":
+        return u"Ó"
+    if char == u"ώ":
+        return u"ó"
+    
+    
 
     # Japanese (katakana and hiragana)
     if char in u"アあ":
@@ -957,6 +1053,77 @@ def trans(char, default = '?'):
     if char == u"ヺ":
         return u"vo"
 
+    # Japanese and Chinese punctuation and typography
+    if char == u"・·":
+        return u" "
+    if char == u"々仝ヽヾゝゞ〱〲〳〵〴〵":
+        return u"2" # Repeat previous character - elsewhere - is used in a similar meaning
+    if char in u"〃『』《》":
+        return u'"'
+    if char in u"「」〈〉〘〙〚〛":
+        return u"'"
+    if char in u"（〔":
+        return u"("
+    if char in u"）〕":
+        return u")"
+    if char in u"［【〖":
+        return u"["
+    if char in u"］】〗":
+        return u"]"
+    if char == u"｛":
+        return u"{"
+    if char == u"｝":
+        return u"}"
+    if char == u"っ":
+        return u":"
+    if char == u"ー":
+        return u"-"
+    if char == u"゛":
+        return u"'"
+    if char == u"゜":
+        return u"p"
+    if char == u"。":
+        return u". "
+    if char == u"、":
+        return u", "
+    if char == u"・":
+        return u"*"
+    if char == u"〆":
+        return u"shime"
+    if char == u"〜":
+        return u"-"
+    if char == u"…":
+        return u"..."
+    if char == u"‥":
+        return u".."
+    if char == u"ヶ":
+        return u"months"
+    if char in u"•◦":
+        return u"_"
+    if char in u"※＊":
+        return u"*"
+    if char == u"Ⓧ":
+        return u"(X)"
+    if char == u"Ⓨ":
+        return u"(Y)"
+    if char == u"！":
+        return u"!"
+    if char == u"？":
+        return u"?"
+    if char == u"；":
+        return u";"
+    if char == u"：":
+        return u":"
+    if char == u"。":
+        return u"."
+    if char in u"，、":
+        return u","
+    
+    
+    
+    
+    
+
     # Georgian
     if char == u"ა":
         return u"a"
@@ -966,7 +1133,7 @@ def trans(char, default = '?'):
         return u"g"
     if char == u"დ":
         return u"d"
-    if char == u"ე":
+    if char in u"ეჱ":
         return u"e"
     if char == u"ვ":
         return u"v"
@@ -1024,6 +1191,12 @@ def trans(char, default = '?'):
         return u"j"
     if char == u"ჰ":
         return u"h"
+    if char == u"ჳ":
+        return u"w"
+    if char == u"ჵ":
+        return u"o"
+    if char == u"ჶ":
+        return u"f"
 
     # Devanagari
     if char in u"पप":
@@ -1160,5 +1333,186 @@ def trans(char, default = '?'):
     if char == u"९":
         return u"9"
 
+    # Armenian
+    if char == u"Ա":
+        return u"A"
+    if char == u"ա":
+        return u"a"
+    if char == u"Բ":
+        return u"B"
+    if char == u"բ":
+        return u"b"
+    if char == u"Գ":
+        return u"G"
+    if char == u"գ":
+        return u"g"
+    if char == u"Դ":
+        return u"D"
+    if char == u"դ":
+        return u"d"
+    if char == u"Ե":
+        return u"Je"
+    if char == u"ե":
+        return u"e"
+    if char == u"Զ":
+        return u"Z"
+    if char == u"զ":
+        return u"z"
+    if char == u"Է":
+        return u"É"
+    if char == u"է":
+        return u"é"
+    if char == u"Ը":
+        return u"Ë"
+    if char == u"ը":
+        return u"ë"
+    if char == u"Թ":
+        return u"Th"
+    if char == u"թ":
+        return u"th"
+    if char == u"Ժ":
+        return u"Zh"
+    if char == u"ժ":
+        return u"zh"
+    if char == u"Ի":
+        return u"I"
+    if char == u"ի":
+        return u"i"
+    if char == u"Լ":
+        return u"L"
+    if char == u"լ":
+        return u"l"
+    if char == u"Խ":
+        return u"Ch"
+    if char == u"խ":
+        return u"ch"
+    if char == u"Ծ":
+        return u"Ts"
+    if char == u"ծ":
+        return u"ts"
+    if char == u"Կ":
+        return u"K"
+    if char == u"կ":
+        return u"k"
+    if char == u"Հ":
+        return u"H"
+    if char == u"հ":
+        return u"h"
+    if char == u"Ձ":
+        return u"Dz"
+    if char == u"ձ":
+        return u"dz"
+    if char == u"Ղ":
+        return u"R"
+    if char == u"ղ":
+        return u"r"
+    if char == u"Ճ":
+        return u"Cz"
+    if char == u"ճ":
+        return u"cz"
+    if char == u"Մ":
+        return u"M"
+    if char == u"մ":
+        return u"m"
+    if char == u"Յ":
+        return u"J"
+    if char == u"յ":
+        return u"j"
+    if char == u"Ն":
+        return u"N"
+    if char == u"ն":
+        return u"n"
+    if char == u"Շ":
+        return u"S"
+    if char == u"շ":
+        return u"s"
+    if char == u"Շ":
+        return u"Vo"
+    if char == u"շ":
+        return u"o"
+    if char == u"Չ":
+        return u"Tsh"
+    if char == u"չ":
+        return u"tsh"
+    if char == u"Պ":
+        return u"P"
+    if char == u"պ":
+        return u"p"
+    if char == u"Ջ":
+        return u"Dz"
+    if char == u"ջ":
+        return u"dz"
+    if char == u"Ռ":
+        return u"R"
+    if char == u"ռ":
+        return u"r"
+    if char == u"Ս":
+        return u"S"
+    if char == u"ս":
+        return u"s"
+    if char == u"Վ":
+        return u"V"
+    if char == u"վ":
+        return u"v"
+    if char == u"Տ":
+        return u"T'"
+    if char == u"տ":
+        return u"t'"
+    if char == u"Ր":
+        return u"R"
+    if char == u"ր":
+        return u"r"
+    if char == u"Ց":
+        return u"Tsh"
+    if char == u"ց":
+        return u"tsh"
+    if char == u"Ւ":
+        return u"V"
+    if char == u"ւ":
+        return u"v"
+    if char == u"Փ":
+        return u"Ph"
+    if char == u"փ":
+        return u"ph"
+    if char == u"Ք":
+        return u"Kh"
+    if char == u"ք":
+        return u"kh"
+    if char == u"Օ":
+        return u"O"
+    if char == u"օ":
+        return u"o"
+    if char == u"Ֆ":
+        return u"F"
+    if char == u"ֆ":
+        return u"f"
+    if char == u"և":
+        return u"&"
+    if char == u"՟":
+        return u"."
+    if char == u"՞":
+        return u"?"
+    if char == u"՝":
+        return u";"
+    if char == u"՛":
+        return u""
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     return default
