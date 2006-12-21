@@ -32,8 +32,8 @@ This script understands various command-line arguments:
     -ref           Work on all pages that link to a certain page.
                    Argument can also be given as "-ref:referredpagetitle".
 
-    -link          Work on all pages that are linked from a certain page.
-                   Argument can also be given as "-link:linkingpagetitle".
+    -links         Work on all pages that are linked from a certain page.
+                   Argument can also be given as "-links:linkingpagetitle".
 
     -new           Work on the most recent new pages on the wiki
 
@@ -386,7 +386,6 @@ class Subject(object):
         # because we don't know yet if the pages there
         # really exist...
         for page in self.done + self.pending + self.todo:
-            print page
             if page.site() == site:
                 if page.namespace() == self.originPage.namespace():
                     return page
@@ -1455,7 +1454,14 @@ if __name__ == "__main__":
                         categoryName = arg[5:]
                 elif arg.startswith('-subcat'):
                     catrecurse = True
+                elif arg.startswith('-links'):
+                    if len(arg) == 6:
+                        linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
+                    else:
+                        linkingPageTitle = arg[7:]
+                # deprecated for consistency with other scripts
                 elif arg.startswith('-link'):
+                    wikipedia.output(u'NOTE: The -link parameter is deprecated. Please use -links instead.')
                     if len(arg) == 5:
                         linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
                     else:
