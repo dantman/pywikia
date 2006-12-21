@@ -34,7 +34,7 @@ will only touch a single page.
 
 __version__='$Id: touch.py,v 1.13 2006/03/01 14:07:06 russblau Exp $'
 
-import wikipedia, pagegenerators, catlib
+import wikipedia, pagegenerators, catlib, config
 import sys
 
 class TouchBot:
@@ -58,6 +58,9 @@ class TouchBot:
                 print "Page %s is locked?!" % page.aslink()
 
 def main():
+    # Disable cosmetic changes because we don't want to modify any page
+    # content, so that we don't flood the histories with minor changes.
+    config.cosmetic_changes = False
     #page generator
     gen = None
     redirs = False
