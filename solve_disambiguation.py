@@ -273,6 +273,11 @@ ignore_title = {
             u"Wikipedia:Wikiproject Roemeense gemeenten/Doorverwijspagina's",
             u"Gebruiker:Emiel/artikelen",
             u"Wikipedia:Links naar doorverwijspagina's/20060917 dump",
+            u'Gebruiker:Waerth/Wikipedia hitsparade.*',
+            u'Overleg gebruiker:[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?',
+            u'Gebruiker:Lankhorst/Lijst.*',
+            u'Wikipedia:Wikipedianen met een encyclopedisch artikel',
+            u'Gebruiker:Al/Informatie Roemenië/.*',
          ],
         'pt': [
             u'Usuário:.+',
