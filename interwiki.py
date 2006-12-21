@@ -174,9 +174,8 @@ This script understands various command-line arguments:
                    following cases:
                    * If there are no interwiki at all on the page
                    * If an interwiki must be removed
-                   * If an interwiki must be changed, where the old interwiki
-                     does not go to a non-existing or redirect page (although
-                     some cases where it is are included too)
+                   * If an interwiki must be changed and there has been a
+                     conflict for this page
                    
     -bracket       only work on pages that have (in the home language) a bracket
                    in their title. All other pages are skipped.
@@ -676,11 +675,12 @@ class Subject(object):
         """Return True if all the work for this subject has completed."""
         return len(self.todo) == 0
 
-    def problem(self, txt):
+    def problem(self, txt, createneed = True):
         """Report a problem with the resolution of this subject."""
         wikipedia.output(u"ERROR: %s" % txt)
         self.confirm = True
-        self.problemfound = True
+        if createneed:
+            self.problemfound = True
         if globalvar.autonomous:
             try:
                 f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
@@ -965,7 +965,7 @@ class Subject(object):
                 # Determine whether we need permission to submit
                 ask = False
                 if removing and removing != [page]:   # Allow for special case of a self-pointing interwiki link
-                    self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)))
+                    self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)), createneed = False)
                     ask = True
                 if globalvar.force:
                     ask = False
