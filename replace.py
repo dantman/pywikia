@@ -372,7 +372,7 @@ def main():
 
     if (len(commandline_replacements) == 2 and fix == None):
         replacements.append((commandline_replacements[0], commandline_replacements[1]))
-        if summary == None:
+        if summary_commandline == None:
             wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
     elif fix == None:
         old = wikipedia.input(u'Please enter the text that should be replaced:')
