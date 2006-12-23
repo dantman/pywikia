@@ -3,6 +3,12 @@
 """
 This robot check copyright text in Google and Yahoo.
 
+Google search requires to install the pyGoogle module from http://pygoogle.sf.net
+and get a Google API license key from http://www.google.com/apis/index.html.
+
+Yahoo! search requires pYsearch module http://pysearch.sourceforge.net and
+a Yahoo AppID http://developer.yahoo.com. 
+
 You can run the bot with the following commandline parameters:
 
 -g           - Use Google search engine (default)
