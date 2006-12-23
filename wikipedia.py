@@ -3580,8 +3580,8 @@ def output(text, decoder = None, colors = [], newline = True):
         logfile.flush()
     ui.output(text, colors = colors, newline = newline)
 
-def input(question):
-    return ui.input(question)
+def input(question, colors = None):
+    return ui.input(question, colors)
 
 def inputChoice(question, answers, hotkeys, default = None):
     return ui.inputChoice(question, answers, hotkeys, default)

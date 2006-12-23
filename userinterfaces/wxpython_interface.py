@@ -12,7 +12,7 @@ class UI:
     def __init__(self):
         pass
 
-    def output(self, text, newline = True):
+    def output(self, text, newline = True, colors = None):
         """
         If a character can't be displayed, it will be replaced with a
         question mark.
@@ -23,7 +23,7 @@ class UI:
             # comma at the end means "don't print newline"
             print text.encode(config.console_encoding, 'replace'),
 
-    def input(self, question):
+    def input(self, question, colors = None):
         """
         Works like raw_input(), but returns a unicode string instead of ASCII.
 

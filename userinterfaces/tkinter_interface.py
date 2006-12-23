@@ -196,7 +196,7 @@ class UI:
             # auto-scroll down
             self.logBox.see(END)
 
-    def input(self, question):
+    def input(self, question, colors=None):
         """
         Returns a unicode string.
         """

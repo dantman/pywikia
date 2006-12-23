@@ -165,7 +165,7 @@ class UI:
             colors.append(None)
         self.printColorized(text, colors)
 
-    def input(self, question):
+    def input(self, question, colors = None):
         """
         Works like raw_input(), but returns a unicode string instead of ASCII.
 
@@ -176,7 +176,10 @@ class UI:
         # sound the terminal bell to notify the user
         if config.ring_bell:
             sys.stdout.write('\07')
-        self.output(question + ' ', newline=False)
+        if colors:
+            self.output(question + ' ', colors = colors + [None], newline=False)
+        else:
+            self.output(question + ' ', newline = False)
         text = raw_input()
         text = unicode(text, config.console_encoding)
         return text
