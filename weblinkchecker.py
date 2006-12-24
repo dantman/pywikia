@@ -15,7 +15,9 @@ two times, with a time lag of at least one week. Such links will be logged to a
 
 In addition to the logging step, it is possible to automatically report dead
 links to the talk page of the article where the link was found. To use this
-feature, set report_dead_links_on_talk = True in your user-config.py.
+feature, set report_dead_links_on_talk = True in your user-config.py, or
+specify "-talk" on the command line. Adding "-notalk" switches this off
+irrespective of the configuration variable.
 
 When a link is found alive, it will be removed from the .dat file.
 
@@ -70,6 +72,22 @@ ignorelist = [
     re.compile('.*[\./@]gso.gbv.de(/.*)?'),  # bot somehow can't handle their redirects 
     re.compile('.*[\./@]berlinonline.de(/.*)?'), # a de: user wants to fix them by hand and doesn't want them to be deleted, see [[de:Benutzer:BLueFiSH.as/BZ]].
 ]
+
+class Global(object):
+    talk = config.report_dead_links_on_talk
+
+    def handleArgs(self, args):
+        unhandledArguments = []
+        for arg in args:
+            if arg == '-talk':
+                self.talk = True
+            elif arg == '-notalk':
+                self.talk = False
+            else:
+                unhandledArguments.append(arg)
+        return unhandledArguments
+
+globalvar = Global()
 
 def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     # RFC 2396 says that URLs may only contain certain characters.
@@ -284,7 +302,7 @@ class LinkCheckThread(threading.Thread):
 class History:
     '''
     Stores previously found dead links.
-    The URLs are dict's keys, and values are lists of tuples where each tuple
+    The URLs are dictionary keys, and values are lists of tuples where each tuple
     represents one time the URL was found dead. Tuples have the form
     (title, date, error) where title is the wiki page where the URL was found,
     date is an instance of time, and error is a string with error code and
@@ -392,7 +410,7 @@ class DeadLinkReportThread(threading.Thread):
     '''
     A Thread that is responsible for posting error reports on talk pages. There
     will only be one DeadLinkReportThread, and it is using a semaphore to make
-    sure that two LinkCheckerThreads can't access the queue at the same time.
+    sure that two LinkCheckerThreads can not access the queue at the same time.
     '''
     def __init__(self):
         threading.Thread.__init__(self)
@@ -457,7 +475,8 @@ class WeblinkCheckerRobot:
     def __init__(self, generator, start ='!'):
         self.generator = generator
         self.start = start
-        if config.report_dead_links_on_talk:
+        if globalvar.talk:
+            #wikipedia.output("Starting talk page thread")
             reportThread = DeadLinkReportThread()
             # thread dies when program terminates
             # reportThread.setDaemon(True)
@@ -498,7 +517,10 @@ class WeblinkCheckerRobot:
 def main():
     gen = None
     pageTitle = []
-    for arg in wikipedia.handleArgs():
+    args = wikipedia.handleArgs()
+    args = globalvar.handleArgs(args)
+    
+    for arg in args:
         if arg.startswith('-start:'):
             start = arg[7:]
             gen = pagegenerators.AllpagesPageGenerator(start)
