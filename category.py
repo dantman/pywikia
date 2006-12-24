@@ -108,7 +108,7 @@ cfd_templates = {
 class CategoryDatabase:
     '''
     This is a temporary knowledge base saving for each category the contained
-    subcategories and articles, so that category pages don't need to
+    subcategories and articles, so that category pages do not need to
     be loaded over and over again
     '''
     def __init__(self, rebuild = False, filename = 'category.dump.bz2'):
@@ -432,6 +432,19 @@ class CategoryTidyRobot:
         '''
         print
         wikipedia.output(u'Treating page %s, currently in category %s' % (article.title(), current_cat.title()))
+
+        # Determine a reasonable amount of context to print
+        full_text = article.get()
+        contextLength = full_text.index('\n\n')
+        if full_text.startswith(u'[['): # probably an image
+            # Add extra paragraph.
+            contextLength = full_text.index('\n\n', contextLength+2)
+        if contextLength > 1000 or contextLength < 0:
+            contextLength = 500
+        print
+        wikipedia.output(full_text[:contextLength])
+        print
+        
         subcatlist = self.catDB.getSubcats(current_cat)
         supercatlist = self.catDB.getSupercats(current_cat)
         print
@@ -451,11 +464,10 @@ class CategoryTidyRobot:
         print ' j - Jump to another category'
         print ' n - Skip this article'
         print ' r - Remove this category tag'
-        print ' ? - Read the page'
+        print ' ? - Print first part of the page (longer and longer)'
         wikipedia.output(u'Enter - Save category as %s' % current_cat.title())
 
         flag = False
-        length = 1000
         while not flag:
             print ''
             choice=wikipedia.input(u'Choice:')
@@ -479,20 +491,18 @@ class CategoryTidyRobot:
                 catlib.change_category(article, original_cat, None)
                 flag = True
             elif choice == '?':
-                print ''
-                full_text = article.get()
-                print ''
-                wikipedia.output(full_text[0:length])
+                contextLength += 500
+                print
+                wikipedia.output(full_text[:contextLength])
+                print
                 
                 # if categories possibly weren't visible, show them additionally
                 # (maybe this should always be shown?)
-                if len(full_text) > length:
+                if len(full_text) > contextLength:
                     print ''
                     print 'Original categories: '
                     for cat in article.categories(): 
                         wikipedia.output(u'* %s' % cat.title()) 
-                    # show more text if the user uses this function again
-                    length = length+500
             elif choice[0] == 'u':
                 try:
                     choice=int(choice[1:])
