@@ -666,12 +666,9 @@ class Subject(object):
                                 lpsite=linkedPage.site()
                                 for prevPage in self.foundIn.keys():
                                     if prevPage != linkedPage and prevPage.site() == lpsite:
-                                        self.problem(u"%s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
-                                        if globalvar.autonomous:
-                                            # We will not solve this autonomously.
-                                            # We can therefore stop immediately.
-                                            self.todo = []
-                                            return
+                                        # Still, this could be "no problem" as either may be a
+                                        # redirect to the other. No way to find out quickly!
+                                        wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
                                         break
                                 else:
                                     if globalvar.shownew:
