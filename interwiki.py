@@ -661,8 +661,21 @@ class Subject(object):
                     for linkedPage in iw:
                         if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage) or self.wiktionaryMismatch(linkedPage)):
                             if self.addIfNew(linkedPage, counter, page):
-                                if globalvar.shownew:
-                                    wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                                # It is new. Also verify whether it is the second on the
+                                # same site
+                                lpsite=linkedPage.site()
+                                for prevPage in self.foundIn.keys():
+                                    if prevPage != linkedPage and prevPage.site() == lpsite:
+                                        self.problem(u"%s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                                        if globalvar.autonomous:
+                                            # We will not solve this autonomously.
+                                            # We can therefore stop immediately.
+                                            self.todo = []
+                                            return
+                                        break
+                                else:
+                                    if globalvar.shownew:
+                                        wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
         self.pending = []
@@ -703,8 +716,8 @@ class Subject(object):
 
 
     def assemble(self):
-        # No errors have been seen so far
-        errorCount = 0
+        # No errors have been seen so far, except....
+        errorCount = self.problemfound
         mysite = wikipedia.getSite()
         # Build up a dictionary of all pages found, with the site as key.
         # Each value will be a list of pages.
