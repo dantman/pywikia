@@ -100,7 +100,7 @@ stopme(): Put this on a bot when it is not or not communicating with the Wiki
 """
 from __future__ import generators
 #
-# (C) Rob W.W. Hooft, Andre Engels, 2003-2005
+# (C) Pywikipedia bot team, 2003-2006
 #
 # Distributed under the terms of the MIT license.
 #
@@ -188,7 +188,6 @@ class PageNotFound(Exception):
     """Page not found in list"""
 
 SaxError = xml.sax._exceptions.SAXParseException
-
 
 # Pre-compile re expressions
 reNamespace = re.compile("^(.+?) *: *(.*)$")
@@ -1896,12 +1895,16 @@ class Throttle(object):
             self.checkMultiplicity()
         self.setDelay(mindelay)
 
+    def logfn(self):
+        import wikipediatools as _wt
+        return _wt.absoluteFilename('throttle.log')
+        
     def checkMultiplicity(self):
         processes = {}
         my_pid = 1
         count = 1
         try:
-            f = open('throttle.log','r')
+            f = open(self.logfn(), 'r')
         except IOError:
             if not self.pid:
                 pass
@@ -1927,7 +1930,7 @@ class Throttle(object):
             self.pid = my_pid
         self.checktime = time.time()
         processes[self.pid] = self.checktime
-        f = open('throttle.log','w')
+        f = open(self.logfn(), 'w')
         for p in processes.keys():
             f.write(str(p)+' '+str(processes[p])+'\n')
         f.close()
@@ -1974,7 +1977,7 @@ class Throttle(object):
         self.checktime = 0
         processes = {}
         try:
-            f = open('throttle.log','r')
+            f = open(self.logfn(), 'r')
         except IOError:
             return
         else:
@@ -1985,12 +1988,12 @@ class Throttle(object):
                 ptime = int(line[1].split('.')[0])
                 if now - ptime <= self.releasepid and pid != self.pid:
                     processes[pid] = ptime
-        f = open('throttle.log','w')
+        f = open(self.logfn(), 'w')
         for p in processes.keys():
             f.write(str(p)+' '+str(processes[p])+'\n')
         f.close()
 
-    def __call__(self, requestsize = 1):
+    def __call__(self, requestsize=1):
         """This is called from getEditPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
            since the last time it was called before it returns."""
@@ -2017,7 +2020,8 @@ class MyURLopener(urllib.FancyURLopener):
 # Special opener in case we are using a site with authentication
 if config.authenticate:
     import urllib2, cookielib
-    COOKIEFILE = 'login-data/cookies.lwp'
+    import wikipediatools as _wt
+    COOKIEFILE = _wt.absoluteFilename('login-data', 'cookies.lwp')
     cj = cookielib.LWPCookieJar()
     if os.path.isfile(COOKIEFILE):
         cj.load(COOKIEFILE)
@@ -2505,7 +2509,8 @@ def Family(fam = None, fatal = True):
         fam = config.family
     try:
         # search for family module in the 'families' subdirectory
-        sys.path.append('families')
+        import wikipediatools as _wt
+        sys.path.append(_wt.absoluteFilename('families'))
         exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
@@ -2607,9 +2612,9 @@ class Site(object):
             self._cookies = None
             self.loginStatusKnown = True
         else:
-            fn = 'login-data/%s-%s-%s-login.data' % (self.family.name, self.lang, username)
-            #if not os.path.exists(fn):
-            #    fn = 'login-data/%s-login.data' % self.lang
+            import wikipediatools as _wt
+            tmp = '%s-%s-%s-login.data' % (self.family.name, self.lang, username)
+            fn = _wt.absoluteFilename('login-data', tmp)
             if not os.path.exists(fn):
                 #print "Not logged in"
                 self._cookies = None
@@ -3338,7 +3343,8 @@ def handleArgs():
 #########################
 
 # search for user interface module in the 'userinterfaces' subdirectory
-sys.path.append('userinterfaces')
+import wikipediatools as _wt
+sys.path.append(_wt.absoluteFilename('userinterfaces'))
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 
@@ -3539,10 +3545,12 @@ def showDiff(oldtext, newtext):
 
 def activateLog(logname):
     global logfile
+    import wikipediatools as _wt
+    logfn = _wt.absoluteFilename('logs', logname)
     try:
-        logfile = codecs.open('logs/%s' % logname, 'a', 'utf-8')
+        logfile = codecs.open(logfn, 'a', 'utf-8')
     except IOError:
-        logfile = codecs.open('logs/%s' % logname, 'w', 'utf-8')
+        logfile = codecs.open(logfn, 'w', 'utf-8')
 
 def output(text, decoder = None, colors = [], newline = True):
     """
@@ -3603,7 +3611,7 @@ Global arguments available for all bots:
 
 -log:xyz          Enable the logfile, using xyz as the filename.
 
--nolog            Disable the logfile (if it's enabled by default).
+-nolog            Disable the logfile (if it is enabled by default).
 
 -putthrottle:nn   Set the minimum time (in seconds) the bot will wait between
                   saving pages.

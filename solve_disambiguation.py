@@ -633,7 +633,7 @@ class DisambiguationRobot(object):
                     continue
                 else:
                     if len(choice)>0 and choice[0] == 'r':
-                    # we want to throw away the original link text
+                        # we want to throw away the original link text
                         replaceit = True
                         choice = choice[1:]
                     elif include == "redirect":

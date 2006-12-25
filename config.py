@@ -55,7 +55,8 @@ authenticate = {}
 # Get the names of all known families, and initialize
 # with empty dictionaries
 RfamilyFile = re.compile('(?P<name>.+)_family.py$')
-for filename in os.listdir('families'):
+import wikipediatools as _wt
+for filename in os.listdir(_wt.absoluteFilename('families')):
     m = RfamilyFile.match(filename)
     if m:
         familyName = m.group('name')
@@ -273,7 +274,7 @@ for _key in _gl:
 del _key
 # Get the user files
 _thislevel=0
-_fns=["user-config.py"]
+_fns=[_wt.absoluteFilename("user-config.py")]
 for _filename in _fns:
     _thislevel += 1
     if os.path.exists(_filename):
