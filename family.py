@@ -2185,6 +2185,9 @@ class Family:
     def version(self, code):
         return "1.5"
 
+    def page_action_address(self, code, name, action):
+        return '%s?title=%s&action=%s' % (self.path(code), name, action)
+        
     def put_address(self, code, name):
         return '%s?title=%s&action=submit' % (self.path(code), name)
 
