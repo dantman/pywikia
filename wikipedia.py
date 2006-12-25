@@ -7,15 +7,15 @@ late August 2004)
 
 Classes:
 Page: A MediaWiki page
-    __init__              : Page(xx,Title) - the page with title Title on language xx:
+    __init__              : Page(Site, Title) - the page with title Title on wikimedia site Site
     title                 : The name of the page, in a form suitable for an interwiki link
     urlname               : The name of the page, in a form suitable for a URL
     titleWithoutNamespace : The name of the page, with the namespace part removed
     section               : The section of the page (the part of the name after '#')
     sectionFreeTitle      : The name without the section part
     aslink                : The name of the page in the form [[Title]] or [[lang:Title]]
-    site                  : Thewiki where this page isin
-    encoding              : The encoding the page is in
+    site                  : The wiki this page is in
+    encoding              : The encoding of the page
     isAutoTitle           : If the title is a well known, auto-translatable title
     autoFormat            : Returns (dictName, value), where value can be a year, date, etc.,
                             and dictName is 'YearBC', 'December', etc.
@@ -1246,15 +1246,8 @@ class Page(object):
             raise IsNotRedirectPage(self)
 
     def getPreviousVersion(self):
-        # Not for general use - if this is uploaded to CVS, it is by accident
-        site = self.site()
-        path = site.family.version_history_address(self.site().language(), self.urlname())
-        txt = site.getUrl(path)
-        loc = txt.find("cur</a>")
-        if txt.find("Some minor changes") > loc or txt.find("Some minor changes") == -1:
-            return self.get()
-        r = re.compile('oldid=(\d+)\"')
-        oldid = r.findall(txt)[0]
+        vh = self.getVersionHistory()
+        oldid = vh[0][0]
         return self.getEditPage(oldid=oldid)[0]
 
     def getVersionHistory(self, forceReload = False, reverseOrder = False, getAll = False):
@@ -1266,12 +1259,12 @@ class Page(object):
         site = self.site()
 
         # regular expression matching one edit in the version history.
-        # results will have 3 groups: edit date/time, user name, and edit
+        # results will have 4 groups: oldid, edit date/time, user name, and edit
         # summary.
         if self.site().version() < "1.4":
-            editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
+            editR = re.compile('<li>.*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
         else:
-            editR = re.compile('<li>.*?<a href=".*?" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a>.*?</span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
+            editR = re.compile('<li>.*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a>.*?</span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
 
         startFromPage = None
         thisHistoryDone = False
@@ -1434,10 +1427,10 @@ class Page(object):
         Returns the version history as a wiki table.
         """
         result = '{| border="1"\n'
-        result += '! date/time || username || edit summary\n'
-        for time, username, summary in self.getVersionHistory(forceReload = forceReload, reverseOrder = reverseOrder, getAll = getAll):
+        result += '! oldid || date/time || username || edit summary\n'
+        for oldid, time, username, summary in self.getVersionHistory(forceReload = forceReload, reverseOrder = reverseOrder, getAll = getAll):
             result += '|----\n'
-            result += '| %s || %s || <nowiki>%s</nowiki>\n' % (time, username, summary)
+            result += '| %s || %s || %s || <nowiki>%s</nowiki>\n' % (oldid, time, username, summary)
         result += '|}\n'
         return result
 
@@ -3260,7 +3253,7 @@ def argHandler(arg, moduleName):
     parameter, processes it and returns None.
 
     moduleName should be the name of the module calling this function. This is
-    required because the -help option loads the module's docstring and because
+    required because the -help option loads the module docstring and because
     the module name will be used for the filename of the log.
     '''
     global default_code, default_family
@@ -3300,7 +3293,7 @@ def handleArgs():
     that are not global.
     '''
     global default_code, default_family
-    # get commandline arguemnts
+    # get commandline arguments
     args = sys.argv
     # get the name of the module calling this function. This is
     # required because the -help option loads the module's docstring and because
