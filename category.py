@@ -337,7 +337,7 @@ class CategoryRemoveRobot:
     '''
     Removes the category tag from all pages in a given category and from the
     category pages of all subcategories, without prompting.
-    Doesn't remove category tags pointing at subcategories.
+    Does not remove category tags pointing at subcategories.
     '''
     deletion_reason_remove = {
         'de':u'Bot: Kategorie wurde aufgelöst',
