@@ -579,8 +579,12 @@ class DisambiguationRobot(object):
                             break
                     elif choice in ['d', 'D']:
                         editor = editarticle.TextEditor()
-                        if not disambPage.isRedirectPage():
-                            disambigText = editor.edit(disambPage.get(), jumpIndex = m.start())
+                        if disambPage.isRedirectPage():
+                            disambredir1 = disambPage.getRedirectTarget()
+                            disambredir2 = wikipedia.Page(wikipedia.getSite(), disambredir1)
+                            disambigText = editor.edit(disambredir2.get(), jumpIndex = m.start(), highlight = disambredir2.title())
+                        else:
+                            disambigText = editor.edit(disambPage.get(), jumpIndex = m.start(), highlight = disambPage.title())
                     elif choice in ['l', 'L']:
                         self.listAlternatives()
                     elif choice in ['m', 'M']:
