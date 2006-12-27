@@ -124,8 +124,9 @@ def workon(page):
 
 try:
     msg = {
-        'en': 'Changing redirects on a disambiguation page',
-        'nl': 'Verandering van redirects op een doorverwijspagina'
+        'en': u'Changing redirects on a disambiguation page',
+        'nl': u'Verandering van redirects op een doorverwijspagina',
+        'pt': u'Arrumando redirects na página de desambiguação',
         }
     start = []
     test = False
