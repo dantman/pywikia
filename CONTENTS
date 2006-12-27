@@ -80,6 +80,7 @@ copyright.py           : This robot check copyright text in Google and Yahoo.
 cosmetic_changes.py    : Can do slight modifications to a wiki page source code
                          such that the code looks cleaner.
 delete.py              : This script can be used to delete pages en masse.
+disambredir.py         : Changing redirect names in disambiguation pages.
 featured.py            : A robot to check feature articles.
 fixes.py               : This is not a bot, perform one of the predefined replacements
                          tasks, used for "replace.py -fix:replacement".
@@ -191,9 +192,9 @@ parameter, e.g.
 
     python interwiki.py -help
 
-You need to have at least python version 2.3 installed on your computer
-to be able to run any of the code in this package. Support for older
-versions of python is not planned.
+You need to have at least python version 2.5 (http://www.python.org/download/) 
+installed on your computer to be able to run any of the code in this package.
+Support for older versions of python is not planned.
 
 You do not need to "install" this package to be able to make use of
 it. You can actually just run it from the directory where you unpacked
