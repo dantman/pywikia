@@ -2036,18 +2036,23 @@ def replaceExceptNowikiAndComments(text, old, new):
     """ Deprecated. """
     return replaceExceptMathNowikiAndComments(text, old, new)
 
-def replaceExceptMathNowikiAndComments(text, old, new):
+def replaceExceptMathNowikiAndComments(text, old, new, caseInsensitive = False):
     """
     Replaces old by new in text, skipping occurences of old within nowiki tags
-    and HTML comments.
+    and HTML comments.  If caseInsensitive is true, then use case insensitivity
+    in the regex matching.
 
     Parameters:
         text - a string
         old  - a compiled regular expression
         new  - a string
+        caseInsensitive - a boolean
     """
     if type(old) == type('') or type(old) == type(u''):
-        old = re.compile(old)
+        if caseInsensitive:
+            old = re.compile(old, re.IGNORECASE)
+        else:
+            old = re.compile(old)
     nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<math>.*?</math>|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
     # How much of the text we have looked at so far
     index = 0
