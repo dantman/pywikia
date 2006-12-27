@@ -48,6 +48,7 @@ You can run the bot with the following commandline parameters:
                iterate over all user pages starting at User:M, use
                -start:User:M.
 -always      - Don't prompt you for each replacement
+-nocase      - Use case insensitive regular expressions.
 other:       - First argument is the old text, second argument is the new text.
                If the -regex argument is given, the first argument will be
                regarded as a regular expression, and the second argument might
@@ -284,6 +285,8 @@ def main():
     # will become True when the user presses a ('yes to all') or uses the -always
     # commandline paramater.
     acceptall = False
+    # Will become True if the user inputs the commandline parameter -nocase
+    caseInsensitive = False
     # Which namespaces should be processed?
     # default to [] which means all namespaces will be processed
     namespaces = []
@@ -362,6 +365,8 @@ def main():
             fix = arg[5:]
         elif arg == '-always':
             acceptall = True
+        elif arg == '-nocase':
+            caseInsensitive = True
         elif arg.startswith('-namespace:'):
             namespaces.append(int(arg[11:]))
         elif arg.startswith('-summary:'):
@@ -417,13 +422,19 @@ def main():
         old, new = replacements[i]
         if not regex:
             old = re.escape(old)
-        oldR = re.compile(old, re.UNICODE)
+        if caseInsensitive:
+            oldR = re.compile(old, re.UNICODE | re.IGNORECASE)
+        else:
+            oldR = re.compile(old, re.UNICODE)
         replacements[i] = oldR, new
     for i in range(len(exceptions)):
         exception = exceptions[i]
         if not regex:
             exception = re.escape(exception)
-        exceptionR = re.compile(exception, re.UNICODE)
+        if caseInsensitive:
+            exceptionR = re.compile(exception, re.UNICODE | re.IGNORECASE)
+        else:
+            exceptionR = re.compile(exception, re.UNICODE)
         exceptions[i] = exceptionR
     
     if xmlFilename:
