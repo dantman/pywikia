@@ -528,7 +528,6 @@ class Family(family.Family):
 
         self.obsolete = {'dk':'da',
                     'minnan':'zh-min-nan',
-                    'mo':None,
                     'nb':'no',
                     'jp':'ja',
                     'tokipona':None,
