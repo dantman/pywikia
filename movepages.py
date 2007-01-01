@@ -102,7 +102,7 @@ class MovePagesBot:
         pagemove = (u'%s%s%s' % (pagestart, page, pageend))
         ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o]' % pagemove)
         if ask2 in ['y', 'Y']:
-            titleroot = wikipedia.Page(wikipedia.getSite(), page)
+            titleroot = wikipedia.Page(wikipedia.getSite(), page.title())
             msg = wikipedia.translate(wikipedia.getSite(), comment)
             titleroot.move(pagemove, msg, throttle=True)
             if delete == True:
