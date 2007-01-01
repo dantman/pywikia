@@ -36,7 +36,7 @@ __version__='$Id$'
 
 loaded = {}
 
-def get(key, site = None):
+def get(key, site = None, allowreload = True):
     site = site or wikipedia.getSite()
     if loaded.has_key(site):
         # Use cached copy if it exists.
@@ -60,6 +60,9 @@ def get(key, site = None):
     key = key[0].lower() + key[1:]
     if dictionary.has_key(key):
         return dictionary[key]
+    elif allowreload:
+        refresh_messages(site = site)
+        return get(key, site = site, allowreload = False)
     else:
         raise KeyError('MediaWiki Key %s not found' % key)
 
