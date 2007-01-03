@@ -16,9 +16,6 @@ Command-line arguments:
 
     -start         Work on all pages on the home wiki, starting at the named page.
                    
-    -prefix        Automatic move pages in specific page with prefix name of the pages.
-                   Argument can also be given as "-prefix:Python/Pywikipediabot/".
-
     -from -to      The page to move from and the page to move to.
 
     -new           Work on the most recent new pages on the wiki.
@@ -26,6 +23,12 @@ Command-line arguments:
     -del           Argument can be given also together with other arguments,
                    its functionality is delete old page that was moved.
                    For example: "movepages.py Helen_Keller -del".
+
+-prefix argument run only alone, over a list of pages.
+
+    -prefix        Automatic move pages in specific page with prefix name of the pages.
+                   Argument can also be given as "-prefix:Python/Pywikipediabot/".
+
 
 Single pages use: movepages.py Helen_Keller
 
@@ -141,18 +144,34 @@ def main():
     delete = False
     
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-cat:'):
-            cat = catlib.Category(wikipedia.getSite(), 'Category:%s'%arg[5:])
-            gen = pagegenerators.CategorizedPageGenerator(cat)
-        elif arg.startswith('-ref:'):
-            ref = wikipedia.Page(wikipedia.getSite(), arg[5:])
-            gen = pagegenerators.ReferringPageGenerator(ref)
-        elif arg.startswith('-link:'):
-            link = wikipedia.Page(wikipedia.getSite(), arg[6:])
-            gen = pagegenerators.LinkedPageGenerator(link)
-        elif arg.startswith('-start:'):
-            start = wikipedia.Page(wikipedia.getSite(),arg[7:])
-            gen = pagegenerators.AllpagesPageGenerator(start.titleWithoutNamespace(),namespace=start.namespace())
+        if arg.startswith('-cat'):
+            if len(arg) == 4:
+                cat = wikipedia.input(u'Please enter the category name:')
+            else:
+                cat = arg[5:]
+            categ = catlib.Category(wikipedia.getSite(), 'Category:%s'%cat)
+            gen = pagegenerators.CategorizedPageGenerator(categ)
+        elif arg.startswith('-ref'):
+            if len(arg) == 4:
+                ref = wikipedia.input(u'Links to which page should be processed?')
+            else:
+                ref = arg[5:]
+            refer = wikipedia.Page(wikipedia.getSite(), ref)
+            gen = pagegenerators.ReferringPageGenerator(refer)
+        elif arg.startswith('-link'):
+            if len(arg) == 5:
+                link = wikipedia.input(u'Links from which page should be processed?')
+            else:
+                link = arg[6:]
+            links = wikipedia.Page(wikipedia.getSite(), link)
+            gen = pagegenerators.LinkedPageGenerator(links)
+        elif arg.startswith('-start'):
+            if len(arg) == 6:
+                start = wikipedia.input(u'Which page to start from:')
+            else:
+                start = arg[7:]
+            startp = wikipedia.Page(wikipedia.getSite(), start)
+            gen = pagegenerators.AllpagesPageGenerator(startp.titleWithoutNamespace(),namespace=startp.namespace())
         elif arg.startswith('-new'):
             if not number:
                 number = config.special_page_limit
@@ -165,8 +184,11 @@ def main():
         elif arg.startswith('-to:'):
             newName = arg[len('-to:'):]
             ToName = True
-        elif arg.startswith('-prefix:'):
-            prefix = wikipedia.Page(wikipedia.getSite(), arg[8:])
+        elif arg.startswith('-prefix'):
+            if len(arg) == len('-prefix'):
+                prefix = wikipedia.input(u'Input the prefix name:')
+            else:
+                prefix = wikipedia.Page(wikipedia.getSite(), arg[8:])
             listpageTitle = wikipedia.input(u'List of pages:')
             listpage = wikipedia.Page(wikipedia.getSite(), listpageTitle)
             gen = pagegenerators.LinkedPageGenerator(listpage)
@@ -188,12 +210,12 @@ def main():
             pagedel = wikipedia.Page(wikipedia.getSite(), page)
             deletemsg = wikipedia.setAction(deletecomment)
             pagedel.delete(page, deletemsg)
-    else:
-        wikipedia.showHelp('movepages')
     if gen:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = MovePagesBot(preloadingGen, delete)
         bot.run()
+    else:
+        wikipedia.showHelp('movepages')
                 
 if __name__ == '__main__':
     try:
