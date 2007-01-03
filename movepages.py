@@ -102,7 +102,7 @@ class MovePagesBot:
     def AppendPageName(self, page, delete):
         pagestart = wikipedia.input(u'Append This to the start:')
         pageend = wikipedia.input(u'Append This to the end:')
-        pagemove = (u'%s%s%s' % (pagestart, page, pageend))
+        pagemove = (u'%s%s%s' % (pagestart, page.title(), pageend))
         ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o]' % pagemove)
         if ask2 in ['y', 'Y']:
             titleroot = wikipedia.Page(wikipedia.getSite(), page.title())
