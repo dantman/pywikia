@@ -282,6 +282,7 @@ msg = {
     'os': (u'Робот', u'баххæст кодта', u'Баивта', u'Аиуварс'),
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
     'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
+    'ro': (u'Robot interwiki: ', u'Adãugat', u'Înlãturat',u'Modificat'), 
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
     'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),
     'sr': (u'Бот', u'Додаје', u'Брише', u'Мења'),
