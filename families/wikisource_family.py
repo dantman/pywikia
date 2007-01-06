@@ -110,6 +110,14 @@ class Family(family.Family):
             'la': u'Disputatio Scriptoris',
             'pt': u'Autor Discussão',
         }
+
+        self.namespaces[104] = {
+            'en': u'Page',
+        }
+
+        self.namespaces[105] = {
+            'en': u'Page talk',
+        }
         
         self.alphabetic = ['ang','ar','az','bg','bs','ca','cs','cy',
                       'da','de','el','en','es','et','fa','fi',
