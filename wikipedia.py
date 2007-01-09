@@ -3178,7 +3178,11 @@ class Site(object):
         else:
             nslist = []
             for n in self.family.namespaces:
-                ns = self.family.namespace(self.lang, n)
+                try:
+                    ns = self.family.namespace(self.lang, n)
+                except KeyError:
+                    # No default namespace defined
+                    continue
                 if ns is not None:
                     nslist.append(self.family.namespace(self.lang, n))
             _namespaceCache[self] = nslist
