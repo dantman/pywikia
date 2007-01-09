@@ -487,7 +487,7 @@ class Page(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents, self._isWatched, self.editRestriction = self.getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop)
+                self._contents, self._isWatched, self.editRestriction = self.getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop, nofollow_redirects=nofollow_redirects)
                 hn = self.section()
                 if hn:
                     m = re.search("=+ *%s *=+" % hn, self._contents)
@@ -509,7 +509,7 @@ class Page(object):
                 raise
         return self._contents
 
-    def getEditPage(self, get_redirect=False, throttle = True, sysop = False, oldid = None):
+    def getEditPage(self, get_redirect=False, throttle = True, sysop = False, oldid = None, nofollow_redirects = False):
         """
         Get the contents of the Page via the edit page.
         Do not use this directly, use get() instead.
@@ -594,7 +594,7 @@ class Page(object):
         if m:
             if get_redirect:
                 self._redirarg = m.group(1)
-            else:
+            elif not nofollow_redirects:
                 raise IsRedirectPage(m.group(1))
         x = text[i1:i2]
         x = unescape(x)
