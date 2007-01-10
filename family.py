@@ -2243,6 +2243,9 @@ class Family:
     def delete_address(self, code, name):
         return '%s?title=%s&action=delete' % (self.path(code), name)
 
+    def protect_address(self, code, name):
+        return '%s?title=%s&action=protect' % (self.path(code), name)
+
     def version_history_address(self, code, name):
         return '%s?title=%s&action=history&limit=%d' % (self.path(code), name, config.special_page_limit)
 

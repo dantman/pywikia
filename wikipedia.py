@@ -1573,6 +1573,73 @@ class Page(object):
                     output(data)
                     return False
 
+    def protect(self, edit = 'sysop', move = 'sysop', reason = None, prompt = True, throttle = False):
+        """(Un)protects a wiki page. Requires administrator status. If reason is None,
+           asks for a reason. If prompt is True, asks the user if he wants to protect the page.
+           Valid values for edit and move are:
+           * '' (equivalent to 'none')
+           * 'autoconfirmed'
+           * 'sysop'
+        """
+        if throttle:
+            put_throttle()
+        if reason == None:
+            reason = input(u'Please enter a reason for the (un)protection:')
+        reason = reason.encode(self.site().encoding())
+        answer = 'y'
+        if prompt:
+            answer = inputChoice(u'Do you want to (un)protect %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No'], ['y', 'N'], 'N')
+        if answer in ['y', 'Y']:
+            host = self.site().hostname()
+            address = self.site().protect_address(self.urlname())
+
+            self.site().forceLogin(sysop = True)
+
+            token = self.site().getToken(self, sysop = True)
+
+            #Translate 'none' to ''
+            if edit == 'none': edit = ''
+            if move == 'none': move = ''
+
+            predata = [
+                ('mwProtect-level-edit', edit),
+                ('mwProtect-level-move', move),
+                ('mwProtect-reason', reason)
+                ]
+            if token:
+                predata.append(('wpEditToken', token))
+            if self.site().hostname() in config.authenticate.keys():
+                predata.append(("Content-type","application/x-www-form-urlencoded"))
+                predata.append(("User-agent", "PythonWikipediaBot/1.0"))
+                data = urlencode(tuple(predata))
+                response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+                data = ''
+            else:    
+                data = urlencode(tuple(predata))
+                conn = httplib.HTTPConnection(host)
+                conn.putrequest("POST", address)
+                conn.putheader('Content-Length', str(len(data)))
+                conn.putheader("Content-type", "application/x-www-form-urlencoded")
+                conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
+                if self.site().cookies(sysop = True):
+                    conn.putheader('Cookie', self.site().cookies(sysop = True))
+                conn.endheaders()
+                conn.send(data)
+        
+                response = conn.getresponse()
+                data = response.read()
+                conn.close()
+       
+            if data == '':
+                output(u'(Un)protection successful.')
+                return True
+            else:
+                #Normally, we expect a 302 with no data, so this means an error
+                data = data.decode(myencoding())
+                output(u'Protection failed:.')
+                output(data)
+                return False
+
 class ImagePage(Page):
     # a Page in the Image namespace
     def __init__(self, site, title = None, insite = None, tosite = None):
@@ -3044,6 +3111,9 @@ class Site(object):
 
     def delete_address(self, s):
         return self.family.delete_address(self.lang, s)
+
+    def protect_address(self, s):
+        return self.family.protect_address(self.lang, s)
 
     def put_address(self, s):
         return self.family.put_address(self.lang, s)
