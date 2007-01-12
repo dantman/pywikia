@@ -152,13 +152,17 @@ interwiki_shownew = True
 # You need pydot for this: http://dkbza.org/pydot.html
 interwiki_graph = False
 
-# If interwiki graphs are enabled, which format should be used?
-# Supported formats include png, jpg, ps and svg.
-interwiki_graph_format = 'png'
-
-# If interwiki graphs are enabled, should we save the dot file
-# too ? Usefull to make another graph with the same data
-interwiki_graph_dumpdot = False
+# If interwiki graphs are enabled, which format(s) should be used?
+# Supported formats include png, jpg, ps, and svg. See:
+# http://www.graphviz.org/doc/info/output.html
+# If you want to also dump the dot files, you can use this in your
+# user-config.py:
+# interwiki_graph_formats = ['dot', 'png']
+# If you need a PNG image with an HTML image map, use this:
+# interwiki_graph_formats = ['png', 'cmap']
+# If you only need SVG images, use:
+# interwiki_graph_formats = ['svg']
+interwiki_graph_formats = ['png']
 
 # You can post the contents of your autonomous_problems.dat to the wiki,
 # e.g. to http://de.wikipedia.org/wiki/Wikipedia:Interwiki-Konflikte .

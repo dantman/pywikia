@@ -19,16 +19,18 @@ class GraphSavingThread(threading.Thread):
     mechanism to kill a thread if it takes too long.
     """
     
-    def __init__(self, graph, filename):
+    def __init__(self, graph, originPage):
         threading.Thread.__init__(self)
         self.graph = graph
-        self.filename = filename
+        self.originPage = originPage
 
     def run(self):
-        if self.graph.write(self.filename, prog = 'dot', format = config.interwiki_graph_format):
-            wikipedia.output(u'Graph saved as %s' % self.filename)
-        else:
-            wikipedia.output(u'Graph could not be saved as %s' % self.filename)
+        for format in config.interwiki_graph_format:
+            filename = getFilename(self.originPage, format)
+            if self.graph.write(filename, prog = 'dot', format = format):
+                wikipedia.output(u'Graph saved as %s' % filename)
+            else:
+                wikipedia.output(u'Graph could not be saved as %s' % filename)
 
 class GraphDrawer:
     def __init__(self, subject):
@@ -87,13 +89,7 @@ class GraphDrawer:
                 self.graph.add_edge(edge)
 
     def saveGraphFile(self):
-        filename = 'interwiki-graphs/' + getFilename(self.subject.originPage)
-        if config.interwiki_graph_dumpdot:
-            if self.graph.write(filename + '.dot', prog = 'dot' , format ='raw'):
-                wikipedia.output(u'Dot file saved as %s' % filename)
-            else:
-                wikipedia.output(u'Dot file could not be saved as %s' % filename)
-        thread = GraphSavingThread(self.graph, filename)
+        thread = GraphSavingThread(self.graph, self.subject.originPage)
         thread.start()
 
     def createGraph(self):
@@ -116,10 +112,10 @@ class GraphDrawer:
                 self.addDirectedEdge(page, refPage)
         self.saveGraphFile()
 
-def getFilename(page, withExtension = True):
-        filename = '%s-%s-%s' % (page.site().family.name, page.site().language(), page.title())
-        if withExtension:
-            filename += '.%s' % config.interwiki_graph_format
+def getFilename(page, extension = None):
+        filename = 'interwiki-graphs/%s-%s-%s' % (page.site().family.name, page.site().language(), page.title())
+        if extension:
+            filename += '.%s' % extension
         # Replace characters that are not possible in file names on some systems.
         # Spaces are possible on most systems, but are bad for URLs.
         for forbiddenChar in ':*?/\\ ':
