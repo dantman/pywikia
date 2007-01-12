@@ -38,7 +38,7 @@ def post_multipart(host, selector, fields, files, cookies):
     conn.putrequest('POST', selector)
     conn.putheader('content-type', content_type)
     conn.putheader('content-length', str(len(body)))
-    conn.putheader("User-agent", "RobHooftWikiRobot/1.0")
+    conn.putheader("User-agent", wikipedia.useragent)
     if cookies:
         conn.putheader('Cookie',cookies)
     conn.endheaders()

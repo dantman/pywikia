@@ -75,6 +75,8 @@ argHandler(text): Checks whether text is an argument defined on wikipedia.py
 translate(xx, dict): dict is a dictionary, giving text depending on language,
     xx is a language. Returns the text in the most applicable language for
     the xx: wiki
+setUserAgent(text): Sets the string being passed to the HTTP server as
+    the User-agent: header. Defaults to 'Pywikipediabot/1.0'.
 
 output(text): Prints the text 'text' in the encoding of the user's console.
 input(text): Asks input from the user, printing the text 'text' first.
@@ -1003,7 +1005,7 @@ class Page(object):
         # Submit the prepared information
         if self.site().hostname() in config.authenticate.keys():
             predata.append(("Content-type","application/x-www-form-urlencoded"))
-            predata.append(("User-agent", "PythonWikipediaBot/1.0"))
+            predata.append(("User-agent", useragent))
             data = urlencode(tuple(predata))
             response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
             # I'm not sure what to check in this case, so I just assume things went ok.
@@ -1018,7 +1020,7 @@ class Page(object):
             conn.putrequest("POST", address)
             conn.putheader('Content-Length', str(len(data)))
             conn.putheader("Content-type", "application/x-www-form-urlencoded")
-            conn.putheader("User-agent", "PythonWikipediaBot/1.0")
+            conn.putheader("User-agent", useragent)
             if self.site().cookies():
                 conn.putheader('Cookie', self.site().cookies(sysop = sysop))
             conn.endheaders()
@@ -1468,7 +1470,7 @@ class Page(object):
             predata.append(('wpEditToken', token))
         if self.site().hostname() in config.authenticate.keys():
             predata.append(("Content-type","application/x-www-form-urlencoded"))
-            predata.append(("User-agent", "PythonWikipediaBot/1.0"))
+            predata.append(("User-agent", useragent))
             data = urlencode(tuple(predata))
             response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
             data = ''
@@ -1478,7 +1480,7 @@ class Page(object):
             conn.putrequest("POST", address)
             conn.putheader('Content-Length', str(len(data)))
             conn.putheader("Content-type", "application/x-www-form-urlencoded")
-            conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
+            conn.putheader("User-agent", useragent)
             if self.site().cookies(sysop = sysop):
                 conn.putheader('Cookie', self.site().cookies(sysop = sysop))
             conn.endheaders()
@@ -1534,7 +1536,7 @@ class Page(object):
                 predata.append(('wpEditToken', token))
             if self.site().hostname() in config.authenticate.keys():
                 predata.append(("Content-type","application/x-www-form-urlencoded"))
-                predata.append(("User-agent", "PythonWikipediaBot/1.0"))
+                predata.append(("User-agent", useragent))
                 data = urlencode(tuple(predata))
                 response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
                 data = ''
@@ -1544,7 +1546,7 @@ class Page(object):
                 conn.putrequest("POST", address)
                 conn.putheader('Content-Length', str(len(data)))
                 conn.putheader("Content-type", "application/x-www-form-urlencoded")
-                conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
+                conn.putheader("User-agent", useragent)
                 if self.site().cookies(sysop = True):
                     conn.putheader('Cookie', self.site().cookies(sysop = True))
                 conn.endheaders()
@@ -1610,7 +1612,7 @@ class Page(object):
                 predata.append(('wpEditToken', token))
             if self.site().hostname() in config.authenticate.keys():
                 predata.append(("Content-type","application/x-www-form-urlencoded"))
-                predata.append(("User-agent", "PythonWikipediaBot/1.0"))
+                predata.append(("User-agent", useragent))
                 data = urlencode(tuple(predata))
                 response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
                 data = ''
@@ -1620,7 +1622,7 @@ class Page(object):
                 conn.putrequest("POST", address)
                 conn.putheader('Content-Length', str(len(data)))
                 conn.putheader("Content-type", "application/x-www-form-urlencoded")
-                conn.putheader("User-agent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0")
+                conn.putheader("User-agent", useragent)
                 if self.site().cookies(sysop = True):
                     conn.putheader('Cookie', self.site().cookies(sysop = True))
                 conn.endheaders()
@@ -1883,7 +1885,7 @@ class GetAll(object):
         now = time.time()
         if self.site.hostname() in config.authenticate.keys():
             data.append(("Content-type","application/x-www-form-urlencoded"))
-            data.append(("User-agent", "PythonWikipediaBot/1.0"))
+            data.append(("User-agent", useragent))
             data = urlencode(tuple(data))
             response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
             data = response.read()
@@ -1893,7 +1895,7 @@ class GetAll(object):
             conn.putrequest("POST", address)
             conn.putheader('Content-Length', str(len(data)))
             conn.putheader("Content-type", "application/x-www-form-urlencoded")
-            conn.putheader("User-agent", "PythonWikipediaBot/1.0")
+            conn.putheader("User-agent", useragent)
             if self.site.cookies():
                 conn.putheader('Cookie', self.site.cookies())
             conn.endheaders()
@@ -1931,6 +1933,14 @@ def setAction(s):
 
 # Default action
 setAction('Wikipedia python library')
+
+def setUserAgent(s):
+    """Set a User-agent: header passed to the HTTP server"""
+    global useragent
+    useragent = s
+
+# Default User-agent
+setUserAgent('PythonWikipediaBot/1.0')
 
 def urlencode(query):
     """This can encode a query so that it can be sent as a query using

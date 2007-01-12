@@ -164,7 +164,7 @@ def main():
                 sa.append(arg.replace(" ", "_"))
 
     headers = {"Content-type": "application/x-www-form-urlencoded", 
-               "User-agent": "RobHooftWikiRobot/1.0"}
+               "User-agent": wikipedia.useragent}
     print "opening connection to", mysite.hostname(),
     conn = httplib.HTTPConnection(mysite.hostname())
     print " done"

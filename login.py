@@ -118,7 +118,7 @@ class LoginManager:
         data = wikipedia.urlencode(data.items())
         headers = {
             "Content-type": "application/x-www-form-urlencoded", 
-            "User-agent": "RobHooftWikiRobot/1.0"
+            "User-agent": wikipedia.useragent
         }
         pagename = self.site.login_address()
 
