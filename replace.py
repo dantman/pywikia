@@ -398,7 +398,7 @@ def main():
             summary_message = wikipedia.input(u'Press Enter to use this default message, or enter a description of the changes your bot will make:')
             if summary_message == '':
                 summary_message = default_summary_message
-                wikipedia.setAction(summary_message)
+            wikipedia.setAction(summary_message)
             
     else:
         # Perform one of the predefined actions.
