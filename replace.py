@@ -96,6 +96,7 @@ __version__='$Id$'
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
 # below.
 msg = {
+       'ar':u'%s روبوت : إستبدال تلقائي للنص',
        'de':u'Bot: Automatisierte Textersetzung %s',
        'en':u'Robot: Automated text replacement %s',
        'el':u'Ρομπότ: Αυτόματη αντικατάσταση κειμένου %s',
