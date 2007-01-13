@@ -238,8 +238,8 @@ class ReplaceRobot:
                             page.put(new_text)
 			except wikipedia.EditConflict:
 			    wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                        except wikipedia.SpamfilterError:
-                            wikipedia.output(u'Cannot change %s because of blacklist entry' % (page.title()))
+                        except wikipedia.SpamfilterError(url):
+                            wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(),url))
 
 def prepareRegexForMySQL(pattern):
     pattern = pattern.replace('\s', '[:space:]')
