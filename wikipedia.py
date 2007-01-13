@@ -2113,11 +2113,12 @@ def replaceExceptNowikiAndComments(text, old, new):
     """ Deprecated. """
     return replaceExceptMathNowikiAndComments(text, old, new)
 
-def replaceExceptMathNowikiAndComments(text, old, new, caseInsensitive = False):
+def replaceExceptMathNowikiAndComments(text, old, new, caseInsensitive = False, allowoverlap = False):
     """
     Replaces old by new in text, skipping occurences of old within nowiki tags
     and HTML comments.  If caseInsensitive is true, then use case insensitivity
-    in the regex matching.
+    in the regex matching. If allowoverlap is true, overlapping occurences are
+    all replaced (watch out when using this, it might lead to infinite loops!).
 
     Parameters:
         text - a string
@@ -2146,7 +2147,10 @@ def replaceExceptMathNowikiAndComments(text, old, new, caseInsensitive = False):
             replace_text = old.sub(new, text[match.start():match.end()])
             text = text[:match.start()] + replace_text + text[match.end():]
             # continue the search on the remaining text
-            index = match.start() + len(replace_text)
+            if allowoverlap:
+                index = match.start() + 1
+            else:
+                index = match.start() + len(replace_text)
     return text
 
 # Part of library dealing with interwiki links

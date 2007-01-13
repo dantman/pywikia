@@ -49,6 +49,9 @@ You can run the bot with the following commandline parameters:
                -start:User:M.
 -always      - Don't prompt you for each replacement
 -nocase      - Use case insensitive regular expressions.
+-allowoverlap - When occurences of the pattern overlap, replace all of them.
+               Warning! Don't use this option if you don't know what you're
+               doing, because it might easily lead to infinite loops then.
 other:       - First argument is the old text, second argument is the new text.
                If the -regex argument is given, the first argument will be
                regarded as a regular expression, and the second argument might
@@ -153,7 +156,7 @@ class ReplaceRobot:
     """
     A bot that can do text replacements.
     """
-    def __init__(self, generator, replacements, exceptions = [], acceptall = False):
+    def __init__(self, generator, replacements, exceptions = [], acceptall = False, allowoverlap = False):
         """
         Arguments:
             * generator    - A generator that yields Page objects.
@@ -165,11 +168,13 @@ class ReplaceRobot:
                              changed.
             * acceptall    - If True, the user won't be prompted before changes
                              are made.
+            * allowoverlap - If True, when matches overlap, all of them are replaced
         """
         self.generator = generator
         self.replacements = replacements
         self.exceptions = exceptions
         self.acceptall = acceptall
+        self.allowoverlap = allowoverlap
 
     def checkExceptions(self, original_text):
         """
@@ -189,7 +194,7 @@ class ReplaceRobot:
         """
         new_text = original_text
         for old, new in self.replacements:
-            new_text = wikipedia.replaceExceptMathNowikiAndComments(new_text, old, new)
+            new_text = wikipedia.replaceExceptMathNowikiAndComments(new_text, old, new, allowoverlap = self.allowoverlap)
         return new_text
         
     def run(self):
@@ -294,6 +299,8 @@ def main():
     startpage = None
     # Google query
     googleQuery = None
+    # Do all hits when they overlap
+    allowoverlap = False
     # Load default summary message.
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
@@ -372,6 +379,8 @@ def main():
         elif arg.startswith('-summary:'):
             wikipedia.setAction(arg[9:])
             summary_commandline = True
+        elif arg.startswith('-allowoverlap'):
+            allowoverlap = True
         else:
             commandline_replacements.append(arg)
 
@@ -466,7 +475,7 @@ LIMIT 200""" % (whereClause, exceptClause)
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 50)
-    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall)
+    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap)
     bot.run()
 
 
