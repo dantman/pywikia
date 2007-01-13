@@ -43,7 +43,35 @@ msg = {
           'pt':u'Bot: Retirando link para o próprio artigo'
        }
 
+class XmlDumpSelflinkPageGenerator:
+    """
+    Generator which will yield Pages that might contain selflinks.
+    These pages will be retrieved from a local XML dump file
+    (cur table).
+    """
+    def __init__(self, xmlFilename):
+        """
+        Arguments:
+            * xmlFilename  - The dump's path, either absolute or relative
+        """
+
+        self.xmlFilename = xmlFilename
+
+    def __iter__(self):
+        import xmlreader
+        mysite = wikipedia.getSite()
+        dump = xmlreader.XmlDump(self.xmlFilename)
+        for entry in dump.parse():
+            title = re.escape(entry.title)
+            if not mysite.nocapitalize:
+                title = '[%s%s]%s' % (title[0].lower(), title[0].upper(), title[1:])
+            selflinkR = re.compile(r'\[\[' + title + '(\|[^\]]*)?\]\]')
+            if selflinkR.search(entry.text):
+                yield wikipedia.Page(mysite, entry.title)
+                continue
+
 class SelflinkBot:
+
     def __init__(self, generator):
         self.generator = generator
 
@@ -138,7 +166,13 @@ def main():
             gen = pagegenerators.TextfilePageGenerator(arg[6:])
         elif arg.startswith('-cat:'):
             cat = catlib.Category(wikipedia.getSite(), arg[5:])
-            gen = pagegenerators.CategorizedPageGenerator(cat)   
+            gen = pagegenerators.CategorizedPageGenerator(cat)
+        elif arg.startswith('-xml'):
+            if len(arg) == 4:
+                xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
+            else:
+                xmlFilename = arg[5:]
+            gen = XmlDumpSelflinkPageGenerator(xmlFilename)
         elif arg == '-sql':
             # NOT WORKING YET
             query = """
