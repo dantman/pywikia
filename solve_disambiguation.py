@@ -278,6 +278,8 @@ ignore_title = {
             u'Gebruiker:Lankhorst/Lijst.*',
             u'Wikipedia:Wikipedianen met een encyclopedisch artikel',
             u'Gebruiker:Al/Informatie Roemenië/.*',
+            u'Gebruiker:GruffiGummi:Problemen',
+            u'Gebruiker:Thor NL/Onderhanden werk/.+',
          ],
         'pt': [
             u'Usuário:.+',
@@ -397,6 +399,9 @@ class DisambiguationRobot(object):
     ignore_contents = {
         'de':(u'{{[Ii]nuse}}',
               u'{{[Ll]öschen}}',
+            ),
+        'nl':(u'{{wiu2}}',
+              u'{{nuweg}}',
             ),
         'ru':(u'{{[Ii]nuse}}',
               u'{{[Pp]rocessing}}',
