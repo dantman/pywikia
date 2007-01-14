@@ -8,3 +8,4 @@ warning*.log
 *.txt
 check_extern.log
 throttle.log
+login-data
