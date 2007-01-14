@@ -29,6 +29,7 @@ If the page to be uploaded already exists:
 -appendtop      add the text to the top of it
 -appendbottom   add the text to the bottom of it
 -force          overwrite the existing page
+-notitle        do not include the title line in the page
 """
 #
 # (C) Andre Engels, 2004
@@ -109,7 +110,7 @@ def findpage(t):
         wikipedia.output(page.title())
         if notitle:
           #Remove title (to allow creation of redirects)
-          contents = re.sub(search_string + "\n+","",contents)
+          contents = re.sub(search_string + "\n","",contents)
         if page.exists():
             if append == "Top":
                 old_text = page.get()
