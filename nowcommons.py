@@ -60,7 +60,7 @@ class NowCommonsDeleteBot:
         gen = pagegenerators.NamespaceFilterPageGenerator(gen, [6])
         return gen
 
-    def findFilenameOnCommons(localImagePage):
+    def findFilenameOnCommons(self, localImagePage):
         filenameOnCommons = None
         for templateName, params in localImagePage.templatesWithParams():
             if templateName in self.ncTemplates():
@@ -87,7 +87,7 @@ class NowCommonsDeleteBot:
                     continue
                 md5 = localImagePage.getFileMd5Sum()
 
-                filenameOnCommons = findFilenameOnCommons(localImagePage)
+                filenameOnCommons = self.findFilenameOnCommons(localImagePage)
                 if not filenameOnCommons:
                     wikipedia.output(u'NowCommons template not found.')
                     continue
