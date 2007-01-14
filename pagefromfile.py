@@ -86,6 +86,7 @@ titleend = u"'''"
 search_string = u""
 force = False
 append = "False"
+notitle = False
 
 def findpage(t):
     search_string = titlestart + "(.*?)" + titleend
@@ -106,6 +107,9 @@ def findpage(t):
     else:
         page = wikipedia.Page(mysite, title)
         wikipedia.output(page.title())
+        if notitle:
+          #Remove title (to allow creation of redirects)
+          contents = re.sub(titlestart + ".*?" + titleend + "\n","",contents)
         if page.exists():
             if append == "Top":
                 old_text = page.get()
@@ -160,6 +164,8 @@ for arg in sys.argv[1:]:
         elif arg=="-safe":
             force=False
             append="False"
+        elif arg=='-notitle':
+            notitle=True
         elif arg.startswith("-titlestart:"):
             titlestart=arg[12:]
         elif arg.startswith("-titleend:"):
