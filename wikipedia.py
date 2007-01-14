@@ -579,9 +579,10 @@ class Page(object):
             # another form
             RversionTab = re.compile(self.site().family.RversionTab(self.site().language()))
         else:
-            RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history">.*</a></li>')
+            RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>')
         matchVersionTab = RversionTab.search(text)
         if not matchVersionTab:
+            print 'no version hist'
             raise NoPage(self.site(), self.aslink(forceInterwiki = True))
         # Look if the page is on our watchlist
         R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
