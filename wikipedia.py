@@ -582,7 +582,6 @@ class Page(object):
             RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>')
         matchVersionTab = RversionTab.search(text)
         if not matchVersionTab:
-            print 'no version hist'
             raise NoPage(self.site(), self.aslink(forceInterwiki = True))
         # Look if the page is on our watchlist
         R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
@@ -1215,7 +1214,16 @@ class Page(object):
 
     def templates(self):
         """
-        Gives a list of template names used on a page, as a list of strings. Template parameters are ignored.
+        Gives a list of template names used on a page, as a list of strings.
+        Template parameters are ignored.
+        """
+        return [template for (template, param) in self.templatesWithParams()]
+
+    def templatesWithParams(self):
+        """
+        Gives a list of tuples. There is one tuple for each use of a template
+        in the page, with the template name as the first entry and a list
+        of parameters as the second entry.
         """
         try:
             thistxt = self.get()
@@ -1223,10 +1231,15 @@ class Page(object):
             return []
 
         result = []
-        Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^\|]+?)(\|(?P<pamars>.+?))?}}', re.DOTALL)
+        Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^\|]+?)(\|(?P<params>.+?))?}}', re.DOTALL)
         for m in Rtemplate.finditer(thistxt):
-            # we ignore parameters.
-            result.append(m.group('name'))
+            paramString = m.group('params')
+            params = []
+            if paramString:
+                params = paramString.split('|')
+            name = m.group('name')
+            name = Page(self.site(), name).title()
+            result.append((name, params))
         return result
 
     def getRedirectTarget(self):
