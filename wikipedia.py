@@ -579,7 +579,7 @@ class Page(object):
             # another form
             RversionTab = re.compile(self.site().family.RversionTab(self.site().language()))
         else:
-            RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>')
+            RversionTab = re.compile(r'<li id="ca-history"><a href=".*title=.*&amp;action=history"( title=".*?" accesskey=".")?>.*</a></li>')
         matchVersionTab = RversionTab.search(text)
         if not matchVersionTab:
             raise NoPage(self.site(), self.aslink(forceInterwiki = True))
