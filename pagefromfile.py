@@ -92,7 +92,7 @@ notitle = False
 def findpage(t):
     search_string = titlestart + "(.*?)" + titleend
     try:
-        location = re.search(starttext+"\n([^\Z]*?)"+endtext,t)
+        location = re.search(starttext+"([^\Z]*?)"+endtext,t)
         if include:
             contents = location.group()
         else:
@@ -110,7 +110,9 @@ def findpage(t):
         wikipedia.output(page.title())
         if notitle:
           #Remove title (to allow creation of redirects)
-          contents = re.sub(search_string + "\n","",contents)
+          contents = re.sub(search_string, "", contents)
+        #Remove trailing newlines (cause troubles when creating redirects)
+        contents = re.sub('^[\r\n]*','',contents)
         if page.exists():
             if append == "Top":
                 old_text = page.get()
