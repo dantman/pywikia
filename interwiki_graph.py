@@ -25,8 +25,8 @@ class GraphSavingThread(threading.Thread):
         self.originPage = originPage
 
     def run(self):
-        for format in config.interwiki_graph_format:
-            filename = getFilename(self.originPage, format)
+        for format in config.interwiki_graph_formats:
+            filename = 'interwiki-graphs/' + getFilename(self.originPage, format)
             if self.graph.write(filename, prog = 'dot', format = format):
                 wikipedia.output(u'Graph saved as %s' % filename)
             else:
@@ -113,7 +113,7 @@ class GraphDrawer:
         self.saveGraphFile()
 
 def getFilename(page, extension = None):
-        filename = 'interwiki-graphs/%s-%s-%s' % (page.site().family.name, page.site().language(), page.title())
+        filename = '%s-%s-%s' % (page.site().family.name, page.site().language(), page.title())
         if extension:
             filename += '.%s' % extension
         # Replace characters that are not possible in file names on some systems.
