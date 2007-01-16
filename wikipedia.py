@@ -698,7 +698,11 @@ class Page(object):
             locdis = self.site().family.disambig( self._site.lang )
 
             for tn in self.templates():
-                tn = tn[0].upper() + tn[1:]
+                try:
+                    tn = tn[0].upper() + tn[1:]
+                except ValueError:
+                    # len(tn) < 2
+                    tn = tn.upper()
                 tn = tn.replace('_', ' ')
                 if tn in locdis:
                     _isDisambig = True
