@@ -20,7 +20,8 @@ class Family(family.Family):
             'nb':'no.wikipedia.org',
             'tokipona':'tokipona.wikipedia.org',
             'zh-cn':'zh.wikipedia.org',
-            'zh-tw':'zh.wikipedia.org'
+            'zh-tw':'zh.wikipedia.org',
+            'test':'test.wikipedia.org'
             }
         for lang in self.knownlanguages:
             if lang not in self.langs:
