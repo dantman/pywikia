@@ -700,7 +700,7 @@ class Page(object):
             for tn in self.templates():
                 try:
                     tn = tn[0].upper() + tn[1:]
-                except ValueError:
+                except IndexError:
                     # len(tn) < 2
                     tn = tn.upper()
                 tn = tn.replace('_', ' ')
