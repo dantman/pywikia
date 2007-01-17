@@ -2246,6 +2246,9 @@ class Family:
     def protect_address(self, code, name):
         return '%s?title=%s&action=protect' % (self.path(code), name)
 
+    def unprotect_address(self, code, name):
+        return '%s?title=%s&action=unprotect' % (self.path(code), name)
+
     def version_history_address(self, code, name):
         return '%s?title=%s&action=history&limit=%d' % (self.path(code), name, config.special_page_limit)
 

@@ -1592,8 +1592,8 @@ class Page(object):
                         data = data[ibegin:iend]
                     output(data)
                     return False
-
-    def protect(self, edit = 'sysop', move = 'sysop', reason = None, prompt = True, throttle = False):
+                
+    def protect(self, edit = 'sysop', move = 'sysop', unprotect = False, reason = None, prompt = True, throttle = False):
         """(Un)protects a wiki page. Requires administrator status. If reason is None,
            asks for a reason. If prompt is True, asks the user if he wants to protect the page.
            Valid values for edit and move are:
@@ -1601,6 +1601,9 @@ class Page(object):
            * 'autoconfirmed'
            * 'sysop'
         """
+        address = self.site().protect_address(self.urlname())
+        if unprotect:
+            address = self.site().unprotect_address(self.urlname())
         if throttle:
             put_throttle()
         if reason == None:
@@ -1611,8 +1614,7 @@ class Page(object):
             answer = inputChoice(u'Do you want to (un)protect %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No'], ['y', 'N'], 'N')
         if answer in ['y', 'Y']:
             host = self.site().hostname()
-            address = self.site().protect_address(self.urlname())
-
+            
             self.site().forceLogin(sysop = True)
 
             token = self.site().getToken(self, sysop = True)
@@ -3147,6 +3149,9 @@ class Site(object):
 
     def protect_address(self, s):
         return self.family.protect_address(self.lang, s)
+
+    def unprotect_address(self, s):
+        return self.family.unprotect_address(self.lang, s)
 
     def put_address(self, s):
         return self.family.put_address(self.lang, s)
