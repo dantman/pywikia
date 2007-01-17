@@ -6,18 +6,21 @@ Scripts to manage categories.
 Syntax: python category.py action [-option]
 
 where action can be one of these:
- * add    - mass-add a category to a list of pages
- * remove - remove category tag from all pages in a category
- * move   - move all pages in a category to another category
- * tidy   - tidy up a category by moving its articles into subcategories
- * tree   - show a tree of subcategories of a given category
+ * add     - mass-add a category to a list of pages
+ * remove  - remove category tag from all pages in a category
+ * move    - move all pages in a category to another category
+ * tidy    - tidy up a category by moving its articles into subcategories
+ * tree    - show a tree of subcategories of a given category
+ * listify - make a list of all of the articles that are in a category
 
 and option can be one of these:
  * -person    - sort persons by their last name (for action 'add')
  * -rebuild   - reset the database
  * -from:     - The category to move from (for the move option)
                 Also, the category to remove from in the remove option
+                Also, the category to make a list of in the listify option
  * -to:       - The category to move to (for the move option)
+              - Also, the name of the list to make in the listify option
          NOTE: If the category names have spaces in them, surround the names with
          single quotes, i.e. -to:Us -from:'United States'
  * -batch     - Don't prompt to delete emptied categories (do it automatically).
@@ -333,6 +336,33 @@ class CategoryMoveRobot:
                 else:
                     wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCatTitle, self.newCatTitle))
 
+class CategoryListifyRobot:
+    '''
+    Creates a list containing all of the members in a category.
+    '''
+    listify_msg={
+        'en':u'Robot: Listifying from %s'
+    }
+
+    def __init__(self, catTitle, listTitle, editSummary):
+        self.editSummary = editSummary
+        self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
+        self.list = wikipedia.Page(wikipedia.getSite(), listTitle)
+        # get edit summary message
+	if self.editSummary:
+	    wikipedia.setAction(self.editSummary)
+	else:
+            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.listify_msg) % self.cat.title())
+
+    def run(self):
+        listString = ""
+        for article in self.cat.articles():
+            listString = listString + "*[[%s]]\n" % article.title()
+        if self.list.exists():
+            wikipedia.output(u'Page %s already exists, aborting.' % self.list.title())
+        else:
+            self.list.put(listString)
+
 class CategoryRemoveRobot:
     '''
     Removes the category tag from all pages in a given category and from the
@@ -359,15 +389,16 @@ class CategoryRemoveRobot:
         'pt':u'Bot: Removendo [[Categoria:%s]]',
         'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
     }
-    
-    def __init__(self, catTitle, batchMode = False, editSummary = ''):
+
+    def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False):
 	self.editSummary = editSummary
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
+        self.useSummaryForDeletion = useSummaryForDeletion
 	if self.editSummary:
 	    wikipedia.setAction(self.editSummary)
 	else:
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())
+            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())    
         
     def run(self):
         articles = self.cat.articles(recurse = 0)
@@ -384,7 +415,10 @@ class CategoryRemoveRobot:
             for subcategory in subcategories:
                 catlib.change_category(subcategory, self.cat, None)
         if self.cat.exists() and self.cat.isEmpty():
-            reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
+            if self.useSummaryForDeletion:
+                reason = self.editSummary
+            else:
+                reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
             if batchMode == True:
                 self.cat.delete(reason, False)
             else:
@@ -636,6 +670,10 @@ if __name__ == "__main__":
     batchMode = False
     editSummary = ''
     inPlace = False
+
+    #If this is set to true then the custom edit summary given for removing
+    #categories from articles will also be used as the deletion reason.
+    useSummaryForDeletion = False
     try:
         catDB = CategoryDatabase()
         action = None
@@ -654,6 +692,8 @@ if __name__ == "__main__":
                     action = 'tidy'
                 elif arg == 'tree':
                     action = 'tree'
+                elif arg == 'listify':
+                    action = 'listify'
                 elif arg == '-person':
                     sort_by_last_name = True
                 elif arg == '-rebuild':
@@ -668,6 +708,8 @@ if __name__ == "__main__":
 		    batchMode = True
                 elif arg == '-inplace':
                     inPlace = True
+                elif arg == '-delsum':
+                    useSummaryForDeletion = True
 		elif arg.startswith('-summary:'):
 		    editSummary = arg[len('-summary:'):]
                 
@@ -675,10 +717,8 @@ if __name__ == "__main__":
             add_category(sort_by_last_name)
         elif action == 'remove':
 	    if (fromGiven == False):
-                catTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
-                bot = CategoryRemoveRobot(catTitle, batchMode, editSummary)
-	    else:
-                bot = CategoryRemoveRobot(oldCatTitle, batchMode, editSummary)
+                oldCatTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
+            bot = CategoryRemoveRobot(oldCatTitle, batchMode, editSummary, useSummaryForDeletion)
             bot.run()
         elif action == 'move':
 	    if (fromGiven == False):
@@ -695,6 +735,13 @@ if __name__ == "__main__":
             catTitle = wikipedia.input(u'For which category do you want to create a tree view?')
             filename = wikipedia.input(u'Please enter the name of the file where the tree should be saved, or press enter to simply show the tree:')
             bot = CategoryTreeRobot(catTitle, catDB, filename)
+            bot.run()
+        elif action == 'listify':
+            if (fromGiven == False):
+                oldCatTitle = wikipedia.input(u'Please enter the name of the category to listify:')
+            if (toGiven == False):
+                newCatTitle = wikipedia.input(u'Please enter the name of the list to create:')
+            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary)
             bot.run()
         else:
             wikipedia.showHelp('category')
