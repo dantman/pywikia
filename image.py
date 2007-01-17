@@ -11,8 +11,12 @@ Command line options:
 
 -summary:  Provide a custom edit summary.  If the summary includes spaces, surround
            it with single quotes, such as:  -summary:'My edit summary'
-
 -always    Don't prompt to make changes, just do them.
+-loose     Do loose replacements.  This will replace all occurences of the name of the
+           image (and not just explicit image syntax).  This should work to catch all
+           instances of the image, including where it is used as a template parameter
+           or in image galleries.  However, it can also make more mistakes.  This only
+           works with image replacement, not image removal.
 
 Examples:
 
@@ -56,7 +60,7 @@ class ImageRobot:
         'pt': u'Bot: Alterando imagem %s',
     }
 
-    def __init__(self, generator, oldImage, newImage = None, summary = '', always = False):
+    def __init__(self, generator, oldImage, newImage = None, summary = '', always = False, loose = False):
         """
         Arguments:
             * generator - A page generator.
@@ -69,6 +73,7 @@ class ImageRobot:
         self.newImage = newImage
         self.summary = summary
         self.always = always
+        self.loose = loose
 
         # get edit summary message
         mysite = wikipedia.getSite()
@@ -98,10 +103,16 @@ class ImageRobot:
 
         old = re.sub('[_ ]', '[_ ]', old)
         #TODO: Add internationalization of Image namespace name.
-        ImageRegex = re.compile(r'\[\[ *[Ii]mage:' + old + ' *(?P<parameters>\|[^\n]+|) *\]\]')
+        if not self.loose or not self.newImage:
+            ImageRegex = re.compile(r'\[\[ *[Ii]mage:' + old + ' *(?P<parameters>\|[^\n]+|) *\]\]')
+        else:
+            ImageRegex = re.compile(r'' + old)
 
         if self.newImage:
-            replacements.append((ImageRegex, '[[Image:' + self.newImage + '\g<parameters>]]'))
+            if not self.loose:
+                replacements.append((ImageRegex, '[[Image:' + self.newImage + '\g<parameters>]]'))
+            else:
+                replacements.append((ImageRegex, self.newImage))
         else:
             replacements.append((ImageRegex, ''))
 
@@ -114,10 +125,13 @@ def main():
     newImage = None
     summary = ''
     always = False
+    loose = False
     # read command line parameters
     for arg in wikipedia.handleArgs():
         if arg == '-always':
             always = True
+        elif arg == '-loose':
+            loose = True
         elif arg.startswith('-summary'):
             if len(arg) == len('-summary'):
                 summary = wikipedia.input(u'Choose an edit summary: ')
@@ -140,7 +154,7 @@ def main():
         gen = pagegenerators.FileLinksGenerator(oldImagePage)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
 
-        bot = ImageRobot(preloadingGen, oldImage, newImage, summary, always)
+        bot = ImageRobot(preloadingGen, oldImage, newImage, summary, always, loose)
         bot.run()
 
 if __name__ == "__main__":
