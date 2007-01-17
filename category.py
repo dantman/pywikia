@@ -27,6 +27,11 @@ and option can be one of these:
  * -summary:  - Pick a custom edit summary for the bot.
  * -inplace   - Use this flag to change categories in place rather than
                 rearranging them.
+ * -delsum    - An option for remove, this specifies to use the custom edit
+                summary as the deletion reason (rather than a canned deletion reason)
+ * -overwrite - An option for listify, this overwrites the current page with the
+                list even if something is already there.
+
 
 For the actions tidy and tree, the bot will store the category structure locally
 in category.dump. This saves time and server load, but if it uses these data
@@ -341,11 +346,13 @@ class CategoryListifyRobot:
     Creates a list containing all of the members in a category.
     '''
     listify_msg={
-        'en':u'Robot: Listifying from %s'
+        'en':u'Robot: Listifying from %s',
+        'sv':u'Robot: Skapar en lista från %s'
     }
 
-    def __init__(self, catTitle, listTitle, editSummary):
+    def __init__(self, catTitle, listTitle, editSummary, overwrite):
         self.editSummary = editSummary
+        self.overwrite = overwrite
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         self.list = wikipedia.Page(wikipedia.getSite(), listTitle)
         # get edit summary message
@@ -358,7 +365,7 @@ class CategoryListifyRobot:
         listString = ""
         for article in self.cat.articles():
             listString = listString + "*[[%s]]\n" % article.title()
-        if self.list.exists():
+        if self.list.exists() and not self.overwrite:
             wikipedia.output(u'Page %s already exists, aborting.' % self.list.title())
         else:
             self.list.put(listString)
@@ -670,6 +677,7 @@ if __name__ == "__main__":
     batchMode = False
     editSummary = ''
     inPlace = False
+    overwrite = False
 
     #If this is set to true then the custom edit summary given for removing
     #categories from articles will also be used as the deletion reason.
@@ -710,6 +718,8 @@ if __name__ == "__main__":
                     inPlace = True
                 elif arg == '-delsum':
                     useSummaryForDeletion = True
+                elif arg == '-overwrite':
+                    overwrite = True
 		elif arg.startswith('-summary:'):
 		    editSummary = arg[len('-summary:'):]
                 
@@ -741,7 +751,7 @@ if __name__ == "__main__":
                 oldCatTitle = wikipedia.input(u'Please enter the name of the category to listify:')
             if (toGiven == False):
                 newCatTitle = wikipedia.input(u'Please enter the name of the list to create:')
-            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary)
+            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite)
             bot.run()
         else:
             wikipedia.showHelp('category')
