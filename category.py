@@ -6,31 +6,33 @@ Scripts to manage categories.
 Syntax: python category.py action [-option]
 
 where action can be one of these:
- * add     - mass-add a category to a list of pages
- * remove  - remove category tag from all pages in a category
- * move    - move all pages in a category to another category
- * tidy    - tidy up a category by moving its articles into subcategories
- * tree    - show a tree of subcategories of a given category
- * listify - make a list of all of the articles that are in a category
+ * add      - mass-add a category to a list of pages
+ * remove   - remove category tag from all pages in a category
+ * move     - move all pages in a category to another category
+ * tidy     - tidy up a category by moving its articles into subcategories
+ * tree     - show a tree of subcategories of a given category
+ * listify  - make a list of all of the articles that are in a category
 
 and option can be one of these:
- * -person    - sort persons by their last name (for action 'add')
- * -rebuild   - reset the database
- * -from:     - The category to move from (for the move option)
-                Also, the category to remove from in the remove option
-                Also, the category to make a list of in the listify option
- * -to:       - The category to move to (for the move option)
-              - Also, the name of the list to make in the listify option
+ * -person     - sort persons by their last name (for action 'add')
+ * -rebuild    - reset the database
+ * -from:      - The category to move from (for the move option)
+                 Also, the category to remove from in the remove option
+                 Also, the category to make a list of in the listify option
+ * -to:        - The category to move to (for the move option)
+               - Also, the name of the list to make in the listify option
          NOTE: If the category names have spaces in them, surround the names with
          single quotes, i.e. -to:Us -from:'United States'
- * -batch     - Don't prompt to delete emptied categories (do it automatically).
- * -summary:  - Pick a custom edit summary for the bot.
- * -inplace   - Use this flag to change categories in place rather than
-                rearranging them.
- * -delsum    - An option for remove, this specifies to use the custom edit
-                summary as the deletion reason (rather than a canned deletion reason)
- * -overwrite - An option for listify, this overwrites the current page with the
-                list even if something is already there.
+ * -batch      - Don't prompt to delete emptied categories (do it automatically).
+ * -summary:   - Pick a custom edit summary for the bot.
+ * -inplace    - Use this flag to change categories in place rather than
+                 rearranging them.
+ * -delsum     - An option for remove, this specifies to use the custom edit
+                 summary as the deletion reason (rather than a canned deletion reason)
+ * -overwrite  - An option for listify, this overwrites the current page with the
+                 list even if something is already there.
+ * -showimages - An option for listify, this displas images rather than linking them
+                 in the list.
 
 
 For the actions tidy and tree, the bot will store the category structure locally
@@ -350,9 +352,10 @@ class CategoryListifyRobot:
         'sv':u'Robot: Skapar en lista från %s'
     }
 
-    def __init__(self, catTitle, listTitle, editSummary, overwrite):
+    def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False):
         self.editSummary = editSummary
         self.overwrite = overwrite
+        self.showImages = showImages
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         self.list = wikipedia.Page(wikipedia.getSite(), listTitle)
         # get edit summary message
@@ -364,7 +367,10 @@ class CategoryListifyRobot:
     def run(self):
         listString = ""
         for article in self.cat.articles():
-            listString = listString + "*[[%s]]\n" % article.title()
+            if not article.isImage() or self.showImages:
+                listString = listString + "*[[%s]]\n" % article.title()
+            else:
+                listString = listString + "*[[:%s]]\n" % article.title()
         if self.list.exists() and not self.overwrite:
             wikipedia.output(u'Page %s already exists, aborting.' % self.list.title())
         else:
@@ -678,6 +684,7 @@ if __name__ == "__main__":
     editSummary = ''
     inPlace = False
     overwrite = False
+    showImages = False
 
     #If this is set to true then the custom edit summary given for removing
     #categories from articles will also be used as the deletion reason.
@@ -720,6 +727,8 @@ if __name__ == "__main__":
                     useSummaryForDeletion = True
                 elif arg == '-overwrite':
                     overwrite = True
+                elif arg == '-showimages':
+                    showImages = True
 		elif arg.startswith('-summary:'):
 		    editSummary = arg[len('-summary:'):]
                 
@@ -751,7 +760,7 @@ if __name__ == "__main__":
                 oldCatTitle = wikipedia.input(u'Please enter the name of the category to listify:')
             if (toGiven == False):
                 newCatTitle = wikipedia.input(u'Please enter the name of the list to create:')
-            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite)
+            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite, showImages)
             bot.run()
         else:
             wikipedia.showHelp('category')
