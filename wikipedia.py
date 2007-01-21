@@ -309,7 +309,8 @@ class Page(object):
         sectionStart = t.find(u'#')
         if sectionStart >= 0:
             self._section = t[sectionStart+1:].strip()
-            if self._section == u'': self._section = None            
+            self._section = sectionencode(self._section, self.site().encoding())
+            if self._section == u'': self._section = None          
             t = t[:sectionStart].strip()
         else:
             self._section = None
@@ -1845,7 +1846,7 @@ class GetAll(object):
         pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
         section = pl2.section()
         if section:
-            m = re.search("== *%s *==" % re.escape(section), text)                    
+            m = re.search(".3D.3D\_*(.5B.5B)?\_*%s\_*(.5B.5B)?\_*.3D.3D" % re.escape(section), sectionencode(text,pl2.site().encoding()))                    
             if not m:
                 output(u"WARNING: Section not found: %s" % pl2.aslink(forceInterwiki = True))
             else:
@@ -2525,6 +2526,10 @@ def doubleXForEsperanto(text):
             text = result
             break
     return text
+
+def sectionencode(text, encoding):
+    # change the text so that it can be used as a section title in wiki-links
+    return urllib.quote(text.replace(" ","_").encode(encoding)).replace("%",".")
 
 ######## Unicode library functions ########
 
