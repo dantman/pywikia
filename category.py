@@ -80,6 +80,7 @@ msg_add={
     'no':u'Robot: Legger til [[Kategori:%s]]',
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
+    'sv':u'Robot: Lägger till [[Kategori:%s]]',
     }
 
 msg_change={
@@ -97,6 +98,7 @@ msg_change={
     'no':u'Robot: Endrer %s',
     'pt':u'Bot: Modificando [[Categoria:%s]]',
     'sr':u'Бот: Измена категорије %s',
+    'sv':u'Robot: Ändrar %s',
     }
 
 deletion_reason_move = {
@@ -109,6 +111,7 @@ deletion_reason_move = {
     'no':u'Robot: Kategorien ble flyttet til %s',
     'pt':u'Bot: Categoria %s foi movida',
     'sr':u'Бот: Категорија премештена у %s',
+    'sv':u'Robot: Kategori flyttades till %s',
     }
 
 cfd_templates = {
@@ -388,6 +391,7 @@ class CategoryRemoveRobot:
         'he':u'רובוט: הקטגוריה פורקה',
         'ia':u'Robot: Categoria esseva dissolvite',
         'pt':u'Bot: Categoria foi unida',
+        'sv':u'Robot: Kategorin upplöstes',
     }
     
     msg_remove={
@@ -401,6 +405,7 @@ class CategoryRemoveRobot:
         'nl':u'Bot: Verwijderd uit %s',
         'pt':u'Bot: Removendo [[Categoria:%s]]',
         'sr':u'Бот: Уклањање из категорије [[Категорија:%s|%s]]',
+        'sv':u'Robot: Tar bort från %s',
     }
 
     def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False):
@@ -626,6 +631,7 @@ class CategoryTreeRobot:
             'ia': u'(equalmente in %s)',
             'is': u'(einnig í %s)',
             'pt': u'(também em %s)',
+            'sv': u'(också i %s)',
             'ср': u'(такође у %s)',
             }
             
