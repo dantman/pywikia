@@ -4,14 +4,15 @@
 This robot check copyright text in Google and Yahoo.
 
 Google search requires to install the pyGoogle module from http://pygoogle.sf.net
-and get a Google API license key from http://www.google.com/apis/index.html.
+and get a Google API license key from http://code.google.com/apis/soapsearch/ (but
+since December 2006 Google is no longer issuing new SOAP API keys).
 
-Yahoo! search requires pYsearch module http://pysearch.sourceforge.net and
-a Yahoo AppID http://developer.yahoo.com. 
+Yahoo! search requires pYsearch module from http://pysearch.sourceforge.net and
+a Yahoo AppID from http://developer.yahoo.com.
 
 You can run the bot with the following commandline parameters:
 
--g           - Use Google search engine (default)
+-g           - Use Google search engine
 -ng          - Do not use Google
 -y           - Use Yahoo! search engine
 -ny          - Do not use Yahoo!
@@ -42,10 +43,9 @@ You can run the bot with the following commandline parameters:
 
 Examples:
 
-If you want to check first 50 new articles using Yahoo! and Google search
-engine then use this command:
+If you want to check first 50 new articles then use this command:
 
-    python copyright.py -new:50 -g -y
+    python copyright.py -new:50
 
 If you want to check a category with no limit for number of queries to
 request, use this:
@@ -66,14 +66,9 @@ import wikipedia, pagegenerators, catlib, config, mediawiki_messages
 
 __version__='$Id$'
 
-search_in_google=True
-search_in_yahoo=False
-search_in_msn=False
-check_in_source_google=False
-check_in_source_yahoo=True
+#search_in_msn = False
 exclude_quote = True
-search_request_retry=10
-max_query_for_page=25
+
 appdir = "copyright/"
 output_file = appdir + "output.txt"
 
@@ -90,9 +85,41 @@ pages_for_exclusion_database = [
 #('de', 'Wikipedia:Weiternutzung', 'Weiternutzung.txt'),
 ('it', 'Wikipedia:Cloni', 'Cloni.txt'),
 #('pl', 'Wikipedia:Mirrory_i_forki_polskiej_Wikipedii', 'Mirrory_i_forki_polskiej_Wikipedii.txt'),
-#('pt', 'Wikipedia:Clones_da_Wikip�dia', 'Clones_da_Wikip�dia.txt'),
+#('pt', 'Wikipedia:Clones_da_Wikipédia', 'Clones_da_Wikipédia.txt'),
 #('sv', 'Wikipedia:Spegelsidor', 'Spegelsidor.txt'),
 ]
+
+sections_to_skip = {
+'en':['References', 'Further reading', 'Citations', 'External links'],
+'it':['Bibliografia', 'Riferimenti bibliografici', "Collegamenti esterni"],
+}
+
+def skip_section(text):
+    l = list()
+    for s in sections_to_skip.values():
+        l.extend(s)
+    sect_titles = '|'.join(l)
+
+    sectC = re.compile('(?mi)^==\s*(' + sect_titles + ')\s*==')
+    newtext = ''
+
+    while True:
+        newtext = cut_section(text, sectC)
+        if newtext == text:
+            break
+        text = newtext
+    return text
+
+def cut_section(text, sectC):
+    sectendC = re.compile('(?m)^==')
+    start = sectC.search(text)
+    if start:
+        end = sectendC.search(text, start.end())
+        if end:
+            return text[:start.start()]+text[end.start():]
+        else:
+            return text[:start.start()]
+    return text
 
 def exclusion_file_list():
     for i in pages_for_exclusion_database:
@@ -184,11 +211,31 @@ def write_log(text, filename = output_file):
     f.write(text)
     f.close()
 
+#
+# Set regex used in cleanwikicode() to remove [[Image:]] tags
+# and regex used in check_in_source() to reject pages with
+# 'Wikipedia'.
+
+def join_family_data(reString, namespace):
+    for s in wikipedia.Family().namespaces[namespace].itervalues():
+        if type (s) == type([]):
+            for e in s:
+                reString += '|' + e
+        else:
+            reString += '|' + s
+    return '\s*(' + reString + ')\s*'
+
+reImageC = re.compile('\[\[' + join_family_data('Image', 6) + ':.*?\]\]', re.I)
+reWikipediaC = re.compile(join_family_data('Wikipedia', 4).replace("|Wiki|", "|"), re.I)
+
 def cleanwikicode(text):
     if not text:
         return ""
     #write_log(text+'\n', "debug_cleanwikicode1.txt")
-    text = re.sub('(?i)<br(\s*/)?>', '', text)
+    text = re.sub('(?i)<p.*?>' ,'', text)
+    text = re.sub('(?i)</?div.*?>' ,'', text)
+    text = re.sub("(?i)</*small>", "", text)
+    text = re.sub('(?i)<(/\s*)?br(\s*/)?>', '', text)
     text = re.sub('<!--.*?-->', '', text)
     text = re.sub('&lt;', '<', text)
     text = re.sub('&gt;', '>', text)
@@ -199,15 +246,19 @@ def cleanwikicode(text):
         text = re.sub('^[:*]?\s*["][^"]+["]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
         text = re.sub('^[:*]?\s*[«][^»]+[»]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
         text = re.sub('^[:*]?\s*[“][^”]+[”]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
- 
+
     # exclude <ref> notes
     text = re.sub ("<ref.*?>.*?</ref>", "", text)
     # exclude wikitable
     text = re.sub('^(\||{[^{]).*', "", text)
     # remove URL
-    text = re.sub('http://[\w/.,;:@&=%#\\\?_!~*\'|()\"+-]+', ' ', text)
+    text = re.sub('https?://[\w/.,;:@&=%#\\\?_!~*\'|()\"+-]+', ' ', text)
+    # remove Image tags
+    text = reImageC.sub("", text)
     # replace piped wikilink
     text = re.sub("\[\[[^\]]*?\|(.*?)\]\]", "\\1", text)
+    # remove unicode and polytonic template
+    text = re.sub("(?i){{(unicode|polytonic)\|(.*?)}}", "\\1", text)
     # remove <nowiki> tags
     text = re.sub("</*nowiki>", "", text)
     # remove template
@@ -225,7 +276,7 @@ def cleanwikicode(text):
     #if text:
     #    write_log(text+'\n', "debug_cleanwikicode2.txt")
     return text
- 
+
 excl_list = exclusion_list()
 
 def exclusion_list_dump():
@@ -270,18 +321,20 @@ def query(lines = [], max_query_len = 1300):
 
     output = u""
     n_query = 0
-    previous_group_url = ''
+    previous_group_url = 'none'
 
     for line in lines:
         line = cleanwikicode(line)
-        for search_words in mysplit(line,31," "):
-            if len(search_words)>120:
+        for search_words in mysplit(line, 31, " "):
+            if len(search_words) > 120:
                 n_query += 1
-                if max_query_for_page and n_query>max_query_for_page:
+                #wikipedia.output(search_words)
+                if config.copyright_max_query_for_page and n_query > config.copyright_max_query_for_page:
                     print "Max query limit for page reached"
                     return output
-                if len(search_words)>max_query_len:
-                    search_words=search_words[:max_query_len]
+                if len(search_words) > max_query_len:
+                    search_words = search_words[:max_query_len]
+                    consecutive = False
                     if " " in search_words:
                          search_words = search_words[:search_words.rindex(" ")]
                 results = get_results(search_words)
@@ -289,14 +342,28 @@ def query(lines = [], max_query_len = 1300):
                 for url, engine in results:
                     group_url += '\n*%s - %s' % (engine, url)
                 if results:
+                    group_url_list = group_url.splitlines()
+                    group_url_list.sort()
+                    group_url = '\n'.join(group_url_list)
                     if previous_group_url == group_url:
-                        output += '\n**' + search_words
+                        if consecutive:
+                            output += ' ' + search_words
+                        else:
+                            output += '\n**' + search_words
                     else:
                         output += group_url + '\n**' + search_words
+
                     previous_group_url = group_url
+                    consecutive = True
+                else:
+                    consecutive = False
+            else:
+               consecutive = False
+
     return output
 
 source_seen = set()
+positive_source_seen = set()
 
 def check_in_source(url):
     """
@@ -305,7 +372,10 @@ def check_in_source(url):
     either with Google and Yahoo! service.
     """
     import urllib2
-    global excl_list, source_seen
+    global excl_list, source_seen, positive_source_seen
+
+    if url in positive_source_seen:
+        return True
 
     if url in source_seen:
         return False
@@ -314,35 +384,40 @@ def check_in_source(url):
         return False
 
     # very experimental code
-    if not url[-4:] in [".pdf", ".doc"]:
+    if not url[-4:] in [".pdf", ".doc", ".ppt"]:
         resp = urllib2.urlopen(url)
-        text = resp.read().lower()
+        text = resp.read()
         #resp.close()
-        if 'wikipedia' in text:
+
+        if reWikipediaC.search(text):
+#        if 'wikipedia' in text.lower():
             excl_list += [url]
             #write_log(url + '\n', "copyright/sites_with_'wikipedia'.txt")
+            positive_source_seen.add(url)
             return True
         else:
             #write_log(url + '\n', "copyright/sites_without_'wikipedia'.txt")
             source_seen.add(url)
     return False
 
-def check_urllist(url, add_item):
+def add_in_urllist(url, add_item, engine):
     for i in range(len(url)):
         if add_item in url[i]:
-            url[i] = (add_item, 'google, yahoo')
-            return True
-    return False
+            if engine not in url[i][1]:
+                url[i] = (add_item, url[i][1] + ', ' + engine)
+            return
+    url.append((add_item, engine))
+    return
 
 def get_results(query, numresults = 10):
     url = list()
     query = re.sub("[()\"<>]", "", query)
     #wikipedia.output(query)
-    if search_in_google:
+    if config.copyright_google:
         import google
         google.LICENSE_KEY = config.google_key
         print "  google query..."
-        search_request_retry = 6
+        search_request_retry = config.copyright_connection_tries
         while search_request_retry:
         #SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
         # Daily limit of 1000 queries exceeded for key xxx>
@@ -350,47 +425,62 @@ def get_results(query, numresults = 10):
                 data = google.doGoogleSearch('-Wikipedia "' + query + '"')
                 search_request_retry = 0
                 for entry in data.results:
-                    url.append((entry.URL, 'google'))
+                    if config.copyright_check_in_source_google:
+                        if check_in_source(entry.URL):
+                            continue
+                    add_in_urllist(url, entry.URL, 'google')
             except Exception, err:
                 print "Got an error ->", err
                 search_request_retry -= 1
-    if search_in_yahoo:
+    if config.copyright_yahoo:
         import yahoo.search.web
         print "  yahoo query..."
         data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"' +
                                           query.encode('utf_8') +
                                           '" -Wikipedia', results=numresults)
-        search_request_retry = 6
+        search_request_retry = config.copyright_connection_tries
         while search_request_retry:
             try:
                 for entry in data.parse_results():
-                    if check_in_source_yahoo:
+                    if config.copyright_check_in_source_yahoo:
                         if check_in_source(entry.Url):
                             continue
-                    if not check_urllist(url, entry.Url):
-                        url.append((entry.Url, 'yahoo'))
+                    add_in_urllist(url, entry.Url, 'yahoo')
                 search_request_retry = 0
             except Exception, err:
                 print "Got an error ->", err
                 search_request_retry -= 1
     #if search_in_msn:
+    #    ## max_query_len = 150?
     #    from __SOAPpy import WSDL
     #    print "  msn query..."
     #    wsdl_url = 'http://soap.search.msn.com/webservices.asmx?wsdl'
     #    server = WSDL.Proxy(wsdl_url)
-    #    params = {'AppID': config.msn_appid, 'Query': query, 'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
+    #    params = {'AppID': config.msn_appid, 'Query': '-Wikipedia "' + query + '"', 'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
     #             'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
-    #    server_results = server.Search(Request=params)
-    #    if server_results.Responses[0].Results:
-    #        results = server_results.Responses[0].Results[0]
+    #
+    #    search_request_retry = config.copyright_connection_tries
+    #    results = ''
+    #    while search_request_retry:
+    #        try:
+    #            server_results = server.Search(Request = params)
+    #            search_request_retry = 0
+    #            if server_results.Responses[0].Results:
+    #                results = server_results.Responses[0].Results[0]
+    #        except Exception, err:
+    #            print "Got an error ->", err
+    #            search_request_retry -= 1
     #    for entry in results:
-    #        url.append((entry.Url, 'msn'))
+    #         try:
+    #             add_in_urllist(url, entry.Url, 'msn')
+    #         except AttributeError:
+    #             print "attrib ERROR"
 
     offset = 0
     for i in range(len(url)):
-        if check_list(url[i+offset][0], excl_list, debug=True):
-            url.pop(i+offset)
-            offset+=-1
+        if check_list(url[i + offset][0], excl_list, debug = True):
+            url.pop(i + offset)
+            offset += -1
     return url
 
 def get_by_id(title, id):
@@ -431,12 +521,20 @@ class CheckRobot:
     	    wikipedia.output(page.title())
 
 	    if original_text:
-                output = query(lines=original_text.splitlines())
+                text = skip_section(original_text)
+                output = query(lines = text.splitlines())
                 if output:
                    write_log('=== [[' + page.title() + ']] ===' + output + '\n', filename = output_file)
 
+def check_config(var, license_id, license_name):
+    if var:
+        if not license_id:
+            wikipedia.output(u"Warning! You don't have set a " + license_name + ", search engine is disabled.")
+            return False
+    return var
+
 def main():
-    global search_in_google, search_in_yahoo, max_query_for_page, output_file
+    global output_file
     gen = None
     # Can either be 'xmldump', 'textfile' or 'userinput'.
     source = None
@@ -468,6 +566,9 @@ def main():
 
     firstPageTitle = None
 
+    config.copyright_yahoo = check_config(config.copyright_yahoo, config.yahoo_appid, "Yahoo AppID")
+    config.copyright_google = check_config(config.copyright_google, config.google_key, "Google Web API license key")
+
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
         if arg.startswith('-filelinks'):
@@ -481,19 +582,19 @@ def main():
         elif arg.startswith('-repeat'):
             repeat = True
         elif arg.startswith('-y'):
-            search_in_yahoo = True
+            config.copyright_yahoo = True
         elif arg.startswith('-g'):
-            search_in_google = True
+            config.copyright_google = True
         elif arg.startswith('-ny'):
-            search_in_yahoo = False
+            config.copyright_yahoo = False
         elif arg.startswith('-ng'):
-            search_in_google = False
+            config.copyright_google = False
         elif arg.startswith('-output'):
             if len(arg) >= 8:
                 output_file = arg[8:]
         elif arg.startswith('-maxquery'):
             if len(arg) >= 10:
-                max_query_for_page = int(arg[10:])
+                config.copyright_max_query_for_page = int(arg[10:])
         elif arg.startswith('-new'):
             if len(arg) >=5:
               gen = pagegenerators.NewpagesPageGenerator(number=int(arg[5:]), repeat = repeat)
@@ -574,7 +675,7 @@ def main():
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
     bot = CheckRobot(preloadingGen)
     bot.run()
- 
+
 if __name__ == "__main__":
     try:
         main()
