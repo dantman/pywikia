@@ -2836,12 +2836,14 @@ class Site(object):
                 title = m.group('title')
                 title = title.replace('&quot;', '"')
                 length = int(m.group('length'))
+                loggedIn = u''
                 username = m.group('username')
+                comment = u''
 
                 if title not in seen:
                     seen.add(title)
                     page = Page(self, title)
-                    yield page, date, length, username
+                    yield page, date, length, loggedIn, username, comment
 
             if not repeat:
                 break
