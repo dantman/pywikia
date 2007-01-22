@@ -237,12 +237,42 @@ db_hostname = 'localhost'
 db_username = 'wikiuser'
 db_password = ''
 
+############## SEARCH ENGINE SETTINGS ##############
+
+# Some scripts allow using the Google Web API. To use this feature, you must
+# install the pyGoogle module from http://pygoogle.sf.net/ and get a Google
+# Web API license key from http://www.google.com/apis/index.html .
+google_key = ''
+
+# Some scripts allow using the Yahoo! Search Web Services. To use this feature,
+# you must install the pYsearch module from http://pysearch.sourceforge.net/
+# and get a Yahoo AppID from http://developer.yahoo.com
+yahoo_appid = ''
+
+############## COPYRIGHT SETTINGS ##############
+
+# Enable/disable search engine in copyright.py script
+copyright_google = True
+copyright_yahoo = True
+
+# Perform a deep check, loading URLs to search if 'Wikipedia' is present.
+# This may be useful to improve number of correct results. If you haven't
+# a fast connection, you might want to keep they disabled.
+copyright_check_in_source_google = False
+copyright_check_in_source_yahoo = False
+
+# Limit number of queries for page.
+copyright_max_query_for_page = 25
+
+# Number of attempts on connection error.
+copyright_connection_tries = 10
+
 ############## FURTHER SETTINGS ##############
 
 # The bot can make some additional changes to each page it edits, e.g. fix
 # whitespace or positioning of interwiki and category links.
 
-# This is an experimental feature; handle with care and consider re-checking 
+# This is an experimental feature; handle with care and consider re-checking
 # each bot edit if enabling this!
 cosmetic_changes = False
 
@@ -253,16 +283,6 @@ cosmetic_changes = False
 # If you want the bot to also do cosmetic changes when editing a page on a
 # foreign wiki, set cosmetic_changes_mylang_only to False, but be careful!
 cosmetic_changes_mylang_only = True
-
-# Some scripts allow using the Google Web API. To use this feature, you must
-# install the pyGoogle module from http://pygoogle.sf.net/ and get a Google
-# Web API license key from http://www.google.com/apis/index.html .
-google_key = ''
-
-# Some scripts allow using the Yahoo! Search Web Services. To use this feature,
-# you must install the pYsearch module from http://pysearch.sourceforge.net/
-# and get a Yahoo AppIP from http://developer.yahoo.com
-yahoo_appid = ''
 
 # End of configuration section
 # ============================
