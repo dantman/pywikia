@@ -2874,7 +2874,7 @@ class Site(object):
             path = self.shortpages_address()
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> \((?P<length>\d+)(.+?)\)</li>')
+            entryR = re.compile(ur'<li>\(<a href=".+?" title=".+?">hist</a>\) ‎<a href=".+?" title="(?P<title>.+?)">.+?</a> ‎\[(?P<length>\d+)(.+?)\]</li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
                 length = int(m.group('length'))
