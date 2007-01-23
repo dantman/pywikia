@@ -712,7 +712,11 @@ class Page(object):
                 _isDisambig = False
         return _isDisambig
 
-    def getReferences(self, follow_redirects=True, withTemplateInclusion = True, onlyTemplateInclusion = False):
+    def getReferences(self, follow_redirects=True,
+                      withTemplateInclusion=True,
+                      onlyTemplateInclusion=False,
+                      redirectsOnly=False
+                      ):
         """
         Yield all pages that link to the page. If you need a full list of
         referring pages, use this:
@@ -726,6 +730,7 @@ class Page(object):
                                   used as a template.
         * onlyTemplateInclusion - if True, only returns pages where self is
                                   used as a template.
+        * redirectsOnly         - if True, only returns redirects to self.
         """
         site = self.site()
         path = site.references_address(self.urlname())
@@ -807,7 +812,7 @@ class Page(object):
                         if redirect:
                             output(u"WARNING: [[%s]] is a double-redirect."
                                    % rmatch.group("title"))
-                        if follow_redirects or not redirect:
+                        if follow_redirects or redirectsOnly or not redirect:
                             refTitles.add(rmatch.group("title"))
                         redirect += 1
                 # the same line may match both redirectpattern and
@@ -815,8 +820,8 @@ class Page(object):
                 # a redirect link
                 if not lmatch:
                     lmatch = listitempattern.search(line)
-                if lmatch:
-                    if follow_redirects or not redirect:
+                if lmatch and (follow_redirects or not redirect
+                               ) and not redirectsOnly:
                         try:
                             isTemplateInclusion = (lmatch.group("templateInclusion") != None)
                         except IndexError:
