@@ -363,7 +363,7 @@ class Family(family.Family):
             'th':  [u'แก้กำกวม', u'Disambig'],
             'tl':  [u'Paglilinaw', u'Disambig'],
             'tr':  [u'Anlam ayrım', u'Disambig', u'Anlam ayrımı'],
-            'uk':  [u'DisambigG', u'Disambig']
+            'uk':  [u'DisambigG', u'Disambig'],
             'vi':  [u'Trang định hướng', u'Định hướng', u'Disambig', u'Hndis'],
             'wa':  [u'Omonimeye', u'Disambig'],
             'zh':  [u'Disambig', u'消歧义', u'消歧义页', u'消歧義'],
