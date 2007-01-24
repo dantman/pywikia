@@ -9,6 +9,7 @@ Command line options:
 
 -category:   Delete all pages in the given category.
 -links:      Delete all pages linked from a given page.
+-file:       Delete all pages listed in a text file.
 -ref:        Delete all pages referring from a given page.
 -always      Don't prompt to delete pages, just do it.
 -summary:    Supply a custom edit summary.
@@ -26,6 +27,9 @@ import wikipedia, config, catlib
 import pagegenerators
 
 # Summary messages for deleting from a category.
+msg_simple_delete = {
+    'en': u'Bot: Deleting a list of files.',
+}
 msg_delete_category = {
     'de': u'Bot: Lösche alle Seiten in Kategorie %s',
     'en': u'Robot - Deleting all pages from category %s',
@@ -78,12 +82,18 @@ def main():
     doCategory = False
     doRef = False
     doLinks = False
+    fileName = ''
     gen = None
     
     # read command line parameters
     for arg in wikipedia.handleArgs():
         if arg == '-always':
             always = True
+        elif arg.startswith('-file'):
+            if len(arg) == len('-file'):
+                fileName = wikipedia.input(u'Enter name of file to delete pages from:')
+            else:
+                fileName = arg[len('-file:'):]
         elif arg.startswith('-summary'):
             if len(arg) == len('-summary'):
                 summary = wikipedia.input(u'Enter a reason for the deletion:')
@@ -138,6 +148,11 @@ def main():
             summary = wikipedia.translate(mysite, msg_delete_ref) % pageName
         refPage = wikipedia.Page(wikipedia.getSite(), pageName)
         gen = pagegenerators.ReferringPageGenerator(refPage)
+    elif fileName:
+        if not summary:
+            summary = wikipedia.translate(mysite, msg_simple_delete)
+        gen = pagegenerators.TextfilePageGenerator(fileName)
+    
     if gen:
         wikipedia.setAction(summary)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
