@@ -178,6 +178,7 @@ class ReplaceRobot:
         self.exceptions = exceptions
         self.acceptall = acceptall
         self.allowoverlap = allowoverlap
+        self.recursive = recursive 
 
     def checkExceptions(self, original_text):
         """
