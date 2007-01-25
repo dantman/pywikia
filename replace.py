@@ -48,6 +48,7 @@ You can run the bot with the following commandline parameters:
                iterate over all user pages starting at User:M, use
                -start:User:M.
 -always      - Don't prompt you for each replacement
+-recursive   - Recourse replacement until possible.
 -nocase      - Use case insensitive regular expressions.
 -allowoverlap - When occurences of the pattern overlap, replace all of them.
                Warning! Don't use this option if you don't know what you're
@@ -135,6 +136,7 @@ class XmlDumpReplacePageGenerator:
         self.xmlFilename = xmlFilename
         self.replacements = replacements
         self.exceptions = exceptions
+        self.recursive = recursive
     
     def __iter__(self):
         import xmlreader
@@ -157,8 +159,8 @@ class ReplaceRobot:
     """
     A bot that can do text replacements.
     """
-    def __init__(self, generator, replacements, exceptions = [], acceptall = False, allowoverlap = False):
-        """
+    def __init__(self, generator, replacements, exceptions = [], acceptall = False, allowoverlap = False, recursive = False):
+        """        
         Arguments:
             * generator    - A generator that yields Page objects.
             * replacements - A list of 2-tuples of original text (as a compiled
@@ -225,6 +227,12 @@ class ReplaceRobot:
                 if new_text == original_text:
                     wikipedia.output('No changes were necessary in %s' % page.title())
                 else:
+                    if self.recursive:
+                        newest_text = self.doReplacements(new_text)
+                        while (newest_text!=new_text):
+                            new_text = newest_text
+                            newest_text = self.doReplacements(new_text)
+
                     # Show the title of the page where the link was found.
                     # Highlight the title in purple.
                     colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
@@ -304,6 +312,8 @@ def main():
     googleQuery = None
     # Do all hits when they overlap
     allowoverlap = False
+    # Do not recurse replacement
+    recursive = False
     # Load default summary message.
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
@@ -375,6 +385,8 @@ def main():
             fix = arg[5:]
         elif arg == '-always':
             acceptall = True
+        elif arg == '-recursive':
+            recursive = True
         elif arg == '-nocase':
             caseInsensitive = True
         elif arg.startswith('-namespace:'):
@@ -478,9 +490,8 @@ LIMIT 200""" % (whereClause, exceptClause)
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
     preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 50)
-    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap)
+    bot = ReplaceRobot(preloadingGen, replacements, exceptions, acceptall, allowoverlap, recursive)
     bot.run()
-
 
 if __name__ == "__main__":
     try:
