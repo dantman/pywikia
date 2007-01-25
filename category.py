@@ -351,8 +351,8 @@ class CategoryListifyRobot:
     Creates a list containing all of the members in a category.
     '''
     listify_msg={
-        'en':u'Robot: Listifying from %s',
-        'sv':u'Robot: Skapar en lista från %s'
+        'en':u'Robot: Listifying from %s (%d entries)',
+        'sv':u'Robot: Skapar en lista från %s (%d)'
     }
 
     def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False):
@@ -362,14 +362,17 @@ class CategoryListifyRobot:
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         self.list = wikipedia.Page(wikipedia.getSite(), listTitle)
         # get edit summary message
+
+
+    def run(self):
+        listOfArticles = self.cat.articles()
 	if self.editSummary:
 	    wikipedia.setAction(self.editSummary)
 	else:
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.listify_msg) % self.cat.title())
+            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.listify_msg) % (self.cat.title(), len(listOfArticles)))
 
-    def run(self):
         listString = ""
-        for article in self.cat.articles():
+        for article in listOfArticles:
             if not article.isImage() or self.showImages:
                 listString = listString + "*[[%s]]\n" % article.title()
             else:
