@@ -95,9 +95,9 @@ __version__='$Id$'
 
 # Summary messages in different languages
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
-# below.
+# below.`v
 msg = {
-       'ar':u'%s روبوت : إستبدال تلقائي للنص',
+       'ar':u'%s روبوت : استبدال تلقائي للنص',
        'de':u'Bot: Automatisierte Textersetzung %s',
        'en':u'Robot: Automated text replacement %s',
        'el':u'Ρομπότ: Αυτόματη αντικατάσταση κειμένου %s',
