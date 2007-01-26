@@ -142,11 +142,12 @@ class LinkChecker(object):
         self.url = url
         self.redirectChain = redirectChain + [url]
         self.changeUrl(url)
-        #header = {'User-agent': wikipedia.useragent}
-        # we fake being Firefox because some webservers block
-        # unknown clients
         self.header = {
-            'User-agent': wikipedia.useragent,
+            # 'User-agent': wikipedia.useragent,
+            # we fake being Firefox because some webservers block unknown
+            # clients, e.g. http://images.google.de/images?q=Albit gives a 403
+            # when using the PyWikipediaBot user agent.
+            'User-agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5',
             'Accept': 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
             'Accept-Language': 'de-de,de;q=0.8,en-us;q=0.5,en;q=0.3',
             'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
