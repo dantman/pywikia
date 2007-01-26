@@ -722,7 +722,7 @@ class DisambiguationRobot(object):
             self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
                                             enabled=self.primary)
     
-            if disambPage.isRedirectPage():
+            if disambPage.isRedirectPage() and not self.primary:
                 try:
                     target = disambPage.getRedirectTarget()
                     self.alternatives.append(target)
