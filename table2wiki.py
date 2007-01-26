@@ -52,34 +52,34 @@ __version__='$Id$'
 import re, sys, time
 import wikipedia, config, pagegenerators
 
-msg_no_warnings = {'de':'Bot: Tabellensyntax konvertiert',
-                   'en':'User-controlled Bot: table syntax updated',
-                   'es':'Bot controlado: actualizada sintaxis de tabla',
-                   'he':'בוט בפיקוח משתמש: עדכון תחביר הטבלה',
-                   'ia':'Robot controlate: Syntaxe del tabella cambiate de HTML a Wiki',
-                   'lt':'kontroliuojamas robotas: atnaujinta lentelės sintaksė',
-                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax',
-                   'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada',
+msg_no_warnings = {'de':u'Bot: Tabellensyntax konvertiert',
+                   'en':u'User-controlled Bot: table syntax updated',
+                   'es':u'Bot controlado: actualizada sintaxis de tabla',
+                   'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה',
+                   'ia':u'Robot controlate: Syntaxe del tabella cambiate de HTML a Wiki',
+                   'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė',
+                   'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax',
+                   'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada',
                   }
 
-msg_one_warning = {'de':'Bot: Tabellensyntax konvertiert - %d Warnung!',
-                   'en':'User-controlled Bot: table syntax updated - %d warning!',
-                   'es':'Bot controlado: actualizada sintaxis de tabla - %d aviso!',
-                   'he':'בוט בפיקוח משתמש: עדכון תחביר הטבלה - אזהרה אחת!',
-                   'ia':'Robot controlate: Syntaxe del tabella cambiate - %d advertimento!',
-                   'lt':'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimas!',
-                   'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
-                   'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
+msg_one_warning = {'de':u'Bot: Tabellensyntax konvertiert - %d Warnung!',
+                   'en':u'User-controlled Bot: table syntax updated - %d warning!',
+                   'es':u'Bot controlado: actualizada sintaxis de tabla - %d aviso!',
+                   'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה - אזהרה אחת!',
+                   'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimento!',
+                   'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimas!',
+                   'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
+                   'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
                   }
 
-msg_multiple_warnings = {'de':'Bot: Tabellensyntax konvertiert - %d Warnungen!',
-                         'en':'User-controlled Bot: table syntax updated - %d warnings!',
-                         'es':'Bot controlado: actualizada sintaxis de tabla - %d avisos!',
-                         'he':'בוט בפיקוח משתמש: עדכון תחביר הטבלה - %d אזהרות!',
-                         'ia':'Robot controlate: Syntaxe del tabella cambiate - %d advertimentos!',
-                         'lt':'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimai!',
-                         'nl':'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!',
-                         'pt':'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
+msg_multiple_warnings = {'de':u'Bot: Tabellensyntax konvertiert - %d Warnungen!',
+                         'en':u'User-controlled Bot: table syntax updated - %d warnings!',
+                         'es':u'Bot controlado: actualizada sintaxis de tabla - %d avisos!',
+                         'he':u'בוט בפיקוח משתמש: עדכון תחביר הטבלה - %d אזהרות!',
+                         'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimentos!',
+                         'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimai!',
+                         'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!',
+                         'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
                         }
 
 class TableXmlDumpPageGenerator:
