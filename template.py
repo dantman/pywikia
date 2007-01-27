@@ -220,28 +220,28 @@ class TemplateRobot:
         self.resolve = (new == None)
 
         # get edit summary message
-	if isinstance(self.old, list):
-	    allTemplates = (', ').join(old)
-	else:
-	    allTemplates = old
-	if self.editSummary:
-	    wikipedia.setAction(self.editSummary)
-	else:
-	    mysite = wikipedia.getSite()
+        if isinstance(self.old, list):
+            allTemplates = (', ').join(old)
+        else:
+            allTemplates = old
+        if self.editSummary:
+            wikipedia.setAction(self.editSummary)
+        else:
+            mysite = wikipedia.getSite()
             if self.remove:
-		if self.extras:
-		    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_remove) % allTemplates)
-		else:
-               	    wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % allTemplates)
-	    elif self.resolve:
-		if self.extras:
-		    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_subst) % allTemplates)
-		else:
-               	    wikipedia.setAction(wikipedia.translate(mysite, self.msg_subst) % allTemplates)
+                if self.extras:
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_remove) % allTemplates)
+                else:
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % allTemplates)
+            elif self.resolve:
+                if self.extras:
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_subst) % allTemplates)
+                else:
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_subst) % allTemplates)
             else:
-		if self.extras:
-		    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_change) % allTemplates)
-		else:
+                if self.extras:
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_change) % allTemplates)
+                else:
                     wikipedia.setAction(wikipedia.translate(mysite, self.msg_change) % allTemplates)
 
     def run(self):
@@ -255,20 +255,21 @@ class TemplateRobot:
         # empty string if there are none.
 
         replacements = []
-	if not isinstance(self.old, list):
-	    self.old = [self.old]
+        if not isinstance(self.old, list):
+            self.old = [self.old]
 
-	for old in self.old:
-	    oldOld = old
+        for old in self.old:
             if not wikipedia.getSite().nocapitalize:
-                old = '[' + old[0].upper() + old[0].lower() + ']' + old[1:]
-            old = re.sub('[_ ]', '[_ ]', old)
-            templateRegex = re.compile(r'\{\{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + old + ' *(?P<parameters>\|[^}]+|) *}}')
+                pattern = '[' + re.escape(old[0].upper()) + re.escape(old[0].lower()) + ']' + re.escape(old[1:])
+            else:
+                pattern = re.escape(old)
+            pattern = re.sub('_|\\\\ ', '[_ ]', pattern)
+            templateRegex = re.compile(r'\{\{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + pattern + ' *(?P<parameters>\|[^}]+|) *}}')
 
             if self.remove:
                 replacements.append((templateRegex, ''))
             elif self.resolve:
-                replacements.append((templateRegex, '{{subst:' + oldOld + '\g<parameters>}}'))
+                replacements.append((templateRegex, '{{subst:' + old + '\g<parameters>}}'))
             else:
                 replacements.append((templateRegex, '{{' + self.new + '\g<parameters>}}'))
 
