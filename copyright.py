@@ -111,7 +111,7 @@ def skip_section(text):
     return text
 
 def cut_section(text, sectC):
-    sectendC = re.compile('(?m)^==')
+    sectendC = re.compile('(?m)^==[^=]')
     start = sectC.search(text)
     if start:
         end = sectendC.search(text, start.end())
@@ -529,7 +529,7 @@ class CheckRobot:
 def check_config(var, license_id, license_name):
     if var:
         if not license_id:
-            wikipedia.output(u"Warning! You don't have set a " + license_name + ", search engine is disabled.")
+            wikipedia.output(u"WARNING: You don't have set a " + license_name + ", search engine is disabled.")
             return False
     return var
 
@@ -656,6 +656,8 @@ def main():
             gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
         elif arg.startswith('-namespace:'):
             namespaces.append(int(arg[11:]))
+        elif arg.startswith('-forceupdate'):
+            load_pages(force_update = True)
 
     if PageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]
