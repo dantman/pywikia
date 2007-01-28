@@ -210,6 +210,7 @@ class Family(family.Family):
             'ru': u'Портал',
             'sk': u'Portál',
             'sr': u'Портал',
+            'su': u'Obrolan portal',
             'tg': u'Портал',
         }
         
