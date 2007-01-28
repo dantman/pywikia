@@ -2380,7 +2380,7 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
 
     catNamespace = '|'.join(site.category_namespaces())
     #print "Regex is [[(%s):%s]]" % (catNamespace, oldcat.titleWithoutNamespace())
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\][\s]*' % (catNamespace, oldcat.titleWithoutNamespace()))
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\]' % (catNamespace, oldcat.titleWithoutNamespace()))
     text = replaceExceptMathNowikiAndComments(oldtext, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace())
     return text
 
