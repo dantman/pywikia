@@ -301,9 +301,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
         return
 
-    # This loop will stop after the first occurence of the category was found
-    # and replaced. There might also be cases where a category was inserted
-    # twice in an article; the bot would then only replace the first occurence.
+    # This loop will replace all occurrences of the category to be changed.
     for i in range(len(cats)):
         cat = cats[i]
         if cat == oldCat:
@@ -314,21 +312,22 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             else:
                 newCat = Category(site, newCat.title(), sortKey = sortKey)
                 cats = cats[:i] + [newCat] + cats[i+1:]
-            text = article.get(nofollow_redirects=True)
-	    try:
-                text = wikipedia.replaceCategoryLinks(text, cats)
-            except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
-		wikipedia.output(u'Skipping %s because of interwiki link to self' % (article))
-	    try:
-                article.put(text, comment)
-	    except wikipedia.EditConflict:
-                wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
-            except wikipedia.SpamfilterError:
-                wikipedia.output(u'Skipping %s because of spam filter error' % (article.title()))
-	    return
-    wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
-    return
+    #Remove duplicates.
+    cats = set(cats)
 
+    text = article.get(nofollow_redirects=True)
+    try:
+        text = wikipedia.replaceCategoryLinks(text, cats)
+    except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
+	wikipedia.output(u'Skipping %s because of interwiki link to self' % (article))
+    try:
+        article.put(text, comment)
+    except wikipedia.EditConflict:
+        wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
+    except wikipedia.SpamfilterError:
+        wikipedia.output(u'Skipping %s because of spam filter error' % (article.title()))
+
+    wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
 
 def test():
     site = wikipedia.getSite()
