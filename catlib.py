@@ -290,7 +290,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     """
     cats = article.categories(nofollow_redirects=True)
     site = article.site()
-    removed = False
+    changesMade = False
 
     if inPlace == True:
         text = article.get(nofollow_redirects=True)
@@ -305,6 +305,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     for i in range(len(cats)):
         cat = cats[i]
         if cat == oldCat:
+            changesMade = True
             if not sortKey:
                 sortKey = cat.sortKey
             if not newCat:
@@ -327,7 +328,8 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     except wikipedia.SpamfilterError:
         wikipedia.output(u'Skipping %s because of spam filter error' % (article.title()))
 
-    wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
+    if not changesMade:
+        wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
 
 def test():
     site = wikipedia.getSite()
