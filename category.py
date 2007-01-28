@@ -21,8 +21,9 @@ and option can be one of these:
                  Also, the category to make a list of in the listify option
  * -to:        - The category to move to (for the move option)
                - Also, the name of the list to make in the listify option
-         NOTE: If the category names have spaces in them, surround the names with
-         single quotes, i.e. -to:Us -from:'United States'
+         NOTE: If the category names have spaces in them you may need to use a
+         special syntax in your shell so that the names aren't treated as separate
+         parameters.  For instance, in BASH, use single quotes, e.g. -from:'Polar bears'
  * -batch      - Don't prompt to delete emptied categories (do it automatically).
  * -summary:   - Pick a custom edit summary for the bot.
  * -inplace    - Use this flag to change categories in place rather than
