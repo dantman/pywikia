@@ -302,6 +302,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         return
 
     # This loop will replace all occurrences of the category to be changed.
+    # BUG: But for now, it only replaces the first.
     for i in range(len(cats)):
         cat = cats[i]
         if cat == oldCat:
@@ -313,8 +314,9 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             else:
                 newCat = Category(site, newCat.title(), sortKey = sortKey)
                 cats = cats[:i] + [newCat] + cats[i+1:]
-    #Remove duplicates.
-    cats = set(cats)
+            break
+    # Remove duplicates.  Commented out for now because it was randomizing the order.
+    # cats = set(cats)
 
     text = article.get(nofollow_redirects=True)
     try:
