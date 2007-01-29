@@ -92,7 +92,7 @@ def CategoryPartPageGenerator(category, start = None):
     if site.version() < "1.4":
         Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
     else:
-        Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
+        Rtitle = re.compile('<li><a href="/.*?" title=".*?">([^]<>].*?)</a></li>')
     RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
     while True:
         path = site.get_address(category.urlname())
