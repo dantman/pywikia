@@ -1203,10 +1203,12 @@ class Page(object):
                     result.append(page)
         return result
 
-    def imagelinks(self, followRedirects = False):
+    def imagelinks(self, followRedirects = False, loose = False):
         """
         Gives the images the page shows, as a list of Page objects.
         This includes images in galleries.
+        If loose is set to true, this will find anything that looks like it could be an image.
+        This is useful for finding, say, images that are passed as parameters to templates.
         """
         results = []
         # Find normal images
@@ -1214,13 +1216,19 @@ class Page(object):
             if page.isImage():
                 results.append(page)
         # Find images in galleries
+        pageText = self.get()
         galleryR = re.compile('<gallery>.*?</gallery>', re.DOTALL)
         galleryEntryR = re.compile('(?P<title>(%s|%s):.+?)(\|.+)?\n' % (self.site().image_namespace(), self.site().family.image_namespace(code = '_default')))
-        for gallery in galleryR.findall(self.get()):
+        for gallery in galleryR.findall(pageText):
             for match in galleryEntryR.finditer(gallery):
                 page = ImagePage(self.site(), match.group('title'))
                 results.append(page)
-        return results
+        if loose:
+            ns = getSite().image_namespace()
+            imageR = re.compile('\w\w\w+\.(?:gif|png|jpg|jpeg|svg)', re.IGNORECASE)
+            for imageName in imageR.findall(pageText):
+                results.append(ImagePage(self.site(), ns + ':' + imageName))
+        return set(results)
 
     def templates(self):
         """

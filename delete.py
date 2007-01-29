@@ -11,6 +11,7 @@ Command line options:
 -links:      Delete all pages linked from a given page.
 -file:       Delete all pages listed in a text file.
 -ref:        Delete all pages referring from a given page.
+-images:     Delete all images used on a given page.
 -always      Don't prompt to delete pages, just do it.
 -summary:    Supply a custom edit summary.
 
@@ -48,6 +49,9 @@ msg_delete_ref = {
     'lt': u'robotas: Trinami visi puslapiai rodantys į %s',
     'pt': u'Bot: Apagando todas as páginas afluentes a %s',
 }
+msg_delete_images = {
+    'en': u'Robot - Deleting all images on page %s',
+}
 
 class DeletionRobot:
     """
@@ -82,6 +86,7 @@ def main():
     doCategory = False
     doRef = False
     doLinks = False
+    doImages = False
     fileName = ''
     gen = None
     
@@ -123,6 +128,12 @@ def main():
                 pageName = wikipedia.input(u'Enter the page to delete:')
             else:
                 pageName = arg[len('-page:'):]
+        elif arg.startswith('-images'):
+            doImages = True
+            if len(arg) == len('-images'):
+                pageName = wikipedia.input(u'Enter the page with the images to delete:')
+            else:
+                pageName = arg[len('-images'):]
 
     mysite = wikipedia.getSite()
 
@@ -152,11 +163,16 @@ def main():
         if not summary:
             summary = wikipedia.translate(mysite, msg_simple_delete)
         gen = pagegenerators.TextfilePageGenerator(fileName)
+    elif doImages:
+        if not summary:
+            summary = wikipedia.translate(mysite, msg_delete_images)
+        gen = pagegenerators.ImagesPageGenerator(wikipedia.Page(wikipedia.getSite(), pageName))
     
     if gen:
         wikipedia.setAction(summary)
-        preloadingGen = pagegenerators.PreloadingGenerator(gen)
-        bot = DeletionRobot(preloadingGen, summary, always)
+        # We are just deleting pages, so we have no need of using a preloading page generator
+        # to actually get the text of those pages.
+        bot = DeletionRobot(gen, summary, always)
         bot.run()
     else:
         wikipedia.showHelp(u'delete')

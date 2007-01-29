@@ -38,6 +38,10 @@ def FileLinksGenerator(referredPage):
     for page in referredPage.getFileLinks():
         yield page
 
+def ImagesPageGenerator(pageWithImages):
+    for page in pageWithImages.imagelinks(followRedirects = False, loose = True):
+        yield page
+
 def ReferringPageGenerator(referredPage, followRedirects=False,
                            withTemplateInclusion=True,
                            onlyTemplateInclusion=False):
