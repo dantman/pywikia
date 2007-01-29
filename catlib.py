@@ -301,37 +301,38 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
         return
 
-    # This loop will replace all occurrences of the category to be changed.
-    # BUG: But for now, it only replaces the first.
+    # This loop will replace all occurrences of the category to be changed, and remove duplicates.
+    newCatList = []
+    newCatSet = set()
     for i in range(len(cats)):
         cat = cats[i]
         if cat == oldCat:
             changesMade = True
             if not sortKey:
                 sortKey = cat.sortKey
-            if not newCat:
-                cats = cats[:i] + cats[i+1:]
-            else:
-                newCat = Category(site, newCat.title(), sortKey = sortKey)
-                cats = cats[:i] + [newCat] + cats[i+1:]
-            break
-    # Remove duplicates.  Commented out for now because it was randomizing the order.
-    # cats = set(cats)
-
-    text = article.get(nofollow_redirects=True)
-    try:
-        text = wikipedia.replaceCategoryLinks(text, cats)
-    except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
-	wikipedia.output(u'Skipping %s because of interwiki link to self' % (article))
-    try:
-        article.put(text, comment)
-    except wikipedia.EditConflict:
-        wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
-    except wikipedia.SpamfilterError:
-        wikipedia.output(u'Skipping %s because of spam filter error' % (article.title()))
+            if newCat:
+                if newCat.title() not in newCatSet:
+                    newCategory = Category(site, newCat.title(), sortKey = sortKey)
+                    newCatSet.add(newCat.title())
+                    newCatList.append(newCategory)
+        elif cat.title() not in newCatSet:
+            newCatSet.add(cat.title())
+            newCatList.append(cat)
 
     if not changesMade:
         wikipedia.output(u'ERROR: %s is not in category %s!' % (article.aslink(), oldCat.title()))
+    else:
+        text = article.get(nofollow_redirects=True)
+        try:
+            text = wikipedia.replaceCategoryLinks(text, newCatList)
+        except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
+            wikipedia.output(u'Skipping %s because of interwiki link to self' % (article))
+        try:
+            article.put(text, comment)
+        except wikipedia.EditConflict:
+            wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
+        except wikipedia.SpamfilterError:
+            wikipedia.output(u'Skipping %s because of spam filter error' % (article.title()))
 
 def test():
     site = wikipedia.getSite()
