@@ -345,7 +345,7 @@ class CategoryMoveRobot:
                     else:
                         self.oldCat.delete(reason, True)
                 else:
-                    wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCat.title(), self.newCat.title()))
+                    wikipedia.output('Couldn\'t copy contents of %s because %s already exists.' % (self.oldCat.title(), self.newCatTitle))
 
 class CategoryListifyRobot:
     '''
