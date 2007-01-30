@@ -96,33 +96,41 @@ class Family(family.Family):
         self.namespaces[100] = {
             '_default': u'Portal',
             'he':       u'פורטל',
-        }
+            }
         
         self.namespaces[101] = {
             '_default': u'Portal talk',
             'he':       u'שיחת פורטל',
-        }
-        
+            }
 
+        self.namespaces[108] = {
+            '_default': u'Transwiki'
+            }
+
+        self.namespaces[109] = {
+            '_default': u'Transwiki talk',
+            'fr':       u'Discussion Transwiki'
+            }
+         
         self.disambiguationTemplates = {
             '_default': [u''],
             'ka':       [u'მრავალმნიშვნელოვანი', u'მრავმნიშ'],
             'pt':       [u'Desambiguação'],
-        }
+            }
 
         # attop is a list of languages that prefer to have the interwiki
         # links at the top of the page.
-        self.interwiki_attop = ['fr', 'pl']
+        self.interwiki_attop = ['pl']
 
         # on_one_line is a list of languages that want the interwiki links
         # one-after-another on a single line
-        self.interwiki_on_one_line = ['fr', 'pl']
+        self.interwiki_on_one_line = ['pl']
         
         # Similar for category
         self.category_attop = ['pl']
 
         # List of languages that want the category on_one_line.
-        self.category_on_one_line = ['fr']
+        self.category_on_one_line = []
         
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
