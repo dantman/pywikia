@@ -57,7 +57,6 @@ class CSDRobot:
         """
         self.mySite = wikipedia.getSite()
         self.csdCat = catlib.Category(self.mySite, wikipedia.translate(self.mySite, self.csd_cat))
-        self.deletionMsg = wikipedia.translate(self.mySite, self.deletion_msg)
         self.savedProgress = '!'
         self.generator = None
         self.preloadingGen = None
@@ -94,7 +93,10 @@ class CSDRobot:
                     startFromBeginning = False
                     break
                 elif choice == 'd':
-                    page.delete(self.deletionMsg, prompt = False)
+                    reason = wikipedia.input(u'Please enter the reason for deletion, or press enter for the default message:')
+                    if not reason:
+                        reason = wikipedia.translate(self.mySite, self.deletion_msg)
+                    page.delete(reason, prompt = False)
                 elif choice == 's' or True:
                     wikipedia.output(u'Skipping page %s' % page.title())
                 startFromBeginning = True
