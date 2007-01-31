@@ -35,6 +35,7 @@ import wikipedia, upload, config, pagegenerators
 copy_message = {
     'en':u"This image was copied from %s. The original description was:\r\n\r\n%s",
     'de':u"Dieses Bild wurde von %s kopiert. Die dortige Beschreibung lautete:\r\n\r\n%s",
+    'fr':u"Cette image est copiée de %s. La description originale était:\r\n\r\n%s",
     'he':u"תמונה זו הועתקה מהאתר %s. תיאור הקובץ המקורי היה:\r\n\r\n%s",
     'ia':u"Iste imagine esseva copiate de %s. Le description original esseva:\r\n\r\n%s",
     'it':u"Questa immagine è stata copiata da %s. La descrizione originale era:\r\n\r\n%s",

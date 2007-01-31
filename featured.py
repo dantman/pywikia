@@ -41,6 +41,7 @@ msg = {
     'bs': u'Interwiki za izabrane članke za [[%s:%s]]',
     'en': u'Featured article link for [[%s:%s]]',
     'fi': u'Suositeltu artikkeli -tähti: [[%s:%s]]',
+    'fr': u'Lien AdQ pour [[%s:%s]]', 
     'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Interwiki za izabrane članke za [[%s:%s]]',
     'lt': u'Pavyzdinis straipsnis [[%s:%s]]',

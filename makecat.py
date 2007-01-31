@@ -44,6 +44,7 @@ import wikipedia, date, catlib
 msg={
     'en':u'Creation or update of category:',
     'es':u'Creación o actualiza de la categoría:',
+    'fr':u'Création ou mise à jour de categorie:', 
     'he':u'יצירה או עדכון של קטגוריה:',
     'ia':u'Creation o actualisation de categoria:',
     'it':u'La creazione o laggiornamento di categoria:',

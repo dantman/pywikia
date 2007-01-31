@@ -45,6 +45,7 @@ import re, sys, codecs
 msg={
     'de': u'Automatischer Import von Artikeln',
     'en': u'Automated import of articles',
+    'fr': u'Import automatique',
     'he': u'ייבוא ערכים אוטומטי',
     'ia': u'Importation automatic de articulos',
     'it': u'Caricamento automatico',
@@ -57,20 +58,26 @@ msg={
 msg_top={
     'en': u'append on top',
     'he': u'הצמד בהתחלה',
+    'fr': u'attaché en haut',
     'it': u'aggiungo in cima',
-    'ksh': u'Automatesch füürjesaz'
+    'ksh': u'Automatesch füürjesaz',
+    'pt': u'adicionado no topo'
     }
 msg_bottom={
     'en': u'append on bottom',
     'he': u'הצמד בסוף',
+    'fr': u'attaché en bas',
     'it': u'aggiungo in fondo',
-    'ksh': u'Automatesch aanjehange'
+    'ksh': u'Automatesch aanjehange',
+    'pt': u'adicionando no fim'
     }
 msg_force={
     'en': u'existing text overwritten',
     'he': u'הטקסט הקיים נדרס',
+    'fr': u'texte existant écrasé',
     'it': u'sovrascritto il testo esistente',
-    'ksh': u'Automatesch ußjetuusch'
+    'ksh': u'Automatesch ußjetuusch',
+    'pt': u'sobrescrever texto'
     }
 
 # Adapt these to the file you are using. 'starttext' and 'endtext' are

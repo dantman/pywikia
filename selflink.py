@@ -39,9 +39,10 @@ import re, sys
 msg = {
           'de':u'Bot: Entferne Selbstlinks',
           'he':u'רובוט: מסיר קישורים של הדף לעצמו',
+          'fr':u'Bot: Enlève autoliens',
           'en':u'Robot: Removing selflinks',
           'pt':u'Bot: Retirando link para o próprio artigo'
-       }
+       }    
 
 class XmlDumpSelflinkPageGenerator:
     """

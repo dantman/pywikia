@@ -23,13 +23,14 @@ wikipedia.get_throttle.setDelay(5)
 wikipedia.put_throttle.setDelay(10)
 
 msg={
-    'en': 'Bot: Changing categories',
-    'he': 'Bot: משנה קטגוריות',
-    'ia': 'Bot: Alteration de categorias',
-    'lt': 'robotas: Keičiamos kategorijos',
-    'nl': 'Bot: Verandering van categorieen',
-    'pt': 'Bot: Categorizando',
-    'sr': 'Bot: Ð˜Ð·Ð¼ÐµÐ½Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ˜Ð°',
+    'en':u'Bot: Changing categories',
+    'he':u'Bot: משנה קטגוריות',
+    'fr':u'Bot: Change categories',
+    'ia':u'Bot: Alteration de categorias',
+    'lt':u'robotas: Keičiamos kategorijos',
+    'nl':u'Bot: Verandering van categorieen',
+    'pt':u'Bot: Categorizando',
+    'sr':u'Bot: Ð˜Ð·Ð¼ÐµÐ½Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ˜Ð°',
     }
 
 def choosecats(pagetext):

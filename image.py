@@ -46,6 +46,7 @@ class ImageRobot:
     msg_replace={
         'de': u'Bot: Ersetze Bild %s durch %s',
         'en': u'Robot - Replacing image %s with %s',
+        'fr': u'Bot: Remplace image %s par %s',
         'he': u'רובוט - מחליף את התמונה %s בתמונה %s',
         'lt': u'robotas: vaizdas %s keičiamas į %s',
         'pt': u'Bot: Alterando imagem %s para %s',
@@ -55,6 +56,7 @@ class ImageRobot:
     msg_remove={
         'de': u'Bot: Entferne Bild %s',
         'en': u'Robot - Removing image %s',
+        'fr': u'Bot: Enleve image %s',
         'he': u'רובוט - מסיר את התמונה %s',
         'lt': u'robotas: Šalinamas vaizdas %s',
         'pt': u'Bot: Alterando imagem %s',

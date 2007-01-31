@@ -11,6 +11,7 @@ fixes = {
         'msg': {
                'en':u'Robot: converting/fixing HTML',
                'de':u'Bot: konvertiere/korrigiere HTML',
+               'fr':u'Robot: convertit/fixe HTML',
                'he':u'רובוט: ממיר/מתקן HTML',
                'ia':u'Robot: conversion/reparation de HTML',
                'lt':u'robotas: konvertuojamas/taisomas HTML',
@@ -77,6 +78,7 @@ fixes = {
         'msg': {
                'de':u'Bot: Korrigiere Wiki-Syntax',
                'en':u'Bot: Fixing wiki syntax',
+               'fr':u'Bot: Corrige wiki-syntaxe',
                'he':u'בוט: מתקן תחביר ויקי',
                'ia':u'Robot: Reparation de syntaxe wiki',
                'lt':u'robotas: Taisoma wiki sintaksė',

@@ -90,7 +90,7 @@ msg_change={
     'en':u'Robot: Changing %s',
     'es':u'Bot: Cambiada %s',
     'fi':u'Botti vaihtoi luokan %s',
-    'fr':u'Robot : modifie %s',
+    'fr':u'Robot : modifie [[%s]]',
     'he':u'רובוט: משנה %s',
     'ia':u'Robot: Modification de %s',
     'is':u'Vélmenni: Breyti flokknum [[Flokkur:%s]]',
@@ -105,7 +105,7 @@ msg_change={
 deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach %s verschoben',
     'en':u'Robot: Category was moved to %s',
-    'fr':u'Robot : catégorie déplacée sur %s',
+    'fr':u'Robot : catégorie déplacée sur [[%s]]',
     'he':u'רובוט: הקטגוריה הועברה לשם %s',
     'ia':u'Robot: Categoria transferite a %s',
     'lt':u'robotas: Kategorija pervadinta į %s',

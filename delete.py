@@ -34,23 +34,27 @@ msg_simple_delete = {
 msg_delete_category = {
     'de': u'Bot: Lösche alle Seiten in Kategorie %s',
     'en': u'Robot - Deleting all pages from category %s',
+    'fr': u'Bot: Supprime toutes pages de la catégorie %s',
     'lt': u'robotas: Trinami visi puslapiai iš kategorijos %s',
     'pt': u'Bot: Apagando todas as páginas da categoria %s',
 }
 msg_delete_links = {
     'de': u'Bot: Lösche alle Seiten in %s verlinkten Seiten',
     'en': u'Robot - Deleting all pages linked from %s',
+    'fr': u'Bot: Supprime toutes pages liées depuis %s',
     'lt': u'robotas: Trinami visi puslapiai į kuriuos yra nuoroda iš %s',
     'pt': u'Bot: Apagando todas as páginas ligadas a %s',
 }
 msg_delete_ref = {
     'de': u'Bot: Lösche alle auf %s linkenden Seiten',
     'en': u'Robot - Deleting all pages referring from %s',
+    'fr': u'Bot: Supprime toutes pages référant à %s',
     'lt': u'robotas: Trinami visi puslapiai rodantys į %s',
     'pt': u'Bot: Apagando todas as páginas afluentes a %s',
 }
 msg_delete_images = {
     'en': u'Robot - Deleting all images on page %s',
+    'pt': u'Bot: Apagando todas as imagens da página %s',
 }
 
 class DeletionRobot:

@@ -35,6 +35,7 @@ import re, sys
 msg={
     'en':u'robot: changing Windows-1252 characters to HTML entities',
     'de':u'Bot: Wandle Windows-1252-Zeichen in HTML-Entitäten um',
+    'fr':u'Bot: Modifie caracteres Windows-1252 vers entités HTML',
     'he':u'רובוט: משנה תווים בקידוד Windows-1252 ליישויות HTML',
     'ia':u'Robot: modification de characteres Windows-1252 a entitates HTML',
     }

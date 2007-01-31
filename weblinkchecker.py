@@ -50,6 +50,7 @@ import threading, time
 talk_report_msg = {
     'de': u'Bot: Berichte nicht verfügbaren Weblink',
     'en': u'robot: Reporting unavailable external link',
+    'fr': u'Bot: Rapporte lien externe inaccessible',
     'he': u'רובוט: מדווח על קישור חיצוני בלתי זמין',
     'ia': u'Robot: Reporto de un ligamine externe non functionante',
     'pt': u'Bot: Checando links externos',
@@ -59,6 +60,7 @@ talk_report_msg = {
 talk_report = {
     'de': u'== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich unerreichbar ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n--~~~~',
     'en': u'== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n--~~~~',
+    'fr': u'== Lien mort ==\n\nPendant plusieurs patrouilles par bot, le lien suivant a été inaccessible. Veuillez vérifier si le lien est effectivement mort et corrigez ou retirez-le si oui.\n\n%s\n--~~~~',
     'he': u'== קישור שבור ==\n\nבמהלך מספר ריצות אוטומטיות של הבוט, נמצא שהקישור החיצוני הבא אינו זמין. אנא בדקו אם הקישור אכן שבור, ותקנו אותו או הסירו את הפיסקאות הללו במקרה זה!\n\n%s\n--~~~~',
     'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n--~~~~',
     'pt': u'== Link quebrado ==\n\nFoi checado os links externos deste artigo por vários minutos. Verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
