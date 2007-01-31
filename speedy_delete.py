@@ -16,7 +16,7 @@ a vandal has replaced a perfectly good article with nonsense, which has subseque
 been tagged by someone who didn't realize it was previously a good article.  The onus
 is on you to avoid making these mistakes.
 
-Syntax: python speedy-delete.py
+Syntax: python speedy_delete.py
 
 Command line options:
 
@@ -59,6 +59,10 @@ class SpeedyRobot:
     deletion_msg={
         'de':u'Lösche Artikel mit [[Wikipedia:Schnelllöschantrag|Schnelllöschantrag]]',
         'en':u'Deleting candidate for speedy deletion per [[WP:CSD]]',
+    }
+
+    talk_deletion_msg={
+        'en':u'Orphaned talk page of deleted page.',
     }
 
     def __init__(self):
@@ -108,6 +112,12 @@ class SpeedyRobot:
                     if not reason:
                         reason = wikipedia.translate(self.mySite, self.deletion_msg)
                     page.delete(reason, prompt = False)
+                    if not page.isTalkPage():
+                        talkPage = page.switchTalkPage()
+                        if talkPage.exists():
+                            choiceTalk = wikipedia.inputChoice('Delete associated talk page?', ['yes', 'no'], ['y', 'n'], default='y')
+                            if choiceTalk == 'y':
+                                talkPage.delete(wikipedia.translate(self.mySite, self.talk_deletion_msg), prompt = False)
                 elif choice == 's' or True:
                     wikipedia.output(u'Skipping page %s' % page.title())
                 startFromBeginning = True
