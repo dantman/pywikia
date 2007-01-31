@@ -41,10 +41,12 @@ class CSDRobot:
     """
 
     csd_cat={
-        'en':u'Category:Candidates for speedy deletion',
+        'de': u'Kategorie:Wikipedia:Schnelllöschen',
+        'en': u'Category:Candidates for speedy deletion',
     }
 
     deletion_msg={
+        'de':u'Lösche Artikel mit [[Wikipedia:Schnelllöschantrag|Schnelllöschantrag]]',
         'en':u'Deleting candidate for speedy deletion per [[WP:CSD]]',
     }
 
@@ -82,18 +84,18 @@ class CSDRobot:
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
                 wikipedia.output(pageText)
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
-                choice = wikipedia.inputChoice(u'Input action?', ['Delete', 'Skip', 'update'], ['D', 'S', 'U', 'Q'], 'S')
-                if choice in ['Q', 'q']:
+                choice = wikipedia.inputChoice(u'Input action?', ['delete', 'skip', 'update'], ['d', 'S', 'u', 'q'], 'S')
+                if choice == 'q':
                     keepGoing = False
                     break
-                elif choice in ['U', 'u']:
+                elif choice == 'u':
                     wikipedia.output(u'Updating from CSD category.')
                     self.savedProgress = page.title()
                     startFromBeginning = False
                     break
-                elif choice in ['D', 'd']:
+                elif choice == 'd':
                     page.delete(self.deletionMsg, prompt = False)
-                elif choice in ['S', 's'] or True:
+                elif choice == 's' or True:
                     wikipedia.output(u'Skipping page %s' % page.title())
                 startFromBeginning = True
         wikipedia.output(u'Quitting program.')
