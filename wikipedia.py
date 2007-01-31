@@ -941,8 +941,9 @@ class Page(object):
                 import cosmetic_changes
                 ccToolkit = cosmetic_changes.CosmeticChangesToolkit(self.site())
                 newtext = ccToolkit.change(newtext)
-                if comment and old != newtext:
+                if comment and old.strip() != newtext.strip():
                     comment += translate(self.site(), cosmetic_changes.msg_append)
+
         if watchArticle == None:
             # if the page was loaded via get(), we know its status
             if hasattr(self, '_isWatched'):
