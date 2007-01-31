@@ -557,23 +557,25 @@ class Family(family.Family):
         # not in the Latin alphabet counted 1/3 lower
         
         self.languages_by_size = [
-            'en','de','fr','pl','nl','it','sv','pt','ja','es',
-            'fi','no','ru','zh','eo','sk','da','cs','hu','ca',
-            'ro','sl','id','tr','lt','he','sr','et','hr','bg',
-            'uk','ko','gl','nn','ms','io','eu','nap','is','ar',
-            'bs','simple','lb','vi','th','fa','sq','el','br','wa',
-            'ka','ht','la','bn','sh','scn','af','ku','ast','mk',
-            'lv','cy','co','tl','ksh','te','an','tt','oc','ga',
-            'vec','gd','az','mr','uz','ia','be','nds','cv','ta',
-            'fy','als','li','kn','jv','lmo','fo','zh-min-nan','sw','ilo',
-            'ur','su','frp','hy','sco','war','yi','pms','nrm','ceb',
-            'pam','tg','fur','nds-nl','kw','hi','os','se','ug','map-bms',
-            'lad','csb','pdc','ang','zh-yue','lij','ml','mt','vls','vo',
-            'fiu-vro','mi','sa','ps','bat-smg','jbo','qu','am','tpi','ky',
-            'mo','ie','na','wo','nah','ln','ks','rm','mn','mg',
-            'bo','tet','sc','my','udm','kg','gu','gv','bm','tk',
-            'kk','dv','got','roa-rup','av','ne','si','ba','chr','sm',
-            'my','nv','yo',]
+            'en','de','fr','pl','nl','it','pt','ja','sv','es',
+            'fi','no','ru','zh','eo','sk','cs','da','ro','ca',
+            'id','hu','tr','sl','lt','he','uk','et','sr','hr',
+            'bg','ko','gl','nn','te','ceb','ms','eu','ar','vi',
+            'io','simple','sq','is','bs','lb','th','nap','el','br',
+            'fa','la','bn','ka','su','sh','wa','bpy','scn','ku',
+            'lv','ast','ht','oc','cy','af','mk','ksh','jv','tl',
+            'co','an','mr','ru-sib','az','ga','ta','hi','gd','fy',
+            'lmo','be','nds','tt','vec','uz','ia','cv','tg','pms',
+            'sw','ur','kn','als','li','zh-min-nan','nrm','ilo','yi','fo',
+            'pam','nds-nl','war','frp','am','hy','sco','qu','fur','new',
+            'nov','vo','lij','ml','zh-yue','mt','kw','vls','sa','se','pdc',
+            'os','map-bms','lad','diq','nah','fiu-vro','csb','yo','ug',
+            'bat-smg','ang','to','ps','jbo','ty','mi','zh-classical','bar','tk',
+            'hsb','ln','ie','tpi','mn','ne','rm','mo','roa-rup','ks',
+            'na','arc','wo','mg','kk','sc','pag','bo','ky','rmy',
+            'eml','tet','gu','kg','dv','ba','wuu','udm','gv','cbk-zam',
+            'so','bm','sm','got','cr','chr','si','av','sd','bh',
+            'pi',]
 
         # other groups of language that we might want to do at once
             
