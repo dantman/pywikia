@@ -16,7 +16,7 @@ a vandal has replaced a perfectly good article with nonsense, which has subseque
 been tagged by someone who didn't realize it was previously a good article.  The onus
 is on you to avoid making these mistakes.
 
-Syntax: python speedy_delete.py
+Syntax: python speedy-delete.py
 
 Command line options:
 
@@ -42,27 +42,42 @@ class SpeedyRobot:
     """
 
     csd_cat={
-        'cs': u'cs:Wikipedie:Rychlé smazání',
         'de': u'Kategorie:Wikipedia:Schnelllöschen',
         'en': u'Category:Candidates for speedy deletion',
-        'es': u'es:Wikipedia:Política de Borrado Rápido',
-        'fr': u'Wikipédia:Demande de suppression immédiate',
-        'it': u'Aiuto:Cancellazioni immediate',
-        'ja': u'Wikipedia:即時削除の方針',
-        'pl': u'Wikipedia:Zasady ekspresowego kasowania',
-        'pt': u'Wikipedia:Eliminação rápida',
-        'ru': u'Википедия:Критерии быстрого удаления',
-        'sl': u'Wikipedija:Merila hitrega izbrisa',
-        'zh': u'Wikipedia:可以快速删除的条目的标准',
     }
 
-    deletion_msg={
-        'de':u'Lösche Artikel mit [[Wikipedia:Schnelllöschantrag|Schnelllöschantrag]]',
-        'en':u'Deleting candidate for speedy deletion per [[WP:CSD]]',
+    deletion_messages = {
+        'de': {
+            u'_default': u'Lösche Artikel mit [[Wikipedia:Schnelllöschantrag|Schnelllöschantrag]]',
+        },
+        'en': {
+            u'_default':     u'Deleting candidate for speedy deletion per [[WP:CSD]]',
+            u'Db-nonsense':  u'Nonsense',
+            u'Db-test':      u'Test page',
+            u'Db-vandalism': u'Vandalism',
+        },
     }
 
     talk_deletion_msg={
-        'en':u'Orphaned talk page of deleted page.',
+        'en':u'Verwaiste Diskussionsseite von gelöschter Seite',
+        'en':u'Orphaned talk page of deleted page',
+    }
+
+    delete_reasons = {
+        'de': {
+            'mist':  u'Unsinn',
+            'asdf':  u'Tastaturtest',
+            'spam':  u'Spam',
+            'web':   u'Nur ein Weblink',
+            'egal':  u'Eindeutig irrelevant',
+            'pfui':  u'Beleidigung',
+            'redir': u'Unnötiger Redirect',
+        },
+        'en': {
+            # just for testing
+            '1':  u'Reason 1',
+            '2':  u'Reason 2',
+        },
     }
 
     def __init__(self):
@@ -76,6 +91,46 @@ class SpeedyRobot:
         self.generator = None
         self.preloadingGen = None
 
+    def guessReasonForDeletion(self, page):
+        templateNames = page.templates()
+        reason = None
+        reasons = wikipedia.translate(self.mySite, self.deletion_messages)
+        
+        for templateName in templateNames:
+            print templateName
+            if templateName in reasons.keys():
+                
+                reason = reasons[templateName]
+        if not reason:
+            reason = reasons[u'_default']
+        return reason
+
+    def getReasonForDeletion(self, page):
+        suggestedReason = self.guessReasonForDeletion(page)
+        wikipedia.output(u'The suggested reason is: %s\n' % suggestedReason)
+
+        if self.delete_reasons.has_key(page.site().lang):
+            localReasons = self.delete_reasons[page.site().lang]
+            for key, reason in localReasons.iteritems():
+                wikipedia.output(u'%s: %s' % (key, reason))
+            reason = wikipedia.input(u'Please enter the reason for deletion, choose a default reason, or press enter for the suggested message:')
+            if localReasons.has_key(reason):
+                reason = localReasons[reason]
+        else:
+            reason = wikipedia.input(u'Please enter the reason for deletion, or press enter for the suggested message:')
+
+        if not reason:
+            reason = suggestedReason
+        return reason
+
+    def handleTalkPage(self, page):
+        if not page.isTalkPage():
+            talkPage = page.switchTalkPage()
+            if talkPage.exists():
+                choiceTalk = wikipedia.inputChoice('Delete associated talk page?', ['yes', 'no'], ['y', 'n'], default='y')
+                if choiceTalk == 'y':
+                    talkPage.delete(wikipedia.translate(self.mySite, self.talk_deletion_msg), prompt = False)
+        
     def run(self):
         """
         Starts the robot's action.
@@ -108,16 +163,10 @@ class SpeedyRobot:
                     startFromBeginning = False
                     break
                 elif choice == 'd':
-                    reason = wikipedia.input(u'Please enter the reason for deletion, or press enter for the default message:')
-                    if not reason:
-                        reason = wikipedia.translate(self.mySite, self.deletion_msg)
+                    reason = self.getReasonForDeletion(page)
+                    wikipedia.output(u'Selected reason is: %s' % reason)
                     page.delete(reason, prompt = False)
-                    if not page.isTalkPage():
-                        talkPage = page.switchTalkPage()
-                        if talkPage.exists():
-                            choiceTalk = wikipedia.inputChoice('Delete associated talk page?', ['yes', 'no'], ['y', 'n'], default='y')
-                            if choiceTalk == 'y':
-                                talkPage.delete(wikipedia.translate(self.mySite, self.talk_deletion_msg), prompt = False)
+                    self.handleTalkPage(page)
                 elif choice == 's' or True:
                     wikipedia.output(u'Skipping page %s' % page.title())
                 startFromBeginning = True
