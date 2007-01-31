@@ -41,8 +41,18 @@ class CSDRobot:
     """
 
     csd_cat={
+        'cs': u'cs:Wikipedie:Rychlé smazání',
         'de': u'Kategorie:Wikipedia:Schnelllöschen',
         'en': u'Category:Candidates for speedy deletion',
+        'es': u'es:Wikipedia:Política de Borrado Rápido',
+        'fr': u'Wikipédia:Demande de suppression immédiate',
+        'it': u'Aiuto:Cancellazioni immediate',
+        'ja': u'Wikipedia:即時削除の方針',
+        'pl': u'Wikipedia:Zasady ekspresowego kasowania',
+        'pt': u'Wikipedia:Eliminação rápida',
+        'ru': u'Википедия:Критерии быстрого удаления',
+        'sl': u'Wikipedija:Merila hitrega izbrisa',
+        'zh': u'Wikipedia:可以快速删除的条目的标准',
     }
 
     deletion_msg={
