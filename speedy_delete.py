@@ -112,7 +112,7 @@ class SpeedyRobot:
         if self.delete_reasons.has_key(page.site().lang):
             localReasons = self.delete_reasons[page.site().lang]
             for key, reason in localReasons.iteritems():
-                wikipedia.output(u'%s: %s' % (key, reason))
+                wikipedia.output((key + ':').ljust(6) + reason)
             reason = wikipedia.input(u'Please enter the reason for deletion, choose a default reason, or press enter for the suggested message:')
             if localReasons.has_key(reason):
                 reason = localReasons[reason]
