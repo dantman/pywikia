@@ -96,7 +96,8 @@ class NowCommonsDeleteBot:
                     wikipedia.output(u'This image has a version history. Please manually delete it after making sure that the old versions aren\'t worth keeping.')
                     continue
                 if localImagePage.titleWithoutNamespace() != commonsImagePage.titleWithoutNamespace():
-                    if localImagePage.usingPages():
+                    usingPages = localImagePage.usingPages()
+                    if usingPages and usingPages != [localImagePage]:
                         wikipedia.output('%s is still used in %i pages. Please change them manually.' % (localImagePage.title(), len(localImagePage.usingPages())))
                         continue
                     else:
