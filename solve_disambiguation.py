@@ -684,14 +684,17 @@ class DisambiguationRobot(object):
                     continue
 
                 wikipedia.output(text[max(0,m.start()-30):m.end()+30])
-            wikipedia.output(u'\nThe following changes have been made:\n')
-            wikipedia.showDiff(original_text, text)
-            wikipedia.output(u'')
-            # save the page
-            try:
-                refPage.put(text)
-            except wikipedia.PageNotSaved, error:
-                wikipedia.output(u'Page not saved: %s' % error)
+            if text == original_text:
+                wikipedia.output(u'\nNo changes have been made:\n')
+            else:
+                wikipedia.output(u'\nThe following changes have been made:\n')
+                wikipedia.showDiff(original_text, text)
+                wikipedia.output(u'')
+                # save the page
+                try:
+                    refPage.put(text)
+                except wikipedia.PageNotSaved, error:
+                    wikipedia.output(u'Page not saved: %s' % error)
         return True
     
     
