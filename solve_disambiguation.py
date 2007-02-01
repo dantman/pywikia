@@ -442,13 +442,6 @@ class DisambiguationRobot(object):
             result[i]=None
         self.alternatives = result.keys()
     
-    def listAlternativesGui(self):
-        # list in new window, does not behave as expected, so not used currently.
-        print '\n\t\t--> beachte neues Fenster <--'
-        import gui
-        list_window = gui.ListBoxWindow()
-        list_window.list(self.alternatives)
-    
     def listAlternatives(self):
         list = u'\n'
         for i in range(len(self.alternatives)):
@@ -697,7 +690,49 @@ class DisambiguationRobot(object):
                     wikipedia.output(u'Page not saved: %s' % error)
         return True
     
-    
+    def findAlternatives(self, disambPage):
+        if disambPage.isRedirectPage() and not self.primary:
+            try:
+                target = disambPage.getRedirectTarget()
+                self.alternatives.append(target)
+            except wikipedia.NoPage:
+                wikipedia.output(u"The specified page was not found.")
+                user_input = wikipedia.input(u"""\
+Please enter the name of the page where the redirect should have pointed at,
+or press enter to quit:""")
+                if user_input == "":
+                    sys.exit(1)
+                else:
+                    self.alternatives.append(user_input)
+            except wikipedia.IsNotRedirectPage:
+                wikipedia.output(
+                    u"The specified page is not a redirect. Skipping.")
+                return False
+        elif self.getAlternatives:
+            try:
+                if self.primary:
+                    try:
+                        disambPage2 = wikipedia.Page(self.mysite,
+                                        primary_topic_format[self.mylang]
+                                            % disambPage.title()
+                                    )
+                        links = disambPage2.linkedPages()
+                    except wikipedia.NoPage:
+                        wikipedia.output(u"Page does not exist, using the first link in page %s." % disambPage.title())
+                        links = disambPage.linkedPages()[0:1]
+                else:
+                    try:
+                        links = disambPage.linkedPages()
+                    except wikipedia.NoPage:
+                        wikipedia.output(u"Page does not exist, skipping.")
+                        return False
+            except wikipedia.IsRedirectPage:
+                wikipedia.output(u"Page is a redirect, skipping.")
+                return False
+            for link in links:
+                self.alternatives.append(link.title())
+        return True
+
     def run(self):
         if self.main_only:
             if not ignore_title.has_key(self.mysite.family.name):
@@ -722,54 +757,10 @@ class DisambiguationRobot(object):
 
             wikipedia.setAction(comment)
             
-            self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage,
-                                            enabled=self.primary)
+            self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage, enabled=self.primary)
     
-            if disambPage.isRedirectPage() and not self.primary:
-                try:
-                    target = disambPage.getRedirectTarget()
-                    self.alternatives.append(target)
-                except wikipedia.NoPage:
-                    wikipedia.output(u"The specified page was not found.")
-                    user_input = wikipedia.input(u"""\
-Please enter the name of the page where the redirect should have pointed at,
-or press enter to quit:""")
-                    if user_input == "":
-                        sys.exit(1)
-                    else:
-                        self.alternatives.append(user_input)
-                except wikipedia.IsNotRedirectPage:
-                    wikipedia.output(
-                        u"The specified page is not a redirect. Skipping.")
-                    continue
-            elif self.getAlternatives:
-                try:
-                    if self.primary:
-                        try:
-                            disambPage2 = wikipedia.Page(self.mysite,
-                                            primary_topic_format[self.mylang]
-                                                % disambPage.title()
-                                        )
-                            thistxt = disambPage2.get(throttle=False)
-                        except wikipedia.NoPage:
-                            wikipedia.output(u"Page does not exist, using the first link in page %s." % disambPage.title())
-                            thistxt = disambPage.linkedPages()[0].aslink()
-                    else:
-                        try:
-                            thistxt = disambPage.get(throttle=False)
-                        except wikipedia.NoPage:
-                            wikipedia.output(u"Page does not exist, skipping.")
-                            continue
-                except wikipedia.IsRedirectPage:
-                    wikipedia.output(u"Page is a redirect, skipping.")
-                    continue
-                thistxt = wikipedia.removeLanguageLinks(thistxt)
-                thistxt = wikipedia.removeCategoryLinks(thistxt, self.mysite)
-                # regular expression matching a wikilink
-                w = r'([^\]\|]*)'
-                Rlink = re.compile(r'\[\['+w+r'(\|'+w+r')?\]\]')
-                for matchObj in Rlink.findall(thistxt):
-                    self.alternatives.append(matchObj[0])
+            if not self.findAlternatives(disambPage):
+                continue
     
             self.makeAlternativesUnique()
             # sort possible choices
