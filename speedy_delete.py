@@ -178,7 +178,7 @@ class SpeedyRobot:
             self.refreshGenerator()
             for page in self.preloadingGen:
                 try:
-                    pageText = page.get()
+                    pageText = page.get(get_redirect = True)
                 except wikipedia.NoPage:
                     wikipedia.output(u'Page %s does not exist or has already been deleted, skipping.' % page.aslink())
                     continue
