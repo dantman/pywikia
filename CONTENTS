@@ -115,6 +115,9 @@ saveHTML.py            : Downloads the HTML-pages of articles and images.
 selflink.py            : This bot goes over multiple pages of the home wiki, 
                          searches for selflinks, and allows removing them.
 solve_disambiguation.py: Interactive robot doing disambiguation.
+speedy_delete.py       : This bot load a list of pages from the category of candidates
+                         for speedy deletion and give the user an interactive prompt to decide
+                         whether each should be deleted or not.
 spellcheck.py          : This bot spellchecks Wikipedia pages.
 standardize_interwiki.py:A robot that downloads a page, and reformats the
                          interwiki links in a standard way (i.e. move all
