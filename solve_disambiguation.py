@@ -732,7 +732,22 @@ or press enter to quit:""")
             for link in links:
                 self.alternatives.append(link.title())
         return True
+    
+    def setSummaryMessage(self, disambPage):
+        # first check whether user has customized the edit comment
+        if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
+            comment = wikipedia.translate(self.mysite,
+                            wikipedia.config.disambiguation_comment[
+                            self.mysite.family.name]
+                            ) % disambPage.title()
+        elif disambPage.isRedirectPage():
+            # when working on redirects, there's another summary message
+            comment = wikipedia.translate(self.mysite, msg_redir) % disambPage.title()
+        else:
+            comment = wikipedia.translate(self.mysite, msg) % disambPage.title()
 
+        wikipedia.setAction(comment)
+        
     def run(self):
         if self.main_only:
             if not ignore_title.has_key(self.mysite.family.name):
@@ -741,27 +756,14 @@ or press enter to quit:""")
                 ignore_title[self.mysite.family.name][self.mylang] = []
             ignore_title[self.mysite.family.name][self.mylang] += [
                 u'%s:' % namespace for namespace in self.mysite.namespaces()]
-    
-        for disambPage in self.generator:
-            # first check whether user has customized the edit comment
-            if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
-                comment = wikipedia.translate(self.mysite,
-                              wikipedia.config.disambiguation_comment[
-                              self.mysite.family.name]
-                              ) % disambPage.title()
-            elif disambPage.isRedirectPage():
-                # when working on redirects, there's another summary message
-                comment = wikipedia.translate(self.mysite, msg_redir) % disambPage.title()
-            else:
-                comment = wikipedia.translate(self.mysite, msg) % disambPage.title()
 
-            wikipedia.setAction(comment)
-            
+        for disambPage in self.generator:
+            self.setSummaryMessage(disambPage)
             self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage, enabled=self.primary)
-    
+
             if not self.findAlternatives(disambPage):
                 continue
-    
+
             self.makeAlternativesUnique()
             # sort possible choices
             self.alternatives.sort()
