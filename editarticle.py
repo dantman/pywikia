@@ -61,6 +61,8 @@ class TextEditor:
                 line = column = 0
             if config.editor == 'kate':
                 command += " -l %i -c %i" % (line, column)
+            elif config.editor == 'gedit':
+                command += " +%i" % line + 1 # seems not to support columns
             elif config.editor == 'jedit':
                 lineOfFirstOccurence += 1
                 command += " +line:%i" % line # seems not to support columns
