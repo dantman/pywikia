@@ -1182,7 +1182,8 @@ class Page(object):
         try:
             thistxt = removeLanguageLinks(self.get())
         except NoPage:
-            return []
+            raise
+            #return []
         except IsRedirectPage:
             raise
         thistxt = removeCategoryLinks(thistxt, self.site())
