@@ -314,7 +314,7 @@ def PageWithTalkPageGenerator(generator):
     for page in generator:
         yield page
         if not page.isTalkPage():
-            yield page.switchTalkPage()
+            yield page.toggleTalkPage()
 
 def PreloadingGenerator(generator, pageNumber=60):
     """

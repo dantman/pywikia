@@ -1099,6 +1099,13 @@ class Page(object):
 
     def switchTalkPage(self):
         """
+        DEPRECATED. This method was renamed to toggleTalkPage(), which is a
+        more expressive name.
+        """
+        return self.toggleTalkPage()
+    
+    def toggleTalkPage(self):
+        """
         If self is a talk page, returns the associated content page; otherwise,
         returns the associated talk page. Returns None if self is a special
         page.
