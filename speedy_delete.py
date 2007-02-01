@@ -16,6 +16,8 @@ a vandal has replaced a perfectly good article with nonsense, which has subseque
 been tagged by someone who didn't realize it was previously a good article.  The onus
 is on you to avoid making these mistakes.
 
+NOTE: This script currently only works for the Wikipedia project.
+
 Syntax: python speedy-delete.py
 
 Command line options:
@@ -25,7 +27,7 @@ Command line options:
 Examples:
 
     none needed yet
-    
+
 """
 #
 # Distributed under the terms of the MIT license.
@@ -42,10 +44,35 @@ class SpeedyRobot:
     """
 
     csd_cat={
+        'als': u'Kategorie:Wikipedia:Schnelllöschen',
+        'ar': u'تصنيف:صفحات حذف سريع',
+        'be': u'Катэгорыя:Вікіпэдыя:Кандыдатуры на выдаленьне',
+        'cs': u'Kategorie:Stránky ke smazání',
         'de': u'Kategorie:Wikipedia:Schnelllöschen',
         'en': u'Category:Candidates for speedy deletion',
+        'es': u'Categoría:Wikipedia:Borrar (definitivo)',
+        'fa': u'رده:مقالات نامزد حذف سریع',
+        'fi': u'Luokka:Roskaa',
+        'hsb': u'Kategorija:Strony k spěšnemu wušmórnjenju',
+        'ia': u'Categoria:Wikipedia:Eliminar',
+        'ja': u'Category:即時削除',
+        'ks': u'Category:Candidates for speedy deletion',
+        'nah': u'Categoría:Huiquipedia:Borrar (definitivo)',
+        'nl': u'Categorie:Wikipedia:Nuweg',
+        'no': u'Kategori:Sider som er foreslått raskt slettet',
+        'pl': u'Kategoria:Ekspresowe kasowanko',
+        'pt': u'Categoria:Páginas para eliminação rápida',
+        'ru': u'Категория:Википедия:К быстрому удалению',
+        'sv': u'Kategori:Snabba raderingar',
+        'uk': u'Категорія:Статті до швидкого вилучення',
+        'vi': u'Thể loại:Chờ xoá',
+        'zh': u'Category:快速删除候选',
+        'zh-yue': u'Category:快速刪除候選',
     }
 
+    # If the site has several templates for speedy deletion, it might be
+    # possible to find out the reason for deletion by the template used.
+    # _default will be used if no such semantic template was used.
     deletion_messages = {
         'de': {
             u'_default': u'Lösche Artikel mit [[Wikipedia:Schnelllöschantrag|Schnelllöschantrag]]',
@@ -58,11 +85,15 @@ class SpeedyRobot:
         },
     }
 
+    # Default reason for deleting a talk page.
     talk_deletion_msg={
         'en':u'Verwaiste Diskussionsseite von gelöschter Seite',
         'en':u'Orphaned talk page of deleted page',
     }
 
+    # A list of often-used reasons for deletion. Shortcuts are keys, and
+    # reasons are values. If the user enters a shortcut, the associated reason
+    # will be used.
     delete_reasons = {
         'de': {
             'asdf':  u'Tastaturtest',
@@ -116,6 +147,8 @@ class SpeedyRobot:
         colors = [None] * 25 + [12] * len(suggestedReason)
         wikipedia.output(u'The suggested reason is: %s' % suggestedReason, colors = colors)
 
+        # We don't use wikipedia.translate() here because for some languages the
+        # entry is intentionally left out.
         if self.delete_reasons.has_key(page.site().lang):
             localReasons = self.delete_reasons[page.site().lang]
             wikipedia.output(u'')
