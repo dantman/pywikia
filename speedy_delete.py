@@ -207,7 +207,7 @@ class SpeedyRobot:
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
                 wikipedia.output(pageText)
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
-                choice = wikipedia.inputChoice(u'Input action?', ['delete', 'skip', 'update'], ['d', 'S', 'u', 'q'], 'S')
+                choice = wikipedia.inputChoice(u'Input action?', ['delete', 'skip', 'update', 'quit'], ['d', 'S', 'u', 'q'], 'S')
                 if choice == 'q':
                     keepGoing = False
                     break
