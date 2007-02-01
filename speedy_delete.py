@@ -33,8 +33,8 @@ Examples:
 # Distributed under the terms of the MIT license.
 #
 import wikipedia, config
-import replace, pagegenerators
-import re, sys, string, catlib
+import replace, pagegenerators, catlib
+import re, sys, string, time
 
 class SpeedyRobot:
     """
@@ -196,9 +196,11 @@ class SpeedyRobot:
             if startFromBeginning:
                 self.savedProgress = '!'
             self.refreshGenerator()
+            count = 0
             for page in self.preloadingGen:
                 try:
                     pageText = page.get(get_redirect = True)
+                    count += 1
                 except wikipedia.NoPage:
                     wikipedia.output(u'Page %s does not exist or has already been deleted, skipping.' % page.aslink())
                     continue
@@ -224,6 +226,9 @@ class SpeedyRobot:
                 elif choice == 's' or True:
                     wikipedia.output(u'Skipping page %s' % page.title())
                 startFromBeginning = True
+            if count == 0:
+                wikipedia.output(u'There are no pages to delete. Waiting for 30 seconds...')
+                time.sleep(30)
         wikipedia.output(u'Quitting program.')
         
     def refreshGenerator(self):
