@@ -303,7 +303,18 @@ def CategoryGenerator(generator):
     that only categories are being retrieved.
     """
     for page in generator:
-        yield catlib.Category(page.site(),page.title())
+        yield catlib.Category(page.site(), page.title())
+
+def PageWithTalkPageGenerator(generator):
+    """
+    Wraps around another generator. Yields the same pages, but for non-talk pages, it
+    also includes associated talk pages.
+    This generator does not check if the talk page in fact exists.
+    """
+    for page in generator:
+        yield page
+        if not page.isTalkPage():
+            yield page.switchTalkPage()
 
 def PreloadingGenerator(generator, pageNumber=60):
     """

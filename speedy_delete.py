@@ -65,13 +65,14 @@ class SpeedyRobot:
 
     delete_reasons = {
         'de': {
-            'mist':  u'Unsinn',
             'asdf':  u'Tastaturtest',
-            'spam':  u'Spam',
-            'web':   u'Nur ein Weblink',
             'egal':  u'Eindeutig irrelevant',
+            'mist':  u'Unsinn',
+            'move':  u'Redirectlöschung, um Platz für Verschiebung zu schaffen',
             'pfui':  u'Beleidigung',
             'redir': u'Unnötiger Redirect',
+            'spam':  u'Spam',
+            'web':   u'Nur ein Weblink',
         },
         # There's a template for nearly every possible reason on en:.
         # If the bot can't guess the reason from the template, the user should
@@ -87,19 +88,26 @@ class SpeedyRobot:
         self.mySite = wikipedia.getSite()
         self.csdCat = catlib.Category(self.mySite, wikipedia.translate(self.mySite, self.csd_cat))
         self.savedProgress = '!'
-        self.generator = None
         self.preloadingGen = None
 
     def guessReasonForDeletion(self, page):
-        templateNames = page.templates()
         reason = None
-        reasons = wikipedia.translate(self.mySite, self.deletion_messages)
+        if page.isTalkPage():
+            # This is probably a talk page that is orphaned because we
+            # just deleted the associated article.
+            reason = wikipedia.translate(self.mySite, self.talk_deletion_msg)
+        else:
+            # Try to guess reason by the template used
+            templateNames = page.templates()
+            reasons = wikipedia.translate(self.mySite, self.deletion_messages)
 
-        for templateName in templateNames:
-            print templateName
-            if templateName in reasons.keys():
-                reason = reasons[templateName]
+            for templateName in templateNames:
+                print templateName
+                if templateName in reasons.keys():
+                    reason = reasons[templateName]
+                    break
         if not reason:
+            # Unsuccessful in guessing the reason. Use a default message.
             reason = reasons[u'_default']
         return reason
 
@@ -123,14 +131,6 @@ class SpeedyRobot:
             reason = suggestedReason
         return reason
 
-    def handleTalkPage(self, page):
-        if not page.isTalkPage():
-            talkPage = page.switchTalkPage()
-            if talkPage.exists():
-                choiceTalk = wikipedia.inputChoice('Delete associated talk page?', ['yes', 'no'], ['y', 'n'], default='y')
-                if choiceTalk == 'y':
-                    talkPage.delete(wikipedia.translate(self.mySite, self.talk_deletion_msg), prompt = False)
-        
     def run(self):
         """
         Starts the robot's action.
@@ -146,7 +146,7 @@ class SpeedyRobot:
                 try:
                     pageText = page.get()
                 except wikipedia.NoPage:
-                    wikipedia.output(u'Page appears to have already been deleted, skipping.')
+                    wikipedia.output(u'Page %s does not exist or has already been deleted, skipping.' % page.aslink())
                     continue
                 colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
                 wikipedia.output(u'\n>>> %s <<<' % page.title(), colors = colors)
@@ -166,15 +166,16 @@ class SpeedyRobot:
                     reason = self.getReasonForDeletion(page)
                     wikipedia.output(u'Selected reason is: %s' % reason)
                     page.delete(reason, prompt = False)
-                    self.handleTalkPage(page)
                 elif choice == 's' or True:
                     wikipedia.output(u'Skipping page %s' % page.title())
                 startFromBeginning = True
         wikipedia.output(u'Quitting program.')
         
     def refreshGenerator(self):
-        self.generator = pagegenerators.CategoryPartPageGenerator(self.csdCat, start = self.savedProgress)
-        self.preloadingGen = pagegenerators.PreloadingGenerator(self.generator, pageNumber = 20)
+        generator = pagegenerators.CategoryPartPageGenerator(self.csdCat, start = self.savedProgress)
+        # wrap another generator around it so that we won't produce orphaned talk pages.
+        generator2 = pagegenerators.PageWithTalkPageGenerator(generator)
+        self.preloadingGen = pagegenerators.PreloadingGenerator(generator2, pageNumber = 20)
     
 def main():
     # read command line parameters
