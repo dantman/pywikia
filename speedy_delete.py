@@ -89,7 +89,7 @@ class SpeedyRobot:
             u'Db-band':       u'Deleting page per [[WP:CSD|CSD]] A7: Article about a non-notable band.',
             u'Db-banned':     u'Deleting page per [[WP:CSD|CSD]] G5: Page created by a banned user.',
             u'Db-bio':        u'Deleting page per [[WP:CSD|CSD]] A7: Article about a non-notable person.',
-            u'Db-notenglish': u'Deleting page per [[WP:CSD|CSD]] A2: Article isn't written in English.',
+            u'Db-notenglish': u'Deleting page per [[WP:CSD|CSD]] A2: Article isn\'t written in English.',
             u'Db-copyvio':    u'Deleting page per [[WP:CSD|CSD]] G12: Page is a blatant copyright violation.',
             u'Db-repost':     u'Deleting page per [[WP:CSD|CSD]] G4: Recreation of previously deleted material.',
             u'Db-vandalism':  u'Deleting page per [[WP:CSD|CSD]] G3: Blatant vandalism.',
@@ -99,12 +99,16 @@ class SpeedyRobot:
             u'Db-r1':         u'Deleting page per [[WP:CSD|CSD]] R1: Redirect to a deleted or non-existent page.',
             u'Db-experiment': u'Deleting page per [[WP:CSD|CSD]] G2: Page was created as an experiment.',
         },
+        'pt': {
+            u'_default':      u'Apagando página por [[Wikipedia:Páginas para eliminar|eliminação rápida]]',
+        },
     }
 
     # Default reason for deleting a talk page.
     talk_deletion_msg={
-        'en':u'Verwaiste Diskussionsseite von gelöschter Seite',
+        'de':u'Verwaiste Diskussionsseite von gelöschter Seite',
         'en':u'Orphaned talk page of deleted page',
+        'pt':u'Página de discussão órfã da página apagada',
     }
 
     # A list of often-used reasons for deletion. Shortcuts are keys, and
