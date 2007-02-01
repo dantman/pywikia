@@ -73,11 +73,10 @@ class SpeedyRobot:
             'pfui':  u'Beleidigung',
             'redir': u'Unnötiger Redirect',
         },
-        'en': {
-            # just for testing
-            '1':  u'Reason 1',
-            '2':  u'Reason 2',
-        },
+        # There's a template for nearly every possible reason on en:.
+        # If the bot can't guess the reason from the template, the user should
+        # enter it manually.
+        # 'en':
     }
 
     def __init__(self):
@@ -95,11 +94,10 @@ class SpeedyRobot:
         templateNames = page.templates()
         reason = None
         reasons = wikipedia.translate(self.mySite, self.deletion_messages)
-        
+
         for templateName in templateNames:
             print templateName
             if templateName in reasons.keys():
-                
                 reason = reasons[templateName]
         if not reason:
             reason = reasons[u'_default']
@@ -107,14 +105,16 @@ class SpeedyRobot:
 
     def getReasonForDeletion(self, page):
         suggestedReason = self.guessReasonForDeletion(page)
-        wikipedia.output(u'The suggested reason is: %s\n' % suggestedReason)
+        wikipedia.output(u'The suggested reason is: %s' % suggestedReason)
 
         if self.delete_reasons.has_key(page.site().lang):
             localReasons = self.delete_reasons[page.site().lang]
+            wikipedia.output(u'')
             for key, reason in localReasons.iteritems():
-                wikipedia.output((key + ':').ljust(6) + reason)
+                wikipedia.output((key + ':').ljust(8) + reason)
+            wikipedia.output(u'')
             reason = wikipedia.input(u'Please enter the reason for deletion, choose a default reason, or press enter for the suggested message:')
-            if localReasons.has_key(reason):
+            if localReasons.has_key(reason.strip()):
                 reason = localReasons[reason]
         else:
             reason = wikipedia.input(u'Please enter the reason for deletion, or press enter for the suggested message:')
