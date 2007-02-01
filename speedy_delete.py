@@ -106,9 +106,9 @@ class SpeedyRobot:
 
     # Default reason for deleting a talk page.
     talk_deletion_msg={
-        'de':u'Verwaiste Diskussionsseite von gelöschter Seite',
-        'en':u'Orphaned talk page of deleted page',
-        'pt':u'Página de discussão órfã da página apagada',
+        'de':u'Verwaiste Diskussionsseite',
+        'en':u'Orphaned talk page',
+        'pt':u'Página de discussão órfã',
     }
 
     # A list of often-used reasons for deletion. Shortcuts are keys, and
@@ -118,12 +118,15 @@ class SpeedyRobot:
         'de': {
             'asdf':  u'Tastaturtest',
             'egal':  u'Eindeutig irrelevant',
+            'ka':    u'Kein Artikel',
             'mist':  u'Unsinn',
             'move':  u'Redirectlöschung, um Platz für Verschiebung zu schaffen',
+            'nde':   u'Nicht in deutscher Sprache verfasst',
             'pfui':  u'Beleidigung',
             'redir': u'Unnötiger Redirect',
             'spam':  u'Spam',
             'web':   u'Nur ein Weblink',
+            'wg':    u'Wiedergänger (wurde bereits zuvor gelöscht)',
         },
         # There's a template for nearly every possible reason on en:.
         # If the bot can't guess the reason from the template, the user should
@@ -143,7 +146,8 @@ class SpeedyRobot:
 
     def guessReasonForDeletion(self, page):
         reason = None
-        if page.isTalkPage():
+        # TODO: The following check loads the page 2 times. Find a better way to do it.
+        if page.isTalkPage() and (page.toggleTalkPage().isRedirectPage() or not page.toggleTalkPage().exists()):
             # This is probably a talk page that is orphaned because we
             # just deleted the associated article.
             reason = wikipedia.translate(self.mySite, self.talk_deletion_msg)
@@ -153,7 +157,6 @@ class SpeedyRobot:
             reasons = wikipedia.translate(self.mySite, self.deletion_messages)
 
             for templateName in templateNames:
-                print templateName
                 if templateName in reasons.keys():
                     reason = reasons[templateName]
                     break
@@ -227,8 +230,11 @@ class SpeedyRobot:
                     wikipedia.output(u'Skipping page %s' % page.title())
                 startFromBeginning = True
             if count == 0:
-                wikipedia.output(u'There are no pages to delete. Waiting for 30 seconds...')
-                time.sleep(30)
+                if startFromBeginning:
+                    wikipedia.output(u'There are no pages to delete. Waiting for 30 seconds...')
+                    time.sleep(30)
+                else:
+                    startFromBeginning = True
         wikipedia.output(u'Quitting program.')
         
     def refreshGenerator(self):
