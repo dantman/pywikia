@@ -200,7 +200,6 @@ class SpeedyRobot:
                     reason = self.getReasonForDeletion(page)
                     colors = [None] * 22 + [12] * len(reason)
                     wikipedia.output(u'The chosen reason is: %s' % reason, colors = colors)
-                    wikipedia.output(u'Selected reason is: %s' % reason)
                     page.delete(reason, prompt = False)
                 elif choice == 's' or True:
                     wikipedia.output(u'Skipping page %s' % page.title())
