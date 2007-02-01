@@ -113,7 +113,8 @@ class SpeedyRobot:
 
     def getReasonForDeletion(self, page):
         suggestedReason = self.guessReasonForDeletion(page)
-        wikipedia.output(u'The suggested reason is: %s' % suggestedReason)
+        colors = [None] * 25 + [12] * len(suggestedReason)
+        wikipedia.output(u'The suggested reason is: %s' % suggestedReason, colors = colors)
 
         if self.delete_reasons.has_key(page.site().lang):
             localReasons = self.delete_reasons[page.site().lang]
@@ -164,6 +165,8 @@ class SpeedyRobot:
                     break
                 elif choice == 'd':
                     reason = self.getReasonForDeletion(page)
+                    colors = [None] * 22 + [12] * len(reason)
+                    wikipedia.output(u'The chosen reason is: %s' % reason, colors = colors)
                     wikipedia.output(u'Selected reason is: %s' % reason)
                     page.delete(reason, prompt = False)
                 elif choice == 's' or True:
