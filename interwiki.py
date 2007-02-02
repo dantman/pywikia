@@ -622,7 +622,7 @@ class Subject(object):
                     elif not globalvar.followredirect:
                         print "NOTE: not following redirects."
                     else:
-                        if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage) or self.wiktionaryMismatch(redirectTargetPage)):
+                        if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage) or self.wiktionaryMismatch(redirectTargetPage) or (page.site().family != redirectTargetPage.site().family)):
                             if self.addIfNew(redirectTargetPage, counter, page):
                                 if globalvar.shownew:
                                     wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
