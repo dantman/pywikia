@@ -111,31 +111,27 @@ class LoginManager:
         
         Returns cookie data if succesful, None otherwise."""
     
-        data = {"wpName": self.username.encode(self.site.encoding()),
-                "wpPassword": self.password,
-                "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
-                "wpRemember": str(int(bool(remember)))}
-        data = wikipedia.urlencode(data.items())
-        headers = {
-            "Content-type": "application/x-www-form-urlencoded", 
-            "User-agent": wikipedia.useragent
-        }
-        pagename = self.site.login_address()
+        predata = [
+            ("wpName", self.username.encode(self.site.encoding())),
+            ("wpPassword", self.password),
+            ("wpLoginattempt", "Aanmelden & Inschrijven"), # dutch button label seems to work for all wikis
+            ("wpRemember", str(int(bool(remember))))
+        ]
+        address = self.site.login_address()
 
         if self.site.hostname() in config.authenticate.keys():
-            response = urllib2.urlopen(urllib2.Request('http://'+self.site.hostname()+pagename, data, headers))
+            headers = {
+                "Content-type": "application/x-www-form-urlencoded", 
+                "User-agent": wikipedia.useragent
+            }
+            data = wikipedia.urlencode(tuple(predata))
+            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data, headers))
             data = response.read()
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
         else:
-            conn = httplib.HTTPConnection(self.site.hostname())
-            conn.request("POST", pagename, data, headers)
-            response = conn.getresponse()
-            conn.close()
-
-            data = response.read()
-            print data
-            n=0
+            response, data = self.site.postForm(address, predata)
+            n = 0
             Reat=re.compile(': (.*?);')
             L = []
 

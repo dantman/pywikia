@@ -1036,27 +1036,10 @@ class Page(object):
             # Very naive, I agree.
             data = u''
         else:
-            data = urlencode(tuple(predata))
-            conn = httplib.HTTPConnection(host)
-
-            # Encode all of this into a HTTP request
-            data = urlencode(tuple(predata))
-            conn.putrequest("POST", address)
-            conn.putheader('Content-Length', str(len(data)))
-            conn.putheader("Content-type", "application/x-www-form-urlencoded")
-            conn.putheader("User-agent", useragent)
-            if self.site().cookies():
-                conn.putheader('Cookie', self.site().cookies(sysop = sysop))
-            conn.endheaders()
-            conn.send(data)
-
-            # Prepare the return values
             try:
-                response = conn.getresponse()
+                response, data = self.site().postForm(address, predata, sysop = sysop)
             except httplib.BadStatusLine, line:
                 raise PageNotSaved('Bad status line: %s' % line)
-            data = response.read().decode(self.site().encoding())
-            conn.close()
         if data != u'':
             # Saving unsuccessful. Possible reasons: edit conflict or invalid edit token.
             # A second text area means that an edit conflict has occured.
@@ -1530,23 +1513,9 @@ class Page(object):
             data = urlencode(tuple(predata))
             response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
             data = ''
-        else:    
-            data = urlencode(tuple(predata))
-            conn = httplib.HTTPConnection(host)
-            conn.putrequest("POST", address)
-            conn.putheader('Content-Length', str(len(data)))
-            conn.putheader("Content-type", "application/x-www-form-urlencoded")
-            conn.putheader("User-agent", useragent)
-            if self.site().cookies(sysop = sysop):
-                conn.putheader('Cookie', self.site().cookies(sysop = sysop))
-            conn.endheaders()
-            conn.send(data)
-
-            response = conn.getresponse()
-            data = response.read()
-            conn.close()
-        if data != '':
-            data = data.decode(myencoding())
+        else:
+            response, data = self.site().postForm(address, predata, sysop = sysop)
+        if data != u'':
             if mediawiki_messages.get('pagemovedsub') in data:
                 output(u'Page %s moved to %s'%(self.title(), newtitle))
                 return True
@@ -1595,25 +1564,10 @@ class Page(object):
                 predata.append(("User-agent", useragent))
                 data = urlencode(tuple(predata))
                 response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
-                data = ''
-            else:    
-                data = urlencode(tuple(predata))
-                conn = httplib.HTTPConnection(host)
-                conn.putrequest("POST", address)
-                conn.putheader('Content-Length', str(len(data)))
-                conn.putheader("Content-type", "application/x-www-form-urlencoded")
-                conn.putheader("User-agent", useragent)
-                if self.site().cookies(sysop = True):
-                    conn.putheader('Cookie', self.site().cookies(sysop = True))
-                conn.endheaders()
-                conn.send(data)
-        
-                response = conn.getresponse()
-                data = response.read()
-                conn.close()
-        
-            if data != '':
-                data = data.decode(myencoding())
+                data = u''
+            else:
+                response, data = self.site().postForm(address, predata, sysop = True)
+            if data != u'':
                 if mediawiki_messages.get('actioncomplete') in data:
                     output(u'Deletion successful.')
                     return True
@@ -1674,28 +1628,14 @@ class Page(object):
                 data = urlencode(tuple(predata))
                 response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
                 data = ''
-            else:    
-                data = urlencode(tuple(predata))
-                conn = httplib.HTTPConnection(host)
-                conn.putrequest("POST", address)
-                conn.putheader('Content-Length', str(len(data)))
-                conn.putheader("Content-type", "application/x-www-form-urlencoded")
-                conn.putheader("User-agent", useragent)
-                if self.site().cookies(sysop = True):
-                    conn.putheader('Cookie', self.site().cookies(sysop = True))
-                conn.endheaders()
-                conn.send(data)
-        
-                response = conn.getresponse()
-                data = response.read()
-                conn.close()
+            else:
+                data, response = self.site().postForm(address, predata, sysop = True)
        
-            if data == '':
+            if data == u'':
                 output(u'(Un)protection successful.')
                 return True
             else:
                 #Normally, we expect a 302 with no data, so this means an error
-                data = data.decode(myencoding())
                 output(u'Protection failed:.')
                 output(data)
                 return False
@@ -1820,15 +1760,15 @@ class GetAll(object):
         if not data:
             return
         R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
-        M = R.match(data)
-        if M:
-            data = M.group(2)
+        m = R.match(data)
+        if m:
+            data = m.group(2)
         handler = xmlreader.MediaWikiXmlHandler()
         handler.setCallback(self.oneDone)
         handler.setHeaderCallback(self.headerDone)
-        f = open("backup.txt","w")
-        f.write(data)
-        f.close()
+        #f = open("backup.txt", "w")
+        #f.write(data)
+        #f.close()
         try:
             xml.sax.parseString(data, handler)
         except (xml.sax._exceptions.SAXParseException, ValueError), err:
@@ -1936,38 +1876,26 @@ class GetAll(object):
             print pagenames
         # convert Unicode string to the encoding used on that wiki
         pagenames = pagenames.encode(self.site.encoding())
-        data = [
-                    ('action', 'submit'),
-                    ('pages', pagenames),
-                    ('curonly', 'True'),
-                    ]
-        #print repr(data)
+        predata = [
+            ('action', 'submit'),
+            ('pages', pagenames),
+            ('curonly', 'True'),
+        ]
         # Slow ourselves down
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
         now = time.time()
         if self.site.hostname() in config.authenticate.keys():
-            data.append(("Content-type","application/x-www-form-urlencoded"))
-            data.append(("User-agent", useragent))
-            data = urlencode(tuple(data))
+            predata.append(("Content-type","application/x-www-form-urlencoded"))
+            predata.append(("User-agent", useragent))
+            data = urlencode(tuple(predata))
             response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
             data = response.read()
         else:
-            data = urlencode(tuple(data))
-            conn = httplib.HTTPConnection(self.site.hostname())
-            conn.putrequest("POST", address)
-            conn.putheader('Content-Length', str(len(data)))
-            conn.putheader("Content-type", "application/x-www-form-urlencoded")
-            conn.putheader("User-agent", useragent)
-            if self.site.cookies():
-                conn.putheader('Cookie', self.site.cookies())
-            conn.endheaders()
-            conn.send(data)
-            response = conn.getresponse()
-            if (response.status >= 300):
-                raise ServerError(response.status, response.reason)
-            data = response.read()
-            conn.close()
+            response, data = self.site.postForm(address, predata)
+        # The XML parser doesn't expect a Unicode string, but an encoded one,
+        # so we'll encode it back.
+        data = data.encode(self.site.encoding())
         get_throttle.setDelay(time.time() - now)
         return data
 
@@ -2710,6 +2638,40 @@ class Site(object):
         for language in self.languages():
             if not language[0].upper()+language[1:] in self.namespaces():
                 self._validlanguages += [language]
+
+    def postForm(self, address, predata, sysop = False):
+        """
+        Posts the given form data to the given address at this site.
+        address is the absolute path without hostname.
+        predata is a list of key-value tuples.
+        Returns a (response, data) tuple where response is the HTTP
+        response object and data is a Unicode string containing the
+        body of the response.
+        """
+
+        # TODO: add the authenticate stuff here
+
+        # Encode all of this into a HTTP request
+
+        conn = httplib.HTTPConnection(self.hostname())
+        data = urlencode(tuple(predata))
+
+        conn.putrequest('POST', address)
+        conn.putheader('Content-Length', str(len(data)))
+        conn.putheader('Content-type', 'application/x-www-form-urlencoded')
+        conn.putheader('User-agent', useragent)
+        if self.cookies():
+            conn.putheader('Cookie', self.cookies(sysop = sysop))
+        conn.endheaders()
+        conn.send(data)
+
+        # Prepare the return values
+        # Note that this can raise network exceptions which are not
+        # caught here.
+        response = conn.getresponse()
+        data = response.read().decode(self.encoding())
+        conn.close()
+        return response, data
 
     def forceLogin(self, sysop = False):
         if not self.loggedin(sysop = sysop):

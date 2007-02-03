@@ -53,7 +53,7 @@ class User:
         fullpagename = self.site.namespace(2) + ':' + self.name
         if subpage:
             fullpagename += '/' + subpage
-        return wikipedia.Page(self.site,fullpagename)
+        return wikipedia.Page(self.site, fullpagename)
 
     def getUserTalkPage(self, subpage=''):
         if self.name[0] == '#':
@@ -65,7 +65,7 @@ class User:
             fullpagename += '/' + subpage
         return wikipedia.Page(self.site,fullpagename)
 
-    def block(self, expiry=None, reason=None, AnonOnly=True, NoSignup=False, EnableAutoblock=False):
+    def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False, enableAutoblock=False):
         """
         Block the user.
 
@@ -73,9 +73,9 @@ class User:
         expiry - expiry time of block, may be a period of time (incl. infinite)
                  or the block's expiry time
         reason - reason for block
-        AnonOnly - is the block affecting only anonymous users?
-        NoSignup - does the block disable account creation?
-        EnableAutoblock - is autoblock enabled on the block?
+        anonOnly - is the block affecting only anonymous users?
+        noSignup - does the block disable account creation?
+        enableAutoblock - is autoblock enabled on the block?
 
         The default values for block options are set to as most unrestrictive
         """
@@ -100,31 +100,19 @@ class User:
             ('wpBlockExpiry', 'other'),
             ('wpBlockOther', expiry),
             ('wpBlockReason', reason),
-            ('wpAnonOnly', boolStr[AnonOnly]),
-            ('wpCreateAccount', boolStr[NoSignup]),
-            ('wpEnableAutoblock', boolStr[EnableAutoblock]),
+            ('wpAnonOnly', boolStr[anonOnly]),
+            ('wpCreateAccount', boolStr[noSignup]),
+            ('wpEnableAutoblock', boolStr[enableAutoblock]),
             ('wpBlock', 'Block this user'),
             ('wpEditToken', token)
-            ]
+        ]
 
-        data = wikipedia.urlencode(tuple(predata))
         address = self.site.block_address()
-
-        conn = httplib.HTTPConnection(self.site.hostname())
-        conn.putrequest("POST", address)
-        conn.putheader('Content-Length', str(len(data)))
-        conn.putheader("Content-type", "application/x-www-form-urlencoded")
-        conn.putheader("User-agent", wikipedia.useragent)
-        conn.putheader('Cookie', self.site.cookies())
-        conn.endheaders()
-        conn.send(data)
-
-        response = conn.getresponse()
-        data = response.read()
-        conn.close()
+        response, data = self.site.postForm(address, predata, sysop = True)
 
         if response.status != 302:
-            if re.search('is already blocked',data):
+            # TODO: i18n
+            if u'is already blocked' in data:
                 raise AlreadyBlockedError
             raise BlockError
         return True
@@ -150,6 +138,7 @@ class User:
         token = self.site.getToken(self, sysop = True)
         address = self.site.blocksearch_address(self.name)
 
+        #TODO: use Site.getUrl() instead
         conn = httplib.HTTPConnection(self.site.hostname())
         conn.putrequest("GET", address)
         conn.putheader("User-agent", wikipedia.useragent)
@@ -161,7 +150,7 @@ class User:
         data = response.read()
         conn.close()
 
-        bIDre = re.search(r'action=unblock&amp;id=(\d+)',data)
+        bIDre = re.search(r'action=unblock&amp;id=(\d+)', data)
         if not bIDre:
             print data
             raise BlockIDError
@@ -178,27 +167,13 @@ class User:
             ('wpUnblockReason', reason),
             ('wpBlock', 'Unblock this address'),
             ('wpEditToken', token),
-            ]
+        ]
 
-        data = wikipedia.urlencode(tuple(predata))
-        address = self.site.unblock_address()
-
-        conn = httplib.HTTPConnection(self.site.hostname())
-        conn.putrequest("POST", address)
-        conn.putheader('Content-Length', str(len(data)))
-        conn.putheader("Content-type", "application/x-www-form-urlencoded")
-        conn.putheader("User-agent", wikipedia.useragent)
-        conn.putheader('Cookie', self.site.cookies())
-        conn.endheaders()
-        conn.send(data)
-
-        response = conn.getresponse()
-        data = response.read()
-        conn.close()
-
+        response, data = self.site.postForm(address, predata, sysop = True)
         if response.status != 302:
-            print data
-            if re.search('Block ID \d+ not found',data):
+            wikipedia.output(data)
+            # TODO: i18n
+            if re.search('Block ID \d+ not found', data):
                 raise AlreadyUnblockedError
             raise UnblockError
         return True
@@ -210,7 +185,7 @@ if __name__ == '__main__':
     """
     try:
         Site = wikipedia.getSite()
-        exampleUser = User(Site,'Example')
+        exampleUser = User(Site, 'Example')
         print exampleUser.getUserPage().get()
         print exampleUser.getUserPage('Lipsum').get()
         print exampleUser.getUserTalkPage().get()
