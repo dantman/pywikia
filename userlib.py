@@ -137,19 +137,7 @@ class User:
 
         token = self.site.getToken(self, sysop = True)
         address = self.site.blocksearch_address(self.name)
-
-        #TODO: use Site.getUrl() instead
-        conn = httplib.HTTPConnection(self.site.hostname())
-        conn.putrequest("GET", address)
-        conn.putheader("User-agent", wikipedia.useragent)
-        conn.putheader('Cookie', self.site.cookies())
-        conn.endheaders()
-        conn.send('')
-
-        response = conn.getresponse()
-        data = response.read()
-        conn.close()
-
+        data = self.site.getUrl(address)
         bIDre = re.search(r'action=unblock&amp;id=(\d+)', data)
         if not bIDre:
             print data
@@ -168,6 +156,7 @@ class User:
             ('wpBlock', 'Unblock this address'),
             ('wpEditToken', token),
         ]
+        address = self.site.unblock_address()
 
         response, data = self.site.postForm(address, predata, sysop = True)
         if response.status != 302:
