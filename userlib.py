@@ -13,8 +13,9 @@ class AutoblockUserError(wikipedia.Error):
   for him (i.e. roughly everything except unblock).
   """
 
-class BlockError(wikipedia.Error):
-  pass
+class BlockError(wikipedia.Error): pass
+
+class AlreadyBlockedError(BlockError): pass
 
 class User:
   """
@@ -74,6 +75,11 @@ class User:
     The default values for block options are set to as most unrestrictive
     """
 
+    if self.name[0] == '#':
+      #This user is probably being queried for purpose of lifting
+      #an autoblock, so can't be blocked.
+      raise AutoblockUserError
+
     if expiry == None:
       expiry = input(u'Please enter the expiry time for the block:')
     if reason == None:
@@ -113,6 +119,8 @@ class User:
     conn.close()
 
     if response.status != 302:
+      if re.search('is already blocked',data):
+        raise AlreadyBlockedError
       raise BlockError
     return True
 
