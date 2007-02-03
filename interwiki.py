@@ -176,6 +176,10 @@ This script understands various command-line arguments:
                    * If an interwiki must be removed
                    * If an interwiki must be changed and there has been a
                      conflict for this page
+                   Optionally, -whenneeded can be given an additional number
+                   (for example -whenneeded:3), in which case other languages
+                   will be changed if there are that number or more links to
+                   change or add
                    
     -bracket       only work on pages that have (in the home language) a bracket
                    in their title. All other pages are skipped.
@@ -315,6 +319,7 @@ class Global(object):
     localonly = False
     limittwo = False
     strictlimittwo = False
+    needlimit = 0
     ignore = []
     bracketonly = False
 
@@ -858,7 +863,7 @@ class Subject(object):
             lclSite = self.originPage.site()
             lclSiteDone = False
             frgnSiteDone = False
-            for siteCode in lclSite.family.languages_by_size + [self.originPage.site().lang]:   #make sure there is always this site's code
+            for siteCode in lclSite.family.languages_by_size + [s for s in lclSite.family.knownlanguages if not s in lclSite.family.languages_by_size]:
                 site = wikipedia.getSite(code = siteCode)
                 if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and new.has_key(site)):
                     if site == lclSite:
@@ -880,7 +885,7 @@ class Subject(object):
                         wikipedia.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
                         continue
                     mods, adding, removing, modifying = compareLanguages(old, new, insite = lclSite)
-                    if len(removing) > 0 or (len(modifying) > 0 and self.problemfound) or len(old.keys()) == 0:
+                    if len(removing) > 0 or (len(modifying) > 0 and self.problemfound) or len(old.keys()) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit):
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
@@ -1414,9 +1419,15 @@ if __name__ == "__main__":
                 elif arg == '-limittwo':
                     globalvar.limittwo = True
                     globalvar.strictlimittwo = True
-                elif arg == '-whenneeded':
+                elif arg.startswith('-whenneeded'):
                     globalvar.limittwo = True
                     globalvar.strictlimittwo = False
+                    try:
+                        globalvar.needlimit = int(arg[12:])
+                    except KeyError:
+                        pass
+                    except ValueError:
+                        pass
                 elif arg.startswith('-years'):
                     # Look if user gave a specific year at which to start
                     # Must be a natural number or negative integer.
