@@ -2280,6 +2280,12 @@ class Family:
     def unprotect_address(self, code, name):
         return '%s?title=%s&action=unprotect' % (self.path(code), name)
 
+    def block_address(self, code):
+      return '%s?title=%s:Blockip&action=submit' % (self.path(code), self.special_namespace_url(code))
+
+    def unblock_address(self, code):
+      return '%s?title=%s:Ipblocklist&action=submit' % (self.path(code), self.special_namespace_url(code))
+
     def version_history_address(self, code, name):
         return '%s?title=%s&action=history&limit=%d' % (self.path(code), name, config.special_page_limit)
 

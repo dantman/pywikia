@@ -13,6 +13,9 @@ class AutoblockUserError(wikipedia.Error):
   for him (i.e. roughly everything except unblock).
   """
 
+class BlockError(wikipedia.Error):
+  pass
+
 class User:
   """
   A class that represents a Wiki user.
@@ -81,7 +84,6 @@ class User:
     wikipedia.output(u"Blocking [[User:%s]]..." % self.name)
 
     boolStr = ['0','1']
-
     predata = [
         ('wpBlockAddress', self.name),
         ('wpBlockExpiry', 'other'),
@@ -95,8 +97,10 @@ class User:
         ]
 
     data = wikipedia.urlencode(tuple(predata))
+    address = self.site.block_address()
+
     conn = httplib.HTTPConnection(self.site.hostname())
-    conn.putrequest("POST", '/w/index.php?title=Special:Blockip&action=submit')
+    conn.putrequest("POST", address)
     conn.putheader('Content-Length', str(len(data)))
     conn.putheader("Content-type", "application/x-www-form-urlencoded")
     conn.putheader("User-agent", wikipedia.useragent)
@@ -108,7 +112,9 @@ class User:
     data = response.read()
     conn.close()
 
-    return response
+    if response.status != 302:
+      raise BlockError
+    return True
 
 if __name__ == '__main__':
   """

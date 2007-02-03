@@ -3216,6 +3216,12 @@ class Site(object):
     def purge_address(self, s):
         return self.family.purge_address(self.lang, s)
 
+    def block_address(self):
+        return self.family.block_address(self.lang)
+
+    def unblock_address(self):
+        return self.family.unblock_address(self.lang)
+
     def checkCharset(self, charset):
         if not hasattr(self,'charset'):
             self.charset = charset
