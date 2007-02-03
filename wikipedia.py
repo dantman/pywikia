@@ -2640,6 +2640,10 @@ class Site(object):
                 self._validlanguages += [language]
 
     def postForm(self, address, predata, sysop = False):
+        data = urlencode(tuple(predata))
+        return self.postData(address, data, sysop = sysop)
+
+    def postData(self, address, data, contentType = 'application/x-www-form-urlencoded', sysop = False):
         """
         Posts the given form data to the given address at this site.
         address is the absolute path without hostname.
@@ -2654,11 +2658,10 @@ class Site(object):
         # Encode all of this into a HTTP request
 
         conn = httplib.HTTPConnection(self.hostname())
-        data = urlencode(tuple(predata))
 
         conn.putrequest('POST', address)
         conn.putheader('Content-Length', str(len(data)))
-        conn.putheader('Content-type', 'application/x-www-form-urlencoded')
+        conn.putheader('Content-type', contentType)
         conn.putheader('User-agent', useragent)
         if self.cookies():
             conn.putheader('Cookie', self.cookies(sysop = sysop))
