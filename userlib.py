@@ -4,7 +4,7 @@ Library to work with users, their pages and talk pages.
 """
 
 import wikipedia
-import httplib
+import re, httplib
 
 class AutoblockUserError(wikipedia.Error):
   """
@@ -16,6 +16,12 @@ class AutoblockUserError(wikipedia.Error):
 class BlockError(wikipedia.Error): pass
 
 class AlreadyBlockedError(BlockError): pass
+
+class UnblockError(wikipedia.Error): pass
+
+class BlockIDError(UnblockError): pass
+
+class AlreadyUnblockedError(UnblockError): pass
 
 class User:
   """
@@ -123,6 +129,81 @@ class User:
         raise AlreadyBlockedError
       raise BlockError
     return True
+
+  def unblock(self, reason=None):
+    """
+    Unblock the user.
+
+    Parameter:
+    reason - reason for block
+    """
+
+    if self.name[0] == '#':
+      blockID = self.name[1:]
+    else:
+      blockID = self._getBlockID()
+
+    self._unblock(blockID,reason)
+
+  def _getBlockID(self):
+    wikipedia.output(u"Getting block id for [[User:%s]]..." % self.name)
+
+    token = self.site.getToken(self, sysop = True)
+    address = self.site.blocksearch_address(self.name)
+
+    conn = httplib.HTTPConnection(self.site.hostname())
+    conn.putrequest("GET", address)
+    conn.putheader("User-agent", wikipedia.useragent)
+    conn.putheader('Cookie', self.site.cookies())
+    conn.endheaders()
+    conn.send('')
+
+    response = conn.getresponse()
+    data = response.read()
+    conn.close()
+
+    bIDre = re.search(r'action=unblock&amp;id=(\d+)',data)
+    if not bIDre:
+      print data
+      raise BlockIDError
+
+    return bIDre.group(1)
+
+  def _unblock(self, blockID, reason):
+    wikipedia.output(u"Unblocking [[User:%s]]..." % self.name)
+
+    token = self.site.getToken(self, sysop = True)
+
+    predata = [
+        ('id', blockID),
+        ('wpUnblockReason', reason),
+        ('wpBlock', 'Unblock this address'),
+        ('wpEditToken', token)
+        ]
+
+    data = wikipedia.urlencode(tuple(predata))
+    address = self.site.unblock_address()
+
+    conn = httplib.HTTPConnection(self.site.hostname())
+    conn.putrequest("POST", address)
+    conn.putheader('Content-Length', str(len(data)))
+    conn.putheader("Content-type", "application/x-www-form-urlencoded")
+    conn.putheader("User-agent", wikipedia.useragent)
+    conn.putheader('Cookie', self.site.cookies())
+    conn.endheaders()
+    conn.send(data)
+
+    response = conn.getresponse()
+    data = response.read()
+    conn.close()
+
+    if response.status != 302:
+      print data
+      if re.search('Block ID \d+ not found',data):
+        raise AlreadyUnblockedError
+      raise UnblockError
+    return True
+
 
 if __name__ == '__main__':
   """
