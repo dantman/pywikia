@@ -602,7 +602,7 @@ class Subject(object):
             isRedirect = False
             # Now check whether any interwiki links should be added to the
             # todo list.
-            if page.section():
+            if page.section() and not page.isRedirectPage():
                 # We have been referred to a part of a page, not the whole page. Do not follow references.
                 pass
             else:

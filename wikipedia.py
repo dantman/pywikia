@@ -595,10 +595,21 @@ class Page(object):
             output(u"DBG> page may be locked?!")
             editRestriction = 'sysop'
         if m:
+            if self.section():
+                redirtarget = "%s#%s"%(m.group(1),self.section())
+            else:
+                redirtarget = m.group(1)
             if get_redirect:
-                self._redirarg = m.group(1)
+                self._redirarg = redirtarget
             elif not nofollow_redirects:
-                raise IsRedirectPage(m.group(1))
+                raise IsRedirectPage(redirtarget)
+        if self.section():
+            m = re.search("\.3D\_*(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?\_*\.3D" % re.escape(self.section()), sectionencode(text,self.site().encoding()))
+            if not m:
+                try:
+                    self._getexception
+                except AttributeError:
+                    raise SectionError # Page has no section by this name
         x = text[i1:i2]
         x = unescape(x)
         while x and x[-1] in '\n ':
@@ -639,6 +650,8 @@ class Page(object):
             return False
         except IsRedirectPage:
             return True
+        except SectionError:
+            return False
         return False
 
     def isEmpty(self):
@@ -1186,6 +1199,8 @@ class Page(object):
             #return []
         except IsRedirectPage:
             raise
+        except SectionError:
+            return []
         thistxt = removeCategoryLinks(thistxt, self.site())
 
         # remove HTML comments from text before processing
@@ -1852,9 +1867,13 @@ class GetAll(object):
         pl2._userName = username
         pl2._ipedit = ipedit
         pl2._editTime = timestamp
+        section = pl2.section()
         m = self.site.redirectRegex().match(text)
         if m:
-            redirectto=m.group(1)
+            print "%s is a redirect"%pl2
+            redirectto = m.group(1)
+            if section and redirectto.find("#") == -1:
+                redirectto = redirectto+"#"+section
             pl2._getexception = IsRedirectPage
             pl2._redirarg = redirectto
         # There's no possibility to read the wpStarttime argument from the XML.
@@ -1866,17 +1885,17 @@ class GetAll(object):
         # recreate pages someone deleted. If it's too fast, the bot will raise
         # EditConflict exceptions although there's no conflict.
         pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
-        section = pl2.section()
         if section:
-            m = re.search(".3D.3D\_*(.5B.5B)?\_*%s\_*(.5B.5B)?\_*.3D.3D" % re.escape(section), sectionencode(text,pl2.site().encoding()))                    
+            m = re.search("\.3D\_*(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?\_*\.3D" % re.escape(section), sectionencode(text,pl2.site().encoding()))                    
             if not m:
-                output(u"WARNING: Section not found: %s" % pl2.aslink(forceInterwiki = True))
-            else:
-                # Store the content
-                pl2._contents = text
-        else:
-            # Store the content
-            pl2._contents = text
+                try:
+                    pl2._getexception
+                    output(u"WARNING: Section not found: %s" % pl2.aslink(forceInterwiki = True))
+                except AttributeError:
+                    # There is no exception yet
+                    pl2._getexception = SectionError
+        # Store the content
+        pl2._contents = text
  
     def headerDone(self, header):
         # Verify our family data
