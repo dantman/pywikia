@@ -885,7 +885,7 @@ class Subject(object):
                         wikipedia.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
                         continue
                     mods, adding, removing, modifying = compareLanguages(old, new, insite = lclSite)
-                    if len(removing) > 0 or (len(modifying) > 0 and self.problemfound) or len(old.keys()) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit):
+                    if len(removing) > 0 or (len(modifying) > 0 and self.problemfound) or len(old.keys()) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit +1):
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
