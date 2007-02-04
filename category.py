@@ -356,17 +356,20 @@ class CategoryListifyRobot:
         'sv':u'Robot: Skapar en lista från %s (%d)'
     }
 
-    def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False):
+    def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False, subCats = False):
         self.editSummary = editSummary
         self.overwrite = overwrite
         self.showImages = showImages
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         self.list = wikipedia.Page(wikipedia.getSite(), listTitle)
+        self.subCats = subCats
         # get edit summary message
 
 
     def run(self):
         listOfArticles = self.cat.articles()
+        if self.subCats:
+            listOfArticles += self.cat.supercategories()
 	if self.editSummary:
 	    wikipedia.setAction(self.editSummary)
 	else:
@@ -374,7 +377,7 @@ class CategoryListifyRobot:
 
         listString = ""
         for article in listOfArticles:
-            if not article.isImage() or self.showImages:
+            if (not article.isImage() or self.showImages) and not article.isCategory():
                 listString = listString + "*[[%s]]\n" % article.title()
             else:
                 listString = listString + "*[[:%s]]\n" % article.title()
@@ -770,7 +773,7 @@ if __name__ == "__main__":
                 oldCatTitle = wikipedia.input(u'Please enter the name of the category to listify:')
             if (toGiven == False):
                 newCatTitle = wikipedia.input(u'Please enter the name of the list to create:')
-            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite, showImages)
+            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite, showImages, subCats = True)
             bot.run()
         else:
             wikipedia.showHelp('category')
