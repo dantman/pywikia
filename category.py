@@ -369,7 +369,7 @@ class CategoryListifyRobot:
     def run(self):
         listOfArticles = self.cat.articles()
         if self.subCats:
-            listOfArticles += self.cat.supercategories()
+            listOfArticles += self.cat.subcategories()
 	if self.editSummary:
 	    wikipedia.setAction(self.editSummary)
 	else:
