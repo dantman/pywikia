@@ -30,6 +30,32 @@ class TextEditor:
     def __init__(self):
         pass
 
+    def command(self, tempFilename, text, jumpIndex = None):
+        command = config.editor
+        if jumpIndex:
+            # Some editors make it possible to mark occurences of substrings, or
+            # to jump to the line of the first occurence.
+            # TODO: Find a better solution than hardcoding these, e.g. a config
+            # option.
+            line = text[:jumpIndex].count('\n')
+            column = jumpIndex - (text[:jumpIndex].rfind('\n') + 1)
+        else:
+            line = column = 0
+        if config.editor == 'kate':
+            command += " -l %i -c %i" % (line, column)
+        elif config.editor == 'gedit':
+            command += " +%i" % (line + 1) # seems not to support columns
+        elif config.editor == 'jedit':
+            lineOfFirstOccurence += 1
+            command += " +line:%i" % line # seems not to support columns
+        #print command
+        elif config.editor == 'vim':
+            command += " +%i" % (line + 1) # seems not to support columns
+        elif config.editor == 'nano':
+            command += " +%i,%i" % (line + 1, column + 1)
+        command += ' %s' % tempFilename
+        return command
+
     def edit(self, text, jumpIndex = None, highlight = None):
         """
         Calls the editor and thus allows the user to change the text.
@@ -49,24 +75,7 @@ class TextEditor:
             tempFile.write(text.encode(config.editor_encoding))
             tempFile.close()
             creationDate = os.stat(tempFilename).st_atime
-            command = "%s %s" % (config.editor, tempFilename)
-            if jumpIndex:
-                # Some editors make it possible to mark occurences of substrings, or
-                # to jump to the line of the first occurence.
-                # TODO: Find a better solution than hardcoding these, e.g. a config
-                # option.
-                line = text[:jumpIndex].count('\n')
-                column = jumpIndex - (text[:jumpIndex].rfind('\n') + 1)
-            else:
-                line = column = 0
-            if config.editor == 'kate':
-                command += " -l %i -c %i" % (line, column)
-            elif config.editor == 'gedit':
-                command += " +%i" % line + 1 # seems not to support columns
-            elif config.editor == 'jedit':
-                lineOfFirstOccurence += 1
-                command += " +line:%i" % line # seems not to support columns
-            #print command
+            command = self.command(tempFilename, text, jumpIndex)
             os.system(command)
             lastChangeDate = os.stat(tempFilename).st_atime
             if lastChangeDate == creationDate:
