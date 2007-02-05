@@ -144,9 +144,9 @@ class TemplateRobot:
     msg_change={
         'en':u'Robot: Changing template: %s',
         'de':u'Bot: Ändere Vorlage: %s',
-	'fr':u'Robot: Change modèle: %s',
+        'fr':u'Robot: Change modèle: %s',
         'he':u'רובוט: משנה תבנית: %s',
-	'ia':u'Robot: Modification del template: %s',
+        'ia':u'Robot: Modification del template: %s',
         'hu':u'Robot: Sablon csere: %s',
         'lt':u'robotas: Keičiamas šablonas: %s',
         'pt':u'Bot: Alterando predefinição: %s',
@@ -155,7 +155,7 @@ class TemplateRobot:
 
     #Needs more translations!
     msgs_change={
-	'en':u'Robot: Changing templates: %s',
+        'en':u'Robot: Changing templates: %s',
         'he':u'רובוט: משנה תבניות: %s',
         'fr':u'Bot: Modifie modèles %s',
         'lt':u'robotas: Keičiami šablonai: %s',
@@ -268,7 +268,7 @@ class TemplateRobot:
             else:
                 pattern = re.escape(old)
             pattern = re.sub('_|\\\\ ', '[_ ]', pattern)
-            templateRegex = re.compile(r'\{\{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + pattern + ' *(?P<parameters>\|[^}]+|) *}}')
+            templateRegex = re.compile(r'\{\{ *([Tt]emplate:|[mM][sS][gG]:)?' + pattern + '\s*(?P<parameters>\|.+?)? *}}', re.DOTALL)
 
             if self.remove:
                 replacements.append((templateRegex, ''))
