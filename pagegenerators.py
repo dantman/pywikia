@@ -1,6 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
+"""
+This module offers a wide variety of page generators. A page generator is an
+object that is iterable (see http://www.python.org/dev/peps/pep-0255/ ) and
+that yields page objects on which other scripts can then work.
 
+In general, there is no need to run this script directly. It can, however,
+be run for testing purposes.
+"""
 __version__='$Id$'
 
 # Standard library imports
@@ -489,18 +496,26 @@ class CommandLineGenerator(object):
 
 if __name__ == "__main__":
     try:
-        clg = CommandLineGenerator()
-        args = wikipedia.handleArgs()
-        args = clg.handleArgs(args)
-        for arg in args:
-            wikipedia.output("WARNING: Unhandled argument %s" % arg)
-        g = clg.get()
-        i = 0
-        for p in g:
-            i += 1
-            if i > 100:
-                break
-            print p
+        genFactory = GeneratorFactory()
+        for arg in wikipedia.handleArgs():
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
+        for page in gen:
+            wikipedia.output(page.title())
+        # This test code did not work. --Daniel
+        #clg = CommandLineGenerator()
+        #args = wikipedia.handleArgs()
+        #args = clg.handleArgs(args)
+        #for arg in args:
+            #wikipedia.output("WARNING: Unhandled argument %s" % arg)
+        #g = clg.get()
+        #i = 0
+        #for p in g:
+            #i += 1
+            #if i > 100:
+                #break
+            #print p
     finally:
         wikipedia.stopme()
 
