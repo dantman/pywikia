@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-This robot check copyright text in Google and Yahoo.
+This robot checks copyright text in Google and Yahoo.
 
 Google search requires to install the pyGoogle module from http://pygoogle.sf.net
 and get a Google API license key from http://code.google.com/apis/soapsearch/ (but
@@ -18,7 +18,7 @@ You can run the bot with the following commandline parameters:
 -ny          - Do not use Yahoo!
 -maxquery    - Stop after a specified number of queries for page (default: 25)
 -new
--repeat
+
 -output      - Append results to a specified file (default: 'copyright/output.txt')
 -file        - Work on all pages given in a local text file.
                Will read any [[wiki link]] and use these articles.
@@ -429,6 +429,8 @@ def get_results(query, numresults = 10):
                         if check_in_source(entry.URL):
                             continue
                     add_in_urllist(url, entry.URL, 'google')
+            except KeyboardInterrupt:
+                raise
             except Exception, err:
                 print "Got an error ->", err
                 search_request_retry -= 1
@@ -536,25 +538,10 @@ def check_config(var, license_id, license_name):
 def main():
     global output_file
     gen = None
-    # Can either be 'xmldump', 'textfile' or 'userinput'.
-    source = None
-    # the textfile's path, either absolute or relative, which will be used when
-    # source is 'textfile'.
-    textfilename = None
-    # the category name which will be used when source is 'category'.
-    categoryname = None
-    #
-    catrecurse = False
     # pages which will be processed when the -page parameter is used
     PageTitles = []
     # IDs which will be processed when the -ids parameter is used
     ids = None
-    # a page whose referrers will be processed when the -ref parameter is used
-    referredPageTitle = None
-    # an image page whose file links will be processed when the -filelinks parameter is used
-    fileLinksPageTitle = None
-    # a page whose links will be processed when the -links parameter is used
-    linkingPageTitle = None
     # will become True when the user presses a ('yes to all') or uses the -always
     # commandline paramater.
     acceptall = False
@@ -562,25 +549,22 @@ def main():
     # default to [] which means all namespaces will be processed
     namespaces = []
     #
-    repeat = False
+    #repeat = False
 
     firstPageTitle = None
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
+
 
     config.copyright_yahoo = check_config(config.copyright_yahoo, config.yahoo_appid, "Yahoo AppID")
     config.copyright_google = check_config(config.copyright_google, config.google_key, "Google Web API license key")
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-filelinks'):
-            if len(arg) == 10:
-                fileLinksPageTitle = wikipedia.input(u'Links to which image page should be processed?')
-            else:
-                fileLinksPageTitle = arg[11:]
-            #TODO: Replace 'Image:' with something that automatically gets the name of images based on the language.
-            fileLinksPage = wikipedia.Page(wikipedia.getSite(), 'Image:' + fileLinksPageTitle)
-            gen = pagegenerators.FileLinksGenerator(fileLinksPage)
-        elif arg.startswith('-repeat'):
-            repeat = True
+        #if arg.startswith('-repeat'):
+        #    repeat = True
         elif arg.startswith('-y'):
             config.copyright_yahoo = True
         elif arg.startswith('-g'):
@@ -595,32 +579,6 @@ def main():
         elif arg.startswith('-maxquery'):
             if len(arg) >= 10:
                 config.copyright_max_query_for_page = int(arg[10:])
-        elif arg.startswith('-new'):
-            if len(arg) >=5:
-              gen = pagegenerators.NewpagesPageGenerator(number=int(arg[5:]), repeat = repeat)
-            else:
-              gen = pagegenerators.NewpagesPageGenerator(number=60, repeat = repeat)
-        elif arg.startswith('-file'):
-            if len(arg) >= 6:
-                textfilename = arg[6:]
-            gen = pagegenerators.TextfilePageGenerator(textfilename)
-        #elif arg.startswith('-idfile'):
-        #    if len(arg) >= 11:
-        #        textfilename = arg[11:]
-        #        ids = read_file(textfilename).splitlines()
-        elif arg.startswith('-subcat'):
-            catrecurse = True
-        elif arg.startswith('-cat'):
-            if len(arg) == 4:
-                categoryname = wikipedia.input(u'Please enter the category name:')
-            else:
-                categoryname = arg[5:]
-            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
-            if firstPageTitle:
-                gen = pagegenerators.CategorizedPageGenerator(cat, recurse = catrecurse, start = firstPageTitle)
-            else:
-                gen = pagegenerators.CategorizedPageGenerator(cat, recurse = catrecurse)
-
         elif arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
@@ -631,33 +589,15 @@ def main():
                 PageTitles.append(wikipedia.input(u'Which page do you want to change?'))
             else:
                 PageTitles.append(arg[6:])
-            source = 'specificPages'
-        elif arg.startswith('-ref'):
-            if len(arg) == 4:
-                referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
-            else:
-                referredPageTitle = arg[5:]
-            referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
-            gen = pagegenerators.ReferringPageGenerator(referredPage)
-        elif arg.startswith('-links'):
-            if len(arg) == 6:
-                linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
-            else:
-                linkingPageTitle = arg[7:]
-            linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
-            gen = pagegenerators.LinkedPageGenerator(linkingPage)
-        elif arg.startswith('-start'):
-            if len(arg) == 6:
-                firstPageTitle = wikipedia.input(u'Which page do you want to change?')
-            else:
-                firstPageTitle = arg[7:]
-            namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
-            firstPageTitle = wikipedia.Page(wikipedia.getSite(), firstPageTitle).titleWithoutNamespace()
-            gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
         elif arg.startswith('-namespace:'):
             namespaces.append(int(arg[11:]))
         elif arg.startswith('-forceupdate'):
             load_pages(force_update = True)
+        else:
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
+
 
     if PageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]

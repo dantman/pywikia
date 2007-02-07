@@ -276,20 +276,15 @@ def main():
     #page generator
     gen = None
     pageTitle = []
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
+
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-start:'):
-            gen = pagegenerators.AllpagesPageGenerator(arg[7:])
-        elif arg.startswith('-ref:'):
-            referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
-            gen = pagegenerators.ReferringPageGenerator(referredPage)
-        elif arg.startswith('-links:'):
-            linkingPage = wikipedia.Page(wikipedia.getSite(), arg[7:])
-            gen = pagegenerators.LinkedPageGenerator(linkingPage)
-        elif arg.startswith('-file:'):
-            gen = pagegenerators.TextfilePageGenerator(arg[6:])
-        elif arg.startswith('-cat:'):
-            cat = catlib.Category(wikipedia.getSite(), arg[5:])
-            gen = pagegenerators.CategorizedPageGenerator(cat)
+        generator = genFactory.handleArg(arg)
+        if generator:
+            gen = generator
         else:
             pageTitle.append(arg)
 

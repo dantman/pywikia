@@ -265,9 +265,6 @@ def prepareRegexForMySQL(pattern):
                         
 def main():
     gen = None
-    # How we want to retrieve information on which pages need to be changed.
-    # Can either be 'xmldump', 'textfile' or 'userinput'.
-    source = None
     # summary message
     summary_commandline = None
     # Array which will collect commandline parameters.
@@ -286,19 +283,7 @@ def main():
     # is 'xmldump'.
     xmlFilename = None
     useSql = False
-    # the textfile's path, either absolute or relative, which will be used when
-    # source is 'textfile'.
-    textfilename = None
-    # the category name which will be used when source is 'category'.
-    categoryname = None
-    # pages which will be processed when the -page parameter is used
     PageTitles = []
-    # a page whose referrers will be processed when the -ref parameter is used
-    referredPageTitle = None
-    # an image page whose file links will be processed when the -filelinks parameter is used
-    fileLinksPageTitle = None
-    # a page whose links will be processed when the -links parameter is used
-    linkingPageTitle = None
     # will become True when the user presses a ('yes to all') or uses the -always
     # commandline paramater.
     acceptall = False
@@ -307,40 +292,22 @@ def main():
     # Which namespaces should be processed?
     # default to [] which means all namespaces will be processed
     namespaces = []
-    # Which page to start
-    startpage = None
-    # Google query
-    googleQuery = None
     # Do all hits when they overlap
     allowoverlap = False
     # Do not recurse replacement
     recursive = False
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
     # Load default summary message.
+    # BUG WARNING: This is probably incompatible with the -lang parameter.
     wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg))
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
         if arg == '-regex':
             regex = True
-        elif arg.startswith('-filelinks'):
-            if len(arg) == 10:
-                fileLinksPageTitle = wikipedia.input(u'Links to which image page should be processed?')
-            else:
-                fileLinksPageTitle = arg[11:]
-            #TODO: Replace 'Image:' with something that automatically gets the name of images based on the language.
-            fileLinksPage = wikipedia.Page(wikipedia.getSite(), 'Image:' + fileLinksPageTitle)
-            gen = pagegenerators.FileLinksGenerator(fileLinksPage)
-        elif arg.startswith('-file'):
-            if len(arg) >= 6:
-                textfilename = arg[6:]
-            gen = pagegenerators.TextfilePageGenerator(textfilename)
-        elif arg.startswith('-cat'):
-            if len(arg) == 4:
-                categoryname = wikipedia.input(u'Please enter the category name:')
-            else:
-                categoryname = arg[5:]
-            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
-            gen = pagegenerators.CategorizedPageGenerator(cat)
         elif arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
@@ -353,33 +320,6 @@ def main():
                 PageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
             else:
                 PageTitles.append(arg[6:])
-            source = 'specificPages'
-        elif arg.startswith('-ref'):
-            if len(arg) == 4:
-                referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
-            else:
-                referredPageTitle = arg[5:]
-            referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
-            gen = pagegenerators.ReferringPageGenerator(referredPage)
-        elif arg.startswith('-links'):
-            if len(arg) == 6:
-                linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
-            else:
-                linkingPageTitle = arg[7:]
-            linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
-            gen = pagegenerators.LinkedPageGenerator(linkingPage)
-        elif arg.startswith('-start'):
-            if len(arg) == 6:
-                firstPageTitle = wikipedia.input(u'Which page do you want to chage?')
-            else:
-                firstPageTitle = arg[7:]
-            namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
-            firstPageTitle = wikipedia.Page(wikipedia.getSite(), firstPageTitle).titleWithoutNamespace()
-            gen = pagegenerators.AllpagesPageGenerator(firstPageTitle, namespace)
-        elif arg.startswith('-google'):
-            if len(arg) >= 8:
-                googleQuery = arg[8:]
-            gen = pagegenerators.GoogleSearchPageGenerator(googleQuery)
         elif arg.startswith('-except:'):
             exceptions.append(arg[8:])
         elif arg.startswith('-fix:'):
@@ -398,7 +338,11 @@ def main():
         elif arg.startswith('-allowoverlap'):
             allowoverlap = True
         else:
-            commandline_replacements.append(arg)
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
+            else:
+                commandline_replacements.append(arg)
 
     if (len(commandline_replacements) == 2 and fix == None):
         replacements.append((commandline_replacements[0], commandline_replacements[1]))

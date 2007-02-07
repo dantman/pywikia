@@ -1337,20 +1337,15 @@ if __name__ == "__main__":
         hints = []
         start = None
         number = None
-        # the category name which will be used when source is 'category'.
-        categoryName = None
-        # a page whose referrers will be processed when the -ref parameter is used
-        referredPageTitle = None
-        linkingPageTitle = None
         warnfile = None
-        # a PageGenerator (which doesn't give hints, only Pages)
+        # a normal PageGenerator (which doesn't give hints, only Pages)
         hintlessPageGen = None
         optContinue = False
         optRestore = False
-        workNew = False
-        catrecurse = False
-        
-        bot=InterwikiBot()
+        # This factory is responsible for processing command line arguments
+        # that are also used by other scripts and that determine on which pages
+        # to work on.
+        genFactory = pagegenerators.GeneratorFactory()
         
         if not config.never_log:
             wikipedia.activateLog('interwiki.log')
@@ -1457,39 +1452,7 @@ if __name__ == "__main__":
                     optRestore = True
                 elif arg == '-continue':
                     optContinue = True
-                elif arg.startswith('-file:'):
-                    hintlessPageGen = pagegenerators.TextfilePageGenerator(arg[6:])
-                elif arg == '-start':
-                    start = wikipedia.input(u'Which page to start from: ')
-                elif arg.startswith('-start:'):
-                    if len(arg) == 7:
-                        start = wikipedia.input(u'Which page to start from: ')
-                    else:
-                        start = arg[7:]
-                elif arg.startswith('-ref'):
-                    if len(arg) == 4:
-                        referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
-                    else:
-                        referredPageTitle = arg[5:]
-                elif arg.startswith('-cat'):
-                    if len(arg) == 4:
-                        categoryName = wikipedia.input(u'Please enter the category name:')
-                    else:
-                        categoryName = arg[5:]
-                elif arg.startswith('-subcat'):
-                    catrecurse = True
-                elif arg.startswith('-links'):
-                    if len(arg) == 6:
-                        linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
-                    else:
-                        linkingPageTitle = arg[7:]
                 # deprecated for consistency with other scripts
-                elif arg.startswith('-link'):
-                    wikipedia.output(u'NOTE: The -link parameter is deprecated. Please use -links instead.')
-                    if len(arg) == 5:
-                        linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
-                    else:
-                        linkingPageTitle = arg[6:]
                 elif arg.startswith('-number:'):
                     number = int(arg[8:])
                 elif arg.startswith('-array:'):
@@ -1512,10 +1475,12 @@ if __name__ == "__main__":
                     config.interwiki_graph = True
                 elif arg == '-bracket':
                     globalvar.bracketonly = True
-                elif arg == '-new':
-                    workNew = True
                 else:
-                    singlePageTitle.append(arg)
+                    generator = genFactory.handleArg(arg)
+                    if generator:
+                        hintlessPageGen = generator
+                    else:
+                        singlePageTitle.append(arg)
         
         # ensure that we don't try to change main page
         try:
@@ -1525,7 +1490,6 @@ if __name__ == "__main__":
         except:
             wikipedia.output(u'Missing main page name')
 
-        # We need to know what language we are processing before invoking getSite()
         if optRestore or optContinue:
             site = wikipedia.getSite()
             import wikipediatools as _wt
@@ -1546,27 +1510,7 @@ if __name__ == "__main__":
                 # old generator is used up, create a new one
                 hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace)])
 
-        if referredPageTitle:
-            referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
-            hintlessPageGen = pagegenerators.ReferringPageGenerator(referredPage)
-        elif linkingPageTitle:
-            linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
-            hintlessPageGen = pagegenerators.LinkedPageGenerator(linkingPage)
-        elif categoryName:
-            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryName)
-            if start:
-                hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat, recurse = catrecurse, start = start)
-            else:
-                hintlessPageGen = pagegenerators.CategorizedPageGenerator(cat, recurse = catrecurse)
-        elif workNew:
-            if not number:
-                number = config.special_page_limit 
-            hintlessPageGen = pagegenerators.NewpagesPageGenerator(number = number)
-        elif start:
-            namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
-            start = wikipedia.Page(wikipedia.getSite(), start).titleWithoutNamespace()
-            hintlessPageGen = pagegenerators.AllpagesPageGenerator(start, namespace)
-
+        bot = InterwikiBot()
 
         if hintlessPageGen:
             # we'll use iter() to create make a next() function available.

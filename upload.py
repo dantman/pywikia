@@ -26,27 +26,15 @@ import os, sys, re
 import urllib, httplib
 import wikipedia, config, mediawiki_messages
 
-def post_multipart(host, selector, fields, files, cookies):
+def post_multipart(site, address, fields, files, cookies):
     """
     Post fields and files to an http host as multipart/form-data.
     fields is a sequence of (name, value) elements for regular form fields.
     files is a sequence of (name, filename, value) elements for data to be uploaded as files
     Return the server's response page.
     """
-    content_type, body = encode_multipart_formdata(fields, files)
-    conn = httplib.HTTPConnection(host)
-    conn.putrequest('POST', selector)
-    conn.putheader('content-type', content_type)
-    conn.putheader('content-length', str(len(body)))
-    conn.putheader("User-agent", wikipedia.useragent)
-    if cookies:
-        conn.putheader('Cookie',cookies)
-    conn.endheaders()
-    conn.send(body)
-    response = conn.getresponse()
-    returned_html = response.read()
-    conn.close()
-    return response, returned_html
+    contentType, body = encode_multipart_formdata(fields, files)
+    return site.postData(address, body, contentType = contentType)
 
 def encode_multipart_formdata(fields, files):
     """
@@ -54,24 +42,23 @@ def encode_multipart_formdata(fields, files):
     files is a sequence of (name, filename, value) elements for data to be uploaded as files
     Return (content_type, body) ready for httplib.HTTP instance
     """
-    BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
-    CRLF = '\r\n'
-    L = []
+    boundary = '----------ThIs_Is_tHe_bouNdaRY_$'
+    lines = []
     for (key, value) in fields:
-        L.append('--' + BOUNDARY)
-        L.append('Content-Disposition: form-data; name="%s"' % key)
-        L.append('')
-        L.append(value)
+        lines.append('--' + boundary)
+        lines.append('Content-Disposition: form-data; name="%s"' % key)
+        lines.append('')
+        lines.append(value)
     for (key, filename, value) in files:
-        L.append('--' + BOUNDARY)
-        L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
-        L.append('Content-Type: %s' % get_content_type(filename))
-        L.append('')
-        L.append(value)
-    L.append('--' + BOUNDARY + '--')
-    L.append('')
-    body = CRLF.join(L)
-    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+        lines.append('--' + boundary)
+        lines.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
+        lines.append('Content-Type: %s' % get_content_type(filename))
+        lines.append('')
+        lines.append(value)
+    lines.append('--' + boundary + '--')
+    lines.append('')
+    body = '\r\n'.join(lines)
+    content_type = 'multipart/form-data; boundary=%s' % boundary
     return content_type, body
 
 def get_content_type(filename):
@@ -206,13 +193,12 @@ class UploadRobot:
         # don't upload if we're in debug mode
         if not debug:
             wikipedia.output(u'Uploading file to %s...' % self.targetSite)
-            response, returned_html = post_multipart(self.targetSite.hostname(),
+            response, returned_html = post_multipart(self.targetSite,
                                   self.targetSite.upload_address(),
                                   formdata.items(),
                                   (('wpUploadFile', encodedFilename, contents),),
                                   cookies = self.targetSite.cookies()
                                   )
-            returned_html = returned_html.decode(self.targetSite.encoding())
             # There are 2 ways MediaWiki can react on success: either it gives
             # a 200 with a success message, or it gives a 302 (redirection).
             # Do we know how the "success!" HTML page should look like?

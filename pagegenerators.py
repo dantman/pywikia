@@ -352,6 +352,79 @@ def PreloadingGenerator(generator, pageNumber=60):
         for refpage in somePages:
             yield refpage
 
+class GeneratorFactory:
+    """
+    This factory is responsible for processing command line arguments
+    that are used many scripts and that determine on which pages
+    to work on.
+    """
+    def __init__(self):
+        pass
+
+    def handleArg(self, arg):
+        if arg.startswith('-filelinks'):
+            if len(arg) == 10:
+                fileLinksPageTitle = wikipedia.input(u'Links to which image page should be processed?')
+            else:
+                fileLinksPageTitle = arg[11:]
+            fileLinksPage = wikipedia.Page(wikipedia.getSite(), 'Image:' + fileLinksPageTitle)
+            return FileLinksGenerator(fileLinksPage)
+        elif arg.startswith('-file'):
+            if len(arg) >= 6:
+                textfilename = arg[6:]
+            return TextfilePageGenerator(textfilename)
+        elif arg.startswith('-cat'):
+            if len(arg) == 4:
+                categoryname = wikipedia.input(u'Please enter the category name:')
+            else:
+                categoryname = arg[5:]
+            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
+            return CategorizedPageGenerator(cat)
+        elif arg.startswith('-subcat'):
+            if len(arg) == 7:
+                categoryname = wikipedia.input(u'Please enter the category name:')
+            else:
+                categoryname = arg[8:]
+            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
+            return CategorizedPageGenerator(cat, recurse = True)
+        elif arg.startswith('-ref'):
+            if len(arg) == 4:
+                referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
+            else:
+                referredPageTitle = arg[5:]
+            referredPage = wikipedia.Page(wikipedia.getSite(), referredPageTitle)
+            return ReferringPageGenerator(referredPage)
+        elif arg.startswith('-links'):
+            if len(arg) == 6:
+                linkingPageTitle = wikipedia.input(u'Links from which page should be processed?')
+            else:
+                linkingPageTitle = arg[7:]
+            linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
+            return LinkedPageGenerator(linkingPage)
+        elif arg.startswith('-start'):
+            if len(arg) == 6:
+                firstPageTitle = wikipedia.input(u'At which page do you want to start?')
+            else:
+                firstPageTitle = arg[7:]
+            namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
+            firstPageTitle = wikipedia.Page(wikipedia.getSite(), firstPageTitle).titleWithoutNamespace()
+            return AllpagesPageGenerator(firstPageTitle, namespace)
+        elif arg.startswith('-new'):
+            if len(arg) >=5:
+              return NewpagesPageGenerator(number = int(arg[5:]))
+            else:
+              return NewpagesPageGenerator(number = 60)
+        elif arg.startswith('-google'):
+            if len(arg) == 8:
+                googleQuery = wikipedia.input(u'What do you want to search for?')
+            else:
+                googleQuery = arg[8:]
+            return GoogleSearchPageGenerator(googleQuery)
+        else:
+            return None
+
+# This class was written before GeneratorFactory. It was intended for the same
+# purpose, but it is not used anywhere.
 class CommandLineGenerator(object):
     """Make a generator by parsing command line arguments."""
     def __init__(self):
@@ -364,7 +437,7 @@ class CommandLineGenerator(object):
             sys.exit(1)
         self.genclass = (newclass, kw)
         self.start = None
-              
+
     def handleArgs(self, args):
         unhandledArgs = []
         for arg in args:
