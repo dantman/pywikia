@@ -20,8 +20,8 @@ import config
 
 def AllpagesPageGenerator(start ='!', namespace = None):
     """
-    Using the Allpages special page, retrieve all articles, load them (60 at
-    a time) using XML export, and yield title/text pairs.
+    Using the Allpages special page, retrieve all articles' titles, and yield
+    page objects.
     """
     if namespace==None:
         namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
