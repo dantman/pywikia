@@ -7,7 +7,7 @@ Syntax: python delete.py [-category categoryName]
 
 Command line options:
 
--category:   Delete all pages in the given category.
+-cat:        Delete all pages in the given category.
 -links:      Delete all pages linked from a given page.
 -file:       Delete all pages listed in a text file.
 -ref:        Delete all pages referring from a given page.
@@ -19,7 +19,7 @@ Examples:
 
 Delete everything in the category "To delete" without prompting.
 
-    python delete.py -category:"To delete" -always
+    python delete.py -cat:"To delete" -always
 """
 #
 # Distributed under the terms of the MIT license.
@@ -108,12 +108,12 @@ def main():
                 summary = wikipedia.input(u'Enter a reason for the deletion:')
             else:
                 summary = arg[len('-summary:'):]
-        elif arg.startswith('-category'):
+        elif arg.startswith('-cat'):
             doCategory = True
-            if len(arg) == len('-category'):
+            if len(arg) == len('-cat'):
                 pageName = wikipedia.input(u'Enter the category to delete from:')
             else:
-                pageName = arg[len('-category:'):]
+                pageName = arg[len('-cat:'):]
         elif arg.startswith('-links'):
             doLinks = True
             if len(arg) == len('-links'):
