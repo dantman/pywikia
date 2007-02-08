@@ -264,6 +264,9 @@ copyright_check_in_source_yahoo = False
 # Limit number of queries for page.
 copyright_max_query_for_page = 25
 
+# Skip a number specified of queries
+copyright_skip_query = 0
+
 # Number of attempts on connection error.
 copyright_connection_tries = 10
 

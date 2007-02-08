@@ -17,6 +17,7 @@ You can run the bot with the following commandline parameters:
 -y           - Use Yahoo! search engine
 -ny          - Do not use Yahoo!
 -maxquery    - Stop after a specified number of queries for page (default: 25)
+-skipquery   - Skip a number specified of queries
 -new
 
 -output      - Append results to a specified file (default: 'copyright/output.txt')
@@ -330,8 +331,10 @@ def query(lines = [], max_query_len = 1300):
                 n_query += 1
                 #wikipedia.output(search_words)
                 if config.copyright_max_query_for_page and n_query > config.copyright_max_query_for_page:
-                    print "Max query limit for page reached"
+                    wikipedia.output(u"Max query limit for page reached")
                     return output
+                if config.copyright_skip_query > n_query:
+                    continue
                 if len(search_words) > max_query_len:
                     search_words = search_words[:max_query_len]
                     consecutive = False
@@ -565,7 +568,7 @@ def main():
     for arg in wikipedia.handleArgs():
         #if arg.startswith('-repeat'):
         #    repeat = True
-        elif arg.startswith('-y'):
+        if arg.startswith('-y'):
             config.copyright_yahoo = True
         elif arg.startswith('-g'):
             config.copyright_google = True
@@ -579,6 +582,9 @@ def main():
         elif arg.startswith('-maxquery'):
             if len(arg) >= 10:
                 config.copyright_max_query_for_page = int(arg[10:])
+        elif arg.startswith('-skipquery'):
+            if len(arg) >= 11:
+                config.copyright_skip_query = int(arg[11:])
         elif arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
@@ -597,7 +603,6 @@ def main():
             generator = genFactory.handleArg(arg)
             if generator:
                 gen = generator
-
 
     if PageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]
