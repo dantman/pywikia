@@ -105,7 +105,6 @@ def CategoryPartPageGenerator(category, start = None):
         path = site.get_address(category.urlname())
         if start:
             path = path + '&from=%s' % wikipedia.Page(site, start).urlname()
-            print path
             wikipedia.output(u'Getting [[%s]] starting at %s...'
                                % (category.title(), start))
         else:
