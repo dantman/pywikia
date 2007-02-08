@@ -2877,7 +2877,7 @@ class Site(object):
         throttle = True
         seen = set()
         while True:
-            path = self.shortpages_address()
+            path = self.shortpages_address(n = number)
             get_throttle()
             html = self.getUrl(path)
             entryR = re.compile(ur'<li>\(<a href=".+?" title=".+?">hist</a>\) ‎<a href=".+?" title="(?P<title>.+?)">.+?</a> ‎\[(?P<length>\d+)(.+?)\]</li>')
