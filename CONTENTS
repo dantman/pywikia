@@ -179,7 +179,7 @@ wiktionarytest.py      : Unit tests for wiktionary.py
 
 
 
-External software can be used with pywikipediabot:
+External software can be used with PyWikipediaBot:
 
   * Win32com library for use with wikicomserver.py
   * Pydot, Pyparsing and Graphviz for use with interwiki_graph.py
@@ -187,6 +187,12 @@ External software can be used with pywikipediabot:
   * PyGoogle to access Google Web API and PySearch to access Yahoo! Search
     Web Services for use with copyright.py and pagegenerators.py
   * MySQLdb to access MySQL database for use with pagegenerators.py
+
+PyWikipediaBot makes use of some modules that are part of python, but that
+are not installed by default on some Linux distributions:
+  * python-xml (required to parse XML via SaX2)
+  * python-celementtree (recommended if you use XML dumps)
+  * python-tkinter (optional, used by some experimental GUI stuff)
 
 
 More precise information, and a list of the options that are available for
