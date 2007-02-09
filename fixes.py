@@ -91,7 +91,7 @@ fixes = {
             (r'\[(http://[^\|\] ]+?)\s*\|\s*([^\|\]]+?)\]', r'[\1 \2]'), # external link and description separated by a dash.
             # Attention: while this is a mistake in most cases, there are some valid URLs that contain dashes.
             (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),    # wiki link closed by single bracket
-            (r'{{([^}]+?)}(?!})',       r'{{\1}}'),      # template closed by single bracket
+            (r'{{([^{}]+?)}(?!})',       r'{{\1}}'),      # template closed by single bracket
         ],
         'exceptions': [
             r'http://.*?object=tx\|', # regular dash in URL
