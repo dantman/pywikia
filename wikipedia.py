@@ -2247,9 +2247,14 @@ def interwikiFormat(links, insite = None):
     if not links:
         return ''
     # Security check: site may not refer to itself.
-    for pl in links.values():
-        if pl.site() == insite:
-            raise ValueError("Trying to add interwiki link to self")
+    #
+    # Disabled because MediaWiki was changed so that such links appear like
+    # normal links, and some people accidentally use them for normal links.
+    # While such links are bad style, they are not worth crashing the bot.
+    #
+    #for pl in links.values():
+    #    if pl.site() == insite:
+    #        raise ValueError("Trying to add interwiki link to self")
     s = []
     ar = links.keys()
     ar.sort()
