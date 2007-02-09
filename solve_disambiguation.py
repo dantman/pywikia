@@ -789,7 +789,8 @@ def main():
     # if the -file argument is used, page titles are dumped in this array.
     # otherwise it will only contain one page.
     generator = None
-    # if -file is not used, this temporary array is used to read the page title.
+    # This temporary array is used to read the page title if one single
+    # page to work on is specified by the arguments.
     pageTitle = []
     primary = False
     main_only = False
