@@ -48,7 +48,7 @@ You can run the bot with the following commandline parameters:
                iterate over all user pages starting at User:M, use
                -start:User:M.
 -always      - Don't prompt you for each replacement
--recursive   - Recourse replacement until possible.
+-recursive   - Recurse replacement until possible.
 -nocase      - Use case insensitive regular expressions.
 -allowoverlap - When occurences of the pattern overlap, replace all of them.
                Warning! Don't use this option if you don't know what you're
@@ -136,7 +136,6 @@ class XmlDumpReplacePageGenerator:
         self.xmlFilename = xmlFilename
         self.replacements = replacements
         self.exceptions = exceptions
-        self.recursive = recursive
     
     def __iter__(self):
         import xmlreader
