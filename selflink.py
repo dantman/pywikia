@@ -75,8 +75,6 @@ class SelflinkBot:
 
     def __init__(self, generator):
         self.generator = generator
-
-    def run(self):
         linktrail = wikipedia.getSite().linktrail()
         # The regular expression which finds links. Results consist of four groups:
         # group title is the target page title, that is, everything before | or ].
@@ -84,14 +82,12 @@ class SelflinkBot:
         # group label is the alternative link title, that's everything between | and ].
         # group linktrail is the link trail, that's letters after ]] which are part of the word.
         # note that the definition of 'letter' varies from language to language.
-        linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
-        # how many bytes should be displayed around the current link
-        context = 90
-        moreContext = 400
-        comment = wikipedia.translate(wikipedia.getSite(), msg)
-        wikipedia.setAction(comment)
+        self.linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
 
-        for page in self.generator:
+    def treat(self, page):
+            # how many bytes should be displayed around the current link
+            context = 90
+            moreContext = 400
             # Show the title of the page where the link was found.
             # Highlight the title in purple.
             colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
@@ -101,7 +97,7 @@ class SelflinkBot:
                 text = oldText
                 curpos = 0
                 while curpos < len(text):
-                    m = linkR.search(text, pos = curpos)
+                    m = self.linkR.search(text, pos = curpos)
                     if not m:
                         break
                     # Make sure that next time around we will not find this same hit.
@@ -117,14 +113,14 @@ class SelflinkBot:
                         # at the end of the link, reset the color to default
                         colors = [None for c in text[max(0, m.start() - context) : m.start()]] + [12 for c in text[m.start() : m.end()]] + [None for c in text[m.end() : m.end() + context]]
                         wikipedia.output(text[max(0, m.start() - context) : m.end() + context], colors = colors)
-                        choice = wikipedia.inputChoice(u'What shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'context?'], ['U', 'b', 's', '?'], 'u')
+                        choice = wikipedia.inputChoice(u'What shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'more context'], ['U', 'b', 's', 'm'], 'u')
                         print
                         if choice != 's':
                             new = m.group('label') or m.group('title')
                             new += m.group('linktrail')
                             if choice == 'u':
                                 text = text[:m.start()] + new + text[m.end():]
-                            elif choice == '?':
+                            elif choice == 'm':
                                 colors = [None for c in text[max(0, m.start() - moreContext) : m.start()]] + [12 for c in text[m.start() : m.end()]] + [None for c in text[m.end() : m.end() + moreContext]]
                                 wikipedia.output(text[max(0, m.start() - moreContext) : m.end() + moreContext], colors = colors)
                                 choice = wikipedia.inputChoice(u'What shall be done with this selflink?',  ['unlink', 'make bold', 'skip'], ['U', 'b', 's'], 'u')
@@ -149,6 +145,13 @@ class SelflinkBot:
                 wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
             except wikipedia.LockedPage:
                 wikipedia.output(u"Page %s is locked?!" % page.aslink())
+
+    def run(self):
+        comment = wikipedia.translate(wikipedia.getSite(), msg)
+        wikipedia.setAction(comment)
+
+        for page in self.generator:
+            self.treat(page)
 
 def main():
     #page generator
