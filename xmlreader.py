@@ -233,8 +233,9 @@ class XmlDump(object):
     Represents an XML dump file. Reads the local file at initialization,
     parses it, and offers access to the resulting XmlEntries via a generator.
     
-    NOTE: This used to be done by a SAX parser, but this solution with regular
-    expressions is about 10 to 20 times faster.
+    NOTE: This used to be done by a SAX parser, but the solution with regular
+    expressions is about 10 to 20 times faster. The cElementTree version is
+    again much, much faster than the regex solution.
     """
     def __init__(self, filename):
         self.filename = filename
@@ -243,6 +244,7 @@ class XmlDump(object):
         '''Return a generator that will yield XmlEntry objects'''
         print 'Reading XML dump...'
         if not 'iterparse' in globals():
+            wikipedia.output(u'NOTE: cElementTree not found. Using slower fallback solution. Consider installing the python-celementtree package.')
             return self.regex_parse()
         else:
             return self.new_parse()
@@ -293,6 +295,9 @@ class XmlDump(object):
         Generator which reads some lines from the XML dump file, and
         parses them to create XmlEntry objects. Stops when the end of file is
         reached.
+
+        NOTE: This is very slow. It's only a fallback solution for users who
+        haven't installed cElementTree.
         '''
         Rpage = re.compile(
             '<page>\s*'+
