@@ -155,22 +155,16 @@ class SelflinkBot:
 def main():
     #page generator
     gen = None
+    # This temporary array is used to read the page title if one single
+    # page to work on is specified by the arguments.
     pageTitle = []
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
+
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-start:'):
-            gen = pagegenerators.AllpagesPageGenerator(arg[7:])
-        elif arg.startswith('-ref:'):
-            referredPage = wikipedia.Page(wikipedia.getSite(), arg[5:])
-            gen = pagegenerators.ReferringPageGenerator(referredPage)
-        elif arg.startswith('-links:'):
-            linkingPage = wikipedia.Page(wikipedia.getSite(), arg[7:])
-            gen = pagegenerators.LinkedPageGenerator(linkingPage)
-        elif arg.startswith('-file:'):
-            gen = pagegenerators.TextfilePageGenerator(arg[6:])
-        elif arg.startswith('-cat:'):
-            cat = catlib.Category(wikipedia.getSite(), arg[5:])
-            gen = pagegenerators.CategorizedPageGenerator(cat)
-        elif arg.startswith('-xml'):
+        if arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
             else:
@@ -189,7 +183,11 @@ AND (old_text LIKE concat('%[[', page_title, ']]%')
 LIMIT 100"""
             gen = pagegenerators.MySQLPageGenerator(query)
         else:
-            pageTitle.append(arg)
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
+            else:
+                pageTitle.append(arg)
 
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
