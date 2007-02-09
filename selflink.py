@@ -31,6 +31,7 @@ will only work on a single page.
 __version__='$Id$'
 
 import wikipedia, pagegenerators, catlib
+import editarticle
 import re, sys
 
 # Summary messages in different languages
@@ -85,36 +86,52 @@ class SelflinkBot:
         self.linkR = re.compile(r'\[\[(?P<title>[^\]\|#]*)(?P<section>#[^\]\|]*)?(\|(?P<label>[^\]]*))?\]\](?P<linktrail>' + linktrail + ')')
 
     def handleNextLink(self, page, text, match, context = 100):
+        """
+        Returns a tuple (text, jumpToBeginning).
+        text is the unicode string after the current link has been processed.
+        jumpToBeginning is a boolean which specifies if the cursor position
+        should be reset to 0. This is required after the user has edited the
+        article.
+        """
         # ignore interwiki links and links to sections of the same page as well as section links
         if not match.group('title') or page.site().isInterwikiLink(match.group('title')) or match.group('section'):
-            return text
+            return text, False
 
         linkedPage = wikipedia.Page(page.site(), match.group('title'))
         # Check whether the link found is to the current page itself.
         if linkedPage != page:
             # not a self-link
-            return text
+            return text, False
         else:
             # at the beginning of the link, start red color.
             # at the end of the link, reset the color to default
             colors = [None for c in text[max(0, match.start() - context) : match.start()]] + [12 for c in text[match.start() : match.end()]] + [None for c in text[match.end() : match.end() + context]]
             wikipedia.output(text[max(0, match.start() - context) : match.end() + context], colors = colors)
-            choice = wikipedia.inputChoice(u'\nWhat shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'more context'], ['U', 'b', 's', 'm'], 'u')
+            choice = wikipedia.inputChoice(u'\nWhat shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'edit', 'more context'], ['U', 'b', 's', 'e', 'm'], 'u')
             wikipedia.output(u'')
 
             if choice == 's':
                 # skip this link
-                return text
+                return text, False
+            elif choice == 'e':
+                editor = editarticle.TextEditor()
+                newText = editor.edit(text, jumpIndex = match.start())
+                # if user didn't press Cancel
+                if newText:
+                    return newText, True
+                else:
+                    return text, True
+            elif choice == 'm':
+                # show more context by recursive self-call
+                return self.handleNextLink(page, text, match, context = context + 100)
             else:
                 new = match.group('label') or match.group('title')
                 new += match.group('linktrail')
                 if choice == 'u':
-                    return text[:match.start()] + new + text[match.end():]
-                elif choice == 'b':
-                    return text[:match.start()] + "'''" + new + "'''" + text[match.end():]
+                    return text[:match.start()] + new + text[match.end():], False
                 else:
-                    # show more context by recursive self-call
-                    return self.handleNextLink(page, text, match, context = context + 100)
+                    # make bold
+                    return text[:match.start()] + "'''" + new + "'''" + text[match.end():], False
     
     def treat(self, page):
         # Show the title of the page where the link was found.
@@ -131,7 +148,9 @@ class SelflinkBot:
                     break
                 # Make sure that next time around we will not find this same hit.
                 curpos = match.start() + 1
-                text = self.handleNextLink(page, text, match)
+                text, jumpToBeginning = self.handleNextLink(page, text, match)
+                if jumpToBeginning:
+                    curpos = 0
 
             if oldText == text:
                 wikipedia.output(u'No changes necessary.')
