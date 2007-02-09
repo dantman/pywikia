@@ -94,13 +94,12 @@ class RedirectGenerator:
                 print '%i pages read...' % readPagesCount
             # if self.namespace != -1 and self.namespace != entry.namespace:
                 # continue
-            m = redirR.search(entry.text)
+            m = redirR.match(entry.text)
             if m:
                 target = m.group(1)
                 # There might be redirects to another wiki. Ignore these.
                 for code in wikipedia.getSite().family.langs.keys():
                     if target.startswith('%s:' % code) or target.startswith(':%s:' % code):
-                        # TODO: doesn't seem to work
                         wikipedia.output(u'NOTE: Ignoring %s which is a redirect to %s:' % (entry.title, code))
                         target = None
                         break

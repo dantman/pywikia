@@ -2640,10 +2640,6 @@ class Site(object):
                 self._validlanguages += [language]
 
     def postForm(self, address, predata, sysop = False):
-        data = urlencode(tuple(predata))
-        return self.postData(address, data, sysop = sysop)
-
-    def postData(self, address, data, contentType = 'application/x-www-form-urlencoded', sysop = False):
         """
         Posts the given form data to the given address at this site.
         address is the absolute path without hostname.
@@ -2652,11 +2648,22 @@ class Site(object):
         response object and data is a Unicode string containing the
         body of the response.
         """
+        data = urlencode(tuple(predata))
+        return self.postData(address, data, sysop = sysop)
+
+    def postData(self, address, data, contentType = 'application/x-www-form-urlencoded', sysop = False):
+        """
+        Posts the given data to the given address at this site.
+        address is the absolute path without hostname.
+        data is an ASCII string. (or isn't it?)
+        Returns a (response, data) tuple where response is the HTTP
+        response object and data is a Unicode string containing the
+        body of the response.
+        """
 
         # TODO: add the authenticate stuff here
 
         # Encode all of this into a HTTP request
-
         conn = httplib.HTTPConnection(self.hostname())
 
         conn.putrequest('POST', address)
@@ -3122,13 +3129,16 @@ class Site(object):
         """
         Regular expression recognizing redirect pages
         """
-        redirKeywords = [u'redirect']
         try:
-            redirKeywords += self.family.redirect[self.lang]
+            redirKeywords = [u'redirect'] + self.family.redirect[self.lang]
+            redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
         except KeyError:
-            pass
-        txt = '(?:'+'|'.join(redirKeywords)+')'
-        return re.compile(r'\#'+txt+'[^[]*\[\[(.*?)(\]|\|)', re.IGNORECASE)
+            # no localized keyword for redirects
+            redirKeywordsR = r'redirect'
+        # A redirect starts with hash (#), followed by a keyword, then 
+        # arbitrary stuff, then a wikilink. The link target ends before
+        # either a | or a ].
+        return re.compile(r'#' + redirKeywordsR + '.*?\[\[(.*?)(?:\]|\|)', re.IGNORECASE)
 
     def category_namespace(self):
         return self.family.category_namespace(self.lang)
