@@ -110,7 +110,7 @@ class User:
         address = self.site.block_address()
         response, data = self.site.postForm(address, predata, sysop = True)
 
-        if response.status != 302:
+        if data:
             # TODO: i18n
             if u'is already blocked' in data:
                 raise AlreadyBlockedError
