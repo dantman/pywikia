@@ -1567,7 +1567,7 @@ class Page(object):
                 data = u''
             else:
                 response, data = self.site().postForm(address, predata, sysop = True)
-            if data != u'':
+            if data:
                 if mediawiki_messages.get('actioncomplete') in data:
                     output(u'Deletion successful.')
                     return True
@@ -1630,13 +1630,13 @@ class Page(object):
                 data = ''
             else:
                 data, response = self.site().postForm(address, predata, sysop = True)
-       
-            if data == u'':
+
+            if not response:
                 output(u'(Un)protection successful.')
                 return True
             else:
                 #Normally, we expect a 302 with no data, so this means an error
-                output(u'Protection failed:.')
+                output(u'Protection failed:')
                 output(data)
                 return False
 
