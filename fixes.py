@@ -73,6 +73,10 @@ fixes = {
             #(u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
         ]
     },
+    # Do NOT run this automatically!
+    # Recommendation: First run syntax2 automatically, afterwards
+    # run syntax manually, carefully checking that you're not breaking
+    # anything.
     'syntax': {
         'regex': True,
         'msg': {
@@ -86,12 +90,52 @@ fixes = {
                'sr':u'Бот: Поправка вики синтаксе',
               },
         'replacements': [
-            (r'\[\[(http://.+?)\]\]',   r'[\1]'),        # external link in double brackets
-            (r'\[\[(http://.+?)\]',   r'[\1]'),          # external starting with double bracket
-            (r'\[(http://[^\|\] ]+?)\s*\|\s*([^\|\]]+?)\]', r'[\1 \2]'), # external link and description separated by a dash.
-            # Attention: while this is a mistake in most cases, there are some valid URLs that contain dashes.
-            (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),    # wiki link closed by single bracket
-            (r'{{([^{}]+?)}(?!})',       r'{{\1}}'),      # template closed by single bracket
+            # external link in double brackets
+            (r'\[\[(http://[^\]]+?)\]\]',   r'[\1]'),
+            # external link starting with double bracket
+            (r'\[\[(http://.+?)\]',   r'[\1]'),
+            # external link and description separated by a dash.
+            # ATTENTION: while this is a mistake in most cases, there are some
+            # valid URLs that contain dashes!
+            (r'\[(http://[^\|\] ]+?)\s*\|\s*([^\|\]]+?)\]', r'[\1 \2]'),
+            # wiki link closed by single bracket.
+            # ATTENTION: There are some false positives, for example
+            # Brainfuck code examples or MS-DOS parameter instructions.
+            # There are also sometimes better ways to fix it than
+            # just putting an additional ] after the link.
+            (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),
+            # template closed by single bracket
+            # ATTENTION: There are some false positives, especially in
+            # mathematical context or program code.
+            (r'{{([^{}]+?)}(?!})',       r'{{\1}}'),
+        ],
+        'exceptions': [
+            r'http://.*?object=tx\|', # regular dash in URL
+        ]
+    },
+    # The same as syntax, but restricted to replacements that should
+    # be safe to run automatically.
+    'syntax-safe': {
+        'regex': True,
+        'msg': {
+               'de':u'Bot: Korrigiere Wiki-Syntax',
+               'en':u'Bot: Fixing wiki syntax',
+               'fr':u'Bot: Corrige wiki-syntaxe',
+               'he':u'בוט: מתקן תחביר ויקי',
+               'ia':u'Robot: Reparation de syntaxe wiki',
+               'lt':u'robotas: Taisoma wiki sintaksė',
+               'pt':u'Bot: Corrigindo sintaxe wiki',
+               'sr':u'Бот: Поправка вики синтаксе',
+              },
+        'replacements': [
+            # external link in double brackets
+            (r'\[\[(http://[^\]]+?)\]\]',   r'[\1]'),
+            # external link starting with double bracket
+            (r'\[\[(http://.+?)\]',   r'[\1]'),
+             # external link and description separated by a dash, with
+             # whitespace in front of the dash, so that it is clear that
+             # the dash is not a legitimate part of the URL.
+            (r'\[(http://[^\|\] ]+?)\s+\|\s*([^\|\]]+?)\]', r'[\1 \2]'),
         ],
         'exceptions': [
             r'http://.*?object=tx\|', # regular dash in URL
