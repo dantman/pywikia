@@ -541,8 +541,9 @@ class Family(family.Family):
             'no': self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
-            'vi': self.alphabetic_revised
-            }
+            'vi': self.alphabetic_revised,
+            'yi': ['en','he']
+        }
 
         self.obsolete = {'dk':'da',
                     'minnan':'zh-min-nan',
@@ -550,7 +551,8 @@ class Family(family.Family):
                     'jp':'ja',
                     'tokipona':None,
                     'zh-tw':'zh',
-                    'zh-cn':'zh'}
+                    'zh-cn':'zh'
+        }
             
         # Language codes of the largest wikis. They should be roughly sorted
         # by size.
