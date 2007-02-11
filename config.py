@@ -116,7 +116,10 @@ ring_bell = True
 # Linux/Unix terminals.
 # Set this to False if you're using Linux and your tty doesn't support
 # ANSI colors.
-colorized_output = sys.stdout.isatty()
+try:
+  colorized_output = sys.stdout.isatty()
+except:
+  colorized_output = False
 
 ############## EXTERNAL EDITOR SETTINGS ##############
 # The command for the editor you want to use. If set to None, a simple Tkinter
