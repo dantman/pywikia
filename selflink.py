@@ -24,6 +24,12 @@ This script understands various command-line arguments:
     -cat:          used as -cat:category_name, specifies that the robot should
                    work on all pages in the named category.
 
+    -namespace:n - Number of namespace to process. The parameter can be used
+                   multiple times. It works in combination with all other
+                   parameters, except for the -start parameter. If you e.g.
+                   want to iterate over all user pages starting at User:M, use
+                   -start:User:M.
+
 All other parameters will be regarded as a page title; in this case, the bot
 will only work on a single page.
 """
@@ -177,6 +183,9 @@ def main():
     # This temporary array is used to read the page title if one single
     # page to work on is specified by the arguments.
     pageTitle = []
+    # Which namespaces should be processed?
+    # default to [] which means all namespaces will be processed
+    namespaces = []
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
@@ -201,6 +210,8 @@ AND (old_text LIKE concat('%[[', page_title, ']]%')
     OR old_text LIKE concat('%[[', page_title, '|%'))
 LIMIT 100"""
             gen = pagegenerators.MySQLPageGenerator(query)
+        elif arg.startswith('-namespace:'):
+            namespaces.append(int(arg[11:]))
         else:
             generator = genFactory.handleArg(arg)
             if generator:
@@ -214,6 +225,8 @@ LIMIT 100"""
     if not gen:
         wikipedia.showHelp('selflink')
     else:
+        if namespaces != []:
+            gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = SelflinkBot(preloadingGen)
         bot.run()
