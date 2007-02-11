@@ -1482,7 +1482,7 @@ class Page(object):
         edits = self.getVersionHistory()
         users = set()
         for edit in edits:
-            users.add(edit[1])
+            users.add(edit[2])
         return users
 
     def move(self, newtitle, reason = None, movetalkpage = True, sysop = False, throttle = False):
