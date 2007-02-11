@@ -268,7 +268,7 @@ class TemplateRobot:
             else:
                 pattern = re.escape(old)
             pattern = re.sub('_|\\\\ ', '[_ ]', pattern)
-            templateRegex = re.compile(r'\{\{ *([Tt]emplate:|[mM][sS][gG]:)?' + pattern + '\s*(?P<parameters>\|.+?)? *}}', re.DOTALL)
+            templateRegex = re.compile(r'\{\{ *([Tt]emplate:|[mM][sS][gG]:)?' + pattern + '\s*(?P<parameters>\|.+?|) *}}', re.DOTALL)
 
             if self.remove:
                 replacements.append((templateRegex, ''))
