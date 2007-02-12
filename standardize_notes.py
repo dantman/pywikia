@@ -1,16 +1,13 @@
 # -*- coding: utf-8  -*-
 """
 This bot will standardize footnote references. It will retrieve information on
-which pages might need changes either from an SQL dump or a text file, or only
-change a single page.
+which pages might need changes either from an SQL dump (no longer supported)
+or a text file, or only change a single page.
 
 At present it converts to [[Wikipedia:Footnote3]] format (ref/note).
 
 You can run the bot with the following commandline parameters:
 
--sql         - Retrieve information from a local SQL dump (cur table, see
-               http://download.wikimedia.org).
-               Argument can also be given as "-sql:filename".
 -file        - Work on all pages given in a local text file.
                Will read any [[wiki link]] and use these articles.
                Argument can also be given as "-file:filename".
@@ -225,7 +222,7 @@ class ReplacePageGenerator:
         """
         mysite = wikipedia.getSite()
         import sqldump
-        dump = sqldump.SQLdump(self.sqlfilename, wikipedia.myencoding())
+        dump = sqldump.SQLdump(self.sqlfilename, wikipedia.getSite().encoding())
         for entry in dump.entries():
             skip_page = False
             if self.namespace != -1 and self.namespace != entry.namespace:

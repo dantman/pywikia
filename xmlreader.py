@@ -317,7 +317,7 @@ class XmlDump(object):
             '</revision>\s*'+
             '</page>',
                 re.DOTALL)
-        f = codecs.open(self.filename, 'r', encoding = wikipedia.myencoding(),
+        f = codecs.open(self.filename, 'r', encoding = wikipedia.getSite().encoding(),
                         errors='replace')
         eof = False
         lines = u''

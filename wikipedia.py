@@ -2414,10 +2414,6 @@ def categoryFormat(categories, insite = None):
 
 # end of category specific code
 
-def myencoding():
-    """The character encoding used by the home wiki"""
-    return getSite().encoding()
-
 def url2link(percentname, insite, site):
     """Convert a url-name of a page into a proper name for an interwiki link
        the argument 'insite' specifies the target wiki
