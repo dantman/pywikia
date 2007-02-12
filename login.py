@@ -167,9 +167,9 @@ class LoginManager:
             # uses, via Unicode. This is the same as wikipedia.input() does with the 
             # username, but input() uses raw_input() instead of getpass().
             self.password = unicode(self.password, config.console_encoding)
-    
-        self.password = self.password.encode(wikipedia.myencoding())
-    
+
+        self.password = self.password.encode(self.site.encoding())
+
         wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
         # Ensure bot policy on the English Wikipedia
         if not self.botAllowed():
