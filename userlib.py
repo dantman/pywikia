@@ -154,7 +154,7 @@ class User:
             'id': blockID,
             'wpUnblockReason': reason,
             'wpBlock': 'Unblock this address',
-            'wpEditToken': token)
+            'wpEditToken': token,
         }
         address = self.site.unblock_address()
 
