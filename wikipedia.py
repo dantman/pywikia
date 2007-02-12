@@ -2653,6 +2653,8 @@ class Site(object):
     def urlEncode(self, query):
         """This can encode a query so that it can be sent as a query using
         a http POST request"""
+        if not query:
+            return None
         l = []
         for key, value in query.iteritems():
             key = urllib.quote(key)
