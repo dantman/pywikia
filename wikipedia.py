@@ -151,16 +151,19 @@ class NoUsername(Error):
     """Username is not in user-config.py"""
 
 class NoPage(Error):
-    """Wikipedia page does not exist"""
+    """Page does not exist"""
 
 class IsRedirectPage(Error):
-    """Wikipedia page is a redirect page"""
+    """Page is a redirect page"""
 
 class IsNotRedirectPage(Error):
-    """Wikipedia page is not a redirect page"""
+    """Page is not a redirect page"""
 
 class LockedPage(Error):
-    """Wikipedia page is locked"""
+    """Page is locked"""
+
+class LockedNoPage(NoPage, LockedPage):
+    """Page does not exist, and creating it is not possible because of a lock."""
 
 class NoSuchEntity(ValueError):
     """No entity exist for this character"""
@@ -545,6 +548,10 @@ class Page(object):
                 # find out if the username or IP has been blocked
                 if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
                     raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
+                # on wikipedia:en, anonymous users can't create new articles. This seems
+                # to be MediaWiki hack, there is no internationalization yet.
+                elif self.site() == Site('en', 'wikipedia') and text.find('Wikipedia does not have an article with this exact title.'):
+                    raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.')
                 else:
                     output( unicode(text) )
                     # We assume that the server is down. Wait some time, then try again.
