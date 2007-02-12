@@ -263,20 +263,13 @@ class Page(object):
                 break
             p = m.group(1)
             lowerNs = p.lower()
-            ns = self.site().family.getCanonicalIndex(lowerNs)
+            ns = self.site().getNamespaceIndex(lowerNs)
             if ns:
-                # Canonical namespace - defined as _default in the family files
                 t = m.group(2)
                 self._namespace = ns
                 break
             else:
-                ns = self.site().family.getNsIndex( self.site().lang, lowerNs )
-                if ns:
-                    # Ordinary namespace
-                    t = m.group(2)
-                    self._namespace = ns
-                    break
-                elif lowerNs in self.site().family.alphabetic:
+                if lowerNs in self.site().family.alphabetic:
                     # Interwiki link
                     t = m.group(2)
 
@@ -3350,6 +3343,9 @@ class Site(object):
                     nslist.append(self.family.namespace(self.lang, n))
             _namespaceCache[self] = nslist
             return nslist
+
+    def getNamespaceIndex(self, namespace):
+        return self.family.getNamespaceIndex(self.lang, namespace)
 
     def linktrail(self):
         return self.family.linktrail(self.lang)

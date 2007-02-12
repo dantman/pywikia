@@ -2356,13 +2356,7 @@ class Family:
         found is an existing page, in case the normal regexp does not work."""
         return None
 
-    def getCanonicalIndex(self, namespace):
-        """Given a potential namespace, match it with _default values and return namespace index.
-        Returns None if not found
-        """
-        return self.getNsIndex('_default', namespace)
-
-    def getNsIndex(self, lang, namespace):
+    def getNamespaceIndex(self, lang, namespace):
         """Given a namespace, attempt to match it with all available namespaces.
         Sites may have more than one way to write the same namespace - choose the first one in the list.
         Returns namespace index or None
@@ -2379,4 +2373,10 @@ class Family:
             except (KeyError,AttributeError):
                 # The namespace has no localized name defined
                 pass
-        return None
+        if lang != '_default':
+            # This is not a localized namespace. Try if it
+            # is a default (English) namespace.
+            return self.getNamespaceIndex('_default', namespace)
+        else:
+            # give up
+            return None
