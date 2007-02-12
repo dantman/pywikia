@@ -111,12 +111,12 @@ class LoginManager:
         
         Returns cookie data if succesful, None otherwise."""
     
-        predata = [
-            ("wpName", self.username.encode(self.site.encoding())),
-            ("wpPassword", self.password),
-            ("wpLoginattempt", "Aanmelden & Inschrijven"), # dutch button label seems to work for all wikis
-            ("wpRemember", str(int(bool(remember))))
-        ]
+        predata = {
+            "wpName": self.username.encode(self.site.encoding()),
+            "wpPassword": self.password,
+            "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
+            "wpRemember": str(int(bool(remember)))
+        }
         address = self.site.login_address()
 
         if self.site.hostname() in config.authenticate.keys():
@@ -124,7 +124,7 @@ class LoginManager:
                 "Content-type": "application/x-www-form-urlencoded", 
                 "User-agent": wikipedia.useragent
             }
-            data = wikipedia.urlencode(tuple(predata))
+            data = self.site.urlEncode(predata)
             response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data, headers))
             data = response.read()
             wikipedia.cj.save(wikipedia.COOKIEFILE)

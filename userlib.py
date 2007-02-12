@@ -95,17 +95,17 @@ class User:
         wikipedia.output(u"Blocking [[User:%s]]..." % self.name)
 
         boolStr = ['0','1']
-        predata = [
-            ('wpBlockAddress', self.name),
-            ('wpBlockExpiry', 'other'),
-            ('wpBlockOther', expiry),
-            ('wpBlockReason', reason),
-            ('wpAnonOnly', boolStr[anonOnly]),
-            ('wpCreateAccount', boolStr[noSignup]),
-            ('wpEnableAutoblock', boolStr[enableAutoblock]),
-            ('wpBlock', 'Block this user'),
-            ('wpEditToken', token)
-        ]
+        predata = {
+            'wpBlockAddress': self.name,
+            'wpBlockExpiry': 'other',
+            'wpBlockOther': expiry,
+            'wpBlockReason': reason,
+            'wpAnonOnly': boolStr[anonOnly],
+            'wpCreateAccount': boolStr[noSignup],
+            'wpEnableAutoblock': boolStr[enableAutoblock],
+            'wpBlock': 'Block this user',
+            'wpEditToken': token
+        }
 
         address = self.site.block_address()
         response, data = self.site.postForm(address, predata, sysop = True)
@@ -150,12 +150,12 @@ class User:
 
         token = self.site.getToken(self, sysop = True)
 
-        predata = [
-            ('id', blockID),
-            ('wpUnblockReason', reason),
-            ('wpBlock', 'Unblock this address'),
-            ('wpEditToken', token),
-        ]
+        predata = {
+            'id': blockID,
+            'wpUnblockReason': reason,
+            'wpBlock': 'Unblock this address',
+            'wpEditToken': token)
+        }
         address = self.site.unblock_address()
 
         response, data = self.site.postForm(address, predata, sysop = True)

@@ -1012,30 +1012,31 @@ class Page(object):
         comment = comment.encode(self.site().encoding())
         # Encode the text into the right encoding for the wiki
         text = text.encode(self.site().encoding())
-        predata = [
-            ('wpSave', '1'),
-            ('wpSummary', comment),
-            ('wpTextbox1', text)]
+        predata = {
+            'wpSave': '1',
+            'wpSummary': comment,
+            'wpTextbox1': text
+        }
         # Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions
         if newPage:
-            predata.append(('wpEdittime', ''))
-            predata.append(('wpStarttime', ''))
+            predata['wpEdittime'] = ''
+            predata['wpStarttime'] = ''
         else:
-            predata.append(('wpEdittime', self._editTime))
-            predata.append(('wpStarttime', self._startTime))
+            predata['wpEdittime'] = self._editTime
+            predata['wpStarttime'] = self._startTime
         # Pass the minorEdit and watchArticle arguments to the Wiki.
         if minorEdit:
-            predata.append(('wpMinoredit', '1'))
+            predata['wpMinoredit'] = '1'
         if watchArticle:
-            predata.append(('wpWatchthis', '1'))
+            predata['wpWatchthis'] = '1'
         # Give the token, but only if one is supplied.
         if token:
-            predata.append(('wpEditToken', token))
+            predata['wpEditToken'] = token
 
         # Sorry, single-site exception...
         if self.site().fam().name == 'loveto' and self.site().language() == 'recipes':
-            predata.append(('masteredit','1'))
+            predata['masteredit'] = '1'
 
         if newPage:
             output(u'Creating page %s' % self.aslink(forceInterwiki=True))
@@ -1045,7 +1046,7 @@ class Page(object):
         if self.site().hostname() in config.authenticate.keys():
             predata.append(("Content-type","application/x-www-form-urlencoded"))
             predata.append(("User-agent", useragent))
-            data = urlencode(tuple(predata))
+            data = self.site().urlEncode(predata)
             response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
             # I'm not sure what to check in this case, so I just assume things went ok.
             # Very naive, I agree.
@@ -1511,21 +1512,21 @@ class Page(object):
         address = self.site().move_address()
         self.site().forceLogin(sysop = sysop)
         token = self.site().getToken(self, sysop = sysop)
-        predata = [
-            ('wpOldTitle', self.title().encode(self.site().encoding())),
-            ('wpNewTitle', newtitle.encode(self.site().encoding())),
-            ('wpReason', reason.encode(self.site().encoding())),
-            ]
+        predata = {
+            'wpOldTitle': self.title().encode(self.site().encoding()),
+            'wpNewTitle': newtitle.encode(self.site().encoding()),
+            'wpReason': reason.encode(self.site().encoding()),
+        }
         if movetalkpage:
-            predata.append(('wpMovetalk','1'))
+            predata['wpMovetalk'] = '1'
         else:
-            predata.append(('wpMovetalk','0'))
+            predata['wpMovetalk'] = '0'
         if token:
-            predata.append(('wpEditToken', token))
+            predata['wpEditToken'] = token
         if self.site().hostname() in config.authenticate.keys():
-            predata.append(("Content-type","application/x-www-form-urlencoded"))
-            predata.append(("User-agent", useragent))
-            data = urlencode(tuple(predata))
+            predata['Content-type'] = 'application/x-www-form-urlencoded'
+            predata['User-agent'] = useragent
+            data = self.site().urlEncode(predata)
             response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
             data = ''
         else:
@@ -1568,16 +1569,17 @@ class Page(object):
             self.site().forceLogin(sysop = True)
 
             token = self.site().getToken(self, sysop = True)
-            predata = [
-                ('wpReason', reason),
-                ('wpConfirm', '1'),
-                ('wpConfirmB', '1')]
+            predata = {
+                'wpReason': reason,
+                'wpConfirm': '1',
+                'wpConfirmB': '1'
+            }
             if token:
-                predata.append(('wpEditToken', token))
+                predata['wpEditToken'] = token
             if self.site().hostname() in config.authenticate.keys():
-                predata.append(("Content-type","application/x-www-form-urlencoded"))
-                predata.append(("User-agent", useragent))
-                data = urlencode(tuple(predata))
+                predata['Content-type'] = 'application/x-www-form-urlencoded'
+                predata['User-agent'] = useragent
+                data = self.site().urlEncode(predata)
                 response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
                 data = u''
             else:
@@ -1630,17 +1632,17 @@ class Page(object):
             if edit == 'none': edit = ''
             if move == 'none': move = ''
 
-            predata = [
-                ('mwProtect-level-edit', edit),
-                ('mwProtect-level-move', move),
-                ('mwProtect-reason', reason)
-                ]
+            predata = {
+                'mwProtect-level-edit': edit,
+                'mwProtect-level-move': move,
+                'mwProtect-reason': reason
+            }
             if token:
-                predata.append(('wpEditToken', token))
+                predata['wpEditToken'] = token
             if self.site().hostname() in config.authenticate.keys():
-                predata.append(("Content-type","application/x-www-form-urlencoded"))
-                predata.append(("User-agent", useragent))
-                data = urlencode(tuple(predata))
+                predata["Content-type"] = "application/x-www-form-urlencoded"
+                predata["User-agent"] = useragent
+                data = self.site().urlEncode(predata)
                 response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
                 data = ''
             else:
@@ -1891,19 +1893,19 @@ class GetAll(object):
             print pagenames
         # convert Unicode string to the encoding used on that wiki
         pagenames = pagenames.encode(self.site.encoding())
-        predata = [
-            ('action', 'submit'),
-            ('pages', pagenames),
-            ('curonly', 'True'),
-        ]
+        predata = {
+            'action': 'submit',
+            'pages': pagenames,
+            'curonly': 'True',
+        }
         # Slow ourselves down
         get_throttle(requestsize = len(self.pages))
         # Now make the actual request to the server
         now = time.time()
         if self.site.hostname() in config.authenticate.keys():
-            predata.append(("Content-type","application/x-www-form-urlencoded"))
-            predata.append(("User-agent", useragent))
-            data = urlencode(tuple(predata))
+            predata["Content-type"] = "application/x-www-form-urlencoded"
+            predata["User-agent"] = useragent
+            data = self.site.urlEncode(predata)
             response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
             data = response.read()
         else:
@@ -1948,18 +1950,7 @@ def setUserAgent(s):
 # Default User-agent
 setUserAgent('PythonWikipediaBot/1.0')
 
-def urlencode(query):
-    """This can encode a query so that it can be sent as a query using
-       a http POST request"""
-    l=[]
-    for k, v in query:
-        k = urllib.quote(k)
-        v = urllib.quote(v)
-        l.append(k + '=' + v)
-    return '&'.join(l)
-
 # Mechanics to slow down page download rate.
-
 class Throttle(object):
     def __init__(self, mindelay = config.minthrottle, maxdelay = config.maxthrottle, multiplydelay = True):
         """Make sure there are at least 'delay' seconds between page-gets
@@ -2659,6 +2650,16 @@ class Site(object):
             if not language[0].upper()+language[1:] in self.namespaces():
                 self._validlanguages += [language]
 
+    def urlEncode(self, query):
+        """This can encode a query so that it can be sent as a query using
+        a http POST request"""
+        l = []
+        for key, value in query.iteritems():
+            key = urllib.quote(key)
+            value = urllib.quote(value)
+            l.append(key + '=' + value)
+        return '&'.join(l)
+
     def postForm(self, address, predata, sysop = False):
         """
         Posts the given form data to the given address at this site.
@@ -2668,7 +2669,7 @@ class Site(object):
         response object and data is a Unicode string containing the
         body of the response.
         """
-        data = urlencode(tuple(predata))
+        data = self.urlEncode(predata)
         return self.postData(address, data, sysop = sysop)
 
     def postData(self, address, data, contentType = 'application/x-www-form-urlencoded', sysop = False):
@@ -2797,9 +2798,9 @@ class Site(object):
         while not retrieved:
             try:
                 if self.hostname() in config.authenticate.keys():
-                    f = urllib2.urlopen('http://%s%s' % (self.hostname(), path), data)
+                    f = urllib2.urlopen('http://%s%s' % (self.hostname(), path), self.urlEncode(data))
                 else:
-                    f = uo.open('http://%s%s' % (self.hostname(), path), data)
+                    f = uo.open('http://%s%s' % (self.hostname(), path), self.urlEncode(data))
                 retrieved = True
             except KeyboardInterrupt:
                 raise
@@ -2807,7 +2808,7 @@ class Site(object):
                 if retry:
                     # We assume that the server is down. Wait some time, then try again.
                     output(u"%s" % e)
-                    output(u"WARNING: Could not load 'http://%s%s'. Maybe the server or your connection is down. Retrying in %i minutes..." % (self.hostname(), path, retry_idle_time))
+                    output(u"WARNING: Could not open 'http://%s%s'. Maybe the server or your connection is down. Retrying in %i minutes..." % (self.hostname(), path, retry_idle_time))
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
