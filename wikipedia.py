@@ -200,7 +200,7 @@ reNamespace = re.compile("^(.+?) *: *(.*)$")
 # The most important thing in this whole module: The Page class
 class Page(object):
     """A page on the wiki."""
-    def __init__(self, site, title, insite = None, tosite = None, defaultNamespace = 0):
+    def __init__(self, site, title, insite = None, defaultNamespace = 0):
         """
         Constructor. Normally called with two arguments:
         Parameters:
@@ -222,10 +222,6 @@ class Page(object):
             site = getSite(site)
         
         self._site = site
-        if tosite:
-            self._tosite = tosite
-        else:
-            self._tosite = getSite() # Default to home wiki
 
         if not insite:
             insite = site
@@ -1656,8 +1652,8 @@ class Page(object):
 
 class ImagePage(Page):
     # a Page in the Image namespace
-    def __init__(self, site, title = None, insite = None, tosite = None):
-        Page.__init__(self, site, title, insite, tosite)
+    def __init__(self, site, title = None, insite = None):
+        Page.__init__(self, site, title, insite)
         self._imagePageContents = None
 
     def getImagePageContents(self):

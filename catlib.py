@@ -35,8 +35,8 @@ class Category(wikipedia.Page):
     """Subclass of Page that has some special tricks that only work for
        category: pages"""
 
-    def __init__(self, site, title = None, insite = None, tosite = None, sortKey = None):
-        wikipedia.Page.__init__(self, site = site, title = title, insite = insite, tosite = tosite)
+    def __init__(self, site, title = None, insite = None, sortKey = None):
+        wikipedia.Page.__init__(self, site = site, title = title, insite = insite)
         self.sortKey = sortKey
         if self.namespace() != 14:
             raise ValueError(u'BUG: %s is not in the category namespace!' % title)
