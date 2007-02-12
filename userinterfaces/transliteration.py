@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-def trans(char, default = '?'):
+def trans(char, default = '?', prev = '-'):
     # Give a transliteration for char, or default if none is known
     # Accented etc. Latin characters
     if char in u"ÀÁÂẦẤẪẨẬÃĀĂẰẮẴẶẲȦǠẠḀȂĄǍẢ":
@@ -692,7 +692,7 @@ def trans(char, default = '?'):
     if char == u"ئ":
         return u"y'"
     if char == u"◌":
-        return u"-" # consonant doubling, no good transliteration for it
+        return prev
     if char in u"◌◌":
         return u"" # indicates absence of vowels
     # Arabic vowels
@@ -1057,7 +1057,7 @@ def trans(char, default = '?'):
     if char == u"・·":
         return u" "
     if char == u"々仝ヽヾゝゞ〱〲〳〵〴〵":
-        return u"2" # Repeat previous character - elsewhere - is used in a similar meaning
+        return prev
     if char in u"〃『』《》":
         return u'"'
     if char in u"「」〈〉〘〙〚〛":
@@ -1077,7 +1077,7 @@ def trans(char, default = '?'):
     if char == u"っ":
         return u":"
     if char == u"ー":
-        return u"-"
+        return u"h"
     if char == u"゛":
         return u"'"
     if char == u"゜":
@@ -1087,7 +1087,7 @@ def trans(char, default = '?'):
     if char == u"、":
         return u", "
     if char == u"・":
-        return u"*"
+        return u" "
     if char == u"〆":
         return u"shime"
     if char == u"〜":
@@ -1118,11 +1118,6 @@ def trans(char, default = '?'):
         return u"."
     if char in u"，、":
         return u","
-    
-    
-    
-    
-    
 
     # Georgian
     if char == u"ა":
@@ -1496,23 +1491,5 @@ def trans(char, default = '?'):
         return u";"
     if char == u"՛":
         return u""
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     return default

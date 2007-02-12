@@ -135,27 +135,21 @@ class UI:
             # We need to reflect this growth in size by shifting the color list
             # entries. This variable counts how much the size has grown.
             sizeIncrease = 0
+            prev = "-"
             for i in xrange(len(codecedText)):
                 # work on characters that couldn't be encoded, but not on
                 # original question marks.
                 if codecedText[i] == '?' and text[i] != u'?':
-                    transliterated = transliteration.trans(text[i], default = '?')
-                    if transliterated != '?':
-                        # transliteration was successful. The replacement
-                        # could consist of multiple letters.
-                        transliteratedText += transliterated
-                        transLength = len(transliterated)
-                        # mark the transliterated letters in yellow.
-                        color = colors[i + sizeIncrease] or 14
-                        colors = colors[:i + sizeIncrease] + [color] * transLength + colors[i + sizeIncrease + 1:]
-                        # memorize if we replaced a single letter by multiple letters.
-                        sizeIncrease += transLength - 1
-                    else :
-                        # transliteration failed
-                        transliteratedText += '?'
-                        # mark the replacement character in yellow.
-                        color = colors[i + sizeIncrease] or 14
-                        colors = colors[:i + sizeIncrease] + [color] + colors[i + sizeIncrease + 1:]
+                    transliterated = transliteration.trans(text[i], default = '?', prev = prev)
+                    # transliteration was successful. The replacement
+                    # could consist of multiple letters.
+                    transliteratedText += transliterated
+                    transLength = len(transliterated)
+                    # mark the transliterated letters in yellow.
+                    color = colors[i + sizeIncrease] or 14
+                    colors = colors[:i + sizeIncrease] + [color] * transLength + colors[i + sizeIncrease + 1:]
+                    # memorize if we replaced a single letter by multiple letters.
+                    sizeIncrease += transLength - 1
                 else:
                     # no need to try to transliterate.
                     transliteratedText += codecedText[i]
