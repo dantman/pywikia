@@ -94,16 +94,23 @@ fixes = {
             (r'\[\[(?P<url>http://[^\]]+?)\]\]',   r'[\g<url>]'),
             # external link starting with double bracket
             (r'\[\[(?P<url>http://.+?)\]',   r'[\g<url>]'),
+            # external link ending with double bracket.
+            # do not change weblinks that contain wiki links inside
+            # inside the description
+            (r'\[(?P<url>http://[^\[\]]+?)\]\](?!\])',   r'[\g<url>]'),
             # external link and description separated by a dash.
             # ATTENTION: while this is a mistake in most cases, there are some
             # valid URLs that contain dashes!
-            (r'\[(?P<url>http://[^\|\] ]+?)\s*\|\s*(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
+            (r'\[(?P<url>http://[^\|\]\s]+?) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
             # wiki link closed by single bracket.
             # ATTENTION: There are some false positives, for example
             # Brainfuck code examples or MS-DOS parameter instructions.
             # There are also sometimes better ways to fix it than
             # just putting an additional ] after the link.
+            # wiki link opened by single bracket.
+            # ATTENTION: same as above.
             (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),
+            (r'(?<!\[)\[([^\[\]]+?)\]\](?!\])',  r'[[\1]]'),
             # template closed by single bracket
             # ATTENTION: There are some false positives, especially in
             # mathematical context or program code.
@@ -111,7 +118,8 @@ fixes = {
         ],
         'exceptions': [
             r'http://.*?object=tx\|', # regular dash in URL
-            r'http://www.allmusic.com', # regular dash in URL
+            r'http://.*?allmusic\.com', # regular dash in URL
+            r'http://.*?allmovie\.com', # regular dash in URL
         ]
     },
     # The same as syntax, but restricted to replacements that should
@@ -133,14 +141,16 @@ fixes = {
             (r'\[\[(?P<url>http://[^\]]+?)\]\]',   r'[\g<url>]'),
             # external link starting with double bracket
             (r'\[\[(?P<url>http://.+?)\]',   r'[\g<url>]'),
+            # external link with forgotten closing bracket
+            (r'\[(?P<url>http://[^\]\s]+)\r\n',   r'[\g<url>]\r\n'),
              # external link and description separated by a dash, with
              # whitespace in front of the dash, so that it is clear that
              # the dash is not a legitimate part of the URL.
-            (r'\[(?P<url>http://[^\|\] ]+?)\s+\|\s*(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
+            (r'\[(?P<url>http://[^\|\]\r\n]+?) +\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
             # dash in external link, where the correct end of the URL can
             # be detected from the file extension. It is very unlikely that
             # this will cause mistakes.
-            (r'\[(?P<url>http://[^\|\] ]+?(\.pdf|\.html|\.htm|\.php))\s*\|\s*(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
+            (r'\[(?P<url>http://[^\|\] ]+?(\.pdf|\.html|\.htm|\.php|\.asp|\.aspx)) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
         ],
     },
     'case-de': { # German upper / lower case issues
