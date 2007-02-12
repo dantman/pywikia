@@ -1185,7 +1185,7 @@ class Page(object):
         """
         result = []
         try:
-            thistxt = removeLanguageLinks(self.get())
+            thistxt = removeLanguageLinks(self.get(), self.site())
         except NoPage:
             raise
             #return []
@@ -2636,8 +2636,8 @@ class Site(object):
         # in initialization instead of each time it is used.
         self._validlanguages = []
         for language in self.languages():
-            if not language[0].upper()+language[1:] in self.namespaces():
-                self._validlanguages += [language]
+            if not language[0].upper() + language[1:] in self.namespaces():
+                self._validlanguages.append(language)
 
     def urlEncode(self, query):
         """This can encode a query so that it can be sent as a query using
