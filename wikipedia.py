@@ -294,7 +294,11 @@ class Page(object):
                         otherlang = self.site().lang
                         if lowerNs in ['commons']:
                             otherlang = lowerNs
-                        self._site = getSite(otherlang, self.site().family.known_families[lowerNs])
+                        familyName = self.site().family.known_families[lowerNs]
+                        try:
+                            self._site = getSite(otherlang, familyName)
+                        except ValueError:
+                            raise NoPage('%s is not a local page on %s, and the %s family is not supported by PyWikipediaBot!' % (title, self.site(), familyName))
                         t = m.group(2)
                 else:
                     # If there's no recognized interwiki or namespace,
@@ -3119,9 +3123,10 @@ class Site(object):
         first, rest = s.split(':',1)
         # interwiki codes are case-insensitive
         first = first.lower().strip()
-        if first in self.validLanguageLinks() or (
+        if not self.getNamespaceIndex(first) and (
+                first in self.validLanguageLinks() or (
                 first in self.family.known_families
-                and self.family.known_families[first] != self.family.name):
+                and self.family.known_families[first] != self.family.name)):
             return True
         return self.isInterwikiLink(rest)
 
