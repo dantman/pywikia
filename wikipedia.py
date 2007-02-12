@@ -269,7 +269,7 @@ class Page(object):
                 self._namespace = ns
                 break
             else:
-                if lowerNs in self.site().family.alphabetic:
+                if lowerNs in self.site().family.langs.keys():
                     # Interwiki link
                     t = m.group(2)
 
