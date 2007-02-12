@@ -548,6 +548,13 @@ class Page(object):
                 # find out if the username or IP has been blocked
                 if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
                     raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
+                # If there is no text area and the heading is 'View Source',
+                # it is a non-existent page with a title protected via
+                # cascading protection.
+                # See http://en.wikipedia.org/wiki/Wikipedia:Protected_titles
+                # and http://de.wikipedia.org/wiki/Wikipedia:Gesperrte_Lemmata
+                elif text.find(mediawiki_messages.get('viewsource', self.site())) != -1:
+                    raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.')
                 # on wikipedia:en, anonymous users can't create new articles. This seems
                 # to be MediaWiki hack, there is no internationalization yet.
                 elif self.site() == Site('en', 'wikipedia') and text.find('Wikipedia does not have an article with this exact title.'):
@@ -611,6 +618,7 @@ class Page(object):
             elif not nofollow_redirects:
                 raise IsRedirectPage(redirtarget)
         if self.section():
+            # TODO: What the hell is this? Docu please.
             m = re.search("\.3D\_*(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?\_*\.3D" % re.escape(self.section()), sectionencode(text,self.site().encoding()))
             if not m:
                 try:
