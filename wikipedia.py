@@ -554,11 +554,11 @@ class Page(object):
                 # See http://en.wikipedia.org/wiki/Wikipedia:Protected_titles
                 # and http://de.wikipedia.org/wiki/Wikipedia:Gesperrte_Lemmata
                 elif text.find(mediawiki_messages.get('viewsource', self.site())) != -1:
-                    raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.')
+                    raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.' % self.aslink())
                 # on wikipedia:en, anonymous users can't create new articles. This seems
                 # to be MediaWiki hack, there is no internationalization yet.
-                elif self.site() == Site('en', 'wikipedia') and text.find('Wikipedia does not have an article with this exact title.'):
-                    raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.')
+                elif text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
+                    raise LockedNoPage((u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink()))
                 else:
                     output( unicode(text) )
                     # We assume that the server is down. Wait some time, then try again.
