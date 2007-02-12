@@ -20,3 +20,5 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Meta talk', self.namespaces[5]['_default']],
         }
+
+        self.interwiki_forward = 'wikipedia'

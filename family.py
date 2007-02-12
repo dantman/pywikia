@@ -2011,7 +2011,13 @@ class Family:
         # they be replaced. If for example the language with code xx: now should get
         # code yy:, add {'xx':'yy'} to obsolete.
         # If all links to language xx: shall be removed, add {'xx': None}.
-    
+
+        # Some families, e. g. commons and meta, are not multilingual and
+        # forward interlanguage links to another family (wikipedia).
+        # These families can set this variable to the name of the target
+        # family.
+        self.interwiki_forward = None
+
         self.obsolete = {}
         
         # Language codes of the largest wikis. They should be roughly sorted

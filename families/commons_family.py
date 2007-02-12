@@ -28,6 +28,8 @@ class Family(family.Family):
             '_default': [u'Creator talk', self.namespaces[5]['_default']],
         }
 
+        self.interwiki_forward = 'wikipedia'
+
     def version(self, code):
         return "1.8"
     

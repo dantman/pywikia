@@ -3115,8 +3115,14 @@ class Site(object):
         first, rest = s.split(':',1)
         # interwiki codes are case-insensitive
         first = first.lower().strip()
+        # commons: forwards interlanguage links to wikipedia:, etc.
+        if self.family.interwiki_forward:
+            interlangTargetFamily = Family(self.family.interwiki_forward)
+        else:
+            interlangTargetFamily = self.family
         if not self.getNamespaceIndex(first) and (
-                first in self.validLanguageLinks() or (
+                #first in self.validLanguageLinks() or (
+                first in interlangTargetFamily.langs.keys() or (
                 first in self.family.known_families
                 and self.family.known_families[first] != self.family.name)):
             return True
