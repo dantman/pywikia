@@ -280,6 +280,7 @@ msg = {
     'ka': (u'რობოტი ', u'დამატება', u'წაშლა', u'შეცვლა'),
     'ksh': (u'Bot: ', u'dobëijedonn', u'erußjenumme', u'ußjewääßelt'),
     'lt': (u'robotas ', u'Pridedama', u'Šalinama', u'Keičiama'),
+    'mzn': (u'Rebot ', u'Biyeshten', u'Bayten', u'Hekărden'),
     'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
     'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
     'no': (u'robot ', u'Tilføyer', u'Fjerner', u'Endrer'),
