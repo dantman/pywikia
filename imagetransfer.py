@@ -213,13 +213,16 @@ class ImageTransferBot:
                     todo = wikipedia.input(u"To end uploading, press enter:")
                     if not todo:
                         break
-                    todo=int(todo)
+                    todo = int(todo)
                 if todo in range(len(imagelist)):
-                    self.transferImage(imagelist[todo], debug = False)
+                    if imagelist[todo].fileIsOnCommons():
+                        wikipedia.output(u'The image is already on Wikimedia Commons.')
+                    else:
+                        self.transferImage(imagelist[todo], debug = False)
                     # remove the selected image from the list
                     imagelist = imagelist[:todo] + imagelist[todo + 1:]
                 else:
-                    print("No such image number.")
+                    wikipedia.output(u'No such image number.')
 
 def main():
     # if -file is not used, this temporary array is used to read the page title.
