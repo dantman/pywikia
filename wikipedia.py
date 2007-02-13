@@ -30,7 +30,7 @@ Page: A MediaWiki page
     interwiki (*)         : The interwiki links from the page (list of Pages)
     categories (*)        : The categories the page is in (list of Pages)
     linkedPages (*)       : The normal pages linked from the page (list of Pages)
-    imagelinks (*)        : The pictures on the page (list of Pages)
+    imagelinks (*)        : The pictures on the page (list of ImagePages)
     templates (*)         : All templates referenced on the page (list of strings)
     getRedirectTarget (*) : The page the page redirects to
     isDisambig (*)        : True if the page is a disambiguation page
@@ -1221,7 +1221,7 @@ class Page(object):
 
     def imagelinks(self, followRedirects = False, loose = False):
         """
-        Gives the images the page shows, as a list of Page objects.
+        Gives the images the page shows, as a list of ImagePage objects.
         This includes images in galleries.
         If loose is set to true, this will find anything that looks like it could be an image.
         This is useful for finding, say, images that are passed as parameters to templates.
@@ -1230,7 +1230,9 @@ class Page(object):
         # Find normal images
         for page in self.linkedPages():
             if page.isImage():
-                results.append(page)
+                # convert Page object to ImagePage object
+                imagePage = ImagePage(page.site(), page.title())
+                results.append(imagePage)
         # Find images in galleries
         pageText = self.get()
         galleryR = re.compile('<gallery>.*?</gallery>', re.DOTALL)
