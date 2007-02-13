@@ -271,6 +271,7 @@ class Family(family.Family):
             'fr': u'Projet',
             'it': u'Progetto',
             'lmo': u'Purtaal',
+            'pl': u'Wikiprojekt',
         }
             
         self.namespaces[103] = {
@@ -282,6 +283,7 @@ class Family(family.Family):
             'fr': u'Discussion Projet',
             'it': u'Discussioni progetto',
             'lmo': u'Descüssiun Purtaal',
+            'pl': u'Dyskusja Wikiprojektu',
         }
         
         self.namespaces[104] = {
