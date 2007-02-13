@@ -2106,7 +2106,8 @@ def replaceExceptNowikiAndComments(text, old, new):
 def replaceExceptMathNowikiAndComments(text, old, new, caseInsensitive = False, allowoverlap = False):
     """
     Replaces old by new in text, skipping occurences of old within nowiki tags
-    and HTML comments.  If caseInsensitive is true, then use case insensitivity
+    and HTML comments, as well as math, pre, and includeonly tags.
+    If caseInsensitive is true, then use case insensitivity
     in the regex matching. If allowoverlap is true, overlapping occurences are
     all replaced (watch out when using this, it might lead to infinite loops!).
 
@@ -2121,7 +2122,7 @@ def replaceExceptMathNowikiAndComments(text, old, new, caseInsensitive = False, 
             old = re.compile(old, re.IGNORECASE)
         else:
             old = re.compile(old)
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<math>.*?</math>|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
+    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<math>.*?</math>|<pre>.*?</pre>|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
     # How much of the text we have looked at so far
     index = 0
     while True:
