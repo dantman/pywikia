@@ -251,7 +251,7 @@ def cleanwikicode(text):
     # exclude <ref> notes
     text = re.sub ("<ref.*?>.*?</ref>", "", text)
     # exclude wikitable
-    text = re.sub('^(\||{[^{]).*', "", text)
+    text = re.sub('(?m)^[ \t]*({\||[|!]).*', "", text)
     # remove URL
     text = re.sub('https?://[\w/.,;:@&=%#\\\?_!~*\'|()\"+-]+', ' ', text)
     # remove Image tags
