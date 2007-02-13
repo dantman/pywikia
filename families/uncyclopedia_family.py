@@ -248,18 +248,20 @@ class Family(family.Family):
         return self.langs[code]
 
     def path(self, code):
+        if code=='ar':
+           return '/index.php'
         if code=='fi':
            return '/hikipedia/index.php'
         if code=='hu':
-           return '/w/index.php'
+           return '/index.php'
         if code=='ja':
-           return '/w/index.php'
+           return '/index.php'
         if code=='no':
            return '/index.php'
         if code=='sv':
            return '/w/index.php'
         if code=='zh-tw':
-           return '/w/index.php'
+           return '/index.php'
         return '/wiki/index.php'
 
     def version(self, code):
