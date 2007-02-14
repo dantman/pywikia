@@ -30,12 +30,14 @@ import pagegenerators
 # Summary messages for deleting from a category.
 msg_simple_delete = {
     'en': u'Bot: Deleting a list of files.',
+    'pl': u'Robot usuwa pliki z listy.',
 }
 msg_delete_category = {
     'de': u'Bot: Lösche alle Seiten in Kategorie %s',
     'en': u'Robot - Deleting all pages from category %s',
     'fr': u'Bot: Supprime toutes pages de la catégorie %s',
     'lt': u'robotas: Trinami visi puslapiai iš kategorijos %s',
+    'en': u'Robot usuwa wszystkie artykuły z kategorii %s',
     'pt': u'Bot: Apagando todas as páginas da categoria %s',
 }
 msg_delete_links = {
@@ -43,6 +45,7 @@ msg_delete_links = {
     'en': u'Robot - Deleting all pages linked from %s',
     'fr': u'Bot: Supprime toutes pages liées depuis %s',
     'lt': u'robotas: Trinami visi puslapiai į kuriuos yra nuoroda iš %s',
+    'pl': u'Robot usuwa wszystkie artykuły zlinkowane z %s',
     'pt': u'Bot: Apagando todas as páginas ligadas a %s',
 }
 msg_delete_ref = {
@@ -50,10 +53,12 @@ msg_delete_ref = {
     'en': u'Robot - Deleting all pages referring from %s',
     'fr': u'Bot: Supprime toutes pages référant à %s',
     'lt': u'robotas: Trinami visi puslapiai rodantys į %s',
+    'pl': u'Robot usuwa wszystkie artykuły odnoszące się do %s',
     'pt': u'Bot: Apagando todas as páginas afluentes a %s',
 }
 msg_delete_images = {
     'en': u'Robot - Deleting all images on page %s',
+    'pl': u'Robot usuwa wszystkie obrazy w artykule %s',
     'pt': u'Bot: Apagando todas as imagens da página %s',
 }
 

@@ -106,7 +106,7 @@ def main():
                     else:
                         wikipedia.output(u"WARNING!!! %s already exists but redirects elsewhere!" % goal)
                 except wikipedia.IsNotRedirectPage:
-                    wikipedia.output(u"WARNING!!! Page %s already exists and is not a redirect. Please check page!" % goal0
+                    wikipedia.output(u"WARNING!!! Page %s already exists and is not a redirect. Please check page!" % goal)
                 except wikipedia.NoPage:
                     change=''
                     if p.isRedirectPage():

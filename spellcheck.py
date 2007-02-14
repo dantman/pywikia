@@ -62,6 +62,7 @@ msg={
     'he':u'בדיקת איות באמצעות בוט',
     'ia':u'Correction de orthographia per robot',
     'nl':u'Spellingscontrole',
+    'pl':u'Wspomagane przez robota sprawdzanie pisowni',
     'pt':u'Bot de correção ortográfica',
 }
 

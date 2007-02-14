@@ -49,6 +49,7 @@ class ImageRobot:
         'fr': u'Bot: Remplace image %s par %s',
         'he': u'רובוט - מחליף את התמונה %s בתמונה %s',
         'lt': u'robotas: vaizdas %s keičiamas į %s',
+        'pl': u'Robot zamienia obraz %s na %s',
         'pt': u'Bot: Alterando imagem %s para %s',
     }
 
@@ -59,6 +60,7 @@ class ImageRobot:
         'fr': u'Bot: Enleve image %s',
         'he': u'רובוט - מסיר את התמונה %s',
         'lt': u'robotas: Šalinamas vaizdas %s',
+        'pl': u'Robot usuwa obraz %s',
         'pt': u'Bot: Alterando imagem %s',
     }
 

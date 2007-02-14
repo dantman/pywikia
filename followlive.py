@@ -69,6 +69,13 @@ templates = {
               u'{{wb}}' :{ 'msg' : '{wb}','pos' : 'top'},
               },
 
+        'pl':{u'{{ek}}'         : { 'msg' : '[[Kategoria:Ekspresowe kasowanko|ek]]', 'pos':'top'},
+              u'{{dopracować}}' : { 'msg' : 'Dopracować', 'pos':'top'},
+              u'{{linki}}'      : { 'msg' : 'Linki wewnętrzne do dodania', 'pos':'top'},
+              u'{{źródła}}'     : { 'msg' : 'W artykule brakuje źródeł', 'pos':'top'},
+              u'{{stub}}'       : { 'msg' : 'stub (zalążek)', 'pos':'bottom'},
+              },
+        
         'pt': {u'{{wikificar}}' : {'msg': '{{wikificar}}', 'pos':'top'},
                u'{{reciclar}}'  : {'msg': '{{reciclar}}', 'pos':'top'},
                u'{{lixo|~~~~}}' : {'msg': '{{lixo}}', 'pos':'top'},
@@ -83,6 +90,7 @@ blanking = {
     'en': 'blanked, content was "%s"',
     'fr': u'blanchit, le contenu était "%s"',
     'he': 'רוקן, תוכן היה "%s"',
+    'pl': u'wyczyszczony - zawartością było "%s"',
 }
 
 # do nothing if this is in it
@@ -92,6 +100,7 @@ done = {
     'fr':('{{suppression}}', u'{{à vérifier}}'),
     'he':('{{מחק}}', '{{פירושונים}}', '{{הצבעת מחיקה}}'),
     'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}'),
+    'pl':('{{ek}}', '{{dopracować}}', '{{linki}}', '{{źródła}}', '{{stub}}'),
     'pt':('{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}'),
     }
 

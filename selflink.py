@@ -48,6 +48,7 @@ msg = {
           'he':u'רובוט: מסיר קישורים של הדף לעצמו',
           'fr':u'Bot: Enlève autoliens',
           'en':u'Robot: Removing selflinks',
+          'en':u'Robot automatycznie usuwa linki zwrotne',
           'pt':u'Bot: Retirando link para o próprio artigo'
        }    
 

@@ -102,12 +102,16 @@ class SpeedyRobot:
         'pt': {
             u'_default':      u'Apagando página por [[Wikipedia:Páginas para eliminar|eliminação rápida]]',
         },
+        'pl': {
+            u'_default':      u'Usuwanie artykułu zgodnie z zasadami [[Wikipedia:Ekspresowe kasowanko|ekspresowego kasowania]]',
+        }
     }
 
     # Default reason for deleting a talk page.
     talk_deletion_msg={
         'de':u'Verwaiste Diskussionsseite',
         'en':u'Orphaned talk page',
+        'pl':u'Osierocona strona dyskusji',
         'pt':u'Página de discussão órfã',
     }
 

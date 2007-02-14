@@ -45,6 +45,7 @@ msg = {
     'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Interwiki za izabrane članke za [[%s:%s]]',
     'lt': u'Pavyzdinis straipsnis [[%s:%s]]',
+    'pl': u'Link do artykułu wyróżnionego [[%s:%s]]',
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
     'sr': u'Међувики за изабране чланке за [[%s:%s]]',
 }
@@ -64,6 +65,7 @@ template = {
     'lt': 'Link FA',
     'lv': 'Link FA',
     'no': 'Link UA',
+    'pl': 'Link FA',
     'pt': 'Link FA',
     'ru': 'Link FA',
     'sl': 'Link FA',

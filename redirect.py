@@ -51,6 +51,7 @@ msg_double={
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     'ksh':u'Bot: Dubbel Ömlëijdong fottjemaat',
     'lt':u'robotas: Taisomas dvigubas peradresavimas',
+    'pl':u'Robot naprawia podwójne przekierowanie',
     'pt':u'Bot: Corrigido duplo redirecionamento',
     'sr':u'Бот: Поправка дуплих преусмерења',
     }
@@ -64,6 +65,7 @@ reason_broken={
     'ia':u'Robot: Scopo del redirection non existe',
     'ksh':u'Bot: Dė Ömlëijdong jingk ennet Liiere',
     'lt':u'robotas: Peradresavimas į niekur',
+    'pl':u'Robot: cel przekierowania nie istnieje',
     'pt':u'Bot: Redirecionamento não existe',
     'sr':u'Бот: Преусмерење не постоји',
     }

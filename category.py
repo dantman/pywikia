@@ -79,6 +79,7 @@ msg_add={
     'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
     'lt':u'robotas: Pridedama [[Kategorija:%s]]',
     'no':u'Robot: Legger til [[Kategori:%s]]',
+    'pl':u'Robot dodaje [[Kategoria:%s]]',
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
     'sr':u'Бот: Додаје [[Категорија:%s]]',
     'sv':u'Robot: Lägger till [[Kategori:%s]]',
@@ -98,6 +99,7 @@ msg_change={
     'nl':u'Bot: Wijziging %s',
     'no':u'Robot: Endrer %s',
     'pt':u'Bot: Modificando [[Categoria:%s]]',
+    'pl':u'Robot przenosi %s',
     'sr':u'Бот: Измена категорије %s',
     'sv':u'Robot: Ändrar %s',
     }
@@ -111,6 +113,7 @@ deletion_reason_move = {
     'lt':u'robotas: Kategorija pervadinta į %s',
     'no':u'Robot: Kategorien ble flyttet til %s',
     'pt':u'Bot: Categoria %s foi movida',
+    'pl':u'Robot przenosi kategorię do %s',
     'sr':u'Бот: Категорија премештена у %s',
     'sv':u'Robot: Kategori flyttades till %s',
     }

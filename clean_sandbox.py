@@ -13,18 +13,21 @@ import time
 content = {
     'de': u'{{Bitte erst NACH dieser Zeile schreiben! (Begrüßungskasten)}}\r\n',
     'en': u'{{Please leave this line alone (sandbox heading)}}\n <!-- Hello! Feel free to try your formatting and editing skills below this line. As this page is for editing experiments, this page will automatically be cleaned every 12 hours. -->',
+    'pl': u'{{Prosimy - NIE ZMIENIAJ, NIE KASUJ, NIE PRZENOŚ tej linijki - pisz niżej}}',
     'pt': u'<!--não apague esta linha-->{{página de testes}}<!--não apagar-->\r\n',
     }
 
 msg = {
     'de': u'Bot: Setze Seite zurück.',
     'en': u'Robot: This page will automatically be cleaned.',
+    'pl': u'Robot czyści brudnopis',
     'pt': u'Bot: Limpeza da página de testes',
     }
     
 sandboxTitle = {
     'de': u'Wikipedia:Spielwiese',
     'en': u'Wikipedia:Sandbox',
+    'pl': u'Wikipedia:Brudnopis',
     'pt': u'Wikipedia:Página de testes',
     }
 

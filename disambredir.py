@@ -126,6 +126,7 @@ try:
     msg = {
         'en': u'Changing redirects on a disambiguation page',
         'nl': u'Verandering van redirects op een doorverwijspagina',
+        'pl': u'Zmiana przekierowań na stronie ujednoznaczającej',
         'pt': u'Arrumando redirects na página de desambiguação',
         }
     start = []

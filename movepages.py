@@ -48,12 +48,14 @@ comment={
     'en': u'Pagemove by bot',
     'he': u'העברת דף באמצעות בוט',
     'fr': u'Page renommée par bot',
+    'pl': u'Przeniesienie artykułu przez robota',
     'pt': u'Página movida por bot',
     }
 
 deletecomment={
     'en': u'Delete page by bot',
     'fr': u'Page supprimée par bot',
+    'pl': u'Usunięcie artykułu przez robota',
     'pt': u'Página apagada por bot',
     }
 

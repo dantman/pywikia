@@ -51,6 +51,7 @@ msg={
     'it': u'Caricamento automatico',
     'ksh': u'Automatesch aanjelaat',
     'nl': u'Geautomatiseerde import',
+    'pl': u'Automatyczny import artykułów',
     'pt': u'Importação automática de artigos'
     }
 
@@ -61,6 +62,7 @@ msg_top={
     'fr': u'attaché en haut',
     'it': u'aggiungo in cima',
     'ksh': u'Automatesch füürjesaz',
+    'pl': u'dodaj na górze',
     'pt': u'adicionado no topo'
     }
 msg_bottom={
@@ -69,6 +71,7 @@ msg_bottom={
     'fr': u'attaché en bas',
     'it': u'aggiungo in fondo',
     'ksh': u'Automatesch aanjehange',
+    'pl': u'dodaj na dole',
     'pt': u'adicionando no fim'
     }
 msg_force={
@@ -77,6 +80,7 @@ msg_force={
     'fr': u'texte existant écrasé',
     'it': u'sovrascritto il testo esistente',
     'ksh': u'Automatesch ußjetuusch',
+    'en': u'aktualny tekst nadpisany',
     'pt': u'sobrescrever texto'
     }
 
