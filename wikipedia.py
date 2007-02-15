@@ -2106,35 +2106,66 @@ def replaceExceptNowikiAndComments(text, old, new):
     return replaceExceptMathNowikiAndComments(text, old, new)
 
 def replaceExceptMathNowikiAndComments(text, old, new, caseInsensitive = False, allowoverlap = False):
+    """ Deprecated. """
+    return replaceExcept(text, old, new, ['nowiki', 'comment', 'math', 'pre'], caseInsensitive, allowoverlap)
+
+def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowoverlap = False):
     """
-    Replaces old by new in text, skipping occurences of old within nowiki tags
-    and HTML comments, as well as math, pre, and includeonly tags.
-    If caseInsensitive is true, then use case insensitivity
-    in the regex matching. If allowoverlap is true, overlapping occurences are
-    all replaced (watch out when using this, it might lead to infinite loops!).
+    Replaces old by new in text, skipping occurences of old e.g. within nowiki
+    tags or HTML comments.
+    If caseInsensitive is true, then use case insensitivity in the regex
+    matching. If allowoverlap is true, overlapping occurences are all replaced
+    (watch out when using this, it might lead to infinite loops!).
 
     Parameters:
-        text - a string
-        old  - a compiled regular expression
-        new  - a string
+        text            - a string
+        old             - a compiled regular expression
+        new             - a string
+        exceptList      - a list of strings which signal what to leave out,
+                          e.g. ['math', 'table', 'template']
         caseInsensitive - a boolean
     """
+    exceptionRegexes = {
+        'comment':     re.compile(r'<!--.*?-->'),
+        'includeonly': re.compile(r'(?is)<includeonly>.*?</includeonly>'),
+        'math':        re.compile(r'(?is)<math>.*?</math>'),
+        'noinclude':   re.compile(r'(?is)<noinclude>.*?</noinclude>'),
+        'nowiki':      re.compile(r'(?is)<nowiki>.*?</nowiki>'),
+        'pre':         re.compile(r'(?ims)^ (.*?)$|<pre>.*?</pre>'),
+        'table':       re.compile(r'(?ims)^{\|.*?^\|}|<table>.*?</table>'),
+        'template':    re.compile(r'(?s)^{{.*?}}'),
+    }
+
+    # if we got a string, compile it as a regular expression
     if type(old) == type('') or type(old) == type(u''):
         if caseInsensitive:
             old = re.compile(old, re.IGNORECASE)
         else:
             old = re.compile(old)
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<math>.*?</math>|<pre>.*?</pre>|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
+    
+    #noTouch = '|'.join([exceptions[name] for name in exceptList])
+    #noTouchR = re.compile(noTouch)
     # How much of the text we have looked at so far
+    dontTouchRegexes = [exceptionRegexes[name] for name in exceptions]
     index = 0
     while True:
         match = old.search(text, index)
         if not match:
+            # nothing left to replace
             break
-        noTouchMatch = nowikiOrHtmlCommentR.search(text, index)
-        if noTouchMatch and noTouchMatch.start() < match.start():
+
+        # check which exception will occur next.
+        nextExceptionMatch = None
+        for dontTouchR in dontTouchRegexes:
+            excMatch = dontTouchR.search(text, index)
+            if excMatch and (
+                    nextExceptionMatch is None or
+                    excMatch.start() < nextExceptionMatch.start()):
+                nextExceptionMatch = excMatch
+
+        if nextExceptionMatch is not None and nextExceptionMatch.start() <= match.start():
             # an HTML comment or text in nowiki tags stands before the next valid match. Skip.
-            index = noTouchMatch.end()
+            index = nextExceptionMatch.end()
         else:
             # We found a valid match. Replace it.
             replace_text = old.sub(new, text[match.start():match.end()])

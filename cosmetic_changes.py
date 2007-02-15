@@ -216,22 +216,17 @@ class CosmeticChangesToolkit:
     def validXhtml(self, text):
         text = wikipedia.replaceExceptNowikiAndComments(text, r'<br>', r'<br />')
         return text
-    
+
     def removeUselessSpaces(self, text):
         result = []
         multipleSpacesR = re.compile('  +')
         spaceAtLineEndR = re.compile(' $')
-        preR = re.compile('<pre', re.IGNORECASE)
-        lines = text.split('\r\n')
-        for line in lines:
-            # don't change fixed-font lines because whitespace matters there.
-            # don't change table and template contents because whitespace is
-            # sometimes used to make them more readable. 
-            if not (line.startswith(' ') or line.startswith('{') or line.startswith('|') or  preR.search(line)):
-                line = wikipedia.replaceExceptMathNowikiAndComments(line, multipleSpacesR, ' ')
-                line = wikipedia.replaceExceptMathNowikiAndComments(line, spaceAtLineEndR, '')
-            result.append(line)
-        return '\r\n'.join(result)
+
+        exceptions = ['comment', 'math', 'nowiki', 'pre', 'table', 'template']
+        text = wikipedia.replaceExcept(text, multipleSpacesR, ' ', exceptions)
+        text = wikipedia.replaceExcept(text, spaceAtLineEndR, '', exceptions)
+
+        return text
 
     def cleanUpSectionHeaders(self, text):
         for level in range(1, 7):
