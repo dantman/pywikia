@@ -51,6 +51,9 @@ botList = {
         'en': u'Wikipedia:Registered bots',
         'simple': u'Wikipedia:Bots',
     },
+    'gentoo': {
+        'en': u'Help:Bots',
+    }
 }
 
 def makepath(path):

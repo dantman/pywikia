@@ -5,7 +5,8 @@ import family, config
 
 __version__ = '$Id$'
 
-# An inofficial Gentoo wiki project
+# An inofficial Gentoo wiki project.
+# Ask for permission at http://gentoo-wiki.com/Help:Bots before running a bot.
 
 class Family(family.Family):
 
