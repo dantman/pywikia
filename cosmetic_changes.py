@@ -248,26 +248,34 @@ class CosmeticChangesBot:
         self.acceptall = acceptall
         # Load default summary message.
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_standalone))
-    
+
+    def treat(self, page):
+        try:
+            # Show the title of the page where the link was found.
+            # Highlight the title in purple.
+            colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
+            wikipedia.output(u'\n>>> %s <<<' % page.title(), colors = colors)
+            ccToolkit = CosmeticChangesToolkit(page.site(), debug = True)
+            changedText = ccToolkit.change(page.get())
+            if changedText != page.get():
+                if not self.acceptall:
+                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                    if choice in ['a', 'A']:
+                        self.acceptall = True
+                if self.acceptall or choice in ['y', 'Y']:
+                    page.put(changedText)
+            else:
+                wikipedia.output('No changes were necessary in %s' % page.title())
+        except wikipedia.NoPage:
+            wikipedia.output("Page %s does not exist?!" % page.aslink())
+        except wikipedia.IsRedirectPage:
+            wikipedia.output("Page %s is a redirect; skipping." % page.aslink())
+        except wikipedia.LockedPage:
+            wikipedia.output("Page %s is locked?!" % page.aslink())
+
     def run(self):
         for page in self.generator:
-            try:
-                ccToolkit = CosmeticChangesToolkit(page.site(), debug = True)
-                changedText = ccToolkit.change(page.get())
-                if changedText != page.get():
-                    if not self.acceptall:
-                        choice = wikipedia.inputChoice(u'Do you want to accept these changes?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                        if choice in ['a', 'A']:
-                            self.acceptall = True
-                    if self.acceptall or choice in ['y', 'Y']:
-                        page.put(changedText)
-            except wikipedia.NoPage:
-                wikipedia.output("Page %s does not exist?!" % page.aslink())
-            except wikipedia.IsRedirectPage:
-                wikipedia.output("Page %s is a redirect; skipping." % page.aslink())
-            except wikipedia.LockedPage:
-                wikipedia.output("Page %s is locked?!" % page.aslink())
-            
+            self.treat(page)
 
 def main():
     #page generator
