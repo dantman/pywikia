@@ -148,23 +148,15 @@ def TextfilePageGenerator(filename=None):
         filename = wikipedia.input(u'Please enter the filename:')
     site = wikipedia.getSite()
     f = codecs.open(filename, 'r', config.textfile_encoding)
-    R = re.compile(ur'\[\[(.+?)\]\]')
+    R = re.compile(ur'\[\[(.+?)(?:\]\]|\|)') # title ends either before | or before ]]
     for pageTitle in R.findall(f.read()):
-        parts = pageTitle.split(':')
-        i = 0
-        try:
-            fam = wikipedia.Family(parts[i], fatal = False)
-            i += 1
-        except:
-            fam = site.family
-        if parts[i] in fam.langs:
-            code = parts[i]
-            i += 1
-        else:
-            code = site.lang
-        pagename = ':'.join(parts[i:])
-        site = wikipedia.getSite(code = code, fam = fam)
-        yield wikipedia.Page(site, pagename)
+        site = wikipedia.getSite()
+        # If the link doesn't refer to this site, the Page constructor
+        # will automatically choose the correct site.
+        # This makes it possible to work on different wikis using a single
+        # text file, but also could be dangerous because you might
+        # inadvertently change pages on another wiki!
+        yield wikipedia.Page(site, pageTitle)
     f.close()
 
 def PagesFromTitlesGenerator(iterable):
