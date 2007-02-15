@@ -874,8 +874,8 @@ class Subject(object):
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
-                            if site != lclSite:
-                                frgnSiteDone = True
+                                if site != lclSite:
+                                    frgnSiteDone = True
                         except LinkMustBeRemoved:
                             notUpdatedSites.append(site)
                 elif not globalvar.strictlimittwo and new.has_key(site) and site != lclSite:
