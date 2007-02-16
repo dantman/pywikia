@@ -251,7 +251,12 @@ except NameError:
 import wikipedia, config, pagegenerators, catlib
 import titletranslate, interwiki_graph
 
-class LinkMustBeRemoved(wikipedia.Error):
+class SaveError(wikipedia.Error):
+    """
+    An attempt to save a page with changed interwiki has failed.
+    """
+
+class LinkMustBeRemoved(SaveError):
     """
     An interwiki link has to be removed, but this can't be done because of user
     preferences or because the user chose not to change the page.
@@ -874,9 +879,9 @@ class Subject(object):
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
-                                if site != lclSite:
-                                    frgnSiteDone = True
-                        except LinkMustBeRemoved:
+                            if site != lclSite:
+                                frgnSiteDone = True
+                        except SaveError:
                             notUpdatedSites.append(site)
                 elif not globalvar.strictlimittwo and new.has_key(site) and site != lclSite:
                     old={}
@@ -891,7 +896,7 @@ class Subject(object):
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
-                        except LinkMustBeRemoved:
+                        except SaveError:
                             notUpdatedSites.append(site)
                         except wikipedia.NoUsername:
                             pass
@@ -904,7 +909,7 @@ class Subject(object):
                         if self.replaceLinks(page, new, bot):
                             # Page was changed
                             updatedSites.append(site)
-                    except LinkMustBeRemoved:
+                    except SaveError:
                         notUpdatedSites.append(site)
         
         # disabled graph drawing for minor problems: it just takes too long 
@@ -923,12 +928,12 @@ class Subject(object):
         if globalvar.localonly:
             # In this case only continue on the Page we started with
             if page != self.originPage:
-                return False
+                raise SaveError
 
         if page.title() != page.sectionFreeTitle():
             # This is not a page, but a subpage. Do not edit it.
             wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % page.aslink(True))
-            return False
+            raise SaveError
         # Show a message in purple.
         text = u"Updating links on page %s." % page.aslink(True)
         colors = [13] * len(text)
@@ -943,7 +948,7 @@ class Subject(object):
             s = "None"
             if pltmp != None: s = pltmp.aslink(True)
             wikipedia.output(u"BUG>>> %s is not in the list of new links! Found %s." % (page.aslink(True), s))
-            return False
+            raise SaveError
         
         # Avoid adding an iw link back to itself
         del new[page.site()]
@@ -955,7 +960,7 @@ class Subject(object):
                 old[page2.site()] = page2
         except wikipedia.NoPage:
             wikipedia.output(u"BUG>>> %s no longer exists?" % page.aslink(True))
-            return False
+            raise SaveError
 
         # Check what needs to get done
         mods, adding, removing, modifying = compareLanguages(old, new, insite = page.site())
@@ -1017,12 +1022,12 @@ class Subject(object):
                             status, reason, data = page.put(newtext, comment = wikipedia.translate(page.site().lang, msg)[0] + mods)
                         except wikipedia.LockedPage:
                             wikipedia.output(u'Page %s is locked. Skipping.' % page.title())
-                            return False
+                            raise SaveError
                         except (wikipedia.EditConflict, wikipedia.SpamfilterError), error:
                             # we can't resolve edit conflicts and spamfilter triggerings
                             # automatically.
                             wikipedia.output(u'ERROR putting page: %s. Giving up.' % error.args[0])
-                            return False
+                            raise SaveError
                         except (socket.error, IOError, wikipedia.PageNotSaved), error:
                             if timeout>3600:
                                 raise
