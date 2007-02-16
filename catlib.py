@@ -273,6 +273,10 @@ class Category(wikipedia.Page):
 	        newtext = matchcfd.sub('',newtext)
             matchcomment = re.compile(r"<!--BEGIN CFD TEMPLATE-->.*<!--END CFD TEMPLATE-->", re.IGNORECASE | re.MULTILINE | re.DOTALL)
             newtext = matchcomment.sub('',newtext)
+            pos = 0
+            while (newtext[pos:pos+1] == "\n"):
+                pos = pos + 1
+            newtext = newtext[pos:]
 	    targetCat.put(newtext, creationSummary)
             return True
     
