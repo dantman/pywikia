@@ -1491,5 +1491,69 @@ def trans(char, default = '?', prev = '-'):
         return u";"
     if char == u"՛":
         return u""
+
+    # Tamil
+    if char == u"க்":
+        return u"k"
+    if char in u"ஙண்ந்ன்":
+        return u"n"
+    if char == u"ச":
+        return u"c"
+    if char == u"ஞ்":
+        return u"ñ"
+    if char == u"ட்":
+        return u"th"
+    if char == u"த":
+        return u"t"
+    if char == u"ப":
+        return u"p"
+    if char == u"ம்":
+        return u"m"
+    if char == u"ய்":
+        return u"y"
+    if char in u"ர்ழ்ற":
+        return u"r"
+    if char in u"ல்ள":
+        return u"l"
+    if char == u"வ்":
+        return u"v"
+    if char == u"ஜ":
+        return u"j"
+    if char == u"ஷ":
+        return u"sh"
+    if char == u"ஸ":
+        return u"s"
+    if char == u"ஹ":
+        return u"h"
+    if char == u"க்ஷ":
+        return u"x"
+    if char == u"அ":
+        return u"a"
+    if char == u"ஆ":
+        return u"aa"
+    if char == u"இ":
+        return u"i"
+    if char == u"ஈ":
+        return u"ii"
+    if char == u"உ":
+        return u"u"
+    if char == u"ஊ":
+        return u"uu"
+    if char == u"எ":
+        return u"e"
+    if char == u"ஏ":
+        return u"ee"
+    if char == u"ஐ":
+        return u"ai"
+    if char == u"ஒ":
+        return u"o"
+    if char == u"ஓ":
+        return u"oo"
+    if char == u"ஔ":
+        return u"au"
+    if char == u"ஃ":
+        return ""
+    
+    
     
     return default
