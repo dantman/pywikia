@@ -3193,6 +3193,8 @@ class Site(object):
         # either a | or a ].
         return re.compile(r'#' + redirKeywordsR + '.*?\[\[(.*?)(?:\]|\|)', re.IGNORECASE)
 
+    # The following methods are for convenience, so that you can access
+    # methods of the Family class easier.
     def category_namespace(self):
         return self.family.category_namespace(self.lang)
 
@@ -3213,6 +3215,9 @@ class Site(object):
 
     def hostname(self):
         return self.family.hostname(self.lang)
+
+    def path(self):
+        return self.family.path(self.lang)
 
     def dbName(self):
         return self.family.dbName(self.lang)
