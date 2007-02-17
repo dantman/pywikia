@@ -41,6 +41,7 @@ __version__='$Id$'
 
 # Summary message for fixing double redirects
 msg_double={
+    'ar':u'روبوت: تصليح تحويلة مزدوجة',
     'br':u'Kempennet adkas doubl gant robot',
     'en':u'Robot: Fixing double redirect',
     'de':u'Bot: Korrigiere doppelten Redirect',
