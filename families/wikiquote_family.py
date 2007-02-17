@@ -17,8 +17,18 @@ class Family(family.Family):
             'zh-cn':'zh.wikiquote.org',
             'zh-tw':'zh.wikiquote.org'
             }
+        self.languages_by_size = [
+                     'en','de','pl','it','sk','ru','pt','bs','bg','sl',
+                     'es','tr','he','zh','id','sv','lt','ja','no','hu',
+                     'el','fa','nl','cs','ku','fi','fr','ar','eo','ca',
+                     'gl','ro','ka','hr','la','uk','da','et','sr','vi',
+                     'sq','ko','eu','th','simple','nn','ast','ang','hi','lb',
+                     'is','ta','az','mr','kn','am','co','ml','cy','wo',
+                     'za','te','kr','qu','uz','tt','ur','af','vo','bm',
+                     'cr','na','nds','ky','su','als','be','ug','gu','zh-min-nan',
+                     'hy','ga','kk','ks','kw','tk',]
         
-        for lang in self.knownlanguages:
+        for lang in self.languages_by_size:            
             self.langs[lang] = lang+'.wikiquote.org'
 
         self.obsolete = {'nb':'no',
