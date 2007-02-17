@@ -276,6 +276,7 @@ ignore_title = {
             u"Wikipedia:Wikiproject Roemeense gemeenten/Doorverwijspagina's",
             u"Gebruiker:Emiel/artikelen",
             u"Wikipedia:Links naar doorverwijspagina's/20060917 dump",
+            u"Wikipedia:Links naar doorverwijspagina's/20061206 dump",
             u'Gebruiker:Waerth/Wikipedia hitsparade.*',
             u'Overleg gebruiker:[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?',
             u'Gebruiker:Lankhorst/Lijst.*',
@@ -313,6 +314,15 @@ ignore_title = {
 
 def firstcap(string):
     return string[0].upper()+string[1:]
+
+def correctcap(link, text):
+    # If text links to a page with title link uncapitalized, uncapitalize link, otherwise capitalize it
+    linkupper = link.title()
+    linklower = linkupper[0].lower() + linkupper[1:]
+    if text.find("[[%s]]"%linklower) > -1 or text.find("[[%s|"%linklower) > -1:
+        return linklower
+    else:
+        return linkupper
 
 class ReferringPageGeneratorWithIgnore:
     def __init__(self, disambPage, primary=False):
@@ -724,20 +734,22 @@ or press enter to quit:""")
                                             % disambPage.title()
                                     )
                         links = disambPage2.linkedPages()
+                        links = [correctcap(l,disambPage2.get()) for l in links]
                     except wikipedia.NoPage:
                         wikipedia.output(u"Page does not exist, using the first link in page %s." % disambPage.title())
-                        links = disambPage.linkedPages()[0:1]
+                        links = disambPage.linkedPages()[:1]
+                        links = [correctcap(l,disambPage.get()) for l in links]
                 else:
                     try:
                         links = disambPage.linkedPages()
+                        links = [correctcap(l,disambPage.get()) for l in links]
                     except wikipedia.NoPage:
                         wikipedia.output(u"Page does not exist, skipping.")
                         return False
             except wikipedia.IsRedirectPage:
                 wikipedia.output(u"Page is a redirect, skipping.")
                 return False
-            for link in links:
-                self.alternatives.append(link.title())
+            self.alternatives += links
         return True
     
     def setSummaryMessage(self, disambPage):
