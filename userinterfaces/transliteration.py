@@ -416,8 +416,11 @@ def trans(char, default = '?', prev = '-'):
         return u"F"
     if char == u"ф":
         return u"f"
-    if char == u"Х":
-        return u"Kh"
+    if char in u"ХΧ":
+        if prev.lower() == prev:
+            return u"Kh"
+        else:
+            return u"KH"
     if char == u"х":
         return u"kh"
     if char == u"Ц":
@@ -773,7 +776,10 @@ def trans(char, default = '?', prev = '-'):
     if char == u"η":
         return u"i"
     if char == u"Θ":
-        return u"Th"
+        if prev.lower() == prev:
+            return u"Th"
+        else:
+            return u"TH"
     if char == u"θ":
         return u"th"
     if char == u"Ι":
@@ -829,7 +835,10 @@ def trans(char, default = '?', prev = '-'):
     if char == u"φ":
         return u"f"
     if char == u"Ψ":
-        return u"Ps"
+        if prev.lower() == prev:
+            return u"Ps"
+        else:
+            return u"PS"
     if char == u"ψ":
         return u"ps"
     if char == u"Ω":
@@ -840,7 +849,10 @@ def trans(char, default = '?', prev = '-'):
     if char == u"ϗ":
         return u"&"
     if char == u"Ϛ":
-        return u"St"
+        if prev.lower() == prev:
+            return u"St"
+        else:
+            return u"ST"
     if char == u"ϛ":
         return u"st"
     if char in u"ϘϞ":
@@ -852,11 +864,17 @@ def trans(char, default = '?', prev = '-'):
     if char == u"ϻ":
         return u"s"
     if char == u"Ϡ":
-        return u"Ss"
+        if prev.lower() == prev:
+            return u"Ss"
+        else:
+            return u"SS"
     if char == u"ϡ":
         return u"ss"
     if char == u"Ϸ":
-        return u"Sh"
+        if prev.lower() == prev:
+            return u"Sh"
+        else:
+            return u"SH"
     if char == u"ϸ":
         return u"sh"
     if char == u"·":
@@ -894,8 +912,6 @@ def trans(char, default = '?', prev = '-'):
         return u"Ó"
     if char == u"ώ":
         return u"ó"
-    
-    
 
     # Japanese (katakana and hiragana)
     if char in u"アあ":
@@ -1552,8 +1568,6 @@ def trans(char, default = '?', prev = '-'):
     if char == u"ஔ":
         return u"au"
     if char == u"ஃ":
-        return ""
-    
-    
+        return ""    
     
     return default

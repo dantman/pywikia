@@ -150,9 +150,12 @@ class UI:
                     colors = colors[:i + sizeIncrease] + [color] * transLength + colors[i + sizeIncrease + 1:]
                     # memorize if we replaced a single letter by multiple letters.
                     sizeIncrease += transLength - 1
+                    if len(transliterated) > 0:
+                        prev = transliterated[-1]
                 else:
                     # no need to try to transliterate.
                     transliteratedText += codecedText[i]
+                    prev = codecedText[i]
             text = transliteratedText
         if newline:
             text += u'\n'
