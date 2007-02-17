@@ -49,7 +49,7 @@ msg={
     'ia':u'Creation o actualisation de categoria:',
     'it':u'La creazione o laggiornamento di categoria:',
     'nl':u'Aanmaak of uitbreiding van categorie:',
-    'en':u'Stworzenie lub aktualizacja kategorii:',
+    'pl':u'Stworzenie lub aktualizacja kategorii:',
     'pt':u'Criando ou atualizando categoria:',
     }
 
