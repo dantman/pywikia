@@ -612,7 +612,7 @@ class Page(object):
                 raise IsRedirectPage(redirtarget)
         if self.section():
             # TODO: What the hell is this? Docu please.
-            m = re.search("\.3D\_*(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?\_*\.3D" % re.escape(self.section()), sectionencode(text,self.site().encoding()))
+            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(self.section()), sectionencode(text,self.site().encoding()))
             if not m:
                 try:
                     self._getexception
@@ -1838,7 +1838,7 @@ class GetAll(object):
         # EditConflict exceptions although there's no conflict.
         pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
         if section:
-            m = re.search("\.3D\_*(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?\_*\.3D" % re.escape(section), sectionencode(text,pl2.site().encoding()))                    
+            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,pl2.site().encoding()))                    
             if not m:
                 try:
                     pl2._getexception
