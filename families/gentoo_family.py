@@ -66,5 +66,8 @@ class Family(family.Family):
     def path(self, code):
         return '/index.php'
 
+    def nicepath(self, code):
+        return '/'
+
     def version(self, code):
         return "1.9alpha"
