@@ -242,7 +242,7 @@ def cleanwikicode(text):
     text = re.sub('&gt;', '>', text)
 
     if exclude_quote:
-        text = re.sub("(?i){{quote|.*?}}", "", text)
+        text = re.sub("(?i){{quote\|.*?}}", "", text)
         text = re.sub("^[:*]?\s*''.*?''\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$", "", text)
         text = re.sub('^[:*]?\s*["][^"]+["]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
         text = re.sub('^[:*]?\s*[«][^»]+[»]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
@@ -388,19 +388,22 @@ def check_in_source(url):
 
     # very experimental code
     if not url[-4:] in [".pdf", ".doc", ".ppt"]:
-        resp = urllib2.urlopen(url)
-        text = resp.read()
-        #resp.close()
+        try:
+            resp = urllib2.urlopen(url)
+            text = resp.read()
+            #resp.close()
+        except HTTPerror:
+            return False
 
-        if reWikipediaC.search(text):
-#        if 'wikipedia' in text.lower():
-            excl_list += [url]
-            #write_log(url + '\n', "copyright/sites_with_'wikipedia'.txt")
-            positive_source_seen.add(url)
-            return True
-        else:
-            #write_log(url + '\n', "copyright/sites_without_'wikipedia'.txt")
-            source_seen.add(url)
+            if reWikipediaC.search(text):
+                # if 'wikipedia' in text.lower():
+                excl_list += [url]
+                #write_log(url + '\n', "copyright/sites_with_'wikipedia'.txt")
+                positive_source_seen.add(url)
+                return True
+            else:
+                #write_log(url + '\n', "copyright/sites_without_'wikipedia'.txt")
+                source_seen.add(url)
     return False
 
 def add_in_urllist(url, add_item, engine):
@@ -422,8 +425,6 @@ def get_results(query, numresults = 10):
         print "  google query..."
         search_request_retry = config.copyright_connection_tries
         while search_request_retry:
-        #SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
-        # Daily limit of 1000 queries exceeded for key xxx>
             try:
                 data = google.doGoogleSearch('-Wikipedia "' + query + '"')
                 search_request_retry = 0
@@ -435,8 +436,11 @@ def get_results(query, numresults = 10):
             except KeyboardInterrupt:
                 raise
             except Exception, err:
+                #SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
+                # Daily limit of 1000 queries exceeded for key xxx>
                 print "Got an error ->", err
-                search_request_retry -= 1
+                if search_request_retry:
+                    search_request_retry -= 1
     if config.copyright_yahoo:
         import yahoo.search.web
         print "  yahoo query..."
@@ -454,7 +458,8 @@ def get_results(query, numresults = 10):
                 search_request_retry = 0
             except Exception, err:
                 print "Got an error ->", err
-                search_request_retry -= 1
+                if search_request_retry:
+                    search_request_retry -= 1
     #if search_in_msn:
     #    ## max_query_len = 150?
     #    from __SOAPpy import WSDL

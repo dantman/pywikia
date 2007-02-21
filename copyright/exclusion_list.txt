@@ -27,6 +27,7 @@ wikibooks
 wikiquote
 wikisource
 wikimedia
+wikinews
 wiktionary
 wikiversity
 
