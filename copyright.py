@@ -392,7 +392,7 @@ def check_in_source(url):
             resp = urllib2.urlopen(url)
             text = resp.read()
             #resp.close()
-        except HTTPerror:
+        except urllib2.HTTPerror:
             return False
 
             if reWikipediaC.search(text):
