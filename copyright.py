@@ -392,18 +392,18 @@ def check_in_source(url):
             resp = urllib2.urlopen(url)
             text = resp.read()
             #resp.close()
-        except urllib2.HTTPerror:
+        except urllib2.HTTPError:
             return False
 
-            if reWikipediaC.search(text):
-                # if 'wikipedia' in text.lower():
-                excl_list += [url]
-                #write_log(url + '\n', "copyright/sites_with_'wikipedia'.txt")
-                positive_source_seen.add(url)
-                return True
-            else:
-                #write_log(url + '\n', "copyright/sites_without_'wikipedia'.txt")
-                source_seen.add(url)
+        if reWikipediaC.search(text):
+            # if 'wikipedia' in text.lower():
+            excl_list += [url]
+            #write_log(url + '\n', "copyright/sites_with_'wikipedia'.txt")
+            positive_source_seen.add(url)
+            return True
+        else:
+            #write_log(url + '\n', "copyright/sites_without_'wikipedia'.txt")
+            source_seen.add(url)
     return False
 
 def add_in_urllist(url, add_item, engine):
