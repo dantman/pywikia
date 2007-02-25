@@ -64,7 +64,8 @@ for line in lines:
             wikipedia.output(u"<h2>%s</h2>"%line[0],showcgi=True)
         print "<ul>"
         last = line[0]
-    wikipedia.output(line[2], showcgi = True)
+    wikipedia.output(line[2].replace('href="/w','href="http://nl.wikipedia.org/w'), showcgi = True)
+    print
 
 print "</ul>"
 print "<p>&nbsp;</p>"
