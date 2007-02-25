@@ -3762,7 +3762,7 @@ def activateLog(logname):
     except IOError:
         logfile = codecs.open(logfn, 'w', 'utf-8')
 
-def output(text, decoder = None, colors = [], newline = True):
+def output(text, decoder = None, colors = [], newline = True, showcgi = False):
     """
     Works like print, but uses the encoding used by the user's console
     (console_encoding in the configuration file) instead of ASCII.
@@ -3774,6 +3774,7 @@ def output(text, decoder = None, colors = [], newline = True):
     character at that position.
 
     If newline is True, a linebreak will be added after printing the text.
+    If showcgi is True, the text will be shown even in the CGI interface.
     """
     if decoder:
         text = unicode(text, decoder)
@@ -3789,7 +3790,7 @@ def output(text, decoder = None, colors = [], newline = True):
         # save the text in a logfile (will be written in utf-8)
         logfile.write(text + '\n')
         logfile.flush()
-    ui.output(text, colors = colors, newline = newline)
+    ui.output(text, colors = colors, newline = newline, showcgi = showcgi)
 
 def input(question, colors = None):
     return ui.input(question, colors)

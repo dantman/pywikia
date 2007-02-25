@@ -155,7 +155,7 @@ class UI:
 
         MainloopThread(self.parent).start()
 
-    def output(self, text, urgency = 1, colors = None, newline = True):
+    def output(self, text, urgency = 1, colors = None, newline = True, showcgi = False):
         """
         urgency levels:
             0 - Debug output. Won't be shown in normal mode.

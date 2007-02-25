@@ -89,7 +89,7 @@ class UI:
         else:
             sys.stdout.write(text.encode(config.console_encoding, 'replace'))
 
-    def output(self, text, colors = None, newline = True):
+    def output(self, text, colors = None, newline = True, showcgi = False):
         """
         If a character can't be displayed in the encoding used by the user's
         terminal, it will be replaced with a question mark or by a
