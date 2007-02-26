@@ -2073,7 +2073,8 @@ class Family:
         'ru': [u'перенаправление', u'перенапр', u'ПЕРЕНАПРАВЛЕНИЕ'],
         'sk': [u'presmeruj'],
         'sr': [u'преусмери', u'Преусмери'],
-        'tt': [u'yünältü']
+        'tt': [u'yünältü'],
+        'yi': [u'ווייטערפירן']
     }
 
     # So can be pagename code
