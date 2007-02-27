@@ -1768,7 +1768,15 @@ class GetAll(object):
                 elif dt < 360:
                     dt += 60
             else:
-                break
+                if data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
+                    output(u'Got incorrect export page. Sleeping for %d seconds'%dt)
+                    time.sleep(dt)
+                    if dt <= 60:
+                        dt += 15
+                    elif dt < 360:
+                        dt += 60
+                else:
+                    break
         if not data:
             return
         R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
