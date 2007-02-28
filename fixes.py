@@ -192,12 +192,12 @@ fixes = {
         ],
     },
     # some disambiguation stuff for de:
-    # python replace.py -fix:music -ref:Vorlage:Musikalbum
+    # python replace.py -fix:music -subcat:Album
     'music': {
         'regex': False,
         'msg': {
-               'de':u'Bot: korrigiere Links auf Begriffsklärungen',
-              },
+            'de':u'Bot: korrigiere Links auf Begriffsklärungen',
+        },
         'replacements': [
             (u'[[CD]]', u'[[Audio-CD|CD]]'),
             (u'[[LP]]', u'[[Langspielplatte|LP]]'),
@@ -205,5 +205,21 @@ fixes = {
             (u'[[MC]]', u'[[Musikkassette|MC]]'),
             (u'[[Single]]', u'[[Single (Musik)|Single]]'),
         ]
+    },
+    # format of dates of birth and death, for de:
+    # python replace.py -fix:datum -ref:Vorlage:Personendaten
+    'datum': {
+        'regex': True,
+        'msg': {
+            'de': u'Bot: Korrigiere Datumsformat',
+        },
+        'replacements': [
+            (u'\(\*(\d{3,4})', u'(* \\1'),
+            (u'†(\d{3,4})', u'† \\1'),
+            (u'&dagger;(\d{3,4})', u'† \\1'),
+            (u'\(\*\[\[(\d)', u'(* [[\\1'),
+            (u'†\[\[(\d)', u'† [[\\1'),
+            (u'&dagger;\[\[(\d)', u'† [[\\1'),
+        ],
     },
 }
