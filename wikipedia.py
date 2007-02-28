@@ -1102,13 +1102,6 @@ class Page(object):
             # page is locked and we don't have a sysop account.
             return False
 
-    def switchTalkPage(self):
-        """
-        DEPRECATED. This method was renamed to toggleTalkPage(), which is a
-        more expressive name.
-        """
-        return self.toggleTalkPage()
-    
     def toggleTalkPage(self):
         """
         If self is a talk page, returns the associated content page; otherwise,

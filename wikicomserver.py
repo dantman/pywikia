@@ -86,7 +86,7 @@ class WikiPage(wikipedia.Page):
     _reg_clsid_ = "{318CC152-D2A9-4C11-BA01-78B9B91DBDDE}"
     _reg_desc_ = "Mediawiki Wiki Page"
     _reg_progid_ = "Mediawiki.WikiPage"
-    _public_methods_ = ['__cmp__', '__repr__', '__str__', 'aslink', 'autoFormat', 'canBeEdited', 'categories', 'contributingUsers', 'delete', 'encoding', 'exists', 'get', 'getEditPage', 'getRedirectTarget', 'getReferences', 'getVersionHistory', 'getVersionHistoryTable', 'imagelinks', 'interwiki', 'isAutoTitle', 'isCategory', 'isDisambig', 'isEmpty', 'isImage', 'isRedirectPage', 'isTalkPage', 'linkedPages', 'namespace', 'permalink', 'put', 'putPage', 'section', 'sectionFreeTitle', 'site', 'switchTalkPage', 'templates', 'title', 'titleWithoutNamespace', 'urlname']
+    _public_methods_ = ['__cmp__', '__repr__', '__str__', 'aslink', 'autoFormat', 'canBeEdited', 'categories', 'contributingUsers', 'delete', 'encoding', 'exists', 'get', 'getEditPage', 'getRedirectTarget', 'getReferences', 'getVersionHistory', 'getVersionHistoryTable', 'imagelinks', 'interwiki', 'isAutoTitle', 'isCategory', 'isDisambig', 'isEmpty', 'isImage', 'isRedirectPage', 'isTalkPage', 'linkedPages', 'namespace', 'permalink', 'put', 'putPage', 'section', 'sectionFreeTitle', 'site', 'toggleTalkPage', 'templates', 'title', 'titleWithoutNamespace', 'urlname']
     _public_attrs_ = ['objectVer', 'objectName']
     _readonly_attrs_ = _public_attrs_
 
