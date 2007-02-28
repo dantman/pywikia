@@ -9,7 +9,7 @@ the messages. It can be updated manually by running this script, e.g. when
 somebody changed the current message at the wiki. The texts will also be
 reloaded automatically once a month.
 
-Syntax: python mediawiki_messages [-all] [-debug]
+Syntax: python mediawiki_messages [-all]
 
 Command line options:
     -refresh - Reloads messages for the home wiki or for the one defined via
@@ -162,7 +162,6 @@ def refresh_all_messages():
             site = wikipedia.getSite(code = lang, fam = family)
             refresh_messages(site)
 def main():
-    debug = False
     refresh_all = False
     refresh = False
     key = None
