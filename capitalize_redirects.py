@@ -56,45 +56,43 @@ def main():
     namespaces = []
     startpage = None
 
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'capitalize_redirects')
-        if arg:
-            if arg.startswith('-file'):
-                if len(arg) == 5:
-                    textfilename = wikipedia.input(u'Please enter the filename:')
-                else:
-                    textfilename = arg[6:]
-                source = 'textfile'
-            elif arg.startswith('-cat'):
-                if len(arg) == 4:
-                    categoryname = wikipedia.input(u'Please enter the category name:')
-                else:
-                    categoryname = arg[5:]
-                source = 'category'
-            elif arg.startswith('-page'):
-                if len(arg) == 5:
-                    pageNames.append(wikipedia.input(u'Which page do you want to chage?'))
-                else:
-                    pageNames.append(arg[6:])
-                source = 'singlepage'
-            elif arg.startswith('-ref'):
-                if len(arg) == 4:
-                    referredPageName = wikipedia.input(u'Links to which page should be processed?')
-                else:
-                    referredPageName = arg[5:]
-                source = 'ref'
-            elif arg.startswith('-start'):
-                if len(arg) == 6:
-                    firstPageTitle = wikipedia.input(u'Which page do you want to chage?')
-                else:
-                    firstPageTitle = arg[7:]
-                source = 'allpages'
-            elif arg == '-always':
-                acceptall = True
-            elif arg.startswith('-namespace:'):
-                namespaces.append(int(arg[11:]))
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-file'):
+            if len(arg) == 5:
+                textfilename = wikipedia.input(u'Please enter the filename:')
             else:
-                commandline_replacements.append(arg)
+                textfilename = arg[6:]
+            source = 'textfile'
+        elif arg.startswith('-cat'):
+            if len(arg) == 4:
+                categoryname = wikipedia.input(u'Please enter the category name:')
+            else:
+                categoryname = arg[5:]
+            source = 'category'
+        elif arg.startswith('-page'):
+            if len(arg) == 5:
+                pageNames.append(wikipedia.input(u'Which page do you want to chage?'))
+            else:
+                pageNames.append(arg[6:])
+            source = 'singlepage'
+        elif arg.startswith('-ref'):
+            if len(arg) == 4:
+                referredPageName = wikipedia.input(u'Links to which page should be processed?')
+            else:
+                referredPageName = arg[5:]
+            source = 'ref'
+        elif arg.startswith('-start'):
+            if len(arg) == 6:
+                firstPageTitle = wikipedia.input(u'Which page do you want to chage?')
+            else:
+                firstPageTitle = arg[7:]
+            source = 'allpages'
+        elif arg == '-always':
+            acceptall = True
+        elif arg.startswith('-namespace:'):
+            namespaces.append(int(arg[11:]))
+        else:
+            commandline_replacements.append(arg)
         
     if source == 'textfile':
         gen = pagegenerators.TextfilePageGenerator(textfilename)
