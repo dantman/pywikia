@@ -122,7 +122,7 @@ def main():
         watchlist = get(wikipedia.getSite())
         wikipedia.output(u'%i pages in the watchlist.' % len(watchlist))
         for pageName in watchlist:
-            wikipedia.output(u'* %s' % pageName)
+            wikipedia.output(pageName, toStdout = True)
 
 if __name__ == "__main__":
     try:
