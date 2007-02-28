@@ -1357,116 +1357,114 @@ if __name__ == "__main__":
         if not config.never_log:
             wikipedia.activateLog('interwiki.log')
 
-        for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg, 'interwiki')
-            if arg:
-                if arg == '-noauto':
-                    globalvar.auto = False
-                elif arg.startswith('-hint:'):
-                    hints.append(arg[6:])
-                elif arg == '-force':
-                    globalvar.force = True
-                elif arg == '-same':
-                    globalvar.same = True
-                elif arg == '-wiktionary':
-                    globalvar.same = 'wiktionary'
-                elif arg == '-untranslated':
-                    globalvar.untranslated = True
-                elif arg == '-untranslatedonly':
-                    globalvar.untranslated = True
-                    globalvar.untranslatedonly = True
-                elif arg == '-askhints':
-                    globalvar.untranslated = True
-                    globalvar.untranslatedonly = False
-                    globalvar.askhints = True    
-                elif arg == '-noauto':
+        for arg in wikipedia.handleArgs():
+            if arg == '-noauto':
+                globalvar.auto = False
+            elif arg.startswith('-hint:'):
+                hints.append(arg[6:])
+            elif arg == '-force':
+                globalvar.force = True
+            elif arg == '-same':
+                globalvar.same = True
+            elif arg == '-wiktionary':
+                globalvar.same = 'wiktionary'
+            elif arg == '-untranslated':
+                globalvar.untranslated = True
+            elif arg == '-untranslatedonly':
+                globalvar.untranslated = True
+                globalvar.untranslatedonly = True
+            elif arg == '-askhints':
+                globalvar.untranslated = True
+                globalvar.untranslatedonly = False
+                globalvar.askhints = True    
+            elif arg == '-noauto':
+                pass
+            elif arg.startswith('-warnfile:'):
+                warnfile = arg[10:]
+            elif arg == '-confirm':
+                globalvar.confirm = True
+            elif arg == '-select':
+                globalvar.select = True
+            elif arg == '-autonomous':
+                globalvar.autonomous = True
+            elif arg == '-noshownew':
+                globalvar.shownew = False
+            elif arg == '-nobacklink':
+                globalvar.backlink = False
+            elif arg == '-noredirect':
+                globalvar.followredirect = False
+            elif arg == '-localonly':
+                globalvar.localonly = True
+            elif arg == '-limittwo':
+                globalvar.limittwo = True
+                globalvar.strictlimittwo = True
+            elif arg.startswith('-whenneeded'):
+                globalvar.limittwo = True
+                globalvar.strictlimittwo = False
+                try:
+                    globalvar.needlimit = int(arg[12:])
+                except KeyError:
                     pass
-                elif arg.startswith('-warnfile:'):
-                    warnfile = arg[10:]
-                elif arg == '-confirm':
-                    globalvar.confirm = True
-                elif arg == '-select':
-                    globalvar.select = True
-                elif arg == '-autonomous':
-                    globalvar.autonomous = True
-                elif arg == '-noshownew':
-                    globalvar.shownew = False
-                elif arg == '-nobacklink':
-                    globalvar.backlink = False
-                elif arg == '-noredirect':
-                    globalvar.followredirect = False
-                elif arg == '-localonly':
-                    globalvar.localonly = True
-                elif arg == '-limittwo':
-                    globalvar.limittwo = True
-                    globalvar.strictlimittwo = True
-                elif arg.startswith('-whenneeded'):
-                    globalvar.limittwo = True
-                    globalvar.strictlimittwo = False
-                    try:
-                        globalvar.needlimit = int(arg[12:])
-                    except KeyError:
-                        pass
-                    except ValueError:
-                        pass
-                elif arg.startswith('-years'):
-                    # Look if user gave a specific year at which to start
-                    # Must be a natural number or negative integer.
-                    if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
-                        startyear = int(arg[7:])
-                    else:
-                        startyear = 1
-                    # avoid problems where year pages link to centuries etc.
-                    globalvar.followredirect = False
-                    hintlessPageGen = pagegenerators.YearPageGenerator(startyear)
-                elif arg.startswith('-days'):
-                    if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
-                        # Looks as if the user gave a specific month at which to start
-                        # Must be a natural number.
-                        startMonth = int(arg[6:])
-                    else:
-                        startMonth = 1
-                    hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
-                elif arg.startswith('-skipfile:'):
-                    skipfile = arg[10:]
-                    skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
-                    for page in skipPageGen:
-                        globalvar.skip.add(page)
-                elif arg == '-skipauto':
-                    globalvar.skipauto = True
-                elif arg == '-restore':
-                    optRestore = True
-                elif arg == '-continue':
-                    optContinue = True
-                # deprecated for consistency with other scripts
-                elif arg.startswith('-number:'):
-                    number = int(arg[8:])
-                elif arg.startswith('-array:'):
-                    globalvar.minarraysize = int(arg[7:])
-                    if globalvar.minarraysize < globalvar.maxquerysize:
-                        globalvar.maxquerysize = globalvar.minarraysize
-                elif arg.startswith('-neverlink:'):
-                    globalvar.neverlink += arg[11:].split(",")
-                elif arg.startswith('-ignore:'):
-                    globalvar.ignore += [wikipedia.Page(None,p) for p in arg[8:].split(",")]
-                elif arg.startswith('-ignorefile:'):
-                    ignorefile = arg[12:]
-                    ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
-                    for page in ignorePageGen:
-                        globalvar.ignore.append(page)
-                elif arg == '-showpage':
-                    globalvar.showtextlink += globalvar.showtextlinkadd
-                elif arg == '-graph':
-                    # override configuration
-                    config.interwiki_graph = True
-                elif arg == '-bracket':
-                    globalvar.bracketonly = True
+                except ValueError:
+                    pass
+            elif arg.startswith('-years'):
+                # Look if user gave a specific year at which to start
+                # Must be a natural number or negative integer.
+                if len(arg) > 7 and (arg[7:].isdigit() or (arg[7] == "-" and arg[8:].isdigit())):
+                    startyear = int(arg[7:])
                 else:
-                    generator = genFactory.handleArg(arg)
-                    if generator:
-                        hintlessPageGen = generator
-                    else:
-                        singlePageTitle.append(arg)
+                    startyear = 1
+                # avoid problems where year pages link to centuries etc.
+                globalvar.followredirect = False
+                hintlessPageGen = pagegenerators.YearPageGenerator(startyear)
+            elif arg.startswith('-days'):
+                if len(arg) > 6 and arg[5] == ':' and arg[6:].isdigit():
+                    # Looks as if the user gave a specific month at which to start
+                    # Must be a natural number.
+                    startMonth = int(arg[6:])
+                else:
+                    startMonth = 1
+                hintlessPageGen = pagegenerators.DayPageGenerator(startMonth)
+            elif arg.startswith('-skipfile:'):
+                skipfile = arg[10:]
+                skipPageGen = pagegenerators.TextfilePageGenerator(skipfile)
+                for page in skipPageGen:
+                    globalvar.skip.add(page)
+            elif arg == '-skipauto':
+                globalvar.skipauto = True
+            elif arg == '-restore':
+                optRestore = True
+            elif arg == '-continue':
+                optContinue = True
+            # deprecated for consistency with other scripts
+            elif arg.startswith('-number:'):
+                number = int(arg[8:])
+            elif arg.startswith('-array:'):
+                globalvar.minarraysize = int(arg[7:])
+                if globalvar.minarraysize < globalvar.maxquerysize:
+                    globalvar.maxquerysize = globalvar.minarraysize
+            elif arg.startswith('-neverlink:'):
+                globalvar.neverlink += arg[11:].split(",")
+            elif arg.startswith('-ignore:'):
+                globalvar.ignore += [wikipedia.Page(None,p) for p in arg[8:].split(",")]
+            elif arg.startswith('-ignorefile:'):
+                ignorefile = arg[12:]
+                ignorePageGen = pagegenerators.TextfilePageGenerator(ignorefile)
+                for page in ignorePageGen:
+                    globalvar.ignore.append(page)
+            elif arg == '-showpage':
+                globalvar.showtextlink += globalvar.showtextlinkadd
+            elif arg == '-graph':
+                # override configuration
+                config.interwiki_graph = True
+            elif arg == '-bracket':
+                globalvar.bracketonly = True
+            else:
+                generator = genFactory.handleArg(arg)
+                if generator:
+                    hintlessPageGen = generator
+                else:
+                    singlePageTitle.append(arg)
         
         # ensure that we don't try to change main page
         try:

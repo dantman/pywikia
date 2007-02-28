@@ -165,15 +165,13 @@ def main():
     refresh_all = False
     refresh = False
     key = None
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'mediawiki_messages')
-        if arg:
-            if arg == '-all':
-                refresh_all = True
-            elif arg == '-refresh':
-                refresh = True
-            else:
-                key = arg
+    for arg in wikipedia.handleArgs():
+        if arg == '-all':
+            refresh_all = True
+        elif arg == '-refresh':
+            refresh = True
+        else:
+            key = arg
     if key:
         wikipedia.output(get(key), toStdout = True)
     elif refresh_all:

@@ -195,20 +195,18 @@ def main():
     sysop = False
     logall = False
     forceLogin = False
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'login')
-        if arg:
-            if arg.startswith("-pass:"):
-                password = arg[6:]
-            elif arg == "-sysop":
-                sysop = True
-            elif arg == "-all":
-                logall = True
-            elif arg == "-force":
-                forceLogin = True
-            else:
-                wikipedia.showHelp('login')
-                sys.exit()
+    for arg in wikipedia.handleArgs():
+        if arg.startswith("-pass:"):
+            password = arg[6:]
+        elif arg == "-sysop":
+            sysop = True
+        elif arg == "-all":
+            logall = True
+        elif arg == "-force":
+            forceLogin = True
+        else:
+            wikipedia.showHelp('login')
+            sys.exit()
     if logall:
         if sysop:
             namedict = config.sysopnames

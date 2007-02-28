@@ -262,24 +262,22 @@ def main():
     # at which redirect shall we start searching double redirects again (only with dump)
     # default to -1 which means all redirects are checked
     restart = -1
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'redirect')
-        if arg:
-            if arg == 'double':
-                action = 'double'
-            elif arg == 'broken':
-                action = 'broken'
-            elif arg.startswith('-xml'):
-                if len(arg) == 4:
-                    xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
-                else:
-                    xmlFilename = arg[5:]
-            elif arg.startswith('-namespace:'):
-                namespace = int(arg[11:])
-            elif arg.startswith('-restart:'):
-                restart = int(arg[9:])
+    for arg in wikipedia.handleArgs():
+        if arg == 'double':
+            action = 'double'
+        elif arg == 'broken':
+            action = 'broken'
+        elif arg.startswith('-xml'):
+            if len(arg) == 4:
+                xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
             else:
-                print 'Unknown argument: %s' % arg
+                xmlFilename = arg[5:]
+        elif arg.startswith('-namespace:'):
+            namespace = int(arg[11:])
+        elif arg.startswith('-restart:'):
+            restart = int(arg[9:])
+        else:
+            print 'Unknown argument: %s' % arg
 
     if not action:
         wikipedia.showHelp('redirect')

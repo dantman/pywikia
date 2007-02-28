@@ -306,7 +306,7 @@ def add_category(sort_by_last_name = False):
                         cats.append(catpl)
                         text = page.get()
                         text = wikipedia.replaceCategoryLinks(text, cats)
-			try:
+                        try:
                             page.put(text)
                         except wikipedia.EditConflict:
                             wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
@@ -319,9 +319,9 @@ class CategoryMoveRobot:
         self.inPlace = inPlace
         self.moveCatPage = moveCatPage
         # set edit summary message
-	if self.editSummary:
-	    wikipedia.setAction(self.editSummary)
-	else:
+        if self.editSummary:
+            wikipedia.setAction(self.editSummary)
+        else:
             wikipedia.setAction(wikipedia.translate(wikipedia.getSite(),msg_change) % self.oldCat.title())
 
     def run(self):
@@ -373,9 +373,9 @@ class CategoryListifyRobot:
         listOfArticles = self.cat.articles()
         if self.subCats:
             listOfArticles += self.cat.subcategories()
-	if self.editSummary:
-	    wikipedia.setAction(self.editSummary)
-	else:
+        if self.editSummary:
+            wikipedia.setAction(self.editSummary)
+        else:
             wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.listify_msg) % (self.cat.title(), len(listOfArticles)))
 
         listString = ""
@@ -419,13 +419,13 @@ class CategoryRemoveRobot:
     }
 
     def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False):
-	self.editSummary = editSummary
+        self.editSummary = editSummary
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
         self.useSummaryForDeletion = useSummaryForDeletion
-	if self.editSummary:
-	    wikipedia.setAction(self.editSummary)
-	else:
+        if self.editSummary:
+            wikipedia.setAction(self.editSummary)
+        else:
             wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())    
         
     def run(self):
@@ -710,55 +710,53 @@ if __name__ == "__main__":
         action = None
         sort_by_last_name = False
         restore = False
-        for arg in sys.argv[1:]:
-            arg = wikipedia.argHandler(arg, 'category')
-            if arg:
-                if arg == 'add':
-                    action = 'add'
-                elif arg == 'remove':
-                    action = 'remove'
-                elif arg == 'move':
-                    action = 'move'
-                elif arg == 'tidy':
-                    action = 'tidy'
-                elif arg == 'tree':
-                    action = 'tree'
-                elif arg == 'listify':
-                    action = 'listify'
-                elif arg == '-person':
-                    sort_by_last_name = True
-                elif arg == '-rebuild':
-                    catDB.rebuild()
-		elif arg.startswith('-from:'):
-		    oldCatTitle = arg[len('-from:'):]
-		    fromGiven = True
-		elif arg.startswith('-to:'):
-		    newCatTitle = arg[len('-to:'):]
-		    toGiven = True
-		elif arg == '-batch':
-		    batchMode = True
-                elif arg == '-inplace':
-                    inPlace = True
-                elif arg == '-delsum':
-                    useSummaryForDeletion = True
-                elif arg == '-overwrite':
-                    overwrite = True
-                elif arg == '-showimages':
-                    showImages = True
-		elif arg.startswith('-summary:'):
-		    editSummary = arg[len('-summary:'):]
-                
+        for arg in wikipedia.handleArgs():
+            if arg == 'add':
+                action = 'add'
+            elif arg == 'remove':
+                action = 'remove'
+            elif arg == 'move':
+                action = 'move'
+            elif arg == 'tidy':
+                action = 'tidy'
+            elif arg == 'tree':
+                action = 'tree'
+            elif arg == 'listify':
+                action = 'listify'
+            elif arg == '-person':
+                sort_by_last_name = True
+            elif arg == '-rebuild':
+                catDB.rebuild()
+            elif arg.startswith('-from:'):
+                oldCatTitle = arg[len('-from:'):]
+                fromGiven = True
+            elif arg.startswith('-to:'):
+                newCatTitle = arg[len('-to:'):]
+                toGiven = True
+            elif arg == '-batch':
+                batchMode = True
+            elif arg == '-inplace':
+                inPlace = True
+            elif arg == '-delsum':
+                useSummaryForDeletion = True
+            elif arg == '-overwrite':
+                overwrite = True
+            elif arg == '-showimages':
+                showImages = True
+            elif arg.startswith('-summary:'):
+                editSummary = arg[len('-summary:'):]
+
         if action == 'add':
             add_category(sort_by_last_name)
         elif action == 'remove':
-	    if (fromGiven == False):
+            if (fromGiven == False):
                 oldCatTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
             bot = CategoryRemoveRobot(oldCatTitle, batchMode, editSummary, useSummaryForDeletion)
             bot.run()
         elif action == 'move':
-	    if (fromGiven == False):
+            if (fromGiven == False):
                 oldCatTitle = wikipedia.input(u'Please enter the old name of the category:')
-	    if (toGiven == False):
+            if (toGiven == False):
                 newCatTitle = wikipedia.input(u'Please enter the new name of the category:')
             bot = CategoryMoveRobot(oldCatTitle, newCatTitle, batchMode, editSummary, inPlace)
             bot.run()
