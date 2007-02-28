@@ -1358,27 +1358,6 @@ if __name__ == "__main__":
             wikipedia.activateLog('interwiki.log')
 
         for arg in sys.argv[1:]:
-            # This code needs to be cleaned up to allow file name passage, and documented at the top
-            if arg == "-mult":
-                # WTF is this? Can we kick it out? --Daniel
-                f = file("codelist.txt")
-                lang = f.readline().strip()
-                if len(lang) < 2:
-                    raise u"No more items in the list"
-                print "Processing " + lang
-                f2 = file("codelist2.txt", "w")
-                for s in f:
-                    f2.write(s)
-                f.close()
-                f2.close()
-                import os
-                os.remove("codelist.txt")
-                os.rename("codelist2.txt", "codelist.txt")
-                
-                wikipedia.argHandler("-lang:" + lang, 'interwiki')
-                wikipedia.argHandler("-log:mult_%s.log" % lang, 'interwiki')
-                continue
-
             arg = wikipedia.argHandler(arg, 'interwiki')
             if arg:
                 if arg == '-noauto':
