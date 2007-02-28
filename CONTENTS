@@ -30,6 +30,7 @@ gui.py                 : Some GUI elements for solve_disambiguation.py
 mediawiki_messages.py  : Access to the various translations of the MediaWiki
                          software interface.
 pagegenerators.py      : Generator pages.
+userlib.py             : Library to work with users, their pages and talk pages.
 
 
 === Utilities ===
@@ -44,6 +45,7 @@ extract_wikilinks.py   : Two bots to get all linked-to Wikipedia pages from an
 followlive.py          : Periodically grab the list of new articles and analyze
                          them. If the article is too short, a menu will let you
                          easily add a template.
+get.py                 : Script to gets a page and writes its contents to standard output.
 login.py               : Log in to an account on your "home" wikipedia. 
 splitwarning.py        : split an interwiki.log file into warning files for each
                          separate language. suggestion: Zip the created files up, 
@@ -59,6 +61,7 @@ editarticle.py         : Edit an article with your favourite editor. Run
                          detailed infortion on possiblities.
 sqldump.py             : Extract information from local cur SQL dump
                          files, like the ones at http://download.wikimedia.org
+rcsort.py              : A tool to see the recentchanges ordered by user instead of by date.
 xmlreader.py           : 
 watchlist.py           : Allows access to the bot account's watchlist.
 wikicomserver.py       : This library allows the use of the pywikipediabot directly
@@ -66,6 +69,7 @@ wikicomserver.py       : This library allows the use of the pywikipediabot direc
 
 === Robots ===
 
+capitalize_redirects.py: Script to create a redirect of capitalize articles.
 casechecker.py         : Script to enumerate all pages in the wikipedia and find all titles
                          with mixed latin and cyrilic alphabets.
 category.py            : add a category link to all pages mentioned on a page,
@@ -180,7 +184,6 @@ wiktionarytest.py      : Unit tests for wiktionary.py
 
 
 External software can be used with PyWikipediaBot:
-
   * Win32com library for use with wikicomserver.py
   * Pydot, Pyparsing and Graphviz for use with interwiki_graph.py
   * JSON for use with query.py
