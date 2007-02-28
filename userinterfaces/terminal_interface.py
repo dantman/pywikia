@@ -43,7 +43,7 @@ class UI:
             result += unixColors[None]
         targetStream.write(result.encode(config.console_encoding, 'replace'))
 
-    def printColorizedInWindows(self, text, colors):
+    def printColorizedInWindows(self, text, colors, targetStream):
         """
         This only works in Python 2.5 or higher.
         """
