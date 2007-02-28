@@ -61,10 +61,10 @@ for line in lines:
         if line[0] == None:
             print "<h2>Gebruiker onbekend</h2>"
         else:
-            wikipedia.output(u"<h2>%s</h2>"%line[0],showcgi=True)
+            wikipedia.output(u"<h2>%s</h2>"%line[0], toStdout=True)
         print "<ul>"
         last = line[0]
-    wikipedia.output(line[2].replace('href="/w','href="http://nl.wikipedia.org/w'), showcgi = True)
+    wikipedia.output(line[2].replace('href="/w','href="http://nl.wikipedia.org/w'), toStdout = True)
     print
 
 print "</ul>"
