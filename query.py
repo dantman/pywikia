@@ -27,7 +27,7 @@ def GetData( lang, params, verbose = False ):
         data = None
         titlecount = 0
     
-    path = u"/w/query.php?" + wikipedia.urlencode( params.iteritems() )
+    path = u"/w/query.php?" + urllib.urlencode( params.items() )
     
     if verbose:
         wikipedia.output( u"Requesting %d titles from %s:%s" % (titlecount, lang, path) )
