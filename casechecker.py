@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
-""" Script to enumerate all pages in the wikipedia and find all titles
+""" Script to enumerate all pages on the wiki and find all titles
 with mixed latin and cyrilic alphabets.
 """
 
@@ -92,41 +92,40 @@ class CaseChecker( object ):
     autonomous = False
     namespaces = []
     
-    def __init__(self, args):    
+    def __init__(self):
         
-        for arg in args:
-            arg = wikipedia.argHandler(arg, 'casechecker')
-            if arg:
-                if arg.startswith('-from'):
-                    if arg.startswith('-from:'):
-                        self.apfrom = arg[6:]
-                    else:
-                        self.apfrom = wikipedia.input(u'Which page to start from: ')
-                elif arg.startswith('-reqsize:'):
-                    self.aplimit = int(arg[9:])
-                elif arg == '-links':
-                    self.links = True
-                elif arg == '-linksonly':
-                    self.links = True
-                    self.titles = False
-                elif arg == '-replace':
-                    self.replace = True
-                elif arg.startswith('-limit:'):
-                    self.stopAfter = int(arg[7:])
-                elif arg == '-verbose':
-                    self.verbose = True
-                elif arg == '-autonomous':
-                    self.autonomous = True
-                elif arg.startswith('-ns:'):
-                    self.namespaces.append( int(arg[4:]) )
-                elif arg.startswith('-wikilog:'):
-                    try:
-                        self.wikilog = codecs.open(arg[9:], 'a', 'utf-8')
-                    except IOError:
-                        self.wikilog = codecs.open(arg[9:], 'w', 'utf-8')
+        for arg in wikipedia.handleArgs():
+            if arg.startswith('-from'):
+                if arg.startswith('-from:'):
+                    self.apfrom = arg[6:]
                 else:
-                    wikipedia.output(u'Unknown argument %s' % arg)
-                    sys.exit()
+                    self.apfrom = wikipedia.input(u'Which page to start from: ')
+            elif arg.startswith('-reqsize:'):
+                self.aplimit = int(arg[9:])
+            elif arg == '-links':
+                self.links = True
+            elif arg == '-linksonly':
+                self.links = True
+                self.titles = False
+            elif arg == '-replace':
+                self.replace = True
+            elif arg.startswith('-limit:'):
+                self.stopAfter = int(arg[7:])
+            elif arg == '-verbose':
+                self.verbose = True
+            elif arg == '-autonomous':
+                self.autonomous = True
+            elif arg.startswith('-ns:'):
+                self.namespaces.append( int(arg[4:]) )
+            elif arg.startswith('-wikilog:'):
+                try:
+                    self.wikilog = codecs.open(arg[9:], 'a', 'utf-8')
+                except IOError:
+                    self.wikilog = codecs.open(arg[9:], 'w', 'utf-8')
+            else:
+                wikipedia.output(u'Unknown argument %s.' % arg)
+                wikipedia.showHelp()
+                sys.exit()
 
         if self.namespaces == []:
             if self.apfrom == u'':
@@ -472,7 +471,7 @@ class CaseChecker( object ):
         
 if __name__ == "__main__":
     try:
-        bot = CaseChecker(sys.argv[1:])
+        bot = CaseChecker()
         bot.Run()
     finally:
         wikipedia.stopme()
