@@ -11,6 +11,11 @@ __version__ = '$Id$'
 #
 import re, time
 import wikipedia
+try:
+    set # introduced in Python 2.4: faster and future
+except NameError:
+    # fallback solution for Python 2.3
+    from sets import Set as set
 
 msg_created_for_renaming = {
     'de':u'Bot: Verschoben von %s. Autoren: %s',
