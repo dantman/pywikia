@@ -3437,8 +3437,9 @@ def setSite(site):
 def handleArgs():
     '''
     Takes the commandline arguments, converts them to Unicode, processes all
-    global parameters such as -lang or -log. Yields all arguments
-    that are not global.
+    global parameters such as -lang or -log. Returns a list of all arguments
+    that are not global. This makes sure that global arguments are applied
+    first, regardless of the order in which the arguments were given.
     '''
     global default_code, default_family
     # get commandline arguments
@@ -3448,6 +3449,7 @@ def handleArgs():
     # the module name will be used for the filename of the log.
     # TODO: check if the following line is platform-independent
     moduleName = args[0][:args[0].rindex('.')]
+    nonGlobalArgs = []
     for arg in args[1:]:
         if sys.platform=='win32':
             # stupid Windows gives parameters encoded as windows-1252, but input
@@ -3477,7 +3479,8 @@ def handleArgs():
         else:
             # the argument is not global. Let the specific bot script care
             # about it.
-            yield arg
+            nonGlobalArgs.append(arg)
+    return nonGlobalArgs
 
 #########################
 # Interpret configuration
