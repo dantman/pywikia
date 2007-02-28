@@ -691,7 +691,7 @@ class CategoryTreeRobot:
             f.write(tree)
             f.close()
         else:
-            wikipedia.output(tree)
+            wikipedia.output(tree, toStdout = True)
 
 if __name__ == "__main__":
     fromGiven = False
