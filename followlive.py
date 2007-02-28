@@ -33,58 +33,169 @@ What is it? """
 #   languages code contains list of templates to be used
 #       templates contains a message and its position 
 templates = {
-	'en':{'{{delete}}'      :{ 'msg' : 'This article should be deleted','pos': 'top'},
-              '{{cleanup}}'     :{ 'msg' : 'This article need cleanup','pos': 'top'},
-              '{{stub}}'        :{ 'msg' : 'This article is a stub','pos': 'bottom'},
-              '{{categorize}}'  :{ 'msg' : 'This article needs to be [[Wikipedia:Categorization|categorized]]', 'pos' : 'top'},
-              '{{notability}}'  :{'msg' : 'The [[Wikipedia:Notability|notability]] of this article is unclear.', 'pos': 'top'},
-              '{{verify}}'      :{'msg' : 'This article needs to be checked for factuality.', 'pos': 'top'},
-              '{{copyedit}}'    :{ 'msg' : 'The writing of this article needs to be [[Wikipedia:How to copy-edit|copyeditted]] and improved.','pos' : 'top'},
-              '{{unreferenced}}':{ 'msg' : 'This article needs [[Wikipedia:Citing sources|references]] so it can be verified.', 'pos': 'bottom'},
-              '{{wikify}}'      :{ 'msg' : 'This article needs to be wikified per the [[Wikipedia:Manual of Style|Manual of Style]]', 'pos' : 'top'},
-              },
+    'en': {
+        '{{delete}}': {
+            'msg' : 'This article should be deleted',
+            'pos': 'top'
+        },
+        '{{cleanup}}': {
+            'msg' : 'This article need cleanup',
+            'pos': 'top'
+        },
+        '{{stub}}': {
+            'msg' : 'This article is a stub',
+            'pos': 'bottom'
+        },
+        '{{categorize}}': {
+            'msg' : 'This article needs to be [[Wikipedia:Categorization|categorized]]',
+            'pos' : 'top'
+        },
+        '{{notability}}': {
+            'msg' : 'The [[Wikipedia:Notability|notability]] of this article is unclear.',
+            'pos': 'top'
+        },
+        '{{verify}}': {
+            'msg' : 'This article needs to be checked for factuality.',
+            'pos': 'top'
+        },
+        '{{copyedit}}': {
+            'msg' : 'The writing of this article needs to be [[Wikipedia:How to copy-edit|copyeditted]] and improved.',
+            'pos' : 'top'
+        },
+        '{{unreferenced}}': {
+            'msg' : 'This article needs [[Wikipedia:Citing sources|references]] so it can be verified.',
+            'pos': 'bottom'
+        },
+        '{{wikify}}': {
+            'msg' : 'This article needs to be wikified per the [[Wikipedia:Manual of Style|Manual of Style]]',
+            'pos' : 'top'
+        },
+    },
+    'fr':{
+        u'{{suppression}}': {
+            'msg' : u'Cet article devrait être supprimé',
+            'pos': 'top'
+        },
+        u'{{à vérifier}}': {
+            'msg': u'Cet article est à vérifier',
+            'pos': 'top'
+        },
+        u'{{ébauche}}': {
+            'msg': u'Cet article est une ébauche',
+            'pos': 'bottom'
+        },
+    },
+    'he':{
+        u'{{מחק}}': {
+            'msg' : 'יש למחוק ערך זה',
+            'pos': 'top'
+        },
+        u'{{לשכתב}}': {
+            'msg' : 'ערך זה דורש שכתוב',
+            'pos': 'top'
+        },
+        u'{{קצרמר}}': {
+            'msg' : 'ערך זה הוא קצרמר',
+            'pos': 'bottom'
+        },
+        u'{{הבהרת חשיבות}}':{
+            'msg' : 'חשיבותו של ערך זה אינה ברורה.',
+            'pos': 'top'
+        },
+        u'{{עריכה}}': {
+            'msg' : 'ערך זה דורש עריכה',
+            'pos': 'top'
+        },
+    },
+	'ia':{
+        u'{{Eliminar}}': {
+            'msg' : 'Iste articulo debe esser eliminate',
+            'pos': 'top'
+        },
+        u'{{Revision}}': {
+            'msg' : 'Iste articulo require revision',
+            'pos': 'top'
+        },
+        u'{{Stub}}': {
+            'msg' : 'Iste articulo es in stato embryonic',
+            'pos': 'bottom'
+        },
+    },
+   'nl':{
+        u'{{weg}}': {
+            'msg' : '{weg}',
+            'pos' : 'top'
+        },
+        u'{{nuweg}}': {
+            'msg' : '{nuweg}',
+            'pos' : 'top'
+        },
+        u'{{wiu}}': {
+            'msg' : '{wiu}',
+            'pos' : 'top'
+        },
+        u'{{beg}}': {
+            'msg' : '{beg}',
+            'pos' : 'bottom'
+        },
+        u'{{wikify}}': {
+            'msg' : '{wikify}',
+            'pos' : 'top'
+        },
+        u'{{wb}}': {
+            'msg' : '{wb}',
+            'pos' : 'top'
+        },
+    },
+    'pl':{
+        u'{{ek}}': {
+            'msg' : '[[Kategoria:Ekspresowe kasowanko|ek]]',
+            'pos':'top'
+        },
+        u'{{dopracować}}' : {
+            'msg' : 'Dopracować',
+            'pos':'top'
+        },
+        u'{{linki}}'      : {
+            'msg' : 'Linki wewnętrzne do dodania',
+            'pos':'top'
+        },
+        u'{{źródła}}'     : {
+            'msg' : 'W artykule brakuje źródeł',
+            'pos':'top'
+        },
+        u'{{stub}}'       : {
+            'msg' : 'stub (zalążek)',
+            'pos':'bottom'
+        },
+    },
+   'pt': {
+        u'{{wikificar}}': {
+            'msg': '{{wikificar}}', 'pos':'top'
+        },
+        u'{{reciclar}}': {
+            'msg': '{{reciclar}}',
+            'pos':'top'
+        },
+        u'{{lixo|~~~~}}': {
+            'msg': '{{lixo}}',
+            'pos':'top'
+        },
+        u'{{revisão}}': {
+            'msg': '{{revisão}}',
+            'pos':'top'
+        },
+        u'{{impróprio}}': {
+            'msg': '{{impróprio}}',
+            'pos':'top'
+        },
+        u'{{apagar vaidade}}': {
+            'msg': '{{apagar vaidade}}',
+            'pos':'top'
+        },
+    },
+}
 
-        'fr':{u'{{suppression}}' :{ 'msg' : u'Cet article devrait être supprimé','pos': 'top'},
-              u'{{à vérifier}}'  :{ 'msg': u'Cet article est à vérifier','pos': 'top'},
-              u'{{ébauche}}'     :{ 'msg': u'Cet article est une ébauche','pos': 'bottom'},
-              },
-
-        'he':{'{{מחק}}'          :{ 'msg' : 'יש למחוק ערך זה','pos': 'top'},
-              '{{לשכתב}}'        :{ 'msg' : 'ערך זה דורש שכתוב','pos': 'top'},
-              '{{קצרמר}}'        :{ 'msg' : 'ערך זה הוא קצרמר','pos': 'bottom'},
-              '{{הבהרת חשיבות}}' :{'msg' : 'חשיבותו של ערך זה אינה ברורה.', 'pos': 'top'},
-              '{{עריכה}}'        :{ 'msg' : 'ערך זה דורש עריכה','pos': 'top'},
-              },
-        
-	'ia':{'{{Eliminar}}' :{ 'msg' : 'Iste articulo debe esser eliminate','pos': 'top'},
-              '{{Revision}}' :{ 'msg' : 'Iste articulo require revision','pos': 'top'},
-              '{{Stub}}'     :{ 'msg' : 'Iste articulo es in stato embryonic','pos': 'bottom'},
-              },
-        
-        'nl':{u'{{weg}}' :{ 'msg' : '{weg}','pos' : 'top'},
-              u'{{nuweg}}' :{ 'msg' : '{nuweg}','pos' : 'top'},
-              u'{{wiu}}' :{ 'msg' : '{wiu}','pos' : 'top'},
-              u'{{beg}}' :{ 'msg' : '{beg}','pos' : 'bottom'},
-              u'{{wikify}}' :{ 'msg' : '{wikify}','pos' : 'top'},
-              u'{{wb}}' :{ 'msg' : '{wb}','pos' : 'top'},
-              },
-
-        'pl':{u'{{ek}}'         : { 'msg' : '[[Kategoria:Ekspresowe kasowanko|ek]]', 'pos':'top'},
-              u'{{dopracować}}' : { 'msg' : 'Dopracować', 'pos':'top'},
-              u'{{linki}}'      : { 'msg' : 'Linki wewnętrzne do dodania', 'pos':'top'},
-              u'{{źródła}}'     : { 'msg' : 'W artykule brakuje źródeł', 'pos':'top'},
-              u'{{stub}}'       : { 'msg' : 'stub (zalążek)', 'pos':'bottom'},
-              },
-        
-        'pt': {u'{{wikificar}}' : {'msg': '{{wikificar}}', 'pos':'top'},
-               u'{{reciclar}}'  : {'msg': '{{reciclar}}', 'pos':'top'},
-               u'{{lixo|~~~~}}' : {'msg': '{{lixo}}', 'pos':'top'},
-               u'{{revisão}}' : {'msg': '{{revisão}}', 'pos':'top'},
-               u'{{impróprio}}' : {'msg': '{{impróprio}}', 'pos':'top'},
-               u'{{apagar vaidade}}' : {'msg': '{{apagar vaidade}}', 'pos':'top'},
-               },
-        }
-        
 # Message used when blanking an article
 blanking = {
     'en': 'blanked, content was "%s"',
@@ -236,8 +347,8 @@ question = questions + question
 # MAIN
 if __name__ == "__main__":
     try:
-        for arg in sys.argv[1:]:
-            wikipedia.argHandler(arg, 'followlive')
+        for arg in wikipedia.handleArgs():
+            wikipedia.output(u'Warning: argument "%s" not understood; ignoring.' % arg)
         bot = CleaningBot()
         bot.run()
     except:
