@@ -451,13 +451,13 @@ class DeadLinkReportThread(threading.Thread):
                 self.semaphore.acquire()
                 (url, errorReport, containingPage) = self.queue[0]
                 self.queue = self.queue[1:]
-                message = u'** Reporting dead link on ' + containingPage.switchTalkPage().aslink() + '...'
+                message = u'** Reporting dead link on ' + containingPage.toggleTalkPage().aslink() + '...'
                 wikipedia.output(message, colors = [11] * len(message))
-                talk = containingPage.switchTalkPage()
+                talk = containingPage.toggleTalkPage()
                 try:
                     content = talk.get() + "\n\n"
                     if url in content:
-                        message = u'** Dead link seems to have already been reported on ' + containingPage.switchTalkPage().aslink() + '.'
+                        message = u'** Dead link seems to have already been reported on ' + containingPage.toggleTalkPage().aslink() + '.'
                         wikipedia.output(message, colors = [11] * len(message))
                         self.semaphore.release()
                         continue
@@ -467,7 +467,7 @@ class DeadLinkReportThread(threading.Thread):
                 try:
                     talk.put(content)
                 except wikipedia.SpamfilterError, url:
-                    message = u'** SpamfilterError while trying to change %s: %s' % (containingPage.switchTalkPage().aslink(), url)
+                    message = u'** SpamfilterError while trying to change %s: %s' % (containingPage.toggleTalkPage().aslink(), url)
                     wikipedia.output(message, colors = [11] * len(message))
                     
                 self.semaphore.release()
