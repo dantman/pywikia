@@ -1802,33 +1802,33 @@ class GetAll(object):
         text = entry.text
         editRestriction = entry.editRestriction
         moveRestriction = entry.moveRestriction
-        pl = Page(self.site, title)
-        for pl2 in self.pages:
-            if pl2.sectionFreeTitle() == pl.sectionFreeTitle():
-                if not hasattr(pl2,'_contents') and not hasattr(pl2,'_getexception'):
+        page = Page(self.site, title)
+        for page2 in self.pages:
+            if page2.sectionFreeTitle() == page.sectionFreeTitle():
+                if not hasattr(page2,'_contents') and not hasattr(page2,'_getexception'):
                     break
         else:
-            output(u"BUG>> title %s (%s) not found in list" % (title, pl.aslink(forceInterwiki=True)))
-            output(u'Expected one of: %s' % u','.join([pl2.aslink(forceInterwiki=True) for pl2 in self.pages]))
+            output(u"BUG>> title %s (%s) not found in list" % (title, page.aslink(forceInterwiki=True)))
+            output(u'Expected one of: %s' % u','.join([page2.aslink(forceInterwiki=True) for page2 in self.pages]))
             raise PageNotFound
 
-        pl2.editRestriction = entry.editRestriction
-        pl2.moveRestriction = entry.moveRestriction
+        page2.editRestriction = entry.editRestriction
+        page2.moveRestriction = entry.moveRestriction
         if editRestriction == 'autoconfirmed':
-            pl2._editrestriction = True
-        pl2._permalink = entry.revisionid
-        pl2._userName = username
-        pl2._ipedit = ipedit
-        pl2._editTime = timestamp
-        section = pl2.section()
+            page2._editrestriction = True
+        page2._permalink = entry.revisionid
+        page2._userName = username
+        page2._ipedit = ipedit
+        page2._editTime = timestamp
+        section = page2.section()
         m = self.site.redirectRegex().match(text)
         if m:
-            output(u"%s is a redirect" % pl2)
+            output(u"%s is a redirect" % page2.aslink())
             redirectto = m.group(1)
             if section and redirectto.find("#") == -1:
                 redirectto = redirectto+"#"+section
-            pl2._getexception = IsRedirectPage
-            pl2._redirarg = redirectto
+            page2._getexception = IsRedirectPage
+            page2._redirarg = redirectto
         # There's no possibility to read the wpStarttime argument from the XML.
         # This argument makes sure an edit conflict is raised if the page is
         # deleted between retrieval and saving of the page. It contains the
@@ -1837,18 +1837,18 @@ class GetAll(object):
         # make sure your system clock is correct. If it's too slow, the bot might
         # recreate pages someone deleted. If it's too fast, the bot will raise
         # EditConflict exceptions although there's no conflict.
-        pl2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
+        page2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
         if section:
-            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,pl2.site().encoding()))                    
+            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))                    
             if not m:
                 try:
-                    pl2._getexception
-                    output(u"WARNING: Section not found: %s" % pl2.aslink(forceInterwiki = True))
+                    page2._getexception
+                    output(u"WARNING: Section not found: %s" % page2.aslink(forceInterwiki = True))
                 except AttributeError:
                     # There is no exception yet
-                    pl2._getexception = SectionError
+                    page2._getexception = SectionError
         # Store the content
-        pl2._contents = text
+        page2._contents = text
  
     def headerDone(self, header):
         # Verify our family data
@@ -2075,7 +2075,7 @@ class Throttle(object):
         self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
         # Announce the delay if it exceeds a preset limit
         if waittime > config.noisysleep:
-            output(u"Sleeping for %.1f seconds, %s" % (waittime, time.strftime("%d %b %Y %H:%M:%S", time.localtime())))
+            output(u"Sleeping for %.1f seconds, %s" % (waittime, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
         time.sleep(waittime)
         self.now = time.time()
 
