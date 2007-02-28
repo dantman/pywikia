@@ -631,7 +631,7 @@ class Subject(object):
                         self.todo = []
                         pass
                     elif not globalvar.followredirect:
-                        print "NOTE: not following redirects."
+                        wikipedia.output(u"NOTE: not following redirects.")
                     else:
                         if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage) or self.wiktionaryMismatch(redirectTargetPage) or (page.site().family != redirectTargetPage.site().family)):
                             if self.addIfNew(redirectTargetPage, counter, page):
@@ -714,7 +714,7 @@ class Subject(object):
                 f.close()
             except:
                #raise
-               print 'File autonomous_problem.dat open or corrupted! Try again with -restore.'
+               wikipedia.output(u'File autonomous_problem.dat open or corrupted! Try again with -restore.')
                sys.exit()
 
     def whereReport(self, page, indent=4):
@@ -766,8 +766,8 @@ class Subject(object):
             # First loop over the ones that have more solutions
             for site, pages in new.items():
                 if len(pages) > 1:
-                    print "=" * 30
-                    print "Links to %s" % site
+                    wikipedia.output(u"=" * 30)
+                    wikipedia.output(u"Links to %s" % site)
                     i = 0
                     for page2 in pages:
                         i += 1
@@ -801,7 +801,7 @@ class Subject(object):
             for site, pages in new.items():
                 if len(pages) == 1:
                     if not acceptall:
-                        print "=" * 30
+                        wikipedia.output(u"=" * 30)
                         page2 = pages[0]
                         wikipedia.output(u"Found link to %s in:" % page2.aslink(True))
                         self.whereReport(page2, indent = 4)
@@ -1010,12 +1010,12 @@ class Subject(object):
                     # another get-query first.
                     if bot:
                         while wikipedia.get_throttle.waittime() + 2.0 < wikipedia.put_throttle.waittime():
-                            print "NOTE: Performing a recursive query first to save time...."
+                            wikipedia.output(u"NOTE: Performing a recursive query first to save time....")
                             qdone = bot.oneQuery()
                             if not qdone:
                                 # Nothing more to do
                                 break
-                    print "NOTE: Updating live wiki..."
+                    wikipedia.output(u"NOTE: Updating live wiki...")
                     timeout=60
                     while 1:
                         try:
@@ -1040,7 +1040,7 @@ class Subject(object):
                     if str(status) == '302':
                         return True
                     else:
-                        print status, reason
+                        wikipedia.output(u'%s %s' % (status, reason))
                 else:
                     raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)))
             return False
@@ -1227,7 +1227,7 @@ class InterwikiBot(object):
         # First find the best language to work on
         site = self.selectQuerySite()
         if site == None:
-            print "NOTE: Nothing left to do"
+            wikipedia.output(u"NOTE: Nothing left to do")
             return False
         # Now assemble a reasonable list of pages to get
         subjectGroup = []
@@ -1243,7 +1243,7 @@ class InterwikiBot(object):
                     # We have found enough pages to fill the bandwidth.
                     break
         if len(pageGroup) == 0:
-            print "NOTE: Nothing left to do 2"
+            wikipedia.output(u"NOTE: Nothing left to do 2")
             return False
         # Get the content of the assembled list in one blow
         gen = pagegenerators.PreloadingGenerator(iter(pageGroup))
@@ -1488,7 +1488,7 @@ if __name__ == "__main__":
                     nextPage = page.titleWithoutNamespace() + '!'
                     namespace = page.namespace()
                 except NameError:
-                    print "Dump file is empty?! Starting at the beginning."
+                    wikipedia.output(u"Dump file is empty?! Starting at the beginning.")
                     nextPage = "!"
                     namespace = 0
                 # old generator is used up, create a new one
