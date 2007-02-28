@@ -70,7 +70,7 @@ Other functions:
 getall(): Load pages via Special:Export
 setAction(text): Use 'text' instead of "Wikipedia python library" in
     editsummaries
-argHandler(text): Checks whether text is an argument defined on wikipedia.py
+handleArgs(): Checks whether text is an argument defined on wikipedia.py
     (these are -family, -lang, -log and others)
 translate(xx, dict): dict is a dictionary, giving text depending on language,
     xx is a language. Returns the text in the most applicable language for
@@ -1761,7 +1761,7 @@ class GetAll(object):
             except (socket.error, httplib.BadStatusLine, ServerError):
                 # Print the traceback of the caught exception
                 print ''.join(traceback.format_exception(*sys.exc_info()))
-                output(u'DBG> got network error in GetAll.run. Sleeping for %d seconds'%dt)
+                output(u'DBG> got network error in GetAll.run. Sleeping for %d seconds...' % dt)
                 time.sleep(dt)
                 if dt <= 60:
                     dt += 15
@@ -1769,7 +1769,7 @@ class GetAll(object):
                     dt += 60
             else:
                 if data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
-                    output(u'Got incorrect export page. Sleeping for %d seconds'%dt)
+                    output(u'Got incorrect export page. Sleeping for %d seconds...' % dt)
                     time.sleep(dt)
                     if dt <= 60:
                         dt += 15
@@ -2082,7 +2082,7 @@ class Throttle(object):
         self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
         # Announce the delay if it exceeds a preset limit
         if waittime > config.noisysleep:
-            print "Sleeping for %.1f seconds," % waittime, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
+            wikipedia.output(u"Sleeping for %.1f seconds," % waittime, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
         time.sleep(waittime)
         self.now = time.time()
 
@@ -3444,47 +3444,6 @@ def getSite(code = None, fam = None, user=None):
 def setSite(site):
     default_code = site.language
     default_family = site.family
-
-def argHandler(arg, moduleName):
-    '''
-    DEPRECATED - use handleArgs instead
-    Takes a commandline parameter, converts it to unicode, and returns it unless
-    it is one of the global parameters as -lang or -log. If it is a global
-    parameter, processes it and returns None.
-
-    moduleName should be the name of the module calling this function. This is
-    required because the -help option loads the module docstring and because
-    the module name will be used for the filename of the log.
-    '''
-    global default_code, default_family
-    if sys.platform=='win32':
-        # stupid Windows gives parameters encoded as windows-1252, but input
-        # encoded as cp850
-        arg = unicode(arg, 'windows-1252')
-    else:
-        # Linux uses the same encoding for both
-        arg = unicode(arg, config.console_encoding)
-    if arg == '-help':
-        showHelp(moduleName)
-        sys.exit(0)
-    elif arg.startswith('-family:'):
-        global default_family
-        default_family = arg[8:]
-    elif arg.startswith('-lang:'):
-        global default_code
-        default_code = arg[6:]
-    elif arg.startswith('-putthrottle:'):
-        put_throttle.setDelay(int(arg[13:]),absolute = True)
-    elif arg == '-log':
-        activateLog('%s.log' % moduleName)
-    elif arg.startswith('-log:'):
-        activateLog(arg[5:])
-    elif arg == '-nolog':
-        global logfile
-        logfile = None
-    else:
-        return arg
-    return None
 
 def handleArgs():
     '''
