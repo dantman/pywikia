@@ -1072,7 +1072,7 @@ class Page(object):
                 raise EditConflict(u'Someone deleted the page.')
             elif safetuple and "<" in data:
                 # We might have been using an outdated token
-                print "Changing page has failed. Retrying."
+                output(u"Changing page has failed. Retrying.")
                 return self.putPage(safetuple[0], comment=safetuple[1],
                         watchArticle=safetuple[2], minorEdit=safetuple[3], newPage=safetuple[4],
                         token=None, gettoken=True, sysop=safetuple[5])
@@ -1760,7 +1760,7 @@ class GetAll(object):
                 data = self.getData()
             except (socket.error, httplib.BadStatusLine, ServerError):
                 # Print the traceback of the caught exception
-                print ''.join(traceback.format_exception(*sys.exc_info()))
+                output(u''.join(traceback.format_exception(*sys.exc_info())))
                 output(u'DBG> got network error in GetAll.run. Sleeping for %d seconds...' % dt)
                 time.sleep(dt)
                 if dt <= 60:
@@ -1830,7 +1830,7 @@ class GetAll(object):
         section = pl2.section()
         m = self.site.redirectRegex().match(text)
         if m:
-            print "%s is a redirect"%pl2
+            output(u"%s is a redirect" % pl2)
             redirectto = m.group(1)
             if section and redirectto.find("#") == -1:
                 redirectto = redirectto+"#"+section
@@ -1892,7 +1892,7 @@ class GetAll(object):
             pagenames = [doubleXForEsperanto(pagetitle) for pagetitle in pagenames]
         pagenames = u'\r\n'.join(pagenames)
         if type(pagenames) != type(u''):
-            wikipedia.output(u'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.')
+            output(u'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.')
             print pagenames
         # convert Unicode string to the encoding used on that wiki
         pagenames = pagenames.encode(self.site.encoding())
@@ -2082,7 +2082,7 @@ class Throttle(object):
         self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
         # Announce the delay if it exceeds a preset limit
         if waittime > config.noisysleep:
-            wikipedia.output(u"Sleeping for %.1f seconds," % waittime, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
+            output(u"Sleeping for %.1f seconds," % waittime, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
         time.sleep(waittime)
         self.now = time.time()
 
@@ -2363,10 +2363,7 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
     if site is None:
         site = getSite()
 
-    #print "oldcat: %s  newcat: %s" % (oldcat, newcat)
-
     catNamespace = '|'.join(site.category_namespaces())
-    #print "Regex is [[(%s):%s]]" % (catNamespace, oldcat.titleWithoutNamespace())
     categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\]' % (catNamespace, oldcat.titleWithoutNamespace()))
     text = replaceExceptMathNowikiAndComments(oldtext, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace())
     return text
@@ -2525,7 +2522,6 @@ def UnicodeToAsciiHtml(s):
     html = []
     for c in s:
         cord = ord(c)
-        #print cord,
         if cord < 128:
             html.append(c)
         else:
@@ -2604,6 +2600,8 @@ def html2unicode(text, ignore = []):
 def Family(fam = None, fatal = True):
     """
     Import the named family.
+    If fatal is true, the bot will stop running when the given family is
+    unknown. If fatal is false, it will only raise a ValueError exception.
     """
     if fam == None:
         fam = config.family
@@ -2614,8 +2612,7 @@ def Family(fam = None, fatal = True):
         exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
-            print "Error importing the %s family. This probably means the family"%fam
-            print "does not exist. Also check your configuration file"
+            output(u"Error importing the %s family. This probably means the family does not exist. Also check your configuration file." % fam)
             import traceback
             traceback.print_stack()
             sys.exit(1)
@@ -2772,7 +2769,6 @@ class Site(object):
             tmp = '%s-%s-%s-login.data' % (self.family.name, self.lang, username)
             fn = _wt.absoluteFilename('login-data', tmp)
             if not os.path.exists(fn):
-                #print "Not logged in"
                 self._cookies = None
                 self.loginStatusKnown = True
             else:
@@ -2834,7 +2830,7 @@ class Site(object):
         if m:
             charset = m.group(1)
         else:
-            print "WARNING: No character set found"
+            output(u"WARNING: No character set found.")
             # UTF-8 as default
             charset = 'utf-8'
         # Check if this is the charset we expected
@@ -3073,7 +3069,7 @@ class Site(object):
             start = urllib.quote(start)
             # load a list which contains a series of article names (always 480)
             path = self.allpages_address(start, namespace)
-            print 'Retrieving Allpages special page for %s from %s, namespace %i' % (repr(self), start, namespace)
+            output(u'Retrieving Allpages special page for %s from %s, namespace %i' % (repr(self), start, namespace))
             returned_html = self.getUrl(path)
             # Try to find begin and end markers
             try:
