@@ -156,38 +156,36 @@ def main():
 
 mysite = wikipedia.getSite()
 commenttext = wikipedia.translate(mysite,msg)
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg, 'pagefromfile')
-    if arg:
-        if arg.startswith("-start:"):
-            starttext=arg[7:]
-        elif arg.startswith("-end:"):
-            endtext=arg[5:]
-        elif arg.startswith("-file:"):
-            filename=arg[6:]
-        elif arg=="-include":
-            include = True
-        #elif arg=="-exclude":
-            #exclude = True
-        elif arg=="-appendtop":
-            append = "Top"
-        elif arg=="-appendbottom":
-            append = "Bottom"
-        elif arg=="-force":
-            force=True
-        elif arg=="-safe":
-            force=False
-            append="False"
-        elif arg=='-notitle':
-            notitle=True
-        elif arg.startswith("-titlestart:"):
-            titlestart=arg[12:]
-        elif arg.startswith("-titleend:"):
-            titleend=arg[10:]
-        elif arg.startswith("-summary:"):
-            commenttext=arg[9:]
-        else:
-            wikipedia.output(u"Disregarding unknown argument %s."%arg)
+for arg in wikipedia.handleArgs():
+    if arg.startswith("-start:"):
+        starttext=arg[7:]
+    elif arg.startswith("-end:"):
+        endtext=arg[5:]
+    elif arg.startswith("-file:"):
+        filename=arg[6:]
+    elif arg=="-include":
+        include = True
+    #elif arg=="-exclude":
+        #exclude = True
+    elif arg=="-appendtop":
+        append = "Top"
+    elif arg=="-appendbottom":
+        append = "Bottom"
+    elif arg=="-force":
+        force=True
+    elif arg=="-safe":
+        force=False
+        append="False"
+    elif arg=='-notitle':
+        notitle=True
+    elif arg.startswith("-titlestart:"):
+        titlestart=arg[12:]
+    elif arg.startswith("-titleend:"):
+        titleend=arg[10:]
+    elif arg.startswith("-summary:"):
+        commenttext=arg[9:]
+    else:
+        wikipedia.output(u"Disregarding unknown argument %s." % arg)
 
 try:
     main()

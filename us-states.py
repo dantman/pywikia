@@ -79,17 +79,15 @@ def main():
         'West Virginia': 'WV',
         'Wisconsin': 'WI',
         'Wyoming': 'WY'
-        }
+    }
 
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'us-states')
-        if arg:
-            if arg.startswith('-start:'):
-                start = arg[7:]
-            elif arg == '-force':
-                force = True
-            else:
-                wikipedia.output(u'Warning: argument "%s" not understood; ignoring.'%arg)
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-start:'):
+            start = arg[7:]
+        elif arg == '-force':
+            force = True
+        else:
+            wikipedia.output(u'Warning: argument "%s" not understood; ignoring.'%arg)
 
     mysite = wikipedia.getSite()
     for p in mysite.allpages(start = start):

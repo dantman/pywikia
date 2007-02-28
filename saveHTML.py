@@ -131,37 +131,35 @@ def main():
     overwrite_images = False
     overwrite_articles = False
     
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'saveHTML')
-        if arg:
-            if arg.startswith("-lang:"):
-                lang = arg[6:]
-            elif arg.startswith("-file:"):
-                f=open(arg[6:], 'r')
-                R=re.compile(r'.*\[\[([^\]]*)\]\].*')
-                m = False
-                for line in f.readlines():
-                    m=R.match(line)            
-                    if m:
-                        sa.append(string.replace(m.group(1), " ", "_"))
-                    else:
-                        print "ERROR: Did not understand %s line:\n%s" % (
-                            arg[6:], repr(line))
-                f.close()
-            elif arg.startswith("-o:"):
-                output_directory = arg[3:]
-            elif arg.startswith("-images"):
-                save_images = True
-            elif arg.startswith("-overwrite:"):
-                if arg[11] == "I":
-                    overwrite_images = True
-                elif arg[11] == "A":
-                    overwrite_articles = True
-                elif arg[11] == "B":
-                    overwrite_images = True
-                    overwrite_articles = True
-            else:
-                sa.append(arg.replace(" ", "_"))
+    for arg in wikipedia.handleArgs():
+        if arg.startswith("-lang:"):
+            lang = arg[6:]
+        elif arg.startswith("-file:"):
+            f=open(arg[6:], 'r')
+            R=re.compile(r'.*\[\[([^\]]*)\]\].*')
+            m = False
+            for line in f.readlines():
+                m=R.match(line)            
+                if m:
+                    sa.append(string.replace(m.group(1), " ", "_"))
+                else:
+                    print "ERROR: Did not understand %s line:\n%s" % (
+                        arg[6:], repr(line))
+            f.close()
+        elif arg.startswith("-o:"):
+            output_directory = arg[3:]
+        elif arg.startswith("-images"):
+            save_images = True
+        elif arg.startswith("-overwrite:"):
+            if arg[11] == "I":
+                overwrite_images = True
+            elif arg[11] == "A":
+                overwrite_articles = True
+            elif arg[11] == "B":
+                overwrite_images = True
+                overwrite_articles = True
+        else:
+            sa.append(arg.replace(" ", "_"))
 
     headers = {"Content-type": "application/x-www-form-urlencoded", 
                "User-agent": wikipedia.useragent}

@@ -396,25 +396,25 @@ try:
     rebuild = False
     checknames = True
     checklang = None
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'spellcheck')
-        if arg:
-            if arg.startswith("-start:"):
-                start = arg[7:]
-            elif arg.startswith("-newpages"):
-                newpages = True
-            elif arg.startswith("-longpages"):
-                longpages = True
-            elif arg.startswith("-html"):
-                correct_html_codes = True
-            elif arg.startswith("-rebuild"):
-                rebuild = True
-            elif arg.startswith("-noname"):
-                checknames = False
-            elif arg.startswith("-checklang:"):
-                checklang = arg[11:]
-            else:
-                title.append(arg)
+
+    for arg in wikipedia.handleArgs():
+        if arg.startswith("-start:"):
+            start = arg[7:]
+        elif arg.startswith("-newpages"):
+            newpages = True
+        elif arg.startswith("-longpages"):
+            longpages = True
+        elif arg.startswith("-html"):
+            correct_html_codes = True
+        elif arg.startswith("-rebuild"):
+            rebuild = True
+        elif arg.startswith("-noname"):
+            checknames = False
+        elif arg.startswith("-checklang:"):
+            checklang = arg[11:]
+        else:
+            title.append(arg)
+
     mysite = wikipedia.getSite()
     if not checklang:
         checklang = mysite.language()

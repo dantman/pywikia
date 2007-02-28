@@ -91,9 +91,7 @@ class TextEditor:
 class ArticleEditor:
     joinchars = string.letters + '[]' + string.digits # join lines if line starts with this ones
 
-    def __init__(self, args):
-        """Takes one argument, usually this is sys.argv[1:]"""
-        self.all_args = args
+    def __init__(self):
         self.set_options()
         self.setpage()
         self.site = wikipedia.getSite()
@@ -101,10 +99,8 @@ class ArticleEditor:
     def set_options(self):
         """Parse commandline and set options attribute"""
         my_args = []
-        for arg in self.all_args:
-            arg = wikipedia.argHandler(arg, 'editarticle')
-            if arg:
-                my_args.append(arg)
+        for arg in wikipedia.handleArgs():
+            my_args.append(arg)
         parser = optparse.OptionParser()
         parser.add_option("-r", "--edit_redirect", action="store_true", default=False, help="Ignore/edit redirects")
         parser.add_option("-p", "--page", help="Page to edit")
@@ -166,7 +162,7 @@ class ArticleEditor:
         if new and old != new:
             new = self.repair(new)
             wikipedia.showDiff(old, new)
-            comment = wikipedia.input(u"What did you change? ") + sig
+            comment = wikipedia.input(u"What did you change?") + sig
             try:
                 self.page.put(new, comment = comment, minorEdit = False, watchArticle=self.options.watch)
             except wikipedia.EditConflict:
@@ -175,7 +171,7 @@ class ArticleEditor:
             wikipedia.output(u"Nothing changed")
 
 def main():
-    app = ArticleEditor(sys.argv[1:])
+    app = ArticleEditor()
     app.run()
 
 if __name__ == "__main__":

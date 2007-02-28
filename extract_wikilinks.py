@@ -29,17 +29,15 @@ sorted = False
 list = []
 complete = True
 
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg, 'extract_wikilinks')
-    if arg:
-        if arg.startswith("-sorted"):
-            sorted = True
-        elif arg.startswith("-bare"):
-            complete = False
-        elif fn:
-            print "Ignoring argument %s"%arg
-        else:
-            fn = arg
+for arg in wikipedia.handleArgs():
+    if arg.startswith("-sorted"):
+        sorted = True
+    elif arg.startswith("-bare"):
+        complete = False
+    elif fn:
+        print "Ignoring argument %s"%arg
+    else:
+        fn = arg
 
 if not fn:
     print "No file specified to get the links from"

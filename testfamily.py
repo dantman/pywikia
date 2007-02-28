@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8	 -*-
 """
 This utility's primary use is to find all mismatches between the namespace
@@ -39,11 +39,9 @@ def testSite(site):
 
 def main():
     all = False
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'testfamily')
-        if arg:
-            if arg == '-all':
-                all = True
+    for arg in wikipedia.handleArgs():
+        if arg == '-all':
+            all = True
     
     mySite = wikipedia.getSite()
     fam = mySite.family

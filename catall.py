@@ -77,13 +77,11 @@ def make_categories(page, list, site = None):
 docorrections=True
 start=[]
 
-for arg in sys.argv[1:]:
-    arg = wikipedia.argHandler(arg, 'catall')
-    if arg:
-        if arg == '-onlynew':
-            docorrections=False
-        else:
-            start.append(arg)
+for arg in wikipedia.handleArgs():
+    if arg == '-onlynew':
+        docorrections=False
+    else:
+        start.append(arg)
 
 if start == []:
     start='A'

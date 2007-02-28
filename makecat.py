@@ -198,22 +198,20 @@ try:
     main = True
     workingcatname = []
     tocheck = []
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'makecat')
-        if arg:
-            if arg.startswith('-nodate'):
-                skipdates = True
-            elif arg.startswith('-forward'):
-                checkbackward = False
-                checkbroken = False
-            elif arg.startswith('-exist'):
-                checkbroken = False
-            elif arg.startswith('-keepparent'):
-                removeparent = False
-            elif arg.startswith('-all'):
-                main = False
-            else:
-                workingcatname.append(arg)
+    for arg in wikipedia.handleArgs():
+        if arg.startswith('-nodate'):
+            skipdates = True
+        elif arg.startswith('-forward'):
+            checkbackward = False
+            checkbroken = False
+        elif arg.startswith('-exist'):
+            checkbroken = False
+        elif arg.startswith('-keepparent'):
+            removeparent = False
+        elif arg.startswith('-all'):
+            main = False
+        else:
+            workingcatname.append(arg)
 
     if len(workingcatname) == 0:
         workingcatname = raw_input("Which page to start with? ")

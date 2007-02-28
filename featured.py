@@ -249,11 +249,8 @@ if __name__=="__main__":
         sys.exit()
         
     fromlang=[]
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'featured')
-        if not arg:
-            pass
-        elif arg == '-interactive':
+    for arg in wikipedia.handleArgs():
+        if arg == '-interactive':
             interactive=1
         elif arg == '-nocache':
             nocache=1

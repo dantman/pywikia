@@ -100,19 +100,17 @@ try:
     image_url = False
     shown = False
 
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'imageharvest')
-        if arg:
-            if arg == "-pattern":
-                image_url = True
-            elif arg == "-shown":
-                shown = True
-            elif arg == "-justshown":
-                shown = "just"
-            elif url == u'':
-                url = arg
-            else:
-                desc += [arg]
+    for arg in wikipedia.handleArgs():
+        if arg == "-pattern":
+            image_url = True
+        elif arg == "-shown":
+            shown = True
+        elif arg == "-justshown":
+            shown = "just"
+        elif url == u'':
+            url = arg
+        else:
+            desc += [arg]
 
     fileformats = ('jpg', 'jpeg', 'png', 'gif', 'svg', 'ogg')
     mysite = wikipedia.getSite()

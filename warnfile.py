@@ -104,10 +104,8 @@ class WarnfileRobot:
 
 def main():
     filename = None
-    for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'warnfile')
-        if arg:
-            filename = arg
+    for arg in wikipedia.handleArgs():
+        filename = arg
 
     if not filename:
         mysite = wikipedia.getSite()
