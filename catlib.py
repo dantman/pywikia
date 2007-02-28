@@ -343,18 +343,16 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
 def test():
     site = wikipedia.getSite()
     
-    pl=Category(site, 'Software')
+    cat = Category(site, 'Category:Software')
     
-    print pl.catlist(recurse = False)
+    print cat.catlist(recurse = False)
 
-    print pl.subcategories(recurse = False)
+    print cat.subcategories(recurse = False)
 
-    print pl.articles(recurse = False)
+    print cat.articles(recurse = False)
 
 if __name__=="__main__":
     import sys
     for arg in sys.argv[1:]:
-        arg = wikipedia.argHandler(arg, 'catlib')
-        if arg:
-            print "Ignored argument", arg
+        wikipedia.output(u'Ignored argument: %s' % arg)
     test()
