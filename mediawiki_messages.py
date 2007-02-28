@@ -175,7 +175,7 @@ def main():
             else:
                 key = arg
     if key:
-        wikipedia.output(get(key))
+        wikipedia.output(get(key), toStdout = True)
     elif refresh_all:
         refresh_all_messages()
     elif refresh:

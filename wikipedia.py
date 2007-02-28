@@ -2012,8 +2012,7 @@ class Throttle(object):
             f.write(str(p)+' '+str(processes[p])+'\n')
         f.close()
         self.process_multiplicity = count
-        print("Checked for running processes. %s processes currently running, "%count +
-              "including the current process.")
+        output(u"Checked for running processes. %s processes currently running, including the current process." % count)
 
     def setDelay(self, delay = config.minthrottle, absolute = False):
         if absolute:
@@ -2086,28 +2085,6 @@ class Throttle(object):
             print "Sleeping for %.1f seconds," % waittime, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
         time.sleep(waittime)
         self.now = time.time()
-
-get_throttle = Throttle(config.minthrottle,config.maxthrottle)
-put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
-
-
-class MyURLopener(urllib.FancyURLopener):
-    version="PythonWikipediaBot/1.0"
-
-# Special opener in case we are using a site with authentication
-if config.authenticate:
-    import urllib2, cookielib
-    import wikipediatools as _wt
-    COOKIEFILE = _wt.absoluteFilename('login-data', 'cookies.lwp')
-    cj = cookielib.LWPCookieJar()
-    if os.path.isfile(COOKIEFILE):
-        cj.load(COOKIEFILE)
-    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-    for site in config.authenticate.keys():
-        passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
-    authhandler = urllib2.HTTPBasicAuthHandler(passman)
-    authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),authhandler)
-    urllib2.install_opener(authenticateURLopener)
 
 def replaceExceptNowikiAndComments(text, old, new):
     """ Deprecated. """
@@ -3867,3 +3844,25 @@ def debugDump(name, site, error, data):
         f.write(data)
     f.close()
     output( u'ERROR: %s caused error %s. Dump %s created.' % (name,error,filename) )
+
+get_throttle = Throttle(config.minthrottle,config.maxthrottle)
+put_throttle = Throttle(config.put_throttle,config.put_throttle,False)
+
+
+class MyURLopener(urllib.FancyURLopener):
+    version="PythonWikipediaBot/1.0"
+
+# Special opener in case we are using a site with authentication
+if config.authenticate:
+    import urllib2, cookielib
+    import wikipediatools as _wt
+    COOKIEFILE = _wt.absoluteFilename('login-data', 'cookies.lwp')
+    cj = cookielib.LWPCookieJar()
+    if os.path.isfile(COOKIEFILE):
+        cj.load(COOKIEFILE)
+    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    for site in config.authenticate.keys():
+        passman.add_password(None, site, config.authenticate[site][0], config.authenticate[site][1])
+    authhandler = urllib2.HTTPBasicAuthHandler(passman)
+    authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),authhandler)
+    urllib2.install_opener(authenticateURLopener)

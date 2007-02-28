@@ -28,7 +28,7 @@ class UI:
     # NOTE: We use sys.stdout.write() instead of print because print adds a
     # newline.
     
-    def printColorizedInUnix(self, text, colors):
+    def printColorizedInUnix(self, text, colors, targetStream):
         result = ""
         lastColor = None
         for i in range(0, len(colors)):
@@ -41,7 +41,7 @@ class UI:
         if lastColor != None:
             # reset the color to default at the end
             result += unixColors[None]
-        sys.stdout.write(result.encode(config.console_encoding, 'replace'))
+        targetStream.write(result.encode(config.console_encoding, 'replace'))
 
     def printColorizedInWindows(self, text, colors):
         """
@@ -52,13 +52,13 @@ class UI:
             lastColor = None
             for i in range(0, len(colors)):
                 if colors[i] != lastColor:
-                    #sys.stdout.flush()
+                    #targetStream.flush()
                     if colors[i] == None:
                         ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, config.defaultcolor)
                     else:
                         ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, colors[i])
                 # print one text character.
-                sys.stdout.write(text[i].encode(config.console_encoding, 'replace'))
+                targetStream.write(text[i].encode(config.console_encoding, 'replace'))
                 lastColor = colors[i]
             if lastColor != None:
                 # reset the color to default at the end
@@ -73,21 +73,20 @@ class UI:
                     somecolor = True
             if somecolor:
                 if text[-1] == "\n":
-                    sys.stdout.write((text[:-1]+"***\n").encode(config.console_encoding, 'replace'))
+                    targetStream.write((text[:-1]+"***\n").encode(config.console_encoding, 'replace'))
                 else:
-                    sys.stdout.write((text+"***").encode(config.console_encoding, 'replace'))
+                    targetStream.write((text+"***").encode(config.console_encoding, 'replace'))
             else:
-                sys.stdout.write(text.encode(config.console_encoding, 'replace'))
-        
-        
-    def printColorized(self, text, colors):
+                targetStream.write(text.encode(config.console_encoding, 'replace'))
+
+    def printColorized(self, text, colors, targetStream):
         if colors and config.colorized_output:
             if sys.platform == 'win32':
-                self.printColorizedInWindows(text, colors)
+                self.printColorizedInWindows(text, colors, targetStream)
             else:
-                self.printColorizedInUnix(text, colors)
+                self.printColorizedInUnix(text, colors, targetStream)
         else:
-            sys.stdout.write(text.encode(config.console_encoding, 'replace'))
+            targetStream.write(text.encode(config.console_encoding, 'replace'))
 
     def output(self, text, colors = None, newline = True, toStdout = False):
         """
@@ -160,7 +159,12 @@ class UI:
         if newline:
             text += u'\n'
             colors.append(None)
-        self.printColorized(text, colors)
+
+        if toStdout:
+            targetStream = sys.stdout
+        else:
+            targetStream = sys.stderr
+        self.printColorized(text, colors, targetStream)
 
     def input(self, question, colors = None):
         """
