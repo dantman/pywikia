@@ -2698,7 +2698,7 @@ class Site(object):
         conn.putheader('Content-Length', str(len(data)))
         conn.putheader('Content-type', contentType)
         conn.putheader('User-agent', useragent)
-        if self.cookies():
+        if self.cookies(sysop = sysop):
             conn.putheader('Cookie', self.cookies(sysop = sysop))
         conn.endheaders()
         conn.send(data)
