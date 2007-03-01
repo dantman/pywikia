@@ -494,7 +494,7 @@ if __name__ == "__main__":
             if generator:
                 gen = generator
         for page in gen:
-            wikipedia.output(page.title())
+            wikipedia.output(page.title(), toStdout = True)
         # This test code did not work. --Daniel
         #clg = CommandLineGenerator()
         #args = wikipedia.handleArgs()
