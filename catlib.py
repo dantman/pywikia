@@ -27,6 +27,11 @@ msg_created_for_renaming = {
     'pt':u'Bot: Movido de %s. Autor: %s',
     }
 
+# some constants that are used internally
+SUPERCATEGORY = 0
+SUBCATEGORY = 1
+ARTICLE = 2
+
 def isCatTitle(title, site):
     return ':' in title and title[:title.index(':')] in site.category_namespaces()
 
@@ -46,6 +51,10 @@ class Category(wikipedia.Page):
         self.sortKey = sortKey
         if self.namespace() != 14:
             raise ValueError(u'BUG: %s is not in the category namespace!' % title)
+        self.completelyCached = False
+        self.articleCache = []
+        self.subcatCache = []
+        self.supercatCache = []
 
     def aslink(self, forceInterwiki = False):
         """
@@ -65,48 +74,57 @@ class Category(wikipedia.Page):
             return '[[%s]]' % titleWithSortKey
 
 	
-    def catlist(self, recurse = False, purge = False):
-        """Cache result of make_catlist for a second call
+    def getContentsAndSupercats(self, recurse = False, purge = False):
+        """
+        Cache result of _parseCategory for a second call
 
-           This should not be used outside of this module.
+        This should not be used outside of this module.
         """
         if purge:
-            self._catlistT = self._make_catlist(recurse = recurse, purge = True)
-        # if we don't have a cached version
-        elif not hasattr(self, '_catlistT'):
-            self._catlistT = self._make_catlist(recurse = recurse)
-        return self._catlistT
-            
-    def _make_catlist(self, recurse = False, purge = False, site = None):
-        """Make a list of all articles and categories that are in this
-           category. If recurse is set to True, articles and subcategories
-           of any subcategories are also retrieved.
+            self.completelyCached = False
+        if self.completelyCached:
+            for article in self.articleCache:
+                yield ARTICLE, article
+            for subcat in self.subcatCache:
+                yield SUBCATEGORY, subcat
+            for supercat in self.supercatCache:
+                yield SUPERCATEGORY, supercat
+        else:
+            for type, title in self._parseCategory(recurse, purge):
+                if type == ARTICLE:
+                    self.articleCache.append(title)
+                elif type == SUBCATEGORY:
+                    self.subcatCache.append(title)
+                elif type == SUPERCATEGORY:
+                    self.supercatCache.append(title)
+                yield type, title
+            self.completelyCached = True
 
-           Returns non-unique, non-sorted lists of articles, subcategories and
-           supercategories. The supercategory list only contains the
-           supercategories of this category, regardless of the recurse argument.
-
-           This should not be used outside of this module.
+    def _parseCategory(self, recurse = False, purge = False):
         """
-        if site is None:
-            site = self.site()
-        import re
-        if site.version() < "1.4":
+        Make a list of all articles and categories that are in this
+        category. If recurse is set to True, articles and subcategories
+        of any subcategories are also retrieved.
+
+        Returns non-unique, non-sorted lists of articles, subcategories and
+        supercategories. The supercategory list only contains the
+        supercategories of this category, regardless of the recurse argument.
+
+        This should not be used outside of this module.
+        """
+        if self.site().version() < "1.4":
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
-        elif site.version() < "1.8":
+        elif self.site().version() < "1.8":
             Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
         else:
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
-        if site.version() < "1.8":
+        if self.site().version() < "1.8":
             Rsubcat = None
         else:
             Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\".+?\">(.+?)</a>')
-        ns = site.category_namespaces()
+        ns = self.site().category_namespaces()
         catsdone = []
         catstodo = [self]
-        articles = []
-        subcats = []
-        supercats=[]
         # regular expression matching the "(next 200)" link
         RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
         
@@ -122,7 +140,7 @@ class Category(wikipedia.Page):
             # each of the list pages, so we will care about them after this
             # loop.
             while not thisCatDone:
-                path = site.get_address(cat.urlname())
+                path = self.site().get_address(cat.urlname())
                 if startFromPage:
                     path += '&from=' + startFromPage
                 if purge:
@@ -131,7 +149,7 @@ class Category(wikipedia.Page):
                     wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), startFromPage))
                 else:
                     wikipedia.output('Getting [[%s]]...' % cat.title())
-                txt = site.getUrl(path)
+                txt = self.site().getUrl(path)
                 # save a copy of this text to find out self's supercategory.
                 # if recurse is true, this function should only return self's
                 # supercategory, not the ones of its subcats.
@@ -158,9 +176,9 @@ class Category(wikipedia.Page):
                         ncat = Category(self.site(), title)
                         if recurse and ncat not in catsdone:
                             catstodo.append(ncat)
-                        subcats.append(title)
+                        yield SUBCATEGORY, title
                     else:
-                        articles.append(title)
+                        yield ARTICLE, title
                 if Rsubcat:
                     # For MediaWiki versions where subcats look differently
                     for titleWithoutNamespace in Rsubcat.findall(txt):
@@ -168,7 +186,7 @@ class Category(wikipedia.Page):
                         ncat = Category(self.site(), title)
                         if recurse and ncat not in catsdone:
                             catstodo.append(ncat)
-                        subcats.append(title)
+                        yield SUBCATEGORY, title
                 # try to find a link to the next list page
                 matchObj = RLinkToNextPage.search(txt)
                 if matchObj:
@@ -194,37 +212,63 @@ class Category(wikipedia.Page):
             for title in Rsupercat.findall(self_txt):
                 # There might be a link to Special:Categories we don't want
                 if isCatTitle(title, self.site()):
-                    supercats.append(title)
-        return (articles, subcats, supercats)
+                    yield SUPERCATEGORY, title
     
     def subcategories(self, recurse = False):
-        """Create a list of all subcategories of the current category.
-
-           If recurse = True, also return subcategories of the subcategories.
-
-           Returns a sorted, unique list of all subcategories.
         """
+        Create a list of all subcategories of the current category.
+
+        If recurse = True, also return subcategories of the subcategories.
+
+        Returns a sorted, unique list of all subcategories.
+        """
+        for type, title in self.getContentsAndSupercats(recurse):
+            if type == SUBCATEGORY:
+                yield Category(self.site(), title)
+
+        """
+        Create a list of all subcategories of the current category.
+
+        If recurse = True, also return subcategories of the subcategories.
+
+        Returns a sorted, unique list of all subcategories.
+        """
+    def subcategoriesList(self, recurse = False):
         subcats = []
-        for title in self.catlist(recurse)[1]:
-            ncat = Category(self.site(), title)
-            subcats.append(ncat)
+        for cat in self.subcategories(recurse):
+            subcats.append(cat)
         return unique(subcats)
-    
-    #returns a list of all articles in this category
+
     def articles(self, recurse = False):
+        for type, title in self.getContentsAndSupercats(recurse):
+            if type == ARTICLE:
+                yield wikipedia.Page(self.site(), title)
+
+    #returns a list of all articles in this category
+    def articlesList(self, recurse = False):
         """Create a list of all pages in the current category.
 
            If recurse = True, also return pages in all subcategories.
 
-           Returns a sorted, unique list of all categories.
+           Returns a sorted, unique list of all articles.
         """
         articles = []
-        for title in self.catlist(recurse)[0]:
-            npage = wikipedia.Page(self.site(), title)
-            articles.append(npage)
+        for article in self.articles(recurse):
+            articles.append(article)
         return unique(articles)
 
     def supercategories(self, recurse = False):
+        """Create a list of all supercategories of the current category.
+
+           If recurse = True, also return subcategories of the subcategories.
+
+           Returns a sorted, unique list of all supercategories.
+        """
+        for type, title in self.getContentsAndSupercats(recurse):
+            if type == SUPERCATEGORY:
+                yield Category(self.site(), title)
+
+    def supercategoriesList(self, recurse = False):
         """Create a list of all subcategories of the current category.
 
            If recurse = True, also return subcategories of the subcategories.
@@ -232,16 +276,17 @@ class Category(wikipedia.Page):
            Returns a sorted, unique list of all subcategories.
         """
         supercats = []
-        for title in self.catlist(recurse)[2]:
-            ncat = Category(self.site(), title)
-            supercats.append(ncat)
+        for cat in self.supercategories(recurse):
+            supercats.append(cat)
         return unique(supercats)
-    
+
     def isEmpty(self):
         # TODO: rename; naming conflict with Page.isEmpty
-        (articles, subcats, supercats) = self.catlist(purge = True)
-        return (articles == [] and subcats == [])
-    
+        for type, title in self.getContentsAndSupercats():
+            if type == ARTICLE or type == SUBCATEGORY:
+                return False
+        return True
+
     def copyTo(self, catname):
         """
         Returns true if copying was successful, false if target page already
@@ -354,11 +399,12 @@ def test():
     
     cat = Category(site, 'Category:Software')
     
-    print cat.catlist(recurse = False)
-
-    print cat.subcategories(recurse = False)
-
-    print cat.articles(recurse = False)
+    wikipedia.output(u'SUBCATEGORIES:')
+    for subcat in cat.subcategories():
+        wikipedia.output(subcat.title())
+    wikipedia.output(u'\nARTICLES:')
+    for article in cat.articles():
+        wikipedia.output(article.title())
 
 if __name__=="__main__":
     import sys

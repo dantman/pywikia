@@ -162,8 +162,8 @@ class CategoryDatabase:
         if self.catContentDB.has_key(supercat):
             return self.catContentDB[supercat][0]
         else:
-            subcatlist = supercat.subcategories()
-            articlelist = supercat.articles()
+            subcatlist = supercat.subcategoriesList()
+            articlelist = supercat.articlesList()
             # add to dictionary
             self.catContentDB[supercat] = (subcatlist, articlelist)
             return subcatlist
@@ -178,8 +178,8 @@ class CategoryDatabase:
         if self.catContentDB.has_key(cat):
             return self.catContentDB[cat][1]
         else:
-            subcatlist = cat.subcategories()
-            articlelist = cat.articles()
+            subcatlist = cat.subcategoriesList()
+            articlelist = cat.articlesList()
             # add to dictionary
             self.catContentDB[cat] = (subcatlist, articlelist)
             return articlelist
@@ -189,7 +189,7 @@ class CategoryDatabase:
         if self.superclassDB.has_key(subcat):
             return self.superclassDB[subcat]
         else:
-            supercatlist = subcat.supercategories()
+            supercatlist = subcat.supercategoriesList()
             # add to dictionary
             self.superclassDB[subcat] = supercatlist
             return supercatlist
@@ -205,7 +205,10 @@ class CategoryDatabase:
             'superclassDB': self.superclassDB
         }
         # store dump to disk in binary format
-        pickle.dump(databases, f, protocol=pickle.HIGHEST_PROTOCOL)
+        try:
+            pickle.dump(databases, f, protocol=pickle.HIGHEST_PROTOCOL)
+        except pickle.PicklingError:
+            pass
         f.close()
         
 def sorted_by_last_name(catlink, pagelink):
@@ -332,7 +335,7 @@ class CategoryMoveRobot:
             catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
         
         # TODO: create subcategory generator
-        subcategories = self.oldCat.subcategories(recurse = 0)
+        subcategories = self.oldCat.subcategoriesList(recurse = False)
         if len(subcategories) == 0:
             wikipedia.output(u'There are no subcategories in category ' + self.oldCat.title())
         else:
@@ -370,9 +373,9 @@ class CategoryListifyRobot:
 
 
     def run(self):
-        listOfArticles = self.cat.articles()
+        listOfArticles = self.cat.articlesList()
         if self.subCats:
-            listOfArticles += self.cat.subcategories()
+            listOfArticles += self.cat.subcategoriesList()
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
         else:
@@ -429,14 +432,14 @@ class CategoryRemoveRobot:
             wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())    
         
     def run(self):
-        articles = self.cat.articles(recurse = 0)
+        articles = self.cat.articlesList(recurse = 0)
         if len(articles) == 0:
             wikipedia.output(u'There are no articles in category %s' % self.cat.title())
         else:
             for article in articles:
                 catlib.change_category(article, self.cat, None)
         # Also removes the category tag from subcategories' pages 
-        subcategories = self.cat.subcategories(recurse = 0)
+        subcategories = self.cat.subcategoriesList(recurse = 0)
         if len(subcategories) == 0:
             wikipedia.output(u'There are no subcategories in category %s' % self.cat.title())
         else:
@@ -589,7 +592,7 @@ class CategoryTidyRobot:
         # get edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_change) % cat.title())
         
-        articles = cat.articles(recurse = 0)
+        articles = cat.articlesList(recurse = False)
         if len(articles) == 0:
             wikipedia.output(u'There are no articles in category ' + catTitle)
         else:
