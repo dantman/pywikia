@@ -271,6 +271,7 @@ msg = {
     'csb':(u'robot ', u'dodôwô', u'rëmô', u'pòprôwiô'),
     'da': (u'robot ', u'Tilføjer', u'Fjerner', u'Ændrer'),
     'de': (u'Bot: ', u'Ergänze', u'Entferne', u'Ändere'),
+    'el': (u'Ρομπότ:', u'Προσθήκη', u'Αφαίρεση', u'Τροποποίηση'),
     'en': (u'robot ', u'Adding', u'Removing', u'Modifying'),
     'es': (u'robot ', u'Añadido', u'Eliminado', u'Modificado'),
     'eu': (u'robota ', u'Erantsia', u'Ezabatua', u'Aldatua'),
