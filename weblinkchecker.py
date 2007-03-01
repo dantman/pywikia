@@ -521,6 +521,7 @@ class WeblinkCheckerRobot:
 
 def main():
     gen = None
+    start = '!'
     pageTitle = []
     args = wikipedia.handleArgs()
     args = globalvar.handleArgs(args)
@@ -528,7 +529,6 @@ def main():
     for arg in args:
         if arg.startswith('-start:'):
             start = arg[7:]
-            gen = pagegenerators.AllpagesPageGenerator(start)
         else:
             pageTitle.append(arg)
 
@@ -536,6 +536,8 @@ def main():
         pageTitle = ' '.join(pageTitle)
         page = wikipedia.Page(wikipedia.getSite(), pageTitle)
         gen = iter([page])
+    else:
+        gen = pagegenerators.AllpagesPageGenerator(start)
 
     if gen:
         gen = pagegenerators.PreloadingGenerator(gen, pageNumber = 240)
