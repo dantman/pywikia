@@ -847,10 +847,11 @@ def main():
             main_only = True
         elif arg.startswith('-start'):
             try:
-                if len(arg) < 8:
+                if len(arg) <= len('-start:'):
                     generator = pagegenerators.CategorizedPageGenerator(wikipedia.getSite().disambcategory())
                 else:
-                    generator = pagegenerators.CategorizedPageGenerator(wikipedia.getSite().disambcategory(), arg[7:])
+                    generator = pagegenerators.CategorizedPageGenerator(wikipedia.getSite().disambcategory(), start = arg[7:])
+                generator = pagegenerators.NamespaceFilterPageGenerator(generator, [0])
             except wikipedia.NoPage:
                 print "Disambiguation category for your wiki is not known."
                 raise
@@ -871,10 +872,10 @@ def main():
     # if no disambiguation pages was given as an argument, and none was
     # read from a file, query the user
     if not generator:
-        pageTitle = wikipedia.input(u'Which page to check:')
+        pageTitle = wikipedia.input(u'On which disambiguation page do you want to work?')
         page = wikipedia.Page(wikipedia.getSite(), pageTitle)
         generator = iter([page])
-                
+
     bot = DisambiguationRobot(always, alternatives, getAlternatives, generator, primary, main_only)
     bot.run()
 
