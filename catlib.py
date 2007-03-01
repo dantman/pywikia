@@ -198,7 +198,6 @@ class Category(wikipedia.Page):
                     wikipedia.output('There are more articles in %s.' % cat.title())
                 else:
                     thisCatDone = True
-                import sys
         # get supercategories
         try:
             ibegin = self_txt.index('<div id="catlinks">')
