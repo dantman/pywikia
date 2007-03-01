@@ -149,8 +149,12 @@ class Category(wikipedia.Page):
                         iend = txt.index('<!-- end content -->')
                 txt = txt[ibegin:iend]
                 for title in Rtitle.findall(txt):
+                    if title == self.title():
+                        # This is only a link to "previous 200" or "next 200".
+                        # Ignore it.
+                        pass
                     # For MediaWiki versions where subcats look like articles
-                    if isCatTitle(title, self.site()):
+                    elif isCatTitle(title, self.site()):
                         ncat = Category(self.site(), title)
                         if recurse and ncat not in catsdone:
                             catstodo.append(ncat)
