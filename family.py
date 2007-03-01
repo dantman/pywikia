@@ -1296,7 +1296,7 @@ class Family:
             },
         }
         
-        self.talkNamespacePattern = {
+        self.talkNamespacePatterns = {
             '_default': lambda ns: u'%s talk' % ns,
             'ab':  lambda ns: u'Обсуждение %s' % ns.lower(),
             'af':  lambda ns: u'%sbespreking' % ns,
@@ -1881,10 +1881,10 @@ class Family:
 
     def _talkNamespace(self, code, associatedNamespaceIndex):
         associatedNamespace = self.namespace(code, associatedNamespaceIndex)
-        if self.talkNamespacePattern.has_key(code):
-            talk = self.talkNamespacePattern[code]
+        if self.talkNamespacePatterns.has_key(code):
+            talk = self.talkNamespacePatterns[code]
         else:
-            talk = self.talkNamespacePattern['_default']
+            talk = self.talkNamespacePatterns['_default']
         return talk(associatedNamespace)
 
     def linktrail(self, code, fallback = '_default'):
@@ -2243,3 +2243,36 @@ class Family:
         else:
             # give up
             return None
+
+    def __getstate__(self):
+        """
+        Is called when the family should be pickled (serialized).
+        pickle doesn't support serializing lambda functions, but we use
+        them for namespaces. So this is an ugly workaround: we replace
+        each lambda function by its result string.
+
+        Maybe we can find a more elegant solution later, e.g. replacing
+        the functions by strings when initializing the family. But that's
+        difficult because of inheritance: we cannot simply put such a
+        call into the constructor.
+
+        Or maybe we can rethink the whole thing and get it to work without
+        lambda functions. Or make it possible to pickle Page objects
+        without pickling their associated Family object, which is a waste
+        of disk space anyway.
+        """
+        d = self.__dict__.copy()
+        for number in d['namespaces']:
+            for lang in d['namespaces'][number]:
+                nslist = d['namespaces'][number][lang]
+                if type(nslist).__name__ != 'list':
+                    nslist = [nslist]
+                for i in range(len(nslist)):
+                    ns = nslist[i]
+                    if type(ns).__name__ == 'function':
+                        nslist[i] = ns(lang)
+                d['namespaces'][number][lang] = nslist
+        # empty this to get rid of the lambda functions, as we won't
+        # need it anymore
+        d['talkNamespacePatterns'] = {}
+        return d
