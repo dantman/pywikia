@@ -143,11 +143,13 @@ try:
     mysite = wikipedia.getSite()
     linktrail = mysite.linktrail()
     try:
-        basicgenerator = pagegenerators.CategorizedPageGenerator(mysite.disambcategory(),start=start)
+        generator = pagegenerators.CategorizedPageGenerator(mysite.disambcategory(), start = start)
     except wikipedia.NoPage:
         print "The bot does not know the disambiguation category for your wiki."
         raise
-    generator = pagegenerators.PreloadingGenerator(basicgenerator)
+    # only work on articles
+    generator = pagegenerators.NamespaceFilterPageGenerator(generator, [0])
+    generator = pagegenerators.PreloadingGenerator(generator)
     for page in generator:
         workon(page)
 
