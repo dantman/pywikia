@@ -28,9 +28,9 @@ msg_created_for_renaming = {
     }
 
 # some constants that are used internally
-SUPERCATEGORY = 0
+ARTICLE = 0
 SUBCATEGORY = 1
-ARTICLE = 2
+SUPERCATEGORY = 2
 
 def isCatTitle(title, site):
     return ':' in title and title[:title.index(':')] in site.category_namespaces()
@@ -74,9 +74,9 @@ class Category(wikipedia.Page):
             return '[[%s]]' % titleWithSortKey
 
 	
-    def getContentsAndSupercats(self, recurse = False, purge = False):
+    def _getContentsAndSupercats(self, recurse = False, purge = False):
         """
-        Cache result of _parseCategory for a second call
+        Cache results of _parseCategory for a second call.
 
         This should not be used outside of this module.
         """
@@ -102,13 +102,17 @@ class Category(wikipedia.Page):
 
     def _parseCategory(self, recurse = False, purge = False):
         """
-        Make a list of all articles and categories that are in this
-        category. If recurse is set to True, articles and subcategories
-        of any subcategories are also retrieved.
+        Yields all articles and subcategories that are in this category,
+        as well as its supercategories. If recurse is set to True, articles
+        and subcategories of any subcategories are also retrieved. Only the
+        supercategories of the given category will be yielded, regardless of
+        the recurse argument.
 
-        Returns non-unique, non-sorted lists of articles, subcategories and
-        supercategories. The supercategory list only contains the
-        supercategories of this category, regardless of the recurse argument.
+        Yielded results are tuples in the form (type, title) where type is one
+        of the constants ARTICLE, SUBCATEGORY and SUPERCATEGORY, and title is
+        the title (with namespace) of the page or category.
+
+        Note that results of this method need not be unique.
 
         This should not be used outside of this module.
         """
@@ -216,73 +220,82 @@ class Category(wikipedia.Page):
     
     def subcategories(self, recurse = False):
         """
-        Create a list of all subcategories of the current category.
+        Yields all subcategories of the current category.
 
-        If recurse = True, also return subcategories of the subcategories.
+        If recurse is True, also yields subcategories of the subcategories.
 
-        Returns a sorted, unique list of all subcategories.
+        Results a sorted (as sorted by MediaWiki), but need not be unique.
         """
-        for type, title in self.getContentsAndSupercats(recurse):
+        for type, title in self._getContentsAndSupercats(recurse):
             if type == SUBCATEGORY:
                 yield Category(self.site(), title)
 
-        """
-        Create a list of all subcategories of the current category.
-
-        If recurse = True, also return subcategories of the subcategories.
-
-        Returns a sorted, unique list of all subcategories.
-        """
     def subcategoriesList(self, recurse = False):
+        """
+        Creates a list of all subcategories of the current category.
+
+        If recurse is True, also return subcategories of the subcategories.
+
+        The elements of the returned list are sorted (as sorted by MediaWiki)
+        and unique.
+        """
         subcats = []
         for cat in self.subcategories(recurse):
             subcats.append(cat)
         return unique(subcats)
 
     def articles(self, recurse = False):
-        for type, title in self.getContentsAndSupercats(recurse):
+        """
+        Yields all articles of the current category.
+
+        If recurse is True, also yields articles of the subcategories.
+
+        Results a sorted (as sorted by MediaWiki), but need not be unique.
+        """
+        for type, title in self._getContentsAndSupercats(recurse):
             if type == ARTICLE:
                 yield wikipedia.Page(self.site(), title)
 
-    #returns a list of all articles in this category
     def articlesList(self, recurse = False):
-        """Create a list of all pages in the current category.
+        """
+        Creates a list of all articles of the current category.
 
-           If recurse = True, also return pages in all subcategories.
+        If recurse is True, also return articles of the subcategories.
 
-           Returns a sorted, unique list of all articles.
+        The elements of the returned list are sorted (as sorted by MediaWiki)
+        and unique.
         """
         articles = []
         for article in self.articles(recurse):
             articles.append(article)
         return unique(articles)
 
-    def supercategories(self, recurse = False):
-        """Create a list of all supercategories of the current category.
-
-           If recurse = True, also return subcategories of the subcategories.
-
-           Returns a sorted, unique list of all supercategories.
+    def supercategories(self):
         """
-        for type, title in self.getContentsAndSupercats(recurse):
+        Yields all supercategories of the current category.
+
+        Results a sorted in the order in which they were entered, and need not
+        be unique.
+        """
+        for type, title in self._getContentsAndSupercats():
             if type == SUPERCATEGORY:
                 yield Category(self.site(), title)
 
-    def supercategoriesList(self, recurse = False):
-        """Create a list of all subcategories of the current category.
+    def supercategoriesList(self):
+        """
+        Creates a list of all supercategories of the current category.
 
-           If recurse = True, also return subcategories of the subcategories.
-
-           Returns a sorted, unique list of all subcategories.
+        The elements of the returned list are unique and appear in the order
+        in which they were entered.
         """
         supercats = []
-        for cat in self.supercategories(recurse):
+        for cat in self.supercategories():
             supercats.append(cat)
         return unique(supercats)
 
     def isEmpty(self):
         # TODO: rename; naming conflict with Page.isEmpty
-        for type, title in self.getContentsAndSupercats():
+        for type, title in self._getContentsAndSupercats():
             if type == ARTICLE or type == SUBCATEGORY:
                 return False
         return True
