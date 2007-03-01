@@ -242,7 +242,7 @@ class SpeedyRobot:
         wikipedia.output(u'Quitting program.')
         
     def refreshGenerator(self):
-        generator = pagegenerators.CategoryPartPageGenerator(self.csdCat, start = self.savedProgress)
+        generator = pagegenerators.CategorizedPageGenerator(self.csdCat, start = self.savedProgress)
         # wrap another generator around it so that we won't produce orphaned talk pages.
         generator2 = pagegenerators.PageWithTalkPageGenerator(generator)
         self.preloadingGen = pagegenerators.PreloadingGenerator(generator2, pageNumber = 20)

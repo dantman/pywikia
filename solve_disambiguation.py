@@ -848,9 +848,9 @@ def main():
         elif arg.startswith('-start'):
             try:
                 if len(arg) < 8:
-                    generator = pagegenerators.CategoryPartPageGenerator(wikipedia.getSite().disambcategory())
+                    generator = pagegenerators.CategorizedPageGenerator(wikipedia.getSite().disambcategory())
                 else:
-                    generator = pagegenerators.CategoryPartPageGenerator(wikipedia.getSite().disambcategory(),arg[7:])
+                    generator = pagegenerators.CategorizedPageGenerator(wikipedia.getSite().disambcategory(), arg[7:])
             except wikipedia.NoPage:
                 print "Disambiguation category for your wiki is not known."
                 raise

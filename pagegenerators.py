@@ -87,52 +87,6 @@ def CategorizedPageGenerator(category, recurse = False, start='!'):
         if page.title() >= start:
             yield page
 
-def CategoryPartPageGenerator(category, start = None):
-    '''
-    Yields 200 pages in a category; for categories with 1000s of articles
-    CategorizedPageGenerator is too slow.
-    '''
-    # The code is based on _make_catlist in catlib.py; probably the two should
-    # be merged, with this generator being moved to catlib.py and _make_catlist
-    # using it.
-    site = wikipedia.getSite()
-    if site.version() < "1.4":
-        Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
-    else:
-        Rtitle = re.compile('<li><a href="/.*?" title=".*?">([^]<>].*?)</a></li>')
-    RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
-    while True:
-        path = site.get_address(category.urlname())
-        if start:
-            path = path + '&from=%s' % wikipedia.Page(site, start).urlname()
-            wikipedia.output(u'Getting [[%s]] starting at %s...'
-                               % (category.title(), start))
-        else:
-            wikipedia.output(u'Getting [[%s]...' % category.title())
-        txt = site.getUrl(path)
-        self_txt = txt
-        # index where subcategory listing begins
-        # this only works for the current version of the MonoBook skin
-        ibegin = txt.index('"clear:both;"')
-        # index where article listing ends
-        try:
-            iend = txt.index('<div class="printfooter">')
-        except ValueError:
-            try:
-                iend = txt.index('<div id="catlinks">')
-            except ValueError:
-                iend = txt.index('<!-- end content -->')
-        txt = txt[ibegin:iend]
-        for title in Rtitle.findall(txt):
-            page = wikipedia.Page(site, title)
-            if page.namespace() != 14:
-                yield page
-        matchObj = RLinkToNextPage.search(txt)
-        if matchObj:
-            start = matchObj.group(1)
-        else:
-            break
-
 def LinkedPageGenerator(linkingPage):
     """Yields all pages linked from a specific page."""
     for page in linkingPage.linkedPages():
