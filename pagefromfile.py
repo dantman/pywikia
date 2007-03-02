@@ -80,7 +80,7 @@ msg_force={
     'fr': u'texte existant écrasé',
     'it': u'sovrascritto il testo esistente',
     'ksh': u'Automatesch ußjetuusch',
-    'en': u'aktualny tekst nadpisany',
+    'pl': u'aktualny tekst nadpisany',
     'pt': u'sobrescrever texto'
     }
 
