@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #coding: utf-8
 """
 This bot takes its input from a file that contains a number of
@@ -23,6 +24,8 @@ Specific arguments:
 -titleend:xxx   Use xxx in place of ''' for identifying the
                 end of page title
 -summary:xxx    Use xxx as the summary for the upload
+-debug          Do not really upload pages, just check and report
+                messages
 
 If the page to be uploaded already exists:
 -safe           do nothing (default)
@@ -84,10 +87,11 @@ msg_force={
     'pt': u'sobrescrever texto'
     }
 
+# TODO: make object-oriented
+
 # Adapt these to the file you are using. 'starttext' and 'endtext' are
 # the beginning and end of each entry. Take text that should be included
 # and does not occur elsewhere in the text.
-# TODO: Why not use the entire file contents?
 starttext = "{{-start-}}"
 endtext = "{{-stop-}}"
 filename = "dict.txt"
@@ -99,6 +103,7 @@ search_string = u""
 force = False
 append = "False"
 notitle = False
+debug = False
 
 def findpage(t):
     search_string = titlestart + "(.*?)" + titleend
@@ -110,12 +115,12 @@ def findpage(t):
             contents = location.group(1)
     except AttributeError:
         print 'Start or end marker not found.'
-        return
+        return 0
     try:
         title = re.search(search_string, contents).group(1)
     except AttributeError:
         wikipedia.output(u"No title found - skipping a page.")
-        return
+        return 0
     else:
         page = wikipedia.Page(mysite, title)
         wikipedia.output(page.title())
@@ -130,29 +135,36 @@ def findpage(t):
                 contents = contents + old_text
                 commenttext_top = commenttext + " - " + wikipedia.translate(mysite,msg_top)
                 wikipedia.output(u"Page %s already exists, appending on top!"%title)
-                page.put(contents, comment = commenttext_top, minorEdit = False)
+                if not debug:
+                    page.put(contents, comment = commenttext_top, minorEdit = False)
             elif append == "Bottom":
                 old_text = page.get()
                 contents = old_text + contents
                 commenttext_bottom = commenttext + " - " + wikipedia.translate(mysite,msg_bottom)
                 wikipedia.output(u"Page %s already exists, appending on bottom!"%title)
-                page.put(contents, comment = commenttext_bottom, minorEdit = False)
+                if not debug:
+                    page.put(contents, comment = commenttext_bottom, minorEdit = False)
             elif force:
                 commenttext_force = commenttext + " *** " + wikipedia.translate(mysite,msg_force) + " ***"
                 wikipedia.output(u"Page %s already exists, ***overwriting!"%title)
-                page.put(contents, comment = commenttext_force, minorEdit = False)
+                if not debug:
+                    page.put(contents, comment = commenttext_force, minorEdit = False)
             else:
                 wikipedia.output(u"Page %s already exists, not adding!"%title)
         else:
-            page.put(contents, comment = commenttext, minorEdit = False)
-    findpage(t[location.end()+1:])
-    return
+            if not debug:
+                page.put(contents, comment = commenttext, minorEdit = False)
+    return location.end()
 
 def main():
     text = []
     f = codecs.open(filename,'r', encoding = config.textfile_encoding)
     text = f.read()
-    findpage(text)
+    a = findpage(text)
+    position = a
+    while a>0:
+        a = findpage(text[position+1:])
+        position += a
 
 mysite = wikipedia.getSite()
 commenttext = wikipedia.translate(mysite,msg)
@@ -173,6 +185,9 @@ for arg in wikipedia.handleArgs():
         append = "Bottom"
     elif arg=="-force":
         force=True
+    elif arg=="-debug":
+        wikipedia.output(u"Debug mode enabled.")
+        debug = True
     elif arg=="-safe":
         force=False
         append="False"
