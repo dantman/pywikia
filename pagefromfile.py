@@ -101,7 +101,7 @@ titlestart = u"'''"
 titleend = u"'''"
 search_string = u""
 force = False
-append = "False"
+append = None
 notitle = False
 debug = False
 
@@ -189,8 +189,8 @@ for arg in wikipedia.handleArgs():
         wikipedia.output(u"Debug mode enabled.")
         debug = True
     elif arg=="-safe":
-        force=False
-        append="False"
+        force = False
+        append = None
     elif arg=='-notitle':
         notitle=True
     elif arg.startswith("-titlestart:"):
