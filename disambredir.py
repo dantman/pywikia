@@ -113,9 +113,7 @@ def workon(page):
     for page2 in links:
         try:
             target = wikipedia.Page(mysite,page2.getRedirectTarget())
-        except wikipedia.IsNotRedirectPage:
-            continue
-        except wikipedia.NoPage:
+        except (wikipedia.Error,wikipedia.SectionError):
             continue
         text = treat(text, page2, target)
     if text != page.get():
