@@ -76,14 +76,15 @@ def ReferringPagesGenerator(referredPages, followRedirects=False,
     for page in allPages:
         yield page
 
-def CategorizedPageGenerator(category, recurse = False, start='!'):
+def CategorizedPageGenerator(category, recurse = False, start = None):
     '''
     Yields all pages in a specific category.
+
     If recurse is True, pages in subcategories are included as well.
-    If start has a value, only pages whose title comes after start
+    If start is a string value, only pages whose title comes after start
     alphabetically are included.
     '''
-    for page in category.articles(recurse=recurse):
+    for page in category.articles(recurse = recurse, startFrom = start):
         if page.title() >= start:
             yield page
 

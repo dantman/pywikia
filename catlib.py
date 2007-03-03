@@ -74,9 +74,13 @@ class Category(wikipedia.Page):
             return '[[%s]]' % titleWithSortKey
 
 	
-    def _getContentsAndSupercats(self, recurse = False, purge = False):
+    def _getContentsAndSupercats(self, recurse = False, purge = False, startFrom = None):
         """
         Cache results of _parseCategory for a second call.
+
+        Parameters are analogous to _parseCategory(). If purge is True,
+        cached results will be discarded. If startFrom is used, nothing
+        will be cached.
 
         This should not be used outside of this module.
         """
@@ -90,7 +94,7 @@ class Category(wikipedia.Page):
             for supercat in self.supercatCache:
                 yield SUPERCATEGORY, supercat
         else:
-            for type, title in self._parseCategory(recurse, purge):
+            for type, title in self._parseCategory(recurse = recurse, purge = purge, startFrom = startFrom):
                 if type == ARTICLE:
                     self.articleCache.append(title)
                 elif type == SUBCATEGORY:
@@ -98,15 +102,20 @@ class Category(wikipedia.Page):
                 elif type == SUPERCATEGORY:
                     self.supercatCache.append(title)
                 yield type, title
-            self.completelyCached = True
+            if not startFrom:
+                self.completelyCached = True
 
-    def _parseCategory(self, recurse = False, purge = False):
+    def _parseCategory(self, recurse = False, purge = False, startFrom = None):
         """
         Yields all articles and subcategories that are in this category,
         as well as its supercategories. If recurse is set to True, articles
         and subcategories of any subcategories are also retrieved. Only the
         supercategories of the given category will be yielded, regardless of
         the recurse argument.
+
+        Set purge to True to instruct MediaWiki not to serve a cached version.
+
+        Set startFrom to a string which is the title of the page to start from.
 
         Yielded results are tuples in the form (type, title) where type is one
         of the constants ARTICLE, SUBCATEGORY and SUPERCATEGORY, and title is
@@ -137,7 +146,7 @@ class Category(wikipedia.Page):
             catsdone.append(cat)
             # if category list is split up into several pages, this variable
             # stores where the next list page should start
-            startFromPage = None
+            currentPageOffset = startFrom
             thisCatDone = False
             # This loop will run until all list pages of the current category
             # have been read. Note: supercategories are displayed equally on
@@ -145,12 +154,12 @@ class Category(wikipedia.Page):
             # loop.
             while not thisCatDone:
                 path = self.site().get_address(cat.urlname())
-                if startFromPage:
-                    path += '&from=' + startFromPage
+                if currentPageOffset:
+                    path += '&from=' + currentPageOffset
                 if purge:
                     path += '&action=purge'
-                if startFromPage:
-                    wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), startFromPage))
+                if currentPageOffset:
+                    wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), currentPageOffset))
                 else:
                     wikipedia.output('Getting [[%s]]...' % cat.title())
                 txt = self.site().getUrl(path)
@@ -194,7 +203,7 @@ class Category(wikipedia.Page):
                 # try to find a link to the next list page
                 matchObj = RLinkToNextPage.search(txt)
                 if matchObj:
-                    startFromPage = matchObj.group(1)
+                    currentPageOffset = matchObj.group(1)
                     wikipedia.output('There are more articles in %s.' % cat.title())
                 else:
                     thisCatDone = True
@@ -243,7 +252,7 @@ class Category(wikipedia.Page):
             subcats.append(cat)
         return unique(subcats)
 
-    def articles(self, recurse = False):
+    def articles(self, recurse = False, startFrom = None):
         """
         Yields all articles of the current category.
 
@@ -251,7 +260,7 @@ class Category(wikipedia.Page):
 
         Results a sorted (as sorted by MediaWiki), but need not be unique.
         """
-        for type, title in self._getContentsAndSupercats(recurse):
+        for type, title in self._getContentsAndSupercats(recurse = recurse, startFrom = startFrom):
             if type == ARTICLE:
                 yield wikipedia.Page(self.site(), title)
 
@@ -265,7 +274,7 @@ class Category(wikipedia.Page):
         and unique.
         """
         articles = []
-        for article in self.articles(recurse):
+        for article in self.articles(recurse = recurse, startFrom = startFrom):
             articles.append(article)
         return unique(articles)
 
