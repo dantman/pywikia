@@ -2079,14 +2079,6 @@ class Throttle(object):
         time.sleep(waittime)
         self.now = time.time()
 
-def replaceExceptNowikiAndComments(text, old, new):
-    """ Deprecated. """
-    return replaceExceptMathNowikiAndComments(text, old, new)
-
-def replaceExceptMathNowikiAndComments(text, old, new, caseInsensitive = False, allowoverlap = False):
-    """ Deprecated. """
-    return replaceExcept(text, old, new, ['nowiki', 'comment', 'math', 'pre'], caseInsensitive, allowoverlap)
-
 def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowoverlap = False):
     """
     Replaces old by new in text, skipping occurences of old e.g. within nowiki
@@ -2216,7 +2208,7 @@ def removeLanguageLinks(text, site = None):
     # whitespace.
     languageR = '|'.join(site.validLanguageLinks())
     interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*' % languageR, re.IGNORECASE)
-    text = replaceExceptMathNowikiAndComments(text, interwikiR, '')
+    text = replaceExcept(text, interwikiR, '', ['nowiki', 'comment', 'math', 'pre'])
     return normalWhitespace(text)
 
 def replaceLanguageLinks(oldtext, new, site = None):
@@ -2354,7 +2346,7 @@ def removeCategoryLinks(text, site):
     # ASCII letters and hyphens.
     catNamespace = '|'.join(site.category_namespaces())
     categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace)
-    text = replaceExceptMathNowikiAndComments(text, categoryR, '')
+    text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])
     return normalWhitespace(text)
 
 def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
@@ -2368,7 +2360,7 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
 
     catNamespace = '|'.join(site.category_namespaces())
     categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\]' % (catNamespace, oldcat.titleWithoutNamespace()))
-    text = replaceExceptMathNowikiAndComments(oldtext, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace())
+    text = replaceExcept(oldtext, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
     return text
 
 def replaceCategoryLinks(oldtext, new, site = None):

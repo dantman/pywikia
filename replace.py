@@ -198,7 +198,7 @@ class ReplaceRobot:
         """
         new_text = original_text
         for old, new in self.replacements:
-            new_text = wikipedia.replaceExceptMathNowikiAndComments(new_text, old, new, allowoverlap = self.allowoverlap)
+            new_text = wikipedia.replaceExcept(new_text, old, new, ['nowiki', 'comment', 'math', 'pre'], allowoverlap = self.allowoverlap)
         return new_text
         
     def run(self):
