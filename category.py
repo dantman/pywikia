@@ -388,7 +388,7 @@ class CategoryListifyRobot:
                 if self.talkPages and not article.isTalkPage():
                     listString = listString + "*[[%s]] -- [[%s]]\n" % (article.title(), article.toggleTalkPage().title())
                 else:
-                    listString = listString + "*[[%s]]\n" % article.title()
+                    listString = listString + "*[[:%s]]\n" % article.title()
             else:
                 if self.talkPages and not article.isTalkPage():
                     listString = listString + "*[[%s]] -- [[%s]]\n" % (article.title(), article.toggleTalkPage().title())
