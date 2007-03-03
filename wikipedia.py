@@ -2108,9 +2108,19 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         'includeonly': re.compile(r'(?is)<includeonly>.*?</includeonly>'),
         'math':        re.compile(r'(?is)<math>.*?</math>'),
         'noinclude':   re.compile(r'(?is)<noinclude>.*?</noinclude>'),
+        # wiki tags are ignored inside nowiki tags.
         'nowiki':      re.compile(r'(?is)<nowiki>.*?</nowiki>'),
-        'pre':         re.compile(r'(?ims)^ (.*?)$|<pre>.*?</pre>'),
+        # lines that start with a space are shown in a monospace font and
+        # have whitespace preserved, with wiki tags being ignored.
+        'pre':         re.compile(r'(?is)<pre>.*?</pre>'),
+        # lines that start with a space are shown in a monospace font and
+        # have whitespace preserved.
+        'startspace':  re.compile(r'(?m)^ (.*?)$'),
+        # tables often have whitespace that is used to improve wiki
+        # source code readability.
         'table':       re.compile(r'(?ims)^{\|.*?^\|}|<table>.*?</table>'),
+        # templates with parameters often have whitespace that is used to
+        # improve wiki source code readability.
         'template':    re.compile(r'(?s)^{{.*?}}'),
     }
 
