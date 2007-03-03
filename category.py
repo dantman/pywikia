@@ -32,8 +32,10 @@ and option can be one of these:
                  summary as the deletion reason (rather than a canned deletion reason)
  * -overwrite  - An option for listify, this overwrites the current page with the
                  list even if something is already there.
- * -showimages - An option for listify, this displas images rather than linking them
+ * -showimages - An option for listify, this displays images rather than linking them
                  in the list.
+ * -talkpages  - An option for listify, this outputs the links to talk pages of the
+                 pages to be listified in addition to the pages themselves.
 
 
 For the actions tidy and tree, the bot will store the category structure locally
@@ -362,15 +364,14 @@ class CategoryListifyRobot:
         'sv':u'Robot: Skapar en lista från %s (%d)'
     }
 
-    def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False, subCats = False):
+    def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False, subCats = False, talkPages = False):
         self.editSummary = editSummary
         self.overwrite = overwrite
         self.showImages = showImages
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         self.list = wikipedia.Page(wikipedia.getSite(), listTitle)
         self.subCats = subCats
-        # get edit summary message
-
+        self.talkPages = talkPages
 
     def run(self):
         listOfArticles = self.cat.articlesList()
@@ -384,9 +385,15 @@ class CategoryListifyRobot:
         listString = ""
         for article in listOfArticles:
             if (not article.isImage() or self.showImages) and not article.isCategory():
-                listString = listString + "*[[%s]]\n" % article.title()
+                if self.talkPages and not article.isTalkPage():
+                    listString = listString + "*[[%s]] -- [[%s]]\n" % (article.title(), article.toggleTalkPage().title())
+                else:
+                    listString = listString + "*[[%s]]\n" % article.title()
             else:
-                listString = listString + "*[[:%s]]\n" % article.title()
+                if self.talkPages and not article.isTalkPage():
+                    listString = listString + "*[[%s]] -- [[%s]]\n" % (article.title(), article.toggleTalkPage().title())
+                else:
+                    listString = listString + "*[[:%s]]\n" % article.title()
         if self.list.exists() and not self.overwrite:
             wikipedia.output(u'Page %s already exists, aborting.' % self.list.title())
         else:
@@ -704,6 +711,7 @@ if __name__ == "__main__":
     inPlace = False
     overwrite = False
     showImages = False
+    talkPages = False
 
     #If this is set to true then the custom edit summary given for removing
     #categories from articles will also be used as the deletion reason.
@@ -748,6 +756,8 @@ if __name__ == "__main__":
                 showImages = True
             elif arg.startswith('-summary:'):
                 editSummary = arg[len('-summary:'):]
+            elif arg == '-talkpages':
+                talkPages = True
 
         if action == 'add':
             add_category(sort_by_last_name)
@@ -777,7 +787,7 @@ if __name__ == "__main__":
                 oldCatTitle = wikipedia.input(u'Please enter the name of the category to listify:')
             if (toGiven == False):
                 newCatTitle = wikipedia.input(u'Please enter the name of the list to create:')
-            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite, showImages, subCats = True)
+            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite, showImages, subCats = True, talkPages = talkPages)
             bot.run()
         else:
             wikipedia.showHelp('category')
