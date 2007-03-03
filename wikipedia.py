@@ -2104,7 +2104,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         caseInsensitive - a boolean
     """
     exceptionRegexes = {
-        'comment':     re.compile(r'<!--.*?-->'),
+        'comment':     re.compile(r'(?s)<!--.*?-->'),
         'includeonly': re.compile(r'(?is)<includeonly>.*?</includeonly>'),
         'math':        re.compile(r'(?is)<math>.*?</math>'),
         'noinclude':   re.compile(r'(?is)<noinclude>.*?</noinclude>'),
