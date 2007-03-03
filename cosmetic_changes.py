@@ -223,7 +223,7 @@ class CosmeticChangesToolkit:
         return text
 
     def validXhtml(self, text):
-        text = wikipedia.replaceExceptNowikiAndComments(text, r'<br>', r'<br />')
+        text = wikipedia.replaceExcept(text, r'<br>', r'<br />', ['comment', 'nowiki', 'pre'])
         return text
 
     def removeUselessSpaces(self, text):
@@ -240,7 +240,7 @@ class CosmeticChangesToolkit:
     def cleanUpSectionHeaders(self, text):
         for level in range(1, 7):
             equals = '=' * level
-            text = wikipedia.replaceExceptNowikiAndComments(text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', r'\n' + equals + ' \g<title> ' + equals + '\r\n')
+            text = wikipedia.replaceExcept(text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', r'\n' + equals + ' \g<title> ' + equals + '\r\n', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     def removeDeprecatedTemplates(self, text):
@@ -248,7 +248,7 @@ class CosmeticChangesToolkit:
             for template in deprecatedTemplates[self.site.family.name][self.site.lang]:
                 if not self.site.nocapitalize:
                     template = '[' + template[0].upper() + template[0].lower() + ']' + template[1:]
-                text = wikipedia.replaceExceptNowikiAndComments(text, r'\{\{([mM][sS][gG]:)?' + template + '(?P<parameters>\|[^}]+|)}}', '')
+                text = wikipedia.replaceExcept(text, r'\{\{([mM][sS][gG]:)?' + template + '(?P<parameters>\|[^}]+|)}}', '', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
 class CosmeticChangesBot:

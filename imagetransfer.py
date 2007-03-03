@@ -130,7 +130,7 @@ class ImageTransferBot:
                 for old, new in licenseTemplates[(sourceSite.sitename(), self.targetSite.sitename())].iteritems():
                     new = '{{%s}}' % new
                     old = re.compile('{{%s}}' % old)
-                    description = wikipedia.replaceExceptNowikiAndComments(description, old, new)
+                    description = wikipedia.replaceExcept(description, old, new, ['comment', 'math', 'nowiki', 'pre'])
             
             description = wikipedia.translate(self.targetSite, copy_message) % (sourceSite, description)
             description += '\n\n' + sourceImagePage.getFileVersionHistoryTable()
