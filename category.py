@@ -323,6 +323,7 @@ class CategoryMoveRobot:
         self.newCatTitle = newCatTitle
         self.inPlace = inPlace
         self.moveCatPage = moveCatPage
+        self.batchMode = batchMode
         # set edit summary message
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
@@ -348,7 +349,7 @@ class CategoryMoveRobot:
             if self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
                 if self.oldCat.isEmpty():
                     reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % self.newCatTitle
-                    if batchMode == True:
+                    if self.batchMode:
                         self.oldCat.delete(reason, False)
                     else:
                         self.oldCat.delete(reason, True)
@@ -433,6 +434,7 @@ class CategoryRemoveRobot:
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
         self.useSummaryForDeletion = useSummaryForDeletion
+        self.batchMode = batchMode
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
         else:
@@ -457,7 +459,7 @@ class CategoryRemoveRobot:
                 reason = self.editSummary
             else:
                 reason = wikipedia.translate(wikipedia.getSite(), self.deletion_reason_remove)
-            if batchMode == True:
+            if self.batchMode:
                 self.cat.delete(reason, False)
             else:
                 self.cat.delete(reason, True)
