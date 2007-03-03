@@ -12,6 +12,11 @@ Command line options:
                some choices for XY don't make sense and will result in a loop,
                e.g. "l" or "m".
 
+    -start:XY  goes through all misspellings in the category on your wiki
+               that is defined (to the bot) as the category containing misspelling
+               pages, starting at XY. If the -start argument is not given, it starts
+               at the beginning.
+
    -main       only check pages in the main namespace, not in the talk,
                wikipedia, user, etc. namespaces.
 """
@@ -20,7 +25,7 @@ Command line options:
 #
 # Distributed under the terms of the MIT license.
 
-import wikipedia, solve_disambiguation, pagegenerators
+import wikipedia, solve_disambiguation, catlib, pagegenerators
 
 class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
 
@@ -30,6 +35,13 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
         'pt': u'Pseudo-redirect',
     }
 
+    # Optional: if there is a category, one can use the -start
+    # parameter.
+    misspellingCategory = {
+        'de': u'Kategorie:Wikipedia:Falschschreibung',
+        'pt': u'Categoria:!Pseudo-redirects',
+    }
+
     msg = {
         'de': u'Bot: korrigiere Link auf Falschschreibung: %s',
         'en': u'Robot: Fixing misspelled link to %s',
@@ -37,13 +49,20 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
         'pt': u'Bot: Corrigindo link com erro ortográfico para %s'
     }
 
-    def __init__(self, always, main_only):
-        solve_disambiguation.DisambiguationRobot.__init__(self, always, [], True, self.createPageGenerator(), False, main_only)
+    def __init__(self, always, firstPageTitle, main_only):
+        solve_disambiguation.DisambiguationRobot.__init__(self, always, [], True, self.createPageGenerator(firstPageTitle), False, main_only)
 
-    def createPageGenerator(self):
-        misspellingTemplateName = 'Template:%s' % self.misspellingTemplate[wikipedia.getSite().lang]
-        misspellingTemplate = wikipedia.Page(wikipedia.getSite(), misspellingTemplateName)
-        generator = pagegenerators.ReferringPageGenerator(misspellingTemplate, onlyTemplateInclusion = True)
+    def createPageGenerator(self, firstPageTitle):
+        if self.misspellingCategory.has_key(wikipedia.getSite().lang):
+            misspellingCategoryTitle = self.misspellingCategory[wikipedia.getSite().lang]
+            misspellingCategory = catlib.Category(wikipedia.getSite(), misspellingCategoryTitle)
+            generator = pagegenerators.CategorizedPageGenerator(misspellingCategory, recurse = True, start = firstPageTitle)
+        else:
+            misspellingTemplateName = 'Template:%s' % self.misspellingTemplate[wikipedia.getSite().lang]
+            misspellingTemplate = wikipedia.Page(wikipedia.getSite(), misspellingTemplateName)
+            generator = pagegenerators.ReferringPageGenerator(misspellingTemplate, onlyTemplateInclusion = True)
+            if firstPageTitle:
+                wikipedia.output('-start parameter unsupported on this wiki because there is no category for misspellings.')
         preloadingGen = pagegenerators.PreloadingGenerator(generator)
         return preloadingGen
 
@@ -66,14 +85,21 @@ def main():
     # a link. If it's None, the user is prompted (default behaviour).
     always = None
     main_only = False
+    firstPageTitle = None
 
     for arg in wikipedia.handleArgs():
         if arg.startswith('-always:'):
             always = arg[8:]
+        elif arg.startswith('-start'):
+            if len(arg) == 6:
+                firstPageTitle = wikipedia.input(u'At which page do you want to start?')
+            else:
+                firstPageTitle = arg[7:]
         elif arg == '-main':
             main_only = True
+            
 
-    bot = MisspellingRobot(always, main_only)
+    bot = MisspellingRobot(always, firstPageTitle, main_only)
     bot.run()
 
 if __name__ == "__main__":
