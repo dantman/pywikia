@@ -386,12 +386,12 @@ class CategoryListifyRobot:
         for article in listOfArticles:
             if (not article.isImage() or self.showImages) and not article.isCategory():
                 if self.talkPages and not article.isTalkPage():
-                    listString = listString + "*[[%s]] -- [[%s]]\n" % (article.title(), article.toggleTalkPage().title())
+                    listString = listString + "*[[%s]] -- [[%s|talk]]\n" % (article.title(), article.toggleTalkPage().title())
                 else:
-                    listString = listString + "*[[:%s]]\n" % article.title()
+                    listString = listString + "*[[%s]]\n" % article.title()
             else:
                 if self.talkPages and not article.isTalkPage():
-                    listString = listString + "*[[%s]] -- [[%s]]\n" % (article.title(), article.toggleTalkPage().title())
+                    listString = listString + "*[[:%s]] -- [[%s|talk]]\n" % (article.title(), article.toggleTalkPage().title())
                 else:
                     listString = listString + "*[[:%s]]\n" % article.title()
         if self.list.exists() and not self.overwrite:
