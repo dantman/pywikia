@@ -88,16 +88,25 @@ class CosmeticChangesToolkit:
         Makes sure that localized namespace names are used.
         """
         family = self.site.family
+        # wiki links aren't parsed here.
+        exceptions = ['nowiki', 'comment', 'math', 'pre']
+
         for nsNumber in family.namespaces:
             thisNs = family.namespace(self.site.lang, nsNumber)
             defaultNs = family.namespace('_default', nsNumber)
-            if thisNs != defaultNs:
-                text = wikipedia.replaceExceptNowikiAndComments(text, r'\[\[\s*' + defaultNs + '\s*:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]')
-        if self.site.nocapitalize:
-            for nsNumber in family.namespaces:
-                thisNs = family.namespace(self.site.lang, nsNumber)
-                lowerNs = thisNs[0].lower() + thisNs[1:] # this assumes that all NS names have length at least 2
-                text = wikipedia.replaceExceptNowikiAndComments(text, r'\[\[\s*' + lowerNs + '\s*:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]')
+
+            # skip main (article) namespace
+            if thisNs:
+                wrongNamespaces = []
+                if defaultNs != thisNs:
+                    wrongNamespaces.append(defaultNs)
+                    if not self.site.nocapitalize:
+                        wrongNamespaces.append(defaultNs[0].lower() + defaultNs[1:])
+                if not self.site.nocapitalize:
+                    wrongNamespaces.append(thisNs[0].lower() + thisNs[1:])
+
+                if wrongNamespaces:
+                    text = wikipedia.replaceExcept(text, r'\[\[\s*(' + '|'.join(wrongNamespaces) + ') *:(?P<nameAndLabel>.*?)\]\]', r'[[' + thisNs + ':\g<nameAndLabel>]]', exceptions)
         return text
 
     def cleanUpLinks(self, text):
@@ -222,7 +231,7 @@ class CosmeticChangesToolkit:
         multipleSpacesR = re.compile('  +')
         spaceAtLineEndR = re.compile(' $')
 
-        exceptions = ['comment', 'math', 'nowiki', 'pre', 'table', 'template']
+        exceptions = ['comment', 'math', 'nowiki', 'pre', 'startspace', 'table', 'template']
         text = wikipedia.replaceExcept(text, multipleSpacesR, ' ', exceptions)
         text = wikipedia.replaceExcept(text, spaceAtLineEndR, '', exceptions)
 
