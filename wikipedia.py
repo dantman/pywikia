@@ -2169,10 +2169,7 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     result = {}
     # Ignore interwiki links within nowiki tags and HTML comments
     nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
-    match = nowikiOrHtmlCommentR.search(text)
-    while match:
-        text = text[:match.start()] + text[match.end():]
-        match = nowikiOrHtmlCommentR.search(text)
+    text = nowikiOrHtmlCommentR.sub('', text)
 
     # This regular expression will find every link that is possibly an
     # interwiki link.
@@ -2193,7 +2190,8 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
                 output(u"ERROR: %s - ignoring impossible link to %s:%s" % (pageLink, lang, pagetitle))
             else:
                 # we want the actual page objects rather than the titles
-                result[insite.getSite(code = lang)] = Page(insite.getSite(code = lang), pagetitle, insite=insite)
+                site = insite.getSite(code = lang)
+                result[site] = Page(site, pagetitle, insite = insite)
     return result
 
 def removeLanguageLinks(text, site = None):
@@ -2250,10 +2248,11 @@ def interwikiFormat(links, insite = None):
     """Create a suitable string encoding all interwiki links for a wikipedia
        page.
 
-       'links' should be a dictionary with the language names as keys, and
+       'links' should be a dictionary with the language codes as keys, and
        Page objects as values.
 
-       The string is formatted for inclusion in insite (defaulting to your own).
+       The string is formatted for inclusion in insite (defaulting to your
+       own site).
     """
     if insite is None:
         insite = getSite()
