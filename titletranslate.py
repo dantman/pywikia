@@ -40,6 +40,8 @@ def translate(page, hints = None, auto = True):
                     codes = site.family.languages_by_size
                 elif codes == 'cyril':
                     codes = site.family.cyrilliclangs
+                elif codes == 'chinese':
+                    codes = site.family.chineselangs
                 else:
                     codes = codes.split(',')
             for newcode in codes:

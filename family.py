@@ -1868,6 +1868,9 @@ class Family:
         # languages in Cyrillic
         self.cyrilliclangs = []
         
+        # languages that use the chinese alphabet
+        self.chineselangs = []
+        
         # Main page names for all languages
         self.mainpages = {}
 

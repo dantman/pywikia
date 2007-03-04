@@ -576,7 +576,10 @@ class Family(family.Family):
             
         self.cyrilliclangs = [
             'ab', 'ba', 'be', 'bg', 'ce', 'cv', 'kk', 'kv', 'ky', 'mk',
-            'mn', 'mo', 'os', 'ru', 'sr', 'tg', 'tk', 'udm', 'uk', 'xal'] # languages in Cyrillic
+            'mn', 'mo', 'os', 'ru', 'sr', 'tg', 'tk', 'udm', 'uk', 'xal'
+        ] # languages in Cyrillic
+        
+        self.chineselangs = ['ja', 'wuu', 'zh', 'zh-classical', 'zh-yue']
         
         # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'en', 'et', 'es', 'ia', 'la', 'af', 'cs',
