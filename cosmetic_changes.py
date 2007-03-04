@@ -50,6 +50,7 @@ class CosmeticChangesToolkit:
         Given a wiki source code text, returns the cleaned up version.
         """
         oldText = text
+        text = self.fixSelfInterwiki(text)
         text = self.standardizeInterwiki(text)
         text = self.standardizeCategories(text)
         text = self.cleanUpLinks(text)
@@ -61,6 +62,15 @@ class CosmeticChangesToolkit:
         text = self.removeUselessSpaces(text)
         if self.debug:
             wikipedia.showDiff(oldText, text)
+        return text
+
+    def fixSelfInterwiki(self, text):
+        """
+        Interwiki links to the site itself are displayed like local links.
+        Remove their language code prefix.
+        """
+        interwikiR = re.compile(r'\[\[%s\s?:([^\[\]\n]*)\]\]' % self.site.lang)
+        text = interwikiR.sub(r'[[\1]]', text)
         return text
 
     def standardizeInterwiki(self, text):
