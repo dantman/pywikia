@@ -121,6 +121,25 @@ def PagesFromTitlesGenerator(iterable):
             break
         yield wikipedia.Page(wikipedia.getSite(), title)
 
+def LinksearchGenerator(site, link):
+    """Yields all pages that include a specified link, according to [[Special:Linksearch]]"""
+    offset = 0
+    elRX = re.compile('<a .* class="external ?" .*</a>.*<a .*>(.*)</a>') #TODO: de-uglify?
+    while True:
+        url = site.linksearch_address(link,limit=500,offset=offset)
+        wikipedia.output(u'Querying [[Special:Linksearch]]...')
+        data = site.getUrl(url)
+        pos = 0
+        while True:
+            elM = elRX.search(data,pos)
+            if elM:
+                yield wikipedia.Page(site,elM.group(1))
+                pos = elM.end(1)
+            else:
+                break
+        if pos == 0: #No links found
+            break
+        offset += 500
 
 class GoogleSearchPageGenerator:
     '''
