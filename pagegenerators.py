@@ -121,12 +121,14 @@ def PagesFromTitlesGenerator(iterable):
             break
         yield wikipedia.Page(wikipedia.getSite(), title)
 
-def LinksearchGenerator(site, link):
-    """Yields all pages that include a specified link, according to [[Special:Linksearch]]"""
+def LinksearchGenerator(site, link, step=500):
+    """Yields all pages that include a specified link, according to [[Special:Linksearch]].
+    Retrieves in chunks of size "step" (default 500).
+    Does not guarantee that resulting pages are unique."""
     offset = 0
     elRX = re.compile('<a .* class="external ?" .*</a>.*<a .*>(.*)</a>') #TODO: de-uglify?
     while True:
-        url = site.linksearch_address(link,limit=500,offset=offset)
+        url = site.linksearch_address(link,limit=step,offset=offset)
         wikipedia.output(u'Querying [[Special:Linksearch]]...')
         data = site.getUrl(url)
         pos = 0
@@ -139,7 +141,7 @@ def LinksearchGenerator(site, link):
                 break
         if pos == 0: #No links found
             break
-        offset += 500
+        offset += step
 
 class GoogleSearchPageGenerator:
     '''
