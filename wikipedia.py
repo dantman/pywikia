@@ -3233,6 +3233,9 @@ class Site(object):
     def blocksearch_address(self, s):
         return self.family.blocksearch_address(self.lang, s)
 
+    def linksearch_address(self, s, limit=500, offset=0):
+        return self.family.linksearch_address(self.lang, s, limit=limit, offset=offset)
+
     def checkCharset(self, charset):
         if not hasattr(self,'charset'):
             self.charset = charset
