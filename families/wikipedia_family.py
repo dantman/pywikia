@@ -301,6 +301,7 @@ class Family(family.Family):
             'br':  [u'Hvlstumm', u'Digejañ'],
             'bs':  [u'Čvor'],
             'ca':  [u'Desambiguació', u'Disambig', u'Desambigua'],
+            'ceb': [u'Giklaro'],
             'cs':  [u'Rozcestník', u'Rozcestník - 2 znaky', u'Rozcestník - Příjmení',
                     u'Rozcestník - místopisné jméno', u'Disambig'],
             'cy':  [u'Anamrwysedd', u'Disambig', u'Gwahaniaethu'],
@@ -312,7 +313,7 @@ class Family(family.Family):
                     u'5CC', u'TLAdisambig', u'Hndis', u'Numberdis',
                     u'Roadis', u'Roaddis', u'Geodis', u'TLA', u'Surname',
                     u'Dab', u'Disambig-cleanup', u'Disamb',
-                    u'Schooldis', u'Shipindex', u'Songdis', u'4cc'],
+                    u'Schooldis', u'Shipindex', u'Songdis', u'4cc', u'3cc'],
             'eo':  [u'Apartigilo',u'Disambig'],
             'es':  [u'Desambiguacion', u'Desambiguación', u'Desambig', u'Disambig',u'Des'],
             'et':  [u'Täpsustuslehekülg', u'Täpsustus', u'Disambig'],
@@ -534,7 +535,7 @@ class Family(family.Family):
             'pl': self.alphabetic,
             'simple': self.alphabetic,
             'vi': self.alphabetic_revised,
-            'yi': ['en','he']
+            'yi': ['en','he','de']
         }
 
         self.obsolete = {'dk':'da',
