@@ -1649,14 +1649,20 @@ class ImagePage(Page):
     # a Page in the Image namespace
     def __init__(self, site, title = None, insite = None):
         Page.__init__(self, site, title, insite)
-        self._imagePageContents = None
+        self._imagePageHtml = None
 
-    def getImagePageContents(self):
-        if not self._imagePageContents:
+    def getImagePageHtml(self):
+        """
+        Downloads the image page, and returns the HTML, as a unicode string.
+
+        Caches the HTML code, so that if you run this method twice on the
+        same ImagePage object, the page only will be downloaded once.
+        """
+        if not self._imagePageHtml:
             path = self.site().get_address(self.urlname())
             #output(u'Getting http://%s%s' % (self.site().hostname(), path))
-            self._imagePageContents = self.site().getUrl(path)
-        return self._imagePageContents
+            self._imageHtml = self.site().getUrl(path)
+        return self._imagePageHtml
 
     def fileUrl(self):
         # There are three types of image pages:
@@ -1665,7 +1671,7 @@ class ImagePage(Page):
         # * SVG images with links like: filename.svg‎  (1KB, MIME type: image/svg)
         # This regular expression seems to work with all of them.
         urlR = re.compile(r'<div class="fullImageLink" id="file">.+?\n.*?<a href="(?P<url>.+?)"', re.DOTALL)
-        m = urlR.search(self.getImagePageContents())
+        m = urlR.search(self.getImagePageHtml())
         try:
             url = m.group('url')
         except AttributeError:
@@ -1683,7 +1689,7 @@ class ImagePage(Page):
 
     def getFileVersionHistory(self):
         result = []
-        history = re.search('(?s)<ul class="special">.+?</ul>', self.getImagePageContents()).group()
+        history = re.search('(?s)<ul class="special">.+?</ul>', self.getImagePageHtml()).group()
         lineR = re.compile('<li> \(.+?\) \(.+?\) <a href=".+?" title=".+?">(?P<datetime>.+?)</a> . . <a href=".+?" title=".+?">(?P<username>.+?)</a> \(.+?\) . . (?P<resolution>\d+.+?\d+) \((?P<size>[\d,\.]+) .+?\)( <span class="comment">(?P<comment>.*?)</span>)?</li>')
 
         for match in lineR.finditer(history):
@@ -1703,7 +1709,7 @@ class ImagePage(Page):
 
     def usingPages(self):
         result = []
-        titleList = re.search('(?s)<h2 id="filelinks">.+?</ul>', self.getImagePageContents()).group()
+        titleList = re.search('(?s)<h2 id="filelinks">.+?</ul>', self.getImagePageHtml()).group()
         lineR = re.compile('<li><a href=".+?" title=".+?">(?P<title>.+?)</a></li>')
         for match in lineR.finditer(titleList):
             result.append(Page(self.site(), match.group('title')))
