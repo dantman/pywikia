@@ -49,6 +49,12 @@ def ImagesPageGenerator(pageWithImages):
     for page in pageWithImages.imagelinks(followRedirects = False, loose = True):
         yield page
 
+def UnusedFilesGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.unusedfiles(number=number, repeat=repeat):
+        yield wikipedia.ImagePage(page.site(), page.title()) 
+
 def ReferringPageGenerator(referredPage, followRedirects=False,
                            withTemplateInclusion=True,
                            onlyTemplateInclusion=False):
@@ -344,6 +350,11 @@ class GeneratorFactory:
                 fileLinksPageTitle = arg[11:]
             fileLinksPage = wikipedia.Page(wikipedia.getSite(), 'Image:' + fileLinksPageTitle)
             return FileLinksGenerator(fileLinksPage)
+        elif arg.startswith('-unusedfiles'):
+            if len(arg) == 12:
+                return UnusedFilesGenerator()
+            else:
+                return UnusedFilesGenerator(number = int(arg[13:]))
         elif arg.startswith('-file'):
             if len(arg) >= 6:
                 textfilename = arg[6:]

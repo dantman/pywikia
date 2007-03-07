@@ -3053,6 +3053,24 @@ class Site(object):
             if not repeat:
                 break
 
+    def unusedfiles(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.unusedfiles_address(n=number)
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile('<li>\(<a href=".+?" title="(?P<title>.+?)">.+?</a>\) ')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+
+                if title not in seen:
+                    seen.add(title)
+                    page = ImagePage(self, title)
+                    yield page
+            if not repeat:
+                break
+
     def allpages(self, start = '!', namespace = 0, throttle = True):
         """Generator which yields all articles in the home language in
            alphanumerical order, starting at a given page. By default,
@@ -3260,6 +3278,9 @@ class Site(object):
 
     def shortpages_address(self, n=500):
         return self.family.shortpages_address(self.lang, n)
+
+    def unusedfiles_address(self, n=500):
+        return self.family.unusedfiles_address(self.lang, n)
 
     def categories_address(self, n=500):
         return self.family.categories_address(self.lang, n)

@@ -2198,6 +2198,9 @@ class Family:
     def categories_address(self, code, limit=500):
         return "%s?title=%s:Categories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
+    def unusedfiles_address(self, code, limit=500):
+            return "%s?title=%s:Unusedimages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
     def deadendpages_address(self, code, limit=500):
         return "%s?title=%s:Deadendpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
