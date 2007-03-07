@@ -1661,7 +1661,7 @@ class ImagePage(Page):
         if not self._imagePageHtml:
             path = self.site().get_address(self.urlname())
             #output(u'Getting http://%s%s' % (self.site().hostname(), path))
-            self._imageHtml = self.site().getUrl(path)
+            self._imagePageHtml = self.site().getUrl(path)
         return self._imagePageHtml
 
     def fileUrl(self):
