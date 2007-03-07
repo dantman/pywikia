@@ -15,43 +15,121 @@ python mybot.py Pagename
 to do all pages starting at pagename.
 
 There is one standard command line option:
--test:  Ask for input after every change
+
+-debug: Don't do any changes.
 """
 import wikipedia
 import pagegenerators
 import sys
 
-def workon(page):
-    try:
-        text = page.get()
-    except wikipedia.IsRedirectPage:
-        return
-    # Here go edit text in whatever way you want. If you find you do not
-    # want to edit this page, just return
-    if text != page.get():
-        page.put(text) # Adding a summary text would be good
-        if test:
-            wikipedia.input(u"Changed [[%s]]. Press enter to continue."%page.title())
+class BasicBot:
 
-try:
-    start = []
-    test = False
+    # Edit summary message that should be used.
+    # NOTE: Put a good description here, and add translations, if possible!
+    msg = {
+        'de': u'Bot: Ändere ...',
+        'en': u'Robot: changing ...',
+    }
+
+    def __init__(self, generator, debug):
+        """
+        Constructor. Parameters:
+            * generator - The page generator that determines on which pages
+                          to work on.
+            * debug     - If True, doesn't do any real changes, but only show
+                          what would have been changed.
+        """
+        self.generator = generator
+        self.debug = debug
+
+    def run(self):
+        # Set the edit summary message
+        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg))
+        for page in self.generator:
+            self.treat(page)
+
+    def treat(self, page):
+        try:
+            text = page.get()
+        except wikipedia.NoPage:
+            wikipedia.output(u"Page %s does not exist; skipping." % page.aslink())
+            return
+        except wikipedia.IsRedirectPage:
+            wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
+            return
+        except wikipedia.LockedPage:
+            wikipedia.output(u"Page %s is locked; skipping." % page.aslink())
+            return
+
+        # NOTE: Here you can modify the text in whatever way you want.
+        # If you find you do not want to edit this page, just return
+
+        # Example: This puts the text 'Foobar' at the beginning of the page.
+        text = 'Foobar ' + text
+
+        # only save if something was changed
+        if text != page.get():
+            # Show the title of the page where the link was found.
+            # Highlight the title in purple.
+            colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
+            wikipedia.output(u"\n\n>>> %s <<<" % page.title(), colors = colors)
+            # show what was changed
+            wikipedia.showDiff(page.get(), text)
+            if not self.debug:
+                choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No'], ['y', 'N'], 'N')
+                if choice == 'y':
+                    try:
+                        page.put(text)
+                    except wikipedia.EditConflict:
+                        wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
+                    except wikipedia.SpamfilterError, url:
+                        wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(),url))
+
+
+def main():
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
+    # The generator gives the pages that should be worked upon.
+    gen = None
+    # This temporary array is used to read the page title if one single
+    # page to work on is specified by the arguments.
+    pageTitleParts = []
+    # If debug is True, doesn't do any real changes, but only show
+    # what would have been changed.
+    debug = False
+
+    # Parse command line arguments
     for arg in wikipedia.handleArgs():
-        if arg.startswith("-test"):
-            test = True
+        if arg.startswith("-debug"):
+            debug = True
         else:
-            start.append(arg)
-    if start:
-        start = " ".join(start)
+            # check if a standard argument like
+            # -start:XYZ or -ref:Asdf was given.
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
+            else:
+                pageTitleParts.append(arg)
+
+    if pageTitleParts != []:
+        # We will only work on a single page.
+        pageTitle = ' '.join(pageTitleParts)
+        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+        gen = iter([page])
+
+    if gen:
+        # The preloading generator is responsible for downloading multiple
+        # pages from the wiki simultaneously.
+        gen = pagegenerators.PreloadingGenerator(gen)
+        bot = BasicBot(gen, debug)
+        bot.run()
     else:
-        start = "!"
-    mysite = wikipedia.getSite()
-    # If anything needs to be prepared, you can do it here
-    basicgenerator = pagegenerators.AllpagesPageGenerator(start=start)
-    generator = pagegenerators.PreloadingGenerator(basicgenerator)
-    for page in generator:
-        workon(page)
+        wikipedia.showHelp()
 
-finally:
-    wikipedia.stopme()
-
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
