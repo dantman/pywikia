@@ -1867,12 +1867,23 @@ class Family:
         
         self.languages_by_size = []
 
-        # languages in Cyrillic
-        self.cyrilliclangs = []
-        
-        # languages that use the chinese alphabet
-        self.chineselangs = []
-        
+        # Some languages belong to a group where the possibility is high that
+        # equivalent articles have identical titles among the group.
+        self.language_groups = {
+            # languages that use chinese symbols
+            'chinese': [
+                'ja', 'wuu', 'zh', 'zh-classical', 'zh-yue'
+            ],
+            # languages that use the cyrillic alphabet
+            'cyril': [
+                'ab', 'ba', 'be', 'bg', 'ce', 'cv', 'kk', 'kv', 'ky', 'mk',
+                'mn', 'mo', 'os', 'ru', 'sr', 'tg', 'tk', 'udm', 'uk', 'xal'
+            ],
+            'scand': [
+                'da', 'fo', 'is', 'nb', 'no', 'sv'
+            ],
+        }
+
         # Main page names for all languages
         self.mainpages = {}
 

@@ -188,8 +188,6 @@ class Family(family.Family):
             'simple': self.alphabetic
             }
             
-        # group of languages that we might want to do at once
-    
         self.languages_by_size = [
             'en', 'fr', 'vi', 'zh', 'io', 'el', 'pl', 'it', 'de', 'hu',
             'fi', 'nl', 'bg', 'pt', 'ku', 'es', 'gl', 'sr', 'id', 'sv',
@@ -202,8 +200,6 @@ class Family(family.Family):
             'nah', 'ha', 'oc'
             ]
         
-        self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
-
         self.interwiki_on_one_line = ['pl']
 
         self.interwiki_attop = ['pl']

@@ -125,8 +125,6 @@ class Family(family.Family):
                       'is','it','ja', 'ko','la','lt','ml','nl',
                       'no','pl','pt','ro','ru','sk','sl','sr',
                       'sv','te','th','tr','uk','vi','yi','zh']
-        
-        self.cyrilliclangs = ['bg', 'ru', 'sr', 'uk']
 
     def version(self, code):
         return "1.8"

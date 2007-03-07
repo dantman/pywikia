@@ -170,15 +170,11 @@ class Family(family.Family):
             'pl': alphabetic,
             'simple': alphabetic,
             'pt': alphabetic,
-            }
-            
-        # group of languages that we might want to do at once
-            
-        self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
+        }
 
         self.mainpages = {
             'ka':   u'მთავარი გვერდი'
-            }
+        }
 
     def version(self, code):
         return "1.8alpha"    

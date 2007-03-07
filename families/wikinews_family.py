@@ -59,16 +59,12 @@ class Family(family.Family):
             'pl': self.alphabetic,
             'simple': self.alphabetic
             }
-            
-        # group of languages that we might want to do at once
-    
+
         self.languages_by_size = [
             'de', 'en', 'fr', 'gl', 'hu', 'it', 'ja', 'nl', 'pl', 'sv',
             'es', 'fi', 'hi', 'ko', 'la', 'pt', 'ru', 'tr', 'zh',
             'ca', 'eo', 'et', 'gu', 'he', 'hr', 'ro'
         ]
-
-        self.cyrilliclangs = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'] # languages in Cyrillic
        
     def code2encoding(self, code):
         return 'utf-8'

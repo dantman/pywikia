@@ -38,10 +38,8 @@ def translate(page, hints = None, auto = True):
             except ValueError:
                 if codes == 'all':
                     codes = site.family.languages_by_size
-                elif codes == 'cyril':
-                    codes = site.family.cyrilliclangs
-                elif codes == 'chinese':
-                    codes = site.family.chineselangs
+                elif codes in site.family.language_groups:
+                    codes = site.family.language_groups[codes]
                 else:
                     codes = codes.split(',')
             for newcode in codes:
