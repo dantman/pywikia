@@ -109,9 +109,10 @@ class Category(wikipedia.Page):
         """
         Yields all articles and subcategories that are in this category,
         as well as its supercategories. If recurse is set to True, articles
-        and subcategories of any subcategories are also retrieved. Only the
-        supercategories of the given category will be yielded, regardless of
-        the recurse argument.
+        and subcategories of any subcategories are also retrieved. If recurse
+        is set to a number, the subcategories will be retrieved upto that
+        level of recursion. Only the supercategories of the given category
+        will be yielded, regardless of the recurse argument.
 
         Set purge to True to instruct MediaWiki not to serve a cached version.
 
@@ -137,12 +138,16 @@ class Category(wikipedia.Page):
             Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\".+?\">(.+?)</a>')
         ns = self.site().category_namespaces()
         catsdone = []
-        catstodo = [self]
+        catstodo = [(self,recurse)]
         # regular expression matching the "(next 200)" link
         RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
         
         while catstodo:
-            cat = catstodo.pop()
+            (cat,recurselevel) = catstodo.pop()
+            if type(recurselevel) == type(1):
+                newrecurselevel = recurselevel - 1
+            else:
+                newrecurselevel = recurselevel
             catsdone.append(cat)
             # if category list is split up into several pages, this variable
             # stores where the next list page should start
@@ -188,8 +193,8 @@ class Category(wikipedia.Page):
                     # For MediaWiki versions where subcats look like articles
                     elif isCatTitle(title, self.site()):
                         ncat = Category(self.site(), title)
-                        if recurse and ncat not in catsdone:
-                            catstodo.append(ncat)
+                        if recurselevel and ncat not in catsdone:
+                            catstodo.append((ncat,newrecurselevel))
                         yield SUBCATEGORY, title
                     else:
                         yield ARTICLE, title
@@ -198,8 +203,8 @@ class Category(wikipedia.Page):
                     for titleWithoutNamespace in Rsubcat.findall(txt):
                         title = 'Category:%s' % titleWithoutNamespace
                         ncat = Category(self.site(), title)
-                        if recurse and ncat not in catsdone:
-                            catstodo.append(ncat)
+                        if recurselevel and ncat not in catsdone:
+                            catstodo.append((ncat,newrecurselevel))
                         yield SUBCATEGORY, title
                 # try to find a link to the next list page
                 matchObj = RLinkToNextPage.search(txt)
@@ -232,6 +237,10 @@ class Category(wikipedia.Page):
         Yields all subcategories of the current category.
 
         If recurse is True, also yields subcategories of the subcategories.
+        If recurse is a number, also yields subcategories of subcategories,
+        but only at most that number of levels deep (that is, recurse = 0 is
+        equivalent to recurse = False, recurse = 1 gives subcategories and
+        subcategories but no deeper, etcetera).
 
         Results a sorted (as sorted by MediaWiki), but need not be unique.
         """
@@ -244,6 +253,7 @@ class Category(wikipedia.Page):
         Creates a list of all subcategories of the current category.
 
         If recurse is True, also return subcategories of the subcategories.
+        Recurse can also be a number, as explained above.
 
         The elements of the returned list are sorted (as sorted by MediaWiki)
         and unique.
@@ -258,6 +268,8 @@ class Category(wikipedia.Page):
         Yields all articles of the current category.
 
         If recurse is True, also yields articles of the subcategories.
+        Recurse can be a number to restrict the depth at which subcategories
+        are included.
 
         Results a sorted (as sorted by MediaWiki), but need not be unique.
         """
@@ -270,6 +282,8 @@ class Category(wikipedia.Page):
         Creates a list of all articles of the current category.
 
         If recurse is True, also return articles of the subcategories.
+        Recurse can be a number to restrict the depth at which subcategories
+        are included.
 
         The elements of the returned list are sorted (as sorted by MediaWiki)
         and unique.
