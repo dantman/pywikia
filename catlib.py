@@ -162,6 +162,7 @@ class Category(wikipedia.Page):
                     wikipedia.output('Getting [[%s]] starting at %s...' % (cat.title(), currentPageOffset))
                 else:
                     wikipedia.output('Getting [[%s]]...' % cat.title())
+                wikipedia.get_throttle()
                 txt = self.site().getUrl(path)
                 # save a copy of this text to find out self's supercategory.
                 # if recurse is true, this function should only return self's
