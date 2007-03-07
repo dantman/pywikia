@@ -129,7 +129,7 @@ class Family(family.Family):
             'su':  u'Obrolan Wikipedia',
             'tg':  u'Баҳси Википедиа',
             'th':  u'คุยเรื่องWikipedia',
-            'uk':  u'Обговорення Вікіпедія',
+            'uk':  u'Обговорення Вікіпедії',
             'ur':  u'تبادلۂ خیال منصوبہ',
             'vec': u'Discussion Wikipedia',
             'vls': u'Discuusje Wikipedia',

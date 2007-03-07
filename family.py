@@ -602,6 +602,7 @@ class Family:
                 'cv':  u'Ӳкерчĕке сӳтсе явмалли',
                 'da':  u'Billeddiskussion',
                 'el':  u'Συζήτηση εικόνας',
+                'et':  u'Pildi arutelu',
                 'hr':  u'Razgovor o slici',
                 'hsb': u'Diskusija k wobrazej',
                 'kn':  u'ಚಿತ್ರ ಚರ್ಚೆಪುಟ',
@@ -628,6 +629,7 @@ class Family:
                 'te':  u'బొమ్మపై చర్చ',
                 'th':  u'คุยเรื่องภาพ',
                 'xal': u'Зургин тускар ухалвр',
+                'uk':  u'Обговорення зображення',
                 'ur':  u'تبادلۂ خیال تصویر',
             },
             8: {
