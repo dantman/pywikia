@@ -167,54 +167,19 @@ class MovePagesBot:
 
 def main():
     singlepage = []
-    gen = cat = ref = link = start = prefix = None
+    gen = None
+    prefix = None
     FromName = ToName = None
     delete = False
     always = False
-    
+
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
+
     for arg in wikipedia.handleArgs():
-        if arg.startswith('-file'):
-            if len(arg) == len('-file'):
-                fileName = wikipedia.input(u'Enter name of file to move pages from:')
-            else:
-                fileName = arg[len('-file:'):]
-            gen = pagegenerators.TextfilePageGenerator(fileName)
-        elif arg.startswith('-cat'):
-            if len(arg) == 4:
-                cat = wikipedia.input(u'Please enter the category name:')
-            else:
-                cat = arg[5:]
-            categ = catlib.Category(wikipedia.getSite(), 'Category:%s'%cat)
-            gen = pagegenerators.CategorizedPageGenerator(categ)
-        elif arg.startswith('-ref'):
-            if len(arg) == 4:
-                ref = wikipedia.input(u'Links to which page should be processed?')
-            else:
-                ref = arg[5:]
-            refer = wikipedia.Page(wikipedia.getSite(), ref)
-            gen = pagegenerators.ReferringPageGenerator(refer)
-        elif arg.startswith('-link'): # either -links or -link
-            if len(arg) == 5:
-                link = wikipedia.input(u'Links from which page should be processed?')
-            elif arg.startswith('-links'):
-                if len(arg) == 6:
-                    link = wikipedia.input(u'Links from which page should be processed?')
-                else:
-                    link = arg[7:]
-            else:
-                link = arg[6:]
-            links = wikipedia.Page(wikipedia.getSite(), link)
-            gen = pagegenerators.LinkedPageGenerator(links)
-        elif arg.startswith('-start'):
-            if len(arg) == 6:
-                start = wikipedia.input(u'Which page to start from:')
-            else:
-                start = arg[7:]
-            startp = wikipedia.Page(wikipedia.getSite(), start)
-            gen = pagegenerators.AllpagesPageGenerator(startp.titleWithoutNamespace(),namespace=startp.namespace())
-        elif arg.startswith('-new'):
-            gen = pagegenerators.NewpagesPageGenerator(config.special_page_limit)
-        elif arg == '-del':
+        if arg == '-del':
             delete = True
         elif arg == '-always':
             always = True
@@ -230,7 +195,11 @@ def main():
             else:
                 prefix = arg[8:]
         else:
-            singlepage.append(wikipedia.Page(wikipedia.getSite(), arg))
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
+            else:
+                singlepage.append(wikipedia.Page(wikipedia.getSite(), arg))
 
     if singlepage:
         gen = iter(singlepage)
