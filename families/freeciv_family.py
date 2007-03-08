@@ -21,19 +21,12 @@ class Family(family.Family):
         }
 
         self.namespaces[4] = {
-            '_default': [
-                u'Freeciv',
-                self.namespaces[4]['_default']
-            ],
+            '_default': u'Freeciv'
             'fi': u'FreeCiv wiki Suomalaisille',
         }
 
         self.namespaces[5] = {
-            '_default': [
-                lambda code: self._talkNamespace(code, 4),
-                lambda code: self._talkNamespace('_default', 4),
-                self.namespaces[5]['_default']
-            ],
+            '_default': u'Freeciv talk',
             'fi': u'Keskustelu FreeCiv wiki Suomalaisillesta',
         }
 
@@ -49,9 +42,6 @@ class Family(family.Family):
         self.namespaces[111] = {
             '_default': u'Forum talk',
         }
-
-        self.talkNamespacePattern['da'] = lambda ns: u'%s diskussion' % ns
-
 
     def path(self, code):
         return '/index.php'
