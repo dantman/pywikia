@@ -289,7 +289,7 @@ class Category(wikipedia.Page):
         and unique.
         """
         articles = []
-        for article in self.articles(recurse = recurse, startFrom = startFrom):
+        for article in self.articles(recurse = recurse):
             articles.append(article)
         return unique(articles)
 
