@@ -987,13 +987,12 @@ class Page(object):
 
         Don't use this directly, use put() instead.
         """
-        safetuple = () # safetuple keeps the old value, but only if we did not get a token yet could
-        # TODO: get rid of safetuple
+        newTokenRetrieved = False
         if self.site().version() >= "1.4":
             if gettoken or not token:
                 token = self.site().getToken(getagain = gettoken, sysop = sysop)
-            else:
-                safetuple = (text, comment, watchArticle, minorEdit, newPage, sysop)
+                newTokenRetrieved = True
+
         # Check whether we are not too quickly after the previous putPage, and
         # wait a bit until the interval is acceptable
         put_throttle()
@@ -1002,13 +1001,13 @@ class Page(object):
         # Get the address of the page on that host.
         address = self.site().put_address(self.urlname())
         # Use the proper encoding for the comment
-        comment = comment.encode(self.site().encoding())
+        encodedComment = comment.encode(self.site().encoding())
         # Encode the text into the right encoding for the wiki
-        text = text.encode(self.site().encoding())
+        encodedText = text.encode(self.site().encoding())
         predata = {
             'wpSave': '1',
-            'wpSummary': comment,
-            'wpTextbox1': text
+            'wpSummary': encodedComment,
+            'wpTextbox1': encodedText
         }
         # Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions
@@ -1081,13 +1080,18 @@ class Page(object):
                 # moment to rewrite all scripts. Maybe we can later create
                 # two different lock exceptions, one for getting and one for
                 # putting.
-                raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
-            elif safetuple and "<" in data:
+                try:
+                    self.site().forceLogin(sysop = True)
+                    output(u'Page is locked, retrying using sysop account.')
+                    return self.putPage(text = text, comment = comment, watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage, token = token, gettoken = gettoken, sysop = True)
+                except NoUsername:
+                    raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
+            elif not newTokenRetrieved and "<" in data:
                 # We might have been using an outdated token
                 output(u"Changing page has failed. Retrying.")
-                return self.putPage(safetuple[0], comment=safetuple[1],
-                        watchArticle=safetuple[2], minorEdit=safetuple[3], newPage=safetuple[4],
-                        token=None, gettoken=True, sysop=safetuple[5])
+                return self.putPage(text = text, comment = comment,
+                        watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage,
+                        token = None, gettoken = True, sysop = sysop)
             else:
                 # Something went wrong, and we don't know what. Show the
                 # HTML code that hopefully includes some error message.
