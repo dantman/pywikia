@@ -135,6 +135,9 @@ templatecount.py       : Display the list of pages transcluding a given list
 template.py            : change one template (that is {{...}}) into another.
 touch.py               : Bot goes over all pages of the home wiki, and edits
                          them without changing.
+unlink.py              : This bot unlinks a page on every page that links to it.
+unusedfiles.py         : Bot appends some text to all unused images and other
+                         text to the respective uploaders.
 upload.py              : upload an image to Wikipedia.
 us-states.py           : A robot to add redirects to cities for US state 
                          abbreviations.
