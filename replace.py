@@ -343,11 +343,22 @@ def main():
                 gen = generator
             else:
                 commandline_replacements.append(arg)
-
-    if (len(commandline_replacements) == 2 and fix == None):
+                
+    if (len(commandline_replacements)%2):
+        raise wikipedia.Error, 'require even number of replacements.'
+    elif (len(commandline_replacements) == 2 and fix == None):
         replacements.append((commandline_replacements[0], commandline_replacements[1]))
         if summary_commandline == None:
             wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
+    elif (len(commandline_replacements) > 1):
+        if (fix == None):
+            #replacements.extend(commandline_replacements)
+            for i in xrange (0,len(commandline_replacements),2):
+                replacements.append((commandline_replacements[i],
+                                     commandline_replacements[i+1]))
+
+        else:
+           raise wikipedia.Error, 'Specifying -fix with replacements is undefined' 
     elif fix == None:
         old = wikipedia.input(u'Please enter the text that should be replaced:')
         new = wikipedia.input(u'Please enter the new text:')
