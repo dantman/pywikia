@@ -1083,7 +1083,7 @@ class Page(object):
                 try:
                     self.site().forceLogin(sysop = True)
                     output(u'Page is locked, retrying using sysop account.')
-                    return self.putPage(text = text, comment = comment, watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage, token = token, gettoken = gettoken, sysop = True)
+                    return self.putPage(text = text, comment = comment, watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage, token = None, gettoken = True, sysop = True)
                 except NoUsername:
                     raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
             elif not newTokenRetrieved and "<" in data:
@@ -2664,8 +2664,8 @@ class Site(object):
         self.user = user
         self._token = None
         self._sysoptoken = None
-        self.loginStatusKnown = False
-        self.loggedInAs = None
+        self.loginStatusKnown = {}
+        self._loggedInAs = None
         # Calculating valid languages took quite long, so we calculate it once
         # in initialization instead of each time it is used.
         self._validlanguages = []
@@ -2730,17 +2730,20 @@ class Site(object):
         return response, data
 
     def forceLogin(self, sysop = False):
+        self.loggedin(sysop = sysop)
         if not self.loggedin(sysop = sysop):
             loginMan = login.LoginManager(site = self, sysop = sysop)
             if loginMan.login(retry = True):
                 self.loginStatusKnown = True
-                self.loggedInAs = loginMan.username
+                self._loggedInAs = loginMan.username
 
-    def loggedin(self, sysop = False):
+    def loggedInAs(self, sysop = False):
         """
         Checks if we're logged in by loading a page and looking for the login
         link. We assume that we're not being logged out during a bot run, so
         loading the test page is only required once.
+
+        If logged in, returns the username. Otherwise, returns None
         """
         self._loadCookies()
         if not self.loginStatusKnown:
@@ -2752,7 +2755,7 @@ class Site(object):
             m = mytalkR.search(text)
             if m:
                 self.loginStatusKnown = True
-                self.loggedInAs = m.group('username')
+                self._loggedInAs = m.group('username')
                 # While we're at it, check if we have got unread messages
                 if '<div class="usermessage">' in text:
                     output(u'NOTE: You have unread messages on %s' % self)
@@ -2764,7 +2767,7 @@ class Site(object):
                 tokenloc = Rwatch.search(text)
                 if tokenloc:
                     self.putToken(tokenloc.group(1), sysop = sysop)
-        return (self.loggedInAs is not None)
+        return self._loggedInAs
 
     def cookies(self, sysop = False):
         # TODO: cookie caching is disabled

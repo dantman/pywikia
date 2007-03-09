@@ -17,8 +17,8 @@ for arg in wikipedia.handleArgs():
     sys.exit(1)
 
 mysite = wikipedia.getSite()
-if mysite.loggedin():
-    wikipedia.output(u"You are logged in on %s." % repr(mysite))
+if mysite.loggedInAs():
+    wikipedia.output(u"You are logged in on %s as %s." % (repr(mysite), mysite.loggedInAs()))
 else:
     wikipedia.output(u"You are not logged in on %s." % repr(mysite))
 
