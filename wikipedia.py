@@ -1070,6 +1070,18 @@ class Page(object):
                 # Make sure your system clock is correct if this error occurs
                 # without any reason!
                 raise EditConflict(u'Someone deleted the page.')
+            elif mediawiki_messages.get('viewsourcetext') in data:
+                # The page is locked. This should have already been detected
+                # when getting the page, but there are some reasons why this
+                # didn't work, e.g. the page might be locked via a cascade
+                # lock.
+                # We won't raise a LockedPage exception here because these
+                # exceptions are usually already raised when getting pages,
+                # not when putting them, and it would be too much work at this
+                # moment to rewrite all scripts. Maybe we can later create
+                # two different lock exceptions, one for getting and one for
+                # putting.
+                raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
             elif safetuple and "<" in data:
                 # We might have been using an outdated token
                 output(u"Changing page has failed. Retrying.")
@@ -1077,6 +1089,8 @@ class Page(object):
                         watchArticle=safetuple[2], minorEdit=safetuple[3], newPage=safetuple[4],
                         token=None, gettoken=True, sysop=safetuple[5])
             else:
+                # Something went wrong, and we don't know what. Show the
+                # HTML code that hopefully includes some error message.
                 output(data)
         if self.site().hostname() in config.authenticate.keys():
             # No idea how to get the info now.
