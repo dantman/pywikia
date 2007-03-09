@@ -356,7 +356,9 @@ class GeneratorFactory:
             else:
                 return UnusedFilesGenerator(number = int(arg[13:]))
         elif arg.startswith('-file'):
-            if len(arg) >= 6:
+            if len(arg) == 5:
+                textfilename = wikipedia.input(u'Please enter the local file name:')
+            else:
                 textfilename = arg[6:]
             return TextfilePageGenerator(textfilename)
         elif arg.startswith('-cat'):
