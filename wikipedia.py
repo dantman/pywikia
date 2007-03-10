@@ -2730,8 +2730,7 @@ class Site(object):
         return response, data
 
     def forceLogin(self, sysop = False):
-        self.loggedin(sysop = sysop)
-        if not self.loggedin(sysop = sysop):
+        if not self.loggedInAs(sysop = sysop):
             loginMan = login.LoginManager(site = self, sysop = sysop)
             if loginMan.login(retry = True):
                 self.loginStatusKnown = True
