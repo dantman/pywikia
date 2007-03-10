@@ -176,7 +176,7 @@ class CosmeticChangesToolkit:
 
                     # Remove unnecessary initial and final spaces from label.
                     # Please note that some editors prefer spaces around pipes. (See [[en:Wikipedia:Semi-bots]]). We remove them anyway.
-                    if label:
+                    if label != None:
                         # Remove unnecessary leading spaces from label,
                         # but remember if we did this because we want
                         # to re-add it outside of the link later.
