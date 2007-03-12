@@ -365,7 +365,7 @@ class Word(object):
                 return False
         except KeyError:
             pass
-        if self.word[0].isupper():
+        if self.word != uncap(self.word):
             return Word(uncap(self.word)).isCorrect(checkalternative = checkalternative)
         else:
             if checkalternative:
