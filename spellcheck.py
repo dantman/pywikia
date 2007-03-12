@@ -3,7 +3,7 @@
 """
 This bot spellchecks Wikipedia pages. It is very simple, only checking
 whether a word, stripped to its 'essence' is in the list or not, it does
-not do any grammar checking or such. It can be used in two ways:
+not do any grammar checking or such. It can be used in four ways:
 
 spellcheck.py Title
     Check a single page; after this the bot will ask whether you want to
@@ -42,6 +42,8 @@ Command-line options:
 -checklang:xx  use the file for language xx: instead of that for my local
                language; for example on simple: one would use the language
                file of en:
+-knownonly     only check words that have been marked as a mis-spelling in
+               the spelling list; words that are not on the list are skipped
 """
 #
 # (C) Andre Engels, 2005
@@ -255,7 +257,7 @@ def removeHTML(page):
     result = result.replace('&deg;',u'°')
     return result
 
-def spellcheck(page, checknames = True):
+def spellcheck(page, checknames = True, knownonly = False):
     text = page
     if correct_html_codes:
         text = removeHTML(text)
@@ -269,7 +271,7 @@ def spellcheck(page, checknames = True):
         loc += len(match.group(1))
         bigword = Word(match.group(2))
         smallword = bigword.derive()
-        if not Word(smallword).isCorrect() and (checknames or not smallword[0].isupper()):
+        if not Word(smallword).isCorrect(checkalternative = knownonly) and (checknames or not smallword[0].isupper()):
             replacement = askAlternative(smallword,context=text[max(0,loc-40):loc+len(match.group(2))+40])
             if replacement == edit:
                 import editarticle
@@ -350,18 +352,26 @@ class Word(object):
             return wikipedia.input(u"Please give the result of replacing %s by %s in %s:"%(self.derive(),rep,self.word))
         return self.word.replace(self.derive(),rep)
             
-    def isCorrect(self):
+    def isCorrect(self,checkalternative = False):
+        # If checkalternative is True, the word will only be found incorrect if
+        # it is on the spelling list as a spelling error. Otherwise it will
+        # be found incorrect if it is not on the list as a correctly spelled word.
         if self.word == "":
             return True
         try:
             if knownwords[self.word] == self.word:
                 return True
+            else:
+                return False
         except KeyError:
             pass
         if self.word[0].isupper():
-            return Word(uncap(self.word)).isCorrect()
+            return Word(uncap(self.word)).isCorrect(checkalternative = checkalternative)
         else:
-            return False
+            if checkalternative:
+                return True
+            else:
+                return False
 
     def getAlternatives(self):
         alts = []
@@ -396,6 +406,7 @@ try:
     rebuild = False
     checknames = True
     checklang = None
+    knownonly = False
 
     for arg in wikipedia.handleArgs():
         if arg.startswith("-start:"):
@@ -412,6 +423,8 @@ try:
             checknames = False
         elif arg.startswith("-checklang:"):
             checklang = arg[11:]
+        elif arg.startswith("-knownonly"):
+            knownonly = True
         else:
             title.append(arg)
 
@@ -455,7 +468,7 @@ try:
             except wikipedia.Error:
                 pass
             else:
-                text = spellcheck(text,checknames=checknames)
+                text = spellcheck(text,checknames=checknames,knownonly=knownonly)
                 if text != page.get():
                     page.put(text)
     elif start:
@@ -465,7 +478,7 @@ try:
             except wikipedia.Error:
                 pass
             else:
-                text = spellcheck(text,checknames=checknames)
+                text = spellcheck(text,checknames=checknames,knownonly=knownonly)
                 if text != page.get():
                     page.put(text)
 
@@ -476,7 +489,7 @@ try:
             except wikipedia.Error:
                 pass
             else:
-                text = spellcheck(text, checknames = checknames)
+                text = spellcheck(text, checknames = checknames,knownonly=knownonly)
                 if text != page.get():
                     page.put(text)
     
@@ -491,7 +504,7 @@ try:
             except wikipedia.IsRedirectPage:
                 print "Page is a redirect page"
             else:
-                text = spellcheck(text)
+                text = spellcheck(text,knownonly=knownonly)
                 if text != page.get():
                     page.put(text)
             title = wikipedia.input(u"Which page to check now? (enter to stop)")
