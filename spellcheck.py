@@ -382,6 +382,11 @@ class Word(object):
             alts += knownwords[self.word]
         except KeyError:
             pass
+        if self.word[0].isupper():
+            try:
+                alts += [cap(w) for w in knownwords[uncap(self.word)]]
+            except KeyError:
+                pass
         return alts
 
     def declare_correct(self):
