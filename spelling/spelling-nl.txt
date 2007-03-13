@@ -1,3 +1,4 @@
+1 
 1 's
 1 's-Graveland
 1 's-Gravendeel
@@ -8,6 +9,7 @@
 1 -
 1 0,05°
 1 0.5em
+1 08°
 1 09°
 1 0°
 1 1,5°
@@ -17,6 +19,7 @@
 1 1...f5
 1 1.d4
 1 1.e4
+0 1/8ste achtste
 1 1/e
 1 10 jaar
 1 10-jarige
@@ -36,14 +39,18 @@
 1 12&deg
 1 12.7mm
 1 12.Tc1
+1 120px
 0 12de 12e
-0 12de-eeuws 12e_eeuwse
+0 12de-eeuws 12e-eeuwse
 1 12e
 1 12e eeuwse
+1 12e-eeuwse
 1 12u
 1 12°
 1 13.Ld3
+1 130px
 1 1337player
+0 13de 13e
 0 13de-eeuws 13e-eeuwse
 1 13e
 1 13e-eeuwse
@@ -52,12 +59,15 @@
 1 14.Dd3
 1 140px
 1 145px
+0 14de 14e
 1 14e
 1 14°
+1 15-jarig
 1 15-jarige
 1 15...Pc4
 1 15.Pd2
 1 150px
+1 155px
 0 15de  15e
 1 15e
 1 15°
@@ -74,6 +84,7 @@
 1 180px
 0 18de 18e
 1 18e
+1 190px
 1 1947a
 1 1947b
 0 19de 19e
@@ -81,6 +92,7 @@
 1 1e
 1 1em
 1 1px
+0 1ste 1e
 1 1u
 1 1½
 1 2&sup3
@@ -91,6 +103,7 @@
 1 2.Pc3
 1 2.Pf3
 1 2.c4
+1 2.d4
 1 20-jarige
 1 20-steens
 1 200e
@@ -100,54 +113,63 @@
 1 20min
 1 20mm
 1 20px
-0 20ste 20e
+0 20ste 20e twintigste
 1 20u
+1 20x
 1 21-jarige
 1 21e
 0 21ste 21e
 1 220°C
 1 227,90/km²
-0 22e 
+1 22e
+0 22ste 22e
 1 22u
 1 23-jarige
-0 23e 
+1 23e
 1 23°
 1 24e
 1 250px
-0 25e 
-0 26e 
+1 25e
+0 25ste 25e
+1 26e
 1 26min
 1 270°C
 1 275px
 1 27e
 1 280px
-0 28e 
+1 28e
 1 28°
 1 29,2s
 1 29-jarige
-0 29e 
+1 29e
+1 29°
 1 2a
+0 2de 2e
 1 2e
 1 2em
 1 2n
+1 2°
 1 3.Lc4
+1 3.Pf3
 1 3.c4
 0 30-er dertiger
 1 300px
 1 307px
-0 30e 
-0 31e 
+1 30e
+1 31e
 1 32e
-0 33e 
+1 32°
+1 33e
 1 34e
 1 35,9s
-0 35e 
-0 36e 
+1 35e
+1 36e
 1 37e
-0 38e 
+1 38e
 1 39,8s
 0 39e 
 1 3H
+0 3de 3e
 1 3e
 1 3°26
 1 3½
@@ -157,24 +179,28 @@
 1 4.c3
 1 40-hits
 1 40-tal
-0 40e 
+1 40e
+1 40px
 1 41-jarige
 1 41e
-0 42e 
+1 42e
 0 43e 
 1 444,09/km²
 0 44e 
+1 44°
 1 450
 0 45e 
-0 46e 
+1 45°
+1 46e
 1 46°
-0 47e 
+1 47e
 1 47°
 0 48e 
 1 48°
 1 49e
 0 49ste 49e
 1 49°
+0 4de 4e
 1 4e
 1 4n+12
 1 4n+6
@@ -187,31 +213,32 @@
 1 5.d4
 1 5.e3
 1 50-jarig
-0 50e 
+1 50e
 1 50°
 1 50°56
 1 50°59
-0 51e 
+1 51e
 1 51°
 1 51°05
 1 52-jarige
-0 52e 
+1 52e
 1 52°
 1 52°26
-0 53e 
+1 53e
 1 53°
 1 53°01
 1 53°25
 1 53°33
-0 54e 
+1 54e
 1 55&deg
 0 55e 
 1 56e
-0 57e 
+1 57e
 0 58e 
 1 58min
 1 58°
-0 59e 
+1 59e
+0 5de 5e
 1 5e
 1 5°56
 1 6,2s
@@ -220,7 +247,7 @@
 1 6.e5
 0 60-tallig zestigtallig
 0 60e 
-0 61e 
+1 61e
 1 61°
 1 62-jarige
 0 62e 
@@ -234,6 +261,7 @@
 0 68e 
 0 69e 
 1 6d
+0 6de 6e
 1 6e
 1 6u
 1 6°
@@ -248,10 +276,11 @@
 1 74-jarige
 0 74e 
 0 75e 
-0 76e 
+1 76e
 0 77e 
 0 78e 
-0 79e 
+1 79e
+0 7de 7e
 1 7e
 1 7s
 1 7u
@@ -260,7 +289,7 @@
 1 8.cd
 1 800-jarig
 0 80e 
-0 81e 
+1 81e
 0 82e 
 0 83e 
 0 84e 
@@ -276,20 +305,21 @@
 1 9,5m
 1 9-delige
 1 9.bc
-0 90e 
+1 90e
 1 90°
 0 91e 
 0 92e 
 0 93e 
 0 94e 
 0 95e 
-0 96e 
+1 96e
 0 97e 
 1 983,89/km²
 0 98e 
 1 99e
 0 9de 9e
 1 9e
+1 9x
 1 9°
 1 A&G
 1 A-Ha
@@ -301,6 +331,7 @@
 1 A112
 1 A32
 1 A4
+1 A4'tje
 0 A4-tje A4'tje
 1 A66
 1 A7
@@ -335,6 +366,7 @@
 1 ALIGN
 1 ALN
 1 AM
+1 AMC's
 1 AMDG
 1 AMP
 1 AMRO
@@ -345,6 +377,7 @@
 1 AOC
 1 AP
 1 APG
+1 API's
 1 ARAMCO
 1 ARP
 1 ARP-protocol
@@ -392,6 +425,7 @@
 1 Aandoeningen
 1 Aar
 1 Aar sele
+1 Aarhus
 1 Aarle
 1 Aarle-Rixtel
 1 Aarlen
@@ -630,6 +664,8 @@
 1 Adeje
 1 Adek
 1 Adelaide
+0 Adelaide's Adelaides
+1 Adelaides
 1 Adelbert
 1 Adeldom
 1 Adelheid
@@ -696,6 +732,9 @@
 1 Aeolus
 1 Aernoudt
 1 Aerzen
+1 Aesculus
+1 Aeshna
+1 Aeshnidae
 0 Aesopet Aesopus
 1 Aesopus
 1 Aetolië
@@ -786,6 +825,7 @@
 1 Albert
 1 Alberto
 1 Albeschikker
+1 Albi
 1 Albin
 1 Albins
 1 Alblasserdam
@@ -800,6 +840,7 @@
 1 Alderamin
 1 Aldhafara
 1 Aldhafera
+1 Alegro
 1 Alejandro
 1 Alemán
 1 Alessandro
@@ -820,6 +861,7 @@
 1 Ali
 1 Alice
 1 Alien
+1 AlignBars
 1 Alive
 1 Alkemade
 1 Alken-Maes
@@ -829,6 +871,8 @@
 1 Allan
 1 Alland
 1 Allard
+0 Allard's Allards
+1 Allards
 1 Allentown
 1 Allerheiligen
 1 Allerheiligste
@@ -840,6 +884,7 @@
 1 Almelose
 1 Almere
 1 Almohaden
+1 Alnitak
 1 Alofs
 1 Alois
 1 Alom
@@ -855,21 +900,33 @@
 1 AltaVista
 1 Altair
 1 Altaneira
+1 Altenburger
 1 Altenmarkt
 1 Alva
 1 Alvarez
+1 Alyssa's
 1 Alz
 1 Alzheimer
 1 Amalia
+1 Amalia's
+1 Amalthea's
+1 Amanda's
+1 Amarok's
+0 Amazon's Amazons
 1 Amazonas
+1 Amazons
 1 Ambon
 1 Ambonees
 1 Ambrose
 1 Ambrosiano
 1 Ameland
+1 America's
 0 Americaanse Amerikaanse
 1 American
 1 Americas
+0 Amerie's Ameries
+1 Ameries
+1 Amerigo
 1 Amerika
 1 Amerika's
 1 Amerikaan
@@ -884,6 +941,8 @@
 1 Amhaars
 1 Amhali
 1 Amiens
+1 Amiga's
+1 Amigaprogramma's
 1 Amiiformes
 1 Amin
 1 Amir
@@ -895,6 +954,7 @@
 1 Amon
 1 Amphibia
 1 Amphiprion
+1 Amphitruo's
 1 Amphizoidae
 1 Amphoe
 1 Ampère
@@ -903,15 +963,19 @@
 1 Amstel
 1 Amstelveen
 1 Amsterdam
+0 Amsterdam's Amsterdams
 1 Amsterdam-Rijnkanaal
 1 Amsterdammers
 1 Amsterdams
 1 Amsterdamse
 1 Amt
 1 Amtrak
+1 Amy's
 1 Anabantidae
+1 Anacaona's
 1 Ananke
 1 Anarhinchadidae
+1 Anatoly
 1 Ancona
 1 AndereNamen
 1 Anderlecht
@@ -944,6 +1008,7 @@
 1 Angelsaksisch
 1 Angelsaksische
 1 Angerlo
+1 Angkor
 1 Anglesey
 1 Angola
 1 Anguilliformes
@@ -951,10 +1016,12 @@
 1 Anhalt-Dessau
 1 Animalia
 1 Animals
+1 Anisoptera
 1 Ankara
 1 Anloo
 1 Ann
 1 Anna
+1 Anna's
 1 Annales
 1 Annapolis
 1 Anne
@@ -976,6 +1043,7 @@
 1 Anthonis
 1 Anthony
 1 Anthozoa
+1 Anthrax
 0 Anti-semitische Antisemitische
 1 Antigonus
 1 Antillen
@@ -1004,6 +1072,7 @@
 1 Ape
 1 Apeldoorn
 1 Apgar-score
+1 Aphloiaceae
 1 Aphrodite
 0 Aphrodite's Aphrodites
 1 Aphrodites
@@ -1022,6 +1091,7 @@
 1 Appenzell
 1 Appie
 1 Appingedam
+1 Apple
 1 Applied
 1 Apsny
 1 Aquila
@@ -1057,8 +1127,10 @@
 1 Arch
 1 Architecture
 1 Ardant
+1 Ardennen
 1 Ardet
 1 Ardzinba
+1 Ardèche
 1 Area
 1 Aremberg
 1 Arendschot
@@ -1166,6 +1238,7 @@
 1 Atlantisch
 1 Atlantische
 1 Atlasgebergte
+1 Attermeer
 1 Attica
 1 Attische
 1 Aube
@@ -1208,6 +1281,7 @@
 1 Autobianchi
 1 Automatic
 1 Automatique
+1 Auvergne
 1 Avada
 1 Aventijnse
 1 Aventura
@@ -1238,6 +1312,7 @@
 1 Ayyash
 1 Azemiopinae
 1 Azemiops
+1 Azerbeidzjaanse
 1 Azerbeidzjan
 1 Aziaat
 1 Aziaten
@@ -1408,6 +1483,8 @@
 1 Bacharuddin
 1 Bachata
 1 Bachata's
+0 Bachchan's Bachchans
+1 Bachchans
 1 Bachelard
 1 Bachelor-Masterstelsel
 1 Bachelor-Masterstructuur
@@ -1457,6 +1534,8 @@
 0 Bahrain Bahrein
 1 Bahrainona
 1 Bahrein
+0 Baht's Bahts
+1 Bahts
 1 Bahá'u'lláh
 1 Bahá'í
 1 Baier
@@ -1611,6 +1690,7 @@
 1 Barbiepoppen
 1 Barbin
 1 Barbra
+1 Barbèche
 1 Barcelona
 1 Barcelonnette
 1 Bardiya
@@ -1690,8 +1770,10 @@
 1 Beatus
 1 Beauregard
 1 Becket
+1 Becky's
 1 Bedingfield
 0 Bedrijfjournalisten Bedrijfsjournalisten
+1 Bedrijfsjournalisten
 1 Bedum
 1 Bee
 1 Beeldenstorm
@@ -1748,6 +1830,7 @@
 1 Belsen
 1 Beltman
 1 Beltrán
+1 Bemidar
 1 Bemmel
 1 Ben
 1 Ben-Hadad
@@ -1805,6 +1888,8 @@
 1 Bernhard
 1 Bernisse
 1 Bernoulligetallen
+0 Berrabah's Berrabahs
+1 Berrabahs
 1 Berstett
 1 Bert
 1 Berthouts
@@ -1842,12 +1927,14 @@
 1 Big
 1 Biggs
 1 Bijbel
+1 Bijns
 1 Bikila
 1 Bilitis
 1 Billboard
 1 Billens-Hennens
 1 Billy
 1 Bilthoven
+1 Binary
 1 Binh
 1 Binnendieze
 1 Binnenmaas
@@ -1906,6 +1993,7 @@
 1 Boekel
 1 Boelenslaan
 1 Boelensloane
+1 Boerendonk
 1 Boerenkrijg
 1 Boerenpartij
 1 Boerentoren
@@ -1930,6 +2018,8 @@
 1 Bombacaceae
 1 Bombardier
 1 Bonaparte
+0 Bonaparte's Bonapartes
+1 Bonapartes
 1 Bondsvergadering
 1 Bonfoh
 1 Bonifatius
@@ -1985,6 +2075,7 @@
 1 Bourgondië
 1 Bourgondiër
 1 Bourgondiërs
+1 Boussières
 1 Bouteflika
 1 Boutiette
 1 Bouygues
@@ -2010,10 +2101,12 @@
 1 Brad
 1 Bradshaw
 1 Bragança
+1 Brahmaan
 1 Brahmaputra
 1 Brain
 1 Brakel
 1 Brakes
+1 Bramsnæs
 1 Branco
 1 Brancusi
 1 Brasil
@@ -2114,6 +2207,7 @@
 1 Brutus
 1 Brünn
 1 BuZa
+1 Bucephalus
 1 Buchenwald
 1 Buckle
 1 Budel
@@ -2131,6 +2225,7 @@
 1 Bullock
 1 Bulthuis
 1 Bundesbahn
+1 Bundesland
 1 Bundesrat
 1 Bundesstaat
 1 Bunnik
@@ -2193,6 +2288,7 @@
 1 COC
 1 COCH
 1 COLSPAN
+1 CONTROCAM
 1 COO
 1 COOH
 1 COONa
@@ -2201,6 +2297,7 @@
 1 CPU
 1 CS
 1 CT-scan
+1 Caesar
 1 Caesarea
 1 Caesars
 1 Café
@@ -2228,12 +2325,15 @@
 1 Calvino
 1 Cam
 1 Camacho
+1 Camargue
+0 Camarque Camargue
 1 Cambodja
 1 Cambrai
 1 Cambridge
 1 Cambrium
 1 Cambyses
 1 Camelback
+1 Cameraria
 0 Cameroun Kameroen
 1 Camille
 1 Camocim
@@ -2259,6 +2359,7 @@
 1 Cap
 1 Cape
 1 Capelle
+1 Capena
 1 Caperea
 1 Capri
 1 Capricorni
@@ -2270,7 +2371,7 @@
 1 Caracalla
 1 Carangidae
 1 Carapacidae
-0 Caraïbisch Caribisch
+1 Caraïbisch
 1 Carbon
 1 Carboon
 1 Carcharoth
@@ -2288,11 +2389,15 @@
 1 Carlo
 1 Carlos
 1 Carlsen
+1 Carmaux
 1 Carnivora
 1 Carol
 1 Carola
+1 Carola's
 1 Carolien
 1 Carolina
+1 Carolina's
+0 Carolinas Carolina's
 1 Carolus
 1 Caron
 1 Carpenter
@@ -2311,6 +2416,7 @@
 1 Casimir
 1 Cassiopeia
 1 Cassiopeiae
+1 Castanea
 1 Castellane
 1 Castelnau-Montratier
 1 Castigatio
@@ -2360,6 +2466,7 @@
 1 Centraal-Amerika
 1 Centraal-Azië
 1 Centraal-Italië
+1 Centraal-Thailand
 1 Centraal-Vietnam
 1 Centralen
 1 Centrarchidae
@@ -2452,6 +2559,7 @@
 1 Choshui
 1 Chr
 1 Chris
+1 Christa
 0 Christen-Democratische christen-democratische
 1 Christene
 1 Christentum
@@ -2482,6 +2590,9 @@
 1 Chroeomys
 1 Chryses
 1 Chryseïs
+0 Chrysler's Chryslers
+1 Chryslers
+1 Chrysosplenium
 1 Chuck
 1 Chuwit
 1 Chá
@@ -2489,6 +2600,7 @@
 1 Châtelard
 1 Châtonnaye
 1 Ciano
+1 Cicero's
 1 Cichlidae
 1 Cichliden
 1 Cicindelidae
@@ -2510,6 +2622,7 @@
 1 Claire
 1 Clairvaux
 1 Clancy
+1 Clancy's
 1 Clarke
 1 Classic
 1 Claude
@@ -2522,6 +2635,7 @@
 1 Clementon
 1 Clercq
 1 Clermont-sur-Meuse
+1 Clethrionomys
 1 Cliff
 1 Clifford
 1 Clint
@@ -2542,6 +2656,7 @@
 1 Colaptes
 1 Coldplay
 1 Coleman
+1 Coleners
 1 Coleoptera
 1 Coligny
 1 Colin
@@ -2552,6 +2667,7 @@
 1 Colombia
 1 Colombiaans
 1 Colorado
+1 Colors
 1 Colossos
 1 Colossus
 1 Coltrane
@@ -2559,10 +2675,12 @@
 1 Colubridae
 1 Columba
 1 Columbus
+1 Combino's
 1 Comecon
 1 Command
 1 Commandeur
 1 Commerce
+1 Committee
 1 Commodus
 1 Commonwealth
 1 Communications
@@ -2570,6 +2688,7 @@
 1 Comomeer
 1 Compagnie
 1 Company
+1 Comté
 1 Conamus
 1 Concertgebouw
 1 Concertgebouworkest
@@ -2611,6 +2730,7 @@
 1 Corinthische
 1 Corkscrew
 1 Cornac
+1 Cornales
 1 Cornea
 1 Corneel
 1 Corneille
@@ -2621,6 +2741,7 @@
 1 Corporation
 1 Corridor
 1 Corry
+1 Corrèze
 1 Corsendonk
 1 Corsica
 1 Cortes
@@ -2650,6 +2771,7 @@
 1 Cremlin
 1 Cremona
 1 Cremps
+1 Crepis
 1 Creuzburg
 1 Crevecoeur
 1 Cricetidae
@@ -2662,6 +2784,7 @@
 1 Cromstrijen
 1 Cronquist
 1 Crosby
+1 Crossosomatales
 1 Crotalinae
 1 Crowe
 1 Cru
@@ -2695,6 +2818,7 @@
 1 Cylons
 1 Cynosarges
 1 Cynthia
+0 Cypres Cyprus
 1 Cypriniformes
 1 Cyprioot
 1 Cyprioten
@@ -2711,6 +2835,7 @@
 1 Cézanne
 1 Cîteaux
 1 Córdoba
+1 Côte
 1 Côte-d'Or
 1 D'Hooghe
 1 D-Day
@@ -2728,6 +2853,7 @@
 1 DHEA
 1 DIT
 1 DJ
+1 DK
 1 DKW
 1 DMT
 1 DMX
@@ -2780,6 +2906,8 @@
 1 Daoed
 1 Darbon
 1 Darby
+1 Darco
+1 Dardenne
 1 Darfur
 1 Darius
 1 Dark
@@ -2789,8 +2917,10 @@
 1 Darmstadt-Dieburg
 1 Darussalan
 1 Dasyuromorphia
+1 DateFormat
 1 Daudet
 1 Daughter
+1 Daughter's
 1 Dave
 1 Daventry
 1 David
@@ -2858,9 +2988,12 @@
 1 Deo
 1 Department
 1 Depeche
+1 Dequenne
 1 Derain
 1 Dercksen
 1 Derek
+0 Derek's Dereks
+1 Dereks
 1 Derksen
 1 Derrida
 1 Desboutin
@@ -2877,6 +3010,7 @@
 1 Deutsche
 1 Devanagari
 1 Deventer
+1 Devil's
 1 Devoon
 1 Dex
 1 Dexia
@@ -2926,6 +3060,7 @@
 1 Dionysus
 1 Diplomacy
 1 Dipper
+1 Diptera
 1 Direktbank
 1 Dirk
 1 Dirksland
@@ -2966,6 +3101,7 @@
 1 Domine
 1 Dominicaanse
 1 Dominique
+1 Domèvre
 1 Donald
 1 Donar
 1 Donatello
@@ -2995,10 +3131,12 @@
 1 Dortmund
 1 Dortsman
 1 Doré
+1 Doubs
 1 Douglas
 1 Douglass
 1 Douwes
 1 Dove
+1 Dow-Jonesindex
 1 Dowaai
 1 Down
 1 Dragon
@@ -3006,12 +3144,15 @@
 1 Dream
 1 Drechterland
 1 Drempt
+1 Drent
 0 Drente Drenthe
+1 Drenten
 0 Drenth Drent
 1 Drenthe
 0 Drenthen Drenten
 0 Drenths Drents
 0 Drenthse Drentse
+1 Drents
 1 Drentse
 1 Dresden
 1 Drexler
@@ -3065,6 +3206,7 @@
 1 Durban
 1 Dury
 1 Dussen
+1 Dustin
 1 Dutch
 1 Dutroux
 1 Duurstede
@@ -3090,6 +3232,7 @@
 1 E0E0E0
 1 E40
 1 E87
+1 EASP
 1 EDC
 1 EEEEEE
 1 EEPROM
@@ -3098,10 +3241,12 @@
 1 EK
 1 ELISPOT
 1 EMI
+1 ENG
 1 EPROM
 1 EQ
 1 ERH
 1 ERP
+1 ESA
 1 ESW
 1 EU
 1 EVAA
@@ -3109,10 +3254,13 @@
 1 Eaglebrook
 1 Ealsum
 1 Earforce
+1 Early's
 1 Earring
 1 Earth
 1 East
 1 Eastwood
+0 Eastwood's Eastwoods
+1 Eastwoods
 1 Easy
 1 Eat
 1 Eban
@@ -3153,6 +3301,7 @@
 1 Eem
 1 Eemnes
 1 Eemsmond
+1 Een
 1 Eersel
 1 Eethen
 1 Eexterveenschekanaal
@@ -3195,6 +3344,8 @@
 1 Elize
 1 Ellen
 1 Ellesmere
+0 Elliot's Elliots
+1 Elliots
 1 Elloy
 1 Elopiformes
 1 Elopomorpha
@@ -3209,6 +3360,7 @@
 1 Emanuel
 1 Emballonura
 1 Embiotocidae
+1 Embryophyta
 1 Emessa
 1 Emiel
 1 Emil
@@ -3251,6 +3403,7 @@
 1 Enzesfeld-Lindabrunn
 1 Enzo
 1 Eoceen
+1 Eohippus
 1 Epcot
 1 Epic
 1 Epirus
@@ -3258,6 +3411,8 @@
 1 Epulo
 0 Equador Ecuador
 1 Equality
+1 Equidae
+1 Equus
 1 Erasmus
 1 Erawan
 1 Erchamion
@@ -3375,6 +3530,7 @@
 1 FF
 1 FFDEAD
 1 FFFF33
+1 FIDE-reglement
 1 FLN
 1 FN
 1 FN-importeur
@@ -3383,9 +3539,12 @@
 1 FPPS
 1 FSB
 1 Faas
+1 Faassen
 1 Fabaceae
 1 Fabales
+1 Fabeltjeskrant
 1 Faber
+1 Fabiden
 1 Fabienne
 1 Fabricio
 1 Fabris
@@ -3417,6 +3576,7 @@
 1 Faraday
 1 Farias
 1 Farizeeën
+1 Farley
 1 Farnese
 1 Faso
 1 Fasol
@@ -3440,7 +3600,9 @@
 1 Fellbach
 1 Fellowship
 1 Fenech
+1 Fenicisch
 1 Fenicische
+1 Feniciër
 1 Feniciërs
 1 Fenikshof
 1 Ferdinand
@@ -3449,6 +3611,7 @@
 1 Fernando
 1 Fernhout
 1 Ferrari
+1 Ferrera's
 1 Ferté
 1 Ferwerderadeel
 1 Fest
@@ -3464,6 +3627,7 @@
 1 Figueroa
 1 Filicopsida
 1 Filipijnen
+1 Filipijns
 1 Filipijnse
 1 Filippijn
 0 Filippijnen Filipijnen
@@ -3518,6 +3682,7 @@
 1 Florival
 1 Flossenbürg
 1 Floyd
+1 Fluans
 1 Flying
 1 Flörsheim
 1 Foix
@@ -3533,6 +3698,9 @@
 1 Force
 1 Forces
 1 Forceville
+0 Ford's Fords
+1 Fords
+1 Forest
 1 Formula
 1 Forquilha
 1 Fortis
@@ -3548,6 +3716,7 @@
 1 Fra
 1 France
 1 Francesco
+1 Franche
 1 Franche-Comté
 1 Francia
 1 Francis
@@ -3637,6 +3806,7 @@
 1 Fu'ad
 1 Fulda
 1 Fun
+1 Funan
 1 Furth
 1 Furuholmen
 1 Fusarium
@@ -3707,6 +3877,7 @@
 1 Ganges
 1 Ganymedes
 1 Garcin
+1 García's
 1 Gardens
 1 Gardiner
 1 Garelli
@@ -3717,6 +3888,7 @@
 1 Gasselte
 1 Gastaldi
 1 Gaston
+1 Gastrophilus
 1 Gate
 1 Gathering
 1 Gaulle
@@ -3740,6 +3912,7 @@
 1 Geilenkirchen
 1 Geisa
 1 Geisenheim
+1 Geissolomataceae
 1 Geiß
 1 Gelb
 1 Gelderland
@@ -3785,6 +3958,7 @@
 1 Georg
 1 George
 1 Georges
+1 Georgia
 1 Georgische
 1 Georgië
 1 Georgiërs
@@ -3796,6 +3970,7 @@
 1 Gerard
 1 Gerards
 1 Gerardus
+1 Gerasimenko
 1 Gerd
 1 Gereformeerde
 0 Geregiseerd Geregisseerd
@@ -3822,6 +3997,8 @@
 1 Ghiberti
 1 Ghica
 1 Ghislaine
+1 Ghosh'
+0 Ghosh's Ghosh'
 1 Ghosts
 1 Ghostscript
 1 Ghraib
@@ -3840,6 +4017,7 @@
 1 Gieterveen
 1 Gieterzandvoort
 1 Gigouzac
+1 Gijlswijk
 1 Gilbert
 1 Giles
 1 Gilgamesh-epos
@@ -3856,6 +4034,7 @@
 1 Gissi
 1 Giuseppe
 1 Givray
+1 Givry
 1 Glanes
 1 Glasgow
 1 Glashütten
@@ -3875,6 +4054,7 @@
 1 GoLive
 1 Gobiidae
 1 God
+0 God's Gods
 1 Goddard
 1 Godefridus
 1 Godescalc-Evangelarium
@@ -3891,6 +4071,7 @@
 1 Goebbels
 1 GoedOplIn
 1 Goedereede
+1 Goereese
 0 Goerese Goereese
 1 Goering
 1 Goerion
@@ -3917,6 +4098,8 @@
 1 Gorcum
 1 Gordes
 1 Gordon
+0 Gordon's Gordons
+1 Gordons
 1 Gorinchem
 1 Gorky
 1 Gorman
@@ -3937,6 +4120,7 @@
 1 Grabenweg
 1 Grabert
 1 Grabfeld
+1 Gracillariidae
 1 Graffin
 1 Graham
 1 Gram-negatieve
@@ -3946,12 +4130,16 @@
 1 Grandi
 1 Grangettes
 1 Granjeiro
+1 Grant
+0 Grant's Grants
+1 Grants
 1 Granvelle
 1 Grapgics
 1 Grass
 1 Grasse
 1 Grassenfamilie
 1 Grave
+1 Gravenhage
 1 Gravity
 1 Graz
 1 Graça
@@ -3964,6 +4152,8 @@
 1 Gregoriaans
 1 Gregorini
 1 Gregory
+1 Gressly's
+1 Greve
 1 Grevelingen
 1 Griek
 1 Grieken
@@ -3983,6 +4173,7 @@
 1 Grimm
 1 Gris
 1 Groaíras
+1 Grobbendonk
 1 GroenLinks
 1 Groenewold
 1 Groenheuvel
@@ -4012,6 +4203,7 @@
 1 Groothertog
 1 Groothertogdom
 1 Ground
+1 Grozny
 1 Groß-Bieberau
 1 Großalmerode
 1 Großau
@@ -4021,23 +4213,27 @@
 1 Grundig
 1 Gruno
 1 Gruuthuse
+1 Grévy-zebra
 1 Guadeloupe
 1 Guantánamo
 1 Guatemala
 1 Gudrunlied
 1 Guennadi
 1 Guerrero
+1 Guerrero's
 1 Guglhof
 1 Guide
 1 Guido
+1 Guignardia
 1 Guillermo
 1 Guillon
 1 Guinea
-0 Guinese Guineese
+1 Guinese
 1 Guiness
 1 Guldensporenslag
 1 Gumede
 1 Gunda
+1 Gundsø
 1 Gunterstein
 1 Gunung
 1 Gurewitz
@@ -4052,6 +4248,7 @@
 1 Guusje
 1 Guy
 1 Guyana
+1 Guyana's
 1 Guyon
 1 Guzzi
 1 Gwen
@@ -4105,6 +4302,7 @@
 1 Haarlem
 1 Haarlemmerliede
 1 Haarlemmermeer
+1 Haarlemse
 1 Haart
 1 Habibie
 1 Habsburgers
@@ -4121,12 +4319,15 @@
 1 Hafiz
 1 Hafizullah
 1 Hagar
+1 Hageland
 1 Hai
 1 Haidar
 1 Haider
 1 Haifa
 1 Haile
 1 Haiphong
+1 Hakendover
+1 Hakendoverwijn
 1 Hakhamanish
 1 Halbertsma
 1 Halewijn
@@ -4168,10 +4369,12 @@
 1 Happart
 1 Haran
 1 Harbor
+1 Hardee
 1 Hardenberg
 1 Harderwijk
 1 Hardinxveld-Giessendam
 1 Hardy
+1 Hardy's
 1 Harenkarspel
 1 Harich
 1 Hariprasad
@@ -4193,14 +4396,17 @@
 1 Harun
 1 Harvard
 1 Haselhoef
+1 Hasjana
 1 Hasjemieten
 0 Hasjemietische Hasjemitische
 1 Hasjemitische
+1 Haspengouw
 1 Hassan
 1 Hassanal
 1 Hasselt
 1 Hat
 1 Hattem
+1 Haudouin
 1 Haughton
 1 Haus
 1 Haut-Var
@@ -4211,6 +4417,7 @@
 1 Hawaii
 1 Hawaï
 1 Hawks
+1 Haye
 1 Hayers
 1 Hayes
 1 Hazara
@@ -4222,6 +4429,7 @@
 1 Heat
 1 Heathen
 1 Heaven
+1 Heaven's
 1 Hebreeuws
 1 Hebreeuwse
 1 Hebreewse
@@ -4229,6 +4437,7 @@
 1 Hebreeër
 1 Hebreeërs
 1 Hebron
+1 Heche
 1 Hector
 1 Hedel
 1 Hedhurst
@@ -4257,6 +4466,7 @@
 1 Heiligenkreuz
 1 Heiligerlee
 1 Hein
+1 Heindel
 1 Heino
 1 Heinrich
 1 Heintje
@@ -4337,6 +4547,7 @@
 1 Heterodontosaurus
 1 Hetson
 1 Hettingen
+1 Heukels
 1 Heumen
 1 Heurne
 1 Heusden
@@ -4346,6 +4557,7 @@
 1 Hey
 1 Heydrich
 1 Heythuysen
+1 Heze
 1 Hidjaz
 1 Hidrolândia
 1 Hiedler
@@ -4353,7 +4565,9 @@
 1 Hieronymus
 1 Hierophis
 1 Higgins
+1 Highland
 1 Hijlaard
+1 Hilaire
 1 Hilbertruimte
 1 Hilbertruimten
 1 Hill
@@ -4366,6 +4580,7 @@
 1 Hilvarenbeek
 1 Hilversum
 1 Him
+1 Himalaya
 1 Himmler
 1 Himmlers
 1 Hinckle
@@ -4380,6 +4595,7 @@
 0 HipHop hiphop
 1 Hippo
 1 Hippocrates
+1 Hippocrepis
 1 Hipposideros
 1 Hiram
 1 Hirsch
@@ -4415,6 +4631,7 @@
 1 Hohenlohe
 1 Hohenlohe-Ingelfingen
 1 Hohenzollern-Sigmaringen
+1 Hokkaido
 1 Holland
 1 Hollander
 1 Hollanders
@@ -4483,6 +4700,7 @@
 1 Houtense
 1 Houtte
 1 Hove
+1 Hoveida's
 1 How
 1 Howard
 1 Hroznata
@@ -4527,6 +4745,7 @@
 1 Huub
 1 Huy
 1 Huysmans
+1 Hvalsø
 1 Hyam
 1 Hydrocera
 1 Hygrobiidae
@@ -4541,6 +4760,7 @@
 1 IAA
 1 IBGE
 1 IBM
+1 IBO's
 1 ICE
 1 ICO
 1 IEEE
@@ -4550,6 +4770,9 @@
 1 IIS
 1 IJ
 1 IJsland
+1 IJslander
+1 IJslanders
+1 IJslandse
 1 IJssel
 1 IJsselham
 1 IJsselmeer
@@ -4557,6 +4780,7 @@
 1 IJsselmeerpolders
 1 IJsselmuiden
 1 IJsselstein
+1 IJstijd
 1 IJszee
 1 IJzer
 1 IJzeren
@@ -4566,6 +4790,7 @@
 1 IMDB
 1 IMSAI
 1 ING
+1 INSEE
 1 IOC
 1 IP
 1 IP-adres
@@ -4597,6 +4822,7 @@
 1 Ichkeria
 1 Ichthus
 1 Ida
+1 Ida's
 1 Idstein
 1 Ieper
 1 Ier
@@ -4616,7 +4842,9 @@
 1 Impatiens
 1 Imperio
 1 InDesign
+1 Inca's
 1 Incirlik
+1 Incitatus
 1 Indemnity
 1 Independent
 1 India
@@ -4659,10 +4887,12 @@
 1 Ingolstadt
 1 Innocenzo
 1 Insecta
+1 Institut
 1 Institute
 1 Insubres
 1 Intamin
 1 Intel
+1 Intelprocessor
 1 Intercity
 1 International
 1 Internationale
@@ -4690,15 +4920,18 @@
 1 Iraniër
 1 Iraniërs
 1 Irauçuba
+1 Ireland's
 1 Irene
 1 Irian
 1 Irons
+1 Irtysj
 1 Irvine
 1 Irving
 1 Isa
 1 Isaac
 0 Isaak Izaäk Isaäk
 1 Isabella
+1 Isabella's
 1 Isaäk
 1 Isen
 1 Ishmail
@@ -4730,6 +4963,7 @@
 1 Istanboel
 0 Istanbul Istanboel
 1 Istiophoridae
+1 Isère
 1 It's
 1 Ita
 0 Itali&euml Italië
@@ -4758,15 +4992,19 @@
 1 JPG
 1 Jack
 1 Jackson
+0 Jackson's Jacksons
+1 Jacksons
 1 Jacky
 1 Jacob
 1 Jacobo
 1 Jacobs
 1 Jacobswoude
+1 Jacobus
 1 Jacqueline
 1 Jacques
 1 Jacquie
 1 Jaffa
+1 Jagger
 1 Jahan
 1 Jahwe
 1 Jahweh
@@ -4779,6 +5017,7 @@
 1 Jamaux
 1 Jamelia
 1 James
+1 Jamestown
 1 Jamie
 1 Jamuna
 1 Jan-Baptist
@@ -4806,6 +5045,7 @@
 1 Jaroslav
 1 Jarre
 1 Jason
+1 Jasper
 1 Jastremski
 1 Jatiya
 1 Jauhara
@@ -4818,6 +5058,7 @@
 1 Javamens
 1 Javanen
 1 Javase
+1 Javazee
 1 Jay
 1 Jaya
 1 Jean
@@ -4830,7 +5071,9 @@
 1 Jeb
 0 Jeddah Djedda
 1 Jeff
+0 Jeff's Jeffs
 1 Jefferson
+1 Jeffs
 1 Jehova
 1 Jehova's
 1 Jehovah's
@@ -4861,7 +5104,9 @@
 1 Jezusbeeld
 1 Jiddisch
 1 Jiddische
+0 Jim's Jims
 1 Jimmy
+1 Jims
 1 Jiménez
 1 Jisbak
 1 Jo
@@ -4887,6 +5132,7 @@
 1 John
 1 Johnny
 1 Johnson
+1 Johnston
 1 Jojakin
 1 Joksan
 1 Jolly
@@ -4966,6 +5212,7 @@
 1 KTM
 1 KUO
 1 KVP
+1 KWPN
 1 Ka'aba
 1 Kaapstad
 1 Kabardijnen
@@ -5021,6 +5268,7 @@
 1 Kara
 1 Karaisali
 1 Karatas
+1 Karazee
 1 Karbala
 1 Karel
 1 Karim
@@ -5055,6 +5303,8 @@
 1 Kaukasusgebied
 1 Kavkaz
 1 Kawai
+1 Kawasaki's
+1 Kayak
 1 Kazachstan
 1 Kazan
 1 Kaïn
@@ -5076,6 +5326,7 @@
 1 Keltische
 1 Kelvin
 1 Kemal
+1 Kemerovo
 1 Kempen
 1 Kempenaar
 1 Kempenaars
@@ -5099,6 +5350,7 @@
 1 Kerman
 1 Kermis
 1 Kermissen
+1 Kerri's
 1 Kershaw
 1 Kerstkind
 1 Kerstmis
@@ -5271,9 +5523,11 @@
 1 Köhler
 1 Kölldorf
 1 Königshofen
+1 Køge
 1 Küchen
 1 L'Aquila
 1 L'Ouverture
+1 L-vorm
 1 L.A
 1 L1-Cache
 1 L2-Cache
@@ -5288,6 +5542,7 @@
 1 LEFT|ALIGN
 1 LEO
 1 LG
+1 LHA's
 1 LIF
 1 LIP
 1 LOBO
@@ -5339,6 +5594,7 @@
 1 Landegg
 1 Landerd
 1 Landgraaf
+1 Landkreis
 1 Landmacht
 1 Landsdorf
 1 Landsmeer
@@ -5357,6 +5613,7 @@
 1 Lanseloet
 1 Lanthaniden
 1 Lanzmann
+1 Lao
 1 Laon
 1 Lap
 1 Laplander
@@ -5378,7 +5635,7 @@
 1 Lasn
 1 Latijn
 1 Latijnen
-0 Latijns Latijn
+1 Latijns
 1 Latijns-Amerika
 1 Latijns-Amerikaan
 1 Latijns-Amerikaanse
@@ -5396,6 +5653,7 @@
 1 Lauro
 1 Lausanne
 1 Laval-de-Cère
+1 Laverda's
 1 Laverman
 1 Law
 1 Lawrence
@@ -5414,9 +5672,12 @@
 1 Lebesgue-integreerbaar
 1 Lebesgue-integreerbare
 1 Lecco
+1 Lee
+0 Lee's Lees
 1 Leerdam
 1 Leerne
 1 Leersum
+1 Lees
 1 Leeuwarden
 1 Leeuwarderadeel
 1 Leffe
@@ -5433,6 +5694,7 @@
 1 Leigraaf
 1 Leipzig
 1 Leiss
+1 Lejre
 1 Lelystad
 1 Lemegeton
 1 Lemsterland
@@ -5451,9 +5713,11 @@
 1 Leonardo
 1 Leonis
 1 Leopold
+1 Lepidoptera
 1 Leroux-Dhuys
 1 Leslie
 1 Let
+1 Let's
 1 LethaalKonijn
 1 LethaalRat
 1 Lethal
@@ -5475,7 +5739,9 @@
 1 Levantijnse
 1 Levantse
 1 Levi
+1 Levinson
 1 Levita
+1 Leviticus
 1 Lewis
 1 Leyerpolder
 1 Lf5
@@ -5500,6 +5766,7 @@
 1 Lichtenfels
 1 Lichtenveldt
 1 Lichtenvoorde
+1 Liebe
 1 Liebenstein
 1 Lieberwerth
 1 Liebesinsel
@@ -5535,6 +5802,7 @@
 1 Lilly
 1 Lima
 1 Limburg
+0 Limburgische Limburgse
 1 Limburgs
 1 Limburgse
 1 Limina
@@ -5542,15 +5810,21 @@
 1 Limmen
 1 Limogne-en-Quercy
 1 Limousin
+1 Lincoln
+0 Lincoln's Lincolns
+1 Lincolns
 1 Linda
+1 Lindenhof
 1 Lindner
 1 Lindström
 1 Line
+1 LineData
 1 Lingala
 1 Linge
 1 Lingedijk
 1 Lingewaal
 1 Linh
+1 Linnaeus
 1 Linnich
 1 Lintelo
 1 Linux
@@ -5569,6 +5843,7 @@
 1 Lisse
 1 Lissitszky
 1 Lissitzky
+1 Lita's
 1 Litani
 0 Litauwen Litouwen
 1 Litoral
@@ -5583,6 +5858,7 @@
 1 Livius
 1 Ljubljana
 1 Lloyd
+1 Lloyd's
 1 Lloyds
 1 Local
 1 LocatieAchtkarspelen
@@ -5598,12 +5874,14 @@
 1 Loekasjenko
 1 Loenen
 1 Loi
+1 Loire
 1 Lokeren
 1 Lombardije
 1 Lombardijs
 1 Lombardijse
 1 Lombardisch
 1 Lombardische
+1 Lombeek
 1 Lombo
 1 Lommel
 1 Londen
@@ -5635,6 +5913,7 @@
 1 Lotharingen
 1 Louis
 1 Louise
+1 Loup
 1 Louvre
 1 Lovelace
 1 Low
@@ -5647,9 +5926,13 @@
 1 Ltd
 1 Luc
 1 Luca
+1 Lucas
 1 Lucilla
 1 Lucius
+1 Lucky
 1 Lucy
+1 Lucy's
+1 Ludo
 1 Ludolphus
 1 Ludovic
 1 Ludwig
@@ -5671,6 +5954,7 @@
 1 Lupo
 1 Lure
 1 Lusoga
+1 Lutetia
 1 Luther
 1 Lutherse
 1 Lutjanidae
@@ -5742,24 +6026,31 @@
 1 Maassluis
 1 Maastricht
 1 Mabrouk
+1 Mac
 1 Macaca
 1 Maccoby
+0 Macedonie Macedonië
 1 Macedonische
 1 Macedonië
 1 Machacek
+1 Macintosh
 1 Mack
 1 Macromedia
 1 Macrovipera
+1 Macs
 0 Madagascar Madagaskar
 1 Madagaskar
 0 Madagaskische Malagassische
 1 Madero
 1 Madinat
 1 Madonna
+1 Madonna's
 1 Madra
 1 Madrid
 1 Maes
+1 Magelang
 1 Magnelli
+1 Magnoliidae
 1 Magnoliophyta
 1 Magnoliopsida
 1 Magnus
@@ -5793,6 +6084,7 @@
 1 Malagassische
 1 Malawi
 1 Malcolm
+1 Maldiven
 0 Malediven Maldiven
 1 Maleis
 1 Maleise
@@ -5806,6 +6098,7 @@
 1 Mali
 1 Malieveld
 1 Malkovich
+1 Malleret
 1 Malpighi
 1 Malraux
 1 Malta
@@ -5813,8 +6106,12 @@
 1 Maluku
 1 Malvaceae
 1 Malvales
+1 Malviden
+1 Mamelukken
 1 Mammalia
+0 Mammeluk's Mamelukken
 1 Manama
+1 Mance
 1 Mandela's
 1 Manders
 1 Mandrake
@@ -5842,6 +6139,7 @@
 1 Mar
 1 Maras
 1 Marburg
+1 Marc
 1 Marcel
 1 Marcellin
 1 Marcellus
@@ -5852,6 +6150,7 @@
 1 Marco
 1 Marcus
 1 Maredsous
+1 Marek
 1 Marfak
 1 Margaretha
 1 Margraten
@@ -5892,6 +6191,7 @@
 1 Marshallplan
 1 Martens
 1 Martha
+1 Martha's
 1 Martin
 1 Martinique
 1 Martinuskerk
@@ -5946,6 +6246,7 @@
 1 McCord
 1 McCullough
 1 McDaniels
+1 McDonald's
 1 McFly
 1 McLaren
 1 McLarens
@@ -5968,6 +6269,7 @@
 1 MediaWiki
 1 Medina
 1 Medinat
+1 Medusa's
 1 Meerdijk
 1 Meerlo-Wanssum
 1 Meern
@@ -5981,9 +6283,11 @@
 1 Mehmet
 1 Meijel
 1 Mein
+1 Meindert
 1 Meinesz
 1 Meir
 1 Mekka
+1 Mekong
 1 Mel
 1 Melanesische
 1 Meldi
@@ -6028,6 +6332,7 @@
 1 Metropole
 1 Meulen
 1 Meurders
+1 Meurthe
 1 Mexicaan
 1 Mexicaans
 1 Mexicaanse
@@ -6050,6 +6355,7 @@
 1 Michiel
 1 Michiels
 1 Michielsen
+1 Mick
 1 MicroCaririacu
 1 Microsoft
 1 Midasoren
@@ -6067,6 +6373,8 @@
 1 Middelnederlandse
 1 Middelzeese
 1 Midden-Amerika
+1 Midden-Europees
+1 Midden-Europese
 1 Midden-Oosten
 1 Midden-Siberië
 1 Midden-aarde
@@ -6089,6 +6397,7 @@
 1 Mikhail
 1 Milaan
 1 Milanese
+1 Milano's
 1 Milheeze
 1 Military
 1 Miller
@@ -6120,7 +6429,10 @@
 1 Miss
 1 Missing
 0 Missisippi Mississippi
+1 Mississippi
 1 Missy
+1 Missy's
+1 Mister
 1 Mito
 1 Mito-route
 1 Mitsubishi
@@ -6150,6 +6462,8 @@
 1 Mollema
 1 Molniya
 1 Molqi
+1 Molsheim
+1 Molukken
 1 Moluks
 1 Mon
 1 Mona
@@ -6173,7 +6487,9 @@
 1 Montagu
 1 Montanisme
 1 Montatheris
+1 Montbéliard
 1 Montcléra
+1 Montdidier
 1 Montdoumerc
 1 Monte
 1 Monteil
@@ -6212,6 +6528,7 @@
 1 Morimond
 1 Morin
 1 Morini
+1 Morini's
 1 Morinnen
 1 Morinnetje
 1 Morinnetjes
@@ -6220,12 +6537,15 @@
 1 Morphy
 1 Morrelganj
 1 Morris
+0 Morrison's Morrisons
+1 Morrisons
 1 Morten
 1 Mortensen
 1 Mortinson
 1 Moruzi
 1 Morvan
 1 Moseley
+1 Moselle
 1 Moskou
 1 Moslimbroederschap
 1 Moss
@@ -6249,6 +6569,7 @@
 1 Mozambique
 1 Mozes
 1 Mr
+1 Mrs
 1 MuZ
 1 Muang
 1 Mucambo
@@ -6304,8 +6625,10 @@
 1 Mycosphaerella
 1 Myctophiformes
 1 Myers
+1 Myodes
 1 Myotis
 1 Myrrha
+1 Myrtales
 1 Mystacoceti
 1 Mysticeti
 1 Mzorewa
@@ -6386,8 +6709,10 @@
 1 Namen
 1 Namibië
 1 Nana
+1 Nancy
 1 Nandidae
 1 Nanninga
+1 Nanteuil
 1 Nantua
 1 Napier
 1 Napoleon
@@ -6417,6 +6742,7 @@
 1 National
 1 Natrix
 1 Natural
+1 Nature's
 1 Nauheim
 1 Naum
 1 Nauru
@@ -6556,6 +6882,8 @@
 1 Nieuw-Vennep
 1 Nieuw-Vossemeer
 1 Nieuw-Zeeland
+1 Nieuw-Zeelands
+1 Nieuw-Zeelandse
 1 Nieuwediep
 1 Nieuwegein
 1 Nieuwenrode
@@ -6592,6 +6920,7 @@
 1 Nimruz
 1 Ninh
 1 Ninove
+1 Nintendo's
 1 Nippy
 1 Niro
 1 Niro's
@@ -6618,7 +6947,10 @@
 1 Noor
 1 Noord-)Jemen
 1 Noord-Afrika
+1 Noord-Afrikaans
+1 Noord-Afrikaanse
 1 Noord-Amerika
+1 Noord-Amerikaans
 1 Noord-Amerikaanse
 1 Noord-Atlantisch
 1 Noord-Atlantische
@@ -6630,12 +6962,16 @@
 1 Noord-Brabantse
 1 Noord-Duitse
 1 Noord-Duitsland
+1 Noord-Europees
+1 Noord-Europese
 1 Noord-Frankrijk
+1 Noord-Franse
 1 Noord-Gallië
 1 Noord-Hessen
 1 Noord-Holland
 1 Noord-Hollander
 1 Noord-Hollands
+1 Noord-Hollandse
 1 Noord-Israël
 1 Noord-Italië
 1 Noord-Jemen
@@ -6643,8 +6979,11 @@
 1 Noord-Jemenitische
 0 Noord-Jeminitisch Noord-Jemenitisch
 0 Noord-Jeminitische Noord-Jemenitische
+1 Noord-Koreaans
+1 Noord-Koreaanse
 1 Noord-Nederland
 1 Noord-Nederlands
+1 Noord-Nederlandse
 1 Noord-Spanje
 1 Noord-Sumatra
 1 Noord-Vietnam
@@ -6689,6 +7028,7 @@
 1 Norbert
 1 Norbertus
 1 Nord
+1 Nord-Pas-de-Calais
 1 Nordbahn
 1 Norderney
 1 Nordische
@@ -6730,6 +7070,7 @@
 1 Nuevo
 1 Nukul
 1 Number
+1 Numeri
 1 Nunavut
 1 Nung
 1 Nunspeet
@@ -6752,10 +7093,13 @@
 1 OCW
 1 OD
 1 OH
+1 OL
 1 OPTA
 1 OS
 1 OW
+1 Ob
 1 Obama
+1 Obboezem
 1 Obdam
 1 Ober-Politz
 1 Oberbayern
@@ -6764,27 +7108,39 @@
 1 Oberwaltersdorf
 1 Oberwart
 1 Obregón
+1 Oc-Eo
 1 Ocean
 1 Oceaniden
 1 Oceanië
+1 Oceanside
 1 Oceanus
+1 Odeon
 1 Oder
+1 Odiliënberg
 1 Odilon
+1 Odonata
 1 Oeganda
 1 Oegstgeest
 1 Oehlenschläger
+0 Oekraine Oekraïne
 1 Oekraïens
 1 Oekraïense
 1 Oekraïne
 1 Oeral
 1 Oerol
 1 Oeynhausen
+1 Oezbeek
+1 Oezbeeks
+1 Oezbeekse
+1 Oezbeken
+1 Oezbekistan
 1 Offenbach
 1 Offermans
 1 Office
 1 Officiële
 1 Ogle
 1 Ohio
+1 Oise
 1 Oisterwijk
 1 Oistins
 0 Okeanus Oceanus
@@ -6822,13 +7178,18 @@
 1 Ooidonk
 1 Oost
 1 Oost-Afrika
+1 Oost-Afrikaans
 1 Oost-Afrikaanse
+1 Oost-Aziatisch
 1 Oost-Aziatische
 1 Oost-Baltische
+1 Oost-Duits
 1 Oost-Duitse
 1 Oost-Duitsland
 1 Oost-Europa
 1 Oost-Europees
+1 Oost-Europese
+1 Oost-Friese
 1 Oost-Groningen
 1 Oost-Indisch
 1 Oost-Indische
@@ -6837,9 +7198,13 @@
 1 Oost-Indiëvaarders
 1 Oost-Nederland
 1 Oost-Nederlands
+1 Oost-Nederlandse
 1 Oost-Pakistan
+1 Oost-Romeins
 1 Oost-Romeinse
 1 Oost-Vlaa
+1 Oost-Vlaams
+1 Oost-Vlaamse
 1 Oost-Vlaanderen
 0 Oost-Vlaanderen,België Oost-Vlaa
 1 Oost-Zwitserland
@@ -6878,6 +7243,7 @@
 1 Oostnederfrankisch
 0 Oostnederlands Oost-Nederlands
 0 Oostnederlandse Oost-Nederlandse
+1 Oostoever
 0 Oostromeins Oost-Romeins
 0 Oostromeinse Oost-Romeinse
 1 Ooststellingwerf
@@ -6889,6 +7255,8 @@
 1 Oostzeehandel
 1 Ootmarsum
 1 OpenOffice.org
+0 Operette's Operettes
+1 Operettes
 1 Ophidiidae
 1 Ophioglossaceae
 1 Ophioglossales
@@ -6919,6 +7287,8 @@
 1 Organization
 1 Orient
 1 Origo
+1 Orion
+1 Orionis
 1 Orkhan
 1 Orlean
 1 Orleans
@@ -6977,6 +7347,7 @@
 1 Oujda
 1 Outers
 1 Overijse
+0 Overijsel Overijssel
 1 Overijssel
 1 Overijsselse
 1 Overmaas
@@ -6985,12 +7356,15 @@
 1 Ovidius
 1 Owen
 1 Owens
+1 Oxalidaceae
+1 Oxalis
 1 Oxford
 1 Oyenbrugge
 1 P.K
 1 P2
 1 P6
 1 PC
+1 PC's
 1 PCB
 1 PCI
 1 PDF
@@ -7000,6 +7374,7 @@
 1 PFLP
 1 PHP
 1 PJ
+0 PK's pk's
 1 PKB
 1 PKK
 1 PLF
@@ -7019,7 +7394,11 @@
 1 PSV
 1 PTT
 1 PVC
+1 Paaltjesvoetbal
 1 Paaps
+1 Paardenkopnevel
+1 Paardenkrachtuur
+1 Paardenrennen
 1 Paaskerk
 1 Pablo
 1 Pace
@@ -7040,6 +7419,7 @@
 1 Pakong
 1 Palau
 1 Palazzo
+1 Palearctisch
 1 Paleoceen
 1 Paleolithicum
 1 Paleozoïcum
@@ -7165,14 +7545,17 @@
 1 Pentateuch
 1 Pentium
 1 People
+1 People's
 1 Pequeno
 1 Peravia
 1 Perca
 1 Percidae
 1 Perciformes
 1 Percopsiformes
+1 Period
 1 Perissodactyla
 1 Perm
+1 Perminov
 1 Pern
 1 Pernambuco
 1 Pernis
@@ -7203,6 +7586,7 @@
 1 Pesjawar
 1 Petacchi
 1 Petaurus
+1 Petchabun
 1 Petegem-aan-de-Leie
 1 Peter
 1 Peters
@@ -7227,6 +7611,7 @@
 1 Philatéliques
 1 Philip
 1 Philipp
+1 Philippaerts
 1 Philippe
 1 Philips
 1 Phillips
@@ -7253,6 +7638,7 @@
 1 Piauí
 1 Piazzolla
 1 Picabia
+1 Picardië
 1 Picasso
 1 Piektorre
 1 Pieraerts
@@ -7302,12 +7688,15 @@
 1 Please
 1 Pleiadengroep
 1 Pleistoceen
+1 Plesetsk
 1 Pless
 1 Plioceen
 1 Plistoceen
+1 PlotData
 1 Plotina
 1 Plutarco
 1 Pluto
+1 Pnueli's
 1 Poaceae
 1 Poales
 1 Poavosa
@@ -7365,6 +7754,7 @@
 1 Porsche
 1 Porta
 1 Portable
+1 Porte
 1 Portugal
 1 Portugees
 1 Portugese
@@ -7385,6 +7775,7 @@
 1 Poupée
 1 Povlakte
 1 PowerDVD
+1 PowerPC
 1 Pozanti
 1 Pozzato
 1 Poëzie
@@ -7410,6 +7801,7 @@
 1 Primates
 1 Prince
 1 Princeton
+1 Prinsegracht
 1 Prinsenbeek
 1 Prinsengracht
 1 Prinsenland
@@ -7426,6 +7818,7 @@
 1 Propria
 1 Prostejov
 1 Protacanthopterygii
+1 Proteales
 1 Protestant
 1 Protestante
 1 Protestanten
@@ -7461,6 +7854,7 @@
 1 Pu
 1 Public
 1 Publius
+1 Puccini's
 1 Pulau
 1 Punisch
 1 Punische
@@ -7474,10 +7868,12 @@
 1 Puybrun
 1 PvdA
 1 Pyrenees
+1 Pyreneese
 0 Pyrenese Pyreneese
 1 Pyrmont
 1 Pyrrusoverwinning
 1 Pyrrusoverwinningen
+1 Pyrénées
 1 Pål
 1 Pöllau
 1 Qadir
@@ -7485,6 +7881,7 @@
 1 Qassim
 1 Qatar
 1 Qigong
+1 Qir
 1 Quade
 1 Quadir
 1 Quadragesima
@@ -7520,6 +7917,7 @@
 1 RIGHT
 1 RIVM
 1 RK
+1 RKA
 1 RNA
 1 RNI
 1 ROM
@@ -7542,6 +7940,7 @@
 1 Radjinder
 1 Radopholus
 1 Rafael
+1 Rafflesiales
 1 Rage
 1 Ragged
 1 Ragozinka
@@ -7568,6 +7967,7 @@
 1 Rampal
 1 Ramses
 1 Ramspol
+1 Ramsø
 1 Ranah
 1 Randstad
 1 Rania
@@ -7623,6 +8023,7 @@
 1 Reiderland
 1 Reimerswaal
 1 Reinhard
+1 Reinhart
 1 Reinier
 1 Reisenberg
 1 Reitzenstein
@@ -7634,8 +8035,11 @@
 1 Renaissance
 1 Renate
 1 Renault
+0 Renault's Renaults
+1 Renaults
 1 Renkum
 1 Rennes
+1 Rens
 1 Rense
 1 Renswoude
 1 René
@@ -7653,6 +8057,7 @@
 1 Revels
 1 Revon
 1 Revtech
+1 Revu
 1 Reynolds
 1 Rheden
 1 Rhee
@@ -7662,7 +8067,9 @@
 1 Rheingau-Taunus-Kreis
 1 Rhenen
 1 Rhenus
+1 Rhin
 1 Rhinocerotidae
+1 Rhizophorales
 1 Rhode
 1 Rhodesië
 1 Rhodochlamys
@@ -7679,6 +8086,7 @@
 1 Richard
 1 Richman
 1 Rick
+1 Ricky's
 1 Rico
 1 Ridderkerk
 1 Ridderstraat
@@ -7711,6 +8119,7 @@
 1 Rimski-Korsakov
 1 Ringo
 1 Rintje
+1 Rinzai
 1 Rio
 1 Rips
 1 Ritsma
@@ -7737,6 +8146,7 @@
 1 Rode-Kruisauto
 1 Rode-Kruispost
 1 Rodenrijs
+1 Rodentia
 1 Rodin
 1 Rodinië
 1 Rodriguez
@@ -7755,6 +8165,7 @@
 1 Rohan
 1 Rohirrim
 1 Rohrbach
+1 Roide
 1 Roland
 1 Rolde
 1 Roll
@@ -7785,7 +8196,29 @@
 1 Roots
 1 Rosaceae
 1 Rosales
+1 Rosaviakosmos
 1 Rosemary
+1 Roset
+1 Roseto
+1 Rosetta
+1 Rosette
+1 Rosey
+1 Rosheim
+1 Rosiana
+1 Rosicrucian
+1 Rosidae
+1 Rosiden
+1 Rosier
+1 Rosiers
+1 Rosiflorae
+1 Rosina
+1 Rosis
+1 Rosita
+1 Rositz
+1 Rosières
+1 Rosj
+1 Roskilde
+1 Roskosmos
 1 Rosmalen
 1 Ross
 1 Rossem
@@ -7804,13 +8237,16 @@
 1 Rousettus
 1 Row
 1 Rowling
+1 Rowwen
 1 Roxy
 1 Royal
 1 Rozenburg
 1 Rozendaal
+1 Rozenkruisers
 1 Rubio
 1 Ruby
 1 Rucphen
+1 Rudi
 1 Rudolf
 1 Rudy
 1 Rue
@@ -7822,6 +8258,7 @@
 1 Running
 1 Rus
 1 Rusland
+1 Ruslands
 1 Russen
 1 Russes
 1 Russin
@@ -7829,6 +8266,7 @@
 1 Russisch
 1 Russisch-Iraanse
 1 Russische
+1 Rutten
 1 Ruud
 1 Ruurlo
 1 Ruys
@@ -7855,6 +8293,7 @@
 1 SET
 1 SI
 1 SI-basiseenheid
+1 SI-eenheid
 1 SI-prefix
 1 SI-systeem
 1 SI-voorvoegsel
@@ -7867,6 +8306,7 @@
 1 SNS
 1 SOKO
 1 SOMAN
+1 SP
 1 SPD
 1 SS
 1 SSA
@@ -7877,6 +8317,7 @@
 1 STER-reclame
 1 STER-spot
 1 STER-spots
+1 SUV's
 1 SV
 1 SWM
 1 Saal
@@ -7937,6 +8378,8 @@
 1 Saleh
 1 Salem
 1 Salih
+0 Salinger's Salingers
+1 Salingers
 1 Salisch
 1 Salische
 1 Sallal
@@ -7976,7 +8419,9 @@
 0 Sanskrit Sanskriet
 1 Sansovino
 1 Santa
+1 Santalales
 1 Santana
+1 Santerre
 1 Santiago
 1 Santo
 1 Saoed
@@ -7984,6 +8429,8 @@
 1 Saoedi's
 1 Saoedi-Arabië
 1 Saoedische
+1 Sapindaceae
+1 Sapindales
 1 Sara
 1 Saraceen
 1 Saraceens
@@ -7996,9 +8443,11 @@
 1 Sarankhola
 1 Sarante
 1 Sarn
+1 Sars
 1 Sartan
 1 Sarthe
 1 Sarto
+1 Sascha
 1 Sassenheim
 1 Satan
 1 Sathit
@@ -8014,11 +8463,17 @@
 1 Sauria
 1 Sauwerd
 1 Sava
+1 Savannah
 1 Saving
 1 Savoldelli
 1 Sax
+1 Saxicola
+1 Saxifragaceae
+1 Saxifragales
 1 Saying
 0 Saïd Said
+1 Saône
+1 ScaleMajor
 1 Scandinavisch
 1 Scandinavische
 1 Scandinavië
@@ -8026,6 +8481,7 @@
 1 Scaridae
 1 Scatophagidae
 1 Scenic
+1 Scey
 1 Schaarsbergen
 1 Schachzeitung
 1 Schagen
@@ -8033,6 +8489,7 @@
 1 Schaumburg-Lippe
 1 Scheemda
 1 Scheepbouwer
+1 Scheers
 1 Schelde
 1 Scheldevallei
 1 Schelling
@@ -8044,6 +8501,7 @@
 1 Schiedam
 1 Schiermonnikoog
 1 Schijndel
+1 Schindler's
 1 Schinnen
 1 Schipborg
 1 Schiphol
@@ -8092,6 +8550,8 @@
 1 Scopelomorpha
 1 Scorpaenidae
 1 Scott
+0 Scott's Scotts
+1 Scotts
 1 Scruggs
 1 Scuti
 1 Scythen
@@ -8103,6 +8563,7 @@
 1 Sebastiaan
 1 Sebastian
 1 Sebastián
+1 Seeland
 1 Seerijp
 1 Segeberg
 1 Seibersdorf
@@ -8122,6 +8583,7 @@
 1 Senaatscommissie
 1 Senador
 1 Senegalese
+1 Senlis
 1 Sennacherib
 1 Sens
 1 Seoul
@@ -8142,6 +8604,7 @@
 1 Sertan
 1 Sertões
 1 Servet
+1 Services
 1 Servisch
 1 Servische
 1 Servië
@@ -8171,7 +8634,11 @@
 1 Shannon
 1 Sharon
 1 Shaun
+1 She's
 1 Shemaka
+1 Sherman
+0 Sherman's Shermans
+1 Shermans
 1 Shetlander
 1 Shetlanders
 1 Shinar
@@ -8250,6 +8717,7 @@
 1 Singletop40tabel
 1 Sinhala
 1 Siniscalchi
+1 Sinkiang
 1 Sinksen
 1 Sint
 1 Sint-Baafs
@@ -8282,6 +8750,7 @@
 1 Siviriez
 1 Six
 1 Sixtijns
+1 Sjabloon:ChineseDierenriem
 1 Sjamil
 1 Sjarif
 1 Sjepel
@@ -8289,8 +8758,10 @@
 0 Sji'iten sjiiten
 1 Sjoerd
 1 Sjostakovitsj
+1 Sjælland
 1 Skarsterlân
 1 Skopje
+1 Skovbo
 1 Skytrain
 1 Slaaf
 1 Slauerhoff
@@ -8305,6 +8776,7 @@
 1 Sliedrecht
 1 Sloane
 1 Slochteren
+1 Slocum
 1 Sloterweg
 1 Slotscène
 0 Slotscéne Slotscène
@@ -8350,17 +8822,22 @@
 1 Softenon
 1 Soi
 1 Soissons
+1 Soko
 1 Solanaceae
 1 Solanales
 1 Solina
 1 Solingen
 1 Solomon
+0 Solon's Solons
+1 Solons
+1 Solrød
 1 Soltau
 1 Somalië
 1 Sombroek
 1 Somdej
 1 Someren
 1 Somerville
+1 Somme
 1 Sommerville
 1 Somoza
 1 Son
@@ -8373,12 +8850,14 @@
 1 Sonora
 1 Sons
 1 Sony
+1 Sony's
 1 Sooden-Allendorf
 1 Sooß
 1 Sophia
 1 Sophie
 1 Soricomorphia
 1 Sorong
+1 Soto
 1 Soulages
 1 South
 1 Southern
@@ -8386,6 +8865,7 @@
 0 Sovjet-Unie Sovjetunie
 0 Sovjet-leger Sovjetleger
 0 Sovjet-republiek sovjetrepubliek
+1 Sovjetbureau
 1 Sovjetburgers
 1 Sovjetleger
 1 Sovjetopstand
@@ -8420,6 +8900,7 @@
 1 Spartanen
 1 Speculum
 1 Spellingbesluit
+1 Spermatopsida
 1 Spessart
 1 Spetsnaz
 1 Spetters
@@ -8441,6 +8922,7 @@
 1 Sprache
 1 Sprang-Capelle
 1 Spreeuwachtigen
+1 Spulico
 1 Spurgeon
 1 Squamata
 1 SquareSoft
@@ -8482,6 +8964,7 @@
 1 Staël
 1 Steadman
 1 Steenarend
+1 Steenbeek
 1 Steenbergen
 1 Steenbrugge
 1 Steenderen
@@ -8507,9 +8990,11 @@
 1 Stephen
 1 Stephens
 0 Steppekiekendief steppenkiekendief
+1 Steppenzebra
 1 Stern
 1 Sternopterygii
 1 Sterrenslag
+1 Sterrenstad
 1 Steve
 1 Steven
 1 Stevens
@@ -8518,6 +9003,8 @@
 1 Steyr-Land
 1 Stichaeidae
 1 Stiermarken
+0 Stifler's Stiflers
+1 Stiflers
 1 Stijn
 1 Stills
 1 Stilo
@@ -8582,6 +9069,7 @@
 1 Sun
 1 Suncus
 1 Sundarbans
+1 Sundevall
 1 Sunny
 1 Superfortress
 1 Supergrass
@@ -8673,6 +9161,7 @@
 1 TV1
 1 TV2
 1 TV2-journaal
+1 Taalunie
 1 Tabard
 1 Tabata
 1 Tabularum
@@ -8711,6 +9200,7 @@
 1 Tanzania
 1 Tanzaniaanse
 1 Taraki
+1 Taraxacum
 1 Tariq
 1 Tarkovski
 1 Taroko
@@ -8736,6 +9226,7 @@
 1 Taylor
 1 Taylorstelsel
 1 Tazio
+1 Taíno's
 1 Tbilisi
 0 Tblisi Tbilisi
 1 Te-Deum
@@ -8799,6 +9290,7 @@
 1 Thaniya
 1 Thap
 1 Tharen
+1 That's
 1 Theatri
 1 Theatrum
 1 Theil
@@ -8813,6 +9305,7 @@
 1 Thep
 1 Theraponidae
 1 Theravada
+1 There's
 1 Theresia
 1 Theropoda
 1 Thessaloniki
@@ -8852,9 +9345,11 @@
 1 Tilburg
 1 Tim
 1 Timaliidae
+1 TimeAxis
 1 Timeless
 1 Timo
 1 Timoer
+1 Tino's
 1 Tirana
 1 Tirano
 1 Tirools
@@ -8878,7 +9373,9 @@
 0 Tokyo Tokio
 1 Toledo
 1 Tolkien
+0 Tolkien's Tolkiens
 1 Tolkiens
+1 Tolstraat
 1 Tolteken
 1 Toluca
 1 Tom
@@ -8898,6 +9395,8 @@
 1 Toolkit
 1 Toor
 1 Top40
+0 Topsell's Topsells
+1 Topsells
 1 Torah
 1 Toride
 0 Torino Turijn
@@ -8905,6 +9404,7 @@
 1 Torres
 1 Toscane
 1 Toubiana
+1 Toul
 1 Toulouse
 1 Toulouse-Lautrec
 1 Tour
@@ -8931,6 +9431,7 @@
 1 Trautenau
 1 Traviata
 1 Travis
+1 Travolta's
 1 Treblinka
 1 Trek
 1 Tremelo
@@ -8955,6 +9456,7 @@
 1 Trotski
 1 Trouble
 1 Troy
+1 Troyes
 1 Trudy
 1 True
 1 Truffaut
@@ -8988,8 +9490,10 @@
 1 Tufanbeyli
 1 Tuijp
 1 Tulip
+1 Tulle
 1 Tullus
 1 Tunesië
+1 Turdidae
 1 Turijn
 1 Turk
 1 Turken
@@ -9007,6 +9511,7 @@
 1 Tweede-Kamerleden
 0 Tweede-kamerleden Tweede-Kamerleden
 1 Twente
+1 Twentepad
 0 Twenthe Twente
 1 Twents
 1 Twijzel
@@ -9041,6 +9546,7 @@
 1 USAID
 1 USB
 1 USSR
+1 UT
 1 UTC
 1 UV-B
 1 Ubangi
@@ -9061,12 +9567,14 @@
 1 UltraPlayer
 1 Ultravox
 1 Ulugh
+1 Ulysses
 0 Umbri&euml; Umbrië
 1 Umbrië
 1 Under
 1 Unicode
 1 Union
 1 United
+1 Universal
 1 Universe
 1 University
 1 Université
@@ -9112,6 +9620,7 @@
 1 VI
 1 VII
 1 VIII
+1 VKS
 1 VLC
 1 VN
 1 VOC
@@ -9142,6 +9651,7 @@
 1 Valkenswaard
 1 Valle
 1 Valley
+1 Vallø
 1 Valtellina
 1 Vanden
 1 Vandenbroucke
@@ -9167,6 +9677,7 @@
 1 Veere
 1 Veerman
 1 Vega
+1 Vega's
 1 Veghel
 1 Vekoma
 1 Velasco
@@ -9195,6 +9706,7 @@
 1 Verduyn
 1 Vereenigde
 1 Verenigde
+1 Vergilius
 1 Verheijen
 1 Verheul
 1 Verlaine
@@ -9206,12 +9718,14 @@
 1 Versailles
 1 Versatile
 1 Vertebrata
+1 Verticillium
 1 Verus
 1 Verviers
 1 Vervins
 0 Vervlgens Vervolgens
 1 Vervolgens
 1 Verweggistan
+1 Vesoul
 1 Vespertilionidae
 1 Vessem
 1 Veugelers
@@ -9248,6 +9762,7 @@
 1 Vince
 1 Vincent
 1 Vincenzo
+1 Vinci
 1 Vinh
 1 Vinokourov
 1 Viper
@@ -9261,7 +9776,9 @@
 1 Virus666
 1 Vishnukarn
 1 Visigotisch
+1 Vitales
 1 Viterbi
+1 Vitrey
 1 Vittorio
 1 Vivant
 1 Vlaams
@@ -9316,11 +9833,13 @@
 1 Voorne
 1 Voornenburgh
 1 Vorden
+1 Vorey
 1 Vouziers
 1 Voyage
 1 Voyager
 1 Vranckx
 1 Vrede
+1 Vredenheim
 1 Vriezenveen
 1 Vrijheidsbeeld
 1 Vrouwenpolder
@@ -9339,6 +9858,7 @@
 1 WAK
 1 WAO
 1 WB
+1 WCW's
 1 WHO
 1 WK
 1 WL
@@ -9357,6 +9877,7 @@
 1 Waardenburg
 1 Waasen
 1 Wachau
+1 Wachtmeister
 1 Wackerman
 1 Wadden
 1 Waddeneiland
@@ -9396,6 +9917,8 @@
 1 Walterus
 1 Waltman
 1 Wampersdorf
+0 Wang's Wangs
+1 Wangs
 1 Wankelmotor
 1 Wannseeconferentie
 1 Wansink
@@ -9437,6 +9960,7 @@
 1 Weekly
 1 Weens
 1 Weense
+1 Weerdinge
 1 Weerijs
 1 Weerselo
 1 Wehe
@@ -9494,6 +10018,8 @@
 1 West-Java
 1 West-Nederland
 1 West-Pakistan
+1 West-Romeins
+1 West-Romeinse
 1 West-Sumatra
 1 West-Terschelling
 1 West-Vlaams
@@ -9509,9 +10035,11 @@
 1 Westerse
 1 Westervoort
 1 Westerweel
+1 Westerwolde
 1 Westerwoldse
 0 Westeuropees West-Europees
 0 Westeuropese West-Europese
+1 Westfriese
 0 Westfrieze Westfriese
 0 Westindisch West-Indisch
 0 Westindische West-Indische
@@ -9538,12 +10066,14 @@
 1 Wevelgem
 1 Weyer
 1 What
+1 What's
 1 Wheatstone
 1 Wheeler
 1 When
 1 Whiddy
 1 White
 1 Whitney
+1 Who's
 1 Wibrandus
 1 Wichmond
 1 Widerstand
@@ -9558,6 +10088,8 @@
 1 Wies
 1 Wiesbaden
 1 Wiesenthal
+0 Wiesje's Wiesjes
+1 Wiesjes
 1 Wieteke
 1 Wieuwerd
 1 Wijchen
@@ -9631,6 +10163,8 @@
 1 Wolfowitz
 1 Wolga
 1 Woman
+1 Woman's
+1 Women's
 1 Wonderful
 1 Wong
 1 Woodward
@@ -9651,6 +10185,7 @@
 1 Wroclaw
 1 Wurlitzer
 1 Wuthipong
+1 Wuustwezel
 1 Wyandotte
 1 Wyandotte's
 1 Wybe
@@ -9658,6 +10193,7 @@
 1 Wyclif
 1 Wymbritseradeel
 1 Wymbritseradiel
+1 Wyoming
 0 Wörringer Worringer
 1 Wörterbuch
 1 Wûnseradiel
@@ -9688,6 +10224,7 @@
 1 Xandee
 1 Xanthoma
 1 Xavier
+1 Xenophon
 1 Xeon
 1 Xerxes
 1 Xhosa
@@ -9709,6 +10246,7 @@
 1 Yasser
 1 Yassin
 1 Yavne
+1 Year's
 1 Yehuda
 1 Yenakiieve
 1 Yersinia
@@ -9834,6 +10372,7 @@
 1 Zuid-Engels
 1 Zuid-Europa
 1 Zuid-Europees
+1 Zuid-Europese
 1 Zuid-Frankrijk
 1 Zuid-Holland
 1 Zuid-Hollands
@@ -9849,8 +10388,10 @@
 1 Zuid-Korea
 1 Zuid-Koreaan
 1 Zuid-Koreaans
+1 Zuid-Koreaanse
 1 Zuid-Libanon
 1 Zuid-Limburg
+1 Zuid-Limburgs
 1 Zuid-Limburgse
 1 Zuid-Mesopotamië
 1 Zuid-Molukker
@@ -9921,9 +10462,12 @@
 1 a-prioristische
 1 a.d
 1 a0ffa0
+1 a1
 1 a2
 1 a3
+1 a5
 1 a7
+1 aaa
 0 aaan aan
 1 aagt
 1 aagtappel
@@ -13517,6 +14061,7 @@
 1 aanwijzende
 1 aanwijzer
 1 aanwijzers
+0 aanwijzigingen aanwijzingen
 1 aanwijzing
 1 aanwijzingen
 1 aanwijzingsbesluit
@@ -14023,6 +14568,7 @@
 1 aarsgat
 1 aarsgaten
 1 aarsopening
+0 aarsthertogin aartshertogin
 1 aarsvin
 1 aarsvinnen
 1 aart
@@ -14483,6 +15029,8 @@
 1 acceleraties
 1 acceleratievermogen
 1 accelerator
+1 accelereerde
+1 accelereerden
 1 accelereert
 1 accelereren
 0 accelleratie acceleratie
@@ -14906,6 +15454,7 @@
 1 achtergrondruis
 1 achtergrondscherm
 1 achtergrondstraling
+1 achtergrondzangeres
 1 achterhaal
 1 achterhaalbaar
 1 achterhaalbare
@@ -14978,6 +15527,7 @@
 1 achterklep
 1 achterklinker
 1 achterklinkers
+1 achterknie
 1 achterkomen
 1 achterkozijnen
 1 achterkwartier
@@ -15524,6 +16074,7 @@
 1 acteurslijst
 1 acteursloopbaan
 1 actie
+0 actie-radius actieradius
 1 actieaanbod
 1 actieartikel
 1 actieartikelen
@@ -15585,6 +16136,7 @@
 1 actieveling
 1 actievelingen
 1 actiever
+1 actievere
 1 actievergadering
 1 actieverkoop
 1 actievoerder
@@ -15785,6 +16337,7 @@
 0 adelijken adellijken
 1 adellijk
 1 adellijke
+1 adellijken
 1 adellijker
 1 adellijkere
 1 adellijkst
@@ -16241,10 +16794,25 @@
 1 advocatuur
 1 aedilis
 1 aequo
+1 aerobe
 1 aerobic
 1 aerobics
-0 aerofonen aërofonen
+1 aeroclub
+1 aeroclubs
+1 aerodroom
+1 aerodynamica
+1 aerodynamisch
+1 aerodynamische
+1 aerofonen
+1 aeronaut
+1 aeronautiek
+1 aeronautisch
+1 aeroob
+1 aerosol
+1 aerosolen
+1 aerostatica
 1 aeruginosus
+1 aesculi
 1 aestivalis
 1 af
 1 af te leiden
@@ -22055,6 +22623,7 @@
 1 agaatkleurige
 1 agamen
 1 agamie
+1 agamospermie
 1 agape
 1 agapen
 1 agaten
@@ -22189,6 +22758,7 @@
 1 agressies
 1 agressieve
 1 agressiever
+1 agressievere
 1 agressiviteit
 1 agressor
 1 agrificatie
@@ -22543,6 +23113,7 @@
 1 alcoholpercentage
 1 alcoholpromillage
 1 alcoholtest
+1 alcoholverslaafde
 1 alcoholvrij
 1 alcoholvrije
 1 aldaar
@@ -23166,6 +23737,7 @@
 1 amateurvideo
 1 amateurvideo's
 1 amateurvoetbal
+1 amateurzangers
 1 amati
 1 amazone
 1 amazonen
@@ -23227,6 +23799,7 @@
 1 ambiëren
 1 amblyopie
 1 ambo
+1 ambo's
 1 ambrosia
 1 ambrozijn
 1 ambt
@@ -23368,6 +23941,7 @@
 1 amfitheatersgewijze
 1 amfoor
 1 amfora
+1 amfora's
 1 amforaatje
 1 amforaatjes
 1 amforen
@@ -23515,7 +24089,9 @@
 1 anachronistische
 1 anachronistischer
 1 anaconda
-0 anaeroob anaëroob
+1 anaconda's
+1 anaerobe
+1 anaeroob
 1 anafoor
 1 anaforen
 1 anaforisch
@@ -23617,7 +24193,8 @@
 1 anatomist
 1 anatomisten
 1 anatoom
-1 anaëroob
+0 anaërobe anaerobe
+0 anaëroob anaeroob
 1 anchorman
 1 ancien
 1 ancient
@@ -23848,6 +24425,7 @@
 1 anker
 1 ankerboei
 1 ankerboeien
+1 ankerdatum
 1 ankerde
 1 ankerden
 1 ankeren
@@ -24089,6 +24667,7 @@
 1 antiklerikaalst
 1 antiklerikale
 1 antiklerikalen
+1 antiklerikalisme
 1 antikritiek
 0 antikwaar antiquaar
 1 antiliberalisme
@@ -24188,6 +24767,7 @@
 1 antoniuskruisen
 1 antoniusvuur
 1 antraciet
+1 antrax
 1 antropofaag
 1 antropofagen
 1 antropogeen
@@ -24437,6 +25017,7 @@
 1 appelboomgaard
 1 appelboor
 1 appelboren
+1 appelcompote
 1 appelen
 1 appelflap
 1 appelflappen
@@ -24689,6 +25270,7 @@
 1 arbeidsduur
 1 arbeidsduurverkorting
 1 arbeidsethos
+1 arbeidsgalop
 1 arbeidsgeneeskundige
 1 arbeidsgeschil
 1 arbeidsgeschillen
@@ -25306,6 +25888,7 @@
 1 arseenverbinding
 1 arseenverbindingen
 1 arsenaal
+1 arsenaat
 1 arsenalen
 1 arsenicum
 1 arsenicumvergiftiging
@@ -25518,6 +26101,7 @@
 1 asielzoekers
 1 asielzoekerswoning
 1 asielzoekerswoningen
+1 asinus
 1 asjeblieft
 1 asjemenou
 1 askar
@@ -25919,6 +26503,7 @@
 1 atoomkernen
 1 atoomkop
 1 atoommassa
+1 atoommassa's
 1 atoomnummer
 1 atoomnummers
 1 atoomoorlog
@@ -26415,6 +27000,7 @@
 1 autowrak
 1 autowrakken
 0 autos auto's
+1 aux
 1 auxine
 1 av
 1 aval
@@ -26621,7 +27207,7 @@
 1 axonometrisch
 1 axonometrische
 1 ayatollah
-1 ayatollah's
+1 ayatollahs
 1 az-Zahir
 1 azalea
 1 azalea's
@@ -26655,20 +27241,23 @@
 1 azuurblauwe
 1 azuursteen
 1 azuurstenen
-1 aëroclub
-1 aëroclubs
-1 aërodroom
-1 aërodynamica
-1 aërodynamisch
-1 aërodynamische
-1 aërofonen
-1 aëronaut
-1 aëronautiek
-1 aëronautisch
-1 aëroob
-1 aërosol
-1 aërosolen
-1 aërostatica
+0 aërobe aerobe
+0 aërobic aerobic
+0 aërobics aerobics
+0 aëroclub aeroclub
+0 aëroclubs aeroclubs
+0 aërodroom aerodroom
+0 aërodynamica aerodynamica
+0 aërodynamisch aerodynamisch
+0 aërodynamische aerodynamische
+0 aërofonen aerofonen
+0 aëronaut aeronaut
+0 aëronautiek aeronautiek
+0 aëronautisch aeronautisch
+0 aëroob aeroob
+0 aërosol aerosol
+0 aërosolen aerosolen
+0 aërostatica aerostatica
 1 aïs
 1 aïssen
 1 aðgreining
@@ -26678,7 +27267,11 @@
 1 b-mineur
 1 b-side
 1 b.v
+1 b1
+1 b3
+1 b4
 1 b7
+1 b8
 1 ba
 1 ba&#287;lama
 1 baad
@@ -27906,6 +28499,7 @@
 1 bandurria
 1 bandversiering
 1 bandversieringen
+1 bandvormig
 1 bandweverij
 1 bandweverijen
 1 bandwinkel
@@ -28159,6 +28753,11 @@
 1 baptistengemeenten
 1 baptisterium
 1 bar
+1 bar:0
+1 bar:1400
+1 bar:2800
+1 bar:340
+1 bar:4200
 1 barak
 1 barakken
 1 barangay
@@ -28410,6 +29009,7 @@
 1 basiseditie
 1 basisedities
 1 basiseducatie
+1 basiseenheden
 1 basiseis
 1 basiseisen
 1 basiselement
@@ -28458,6 +29058,7 @@
 1 basispastoraat
 1 basispatronen
 1 basispatroon
+1 basisplaats
 1 basispositie
 1 basispremie
 1 basisprijs
@@ -29664,6 +30265,7 @@
 1 beekbezinkingen
 1 beekdal
 1 beekje
+1 beekjes
 1 beeld
 1 beeldafstand
 1 beeldband
@@ -29800,6 +30402,7 @@
 1 beenamputatie
 1 beenamputaties
 1 beenbedekking
+1 beenbeharing
 1 beenbeschermer
 1 beenbeschermers
 1 beenbescherming
@@ -30041,6 +30644,7 @@
 1 begeleidster
 1 begeleidsters
 1 begeleidt
+0 begeleiginsband begeleidingsband
 1 begenadig
 1 begenadigd
 1 begenadigde
@@ -30118,6 +30722,7 @@
 1 beginnetje
 1 beginnummer
 1 beginperiode
+1 beginpositie
 1 beginpunt
 1 beginpunten
 1 beginregel
@@ -30161,6 +30766,7 @@
 1 begintijdstip
 1 begintitels
 1 begintoestand
+1 beginveld
 1 beginvoorwaarden
 1 beginwaarde
 1 beginwaarden
@@ -30711,6 +31317,7 @@
 1 beidde
 1 beidden
 1 beide
+0 beideb beiden
 1 beiden
 1 beider
 1 beiderhande
@@ -32883,6 +33490,7 @@
 1 bergbewoner
 1 bergbewoners
 1 bergblauw
+1 bergdalen
 1 bergdorpje
 1 bergdorpjes
 1 bergeend
@@ -32906,6 +33514,7 @@
 1 berggezicht
 1 berggezichten
 1 berggroen
+1 berggroep
 1 berghelling
 1 berghellingen
 1 berghok
@@ -33001,6 +33610,7 @@
 1 bergweiden
 1 bergwind
 1 bergwinden
+1 bergzebra
 1 bergziekte
 1 bergzout
 1 bergère
@@ -34520,6 +35130,7 @@
 1 betaamd
 1 betaamde
 1 betaamt
+1 betalaïnes
 1 betalen
 1 betalend
 1 betalende
@@ -35437,6 +36048,7 @@
 1 bevoer
 1 bevoeren
 1 bevolen
+0 bevolgen bevlogen
 1 bevolk
 1 bevolken
 1 bevolking
@@ -36555,6 +37167,7 @@
 1 bibliotheekassistenten
 1 bibliotheekcommissie
 1 bibliotheekgids
+1 bibliotheekjargon
 1 bibliotheekleden
 1 bibliotheekmedewerker
 1 bibliotheekmedewerkers
@@ -36799,6 +37412,7 @@
 1 bigotterie
 1 bigt
 1 bij
+1 bij elkaar
 1 bij)vrouw
 1 bijaccent
 1 bijaccenten
@@ -37078,6 +37692,7 @@
 1 bijeenzoekend
 1 bijeenzoekende
 1 bijeffecten
+0 bijelkaar bij_elkaar
 1 bijen
 1 bijenarend
 1 bijenarenden
@@ -38578,6 +39193,7 @@
 1 bistrootje
 1 bistrootjes
 1 bit
+1 bitch
 1 bits
 1 bitse
 1 bitser
@@ -38814,6 +39430,7 @@
 1 bladluizen
 1 bladmaag
 1 bladmagen
+1 bladmerk
 1 bladmoes
 1 bladmos
 1 bladmossen
@@ -38976,6 +39593,7 @@
 1 blauwgrijs
 1 blauwgrijze
 1 blauwgroen
+1 blauwgroene
 1 blauwheid
 1 blauwig
 1 blauwige
@@ -38995,6 +39613,7 @@
 1 blauwogigere
 1 blauwogigst
 1 blauwogigste
+1 blauwschimmelkaas
 1 blauwsel
 1 blauwseldotje
 1 blauwseldotjes
@@ -39632,6 +40251,7 @@
 1 bloemblaadjes
 1 bloemblad
 1 bloembladen
+1 bloembladeren
 1 bloembodem
 1 bloembodems
 1 bloembol
@@ -39696,6 +40316,7 @@
 1 bloemfestoen
 1 bloemfestoenen
 1 bloemfontein
+1 bloemhoofdje
 1 bloemig
 1 bloemige
 1 bloemiger
@@ -39743,6 +40364,7 @@
 1 bloempjes
 1 bloempjesdag
 1 bloempjesdagen
+1 bloempluim
 1 bloempot
 1 bloempotten
 1 bloemrijk
@@ -39830,6 +40452,7 @@
 1 blokjes
 1 blokjesbestrating
 1 blokjesgoed
+1 blokjesvoetbal
 1 blokkade
 1 blokkadebreker
 1 blokkadebrekers
@@ -40014,6 +40637,7 @@
 1 blue
 1 bluegrass
 1 blues
+1 bluesgitarist
 1 bluf
 1 bluffen
 1 bluffend
@@ -40401,6 +41025,7 @@
 1 boekenrekken
 1 boekenschrijver
 1 boekenschrijvers
+1 boekenserie
 1 boekenstalletje
 1 boekenstalletjes
 1 boekenstandaard
@@ -40809,9 +41434,9 @@
 1 boeting
 1 boetpleging
 1 boetplegingen
-1 boetpredikatie
-1 boetpredikaties
-1 boetpredikatiën
+1 boetpredicatie
+1 boetpredicaties
+1 boetpredicatiën
 1 boetprediker
 1 boetpredikers
 1 boetpreek
@@ -41533,11 +42158,13 @@
 1 boomgaarden
 1 boomgrens
 1 boomgroep
+1 boomholte
 1 boomkikkers
 1 boomkikvors
 1 boomkikvorsen
 1 boomklever
 1 boomklevers
+1 boomkroon
 1 boomkruin
 1 boomkruinen
 1 boomkweker
@@ -42282,6 +42909,7 @@
 1 bottleneck
 1 bottom
 1 bottom-up
+1 bottom:20
 1 botuil
 1 botuilen
 1 botuit
@@ -42555,6 +43183,7 @@
 1 bovenbeschreven
 1 bovenbewust
 1 bovenbewustzijn
+1 bovenbil
 1 bovenblad
 1 bovenbladen
 1 bovenblijven
@@ -42627,6 +43256,7 @@
 1 bovenin
 1 bovenkaak
 1 bovenkaakbeen
+0 bovenkaaksbeen bovenkaakbeen
 1 bovenkaken
 1 bovenkamer
 1 bovenkamers
@@ -43817,6 +44447,7 @@
 1 broedplaatsen
 1 broeds
 1 broedse
+1 broedseizoen
 1 broedsel
 1 broedsels
 1 broedsheid
@@ -44287,6 +44918,8 @@
 1 bruingeel
 1 bruingele
 1 bruingrijs
+1 bruingroen
+1 bruingroene
 1 bruinharig
 1 bruinharige
 1 bruinig
@@ -45237,6 +45870,8 @@
 1 burgerrechtelijke
 1 burgerrechten
 1 burgerrechtenbeweging
+1 burgerrechtenpolitiek
+1 burgerregering
 1 burgers
 1 burgerschap
 1 burgerschapskunde
@@ -45284,6 +45919,7 @@
 1 burlesk
 1 burleske
 1 burlesker
+1 burn-out
 0 burnout burn-out
 0 buro bureau
 0 buro's bureaus
@@ -45291,6 +45927,8 @@
 1 bursalen
 1 bus
 1 busbaan
+1 busbedrijf
+1 busboycot
 1 buschauffeur
 1 buschauffeuse
 1 busdienst
@@ -45389,6 +46027,7 @@
 1 buurschap
 1 buurschappen
 1 buurstaat
+1 buurstad
 1 buurt
 1 buurtbewoner
 1 buurtbewoners
@@ -45453,11 +46092,13 @@
 1 bèta
 1 bühne
 1 c
+1 c2
 1 c3
 1 c4
 1 c6
 1 c7
 1 ca
+1 caballus
 1 caban
 1 cabans
 1 cabaret
@@ -45868,7 +46509,9 @@
 1 capuchons
 0 capucino cappuccino
 1 caputcolleges
+1 caquique
 1 carabinieri
+1 caracara's
 1 caracole
 1 caracoles
 1 carambole
@@ -45899,6 +46542,7 @@
 1 carbolzuur
 1 carbon
 1 carbonaat
+1 carbonaathoudende
 1 carbonaten
 1 carbonisatie
 1 carbonisch
@@ -45979,6 +46623,7 @@
 1 carnavalsstoeten
 1 carnavalstoet
 1 carnavalstoeten
+1 carnea
 1 carnet
 1 carnets
 1 carnifex
@@ -45991,6 +46636,7 @@
 0 carousels carrousels
 0 caroussel carrousel
 0 caroussels carrousels
+1 carpaccio
 1 carpool
 1 carpoolen
 1 carpooler
@@ -46798,6 +47444,7 @@
 1 chinook
 1 chintz
 1 chip
+1 chipkaart
 1 chipolatapudding
 1 chips
 1 chique
@@ -47301,6 +47948,10 @@
 1 civilization
 1 civisme
 1 civitas
+1 clade
+1 clade1
+1 clade2
+1 clades
 1 claim
 1 claimde
 1 claimden
@@ -47337,6 +47988,8 @@
 1 classicus
 1 classificatie
 1 classificatiebureau
+0 classificatiebureau's classificatiebureaus
+1 classificatiebureaus
 1 classificaties
 1 classificator
 1 classificatoren
@@ -47470,6 +48123,8 @@
 1 cloaca
 1 clochard
 1 clochards
+1 clomifeen
+0 clomiphene clomifeen
 1 close
 1 close-up
 1 close-ups
@@ -47545,6 +48200,7 @@
 1 co-auteur
 1 co-ouderschap
 1 co-schap
+1 coa.png
 1 coach
 1 coachen
 1 coaches
@@ -47577,6 +48233,7 @@
 1 coating
 1 coatings
 1 coatingzijde
+1 coatofarms
 1 coax-kabel
 1 coaxiaal
 1 coaxiale
@@ -47639,6 +48296,7 @@
 1 coderingslijst
 1 coderingsprobleem
 1 coderingsproblemen
+1 coderingssysteem
 1 coderingstechnieken
 1 codes
 1 codesysteem
@@ -47851,6 +48509,8 @@
 1 colophon
 1 color
 1 color:black
+1 color:blue
+1 color:gray1
 1 coloradokever
 1 coloradokevers
 1 coloraturen
@@ -47923,6 +48583,7 @@
 1 comboleden
 1 combolid
 1 comeback
+1 comedian
 1 comedy
 1 comestibles
 1 comfort
@@ -47941,6 +48602,8 @@
 1 comités
 1 comitévoorzitter
 1 commandant
+1 commandant1
+1 commandant2
 1 commandante
 1 commandanten
 1 commandeer
@@ -48155,6 +48818,7 @@
 1 commutatieve
 1 commutativiteit
 1 commutatortrillingen
+1 comosa
 1 compact
 1 compactcamera
 1 compactcamera's
@@ -48176,6 +48840,7 @@
 1 compagnieën
 1 compagnon
 1 compagnons
+0 companen kompanen
 1 comparant
 1 comparante
 1 comparanten
@@ -48321,6 +48986,8 @@
 1 complimentje
 1 complimentjes
 1 complot
+1 complotteerde
+1 complotteerden
 1 complotten
 1 complotteren
 1 complottheorie
@@ -48490,6 +49157,7 @@
 1 computerscherm
 1 computerservicediensten
 1 computersoftware
+1 computerspellen
 1 computerspelletje
 1 computerstaat
 1 computerstaten
@@ -49761,6 +50429,7 @@
 1 cookies
 1 coopertest
 0 coordinatie coördinatie
+0 coordinator coördinator
 1 copartnership
 0 copie kopie
 1 copieus
@@ -50097,6 +50766,7 @@
 1 couveusekind
 1 couveuses
 1 couveuseverpleging
+1 covalente
 1 cover
 1 coverartikel
 1 coverbedrijf
@@ -50176,6 +50846,7 @@
 1 crackverslaafden
 1 crackverslaving
 1 cranberry
+1 cranberry's
 1 crank
 1 crapaud
 1 crapauds
@@ -50394,6 +51065,7 @@
 1 croste
 1 croupier
 1 croupiers
+1 crowdsurfen
 1 cru
 1 cruciaal
 1 cruciale
@@ -50423,6 +51095,7 @@
 1 cryptogram
 1 cryptogrammen
 1 cryptologie
+1 cryptorchisme
 1 crèche
 1 crèches
 1 crème
@@ -50474,6 +51147,7 @@
 1 cultfilms
 1 cultisch
 1 cultivar
+1 cultivars
 1 cultivatie
 1 cultiveer
 1 cultiveerde
@@ -50761,20 +51435,29 @@
 1 cytostatica
 1 czarny
 1 d
+1 d'Antermoia
 1 d'Arc
 1 d'Ascq
 1 d'Assonleville
+1 d'Azur
+1 d'Italia
 1 d'Or
+1 d'Origine
 1 d'Orsay
 1 d'Orval
 1 d'outre-mer
+1 d'Égletons
 1 d(x,y
 1 d.i
+1 d.m.v
 1 d.w.z
 1 d.w.z.
 1 d2
+1 d4
 1 d5
+1 d6
 1 d7
+1 d8
 1 da
 1 daad
 1 daadkracht
@@ -51440,6 +52123,7 @@
 1 dansfeesten
 1 dansfestijn
 1 dansfiguur
+1 dansgezelschap
 1 dansgroep
 1 dansgroepen
 1 danshuis
@@ -51936,6 +52620,7 @@
 1 decoder
 1 decoderen
 1 decodering
+1 decoderingsmachine
 1 decoders
 1 decolleté
 1 decolletés
@@ -52044,6 +52729,7 @@
 1 deelbetalingen
 1 deelbewerking
 1 deelbewerkingen
+1 deelblaadjes
 1 deelbudget
 1 deelbudgetgebied
 1 deelbudgetgebieden
@@ -52302,6 +52988,7 @@
 1 definitiever
 1 definiëren
 1 definiëring
+0 defintief definitief
 1 deflatie
 1 deflationistisch
 1 deflationistische
@@ -52331,6 +53018,7 @@
 1 deftigheid
 1 deftigst
 1 deftigste
+1 deg
 1 deg;C
 0 degeen degene
 1 degel
@@ -52369,6 +53057,7 @@
 1 deglaceerden
 1 deglaceert
 1 deglaceren
+1 degli
 1 degout
 1 degoutant
 1 degoutante
@@ -52382,6 +53071,7 @@
 1 degradeerden
 1 degradeert
 1 degraderen
+1 degraderend
 1 degressie
 1 degressief
 1 dehydratie
@@ -53093,6 +53783,7 @@
 1 derdeklas
 1 derdeklasreiziger
 1 derdeklasreizigers
+1 derdeklasser
 1 derdeklassereiziger
 1 derdeklassereizigers
 1 derdelijnsgezondheidszorg
@@ -53133,6 +53824,7 @@
 1 derivaties
 1 dermate
 1 dermatitis
+1 dermatologen
 1 dermatologie
 1 dermatologisch
 1 dermatoloog
@@ -53408,6 +54100,7 @@
 1 determinanten
 1 determinatie
 1 determinatief
+1 determinatiekenmerk
 1 determinaties
 1 determinatietabellen
 1 determinatieve
@@ -53660,6 +54353,9 @@
 1 diagnosefase
 1 diagnosen
 1 diagnoses
+1 diagnosticeerde
+1 diagnosticeerden
+1 diagnosticeert
 1 diagnosticeren
 1 diagnostiek
 1 diagnostisch
@@ -53688,6 +54384,7 @@
 1 diakenhuizen
 1 diakens
 1 diakritisch
+1 diakritische
 1 dialect
 1 dialectatlas
 1 dialectatlassen
@@ -53786,6 +54483,7 @@
 1 diascopie
 1 diaserie
 1 diaspora
+1 diasteem
 1 diastole
 1 diastolisch
 1 diatheek
@@ -53795,6 +54493,7 @@
 1 diatonische
 1 diaviewer
 1 diavoorstelling
+0 dicatoriale dictatoriale
 1 dichotome
 1 dichotomie
 1 dichotoom
@@ -54946,6 +55645,7 @@
 1 diplomaatje
 1 diplomaatjes
 1 diplomaten
+1 diplomatendochter
 1 diplomatenklasje
 1 diplomatenkoffertje
 1 diplomatenrol
@@ -55353,6 +56053,7 @@
 1 disticha
 1 distichon
 1 distichons
+0 distict district
 1 distillaat
 1 distillaten
 1 distillateur
@@ -55505,6 +56206,7 @@
 0 divisie's divisies
 1 divisiecommandant
 1 divisiecommandanten
+1 divisiegeneraal
 1 divisies
 1 divisio
 1 divisionalisering
@@ -55635,6 +56337,7 @@
 1 doctrinairst
 1 doctrine
 1 doctrines
+1 docudrama
 1 document
 1 documentaanduiding
 1 documentair
@@ -55676,6 +56379,8 @@
 1 doddigst
 1 doddigste
 1 dode
+0 dodecaeder dodecaëder
+0 dodecaeders dodecaëders
 1 dodecaëder
 1 dodecaëders
 1 dodekop
@@ -55753,6 +56458,7 @@
 1 doelcollectes
 1 doelde
 1 doelden
+0 doeleind doeleinde
 1 doeleinde
 1 doeleinden
 1 doelen
@@ -56040,6 +56746,7 @@
 1 dolksteek
 1 dolksteken
 1 dolkstoot
+1 dolkstootlegende
 1 dolkstoten
 1 dollar
 1 dollarcent
@@ -59094,6 +59801,7 @@
 1 dranklucht
 1 drankmisbruik
 1 drankorgel
+1 drankprobleem
 1 drankverbod
 1 drankverbruik
 1 drankvergunning
@@ -59368,6 +60076,7 @@
 1 driekantst
 1 drieklank
 1 drieklanken
+1 driekleppige
 1 driekleur
 1 driekleurendruk
 1 driekleurig
@@ -59914,6 +60623,7 @@
 1 droogvloer
 1 droogvloeren
 1 droogvoer
+1 droogvoerkorrels
 1 droogvoets
 1 droogweg
 1 droogwreef
@@ -60341,10 +61051,12 @@
 1 dub
 1 dubbel
 1 dubbelaflevering
+1 dubbelagente
 1 dubbelbesluit
 1 dubbelblank
 1 dubbelbrede
 1 dubbelbreed
+1 dubbelbreking
 1 dubbelcircuit
 1 dubbeldakstent
 1 dubbeldakstenten
@@ -61134,6 +61846,7 @@
 1 dwarsschip
 1 dwarsschot
 1 dwarsschotten
+1 dwarsstaaf
 1 dwarsstang
 1 dwarsstraat
 1 dwarsstraten
@@ -61202,6 +61915,7 @@
 1 dwergachtigste
 1 dwergarend
 1 dwergbanaan
+1 dwergberk
 1 dwergeik
 1 dwergeiken
 1 dwergen
@@ -61210,6 +61924,7 @@
 1 dwergengestaltes
 1 dwergje
 1 dwergjes
+1 dwergstruiken
 1 dwergvinvis
 1 dwergvleermuis
 1 dwergvleermuizen
@@ -61303,6 +62018,7 @@
 1 e5
 1 e6
 1 e7
+1 eV
 1 earl
 1 eau
 1 eau-de-colognefles
@@ -61397,6 +62113,7 @@
 1 echtpaar
 1 echtpaartherapie
 1 echtparen
+0 echtscheding echtscheiding
 1 echtscheiding
 1 echtscheidingen
 1 echtscheidingscomparitie
@@ -61469,6 +62186,7 @@
 1 economisten
 1 economyclass
 1 econoom
+1 ecopassage
 1 ecosysteem
 1 ecosystemen
 1 ecotaks
@@ -61732,6 +62450,7 @@
 1 eenheden
 1 eenheid
 1 eenheidsbond
+1 eenheidscel
 1 eenheidscode
 1 eenheidscodes
 1 eenheidsconcept
@@ -61748,6 +62467,7 @@
 1 eenheidsschool
 1 eenheidsstaat
 1 eenheidsstaten
+1 eenheidssymbool
 1 eenheidstarief
 1 eenheidstijd
 1 eenheidsvakbeweging
@@ -61816,6 +62536,7 @@
 1 eenparig
 1 eenparige
 1 eenparigheid
+1 eenpartijstaat
 1 eenpersoons
 1 eenpersoonsbed
 1 eenpersoonsbedden
@@ -61852,6 +62573,7 @@
 1 eenstemmig
 1 eenstemmige
 1 eenstemmigheid
+1 eenstijlige
 1 eentalig
 1 eentalige
 1 eentaligheid
@@ -62143,6 +62865,7 @@
 1 eetwaren
 1 eetzaal
 1 eetzalen
+1 eetziekte
 1 eeuw
 1 eeuwen
 1 eeuwenheugend
@@ -62608,6 +63331,7 @@
 1 eilandnatie
 1 eilandrepubliek
 1 eilandstaat
+1 eilandstaatje
 1 eilandstation
 1 eilandstations
 1 eileider
@@ -62626,6 +63350,7 @@
 1 eindbeslissing
 1 eindbeslissingen
 1 eindbespreking
+1 eindblaadje
 1 eindcijfer
 1 eindcijfers
 1 eindconclusie
@@ -62712,6 +63437,7 @@
 1 eindredactie
 1 eindredactrice
 1 eindregel
+1 eindregie
 1 eindresultaat
 1 eindresultaten
 1 eindrijm
@@ -62734,6 +63460,7 @@
 1 eindstadium
 1 eindstand
 1 eindstanden
+1 eindstandige
 1 eindstation
 1 eindstations
 1 eindstemming
@@ -62754,6 +63481,7 @@
 1 einduitkering
 1 einduitkomst
 1 einduitslag
+1 eindveld
 1 eindverantwoordelijke
 1 eindverantwoordelijken
 1 eindverantwoordelijkheid
@@ -63457,6 +64185,7 @@
 1 energiemaatregelen
 1 energiemarkt
 1 energieniveau
+0 energieniveau's energieniveaus
 1 energieniveaus
 1 energienota
 1 energienota's
@@ -63468,6 +64197,7 @@
 1 energiepolitiek
 1 energierekening
 1 energierendement
+1 energiereserve
 1 energierijk
 1 energieschaarste
 1 energieschijf
@@ -63952,6 +64682,7 @@
 1 ereambt
 1 ereambten
 1 erebaantje
+1 erebia's
 1 ereblijk
 1 ereblijken
 1 ereboete
@@ -64430,6 +65161,7 @@
 1 esperantist
 1 esperantisten
 1 esplanade
+1 espoirs
 1 espresso
 1 espressokoffie
 1 esprit
@@ -65031,6 +65763,7 @@
 1 ex-koning
 1 ex-leerling
 1 ex-legerleider
+1 ex-libres
 1 ex-libris
 1 ex-librissen
 1 ex-man
@@ -65761,7 +66494,9 @@
 1 f-sleutel
 1 f-sleutels
 1 f2
+1 f4
 1 f7
+1 f9f9f9
 1 fa
 1 faal
 1 faalangst
@@ -65970,6 +66705,8 @@
 0 faecaliën fecaliën
 0 faeces feces
 1 faerie
+0 faeton faëton
+0 faetons faëtons
 1 fagocyt
 1 fagocyten
 1 fagocytose
@@ -66029,6 +66766,7 @@
 1 fakkeltjes
 1 fakkeltocht
 1 fakkeltochten
+1 falabella
 1 falangist
 1 falanx
 1 falanxen
@@ -66088,6 +66826,7 @@
 1 familiariteit
 1 familiariteiten
 1 familie
+0 familie's families
 1 familieaangelegenheden
 1 familieaangelegenheid
 1 familiearchief
@@ -66150,6 +66889,7 @@
 1 familiereünie
 1 familieroman
 1 familieromans
+1 familieruzies
 1 families
 1 familiestuk
 1 familiestukken
@@ -66295,6 +67035,7 @@
 1 faryngaal
 1 fasciata
 1 fasciatus
+1 fascimile
 1 fascinatie
 1 fascine
 1 fascineer
@@ -66400,6 +67141,7 @@
 1 fatwa's
 1 faun
 1 fauna
+1 fauna's
 1 faunen
 1 fauntje
 1 fauntjes
@@ -66464,6 +67206,7 @@
 1 februarimaand
 1 februariomwenteling
 1 fecaal
+1 fecale
 1 fecaliën
 1 feces
 1 federaal
@@ -67203,6 +67946,7 @@
 1 filmcomponist
 1 filmdagen
 1 filmde
+1 filmdebuut
 1 filmden
 1 filmdiva
 1 filmdoek
@@ -67279,6 +68023,7 @@
 1 filmverhaal
 1 filmversie
 1 filmvoorstelling
+1 filmvoorstellingen
 1 filmwereld
 1 filmwereldje
 1 filmzaal
@@ -67289,6 +68034,7 @@
 1 filologisch
 1 filologische
 1 filoloog
+1 filosofe
 1 filosofeer
 1 filosofeerde
 1 filosofeerden
@@ -67348,6 +68094,7 @@
 1 filtreren
 0 fim film
 1 finaal
+0 finaciële financiële
 1 finale
 1 finaledag
 1 finales
@@ -67457,6 +68204,7 @@
 1 fitnessprogramma
 1 fitnessprogramma's
 1 fitnessruimte
+1 fitnessvideo's
 0 fitnus fitness
 1 fits
 1 fitst
@@ -67735,6 +68483,7 @@
 1 fles
 1 flesje
 1 flesjes
+1 flesjesvoetbal
 1 flesjeswaterpas
 1 flesjeswaterpassen
 1 flesopener
@@ -68668,6 +69417,7 @@
 0 fotocopiëren fotokopiëren
 1 fotodienst
 1 fotofinish
+1 fotogalerij
 1 fotogeniek
 1 fotogenieke
 1 fotograaf
@@ -69060,6 +69810,7 @@
 1 frequentst
 1 frequentste
 1 fresco
+1 fresco's
 1 frescoschilder
 1 frescoschilderen
 1 frescoschilders
@@ -69172,6 +69923,8 @@
 1 frivool
 1 frivoolst
 1 from
+1 from:1960
+1 from:start
 1 frommel
 1 frommelde
 1 frommelden
@@ -69333,6 +70086,8 @@
 1 functie-inhoud
 1 functie1
 1 functie2
+1 functie3
+1 functie4
 1 functieanalist
 1 functieanalisten
 1 functieanalyse
@@ -69578,8 +70333,11 @@
 1 g/cm
 1 g/cm³
 1 g/mol
+1 g1
 1 g2
+1 g5
 1 g7
+1 g8
 1 ga
 1 gaaf
 1 gaafheid
@@ -69823,6 +70581,7 @@
 1 galkoortsen
 1 gallen
 1 galleria
+1 gallery
 1 gallicaans
 1 gallicaanse
 1 gallicisme
@@ -69958,6 +70717,7 @@
 1 gangen
 1 gangetje
 1 gangetjes
+1 ganggesteenten
 1 gangkast
 1 gangkasten
 1 gangklok
@@ -70235,6 +70995,7 @@
 1 gasbuizen
 1 gaschromatograaf
 1 gascokes
+1 gasconflict
 1 gasdicht
 1 gasdichte
 1 gasdruk
@@ -70332,6 +71093,7 @@
 1 gasradiatoren
 1 gasradiators
 1 gasreserve
+1 gasschaarste
 1 gassen
 1 gasslang
 1 gasslangen
@@ -70394,6 +71156,7 @@
 1 gastronomisch
 1 gastronomische
 1 gastronoom
+1 gastroscopie
 1 gastspreekster
 1 gastspreeksters
 1 gastspreker
@@ -70449,6 +71212,7 @@
 1 gatten
 1 gauchisme
 1 gaucho
+1 gaucho's
 1 gaufreer
 1 gaufreerde
 1 gaufreerden
@@ -70533,6 +71297,7 @@
 1 geabstraheerd
 1 geabstraheerde
 1 geabstraheerden
+1 geaccelereerd
 0 geaccellereerd geaccelereerd
 1 geaccentueerd
 1 geaccentueerde
@@ -70955,6 +71720,7 @@
 1 gebeden
 1 gebedenboek
 1 gebedenboeken
+1 gebedsdiensten
 1 gebedsgenezeres
 1 gebedsgenezeressen
 1 gebedsgenezing
@@ -71120,6 +71886,7 @@
 1 gebit
 1 gebitje
 1 gebitjes
+1 gebitselement
 1 gebitsverzorging
 1 gebitten
 1 gebitterd
@@ -71516,6 +72283,7 @@
 1 gebroeide
 1 gebroeiden
 1 gebroekt
+0 gebroers broers
 1 gebroken
 1 gebrokkeld
 1 gebrokkelde
@@ -71896,6 +72664,7 @@
 1 geconcretiseerden
 0 geconcurereerd geconcurrereerd
 1 geconcurreerd
+1 geconcurrereerd
 1 gecondenseerd
 1 gecondenseerde
 1 gecondenseerden
@@ -71905,6 +72674,7 @@
 1 gecondoleerd
 1 gecondoleerde
 1 gecondoleerden
+1 geconfedereerde
 1 geconfereerd
 1 geconfereerde
 1 geconfereerden
@@ -72012,6 +72782,7 @@
 1 gecoupeerd
 1 gecoupeerde
 1 gecoupeerden
+1 gecoverd
 1 gecoverde
 1 gecoïncideerd
 1 gecoïncideerde
@@ -72152,9 +72923,11 @@
 1 gedarteld
 1 gedartelde
 1 gedartelden
+0 gedated gedatet
 1 gedateerd
 1 gedateerde
 1 gedateerden
+1 gedatet
 1 gedauwd
 1 gedauwde
 1 gedauwden
@@ -72629,6 +73402,8 @@
 1 gedoleerde
 1 gedoleerden
 1 gedolven
+1 gedomesticeerd
+1 gedomesticeerde
 1 gedomicilieerd
 1 gedomineerd
 1 gedomineerde
@@ -72730,6 +73505,7 @@
 1 gedragsontsporingen
 1 gedragspatronen
 1 gedragspatroon
+1 gedragsproblemen
 1 gedragsregel
 1 gedragsregelen
 1 gedragsregels
@@ -73236,6 +74012,7 @@
 1 gefiltreerd
 1 gefiltreerde
 1 gefiltreerden
+0 gefinancieerd gefinancierd
 1 gefinancierd
 1 gefinancierde
 1 gefinancierden
@@ -74287,6 +75064,7 @@
 1 gehuwde
 1 gehuwden
 1 gehuwdenuitkering
+1 gehydrateerd
 1 gehydroxileerd
 0 gehydroxyleerd gehydroxileerd
 1 gehyperventileerd
@@ -74328,6 +75106,7 @@
 1 gein
 1 geinig
 1 geinige
+0 geinjecteerd geïnjecteerd
 0 geinspireerd geïnspireerd
 0 geinstalleerd geïnstalleerd
 1 geintje
@@ -74585,6 +75364,8 @@
 1 gekarakteriseerd
 1 gekarakteriseerde
 1 gekarakteriseerden
+1 gekarameliseerd
+1 gekarameliseerde
 0 gekaramelliseerd gekarameliseerd
 0 gekaramelliseerde gekarameliseerde
 1 gekard
@@ -75567,6 +76348,7 @@
 1 geldomzet
 1 geldontwaarding
 1 geldopbrengst
+1 geldproblemen
 1 geldsanering
 1 geldschaarste
 1 geldschieter
@@ -75725,6 +76507,7 @@
 1 geleiders
 1 geleiding
 1 geleidingen
+1 geleidingsband
 1 geleidingscoëfficiënt
 1 geleidingstechniek
 1 geleidingsvermogen
@@ -78191,6 +78974,7 @@
 1 geprolongeerd
 1 geprolongeerde
 1 geprolongeerden
+1 gepromoot
 1 gepromoveerd
 1 gepromoveerde
 1 gepromoveerden
@@ -79237,6 +80021,7 @@
 1 gesalueerde
 1 gesalueerden
 1 gesammeld
+1 gesampled
 1 gesanctioneerd
 1 gesanctioneerde
 1 gesanctioneerden
@@ -81255,12 +82040,14 @@
 1 gevaluteerde
 1 gevang
 1 gevangen
+1 gevangen genomen
 1 gevangenbewaarder
 1 gevangenbewaarders
 1 gevangene
 1 gevangenen
 1 gevangenenkamp
 1 gevangenenkampen
+0 gevangengenomen gevangen_genomen
 1 gevangenheid
 1 gevangenhouding
 1 gevangenis
@@ -81340,6 +82127,7 @@
 1 geveegde
 1 geveegden
 1 geveerd
+0 geveert geveerd
 1 geveest
 1 gevegeteerd
 1 geveild
@@ -81632,6 +82420,7 @@
 1 gevoeteerd
 1 gevogeld
 1 gevogelte
+0 gevogld gevolgd
 1 gevoileerd
 1 gevoileerde
 1 gevoileerder
@@ -82409,6 +83198,8 @@
 1 gezelschapsspel
 1 gezelschapsspelen
 1 gezelschapsspellen
+1 gezelschapsspelletje
+1 gezelschapsspelletjes
 1 gezemeld
 1 gezemelknoopt
 1 gezengd
@@ -82596,6 +83387,8 @@
 1 gezondheidspas
 1 gezondheidspassen
 1 gezondheidspolitie
+1 gezondheidsprobleem
+1 gezondheidsproblemen
 1 gezondheidsrecht
 1 gezondheidsredenen
 1 gezondheidsregio
@@ -83064,6 +83857,8 @@
 1 geüniformeerde
 1 geüpdatet
 1 geüpgraded
+1 geüpload
+1 geüploade
 1 geürbaniseerd
 1 geürbaniseerde
 1 geürineerd
@@ -83477,6 +84272,7 @@
 1 gitaarspelers
 1 gitaren
 1 gitarist
+1 gitariste
 1 gitaristen
 1 gitten
 1 gitzwart
@@ -83964,6 +84760,7 @@
 1 glottissen
 1 gloxinia
 1 glucose
+1 glucosestroop
 1 glui
 1 gluien
 1 gluip
@@ -84622,6 +85419,7 @@
 1 golfde
 1 golfden
 1 golfen
+1 golffuncties
 1 golfje
 1 golfjes
 1 golflengte
@@ -84867,6 +85665,7 @@
 1 gosjepietje
 1 gospel
 1 gospels
+1 gospelzangeres
 1 gossip
 1 goteling
 1 gotelingen
@@ -84875,6 +85674,7 @@
 0 gothisch gotisch
 0 gothische gotische
 1 gotiek
+1 gotisch
 1 gotische
 1 gotspe
 1 gouache
@@ -84935,6 +85735,7 @@
 1 goudessaai
 1 goudfazant
 1 goudfazanten
+1 goudfolie
 1 goudforel
 1 goudforellen
 1 goudfrank
@@ -85021,6 +85822,7 @@
 1 goudspechten
 1 goudstuk
 1 goudstukken
+1 goudveil
 1 goudveld
 1 goudvelden
 1 goudvernis
@@ -85841,6 +86643,7 @@
 1 gretigheid
 1 gretigst
 1 gretigste
+1 grevyi
 1 gribus
 1 gribussen
 1 grief
@@ -86246,6 +87049,7 @@
 1 groenblijver
 1 groenboer
 1 groenboeren
+1 groenbruin
 1 groende
 1 groene
 1 groenen
@@ -86323,6 +87127,7 @@
 1 groenvoer
 1 groenwerker
 1 groenwerkers
+1 groenwitte
 1 groep
 1 groepage
 1 groepagedienst
@@ -86368,6 +87173,7 @@
 1 groepsdiscussie
 1 groepsdiscussies
 1 groepsdynamica
+1 groepsfase
 1 groepsformatie
 1 groepsformaties
 1 groepsfoto
@@ -87333,6 +88139,7 @@
 1 gym
 1 gymde
 1 gymkana
+1 gymkhana
 1 gymlokaal
 1 gymmen
 1 gymmend
@@ -87399,6 +88206,7 @@
 1 gênantste
 1 gêne
 1 h
+1 h3
 1 ha
 1 haaf
 1 haag
@@ -87890,6 +88698,7 @@
 1 halfgaar
 1 halfgare
 1 halfgeleider
+1 halfgeleiders
 1 halfgeloken
 1 halfgeopend
 1 halfgesloten
@@ -89513,6 +90322,7 @@
 1 hartziekten
 1 hartziektes
 1 hasj
+1 hasjana
 1 hasjgebruik
 1 hasjhandel
 1 hasjhond
@@ -89632,6 +90442,7 @@
 1 havenmeesters
 1 havenmond
 1 havenplaats
+1 havenplaatsje
 1 havenpolitie
 1 havenradar
 1 havenrecht
@@ -89889,6 +90700,7 @@
 1 heemraadschap
 1 heemraadschappen
 1 heemraden
+1 heemskinderen
 1 heemst
 1 heemtuin
 1 heen
@@ -90060,6 +90872,7 @@
 1 heffing
 1 heffingen
 1 heffingsgrondslag
+0 hefft helft
 1 hefmagneet
 1 hefmechanisme
 1 hefoffer
@@ -90160,6 +90973,7 @@
 1 heien
 1 heier
 1 heiers
+1 height:200
 1 heigrond
 1 heigronden
 1 heihaas
@@ -90186,6 +91000,7 @@
 1 heilgymnastiek
 1 heilicht
 1 heilig
+1 heilig verklaard
 1 heiligavond
 1 heiligbeen
 1 heiligbeenderen
@@ -90227,6 +91042,7 @@
 1 heiligst
 1 heiligste
 1 heiligt
+0 heiligverklaard heilig_verklaard
 1 heiligverklaring
 1 heiligverklaringen
 1 heilloos
@@ -90427,6 +91243,7 @@
 1 heldere
 1 helderheid
 1 helderheidsveranderingen
+1 helderrood
 1 helderst
 1 helderste
 1 helderziend
@@ -90861,6 +91678,7 @@
 1 herbevestigend
 1 herbevestigt
 1 herbevolken
+0 herbevolkt hervolkt
 1 herbewapen
 1 herbewapend
 1 herbewapende
@@ -91340,6 +92158,7 @@
 1 hernoemen
 1 hernoemt
 1 hernomen
+1 herontdekken
 1 herontdekking
 1 herontdekt
 1 heropbouw
@@ -91687,6 +92506,7 @@
 1 hervind
 1 hervinden
 1 hervindt
+1 hervolkt
 1 hervond
 1 hervonden
 0 hervorgehoben aangegeven
@@ -91898,6 +92718,8 @@
 1 hevigste
 1 hexadecimaal
 1 hexadecimale
+0 hexaeder hexaëder
+0 hexaeders hexaëders
 1 hexagonaal
 1 hexagonale
 1 hexagonen
@@ -92092,6 +92914,7 @@
 1 hinkelspellen
 1 hinkelt
 1 hinken
+1 hinkende
 1 hinkepink
 1 hinkepinken
 1 hinkepinkt
@@ -92134,9 +92957,11 @@
 1 hippiekleding
 1 hippiekleren
 1 hippies
+1 hippique
 1 hippisch
 1 hippische
 1 hippocampus
+1 hippocastanum
 1 hippocratisch
 1 hippodromen
 1 hippodroom
@@ -92183,6 +93008,7 @@
 1 historiën
 1 history
 1 hit
+1 hitfilm
 1 hitje
 1 hitjes
 1 hitlijst
@@ -92360,6 +93186,7 @@
 1 hoefijzermagneten
 1 hoefijzers
 1 hoefijzertjes
+1 hoefijzervormig
 1 hoefnagel
 1 hoefnagels
 1 hoefslag
@@ -93006,6 +93833,7 @@
 1 hondsrozen
 1 hondsster
 1 hondst
+1 hondstong
 1 hondsvot
 1 hondsvotten
 1 honen
@@ -93366,6 +94194,7 @@
 1 hoofdpaneel
 1 hoofdpeluw
 1 hoofdpeluws
+0 hoofdperonages hoofdpersonages
 1 hoofdpersonage
 1 hoofdpersonages
 1 hoofdpersonen
@@ -93467,6 +94296,7 @@
 1 hoofdtonen
 1 hoofdtooi
 1 hoofdtoon
+1 hoofdtop
 1 hoofdtrap
 1 hoofdtrek
 1 hoofdtrekken
@@ -93525,6 +94355,7 @@
 0 hoofstad hoofdstad
 1 hooft
 1 hoog
+1 hoog oplopende
 1 hoogaars
 1 hoogaarzen
 1 hoogacht
@@ -93666,6 +94497,7 @@
 1 hoogontwikkeld
 1 hoogopgeleide
 1 hoogopgeleiden
+0 hoogoplopende hoog_oplopende
 1 hoogoven
 1 hoogovenbedrijf
 1 hoogovens
@@ -94365,6 +95197,7 @@
 1 houtstand
 1 houtstapels
 1 houtstof
+1 houttechniek
 1 houtteelt
 1 houtteer
 1 houttuin
@@ -94598,6 +95431,7 @@
 1 huisdeuren
 1 huisdier
 1 huisdieren
+1 huisdierras
 1 huisdokter
 1 huisdokters
 1 huisduif
@@ -95581,7 +96415,7 @@
 1 hypothese
 1 hypothesen
 1 hypotheses
-0 hypothetisch hypothetische
+1 hypothetisch
 1 hypothetische
 1 hypothetischer
 1 hypsometer
@@ -95601,6 +96435,7 @@
 1 i
 1 i-grec
 1 i.p.v
+1 i.s.m
 1 iBanesto.com
 1 iTunes
 1 ia
@@ -95610,6 +96445,7 @@
 1 iatrogeen
 1 iatrosoof
 1 iaën
+1 ibid
 1 ibidem
 1 ibis
 1 ibissen
@@ -95630,6 +96466,7 @@
 1 icoontje
 1 icosahedron
 1 id
+1 id:gray1
 1 ideaal
 1 ideaalst
 1 ideale
@@ -96148,6 +96985,7 @@
 1 illustreren
 1 im
 1 image
+1 imageSize
 1 imagebuilding
 1 imaginair
 1 imaginaire
@@ -96168,6 +97006,7 @@
 1 imbecielste
 1 imbeciliteit
 1 imbeciliteiten
+1 imdb
 1 imitatie
 1 imitaties
 1 imitator
@@ -96371,6 +97210,7 @@
 1 impregneringen
 1 impresariaat
 1 impresario
+1 impresario's
 0 impressariaat impresariaat
 0 impressario impresario
 0 impressario's impresario's
@@ -96782,6 +97622,7 @@
 1 incorrectst
 1 incourant
 1 incourante
+1 increment:10
 1 incrementele
 1 incrowd
 1 incrustatie
@@ -96933,6 +97774,7 @@
 1 indiciën
 1 indictie
 1 indicties
+1 indie
 1 indien
 1 indiende
 1 indienden
@@ -97379,6 +98221,8 @@
 1 inflaties
 1 inflatiespiraal
 1 inflatiespook
+1 inflatiestabiliteit
+1 inflatieverwachtingen
 1 inflatoir
 1 inflatoire
 1 inflexibel
@@ -97400,6 +98244,7 @@
 1 influistering
 1 influistert
 1 info
+1 infobox
 1 infobrief
 1 infomap
 1 informaliteit
@@ -99310,6 +100155,7 @@
 1 insinueerden
 1 insinueert
 1 insinueren
+0 insiprerende inspirerende
 1 insisteer
 1 insisteerde
 1 insisteerden
@@ -100100,6 +100946,7 @@
 1 interim-advies
 1 interim-bestuur
 1 interim-dividend
+1 interim-manager
 1 interim-president
 1 interim-rapport
 1 interim-regeling
@@ -100362,6 +101209,7 @@
 1 intestate
 1 intestaten
 1 intestinaal
+1 intestinalis
 1 intiem
 1 intieme
 1 intiemer
@@ -100527,6 +101375,7 @@
 1 introïtus
 1 intrusie
 1 intrusief
+1 intrusies
 1 intuinde
 1 intuinden
 1 intuinen
@@ -100955,6 +101804,7 @@
 1 inwoners
 1 inwoners/km²
 1 inwonersaantal
+0 inwonerstal inwoneraantal
 1 inwonertal
 1 inwoning
 1 inwonnen
@@ -101125,6 +101975,7 @@
 1 irenisch
 1 irenische
 1 iridium
+1 iridoïde
 1 iris
 1 iriscopie
 1 iriscopist
@@ -101834,6 +102685,7 @@
 1 jazzband
 1 jazzbands
 1 jazzfestival
+1 jazzgitarist
 1 jazzkalender
 1 jazzmuziek
 1 jazzmuzikant
@@ -102040,6 +102892,7 @@
 1 jezuïetenorde
 1 jezuïetenpater
 1 jezuïetenpaters
+1 jezuïetenreductie
 1 jezuïetenstijl
 1 jezuïtisch
 1 jezuïtische
@@ -102346,6 +103199,7 @@
 1 jongerennet
 1 jongerenorganisaties
 1 jongerenplan
+1 jongerenproject
 1 jongerenrubriek
 1 jongerentaal
 1 jongerenteam
@@ -102674,6 +103528,7 @@
 1 justificatie
 1 justificaties
 1 justificeerbaaar
+1 justify
 1 justitiabel
 1 justitiabelen
 1 justitie
@@ -102734,8 +103589,10 @@
 1 kB
 1 kBps
 1 kJ/mol
+1 kPa
 1 kW
 1 ka
+1 ka's
 1 kaag
 1 kaai
 1 kaaide
@@ -102888,6 +103745,8 @@
 1 kaarswijding
 1 kaart
 1 kaart van Duitsland
+1 kaartX
+1 kaartY
 1 kaartavondje
 1 kaartavondjes
 1 kaartbrief
@@ -103837,6 +104696,7 @@
 1 kampeertenten
 1 kampeerterrein
 1 kampeerterreinen
+1 kampeerterreintje
 1 kampeeruitrusting
 1 kampement
 1 kampementen
@@ -104099,7 +104959,9 @@
 1 kannibaliseren
 1 kannibaliserend
 1 kannibalisme
+0 kannonen kanonnen
 1 kano
+1 kano's
 1 kanode
 1 kanoden
 1 kanoet
@@ -104665,6 +105527,7 @@
 1 kapselen
 1 kapsels
 1 kapselt
+1 kapselvrucht
 0 kapsijsde kapseisde
 0 kapsijst kapseist
 0 kapsijzen kapseizen
@@ -104983,6 +105846,7 @@
 1 karretjes
 1 karspoor
 1 karsporen
+1 karstgebied
 1 kart
 1 karteer
 1 karteerde
@@ -105271,6 +106135,7 @@
 1 katabool
 1 katachtig
 1 katachtige
+1 katachtigen
 1 katachtiger
 1 katachtigere
 1 katachtigst
@@ -105316,6 +106181,7 @@
 1 katheten
 1 katheter
 1 katheteriseren
+1 katheters
 1 kathode
 1 kathoden
 1 kathodes
@@ -106230,6 +107096,7 @@
 1 kermen
 1 kermes
 1 kermessen
+1 kermis
 1 kermisachtig
 1 kermisachtige
 1 kermisachtiger
@@ -106331,6 +107198,7 @@
 1 kernhout
 1 kernkop
 1 kernkoppen
+1 kernkrachten
 1 kernlading
 1 kernladingen
 1 kernlichaampje
@@ -106442,6 +107310,7 @@
 1 kerstboompjes
 1 kerstboomverlichting
 1 kerstboter
+1 kerstcadeau
 1 kerstdag
 1 kerstdagen
 1 kerstdienst
@@ -106465,6 +107334,7 @@
 1 kerstgratificatie
 1 kerstkaart
 1 kerstkaarten
+0 kerstkado kerstcadeau
 1 kerstklok
 1 kerstkrans
 1 kerstkransen
@@ -106514,6 +107384,7 @@
 1 kerstversiering
 1 kerstvertelling
 1 kerstvertellingen
+1 kerstviering
 1 kerstweek
 1 kerstweken
 1 kerstzang
@@ -106902,6 +107773,9 @@
 1 keynote
 1 kezen
 1 kg
+1 kg/dm
+0 kg/m2 kg/m<sup>2</sup>
+1 kg/m<sup>2</sup>
 1 khan
 1 khmer
 1 kibbel
@@ -107097,6 +107971,7 @@
 1 kieskeurigste
 1 kieskring
 1 kieskringen
+1 kieslijst
 1 kiesmannen
 1 kiespijn
 1 kiesplicht
@@ -109102,6 +109977,7 @@
 1 kleurenproef
 1 kleurenreproductie
 1 kleurenscala
+1 kleurenschema's
 1 kleurenscherm
 1 kleurenschijf
 1 kleurenschijven
@@ -109483,6 +110359,7 @@
 0 klittebanden klittenbanden
 1 klitten
 1 klittenband
+1 klittenbanden
 1 klodde
 1 klodden
 1 klodder
@@ -109946,6 +110823,7 @@
 1 klysma's
 1 km
 1 km&sup2
+0 km's km
 1 km/h
 1 km/s
 1 km/u
@@ -111736,6 +112614,7 @@
 1 kolonist
 1 kolonisten
 1 koloniën
+0 kolonnes colonnes
 1 koloriet
 1 kolos
 0 kolosaal kolossaal
@@ -111768,6 +112647,7 @@
 1 komediantesk
 1 komedie
 1 komedies
+1 komedieserie
 1 komediespeelster
 1 komediespeelsters
 1 komediespel
@@ -113053,6 +113933,7 @@
 1 korreltje
 1 korreltjes
 1 korreltjesfobie
+1 korrelvormige
 1 korren
 1 korset
 1 korsetten
@@ -113242,6 +114123,7 @@
 1 kosmisch
 1 kosmische
 1 kosmischer
+1 kosmodroom
 1 kosmogonie
 1 kosmograaf
 1 kosmografen
@@ -113614,6 +114496,7 @@
 1 kraaiers
 1 kraaiertje
 1 kraaiertjes
+1 kraaiheide
 1 kraait
 1 kraaitje
 1 kraaitjes
@@ -113784,6 +114667,8 @@
 1 krach
 1 krachs
 1 kracht
+1 kracht1
+1 kracht2
 1 krachtbal
 1 krachtbouillon
 1 krachtbrokken
@@ -114652,6 +115537,7 @@
 1 kristalhelder
 1 kristalheldere
 1 kristalhelderst
+1 kristalklasse
 1 kristalkunde
 1 kristallen
 1 kristallens
@@ -114683,8 +115569,11 @@
 1 kristalontvanger
 1 kristalrooster
 1 kristalsoda
+1 kristalstelsel
 1 kristalstructuur
 1 kristalsuiker
+1 kristalvlak
+1 kristalvlakken
 1 kristalvorm
 1 kristalvormen
 1 kristalvormig
@@ -114702,6 +115591,7 @@
 1 kritiekpunten
 1 kritiekst
 1 kritiekste
+0 kritikasters criticasters
 1 kritisch
 1 kritische
 1 kritischer
@@ -114926,6 +115816,7 @@
 1 kroonbalk
 1 kroonbalken
 1 kroonbladen
+1 kroonbladeren
 1 kroondocent
 1 kroondomein
 1 kroondomeinen
@@ -115980,6 +116871,7 @@
 1 kustwacht
 1 kustwachter
 1 kustwachters
+1 kustwandelingen
 1 kustwateren
 1 kustweg
 1 kustwegen
@@ -116196,6 +117088,7 @@
 1 kwaliteitsontwikkeling
 1 kwaliteitsplan
 1 kwaliteitsplannen
+1 kwaliteitspop
 1 kwaliteitsprogramma
 1 kwaliteitsprogramma's
 1 kwaliteitssticker
@@ -116250,10 +117143,14 @@
 1 kwantiteit
 1 kwantiteiten
 1 kwantum
+1 kwantumdynamica
+1 kwantumfysica
 1 kwantumkorting
 1 kwantumkortingen
 1 kwantummechanica
 1 kwantummechanisch
+1 kwantummechanische
+1 kwantumtheorie
 1 kwark
 1 kwarktaart
 1 kwarktaarten
@@ -116722,6 +117619,7 @@
 1 laaggeprijsde
 1 laaggetakt
 1 laaggetakte
+1 laaggroeiende
 1 laaghangend
 1 laaghangende
 1 laaghartig
@@ -117423,6 +118321,7 @@
 1 landbouwbedrijf
 1 landbouwbedrijven
 1 landbouwbeleid
+1 landbouwbestemming
 1 landbouwcommissaris
 1 landbouwconsulent
 1 landbouwconsulenten
@@ -117471,6 +118370,7 @@
 1 landbouwprojecten
 1 landbouwscholen
 1 landbouwschool
+1 landbouwsubsidies
 1 landbouwtechnieken
 1 landbouwtrekker
 1 landbouwvoorlichting
@@ -117617,6 +118517,7 @@
 1 landpaal
 1 landpacht
 1 landpalen
+1 landplanten
 1 landpost
 1 landraad
 1 landraden
@@ -117670,6 +118571,7 @@
 1 landsheerlijke
 1 landsheren
 1 landskampioen
+1 landskampioenschappen
 1 landskind
 1 landskinderen
 1 landsknecht
@@ -117682,6 +118584,7 @@
 1 landstad
 1 landstalen
 1 landsteden
+1 landstitel
 1 landstorm
 1 landstreek
 1 landstreken
@@ -118135,6 +119038,7 @@
 1 laserstraal
 1 laserstralen
 1 laserstraling
+1 lasertherapie
 1 lasflens
 1 lasijzer
 1 lasijzers
@@ -118291,6 +119195,11 @@
 1 latinist
 1 latinisten
 1 latiniteit
+1 latino
+1 latino's
+1 latitudeGraden
+1 latitudeMinuten
+1 latitudeSeconden
 1 latnagel
 1 latnagels
 1 latrine
@@ -118431,6 +119340,7 @@
 1 laxeren
 1 lay-out
 1 lay-outs
+1 layer:front
 0 lazanja lasagne
 1 lazaret
 1 lazaretten
@@ -119174,6 +120084,7 @@
 1 lefmaker
 1 lefmakers
 1 left
+1 left:40
 1 leg
 1 legaal
 1 legaalst
@@ -119776,6 +120687,9 @@
 1 lept
 1 lepte
 1 lepten
+1 leptine
+0 leptine-deficientie leptine-deficiëntie
+1 leptine-deficiëntie
 1 lepton
 1 leptosome
 1 leptosoom
@@ -120443,6 +121357,7 @@
 1 liberaliteit
 1 libero
 1 libertair
+1 libertarisme
 1 libertijn
 1 libertijnen
 1 libertijns
@@ -120880,6 +121795,7 @@
 1 liefdesbrieven
 1 liefdesdrama
 1 liefdesdrama's
+1 liefdesdriehoek
 1 liefdesenergie
 1 liefdesfilm
 1 liefdesfilms
@@ -121410,6 +122326,7 @@
 1 lijstenmaker
 1 lijstenmakers
 1 lijster
+1 lijsterachtigen
 1 lijsterbes
 1 lijsterbessebomen
 1 lijsterbesseboom
@@ -121693,6 +122610,7 @@
 1 linotypes
 1 lint
 1 lintbebouwing
+1 lintbloemen
 1 lintcassette
 1 linten
 1 lintje
@@ -121959,6 +122877,7 @@
 1 locatiegebonden
 1 locaties
 1 locatieven
+1 locator
 1 locker
 1 loco
 1 loco-burgemeester
@@ -122139,6 +123058,7 @@
 1 loggertje
 1 loggertjes
 1 loggia
+1 loggia's
 1 logglas
 1 logglazen
 1 logheid
@@ -122195,7 +123115,7 @@
 1 lokartikel
 1 lokartikelen
 1 lokartikels
-0 lokatie locatie
+1 lokatie
 0 lokatief locatief
 0 lokaties locaties
 1 lokazen
@@ -122313,6 +123233,7 @@
 1 lompst
 1 lompste
 1 lompweg
+1 lon
 1 lonen
 1 long
 1 longaandoening
@@ -122328,6 +123249,9 @@
 1 longetjes
 1 longfoto
 1 longfoto's
+1 longitudeGraden
+1 longitudeMinuten
+1 longitudeSeconden
 1 longitudinaal
 1 longitudinale
 1 longkruid
@@ -122601,6 +123525,7 @@
 1 loopnummers
 1 loopoor
 1 looporen
+1 looppaden
 1 looppas
 1 loopplank
 1 loopplanken
@@ -123041,6 +123966,7 @@
 1 luchteskader
 1 luchteskaders
 1 luchtfoto
+1 luchtfoto's
 1 luchtgat
 1 luchtgaten
 1 luchtgeest
@@ -123642,6 +124568,7 @@
 1 ma
 1 maag
 1 maagbloeding
+1 maagcapaciteit
 1 maagd
 1 maagdeke
 1 maagdeken
@@ -123682,6 +124609,7 @@
 1 maagschap
 1 maagstoornis
 1 maagstreek
+1 maagwand
 1 maagzout
 1 maagzuur
 1 maagzweer
@@ -123722,6 +124650,7 @@
 1 maakt
 1 maakte
 1 maakten
+0 maaktte maakte
 1 maakwerk
 1 maal
 1 maalde
@@ -123846,6 +124775,7 @@
 1 maanjaar
 1 maanjaren
 1 maankaart
+1 maankalender
 1 maankop
 1 maankoppen
 1 maanlanding
@@ -123854,6 +124784,7 @@
 1 maanloos
 1 maanloze
 1 maanmonsters
+1 maanprogramma
 1 maanraket
 1 maanring
 1 maanringen
@@ -123867,6 +124798,7 @@
 1 maantijd
 1 maantje
 1 maantjes
+1 maantop
 1 maanvis
 1 maanvissen
 1 maanvormig
@@ -124223,6 +125155,7 @@
 1 maffiaorganisatie
 1 maffiaorganisaties
 1 maffioos
+1 maffiose
 1 maffioso
 0 mafia maffia
 0 mafioze maffiose
@@ -124307,6 +125240,8 @@
 1 magneetpool
 1 magneetrem
 1 magneetschijf
+1 magneetspoor
+1 magneetsporen
 1 magneetsteen
 1 magneetstenen
 1 magneetstrip
@@ -124919,6 +125854,7 @@
 1 mannetjesmussen
 1 mannetjesnoot
 1 mannetjesnoten
+1 mannetjespaard
 1 mannetjesplant
 1 mannetjesplanten
 1 mannetjesputter
@@ -125594,6 +126530,7 @@
 1 masochist
 1 masochistisch
 1 masochistische
+1 mass
 1 massa
 1 massa's
 1 massa-artikel
@@ -125827,8 +126764,10 @@
 1 matrassen
 1 matrassenmaker
 1 matrassenmakers
+1 matriarch
 1 matriarchaal
 1 matriarchaat
+1 matriarchale
 1 matrices
 1 matrijs
 1 matrijzen
@@ -125916,6 +126855,7 @@
 1 mauwen
 1 mauwt
 1 mavo
+1 mavo-diploma
 0 mavodiploma mavo-diploma
 1 max
 1 maxi
@@ -125990,6 +126930,7 @@
 1 me
 1 meander
 1 meanderen
+1 meanderende
 1 meanders
 1 mecanicien
 1 mecaniciens
@@ -126159,6 +127100,7 @@
 1 medeoprichter
 1 medeoprichters
 1 medeoprichtster
+1 medepassagier
 1 medeplichtig
 1 medeplichtige
 1 medeplichtigen
@@ -126245,8 +127187,10 @@
 1 medezuster
 1 medezusters
 1 media
+1 media-aandacht
 1 mediaal
 1 mediaan
+1 mediaanlijn
 1 mediaanpapier
 1 mediabedrijf
 1 mediabeleid
@@ -127298,7 +128242,7 @@
 1 meldde
 1 meldden
 1 melddiensten
-0 melde meldde
+1 melde
 1 melden
 1 meldenswaard
 1 meldenswaarde
@@ -128012,6 +128956,7 @@
 1 merrieveulen
 1 merrieveulens
 1 mes
+1 mesa's
 1 mesalliance
 1 mesalliances
 1 mesallieerde
@@ -128070,6 +129015,7 @@
 1 messnede
 1 messnee
 1 messroom
+1 messteek
 1 messteken
 1 mest
 1 mestbank
@@ -128099,6 +129045,7 @@
 1 mestputten
 1 mestriek
 1 mestrieken
+1 mestsilo's
 1 mestspreider
 1 mestspreiders
 1 meststof
@@ -128508,6 +129455,7 @@
 1 micrometer
 1 micrometers
 1 micron
+1 micronatie
 1 microniveau
 1 microns
 1 microprocessor
@@ -128525,6 +129473,8 @@
 1 microseconde
 1 microseconden
 1 microsfeer
+1 microsoorten
+1 microstaat
 1 microtonen
 1 microvolt
 1 microwatt
@@ -128590,7 +129540,7 @@
 1 middelbareschooldiploma
 1 middelde
 1 middelden
-0 middeleeuwen Middeleeuwen
+1 middeleeuwen
 1 middeleeuwer
 1 middeleeuwers
 1 middeleeuws
@@ -129500,6 +130450,7 @@
 1 minsten
 1 minstens
 0 minsterie ministerie
+0 minsters ministers
 1 minstreel
 1 minstrelen
 1 mint
@@ -130106,6 +131057,7 @@
 1 mixers
 1 mixes
 1 mixt
+1 mixta
 1 mixte
 1 mixten
 1 mixtum
@@ -130220,6 +131172,7 @@
 1 modelboerderij
 1 modelboerderijen
 1 modelbouw
+1 modelbouwdozen
 1 modelbouwer
 1 modelhoeve
 1 modelhoeven
@@ -130238,6 +131191,8 @@
 1 modellenboek
 1 modellenbureau
 1 modellencarrière
+1 modellenwedstrijd
+1 modellenwerk
 1 modelleren
 1 modellering
 1 modelletje
@@ -131088,6 +132043,7 @@
 1 monogram
 1 monogrammen
 1 monokini
+1 monoklien
 1 monoliet
 1 monolieten
 1 monolithisch
@@ -131684,6 +132640,7 @@
 1 mosterdmolen
 1 mosterdmolens
 1 mosterdolie
+1 mosterdoliën
 1 mosterdpleister
 1 mosterdpleisters
 1 mosterdpot
@@ -132238,6 +133195,7 @@
 1 murwste
 1 murwt
 1 mus
+1 muscoviet
 1 musculair
 1 musculatuur
 1 musculus
@@ -132527,6 +133485,7 @@
 1 muzikaliteit
 1 muzikant
 1 muzikanten
+1 muzikanten0
 1 muzikantenmarkt
 1 muzikantenvakbond
 1 muzikantesk
@@ -133461,6 +134420,7 @@
 1 nakeek
 1 nakeken
 1 naken
+1 nakende
 1 nakermis
 1 nakermissen
 1 nakeuring
@@ -133830,6 +134790,7 @@
 1 nationaal
 1 nationaal-socialisme
 1 nationaal-socialistische
+1 nationaalsocialistisch
 1 nationale
 1 nationalisatie
 1 nationalisaties
@@ -133848,11 +134809,13 @@
 1 nationalistischer
 1 nationaliteit
 1 nationaliteiten
+1 nationaliteitenvraagstuk
 1 nationaliteitsbeginsel
 1 nationaliteitsbewijs
 1 nationaliteitsbewijzen
 1 nationaliteitsgevoel
 1 nationaliteitswijziging
+1 native
 1 nativisme
 1 natiën
 1 natje
@@ -133995,6 +134958,7 @@
 1 natuuronderzoek
 1 natuuronderzoeker
 1 natuuronderzoekers
+1 natuurpark
 1 natuurproduct
 1 natuurproducten
 1 natuurprogramma
@@ -134672,6 +135636,7 @@
 1 negenhonderdduizend
 1 negenjarig
 1 negenjarige
+1 negenkoppige
 1 negenmaands
 1 negenogen
 1 negenoog
@@ -134945,6 +135910,7 @@
 1 nestschaal
 1 nestschalen
 1 nestveren
+1 nestverzorging
 1 nestvlieder
 1 nestvlieders
 1 nestwarmte
@@ -135018,6 +135984,7 @@
 1 netter
 1 nettigheid
 1 netto
+1 netto-inkomen
 1 netto-opbrengst
 1 nettobedrag
 1 nettobedragen
@@ -136453,6 +137420,7 @@
 1 noordzijde
 1 noorman
 1 noormannen
+0 nooroostelijke noordoostelijke
 1 noot
 1 nootje
 1 nootjes
@@ -136461,6 +137429,7 @@
 1 noottekens
 1 nootvormig
 1 nootvormige
+1 nootvruchtje
 1 nop
 1 nopen
 1 nopens
@@ -136888,6 +137857,8 @@
 1 obelisken
 1 ober
 1 obers
+1 obesitas
+1 obi
 1 object
 1 objecten
 1 objectglaasje
@@ -137018,6 +137989,7 @@
 1 obstrueert
 1 obstrueren
 1 obus
+1 oca
 1 ocarina
 1 ocarinist
 1 ocarinisten
@@ -137129,6 +138101,8 @@
 1 octaan
 1 octaangetal
 1 octaanwaarde
+0 octaeder octaëder
+0 octaeders octaëders
 1 octale
 1 octant
 1 octanten
@@ -137549,6 +138523,7 @@
 1 ohms
 1 ohmse
 1 oho
+1 ohridella
 1 oir
 1 ojief
 1 ojieven
@@ -137819,6 +138794,7 @@
 1 olijvenoogst
 1 olijvenpers
 1 olijvenpersen
+1 olijvenroutes
 1 olim
 1 oliën
 1 olm
@@ -138330,6 +139306,7 @@
 1 omhullen
 1 omhullend
 1 omhullende
+1 omhulling
 1 omhulsel
 1 omhulsels
 1 omhult
@@ -139295,6 +140272,7 @@
 1 on
 1 on-Nederlands
 1 on-Nederlandse
+1 on-lineverbinding
 1 onaandoenlijk
 1 onaandoenlijke
 1 onaandoenlijker
@@ -141170,6 +142148,7 @@
 1 onderzoeksgebied
 1 onderzoeksgebieden
 1 onderzoeksgegevens
+1 onderzoeksgroep
 1 onderzoeksinstelling
 1 onderzoeksinstellingen
 1 onderzoeksinstituut
@@ -141442,6 +142421,7 @@
 1 onesthetischer
 1 onethisch
 1 oneven
+1 onevenhoevigen
 1 onevenredig
 1 onevenredige
 1 onevenwichtig
@@ -142190,6 +143170,7 @@
 1 ongrammaticale
 1 ongrijpbaar
 1 ongrijpbare
+0 ongrondwettelijk ongrondwettig
 1 ongrondwettig
 1 ongrondwettige
 1 ongrondwettiger
@@ -144599,6 +145580,7 @@
 1 ontwoekert
 1 ontwond
 1 ontwonden
+1 ontwormd
 1 ontworpen
 1 ontworstel
 1 ontworsteld
@@ -145802,6 +146784,7 @@
 1 oorlogsbuit
 1 oorlogscontrabande
 1 oorlogscorrespondent
+1 oorlogscorrespondente
 1 oorlogscorrespondenten
 1 oorlogsdagboek
 1 oorlogsdagen
@@ -145846,6 +146829,7 @@
 1 oorlogskansen
 1 oorlogskas
 1 oorlogskerkhoven
+1 oorlogskredieten
 1 oorlogslasten
 1 oorlogsliteratuur
 1 oorlogsmateriaal
@@ -145896,6 +146880,7 @@
 1 oorlogsverleden
 1 oorlogsverminkte
 1 oorlogsverminkten
+1 oorlogsveteranen
 1 oorlogsvlag
 1 oorlogsvlaggen
 1 oorlogsvlieger
@@ -147102,6 +148087,7 @@
 1 opgelezen
 1 opgelicht
 1 opgelichte
+1 opgelikt
 1 opgeloefd
 1 opgeloefde
 1 opgeloken
@@ -148202,6 +149188,7 @@
 1 opofferden
 1 opofferen
 1 opofferend
+1 opofferende
 1 opoffering
 1 opofferingen
 1 opofferingsgezind
@@ -148408,6 +149395,7 @@
 1 oppositiepartij
 1 oppositiepartijen
 1 opposities
+1 oppositifolium
 1 oppositioneel
 1 oppositionele
 0 oppostitiekandidaat oppositiekandidaat
@@ -149671,6 +150659,7 @@
 1 orakeltaal
 1 orale
 1 oraliteit
+1 orang
 1 orang-oetan
 1 orang-oetang
 1 orang-oetans
@@ -150004,6 +150993,7 @@
 1 orginele
 1 orgiën
 1 orientalis
+1 orientation:horizontal
 1 oriflamme
 1 origami
 1 originaliteit
@@ -150119,6 +151109,7 @@
 1 oryx
 1 os
 1 oscar
+1 oscarnominatie
 1 oscars
 1 oscillatie
 1 oscillaties
@@ -150526,6 +151517,7 @@
 1 ovalen
 1 ovaria
 1 ovarium
+1 ovariumkanker
 1 ovatie
 1 ovaties
 1 ovationeel
@@ -151312,6 +152304,7 @@
 1 overkluisden
 1 overkluist
 1 overkluizen
+1 overkocht
 1 overkoepel
 1 overkoepeld
 1 overkoepelde
@@ -151738,6 +152731,7 @@
 1 overschreeuwden
 1 overschreeuwen
 1 overschreeuwt
+0 overschreidt overschrijdt
 1 overschreven
 1 overschrijd
 1 overschrijden
@@ -152302,6 +153296,7 @@
 1 oweeër
 1 oweeërs
 1 own
+1 oxaalzuur
 1 oxer
 1 oxidase
 1 oxidatie
@@ -152367,6 +153362,9 @@
 1 paalgordingen
 1 paalgordings
 1 paalhoofden
+1 paalkampeerterrein
+1 paalkampeerterreinen
+1 paalklimmen
 1 paalt
 1 paaltje
 1 paaltjes
@@ -152375,6 +153373,7 @@
 1 paalvaster
 1 paalwerk
 1 paalwerken
+1 paalwerpen
 1 paalwoning
 1 paalwoningen
 1 paalworm
@@ -152400,13 +153399,20 @@
 1 paapsgezindheid
 1 paapst
 1 paar
+1 paarbladig
 1 paard
+1 paardachtigen
 1 paarde
 1 paardebloem
 1 paardebloemen
+1 paardebloemenmelk
+1 paardebloemstreepzaad
 1 paardedistel
 1 paardekastanje
 1 paardekastanjes
+0 paardekop paardenhoofd
+0 paardekopnevel Paardenkopnevel
+0 paardemanen paardenmanen
 1 paarden
 1 paardenarts
 1 paardenartsen
@@ -152415,11 +153421,14 @@
 1 paardenbek
 1 paardenbiefstuk
 1 paardenbiefstukken
+1 paardenbijter
+1 paardenbloem
 1 paardenbonen
 1 paardenboon
 1 paardenborstel
 1 paardenborstels
 1 paardenbroden
+1 paardenbrok
 1 paardenbrood
 1 paardendek
 1 paardendeken
@@ -152443,9 +153452,12 @@
 1 paardenhandel
 1 paardenharen
 1 paardenhoef
+1 paardenhoefklaver
 1 paardenhoeven
+1 paardenhoofd
 1 paardenhorzel
 1 paardenhorzels
+1 paardenkam
 1 paardenkenner
 1 paardenkenners
 1 paardenknecht
@@ -152465,6 +153477,8 @@
 1 paardenleugen
 1 paardenleugens
 1 paardenliefhebber
+1 paardenlijf
+1 paardenmanen
 1 paardenmarkt
 1 paardenmarkten
 1 paardenmest
@@ -152478,6 +153492,9 @@
 1 paardenpoot
 1 paardenpost
 1 paardenpoten
+1 paardenprocessie
+1 paardenprocessies
+1 paardenraces
 1 paardenras
 1 paardenrassen
 1 paardenrookvlees
@@ -152510,6 +153527,7 @@
 1 paardenvlees
 1 paardenvlieg
 1 paardenvliegen
+1 paardenvoer
 1 paardenvoet
 1 paardenvoeten
 1 paardenvolk
@@ -153495,6 +154513,7 @@
 1 pappigste
 1 pappot
 1 pappotten
+1 pappus
 1 paprika
 1 paprika's
 1 paps
@@ -153767,6 +154786,7 @@
 1 parasiteerden
 1 parasiteert
 1 parasiteren
+1 parasiterende
 1 parasitisch
 1 parasitische
 1 parasitischer
@@ -153818,6 +154838,7 @@
 1 parelduikers
 1 parelen
 1 parelgerst
+1 parelglans
 1 parelgort
 1 parelgrijs
 1 parelgrijze
@@ -153851,6 +154872,7 @@
 1 parementen
 1 paren
 1 parende
+1 parens
 1 parenthese
 1 parenthesen
 1 parentheses
@@ -154136,6 +155158,8 @@
 1 particulieren
 1 partieel
 1 partij
+1 partij1
+1 partij2
 1 partijaanhang
 1 partijactiviteiten
 1 partijbelang
@@ -154179,6 +155203,7 @@
 1 partijkader
 1 partijkiezen
 1 partijkrant
+1 partijkranten
 1 partijleden
 1 partijleider
 1 partijleiders
@@ -154212,6 +155237,7 @@
 1 partijraadsvergaderingen
 1 partijschap
 1 partijschappen
+1 partijschool
 1 partijsecretaris
 1 partijstandpunt
 1 partijstrubbelingen
@@ -154831,6 +155857,7 @@
 1 pauzetjes
 1 pauzetoets
 1 pavane
+1 pavia
 1 paviljoen
 1 paviljoenen
 1 paviljoens
@@ -155392,6 +156419,8 @@
 1 pensum
 1 pensums
 1 pentaan
+0 pentaeder pentaëder
+0 pentaeders pentaëders
 1 pentagona
 1 pentagonaal
 1 pentagram
@@ -155410,6 +156439,7 @@
 1 penultima
 1 penurie
 1 penvoerende
+1 penwortel
 1 pep
 1 pepdrankje
 1 pepdrankjes
@@ -155730,6 +156760,7 @@
 1 perpetueel
 1 perpetuele
 0 perpetuem perpetuum
+1 perpetuum
 1 perplex
 1 perplexe
 1 perplexer
@@ -156348,6 +157379,7 @@
 1 pezigst
 1 pezigste
 1 pfeiffer
+1 philia
 1 phlegma
 1 phylum
 1 pi
@@ -157322,6 +158354,8 @@
 1 piëtisterij
 1 piëtistisch
 1 pk
+1 pk's
+1 pkh
 1 plaag
 1 plaagal
 1 plaagde
@@ -157360,6 +158394,7 @@
 1 plaatradiator
 1 plaatradiatoren
 1 plaats
+1 plaats/kleur
 1 plaatsaanwijzing
 1 plaatsbaar
 1 plaatsbare
@@ -157466,6 +158501,7 @@
 1 placenta
 1 placenta's
 1 placentale
+1 placentatie
 1 placeren
 1 placet
 1 placht
@@ -158251,6 +159287,8 @@
 1 plenty
 1 plenum
 1 plenzen
+1 pleochroïsch
+1 pleochroïsme
 1 pleonasme
 1 pleonasmen
 1 pleonastisch
@@ -158558,6 +159596,7 @@
 1 plootwol
 1 plop
 1 plot
+1 plotArea
 1 ploten
 1 ploterij
 1 ploterijen
@@ -159200,6 +160239,7 @@
 1 polio
 1 poliomyelitis
 1 poliopatiënten
+1 poliovirus
 1 polis
 1 polisbeeld
 1 polisbestand
@@ -159276,6 +160316,8 @@
 1 politiekogels
 1 politiekordon
 1 politiekordons
+1 politiekorps
+1 politiekorpsen
 1 politiekst
 1 politiemaatregel
 1 politiemaatregelen
@@ -159345,6 +160387,7 @@
 1 pollak
 1 pollakken
 1 pollen
+1 pollenkorrels
 1 pollenseizoen
 1 pollepel
 1 pollepels
@@ -159584,6 +160627,7 @@
 1 ponem
 1 ponen
 1 poneren
+0 ponies pony's
 1 ponjaard
 1 ponjaarden
 1 ponjaards
@@ -159742,6 +160786,8 @@
 1 pootvis
 1 pootziekte
 1 pop
+1 pop)artiesten
+1 pop-art-kunstenaar
 1 pop-elpee
 1 pop-under
 1 pop-up
@@ -159766,6 +160812,7 @@
 1 popes
 1 popfeest
 1 popfestival
+1 popfestivals
 1 popfotografe
 1 popgroep
 1 popi
@@ -160494,6 +161541,8 @@
 1 poëziealbums
 1 poëziebundel
 1 poëziebundels
+1 poëzieliefhebbers
+1 pp
 1 ppm
 1 praai
 1 praaide
@@ -160808,13 +161857,18 @@
 1 predestineerden
 1 predestineert
 1 predestineren
-0 predicaat predikaat
+1 predicaat
+1 predicatie
 1 predicatief
+1 predicaties
+1 predicatieve
+1 predicatieven
+1 predicatiën
 1 prediceren
 1 predictie
 1 predicties
 1 predik
-1 predikaat
+0 predikaat predicaat
 1 predikambt
 1 predikambten
 1 predikant
@@ -160827,12 +161881,9 @@
 1 predikantswoning
 1 predikantswoningen
 1 predikaten
-1 predikatie
 0 predikatief predicatief
-1 predikaties
 0 predikatieve predicatieve
 0 predikatieven predicatieven
-1 predikatiën
 1 predikbeurt
 1 predikbeurten
 1 predikbeurtenblad
@@ -161313,6 +162364,7 @@
 1 prettigs
 1 prettigst
 1 prettigste
+1 prettytable
 1 preutel
 1 preutelaar
 1 preutelaars
@@ -161738,6 +162790,7 @@
 1 principieel
 1 principiële
 1 prins
+1 prins-gemaal
 1 prins-regent
 1 prinsbisdom
 1 prinsbisdommen
@@ -161840,7 +162893,7 @@
 1 prismatisch
 1 prismatische
 1 privaat
-0 privaatdocent privédocent
+1 privaatdocent
 1 privaatdocenten
 1 privaatles
 1 privaatlessen
@@ -161885,6 +162938,7 @@
 1 privé-lessen
 1 privé-secretaresse
 1 privé-secretaresses
+1 privé-vermogen
 1 privédocent
 1 privéleraar
 1 privéleven
@@ -161989,6 +163043,7 @@
 1 procedurekwesties
 1 procedurele
 1 procedures
+0 procedé procédé
 1 procent
 1 procenten
 1 procentpunt
@@ -162087,6 +163142,7 @@
 1 producerend
 1 producerende
 1 producers
+1 producersduo
 1 producerstrio
 1 product
 1 productaanbod
@@ -162618,6 +163674,7 @@
 1 promille
 1 prominent
 1 prominente
+1 prominenten
 1 prominenter
 1 prominentere
 1 prominentia
@@ -162712,6 +163769,7 @@
 1 pronkt
 1 pronkte
 1 pronkten
+1 pronktuinen
 1 pronkziek
 1 pronkzieke
 1 pronkzieker
@@ -163058,6 +164116,7 @@
 1 providentiële
 1 provider
 1 providers
+0 province provincie
 1 provinciaal
 1 provinciaaltje
 1 provinciaaltjes
@@ -163312,6 +164371,7 @@
 1 prutterigste
 1 przewalskipaard
 1 przewalskipaarden
+1 près
 1 présence
 1 psalm
 1 psalmberijming
@@ -164130,6 +165190,7 @@
 1 quaesturen
 1 quaestuur
 1 quafilier
+1 quagga
 1 quaker
 1 quakers
 1 qualifier
@@ -165351,6 +166412,7 @@
 1 rassenprobleem
 1 rassenrelletjes
 1 rassenscheiding
+1 rassensegregatie
 1 rassenstrijd
 1 rassentheorie
 1 rassentheorieën
@@ -165790,6 +166852,7 @@
 1 rechercheurs
 1 recherchevaartuig
 1 recherchevaartuigen
+0 recherpoot rechterpoot
 1 recht
 1 rechtaan
 1 rechtbank
@@ -165840,6 +166903,7 @@
 1 rechteroor
 1 rechteroren
 1 rechterpagina
+1 rechterpoot
 1 rechters
 1 rechters-commissarissen
 1 rechtersambt
@@ -166204,7 +167268,9 @@
 1 reclames
 1 reclameslagzinnen
 1 reclamespot
+1 reclamespotje
 1 reclamespotjes
+1 reclamespots
 1 reclamestunt
 1 reclametechnieken
 1 reclametekenaar
@@ -166596,6 +167662,7 @@
 1 reductionist
 1 reductionisten
 1 reductionistisch
+1 reductor
 1 reduite
 0 reduktie reductie
 0 reduktor reductor
@@ -166675,6 +167742,7 @@
 1 reeuwt
 1 reevlees
 1 reeën
+1 ref
 1 refactie
 1 refectoria
 1 refectorium
@@ -166689,6 +167757,7 @@
 1 referees
 1 referein
 1 refereinen
+1 references
 1 referenda
 1 referendaris
 1 referendarissen
@@ -167722,6 +168791,7 @@
 1 relaxatie
 1 relaxed
 1 relaxen
+1 relaxt
 1 relaxte
 1 relay
 1 relayeer
@@ -167965,6 +169035,7 @@
 1 renen
 1 renet
 1 renetten
+1 rengalop
 1 renminbi
 1 rennen
 1 rennend
@@ -168806,6 +169877,7 @@
 1 reukorgaan
 1 reukorganen
 1 reukverdrijver
+1 reukvermogen
 1 reukwater
 1 reukwerk
 1 reukzeep
@@ -168948,6 +170020,7 @@
 1 revierden
 1 revieren
 1 reviert
+1 review
 1 revindicatie
 1 revindicaties
 1 reviseer
@@ -169066,6 +170139,7 @@
 0 rhetorisch retorisch
 0 rhetorische retorisch
 0 rheuma reuma
+1 rhinophyma
 1 rhizoom
 1 riant
 1 riante
@@ -169129,6 +170203,7 @@
 1 richt
 1 richtbaak
 1 richtbaken
+0 richte richtte
 1 richten
 1 richter
 1 richters
@@ -169208,6 +170283,7 @@
 1 ridderstand
 1 riddert
 1 riddertijd
+1 ridderuitrusting
 1 ridderwezen
 1 ridderwoord
 1 ridderzaal
@@ -169301,6 +170377,7 @@
 1 rif
 1 riffen
 1 right
+1 right:10
 1 rigide
 1 rigiditeit
 0 rigoereus rigoureus
@@ -169600,12 +170677,15 @@
 1 rijpe
 1 rijpelijk
 1 rijpen
+1 rijpende
 1 rijper
 1 rijpere
 1 rijpheid
 1 rijping
 1 rijpingsjaren
+1 rijpingsperiode
 1 rijpingsproces
+1 rijpingstijd
 1 rijplezier
 1 rijproef
 1 rijproeven
@@ -169651,6 +170731,7 @@
 1 rijstevla
 1 rijstevlaas
 1 rijstewater
+1 rijstgerechten
 1 rijstijl
 1 rijstkorrel
 1 rijstkorrels
@@ -169682,6 +170763,9 @@
 1 rijsttafelen
 1 rijsttafels
 1 rijsttafelt
+0 rijstterassen rijstterrassen
+1 rijstterrassen
+1 rijstterrassen0 druide druïde
 1 rijstveld
 1 rijstvelden
 1 rijstvla
@@ -169777,6 +170861,7 @@
 1 riks
 1 riksen
 1 riksja
+1 riksja's
 1 ril
 1 rilde
 1 rilden
@@ -170151,6 +171236,7 @@
 1 rivierstand
 1 rivierstanden
 1 rivierstroomrug
+1 riviersystemen
 1 riviertje
 1 riviertjes
 1 riviervaart
@@ -170866,6 +171952,7 @@
 1 romanschrijver
 1 romanschrijvers
 1 romanstructuur
+1 romantechnieken
 1 romantica
 1 romantici
 1 romanticus
@@ -171419,6 +172506,7 @@
 1 roodblindheid
 1 roodbloedig
 1 roodbloedige
+1 roodbloeiende
 1 roodbont
 1 roodbonte
 1 roodbonter
@@ -171427,12 +172515,14 @@
 1 roodbontste
 1 roodborstje
 1 roodborstjes
+1 roodborsttapuit
 1 roodbruin
 1 roodbruine
 1 roodbruiner
 1 roodbruinere
 1 roodbruinst
 1 roodbruinste
+1 roodgekleurd
 1 roodgeruit
 1 roodgeruite
 1 roodgieter
@@ -171724,16 +172814,25 @@
 1 ropten
 1 roquefort
 1 ros
+1 rosacea
 1 rosachtig
 1 rosachtige
+1 rosaria
 1 rosarium
 1 rosariums
+1 rosasiet
 1 rosbief
 1 rosbiefs
+1 roscoeliet
+1 roseliet
+1 rosella
+1 roselle
 1 rosgeel
 1 rosgele
+1 rosgrijze
 1 rosharig
 1 rosharige
+1 roshi
 1 roskam
 1 roskamde
 1 roskamden
@@ -171854,6 +172953,7 @@
 1 rotsvaster
 1 rotswand
 1 rotswanden
+1 rotswoning
 1 rotte
 1 rotten
 1 rottend
@@ -172153,6 +173253,7 @@
 1 rubberwaarden
 1 rubberzolen
 1 rubberzool
+1 rubetra
 1 rubricator
 1 rubriceer
 1 rubriceerde
@@ -172180,6 +173281,7 @@
 1 rudimentaire
 1 rudimenten
 1 rufines
+1 rufocanus
 1 rug
 1 rugblessure
 1 rugby
@@ -172360,6 +173462,7 @@
 1 ruimtecapsule
 1 ruimtefiguur
 1 ruimtegebrek
+1 ruimtegroep
 1 ruimtelaboratorium
 1 ruimtelijk
 1 ruimtelijke
@@ -172380,17 +173483,23 @@
 1 ruimtesondes
 1 ruimtestation
 1 ruimtestations
+1 ruimtetoerisme
 1 ruimtevaarder
 1 ruimtevaarders
 1 ruimtevaart
+1 ruimtevaartbureau
 1 ruimtevaartcentra
 1 ruimtevaartcentrum
+1 ruimtevaartorganisatie
 1 ruimtevaartprogramma
+1 ruimtevaartproject
 1 ruimtevaartuig
 1 ruimtevaartuigen
+1 ruimteveer
 1 ruimteverdeling
 1 ruimteveren
 1 ruimtevlucht
+1 ruimtevluchten
 1 ruimtevrees
 1 ruimtewandeling
 1 ruimtewapen
@@ -172767,6 +173876,7 @@
 1 röntgenbuis
 1 röntgende
 1 röntgenden
+1 röntgendiffractie
 1 röntgenen
 1 röntgenfoto
 1 röntgenfoto's
@@ -172783,6 +173893,7 @@
 1 rösti
 1 rücksichtslos
 1 s
+1 s-Hertogenbosch
 1 sa
 1 saai
 1 saaie
@@ -173155,6 +174266,7 @@
 1 samenbind
 1 samenbinden
 1 samenbindend
+1 samenbindende
 1 samenbindt
 1 samenblijven
 1 samenbond
@@ -173808,6 +174920,7 @@
 1 satirischer
 1 satisfactie
 1 satisfacties
+1 sativa
 1 satraap
 1 satrapen
 1 satrapie
@@ -174898,6 +176011,7 @@
 1 scheepsmakelaars
 1 scheepsmakelaren
 1 scheepsmaker
+1 scheepsmast
 1 scheepsmodel
 1 scheepsmodellen
 1 scheepsmotor
@@ -174935,6 +176049,7 @@
 1 scheepswerf
 1 scheepswerktuigkundige
 1 scheepswerven
+1 scheepswrak
 1 scheept
 1 scheepte
 1 scheepten
@@ -175035,6 +176150,7 @@
 1 scheidingslijn
 1 scheidingslijnen
 1 scheidingsprocedure
+1 scheidingspunten
 1 scheidingsschakelaar
 1 scheidingsschakelaars
 1 scheidingstransformator
@@ -175139,6 +176255,7 @@
 1 schelpdier
 1 schelpdieren
 1 schelpen
+1 schelpenfauna's
 1 schelpenpad
 1 schelpenpaden
 1 schelpenvisser
@@ -175262,6 +176379,7 @@
 1 schenkeltjes
 1 schenkelvlees
 1 schenken
+1 schenkende
 1 schenker
 1 schenkers
 1 schenking
@@ -175830,7 +176948,7 @@
 1 schilderschool
 1 schildersezel
 1 schildersezels
-0 schildersloopbaan schilderloopbaan
+1 schildersloopbaan
 1 schildersmossel
 1 schildersmosselen
 1 schildersmossels
@@ -176014,6 +177132,7 @@
 1 schipponden
 1 schipsluis
 1 schipsluizen
+0 schipwrak scheepswrak
 1 schisma
 1 schisma's
 1 schismata
@@ -176192,6 +177311,7 @@
 1 schofterigere
 1 schofterigst
 1 schofterigste
+1 schofthoogte
 1 schofturen
 1 schoftuur
 1 schok
@@ -177557,6 +178677,7 @@
 1 schubt
 1 schubvleugelig
 1 schubvleugelige
+1 schubvleugeligen
 1 schuchter
 1 schuchterder
 1 schuchtere
@@ -178365,6 +179486,7 @@
 1 sekstoerisme
 1 sekstoeristen
 1 seksualiseren
+1 seksualisme
 1 seksualiteit
 1 seksueel
 1 seksueels
@@ -178913,6 +180035,7 @@
 1 sforzando
 1 sfumato
 1 shabby
+0 shaduwzijde schaduwzijde
 1 shag
 1 shake
 1 shaken
@@ -179476,6 +180599,7 @@
 1 sistrum
 1 sistrums
 1 sitar
+1 sitcom
 1 sitdownstaking
 1 site
 1 sites
@@ -179486,6 +180610,7 @@
 1 sitspapier
 1 situ
 1 situatie
+0 situatie's situaties
 1 situatief
 1 situatiekaart
 1 situatiekaarten
@@ -179593,6 +180718,7 @@
 1 sjiiet
 1 sjiieten
 1 sjiiten
+1 sjiitisch
 1 sjiitische
 1 sjilp
 1 sjilpen
@@ -180547,6 +181673,8 @@
 1 slidderden
 1 slidderen
 1 sliddert
+1 slidegitaar
+1 slidegitarist
 1 sliding
 1 slidings
 1 sliep
@@ -181273,6 +182401,7 @@
 1 smaakloze
 1 smaaklozer
 1 smaakmaker
+1 smaakmakers
 1 smaakorgaan
 1 smaakorganen
 1 smaakstof
@@ -182100,6 +183229,7 @@
 1 snelheidsremmer
 1 snelheidsremmers
 1 snelheidsverhoging
+1 snelheidsverlies
 1 snelheidsverschil
 1 snelheidsverschillen
 1 snelheidswedstrijden
@@ -182655,9 +183785,9 @@
 1 sociaal-kritisch
 1 sociaal-kritische
 0 sociaaldemocraat sociaal-democraat
-0 sociaaldemocraten sociaal-democraten
-0 sociaaldemocratie sociaal-democratie
-0 sociaaldemocratisch sociaal-democratisch
+1 sociaaldemocraten
+1 sociaaldemocratie
+1 sociaaldemocratisch
 0 sociaaldemocratische sociaal-democratische
 1 sociaalst
 1 sociabel
@@ -183078,6 +184208,7 @@
 1 solodebuut
 1 soloecisme
 1 soloecismen
+1 soloharpist
 0 soloinstrument solo-instrument
 1 soloklas
 1 soloklassen
@@ -183752,6 +184883,7 @@
 1 spectaculair
 1 spectaculaire
 1 spectaculairs
+0 spectakel spektakel
 1 spectator
 1 spectatoriaal
 1 spectatoriale
@@ -183833,6 +184965,7 @@
 1 speeldoosje
 1 speeldozen
 1 speelduivel
+1 speelduur
 1 speelfilm
 1 speelfilms
 1 speelgeld
@@ -183841,8 +184974,10 @@
 1 speelgenoten
 1 speelgoed
 1 speelgoederen
+1 speelgoedfabrikant
 1 speelgoedje
 1 speelgoedjes
+1 speelgoedmodellen
 1 speelgoedwinkel
 1 speelgoedwinkels
 1 speelhal
@@ -184456,6 +185591,7 @@
 1 spijkervast
 1 spijkervaste
 1 spijkervaster
+1 spijkervormige
 1 spijkolie
 1 spijl
 1 spijlen
@@ -185162,6 +186298,7 @@
 1 spoorwegmaatschappijen
 1 spoorwegmagnaat
 1 spoorwegmagnaten
+1 spoorwegmedewerkers
 1 spoorwegnet
 1 spoorwegnetten
 1 spoorwegonderneming
@@ -185244,6 +186381,7 @@
 1 sporters
 1 sportevenement
 1 sportevenementen
+1 sportfederatie
 1 sportfeest
 1 sportfeesten
 1 sportgebeuren
@@ -185280,9 +186418,12 @@
 1 sportmens
 1 sportmensen
 1 sportnieuws
+1 sportpaard
+1 sportpaarden
 1 sportpak
 1 sportpakken
 1 sportpark
+1 sportpony's
 1 sportprogramma
 1 sportprogramma's
 1 sportpsychologie
@@ -185672,6 +186813,7 @@
 1 springschermen
 1 springslot
 1 springsloten
+1 springsport
 1 springstof
 1 springstoffen
 1 springstok
@@ -185679,6 +186821,7 @@
 1 springt
 1 springtij
 1 springtijen
+1 springtoestel
 1 springtouw
 1 springtouwen
 1 springveer
@@ -186170,6 +187313,7 @@
 1 staatshoofden
 1 staatsie
 1 staatsiebezoek
+1 staatsiebezoeken
 1 staatsiedegen
 1 staatsiedegens
 1 staatsiefoto
@@ -187085,6 +188229,7 @@
 1 starretjes
 1 starst
 1 start
+1 start:1960
 1 startaccu
 1 startbaan
 1 startbanen
@@ -188230,6 +189375,7 @@
 1 sterkten
 1 sterktes
 1 sterkwater
+0 sterlicht sterrenlicht
 1 sterling
 1 sterlingblok
 1 stern
@@ -189115,6 +190261,7 @@
 1 stokkerigheid
 1 stokkerigst
 1 stokkerigste
+1 stokmaat
 1 stokoud
 1 stokoude
 1 stokpaard
@@ -190312,6 +191459,7 @@
 1 streepjesgoed
 1 streepjeslijn
 1 streepjespatroon
+1 streepkleur
 1 streeplijn
 1 streeplijnen
 1 streept
@@ -190319,6 +191467,7 @@
 1 streepten
 1 streepvormig
 1 streepvormige
+1 streepzaad
 1 strek
 1 strekapparaat
 1 strekdam
@@ -191305,6 +192454,7 @@
 1 studiootjes
 1 studiosi
 1 studiosus
+1 studiowerk
 1 studium
 1 studiën
 1 stuf
@@ -191328,6 +192478,7 @@
 1 stuiflawinen
 1 stuiflawines
 1 stuifmeel
+1 stuifmeelkorrels
 1 stuifsel
 1 stuifsneeuw
 1 stuift
@@ -191883,6 +193034,7 @@
 1 subsidiëring
 1 subsistentie
 1 subsonisch
+1 subsp
 1 subspecialisme
 1 subspecialismen
 1 subsponsor
@@ -192308,6 +193460,7 @@
 1 sumo
 1 sup
 1 super
+1 super-de-luxe
 1 superaanbieding
 1 superaanbiedingen
 1 superarbiter
@@ -192370,6 +193523,7 @@
 1 supermilitairen
 1 supermodern
 1 supermoderne
+1 superorde
 1 superordo
 1 superoxide
 1 superplie
@@ -192448,6 +193602,7 @@
 1 suprematie
 1 suprematisme
 1 suprematistisch
+1 sur
 0 sur-realisme surrealisme
 0 surceance surseance
 1 surf
@@ -192681,6 +193836,7 @@
 1 synagogale
 1 synagoge
 1 synagogen
+0 synagoges synagogen
 1 synagoog
 1 synandrisch
 1 synandrische
@@ -193174,6 +194330,7 @@
 1 tabakskervers
 1 tabakslucht
 1 tabaksmonopolie
+1 tabaksmozaïekvirus
 1 tabaksonderneming
 1 tabaksondernemingen
 1 tabaksoogst
@@ -193430,6 +194587,7 @@
 1 tafeltjes
 1 tafeltoestel
 1 tafeltoestellen
+1 tafelvormige
 1 tafelwater
 1 tafelwijn
 1 tafelwijnen
@@ -193662,6 +194820,8 @@
 1 tamelijke
 1 tamheid
 1 tamme
+1 tamme kastanje
+0 tammekastanje tamme_kastanje
 1 tammer
 1 tamp
 1 tampen
@@ -193996,6 +195156,7 @@
 1 tarot
 1 tarotkaart
 1 tarotkaarten
+1 tarpan
 1 tarra
 1 tarrarekening
 1 tarreer
@@ -194482,6 +195643,7 @@
 1 tegenbetoog
 1 tegenbevel
 1 tegenbevelen
+1 tegenbeweging
 1 tegenbewijs
 1 tegenbewijzen
 1 tegenbezoek
@@ -194611,6 +195773,7 @@
 1 tegenmacht
 1 tegenmaken
 1 tegenmijnen
+0 tegenmoet tegemoet
 1 tegennatuurlijk
 1 tegennatuurlijke
 1 tegennatuurlijker
@@ -194627,7 +195790,9 @@
 1 tegenorder
 1 tegenorders
 1 tegenover
+1 tegenover elkaar
 1 tegenoverdracht
+0 tegenoverelkaar tegenover_elkaar
 1 tegenovergelegen
 1 tegenovergesteld
 1 tegenovergestelde
@@ -194787,6 +195952,7 @@
 1 tegenvoorstel
 1 tegenvoorstellen
 1 tegenvraag
+0 tegenvuur tegengas
 1 tegenwaarde
 1 tegenweer
 1 tegenwerk
@@ -196676,6 +197842,7 @@
 1 testosteron
 1 testosterongehalte
 1 testosteronproductie
+1 testpersonen
 1 testpiloot
 1 testprocedure
 1 testprocedures
@@ -196712,6 +197879,8 @@
 1 tetanusvaccins
 1 tetra
 1 tetracycline
+0 tetraeder tetraëder
+0 tetraeders tetraëders
 1 tetralogie
 1 tetralogieën
 1 tetraploïd
@@ -196884,6 +198053,7 @@
 1 theaterdirecteurs
 1 theaterfestival
 1 theaterfestivals
+1 theatergezelschappen
 1 theatergroep
 1 theaterheld
 1 theaterhelden
@@ -197679,6 +198849,10 @@
 1 tijdtafel
 1 tijdtafels
 1 tijdvak
+1 tijdvak1
+1 tijdvak2
+1 tijdvak3
+1 tijdvak4
 1 tijdvakken
 1 tijdverbetering
 1 tijdverbeteringen
@@ -197790,6 +198964,8 @@
 1 tilde
 1 tilden
 1 tildes
+1 till:2010
+1 till:end
 1 tillen
 1 tillend
 1 tilt
@@ -197798,6 +198974,7 @@
 1 timbres
 1 time
 1 time-out
+1 timeline
 1 timen
 1 timer
 1 times
@@ -197867,6 +199044,7 @@
 1 tinctuur
 1 tinerts
 1 tinfoelie
+1 tinfolie
 1 tingel
 1 tingelde
 1 tingelden
@@ -198042,6 +199220,8 @@
 1 titelhouders
 1 titelhoudster
 1 titelkaart
+1 titelloze
+1 titelnummer
 1 titelpagina
 1 titelpagina's
 1 titelplaat
@@ -199278,6 +200458,7 @@
 1 toetjes
 1 toetrad
 1 toetreden
+1 toetredend
 1 toetreding
 1 toetredingen
 1 toetreed
@@ -199299,6 +200480,7 @@
 1 toetsencombinatie
 1 toetsencombinaties
 1 toetsend
+1 toetsenist
 1 toetser
 1 toetsers
 1 toetsfunctie
@@ -200026,6 +201208,7 @@
 1 tootschoenen
 1 top
 1 top-down
+1 top:10
 1 topaas
 1 topambtenaar
 1 topambtenaren
@@ -201473,6 +202656,7 @@
 1 trekvaarten
 1 trekvastheid
 1 trekveer
+1 trekvermogen
 1 trekvis
 1 trekvissen
 1 trekvogel
@@ -202613,6 +203797,7 @@
 1 tuinliefhebbers
 1 tuinlui
 1 tuinman
+1 tuinmannen
 1 tuinmanswoning
 1 tuinmanswoningen
 1 tuinmeubelen
@@ -202847,6 +204032,7 @@
 1 turnster
 1 turnsters
 1 turnt
+1 turntoestel
 1 turnvereniging
 1 turnverenigingen
 1 turquoise
@@ -202912,6 +204098,7 @@
 1 tussenlagen
 1 tussenlanding
 1 tussenlandingen
+1 tussenletter
 1 tussenliggend
 1 tussenliggende
 1 tussenmaaltijd
@@ -203051,6 +204238,7 @@
 1 twaalfduizend
 1 twaalfduizendste
 1 twaalfhonderd
+1 twaalfjaarlijkse
 1 twaalfjarig
 1 twaalfjarige
 1 twaalfjarigen
@@ -203288,6 +204476,7 @@
 1 tweevlakshoeken
 1 tweevleugelig
 1 tweevleugelige
+1 tweevleugeligen
 1 tweevoetig
 1 tweevoetige
 1 tweevormig
@@ -203463,6 +204652,7 @@
 1 tympaan
 1 typ
 1 type
+1 type:adm2nd
 1 typecasting
 1 typediploma
 1 typeer
@@ -203473,6 +204663,8 @@
 1 typefouten
 1 typekamer
 1 typelint
+1 typelocatie
+1 typelocaties
 1 typemachine
 1 typemachines
 1 typemachineschrift
@@ -203531,6 +204723,7 @@
 1 té
 1 tête-à-tête
 1 tête-à-têtes
+1 tölt
 1 u
 1 uchtend
 1 uchtenden
@@ -205779,6 +206972,7 @@
 1 uitmond
 1 uitmondde
 1 uitmondden
+0 uitmonde uitmondde
 1 uitmonden
 1 uitmondend
 1 uitmonding
@@ -207461,6 +208655,7 @@
 1 uniseks
 1 unisono
 1 unit
+1 unit:year
 1 unitair
 1 unitaire
 1 unitarisme
@@ -207502,6 +208697,7 @@
 1 unstertje
 1 unstertjes
 1 unverfroren
+1 up
 1 up-tempo
 1 up-to-date
 1 upazila
@@ -207898,6 +209094,7 @@
 1 vaatwasmachines
 1 vaatwasser
 1 vaatwerk
+1 vaatziekten
 1 vacant
 1 vacante
 0 vacantie vakantie
@@ -208318,6 +209515,8 @@
 1 valdeuren
 1 vale
 1 valentie
+1 valentieband
+1 valentiebanden
 1 valenties
 1 valer
 1 valere
@@ -208872,6 +210071,7 @@
 1 vastenwetten
 1 vaster
 1 vastere
+1 vastestoffysica
 1 vastgebakken
 1 vastgebeten
 1 vastgebleven
@@ -209457,6 +210657,8 @@
 1 veenkolonie
 1 veenkolonies
 1 veenkoloniën
+1 veenlijk
+1 veenlijken
 1 veenmarkt
 1 veenmol
 1 veenmollen
@@ -209612,6 +210814,7 @@
 1 veilers
 1 veilheid
 1 veilig
+1 veilig stellen
 1 veilige
 1 veiliger
 1 veiligere
@@ -209683,6 +210886,7 @@
 1 veiligheidswet
 1 veiligst
 1 veiligste
+0 veiligstellen veilig_stellen
 1 veiligstelling
 1 veiling
 1 veilingcatalogus
@@ -209797,6 +211001,7 @@
 1 veldslee
 1 veldsleeën
 1 veldspaat
+1 veldspaten
 1 veldsterkte
 1 veldteam
 1 veldteams
@@ -210009,6 +211214,7 @@
 1 ventster
 1 ventsters
 1 ventte
+1 venture
 1 ventweg
 1 venusberg
 1 venusbergen
@@ -210850,10 +212056,12 @@
 1 verdedigingslinies
 1 verdedigingsmiddel
 1 verdedigingsmiddelen
+1 verdedigingsmuur
 1 verdedigingsoorlog
 1 verdedigingsoorlogen
 1 verdedigingsplicht
 1 verdedigingsrecht
+1 verdedigingssysteem
 1 verdedigingswapen
 1 verdedigingswapenen
 1 verdedigingswapens
@@ -212795,6 +214003,7 @@
 1 verkeersgevaarlijk
 1 verkeersgevaarlijke
 1 verkeersinspectie
+1 verkeersknooppunt
 1 verkeersleider
 1 verkeersleiders
 1 verkeersleiding
@@ -213739,6 +214948,8 @@
 1 verlieten
 1 verlieven
 1 verliezen
+1 verliezen1
+1 verliezen2
 1 verliezende
 1 verliezer
 1 verliezers
@@ -214706,6 +215917,7 @@
 1 verplaatsbaarst
 1 verplaatsbare
 1 verplaatsen
+1 verplaatsende
 1 verplaatsing
 1 verplaatsingen
 1 verplaatsingskosten
@@ -218145,6 +219357,7 @@
 1 verzwonden
 1 verzwoor
 1 verzworen
+1 vesicaria
 1 vesper
 1 vesperdienst
 1 vesperklok
@@ -218201,6 +219414,7 @@
 1 vestingoorlog
 1 vestingoorlogen
 1 vestingstad
+1 vestingstelsel
 1 vestingstraf
 1 vestingwallen
 1 vestingwerk
@@ -218229,6 +219443,8 @@
 1 vetbladen
 1 vetbuik
 1 vetbuiken
+1 vetcellen
+1 vetdistributie
 1 vete
 1 veten
 1 veter
@@ -218376,6 +219592,7 @@
 1 vezelt
 1 vezeltje
 1 vezeltjes
+1 vezelverwerkende
 1 vezelwortel
 1 vezelwortels
 1 vezen
@@ -218783,6 +220000,7 @@
 1 vijltjes
 1 vijs
 1 vijst
+0 vijtien vijftien
 1 vijven
 1 vijver
 1 vijvers
@@ -219050,6 +220268,7 @@
 1 vioollessenaar
 1 vioollessenaars
 1 vioolmuziek
+1 vioolpedagoge
 1 vioolsleutel
 1 vioolsleutels
 1 vioolsnaar
@@ -219066,6 +220285,7 @@
 1 vips
 1 viraal
 1 virago
+1 virale
 1 virginaal
 1 virginiteit
 1 virgo
@@ -219298,6 +220518,7 @@
 1 vissersschuit
 1 vissersschuiten
 1 visserssloep
+1 vissersvloot
 1 vissersvolk
 1 vissersvrouw
 1 vissersvrouwen
@@ -220037,6 +221258,7 @@
 1 vliegtechniek
 1 vliegterrein
 1 vliegterreinen
+1 vliegtijd
 1 vliegtocht
 1 vliegtochten
 1 vliegtochtje
@@ -220395,6 +221617,7 @@
 1 vluchtelingenkampen
 1 vluchtelingenprobleem
 1 vluchten
+1 vluchtgangen
 1 vluchtgedrag
 1 vluchtgegevens
 1 vluchthaven
@@ -220411,6 +221634,7 @@
 1 vluchtleider
 1 vluchtleiders
 1 vluchtleiding
+1 vluchtleidingscentrum
 1 vluchtluik
 1 vluchtluiken
 1 vluchtmogelijkheid
@@ -220553,6 +221777,7 @@
 1 voedingsbond
 1 voedingsbonden
 1 voedingsbron
+1 voedingsdeskundigen
 1 voedingsgewas
 1 voedingsgewassen
 1 voedingsgewoonte
@@ -220597,9 +221822,11 @@
 1 voedselopname
 1 voedselpakket
 1 voedselparadijs
+1 voedselprijzen
 1 voedselprobleem
 1 voedselproduct
 1 voedselproducten
+1 voedselproductie
 1 voedselschaarste
 1 voedselstroom
 1 voedseltransport
@@ -220729,6 +221956,7 @@
 1 voetballen
 1 voetballende
 1 voetballer
+1 voetballers
 1 voetballiefhebbers
 1 voetbalmatch
 1 voetbalmatchen
@@ -220754,6 +221982,7 @@
 1 voetbaluitslagen
 1 voetbalvandalen
 1 voetbalvandalisme
+1 voetbalvariant
 1 voetbalveld
 1 voetbalvelden
 1 voetbalvereniging
@@ -221671,7 +222900,9 @@
 1 voogdijvereniging
 1 voois
 1 vooizen
+0 voomalig voormalig
 1 voor
+0 voor-christelijke voorchristelijke
 1 voor-de-gek-houderij
 1 vooraan
 1 vooraanduiding
@@ -222308,6 +223539,7 @@
 1 voorkeursplaats
 1 voorkeursplaatsen
 1 voorkeursrecht
+0 voorkeursstemmen voorkeurstemmen
 1 voorkeurstem
 1 voorkeurstemmen
 1 voorkeurtarief
@@ -222317,6 +223549,7 @@
 1 voorkeuze
 1 voorkind
 1 voorkinderen
+1 voorknie
 1 voorkocht
 1 voorkom
 1 voorkomen
@@ -223083,6 +224316,7 @@
 1 voortplanten
 1 voortplanting
 1 voortplantingsdrang
+1 voortplantingseizoen
 1 voortplantingsgedrag
 1 voortplantingsketen
 1 voortplantingsorgaan
@@ -223843,6 +225077,7 @@
 1 vouwfiets
 1 vouwing
 1 vouwingen
+1 vouwkano's
 1 vouwlijn
 1 vouwlijnen
 1 vouwmachine
@@ -224636,6 +225871,7 @@
 1 vrijwieler
 1 vrijwielers
 1 vrijwielt
+0 vrijwillgers vrijwilligers
 1 vrijwillig
 1 vrijwillige
 1 vrijwilliger
@@ -224872,6 +226108,7 @@
 1 vrouwspersoon
 1 vrouwtje
 1 vrouwtjes
+1 vrouwtjespaard
 1 vrouwvolk
 1 vrouwvriendelijk
 1 vrouwvriendelijke
@@ -224901,6 +226138,7 @@
 1 vruchtbare
 1 vruchtbeginsel
 1 vruchtbeginsels
+1 vruchtbladen
 1 vruchtbodem
 1 vruchtbodems
 1 vruchtbomen
@@ -224943,6 +226181,8 @@
 1 vruchtjes
 1 vruchtknop
 1 vruchtknoppen
+1 vruchtlichaam
+1 vruchtpluis
 1 vruchtvlees
 1 vruchtvorming
 1 vruchtwater
@@ -225091,6 +226331,7 @@
 1 vulhaard
 1 vulhaarden
 1 vulkaan
+1 vulkaangroep
 1 vulkachel
 1 vulkachels
 1 vulkanen
@@ -225103,6 +226344,7 @@
 1 vulkaniseert
 1 vulkaniseren
 1 vulkanisme
+1 vulkanologie
 1 vulkanologisch
 1 vulkanoloog
 1 vulleiding
@@ -226479,6 +227721,7 @@
 1 warkoppen
 1 warkruid
 1 warm
+1 warmbloed
 1 warmbloedig
 1 warmbloedige
 1 warmbloediger
@@ -226967,6 +228210,7 @@
 1 watermolen
 1 watermolens
 1 watermonster
+1 waternaam
 1 waternevel
 0 waterniveau's waterniveaus
 1 waterniveaus
@@ -227080,6 +228324,7 @@
 1 watersnippen
 1 watersnood
 1 watersnoodramp
+1 watersnuffel
 1 waterspiegel
 1 waterspin
 1 waterspinnen
@@ -229183,7 +230428,7 @@
 1 weledelgestrenge
 1 weledelzeergeleerd
 1 weledelzeergeleerde
-0 weleens wel eens
+0 weleens wel eens wel_eens
 1 weleer
 1 weleerwaard
 1 weleerwaarde
@@ -229428,6 +230673,7 @@
 1 wenkbrauwbogen
 1 wenkbrauwboog
 1 wenkbrauwen
+1 wenkbrauwstreep
 1 wenken
 1 wenkt
 1 wenkte
@@ -229473,7 +230719,7 @@
 1 wepel
 1 wepele
 1 werd
-0 werde werd
+0 werde werd werden
 1 werden
 0 werdt werd
 1 wereld
@@ -229577,6 +230823,7 @@
 1 wereldreizen
 1 wereldreiziger
 1 wereldreizigers
+1 wereldreizigster
 1 wereldreligie
 1 wereldrevolutie
 1 wereldrevoluties
@@ -229607,6 +230854,7 @@
 1 wereldtitel
 1 wereldtoneel
 1 wereldtop
+1 wereldtour
 1 werelduurrecord
 1 wereldverbeteraars
 1 wereldverbetering
@@ -230380,6 +231628,9 @@
 1 wicketkeeper
 1 wickets
 1 width
+1 width:1
+1 width:2
+1 width:250
 1 width:250px
 1 wie
 1 wiebel
@@ -230740,6 +231991,7 @@
 1 wijnhuis
 1 wijnhuizen
 1 wijnimporteur
+1 wijnindustrie
 1 wijnjaar
 1 wijnjaren
 1 wijnkaart
@@ -231407,6 +232659,7 @@
 1 winterbed
 1 winterbedden
 1 winterbedding
+1 winterbedevaart
 1 wintercollectie
 1 wintercollecties
 1 wintercursus
@@ -231729,6 +232982,7 @@
 1 witachtigste
 1 witbandzeearend
 1 witbier
+1 witbloeiende
 1 witbloemig
 1 witbloemige
 1 witboek
@@ -231809,11 +233063,13 @@
 1 witvoeten
 1 witwasoperatie
 1 witwasoperaties
+1 witwassen
 1 witwerk
 1 witwerker
 1 witwerkers
 1 witzijden
 1 wiu
+1 wl
 1 wodka
 1 wodkafles
 1 woed
@@ -231885,6 +233141,9 @@
 1 woeligste
 1 woeling
 1 woelingen
+1 woelmuis
+1 woelmuisachtigen
+1 woelmuizen
 1 woelt
 1 woelwater
 1 woelwaters
@@ -231957,6 +233216,7 @@
 1 wolbereiding
 1 wolbomen
 1 wolboom
+1 wold
 1 wolde
 1 woldragend
 1 woldragende
@@ -232096,6 +233356,7 @@
 1 wolzak
 1 wolzakken
 1 womanizer
+1 women's
 1 won
 1 wond
 1 wondde
@@ -233031,6 +234292,7 @@
 1 yuppie
 1 yuppieachtig
 1 yuppies
+1 yyyy
 1 z
 0 z'n zijn
 1 zaad
@@ -233044,8 +234306,11 @@
 1 zaaddragende
 1 zaadhandel
 1 zaadhandels
+1 zaadhok
+1 zaadhokken
 1 zaadhuisje
 1 zaadhuisjes
+1 zaadknoppen
 1 zaadkorrel
 1 zaadkorrels
 1 zaadleider
@@ -233056,6 +234321,7 @@
 1 zaadloze
 1 zaadolie
 1 zaadpacht
+1 zaadplanten
 1 zaadpluis
 1 zaadvast
 1 zaadvaste
@@ -233603,6 +234869,7 @@
 1 zandschuit
 1 zandsteen
 1 zandsteengroeve
+1 zandstenen
 1 zandstorm
 1 zandstralen
 1 zandstraler
@@ -233651,11 +234918,13 @@
 1 zangbodems
 1 zangboek
 1 zangboeken
+1 zangcarrière
 1 zangcursus
 1 zangcursussen
 1 zangdiensten
 1 zangen
 1 zanger
+1 zanger/schrijver
 1 zangerachtigen
 1 zangeres
 1 zangeressen
@@ -233703,6 +234972,7 @@
 1 zangstemmen
 1 zangstuk
 1 zangstukken
+1 zangtalenten
 1 zangtekst
 1 zangteksten
 1 zanguitvoering
@@ -233733,6 +235003,7 @@
 1 zappen
 1 zapte
 1 zarzuela
+1 zarzuela's
 1 zat
 1 zate
 1 zaten
@@ -233958,6 +235229,7 @@
 1 zeegrondels
 1 zeehaan
 1 zeehandel
+1 zeehandelsroutes
 1 zeehanen
 1 zeehaven
 1 zeehavens
@@ -234103,6 +235375,7 @@
 1 zeepbellen
 1 zeepbomen
 1 zeepboom
+1 zeepboomfamilie
 1 zeepdoos
 1 zeepdozen
 1 zeepfabriek
@@ -234549,6 +235822,7 @@
 1 zelfbeschuldigingen
 1 zelfbestuiving
 1 zelfbestuur
+1 zelfbevestiging
 1 zelfbevlekking
 1 zelfbevrediging
 1 zelfbevruchting
@@ -236762,6 +238036,7 @@
 1 zoogster
 1 zoogsters
 1 zoogt
+1 zoogtijd
 1 zoogzuster
 1 zoogzusters
 1 zooi
@@ -236779,6 +238054,7 @@
 1 zooltje
 1 zooltjes
 1 zoom
+1 zoom:14
 1 zoomde
 1 zoomden
 1 zoomen
@@ -237497,6 +238773,7 @@
 1 zwaarhoofdigste
 1 zwaarlijvig
 1 zwaarlijvige
+1 zwaarlijvigen
 1 zwaarlijviger
 1 zwaarlijvigere
 1 zwaarlijvigheid
@@ -238397,9 +239674,12 @@
 0  -
 1 °
 1 °C
+1 ¾
 1 Álvaro
 1 Å
 1 Århus
+1 Égletons
+1 Émilie
 1 Öcalan
 1 ×
 1 Übach-Palenberg
@@ -238418,369 +239698,5 @@
 1 öre
 1 ús
 1 überhaupt
-1 opofferende
-1 schenkende
-1 samenbindende
-1 kernkrachten
-1 nestverzorging
-1 philia
-0 shaduwzijde schaduwzijde
-1 schaduwzijde
-1 Petchabun
-1 Centraal-Thailand
-0 – -
-1 -
-1 Magelang
-1 Haarlemse
-1 Sascha
-0 Limburgische Limburgse
-1 Limburgse
-1 scheepsmast
-1 paalwerpen
-1 Highland
-1 paalklimmen
-1 paalkampeerterreinen
-1 paalkampeerterrein
-1 kampeerterreintje
-1 Twentepad
-1 Paaltjesvoetbal
-1 blokjesvoetbal
-1 flesjesvoetbal
-1 voetbalvariant
-1 lijsterachtigen
-1 Saxicola
-1 parens
-1 rubetra
-1 Linnaeus
-1 Turdidae
-1 roodborsttapuit
-1 wenkbrauwstreep
-1 broedseizoen
-1 gallery
-1 Marek
-0 bijelkaar bij_elkaar
-1 bij elkaar
-1 Weerdinge
-1 veenlijken
-1 veenlijk
-1 messteek
-1 Drents
-1 paarbladig
-1 oppositifolium
-1 goudveil
-1 Saxifragales
-1 Saxifragaceae
-1 Chrysosplenium
-0 Overijsel Overijssel
-1 Overijssel
-0 tegenoverelkaar tegenover_elkaar
-1 tegenover elkaar
-1 beekjes
-1 turntoestel
-1 Sjabloon:ChineseDierenriem
-1 twaalfjaarlijkse
-1 maankalender
-1 Rudi
-1 Scheers
-1 onevenhoevigen
-1 paardachtigen
-1 Equidae
-1 Equus
-1 caballus
-1 mannetjespaard
-1 vrouwtjespaard
-1 schofthoogte
-1 IJslanders
-1 falabella
-1 reukvermogen
-1 katachtigen
-1 IJstijd
-1 Xenophon
-1 gaucho's
-1 Paardenrennen
-1 hippique
-1 gymkhana
-1 Eohippus
-1 beenbeharing
-1 Ludo
-1 Oost-Friese
-1 huisdierras
-1 Darco
-1 Philippaerts
-1 springsport
-1 Lindenhof
-1 25e
-1 tarpan
-1 gedomesticeerde
-1 Wyoming
-0 ponies pony's
-1 pony's
-0 Camarque Camargue
-1 Camargue
-1 Forest
-0 paardemanen paardenmanen
-1 paardenmanen
-1 Vinci
-1 Marc
-1 paardenvoer
-1 paardenbrok
-1 droogvoerkorrels
-1 Bucephalus
-1 Incitatus
-1 Lucky
-1 Mister
-1 Meindert
-1 Fabeltjeskrant
-1 Farley
-1 Amerigo
-1 hinkende
-1 sportpaard
-1 KWPN
-1 sportfederatie
-1 IJslandse
-1 EASP
-1 sportpaarden
-1 sportpony's
-1 beginpositie
-1 b1
-1 g1
-1 b8
-1 g8
-1 beginveld
-1 eindveld
-1 L-vorm
-1 FIDE-reglement
-1 a1
-1 b3
-1 c2
-1 b4
-1 a5
-1 d8
-1 d4
-1 h3
-1 f4
-1 g5
-0 actie-radius actieradius
-1 actieradius
-1 springtoestel
-0 companen kompanen
-1 kompanen
-1 Vergilius
-0 bevolgen bevlogen
-1 bevlogen
-1 jongerenproject
-0 coordinator coördinator
-1 coördinator
-1 kwaliteitspop
-1 Mick
-1 Jagger
-1 filmvoorstellingen
-1 Boerendonk
-1 media-aandacht
-1 15-jarig
-1 prominenten
-1 pop)artiesten
-1 i.s.m
-1 Prinsegracht
-1 Revu
-1 asinus
-1 Steppenzebra
-1 quagga
-1 bergzebra
-1 Grévy-zebra
-1 grevyi
-1 Taraxacum
-1 bloemhoofdje
-1 lintbloemen
-1 pappus
-1 paardebloemenmelk
-1 penwortel
-1 agamospermie
-1 microsoorten
-1 vruchtpluis
-1 vruchtlichaam
-1 determinatiekenmerk
-1 hondstong
-1 tussenletter
-0 minsters ministers
-1 ministers
-1 Taalunie
-1 paardenbloem
-1 fotogalerij
-1 paardebloemstreepzaad
-1 Crepis
-1 streepzaad
-1 vesicaria
-1 subsp
-1 nootvruchtje
-1 Sapindales
-1 Sapindaceae
-1 zeepboomfamilie
-1 Aesculus
-1 Himalaya
-1 hippocastanum
-1 carnea
-1 witbloeiende
-1 roodbloeiende
-1 pavia
-1 hoefijzervormig
-1 bladmerk
-1 eindstandige
-1 bloempluim
-1 boomkroon
-1 driekleppige
-1 cultivars
-1 Castanea
-1 sativa
-0 tammekastanje tamme_kastanje
-1 tamme kastanje
-1 Cameraria
-1 ohridella
-1 Verticillium
-1 Guignardia
-1 aesculi
-1 paardenbijter
-1 Odonata
-1 Anisoptera
-1 Aeshnidae
-1 Aeshna
-1 mixta
-1 vliegtijd
-1 watersnuffel
-1 spijkervormige
-1 arbeidsgalop
-1 rengalop
-1 paardenraces
-1 tölt
-1 IJslander
-1 paardenhoefklaver
-1 Hippocrepis
-1 comosa
-0 geveert geveerd
-1 geveerd
-1 deelblaadjes
-1 eindblaadje
-1 Gastrophilus
-1 intestinalis
-1 Diptera
-1 tweevleugeligen
-1 opgelikt
-1 maagwand
-1 gastroscopie
-1 ontwormd
-1 maantop
-1 mediaanlijn
-1 stokmaat
-1 achterknie
-1 paardenlijf
-1 voorknie
-1 warmbloed
-1 gebitselement
-1 cryptorchisme
-1 dwarsstaaf
-1 diasteem
-1 Lepidoptera
-1 schubvleugeligen
-1 Gracillariidae
-1 parasiterende
-1 CONTROCAM
-0 Macedonie Macedonië
-1 Macedonië
-0 Oekraine Oekraïne
-1 Oekraïne
-0 paardekopnevel Paardenkopnevel
-1 Paardenkopnevel
-1 Alnitak
-1 Orion
-1 Orionis
-0 paardekop paardenhoofd
-1 paardenhoofd
-0 sterlicht sterrenlicht
-1 sterrenlicht
-1 trekvermogen
-1 basiseenheden
-1 Paardenkrachtuur
-1 eenheidssymbool
-1 pkh
-1 SI-eenheid
-1 paardenprocessies
-0 recherpoot rechterpoot
-1 rechterpoot
-1 winterbedevaart
-1 Hakendover
-1 Hakendoverwijn
-1 paardenprocessie
-0 voor-christelijke voorchristelijke
-1 voorchristelijke
-1 Haspengouw
-1 Hageland
-1 Rutten
-1 Lombeek
-1 waternaam
-1 Grobbendonk
-1 s-Hertogenbosch
-1 Nord-Pas-de-Calais
-1 Wuustwezel
-1 Westerwolde
-1 wold
-1 drankprobleem
-1 Kemerovo
-1 Irtysj
-1 Obboezem
-1 Ob
-1 Karazee
-1 riviersystemen
-0 tegenvuur tegengas
-1 tegengas
-1 degraderend
-1 burgerregering
-1 dolkstootlegende
-1 energiereserve
-1 mass
-1 obesitas
-0 kg/m2 kg/m<sup>2</sup>
-1 kg/m<sup>2</sup>
-1 scheidingspunten
-1 vetdistributie
-1 eetziekte
-1 vetcellen
-1 leptine
-0 geinjecteerd geïnjecteerd
-1 geïnjecteerd
-0 leptine-deficientie leptine-deficiëntie
-1 leptine-deficiëntie
-1 virale
-1 zwaarlijvigen
-1 landbouwsubsidies
-1 voedselprijzen
-1 glucosestroop
-1 reclamespots
-1 voedselproductie
-1 vaatziekten
-1 gezondheidsproblemen
-1 gezondheidsprobleem
-1 voedingsdeskundigen
-1 actievere
-1 maagcapaciteit
-1 obi
-1 Molukken
-1 Javazee
-1 Oc-Eo
-1 Malleret
-1 Mekong
-1 Funan
-1 Angkor
-1 zeehandelsroutes
-1 luchtfoto's
-1 verplaatsende
-1 Lao
-1 Oxalidaceae
-1 Oxalis
-1 oca
-1 kroonbladeren
-1 oxaalzuur
-1 gedomesticeerd
-1 Levinson
-1 Reinhart
-1 Dustin
-1 Heche
+1 –
+1 †
