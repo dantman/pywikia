@@ -369,7 +369,11 @@ class Word(object):
             return Word(uncap(self.word)).isCorrect(checkalternative = checkalternative)
         else:
             if checkalternative:
-                return True
+                if checklang == 'nl' and self.word.endswith("'s"):
+                    # often these are incorrect (English-style) possessives
+                    return False
+                else:
+                    return True
             else:
                 return False
 
