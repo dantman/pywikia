@@ -461,11 +461,16 @@ try:
                     line = line.split(' ')
                     word = line[1]
                     knownwords[word] = line[2:]
+                    for word2 in line[2:]:
+                        if not '_' in word2:
+                            knownwords[word2] = word2
         f.close()
     except IOError:
         print "Warning! There is no wordlist for your language!"
     else:
         print "Wordlist successfully loaded."
+    # This is a purely interactive bot, we therefore do not want to put-throttle
+    wikipedia.put_throttle.setDelay(1)
 except:
     wikipedia.stopme()
     raise
