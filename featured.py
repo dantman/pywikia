@@ -54,11 +54,13 @@ msg = {
 # default is en:Link FA
 template = {
     'bg': 'Link FA',
+    'br': 'Liamm PuB',
     'bs': 'Link FA',
     'ca': 'Enllaç AD',
     'da': 'Link FA',
     'de': 'Link FA',
     'en': 'Link FA',
+    'eo': 'LigoElstara',
     'es': 'destacado',
     'fr': 'lien AdQ',
     'hr': 'Link FA',
@@ -72,6 +74,7 @@ template = {
     'ru': 'Link FA',
     'sl': 'Link FA',
     'sr': 'Link FA',
+    'sv': 'UA',
     'tr': 'Link FA',
     'vi': 'Liên kết chọn lọc',
 }
