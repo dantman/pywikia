@@ -45,6 +45,7 @@ msg = {
     'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Interwiki za izabrane članke za [[%s:%s]]',
     'lt': u'Pavyzdinis straipsnis [[%s:%s]]',
+    'nl': u'Etalage artikel link voor [[%s:%s]]',
     'pl': u'Link do artykułu wyróżnionego [[%s:%s]]',
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
     'sr': u'Међувики за изабране чланке за [[%s:%s]]',
@@ -64,6 +65,7 @@ template = {
     'it': 'Link AdQ',
     'lt': 'Link FA',
     'lv': 'Link FA',
+    'nl': 'Link FA',
     'no': 'Link UA',
     'pl': 'Link FA',
     'pt': 'Link FA',
@@ -244,10 +246,7 @@ def featuredWithInterwiki(fromsite, tosite):
             wikipedia.output(u"Page not saved")
 
 if __name__=="__main__":
-    if config.usernames['wikipedia'].has_key('nl'):
-        print "Bot is not to be used at the NL Wikipedia, changing your user-config.py."
-        sys.exit()
-        
+    
     fromlang=[]
     for arg in wikipedia.handleArgs():
         if arg == '-interactive':
