@@ -111,6 +111,7 @@ msg = {
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
        'ksh':u'Bot: hät outomatesch Täx jetuusch: %s',
        'lt':u'robotas: Automatinis teksto keitimas %s',       
+       'nds':u'Bot: Text automaatsch utwesselt: %s',
        'pl':u'Robot automatycznie zamienia tekst %s',
        'pt':u'Bot: Mudança automática %s',
        'sr':u'Бот: Аутоматска замена текста %s',

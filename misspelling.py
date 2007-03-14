@@ -45,6 +45,7 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
     msg = {
         'de': u'Bot: korrigiere Link auf Falschschreibung: %s',
         'en': u'Robot: Fixing misspelled link to %s',
+        'nds': u'Bot: rut mit verkehrt schreven Lenk op %s',
         'pl': u'Robot poprawia literówkę w linku do %s',
         'pt': u'Bot: Corrigindo link com erro ortográfico para %s'
     }
