@@ -111,7 +111,7 @@ __version__ = '$Id$'
 import os, sys
 import httplib, socket, urllib
 import traceback
-import time
+import time, threading
 import math
 import re, md5, codecs, difflib, locale
 import xml.sax, xml.sax.handler
@@ -1978,6 +1978,7 @@ class Throttle(object):
     def __init__(self, mindelay = config.minthrottle, maxdelay = config.maxthrottle, multiplydelay = True):
         """Make sure there are at least 'delay' seconds between page-gets
            after 'ignore' initial page-gets"""
+        self.lock = threading.RLock()
         self.mindelay = mindelay
         self.maxdelay = maxdelay
         self.pid = False # If self.pid remains False, we're not checking for multiple processes
@@ -1997,50 +1998,58 @@ class Throttle(object):
         return _wt.absoluteFilename('throttle.log')
         
     def checkMultiplicity(self):
-        processes = {}
-        my_pid = 1
-        count = 1
+        self.lock.acquire()
         try:
-            f = open(self.logfn(), 'r')
-        except IOError:
-            if not self.pid:
-                pass
+            processes = {}
+            my_pid = 1
+            count = 1
+            try:
+                f = open(self.logfn(), 'r')
+            except IOError:
+                if not self.pid:
+                    pass
+                else:
+                    raise
             else:
-                raise
-        else:
-            now = time.time()
-            for line in f.readlines():
-                try:
-                    line = line.split(' ')
-                    pid = int(line[0])
-                    ptime = int(line[1].split('.')[0])
-                    if now - ptime <= self.releasepid:
-                        if now - ptime <= self.dropdelay and pid != self.pid:
-                            count += 1
-                        processes[pid] = ptime
-                        if pid >= my_pid:
-                            my_pid = pid+1
-                except (IndexError,ValueError):
-                    pass    # Sometimes the file gets corrupted - ignore that line
+                now = time.time()
+                for line in f.readlines():
+                    try:
+                        line = line.split(' ')
+                        pid = int(line[0])
+                        ptime = int(line[1].split('.')[0])
+                        if now - ptime <= self.releasepid:
+                            if now - ptime <= self.dropdelay and pid != self.pid:
+                                count += 1
+                            processes[pid] = ptime
+                            if pid >= my_pid:
+                                my_pid = pid+1
+                    except (IndexError,ValueError):
+                        pass    # Sometimes the file gets corrupted - ignore that line
 
-        if not self.pid:
-            self.pid = my_pid
-        self.checktime = time.time()
-        processes[self.pid] = self.checktime
-        f = open(self.logfn(), 'w')
-        for p in processes.keys():
-            f.write(str(p)+' '+str(processes[p])+'\n')
-        f.close()
-        self.process_multiplicity = count
-        output(u"Checked for running processes. %s processes currently running, including the current process." % count)
+            if not self.pid:
+                self.pid = my_pid
+            self.checktime = time.time()
+            processes[self.pid] = self.checktime
+            f = open(self.logfn(), 'w')
+            for p in processes.keys():
+                f.write(str(p)+' '+str(processes[p])+'\n')
+            f.close()
+            self.process_multiplicity = count
+            output(u"Checked for running processes. %s processes currently running, including the current process." % count)
+        finally:
+            self.lock.release()
 
     def setDelay(self, delay = config.minthrottle, absolute = False):
-        if absolute:
-            self.maxdelay = delay
-            self.mindelay = delay
-        self.delay = delay
-        # Don't count the time we already waited as part of our waiting time :-0
-        self.now = time.time()
+        self.lock.acquire()
+        try:
+            if absolute:
+                self.maxdelay = delay
+                self.mindelay = delay
+            self.delay = delay
+            # Don't count the time we already waited as part of our waiting time :-0
+            self.now = time.time()
+        finally:
+            self.lock.release()
 
     def getDelay(self):
         thisdelay = self.delay
@@ -2093,18 +2102,22 @@ class Throttle(object):
         """This is called from getEditPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
            since the last time it was called before it returns."""
-        waittime = self.waittime()
-        # Calculate the multiplicity of the next delay based on how
-        # big the request is that is being posted now.
-        # We want to add "one delay" for each factor of two in the
-        # size of the request. Getting 64 pages at once allows 6 times
-        # the delay time for the server.
-        self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
-        # Announce the delay if it exceeds a preset limit
-        if waittime > config.noisysleep:
-            output(u"Sleeping for %.1f seconds, %s" % (waittime, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
-        time.sleep(waittime)
-        self.now = time.time()
+        self.lock.acquire()
+        try:
+            waittime = self.waittime()
+            # Calculate the multiplicity of the next delay based on how
+            # big the request is that is being posted now.
+            # We want to add "one delay" for each factor of two in the
+            # size of the request. Getting 64 pages at once allows 6 times
+            # the delay time for the server.
+            self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
+            # Announce the delay if it exceeds a preset limit
+            if waittime > config.noisysleep:
+                print "Sleeping for %.1f seconds," % waittime, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
+            time.sleep(waittime)
+            self.now = time.time()
+        finally:
+            self.lock.release()
 
 def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowoverlap = False):
     """
