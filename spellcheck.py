@@ -137,12 +137,16 @@ def getalternatives(string):
                     simwords[diff] += knownwords[alt]
     posswords = []
     for i in xrange(11):
-        posswords += simwords[i]            
+        if not simwords[i] in posswords:
+            posswords += simwords[i]
     return posswords[:30]
 
 def uncap(string):
     # uncapitalize the first word of the string
-    return string[0].lower()+string[1:]
+    if len(string) > 1:
+        return string[0].lower()+string[1:]
+    else:
+        return string.lower()
 
 def cap(string):
     # uncapitalize the first word of the string
@@ -263,7 +267,7 @@ def spellcheck(page, checknames = True, knownonly = False):
         text = removeHTML(text)
     loc = 0
     while True:
-        wordsearch = re.compile(r'([\s\=\<\>\_-]*)([^\s\=\<\>\_-]+)')
+        wordsearch = re.compile(r'([\s\=\<\>\_]*)([^\s\=\<\>\_]+)')
         match = wordsearch.search(text,loc)
         if not match:
             # No more words on this page
@@ -372,6 +376,11 @@ class Word(object):
                 if checklang == 'nl' and self.word.endswith("'s"):
                     # often these are incorrect (English-style) possessives
                     return False
+                if self.word != cap(self.word):
+                    if Word(cap(self.word)).isCorrect():
+                        return False
+                    else:
+                        return True
                 else:
                     return True
             else:
@@ -486,7 +495,7 @@ try:
                 if text != page.get():
                     page.put(text)
     elif start:
-        for page in pagegenerators.PreloadingGenerator(pagegenerators.AllpagesPageGenerator(start=start)):
+        for page in pagegenerators.PreloadingGenerator(pagegenerators.AllpagesPageGenerator(start=start,getredirects=False)):
             try:
                 text = page.get()
             except wikipedia.Error:
@@ -534,6 +543,10 @@ finally:
         f = codecs.open(makepath(filename), 'a', encoding = mysite.encoding())
     for word in list:
         if Word(word).isCorrect():
+            if word != uncap(word):
+                if Word(uncap(word)).isCorrect():
+                    # Capitalized form of a word that is in the list uncapitalized
+                    continue
             f.write("1 %s\n"%word)
         else:
             f.write("0 %s %s\n"%(word," ".join(knownwords[word])))
