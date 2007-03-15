@@ -18,14 +18,16 @@ import urllib, time
 import wikipedia, date, catlib
 import config
 
-def AllpagesPageGenerator(start ='!', namespace = None):
+def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True):
     """
     Using the Allpages special page, retrieve all articles' titles, and yield
     page objects.
+    If includeredirects is False, redirects are not included. If
+    includeredirects equals the string 'only', only redirects are added.
     """
     if namespace==None:
         namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
-    for page in wikipedia.getSite().allpages(start=start, namespace=namespace):
+    for page in wikipedia.getSite().allpages(start=start, namespace=namespace, includeredirects = includeredirects):
         yield page
     
 def PrefixingPageGenerator(prefix, namespace=None):
@@ -299,9 +301,10 @@ def PageWithTalkPageGenerator(generator):
 
 def PreloadingGenerator(generator, pageNumber=60):
     """
-    Wraps around another generator. Retrieves as many pages as stated by pageNumber
-    from that generator, loads them using Special:Export, and yields them one after
-    the other. Then retrieves more pages, etc.
+    Yields the same pages as generator generator. Retrieves 60 pages (or another
+    number specified by Page Number), loads them using Special:Export, and yields
+    them one after the other. Then retrieves more pages, etc. Thus, it is not necessary
+    to load each page separately.
     """
 
     def preload(pages):

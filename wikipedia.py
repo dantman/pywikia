@@ -111,7 +111,7 @@ __version__ = '$Id$'
 import os, sys
 import httplib, socket, urllib
 import traceback
-import time, threading
+import time
 import math
 import re, md5, codecs, difflib, locale
 import xml.sax, xml.sax.handler
@@ -1978,7 +1978,6 @@ class Throttle(object):
     def __init__(self, mindelay = config.minthrottle, maxdelay = config.maxthrottle, multiplydelay = True):
         """Make sure there are at least 'delay' seconds between page-gets
            after 'ignore' initial page-gets"""
-        self.lock = threading.RLock()
         self.mindelay = mindelay
         self.maxdelay = maxdelay
         self.pid = False # If self.pid remains False, we're not checking for multiple processes
@@ -1998,58 +1997,50 @@ class Throttle(object):
         return _wt.absoluteFilename('throttle.log')
         
     def checkMultiplicity(self):
-        self.lock.acquire()
+        processes = {}
+        my_pid = 1
+        count = 1
         try:
-            processes = {}
-            my_pid = 1
-            count = 1
-            try:
-                f = open(self.logfn(), 'r')
-            except IOError:
-                if not self.pid:
-                    pass
-                else:
-                    raise
-            else:
-                now = time.time()
-                for line in f.readlines():
-                    try:
-                        line = line.split(' ')
-                        pid = int(line[0])
-                        ptime = int(line[1].split('.')[0])
-                        if now - ptime <= self.releasepid:
-                            if now - ptime <= self.dropdelay and pid != self.pid:
-                                count += 1
-                            processes[pid] = ptime
-                            if pid >= my_pid:
-                                my_pid = pid+1
-                    except (IndexError,ValueError):
-                        pass    # Sometimes the file gets corrupted - ignore that line
-
+            f = open(self.logfn(), 'r')
+        except IOError:
             if not self.pid:
-                self.pid = my_pid
-            self.checktime = time.time()
-            processes[self.pid] = self.checktime
-            f = open(self.logfn(), 'w')
-            for p in processes.keys():
-                f.write(str(p)+' '+str(processes[p])+'\n')
-            f.close()
-            self.process_multiplicity = count
-            output(u"Checked for running processes. %s processes currently running, including the current process." % count)
-        finally:
-            self.lock.release()
+                pass
+            else:
+                raise
+        else:
+            now = time.time()
+            for line in f.readlines():
+                try:
+                    line = line.split(' ')
+                    pid = int(line[0])
+                    ptime = int(line[1].split('.')[0])
+                    if now - ptime <= self.releasepid:
+                        if now - ptime <= self.dropdelay and pid != self.pid:
+                            count += 1
+                        processes[pid] = ptime
+                        if pid >= my_pid:
+                            my_pid = pid+1
+                except (IndexError,ValueError):
+                    pass    # Sometimes the file gets corrupted - ignore that line
+
+        if not self.pid:
+            self.pid = my_pid
+        self.checktime = time.time()
+        processes[self.pid] = self.checktime
+        f = open(self.logfn(), 'w')
+        for p in processes.keys():
+            f.write(str(p)+' '+str(processes[p])+'\n')
+        f.close()
+        self.process_multiplicity = count
+        output(u"Checked for running processes. %s processes currently running, including the current process." % count)
 
     def setDelay(self, delay = config.minthrottle, absolute = False):
-        self.lock.acquire()
-        try:
-            if absolute:
-                self.maxdelay = delay
-                self.mindelay = delay
-            self.delay = delay
-            # Don't count the time we already waited as part of our waiting time :-0
-            self.now = time.time()
-        finally:
-            self.lock.release()
+        if absolute:
+            self.maxdelay = delay
+            self.mindelay = delay
+        self.delay = delay
+        # Don't count the time we already waited as part of our waiting time :-0
+        self.now = time.time()
 
     def getDelay(self):
         thisdelay = self.delay
@@ -2102,22 +2093,18 @@ class Throttle(object):
         """This is called from getEditPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
            since the last time it was called before it returns."""
-        self.lock.acquire()
-        try:
-            waittime = self.waittime()
-            # Calculate the multiplicity of the next delay based on how
-            # big the request is that is being posted now.
-            # We want to add "one delay" for each factor of two in the
-            # size of the request. Getting 64 pages at once allows 6 times
-            # the delay time for the server.
-            self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
-            # Announce the delay if it exceeds a preset limit
-            if waittime > config.noisysleep:
-                print "Sleeping for %.1f seconds," % waittime, time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
-            time.sleep(waittime)
-            self.now = time.time()
-        finally:
-            self.lock.release()
+        waittime = self.waittime()
+        # Calculate the multiplicity of the next delay based on how
+        # big the request is that is being posted now.
+        # We want to add "one delay" for each factor of two in the
+        # size of the request. Getting 64 pages at once allows 6 times
+        # the delay time for the server.
+        self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
+        # Announce the delay if it exceeds a preset limit
+        if waittime > config.noisysleep:
+            output(u"Sleeping for %.1f seconds, %s" % (waittime, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+        time.sleep(waittime)
+        self.now = time.time()
 
 def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowoverlap = False):
     """
@@ -3107,10 +3094,15 @@ class Site(object):
             if not repeat:
                 break
 
-    def allpages(self, start = '!', namespace = 0, throttle = True):
+    def allpages(self, start = '!', namespace = 0, includeredirects = True, throttle = True):
         """Generator which yields all articles in the home language in
            alphanumerical order, starting at a given page. By default,
            it starts at '!', so it should yield all pages.
+
+           If includeredirects is False, redirects will not be found.
+           If includeredirects equals the string 'only', only redirects
+           will be found. Note that this has not been tested on older
+           versions of the MediaWiki code.
 
            The objects returned by this generator are all Page()s.
 
@@ -3141,9 +3133,16 @@ class Site(object):
             # remove the irrelevant sections
             returned_html = returned_html[ibegin:iend]
             if self.version()=="1.2":
-                R = re.compile('/wiki/(.*?)" *class=[\'\"]printable')
+                R = re.compile('/wiki/(.*?)\" *class=[\'\"]printable')
+            elif self.version()<"1.5":
+                # Apparently the special code for redirects was added in 1.5
+                R = re.compile('title ?=\"(.*?)\"')
+            elif not includeredirects:
+                R = re.compile('\<td\>\<a href=\"\S*\" +title ?="(.*?)"')
+            elif includeredirects == 'only':
+                R = re.compile('\<td>\<[^\<\>]*allpagesredirect\"\>\<a href=\"\S*\" +title ?="(.*?)"')
             else:
-                R = re.compile('title ?="(.*?)"')
+                R = re.compile('title ?=\"(.*?)\"')
             # Count the number of useful links on this page
             n = 0
             for hit in R.findall(returned_html):

@@ -149,7 +149,7 @@ if __name__ == "__main__":
                 action = 'categories'
             elif arg.startswith('-start:'):
                 start = wikipedia.Page(wikipedia.getSite(),arg[7:])
-                gen = pagegenerators.AllpagesPageGenerator(start.titleWithoutNamespace(),namespace=start.namespace())
+                gen = pagegenerators.AllpagesPageGenerator(start.titleWithoutNamespace(),namespace=start.namespace(),getredirects = False)
             elif arg.startswith('-cat:'):
                 cat = catlib.Category(wikipedia.getSite(),'Category:%s'%arg[5:])
                 gen = pagegenerators.CategorizedPageGenerator(cat)
