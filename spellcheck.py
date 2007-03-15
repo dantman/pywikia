@@ -495,7 +495,7 @@ try:
                 if text != page.get():
                     page.put(text)
     elif start:
-        for page in pagegenerators.PreloadingGenerator(pagegenerators.AllpagesPageGenerator(start=start,getredirects=False)):
+        for page in pagegenerators.PreloadingGenerator(pagegenerators.AllpagesPageGenerator(start=start,includeredirects=False)):
             try:
                 text = page.get()
             except wikipedia.Error:

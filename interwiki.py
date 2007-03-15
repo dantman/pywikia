@@ -1495,7 +1495,7 @@ if __name__ == "__main__":
                     nextPage = "!"
                     namespace = 0
                 # old generator is used up, create a new one
-                hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace, getredirects = False)])
+                hintlessPageGen = pagegenerators.CombinedPageGenerator([pagegenerators.TextfilePageGenerator(dumpFileName), pagegenerators.AllpagesPageGenerator(nextPage, namespace, includeredirects = False)])
 
         bot = InterwikiBot()
 
