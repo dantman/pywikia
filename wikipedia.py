@@ -3160,7 +3160,13 @@ class Site(object):
             # page, there is certainly no next. Probably 480 would do as well,
             # but better be safe than sorry.
             if n < 100:
-                break
+                if (not includeredirects) or includeredirects == 'only':
+                    # Maybe there were only so few because the rest is or is not a redirect
+                    R = re.compile('title ?=\"(.*?)\"')
+                    if len(R.findall(returned_html)) < 100:
+                        break
+                else:
+                    break
 
     def __repr__(self):
         return self.family.name+":"+self.lang
