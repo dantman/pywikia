@@ -44,6 +44,7 @@ msg = {
     'fr': u'Lien AdQ pour [[%s:%s]]', 
     'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Interwiki za izabrane članke za [[%s:%s]]',
+    'it': u'collegamento articolo in vetrina [[%s:%s]]',
     'lt': u'Pavyzdinis straipsnis [[%s:%s]]',
     'nl': u'Etalage artikel link voor [[%s:%s]]',
     'pl': u'Link do artykułu wyróżnionego [[%s:%s]]',
