@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 This script can be used to delete pages en masse.  Of course, you will need an admin
 account on the relevant wiki.
@@ -37,7 +37,7 @@ msg_delete_category = {
     'en': u'Robot - Deleting all pages from category %s',
     'fr': u'Bot: Supprime toutes pages de la catégorie %s',
     'lt': u'robotas: Trinami visi puslapiai iš kategorijos %s',
-    'en': u'Robot usuwa wszystkie artykuły z kategorii %s',
+    'pl': u'Robot usuwa wszystkie artykuły z kategorii %s',
     'pt': u'Bot: Apagando todas as páginas da categoria %s',
 }
 msg_delete_links = {
