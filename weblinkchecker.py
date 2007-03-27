@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This bot is used for checking external links found at the wiki. It checks
 several pages at once, with a limit set by the config variable
@@ -54,6 +54,7 @@ talk_report_msg = {
     'he': u'רובוט: מדווח על קישור חיצוני בלתי זמין',
     'ia': u'Robot: Reporto de un ligamine externe non functionante',
     'nds': u'Lenk-Bot: Weblenk geiht nich mehr',
+    'nl': u'Robot: Melding (tijdelijk) onbereikbare externe link',
     'pl': u'Robot zgłasza niedostępny link zewnętrzny',
     'pt': u'Bot: Checando links externos',
     'sr': u'Бот: Пријављивање непостојећих спољашњих повезница',
@@ -66,6 +67,7 @@ talk_report = {
     'he': u'== קישור שבור ==\n\nבמהלך מספר ריצות אוטומטיות של הבוט, נמצא שהקישור החיצוני הבא אינו זמין. אנא בדקו אם הקישור אכן שבור, ותקנו אותו או הסירו את הפיסקאות הללו במקרה זה!\n\n%s\n--~~~~',
     'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n--~~~~',
     'nds': u'== Weblenk geiht nich mehr ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n--~~~~',
+    'nl': u'== Dode link ==\n\nTijdens enkele automatische botcontroles bleek deze externe link onbereikbaar. Controleer de link handmatig en als deze echt niet werkt verwijder of verbeter hem dan!\n\n%s\n--~~~~',
     'pl': u'== Martwy link ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n--~~~~',
     'pt': u'== Link quebrado ==\n\nFoi checado os links externos deste artigo por vários minutos. Verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
     'sr': u'== Покварене спољашње повезнице ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n--~~~~',
