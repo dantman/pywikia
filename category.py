@@ -270,7 +270,8 @@ def add_category(sort_by_last_name = False):
     wikipedia.output(u'  ==> %i pages to process\n' % len(pages))
     if len(pages) > 0:
         newcatTitle = wikipedia.input(u'Category to add (do not give namespace):')
-        newcatTitle = newcatTitle[:1].capitalize() + newcatTitle[1:]
+        if not wikipedia.getSite().nocapitalize:
+            newcatTitle = newcatTitle[:1].capitalize() + newcatTitle[1:]
 
         # set edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_add) % newcatTitle)
