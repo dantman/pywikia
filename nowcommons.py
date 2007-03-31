@@ -26,6 +26,10 @@ nowCommons = {
     'nl': [
         u'NuCommons',
         u'Nucommons',
+        u'NowCommons',
+        u'Nowcommons',
+        u'NCT',
+        u'Nct',
     ],
 }
 
@@ -111,7 +115,7 @@ class NowCommonsDeleteBot:
                     wikipedia.output(commonsText)
                     choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
                     if choice == 'y':
-                        localImagePage.delete(comment, prompt = False)
+                        localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
                 else:
                     wikipedia.output(u'The image is not identical to the one on Commons!')
             except (wikipedia.NoPage, wikipedia.IsRedirectPage), e:

@@ -73,6 +73,7 @@ nowCommonsMessage = {
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
     'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
     'lt': u'Failas įkeltas į Wikimedia Commons projektą.',
+    'nl': u'Dit bestand staat nu op [[w:nl:Wikimedia Commons|Wikimedia Commons]].',
     'pl': u'Plik jest teraz dostępny na Wikimedia Commons.',
     'pt': u'Arquivo está agora na Wikimedia Commons.',
     'sr': u'Слика је сада доступна и на Викимедија Остави.',
