@@ -41,9 +41,9 @@ __version__='$Id$'
 
 # Summary message for fixing double redirects
 msg_double={
+    'en':u'Robot: Fixing double redirect',
     'ar':u'روبوت: تصليح تحويلة مزدوجة',
     'br':u'Kempennet adkas doubl gant robot',
-    'en':u'Robot: Fixing double redirect',
     'de':u'Bot: Korrigiere doppelten Redirect',
     'fr':u'Robot : répare double redirection',
     'he':u'רובוט: מתקן הפניה כפולה',
@@ -52,6 +52,7 @@ msg_double={
     'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
     'ksh':u'Bot: Dubbel Ömlëijdong fottjemaat',
     'lt':u'robotas: Taisomas dvigubas peradresavimas',
+    'nl':u'Robot: Dubbele doorverwijzing gecorrigeerd',
     'pl':u'Robot naprawia podwójne przekierowanie',
     'pt':u'Bot: Corrigido duplo redirecionamento',
     'sr':u'Бот: Поправка дуплих преусмерења',
@@ -66,6 +67,7 @@ reason_broken={
     'ia':u'Robot: Scopo del redirection non existe',
     'ksh':u'Bot: Dė Ömlëijdong jingk ennet Liiere',
     'lt':u'robotas: Peradresavimas į niekur',
+    'nl':u'Robot: Doel doorverwijzing bestaat niet',
     'pl':u'Robot: cel przekierowania nie istnieje',
     'pt':u'Bot: Redirecionamento não existe',
     'sr':u'Бот: Преусмерење не постоји',
@@ -117,23 +119,23 @@ class RedirectGenerator:
                     if '#' in target:
                         target = target[:target.index('#')]
                     if '|' in target:
-                        wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.title)  
+                        wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.title)
                         target = target[:target.index('|')]
                     dict[entry.title] = target
         return dict
-        
+
     def retrieve_broken_redirects(self):
         if self.xmlFilename == None:
             # retrieve information from the live wiki's maintenance page
             mysite = wikipedia.getSite()
             # broken redirect maintenance page's URL
             path = mysite.broken_redirects_address(default_limit = False)
-            print 'Retrieving special page...' 
+            print 'Retrieving special page...'
             maintenance_txt = mysite.getUrl(path)
-            
+
             # regular expression which finds redirects which point to a non-existing page inside the HTML
             Rredir = re.compile('\<li\>\<a href=".+?" title="(.*?)"')
-        
+
             redir_names = Rredir.findall(maintenance_txt)
             print 'Retrieved %d redirects from special page.\n' % len(redir_names)
             for redir_name in redir_names:
@@ -182,16 +184,16 @@ class RedirectGenerator:
                 if num>self.restart and dict.has_key(value):
                     print 'Checking redirect %s/%s' % (num, len(dict))
                     yield key
-    
-class RedirectRobot:    
+
+class RedirectRobot:
     def __init__(self, action, generator):
         self.action = action
         self.generator = generator
-    
+
     def delete_broken_redirects(self):
         # get reason for deletion text
         reason = wikipedia.translate(wikipedia.getSite(), reason_broken)
-    
+
         for redir_name in self.generator.retrieve_broken_redirects():
             redir_page = wikipedia.Page(wikipedia.getSite(), redir_name)
             try:
@@ -213,7 +215,7 @@ class RedirectRobot:
                 # idle for 1 minute
             print ''
             wikipedia.put_throttle()
-            
+
     def fix_double_redirects(self):
         mysite = wikipedia.getSite()
         for redir_name in self.generator.retrieve_double_redirects():
@@ -285,11 +287,9 @@ def main():
         gen = RedirectGenerator(xmlFilename, namespace, restart)
         bot = RedirectRobot(action, gen)
         bot.run()
-            
+
 try:
     main()
 finally:
     wikipedia.stopme()
 
-
- 	  	 
