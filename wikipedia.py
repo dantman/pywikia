@@ -1499,6 +1499,33 @@ class Page(object):
         result += '|}\n'
         return result
 
+    def fullVersionHistory(self):
+        """
+        Returns all previous versions. Gives a list of tuples consisting of
+        edit date/time, user name and content
+        """
+        address = self.site().export_address()
+        predata = {
+            'action': 'submit',
+            'pages': self.title()
+        }
+        get_throttle(requestsize = 10)
+        now = time.time()
+        if self.site().hostname() in config.authenticate.keys():
+            predata["Content-type"] = "application/x-www-form-urlencoded"
+            predata["User-agent"] = useragent
+            data = self.site.urlEncode(predata)
+            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
+            data = response.read()
+        else:
+            response, data = self.site().postForm(address, predata)
+        data = data.encode(self.site().encoding())
+        get_throttle.setDelay(time.time() - now)
+        output = []
+        r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\</(?:ip|username)\>.*?\<text.*?\>(.*?)\<\/text\>",re.DOTALL)
+        #r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\<",re.DOTALL)
+        return r.findall(data)
+                       
     def contributingUsers(self):
         """
         Returns a set of all user names (including anonymous IPs) of those who
