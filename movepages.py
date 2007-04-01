@@ -20,7 +20,7 @@ Command-line arguments:
     -link          same as -links (deprecated)
 
     -start         Work on all pages on the home wiki, starting at the named page.
-                   
+
     -from -to      The page to move from and the page to move to.
 
     -new           Work on the most recent new pages on the wiki.
@@ -52,21 +52,23 @@ import sys
 
 summary={
     'en': u'Pagemove by bot',
-    'he': u'העברת דף באמצעות בוט',
-    'pt': u'Página movida por bot',
-    'pl': u'Przeniesienie artykułu przez robota',
     'de': u'Seite durch Bot verschoben',
-    'fr': u'Page renommée par bot',
     'el': u'Μετακίνηση σελίδων με bot'
+    'fr': u'Page renommée par bot',
+    'he': u'העברת דף באמצעות בוט',
+    'nl': u'Pagina hernoemd door robot',
+    'pl': u'Przeniesienie artykułu przez robota',
+    'pt': u'Página movida por bot',
 }
 
 deletesummary={
     'en': u'Delete page by bot',
-    'pt': u'Página apagada por bot',
     'de': u'Seite durch Bot gelöscht',
-    'pl': u'Usunięcie artykułu przez robota',
-    'fr': u'Page supprimée par bot',
     'el': u'Διαγραφή σελίδων με bot'
+    'fr': u'Page supprimée par bot',
+    'nl': u'Pagina verwijderd door robot',
+    'pl': u'Usunięcie artykułu przez robota',
+    'pt': u'Página apagada por bot',
 }
 
 class MovePagesBot:
@@ -76,7 +78,7 @@ class MovePagesBot:
         self.delete = delete
         self.always = always
 
-        
+
     def moveOne(self,page,pagemove,delete):
         try:
             msg = wikipedia.translate(wikipedia.getSite(), summary)
@@ -92,7 +94,7 @@ class MovePagesBot:
             wikipedia.output('Page %s is a redirect; skipping.' % page.title())
         except wikipedia.LockedPage:
             wikipedia.output('Page %s is locked!' % page.title())
-            
+
     def treat(self,page):
         pagetitle = page.title()
         wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
@@ -121,11 +123,11 @@ class MovePagesBot:
                 self.pageend = wikipedia.input(u'Append This to the end:')
                 if page.title() == page.titleWithoutNamespace():
                     pagemove = (u'%s%s%s' % (self.pagestart, page.title(), self.pageend))
-                else:                                             
+                else:
                     ask2 = wikipedia.input(u'Do you want to remove the namespace prefix "%s:"? [(Y)es, (N)o]'% page.site().namespace(page.namespace()))
                     if ask2 in ['y', 'Y']:
                         pagemove = (u'%s%s%s' % (self.pagestart, page. titleWithoutNamespace(), self.pageend))
-                    else:                                             
+                    else:
                         pagemove = (u'%s%s%s' % (self.pagestart, page.title(), self.pageend))
                 ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o, (A)ll, (Q)uit]' % pagemove)
                 if ask2 in ['y', 'Y']:
@@ -214,11 +216,9 @@ def main():
         bot.run()
     else:
         wikipedia.showHelp('movepages')
-                
+
 if __name__ == '__main__':
     try:
         main()
     finally:
         wikipedia.stopme()
-
- 	  	 
