@@ -1,8 +1,44 @@
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
+"""
+Script to delete files that are also present on Wikimedia Commons on a local
+wiki. Do not run this script on Wikimedia Commons itself. It works based on
+a given array of templates defined below.
+
+Files are downloaded and compared. If the files match, it can be deleted on
+the source wiki. If multiple versions of the file exist, the script will not
+delete. If the MD5 comparison is not equal, the script will not delete.
+
+A sysop account is required for this script to work.
+
+This script understands various command-line arguments:
+    -autonomous:   run automatically, do not ask any questions. All files
+                   that qualify for deletion are deleted. Reduced screen
+                   output.
+
+Known issues. Please fix these if you are capable and motivated:
+- if a file marked nowcommons is not present on Wikimedia Commons, the bot
+  will exit.
+"""
+#
+# (C) Wikipedian, 2006-2007
+# (C) Siebrand Mazeland, 2007
+#
+# Distributed under the terms of the MIT license.
+#
+__version__ = '$Id$'
+#
+
 import sys, re
 import wikipedia, pagegenerators
 # only for nowCommonsMessage
 from imagetransfer import nowCommonsMessage
+
+autonomous = False
+
+for arg in wikipedia.handleArgs():
+    if arg == '-autonomous':
+        autonomous = True
 
 nowCommons = {
     '_default': [
@@ -31,6 +67,9 @@ nowCommons = {
         u'NCT',
         u'Nct',
     ],
+    'ro': [
+        u'NowCommons'
+    ],
 }
 
 namespaceInTemplate = [
@@ -39,8 +78,8 @@ namespaceInTemplate = [
     'ia',
     'lt',
     'nl',
+    'ro',
 ]
-
 
 
 #nowCommonsMessage = imagetransfer.nowCommonsMessage
@@ -79,6 +118,7 @@ class NowCommonsDeleteBot:
     def run(self):
         commons = wikipedia.Site('commons', 'commons')
         comment = wikipedia.translate(self.site, nowCommonsMessage)
+        
         for page in self.getPageGenerator():
             # Show the title of the image page.
             # Highlight the title in purple.
@@ -109,23 +149,21 @@ class NowCommonsDeleteBot:
                 commonsText = commonsImagePage.get()
                 if md5 == commonsImagePage.getFileMd5Sum():
                     wikipedia.output(u'The image is identical to the one on Commons.')
-                    wikipedia.output(u'\n>>>>>>> Description on %s <<<<<<\n' % localImagePage.aslink())
-                    wikipedia.output(localImagePage.get())
-                    wikipedia.output(u'\n>>>>>> Description on %s <<<<<<\n' % commonsImagePage.aslink())
-                    wikipedia.output(commonsText)
-                    choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
-                    if choice == 'y':
+                    if autonomous == False:
+                        wikipedia.output(u'\n>>>>>>> Description on %s <<<<<<\n' % localImagePage.aslink())
+                        wikipedia.output(localImagePage.get())
+                        wikipedia.output(u'\n>>>>>> Description on %s <<<<<<\n' % commonsImagePage.aslink())
+                        wikipedia.output(commonsText)
+                        choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
+                        if choice == 'y':
+                            localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
+                    else:
                         localImagePage.delete(comment + ' [[:commons:Image:%s]]' % filenameOnCommons, prompt = False)
-                else:
-                    wikipedia.output(u'The image is not identical to the one on Commons!')
             except (wikipedia.NoPage, wikipedia.IsRedirectPage), e:
                 wikipedia.output(u'%s' % e)
                 continue
 
 def main():
-    for arg in wikipedia.handleArgs():
-        pass
-
     bot = NowCommonsDeleteBot()
     bot.run()
 
