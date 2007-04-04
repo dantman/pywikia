@@ -8,7 +8,7 @@ __version__ = '$Id$'
 # The Wikimedia family that is known as Wikipedia, the Free Encyclopedia
 
 class Family(family.Family):
-    
+
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wikipedia'
@@ -83,7 +83,7 @@ class Family(family.Family):
             'ur': u'منصوبہ',
             'yi': u'װיקיפּעדיע',
         }
-        
+
         self.namespaces[5] = {
             '_default': [u'Wikipedia talk', self.namespaces[5]['_default']],
             'ab': u'Обсуждение Wikipedia',
@@ -200,7 +200,7 @@ class Family(family.Family):
             'yi': u'װיקיפּעדיע רעדן',
             'zea': u'Overleg Wikipedia',
         }
-        
+
         self.namespaces[100] = {
             '_default': u'Portal',
             'ar': u'بوابة',
@@ -211,6 +211,7 @@ class Family(family.Family):
             'fr': u'Portail',
             'it': u'Portale',
             'he': u'פורטל',
+            'fi': u'Teemasivu',
             'it': u'Portale',
             'ka': u'პორტალი',
             'kk': u'Портал',
@@ -223,7 +224,7 @@ class Family(family.Family):
             'tg': u'Портал',
             'zh-classical': u'門',
         }
-        
+
         self.namespaces[101] = {
             '_default': u'Portal talk',
             'ar': u'نقاش البوابة',
@@ -234,10 +235,11 @@ class Family(family.Family):
             'de': u'Portal Diskussion',
             'eo': u'Portala diskuto',
             'es': u'Portal Discusión',
-            'eu': u'Atari eztabaida', 
+            'eu': u'Atari eztabaida',
             'fr': u'Discussion Portail',
             'he': u'שיחת פורטל',
             'hr': u'Razgovor o portalu',
+            'fi': u'Keskustelu teemasivusta',
             'id': u'Pembicaraan Portal',
             'it': u'Discussioni portale',
             'ja': u'Portal‐ノート',
@@ -273,7 +275,7 @@ class Family(family.Family):
             'lmo': u'Purtaal',
             'pl': u'Wikiprojekt',
         }
-            
+
         self.namespaces[103] = {
             '_default': u'WikiProject talk',
             'ca': u'Viquiprojecte Discussió',
@@ -285,18 +287,18 @@ class Family(family.Family):
             'lmo': u'Descüssiun Purtaal',
             'pl': u'Dyskusja Wikiprojektu',
         }
-        
+
         self.namespaces[104] = {
             '_default': u'Reference',
             'fr': u'Référence',
-            
+
         }
-        
+
         self.namespaces[105] = {
             '_default': u'Reference talk',
             'fr' : u'Discussion Référence',
         }
-            
+
         self.disambiguationTemplates = {
 
             '_default': [u'Disambig'],
@@ -458,17 +460,17 @@ class Family(family.Family):
             'zh':  u'消歧义',
             'zh-min-nan': u'Khu-pia̍t-ia̍h',
             }
-        
+
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
-            
+
         self.nocapitalize = ['jbo','tlh']
-            
+
 
         # on_one_line is a list of languages that want the interwiki links
         # one-after-another on a single line
         self.interwiki_on_one_line = ['hu']
-        
+
         # A revised sorting order worked out on http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic_revised = ['aa','af','ak','als','am','ang','ab','ar','arc',
             'an','roa-rup','frp','as','ast','gn','av','ay','az','id','ms','bm',
@@ -532,7 +534,7 @@ class Family(family.Family):
         # interwiki_putfirst, interwiki_putfirst is checked first, and
         # languages are put in the order given there. All other languages are put
         # after those, in code-alphabetical order.
-           
+
         self.interwiki_putfirst = {
             'en': self.alphabetic,
             'et': self.alphabetic_revised,
@@ -557,12 +559,12 @@ class Family(family.Family):
                     'zh-tw':'zh',
                     'zh-cn':'zh'
         }
-            
+
         # Language codes of the largest wikis. They should be roughly sorted
         # by size.
         # Note: currently they have been sorted by size, but with languages
         # not in the Latin alphabet counted 1/3 lower
-        
+
         self.languages_by_size = [
             'en','de','fr','pl','nl','it','pt','ja','sv','es',
             'fi','no','ru','zh','eo','sk','cs','da','ro','ca',
@@ -590,7 +592,7 @@ class Family(family.Family):
                     'no', 'simple', 'gl', 'eu', 'nds', 'co', 'mi', 'mr',
                     'id', 'lv', 'sw', 'tt', 'uk', 'vo', 'ga', 'na', 'es',
                     'nl', 'da', 'dk', 'sv', 'test']
-                    
+
         self.mainpages = {
             'aa' :            u'Main Page',
             'ab' :            u'Main Page',
@@ -801,13 +803,13 @@ class Family(family.Family):
 
     def version(self, code):
         return "1.8alpha"
-    
+
     def dbName(self, code):
         # returns the name of the MySQL database
         # for historic reasons, the databases are called wikixx instead of
         # wikipediaxx for Wikipedias.
         return '%swiki' % code
-    
+
     def code2encodings(self, code):
         """Return a list of historical encodings for a specific language
            wikipedia"""
