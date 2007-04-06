@@ -475,52 +475,52 @@ class Family(family.Family):
         self.interwiki_on_one_line = ['hu']
 
         # A revised sorting order worked out on http://meta.wikimedia.org/wiki/Interwiki_sorting_order
-        self.alphabetic_revised = ['aa','af','ak','als','am','ang','ab','ar','arc',
-            'an','roa-rup','frp','as','ast','gn','av','ay','az','id','ms','bm',
-            'bn','zh-min-nan','map-bms','jv','su','ban','ba','be','bh','bpy',
+        self.alphabetic_revised = ['aa','af','ak','als','am','ang','ab','ar','an',
+            'arc','roa-rup','frp','as','ast','gn','av','ay','az','id','ms','bm',
+            'bn','zh-min-nan','map-bms','jv','su','ban','ba','be','bh',
             'bi','bo','bs','br','bug','bg','bxr','ca','ceb','cv','cs','ch',
-            'cbk-zam','ny','sn',
+            'ny','sn',
             'tum','cho','co','za','cy','da','pdc','de','dv','nv','dz','mh','et',
             'na','el','eml','en','es','eo','eu','ee','to','fab','fa','fo','fr','fy','ff',
-            'fur','ga','gv','sm','gd','gl','gay','ki','glk','gu','got','ko','ha','haw',
-            'hy','hi','ho','hsb','hr','io','ig','ilo','ia','ie','iu','ik','os','xh','zu',
-            'is','it','he','kl','xal','kn','kr','ka','ks','csb','kk','kk-cn','kk-kz','kw','rw','ky',
-            'rn','sw','kv','kg','ht','kj','ku','lad','lbe','lo','ltg','la','lv','lb','lt','lij',
-            'li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi','mr','mzn','chm','zh-cdo','mo',
+            'fur','ga','gv','sm','gd','gl','gay','ki','glk','gu','got','zh-classical','xal','ko','ha','haw',
+            'hy','hi','ho','hsb','hr','io','ig','ilo','bpy','ia','ie','iu','ik','os','xh','zu',
+            'is','it','he','kl','pam','kn','kr','ka','ks','csb','kk','kk-cn','kk-kz','kw','rw','ky',
+            'rn','sw','kv','kg','ht','kj','ku','lad','lbe','lo','ltg','la','lv','lb','lij','lt',
+            'li','ln','jbo','lg','lmo','hu','mk','mg','ml','mt','mi','mr','mzn','chm','cdo','mo',
             'mn','mus','my','nah','fj','nl','nds-nl','cr','ne','new','ja','nap','ce',
             'pih','no','nn','nrm','nov','oc','or','om','ng','hz','ug','uz','pa',
-            'pi','pam','pag','pap','ps','km','pms','nds','pl','pt','kk-tr','ty','ksh','ro',
-            'rmy','rm','qu','ru','war','se','sa','sg','sc','sco','st','tn','sq','ru-sib','scn',
+            'pi','pag','pap','ps','km','pms','nds','pl','pt','kk-tr','ty','ksh','ro',
+            'rmy','rm','qu','ru','se','sa','sg','sc','sco','st','tn','sq','ru-sib','scn',
             'si','simple','sd','ss','sk','sl','cu','so','sr','sh','fi','sv','tl',
             'ta','roa-tara','tt','te','tet','th','vi','ti','tlh','tg','tpi','chr','chy',
             've','tr','tk','tw','udm','uk','ur','vec','vo','fiu-vro','wa',
-            'vls','wo','wuu','ts','ii','yi','yo','zh-yue','diq','zea','bat-smg',
-            'zh','zh-tw','zh-cn','zh-classical']
+            'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg',
+            'zh','zh-tw','zh-cn']
 
         # A sorting order for lb.wikipedia worked out by http://lb.wikipedia.org/wiki/User_talk:Otets
-        self.alphabetic_lb = ['aa', 'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar', 'arc',
-            'an', 'roa-rup', 'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'id', 'ms', 'bm',
-            'bn', 'zh-min-nan', 'map-bms', 'jv', 'su', 'ban', 'bug', 'ba', 'be', 'bh', 'mt', 'bpy',
+        self.alphabetic_lb = ['aa', 'af', 'ak', 'als', 'am', 'ang', 'ab', 'ar', 'an',
+            'arc', 'roa-rup', 'frp', 'as', 'ast', 'gn', 'av', 'ay', 'az', 'id', 'ms', 'bm',
+            'bn', 'zh-min-nan', 'map-bms', 'jv', 'su', 'ban', 'bug', 'ba', 'be', 'bh', 'mt',
             'bi', 'bo', 'bs', 'br', 'bg', 'bxr', 'ca', 'ceb', 'cs', 'ch',
-            'cbk-zam', 'chr', 'chy',
+            'chr', 'chy',
             'ny', 'sn', 'tum', 've', 'cho', 'co', 'za', 'cy', 'da', 'pdc', 'de', 'dv',
             'nv', 'dz', 'mh', 'na', 'el', 'eml', 'en', 'es', 'eo', 'et', 'eu', 'ee', 'to',
             'fab', 'fa', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm', 'gd', 'gl',
-            'gay', 'ki', 'glk', 'gu', 'got', 'ha', 'haw', 'hy', 'he', 'hi', 'ho', 'hsb',
-            'hr', 'io', 'ig', 'ilo', 'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it',
-            'ja', 'kl', 'xal', 'kn', 'kr', 'ka', 'ks', 'csb', 'kw', 'rw', 'ky', 'rn', 'sw',
-            'kv', 'kg', 'ko', 'ht', 'kj', 'ku', 'lad', 'lbe', 'lo', 'ltg', 'la', 'lv', 'lb', 'lt', 'lij', 'li',
+            'gay', 'ki', 'glk', 'gu', 'got', 'zh-classical',  'xal', 'ko', 'ha', 'haw', 'hy', 'he', 'hi', 'ho', 'hsb',
+            'hr', 'io', 'ig', 'bpy', 'ilo', 'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it',
+            'ja', 'kl', 'pam', 'kn', 'kr', 'ka', 'ks', 'csb', 'kw', 'rw', 'ky', 'rn', 'sw',
+            'kv', 'kg', 'ht', 'kj', 'ku', 'lad', 'lbe', 'lo', 'ltg', 'la', 'lv', 'lb', 'lij', 'lt', 'li',
             'ln', 'jbo', 'lg', 'lmo', 'hu', 'mk', 'mg', 'ml', 'mi', 'mr', 'mzn', 'chm',
-            'zh-cdo', 'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nap', 'nds-nl', 'nl', 'cr', 'ne', 'new', 'ce',
+            'cdo', 'mo', 'mn', 'mus', 'my', 'nah', 'fj', 'nap', 'nds-nl', 'nl', 'cr', 'ne', 'new', 'ce',
             'pih', 'no', 'nn', 'nrm', 'nov', 'oc', 'or', 'om', 'ng', 'hz', 'ug', 'uz', 'pa', 'kk',
             'kk-cn', 'kk-kz', 'kk-tr',
             'pi', 'pam', 'pag', 'pap', 'ps', 'km', 'pms', 'nds', 'pl', 'pt', 'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu',
-            'ru', 'war', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'ru-sib', 'scn', 'si',
+            'ru', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'ru-sib', 'scn', 'si',
             'simple', 'sd', 'ss', 'sk', 'sl', 'cu', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
             'ta', 'roa-tara', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
-            'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'vls',
-            'wo', 'wuu', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'diq', 'zea', 'bat-msg', 'zh',
-            'zh-tw', 'zh-cn', 'zh-classical']
+            'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'vls', 'war',
+            'wo', 'wuu', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'cbk-zam', 'diq', 'zea', 'bat-msg', 'zh',
+            'zh-tw', 'zh-cn']
 
         # Order for fy: alphabetical by code, but y counts as i
 
@@ -550,6 +550,7 @@ class Family(family.Family):
             'no': self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
+            'te': ['en','hi', 'kn', 'ta', 'ml']
             'vi': self.alphabetic_revised,
             'yi': ['en','he','de']
         }
