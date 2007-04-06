@@ -550,7 +550,7 @@ class Family(family.Family):
             'no': self.alphabetic,
             'pl': self.alphabetic,
             'simple': self.alphabetic,
-            'te': ['en','hi', 'kn', 'ta', 'ml']
+            'te': ['en','hi', 'kn', 'ta', 'ml'],
             'vi': self.alphabetic_revised,
             'yi': ['en','he','de']
         }
