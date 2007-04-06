@@ -190,7 +190,7 @@ class Family(family.Family):
             'tt': u'Wikipedia bäxäse',
             #'ty': u'Discussion Wikipedia',
             'udm': u'Wikipedia сярысь вераськон',
-            'uk': u'Обговорення Вікіпедія',
+            'uk': u'Обговорення Вікіпедії',
             'ur': u'تبادلۂ خیال منصوبہ',
             'vec':u'Discussion Wikipedia',
             'vi': u'Thảo luận Wikipedia',
