@@ -44,6 +44,9 @@ Command-line options:
                file of en:
 -knownonly     only check words that have been marked as a mis-spelling in
                the spelling list; words that are not on the list are skipped
+-knownplus     finds words in the same way as knownonly, but once a word to
+               be changed has been found, also goes through the rest of the
+               page.
 """
 #
 # (C) Andre Engels, 2005
@@ -200,7 +203,7 @@ def askAlternative(word,context=None):
             if possible:
                 print "Found alternatives:"
                 for pos in possible:
-                    print "  %s"%pos
+                    wikipedia.output("  %s"%pos)
             else:
                 print "No similar words found."
         elif answer=="*":
@@ -290,6 +293,9 @@ def spellcheck(page, checknames = True, knownonly = False):
                 replacement = bigword.replace(replacement)
                 text = text[:loc] + replacement + text[loc+len(match.group(2)):]
                 loc += len(replacement)
+            if knownonly == 'plus' and text != page:
+                knownonly = False
+                loc = 0
         else:
             loc += len(match.group(2))
     if correct_html_codes:
@@ -443,6 +449,8 @@ try:
             checklang = arg[11:]
         elif arg.startswith("-knownonly"):
             knownonly = True
+        elif arg.startswith("-knownplus"):
+            knownonly = 'plus'
         else:
             title.append(arg)
 

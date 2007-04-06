@@ -312,6 +312,13 @@ def main():
         else:
             pageTitle.append(arg)
 
+    if wikipedia.getSite() == wikipedia.getSite('nl','wikipedia'):
+        print "Deze bot is op WikipediaNL niet gewenst."
+        print "Het toevoegen van cosmetic changes bij andere veranderingen is toegestaan,"
+        print "maar cosmetic_changes als stand-alone bot niet."
+        print "Vind a.u.b. een nuttig gebruik voor uw bot."
+        sys.exit()
+
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = iter([page])

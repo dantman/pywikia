@@ -331,6 +331,7 @@ class Global(object):
     needlimit = 0
     ignore = []
     bracketonly = False
+    rememberno = False
 
 class Subject(object):
     """
@@ -868,7 +869,6 @@ class Subject(object):
         updatedSites = []
         notUpdatedSites = []
         # Process all languages here
-
         if globalvar.limittwo:
             lclSite = self.originPage.site()
             lclSiteDone = False
@@ -883,7 +883,7 @@ class Subject(object):
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
                             if site != lclSite:
-                                frgnSiteDone = True
+                                 frgnSiteDone = True
                         except SaveError:
                             notUpdatedSites.append(site)
                 elif not globalvar.strictlimittwo and new.has_key(site) and site != lclSite:
@@ -895,7 +895,7 @@ class Subject(object):
                         wikipedia.output(u"BUG>>> %s no longer exists?" % new[site].aslink(True))
                         continue
                     mods, adding, removing, modifying = compareLanguages(old, new, insite = lclSite)
-                    if len(removing) > 0 or (len(modifying) > 0 and self.problemfound) or len(old.keys()) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit +1):
+                    if (len(removing) > 0 and not globalvar.autonomous) or (len(modifying) > 0 and self.problemfound) or len(old.keys()) == 0 or (globalvar.needlimit and len(adding) + len(modifying) >= globalvar.needlimit +1):
                         try:
                             if self.replaceLinks(new[site], new, bot):
                                 updatedSites.append(site)
