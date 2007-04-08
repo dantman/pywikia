@@ -43,9 +43,9 @@ in category.dump. This saves time and server load, but if it uses these data
 later, they may be outdated; use the -rebuild parameter in this case.
 
 For example, to create a new category from a list of persons, type:
-    
+
   python category.py add -person
-    
+
 and follow the on-screen instructions.
 
 
@@ -64,7 +64,7 @@ This will move all pages in the category US to the category United States.
 __version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
-# 
+#
 import re, sys, string, pickle, bz2
 import wikipedia, catlib, config, pagegenerators
 
@@ -81,6 +81,7 @@ msg_add={
     'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
     'lt':u'robotas: Pridedama [[Kategorija:%s]]',
     'nds':u'Kat-Bot: [[Kategorie:%s]] rin',
+    'nl':u'Bot: [[Categorie:%s]] toegevoegd',
     'no':u'Robot: Legger til [[Kategori:%s]]',
     'pl':u'Robot dodaje [[Kategoria:%s]]',
     'pt':u'Bot: Adicionando [[Categoria:%s]]',
@@ -116,6 +117,7 @@ deletion_reason_move = {
     'ia':u'Robot: Categoria transferite a %s',
     'lt':u'robotas: Kategorija pervadinta į %s',
     'nds':u'Kat-Bot: Kategorie na %s schaven',
+    'nl':u'Bot: Categorie is hernoemd naar %s',
     'no':u'Robot: Kategorien ble flyttet til %s',
     'pt':u'Bot: Categoria %s foi movida',
     'pl':u'Robot przenosi kategorię do %s',
@@ -138,13 +140,13 @@ class CategoryDatabase:
             self.rebuild()
         else:
             try:
-                
+
                 f = bz2.BZ2File(filename, 'r')
                 wikipedia.output(u'Reading dump from %s' % filename)
                 databases = pickle.load(f)
                 f.close()
                 # keys are categories, values are 2-tuples with lists as entries.
-                self.catContentDB = databases['catContentDB'] 
+                self.catContentDB = databases['catContentDB']
                 # like the above, but for supercategories
                 self.superclassDB = databases['superclassDB']
                 del databases
@@ -155,7 +157,7 @@ class CategoryDatabase:
     def rebuild(self):
         self.catContentDB={}
         self.superclassDB={}
-    
+
     def getSubcats(self, supercat):
         '''
         For a given supercategory, return a list of Categorys for all its
@@ -172,7 +174,7 @@ class CategoryDatabase:
             # add to dictionary
             self.catContentDB[supercat] = (subcatlist, articlelist)
             return subcatlist
-    
+
     def getArticles(self, cat):
         '''
         For a given category, return a list of Pages for all its articles.
@@ -188,7 +190,7 @@ class CategoryDatabase:
             # add to dictionary
             self.catContentDB[cat] = (subcatlist, articlelist)
             return articlelist
-    
+
     def getSupercats(self, subcat):
         # if we already know which subcategories exist here
         if self.superclassDB.has_key(subcat):
@@ -215,7 +217,7 @@ class CategoryDatabase:
         except pickle.PicklingError:
             pass
         f.close()
-        
+
 def sorted_by_last_name(catlink, pagelink):
         '''
         given a Category, returns a Category which has an explicit sort key which
@@ -307,7 +309,7 @@ def add_category(sort_by_last_name = False):
                         wikipedia.output(u"* %s" % cat.title())
                     catpl = wikipedia.Page(site, cat_namespace + ':' + newcatTitle)
                     if sort_by_last_name:
-                        catpl = sorted_by_last_name(catpl, page) 
+                        catpl = sorted_by_last_name(catpl, page)
                     if catpl in cats:
                         wikipedia.output(u"%s is already in %s." % (page.title(), catpl.title()))
                     else:
@@ -340,7 +342,7 @@ class CategoryMoveRobot:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for article in preloadingGen:
             catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
-        
+
         # TODO: create subcategory generator
         subcategories = self.oldCat.subcategoriesList(recurse = False)
         if len(subcategories) == 0:
@@ -366,6 +368,7 @@ class CategoryListifyRobot:
     '''
     listify_msg={
         'en':u'Robot: Listifying from %s (%d entries)',
+        'en':u'Bot: Lijst van %s (%d pagina\'s)',
         'sv':u'Robot: Skapar en lista från %s (%d)'
     }
 
@@ -416,10 +419,11 @@ class CategoryRemoveRobot:
         'he':u'רובוט: הקטגוריה פורקה',
         'ia':u'Robot: Categoria esseva dissolvite',
         'nds':u'Kat-Bot: Kategorie is nu oplööst',
+        'nl':u'Bot: Categorie is opgeheven',
         'pt':u'Bot: Categoria foi unida',
         'sv':u'Robot: Kategorin upplöstes',
     }
-    
+
     msg_remove={
         'da':u'Robot: Fjerner fra %s',
         'de':u'Bot: Entferne aus %s',
@@ -444,8 +448,8 @@ class CategoryRemoveRobot:
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
         else:
-            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())    
-        
+            wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), self.msg_remove) % self.cat.title())
+
     def run(self):
         articles = self.cat.articlesList(recurse = 0)
         if len(articles) == 0:
@@ -453,7 +457,7 @@ class CategoryRemoveRobot:
         else:
             for article in articles:
                 catlib.change_category(article, self.cat, None)
-        # Also removes the category tag from subcategories' pages 
+        # Also removes the category tag from subcategories' pages
         subcategories = self.cat.subcategoriesList(recurse = 0)
         if len(subcategories) == 0:
             wikipedia.output(u'There are no subcategories in category %s' % self.cat.title())
@@ -474,34 +478,34 @@ class CategoryTidyRobot:
     """
     Script to help a human to tidy up a category by moving its articles into
     subcategories
-    
+
     Specify the category name on the command line. The program will pick up the
     page, and look for all subcategories and supercategories, and show them with
     a number adjacent to them. It will then automatically loop over all pages
     in the category. It will ask you to type the number of the appropriate
     replacement, and perform the change robotically.
-    
+
     If you don't want to move the article to a subcategory or supercategory, but to
     another category, you can use the 'j' (jump) command.
-    
+
     Typing 's' will leave the complete page unchanged.
-    
+
     Typing '?' will show you the first few bytes of the current page, helping
     you to find out what the article is about and in which other categories it
     currently is.
-    
+
     Important:
      * this bot is written to work with the MonoBook skin, so make sure your bot
        account uses this skin
     """
     def __init__(self, catTitle, catDB):
         self.catTitle = catTitle
-        self.catDB = catDB        
+        self.catDB = catDB
 
         # This is a purely interactive robot. We set the delays lower.
         wikipedia.get_throttle.setDelay(1)
         wikipedia.put_throttle.setDelay(10)
-    
+
     def move_to_category(self, article, original_cat, current_cat):
         '''
         Given an article which is in category original_cat, ask the user if
@@ -524,7 +528,7 @@ class CategoryTidyRobot:
         print
         wikipedia.output(full_text[:contextLength])
         print
-        
+
         subcatlist = self.catDB.getSubcats(current_cat)
         supercatlist = self.catDB.getSupercats(current_cat)
         print
@@ -575,14 +579,14 @@ class CategoryTidyRobot:
                 print
                 wikipedia.output(full_text[:contextLength])
                 print
-                
+
                 # if categories possibly weren't visible, show them additionally
                 # (maybe this should always be shown?)
                 if len(full_text) > contextLength:
                     print ''
                     print 'Original categories: '
-                    for cat in article.categories(): 
-                        wikipedia.output(u'* %s' % cat.title()) 
+                    for cat in article.categories():
+                        wikipedia.output(u'* %s' % cat.title())
             elif choice[0] == 'u':
                 try:
                     choice=int(choice[1:])
@@ -600,13 +604,13 @@ class CategoryTidyRobot:
                 # recurse into subcategory
                 self.move_to_category(article, original_cat, subcatlist[choice])
                 flag = True
-    
+
     def run(self):
         cat = catlib.Category(wikipedia.getSite(), 'Category:' + self.catTitle)
-        
+
         # get edit summary message
         wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg_change) % cat.title())
-        
+
         articles = cat.articlesList(recurse = False)
         if len(articles) == 0:
             wikipedia.output(u'There are no articles in category ' + catTitle)
@@ -619,7 +623,7 @@ class CategoryTidyRobot:
 class CategoryTreeRobot:
     '''
     Robot to create tree overviews of the category structure.
-    
+
     Parameters:
         * catTitle - The category which will be the tree's root.
         * catDB    - A CategoryDatabase object
@@ -629,25 +633,25 @@ class CategoryTreeRobot:
         * filename - The textfile where the tree should be saved; None to print
                      the tree to stdout.
     '''
-    
+
     def __init__(self, catTitle, catDB, filename = None, maxDepth = 10):
         self.catTitle = catTitle
         self.catDB = catDB
         self.filename = filename
         # TODO: make maxDepth changeable with a parameter or config file entry
         self.maxDepth = maxDepth
-        
+
     def treeview(self, cat, currentDepth = 0, parent = None):
         '''
         Returns a multi-line string which contains a tree view of all subcategories
         of cat, up to level maxDepth. Recursively calls itself.
-        
+
         Parameters:
             * cat - the Category of the node we're currently opening
             * currentDepth - the current level in the tree (for recursion)
             * parent - the Category of the category we're coming from
         '''
-        
+
         # Translations to say that the current category is in more categories than
         # the one we're coming from
         also_in_cats = {
@@ -658,11 +662,12 @@ class CategoryTreeRobot:
             'he': u'(גם בקטגוריות %s)',
             'ia': u'(equalmente in %s)',
             'is': u'(einnig í %s)',
+            'nl': u'(ook in %s)',
             'pt': u'(também em %s)',
             'sv': u'(också i %s)',
             'ср': u'(такође у %s)',
             }
-            
+
         result = u'#' * currentDepth
         result += '[[:%s|%s]]' % (cat.title(), cat.title().split(':', 1)[1])
         result += ' (%d)' % len(self.catDB.getArticles(cat))
@@ -695,7 +700,7 @@ class CategoryTreeRobot:
     def run(self):
         """
         Prints the multi-line string generated by treeview or saves it to a file.
-    
+
         Parameters:
             * catTitle - the title of the category which will be the tree's root
             * maxDepth - the limit beyond which no subcategories will be listed
