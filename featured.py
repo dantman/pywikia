@@ -41,12 +41,12 @@ msg = {
     'bs': u'Interwiki za izabrane članke za [[%s:%s]]',
     'en': u'Featured article link for [[%s:%s]]',
     'fi': u'Suositeltu artikkeli -tähti: [[%s:%s]]',
-    'fr': u'Lien AdQ pour [[%s:%s]]', 
+    'fr': u'Lien AdQ pour [[%s:%s]]',
     'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Interwiki za izabrane članke za [[%s:%s]]',
     'it': u'collegamento articolo in vetrina [[%s:%s]]',
     'lt': u'Pavyzdinis straipsnis [[%s:%s]]',
-    'nl': u'Etalage artikel link voor [[%s:%s]]',
+    'nl': u'Etalage-artikel link voor [[%s:%s]]',
     'pl': u'Link do artykułu wyróżnionego [[%s:%s]]',
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
     'sr': u'Међувики за изабране чланке за [[%s:%s]]',
@@ -79,7 +79,7 @@ template = {
     'tr': 'Link FA',
     'vi': 'Liên kết chọn lọc',
 }
-    
+
 featured_name = {
     'bs': (BACK, u"Šablon:Wiki članak"),
     'cs': (BACK, u"Šablona:Nejlepší článek"),
@@ -160,13 +160,13 @@ def findTranslated(page, oursite=None):
     if not ourpage.exists():
         wikipedia.output(u"Our page doesn't exist: "+ourpage.title())
         return None
-    if ourpage.isRedirectPage(): 
+    if ourpage.isRedirectPage():
         ourpage=wikipedia.Page(ourpage.site(),ourpage.getRedirectTarget())
     wikipedia.output(u"Corresponding page is "+ourpage.title())
     if ourpage.namespace() != 0:
         wikipedia.output(u"...not in the main namespace, skipping")
         return None
-    if ourpage.isRedirectPage(): 
+    if ourpage.isRedirectPage():
         wikipedia.output(u"double redirect, skipping")
         return None
 	if not ourpage.exists():
@@ -209,7 +209,7 @@ def featuredWithInterwiki(fromsite, tosite):
     re_this_iw=re.compile(ur"\[\[%s:[^]]+\]\]" % fromsite.lang)
 
     arts=featuredArticles(fromsite)
-        
+
     pairs=[]
     for a in arts:
         if a.title()<afterpage:
@@ -234,7 +234,7 @@ def featuredWithInterwiki(fromsite, tosite):
                     wikipedia.output(u"(already done)")
                 else:
                     # insert just before interwiki
-                    if (not interactive or 
+                    if (not interactive or
                         wikipedia.input(u'Connecting %s -> %s. Proceed? [Y/N]'%(a.title(), atrans.title())) in ['Y','y']
                         ):
                         m=re_this_iw.search(text)
@@ -242,15 +242,15 @@ def featuredWithInterwiki(fromsite, tosite):
                             wikipedia.output(u"no interwiki record, very strange")
                             continue
                         comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
-                        text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(findtemplate, fromsite.lang)), atrans.categories()) 
+                        text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(findtemplate, fromsite.lang)), atrans.categories())
                         atrans.put(text, comment)
-                                                
+
                 cc[a.title()]=atrans.title()
         except wikipedia.PageNotSaved, e:
             wikipedia.output(u"Page not saved")
 
 if __name__=="__main__":
-    
+
     fromlang=[]
     for arg in wikipedia.handleArgs():
         if arg == '-interactive':

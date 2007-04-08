@@ -118,7 +118,7 @@ class NowCommonsDeleteBot:
     def run(self):
         commons = wikipedia.Site('commons', 'commons')
         comment = wikipedia.translate(self.site, nowCommonsMessage)
-        
+
         for page in self.getPageGenerator():
             # Show the title of the image page.
             # Highlight the title in purple.

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 This script can be used to delete pages en masse.  Of course, you will need an admin
 account on the relevant wiki.
@@ -30,6 +30,7 @@ import pagegenerators
 # Summary messages for deleting from a category.
 msg_simple_delete = {
     'en': u'Bot: Deleting a list of files.',
+    'nl': u'Bot: verwijdert een lijst met pagina\'s.',
     'pl': u'Robot usuwa pliki z listy.',
 }
 msg_delete_category = {
@@ -37,6 +38,7 @@ msg_delete_category = {
     'en': u'Robot - Deleting all pages from category %s',
     'fr': u'Bot: Supprime toutes pages de la catégorie %s',
     'lt': u'robotas: Trinami visi puslapiai iš kategorijos %s',
+    'nl': u'Bot: verwijdert alle pagina\'s uit categorie %s',
     'pl': u'Robot usuwa wszystkie artykuły z kategorii %s',
     'pt': u'Bot: Apagando todas as páginas da categoria %s',
 }
@@ -45,6 +47,7 @@ msg_delete_links = {
     'en': u'Robot - Deleting all pages linked from %s',
     'fr': u'Bot: Supprime toutes pages liées depuis %s',
     'lt': u'robotas: Trinami visi puslapiai į kuriuos yra nuoroda iš %s',
+    'nl': u'Bot: verwijdert alle pagina\'s met een link op %s',
     'pl': u'Robot usuwa wszystkie artykuły zlinkowane z %s',
     'pt': u'Bot: Apagando todas as páginas ligadas a %s',
 }
@@ -53,11 +56,13 @@ msg_delete_ref = {
     'en': u'Robot - Deleting all pages referring from %s',
     'fr': u'Bot: Supprime toutes pages référant à %s',
     'lt': u'robotas: Trinami visi puslapiai rodantys į %s',
+    'nl': u'Bot: verwijdert alle pagina\'s met referentie van %s',
     'pl': u'Robot usuwa wszystkie artykuły odnoszące się do %s',
     'pt': u'Bot: Apagando todas as páginas afluentes a %s',
 }
 msg_delete_images = {
     'en': u'Robot - Deleting all images on page %s',
+    'nl': u'Bot: verwijdert alle media op pagina %s',
     'pl': u'Robot usuwa wszystkie obrazy w artykule %s',
     'pt': u'Bot: Apagando todas as imagens da página %s',
 }
@@ -66,7 +71,7 @@ class DeletionRobot:
     """
     This robot allows deletion of pages en masse.
     """
-    
+
     def __init__(self, generator, summary, always = False):
         """
         Arguments:
@@ -85,7 +90,7 @@ class DeletionRobot:
         for page in self.generator:
             wikipedia.output(u'Processing page %s' % page.title())
             page.delete(self.summary, not self.always, throttle = True)
-    
+
 def main():
     pageName = ''
     singlePage = ''
@@ -98,7 +103,7 @@ def main():
     doImages = False
     fileName = ''
     gen = None
-    
+
     # read command line parameters
     for arg in wikipedia.handleArgs():
         if arg == '-always':
@@ -176,7 +181,7 @@ def main():
         if not summary:
             summary = wikipedia.translate(mysite, msg_delete_images)
         gen = pagegenerators.ImagesPageGenerator(wikipedia.Page(wikipedia.getSite(), pageName))
-    
+
     if gen:
         wikipedia.setAction(summary)
         # We are just deleting pages, so we have no need of using a preloading page generator

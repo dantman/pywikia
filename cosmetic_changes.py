@@ -17,6 +17,7 @@ msg_standalone = {
     'en': u'Robot: Cosmetic changes',
     'he': u'רובוט: שינויים קוסמטיים',
     'lt': u'robotas: smulkūs taisymai',
+    'nl': u'Bot: Cosmetische veranderingen',
     'pl': u'Robot dokonuje poprawek kosmetycznych',
     'pt': u'Bot: Mudanças triviais',
     }
@@ -28,6 +29,7 @@ msg_append = {
     'en': u'; cosmetic changes',
     'he': u'; שינויים קוסמטיים',
     'lt': u'; smulkūs taisymai',
+    'nl': u'; cosmetische veranderingen',
     'pl': u'; zmiany kosmetyczne',
     'pt': u'; mudanças triviais',
     }
@@ -209,7 +211,7 @@ class CosmeticChangesToolkit:
                             titleWithSection = titleWithSection[0].upper() + titleWithSection[1:]
                         newLink = "[[%s|%s]]" % (titleWithSection, label)
                     # re-add spaces that were pulled out of the link.
-                    # Examples: 
+                    # Examples:
                     #   text[[ title ]]text        -> text [[title]] text
                     #   text[[ title | name ]]text -> text [[title|name]] text
                     #   text[[ title |name]]text   -> text[[title|name]]text

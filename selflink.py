@@ -45,12 +45,13 @@ import re, sys
 # below.
 msg = {
           'de':u'Bot: Entferne Selbstlinks',
+          'en':u'Robot: Removing selflinks',
           'he':u'רובוט: מסיר קישורים של הדף לעצמו',
           'fr':u'Bot: Enlève autoliens',
-          'en':u'Robot: Removing selflinks',
+          'nl':u'Bot: links naar pagina zelf verwijderd',
           'pl':u'Robot automatycznie usuwa linki zwrotne',
           'pt':u'Bot: Retirando link para o próprio artigo'
-       }    
+       }
 
 class XmlDumpSelflinkPageGenerator:
     """
@@ -139,7 +140,7 @@ class SelflinkBot:
                 else:
                     # make bold
                     return text[:match.start()] + "'''" + new + "'''" + text[match.end():], False
-    
+
     def treat(self, page):
         # Show the title of the page where the link was found.
         # Highlight the title in purple.

@@ -6,7 +6,7 @@ Library to work with category pages on Wikipedia
 # (C) Rob W.W. Hooft, Andre Engels, 2004
 #
 # Distributed under the terms of the MIT license.
-# 
+#
 __version__ = '$Id$'
 #
 import re, time
@@ -23,6 +23,7 @@ msg_created_for_renaming = {
     'ia':u'Robot: Transferite de %s. Autores: %s',
     'fr':u'Robot : déplacé depuis %s. Auteurs: %s',
     'he':u'רובוט: הועבר מהשם %s. מחברים: %s',
+    'nl':u'Bot: hernoemd van %s. Auteurs: %s',
     'pl':u'Robot przenosi z %s. Autorzy: %s',
     'pt':u'Bot: Movido de %s. Autor: %s',
     }
@@ -41,7 +42,7 @@ def unique(l):
     l=dict.fromkeys(l).keys()
     l.sort()
     return l
-    
+
 class Category(wikipedia.Page):
     """Subclass of Page that has some special tricks that only work for
        category: pages"""
@@ -141,7 +142,7 @@ class Category(wikipedia.Page):
         catstodo = [(self,recurse)]
         # regular expression matching the "(next 200)" link
         RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
-        
+
         while catstodo:
             (cat,recurselevel) = catstodo.pop()
             if type(recurselevel) == type(1):
@@ -231,7 +232,7 @@ class Category(wikipedia.Page):
                 # There might be a link to Special:Categories we don't want
                 if isCatTitle(title, self.site()):
                     yield SUPERCATEGORY, title
-    
+
     def subcategories(self, recurse = False):
         """
         Yields all subcategories of the current category.
@@ -369,7 +370,7 @@ class Category(wikipedia.Page):
             newtext = newtext[pos:]
 	    targetCat.put(newtext, creationSummary)
             return True
-    
+
 #def Category(code, name):
 #    """Factory method to create category link objects from the category name"""
 #    # Standardized namespace
@@ -432,9 +433,9 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
 
 def test():
     site = wikipedia.getSite()
-    
+
     cat = Category(site, 'Category:Software')
-    
+
     wikipedia.output(u'SUBCATEGORIES:')
     for subcat in cat.subcategories():
         wikipedia.output(subcat.title())

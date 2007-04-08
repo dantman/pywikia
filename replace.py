@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+ -*- coding: utf-8  -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
@@ -57,7 +57,7 @@ other:       - First argument is the old text, second argument is the new text.
                If the -regex argument is given, the first argument will be
                regarded as a regular expression, and the second argument might
                contain expressions like \\1 or \g<name>.
-      
+
 NOTE: Only use either -xml or -file or -page, but don't mix them.
 
 Examples:
@@ -75,7 +75,7 @@ Errror -> Error, use this:
 
 If you have a page called 'John Doe' and want to convert HTML tags to wiki
 syntax, use:
-    
+
     python replace.py -page:John_Doe -fix:HTML
 """
 #
@@ -110,8 +110,9 @@ msg = {
        'it':u'Bot: Sostituzione automatica %s',
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
        'ksh':u'Bot: hät outomatesch Täx jetuusch: %s',
-       'lt':u'robotas: Automatinis teksto keitimas %s',       
+       'lt':u'robotas: Automatinis teksto keitimas %s',
        'nds':u'Bot: Text automaatsch utwesselt: %s',
+       'nl':u'Bot: automatisch tekst vervangen %s',
        'pl':u'Robot automatycznie zamienia tekst %s',
        'pt':u'Bot: Mudança automática %s',
        'sr':u'Бот: Аутоматска замена текста %s',
@@ -138,7 +139,7 @@ class XmlDumpReplacePageGenerator:
         self.xmlFilename = xmlFilename
         self.replacements = replacements
         self.exceptions = exceptions
-    
+
     def __iter__(self):
         import xmlreader
         mysite = wikipedia.getSite()
@@ -161,11 +162,11 @@ class ReplaceRobot:
     A bot that can do text replacements.
     """
     def __init__(self, generator, replacements, exceptions = [], acceptall = False, allowoverlap = False, recursive = False):
-        """        
+        """
         Arguments:
             * generator    - A generator that yields Page objects.
             * replacements - A list of 2-tuples of original text (as a compiled
-                             regular expression) and replacement text (as a 
+                             regular expression) and replacement text (as a
                              string).
             * exceptions   - A list of compiled regular expression; pages which
                              contain text that matches one of these won't be
@@ -179,11 +180,11 @@ class ReplaceRobot:
         self.exceptions = exceptions
         self.acceptall = acceptall
         self.allowoverlap = allowoverlap
-        self.recursive = recursive 
+        self.recursive = recursive
 
     def checkExceptions(self, original_text):
         """
-        If one of the exceptions applies for the given text, returns the 
+        If one of the exceptions applies for the given text, returns the
         substring which matches the exception. Otherwise it returns None.
         """
         for exception in self.exceptions:
@@ -201,7 +202,7 @@ class ReplaceRobot:
         for old, new in self.replacements:
             new_text = wikipedia.replaceExcept(new_text, old, new, ['nowiki', 'comment', 'math', 'pre'], allowoverlap = self.allowoverlap)
         return new_text
-        
+
     def run(self):
         """
         Starts the robot.
@@ -256,14 +257,14 @@ def prepareRegexForMySQL(pattern):
     pattern = pattern.replace('\s', '[:space:]')
     pattern = pattern.replace('\d', '[:digit:]')
     pattern = pattern.replace('\w', '[:alnum:]')
-    
+
     pattern = pattern.replace("'", "\\" + "'")
     #pattern = pattern.replace('\\', '\\\\')
     #for char in ['[', ']', "'"]:
     #    pattern = pattern.replace(char, '\%s' % char)
     return pattern
-    
-                        
+
+
 def main():
     gen = None
     # summary message
@@ -344,7 +345,7 @@ def main():
                 gen = generator
             else:
                 commandline_replacements.append(arg)
-                
+
     if (len(commandline_replacements)%2):
         raise wikipedia.Error, 'require even number of replacements.'
     elif (len(commandline_replacements) == 2 and fix == None):
@@ -359,7 +360,7 @@ def main():
                                      commandline_replacements[i+1]))
 
         else:
-           raise wikipedia.Error, 'Specifying -fix with replacements is undefined' 
+           raise wikipedia.Error, 'Specifying -fix with replacements is undefined'
     elif fix == None:
         old = wikipedia.input(u'Please enter the text that should be replaced:')
         new = wikipedia.input(u'Please enter the new text:')
@@ -380,7 +381,7 @@ def main():
             if summary_message == '':
                 summary_message = default_summary_message
             wikipedia.setAction(summary_message)
-            
+
     else:
         # Perform one of the predefined actions.
         try:
@@ -397,7 +398,7 @@ def main():
             exceptions = fix['exceptions']
         replacements = fix['replacements']
 
-    
+
     # already compile all regular expressions here to save time later
     for i in range(len(replacements)):
         old, new = replacements[i]
@@ -417,11 +418,11 @@ def main():
         else:
             exceptionR = re.compile(exception, re.UNICODE)
         exceptions[i] = exceptionR
-    
+
     if xmlFilename:
         gen = XmlDumpReplacePageGenerator(xmlFilename, replacements, exceptions)
     elif useSql:
-        whereClause = 'WHERE (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(old.pattern) for (old, new) in replacements]) 
+        whereClause = 'WHERE (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(old.pattern) for (old, new) in replacements])
         if exceptions:
             exceptClause = 'AND NOT (%s)' % ' OR '.join(["old_text RLIKE '%s'" % prepareRegexForMySQL(exc.pattern) for exc in exceptions])
         else:

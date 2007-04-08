@@ -15,6 +15,7 @@ fixes = {
                'he':u'רובוט: ממיר/מתקן HTML',
                'ia':u'Robot: conversion/reparation de HTML',
                'lt':u'robotas: konvertuojamas/taisomas HTML',
+               'nl':u'Bot: conversie/reparatie HTML',
                'pl':u'Robot konwertuje/naprawia HTML',
                'pt':u'Bot: Corrigindo HTML',
                'sr':u'Бот: Поправка HTML-а'
@@ -87,6 +88,7 @@ fixes = {
                'he':u'בוט: מתקן תחביר ויקי',
                'ia':u'Robot: Reparation de syntaxe wiki',
                'lt':u'robotas: Taisoma wiki sintaksė',
+               'nl':u'Bot: reparatie wikisyntaxis',
                'pl':u'Robot poprawia wiki-składnię',
                'pt':u'Bot: Corrigindo sintaxe wiki',
                'sr':u'Бот: Поправка вики синтаксе',

@@ -49,6 +49,7 @@ class ImageRobot:
         'fr': u'Bot: Remplace image %s par %s',
         'he': u'רובוט - מחליף את התמונה %s בתמונה %s',
         'lt': u'robotas: vaizdas %s keičiamas į %s',
+        'nl': u'Bot: afbeelding %s vervangen door %s',
         'pl': u'Robot zamienia obraz %s na %s',
         'pt': u'Bot: Alterando imagem %s para %s',
     }
@@ -60,6 +61,7 @@ class ImageRobot:
         'fr': u'Bot: Enleve image %s',
         'he': u'רובוט - מסיר את התמונה %s',
         'lt': u'robotas: Šalinamas vaizdas %s',
+        'nl': u'Bot: afbeelding %s verwijderd',
         'pl': u'Robot usuwa obraz %s',
         'pt': u'Bot: Alterando imagem %s',
     }
@@ -123,7 +125,7 @@ class ImageRobot:
         #Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
         replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.always)
         replaceBot.run()
-    
+
 def main():
     oldImage = None
     newImage = None
