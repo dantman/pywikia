@@ -9,6 +9,11 @@ import wikipedia
 import pagegenerators
 import sys
 
+comment = {
+    'en': u'images for elimination',
+    'pt': u'marcação de imagens para eliminação',
+    }
+
 def appendtext(page, apptext):
     try:
         text = page.get()
@@ -20,7 +25,8 @@ def appendtext(page, apptext):
     if text != page.get():
         wikipedia.showDiff(page.get(),text)
         if wikipedia.input('Do you want to save the changes? (Y/N)') in 'yY':
-            page.put(text,u'marcação de imagens para eliminação')
+            msg = wikipedia.translate(wikipedia.getSite(), comment)
+            page.put(text, msg)
 
 def main():
     for arg in wikipedia.handleArgs():
@@ -34,14 +40,13 @@ def main():
     for page in generator:
         #print page.title()
         if '<table id="mw_metadata" class="mw_metadata">' not in page.getImagePageHtml() and 'http://' not in page.get():
-            print '\n' + page.title()
+            wikipedia.output(u'\n' + page.title())
             appendtext(page,u'\n\n{{subst:No-use2}}')
             uploader = page.getFileVersionHistory().pop()[1]
             usertalkname = u'User Talk:' + uploader
             usertalkpage = wikipedia.Page(mysite,usertalkname)
             msg2uploader = u'\n\n{{img-sem-uso|' + page.title() + u'}}'
             appendtext(usertalkpage,msg2uploader)
-
 
 if __name__ == "__main__":
     try:
