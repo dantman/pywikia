@@ -2802,7 +2802,7 @@ class Site(object):
         l = []
         for key, value in query.iteritems():
             key = urllib.quote(key)
-            value = urllib.quote(value)
+            value = urllib.quote(value.encode('utf-8'))
             l.append(key + '=' + value)
         return '&'.join(l)
 
