@@ -329,6 +329,7 @@ class Page(object):
         self._userName = None
         self._ipedit = None
         self._editTime = None
+        self._deletedRevs = None
 
     def site(self):
         """The site of the page this Page refers to,
@@ -1637,7 +1638,95 @@ class Page(object):
                         data = data[ibegin:iend]
                     output(data)
                     return False
-                
+
+    def loadDeletedRevisions(self):
+        """Loads up Special/Undelete for the page and stores all revisions'
+           timestamps, dates, editors and comments.
+           Returns list of timestamps (which are used to refer to revisions later on).
+        """
+        #TODO: Handle image file revisions too.
+        output(u'Loading list of deleted revisions for [[%s]]...' % self.title())
+
+        address = self.site().undelete_view_address(self.urlname())
+        self.site().forceLogin(sysop = True)
+        text = self.site().getUrl(address, sysop = True)
+        #TODO: Handle non-existent pages etc
+
+        rxRevs = re.compile(r'<input name="ts(?P<ts>\d+)".*?title=".*?">(?P<date>.*?)</a>.*?title=".*?">(?P<editor>.*?)</a>.*?<span class="comment">\((?P<comment>.*?)\)</span>')
+        self._deletedRevs = {}
+        for rev in rxRevs.finditer(text):
+            self._deletedRevs[rev.group('ts')] = [
+                    rev.group('date'),
+                    rev.group('editor'),
+                    rev.group('comment'),
+                    None,  #Revision text
+                    False, #Restoration marker
+                    ]
+
+        self._deletedRevsModified = False
+        return self._deletedRevs.keys()
+
+    def getDeletedRevision(self, timestamp, retrieveText=False):
+        """Returns a deleted revision [date, editor, comment, text, restoration marker].
+           text will be None, unless retrieveText is True (or has been retrieved earlier).
+        """
+        if self._deletedRevs == None:
+            self.loadDeletedRevisions()
+        if not self._deletedRevs.has_key(timestamp):
+            #TODO: Throw an exception instead?
+            return None
+
+        if retrieveText and not self._deletedRevs[timestamp][3]:
+            output(u'Retrieving text of deleted revision...')
+            address = self.site().undelete_view_address(self.urlname(),timestamp)
+            self.site().forceLogin(sysop = True)
+            text = self.site().getUrl(address, sysop = True)
+            und = re.search('<textarea readonly="1" cols="80" rows="25">(.*?)</textarea><div><form method="post"',text,re.DOTALL)
+            if und:
+                self._deletedRevs[timestamp][3] = und.group(1)
+
+        return self._deletedRevs[timestamp]
+
+    def markDeletedRevision(self, timestamp, undelete=True):
+        """Marks revision (identified by timestamp) for undeletion (default)
+           or to remain as deleted (if undelete=False).
+        """
+        if self._deletedRevs == None:
+            self.loadDeletedRevisions()
+        if not self._deletedRevs.has_key(timestamp):
+            #TODO: Throw an exception?
+            return None
+        self._deletedRevs[timestamp][4] = undelete
+        self._deletedRevsModified = True
+
+    def undelete(self, comment=''):
+        """Undeletes page based on the undeletion markers set by previous calls.
+           If no calls have been made since loadDeletedRevisions(), everything will be restored.
+        """
+        if self._deletedRevs == None:
+            self.loadDeletedRevisions()
+        output(u'Undeleting...')
+
+        address = self.site().undelete_address()
+        self.site().forceLogin(sysop = True)
+        token = self.site().getToken(self, sysop=True)
+
+        formdata = {
+                'target': self.title(),
+                'wpComment': comment,
+                'wpEditToken': token,
+                'restore': mediawiki_messages.get('undeletebtn')
+                }
+
+        if self._deletedRevsModified:
+            for ts in self._deletedRevs.keys():
+                if self._deletedRevs[ts][4]:
+                    formdata['ts'+ts] = '1'
+
+        self._deletedRevs = None
+        #TODO: Check for errors below (have we succeeded? etc):
+        return self.site().postForm(address,formdata,sysop=True)
+ 
     def protect(self, edit = 'sysop', move = 'sysop', unprotect = False, reason = None, prompt = True, throttle = False):
         """(Un)protects a wiki page. Requires administrator status. If reason is None,
            asks for a reason. If prompt is True, asks the user if he wants to protect the page.
@@ -3294,6 +3383,12 @@ class Site(object):
 
     def delete_address(self, s):
         return self.family.delete_address(self.lang, s)
+
+    def undelete_view_address(self, s, ts=''):
+        return self.family.undelete_view_address(self.lang, s, ts)
+
+    def undelete_address(self):
+        return self.family.undelete_address(self.lang)
 
     def protect_address(self, s):
         return self.family.protect_address(self.lang, s)

@@ -2329,6 +2329,12 @@ class Family:
     def delete_address(self, code, name):
         return '%s?title=%s&action=delete' % (self.path(code), name)
 
+    def undelete_view_address(self, code, name, ts=''):
+        return '%s?title=%s:Undelete&target=%s&timestamp=%s' % (self.path(code), self.special_namespace_url(code), name, ts)
+
+    def undelete_address(self, code):
+        return '%s?title=%s:Undelete&action=submit' % (self.path(code), self.special_namespace_url(code))
+
     def protect_address(self, code, name):
         return '%s?title=%s&action=protect' % (self.path(code), name)
 
