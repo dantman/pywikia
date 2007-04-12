@@ -1699,12 +1699,14 @@ class Page(object):
         self._deletedRevs[timestamp][4] = undelete
         self._deletedRevsModified = True
 
-    def undelete(self, comment=''):
+    def undelete(self, comment='', throttle=False):
         """Undeletes page based on the undeletion markers set by previous calls.
            If no calls have been made since loadDeletedRevisions(), everything will be restored.
         """
         if self._deletedRevs == None:
             self.loadDeletedRevisions()
+        if throttle:
+            put_throttle()
         output(u'Undeleting...')
 
         address = self.site().undelete_address()
