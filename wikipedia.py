@@ -1702,9 +1702,18 @@ class Page(object):
     def undelete(self, comment='', throttle=False):
         """Undeletes page based on the undeletion markers set by previous calls.
            If no calls have been made since loadDeletedRevisions(), everything will be restored.
+
+           Simplest case:
+              wikipedia.Page(...).undelete('This will restore all revisions')
+
+           More complex:
+              pg = wikipedia.Page(...)
+              revs = pg.loadDeletedRevsions()
+              for rev in revs:
+                  if ... #decide whether to undelete a revision
+                      pg.markDeletedRevision(rev) #mark for undeletion
+              pg.undelete('This will restore only selected revisions.')
         """
-        if self._deletedRevs == None:
-            self.loadDeletedRevisions()
         if throttle:
             put_throttle()
         output(u'Undeleting...')
@@ -1720,7 +1729,7 @@ class Page(object):
                 'restore': mediawiki_messages.get('undeletebtn')
                 }
 
-        if self._deletedRevsModified:
+        if self._deletedRevs != None and self._deletedRevsModified:
             for ts in self._deletedRevs.keys():
                 if self._deletedRevs[ts][4]:
                     formdata['ts'+ts] = '1'
