@@ -14,6 +14,8 @@ Command line options:
 -images:     Delete all images used on a given page.
 -always      Don't prompt to delete pages, just do it.
 -summary:    Supply a custom edit summary.
+-undelete:   Actually undelete pages instead of deleting.
+             Obviously works only with -file.
 
 Examples:
 
@@ -72,7 +74,7 @@ class DeletionRobot:
     This robot allows deletion of pages en masse.
     """
 
-    def __init__(self, generator, summary, always = False):
+    def __init__(self, generator, summary, always = False, undelete=True):
         """
         Arguments:
             * generator - A page generator.
@@ -81,6 +83,7 @@ class DeletionRobot:
         self.generator = generator
         self.summary = summary
         self.always = always
+        self.undelete = undelete
 
     def run(self):
         """
@@ -89,7 +92,10 @@ class DeletionRobot:
         #Loop through everything in the page generator and delete it.
         for page in self.generator:
             wikipedia.output(u'Processing page %s' % page.title())
-            page.delete(self.summary, not self.always, throttle = True)
+            if self.undelete:
+                page.undelete(self.summary, throttle = True)
+            else:
+                page.delete(self.summary, not self.always, throttle = True)
 
 def main():
     pageName = ''
@@ -101,6 +107,7 @@ def main():
     doRef = False
     doLinks = False
     doImages = False
+    undelete = False
     fileName = ''
     gen = None
 
@@ -148,6 +155,8 @@ def main():
                 pageName = wikipedia.input(u'Enter the page with the images to delete:')
             else:
                 pageName = arg[len('-images'):]
+        elif arg.startswith('-undelete'):
+            undelete = True
 
     mysite = wikipedia.getSite()
 
@@ -186,7 +195,7 @@ def main():
         wikipedia.setAction(summary)
         # We are just deleting pages, so we have no need of using a preloading page generator
         # to actually get the text of those pages.
-        bot = DeletionRobot(gen, summary, always)
+        bot = DeletionRobot(gen, summary, always, undelete)
         bot.run()
     else:
         wikipedia.showHelp(u'delete')
