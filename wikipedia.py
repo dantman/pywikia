@@ -1652,7 +1652,7 @@ class Page(object):
         text = self.site().getUrl(address, sysop = True)
         #TODO: Handle non-existent pages etc
 
-        rxRevs = re.compile(r'<input name="ts(?P<ts>\d+)".*?title=".*?">(?P<date>.*?)</a>.*?title=".*?">(?P<editor>.*?)</a>.*?<span class="comment">\((?P<comment>.*?)\)</span>')
+        rxRevs = re.compile(r'<input name="(?P<ts>(?:ts|fileid)\d+)".*?title=".*?">(?P<date>.*?)</a>.*?title=".*?">(?P<editor>.*?)</a>.*?<span class="comment">\((?P<comment>.*?)\)</span>',re.DOTALL)
         self._deletedRevs = {}
         for rev in rxRevs.finditer(text):
             self._deletedRevs[rev.group('ts')] = [
@@ -1676,7 +1676,7 @@ class Page(object):
             #TODO: Throw an exception instead?
             return None
 
-        if retrieveText and not self._deletedRevs[timestamp][3]:
+        if retrieveText and not self._deletedRevs[timestamp][3] and timestamp[:2]=='ts':
             output(u'Retrieving text of deleted revision...')
             address = self.site().undelete_view_address(self.urlname(),timestamp)
             self.site().forceLogin(sysop = True)
