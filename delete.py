@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-This script can be used to delete pages en masse.  Of course, you will need an admin
-account on the relevant wiki.
+This script can be used to delete and undelete pages en masse.
+Of course, you will need an admin account on the relevant wiki.
 
 Syntax: python delete.py [-category categoryName]
 
 Command line options:
 
+-page:       Delete specified page
 -cat:        Delete all pages in the given category.
 -links:      Delete all pages linked from a given page.
 -file:       Delete all pages listed in a text file.
 -ref:        Delete all pages referring from a given page.
 -images:     Delete all images used on a given page.
--always      Don't prompt to delete pages, just do it.
+-always:     Don't prompt to delete pages, just do it.
 -summary:    Supply a custom edit summary.
 -undelete:   Actually undelete pages instead of deleting.
-             Obviously works only with -file.
+             Obviously makes sense only with -page and -file.
 
 Examples:
 
