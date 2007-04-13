@@ -1,4 +1,4 @@
- -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8 -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
