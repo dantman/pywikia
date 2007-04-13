@@ -3309,6 +3309,8 @@ class Site(object):
         Try to check whether s is in the form "foo:bar" or ":foo:bar"
         where foo is a known language code or family. In such a case
         we are dealing with an interwiki link.
+        Called recursively if the first part of the link refers to this
+        site's own family and/or language.
         """
         s = s.lstrip(":")
         if not ':' in s:
@@ -3321,13 +3323,19 @@ class Site(object):
             interlangTargetFamily = Family(self.family.interwiki_forward)
         else:
             interlangTargetFamily = self.family
-        if not self.getNamespaceIndex(first) and (
-                #first in self.validLanguageLinks() or (
-                first in interlangTargetFamily.langs.keys() or (
-                first in self.family.known_families
-                and self.family.known_families[first] != self.family.name)):
-            return True
-        return self.isInterwikiLink(rest)
+        if self.getNamespaceIndex(first):
+            return False
+        if first in interlangTargetFamily.langs:
+            if first == self.lang:
+                return self.isInterwikiLink(rest)
+            else:
+                return True
+        if first in self.family.known_families:
+            if first == self.family.name:
+                return self.isInterwikiLink(rest)
+            else:
+                return True
+        return False
 
     def encoding(self):
         return self.family.code2encoding(self.lang)
