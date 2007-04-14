@@ -93,7 +93,7 @@ lang = k[1]
 # been eliminated.
 # FIXME: Not all language/project combinations have been defined yet.
 #       Add the following strings to customise for a language:
-#       logbook, talkpage, summary, netext, summary2, user, con, report_page
+#       logbook, talk_page, summary, netext, summary2, user, con, report_page
 #       comment, bad_pag, report_text, logt.
 
 ############################################################################
@@ -112,7 +112,7 @@ logbook = {
     'nl':str(project) + ':Logboek welkom',
     }
 #The user talk namespace name (f.e. User_talk:)
-talkpage = {
+talk_page = {
     'commons':'User_talk:',
     'de':'Benutzer_Diskussion:',
     'en':'User_talk:',
@@ -161,11 +161,11 @@ con = {
     }
 # The page where the bot will report users with a possibly bad username.
 report_page = {
-    'commons':'Commons:Administrators\' noticeboard/User problems/Usernames to be checked',
+    'commons':str(project) + ':Administrators\' noticeboard/User problems/Usernames to be checked',
     'de':'Benutzer:Filnik/Report',
-    'en':'Wikipedia:Administrator intervention against vandalism',
+    'en':str(project) + ':Administrator intervention against vandalism',
     'it':'Utente:Filbot/Report',
-    'nl':'Wikipedia:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
+    'nl':str(project) + ':Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
     }
 # The edit summary for reporting a possibly bad username.
 comment = {
@@ -212,14 +212,14 @@ project_inserted = ['commons', 'de', 'en', 'it', 'nl']
 
 # A little block-statement to ensure that the bot won't start with en-parameters
 if lang not in project_inserted:
-    print "Your project is not supported by the framework. You have to edit the script and add it!"
+    wikipedia.output(u"Your project is not supported by the framework. You have to edit the script and add it!")
     wikipedia.stopme()
     exit()
 
 # The follow lines translate the language's parameters.
 welcom = wikipedia.translate(wikipedia.getSite(), netext)
-talk = wikipedia.translate(wikipedia.getSite(), talkpage)
-contib = u'Special:Contributions'
+talk = wikipedia.translate(wikipedia.getSite(), talk_page)
+contib = 'Special:Contributions'
 summ = wikipedia.translate(wikipedia.getSite(), summary)
 logg = wikipedia.translate(wikipedia.getSite(), logbook)
 summ2 = wikipedia.translate(wikipedia.getSite(), summary2)
@@ -290,11 +290,11 @@ def badword_function(raw):
         xl = pl.search(raw, pos)
         if xl == None:
             if len(list_loaded) >= 1:
-                print "\nBad words loaded."
+                wikipedia.output(u"\nBad words loaded.")
                 load_2 = False
                 return list_loaded
             elif len(done) == 0:
-                print "There was no input on the page with bad words."
+                wikipedia.output(u"There was no input on the page with bad words.")
                 load_2 = False
                 continue
         pos = xl.end()
@@ -308,11 +308,11 @@ if filter_wp == True:
     elenco_others = ['@', ".com", ".sex", ".org", ".uk", ".en", ".it", "admin", "administrator", "amministratore", '@yahoo.com', '@alice.com', "amministratrice", "burocrate", "checkuser", "developer", "http://", "jimbo", 'jimmy wales', 'jymmy wales', 'jymbo wales', 'jimbo waIes', "mediawiki", "on wheals", "on wheal", "on wheel", "on wheels", "planante", "razinger", "sysop", "troll", "vandal", " v.f. ", "v. fighter", "vandal f.", "vandal fighter", 'wales jimmy', "wheels", 'willy wheels', "wales", "www."]
     badword_page = wikipedia.Page(lang, bad_page)
     if badword_page.exists():
-        print "Loading the badwords list from Wikipedia..."
+        wikipedia.output(u"Loading the bad words list from " + wikipedia.getSite().hostname() + u"...")
         text_bad = badword_page.get()
         list_loaded = badword_function(text_bad)
     else:
-        print "         >>>WARNING: The badword-page doesn't exist!<<<"
+        wikipedia.output(u"         >>>WARNING: The bad word page does not exist!<<<")
         list_loaded = list()
     elencovarie = elenco_others + list_loaded
 elif filter_wp == False:
@@ -337,7 +337,7 @@ def pageText(url):
 	response.close()
     # When you load to many users, urllib2 can give this error.
     except urllib2.HTTPError:
-        print "Server error. Pausing for 10 seconds before continuing. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
+        wikipedia.output(u"Server error. Pausing for 10 seconds before continuing. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
         time.sleep(10)
 	request = urllib2.Request(url)
 	user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
@@ -356,17 +356,17 @@ def parselog(raw):
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure)
     while load == True:
-        reg = '</a> \(<a href=\"/w/index.php\?title=' + talk + '(.*?)&amp;action=edit'
+        reg = '\(<a href=\"/w/index.php\?title=' + talk + '(.*?)&amp;action=edit\"'
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
             if len(done) >= 1:
                 load = False
-                print "\nLoaded all users..."
+                wikipedia.output(u"\nLoaded all users...")
                 continue
             elif len(done) == 0:
                 load = False
-                print "There is nobody to welcomed..."
+                wikipedia.output(u"There is nobody to welcomed...")
                 continue
         pos = x.end()
         username = x.group(1)
@@ -379,10 +379,13 @@ def parselog(raw):
         contribnum = contribs.count('<li>') #This is not an accurate count, it just counts the first
                                             #50 contributions
         if contribnum >= number:
-            print username + " has enough edits to be welcomed"
+            wikipedia.output( username + u" has enough edits to be welcomed")
             users.append([username, contribnum])
         elif contribnum < number:
-            print username + "has only " + str(contribnum) + " contributions"
+            if contribnum == 0:
+                wikipedia.output( username + u" has no contributions")
+            else:
+                wikipedia.output( username + u" has only " + str(contribnum) + u" contributions")
     return users
 hechas = list()
 
@@ -402,17 +405,17 @@ def report(lang, rep_page, username, com):
         # Adding the log :)
         rep_text = rep(username)
         another_page.put(text_get + rep_text, comment = com, minorEdit = True)
-        print "...Reported..."
+        wikipedia.output(u"...Reported...")
     else:
         pos = y.end()
-        print "The user is already in the report page."
+        wikipedia.output(u"The user is already in the report page.")
 # Here there is the main loop
 while 1:
     # Here there is the URL of the new users, i've find that this url below is the same for all the project, so it
     # mustn't be changed
     URL = "http://%s/w/index.php?title=Special:Log&type=newusers&user=&page=&limit=%d" % (wikipedia.getSite().hostname(), limit)
     log = pageText(URL).decode('utf-8', 'replace')
-    print "Loading latest " + str(limit) + " new users from " + (wikipedia.getSite().hostname()) + "...\n"
+    wikipedia.output(u"Loading latest " + str(limit) + u" new users from " + (wikipedia.getSite().hostname()) + u"...\n")
     parsed = parselog(log)
     for tablita in parsed:
         username = str(tablita[0])
@@ -431,7 +434,7 @@ while 1:
             running = True
             while running:
                 if ask == True:
-                    print "%s hasn't got a valid nickname, what shall i do?" % username
+                    wikipedia.output(u"%s hasn't got a valid nickname, what shall i do?" % username )
                     answer = wikipedia.input("[B]lock or [W]elcome?")
                     for w in block:
                         if w in answer:
@@ -442,7 +445,7 @@ while 1:
                             baduser = False
                             running = False
                 elif ask == False:
-                    print "%s is possibly not a wanted username. It will be reported." % username
+                    wikipedia.output(u"%s is possibly not a wanted username. It will be reported." % username )
                     report(lang, rep_page, username, com)
                     running = False
         elif baduser == False:
@@ -451,15 +454,15 @@ while 1:
                     UNT.put(welcom, summ)
                     hechas.append(tablita)
                 except wikipedia.EditConflict:
-                    print "An edit conflict has occured, skipping this user."
+                    wikipedia.output(u"An edit conflict has occured, skipping this user.")
                     continue
         if log_variable == True:
             if len(hechas) == 1:
-                print "One user has been welcomed."
+                wikipedia.output(u"One user has been welcomed.")
             elif len(hechas) == 0:
-                print "No users have been welcomed."
+                wikipedia.output(u"No users have been welcomed.")
             else:
-                print str(len(hechas)) + " users have been welcomed."
+                wikipedia.output( str(len(hechas)) + u" users have been welcomed.")
             if len(hechas) < numberlog:
                 continue
             # update the welcome log each fifth welcome message
@@ -474,7 +477,7 @@ while 1:
                     month = '0' + month
                     if lang == 'it':
                         pl = wikipedia.Page(welcomesite, logg + '/' + day + '/' + month + '/' + year)
-                    if lang == 'commons':
+                    elif lang == 'commons':
                         pl = wikipedia.Page(welcomesite, logg + '/' + month + '/' + day + '/' + year)
                     else:
                         pl = wikipedia.Page(welcomesite, logg + '/' + year + '/' + month + '/' + day)
@@ -500,7 +503,7 @@ while 1:
                     pl.put(''.join(safety), summ2)
                     hechas = list()
                 except wikipedia.EditConflict:
-                    print "An edit conflict has occured. Pausing for 10 seconds before continuing."
+                    wikipedia.output(u"An edit conflict has occured. Pausing for 10 seconds before continuing.")
                     time.sleep(10)
                     pl.put(''.join(safety), summ2)
                     hechas = list()
@@ -508,9 +511,10 @@ while 1:
             pass
     # If recursive, don't exit, repeat after one hour
     if recursive == True:
-            print "Sleeping " +  str(time_variable) + " seconds before rerun. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
+            wikipedia.output(u"Sleeping " +  str(time_variable) + u" seconds before rerun. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
             time.sleep(time_variable)
     # If not recursive, break
     elif recursive == False:
-            print "Stop!"
+            wikipedia.output(u"Stop!")
             wikipedia.stopme()
+            exit()
