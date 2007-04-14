@@ -27,29 +27,29 @@ This script uses one templates that needs to be on the local wiki. In this scrip
 it is called {{WLE}}. It contains mark up code for log entries.
 
 This script understands the following command-line arguments:
--edit           - Define how many edits need the user to be welcomed (default: 1).
+-edit           - Define how many edits a new user needs to be welcomed (default: 1).
 
--time           - Define how many time the bot must sleep before restart (default: 1 hour).
+-time           - Define how long the bot must sleep before restart (default: 1 hour).
 
 -break          - Use it if you don't want that the Bot restart at the end (it will break).
 
--nlog           - Use this parameter if you don't want that the Bot will add a log.
+-nlog           - Use this parameter if you don't want that the Bot will add a log (default: not defined)
 
--limit          - Use this parameter to define how may users should be checked :-)
+-limit          - Use this parameter to define how may users should be checked (default:50)
 
--numberlog      - The number of user to welcome before refresh the log.
+-numberlog      - The number of users to welcome before refreshing the welcome log (default: 4)
 
--ask or -askme  - Use this parameter, if you want that the Bot asks you if report an user or not.
+-ask or -askme  - Use this parameter if you want that the Bot asks you if report an user or not.
 
 -filter         - Use this parameter to enable the nickname filter.
 
 Known issues. Please fix these if you are capable and motivated:
 * exits when wiki is down.
 * script contains some duplicate code. Refactoring might be nice.
-* automatic user talk namespace name could be extracted from the wiki itself (would save customisation in three places).
+* automatic user talk namespace name could be extracted from the framwork somewhere (family files) (would save customisation)
 Done but it might be done better
 * username and contributions (plural) can probably also be extracted from wiki (saves 2 customisations)
-* variable for how many users to skip
+* add variable for how many users to skip (f.e. the 10 latest users, that may not have made any edits)
 
 """
 #
@@ -67,16 +67,16 @@ import urllib2, config
 import wikipedia, codecs
 import time, re
 
-# I use this trick to understand what project and lenguage will the bot use
+# I use this trick to understand what project and language the bot will use
 c = str(wikipedia.getSite())
 k = c.split(":")
 project = k[0]
-leng = k[1]
+lang = k[1]
 
 # Using the wikipedia.translate() class i could use the right page/user/summary
 # ecc. without specify what project the bot will use :)
 # FIXME: There isn't all the project, so, if it's not the right project you have to
-# add it :) I think that's simple if you look at the other lenguages ;)
+# add it :) I think that's simple if you look at the other languages ;)
 # N.B. The parameters below aren't the only one that needs to be fixed, search
 # the other dictionary delimeted in the same way :-) (it's only one) or search
 # "FIXME" :-)
@@ -86,130 +86,140 @@ leng = k[1]
 ####################################################################################
 
 # The text below are dictionaries, you have only to copy the en line, change 'en' in
-# your lenguage (for example 'de') and modify the text between "" that follow.
+# your language (for example 'de') and modify the text between "" that follow.
+
+#This is the page where the bot will save the log (for example: Wikipedia:Welcome log).
 logbook = {
-       'de':str(project) + ":Willkommen log",
-       'en':str(project) + ":Welcome log" ,
-       'it':str(project) + ":Benvenuto log",
-       'nl':str(project) + ':Logboek welkom',
-       }
-
+    'commons':str(project) + ":Welcome log" ,
+    'de':str(project) + ":Willkommen log",
+    'en':str(project) + ":Welcome log" ,
+    'it':str(project) + ":Benvenuto log",
+    'nl':str(project) + ':Logboek welkom',
+    }
+#The user talk namespace name, for example User_talk:
 talkpage = {
-       'de':'Benutzer_Diskussion:',
-       'en':'User_talk:',
-       'it':'Discussioni_utente:',
-       'nl':'Overleg_gebruiker:',
-       }
-
-contibution = {
-       'de':'Spezial:Beitr%C3%A4ge',
-       'en':'Special:Contributions',
-       'it':'Speciale:Contributi',
-       'nl':'Speciaal:Contributions',
-       }
-
+    'commons':'User_talk:',
+    'de':'Benutzer_Diskussion:',
+    'en':'User_talk:',
+    'it':'Discussioni_utente:',
+    'nl':'Overleg_gebruiker:',
+    }
 summary = {
-       'de':'Herzlich Willkommen!',
-       'en':'Welcome!',
-       'it':'Benvenuto!',
-       'nl':'Welkom!',
-       }
-
+    'commons':'Welcome!',
+    'de':'Herzlich Willkommen!',
+    'en':'Welcome!',
+    'it':'Benvenuto!',
+    'nl':'Welkom!',
+    }
+# The text for the welcome message
 netext = {
-       'de':'{{Benutzer:Filnik/Willkommen}}\nViele Grüsse --~~~~',
-       'en':'{{subst:welcome}}--~~~~',
-       'it':'{{subst:benve|~~~~}}',
-       'nl':'{{Gebruiker:SieBot/Logboek welkom/Welkomstbericht}} ~~~~~',
-       }
-
+    'commons':'{{subst:welcome}}',
+    'de':'{{Benutzer:Filnik/Willkommen}}\nViele Grüsse --~~~~',
+    'en':'{{subst:welcome}}--~~~~',
+    'it':'{{subst:benve|~~~~}}',
+    'nl':'{{Welkomstbericht}}',
+    }
+# The edit summary for updating the welcome log.
 summary2 = {
-       'de':'Ich neu bearbeite den Logfile',
-       'en':'Updating log',
-       'it':'Aggiorno il log',
-       'nl':'Logboek bijwerken',
-       }
-
+    'commons':'Updating log',
+    'de':'Ich neu bearbeite den Logfile',
+    'en':'Updating log',
+    'it':'Aggiorno il log',
+    'nl':'Logboek bijwerken',
+    }
+# Username in the wiki language.
 user = {
-       'de':'Benutzer',
-       'en':'Username',
-       'it':'Utente',
-       'nl':'Gebruikersnaam',
-       }
-
+    'commons':'Username',
+    'de':'Benutzer',
+    'en':'Username',
+    'it':'Utente',
+    'nl':'Gebruikersnaam',
+    }
+# Contributions in the wiki language.
 con = {
-       'de':'Beitraege',
-       'en':'Contribs',
-       'it':'Contributi',
-       'nl':'Bijdragen',
-       }
-
+    'commons':'Contribs',
+    'de':'Beitraege',
+    'en':'Contribs',
+    'it':'Contributi',
+    'nl':'Bijdragen',
+    }
+# The page where the bot will report users with a possibly bad username.
 report_page = {
-               'de':'Benutzer:Filnik/Report',
-               'en':'Wikipedia:Administrator intervention against vandalism',
-               'it':'Utente:Filbot/Report',
-               'nl':'Wikipedia:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
-               }
-
+    'commons':'Commons:Administrators\' noticeboard/User problems/Usernames to be checked',
+    'de':'Benutzer:Filnik/Report',
+    'en':'Wikipedia:Administrator intervention against vandalism',
+    'it':'Utente:Filbot/Report',
+    'nl':'Wikipedia:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
+    }
+# The edit summary for reporting a possibly bad username.
 comment = {
-           'de':'Adding a user that needs to be checked',
-           'en':'Adding a user that needs to be checked',
-           'it':'Aggiunto utente da controllare',
-           'nl':"Te controleren gebruikersnaam toegevoegd",
-           }
-
+    'commons':'Adding a username that needs to be checked',
+    'de':'Adding a username that needs to be checked',
+    'en':'Adding a username that needs to be checked',
+    'it':'Aggiunto utente da controllare',
+    'nl':"Te controleren gebruikersnaam toegevoegd",
+    }
+# The page where the bot reads the real-time bad-word page. (that' parameter is optional :) ).
 bad_pag = {
-           'de':'Benutzer:Filnik/Bad_words',
-           'it':'Utente:Filbot/Bad_words',
-           }
-# The two blocks that follows are functions, the part of text the you have to change is
-# between the "#" lines. I've used these two functions to put the text to change at the top
-# and not in the code below :-)
+    'commons':str(project) + ':Welcome log/Bad_names', 
+    'en':str(project) + ':Welcome log/Bad_names',         
+    'it':'Utente:Filbot/Bad_words',
+    'nl':str(project) + ':Logboek_welkom/Bad_names',
+    }
+
+# The two blocks that follows are functions, the part of text the you have to change is between the "#" lines.
+# I've used these two functions to put the text to change at the top and not in the code below :-)
  
 def rep(username):
-                                        #Change blow!!!       
-################################################################################################################    
+                                        #Change below!!!       
+################################################################################################################################################
+    # The text that you'll add when you report a bad username (for example: *[[Talk_page:Username|Username]])
     report_text = {
-                  'de':'\n*[[Benutzer_Diskussion:' + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-                  'en':'\n*{{Userlinks|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-                  'it':"\n*[[Discussioni utente:" + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-                  'nl':'\n*{{linkgebruiker|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),                  
-                  }
-################################################################################################################
+        'commons':"\n*{{user3|" + Username + "}}" + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'de':'\n*[[Benutzer_Diskussion:' + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'en':'\n*{{Userlinks|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'it':"\n*[[Discussioni utente:" + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'nl':'\n*{{linkgebruiker|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),                  
+        }
+################################################################################################################################################
                                         #Change above!!!    
     rep_text = wikipedia.translate(wikipedia.getSite(), report_text)
     return rep_text
 
 def logfunction(UPl, cantidad):
-                                        #Change blow!!!    
-################################################################################################################
+                                        #Change below!!!    
+################################################################################################################################################
+    # My suggest is only to copy the en line (and change en to your language), copy the WLE template from en-wiki (or commons).
     logt = {    
-            'de':'\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}',
-            'en':'\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}',
-            'it':'\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}',
-            'nl':'\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}',
-            }
-################################################################################################################
+        'commons':'\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}',
+        'de':'\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}',
+        'en':'\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}',
+        'it':'\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}',
+        'nl':'\n{{WLE|user='+ UPl + '|contribs=' + cantidad + '}}',
+        }
+################################################################################################################################################
                                         #Change above!!!
     logtext = wikipedia.translate(wikipedia.getSite(), logt)
     return logtext
 
-# Add your project (in alphabetical order) if you want that the bot start ;)
-project_inserted = ['de', 'en', 'it', 'nl']
+# Add your project (in alphabetical order) if you want that the bot start
+project_inserted = ['commons', 'de', 'en', 'it', 'nl']
 
-################################################################################################################    
-################################################################################################################    
-################################################################################################################    
+# Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project ;)
+################################################################################################################################################    
+################################################################################################################################################   
+################################################################################################################################################    
 
-# A little block to ensure that the bot won't start with en-parameters :-)
-if leng not in project_inserted:
-    print "Your project isn't inserted in the Bot, you have to open the script and add it!"
+# A little block-statement to ensure that the bot won't start with en-parameters
+if lang not in project_inserted:
+    print "Your project is not supported by the framework. You have to edit the script and add it!"
     wikipedia.stopme()
     exit()
 
-# The follow 8 lines translate the parameters above
+# The follow lines translate the language's parameters.
 welcom = wikipedia.translate(wikipedia.getSite(), netext)
 talk = wikipedia.translate(wikipedia.getSite(), talkpage)
-contib = wikipedia.translate(wikipedia.getSite(), contibution)
+contib = u'Special:Contributions'
 summ = wikipedia.translate(wikipedia.getSite(), summary)
 logg = wikipedia.translate(wikipedia.getSite(), logbook)
 summ2 = wikipedia.translate(wikipedia.getSite(), summary2)
@@ -219,20 +229,14 @@ rep_page = wikipedia.translate(wikipedia.getSite(), report_page)
 com = wikipedia.translate(wikipedia.getSite(), comment)
 bad_page = wikipedia.translate(wikipedia.getSite(), bad_pag)
 
-# A variable only for commons :)
-
-if project == 'Commons':
-    rep_page = "Commons:Administrators' noticeboard/User problems/Usernames to be checked"
-    rep_text = "\n*{{user3|" + Username + "}}"
-
 # Number = number of edits that an user required to be welcomed
 number = 1
 # Numberlog = number of users that are required to add the log :)
 numberlog = 4
 # limit = number of users that the bot load to check
 limit = 50
-# ricursive = define if the Bot is ricursive or not
-ricursive = True
+# recursive = define if the Bot is recursive or not
+recursive = True
 # time_variable = how much time the Bot sleeps before restart
 time_variable = 3600
 # log_variable = to define if you want to create the log or not
@@ -256,7 +260,7 @@ for arg in wikipedia.handleArgs():
         else:
             time_variable = int(arg[6:])
     elif arg == '-break':
-        ricursive = False
+        recursive = False
     elif arg == '-nlog':
         log_variable = False
     elif arg == '-askme':
@@ -303,14 +307,14 @@ if filter_wp == True:
     # What follow below are the standard list of badusernames. (elenco in italian means list :) )
     elencoaf = [' ano', ' anus', 'anal ', 'babies', 'baldracca', 'balle', 'bastardo', 'bestiali', 'bestiale', 'bastarda', 'b.i.t.c.h.', 'bitch', 'boobie', 'bordello', 'breast', 'cacata', 'cacca', 'cachapera', 'cagata', 'cane', 'cazz', 'cazzo', 'cazzata', 'chiavare', 'chiavata', 'chick', 'christ ', 'cristo', 'clitoride', 'coione', 'cojdioonear', 'cojones', 'cojo', 'coglione', 'coglioni', 'cornuto', 'cula', 'culatone', 'culattone', 'culo', 'deficiente', 'deficente', 'dio', 'die ', 'died ', 'ditalino', 'ejackulate', 'enculer', 'eroticunt', 'fanculo', 'fellatio', 'fica ', 'ficken', 'figa', 'sfiga', 'fottere', 'fotter', 'fottuto', 'fuck', 'f.u.c.k.', "funkyass"]
     elencogz = ['gay', 'gaysex', 'hentai.com', 'horne', 'horney', 'hot', 'virgin', 'hot', 'hotties', 'idiot', '@alice.it', 'incest', 'jesus', 'gesu', 'gesù', 'kazzo', 'kill', 'leccaculo', 'lesbian', 'lesbica', 'lesbo', 'masturbazione', 'masturbare', 'masturbo', 'merda', 'merdata', 'merdoso', 'mignotta', 'minchia', 'minkia', 'minchione', 'mona', 'nudo', 'nuda', 'nudi', 'oral', 'sex', 'orgasmso', 'porc', 'pompa', 'pompino', 'porno', 'puttana', 'puzza', 'puzzone', "racchia", 'sborone', 'sborrone', 'sborata', 'sborolata', 'sboro', 'scopata', 'scopare', 'scroto', 'scrotum', 'sega', 'sex', 'sesso', 'shit', 'shiz', 's.h.i.t.', 'sadomaso', 'sodomist', 'stronzata', 'stronzo', 'succhiamelo', 'succhiacazzi', 'testicol', 'troia', 'universetoday.net', 'vaffanculo', 'vagina', 'vibrator', "vacca", 'yiddiot', "zoccola"]
-    elenco_others = ['@']
-    badword_page = wikipedia.Page(leng, bad_page)
+    elenco_others = ['@', ".com", ".sex", ".org", ".uk", ".en", ".it", "admin", "administrator", "amministratore", '@yahoo.com', '@alice.com', "amministratrice", "burocrate", "checkuser", "developer", "http://", "jimbo", 'jimmy wales', 'jymmy wales', 'jymbo wales', 'jimbo waIes', "mediawiki", "on wheals", "on wheal", "on wheel", "on wheels", "planante", "razinger", "sysop", "troll", "vandal", " v.f. ", "v. fighter", "vandal f.", "vandal fighter", 'wales jimmy', "wheels", 'willy wheels', "wales", "www."]
+    badword_page = wikipedia.Page(lang, bad_page)
     if badword_page.exists():
         print "Loading the badwords list from Wikipedia..."
         text_bad = badword_page.get()
         list_loaded = badword_function(text_bad)
     else:
-        print "         >>>WARNING: There the badword-page doesn't exist!<<<"
+        print "         >>>WARNING: The badword-page doesn't exist!<<<"
         list_loaded = list()
     elencovarie = elenco_others + list_loaded
 elif filter_wp == False:
@@ -321,8 +325,8 @@ elenco = elencoaf + elencogz + elencovarie
 block = ("B", "b", "Blocco", "blocco", "block", "bloc", "Block", "Bloc", 'Report', 'report')
 say_hi = ("S", "s", "Saluto", "saluto", "Welcome", "welcome", 'w', 'W', 'say hi', 'Say hi', 'Hi', 'hi', 'h', 'hello', 'Hello')
 
-#This variable define in what project we are :-) (what lenguage and what project)
-welcomesite = wikipedia.Site(leng, project)
+#This variable define in what project we are :-) (what language and what project)
+welcomesite = wikipedia.Site(lang, project)
 
 # The function used to load the url where the is the new users
 def pageText(url):
@@ -335,7 +339,7 @@ def pageText(url):
 	response.close()
     # When you load to many users, urllib2 can give this error.
     except urllib2.HTTPError:
-        print "Server's error. Standby for 10 sec, then continue. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
+        print "Server error. Pausing for 10 seconds before continuing. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
         time.sleep(10)
 	request = urllib2.Request(url)
 	user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
@@ -360,7 +364,7 @@ def parselog(raw):
         if x == None:
             if len(done) >= 1:
                 load = False
-                print "\nLoaded all the users..."
+                print "\nLoaded all users..."
                 continue
             elif len(done) == 0:
                 load = False
@@ -380,13 +384,13 @@ def parselog(raw):
             print username + " has enough edits to be welcomed"
             users.append([username, contribnum])
         elif contribnum < number:
-            print username + "has only " + str(contribnum) + " contributes"
+            print username + "has only " + str(contribnum) + " contributions"
     return users
 hechas = list()
 
 # I've used a function to report the username to a wiki-page
-def report(leng, rep_page, username, com):
-    another_page = wikipedia.Page(leng, rep_page)
+def report(lang, rep_page, username, com):
+    another_page = wikipedia.Page(lang, rep_page)
     if another_page.exists():      
         text_get = another_page.get()
     else:
@@ -408,15 +412,15 @@ def report(leng, rep_page, username, com):
 while 1:
     # Here there is the URL of the new users, i've find that this url below is the same for all the project, so it
     # mustn't be changed
-    URL = "http://%s/w/index.php?title=Speciale:Log&type=newusers&user=&page=&limit=%d" % (wikipedia.getSite().hostname(), limit)
+    URL = "http://%s/w/index.php?title=Special:Log&type=newusers&user=&page=&limit=%d" % (wikipedia.getSite().hostname(), limit)
     log = pageText(URL).decode('utf-8', 'replace')
-    print "I'm going to load the new users...\n"
+    print "I'm going to load the new users (latest " + str(limit) + " users)...\n"
     parsed = parselog(log)
     for tablita in parsed:
         username = str(tablita[0])
         UNT = wikipedia.Page(welcomesite, talk + username)
         baduser = False
-        # A check to be sure that the user's nickname isn't only composed by numbers.
+        # A check to ensure that the username isn't only composed by numbers.
         try:
             int(username)
             baduser = True
@@ -433,15 +437,15 @@ while 1:
                     answer = wikipedia.input(u"[B]lock or [W]elcome?")
                     for w in block:
                         if w in answer:
-                            report(leng, rep_page, username, com)
+                            report(lang, rep_page, username, com)
                             running = False
                     for w in say_hi:
                         if w in answer:
                             baduser = False
                             running = False
                 elif ask == False:
-                    print "%s hasn't got a valid nickname, i'm going to report him." % username
-                    report(leng, rep_page, username, com)
+                    print "%s is possibly not a wanted username. It will be reported." % username
+                    report(lang, rep_page, username, com)
                     running = False
         elif baduser == False:
             if not UNT.exists():
@@ -449,15 +453,15 @@ while 1:
                     UNT.put(welcom, summ)
                     hechas.append(tablita)
                 except wikipedia.EditConflict:
-                    print "An edit conflict has occured, i skip the user"
+                    print "An edit conflict has occured, skipping this edit."
                     continue
         if log_variable == True:
             if len(hechas) == 1:
-                print "I have put the welcome to one user."
+                print "One user has been welcomed."
             elif len(hechas) == 0:
-                print "I have put the welcome to nobody."
+                print "No users have been welcomed."
             else:
-                print "I have put the welcome to " + str(len(hechas)) + " users."
+                print str(len(hechas)) + " users have been welcomed."
             if len(hechas) < numberlog:
                 continue
             # update the welcome log each fifth welcome message
@@ -470,12 +474,17 @@ while 1:
                 day = str(rightime[2])
                 if len(month)==1:
                     month = '0' + month
-                    pl = wikipedia.Page(welcomesite, logg + '/' + day + '/' + month + '/' + year)
+                    if lang == 'it':
+                        pl = wikipedia.Page(welcomesite, logg + '/' + day + '/' + month + '/' + year)
+                    if lang == 'commons':
+                        pl = wikipedia.Page(welcomesite, logg + '/' + month + '/' + day + '/' + year)
+                    else:
+                        pl = wikipedia.Page(welcomesite, logg + '/' + year + '/' + month + '/' + day)
                 try:
                     safety.append(pl.get())
                 except wikipedia.NoPage:
                     #Add the table heading each new period. See http://commons.wikimedia.org/wiki/Commons:Welcome_log
-                    if leng == 'it':
+                    if lang == 'it':
                         safety.append('[[Categoria:Benvenuto log|{{subst:PAGENAME}}]]\n{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
                     else:
                         safety.append('{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')                        
@@ -493,17 +502,17 @@ while 1:
                     pl.put(''.join(safety), summ2)
                     hechas = list()
                 except wikipedia.EditConflict:
-                    print "An edit conflict has occured, waiting for 10 seconds, then retry"
+                    print "An edit conflict has occured. Pausing for 10 seconds before continuing."
                     time.sleep(10)
                     pl.put(''.join(safety), summ2)
                     hechas = list()
         elif log_variable == False:
             pass
-    # If ricursive, don't exit, repeat after one hour
-    if ricursive == True:
-            print "Sleeping for " +  str(time_variable) + " sec, then i'll restart, " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
+    # If recursive, don't exit, repeat after one hour
+    if recursive == True:
+            print "Sleeping " +  str(time_variable) + " seconds before rerun. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
             time.sleep(time_variable)
-    # If not ricursive, break
-    elif ricursive == False:
+    # If not recursive, break
+    elif recursive == False:
             print "Stop!"
             wikipedia.stopme()
