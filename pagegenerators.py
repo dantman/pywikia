@@ -133,22 +133,17 @@ def LinksearchGenerator(site, link, step=500):
     """Yields all pages that include a specified link, according to [[Special:Linksearch]].
     Retrieves in chunks of size "step" (default 500).
     Does not guarantee that resulting pages are unique."""
-    offset = 0
     elRX = re.compile('<a .* class="external ?" .*</a>.*<a .*>(.*)</a>') #TODO: de-uglify?
-    while True:
+    offset = 0
+    found = step
+    while found == step:
+        found = 0
         url = site.linksearch_address(link,limit=step,offset=offset)
         wikipedia.output(u'Querying [[Special:Linksearch]]...')
         data = site.getUrl(url)
-        pos = 0
-        while True:
-            elM = elRX.search(data,pos)
-            if elM:
-                yield wikipedia.Page(site,elM.group(1))
-                pos = elM.end(1)
-            else:
-                break
-        if pos == 0: #No links found
-            break
+        for elM in elRX.finditer(data):
+            found += 1
+            yield wikipedia.Page(site,elM.group(1))
         offset += step
 
 class GoogleSearchPageGenerator:
