@@ -91,7 +91,7 @@ class WarnfileRobot:
                         del new[site]
                     except KeyError:
                         pass
-            mods, removing = interwiki.compareLanguages(old, new, insite = page.site())
+            mods, adding, removing, modifying = interwiki.compareLanguages(old, new, insite = page.site())
             if mods:
                 wikipedia.output(page.aslink() + mods)
                 oldtext = page.get()
