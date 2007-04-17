@@ -368,6 +368,7 @@ class CategoryListifyRobot:
     '''
     listify_msg={
         'en':u'Robot: Listifying from %s (%d entries)',
+        'nl':u'Bot: Lijst van %s (%d pagina\'s)',
         'sv':u'Robot: Skapar en lista från %s (%d)'
     }
 
