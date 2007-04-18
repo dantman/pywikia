@@ -3548,6 +3548,9 @@ class Site(object):
     def watchlist_address(self):
         return self.family.watchlist_address(self.lang)
 
+    def contribs_address(self, target, limit=500, offset=''):
+        return self.family.contribs_address(self.lang,target,limit,offset)
+
     def getSite(self, code):
         return getSite(code = code, fam = self.family, user=self.user)
 

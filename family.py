@@ -2323,6 +2323,9 @@ class Family:
     def watchlist_address(self, code):
         return '%s?title=%s:Watchlist/edit' % (self.path(code), self.special_namespace_url(code))
     
+    def contribs_address(self, code, target, limit=500, offset=''):
+        return '%s?title=%s:Contributions&target=%s&limit=%s&offset=%s' % (self.path(code), self.special_namespace_url(code), target, limit, offset)
+    
     def move_address(self, code):
         return '%s?title=%s:Movepage&action=submit' % (self.path(code), self.special_namespace_url(code))
 
