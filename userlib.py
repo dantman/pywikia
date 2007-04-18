@@ -3,8 +3,8 @@
 Library to work with users, their pages and talk pages.
 """
 
-import wikipedia
 import re, httplib
+import wikipedia, mediawiki_messages
 
 class AutoblockUserError(wikipedia.Error):
     """
@@ -64,6 +64,35 @@ class User:
         if subpage:
             fullpagename += '/' + subpage
         return wikipedia.Page(self.site,fullpagename)
+
+    def editedPages(self, limit=500):
+        """ Yields pages that the user has edited, with an upper bound of ``limit''.
+        Pages returned are not guaranteed to be unique
+        (straight Special:Contributions parsing, in chunks of 500 items)."""
+
+        if self.name[0] == '#':
+            #This user is probably being queried for purpose of lifting
+            #an autoblock, so has no contribs.
+            raise AutoblockUserError
+
+        offset = 0
+        step = min(limit,500)
+        older_str = mediawiki_messages.get('sp-contributions-older').replace('$1',str(step))
+        address = self.site.contribs_address(self.name,limit=step)
+        while offset < limit:
+            wikipedia.output(u'Querying [[Special:Contributions/%s]]...' % self.name)
+            data = self.site.getUrl(address)
+            contribRX = re.compile('<li>.*?<a href=".*?" title="(?P<target>.*?)">(?P=target)</a>')
+            for pg in contribRX.finditer(data):
+                yield wikipedia.Page(self.site,pg.group('target'))
+                offset += 1
+                if offset == limit:
+                    break
+            nextRX = re.search('\(<a href="(?P<address>.*?)">' + older_str + '</a>\)',data)
+            if nextRX:
+                address = nextRX.group('address').replace('&amp;','&')
+            else:
+                break
 
     def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False, enableAutoblock=False):
         """
