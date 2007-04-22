@@ -126,9 +126,8 @@ class User:
         boolStr = ['0','1']
         predata = {
             'wpBlockAddress': self.name,
-            'wpBlockExpiry': 'other',
             'wpBlockOther': expiry,
-            'wpBlockReason': reason,
+            'wpBlockReasonList': reason,
             'wpAnonOnly': boolStr[anonOnly],
             'wpCreateAccount': boolStr[noSignup],
             'wpEnableAutoblock': boolStr[enableAutoblock],
