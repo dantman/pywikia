@@ -273,6 +273,7 @@ msg = {
     'de': (u'Bot: ', u'Ergänze', u'Entferne', u'Ändere'),
     'el': (u'Ρομπότ:', u'Προσθήκη', u'Αφαίρεση', u'Τροποποίηση'),
     'en': (u'robot ', u'Adding', u'Removing', u'Modifying'),
+    'eo': (u'roboto ', u'aldono de', u'forigo de', u'modifo de'),
     'es': (u'robot ', u'Añadido', u'Eliminado', u'Modificado'),
     'eu': (u'robota ', u'Erantsia', u'Ezabatua', u'Aldatua'),
     'fa': (u'ربات ', u'افزودن', u'حذف', u'اصلاح'),
