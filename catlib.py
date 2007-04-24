@@ -21,6 +21,7 @@ msg_created_for_renaming = {
     'de':u'Bot: Verschoben von %s. Autoren: %s',
     'en':u'Robot: Moved from %s. Authors: %s',
     'ia':u'Robot: Transferite de %s. Autores: %s',
+    'id':u'Bot: Memindahkan dari %s. Kontributor: %s',
     'fr':u'Robot : déplacé depuis %s. Auteurs: %s',
     'he':u'רובוט: הועבר מהשם %s. מחברים: %s',
     'nl':u'Bot: hernoemd van %s. Auteurs: %s',

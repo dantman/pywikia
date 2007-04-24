@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
@@ -106,6 +106,7 @@ msg = {
        'he':u'רובוט: החלפת טקסט אוטומטית %s',
        'hu':u'Robot: Automatikus szövegcsere %s',
        'ia':u'Robot: Reimplaciamento automatic de texto %s',
+       'id':u'Bot: Penggantian teks otomatis %s',
        'is':u'Vélmenni: breyti texta %s',
        'it':u'Bot: Sostituzione automatica %s',
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
