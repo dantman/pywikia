@@ -368,7 +368,7 @@ def parselog(raw):
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure)
     while load == True:
-        reg = '\(<a href=\"/w/index.php\?title=' + talk + '(.*?)&action=edit\"'
+        reg = '\(<a href=\"/w/index.php\?title=' + talk + '(.*?)&amp;action=edit\"'
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
