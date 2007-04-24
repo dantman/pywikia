@@ -1090,7 +1090,7 @@ class Page(object):
                     #return self.putPage(text = text, comment = comment, watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage, token = None, gettoken = True, sysop = True)
                 except NoUsername:
                     raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
-            elif not newTokenRetrieved and "<" in data:
+            elif not newTokenRetrieved and "<textarea" in data:
                 # We might have been using an outdated token
                 output(u"Changing page has failed. Retrying.")
                 return self.putPage(text = text, comment = comment,
