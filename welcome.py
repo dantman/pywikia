@@ -82,153 +82,6 @@ import urllib2, config
 import wikipedia, codecs
 import time, re
 
-# Find out what project and language the bot will use
-c = str(wikipedia.getSite())
-k = c.split(":")
-project = k[0]
-lang = k[1]
-
-# Script users the class wikipedia.translate() to find the right
-# page/user/summary/etc so the need to specify language and project have
-# been eliminated.
-# FIXME: Not all language/project combinations have been defined yet.
-#       Add the following strings to customise for a language:
-#       logbook, talk_page, summary, netext, summary2, user, con, report_page
-#       comment, bad_pag, report_text, logt.
-
-############################################################################
-############################################################################
-############################################################################
-
-# The text below are dictionaries. Copy the 'en' line, change 'en' in your
-# language (f.e. 'de') and modify/translate the text.
-
-#The page where the bot will save the log (f.e. Wikipedia:Welcome log).
-logbook = {
-    'commons':str(project) + ":Welcome log" ,
-    'de':str(project) + ":Willkommen log",
-    'en':str(project) + ":Welcome log" ,
-    'it':str(project) + ":Benvenuto log",
-    'nl':str(project) + ':Logboek welkom',
-    }
-#The user talk namespace name (f.e. User_talk:)
-talk_page = {
-    'commons':'User_talk:',
-    'de':'Benutzer_Diskussion:',
-    'en':'User_talk:',
-    'it':'Discussioni_utente:',
-    'nl':'Overleg_gebruiker:',
-    }
-#The edit summary for the welcome message (f.e. Welcome!)
-summary = {
-    'commons':'Welcome!',
-    'de':'Herzlich Willkommen!',
-    'en':'Welcome!',
-    'it':'Benvenuto!',
-    'nl':'Welkom!',
-    }
-# The text for the welcome message (f.e. {{welcome}})
-netext = {
-    'commons':'{{subst:welcome}}',
-    'de':'{{Benutzer:Filnik/Willkommen}}\nViele Grüsse --~~~~',
-    'en':'{{subst:welcome}}--~~~~',
-    'it':'{{subst:benve|~~~~}}',
-    'nl':'{{Welkomstbericht}}',
-    }
-# The edit summary for updating the welcome log (f.e. Updating log)
-summary2 = {
-    'commons':'Updating log',
-    'de':'Ich neu bearbeite den Logfile',
-    'en':'Updating log',
-    'it':'Aggiorno il log',
-    'nl':'Logboek bijwerken',
-    }
-# Username in the wiki language (f.e. Username)
-user = {
-    'commons':'Username',
-    'de':'Benutzer',
-    'en':'Username',
-    'it':'Utente',
-    'nl':'Gebruikersnaam',
-    }
-# Contributions in the wiki language (f.e. Contribs)
-con = {
-    'commons':'Contribs',
-    'de':'Beitraege',
-    'en':'Contribs',
-    'it':'Contributi',
-    'nl':'Bijdragen',
-    }
-# The page where the bot will report users with a possibly bad username.
-report_page = {
-    'commons':str(project) + ':Administrators\' noticeboard/User problems/Usernames to be checked',
-    'de':'Benutzer:Filnik/Report',
-    'en':str(project) + ':Administrator intervention against vandalism',
-    'it':'Utente:Filbot/Report',
-    'nl':str(project) + ':Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
-    }
-# The edit summary for reporting a possibly bad username.
-comment = {
-    'commons':'Adding a username that needs to be checked',
-    'de':'Adding a username that needs to be checked',
-    'en':'Adding a username that needs to be checked',
-    'it':'Aggiunto utente da controllare',
-    'nl':"Te controleren gebruikersnaam toegevoegd",
-    }
-# The page where the bot reads the real-time bad words page.
-bad_pag = {
-    'commons':str(project) + ':Welcome log/Bad_names', 
-    'en':str(project) + ':Welcome log/Bad_names',         
-    'it':'Utente:Filbot/Bad_words',
-    'nl':str(project) + ':Logboek_welkom/Bad_names',
-    }
-
-# The two blocks that follow are functions, the part of text you have to add
-# to is between the "#" lines.
- 
-def rep(username):
-                                        #Change below!!!       
-############################################################################
-# The text for reporting a possibly bad username (f.e. *[[Talk_page:Username|Username]])
-    report_text = {
-        'commons':"\n*{{user3|" + Username + "}}" + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'de':'\n*[[Benutzer_Diskussion:' + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'en':'\n*{{Userlinks|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'it':"\n*[[Discussioni utente:" + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'nl':'\n*{{linkgebruiker|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),                  
-        }
-############################################################################
-                                        #Change above!!!    
-    rep_text = wikipedia.translate(wikipedia.getSite(), report_text)
-    return rep_text
-
-# Add your project (in alphabetical order) if you want that the bot start
-project_inserted = ['commons', 'de', 'en', 'it', 'nl']
-
-# Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project ;)
-################################################################################################################################################    
-################################################################################################################################################   
-################################################################################################################################################    
-
-# A little block-statement to ensure that the bot won't start with en-parameters
-if lang not in project_inserted:
-    wikipedia.output(u"Your project is not supported by the framework. You have to edit the script and add it!")
-    wikipedia.stopme()
-    exit()
-
-# The follow lines translate the language's parameters.
-welcom = wikipedia.translate(wikipedia.getSite(), netext)
-talk = wikipedia.translate(wikipedia.getSite(), talk_page)
-contib = 'Special:Contributions'
-summ = wikipedia.translate(wikipedia.getSite(), summary)
-logg = wikipedia.translate(wikipedia.getSite(), logbook)
-summ2 = wikipedia.translate(wikipedia.getSite(), summary2)
-usernam = wikipedia.translate(wikipedia.getSite(), user)
-contrib = wikipedia.translate(wikipedia.getSite(), con)
-rep_page = wikipedia.translate(wikipedia.getSite(), report_page)
-com = wikipedia.translate(wikipedia.getSite(), comment)
-bad_page = wikipedia.translate(wikipedia.getSite(), bad_pag)
-
 # Number = number of edits that an user required to be welcomed
 number = 1
 # Numberlog = number of users that are required to add the log :)
@@ -248,6 +101,7 @@ ask = False
 filter_wp = False
 
 # The block below is used for the parameter
+# Skip it and go down to add you language's parameter
 for arg in wikipedia.handleArgs():
     if arg.startswith('-edit'):
         if len(arg) == 5:
@@ -277,6 +131,164 @@ for arg in wikipedia.handleArgs():
             numberlog = int(wikipedia.input(u'After how many welcomed users would you like to update the welcome log?'))
         else:
             numberlog = int(arg[11:])
+
+# Find out what project and language the bot will use
+c = str(wikipedia.getSite())
+k = c.split(":")
+project = k[0]
+lang = k[1]
+
+# Script users the class wikipedia.translate() to find the right
+# page/user/summary/etc so the need to specify language and project have
+# been eliminated.
+# FIXME: Not all language/project combinations have been defined yet.
+#       Add the following strings to customise for a language:
+#       logbook, talk_page, summary, netext, summary2, user, con, report_page
+#       comment, bad_pag, report_text, logt.
+
+############################################################################
+############################################################################
+############################################################################
+
+# The text below are dictionaries. Copy the 'en' line, change 'en' in your
+# language (f.e. 'de') and modify/translate the text.
+
+#The page where the bot will save the log (f.e. Wikipedia:Welcome log).
+logbook = {
+    'commons':str(project) + ":Welcome log" ,
+    'de':str(project) + ":Willkommen log",
+    'en':str(project) + ":Welcome log" ,
+    'it':str(project) + ":Benvenuto log",
+    'nl':str(project) + ':Logboek welkom',
+    'no':str(project) + ':Velkomstlogg',
+    }
+#The user talk namespace name (f.e. User_talk:)
+talk_page = {
+    'commons':'User_talk:',
+    'de':'Benutzer_Diskussion:',
+    'en':'User_talk:',
+    'it':'Discussioni_utente:',
+    'nl':'Overleg_gebruiker:',
+    'no':'Brukerdiskusjon:',
+    }
+#The edit summary for the welcome message (f.e. Welcome!)
+summary = {
+    'commons':'Welcome!',
+    'de':'Herzlich Willkommen!',
+    'en':'Welcome!',
+    'it':'Benvenuto!',
+    'nl':'Welkom!',
+    'no':'Velkommen!',
+    }
+# The text for the welcome message (f.e. {{welcome}})
+netext = {
+    'commons':'{{subst:welcome}}',
+    'de':'{{Benutzer:Filnik/Willkommen}}\nViele Grüsse --~~~~',
+    'en':'{{subst:welcome}}--~~~~',
+    'it':'{{subst:benve|~~~~}}',
+    'nl':'{{Welkomstbericht}}',
+    'no':'{{subst:bruker:jhs/vk}}',
+    }
+# The edit summary for updating the welcome log (f.e. Updating log)
+summary2 = {
+    'commons':'Updating log',
+    'de':'Ich neu bearbeite den Logfile',
+    'en':'Updating log',
+    'it':'Aggiorno il log',
+    'nl':'Logboek bijwerken',
+    'no':'Oppdaterer logg',
+    }
+# Username in the wiki language (f.e. Username)
+user = {
+    'commons':'Username',
+    'de':'Benutzer',
+    'en':'Username',
+    'it':'Utente',
+    'nl':'Gebruikersnaam',
+    'no':'Brukernavn',
+    }
+# Contributions in the wiki language (f.e. Contribs)
+con = {
+    'commons':'Contribs',
+    'de':'Beitraege',
+    'en':'Contribs',
+    'it':'Contributi',
+    'nl':'Bijdragen',
+    'no':'Bidrag',
+    }
+# The page where the bot will report users with a possibly bad username.
+report_page = {
+    'commons':str(project) + ':Administrators\' noticeboard/User problems/Usernames to be checked',
+    'de':'Benutzer:Filnik/Report',
+    'en':str(project) + ':Administrator intervention against vandalism',
+    'it':'Utente:Filbot/Report',
+    'nl':str(project) + ':Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
+    'no':'Bruker:JhsBot II/Rapport',
+    }
+# The edit summary for reporting a possibly bad username.
+comment = {
+    'commons':'Adding a username that needs to be checked',
+    'de':'Adding a username that needs to be checked',
+    'en':'Adding a username that needs to be checked',
+    'it':'Aggiunto utente da controllare',
+    'nl':'Te controleren gebruikersnaam toegevoegd',
+    'no':'Legger til et brukernavn som må sjekkes',
+    }
+# The page where the bot reads the real-time bad words page.
+bad_pag = {
+    'commons':str(project) + ':Welcome log/Bad_names', 
+    'en':str(project) + ':Welcome log/Bad_names',         
+    'it':'Utente:Filbot/Bad_words',
+    'nl':str(project) + ':Logboek_welkom/Bad_names',
+    'no':'Bruker:JhsBot/Daarlige ord',
+    }
+
+# The two blocks that follow are functions, the part of text you have to add
+# to is between the "#" lines.
+ 
+def rep(username):
+                                        #Change below!!!       
+############################################################################
+# The text for reporting a possibly bad username (f.e. *[[Talk_page:Username|Username]])
+    report_text = {
+        'commons':"\n*{{user3|" + username + "}}" + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'de':'\n*[[Benutzer_Diskussion:' + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'en':'\n*{{Userlinks|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'it':"\n*[[Discussioni utente:" + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'nl':'\n*{{linkgebruiker|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'no':'\n*{{bruker|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        }
+############################################################################
+                                        #Change above!!!    
+    rep_text = wikipedia.translate(wikipedia.getSite(), report_text)
+    return rep_text
+
+# Add your project (in alphabetical order) if you want that the bot start
+project_inserted = ['commons', 'de', 'en', 'it', 'nl', 'no']
+
+# Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project ;)
+################################################################################################################################################    
+################################################################################################################################################   
+################################################################################################################################################    
+
+# A little block-statement to ensure that the bot won't start with en-parameters
+if lang not in project_inserted:
+    wikipedia.output(u"Your project is not supported by the framework. You have to edit the script and add it!")
+    wikipedia.stopme()
+    exit()
+
+# The follow lines translate the language's parameters.
+welcom = wikipedia.translate(wikipedia.getSite(), netext)
+talk = wikipedia.translate(wikipedia.getSite(), talk_page)
+contib = 'Special:Contributions'
+summ = wikipedia.translate(wikipedia.getSite(), summary)
+logg = wikipedia.translate(wikipedia.getSite(), logbook)
+summ2 = wikipedia.translate(wikipedia.getSite(), summary2)
+usernam = wikipedia.translate(wikipedia.getSite(), user)
+contrib = wikipedia.translate(wikipedia.getSite(), con)
+rep_page = wikipedia.translate(wikipedia.getSite(), report_page)
+com = wikipedia.translate(wikipedia.getSite(), comment)
+bad_page = wikipedia.translate(wikipedia.getSite(), bad_pag)
 
 def badword_function(raw):
     list_loaded = list()
@@ -356,7 +368,7 @@ def parselog(raw):
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure)
     while load == True:
-        reg = '\(<a href=\"/w/index.php\?title=' + talk + '(.*?)&amp;action=edit\"'
+        reg = '\(<a href=\"/w/index.php\?title=' + talk + '(.*?)&action=edit\"'
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
@@ -487,6 +499,8 @@ while 1:
                     #Add the table heading each new period. See http://commons.wikimedia.org/wiki/Commons:Welcome_log
                     if lang == 'it':
                         safety.append('[[Categoria:Benvenuto log|{{subst:PAGENAME}}]]\n{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
+                    elif lang == 'no':
+                        safety.append('[[Kategori:Velkomstlogg|{{PAGENAME}}]]\n{| class="wikitable"')
                     else:
                         safety.append('{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')                        
                     # The string below show how the "Usernames" will be notified
@@ -517,4 +531,4 @@ while 1:
     elif recursive == False:
             wikipedia.output(u"Stop!")
             wikipedia.stopme()
-            exit()
+            break
