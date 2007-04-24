@@ -1070,7 +1070,7 @@ class Page(object):
                 # Make sure your system clock is correct if this error occurs
                 # without any reason!
                 raise EditConflict(u'Someone deleted the page.')
-            elif mediawiki_messages.get('viewsourcetext') in data:
+            elif mediawiki_messages.get('viewsource') in data:
                 # The page is locked. This should have already been detected
                 # when getting the page, but there are some reasons why this
                 # didn't work, e.g. the page might be locked via a cascade
