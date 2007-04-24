@@ -133,7 +133,7 @@ def findpage(t):
         wikipedia.output(page.title())
         if notitle:
           #Remove title (to allow creation of redirects)
-          contents = re.sub(search_string, "", contents)
+          contents = re.sub(search_string, "", contents, count=1)
         #Remove trailing newlines (cause troubles when creating redirects)
         contents = re.sub('^[\r\n]*','',contents)
         if page.exists():
