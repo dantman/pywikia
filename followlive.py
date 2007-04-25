@@ -11,17 +11,15 @@ it is doing !
 
 __version__='$Id$'
 
-import sys
-import wikipedia
-import datetime
-import time
-import traceback
+import sys, datetime, time, traceback
+import wikipedia, editarticle
 
 __metaclass__ = type
 
 # The question asked
 question = u"""
 b) blank page
+e) edit page
 d) delete page (need sysop right)
 
 q) quit cleaningbot
@@ -87,37 +85,37 @@ templates = {
     },
     'he':{
         u'{{מחק}}': {
-            'msg' : 'יש למחוק ערך זה',
+            'msg' : u'יש למחוק ערך זה',
             'pos': 'top'
         },
         u'{{לשכתב}}': {
-            'msg' : 'ערך זה דורש שכתוב',
+            'msg' : u'ערך זה דורש שכתוב',
             'pos': 'top'
         },
         u'{{קצרמר}}': {
-            'msg' : 'ערך זה הוא קצרמר',
+            'msg' : u'ערך זה הוא קצרמר',
             'pos': 'bottom'
         },
         u'{{הבהרת חשיבות}}':{
-            'msg' : 'חשיבותו של ערך זה אינה ברורה.',
+            'msg' : u'חשיבותו של ערך זה אינה ברורה.',
             'pos': 'top'
         },
         u'{{עריכה}}': {
-            'msg' : 'ערך זה דורש עריכה',
+            'msg' : u'ערך זה דורש עריכה',
             'pos': 'top'
         },
     },
 	'ia':{
         u'{{Eliminar}}': {
-            'msg' : 'Iste articulo debe esser eliminate',
+            'msg' : u'Iste articulo debe esser eliminate',
             'pos': 'top'
         },
         u'{{Revision}}': {
-            'msg' : 'Iste articulo require revision',
+            'msg' : u'Iste articulo require revision',
             'pos': 'top'
         },
         u'{{Stub}}': {
-            'msg' : 'Iste articulo es in stato embryonic',
+            'msg' : u'Iste articulo es in stato embryonic',
             'pos': 'bottom'
         },
     },
@@ -149,23 +147,23 @@ templates = {
     },
     'pl':{
         u'{{ek}}': {
-            'msg' : '[[Kategoria:Ekspresowe kasowanko|ek]]',
+            'msg' : u'[[Kategoria:Ekspresowe kasowanko|ek]]',
             'pos':'top'
         },
         u'{{dopracować}}' : {
-            'msg' : 'Dopracować',
+            'msg' : u'Dopracować',
             'pos':'top'
         },
         u'{{linki}}'      : {
-            'msg' : 'Linki wewnętrzne do dodania',
+            'msg' : u'Linki wewnętrzne do dodania',
             'pos':'top'
         },
         u'{{źródła}}'     : {
-            'msg' : 'W artykule brakuje źródeł',
+            'msg' : u'W artykule brakuje źródeł',
             'pos':'top'
         },
         u'{{stub}}'       : {
-            'msg' : 'stub (zalążek)',
+            'msg' : u'stub (zalążek)',
             'pos':'bottom'
         },
     },
@@ -174,19 +172,19 @@ templates = {
             'msg': '{{wikificar}}', 'pos':'top'
         },
         u'{{reciclar}}': {
-            'msg': '{{reciclar}}',
+            'msg': u'{{reciclar}}',
             'pos':'top'
         },
         u'{{lixo|~~~~}}': {
-            'msg': '{{lixo}}',
+            'msg': u'{{lixo}}',
             'pos':'top'
         },
         u'{{revisão}}': {
-            'msg': '{{revisão}}',
+            'msg': u'{{revisão}}',
             'pos':'top'
         },
         u'{{impróprio}}': {
-            'msg': '{{impróprio}}',
+            'msg': u'{{impróprio}}',
             'pos':'top'
         },
         u'{{apagar vaidade}}': {
@@ -198,9 +196,9 @@ templates = {
 
 # Message used when blanking an article
 blanking = {
-    'en': 'blanked, content was "%s"',
+    'en': u'blanked, content was "%s"',
     'fr': u'blanchit, le contenu était "%s"',
-    'he': 'רוקן, תוכן היה "%s"',
+    'he': u'רוקן, תוכן היה "%s"',
     'pl': u'wyczyszczony - zawartością było "%s"',
 }
 
@@ -208,10 +206,10 @@ blanking = {
 done = {
     'en':('{{delete}}', '{{deletedpage}}', '{{disambig}}', '{{verify}}', '{{speedy}}',
           '{{VfD}}', '{{AfD}}', '{{cleanup}}', '{{nonsense}}', '{{deletedpage}}'),
-    'fr':('{{suppression}}', u'{{à vérifier}}'),
-    'he':('{{מחק}}', '{{פירושונים}}', '{{הצבעת מחיקה}}'),
+    'fr':(u'{{suppression}}', u'{{à vérifier}}'),
+    'he':(u'{{מחק}}', u'{{פירושונים}}', u'{{הצבעת מחיקה}}'),
     'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}'),
-    'pl':('{{ek}}', '{{dopracować}}', '{{linki}}', '{{źródła}}', '{{stub}}'),
+    'pl':('{{ek}}', u'{{dopracować}}', '{{linki}}', u'{{źródła}}', u'{{stub}}'),
     'pt':('{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}'),
     }
 
@@ -264,6 +262,16 @@ class PageHandler:
             if answer == 'd':
                 wikipedia.output(u'Trying to delete page [[%s]].' % self.page.title())
                 self.page.delete()
+                return
+            if answer == 'e':
+                oldText = self.page.get()
+                text = oldText
+                editor = editarticle.TextEditor()
+                text = editor.edit(self.page.get())
+                if oldText != text:
+                    wikipedia.showDiff(oldText, text)
+                    msg = wikipedia.input(u'Summary message:')
+                    self.page.put(text, msg)
                 return
             if answer == 'b':
                 wikipedia.output(u'Blanking page [[%s]].' % self.page.title())
