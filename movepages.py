@@ -53,7 +53,7 @@ import sys
 summary={
     'en': u'Pagemove by bot',
     'de': u'Seite durch Bot verschoben',
-    'el': u'Μετακίνηση σελίδων με bot'
+    'el': u'Μετακίνηση σελίδων με bot',
     'fr': u'Page renommée par bot',
     'he': u'העברת דף באמצעות בוט',
     'nl': u'Pagina hernoemd door robot',
@@ -64,7 +64,7 @@ summary={
 deletesummary={
     'en': u'Delete page by bot',
     'de': u'Seite durch Bot gelöscht',
-    'el': u'Διαγραφή σελίδων με bot'
+    'el': u'Διαγραφή σελίδων με bot',
     'fr': u'Page supprimée par bot',
     'nl': u'Pagina verwijderd door robot',
     'pl': u'Usunięcie artykułu przez robota',
