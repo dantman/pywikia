@@ -292,7 +292,10 @@ ignore_title = {
         'pt': [
             u'Usuário:.+',
             u'Usuário Discussão:.+',
+            u'Discussão:.+',
             u'Lista de combinações de duas letras',
+            u'Wikipedia:Lista de páginas de desambiguação.+',
+            u'Wikipedia:Páginas para eliminar/.+',
         ],
         'ru': [
             u'Категория:Disambig',
