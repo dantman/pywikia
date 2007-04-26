@@ -15,6 +15,7 @@ the contents of an article
 __version__='$Id$'
 
 from Tkinter import *
+import wikipedia
 
 class EditBoxWindow:
 
@@ -178,5 +179,7 @@ class ListBoxWindow:
 
 if __name__=="__main__":
     root = Tk()
+    page = wikipedia.Page(wikipedia.getSite(), u'Wiki')
+    content = page.get()
     myapp = EditBoxWindow(root)
-    myapp.edit(u'Български')
+    myapp.edit(content)
