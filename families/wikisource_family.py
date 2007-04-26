@@ -10,7 +10,17 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikisource'
        
-        for lang in self.knownlanguages:
+        self.langs = {
+            'dk':'da.wikisource.org',
+            'jp':'ja.wikisource.org',
+            'minnan':'zh-min-nan.wikisource.org',
+            'nb':'no.wikisource.org',
+            'tokipona':'tokipona.wikisource.org',
+            'zh-cn':'zh.wikisource.org',
+            'zh-tw':'zh.wikisource.org'
+            }
+        
+        if lang not in self.langs:
             self.langs[lang] = lang+'.wikisource.org'
   
         self.namespaces[4] = {
