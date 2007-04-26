@@ -35,7 +35,7 @@ Command-line arguments:
 
     -always        Don't prompt to make changes, just do them.
 
-Single page use:   movepages.py pagetitle1 pagetitle2 ...
+Single page use:   movepages.py -from:pagetitle1 -to:pagetitle2 ...
 
 """
 #
@@ -89,11 +89,11 @@ class MovePagesBot:
                 deletemsg = wikipedia.translate(wikipedia.getSite(), deletesummary)
                 page.delete(deletemsg)
         except wikipedia.NoPage:
-            wikipedia.output('Page %s does not exist!' % page.title())
+            wikipedia.output(u'Page %s does not exist!' % page.title())
         except wikipedia.IsRedirectPage:
-            wikipedia.output('Page %s is a redirect; skipping.' % page.title())
+            wikipedia.output(u'Page %s is a redirect; skipping.' % page.title())
         except wikipedia.LockedPage:
-            wikipedia.output('Page %s is locked!' % page.title())
+            wikipedia.output(u'Page %s is locked!' % page.title())
 
     def treat(self,page):
         pagetitle = page.title()
@@ -168,7 +168,6 @@ class MovePagesBot:
             self.treat(page)
 
 def main():
-    singlepage = []
     gen = None
     prefix = None
     FromName = ToName = None
@@ -200,11 +199,7 @@ def main():
             generator = genFactory.handleArg(arg)
             if generator:
                 gen = generator
-            else:
-                singlepage.append(wikipedia.Page(wikipedia.getSite(), arg))
 
-    if singlepage:
-        gen = iter(singlepage)
     if ((FromName and ToName) == True):
         wikipedia.output(u'Do you want to move %s to %s?' % (oldName, newName))
         page = wikipedia.Page(wikipedia.getSite(), oldName)
