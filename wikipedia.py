@@ -2996,7 +2996,7 @@ class Site(object):
         return text
 
 
-    def newpages(self, number = 10, repeat = False):
+    def newpages(self, number = 10, get_redirect = False, repeat = False):
         """Generator which yields new articles subsequently.
            It starts with the article created 'number' articles
            ago (first argument). When these are all yielded

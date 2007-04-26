@@ -37,10 +37,10 @@ def PrefixingPageGenerator(prefix, namespace=None):
         else:
             break
 
-def NewpagesPageGenerator(number = 100, repeat = False, site = None):
+def NewpagesPageGenerator(number = 100, get_redirect = False, repeat = False, site = None):
     if site is None:
         site = wikipedia.getSite()
-    for page in site.newpages(number=number, repeat=repeat):
+    for page in site.newpages(number=number, get_redirect=get_redirect, repeat=repeat):
         yield page[0]
         
 def FileLinksGenerator(referredPage):
