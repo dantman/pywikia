@@ -420,70 +420,6 @@ class GeneratorFactory:
         else:
             return None
 
-# This class was written before GeneratorFactory. It was intended for the same
-# purpose, but it is not used anywhere.
-class CommandLineGenerator(object):
-    """Make a generator by parsing command line arguments."""
-    def __init__(self):
-        self.genclass = None
-        self.start = None
-
-    def setClass(self, newclass, **kw):
-        if self.genclass != None:
-            print "ERROR: More than one page generator specified on command line"
-            sys.exit(1)
-        self.genclass = (newclass, kw)
-        self.start = None
-
-    def handleArgs(self, args):
-        unhandledArgs = []
-        for arg in args:
-            if arg == '-newpages':
-                self.setClass(NewpagesPageGenerator)
-            elif arg == '-allpages':
-                self.setClass(AllpagesPageGenerator)
-            elif arg.startswith('-start:'):
-                self.start = arg[7:]
-            elif arg.startswith('-pageprefix:'):
-                self.setClass(PrefixingPageGenerator, prefix=arg[12:])
-            elif arg.startswith('-filelinks:'):
-                page = wikipedia.Page(None, arg[11:])
-                self.setClass(FileLinksGenerator, referredPage=page)
-            elif arg.startswith('-incat:'):
-                cat = catlib.Category(None, arg[7:])
-                self.setClass(CategorizedPageGenerator, cat=cat, recurse=False)
-            elif arg.startswith('-insubcat:'):
-                cat = catlib.Category(None, arg[10:])
-                self.setClass(CategorizedPageGenerator, cat=cat, recurse=True)
-            elif arg.startswith('-referringto:'):
-                page = wikipedia.Page(None, arg[13:])
-                self.setClass(ReferringPageGenerator, referredPage=page)
-            elif arg.startswith('-google:'):
-                self.setClass(GoogleSearchPageGenerator, query = arg[8:])
-            else:
-                unhandledArgs.append(arg)
-        return unhandledArgs
-
-    def get(self):
-        """Generate an instance of the class"""
-        if self.genclass:
-            cl = self.genclass[0]
-            kw = self.genclass[1]
-        else:
-            cl = None
-            kw = {}
-        # Add the start argument to the keyword arguments
-        if self.start:
-            kw['start'] = self.start
-            # The start argument can be used without an explicit
-            # class. In that case use the allpages generator.
-            if cl is None:
-                cl = AllpagesPageGenerator
-        if cl:
-            return cl(**kw)
-        else:
-            return None
-
 if __name__ == "__main__":
     try:
         genFactory = GeneratorFactory()
@@ -493,19 +429,6 @@ if __name__ == "__main__":
                 gen = generator
         for page in gen:
             wikipedia.output(page.title(), toStdout = True)
-        # This test code did not work. --Daniel
-        #clg = CommandLineGenerator()
-        #args = wikipedia.handleArgs()
-        #args = clg.handleArgs(args)
-        #for arg in args:
-            #wikipedia.output("WARNING: Unhandled argument %s" % arg)
-        #g = clg.get()
-        #i = 0
-        #for p in g:
-            #i += 1
-            #if i > 100:
-                #break
-            #print p
     finally:
         wikipedia.stopme()
 
