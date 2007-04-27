@@ -1199,7 +1199,7 @@ class Page(object):
         """
         result = []
         try:
-            thistxt = removeLanguageLinks(self.get(), self.site())
+            thistxt = removeLanguageLinks(self.get(get_redirect=True), self.site())
         except NoPage:
             raise
             #return []
