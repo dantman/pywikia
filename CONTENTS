@@ -146,6 +146,7 @@ warnfile.py            : A robot that parses a warning file created by
                          and implements the suggested changes without
                          verifying them.
 weblinkchecker.py      : Check if external links are still working.
+welcome.py             : Script to welcome new users.
 windows_chars.py       : Change characters that are not part of Latin-1 into
                          something harmless. It is advisable to do this on
                          Latin-1 wikis before switching to UTF-8.
