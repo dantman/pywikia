@@ -65,10 +65,10 @@ def choosecats(pagetext):
     print ("Give the new categories, one per line.")
     print ("Empty line: if the first, don't change. Otherwise: Ready.")
     print ("-: I made a mistake, let me start over.")
-    print ("?: Give the text of the page with graphical interface.")
+    print ("e: Give the text of the page with graphical interface.")
     print ("??: Give the text of the page in console.") 
     print ("xx: if the first, remove all categories and add no new.")
-    print ("q: quit.")
+    print ("x: quit.")
     while flag == False:
         choice=wikipedia.input(u"?")
         if choice=="":
@@ -76,7 +76,7 @@ def choosecats(pagetext):
         elif choice=="-":
             chosen=choosecats(pagetext)
             flag=True
-        elif choice=="?":
+        elif choice=="e":
             import editarticle
             editor = editarticle.TextEditor()
             newtext = editor.edit(pagetext)
@@ -86,8 +86,6 @@ def choosecats(pagetext):
         elif choice=="xx" and chosen==[]:
             chosen = None
             flag=True
-        elif choice=="q" or "Q":
-            sys.exit()
         else:
             chosen.append(choice)
     return chosen
@@ -103,8 +101,8 @@ def make_categories(page, list, site = None):
 
 def main():
     docorrections=True
-    start=[]
     gen = None
+    mysite = wikipedia.getSite()
 
     genFactory = pagegenerators.GeneratorFactory()
 
@@ -140,6 +138,8 @@ def main():
                             elif newcats != []:
                                 make_categories(p, newcats, mysite)
                 except wikipedia.IsRedirectPage:
+                    pass
+                except wikipedia.NoPage:
                     pass
         finally:
             pass
