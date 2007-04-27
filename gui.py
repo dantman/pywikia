@@ -182,4 +182,5 @@ if __name__=="__main__":
     page = wikipedia.Page(wikipedia.getSite(), u'Wiki')
     content = page.get()
     myapp = EditBoxWindow(root)
-    myapp.edit(content)
+    myapp.edit(content, highlight = page.title())
+
