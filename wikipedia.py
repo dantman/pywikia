@@ -2814,7 +2814,7 @@ class Site(object):
             l.append(key + '=' + value)
         return '&'.join(l)
 
-    def postForm(self, address, predata, sysop = False):
+    def postForm(self, address, predata, sysop = False, useCookie=True):
         """
         Posts the given form data to the given address at this site.
         address is the absolute path without hostname.
@@ -2824,9 +2824,9 @@ class Site(object):
         body of the response.
         """
         data = self.urlEncode(predata)
-        return self.postData(address, data, sysop = sysop)
+        return self.postData(address, data, sysop = sysop, useCookie=useCookie)
 
-    def postData(self, address, data, contentType = 'application/x-www-form-urlencoded', sysop = False):
+    def postData(self, address, data, contentType = 'application/x-www-form-urlencoded', sysop = False, useCookie=True):
         """
         Posts the given data to the given address at this site.
         address is the absolute path without hostname.
@@ -2845,7 +2845,7 @@ class Site(object):
         conn.putheader('Content-Length', str(len(data)))
         conn.putheader('Content-type', contentType)
         conn.putheader('User-agent', useragent)
-        if self.cookies(sysop = sysop):
+        if useCookie and self.cookies(sysop = sysop):
             conn.putheader('Cookie', self.cookies(sysop = sysop))
         conn.endheaders()
         conn.send(data)
@@ -2873,13 +2873,13 @@ class Site(object):
 
         If logged in, returns the username. Otherwise, returns None
         """
-        self._loadCookies()
+        self._loadCookies(sysop = sysop)
         if not self.loginStatusKnown:
             output(u'Getting a page to check if we\'re logged in on %s' % self)
             path = self.put_address('Non-existing_page')
             text = self.getUrl(path, sysop = sysop)
             # Search for the "my talk" link at the top
-            mytalkR = re.compile('<a href=".+?">(?P<username>.+?)</a></li>\s*<li id="pt-mytalk">')
+            mytalkR = re.compile('<li id="pt-userpage"><a href=".+?">(?P<username>.+?)</a></li>')
             m = mytalkR.search(text)
             if m:
                 self.loginStatusKnown = True

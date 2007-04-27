@@ -133,7 +133,7 @@ class LoginManager:
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"
         else:
-            response, data = self.site.postForm(address, predata)
+            response, data = self.site.postForm(address, predata, useCookie=False)
             n = 0
             Reat=re.compile(': (.*?);')
             L = []
