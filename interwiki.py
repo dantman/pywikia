@@ -407,7 +407,6 @@ class Subject(object):
                     return page
         return None
 
-
     def translate(self, hints = None):
         """Add the given translation hints to the todo list"""
         if globalvar.same:
@@ -645,9 +644,8 @@ class Subject(object):
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % page.aslink(True))
                     if page == self.originPage:
-                        # This is the home subject page.
-                        # In this case we can stop all hints!
-                        # Huh? I don't understand this. --Daniel
+                        # The page we are working on is the page that does not exist.
+                        # No use in doing any work on it in that case.
                         for page2 in self.todo:
                             counter.minus(page2.site())
                         self.todo = []
@@ -675,6 +673,10 @@ class Subject(object):
                         # Ignore the interwiki links
                         self.done.remove(page)
                         iw = ()
+                    # Temporary change because of be/be-x-old issue
+                    for linkedPage in iw:
+                        if linkedPage.site() == wikipedia.getSite('be','wikipedia'):
+                            iw.append(wikipedia.Page(wikipedia.getSite('be-x-old','wikipedia'),linkedPage.title()))
                     for linkedPage in iw:
                         if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage) or self.wiktionaryMismatch(linkedPage)):
                             if self.addIfNew(linkedPage, counter, page):
@@ -778,28 +780,23 @@ class Subject(object):
                         i += 1
                         wikipedia.output(u"  (%d) Found link to %s in:" % (i, page2.aslink(True)))
                         self.whereReport(page2, indent = 8)
-                    if not globalvar.autonomous:
-                        while True:
-                            answer = wikipedia.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
-                            if answer:
-                                if answer == 'g':
-                                    return None
-                                elif answer == 'n':
-                                    # None acceptable
+                    while True:
+                        answer = wikipedia.input(u"Which variant should be used [number, (n)one, (g)ive up] :")
+                        if answer:
+                            if answer == 'g':
+                                return None
+                            elif answer == 'n':
+                                # None acceptable
+                                break
+                            elif answer.isdigit():
+                                answer = int(answer)
+                                try:
+                                    result[site] = pages[answer - 1]
+                                except IndexError:
+                                    # user input is out of range
+                                    pass
+                                else:
                                     break
-                                elif answer.isdigit():
-                                    answer = int(answer)
-                                    try:
-                                        result[site] = pages[answer - 1]
-                                    except IndexError:
-                                        # user input is out of range
-                                        pass
-                                    else:
-                                        break
-            # We don't need to continue with the rest if we're in autonomous
-            # mode.
-            if globalvar.autonomous:
-                return None
             # Loop over the ones that have one solution, so are in principle
             # not a problem.
             acceptall = False
@@ -992,8 +989,14 @@ class Subject(object):
                 # Determine whether we need permission to submit
                 ask = False
                 if removing and removing != [page]:   # Allow for special case of a self-pointing interwiki link
-                    self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)), createneed = False)
-                    ask = True
+                    # Temporary because of be/be-x-old issue - removing be: is ok if there is a be-x-old: link
+                    if len(removing) == 1 and removing[0].site() == wikipedia.getSite('be','wikipedia') and wikipedia.getSite('be-x-old','wikipedia') in new:
+                        pass
+                    elif len(removing) == 1 and removing[0].site() == wikipedia.getSite('be-x-old','wikipedia') and wikipedia.getSite('be','wikipedia') in new:
+                        pass                    
+                    else:
+                        self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)), createneed = False)
+                        ask = True
                 if globalvar.force:
                     ask = False
                 if globalvar.confirm:

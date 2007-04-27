@@ -3767,7 +3767,7 @@ def altlang(code):
     if code in ['co','frp']:
         return ['fr','it']
     if code=='yi':
-        return ['he']
+        return ['he','de']
     if code=='sa':
         return ['hi']
     if code in ['eml','lij','lmo','nap','pms','roa-tara','sc','scn','vec']:
@@ -3792,13 +3792,15 @@ def altlang(code):
         return ['pt']
     if code in ['mo','roa-rup']:
         return ['ro']
-    if code in ['av','be','bxr','cv','hy','lbe','ru-sib','tt','udm','uk','xal']:
+    if code in ['av','bxr','cv','hy','lbe','ru-sib','tt','udm','uk','xal']:
         return ['ru']
     if code=='got':
         return ['ru','uk']
-    if code in ['kk','ky','tk','ug','uz']:
+    if code in ['be','be-x-old']:
+        return ['be','be-x-old','ru']
+    if code in ['kk','ky','tk']:
         return ['tr','ru']
-    if code == 'diq':
+    if code in ['diq','ug','uz']:
         return ['tr']
     if code in ['ja','ko','minnan','zh','zh-cn']:
         return ['zh','zh-tw','zh-classical','zh-cn']
@@ -3816,8 +3818,8 @@ def altlang(code):
         return ['id','ms','jv']
     if code in ['bs','hr','mk','sh','sr']:
         return ['sh','hr','sr','bs']
-    if code in ['ceb','pag','war']:
-        return ['tl']
+    if code in ['ceb','pag','tl','war']:
+        return ['tl','es']
     if code=='bi':
         return ['tpi']
     if code=='tpi':
