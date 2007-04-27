@@ -1082,12 +1082,11 @@ class Page(object):
                 # two different lock exceptions, one for getting and one for
                 # putting.
                 try:
-                    self.site().forceLogin(sysop = True)
-                    output(u'Page is locked, and the sysop account can\'t be used because of some bug. Giving up.')
-                    # This doesn't work for an unknown reason; Instead, it
-                    # would lead to an infinite loop.
-                    #output(u'Page is locked, retrying using sysop account.')
-                    #return self.putPage(text = text, comment = comment, watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage, token = None, gettoken = True, sysop = True)
+                    # Page is restricted - try using the sysop account, unless we're using one already
+                    if not sysop:
+                        self.site().forceLogin(sysop = True)
+                        output(u'Page is locked, retrying using sysop account.')
+                        return self.putPage(text = text, comment = comment, watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage, token = None, gettoken = True, sysop = True)
                 except NoUsername:
                     raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
             elif not newTokenRetrieved and "<textarea" in data:
