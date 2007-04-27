@@ -162,7 +162,8 @@ class ReplaceRobot:
     """
     A bot that can do text replacements.
     """
-    def __init__(self, generator, replacements, exceptions = [], acceptall = False, allowoverlap = False, recursive = False):
+    def __init__(self, generator, replacements, exceptions = [], acceptall = False, allowoverlap = False,
+                 recursive = False, addedCat = None):
         """
         Arguments:
             * generator    - A generator that yields Page objects.
@@ -174,7 +175,8 @@ class ReplaceRobot:
                              changed.
             * acceptall    - If True, the user won't be prompted before changes
                              are made.
-            * allowoverlap - If True, when matches overlap, all of them are replaced
+            * allowoverlap - If True, when matches overlap, all of them are replaced.
+            * addedCat     - If set to a value, add this category to every page touched.
         """
         self.generator = generator
         self.replacements = replacements
@@ -182,6 +184,7 @@ class ReplaceRobot:
         self.acceptall = acceptall
         self.allowoverlap = allowoverlap
         self.recursive = recursive
+        self.addedCat = addedCat
 
     def checkExceptions(self, original_text):
         """
@@ -237,6 +240,11 @@ class ReplaceRobot:
                             new_text = newest_text
                             newest_text = self.doReplacements(new_text)
 
+                    if self.addedCat:
+                        cats = page.categories()
+                        if self.addedCat not in cats:
+                            cats.append(self.addedCat)
+                            new_text = wikipedia.replaceCategoryLinks(new_text, cats)
                     # Show the title of the page where the link was found.
                     # Highlight the title in purple.
                     colors = [None] * 5 + [13] * len(page.title()) + [None] * 4

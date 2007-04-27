@@ -30,6 +30,10 @@ Command line options:
              on multiple pages.  If the page title has spaces in it, enclose the entire
              page name in quotes.
 
+-category:   Appends the given category to every page that is edited.  This is useful when
+             a category is being broken out from a template parameter or when templates are
+             being upmerged but more information must be preserved.
+
 -extras      Specify this to signal that all parameters are templates that should either be
              substituted or removed.  Allows you to input way more than just two.  Not
              compatible with -xml (yet)  Disables template replacement.
@@ -94,7 +98,7 @@ __version__='$Id$'
 #
 import wikipedia, config
 import replace, pagegenerators
-import re, sys, string
+import re, sys, string, catlib
 
 class XmlDumpTemplatePageGenerator:
     """
@@ -213,7 +217,8 @@ class TemplateRobot:
         'pt':u'Bot: Substituindo predefinição: %s',
     }
 
-    def __init__(self, generator, old, new = None, remove = False, editSummary = '', acceptAll = False, extras = False):
+    def __init__(self, generator, old, new = None, remove = False, editSummary = '',
+                 acceptAll = False, extras = False, addedCat = None):
         """
         Arguments:
             * generator - A page generator.
@@ -230,6 +235,9 @@ class TemplateRobot:
         self.editSummary = editSummary
         self.acceptAll = acceptAll
         self.extras = extras
+        self.addedCat = addedCat
+        if self.addedCat:
+            self.addedCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.addedCat)
         # if only one argument is given, don't replace the template with another
         # one, but resolve the template by putting its text directly into the
         # article.
@@ -290,7 +298,7 @@ class TemplateRobot:
                 replacements.append((templateRegex, '{{' + self.new + '\g<parameters>}}'))
 
         #Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.acceptAll)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.acceptAll, addedCat=self.addedCat)
         replaceBot.run()
 
 def main():
@@ -299,6 +307,7 @@ def main():
     remove = False
     namespaces = []
     editSummary = ''
+    addedCat = ''
     acceptAll = False
     pageTitles = []
     extras = False
@@ -316,6 +325,8 @@ def main():
                 xmlfilename = arg[5:]
         elif arg.startswith('-namespace:'):
             namespaces.append(int(arg[len('-namespace:'):]))
+        elif arg.startswith('-category:'):
+            addedCat = arg[len('-category:'):]
         elif arg.startswith('-summary:'):
             editSummary = arg[len('-summary:'):]
         elif arg.startswith('-always'):
@@ -367,7 +378,7 @@ def main():
 
     #At this point, if extras is set to False, old is the name of a single template.
     #But if extras is set to True, old is a whole list of templates to be replaced.
-    bot = TemplateRobot(preloadingGen, old, new, remove, editSummary, acceptAll, extras)
+    bot = TemplateRobot(preloadingGen, old, new, remove, editSummary, acceptAll, extras, addedCat)
     bot.run()
 
 if __name__ == "__main__":
