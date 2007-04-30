@@ -19,10 +19,11 @@ class Family(family.Family):
             'zh-cn':'zh.wikisource.org',
             'zh-tw':'zh.wikisource.org'
             }
-        
-        if lang not in self.langs:
-            self.langs[lang] = lang+'.wikisource.org'
-  
+          
+        for lang in self.knownlanguages:
+            if lang not in self.langs:
+                self.langs[lang] = lang+'.wikisource.org'
+
         self.namespaces[4] = {
             '_default': [u'Wikisource', self.namespaces[4]['_default']],
             'ang': u'Wicifruma',
