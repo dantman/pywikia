@@ -111,7 +111,7 @@ __version__ = '$Id$'
 import os, sys
 import httplib, socket, urllib
 import traceback
-import time
+import time, threading
 import math
 import re, md5, codecs, difflib, locale
 import xml.sax, xml.sax.handler
@@ -210,126 +210,133 @@ class Page(object):
         The argument insite can be specified to help decode
         the name; it is the wikimedia site where this link was found.
         """
+        try:
+            # if _editrestriction is True, it means that the page has been found
+            # to have an edit restriction, but we do not know yet whether the
+            # restriction affects us or not
+            self._editrestriction = False
+            
+            if site == None:
+                site = getSite()
+            elif type(site) in [type(''), type(u'')]:
+                site = getSite(site)
+            
+            self._site = site
 
-        # if _editrestriction is True, it means that the page has been found
-        # to have an edit restriction, but we do not know yet whether the
-        # restriction affects us or not
-        self._editrestriction = False
-        
-        if site == None:
-            site = getSite()
-        elif type(site) in [type(''), type(u'')]:
-            site = getSite(site)
-        
-        self._site = site
+            if not insite:
+                insite = site
 
-        if not insite:
-            insite = site
-
-        # Convert HTML entities to unicode
-        t = html2unicode(title)
-        
-        # Convert URL-encoded characters to unicode
-        # Sometimes users copy the link to a site from one to another. Try both the source site and the destination site to decode.
-        t = url2unicode(t, site = insite, site2 = site)
-        
-        #Normalize unicode string to a NFC (composed) format to allow proper string comparisons
-        # According to http://svn.wikimedia.org/viewvc/mediawiki/branches/REL1_6/phase3/includes/normal/UtfNormal.php?view=markup
-        # the mediawiki code normalizes everything to NFC, not NFKC (which might result in information loss).
-        t = unicodedata.normalize('NFC', t)
-        
-        # Clean up the name, it can come from anywhere.
-        # Replace underscores by spaces, also multiple spaces and underscores with a single space
-        # Strip spaces at both ends
-        t = re.sub('[ _]+', ' ', t).strip()
-        # leading colon implies main namespace instead of the default
-        if t.startswith(':'):
-            t = t[1:]
-            self._namespace = 0
-        else:
-            self._namespace = defaultNamespace
-
-        #
-        # This code was adapted from Title.php : secureAndSplit()
-        #
-        # Namespace or interwiki prefix
-        while True:
-            m = reNamespace.match(t)
-            if not m:
-                break
-            p = m.group(1)
-            lowerNs = p.lower()
-            ns = self.site().getNamespaceIndex(lowerNs)
-            if ns:
-                t = m.group(2)
-                self._namespace = ns
-                break
+            # Convert HTML entities to unicode
+            t = html2unicode(title)
+            
+            # Convert URL-encoded characters to unicode
+            # Sometimes users copy the link to a site from one to another. Try both the source site and the destination site to decode.
+            t = url2unicode(t, site = insite, site2 = site)
+            
+            #Normalize unicode string to a NFC (composed) format to allow proper string comparisons
+            # According to http://svn.wikimedia.org/viewvc/mediawiki/branches/REL1_6/phase3/includes/normal/UtfNormal.php?view=markup
+            # the mediawiki code normalizes everything to NFC, not NFKC (which might result in information loss).
+            t = unicodedata.normalize('NFC', t)
+            
+            # Clean up the name, it can come from anywhere.
+            # Replace underscores by spaces, also multiple spaces and underscores with a single space
+            # Strip spaces at both ends
+            t = re.sub('[ _]+', ' ', t).strip()
+            # leading colon implies main namespace instead of the default
+            if t.startswith(':'):
+                t = t[1:]
+                self._namespace = 0
             else:
-                if lowerNs in self.site().family.langs.keys():
-                    # Interwiki link
-                    t = m.group(2)
+                self._namespace = defaultNamespace
 
-                    # Redundant interwiki prefix to the local wiki
-                    if lowerNs == self.site().lang:
-                        if t == '':
-                            raise Error("Can't have an empty self-link")
-                    else:
-                        self._site = getSite(lowerNs, self.site().family.name)
-
-                    # If there's an initial colon after the interwiki, that also
-                    # resets the default namespace
-                    if t != '' and t[0] == ':':
-                        self._namespace = 0
-                        t = t[1:]
-                elif lowerNs in self.site().family.known_families:
-                    if self.site().family.known_families[lowerNs] == self.site().family.name:
-                        t = m.group(2)
-                    else:
-                        # This page is from a different family
-                        output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
-                        otherlang = self.site().lang
-                        if lowerNs in ['commons']:
-                            otherlang = lowerNs
-                        familyName = self.site().family.known_families[lowerNs]
-                        try:
-                            self._site = getSite(otherlang, familyName)
-                        except ValueError:
-                            raise NoPage('%s is not a local page on %s, and the %s family is not supported by PyWikipediaBot!' % (title, self.site(), familyName))
-                        t = m.group(2)
-                else:
-                    # If there's no recognized interwiki or namespace,
-                    # then let the colon expression be part of the title.
+            #
+            # This code was adapted from Title.php : secureAndSplit()
+            #
+            # Namespace or interwiki prefix
+            while True:
+                m = reNamespace.match(t)
+                if not m:
                     break
-            continue
+                p = m.group(1)
+                lowerNs = p.lower()
+                ns = self.site().getNamespaceIndex(lowerNs)
+                if ns:
+                    t = m.group(2)
+                    self._namespace = ns
+                    break
+                else:
+                    if lowerNs in self.site().family.langs.keys():
+                        # Interwiki link
+                        t = m.group(2)
 
-        sectionStart = t.find(u'#')
-        if sectionStart >= 0:
-            self._section = t[sectionStart+1:].strip()
-            self._section = sectionencode(self._section, self.site().encoding())
-            if self._section == u'': self._section = None          
-            t = t[:sectionStart].strip()
-        else:
-            self._section = None
+                        # Redundant interwiki prefix to the local wiki
+                        if lowerNs == self.site().lang:
+                            if t == '':
+                                raise Error("Can't have an empty self-link")
+                        else:
+                            self._site = getSite(lowerNs, self.site().family.name)
 
-        if len(t) > 0:
-            if not self.site().nocapitalize:
-                t = t[0].upper() + t[1:]
-#        else:
-#            output( u"DBG>>> Strange title: %s:%s" % (site.lang, title) )
+                        # If there's an initial colon after the interwiki, that also
+                        # resets the default namespace
+                        if t != '' and t[0] == ':':
+                            self._namespace = 0
+                            t = t[1:]
+                    elif lowerNs in self.site().family.known_families:
+                        if self.site().family.known_families[lowerNs] == self.site().family.name:
+                            t = m.group(2)
+                        else:
+                            # This page is from a different family
+                            output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
+                            otherlang = self.site().lang
+                            if lowerNs in ['commons']:
+                                otherlang = lowerNs
+                            familyName = self.site().family.known_families[lowerNs]
+                            try:
+                                self._site = getSite(otherlang, familyName)
+                            except ValueError:
+                                raise NoPage('%s is not a local page on %s, and the %s family is not supported by PyWikipediaBot!' % (title, self.site(), familyName))
+                            t = m.group(2)
+                    else:
+                        # If there's no recognized interwiki or namespace,
+                        # then let the colon expression be part of the title.
+                        break
+                continue
 
-        if self._namespace != 0:
-            t = self.site().namespace(self._namespace) + u':' + t
-            
-        if self._section:
-            t += u'#' + self._section
-            
-        self._title = t
-        self.editRestriction = None
-        self._permalink = None
-        self._userName = None
-        self._ipedit = None
-        self._editTime = None
-        self._deletedRevs = None
+            sectionStart = t.find(u'#')
+            if sectionStart >= 0:
+                self._section = t[sectionStart+1:].strip()
+                self._section = sectionencode(self._section, self.site().encoding())
+                if self._section == u'': self._section = None          
+                t = t[:sectionStart].strip()
+            else:
+                self._section = None
+
+            if len(t) > 0:
+                if not self.site().nocapitalize:
+                    t = t[0].upper() + t[1:]
+    #        else:
+    #            output( u"DBG>>> Strange title: %s:%s" % (site.lang, title) )
+
+            if self._namespace != 0:
+                t = self.site().namespace(self._namespace) + u':' + t
+                
+            if self._section:
+                t += u'#' + self._section
+                
+            self._title = t
+            self.editRestriction = None
+            self._permalink = None
+            self._userName = None
+            self._ipedit = None
+            self._editTime = None
+            self._deletedRevs = None
+        except:
+            print >>sys.stderr, "Exception in Page constructor"
+            print >>sys.stderr, (
+                "site=%s, title=%s, insite=%s, defaultNamespace=%i"
+                % (site, title, insite, defaultNamespace)
+            )
+            raise
 
     def site(self):
         """The site of the page this Page refers to,
@@ -1288,6 +1295,8 @@ class Page(object):
             if paramString:
                 params = paramString.split('|')
             name = m.group('name')
+            if self.site().isInterwikiLink(name):
+                continue
             name = Page(self.site(), name).title()
             result.append((name, params))
         return result
@@ -2104,6 +2113,7 @@ class Throttle(object):
     def __init__(self, mindelay = config.minthrottle, maxdelay = config.maxthrottle, multiplydelay = True):
         """Make sure there are at least 'delay' seconds between page-gets
            after 'ignore' initial page-gets"""
+        self.lock = threading.RLock()
         self.mindelay = mindelay
         self.maxdelay = maxdelay
         self.pid = False # If self.pid remains False, we're not checking for multiple processes
@@ -2123,50 +2133,58 @@ class Throttle(object):
         return _wt.absoluteFilename('throttle.log')
         
     def checkMultiplicity(self):
-        processes = {}
-        my_pid = 1
-        count = 1
+        self.lock.acquire()
         try:
-            f = open(self.logfn(), 'r')
-        except IOError:
-            if not self.pid:
-                pass
+            processes = {}
+            my_pid = 1
+            count = 1
+            try:
+                f = open(self.logfn(), 'r')
+            except IOError:
+                if not self.pid:
+                    pass
+                else:
+                    raise
             else:
-                raise
-        else:
-            now = time.time()
-            for line in f.readlines():
-                try:
-                    line = line.split(' ')
-                    pid = int(line[0])
-                    ptime = int(line[1].split('.')[0])
-                    if now - ptime <= self.releasepid:
-                        if now - ptime <= self.dropdelay and pid != self.pid:
-                            count += 1
-                        processes[pid] = ptime
-                        if pid >= my_pid:
-                            my_pid = pid+1
-                except (IndexError,ValueError):
-                    pass    # Sometimes the file gets corrupted - ignore that line
+                now = time.time()
+                for line in f.readlines():
+                    try:
+                        line = line.split(' ')
+                        pid = int(line[0])
+                        ptime = int(line[1].split('.')[0])
+                        if now - ptime <= self.releasepid:
+                            if now - ptime <= self.dropdelay and pid != self.pid:
+                                count += 1
+                            processes[pid] = ptime
+                            if pid >= my_pid:
+                                my_pid = pid+1
+                    except (IndexError,ValueError):
+                        pass    # Sometimes the file gets corrupted - ignore that line
 
-        if not self.pid:
-            self.pid = my_pid
-        self.checktime = time.time()
-        processes[self.pid] = self.checktime
-        f = open(self.logfn(), 'w')
-        for p in processes.keys():
-            f.write(str(p)+' '+str(processes[p])+'\n')
-        f.close()
-        self.process_multiplicity = count
-        output(u"Checked for running processes. %s processes currently running, including the current process." % count)
+            if not self.pid:
+                self.pid = my_pid
+            self.checktime = time.time()
+            processes[self.pid] = self.checktime
+            f = open(self.logfn(), 'w')
+            for p in processes.keys():
+                f.write(str(p)+' '+str(processes[p])+'\n')
+            f.close()
+            self.process_multiplicity = count
+            output(u"Checked for running processes. %s processes currently running, including the current process." % count)
+        finally:
+            self.lock.release()
 
     def setDelay(self, delay = config.minthrottle, absolute = False):
-        if absolute:
-            self.maxdelay = delay
-            self.mindelay = delay
-        self.delay = delay
-        # Don't count the time we already waited as part of our waiting time :-0
-        self.now = time.time()
+        self.lock.acquire()
+        try:
+            if absolute:
+                self.maxdelay = delay
+                self.mindelay = delay
+            self.delay = delay
+            # Don't count the time we already waited as part of our waiting time :-0
+            self.now = time.time()
+        finally:
+            self.lock.release()
 
     def getDelay(self):
         thisdelay = self.delay
@@ -2219,18 +2237,22 @@ class Throttle(object):
         """This is called from getEditPage without arguments. It will make sure
            that if there are no 'ignores' left, there are at least delay seconds
            since the last time it was called before it returns."""
-        waittime = self.waittime()
-        # Calculate the multiplicity of the next delay based on how
-        # big the request is that is being posted now.
-        # We want to add "one delay" for each factor of two in the
-        # size of the request. Getting 64 pages at once allows 6 times
-        # the delay time for the server.
-        self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
-        # Announce the delay if it exceeds a preset limit
-        if waittime > config.noisysleep:
-            output(u"Sleeping for %.1f seconds, %s" % (waittime, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
-        time.sleep(waittime)
-        self.now = time.time()
+        self.lock.acquire()
+        try:
+            waittime = self.waittime()
+            # Calculate the multiplicity of the next delay based on how
+            # big the request is that is being posted now.
+            # We want to add "one delay" for each factor of two in the
+            # size of the request. Getting 64 pages at once allows 6 times
+            # the delay time for the server.
+            self.next_multiplicity = math.log(1+requestsize)/math.log(2.0)
+            # Announce the delay if it exceeds a preset limit
+            if waittime > config.noisysleep:
+                output(u"Sleeping for %.1f seconds, %s" % (waittime, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+            time.sleep(waittime)
+            self.now = time.time()
+        finally:
+            self.lock.release()
 
 def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowoverlap = False):
     """
