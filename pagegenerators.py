@@ -102,6 +102,36 @@ def UnCategorizedPageGenerator(number = 100, repeat = False, site = None):
     for page in site.uncategorizedpages(number=number, repeat=repeat):
         yield page
 
+def LonelyPagesPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.lonelypages(number=number, repeat=repeat):
+        yield page
+
+def AncientPagesPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.ancientpages(number=number, repeat=repeat):
+        yield page[0]
+
+def DeadendPagesPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.deadendpages(number=number, repeat=repeat):
+        yield page
+
+def LongPagesPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.longpages(number=number, repeat=repeat):
+        yield page[0]
+
+def ShortPagesPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.shortpages(number=number, repeat=repeat):
+        yield page[0]
+
 def LinkedPageGenerator(linkingPage):
     """Yields all pages linked from a specific page."""
     for page in linkingPage.linkedPages():
