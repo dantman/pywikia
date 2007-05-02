@@ -406,11 +406,6 @@ class GeneratorFactory:
               return NewpagesPageGenerator(number = int(arg[5:]))
             else:
               return NewpagesPageGenerator(number = 60)
-        elif arg.startswith('-uncat'):
-            if len(arg) >=7:
-              return UnCategorizedPageGenerator(number = int(arg[7:]))
-            else:
-              return UnCategorizedPageGenerator(number = 60)
         elif arg.startswith('-google'):
             if len(arg) == 8:
                 googleQuery = wikipedia.input(u'What do you want to search for?')

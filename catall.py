@@ -109,6 +109,10 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg == '-onlynew':
             docorrections=False
+        if arg == '-uncat':
+            generator = pagegenerators.UnCategorizedPageGenerator(number = 100)
+            if generator:
+                gen = generator
         else:
             generator = genFactory.handleArg(arg)
             if generator:
