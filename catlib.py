@@ -320,7 +320,7 @@ class Category(wikipedia.Page):
 
     def isEmpty(self):
         # TODO: rename; naming conflict with Page.isEmpty
-        for type, title in self._getContentsAndSupercats():
+        for type, title in self._getContentsAndSupercats(purge = True):
             if type == ARTICLE or type == SUBCATEGORY:
                 return False
         return True
