@@ -57,7 +57,7 @@ This script understands the following command-line arguments:
 Known issues/FIXMEs:
 * exits when wiki is down.
 * user talk namespace name could be extracted from the framework somewhere
- (family files) (would eliminate need for customisation)
+  (family files) (would eliminate need for customisation)
 * username and contributions (plural) can probably be extracted from wiki
   (eliminates two customisations)
 * add variable for how many users to skip (f.e. the 10 latest users, that
@@ -133,10 +133,8 @@ for arg in wikipedia.handleArgs():
             numberlog = int(arg[11:])
 
 # Find out what project and language the bot will use
-c = str(wikipedia.getSite())
-k = c.split(":")
-project = k[0]
-lang = k[1]
+lang = config.mylang
+project = config.family
 
 # Script users the class wikipedia.translate() to find the right
 # page/user/summary/etc so the need to specify language and project have
