@@ -492,7 +492,7 @@ class Family:
                 'hr': u'Razgovor sa suradnikom',
                 'hsb': u'Diskusija z wužiwarjom',
                 'hu': u'User vita',
-                'hy': 'Մասնակցի քննարկում',
+                'hy': u'Մասնակցի քննարկում',
                 'ia': u'Discussion Usator',
                 'id': u'Pembicaraan Pengguna',
                 'is': u'Notandaspjall',
