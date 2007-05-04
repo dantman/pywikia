@@ -137,6 +137,7 @@ class Family(family.Family):
             'hr': u'Razgovor Wikipedija',
             'hsb': u'Wikipedija diskusija',
             'hu': u'Wikipédia vita',
+            'hy': u'Wikipedia քննարկում',
             'ia': u'Discussion Wikipedia',
             'id': u'Pembicaraan Wikipedia',
             'is': u'Wikipediaspjall',
