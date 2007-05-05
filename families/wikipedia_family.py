@@ -79,6 +79,7 @@ class Family(family.Family):
             'ta': [u'Wikipedia', u'விக்கிபீடியா'],  # Very strange - the localized version is not the main one
             'te': u'వికీపీడియా',
             'tg': u'Википедиа',
+            'th': u'วิกิพีเดีย',
             'tr': u'Vikipedi',
             'uk': u'Вікіпедія',
             'ur': u'منصوبہ',
@@ -191,7 +192,7 @@ class Family(family.Family):
             'ta': [u'Wikipedia பேச்சு', u'விக்கிபீடியா பேச்சு'],
             'te': u'వికీపీడియా చర్చ',
             'tg': u'Баҳси Википедиа',
-            'th': u'คุยเรื่องWikipedia',
+            'th': u'คุยเรื่องวิกิพีเดีย',
             'tr': u'Vikipedi tartışma',
             'tt': u'Wikipedia bäxäse',
             'ty': u'Discussion Wikipedia',
