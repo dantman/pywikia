@@ -1568,6 +1568,115 @@ def trans(char, default = '?', prev = '-'):
     if char == u"ஔ":
         return u"au"
     if char == u"ஃ":
-        return ""    
+        return ""
+
+    # Bengali
+    if char == u"অ":
+        return u"ô"
+    if char in u"আা":
+        return u"a"
+    if char in u"ইিঈী":
+        return u"i"
+    if char in u"উুঊূ":
+        return u"u"
+    if char in u"ঋৃ":
+        return u"ri"
+    if char in u"এে":
+        return u"e"
+    if char in u"ঐৈ":
+        return u"oi"
+    if char in u"ওো":
+        return u"o"
+    if char in u"ঔৌ":
+        return "ou"
+    if char == u"্":
+        return u""
+    if char == u"ৎ":
+        return u"t"
+    if char == u"ং":
+        return u"n"
+    if char == u"ঃ":
+        return u"h"
+    if char == u"ঁ":
+        return u"ñ"
+    if char == u"ক":
+        return u"k"
+    if char == u"খ":
+        return u"kh"
+    if char == u"গ":
+        return u"g"
+    if char == u"ঘ":
+        return u"gh"
+    if char == u"ঙ":
+        return u"ng"
+    if char == u"চ":
+        return u"ch"
+    if char == u"ছ":
+        return u"chh"
+    if char in u"জ":
+        return u"j"
+    if char == u"ঝ":
+        return u"jh"
+    if char == u"ঞ":
+        return u"n"
+    if char in u"টত":
+        return u"t"
+    if char in u"ঠথ":
+        return u"th"
+    if char in u"ডদ":
+        return u"d"
+    if char in u"ঢধ":
+        return u"dh"
+    if char in u"ণন":
+        return u"n"
+    if char == u"প":
+        return u"p"
+    if char == u"ফ":
+        return u"ph"
+    if char == u"ব":
+        return u"b"
+    if char == u"ভ":
+        return u"bh"
+    if char == u"ম":
+        return u"m"
+    if char == u"য":
+        return u"dzh"
+    if char == u"র":
+        return u"r"
+    if char == u"ল":
+        return u"l"
+    if char == u"শ":
+        return u"s"
+    if char == u"হ":
+        return u"h"
+    if char == u"য়":
+        return u"-"
+    if char == u"ড়":
+        return u"r"
+    if char == u"ঢ":
+        return u"rh"
+    if char == u"০":
+        return u"0"
+    if char == u"১":
+        return u"1"
+    if char == u"২":
+        return u"2"
+    if char == u"৩":
+        return u"3"
+    if char == u"৪":
+        return u"4"
+    if char == u"৫":
+        return u"5"
+    if char == u"৬":
+        return u"6"
+    if char == u"৭":
+        return u"7"
+    if char == u"৮":
+        return u"8"
+    if char == u"৯":
+        return u"9"
+    
+    
+    
     
     return default
