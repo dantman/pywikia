@@ -572,29 +572,30 @@ class Family(family.Family):
 
         # Language codes of the largest wikis. They should be roughly sorted
         # by size.
-        # Note: currently they have been sorted by size, but with languages
+        # Note: currently they have been sorted by number of pages, but with languages
         # not in the Latin alphabet counted 1/3 lower
 
         self.languages_by_size = [
-            'en','de','fr','pl','nl','it','pt','ja','sv','es',
-            'fi','no','ru','zh','eo','sk','cs','da','ro','ca',
-            'id','hu','tr','sl','lt','he','uk','et','sr','hr',
-            'bg','ko','gl','nn','te','ceb','ms','eu','ar','vi',
-            'io','simple','sq','is','bs','lb','th','nap','el','br',
-            'fa','la','bn','ka','su','sh','wa','bpy','scn','ku',
-            'lv','ast','ht','oc','cy','af','mk','ksh','jv','tl',
-            'co','an','mr','ru-sib','az','ga','ta','hi','gd','fy',
-            'lmo','be-x-old','nds','tt','vec','uz','ia','be','cv','tg',
-            'pms','sw','ur','kn','als','li','zh-min-nan','nrm','ilo','yi',
-            'fo','pam','nds-nl','war','frp','am','hy','sco','qu','fur',
-            'new','nov','vo','lij','ml','zh-yue','mt','kw','vls','sa','se',
-            'pdc','os','map-bms','lad','diq','nah','fiu-vro','csb','yo',
-            'ug','bat-smg','ang','to','ps','jbo','ty','mi','zh-classical','bar',
-            'tk','hsb','ln','ie','tpi','mn','ne','rm','mo','roa-rup',
-            'ks','na','arc','wo','mg','kk','sc','pag','bo','ky',
-            'rmy','eml','tet','gu','kg','dv','ba','wuu','udm','gv',
-            'cbk-zam','so','bm','sm','got','cr','chr','si','av','sd',
-            'bh','pi',]
+            'en','de','fr','pl','nl','it','pt','ja','es','sv',
+            'ru','fi','no','eo','zh','tr','sk','cs','da','ro',
+            'id','ca','hu','sl','lt','uk','lmo','he','et','ceb',
+            'hr','sr','bg','ko','gl','nn','ms','ar','te','vi',
+            'bs','eu','simple','is','io','el','sq','th','lb','br',
+            'fa','la','nap','sh','su','bn','jv','ka','scn','new',
+            'lv','ku','nds','wa','cy','bpy','ast','pms','oc','af',
+            'hi','ht','ta','ksh','mr','mk','az','an','tl','co',
+            'ga','ru-sib','be-x-old','fy','gd','vec','tg','vo','tt','cv',
+            'sw','ur','uz','ia','kn','als','li','pam','sa','nrm',
+            'zh-min-nan','fo','nds-nl','yi','ilo','qu','war','zh-yue','fur','hy',
+            'am','frp','sco','nov','se','ml','yo','bat-smg','vls','lij',
+            'map-bms','mt','bh','csb','pdc','diq','kw','fiu-vro','nah','os',
+            'be','lad','hsb','to','ang','zh-classical','bar','ne','ln','mi', 
+            'ps','tk','jbo','kk','ty','rm','mn','wo','tpi','ie',
+            'roa-rup','arc','mo','tet','pag','dv','kg','na','ks','sc',
+            'ky','mg','gu','rmy','eml','glk','wuu','cbk-zam','so','udm',
+            'gv','na','cu','bo','bm','sm','iu','chr','sd','ba',
+            'si','cr','lo','av','ug','km','zu','pi','got','cdo',
+            'ce','ti',]
 
         # Languages that used to be coded in iso-8859-1
         self.latin1old = ['de', 'en', 'et', 'es', 'ia', 'la', 'af', 'cs',
