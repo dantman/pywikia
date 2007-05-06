@@ -57,7 +57,7 @@ This script understands the following command-line arguments:
 Known issues/FIXMEs:
 * exits when wiki is down.
 * user talk namespace name could be extracted from the framework somewhere
-  (family files) (would eliminate need for customisation)
+ (family files) (would eliminate need for customisation)
 * username and contributions (plural) can probably be extracted from wiki
   (eliminates two customisations)
 * add variable for how many users to skip (f.e. the 10 latest users, that
@@ -136,6 +136,9 @@ for arg in wikipedia.handleArgs():
 lang = config.mylang
 project = config.family
 
+#This variable define in what project we are :-) (what language and what project)
+welcomesite = wikipedia.Site(lang, project)
+
 # Script users the class wikipedia.translate() to find the right
 # page/user/summary/etc so the need to specify language and project have
 # been eliminated.
@@ -159,15 +162,6 @@ logbook = {
     'it':str(project) + ":Benvenuto log",
     'nl':str(project) + ':Logboek welkom',
     'no':str(project) + ':Velkomstlogg',
-    }
-#The user talk namespace name (f.e. User_talk:)
-talk_page = {
-    'commons':'User_talk:',
-    'de':'Benutzer_Diskussion:',
-    'en':'User_talk:',
-    'it':'Discussioni_utente:',
-    'nl':'Overleg_gebruiker:',
-    'no':'Brukerdiskusjon:',
     }
 #The edit summary for the welcome message (f.e. Welcome!)
 summary = {
@@ -195,15 +189,6 @@ summary2 = {
     'it':'Aggiorno il log',
     'nl':'Logboek bijwerken',
     'no':'Oppdaterer logg',
-    }
-# Username in the wiki language (f.e. Username)
-user = {
-    'commons':'Username',
-    'de':'Benutzer',
-    'en':'Username',
-    'it':'Utente',
-    'nl':'Gebruikersnaam',
-    'no':'Brukernavn',
     }
 # Contributions in the wiki language (f.e. Contribs)
 con = {
@@ -241,25 +226,15 @@ bad_pag = {
     'no':'Bruker:JhsBot/Daarlige ord',
     }
 
-# The two blocks that follow are functions, the part of text you have to add
-# to is between the "#" lines.
- 
-def rep(username):
-                                        #Change below!!!       
-############################################################################
 # The text for reporting a possibly bad username (f.e. *[[Talk_page:Username|Username]])
-    report_text = {
-        'commons':"\n*{{user3|" + username + "}}" + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'de':'\n*[[Benutzer_Diskussion:' + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'en':'\n*{{Userlinks|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'it':"\n*[[Discussioni utente:" + username + "|" + username + "]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'nl':'\n*{{linkgebruiker|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'no':'\n*{{bruker|' + username + '}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        }
-############################################################################
-                                        #Change above!!!    
-    rep_text = wikipedia.translate(wikipedia.getSite(), report_text)
-    return rep_text
+report_text = {
+        'commons':"\n*{{user3|%s}}" + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'de':'\n*[[Benutzer_Diskussion:%s]] ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'en':'\n*{{Userlinks|%s}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'it':"\n*[[Discussioni utente:%s]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'nl':'\n*{{linkgebruiker%s}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'no':'\n*{{bruker|%s}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        }    
 
 # Add your project (in alphabetical order) if you want that the bot start
 project_inserted = ['commons', 'de', 'en', 'it', 'nl', 'no']
@@ -273,20 +248,23 @@ project_inserted = ['commons', 'de', 'en', 'it', 'nl', 'no']
 if lang not in project_inserted:
     wikipedia.output(u"Your project is not supported by the framework. You have to edit the script and add it!")
     wikipedia.stopme()
-    exit()
 
 # The follow lines translate the language's parameters.
-welcom = wikipedia.translate(wikipedia.getSite(), netext)
-talk = wikipedia.translate(wikipedia.getSite(), talk_page)
 contib = 'Special:Contributions'
+usernam = welcomesite.namespace(2)
+welcom = wikipedia.translate(wikipedia.getSite(), netext)
 summ = wikipedia.translate(wikipedia.getSite(), summary)
 logg = wikipedia.translate(wikipedia.getSite(), logbook)
 summ2 = wikipedia.translate(wikipedia.getSite(), summary2)
-usernam = wikipedia.translate(wikipedia.getSite(), user)
 contrib = wikipedia.translate(wikipedia.getSite(), con)
 rep_page = wikipedia.translate(wikipedia.getSite(), report_page)
 com = wikipedia.translate(wikipedia.getSite(), comment)
 bad_page = wikipedia.translate(wikipedia.getSite(), bad_pag)
+rep_text = wikipedia.translate(wikipedia.getSite(), report_text)
+
+# There is the talk page ^__^ the talk_page's variable gives "Talk page" and i change it "Talk_page:"
+talk_page = welcomesite.namespace(3)
+talk = talk_page.replace(" ", "_") + ":"
 
 def badword_function(raw):
     list_loaded = list()
@@ -333,9 +311,6 @@ elenco = elencoaf + elencogz + elencovarie
 block = ("B", "b", "Blocco", "blocco", "block", "bloc", "Block", "Bloc", 'Report', 'report')
 say_hi = ("S", "s", "Saluto", "saluto", "Welcome", "welcome", 'w', 'W', 'say hi', 'Say hi', 'Hi', 'hi', 'h', 'hello', 'Hello')
 
-#This variable define in what project we are :-) (what language and what project)
-welcomesite = wikipedia.Site(lang, project)
-
 # The function used to load the url where the is the new users
 def pageText(url):
     try:
@@ -366,7 +341,7 @@ def parselog(raw):
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure)
     while load == True:
-        reg = '\(<a href=\"/w/index.php\?title=' + talk + '(.*?)&amp;action=edit\"'
+        reg = '\(<a href=\"/w/index.php\?title=' + talk + '(.*?)&(amp;|)action=edit\"'
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
@@ -413,7 +388,7 @@ def report(lang, rep_page, username, com):
     y = n.search(text_get, pos)
     if y == None:
         # Adding the log :)
-        rep_text = rep(username)
+        rep_text = rep_text % username
         another_page.put(text_get + rep_text, comment = com, minorEdit = True)
         wikipedia.output(u"...Reported...")
     else:
