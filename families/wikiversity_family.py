@@ -11,6 +11,10 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikiversity'
 
+        self.langs = {
+            'beta':'beta.wikiversity.org'
+        }
+
         for lang in self.knownlanguages:
             if lang not in self.langs:
                 self.langs[lang] = lang+'.wikiversity.org'
