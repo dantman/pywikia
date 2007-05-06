@@ -2439,8 +2439,8 @@ class Family:
     def linksearch_address(self, code, link, limit=500, offset=0):
       return '%s?title=%s:Linksearch&limit=%d&offset=%d&target=%s' % (self.path(code), self.special_namespace_url(code), limit, offset, link)
 
-    def version_history_address(self, code, name):
-        return '%s?title=%s&action=history&limit=%d' % (self.path(code), name, config.special_page_limit)
+    def version_history_address(self, code, name, limit = config.special_page_limit):
+        return '%s?title=%s&action=history&limit=%d' % (self.path(code), name, limit)
 
     def export_address(self, code):
         return '%s?title=%s:Export' % (self.path(code), self.special_namespace_url('_default'))

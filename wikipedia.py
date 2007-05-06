@@ -1324,11 +1324,11 @@ class Page(object):
         oldid = vh[0][0]
         return self.getEditPage(oldid=oldid)[0]
 
-    def getVersionHistory(self, forceReload = False, reverseOrder = False, getAll = False):
+    def getVersionHistory(self, forceReload = False, reverseOrder = False, getAll = False, revCount = 500):
         """
         Loads the version history page and returns a list of tuples, where each
         tuple represents one edit and is built of edit date/time, user name, and edit
-        summary.  Defaults to getting the first 500 edits.
+        summary.  Defaults to getting the first revCount edits.
         """
         site = self.site()
 
@@ -1351,7 +1351,7 @@ class Page(object):
             # Check if _versionhistoryearliest exists
             if not hasattr(self, '_versionhistoryearliest') or forceReload:
                 self._versionhistoryearliest = []
-            elif getAll and len(self._versionhistoryearliest) == 500:
+            elif getAll and len(self._versionhistoryearliest) == revCount:
                 # Cause a reload, or at least make the loop run
                 thisHistoryDone = False
                 skip = True
@@ -1359,7 +1359,7 @@ class Page(object):
                 thisHistoryDone = True
         elif not hasattr(self, '_versionhistory') or forceReload:
             self._versionhistory = []
-        elif getAll and len(self._versionhistory) == 500:
+        elif getAll and len(self._versionhistory) == revCount:
             # Cause a reload, or at least make the loop run
             thisHistoryDone = False
             skip = True
@@ -1367,10 +1367,10 @@ class Page(object):
             thisHistoryDone = True
 
         while not thisHistoryDone:
-            path = site.family.version_history_address(self.site().language(), self.urlname())
+            path = site.family.version_history_address(self.site().language(), self.urlname(), revCount)
 
             if reverseOrder:
-                if len(self._versionhistoryearliest) >= 500:
+                if len(self._versionhistoryearliest) >= revCount:
                     path += '&dir=prev'
                 else:
                     path += '&go=first'
@@ -1408,7 +1408,7 @@ class Page(object):
                         edits.reverse()
                         for edit in edits:
                             self._versionhistoryearliest.append(edit)
-                        if len(edits) < 500:
+                        if len(edits) < revCount:
                             thisHistoryDone = True
                     else:
                         if not skip:
@@ -1416,7 +1416,7 @@ class Page(object):
                             edits.reverse()
                             for edit in edits:
                                 self._versionhistoryearliest.append(edit)
-                            if len(edits) < 500:
+                            if len(edits) < revCount:
                                 thisHistoryDone = True
 
                             matchObj = RLinkToNextPage.search(self_txt)
@@ -1454,14 +1454,14 @@ class Page(object):
                         edits = editR.findall(self_txt)
                         for edit in edits:
                             self._versionhistory.append(edit)
-                        if len(edits) < 500:
+                        if len(edits) < revCount:
                             thisHistoryDone = True
                     else:
                         if not skip:
                             edits = editR.findall(self_txt)
                             for edit in edits:
                                 self._versionhistory.append(edit)
-                            if len(edits) < 500:
+                            if len(edits) < revCount:
                                 thisHistoryDone = True
 
                             matchObj = RLinkToNextPage.findall(self_txt)
@@ -1486,23 +1486,23 @@ class Page(object):
                     thisHistoryDone = True
 
         if reverseOrder:
-            # Return only 500 edits, even if the version history is extensive
-            if len(self._versionhistoryearliest) > 500 and not getAll:
-                return self._versionhistoryearliest[0:500]
+            # Return only revCount edits, even if the version history is extensive
+            if len(self._versionhistoryearliest) > revCount and not getAll:
+                return self._versionhistoryearliest[0:revCount]
             return self._versionhistoryearliest
 
-        # Return only 500 edits, even if the version history is extensive
-        if len(self._versionhistory) > 500 and not getAll:
-            return self._versionhistory[0:500]
+        # Return only revCount edits, even if the version history is extensive
+        if len(self._versionhistory) > revCount and not getAll:
+            return self._versionhistory[0:revCount]
         return self._versionhistory
 
-    def getVersionHistoryTable(self, forceReload = False, reverseOrder = False, getAll = False):
+    def getVersionHistoryTable(self, forceReload = False, reverseOrder = False, getAll = False, revCount = 500):
         """
         Returns the version history as a wiki table.
         """
         result = '{| border="1"\n'
         result += '! oldid || date/time || username || edit summary\n'
-        for oldid, time, username, summary in self.getVersionHistory(forceReload = forceReload, reverseOrder = reverseOrder, getAll = getAll):
+        for oldid, time, username, summary in self.getVersionHistory(forceReload = forceReload, reverseOrder = reverseOrder, getAll = getAll, revCount = revCount):
             result += '|----\n'
             result += '| %s || %s || %s || <nowiki>%s</nowiki>\n' % (oldid, time, username, summary)
         result += '|}\n'
