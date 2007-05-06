@@ -3781,7 +3781,7 @@ def altlang(code):
         return ['es','pt']
     if code=='lad':
         return ['es','he']
-    if code in ['br','ht','ln','lo','nrm','vi','wa']:
+    if code in ['br','ht','kab','ln','lo','nrm','vi','wa']:
         return ['fr']
     if code in ['ie','oc']:
         return ['ie','oc','fr']

@@ -147,6 +147,7 @@ class Family(family.Family):
             'ja': u'Wikipedia‐ノート',
             'jv': u'Dhiskusi Wikipedia',
             'ka': u'ვიკიპედია განხილვა',
+            'kab': u'Amyannan n Wikipedia',
             'kk': u'Уикипедия талқылауы',
             'kn': u'Wikipedia ಚರ್ಚೆ',
             'ko': u'위키백과토론',
@@ -500,7 +501,7 @@ class Family(family.Family):
             'pi','pag','pap','ps','km','pms','nds','pl','pt','kk-tr','ty','ksh','ro',
             'rmy','rm','qu','ru','se','sa','sg','sc','sco','st','tn','sq','ru-sib','scn',
             'si','simple','sd','ss','sk','sl','cu','so','sr','sh','fi','sv','tl',
-            'ta','roa-tara','tt','te','tet','th','vi','ti','tlh','tg','tpi','chr','chy',
+            'ta','kab','roa-tara','tt','te','tet','th','vi','ti','tlh','tg','tpi','chr','chy',
             've','tr','tk','tw','udm','uk','ur','vec','vo','fiu-vro','wa',
             'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg',
             'zh','zh-tw','zh-cn']
@@ -525,7 +526,7 @@ class Family(family.Family):
             'pi', 'pam', 'pag', 'pap', 'ps', 'km', 'pms', 'nds', 'pl', 'pt', 'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu',
             'ru', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'ru-sib', 'scn', 'si',
             'simple', 'sd', 'ss', 'sk', 'sl', 'cu', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
-            'ta', 'roa-tara', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
+            'ta', 'kab', 'roa-tara', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
             'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'vls', 'war',
             'wo', 'wuu', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'cbk-zam', 'diq', 'zea', 'bat-msg', 'zh',
             'zh-tw', 'zh-cn']
@@ -697,6 +698,7 @@ class Family(family.Family):
             'jbo':            u'ralju ckupau',
             'jv' :            u'Kaca Utama',
             'ka' :            u'მთავარი გვერდი',
+            'kab':            u'Asebtar amenzawi',
             'kg' :            u'Main Page',
             'ki' :            u'Main Page',
             'kj' :            u'Main Page',
