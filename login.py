@@ -147,6 +147,8 @@ class LoginManager:
             if len(L) == 4:
                 return "\n".join(L)
             else:
+                if '<input type="hidden" name="wpCaptchaId"' in data:
+                    wikipedia.output(u'There is a CAPTCHA in the server\'s response.\nPlease wait a while or log in using a graphical web browser to reset the request and try again.')
                 return None
 
     def storecookiedata(self, data):
