@@ -49,8 +49,8 @@ class TemplateCountRobot:
 			total = total + count
 		for line in finalText:
 			wikipedia.output(line)
-		wikipedia.output(u'TOTAL: %d' % total, toStdOut=True)
-		wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdOut=True)
+		wikipedia.output(u'TOTAL: %d' % total, toStdout=True)
+		wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
 
 	def listTemplates(self, templates, namespaces):
 		mysite = wikipedia.getSite()
@@ -69,7 +69,7 @@ class TemplateCountRobot:
 		finalText.append(u'Total page count: %d' % count)
 		for line in finalText:
 			wikipedia.output(line, toStdout=True)
-		wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdOut=True)
+		wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
 
 def main():
 	operation = "None"
