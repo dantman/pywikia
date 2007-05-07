@@ -188,11 +188,10 @@ class User:
 
         response, data = self.site.postForm(address, predata, sysop = True)
         if response.status != 302:
-            wikipedia.output(data)
             # TODO: i18n
             if re.search('Block ID \d+ not found', data):
                 raise AlreadyUnblockedError
-            raise UnblockError
+            raise UnblockError, data
         return True
 
 
