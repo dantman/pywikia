@@ -657,7 +657,8 @@ class Subject(object):
                     (skip, alternativePage) = self.disambigMismatch(page)
                     if skip:
                         wikipedia.output(u"NOTE: ignoring %s and its interwiki links" % page.aslink(True))
-                        self.done.remove(page)
+                        if page in self.done: #XXX: Ugly bugfix - the following line has reportedly thrown "ValueError: list.remove(x): x not in list"
+                            self.done.remove(page)
                         iw = ()
                         if alternativePage:
                             # add the page that was entered by the user
@@ -671,7 +672,8 @@ class Subject(object):
                     elif page.isEmpty() and not page.isCategory():
                         wikipedia.output(u"NOTE: %s is empty; ignoring it and its interwiki links" % page.aslink(True))
                         # Ignore the interwiki links
-                        self.done.remove(page)
+                        if page in self.done: #XXX: Ugly bugfix - the following line has reportedly thrown "ValueError: list.remove(x): x not in list"
+                            self.done.remove(page)
                         iw = ()
                     # Temporary change because of be/be-x-old issue
                     for linkedPage in iw:
