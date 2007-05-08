@@ -55,6 +55,7 @@ class SpeedyRobot:
         'fi': u'Luokka:Roskaa',
         'hsb': u'Kategorija:Strony k spěšnemu wušmórnjenju',
         'ia': u'Categoria:Wikipedia:Eliminar',
+        'it': 'Categoria:Da_cancellare_subito',
         'ja': u'Category:即時削除',
         'ks': u'Category:Candidates for speedy deletion',
         'nah': u'Categoría:Huiquipedia:Borrar (definitivo)',
@@ -76,7 +77,7 @@ class SpeedyRobot:
     deletion_messages = {
         'de': {
             u'_default': u'Lösche Artikel mit [[Wikipedia:Schnelllöschantrag|Schnelllöschantrag]]',
-        },
+            },
         'en': {
             u'_default':      u'Deleting candidate for speedy deletion per [[WP:CSD|CSD]]',
             u'Db-author':     u'Deleting page per [[WP:CSD|CSD]] G7: Author requests deletion and is its only editor.',
@@ -98,19 +99,23 @@ class SpeedyRobot:
             u'Db-disparage':  u'Deleting page per [[WP:CSD|CSD]] T1: Divisive or inflammatory template.',
             u'Db-r1':         u'Deleting page per [[WP:CSD|CSD]] R1: Redirect to a deleted or non-existent page.',
             u'Db-experiment': u'Deleting page per [[WP:CSD|CSD]] G2: Page was created as an experiment.',
-        },
+            },
         'pt': {
             u'_default':      u'Apagando página por [[Wikipedia:Páginas para eliminar|eliminação rápida]]',
-        },
+            },
         'pl': {
             u'_default':      u'Usuwanie artykułu zgodnie z zasadami [[Wikipedia:Ekspresowe kasowanko|ekspresowego kasowania]]',
-        }
+            },
+        'it': {
+            u'_default':      u'Bot: Cancello pagine taggate come [[Aiuto:Cancella subito|cancella subito]].',
+            },        
     }
 
     # Default reason for deleting a talk page.
     talk_deletion_msg={
         'de':u'Verwaiste Diskussionsseite',
         'en':u'Orphaned talk page',
+        'it':u'Bot: Cancello pagina discussione di una pagina già cancellata',
         'pl':u'Osierocona strona dyskusji',
         'pt':u'Página de discussão órfã',
     }
@@ -131,7 +136,15 @@ class SpeedyRobot:
             'spam':  u'Spam',
             'web':   u'Nur ein Weblink',
             'wg':    u'Wiedergänger (wurde bereits zuvor gelöscht)',
-        },
+            },
+        'it': {
+            'test': u'Bot: Cancello pagina in seguito ad un test.',
+            'vandalismo': u'Bot: Cancello pagina vandalica',
+            'copyviol': 'Bot: Cancello copyviol',
+            'redirect': 'Bot: Cancello redirect rotto o inutile',
+            'spam': 'Bot: Cancello pagina piena di spam',
+            'promo': 'Bot: Cancello pagina promozionale',
+            },
         # There's a template for nearly every possible reason on en:.
         # If the bot can't guess the reason from the template, the user should
         # enter it manually.
