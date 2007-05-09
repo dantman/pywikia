@@ -308,6 +308,14 @@ class Family(family.Family):
             'fr' : u'Discussion Référence',
         }
 
+        self.namespaces[106] = {
+            'en': u'Table',
+        }
+
+        self.namespaces[107] = {
+            'en': u'Table talk',
+        }
+
         self.disambiguationTemplates = {
 
             '_default': [u'Disambig'],
