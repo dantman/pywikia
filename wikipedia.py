@@ -468,7 +468,8 @@ class Page(object):
         # disallowed by MediaWiki.
         for illegalChar in ['#', '<', '>', '[', ']', '|', '{', '}', '\n', u'\ufffd']:
             if illegalChar in self.sectionFreeTitle():
-                output(u'Illegal character in %s!' % self.aslink())
+                if verbose:
+                    output(u'Illegal character in %s!' % self.aslink())
                 raise NoPage('Illegal character in %s!' % self.aslink())
         if self.namespace() == -1:
             raise NoPage('%s is in the Special namespace!' % self.aslink())
@@ -498,7 +499,7 @@ class Page(object):
                 hn = self.section()
                 if hn:
                     m = re.search("=+ *%s *=+" % hn, self._contents)
-                    if not m:
+                    if verbose and not m:
                         output(u"WARNING: Section does not exist: %s" % self.aslink(forceInterwiki = True))
                 if self.site().lang == 'eo':
                     self._contents = resolveEsperantoXConvention(self._contents)
@@ -528,7 +529,8 @@ class Page(object):
         """
         isWatched = False
         editRestriction = None
-        output(u'Getting page %s' % self.aslink())
+        if verbose:
+            output(u'Getting page %s' % self.aslink())
         path = self.site().edit_address(self.urlname())
         if oldid:
             path = path + "&oldid="+oldid
@@ -607,7 +609,8 @@ class Page(object):
         # Now process the contents of the textarea
         m = self.site().redirectRegex().match(text[i1:i2])
         if self._editTime == "0":
-            output(u"DBG> page may be locked?!")
+            if verbose:
+                output(u"DBG> page may be locked?!")
             editRestriction = 'sysop'
         if m:
             if self.section():
@@ -1985,7 +1988,7 @@ class GetAll(object):
         section = page2.section()
         m = self.site.redirectRegex().match(text)
         if m:
-            output(u"%s is a redirect" % page2.aslink())
+##            output(u"%s is a redirect" % page2.aslink())
             redirectto = m.group(1)
             if section and redirectto.find("#") == -1:
                 redirectto = redirectto+"#"+section
@@ -3706,6 +3709,8 @@ def handleArgs():
             default_code = arg[6:]
         elif arg.startswith('-putthrottle:'):
             put_throttle.setDelay(int(arg[13:]), absolute = True)
+        elif arg.startswith('-pt:'):
+            put_throttle.setDelay(int(arg[4:]), absolute = True)
         elif arg == '-log':
             activateLog('%s.log' % moduleName)
         elif arg.startswith('-log:'):
@@ -3713,6 +3718,8 @@ def handleArgs():
         elif arg == '-nolog':
             global logfile
             logfile = None
+        elif arg == '-verbose' or arg == "-v":
+            verbose += 1
         else:
             # the argument is not global. Let the specific bot script care
             # about it.
@@ -3728,6 +3735,7 @@ import wikipediatools as _wt
 sys.path.append(_wt.absoluteFilename('userinterfaces'))
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
+verbose = 0
 
 default_family = config.family
 default_code = config.mylang
@@ -3935,6 +3943,8 @@ def activateLog(logname):
     except IOError:
         logfile = codecs.open(logfn, 'w', 'utf-8')
 
+output_lock = threading.Lock()
+
 def output(text, decoder = None, colors = [], newline = True, toStdout = False):
     """
     Works like print, but uses the encoding used by the user's console
@@ -3952,21 +3962,25 @@ def output(text, decoder = None, colors = [], newline = True, toStdout = False):
     so that it can be piped to another process. All other text will
     be sent to stderr.
     """
-    if decoder:
-        text = unicode(text, decoder)
-    elif type(text) != type(u''):
-        print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!"
-        print traceback.print_stack()
-        print "DBG> Attempting to recover, but please report this problem"
-        try:
-            text = unicode(text, 'utf-8')
-        except UnicodeDecodeError:
-            text = unicode(text, 'iso8859-1')
-    if logfile:
-        # save the text in a logfile (will be written in utf-8)
-        logfile.write(text + '\n')
-        logfile.flush()
-    ui.output(text, colors = colors, newline = newline, toStdout = toStdout)
+    output_lock.acquire()
+    try:
+        if decoder:
+            text = unicode(text, decoder)
+        elif type(text) != type(u''):
+            print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!"
+            print traceback.print_stack()
+            print "DBG> Attempting to recover, but please report this problem"
+            try:
+                text = unicode(text, 'utf-8')
+            except UnicodeDecodeError:
+                text = unicode(text, 'iso8859-1')
+        if logfile:
+            # save the text in a logfile (will be written in utf-8)
+            logfile.write(text + '\n')
+            logfile.flush()
+        ui.output(text, colors = colors, newline = newline, toStdout = toStdout)
+    finally:
+        output_lock.release()
 
 def input(question, colors = None):
     return ui.input(question, colors)
@@ -4001,7 +4015,10 @@ Global arguments available for all bots:
 -nolog            Disable the logfile (if it is enabled by default).
 
 -putthrottle:nn   Set the minimum time (in seconds) the bot will wait between
-                  saving pages.
+-pt:n             saving pages.
+
+-verbose          Have the bot provide additional output that may be useful in
+-v                debugging.
 '''
     output(globalHelp)
     try:
