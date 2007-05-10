@@ -35,7 +35,7 @@ class GraphSavingThread(threading.Thread):
 class GraphDrawer:
     def __init__(self, subject):
         if not pydotfound:
-            raise GraphImpossible
+            raise GraphImpossible, 'pydot is not installed.'
         self.graph = None
         self.subject = subject
 
