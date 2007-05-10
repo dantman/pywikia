@@ -716,7 +716,7 @@ class Subject(object):
             try:
                 f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
                 f.write("* %s {%s}" % (self.originPage.aslink(True), txt))
-                if config.interwiki_graph_url:
+                if config.interwiki_graph and config.interwiki_graph_url:
                     filename = interwiki_graph.getFilename(self.originPage, extension = config.interwiki_graph_formats[0])
                     f.write(" [%s%s graph]" % (config.interwiki_graph_url, filename))
                 f.write("\n")
