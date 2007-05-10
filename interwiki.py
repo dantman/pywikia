@@ -1176,10 +1176,12 @@ class InterwikiBot(object):
     def maxOpenSite(self):
         """Return the site that has the most
            open queries plus the number. If there is nothing left, return
-           None, 0. Only languages that are TODO for the first Subject
+           None. Only languages that are TODO for the first Subject
            are returned."""
         max = 0
         maxlang = None
+        if not self.firstSubject():
+            return None
         oc = self.firstSubject().openSites()
         if not oc:
             # The first subject is done. This might be a recursive call made because we
