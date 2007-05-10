@@ -231,6 +231,9 @@ class RedirectRobot:
                 try:
                     second_redir = wikipedia.Page(mysite, target)
                     second_target = second_redir.getRedirectTarget()
+                    anchor = re.search(u'#(.*)$',target)
+                    if anchor and not u'#' in second_target:
+                        second_target += u'#' + anchor.group(1)
                 except wikipedia.IsNotRedirectPage:
                     wikipedia.output(u'%s is not a redirect.' % second_redir.title())
                 except wikipedia.NoPage:
