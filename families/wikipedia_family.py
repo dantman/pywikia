@@ -299,12 +299,14 @@ class Family(family.Family):
 
         self.namespaces[104] = {
             '_default': u'Reference',
+            'es': u'Anexo',
             'fr': u'Référence',
 
         }
 
         self.namespaces[105] = {
             '_default': u'Reference talk',
+            'es': u'Anexo Discusión',
             'fr' : u'Discussion Référence',
         }
 
