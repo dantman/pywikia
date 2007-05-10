@@ -311,11 +311,11 @@ class Family(family.Family):
         }
 
         self.namespaces[106] = {
-            'en': u'Table',
+            '_default': u'Table',
         }
 
         self.namespaces[107] = {
-            'en': u'Table talk',
+            '_default': u'Table talk',
         }
 
         self.disambiguationTemplates = {
