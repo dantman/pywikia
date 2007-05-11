@@ -435,6 +435,13 @@ class GeneratorFactory:
                 linkingPageTitle = arg[7:]
             linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
             gen = LinkedPageGenerator(linkingPage)
+        elif arg.startswith('-transcludes'):
+            if len(arg) == len('-transcludes'):
+                transclusionPageTitle = wikipedia.input(u'Pages that transclude which page should be processed?')
+            else:
+                transclusionPageTitle = arg[len('-transcludes:'):]
+            transclusionPage = wikipedia.Page(wikipedia.getSite(), transclusionPageTitle)
+            gen = ReferringPageGenerator(transclusionPage, onlyTemplateInclusion = True)
         elif arg.startswith('-start'):
             if len(arg) == 6:
                 firstPageTitle = wikipedia.input(u'At which page do you want to start?')
