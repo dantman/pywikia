@@ -143,8 +143,19 @@ class LoginManager:
                 if m:
                     n += 1
                     L.append(m.group(1))
-
-            if len(L) == 4:
+            
+            log_data = []
+            for Ldata in L:
+                if (re.match('.*_session=.*', Ldata)):
+                    log_data.append(Ldata)
+                elif (re.match('.*UserID=.*', Ldata)):
+                    log_data.append(Ldata)
+                elif (re.match('.*UserName=.*', Ldata)):
+                    log_data.append(Ldata)
+                elif (re.match('.*Token=.*', Ldata)):
+                    log_data.append(Ldata)
+  
+            if len(log_data) == 4:
                 return "\n".join(L)
             else:
                 if '<input type="hidden" name="wpCaptchaId"' in data:
