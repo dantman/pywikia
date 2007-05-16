@@ -1068,7 +1068,7 @@ class Page(object):
                 try:
                     reasonR = re.compile(re.escape(mediawiki_messages.get('spamprotectionmatch', self.site())).replace('\$1', '(?P<url>[^<]*)'))
                     url = reasonR.search(data).group('url')
-                except AttributeError:
+                except:
                     # Some wikis have modified the spamprotectionmatch
                     # template in a way that the above regex doesn't work,
                     # e.g. on he.wikipedia the template includes a wikilink.
