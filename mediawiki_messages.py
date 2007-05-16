@@ -96,7 +96,11 @@ def refresh_messages(site = None):
 
     print 'Parsing MediaWiki messages'
     # First group is MediaWiki key string. Second group is the current value string.
-    if site.version() >= "1.5":
+    ver = site.version().split('.')
+    v = []
+    for vr in ver:
+    	v.append(float(vr))
+    if ((v[0] == 1) and (v[1] >= 5)): #site.version() >= "1.5"
         # In MediaWiki 1.5, there are some single quotes around attributes.
         # Since about MediaWiki 1.8, there are only double quotes.
         itemR = re.compile("<tr class=['\"]def['\"] id=['\"].*?['\"]>\n"               # first possibility: original MediaWiki message used
