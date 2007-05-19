@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 """
 Script to welcome new users. This script works out of the box for wikis that
-have been defined in the script. It is currently used on the Dutch and
+have been defined in the script. It is currently used on the Dutch, Norwegian, 
 Italian Wikipedia and Wikimedia Commons.
 
 Ensure you have community support before running this bot!
@@ -10,6 +10,8 @@ Ensure you have community support before running this bot!
 URLs to current implementations:
 * Wikimedia Commons: http://commons.wikimedia.org/wiki/Commons:Welcome_log
 * Dutch Wikipedia: http://nl.wikipedia.org/wiki/Wikipedia:Logboek_welkom
+* Italian Wikipedia: http://it.wikipedia.org/wiki/Wikipedia:Benvenuto_log
+* English Wikiquote: http://en.wikiquote.org/wiki/Wikiquote:Welcome_log
 
 Everything that needs customisation is indicated by comments.
 
@@ -56,9 +58,7 @@ This script understands the following command-line arguments:
 
 Known issues/FIXMEs:
 * exits when wiki is down.
-* user talk namespace name could be extracted from the framework somewhere
- (family files) (would eliminate need for customisation)
-* username and contributions (plural) can probably be extracted from wiki
+* contributions (plural) will as soon as be extracted from wiki
   (eliminates two customisations)
 * add variable for how many users to skip (f.e. the 10 latest users, that
   may not have made any edits)
@@ -81,6 +81,7 @@ __version__ = '$Id$'
 import urllib2, config
 import wikipedia, codecs
 import time, re
+import traceback
 
 # Number = number of edits that an user required to be welcomed
 number = 1
@@ -137,7 +138,7 @@ lang = config.mylang
 project = config.family
 
 #This variable define in what project we are :-) (what language and what project)
-welcomesite = wikipedia.Site(lang, project)
+welcomesite = wikipedia.getSite()
 
 # Script users the class wikipedia.translate() to find the right
 # page/user/summary/etc so the need to specify language and project have
@@ -228,12 +229,12 @@ bad_pag = {
 
 # The text for reporting a possibly bad username (f.e. *[[Talk_page:Username|Username]])
 report_text = {
-        'commons':"\n*{{user3|%s}}" + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'de':'\n*[[Benutzer_Diskussion:%s]] ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'en':'\n*{{Userlinks|%s}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'it':"\n*[[Discussioni utente:%s]] " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'nl':'\n*{{linkgebruiker%s}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'no':'\n*{{bruker|%s}} ' + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+        'commons':"\n*{{user3|%s}}" + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'de':'\n*[[Benutzer_Diskussion:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'en':'\n*{{Userlinks|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'it':"\n*[[Discussioni utente:%s]] " + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'nl':'\n*{{linkgebruiker%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+        'no':'\n*{{bruker|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
         }    
 
 # Add your project (in alphabetical order) if you want that the bot start
@@ -311,27 +312,6 @@ elenco = elencoaf + elencogz + elencovarie
 block = ("B", "b", "Blocco", "blocco", "block", "bloc", "Block", "Bloc", 'Report', 'report')
 say_hi = ("S", "s", "Saluto", "saluto", "Welcome", "welcome", 'w', 'W', 'say hi', 'Say hi', 'Hi', 'hi', 'h', 'hello', 'Hello')
 
-# The function used to load the url where the is the new users
-def pageText(url):
-    try:
-	request = urllib2.Request(url)
-	user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-	request.add_header("User-Agent", user_agent)
-	response = urllib2.urlopen(request)
-	text = response.read()
-	response.close()
-    # When you load to many users, urllib2 can give this error.
-    except urllib2.HTTPError:
-        wikipedia.output(u"Server error. Pausing for 10 seconds before continuing. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
-        time.sleep(10)
-	request = urllib2.Request(url)
-	user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-	request.add_header("User-Agent", user_agent)
-	response = urllib2.urlopen(request)
-	text = response.read()
-	response.close()
-    return text
-
 done = list()
 # The function to load the users (only users who have a certain number of edits)
 def parselog(raw):
@@ -359,8 +339,8 @@ def parselog(raw):
             done.append(username)
         UN = wikipedia.Page(welcomesite, username)
         UNT = wikipedia.Page(welcomesite, talk + username)
-        con = 'http://' + wikipedia.getSite().hostname() + '/wiki/' + contib + '/'+ UN.urlname()
-        contribs = pageText(con)
+        con = '/wiki/' + contib + '/'+ UN.urlname()
+        contribs = welcomesite.getUrl(con)
         contribnum = contribs.count('<li>') #This is not an accurate count, it just counts the first
                                             #50 contributions
         if contribnum >= number:
@@ -375,7 +355,7 @@ def parselog(raw):
 hechas = list()
 
 # I've used a function to report the username to a wiki-page
-def report(lang, rep_page, username, com):
+def report(lang, rep_page, username, com, rep):
     another_page = wikipedia.Page(lang, rep_page)
     if another_page.exists():      
         text_get = another_page.get()
@@ -388,7 +368,7 @@ def report(lang, rep_page, username, com):
     y = n.search(text_get, pos)
     if y == None:
         # Adding the log :)
-        rep_text = rep_text % username
+        rep_text = rep % username
         another_page.put(text_get + rep_text, comment = com, minorEdit = True)
         wikipedia.output(u"...Reported...")
     else:
@@ -398,8 +378,8 @@ def report(lang, rep_page, username, com):
 while 1:
     # Here there is the URL of the new users, i've find that this url below is the same for all the project, so it
     # mustn't be changed
-    URL = "http://%s/w/index.php?title=Special:Log&type=newusers&user=&page=&limit=%d" % (wikipedia.getSite().hostname(), limit)
-    log = pageText(URL).decode('utf-8', 'replace')
+    URL = "/w/index.php?title=Special:Log&type=newusers&user=&page=&limit=%d" % limit
+    log = welcomesite.getUrl(URL)
     wikipedia.output(u"Loading latest " + str(limit) + u" new users from " + (wikipedia.getSite().hostname()) + u"...\n")
     parsed = parselog(log)
     for tablita in parsed:
@@ -420,10 +400,10 @@ while 1:
             while running:
                 if ask == True:
                     wikipedia.output(u"%s hasn't got a valid nickname, what shall i do?" % username )
-                    answer = wikipedia.input("[B]lock or [W]elcome?")
+                    answer = wikipedia.input(u"[B]lock or [W]elcome?")
                     for w in block:
                         if w in answer:
-                            report(lang, rep_page, username, com)
+                            report(lang, rep_page, username, com, rep_text)
                             running = False
                     for w in say_hi:
                         if w in answer:
@@ -431,7 +411,7 @@ while 1:
                             running = False
                 elif ask == False:
                     wikipedia.output(u"%s is possibly not a wanted username. It will be reported." % username )
-                    report(lang, rep_page, username, com)
+                    report(lang, rep_page, username, com, rep_text)
                     running = False
         elif baduser == False:
             if not UNT.exists():
@@ -441,6 +421,12 @@ while 1:
                 except wikipedia.EditConflict:
                     wikipedia.output(u"An edit conflict has occured, skipping this user.")
                     continue
+                except:
+                    traceback.print_stack()
+                    wikipedia.output(u"A generic error has occured, skipping the user.")
+                    continue
+            else:
+                wikipedia.output(u"Already welcomed when i was loading all the users... skipping")
         if log_variable == True:
             if len(hechas) == 1:
                 wikipedia.output(u"One user has been welcomed.")
@@ -461,11 +447,12 @@ while 1:
                 if len(month)==1:
                     month = '0' + month
                     if lang == 'it':
-                        pl = wikipedia.Page(welcomesite, logg + '/' + day + '/' + month + '/' + year)
+                        target = logg + '/' + day + '/' + month + '/' + year
                     elif lang == 'commons':
-                        pl = wikipedia.Page(welcomesite, logg + '/' + month + '/' + day + '/' + year)
+                        target = logg + '/' + month + '/' + day + '/' + year
                     else:
-                        pl = wikipedia.Page(welcomesite, logg + '/' + year + '/' + month + '/' + day)
+                        target = logg + '/' + year + '/' + month + '/' + day
+                pl = wikipedia.Page(welcomesite, target)
                 try:
                     safety.append(pl.get())
                 except wikipedia.NoPage:
@@ -486,22 +473,29 @@ while 1:
                     cantidad = str(tablita[1])
                     logtext = '\n{{WLE|user=' + UPl + '|contribs=' + cantidad + '}}'
                     safety.append(logtext)
+                hechas = list()
                 try:
                     pl.put(''.join(safety), summ2)
-                    hechas = list()
                 except wikipedia.EditConflict:
                     wikipedia.output(u"An edit conflict has occured. Pausing for 10 seconds before continuing.")
                     time.sleep(10)
-                    pl.put(''.join(safety), summ2)
-                    hechas = list()
+                    pl = wikipedia.Page(welcomesite, target)
+                    try:
+                        pl.put(''.join(safety), summ2)
+                    except wikipedia.EditConflict:
+                        wikipedia.output(u"Another edit conflict... well, i skip the report for this time...")
+                except:
+                    traceback.print_stack()
+                    wikipedia.output(u"A generic error has occured, skipping the report.") 
         elif log_variable == False:
             pass
     # If recursive, don't exit, repeat after one hour
     if recursive == True:
-            wikipedia.output(u"Sleeping " +  str(time_variable) + u" seconds before rerun. " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
+            wikipedia.output(u"Sleeping " +  str(time_variable) + u" seconds before rerun. " + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
             time.sleep(time_variable)
     # If not recursive, break
     elif recursive == False:
             wikipedia.output(u"Stop!")
             wikipedia.stopme()
             break
+
