@@ -2306,6 +2306,7 @@ class Family:
         'cy': [u'ail-cyfeirio'],
         'et': [u'suuna'],
         'eu': [u'bidali'],
+        'fi': [u'uudelleenohjaus'],
         'ga': [u'athsheoladh'],
         'he': [u'הפניה'],
         'id': [u'redirected'],
