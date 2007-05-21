@@ -1453,8 +1453,6 @@ if __name__ == "__main__":
                 number = int(arg[8:])
             elif arg.startswith('-array:'):
                 globalvar.minarraysize = int(arg[7:])
-                if globalvar.minarraysize < globalvar.maxquerysize:
-                    globalvar.maxquerysize = globalvar.minarraysize
             elif arg.startswith('-neverlink:'):
                 globalvar.neverlink += arg[11:].split(",")
             elif arg.startswith('-ignore:'):
