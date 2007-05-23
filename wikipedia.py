@@ -1829,7 +1829,7 @@ class ImagePage(Page):
         # * normal, large images with links like: Download high resolution version (1024x768, 200 KB)
         # * SVG images with links like: filename.svg‎  (1KB, MIME type: image/svg)
         # This regular expression seems to work with all of them.
-        urlR = re.compile(r'<div class="fullImageLink" id="file">.+?\n.*?<a href="(?P<url>.+?)"', re.DOTALL)
+        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>.+?)"', re.DOTALL)
         m = urlR.search(self.getImagePageHtml())
         try:
             url = m.group('url')
