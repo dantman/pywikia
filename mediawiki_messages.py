@@ -158,11 +158,12 @@ def refresh_messages(site = None):
 def refresh_all_messages():
     import dircache, time
     filenames = dircache.listdir('mediawiki-messages')
-    message_filenameR = re.compile('mediawiki-messages-([a-z\-:]+).dat')
+    message_filenameR = re.compile('mediawiki-messages-([a-z:]+)-([a-z:]+).dat')
     for filename in filenames:
         match = message_filenameR.match(filename)
         if match:
-            family, lang = match.group(1).split('-')
+            family = match.group(1)
+            lang = match.group(2)
             site = wikipedia.getSite(code = lang, fam = family)
             refresh_messages(site)
 def main():
