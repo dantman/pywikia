@@ -98,7 +98,17 @@ class WarnfileRobot:
                 newtext = wikipedia.replaceLanguageLinks(oldtext, new)
                 if 1:
                     wikipedia.showDiff(oldtext, newtext)
-                    status, reason, data = page.put(newtext, comment='warnfile '+mods)
+                    try:
+                        status, reason, data = page.put(newtext, comment='warnfile '+mods)
+                    except wikipedia.LockedPage:
+                        wikipedia.output(u"Page is locked. Skipping.")
+                        continue
+                    except wikipedia.SpamfilterError:
+                        wikipedia.output(u"Spam filter error. Skipping.")
+                        continue
+                    except wikipedia.Error:
+                        wikipedia.output(u"Error while saving page.")
+                        continue
                     if str(status) != '302':
                         print status, reason
 
