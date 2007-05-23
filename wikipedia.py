@@ -991,7 +991,8 @@ class Page(object):
             newtext = doubleXForEsperanto(newtext)
         return self.putPage(newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
-    def putPage(self, text, comment = None, watchArticle = False, minorEdit = True, newPage = False, token = None, gettoken = False, sysop = False):
+    def putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
+                newPage=False, token=None, gettoken=False, sysop=False):
         """
         Upload 'text' as new contents for this Page by filling out the edit
         page.
@@ -1018,7 +1019,8 @@ class Page(object):
         predata = {
             'wpSave': '1',
             'wpSummary': encodedComment,
-            'wpTextbox1': encodedText
+            'wpTextbox1': encodedText,
+            'maxlag': '5',
         }
         # Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions
@@ -1056,12 +1058,22 @@ class Page(object):
             data = u''
         else:
             try:
-                response, data = self.site().postForm(address, predata, sysop = sysop)
+                response, data = self.site().postForm(address, predata, sysop)
             except httplib.BadStatusLine, line:
                 raise PageNotSaved('Bad status line: %s' % line)
         if data != u'':
-            # Saving unsuccessful. Possible reasons: edit conflict or invalid edit token.
+            # Saving unsuccessful. Possible reasons:
+            # server lag, edit conflict or invalid edit token.
             # A second text area means that an edit conflict has occured.
+            if response.status == 503 \
+               and 'x-database-lag' in response.msg.keys():
+                # server lag; Mediawiki recommends waiting 5 seconds and retrying
+                if verbose:
+                    output(data, newline=False)
+                output(u"# Pausing 5 seconds due to excessive server lag.")
+                time.sleep(5)
+                return self.putPage(text, comment, watchArticle, minorEdit,
+                                    newPage, token, False, sysop)
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
             elif mediawiki_messages.get('spamprotectiontitle', self.site()) in data:
@@ -1096,7 +1108,9 @@ class Page(object):
                     if not sysop:
                         self.site().forceLogin(sysop = True)
                         output(u'Page is locked, retrying using sysop account.')
-                        return self.putPage(text = text, comment = comment, watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage, token = None, gettoken = True, sysop = True)
+                        return self.putPage(text, comment, watchArticle,
+                                            minorEdit, newPage, token=None,
+                                            gettoken=True, sysop=True)
                 except NoUsername:
                     raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
             elif not newTokenRetrieved and "<textarea" in data:
@@ -1387,10 +1401,11 @@ class Page(object):
             # wait for retry_idle_time minutes (growing!) between retries.
             retry_idle_time = 1
 
-            if startFromPage:
-                output(u'Continuing to get version history of %s' % self.aslink(forceInterwiki = True))
-            else:
-                output(u'Getting version history of %s' % self.aslink(forceInterwiki = True))
+            if verbose:
+                if startFromPage:
+                    output(u'Continuing to get version history of %s' % self.aslink(forceInterwiki = True))
+                else:
+                    output(u'Getting version history of %s' % self.aslink(forceInterwiki = True))
 
             txt = site.getUrl(path)
 
@@ -3969,9 +3984,10 @@ def output(text, decoder = None, colors = [], newline = True, toStdout = False):
         if decoder:
             text = unicode(text, decoder)
         elif type(text) != type(u''):
-            print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!"
-            print traceback.print_stack()
-            print "DBG> Attempting to recover, but please report this problem"
+            if verbose:
+                print "DBG> BUG: Non-unicode passed to wikipedia.output without decoder!"
+                print traceback.print_stack()
+                print "DBG> Attempting to recover, but please report this problem"
             try:
                 text = unicode(text, 'utf-8')
             except UnicodeDecodeError:
