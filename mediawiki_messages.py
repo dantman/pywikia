@@ -106,7 +106,7 @@ def refresh_messages(site = None):
         itemR = re.compile("<tr class=['\"]def['\"] id=['\"].*?['\"]>\n"               # first possibility: original MediaWiki message used
                          + "\s*<td>\n"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?"><span id=[\'"].*?[\'"]>(?P<key>.+?)</span><\/a><br \/>'   # message link
+                         + '\s*<a href=".+?" (?:class="new" )?title=".+?"><span id=[\'"].*?[\'"]>(?P<key>.+?)</span><\/a><br \/>'   # message link
                          + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
                          + "\s*(?P<current>.+?)\n"                     # current message
