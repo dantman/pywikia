@@ -99,7 +99,7 @@ def refresh_messages(site = None):
     ver = site.version().split('.')
     v = []
     for vr in ver:
-    	v.append(float(vr))
+    	v.append(float(re.sub('[^0-9]','',vr)))
     if ((v[0] == 1) and (v[1] >= 5)): #site.version() >= "1.5"
         # In MediaWiki 1.5, there are some single quotes around attributes.
         # Since about MediaWiki 1.8, there are only double quotes.
