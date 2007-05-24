@@ -17,25 +17,21 @@ Command-line arguments:
     -links         Work on all pages that are linked from a certain page.
                    Argument can also be given as "-link:linkingpagetitle".
 
-    -link          same as -links (deprecated)
-
     -start         Work on all pages on the home wiki, starting at the named page.
+                   
+    -new           Work on the most recent new pages on the wiki.
 
     -from -to      The page to move from and the page to move to.
-
-    -new           Work on the most recent new pages on the wiki.
 
     -del           Argument can be given also together with other arguments,
                    its functionality is delete old page that was moved.
                    For example: "movepages.py pagetitle -del".
 
-    -prefix        Move pages by adding a namespace prefix to the names of the pages.
+    -addprefix     Move pages by adding a namespace prefix to the names of the pages.
                    (Will remove the old namespace prefix if any)
-                   Argument can also be given as "-prefix:namespace:".
+                   Argument can also be given as "-addprefix:namespace:".
 
     -always        Don't prompt to make changes, just do them.
-
-Single page use:   movepages.py -from:pagetitle1 -to:pagetitle2 ...
 
 """
 #
@@ -49,6 +45,7 @@ __version__='$Id$'
 
 import wikipedia, pagegenerators, catlib, config
 import sys
+import re
 
 summary={
     'en': u'Pagemove by bot',
@@ -72,12 +69,11 @@ deletesummary={
 }
 
 class MovePagesBot:
-    def __init__(self, generator, prefix, delete, always):
+    def __init__(self, generator, addprefix, delete, always):
         self.generator = generator
-        self.prefix = prefix
+        self.addprefix = addprefix
         self.delete = delete
         self.always = always
-
 
     def moveOne(self,page,pagemove,delete):
         try:
@@ -94,13 +90,22 @@ class MovePagesBot:
             wikipedia.output(u'Page %s is a redirect; skipping.' % page.title())
         except wikipedia.LockedPage:
             wikipedia.output(u'Page %s is locked!' % page.title())
-
+            
     def treat(self,page):
-        pagetitle = page.title()
-        wikipedia.output(u'\n>>>> %s <<<<' % pagetitle)
-        if self.prefix:
-            pagetitle = page.titleWithoutNamespace()
-            pagemove = (u'%s%s' % (self.prefix, pagetitle))
+        wikipedia.output(u'\n>>>> %s <<<<' % page.title())
+        pagetitle = page.titleWithoutNamespace()
+        namesp = page.site().namespace(page.namespace())
+        if self.appendAll == True:
+            pagemove = (u'%s%s%s' % (self.pagestart, pagetitle, self.pageend))
+            if self.noNamespace == False and namesp:
+                pagemove = (u'%s:%s' % (namesp, pagemove))
+        elif self.regexAll == True:
+            pagemove = self.regex.sub(self.replacePattern, pagetitle)
+            if self.noNamespace == False and namesp:
+                pagemove = (u'%s:%s' % (namesp, pagemove))
+        if self.addprefix:
+            pagemove = (u'%s%s' % (self.addprefix, pagetitle))
+        if self.addprefix or self.appendAll == True or self.regexAll == True:
             if self.always == False:
                 ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o, (Q)uit]' % pagemove)
                 if ask2 in ['y', 'Y']:
@@ -113,27 +118,52 @@ class MovePagesBot:
                     self.treat(page)
             else:
                 self.moveOne(page,pagemove,self.delete)
-        elif self.appendAll == False:
-            ask = wikipedia.input('What do you want to do: (c)hange page name, (a)ppend to page name, (n)ext page or (q)uit?')
+        else:
+            wikipedia.output(u'What do you want to do:') 
+            ask = wikipedia.input(u'(c)hange page name, (a)ppend to page name, use a (r)egular expression, (n)ext page or (q)uit?')
             if ask in ['c', 'C']:
                 pagemove = wikipedia.input(u'New page name:')
                 self.moveOne(page,pagemove,self.delete)
             elif ask in ['a', 'A']:
                 self.pagestart = wikipedia.input(u'Append This to the start:')
                 self.pageend = wikipedia.input(u'Append This to the end:')
-                if page.title() == page.titleWithoutNamespace():
-                    pagemove = (u'%s%s%s' % (self.pagestart, page.title(), self.pageend))
-                else:
-                    ask2 = wikipedia.input(u'Do you want to remove the namespace prefix "%s:"? [(Y)es, (N)o]'% page.site().namespace(page.namespace()))
+                pagemove = (u'%s%s%s' % (self.pagestart, pagetitle, self.pageend))
+                if namesp:
+                    ask2 = wikipedia.input(u'Do you want to remove the namespace prefix "%s:"? [(Y)es, (N)o]'% namesp)
                     if ask2 in ['y', 'Y']:
-                        pagemove = (u'%s%s%s' % (self.pagestart, page. titleWithoutNamespace(), self.pageend))
+                        noNamespace = True
                     else:
-                        pagemove = (u'%s%s%s' % (self.pagestart, page.title(), self.pageend))
+                        pagemove = (u'%s:%s' % (namesp, pagemove))
                 ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o, (A)ll, (Q)uit]' % pagemove)
                 if ask2 in ['y', 'Y']:
                     self.moveOne(page,pagemove,self.delete)
                 elif ask2 in ['a', 'A']:
                     self.appendAll = True
+                    self.moveOne(page,pagemove,self.delete)
+                elif ask2 in ['q', 'Q']:
+                    sys.exit()
+                elif ask2 in ['n', 'N']:
+                    pass
+                else:
+                    self.treat(page)
+            elif ask in ['r', 'R']:
+                searchPattern = wikipedia.input(u'Enter the search pattern:')
+                self.replacePattern = wikipedia.input(u'Enter the replace pattern:')
+                self.regex=re.compile(searchPattern)
+                if page.title() == page.titleWithoutNamespace():
+                    pagemove = self.regex.sub(self.replacePattern, page.title())
+                else:                                             
+                    ask2 = wikipedia.input(u'Do you want to remove the namespace prefix "%s:"? [(Y)es, (N)o]'% namesp)
+                    if ask2 in ['y', 'Y']:
+                        pagemove = self.regex.sub(self.replacePattern, page.titleWithoutNamespace())
+                        noNamespace = True
+                    else:                                             
+                        pagemove = self.regex.sub(self.replacePattern, page.title())
+                ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o, (A)ll, (Q)uit]' % pagemove)
+                if ask2 in ['y', 'Y']:
+                    self.moveOne(page,pagemove,self.delete)
+                elif ask2 in ['a', 'A']:
+                    self.regexAll = True
                     self.moveOne(page,pagemove,self.delete)
                 elif ask2 in ['q', 'Q']:
                     sys.exit()
@@ -147,23 +177,11 @@ class MovePagesBot:
                 sys.exit()
             else:
                 self.treat(page)
-        else:
-            pagemove = (u'%s%s%s' % (self.pagestart, page.title(), self.pageend))
-            if self.always == False:
-                ask2 = wikipedia.input(u'Change the page title to "%s"? [(Y)es, (N)o, (Q)uit]' % pagemove)
-                if ask2 in ['y', 'Y']:
-                    self.moveOne(page,pagemove,self.delete)
-                elif ask2 in ['q', 'Q']:
-                    sys.exit()
-                elif ask2 in ['n', 'N']:
-                    pass
-                else:
-                    self.treat(page)
-            else:
-                self.moveOne(page,pagemove,self.delete)
 
     def run(self):
         self.appendAll = False
+        self.regexAll = False
+        self.noNamespace = False
         for page in self.generator:
             self.treat(page)
 
@@ -217,3 +235,5 @@ if __name__ == '__main__':
         main()
     finally:
         wikipedia.stopme()
+
+ 	  	 
