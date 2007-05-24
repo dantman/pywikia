@@ -27,6 +27,7 @@ Page: A MediaWiki page
     isRedirectPage (*)    : True if the page is a redirect, false otherwise
     isEmpty (*)           : True if the page has 4 characters or less content, not
                             counting interwiki and category links
+    botMayEdit (*)        : True if bot is allowed to edit page
     interwiki (*)         : The interwiki links from the page (list of Pages)
     categories (*)        : The categories the page is in (list of Pages)
     linkedPages (*)       : The normal pages linked from the page (list of Pages)
@@ -690,6 +691,69 @@ class Page(object):
     def isTalkPage(self):
         ns = self.namespace()
         return ns >= 0 and ns % 2 == 1
+
+    def botMayEdit(self):
+        """
+        True if page doesn't contain {{bots}} or {{nobots}} or
+        contains them and active bot is allowed or not allowed
+        to edit said page
+
+        Note that the framework does not enforce this restriction; if it
+        is desired to implement authorization-checking for a particular
+        bot, the bot must call this method before editing.
+        """
+        import re;
+        p = re.compile(r"\{\{(?P<type>bots|nobots)\|?(?P<data>.*?)\}\}")
+        try:
+            txt = self.get();
+        except NoPage:
+            return True
+
+        m = p.search(txt);
+        
+        if m == None:
+            return True
+
+        if m.group('data') == '':
+            if m.group('type') == 'bots':
+                return True
+            return False
+
+        p = re.compile(r"(?P<type>allow|deny)=(?P<bots>.*)")
+        n = p.search(m.group('data'))
+        listed_bots = n.group('bots').split(',')
+        restriction_type = n.group('type')
+
+        if self.editRestriction:
+            userdict = config.sysopnames
+        else:
+            userdict = config.usernames
+
+        try:
+            this_bot = userdict[self.site().family.name][self.site().lang]
+            if restriction_type == 'allow':
+                if this_bot in listed_bots:
+                    return True
+                elif 'all' in listed_bots:
+                    return True
+                elif 'none' in listed_bots:
+                    return False
+                else:
+                    return False
+            elif restriction_type == 'deny':
+                if this_bot in listed_bots:
+                    return False
+                elif 'all' in listed_bots:
+                    return False
+                elif 'none' in listed_bots:
+                    return True
+                else:
+                    return True
+
+        except :
+            # We don't have a user account for that wiki, or the
+            # page is locked and we don't have a sysop account.
+            return false
 
     def userName(self):
         return self._userName
