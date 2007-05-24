@@ -2311,6 +2311,7 @@ class Family:
         'he': [u'הפניה'],
         'id': [u'redirected'],
         'is': [u'tilvísun'],
+        'ka': [u'გადამისამართება'],
         'nn': [u'omdiriger'],
         'ru': [u'перенаправление', u'перенапр', u'ПЕРЕНАПРАВЛЕНИЕ'],
         'sk': [u'presmeruj'],
