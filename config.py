@@ -28,7 +28,7 @@ mylang = 'language'
 # usernames['wikipedia']['de'] = 'myGermanUsername'
 # usernames['wiktionary']['en'] = 'myEnglishUsername'
 #
-# If you have a sysop account one some wikis, this will be used to delete pages
+# If you have a sysop account on some wikis, this will be used to delete pages
 # or to edit locked pages if you add such lines to your
 # user-config.py:
 #
@@ -209,6 +209,12 @@ put_throttle = 10
 # than 'noisysleep' seconds, it is logged on the screen.
 noisysleep = 3.0
 
+# Defer bot edits during periods of server lag.  For details, see
+# http://www.mediawiki.org/wiki/Maxlag_parameter
+# It is recommended that you do not change this parameter unless you know
+# what you are doing and have a good reason for it!
+maxlag = 5
+
 # Maximum of pages which can be retrieved by special pages. Increase this if
 # you heavily use redirect.py with action "double", and especially if you're
 # running solve_disambiguation.py with the -primary argument.
@@ -267,7 +273,7 @@ copyright_check_in_source_yahoo = False
 # Limit number of queries for page.
 copyright_max_query_for_page = 25
 
-# Skip a number specified of queries
+# Skip a specified number of queries
 copyright_skip_query = 0
 
 # Number of attempts on connection error.

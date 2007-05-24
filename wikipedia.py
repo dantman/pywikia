@@ -1020,8 +1020,10 @@ class Page(object):
             'wpSave': '1',
             'wpSummary': encodedComment,
             'wpTextbox1': encodedText,
-            'maxlag': '5',
         }
+        # Add server lag parameter (see config.py for details)
+        if config.maxlag:
+            predata['maxlag'] = str(config.maxlag)
         # Except if the page is new, we need to supply the time of the
         # previous version to the wiki to prevent edit collisions
         if newPage:
