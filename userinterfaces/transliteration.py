@@ -327,9 +327,6 @@ def trans(char, default = '?', prev = '-'):
     if char == u"؟":
         return u";-)"
     
-    
-        
-    
 
     # Cyrillic
     if char == u"А":
@@ -408,7 +405,7 @@ def trans(char, default = '?', prev = '-'):
         return u"T"
     if char == u"т":
         return u"t"
-    if char == u"У":
+    if char in u"У":
         return u"U"
     if char == u"у":
         return u"u"
@@ -460,9 +457,9 @@ def trans(char, default = '?', prev = '-'):
         return u"Ë"
     if char == u"ё":
         return u"ë"
-    if char == u"Э":
+    if char in u"ЭЀ":
         return u"È"
-    if char == u"э":
+    if char in u"эѐ":
         return u"è"
     if char == u"І":
         return u"I"
@@ -476,18 +473,22 @@ def trans(char, default = '?', prev = '-'):
         return u"Je"
     if char == u"є":
         return u"je"
-    if char == u"Ґ":
+    if char in u"ҐҜ":
         return u"G"
-    if char == u"ґ":
+    if char in u"ґҝ":
         return u"g"
     if char == u"Ђ":
         return u"Dj"
     if char == u"ђ":
         return u"dj"
-    if char == u"Ј":
+    if char in u"ЈӤҊ":
         return u"J"
-    if char == u"ј":
+    if char in u"јӥҋ":
         return u"j"
+    if char == u"Ӣ":
+        return u"Y"
+    if char == u"ӣ":
+        return u"y"
     if char == u"Љ":
         return u"Lj"
     if char == u"љ":
@@ -500,13 +501,17 @@ def trans(char, default = '?', prev = '-'):
         return u"Cj"
     if char == u"ћ":
         return u"cj"
-    if char == u"Џ":
+    if char in u"ЏӁӜҶ":
         return u"Dzh"
-    if char == u"џ":
+    if char in u"џӂӝҷ":
         return u"dzh"
-    if char == u"Ѕ":
+    if char == u"Җ":
+        return u"Zhj"
+    if char == u"җ":
+        return u"zhj"
+    if char in u"ЅӞӠӋҸ":
         return u"Dz"
-    if char == u"ѕ":
+    if char in u"ѕӟӡӌҹ":
         return u"dz"
     if char == u"Ѓ":
         return u"Gj"
@@ -516,17 +521,17 @@ def trans(char, default = '?', prev = '-'):
         return u"Kj"
     if char == u"ќ":
         return u"kj"
-    if char == u"Ғ":
+    if char in u"ҒӶҔ":
         return u"G"
-    if char == u"ғ":
+    if char in u"ғӷҕ":
         return u"g"
     if char == u"Ӣ":
         return u"Ii"
     if char == u"ӣ":
         return u"ii"
-    if char == u"Қ":
+    if char in u"ҚҞҠӃ":
         return u"Q"
-    if char == u"қ":
+    if char == u"қҟҡӄ":
         return u"q"
     if char == u"Ӯ":
         return u"U"
@@ -540,10 +545,10 @@ def trans(char, default = '?', prev = '-'):
         return u"Dz"
     if char == u"ҷ":
         return u"dz"
-    if char == u"Ө":
-        return u"Oe"
-    if char == u"ө":
-        return u"oe"
+    if char in u"ӨӪ":
+        return u"Ô"
+    if char in u"өӫ":
+        return u"ô"
     if char == u"Ү":
         return u"Y"
     if char == u"ү":
@@ -552,22 +557,151 @@ def trans(char, default = '?', prev = '-'):
         return u"H"
     if char == u"һ":
         return u"h"
-    if char == u"Ә":
+    if char in u"ӘӔ":
         return u"AE"
     if char == u"ә":
         return u"ae"
+    if char == u"ӚӬ":
+        return u"Ë"
+    if char == u"ӛӭ":
+        return u"ë"
     if char == u"Җ":
         return u"Zhj"
     if char == u"җ":
         return u"zhj"
-    if char == u"Ң":
+    if char == u"ҢҤӉӇ":
         return u"Ng"
-    if char == u"ң":
+    if char == u"ңҥӊӈ":
         return u"ng"
     if char == u"Ұ":
         return u"U"
     if char == u"ұ":
         return u"u"
+    if char == u"ў":
+        return u"ù"
+    if char == u"Ў":
+        return u"Ù"
+    if char == u"ѝ":
+        return u"ì"
+    if char == u"Ѝ":
+        return u"Ì"
+    if char == u"Ӑ":
+        return u"A"
+    if char == u"ă":
+        return u"a"
+    if char == u"Ӓ":
+        return u"Ä"
+    if char == u"ä":
+        return u"ä"
+    if char in u"ӖѢҌ":
+        return u"E"
+    if char in u"ӗѣҍ":
+        return u"e"
+    if char == u"ҼҾ":
+        return u"Ts"
+    if char == u"ҽҿ":
+        return u"ts"
+    if char == u"Ҙ":
+        return u"Dh"
+    if char == u"ҙ":
+        return u"dh"
+    if char in u"Ӏӏ":
+        return u""
+    if char == u"Ӆ":
+        return u"L"
+    if char == u"ӆ":
+        return u"l"
+    if char == u"Ӎ":
+        return u"M"
+    if char == u"ӎ":
+        return u"m"
+    if char == u"Ӧ":
+        return u"Ö"
+    if char == u"ӧ":
+        return u"ö"
+    if char == u"Ҩ":
+        return u"u"
+    if char == u"ҩ":
+        return u"u"
+    if char == u"Ҧ":
+        return u"Ph"
+    if char == u"ҧ":
+        return u"ph"
+    if char == u"Ҏ":
+        return u"R"
+    if char == u"ҏ":
+        return u"r"
+    if char == u"Ҫ":
+        return u"Th"
+    if char == u"ҫ":
+        return u"th"
+    if char == u"Ҭ":
+        return u"T"
+    if char == u"ҭ":
+        return u"t"
+    if char in u"ӲӰҮ":
+        return u"Ü"
+    if char in u"ӳӱү":
+        return u"ü"
+    if char == u"Ӯ":
+        return u"Û"
+    if char == u"ӯ":
+        return u"û"
+    if char == u"ҰӸ":
+        return u"U"
+    if char == u"ұӹ":
+        return u"u"
+    if char == u"Ҵ":
+        return u"Tts"
+    if char == u"ҵ":
+        return u"tts"
+    if char == u"Ӵ":
+        return u"Ch"
+    if char == u"ӵ":
+        return u"ch"
+
+    # Archaic Cyrillic letters
+    if char == u"Ѹ":
+        return u"Ou"
+    if char == u"ѹ":
+        return u"ou"
+    if char in u"ѠѺ":
+        return u"O"
+    if char in u"ѡѻ":
+        return u"o"
+    if char == u"Ѿ":
+        return u"Ot"
+    if char == u"ѿ":
+        return u"ot"
+    if char == u"Ѣ":
+        return u"E"
+    if char == u"ѣ":
+        return u"e"
+    if char in u"ѤѦ":
+        return u"Ei"
+    if char in u"ѥѧ":
+        return u"ei"
+    if char == u"Ѫ":
+        return u"Ai"
+    if char == u"ѫ":
+        return u"ai"
+    if char == u"Ѯ":
+        return u"X"
+    if char == u"ѯ":
+        return u"x"
+    if char == u"Ѱ":
+        return u"Ps"
+    if char == u"ѱ":
+        return u"ps"
+    if char == u"Ѳ":
+        return u"Th"
+    if char == u"ѳ":
+        return u"th"
+    if char in u"ѴѶ":
+        return u"Ü"
+    if char == u"ѵ":
+        return u"ü"
+    
 
     # Hebrew alphabet
     if char in u"אע":
