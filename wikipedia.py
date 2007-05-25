@@ -842,8 +842,8 @@ class Page(object):
         else:
             startmarker = u"<body "
             endmarker = "printfooter"
-        listitempattern = re.compile(r"<li><a href=.*>(?P<title>.*)</a>(?: \((?P<templateInclusion>.*)\) )?</li>")
-        redirectpattern = re.compile(r"<li><a href=.*>(?P<title>.*)</a> \((?P<redirText>.*)\) <ul>")
+        listitempattern = re.compile(r"<li><a href=.*?>(?P<title>.*?)</a>( \((?P<templateInclusion>.*?)\) )?</li>")
+        redirectpattern = re.compile(r"<li><a href=\".*?&amp;redirect=no\" title=\".*?\">(?P<title>.*?)</a> \((?P<redirText>.*?)\)")
         # to tell the previous and next link apart, we rely on the closing ) at the end of the "previous" label.
         nextpattern = re.compile(r'\) \(<a href="(?P<url>.*?)" title="%s:Whatlinkshere/.*?">.*? [0-9]+</a>\)' % self.site().namespace(-1))
         more = True
