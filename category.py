@@ -517,12 +517,22 @@ class CategoryTidyRobot:
         NOTE: current_cat is only used for internal recursion. You should
         always use current_cat = original_cat.
         '''
-        print
-        wikipedia.output(u'Treating page %s, currently in category %s' % (article.title(), current_cat.title()))
+        wikipedia.output(u'')
+        # Show the title of the page where the link was found.
+        # Highlight the title in purple.
+        colors = [None] * 14 + [13] * len(article.title()) + [None] * 15 + [13] * len(current_cat.title())
+        wikipedia.output(u'Treating page %s, currently in %s' % (article.title(), current_cat.title()), colors = colors)
 
         # Determine a reasonable amount of context to print
-        full_text = article.get()
-        contextLength = full_text.index('\n\n')
+        try:
+            full_text = article.get(get_redirect = True)
+        except wikipedia.NoPage:
+            wikipedia.output(u'Page %s not found.' % article.title())
+            return
+        try:
+            contextLength = full_text.index('\n\n')
+        except ValueError: # substring not found
+            contextLength = 500
         if full_text.startswith(u'[['): # probably an image
             # Add extra paragraph.
             contextLength = full_text.index('\n\n', contextLength+2)
@@ -618,9 +628,9 @@ class CategoryTidyRobot:
         if len(articles) == 0:
             wikipedia.output(u'There are no articles in category ' + catTitle)
         else:
-            for article in articles:
-                print
-                print '==================================================================='
+            preloadingGen = pagegenerators.PreloadingGenerator(iter(articles))
+            for article in preloadingGen:
+                wikipedia.output(u'\n===================================================================')
                 self.move_to_category(article, cat, cat)
 
 class CategoryTreeRobot:
