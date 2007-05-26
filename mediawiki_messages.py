@@ -107,7 +107,7 @@ def refresh_messages(site = None):
                          + "\s*<td>\n"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
                          + '\s*<a href=".+?" (?:class="new" )?title=".+?"><span id=[\'"].*?[\'"]>(?P<key>.+?)</span><\/a><br \/>'   # message link
-                         + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
+                         + '\s*<a href=".+?" (?:class="new" )?title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
                          + "\s*(?P<current>.+?)\n"                     # current message
                          + "\s*</td>"
@@ -117,9 +117,9 @@ def refresh_messages(site = None):
                          + "\s*<td rowspan=['\"]2['\"]>"
                          + '\s*<a id=".+?" name=".+?"></a>'            # anchor
                          + '\s*<a href=".+?" title=".+?"><span id=[\'"].*?[\'"]>(?P<key2>.+?)</span><\/a><br \/>'  # message link
-                         + '\s*<a href=".+?" title=".+?">.+?<\/a>\n'   # talk link
+                         + '\s*<a href=".+?" (?:class="new" )?title=".+?">.+?<\/a>\n'   # talk link
                          + "\s*</td><td>"
-                         + "\s*.+?\n"                                  # original message
+                         + "\s*.*?\n?"                                  # original message (can be empty, in this case the \n will be matched by the \s*)
                          + "\s*</td>"
                          + "\s*</tr><tr class=['\"]new['\"] id=['\"].*?['\"]>"
                          + "\s*<td>\n"
@@ -143,6 +143,7 @@ def refresh_messages(site = None):
         key = match.group('key') or match.group('key2')
         current = match.group('current') or match.group('current2')
         dictionary[key] = current
+
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
     if dictionary == {}:
