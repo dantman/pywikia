@@ -139,7 +139,10 @@ class UI:
                 # work on characters that couldn't be encoded, but not on
                 # original question marks.
                 if codecedText[i] == '?' and text[i] != u'?':
-                    transliterated = transliteration.trans(text[i], default = '?', prev = prev)
+                    try:
+                        transliterated = transliteration.trans(text[i], default = '?', prev = prev, next = text[i+1])
+                    except IndexError:
+                        transliterated = transliteration.trans(text[i], default = '?', prev = prev, next = ' ')
                     # transliteration was successful. The replacement
                     # could consist of multiple letters.
                     transliteratedText += transliterated

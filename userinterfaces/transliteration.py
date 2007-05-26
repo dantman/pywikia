@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-def trans(char, default = '?', prev = '-'):
+def trans(char, default = '?', prev = '-', next = '-'):
     # Give a transliteration for char, or default if none is known
     # Accented etc. Latin characters
     if char in u"ÀÁÂẦẤẪẨẬÃĀĂẰẮẴẶẲȦǠẠḀȂĄǍẢ":
@@ -1048,15 +1048,15 @@ def trans(char, default = '?', prev = '-'):
         return u"ó"
 
     # Japanese (katakana and hiragana)
-    if char in u"アあ":
+    if char in u"アァあ":
         return u"a"
-    if char in u"イい":
+    if char in u"イィい":
         return u"i"
     if char in u"ウう":
         return u"u"
-    if char in u"エえ":
+    if char in u"エェえ":
         return u"e"
-    if char in u"オお":
+    if char in u"オォお":
         return u"o"
     if char in u"ャや":
         return u"ya"
@@ -1174,7 +1174,7 @@ def trans(char, default = '?', prev = '-'):
         return u"de"
     if char in u"ドど":
         return u"do"
-    if char in u"ドば":
+    if char in u"バば":
         return u"ba"
     if char in u"ビび":
         return u"bi"
@@ -1194,6 +1194,8 @@ def trans(char, default = '?', prev = '-'):
         return u"pe"
     if char in u"ポぽ":
         return u"po"
+    if char in u"ヴゔ":
+        return u"vu"
     if char == u"ヷ":
         return u"va"
     if char == u"ヸ":
@@ -1202,6 +1204,8 @@ def trans(char, default = '?', prev = '-'):
         return u"ve"
     if char == u"ヺ":
         return u"vo"
+    if char == u"ッ":
+        return trans(next)[0]
 
     # Japanese and Chinese punctuation and typography
     if char == u"・·":
