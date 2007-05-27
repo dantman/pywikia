@@ -25,8 +25,9 @@ print "<!--"
 import wikipedia
 print "-->"
 mysite = wikipedia.getSite()
+special = mysite.family.special_namespace(mysite.lang)
 
-post = 'title=Speciaal:Recentchanges'
+post = 'title=%s:Recentchanges' % special
 for element in form:
     post += '&%s=%s'%(element,form[element].value)
 if not 'limit' in form:
@@ -36,7 +37,7 @@ text = mysite.getUrl('/w/index.php?%s'%post)
 text = text.split('\n')
 rcoptions = False
 lines = []
-Ruser = re.compile('title=\"Speciaal\:Contributions\/([^\"]*)\"')
+Ruser = re.compile('title=\"%s\:Contributions\/([^\"]*)\"' % special)
 Rnumber = re.compile('tabindex=\"(\d*)\"')
 count = 0
 for line in text:
@@ -50,7 +51,7 @@ for line in text:
             lines.append((user,count,line))
             print
     elif line.find('rcoptions') > -1:
-        print line.replace("/w/index.php?title=Speciaal:Recentchanges&amp;","rcsort.py?")
+        print line.replace("/w/index.php?title=%s:Recentchanges&amp;" % special,"rcsort.py?")
         rcoptions = True
 lines.sort()
 last = 0
