@@ -589,10 +589,7 @@ class Subject(object):
                     else:
                         pages = titletranslate.translate(self.originPage, hints = [newhint], auto = globalvar.auto)
                         for page in pages:
-                            self.todo.append(page)
-                            counter.plus(page.site())
-                            self.foundIn[page] = [None]
-
+                            self.addIfNew(page, counter, None)
 
     def workDone(self, counter):
         """
