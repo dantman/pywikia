@@ -74,10 +74,10 @@ class TextEditor:
             tempFile = open(tempFilename, 'w')
             tempFile.write(text.encode(config.editor_encoding))
             tempFile.close()
-            creationDate = os.stat(tempFilename).st_atime
+            creationDate = os.stat(tempFilename).st_mtime
             command = self.command(tempFilename, text, jumpIndex)
             os.system(command)
-            lastChangeDate = os.stat(tempFilename).st_atime
+            lastChangeDate = os.stat(tempFilename).st_mtime
             if lastChangeDate == creationDate:
                 # Nothing changed
                 return None
