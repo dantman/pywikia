@@ -37,11 +37,11 @@ Known issues/FIXMEs (no critical issues known):
 * Should require a Commons user to be present in user-config.py before
   working
 * Should probably have an input field for additional categories
-* Should probably have an option to change uploadtext with image
+* Should probably have an option to change uploadtext with file
 * required i18n options for NowCommons template (f.e. {{subst:ncd}} on
   en.wp. Currently needs customisation to work properly. Bot was tested
-  succesfully on nl.wp (12k+ images copied and deleted locally) and en.wp
-  (about 100 images copied and SieBot has bot approval for tagging {{ncd}}
+  succesfully on nl.wp (12k+ files copied and deleted locally) and en.wp
+  (about 100 files copied and SieBot has bot approval for tagging {{ncd}}
   with this bot)
 * {{NowCommons|xxx}} requires the namespace prefix Image: on most wikis
   and can be left out on others. This needs to be taken care of when
@@ -177,7 +177,7 @@ class UploadRobot:
         wikipedia.output(u'Reading file %s' % self.url)
         contents = file.read()
         if contents.find("The requested URL was not found on this server.") != -1:
-            print "Couldn't download the image."
+            print "Couldn't download the file."
             return
         file.close()
         # Isolate the pure name
@@ -236,7 +236,7 @@ class UploadRobot:
         formdata["wpUploadDescription"] = self.description
     #     if self.targetSite.version() >= '1.5':
     #         formdata["wpUploadCopyStatus"] = wikipedia.input(u"Copyright status: ")
-    #         formdata["wpUploadSource"] = wikipedia.input(u"Source of image: ")
+    #         formdata["wpUploadSource"] = wikipedia.input(u"Source of file: ")
         formdata["wpUploadAffirm"] = "1"
         formdata["wpUpload"] = "upload bestand"
         # This somehow doesn't work.
@@ -301,7 +301,7 @@ class UploadRobot:
                 wikipedia.output(u'No input filename given')
             else:
                 wikipedia.output(u'Invalid input filename given. Try again.')
-            self.url = wikipedia.input(u'File or URL where image is now:')
+            self.url = wikipedia.input(u'File or URL where file is now:')
         return self.upload_image()
 
 def getcatimgs(catP, cpfrom=''):
@@ -551,14 +551,14 @@ def main(args):
             nn=changename[0].encode('utf-8')
             tenemosuncambio=1
         elif changename[1]==1:
-            print 'skipping this image'
+            print 'skipping this file'
             continue
         imageP=wikipedia.Page(six[1], categorizada[1])
         CP=wikipedia.Page(wikipedia.Site('commons', 'commons'), 'Image:'+nn.decode('utf-8'))
         if CP.exists():
             nn=Tkstuff(nn[0], categorizada[2], categorizada[3], commonsconflict=1).getnewname()
         if nn[1]==1:
-            print 'skipping this image'
+            print 'skipping this file'
             continue
         
         thread.start_new_thread(getCH, (url, imageP, nn, tenemosuncambio))
