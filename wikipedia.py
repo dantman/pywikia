@@ -543,6 +543,11 @@ class Page(object):
         retry_idle_time = 1
         while not textareaFound:
             text = self.site().getUrl(path, sysop = sysop)
+            #Check for new messages
+            if '<div class="usermessage">' in text:
+                messages=True
+            else:
+                messages=False
             # Extract the actual text from the textarea
             try:
                 i1 = re.search('<textarea[^>]*>', text).end()
