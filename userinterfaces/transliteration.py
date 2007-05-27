@@ -790,7 +790,7 @@ def trans(char, default = '?', prev = '-', next = '-'):
         return u"f"
     if char in u"قﻕﻖﻘﻗ":
         return u"q"
-    if char in u"كﻙﻚﻜﻛ":
+    if char in u"كﻙﻚﻜﻛک":
         return u"k"
     if char in u"لﻝﻞﻠﻟ":
         return u"l"
@@ -802,7 +802,7 @@ def trans(char, default = '?', prev = '-', next = '-'):
         return u"h"
     if char in u"وﻭﻮ":
         return u"w"
-    if char in u"يﻱﻲﻴﻳ":
+    if char in u"یيﻱﻲﻴﻳ":
         return u"y"
     # Arabic - additional letters, modified letters and ligatures
     if char == u"ﺀ":
