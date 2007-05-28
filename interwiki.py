@@ -302,6 +302,7 @@ msg = {
     'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),
     'sr': (u'Бот', u'Додаје', u'Брише', u'Мења'),
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
+    'uk': (u'робот', u'додав', u'видалив', u'зміни'),
     }
 
 class Global(object):
