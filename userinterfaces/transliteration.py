@@ -1719,7 +1719,7 @@ def trans(char, default = '?', prev = '-', next = '-'):
         return u"u"
     if char in u"ঋৃ":
         return u"ri"
-    if char in u"এে":
+    if char in u"এেয়":
         return u"e"
     if char in u"ঐৈ":
         return u"oi"
@@ -1814,7 +1814,89 @@ def trans(char, default = '?', prev = '-', next = '-'):
     if char == u"৯":
         return u"9"
     
-    
-    
+    # Thai (because of complications of the alphabet, transliterations
+    #       are very imprecise here)
+    if char == u"ก":
+        return u"k"
+    if char in u"ขฃคฅฆ":
+        return u"kh"
+    if char == u"ง":
+        return u"ng"
+    if char in u"จฉชฌ":
+        return u"ch"
+    if char in u"ซศษส":
+        return u"s"
+    if char in u"ญย":
+        return u"y"
+    if char in u"ฎด":
+        return u"d"
+    if char in u"ฏต":
+        return u"t"
+    if char in u"ฐฑฒถทธ":
+        return u"th"
+    if char in u"ณน":
+        return u"n"
+    if char == u"บ":
+        return u"b"
+    if char == u"ป":
+        return u"p"
+    if char in u"ผพภ":
+        return u"ph"
+    if char in u"ฝฟ":
+        return u"f"
+    if char in u"ม":
+        return u"m"
+    if char == u"ร":
+        return u"r"
+    if char == u"ฤ":
+        return u"rue"
+    if char in u"ๅ":
+        return u":"
+    if char in u"ลฬ":
+        return u"l"
+    if char == u"ฦ":
+        return u"lue"
+    if char == u"ว":
+        return u"w"
+    if char in u"หฮ":
+        return u"h"
+    if char == u"อ":
+        return u""
+    if char == u"ร":
+        return u"ü"
+    if char == u"ว":
+        return u"ua"
+    if char in u"อว–โิ":
+        return u"o"
+    if char in u"ะัา":
+        return u"a"
+    if char in u"ว":
+        return u"u"
+    if char == u"ำ":
+        return u"am"
+    if char == u"ิ":
+        return u"i"
+    if char == u"ี":
+        return u"i:"
+    if char == u"ึ":
+        return u"ue"
+    if char == u"ื":
+        return u"ue:"
+    if char == u"ุ":
+        return u"u"
+    if char == u"ู":
+        return u"u:"
+    if char in u"เ็":
+        return u"e"
+    if char == u"แ":
+        return u"ae"
+    if char in u"ใไ":
+        return u"ai"
+    if char in u"่้๊๋็์":
+        return u""
+    if char in u"ฯ":
+        return u"."
+    if char in u"ๆ":
+        return u"(2)"    
     
     return default
