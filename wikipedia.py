@@ -3921,7 +3921,7 @@ def altlang(code):
         return ['tr']
     if code in ['ja','ko','minnan','zh','zh-cn']:
         return ['zh','zh-tw','zh-classical','zh-cn']
-    if code in ['bo','cdo','wuu','za','zh-cdo','zh-classical','zh-tw','zh-yue']:
+    if code in ['bo','cdo','hak','wuu','za','zh-cdo','zh-classical','zh-tw','zh-yue']:
         return ['zh','zh-cn','zh-classical','zh-tw']
     if code=='da':
         return ['nb','no']

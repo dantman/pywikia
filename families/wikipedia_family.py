@@ -345,7 +345,8 @@ class Family(family.Family):
             'arc': [u'ܕ'],
             'ast': [u'Dixebra'],
             'ar':  [u'Disambig', u'توضيح'],
-            'be-x-old':  [u'Неадназначнасьць', u'Disambig'],
+            'be':  [u'Неадназначнасць', u'Disambig'],
+            'be-x-old':  [u'Неадназначнасць', u'Неадназначнасьць', u'Disambig'],
             'bg':  [u'Пояснение', u'Disambig'],
             'br':  [u'Hvlstumm', u'Digejañ'],
             'bs':  [u'Čvor'],
@@ -369,7 +370,7 @@ class Family(family.Family):
             'eu':  [u'Argipen', u'Disambig'],
             'fa':  [u'ابهام‌زدایی'],
             'fi':  [u'Täsmennyssivu', u'Disambig'],
-            'fr':  [u'Homonymie', u'Homonymie dynastique', u'Paronymie'],
+            'fr':  [u'Homonymie', u'Homonymie dynastique', u'Paronymie', u'Sigles n lettres'],
             'frp': [u'Homonimos'],
             'fy':  [u'Tfs',u'Neibetsjuttings'],
             'ga':  [u'Idirdhealú', u'Disambig'],
@@ -403,6 +404,7 @@ class Family(family.Family):
             'nn':  [u'Fleirtyding'],
             'no':  [u'Peker', u'Etternavn', u'Disambig', u'Tobokstavsforkortelse',
                     u'Trebokstavsforkortelse'],
+            'nov': [u'Desambig'],
             'oc':  [u'Omonimia',],
             'pl':  [u'Disambig', u'DisambRulers', u'DisambigC',u'Strona ujednoznaczniająca'],
             'pt':  [u'Desambiguação', u'Disambig', u'Desambig'],
@@ -425,6 +427,7 @@ class Family(family.Family):
             'uk':  [u'DisambigG', u'Disambig'],
             'vi':  [u'Trang định hướng', u'Định hướng', u'Disambig', u'Hndis'],
             'wa':  [u'Omonimeye', u'Disambig'],
+            'yi':  [u'באדייטען'],
             'zh':  [u'Disambig', u'消歧义', u'消歧义页', u'消歧義'],
             'zh-min-nan': [u'Khu-pia̍t-ia̍h', 'KhPI', u'Disambig'],
             'zh-yue': [u'搞清楚',u'Disambig'],
@@ -518,7 +521,7 @@ class Family(family.Family):
             'ny','sn',
             'tum','cho','co','za','cy','da','pdc','de','dv','nv','dz','mh','et',
             'na','el','eml','en','es','eo','eu','ee','to','fab','fa','fo','fr','fy','ff',
-            'fur','ga','gv','sm','gd','gl','gay','ki','glk','gu','got','zh-classical','xal','ko','ha','haw',
+            'fur','ga','gv','sm','gd','gl','gay','ki','glk','gu','got','zh-classical','hak','xal','ko','ha','haw',
             'hy','hi','ho','hsb','hr','io','ig','ilo','bpy','ia','ie','iu','ik','os','xh','zu',
             'is','it','he','kl','pam','kn','kr','ka','ks','csb','kk','kk-cn','kk-kz','kw','rw','ky',
             'rn','sw','kv','kg','ht','kj','ku','lad','lbe','lo','ltg','la','lv','lb','lij','lt',
@@ -542,7 +545,7 @@ class Family(family.Family):
             'ny', 'sn', 'tum', 've', 'cho', 'co', 'za', 'cy', 'da', 'pdc', 'de', 'dv',
             'nv', 'dz', 'mh', 'na', 'el', 'eml', 'en', 'es', 'eo', 'et', 'eu', 'ee', 'to',
             'fab', 'fa', 'fo', 'fr', 'fy', 'ff', 'fur', 'ga', 'gv', 'sm', 'gd', 'gl',
-            'gay', 'ki', 'glk', 'gu', 'got', 'zh-classical',  'xal', 'ko', 'ha', 'haw', 'hy', 'he', 'hi', 'ho', 'hsb',
+            'gay', 'ki', 'glk', 'gu', 'got', 'zh-classical', 'hak', 'xal', 'ko', 'ha', 'haw', 'hy', 'he', 'hi', 'ho', 'hsb',
             'hr', 'io', 'ig', 'bpy', 'ilo', 'ia', 'ie', 'iu', 'ik', 'os', 'xh', 'zu', 'is', 'it',
             'ja', 'kl', 'pam', 'kn', 'kr', 'ka', 'ks', 'csb', 'kw', 'rw', 'ky', 'rn', 'sw',
             'kv', 'kg', 'ht', 'kj', 'ku', 'lad', 'lbe', 'lo', 'ltg', 'la', 'lv', 'lb', 'lij', 'lt', 'li',
@@ -593,6 +596,7 @@ class Family(family.Family):
 
         self.obsolete = {'dk':'da',
                     'minnan':'zh-min-nan',
+                    'mo':None,
                     'nb':'no',
                     'jp':'ja',
                     'tokipona':None,
@@ -702,6 +706,7 @@ class Family(family.Family):
             'gu' :            u'મુખપૃષ્ઠ',
             'gv' :            u'Main Page',
             'ha' :            u'Main Page',
+            'hak':            u'Thèu-chông',
             'haw':            u'Main Page',
             'he' :            u'עמוד ראשי',
             'hi' :            u'मुख्य पृष्ठ',
@@ -845,7 +850,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.8alpha"
+        return "1.B" # B in plaats van 11 gebruikt, omdat er alfabetisch i.p.v. numeriek wordt vergeleken
 
     def dbName(self, code):
         # returns the name of the MySQL database

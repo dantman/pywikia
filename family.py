@@ -16,7 +16,7 @@ class Family:
            'ny','sn',
            'tum','cho','co','za','cy','da','pdc','de','dv','nv','dz','mh',
            'et','el','eml','en','es','eo','eu','ee','fa','fo','fr','fy','ff','fur','ga',
-           'gv','gd','gl','ki','glk','gu','got','zh-classical','xal','ko','ha','haw','hy','hi','ho','hsb','hr',
+           'gv','gd','gl','ki','glk','gu','got','zh-classical','hak','xal','ko','ha','haw','hy','hi','ho','hsb','hr',
            'io','ig','ilo','bpy','id','ia','ie','iu','ik','os','xh','zu','is','it','he',
            'jv','kl','pam','kn','kr','ka','ks','csb','kk','kw','rw','ky','rn',
            'sw','kv','kg','ht','kj','ku','lad','lbe','lo','la','lv','lb','lij','lt',
