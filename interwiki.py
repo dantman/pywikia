@@ -281,6 +281,7 @@ msg = {
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
     'he': (u'רובוט ', u'מוסיף', u'מסיר', u'משנה'),
     'hr': (u'robot', u'Dodaje', u'Uklanja', u'Mijenja'),
+    'hu': (u'Robot ', u'következő hozzáadása', u'következő eltávolítása', u'következő módosítása'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),
@@ -303,6 +304,7 @@ msg = {
     'sr': (u'Бот', u'Додаје', u'Брише', u'Мења'),
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
     'uk': (u'робот', u'додав', u'видалив', u'зміни'),
+    'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     }
 
 class Global(object):
