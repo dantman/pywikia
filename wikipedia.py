@@ -847,10 +847,16 @@ class Page(object):
         else:
             startmarker = u"<body "
             endmarker = "printfooter"
-        listitempattern = re.compile(r"<li><a href=.*?>(?P<title>.*?)</a>( \((?P<templateInclusion>.*?)\) )?</li>")
-        redirectpattern = re.compile(r"<li><a href=\".*?&amp;redirect=no\" title=\".*?\">(?P<title>.*?)</a> \((?P<redirText>.*?)\)")
-        # to tell the previous and next link apart, we rely on the closing ) at the end of the "previous" label.
-        nextpattern = re.compile(r'\) \(<a href="(?P<url>.*?)" title="%s:Whatlinkshere/.*?">.*? [0-9]+</a>\)' % self.site().namespace(-1))
+        listitempattern = re.compile(
+            r'<li><a href=.*?>(?P<title>.*?)</a>'
+            r'( \((?P<templateInclusion>.*?)\) )?<')
+        redirectpattern = re.compile(
+            r'<li><a href=".*?&amp;redirect=no" title=".*?">'
+            r'(?P<title>.*?)</a> \((?P<redirText>.*?)\) <')
+        # to tell the previous and next link apart, we rely on the closing )
+        # at the end of the "previous" label.
+        nextpattern = re.compile(
+            r'\) \(<a href="(?P<url>.*?)" title="%s:Whatlinkshere/.*?">.*? [0-9]+</a>\)' % self.site().namespace(-1))
         more = True
 
         while more:
@@ -907,7 +913,8 @@ class Page(object):
                     # a #REDIRECT marker, not just the first one).
                     linkpage = Page(site, rmatch.group("title"))
                     if linkpage.getRedirectTarget() != self.sectionFreeTitle():
-                        ignore_redirect = True
+                        if "<ul>" in line:
+                            ignore_redirect = True
                         lmatch = rmatch
                     else:
                         if redirect:
@@ -915,7 +922,11 @@ class Page(object):
                                    % rmatch.group("title"))
                         if follow_redirects or redirectsOnly or not redirect:
                             refTitles.add(rmatch.group("title"))
-                        redirect += 1
+                        if "<ul>" in line:
+                            # a redirect without an <ul> tag has no incoming links
+                            redirect += 1
+                        else:
+                            continue
                 # the same line may match both redirectpattern and
                 # listitempattern, because there is no newline after
                 # a redirect link
