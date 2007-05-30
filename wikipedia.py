@@ -3922,8 +3922,6 @@ def altlang(code):
         return ['ro']
     if code in ['av','bxr','cv','hy','lbe','ru-sib','tg','tt','udm','uk','xal']:
         return ['ru']
-    if code=='got':
-        return ['ru','uk']
     if code in ['be','be-x-old']:
         return ['be','be-x-old','ru']
     if code in ['kk','ky','tk']:
