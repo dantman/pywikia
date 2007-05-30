@@ -298,6 +298,7 @@ msg = {
     'no': (u'robot ', u'Tilføyer', u'Fjerner', u'Endrer'),
     'os': (u'Робот', u'баххæст кодта', u'Баивта', u'Аиуварс'),
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
+    'pms': (u'ël trigomiro ', u'a gionta', u'a modìfica', u'a gava'),
     'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
     'ro': (u'Robot interwiki: ', u'Adãugat', u'Înlãturat',u'Modificat'),
     'ru': (u'робот ', u'добавил', u'удалил', u'изменил'),
