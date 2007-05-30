@@ -3920,7 +3920,7 @@ def altlang(code):
         return ['pt']
     if code in ['mo','roa-rup']:
         return ['ro']
-    if code in ['av','bxr','cv','hy','lbe','ru-sib','tt','udm','uk','xal']:
+    if code in ['av','bxr','cv','hy','lbe','ru-sib','tg','tt','udm','uk','xal']:
         return ['ru']
     if code=='got':
         return ['ru','uk']
