@@ -305,6 +305,7 @@ msg = {
     'sl': (u'robot ', u'Dodajanje', u'Odstranjevanje', u'Spreminjanje'),
     'sr': (u'Бот', u'Додаје', u'Брише', u'Мења'),
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
+    'tg': (u'робот ', u'илова карда истодааст', u'дигаргуни карда истодааст', u'haвз карда истодааст'),
     'uk': (u'робот', u'додав', u'видалив', u'зміни'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     }
