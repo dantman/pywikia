@@ -31,3 +31,7 @@ http://wordlist.sourceforge.net/. This source has as its licensing information:
   supporting documentation. Kevin Atkinson makes no representations
   about the suitability of this array for any purpose. It is provided
   "as is" without express or implied warranty.
+
+The 'BeautifulSoup.py' module is Copyright (c) 2004-2007 Leonard Richardson,
+and is licensed under the terms of the Python Software Foundation license,
+which is available at http://www.python.org/download/releases/2.5/license/.
