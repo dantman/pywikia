@@ -265,6 +265,8 @@ class LinkMustBeRemoved(SaveError):
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
     'ar': (u'روبوت ', u'إضافة', u'مسح', u'تعديل'),
+    'be': (u'робат ', u'Дадаем', u'Выдаляем', u'Мяняем'),
+    'be-x-old': (u'робат ', u'дадаў', u'выдаліў', u'зьмяніў'),
     'br': (u'Robot ', u'Ouzhpennet', u'Kemmet', u'Tennet'),
     'ca': (u'Robot ', u'afegeix', u'esborra', u'modifica'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
@@ -281,7 +283,7 @@ msg = {
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
     'he': (u'רובוט ', u'מוסיף', u'מסיר', u'משנה'),
     'hr': (u'robot', u'Dodaje', u'Uklanja', u'Mijenja'),
-    'hu': (u'Robot ', u'következő hozzáadása', u'következő eltávolítása', u'következő módosítása'),
+    'hu': (u'Robot: ', u'következő hozzáadása', u'következő eltávolítása', u'következő módosítása'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),

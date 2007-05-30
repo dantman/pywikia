@@ -3888,7 +3888,7 @@ def altlang(code):
         return ['es','pt']
     if code=='lad':
         return ['es','he']
-    if code in ['br','ht','kab','ln','lo','nrm','vi','wa']:
+    if code in ['br','ht','kab','ln','lo','nrm','wa']:
         return ['fr']
     if code in ['ie','oc']:
         return ['ie','oc','fr']
@@ -3930,7 +3930,7 @@ def altlang(code):
         return ['tr','ru']
     if code in ['diq','ug','uz']:
         return ['tr']
-    if code in ['ja','ko','minnan','zh','zh-cn']:
+    if code in ['ja','minnan','zh','zh-cn']:
         return ['zh','zh-tw','zh-classical','zh-cn']
     if code in ['bo','cdo','hak','wuu','za','zh-cdo','zh-classical','zh-tw','zh-yue']:
         return ['zh','zh-cn','zh-classical','zh-tw']
