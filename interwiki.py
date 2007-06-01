@@ -262,6 +262,11 @@ class LinkMustBeRemoved(SaveError):
     preferences or because the user chose not to change the page.
     """
 
+class GiveUpOnPage(wikipedia.Error):
+    """
+    The user chose not to work on this page and its linked pages any more.
+    """
+
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
     'ar': (u'روبوت ', u'إضافة', u'مسح', u'تعديل'),
@@ -891,6 +896,8 @@ class Subject(object):
                                  frgnSiteDone = True
                         except SaveError:
                             notUpdatedSites.append(site)
+                        except GiveUpOnPage:
+                            break
                 elif not globalvar.strictlimittwo and new.has_key(site) and site != lclSite:
                     old={}
                     try:
@@ -908,6 +915,8 @@ class Subject(object):
                             notUpdatedSites.append(site)
                         except wikipedia.NoUsername:
                             pass
+                        except GiveUpOnPage:
+                            break
         else:
             for (site, page) in new.iteritems():
                 # if we have an account for this site
@@ -919,6 +928,8 @@ class Subject(object):
                             updatedSites.append(site)
                     except SaveError:
                         notUpdatedSites.append(site)
+                    except GiveUpOnPage:
+                        break
         
         # disabled graph drawing for minor problems: it just takes too long 
         #if notUpdatedSites != [] and config.interwiki_graph:
@@ -1014,7 +1025,7 @@ class Subject(object):
                         # If we cannot ask, deny permission
                         answer = 'n'
                     else:
-                        answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No'], ['y', 'n'])
+                        answer = wikipedia.inputChoice(u'Submit?', ['Yes', 'No', 'Give up'], ['y', 'n', 'g'])
                 else:
                     # If we do not need to ask, allow
                     answer = 'y'
@@ -1055,6 +1066,8 @@ class Subject(object):
                         return True
                     else:
                         wikipedia.output(u'%s %s' % (status, reason))
+                elif answer == 'g':
+                    raise GiveUpOnPage
                 else:
                     raise LinkMustBeRemoved('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)))
             return False
