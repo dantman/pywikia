@@ -2500,9 +2500,8 @@ def replaceLanguageLinks(oldtext, new, site = None):
        'new' should be a dictionary with the language names as keys, and
        Page objects as values.
     """
-    # Find a marker that is not already in the text. We assume nobody puts '@'
-    # immediately before AND immediately after an interwiki link
-    marker = '@'
+    # Find a marker that is not already in the text.
+    marker = '@@'
     while marker in oldtext:
         marker += '@'
     if site == None:
@@ -2621,16 +2620,17 @@ def getCategoryLinks(text, site):
         result.append(cat)
     return result
 
-def removeCategoryLinks(text, site):
+def removeCategoryLinks(text, site, marker = ''):
     """Given the wiki-text of a page, return that page with all category
-       links removed. """
+       links removed. Puts the marker after the last replacement (at the
+       end of the text if there is no replacement)"""
     # This regular expression will find every link that is possibly an
     # interwiki link, plus trailing whitespace. The language code is grouped.
     # NOTE: This assumes that language codes only consist of non-capital
     # ASCII letters and hyphens.
     catNamespace = '|'.join(site.category_namespaces())
     categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace)
-    text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])
+    text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'], marker = marker)
     return normalWhitespace(text)
 
 def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
@@ -2654,27 +2654,27 @@ def replaceCategoryLinks(oldtext, new, site = None):
        'new' should be a list of Category objects.
     """
 
+    # Find a marker that is not already in the text.
+    marker = '@@'
+    while marker in oldtext:
+        marker += '@'
+
     if site is None:
         site = getSite()
     if site == Site('de', 'wikipedia'):
         raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position')
 
     s = categoryFormat(new, insite = site)
-    s2 = removeCategoryLinks(oldtext, site = site)
+    s2 = removeCategoryLinks(oldtext, site = site, marker = marker)
 
     if s:
         if site.language() in site.family.category_attop:
             newtext = s + site.family.category_text_separator + s2
         else:
             # calculate what was after the categories links on the page
-            firstafter = 0
-            try:
-                while s2[firstafter-1] == oldtext[firstafter-1]:
-                    firstafter -= 1
-            except IndexError:
-                pass
+            firstafter = s2.find(marker)
             # Is there any text in the 'after' part that means we should keep it after?
-            if "</noinclude>" in s2[firstafter:] and firstafter < 0:
+            if "</noinclude>" in s2[firstafter:]:
                 newtext = s2[:firstafter] + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 newtext = s2 + site.family.category_text_separator + s
@@ -2682,6 +2682,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
                 interwiki = getLanguageLinks(s2)
                 s2 = removeLanguageLinks(s2, site) + site.family.category_text_separator + s
                 newtext = replaceLanguageLinks(s2, interwiki, site)
+        newtext = newtext.replace(marker,'')
     else:
         return s2
     return newtext
