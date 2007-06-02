@@ -41,24 +41,29 @@ class ThreadPool(dict):
  
 	def append(self, job):
 		self.jobLock.acquire()
-		self.jobQueue.append(job)
-		unlock_workers = len(self.jobQueue)
- 
-		counter = 0
-		for event in self.itervalues():
-			if not event.isSet():
-				event.set()
-				counter += 1
-			if counter == unlock_workers:
-				break
-		self.jobLock.release()
+
+                try:
+                    self.jobQueue.append(job)
+                    unlock_workers = len(self.jobQueue)
+
+                    counter = 0
+                    for event in self.itervalues():
+                        if not event.isSet():
+                            event.set()
+                            counter += 1
+                        if counter == unlock_workers:
+                            break
+                finally:
+                    self.jobLock.release()
  
 	def add_thread(self, *args, **kwargs):
 		self.jobLock.acquire()
-		thread = self.worker(self, *args, **kwargs)
-		self.threads.append(thread)
-		self[id(thread)] = threading.Event()
-		self.jobLock.release()
+                try:
+                    thread = self.worker(self, *args, **kwargs)
+                    self.threads.append(thread)
+                    self[id(thread)] = threading.Event()
+                finally:
+                    self.jobLock.release()
  
 	def start(self):
 		for thread in self.threads:
@@ -66,11 +71,13 @@ class ThreadPool(dict):
 				thread.start()
 	def exit(self):
 		self.jobLock.acquire()
-		del self.jobQueue[:]
-		for thread in self.threads:
-			thread.quit = True
-			self[id(thread)].set()
-		self.jobLock.release()
+                try:
+                    del self.jobQueue[:]
+                    for thread in self.threads:
+                        thread.quit = True
+                        self[id(thread)].set()
+                finally:
+                    self.jobLock.release()
  
 class Thread(threading.Thread):
 	def __init__(self, pool):
@@ -81,28 +88,32 @@ class Thread(threading.Thread):
 	def run(self):
 		while True:
 			self.pool.jobLock.acquire()
-			if self.quit:
-				self.pool.jobLock.release()
-				return
- 
-			if not self.pool.jobQueue:
-				# In case no job is available, wait for the pool 
-				# to  call and do not start a busy while loop.
-				event = self.pool[id(self)]
-				self.pool.jobLock.release()
-				event.clear()
-				event.wait()
-				continue
-			job = self.pool.jobQueue.pop(0)
-			self.pool.jobLock.release()
+                        try:
+                            if self.quit:
+                                    self.pool.jobLock.release()
+                                    return
+     
+                            if not self.pool.jobQueue:
+                                    # In case no job is available, wait for the pool 
+                                    # to  call and do not start a busy while loop.
+                                    event = self.pool[id(self)]
+                                    self.pool.jobLock.release()
+                                    event.clear()
+                                    event.wait()
+                                    continue
+                            job = self.pool.jobQueue.pop(0)
+                        finally:
+                            self.pool.jobLock.release()
  
 			self.do(job)
  
 	def exit(self):
 		self.pool.jobLock.acquire()
-		self.quit = True
-		self.pool[id(self)].set()
-		self.pool.jobLock.release()
+                try:
+                    self.quit = True
+                    self.pool[id(self)].set()
+                finally:
+                    self.pool.jobLock.release()
  
 def catch_signals():
 	import signal
