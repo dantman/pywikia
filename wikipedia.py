@@ -2356,7 +2356,7 @@ class Throttle(object):
         finally:
             self.lock.release()
 
-def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowoverlap = False):
+def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowoverlap = False, marker = ''):
     """
     Replaces old by new in text, skipping occurences of old e.g. within nowiki
     tags or HTML comments.
@@ -2371,6 +2371,8 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         exceptList      - a list of strings which signal what to leave out,
                           e.g. ['math', 'table', 'template']
         caseInsensitive - a boolean
+        marker          - a string, it will be added to the last replacement,
+                          if nothing is changed, it is added at the end
     """
     exceptionRegexes = {
         'comment':     re.compile(r'(?s)<!--.*?-->'),
@@ -2405,6 +2407,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
     # How much of the text we have looked at so far
     dontTouchRegexes = [exceptionRegexes[name] for name in exceptions]
     index = 0
+    markerpos = len(text)
     while True:
         match = old.search(text, index)
         if not match:
@@ -2432,6 +2435,8 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
                 index = match.start() + 1
             else:
                 index = match.start() + len(replace_text)
+            markerpos = match.start() + len(replace_text)
+    text = text[:markerpos] + marker + text[markerpos:]
     return text
 
 # Part of library dealing with interwiki links
@@ -2471,10 +2476,12 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
                 result[site] = Page(site, pagetitle, insite = insite)
     return result
 
-def removeLanguageLinks(text, site = None):
+def removeLanguageLinks(text, site = None, marker = ''):
     """Given the wiki-text of a page, return that page with all interwiki
        links removed. If a link to an unknown language is encountered,
-       a warning is printed."""
+       a warning is printed. If a marker is defined, the marker is placed
+       at the location of the last occurence of an interwiki link (at the end
+       if there are no interwikilinks)."""
     if site == None:
         site = getSite()
     if not site.validLanguageLinks():
@@ -2483,7 +2490,7 @@ def removeLanguageLinks(text, site = None):
     # whitespace.
     languageR = '|'.join(site.validLanguageLinks())
     interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*' % languageR, re.IGNORECASE)
-    text = replaceExcept(text, interwikiR, '', ['nowiki', 'comment', 'math', 'pre'])
+    text = replaceExcept(text, interwikiR, '', ['nowiki', 'comment', 'math', 'pre'], marker = marker)
     return normalWhitespace(text)
 
 def replaceLanguageLinks(oldtext, new, site = None):
@@ -2493,23 +2500,23 @@ def replaceLanguageLinks(oldtext, new, site = None):
        'new' should be a dictionary with the language names as keys, and
        Page objects as values.
     """
+    # Find a marker that is not already in the text. We assume nobody puts '@'
+    # immediately before AND immediately after an interwiki link
+    marker = '@'
+    while marker in oldtext:
+        marker += '@'
     if site == None:
         site = getSite()
     s = interwikiFormat(new, insite = site)
-    s2 = removeLanguageLinks(oldtext, site = site)
+    s2 = removeLanguageLinks(oldtext, site = site, marker = marker)
     if s:
         if site.language() in site.family.interwiki_attop:
-            newtext = s + site.family.interwiki_text_separator + s2
+            newtext = s + site.family.interwiki_text_separator + s2.replace(marker,'')
         else:
             # calculate what was after the language links on the page
-            firstafter = 0
-            try:
-                while s2[firstafter-1] == oldtext[firstafter-1]:
-                    firstafter -= 1
-            except IndexError:
-                pass
+            firstafter = s2.find(marker) + len(marker)
             # Is there any text in the 'after' part that means we should keep it after?
-            if "</noinclude>" in s2[firstafter:] and firstafter < 0:
+            if "</noinclude>" in s2[firstafter:]:
                 newtext = s2[:firstafter] + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 cats = getCategoryLinks(s2, site = site)
@@ -2517,8 +2524,9 @@ def replaceLanguageLinks(oldtext, new, site = None):
                 newtext = replaceCategoryLinks(s2, cats, site=site)
             else:
                 newtext = s2 + site.family.interwiki_text_separator + s
+            newtext = newtext.replace(marker,'')
     else:
-        newtext = s2
+        newtext = s2.replace(marker,'')
     return newtext
 
 def interwikiFormat(links, insite = None):
