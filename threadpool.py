@@ -85,28 +85,29 @@ class Thread(threading.Thread):
         self.quit = False
  
     def run(self):
-        while True:
-            self.pool.jobLock.acquire()
-            try:
-                if self.quit:
-                    self.pool.jobLock.release()
-                    return
-     
-                if not self.pool.jobQueue:
-                    # In case no job is available, wait for the pool 
-                    # to  call and do not start a busy while loop.
-                    event = self.pool[id(self)]
-                    self.pool.jobLock.release()
-                    event.clear()
-                    event.wait()
-                    continue
-                job = self.pool.jobQueue.pop(0)
+	while True:
+		# No try..finally: lock.release() here:
+		# The lock might be released twice, in case
+		# the thread waits for an event, a race 
+		# condition might occur where a lock is released
+		# that is acquired by another thread. 
+		self.pool.jobLock.acquire()
 
-            finally:
-                if self.pool.jobLock.locked():
-                    self.pool.jobLock.release()
- 
-            self.do(job)
+		if self.quit:
+			return
+	
+		if not self.pool.jobQueue:
+			# In case no job is available, wait for the pool 
+			# to  call and do not start a busy while loop.
+			event = self.pool[id(self)]
+			self.pool.jobLock.release()
+			event.clear()
+			event.wait()
+			continue
+		job = self.pool.jobQueue.pop(0)
+		self.pool.jobLock.release()
+	
+		self.do(job)
  
     def exit(self):
         self.pool.jobLock.acquire()
