@@ -849,7 +849,7 @@ class Page(object):
             endmarker = "printfooter"
         listitempattern = re.compile(
             r'<li><a href=.*?>(?P<title>.*?)</a>'
-            r'( \((?P<templateInclusion>.*?)\) )?<')
+            r'( \((?P<templateInclusion>' + mediawiki_messages.get('istemplate',self.site()) + r')\) )?')
         redirectpattern = re.compile(
             r'<li><a href=".*?&amp;redirect=no" title=".*?">'
             r'(?P<title>.*?)</a> \((?P<redirText>.*?)\) <')
