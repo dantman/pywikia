@@ -77,7 +77,7 @@ class SandboxBot:
             if self.no_repeat:
                 wikipedia.output(u'\nDone.')
                 wikipedia.stopme()
-                exit()
+                return
             else:
                 wikipedia.output(u'\nSleeping %s hours, now %s' % (self.hours, now))
                 time.sleep(self.hours * 60 * 60)
@@ -92,7 +92,7 @@ def main():
         else:
             wikipedia.showHelp('clean_sandbox')
             wikipedia.stopme()
-            exit()
+            return
 
     bot = SandboxBot(hours, no_repeat)
     bot.run()
