@@ -1,12 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-This bot makes the cleaned of the page of tests.
+This bot cleans a sandbox by replacing the current contents with predefined
+text.
 
-Syntax:
-6 hours: clean_sandbox.py -hours:6
-1 second: clean_sandbox.py -hours:0.001
+This script understands the following command-line arguments:
+
+    -hours:#       Use this parameter if to make the script repeat itself
+                   after # hours. Hours can be defined as a decimal. 0.001
+                   hours is one second.
 
 """
+#
+# (C) Leogregianin, 2006
+# (C) Wikipedian, 2006-2007
+# (C) Andre Engels, 2007
+# (C) Siebrand Mazeland, 2007
+#
+# Distributed under the terms of the MIT license.
+#
+__version__ = '$Id$'
+#
+
 import wikipedia
 import time
 
@@ -17,6 +31,7 @@ content = {
     'nl': u'{{subst:Wikipedia:Zandbak/schoon zand}}',
     'pl': u'{{Prosimy - NIE ZMIENIAJ, NIE KASUJ, NIE PRZENOŚ tej linijki - pisz niżej}}',
     'pt': u'<!--não apague esta linha-->{{página de testes}}<!--não apagar-->\r\n',
+    'commons': u'{{subst:Sandbox}}<!-- Please edit only below this line. -->\n'
     }
 
 msg = {
@@ -35,11 +50,13 @@ sandboxTitle = {
     'nl': u'Wikipedia:Zandbak',
     'pl': u'Wikipedia:Brudnopis',
     'pt': u'Wikipedia:Página de testes',
+    'commons': u'Commons:Sandbox'
     }
 
 class SandboxBot:
-    def __init__(self, hours):
+    def __init__(self, hours, no_repeat):
         self.hours = hours
+        self.no_repeat = no_repeat
 
     def run(self):
         mySite = wikipedia.getSite()
@@ -57,19 +74,28 @@ class SandboxBot:
                     sandboxPage.put(translatedContent, translatedMsg)
             except wikipedia.EditConflict:
                 wikipedia.output(u'*** Loading again because of edit conflict.\n')
-            wikipedia.output(u'\nSleeping %s hours, now %s' % (self.hours, now))
-            time.sleep(self.hours * 60 * 60)
+            if self.no_repeat:
+                wikipedia.output(u'\nDone.')
+                wikipedia.stopme()
+                exit()
+            else:
+                wikipedia.output(u'\nSleeping %s hours, now %s' % (self.hours, now))
+                time.sleep(self.hours * 60 * 60)
 
 def main():
+    hours = 1
+    no_repeat = True
     for arg in wikipedia.handleArgs():
         if arg.startswith('-hours:'):
             hours = float(arg[7:])
+            no_repeat = False
         else:
             wikipedia.showHelp('clean_sandbox')
+            wikipedia.stopme()
+            exit()
 
-        if hours:
-            bot = SandboxBot(hours)
-            bot.run()
+    bot = SandboxBot(hours, no_repeat)
+    bot.run()
 
 if __name__ == "__main__":
     try:
