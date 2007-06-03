@@ -104,7 +104,7 @@ class Thread(threading.Thread):
 
             finally:
                 if self.pool.jobLock.locked():
-                self.pool.jobLock.release()
+                    self.pool.jobLock.release()
  
             self.do(job)
  
