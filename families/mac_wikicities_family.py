@@ -32,7 +32,7 @@ class Family(family.Family):
         self.languages_by_size = ['en','de']
 
     def version(self, code):
-        return "1.4"
+        return "1.10alpha"
     
     def path(self, code):
         return '/index.php'

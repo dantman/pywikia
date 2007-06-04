@@ -21,7 +21,7 @@ class Family(family.Family):
         }
 
         self.namespaces[4] = {
-            '_default': u'Freeciv'
+            '_default': u'Freeciv',
             'fi': u'FreeCiv wiki Suomalaisille',
         }
 
@@ -47,4 +47,4 @@ class Family(family.Family):
         return '/index.php'
 
     def version(self, code):
-        return "1.9.2"
+        return "1.10alpha"

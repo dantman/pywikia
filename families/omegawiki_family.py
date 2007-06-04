@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
- 
+
 __version__ = '$Id$'
 
 import family
@@ -14,7 +14,6 @@ class Family(family.Family):
         self.langs = {
             'en': 'omegawiki.org',
         }
-        
         self.namespaces[4] = {
             '_default': [u'OmegaWiki'],
         }
@@ -72,7 +71,9 @@ class Family(family.Family):
 
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
-            
+
         self.nocapitalize = self.langs.keys()
 
- 	  	 
+    def version(self, code):
+        return "1.10alpha"
+

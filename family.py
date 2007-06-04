@@ -2389,7 +2389,7 @@ class Family:
         return "1.5"
 
     def versionnumber(self, code):
-        R = re.compile("(%d+).(%d+)")
+        R = re.compile(r"(\d+).(\d+)")
         M = R.search(self.version(code))
         if not M:
             # Version string malformatted; assume it should have been 1.10

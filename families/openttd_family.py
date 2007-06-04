@@ -34,7 +34,6 @@ class Family(family.Family):
     def querypath(self, code):
         return '/query.php'
 
-
     def version(self, code):
-        return "1.5"
+        return "1.9.1"
 

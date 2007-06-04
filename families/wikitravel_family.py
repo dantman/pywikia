@@ -10,7 +10,7 @@ __version__ = '$Id$'
 class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
-        name = 'wikitravel'
+        self.name = 'wikitravel'
         self.langs = {
             'de':'de',
             'en':'en',
@@ -26,12 +26,12 @@ class Family(family.Family):
             'de': u'Wikitravel Diskussion',
         }
 
-    # A few selected big languages for things that we do not want to loop over
-    # all languages. This is only needed by the titletranslate.py module, so
-    # if you carefully avoid the options, you could get away without these
-    # for another wikimedia family.
+        # A few selected big languages for things that we do not want to loop over
+        # all languages. This is only needed by the titletranslate.py module, so
+        # if you carefully avoid the options, you could get away without these
+        # for another wikimedia family.
 
-    self.languages_by_size = ['en','fr','ro']
+        self.languages_by_size = ['en','fr','ro']
 
     def hostname(self,code):
         return 'wikitravel.org'
@@ -40,4 +40,4 @@ class Family(family.Family):
         return '/wiki/%s/index.php' % code
 
     def version(self, code):
-        return "1.3.10"
+        return "1.9.3"

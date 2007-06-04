@@ -18,3 +18,6 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Wikipedia talk', self.namespaces[5]['_default']],
         }
+
+    def version(self, code):
+        return "1.11alpha"

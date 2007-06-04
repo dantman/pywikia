@@ -26,4 +26,4 @@ class Family(family.Family):
         return '/wiki/index.php'
 
     def version(self, code):
-        return "1.9.2"
+        return "1.10"

@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-import family, config
+import family
 
 # Linpedia.org, the GNU/Linux encyclopedia
 
@@ -13,7 +13,7 @@ class Family(family.Family):
             'en':'wikitech.leuksman.com',
         }
 
-# Namespaces
+        # Namespaces
         
         self.namespaces[4] = {
 	    '_default': [u'Wikitech', self.namespaces[4]['_default']],
@@ -23,7 +23,7 @@ class Family(family.Family):
 	    }
 	
     def version(self, code):
-        return "1.6alpha"
+        return "1.11alpha"
 
     def path(self, code):
         return '/index.php'

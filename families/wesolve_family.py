@@ -11,6 +11,7 @@ class UploadDisabled(wikipedia.Error):
 class Family(family.Family):
     name = 'wesolve'
     def __init__(self):
+        self.langs = {}
         for lang in ['en','it']:
             self._addlang(lang,
 			location = 'wesolveitnet.com',

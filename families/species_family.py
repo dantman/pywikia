@@ -23,5 +23,5 @@ class Family(family.Family):
 
         self.interwiki_forward = 'wikipedia'
 
-        def version(self,code):
-            return "1.11"
+    def version(self,code):
+        return "1.11"

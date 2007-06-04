@@ -21,7 +21,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.4.2"
+        return "1.6.8"
 
     def path(self, code):
         return '/index.php'

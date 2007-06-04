@@ -72,4 +72,4 @@ class Family(family.Family):
         return '/%s/index.php' % code
 
     def version(self, code):
-        return "1.7alpha"
+        return "1.10alpha"

@@ -8,7 +8,7 @@ class Family(family.Family):
     def __init__(self):
 
         family.Family.__init__(self)
-        name = 'betawiki' #Set the family name; this should be the same as in the filename.
+        self.name = 'betawiki' #Set the family name; this should be the same as in the filename.
 
         self.langs = {
             'en': 'www.ucip.org', #Put the hostname here.

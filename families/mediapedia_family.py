@@ -22,7 +22,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.3.3"
+        return "1.6.5"
 
     def path(self, code):
         return '/wiki'

@@ -25,5 +25,5 @@ class Family(family.Family):
             '_default': [u'Project talk', self.namespaces[5]['_default']],
         }
 
-        def version(self,code):
-            return "1.11"
+    def version(self, code):
+        return "1.11"

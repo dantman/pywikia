@@ -265,4 +265,4 @@ class Family(family.Family):
         return '/wiki/index.php'
 
     def version(self, code):
-        return "1.7"
+        return "1.9.3"
