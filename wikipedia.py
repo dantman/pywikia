@@ -2510,7 +2510,7 @@ def replaceLanguageLinks(oldtext, new, site = None):
     s2 = removeLanguageLinks(oldtext, site = site, marker = marker)
     if s:
         if site.language() in site.family.interwiki_attop:
-            newtext = s + site.family.interwiki_text_separator + s2.replace(marker,'')
+            newtext = s + site.family.interwiki_text_separator + s2.replace(marker,'').strip()
         else:
             # calculate what was after the language links on the page
             firstafter = s2.find(marker) + len(marker)
@@ -2519,10 +2519,10 @@ def replaceLanguageLinks(oldtext, new, site = None):
                 newtext = s2[:firstafter] + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
                 cats = getCategoryLinks(s2, site = site)
-                s2 = removeCategoryLinks(s2, site) + site.family.interwiki_text_separator + s
+                s2 = removeCategoryLinks(s2.replace(marker,'').strip(), site) + site.family.interwiki_text_separator + s
                 newtext = replaceCategoryLinks(s2, cats, site=site)
             else:
-                newtext = s2 + site.family.interwiki_text_separator + s
+                newtext = s2.replace(marker,'').strip() + site.family.interwiki_text_separator + s
             newtext = newtext.replace(marker,'')
     else:
         newtext = s2.replace(marker,'')
@@ -2677,10 +2677,10 @@ def replaceCategoryLinks(oldtext, new, site = None):
             if "</noinclude>" in s2[firstafter:]:
                 newtext = s2[:firstafter] + s + s2[firstafter:]
             elif site.language() in site.family.categories_last:
-                newtext = s2 + site.family.category_text_separator + s
+                newtext = s2.replace(marker,'').strip() + site.family.category_text_separator + s
             else:
                 interwiki = getLanguageLinks(s2)
-                s2 = removeLanguageLinks(s2, site) + site.family.category_text_separator + s
+                s2 = removeLanguageLinks(s2.replace(marker,'').strip(), site) + site.family.category_text_separator + s
                 newtext = replaceLanguageLinks(s2, interwiki, site)
         newtext = newtext.replace(marker,'')
     else:
