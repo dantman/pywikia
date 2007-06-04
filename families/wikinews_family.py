@@ -70,5 +70,5 @@ class Family(family.Family):
         return 'utf-8'
 
     def version(self, code):
-        return "1.8"
+        return "1.11"
     

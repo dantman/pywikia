@@ -205,6 +205,6 @@ class Family(family.Family):
         self.interwiki_attop = ['pl']
 
     def version(self, code):
-        return "1.8"
+        return "1.11"
     
 

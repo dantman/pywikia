@@ -128,13 +128,13 @@ class Category(wikipedia.Page):
 
         This should not be used outside of this module.
         """
-        if self.site().version() < "1.4":
+        if self.site().versionnumber() < 4:
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"')
-        elif self.site().version() < "1.8":
+        elif self.site().versionnumber() < 8:
             Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
         else:
             Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
-        if self.site().version() < "1.8":
+        if self.site().versionnumber() < 8:
             Rsubcat = None
         else:
             Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\".+?\">(.+?)</a>')
@@ -224,7 +224,7 @@ class Category(wikipedia.Page):
             pass
         else:
             self_txt = self_txt[ibegin:iend]
-            if self.site().version() < '1.5':
+            if self.site().versionnumber() < 5:
                 # MediaWiki 1.4 has an unneeded space here
                 Rsupercat = re.compile('title ="([^"]*)"')
             else:

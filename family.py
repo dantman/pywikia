@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-import config, urllib
+import config, urllib, re
 
 __version__='$Id$'
 
@@ -2384,7 +2384,17 @@ class Family:
     # Which version of MediaWiki is used?
 
     def version(self, code):
+        # Don't use this, use versionnumber() instead. This only exists
+        # to not break family files.
         return "1.5"
+
+    def versionnumber(self, code):
+        R = re.compile("(%d+).(%d+)")
+        M = R.search(self.version(code))
+        if not M:
+            # Version string malformatted; assume it should have been 1.10
+            return 10
+        return 1000 * int(M.group(1)) + int(M.group(2)) - 1000
 
     def page_action_address(self, code, name, action):
         return '%s?title=%s&action=%s' % (self.path(code), name, action)

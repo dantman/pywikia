@@ -138,4 +138,4 @@ class Family(family.Family):
                       'sv','te','th','tr','uk','vi','yi','zh']
 
     def version(self, code):
-        return "1.8"
+        return "1.11"

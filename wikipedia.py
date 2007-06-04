@@ -841,7 +841,7 @@ class Page(object):
         # NOTE: this code relies on the way MediaWiki 1.6 formats the
         #       "Whatlinkshere" special page; if future versions change the
         #       format, they may break this code.
-        if self.site().version() >= "1.5":
+        if self.site().versionnumber() >= 5:
             startmarker = u"<!-- start content -->"
             endmarker = u"<!-- end content -->"
         else:
@@ -969,7 +969,7 @@ class Page(object):
         # NOTE: this code relies on the way MediaWiki 1.6 formats the
         #       "Whatlinkshere" special page; if future versions change the
         #       format, they may break this code.
-        if self.site().version() >= "1.5":
+        if self.site().versionnumber() >= 5:
             startmarker = u"<!-- start content -->"
             endmarker = u"<!-- end content -->"
         else:
@@ -1080,7 +1080,7 @@ class Page(object):
         Don't use this directly, use put() instead.
         """
         newTokenRetrieved = False
-        if self.site().version() >= "1.4":
+        if self.site().versionnumber() >= 4:
             if gettoken or not token:
                 token = self.site().getToken(getagain = gettoken, sysop = sysop)
                 newTokenRetrieved = True
@@ -1434,7 +1434,7 @@ class Page(object):
         # regular expression matching one edit in the version history.
         # results will have 4 groups: oldid, edit date/time, user name, and edit
         # summary.
-        if self.site().version() < "1.4":
+        if self.site().versionnumber() < 4:
             editR = re.compile('<li>.*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
         else:
             editR = re.compile('<li>.*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a>.*?</span>.*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
@@ -3379,11 +3379,11 @@ class Site(object):
             # Try to find begin and end markers
             try:
                 # In 1.4, another table was added above the navigational links
-                if self.version() < "1.4":
-                    begin_s = '<table'
+                if self.versionnumber() >= 4:
+                    begin_s = '</table><hr /><table'
                     end_s = '</table'
                 else:
-                    begin_s = '</table><hr /><table'
+                    begin_s = '<table'
                     end_s = '</table'
                 ibegin = returned_html.index(begin_s)
                 iend = returned_html.index(end_s,ibegin + 3)
@@ -3391,9 +3391,9 @@ class Site(object):
                 raise ServerError('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
             # remove the irrelevant sections
             returned_html = returned_html[ibegin:iend]
-            if self.version()=="1.2":
+            if self.versionnumber()==2:
                 R = re.compile('/wiki/(.*?)\" *class=[\'\"]printable')
-            elif self.version()<"1.5":
+            elif self.versionnumber()<5:
                 # Apparently the special code for redirects was added in 1.5
                 R = re.compile('title ?=\"(.*?)\"')
             elif not includeredirects:
@@ -3407,7 +3407,7 @@ class Site(object):
             for hit in R.findall(returned_html):
                 # count how many articles we found on the current page
                 n = n + 1
-                if self.version()=="1.2":
+                if self.versionnumber()==2:
                     yield Page(self, url2link(hit, site = self, insite = self))
                 else:
                     yield Page(self, hit)
@@ -3640,6 +3640,9 @@ class Site(object):
 
     def version(self):
         return self.family.version(self.lang)
+
+    def versionnumber(self):
+        return self.family.versionnumber(self.lang)
 
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on

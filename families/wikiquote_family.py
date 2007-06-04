@@ -177,7 +177,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.8alpha"    
+        return "1.11alpha"    
 
     def code2encodings(self, code):
         """

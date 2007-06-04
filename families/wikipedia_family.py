@@ -851,8 +851,8 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.B" # B in plaats van 11 gebruikt, omdat er alfabetisch i.p.v. numeriek wordt vergeleken
-
+        return "1.11"
+    
     def dbName(self, code):
         # returns the name of the MySQL database
         # for historic reasons, the databases are called wikixx instead of
