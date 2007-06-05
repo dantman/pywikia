@@ -536,7 +536,7 @@ class Family:
                 'oc': u'Discussion Utilizaire',
                 'os': u'Архайæджы дискусси',
                 'pa': u'ਮੈਂਬਰ ਚਰਚਾ',
-                'pl': u'Dyskusja Wikipedysty',
+                'pl': u'Dyskusja wikipedysty',
                 'pms':u'Ciaciarade',
                 'pt': u'Usuário Discussão',
                 'qu': u'Usuario Discusión',
