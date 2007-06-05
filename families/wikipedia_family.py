@@ -411,7 +411,7 @@ class Family(family.Family):
             'pt':  [u'Desambiguação', u'Disambig', u'Desambig'],
             'ro':  [u'Dezambiguizare', u'Disambig', u'Hndis'],
             'ru':  [u'Disambig', u'Неоднозначность', u'неоднозначность'],
-            'scn': [u'Disambigua', u'Disambig'],
+            'scn': [u'Disambigua', u'Disambig', u'Sigla2', u'Sigla3'],
             'simple': [u'Disambig', u'Disambiguation', u'3CC',u'2CC'],
             'sk':  [u'Disambig', u'Rozlišovacia stránka', u'Disambiguation'],
             'sl':  [u'Disambig', u'Razločitev', u'Disambig-ship'],
