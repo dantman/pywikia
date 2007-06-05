@@ -122,10 +122,20 @@ def catch_signals():
     signal.signal(signal.SIGINT, sig_handler)
     signal.signal(signal.SIGTERM, sig_handler)
  
-def sig_handler(signal, stack):
-    for pool in ThreadPool.pools:
-        pool.exit()
-    sys.exit()
+def sig_handler(signalnum, stack):
+        import signal
+        for pool in ThreadPool.pools:
+                pool.exit()
+                
+        if signalnum == signal.SIGINT:
+                raise KeyboardInterrupt
+        if signalnum == signal.SIGTERM:
+                raise SystemExit
+                
+def terminate():
+        # Maybe not a good idea, will also kill child processes
+	import signal
+        os.kill(0, signal.SIGTERM)
  
 if __name__ == '__main__':
     import time
