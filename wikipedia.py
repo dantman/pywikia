@@ -112,7 +112,7 @@ __version__ = '$Id$'
 import os, sys
 import httplib, socket, urllib
 import traceback
-import time, threading
+import time, threading, Queue
 import math
 import re, md5, codecs, difflib, locale
 import xml.sax, xml.sax.handler
@@ -122,6 +122,7 @@ import unicodedata
 
 import config, mediawiki_messages, login
 import xmlreader
+from BeautifulSoup import *
 
 # we'll set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
@@ -813,11 +814,9 @@ class Page(object):
                 _isDisambig = False
         return _isDisambig
 
-    def getReferences(self, follow_redirects=True,
-                      withTemplateInclusion=True,
-                      onlyTemplateInclusion=False,
-                      redirectsOnly=False
-                      ):
+    def getReferences(self,
+            follow_redirects=True, withTemplateInclusion=True,
+            onlyTemplateInclusion=False, redirectsOnly=False):
         """
         Yield all pages that link to the page. If you need a full list of
         referring pages, use this:
@@ -835,122 +834,75 @@ class Page(object):
         """
         site = self.site()
         path = site.references_address(self.urlname())
-
+        content = SoupStrainer("div", id="bodyContent")
+        nextpattern = re.compile("^next [0-9]+$")
         delay = 1
-
-        # NOTE: this code relies on the way MediaWiki 1.6 formats the
-        #       "Whatlinkshere" special page; if future versions change the
-        #       format, they may break this code.
-        if self.site().versionnumber() >= 5:
-            startmarker = u"<!-- start content -->"
-            endmarker = u"<!-- end content -->"
-        else:
-            startmarker = u"<body "
-            endmarker = "printfooter"
-        listitempattern = re.compile(
-            r'<li><a href=.*?>(?P<title>.*?)</a>'
-            r'( \((?P<templateInclusion>' + mediawiki_messages.get('istemplate',self.site()) + r')\) )?')
-        redirectpattern = re.compile(
-            r'<li><a href=".*?&amp;redirect=no" title=".*?">'
-            r'(?P<title>.*?)</a> \((?P<redirText>.*?)\) <')
-        # to tell the previous and next link apart, we rely on the closing )
-        # at the end of the "previous" label.
-        nextpattern = re.compile(
-            r'\) \(<a href="(?P<url>.*?)" title="%s:Whatlinkshere/.*?">.*? [0-9]+</a>\)' % self.site().namespace(-1))
-        more = True
-
-        while more:
-            refTitles = set()  # use a set to avoid duplications
+        self._isredirectmessage = mediawiki_messages.get("Isredirect", site)
+        self._istemplatemessage = mediawiki_messages.get("Istemplate", site)
+        refPages = set()
+        while path:
             output(u'Getting references to %s' % self.aslink())
-            while True:
-                txt = site.getUrl(path)
-                # trim irrelevant portions of page
-                try:
-                    start = txt.index(startmarker) + len(startmarker)
-                    end = txt.index(endmarker)
-                except ValueError:
-                    output(u"Invalid page received from server.... Retrying in %i minutes." % delay)
-                    time.sleep(delay * 60.)
-                    delay *= 2
-                    if delay > 30:
-                        delay = 30
-                    continue
-                txt = txt[start:end]
-                break
-            nexturl = nextpattern.search(txt)
-            if nexturl:
-                path = nexturl.group("url").replace("&amp;", "&")
+            txt = site.getUrl(path)
+            body = BeautifulSoup(txt,
+                                 convertEntities=BeautifulSoup.HTML_ENTITIES,
+                                 parseOnlyThese=content)
+            next_text = body.find(text=nextpattern)
+            if next_text is not None:
+                path = next_text.parent['href']
             else:
-                more = False
-            try:
-                start = txt.index(u"<ul>")
-                end = txt.rindex(u"</ul>")
-            except ValueError:
-                # No incoming links found on page
-                continue
-            txt = txt[start:end+5]
+                path = ""
+            reflist = body.find("ul")
+            if reflist is None:
+                return
+            for page in self._parse_reflist(reflist,
+                                follow_redirects, withTemplateInclusion,
+                                onlyTemplateInclusion, redirectsOnly):
+                if page not in refPages:
+                    yield page
+                    refPages.add(page)
 
-            txtlines = txt.split(u"\n")
-            redirect = 0
-            ignore_redirect = False
-            for num, line in enumerate(txtlines):
-                if line == u"</ul>":
-                    # end of list of references to redirect page
-                    if ignore_redirect:
-                        ignore_redirect = False
-                    elif redirect:
-                        redirect -= 1
-                    continue
-                if line == u"</li>":
-                    continue
-                if ignore_redirect:
-                    continue
-                lmatch = None
-                rmatch = redirectpattern.search(line)
-                if rmatch:
+    def _parse_reflist(self, reflist,
+            follow_redirects=True, withTemplateInclusion=True,
+            onlyTemplateInclusion=False, redirectsOnly=False):
+        """
+        For internal use only
+
+        Parse a "Special:Whatlinkshere" list of references and yield Page
+        objects that meet the criteria
+        (used by getReferences)
+        """
+        for link in reflist("li", recursive=False):
+            title = link.a.string
+            if title is None:
+                output("DBG> invalid <li> item in Whatlinkshere: %s" % link)
+            p = Page(self.site(), title)
+            isredirect, istemplate = False, False
+            textafter = link.a.findNextSibling(text=True)
+            if textafter is not None:
+                if self._isredirectmessage in textafter:
                     # make sure this is really a redirect to this page
                     # (MediaWiki will mark as a redirect any link that follows
                     # a #REDIRECT marker, not just the first one).
-                    linkpage = Page(site, rmatch.group("title"))
-                    if linkpage.getRedirectTarget() != self.sectionFreeTitle():
-                        if "<ul>" in line:
-                            ignore_redirect = True
-                        lmatch = rmatch
-                    else:
-                        if redirect:
-                            output(u"WARNING: [[%s]] is a double-redirect."
-                                   % rmatch.group("title"))
-                        if follow_redirects or redirectsOnly or not redirect:
-                            refTitles.add(rmatch.group("title"))
-                        if "<ul>" in line:
-                            # a redirect without an <ul> tag has no incoming links
-                            redirect += 1
-                        else:
-                            continue
-                # the same line may match both redirectpattern and
-                # listitempattern, because there is no newline after
-                # a redirect link
-                if not lmatch:
-                    lmatch = listitempattern.search(line)
-                if lmatch and (follow_redirects or not redirect
-                               ) and not redirectsOnly:
-                        try:
-                            isTemplateInclusion = (lmatch.group("templateInclusion") != None)
-                        except IndexError:
-                            isTemplateInclusion = False
-                        if (isTemplateInclusion and withTemplateInclusion) or (not isTemplateInclusion and not onlyTemplateInclusion):
-                            refTitles.add(lmatch.group("title"))
-                            # There might be cases where both a template and a link is used on the same page.
-                            # TODO: find out how MediaWiki reacts in this situation.
-                        continue
-                if rmatch is None and lmatch is None:
-                    output(u"DBG> Unparsed line:")
-                    output(u"(%i) %s" % (num, line))
-            refTitles = list(refTitles)
-            refTitles.sort()
-            for refTitle in refTitles:
-                # create Page objects
-                yield Page(site, refTitle)
+                    if Page(self.site(), p.getRedirectTarget()
+                            ).sectionFreeTitle() == self.sectionFreeTitle():
+                        isredirect = True
+                if self._istemplatemessage in textafter:
+                    istemplate = True
+
+            if (withTemplateInclusion or onlyTemplateInclusion or not istemplate
+                    ) and (not redirectsOnly or isredirect
+                    ) and (not onlyTemplateInclusion or istemplate
+                    ):
+                yield p
+
+            if isredirect and follow_redirects:
+                sublist = link.find("ul")
+                if sublist is not None:
+                    for p in self._parse_reflist(sublist,
+                                follow_redirects, withTemplateInclusion,
+                                onlyTemplateInclusion, redirectsOnly):
+                        yield p
+
 
     def getFileLinks(self):
         """
@@ -1024,6 +976,13 @@ class Page(object):
             for fileLink in fileLinks:
                 # create Page objects
                 yield Page(site, fileLink)
+
+    def put_async(self, newtext,
+                  comment=None, watchArticle=None, minorEdit=True):
+        """Asynchronous version of put (takes the same arguments), which
+           places pages on a queue to be saved by a daemon thread.
+        """
+        page_put_queue.put((self, newtext, comment, watchArticle, minorEdit))
 
     def put(self, newtext, comment=None, watchArticle = None, minorEdit = True):
         """Replace the new page with the contents of the first argument.
@@ -1924,7 +1883,7 @@ class ImagePage(Page):
         # There are three types of image pages:
         # * normal, small images with links like: filename.png (10KB, MIME type: image/png)
         # * normal, large images with links like: Download high resolution version (1024x768, 200 KB)
-        # * SVG images with links like: filename.svg‎  (1KB, MIME type: image/svg)
+        # * SVG images with links like: filename.svg (1KB, MIME type: image/svg)
         # This regular expression seems to work with all of them.
         urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>.+?)"', re.DOTALL)
         m = urlR.search(self.getImagePageHtml())
@@ -2008,7 +1967,8 @@ class GetAll(object):
             if ((not hasattr(pl,'_contents') and not hasattr(pl,'_getexception')) or force):
                 self.pages.append(pl)
             else:
-                output(u"BUGWARNING: %s already done!" % pl.aslink())
+                if verbose:
+                    output(u"BUGWARNING: %s already done!" % pl.aslink())
 
     def run(self):
         dt=15
@@ -3662,6 +3622,25 @@ class Site(object):
     def versionnumber(self):
         return self.family.versionnumber(self.lang)
 
+    def live_version(self):
+        """Return the 'real' version number found on [[Special:Versions]]
+           as a tuple (int, int, str) of the major and minor version numbers
+           and any other text contained in the version.
+        """
+        global htmldata
+        if not hasattr(self, "_mw_version"):
+            versionpage = self.getUrl(self.get_address("Special:Version"))
+            htmldata = BeautifulSoup(versionpage, convertEntities="html")
+            versionstring = htmldata.findAll(text="MediaWiki"
+                                             )[1].parent.nextSibling
+            m = re.match(r"^: ([0-9]+)\.([0-9]+)(.*)$", str(versionstring))
+            if m:
+                self._mw_version = (int(m.group(1)), int(m.group(2)),
+                                        m.group(3))
+            else:
+                self._mw_version = self.family.version(self.lang).split(".")
+        return self._mw_version
+
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
            Site objects"""
@@ -4155,12 +4134,37 @@ Global arguments available for all bots:
     except:
         output(u'Sorry, no help available for %s' % moduleName)
 
+page_put_queue = Queue.Queue()
+
+def async_put():
+    '''
+    Daemon that takes pages from the queue and tries to save them on the wiki.
+    '''
+    while True:
+        page, newtext, comment, watchArticle, minorEdit = page_put_queue.get()
+        if page is None:
+            # needed for compatibility with Python 2.3 and 2.4
+            # in 2.5, we could use the Queue's tak_done() and join() methods
+            return
+        try:
+            page.put(newtext, comment, watchArticle, minorEdit)
+        except:
+            tb = traceback.format_exception(*sys.exc_info())
+            output("Saving page [[%s]] failed:\n%s" % (page.title(), tb))
+
+_putthread = threading.Thread(target=async_put)
+_putthread.setDaemon(True)
+_putthread.start()
+                 
 def stopme():
     """This should be run when a bot does not interact with the Wiki, or
        when it has stopped doing so. After a bot has run stopme() it will
        not slow down other bots any more.
     """
     get_throttle.drop()
+    # wait for the page-putter to flush its queue
+    page_put_queue.put((None, None, None, None, None))
+    _putthread.join()
 
 def debugDump(name, site, error, data):
     import time
