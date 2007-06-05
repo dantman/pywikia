@@ -2179,7 +2179,7 @@ class Family:
         else:
             raise KeyError('ERROR: linktrail in language %s unknown' % code)  
 
-    def namespace(self, code, ns_number, fallback = '_default'):
+    def namespace(self, code, ns_number, fallback = '_default', all = False):
         if not self.isDefinedNS(ns_number):
             raise KeyError('ERROR: Unknown namespace %d' % ns_number)  
         elif self.isNsI18N(ns_number, code):
@@ -2188,11 +2188,17 @@ class Family:
             v = self.namespaces[ns_number][fallback]
         else:
             raise KeyError('ERROR: title for namespace %d in language %s unknown' % (ns_number, code))  
-
-        if type(v) == type([]):
-            return v[0]
-        else:
-            return v
+	
+	if all:
+		if type(v) == type([]):
+		    return tuple(v)
+		else:
+		    return (v, )
+	else:
+	        if type(v) == type([]):
+        	    return v[0]
+	        else:
+        	    return v
 
     def isDefinedNS(self, ns_number):
         """Return True if the namespace has been defined in this family.
