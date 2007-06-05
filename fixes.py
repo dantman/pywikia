@@ -169,7 +169,7 @@ fixes = {
             (r'\bdeutschen Bundestags\b', r'Deutschen Bundestags'), # Aufpassen, z. B. 'deutsche Bundestagswahl'
             (r'\bdeutsche(r|n|) Reich\b', r'Deutsche\1 Reich'),
             (r'\bdeutschen Reichs\b', r'Deutschen Reichs'), # Aufpassen, z. B. 'deutsche Reichsgrenzen'
-            (r'\bdritte(n|) Welt', r'Dritte\1 Welt'),
+            (r'\bdritte(n|) Welt(?!krieg)', r'Dritte\1 Welt'),
             (r'\bdreißigjährige(r|n|) Krieg', r'Dreißigjährige\1 Krieg'),
             (r'\beuropäische(n|) Gemeinschaft', r'Europäische\1 Gemeinschaft'),
             (r'\beuropäische(n|) Kommission', r'Europäische\1 Kommission'),
