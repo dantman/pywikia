@@ -29,6 +29,10 @@ This script understands various command-line arguments:
     -cat           Work on all pages which are in a specific category.
                    Argument can also be given as "-cat:categoryname".
 
+    -subcat        Like -cat, but also includes pages in subcategories of the
+                   given category.
+                   Argument can also be given as "-subcat:categoryname".
+
     -ref           Work on all pages that link to a certain page.
                    Argument can also be given as "-ref:referredpagetitle".
 
@@ -37,10 +41,6 @@ This script understands various command-line arguments:
 
     -new           Work on the most recent new pages on the wiki
 
-    -subcat        When the pages to work on have been chosen by -cat, pages in
-                   subcategories of the selected category are also included.
-                   When -cat has not been selected, this has no effect.
-    
     -same:         looks over all 'serious' languages for the same title.
                    -same is equivalent to -hint:all:
 
