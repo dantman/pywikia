@@ -12,6 +12,7 @@ __version__='$Id$'
 
 # Standard library imports
 import re, codecs, sys
+import threading, Queue
 import urllib, urllib2, time
 
 # Application specific imports
@@ -378,15 +379,14 @@ def PageWithTalkPageGenerator(generator):
         if not page.isTalkPage():
             yield page.toggleTalkPage()
 
-def PreloadingGenerator(generator, pageNumber=60):
-    """
-    Yields the same pages as generator generator. Retrieves 60 pages (or another
-    number specified by Page Number), loads them using Special:Export, and yields
-    them one after the other. Then retrieves more pages, etc. Thus, it is not necessary
-    to load each page separately.
-    """
+class _Preloader(threading.Thread):
+    def __init__(self, queue, generator, pageNumber):
+        threading.Thread.__init__(self)
+        self.queue = queue
+        self.generator = generator
+        self.pageNumber = pageNumber
 
-    def preload(pages):
+    def preload(self, pages):
         try:
             site = pages[0].site()
             wikipedia.getall(site, pages, throttle=False)
@@ -397,24 +397,46 @@ def PreloadingGenerator(generator, pageNumber=60):
             # Ignore this error, and get the pages the traditional way later.
             pass
 
-    # this array will contain up to pageNumber pages and will be flushed
-    # after these pages have been preloaded and yielded.
-    somePages = []
-    for page in generator:
-        somePages.append(page)
-        # We don't want to load too many pages at once using XML export.
-        # We only get a maximum number at a time.
-        if len(somePages) >= pageNumber:
-            preload(somePages)
+    def run(self):
+        # this array will contain up to pageNumber pages and will be flushed
+        # after these pages have been preloaded and yielded.
+        somePages = []
+        for page in self.generator:
+            somePages.append(page)
+            # We don't want to load too many pages at once using XML export.
+            # We only get a maximum number at a time.
+            if len(somePages) >= self.pageNumber:
+                self.preload(somePages)
+                for refpage in somePages:
+                    self.queue.put(refpage)
+                somePages = []
+        if somePages:
+            # preload remaining pages
+            self.preload(somePages)
             for refpage in somePages:
-                yield refpage
-            somePages = []
-    if somePages:
-        # preload remaining pages
-        preload(somePages)
-        for refpage in somePages:
-            yield refpage
+                self.queue.put(refpage)
+        self.queue.put(None)    # to signal end of list
 
+def PreloadingGenerator(generator, pageNumber=60):
+    """
+    Yields the same pages as generator generator. Retrieves 60 pages (or
+    another number specified by pageNumber), loads them using
+    Special:Export, and yields them one after the other. Then retrieves more
+    pages, etc. Thus, it is not necessary to load each page separately.
+    Operates asynchronously, so the next batch of pages is loaded in the
+    background before the first batch is fully consumed.
+    """
+    if pageNumber < 2:
+        raise ValueError("PreloadingGenerator needs to load more than 1 page.")
+    pagequeue = Queue.Queue(min(pageNumber//2, 10))
+    preloader = _Preloader(pagequeue, generator, pageNumber) 
+    preloader.start()
+    while True:
+        p = pagequeue.get()
+        if p is None:
+            return
+        yield p
+    
 class GeneratorFactory:
     """
     This factory is responsible for processing command line arguments
