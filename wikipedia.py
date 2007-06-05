@@ -1152,7 +1152,7 @@ class Page(object):
                 # server lag; Mediawiki recommends waiting 5 seconds and retrying
                 if verbose:
                     output(data, newline=False)
-                output(u"# Pausing 5 seconds due to excessive server lag.")
+                output(u"Pausing 5 seconds due to excessive database server lag.")
                 time.sleep(5)
                 return self.putPage(text, comment, watchArticle, minorEdit,
                                     newPage, token, False, sysop)
@@ -2428,14 +2428,32 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
             index = nextExceptionMatch.end()
         else:
             # We found a valid match. Replace it.
-            replace_text = old.sub(new, text[match.start():match.end()])
-            text = text[:match.start()] + replace_text + text[match.end():]
+
+            # We cannot just insert the new string, as it may contain regex
+            # group references such as \2 or \g<name>.
+            # On the other hand, this approach does not work because it can't
+            # handle lookahead or lookbehind (see bug #1731008):
+            #replacement = old.sub(new, text[match.start():match.end()])
+            #text = text[:match.start()] + replacement + text[match.end():]
+
+            # So we have to process the group references manually.
+            replacement = new
+
+            groupR = re.compile(r'\\(?P<number>\d+)|\\g<(?P<name>.+?)>')
+            while True:
+                groupMatch = groupR.search(replacement)
+                if not groupMatch:
+                    break
+                groupID = groupMatch.group('name') or int(groupMatch.group('number'))
+                replacement = replacement[:groupMatch.start()] + match.group(groupID) + replacement[groupMatch.end():]
+            text = text[:match.start()] + replacement + text[match.end():]
+
             # continue the search on the remaining text
             if allowoverlap:
                 index = match.start() + 1
             else:
-                index = match.start() + len(replace_text)
-            markerpos = match.start() + len(replace_text)
+                index = match.start() + len(replacement)
+            markerpos = match.start() + len(replacement)
     text = text[:markerpos] + marker + text[markerpos:]
     return text
 
