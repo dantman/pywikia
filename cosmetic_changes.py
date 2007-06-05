@@ -252,7 +252,7 @@ class CosmeticChangesToolkit:
     def cleanUpSectionHeaders(self, text):
         for level in range(1, 7):
             equals = '=' * level
-            text = wikipedia.replaceExcept(text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', r'\n' + equals + ' \g<title> ' + equals + '\r\n', ['comment', 'math', 'nowiki', 'pre'])
+            text = wikipedia.replaceExcept(text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', '\n' + equals + ' \g<title> ' + equals + '\r\n', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     def removeDeprecatedTemplates(self, text):
