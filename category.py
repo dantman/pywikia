@@ -112,20 +112,20 @@ msg_change={
     }
 
 deletion_reason_move = {
-    'de':u'Bot: Kategorie wurde nach %s verschoben',
-    'en':u'Robot: Category was moved to %s',
+    'de':u'Bot: Kategorie wurde nach [[%s]] verschoben',
+    'en':u'Robot: Category was moved to [[%s]]',
     'fr':u'Robot : catégorie déplacée sur [[%s]]',
-    'he':u'רובוט: הקטגוריה הועברה לשם %s',
-    'ia':u'Robot: Categoria transferite a %s',
-    'id':u'Bot: Kategori dipindahkan ke %s',
-    'lt':u'robotas: Kategorija pervadinta į %s',
-    'nds':u'Kat-Bot: Kategorie na %s schaven',
-    'nl':u'Bot: Categorie is hernoemd naar %s',
-    'no':u'Robot: Kategorien ble flyttet til %s',
-    'pt':u'Bot: Categoria %s foi movida',
-    'pl':u'Robot przenosi kategorię do %s',
-    'sr':u'Бот: Категорија премештена у %s',
-    'sv':u'Robot: Kategori flyttades till %s',
+    'he':u'רובוט: הקטגוריה הועברה לשם [[%s]]',
+    'ia':u'Robot: Categoria transferite a [[%s]]',
+    'id':u'Bot: Kategori dipindahkan ke [[%s]]',
+    'lt':u'robotas: Kategorija pervadinta į [[%s]]',
+    'nds':u'Kat-Bot: Kategorie na [[%s]] schaven',
+    'nl':u'Bot: Categorie is hernoemd naar [[%s]]',
+    'no':u'Robot: Kategorien ble flyttet til [[%s]]',
+    'pt':u'Bot: Categoria [[%s]] foi movida',
+    'pl':u'Robot przenosi kategorię do [[%s]]',
+    'sr':u'Бот: Категорија премештена у [[%s]]',
+    'sv':u'Robot: Kategori flyttades till [[%s]]',
     }
 
 cfd_templates = {
