@@ -248,9 +248,13 @@ db_password = ''
 
 ############## SEARCH ENGINE SETTINGS ##############
 
-# Some scripts allow using the Google Web API. To use this feature, you must
-# install the pyGoogle module from http://pygoogle.sf.net/ and get a Google
-# Web API license key from http://www.google.com/apis/index.html .
+# Some scripts allow querying Google either via the Google Web API, or by
+# just parsing the HTML from the Google website.
+# To use the Google Web API, you must install the pyGoogle module from
+# http://pygoogle.sf.net/ and have a Google Web API license key. Note that
+# Google doesn't give out license keys anymore.
+# If you don't enter a google license key in your user config file, the scripts
+# will just parse the raw HTML code from the website.
 google_key = ''
 
 # Some scripts allow using the Yahoo! Search Web Services. To use this feature,
