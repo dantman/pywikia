@@ -3689,8 +3689,8 @@ class Site(object):
     def getSite(self, code):
         return getSite(code = code, fam = self.family, user=self.user)
 
-    def namespace(self, num):
-        return self.family.namespace(self.lang, num)
+    def namespace(self, num, all = False):
+        return self.family.namespace(self.lang, num, all = all)
 
     def normalizeNamespace(self, value):
         return self.family.normalizeNamespace(self.lang, value)
