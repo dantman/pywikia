@@ -31,11 +31,15 @@ mediawiki_messages.py  : Access to the various translations of the MediaWiki
                          software interface.
 pagegenerators.py      : Generator pages.
 userlib.py             : Library to work with users, their pages and talk pages.
-
+BeautifulSoup.py       : is a Python HTML/XML parser designed for quick turnaround
+                         projects like screen-scraping. See more:
+                         http://www.crummy.com/software/BeautifulSoup
 
 === Utilities ===
 
 basic.py               : Is a template from which simple bots can be made.
+checkusage.py          : Provides a way for users of the Wikimedia toolserver to check the 
+                         use of images from Commons on other Wikimedia wikis.
 extract_wikilinks.py   : Two bots to get all linked-to Wikipedia pages from an
                          HTML-file. They differ in their output: extract_names
                          gives bare names (can be used for solve_disambiguation.py,
@@ -62,6 +66,7 @@ editarticle.py         : Edit an article with your favourite editor. Run
 sqldump.py             : Extract information from local cur SQL dump
                          files, like the ones at http://download.wikimedia.org
 rcsort.py              : A tool to see the recentchanges ordered by user instead of by date.
+threadpool.py          : 
 xmlreader.py           : 
 watchlist.py           : Allows access to the bot account's watchlist.
 wikicomserver.py       : This library allows the use of the pywikipediabot directly
