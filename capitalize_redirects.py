@@ -4,10 +4,6 @@ The following scripts was copied from, with adaptations:
 http://en.wikipedia.org/wiki/User:Drinibot/CapitalizationRedirects
 Copyright es:user:Yrithinnd
 
-TODO:
-* create a cache file to store verified articles. (pickle)
-* translate "redirect" name by language. (import family; fam = Family(); fam.redirect)
-
 """
 
 import time, sys
