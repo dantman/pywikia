@@ -510,10 +510,6 @@ class Family(family.Family):
         self.nocapitalize = ['jbo','tlh']
 
 
-        # on_one_line is a list of languages that want the interwiki links
-        # one-after-another on a single line
-        self.interwiki_on_one_line = ['hu']
-
         # A revised sorting order worked out on http://meta.wikimedia.org/wiki/Interwiki_sorting_order
         self.alphabetic_revised = ['aa','af','ak','als','am','ang','ab','ar','an',
             'arc','roa-rup','frp','as','ast','gn','av','ay','az','id','ms','bm',
