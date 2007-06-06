@@ -31,6 +31,7 @@ import re, sys, pickle
 import os.path
 import time
 import codecs
+from BeautifulSoup import *
 
 __version__='$Id$'
 
@@ -95,50 +96,32 @@ def refresh_messages(site = None):
     allmessages = site.getUrl(path)
 
     print 'Parsing MediaWiki messages'
-    if site.versionnumber() >= 5:
-        # In MediaWiki 1.5, there are some single quotes around attributes.
-        # Since about MediaWiki 1.8, there are only double quotes.
-        itemR = re.compile("<tr class=['\"]def['\"] id=['\"].*?['\"]>\n"               # first possibility: original MediaWiki message used
-                         + "\s*<td>\n"
-                         + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" (?:class="new" )?title=".+?"><span id=[\'"].*?[\'"]>(?P<key>.+?)</span><\/a><br \/>'   # message link
-                         + '\s*<a href=".+?" (?:class="new" )?title=".+?">.+?<\/a>\n'   # talk link
-                         + "\s*</td><td>"
-                         + "\s*(?P<current>.+?)\n"                     # current message
-                         + "\s*</td>"
-                         + "\s*</tr>"
-                         + "|"
-                         + "<tr class=['\"]orig['\"] id=['\"].*?['\"]>\n"              # second possibility: custom message used
-                         + "\s*<td rowspan=['\"]2['\"]>"
-                         + '\s*<a id=".+?" name=".+?"></a>'            # anchor
-                         + '\s*<a href=".+?" title=".+?"><span id=[\'"].*?[\'"]>(?P<key2>.+?)</span><\/a><br \/>'  # message link
-                         + '\s*<a href=".+?" (?:class="new" )?title=".+?">.+?<\/a>\n'   # talk link
-                         + "\s*</td><td>"
-                         + "\s*.*?\n?"                                  # original message (can be empty, in this case the \n will be matched by the \s*)
-                         + "\s*</td>"
-                         + "\s*</tr><tr class=['\"]new['\"] id=['\"].*?['\"]>"
-                         + "\s*<td>\n"
-                         + "\s*(?P<current2>.+?)\n"                    # current message
-                         + "\s*</td>"
-                         + "\s*</tr>", re.DOTALL)
-    else:
-        itemR = re.compile("<tr bgcolor=\"#[0-9a-f]{6}\"><td>\n"
-                         #+ "\s*(?:<script[^<>]+>[^<>]+<[^<>]+script>)?[^+<a href=.+?>(?P<key>.+?)<\/a><br \/>\n"
-                         + "\s*<a href=.+?>(?P<key>.+?)<\/a><br \/>\n"
-                         + "\s*<a href=.+?>.+?<\/a>\n"
-                         + "\s*</td><td>\n"
-                         + "\s*.+?\n"
-                         + "\s*</td><td>\n"
-                         + "\s*(?P<current>.+?)\n"
-                         + "\s*<\/td><\/tr>", re.DOTALL)
+    soup = BeautifulSoup(allmessages,
+                         convertEntities=BeautifulSoup.HTML_ENTITIES)
+    mw_url = site.path() + "?title=" + site.namespace(8) + ":"
+    altmw_url = site.path() + "/" + site.namespace(8) + ":"
+    nicemw_url = site.nice_get_address(site.namespace(8)+":")
+    ismediawiki = lambda url:url and (url.startswith(mw_url)
+                                      or url.startswith(altmw_url)
+                                      or url.startswith(nicemw_url))
     # we will save the found key:value pairs here
     dictionary = {}
-    for match in itemR.finditer(allmessages):
-        # Key strings only contain ASCII characters, so we can use them as dictionary keys
-        key = match.group('key') or match.group('key2')
-        current = match.group('current') or match.group('current2')
-        dictionary[key] = current
 
+    for keytag in soup('a', href=ismediawiki):
+        # Key strings only contain ASCII characters, so we can save them as
+        # strs
+        key = str(keytag.find(text=True))
+        keyrow = keytag.parent.parent
+        if keyrow['class'] == "orig":
+            valrow = keyrow.findNextSibling('tr')
+            assert valrow['class'] == "new"
+            value = unicode(valrow.td.string).strip()
+        elif keyrow['class'] == 'def':
+            value = unicode(keyrow('td')[1].string).strip()
+        else:
+            raise AssertionError("Unknown tr class value: %s" % keyrow['class'])
+        dictionary[key] = value
+        
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
     if dictionary == {}:
@@ -148,7 +131,7 @@ def refresh_messages(site = None):
         f = open(makepath('mediawiki-messages/mediawiki-messages-%s-%s.dat' % (site.family.name, site.lang)), 'w')
         pickle.dump(dictionary, f)
         f.close()
-    #print dictionary['addgroup']
+    print "Loaded %i values from %s" % (len(dictionary.keys()), site)
     #print dictionary['sitestatstext']
 
 def refresh_all_messages():
@@ -162,6 +145,7 @@ def refresh_all_messages():
             lang = match.group(2)
             site = wikipedia.getSite(code = lang, fam = family)
             refresh_messages(site)
+
 def main():
     refresh_all = False
     refresh = False
