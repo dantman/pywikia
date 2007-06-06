@@ -294,6 +294,7 @@ msg = {
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),
     'ka': (u'რობოტი ', u'დამატება', u'წაშლა', u'შეცვლა'),
     'ksh': (u'Bot: ', u'dobëijedonn', u'erußjenumme', u'ußjewääßelt'),
+    'lmo': (u'Robot ', u'jontant', u'trant via', u'modifiant'),
     'lt': (u'robotas ', u'Pridedama', u'Šalinama', u'Keičiama'),
     'mzn': (u'Rebot ', u'Biyeshten', u'Bayten', u'Hekărden'),
     'nds': (u'IW-Bot: ', u'dorto', u'rut', u'ännert'),
@@ -314,7 +315,7 @@ msg = {
     'sv': (u'robot ', u'Lägger till', u'Tar bort', u'Ändrar'),
     'tet': (u'bot ', u'tau tan', u'hasai', u'filak'),
     'tg': (u'робот ', u'илова карда истодааст', u'дигаргуни карда истодааст', u'ҳaвз карда истодааст'),
-    'uk': (u'робот', u'додав', u'видалив', u'зміни'),
+    'uk': (u'робот', u'додав', u'видалив', u'змінив'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     }
 
