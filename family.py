@@ -2537,6 +2537,9 @@ class Family:
     def unusedcategories_address(self, code, limit=500):
         return "%s?title=%s:Unusedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
+    def withoutinterwiki_address(self, code, limit=500):
+        return "%s?title=%s:Withoutinterwiki&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
     def code2encoding(self, code):
         """Return the encoding for a specific language wiki"""
         return 'utf-8'

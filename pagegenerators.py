@@ -58,6 +58,12 @@ def UnusedFilesGenerator(number = 100, repeat = False, site = None):
     for page in site.unusedfiles(number=number, repeat=repeat):
         yield wikipedia.ImagePage(page.site(), page.title()) 
 
+def WithoutInterwikiPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.withoutinterwiki(number=number, repeat=repeat):
+        yield page
+
 def ReferringPageGenerator(referredPage, followRedirects=False,
                            withTemplateInclusion=True,
                            onlyTemplateInclusion=False):
@@ -460,6 +466,11 @@ class GeneratorFactory:
                 gen = UnusedFilesGenerator()
             else:
                 gen = UnusedFilesGenerator(number = int(arg[13:]))
+        elif arg.startswith('-withoutinterwiki'):
+            if len(arg) == 17:
+                gen = WithoutInterwikiPageGenerator()
+            else:
+                gen = WithoutInterwikiPageGenerator(number = int(arg[13:]))
         elif arg.startswith('-file'):
             if len(arg) == 5:
                 textfilename = wikipedia.input(u'Please enter the local file name:')
