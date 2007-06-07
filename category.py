@@ -36,6 +36,7 @@ and option can be one of these:
                  in the list.
  * -talkpages  - An option for listify, this outputs the links to talk pages of the
                  pages to be listified in addition to the pages themselves.
+ * -recurse    - Recurse through all subcategories of categories.
 
 
 For the actions tidy and tree, the bot will store the category structure locally
@@ -375,7 +376,7 @@ class CategoryListifyRobot:
         'sv':u'Robot: Skapar en lista från %s (%d)'
     }
 
-    def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False, subCats = False, talkPages = False):
+    def __init__(self, catTitle, listTitle, editSummary, overwrite = False, showImages = False, subCats = False, talkPages = False, recurse = False):
         self.editSummary = editSummary
         self.overwrite = overwrite
         self.showImages = showImages
@@ -383,9 +384,10 @@ class CategoryListifyRobot:
         self.list = wikipedia.Page(wikipedia.getSite(), listTitle)
         self.subCats = subCats
         self.talkPages = talkPages
+        self.recurse = recurse
 
     def run(self):
-        listOfArticles = self.cat.articlesList()
+        listOfArticles = self.cat.articlesList(recurse = self.recurse)
         if self.subCats:
             listOfArticles += self.cat.subcategoriesList()
         if self.editSummary:
@@ -738,6 +740,7 @@ if __name__ == "__main__":
     overwrite = False
     showImages = False
     talkPages = False
+    recurse = False
 
     #If this is set to true then the custom edit summary given for removing
     #categories from articles will also be used as the deletion reason.
@@ -784,6 +787,8 @@ if __name__ == "__main__":
                 editSummary = arg[len('-summary:'):]
             elif arg == '-talkpages':
                 talkPages = True
+            elif arg == '-recurse':
+                recurse = True
 
         if action == 'add':
             add_category(sort_by_last_name)
@@ -813,7 +818,7 @@ if __name__ == "__main__":
                 oldCatTitle = wikipedia.input(u'Please enter the name of the category to listify:')
             if (toGiven == False):
                 newCatTitle = wikipedia.input(u'Please enter the name of the list to create:')
-            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite, showImages, subCats = True, talkPages = talkPages)
+            bot = CategoryListifyRobot(oldCatTitle, newCatTitle, editSummary, overwrite, showImages, subCats = True, talkPages = talkPages, recurse = recurse)
             bot.run()
         else:
             wikipedia.showHelp('category')
