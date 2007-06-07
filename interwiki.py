@@ -270,7 +270,7 @@ msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
     'ar': (u'روبوت ', u'إضافة', u'إزالة', u'تعديل'),
     'be': (u'робат ', u'Дадаем', u'Выдаляем', u'Мяняем'),
-    'be-x-old': (u'робат ', u'Дадаў', u'Выдаліў', u'Зьмяніў'),
+    'be-x-old': (u'робат ', u'дадаў', u'выдаліў', u'зьмяніў'),
     'br': (u'Robot ', u'ouzhpennet', u'tennet', u'kemmet'),
     'ca': (u'Robot ', u'afegeix', u'esborra', u'modifica'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
