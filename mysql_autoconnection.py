@@ -62,7 +62,7 @@ class Connection(object):
 		self.database = MySQLdb.connect(*self.conn_args, **self.conn_kwargs)
 		self.connected = True
 		self.current_retry = 0
-		self.cursor = self.database.cursor()
+		self.__cursor = self.database.cursor()
 		
 	def close(self):
 		self.current_retry = 0
@@ -73,8 +73,9 @@ class Connection(object):
 			pass
 
 	def cursor(self, cursorclass = MySQLdb.cursors.Cursor):
-		if type(cursorclass) is not type(self.cursor):
-			self.cursor = self.database.cursor(cursorclass)
+		print 'Asking cursor!'
+		if type(cursorclass) is not type(self.__cursor):
+			self.__cursor = self.database.cursor(cursorclass)
 		return self
 		
 	# Mimic cursor object
@@ -82,7 +83,7 @@ class Connection(object):
 		if hasattr(self.database, name):
 			obj = self.database
 		else:
-			obj = self.cursor
+			obj = self.__cursor
 		attr = getattr(obj, name)
 		if hasattr(attr, '__call__'):
 			return CallWrapper(self.__call, (obj, name))
@@ -117,6 +118,7 @@ if __name__ == '__main__':
 	
 	conn = connect(retry_timeout = 5, max_retries = 4, callback = callback,
 		host = host, user = username, passwd = password, charset = 'utf8')
+	cur = conn.cursor()
 	print 'Connected!'
 	conn.execute('SELECT 1')
 	print 'Query ok, closing connection...'
