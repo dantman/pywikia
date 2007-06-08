@@ -3971,8 +3971,10 @@ def altlang(code):
         return ['no','nb','sv','nn','fi','da']
     if code in ['bug','id','jv','map-bms','ms','su']:
         return ['id','ms','jv']
-    if code in ['bs','hr','mk','sh','sr']:
-        return ['sh','hr','sr','bs']
+    if code in ['bs','hr','sh']:
+        return ['sh','hr','bs','sr']
+    if code in ['mk','sr']:
+        return ['sh','sr','hr','bs']
     if code in ['ceb','pag','tl','war']:
         return ['tl','es']
     if code=='bi':
