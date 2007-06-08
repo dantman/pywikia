@@ -80,7 +80,7 @@ class GraphDrawer:
             # workaround for bug [ 1722739 ]: prevent duplicate edges
             # (it is unclear why duplicate edges occur)
             elif self.graph.get_edge(sourceLabel, targetLabel):
-                wikipedia.output(u'BUG: Tried to create duplicate edge from %s to %s' % (refPage.title(), page.title()))
+                wikipedia.output(u'BUG: Tried to create duplicate edge from %s to %s' % (refPage.aslink(), page.aslink()))
                 # duplicate edges would be bad because then get_edge() would
                 # give a list of edges, not a single edge when we handle the
                 # opposite edge.
