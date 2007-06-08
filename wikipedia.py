@@ -2054,14 +2054,10 @@ class GetAll(object):
             page2._getexception = IsRedirectPage
             page2._redirarg = redirectto
         # There's no possibility to read the wpStarttime argument from the XML.
-        # This argument makes sure an edit conflict is raised if the page is
-        # deleted between retrieval and saving of the page. It contains the
-        # UTC timestamp (server time) of the moment we first retrieved the edit
-        # page. As we can't use server time, we simply use client time. Please
-        # make sure your system clock is correct. If it's too slow, the bot might
-        # recreate pages someone deleted. If it's too fast, the bot will raise
-        # EditConflict exceptions although there's no conflict.
-        page2._startTime = time.strftime('%Y%m%d%H%M%S', time.gmtime(time.time()))
+        # It is this time that the MediaWiki software uses to check for edit
+        # conflicts. We take the earliest time later than the last edit, which
+        # seems to be the safest possible time.
+        page2._startTime = str(int(timestamp)+1)
         if section:
             m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))                    
             if not m:
