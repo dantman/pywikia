@@ -2302,7 +2302,8 @@ class Family:
         return namespaces
 
     # Redirect code can be translated.
-
+    # Note that redirect codes are case-insensitive, so it is enough
+    # to enter the code in lowercase here.
     redirect = {
         'ar': [u'تحويل'],
         'be': [u'перанакіраваньне'],
@@ -2312,16 +2313,16 @@ class Family:
         'cy': [u'ail-cyfeirio'],
         'et': [u'suuna'],
         'eu': [u'bidali'],
-        'fi': [u'uudelleenohjaus', u'UUDELLEENOHJAUS', u'ohjaus', u'OHJAUS'],
+        'fi': [u'uudelleenohjaus', u'ohjaus'],
         'ga': [u'athsheoladh'],
         'he': [u'הפניה'],
         'id': [u'redirected'],
         'is': [u'tilvísun'],
         'ka': [u'გადამისამართება'],
         'nn': [u'omdiriger'],
-        'ru': [u'перенаправление', u'перенапр', u'ПЕРЕНАПРАВЛЕНИЕ'],
+        'ru': [u'перенаправление', u'перенапр'],
         'sk': [u'presmeruj'],
-        'sr': [u'преусмери', u'Преусмери'],
+        'sr': [u'преусмери'],
         'tt': [u'yünältü'],
         'yi': [u'ווייטערפירן']
     }
