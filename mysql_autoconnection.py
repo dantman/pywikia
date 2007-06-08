@@ -73,7 +73,6 @@ class Connection(object):
 			pass
 
 	def cursor(self, cursorclass = MySQLdb.cursors.Cursor):
-		print 'Asking cursor!'
 		if type(cursorclass) is not type(self.__cursor):
 			self.__cursor = self.database.cursor(cursorclass)
 		return self
