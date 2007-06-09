@@ -10,8 +10,8 @@ import time, sys
 import wikipedia, pagegenerators, catlib
 
 msg = {
-    'en': u'Robot: Create redirects',
-    'pt': u'Bot: Criando redirects',
+    'en': u'Robot: Create redirect to [[%s]]',
+    'pt': u'Bot: Criando redirect para [[%s]]',
     }
 
 class CapitalizeBot:
@@ -23,6 +23,8 @@ class CapitalizeBot:
         for page in self.generator:
             page_t = page.title()
             np = wikipedia.Page(wikipedia.getSite(), page_t.capitalize())
+            colors = [None] * 3 + [13] * len(page_t) + [None] * 4
+            wikipedia.output(u'>> %s <<\n' % page_t, colors = colors)
             if not np.exists():
                 wikipedia.output(u'%s don\'t exist' % np.title())
                 if not self.acceptall:
@@ -31,8 +33,8 @@ class CapitalizeBot:
                         self.acceptall = True
                 if self.acceptall or choice in ['y', 'Y']:
                     try:
-                        comment = wikipedia.translate(wikipedia.getSite(), msg)
-                        np.put((u"#REDIRECT [[%s]]" % page_t), comment)
+                        wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % page_t)
+                        np.put(u"#REDIRECT [[%s]]" % page_t)
                         print
                     except:
                         wikipedia.output(u"An error occured. Retrying in 15 seconds...")
