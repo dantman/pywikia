@@ -78,6 +78,8 @@ class Connection(object):
 		return self
 		
 	# Mimic cursor object
+	def __iter__(self):
+		return self.__cursor.__iter__()
 	def __getattr__(self, name, *args, **kwargs):
 		if hasattr(self.database, name):
 			obj = self.database
