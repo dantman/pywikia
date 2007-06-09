@@ -31,6 +31,7 @@ import re, sys, pickle
 import os.path
 import time
 import codecs
+import urllib
 from BeautifulSoup import *
 
 __version__='$Id$'
@@ -98,9 +99,12 @@ def refresh_messages(site = None):
     print 'Parsing MediaWiki messages'
     soup = BeautifulSoup(allmessages,
                          convertEntities=BeautifulSoup.HTML_ENTITIES)
-    mw_url = site.path() + "?title=" + site.namespace(8) + ":"
-    altmw_url = site.path() + "/" + site.namespace(8) + ":"
-    nicemw_url = site.nice_get_address(site.namespace(8)+":")
+    # The MediaWiki namespace in URL-encoded format, as it can contain
+    # non-ASCII characters and spaces.
+    quotedMwNs = urllib.quote(site.namespace(8).replace(' ', '_').encode(site.encoding()))
+    mw_url = site.path() + "?title=" + quotedMwNs + ":"
+    altmw_url = site.path() + "/" + quotedMwNs + ":"
+    nicemw_url = site.nice_get_address(quotedMwNs + ":")
     ismediawiki = lambda url:url and (url.startswith(mw_url)
                                       or url.startswith(altmw_url)
                                       or url.startswith(nicemw_url))
