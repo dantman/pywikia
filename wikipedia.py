@@ -1126,10 +1126,22 @@ class Page(object):
                 except:
                     # Some wikis have modified the spamprotectionmatch
                     # template in a way that the above regex doesn't work,
-                    # e.g. on he.wikipedia the template includes a wikilink.
-                    # This is a workaround for this: it shows the region
+                    # e.g. on he.wikipedia the template includes a wikilink,
+                    # and on fr.wikipedia there is bold text.
+                    # This is a workaround for this: it takes the region
                     # which should contain the spamfilter report and the URL.
-                    url = data[data.find('<!-- start content -->')+22:data.find('<!-- end content -->')].strip()
+                    # It then searches for a plaintext URL.
+                    relevant = data[data.find('<!-- start content -->')+22:data.find('<!-- end content -->')].strip()
+                    # Throw away all the other links etc.
+                    relevant = re.sub('<.*?>', '', relevant)
+                    # MediaWiki only spam-checks HTTP links, and only the
+                    # domain name part of the URL.
+                    m = re.search('http://[\w\-\.]+', relevant)
+                    if m:
+                        url = m.group()
+                    else:
+                        # Can't extract the exact URL. Let the user search.
+                        url = relevant
                 raise SpamfilterError(url)
             elif '<label for=\'wpRecreate\'' in data:
                 # Make sure your system clock is correct if this error occurs
