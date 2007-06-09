@@ -103,8 +103,8 @@ class WarnfileRobot:
                     except wikipedia.LockedPage:
                         wikipedia.output(u"Page is locked. Skipping.")
                         continue
-                    except wikipedia.SpamfilterError:
-                        wikipedia.output(u"Spam filter error. Skipping.")
+                    except wikipedia.SpamfilterError, e:
+                        wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
                         continue
                     except wikipedia.Error:
                         wikipedia.output(u"Error while saving page.")

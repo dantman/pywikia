@@ -255,12 +255,12 @@ class ReplaceRobot:
                         if choice in ['a', 'A']:
                             self.acceptall = True
                     if self.acceptall or choice in ['y', 'Y']:
-			try:
+                        try:
                             page.put(new_text)
-			except wikipedia.EditConflict:
-			    wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                        except wikipedia.SpamfilterError, url:
-                            wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(),url))
+                        except wikipedia.EditConflict:
+                            wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
+                        except wikipedia.SpamfilterError, e:
+                            wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
 
 def prepareRegexForMySQL(pattern):
     pattern = pattern.replace('\s', '[:space:]')

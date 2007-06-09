@@ -82,8 +82,8 @@ class BasicBot:
                         page.put(text)
                     except wikipedia.EditConflict:
                         wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                    except wikipedia.SpamfilterError, url:
-                        wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(),url))
+                    except wikipedia.SpamfilterError, e:
+                        wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
 
 
 def main():

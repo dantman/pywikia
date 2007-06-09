@@ -181,6 +181,8 @@ class EditConflict(PageNotSaved):
 
 class SpamfilterError(PageNotSaved):
     """Saving the page has failed because the MediaWiki spam filter detected a blacklisted URL."""
+    def __init__(self, arg):
+        self.url = arg
 
 class ServerError(Error):
     """Got unexpected server response"""

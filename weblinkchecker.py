@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This bot is used for checking external links found at the wiki. It checks
 several pages at once, with a limit set by the config variable
@@ -470,8 +470,8 @@ class DeadLinkReportThread(threading.Thread):
                 content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorReport
                 try:
                     talk.put(content)
-                except wikipedia.SpamfilterError, url:
-                    message = u'** SpamfilterError while trying to change %s: %s' % (containingPage.toggleTalkPage().aslink(), url)
+                except wikipedia.SpamfilterError, error:
+                    message = u'** SpamfilterError while trying to change %s: %s' % (containingPage.toggleTalkPage().aslink(), error.url)
                     wikipedia.output(message, colors = [11] * len(message))
                     
                 self.semaphore.release()

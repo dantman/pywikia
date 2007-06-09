@@ -429,8 +429,8 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             article.put(text, comment)
         except wikipedia.EditConflict:
             wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
-        except wikipedia.SpamfilterError:
-            wikipedia.output(u'Skipping %s because of spam filter error' % (article.title()))
+        except wikipedia.SpamfilterError, e:
+            wikipedia.output(u'Skipping %s because of blacklist entry %s' % (page.title(), e.url))
 
 def test():
     site = wikipedia.getSite()
