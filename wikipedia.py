@@ -649,10 +649,16 @@ class Page(object):
         """
         Get the permalink page for this page
         """
+        return "http://%s%s&oldid=%i"%(self.site().hostname(), self.site().get_address(self.title()), self.latestRevision())
+    
+    def latestRevision(self):
+        """
+        Get the latest revision for this page
+        """
         if not self._permalink:
             # When we get the page with getall, the permalink is received automatically
             getall(self.site(),[self,],force=True)
-        return "http://%s%s&oldid=%s"%(self.site().hostname(), self.site().get_address(self.title()), self._permalink)
+        return int(self._permalink)
 
     def exists(self):
         """
@@ -761,7 +767,7 @@ class Page(object):
         except :
             # We don't have a user account for that wiki, or the
             # page is locked and we don't have a sysop account.
-            return false
+            return False
 
     def userName(self):
         return self._userName
@@ -1372,6 +1378,12 @@ class Page(object):
             name = Page(self.site(), name).title()
             result.append((name, params))
         return result
+        
+    def templatePages(self):
+        """
+        Gives a list of Page objects containing the templates used on the page. Template parameters are ignored.
+        """
+        return [Page(self.site(), template, self.site(), 10) for template in self.templates()]
 
     def getRedirectTarget(self):
         """
@@ -1392,8 +1404,8 @@ class Page(object):
             raise IsNotRedirectPage(self)
 
     def getPreviousVersion(self):
-        vh = self.getVersionHistory()
-        oldid = vh[0][0]
+        vh = self.getVersionHistory(revCount=2)
+        oldid = vh[1][0]
         return self.getEditPage(oldid=oldid)[0]
 
     def getVersionHistory(self, forceReload = False, reverseOrder = False, getAll = False, revCount = 500):
