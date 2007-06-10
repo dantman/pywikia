@@ -25,7 +25,7 @@ may cause thread unsafety!
 __version__ = '$Id$'
 #
  
-import sys, threading
+import sys, threading, os
  
 class ThreadPool(dict):
     pools = []
@@ -94,6 +94,7 @@ class Thread(threading.Thread):
 		self.pool.jobLock.acquire()
 
 		if self.quit:
+			self.pool.jobLock.release()
 			return
 	
 		if not self.pool.jobQueue:
