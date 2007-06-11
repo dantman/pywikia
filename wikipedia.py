@@ -1594,12 +1594,12 @@ class Page(object):
         result += '|}\n'
         return result
 
-    def fullVersionHistory(self, max = 50, comment = False):
+    def fullVersionHistory(self, max = 50, comment = False, since = None):
         """
         Returns all previous versions. Gives a list of tuples consisting of
         edit date/time, user name and content
         """
-        RV_LIMIT = 2
+        RV_LIMIT = 50
 
         address = self.site().api_address()
         predata = {
@@ -1611,6 +1611,7 @@ class Page(object):
             'format': 'json'
         }
         if max < RV_LIMIT: predata['rvlimit'] = str(max)
+        if since: predata['rvstart'] = since
 
         get_throttle(requestsize = 10)
         now = time.time()
