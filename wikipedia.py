@@ -123,6 +123,7 @@ import unicodedata
 import config, mediawiki_messages, login
 import xmlreader
 from BeautifulSoup import *
+import simplejson
 
 # we'll set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
@@ -1593,32 +1594,61 @@ class Page(object):
         result += '|}\n'
         return result
 
-    def fullVersionHistory(self):
+    def fullVersionHistory(self, max = 50, comment = False):
         """
         Returns all previous versions. Gives a list of tuples consisting of
         edit date/time, user name and content
         """
-        address = self.site().export_address()
+        RV_LIMIT = 2
+
+        address = self.site().api_address()
         predata = {
-            'action': 'submit',
-            'pages': self.title()
+            'action': 'query',
+            'prop': 'revisions',
+            'titles': self.title(),
+            'rvprop': 'timestamp|user|comment|content',
+            'rvlimit': str(RV_LIMIT),
+            'format': 'json'
         }
+        if max < RV_LIMIT: predata['rvlimit'] = str(max)
+
         get_throttle(requestsize = 10)
         now = time.time()
-        if self.site().hostname() in config.authenticate.keys():
-            predata["Content-type"] = "application/x-www-form-urlencoded"
-            predata["User-agent"] = useragent
-            data = self.site.urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
-            data = response.read()
-        else:
-            response, data = self.site().postForm(address, predata)
-        data = data.encode(self.site().encoding())
-        get_throttle.setDelay(time.time() - now)
-        output = []
-        r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\</(?:ip|username)\>.*?\<text.*?\>(.*?)\<\/text\>",re.DOTALL)
-        #r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\<",re.DOTALL)
-        return r.findall(data)
+
+        count = 0
+        output = []	
+
+        while count < max and max != -1:
+            if self.site().hostname() in config.authenticate.keys():
+                predata["Content-type"] = "application/x-www-form-urlencoded"
+                predata["User-agent"] = useragent
+                data = self.site.urlEncode(predata)
+                response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
+                data = response.read().decode(self.site().encoding())
+            else:
+                response, data = self.site().postForm(address, predata)
+        
+            get_throttle.setDelay(time.time() - now)
+            data = simplejson.loads(data)
+            page = data['query']['pages'].values()[0]        
+            if 'missing' in page:
+                raise NoPage, 'Page %s not found' % self
+            revisions = page.get('revisions', ())
+            for revision in revisions:
+                if not comment:
+                    output.append((revision['timestamp'], 
+                      revision['user'], revision.get('*', u'')))
+                else:
+                    output.append((revision['timestamp'], revision['user'],
+                      revision.get('*', u''), revision.get('comment', u'')))
+            count += len(revisions)
+            if max - count < RV_LIMIT:
+                predata['rvlimit'] = str(max - count)
+            if 'query-continue' in data:
+                predata.update(data['query-continue']['revisions'])
+            else:
+                break
+        return output
                        
     def contributingUsers(self):
         """
