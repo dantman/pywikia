@@ -291,6 +291,7 @@ msg = {
     'hu': (u'Robot: ', u'következő hozzáadása', u'következő eltávolítása', u'következő módosítása'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),
     'id': (u'bot ', u'Menambah', u'Membuang', u'Mengubah'),
+    'io': (u'roboto ', u'adjuntas', u'efacas', u'modifikas'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),
     'ka': (u'რობოტი ', u'დამატება', u'წაშლა', u'შეცვლა'),
