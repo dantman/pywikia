@@ -2380,6 +2380,8 @@ class Family:
 
     def querypath(self, code):
         return '/w/query.php'
+    def apipath(self, code):
+        return '/w/api.php'
 
     def nicepath(self, code):
         return '/wiki/'
@@ -2496,6 +2498,8 @@ class Family:
 
     def query_address(self, code):
         return '%s?' % self.querypath(code)
+    def api_address(self, code):
+        return '%s?' % self.apipath(code)
 
     def allpages_address(self, code, start, namespace = 0):
         if self.version(code)=="1.2":
