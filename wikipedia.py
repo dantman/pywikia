@@ -3536,6 +3536,8 @@ class Site(object):
 
     def query_address(self):
         return self.family.query_address(self.lang)
+    def api_address(self):
+        return self.family.api_address(self.lang)
 
     def hostname(self):
         return self.family.hostname(self.lang)
