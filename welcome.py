@@ -254,7 +254,7 @@ netext = {
     'de':u'{{subst:Benutzer:Filnik/Willkommen}}\nViele Grüsse %s',
     'en':u'{{subst:welcome}}%s',
     'it':u'{{subst:Utente:Filnik/benvenuto2}} %s',
-    'nl':u'{{Welkomstbericht}}%s',
+    'nl':u'{{subst:Welkomstbericht}}%s',
     'no':u'{{subst:bruker:jhs/vk}}%s',
     'sq':u'{{subst:tung}}%s',
     }
@@ -320,7 +320,7 @@ report_text = {
         'ar':u"\n*{{user13|%s}}" + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
         'de':u'\n*[[Benutzer_Diskussion:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
         'en':u'\n*{{Userlinks|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'it':u"\n{{Problematico|%s}}",
+        'it':u"\n{{Reported|%s}}",
         'nl':u'\n*{{linkgebruiker%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
         'no':u'\n*{{bruker|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
         u'sq':'\n*[[User:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
@@ -422,6 +422,7 @@ def parselog(raw):
     # The function to load the users (only users who have a certain number of edits)
     done = list()
     users = list()
+    load = list()
     pos = 0
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure)
@@ -452,18 +453,21 @@ def parselog(raw):
         if contribnum >= number:
             wikipedia.output(username + u" has enough edits to be welcomed")
             users.append([username, contribnum])
+            load.append([username, contribnum])
             # That's a little trick to wait some times before continue to
             # load users. It won't stress to much the servers.
-            res = len(users) / 10.0
+            res = len(load) / 10.0
             resq = str(res).split('.')
             if resq[1] == '0':
-                wikipedia.output(u"Sleeping for 10 seconds, %s" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+                wikipedia.output(u"\nSleeping for 10 seconds, %s...\n" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
                 time.sleep(10)
         elif contribnum < number:
             if contribnum == 0:
                 wikipedia.output(username + u" has no contributions")
+                load.append([username, contribnum])
             else:
                 wikipedia.output(username + u" has only " + str(contribnum) + u" contributions")
+                load.append([username, contribnum])
     return users
 
 def report(lang, rep_page, username, com, rep):
@@ -489,7 +493,7 @@ def report(lang, rep_page, username, com, rep):
 
 def blocked(username, wsite):
     #A little function to check if the user has already been blocked (to skip him).
-    reg = """<li>[0-9][0-9]:[0-9][0-9], [0-9][0-9] (.*?) [0-9][0-9][0-9][0-9] <a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a>"""
+    reg = """<li>[0-9][0-9]:[0-9][0-9], [0-9]([0-9])? (.*?) [0-9][0-9][0-9][0-9] <a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a>"""
     block_text = wsite.getUrl('/w/index.php?title=Special:Log/block&page=User:' + username)
     numblock = re.findall(reg, block_text)
     # If the bot doesn't find block-line, it will return "Free" otherwise "Blocked".
@@ -616,7 +620,7 @@ try:
             # Check if the user has been already blocked
             ki = blocked(username, wsite)
             if ki == 'Blocked':
-                wikipedia.output(u'The user has been blocked! Skip him..')
+                wikipedia.output(username + u' has been blocked! Skipping him...')
                 continue
             # Understand if the user has a bad-username
             for word in elenco:
@@ -745,6 +749,5 @@ try:
         elif recursive == False:
                 wikipedia.output(u"Stop!")
                 break
-    wikipedia.stopme()
 finally:
     wikipedia.stopme()
