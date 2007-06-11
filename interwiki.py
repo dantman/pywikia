@@ -297,6 +297,7 @@ msg = {
     'ksh': (u'Bot: ', u'dobëijedonn', u'erußjenumme', u'ußjewääßelt'),
     'lmo': (u'Robot ', u'jontant', u'trant via', u'modifiant'),
     'lt': (u'robotas ', u'Pridedama', u'Šalinama', u'Keičiama'),
+    'lv': (u'robots ', u'pievieno', u'izņem', u'izmaina'),
     'mzn': (u'Rebot ', u'Biyeshten', u'Bayten', u'Hekărden'),
     'nds': (u'IW-Bot: ', u'dorto', u'rut', u'ännert'),
     'nds-nl': (u'bot', u'derbie', u'derof', u'aanders'),
