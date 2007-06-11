@@ -450,17 +450,18 @@ def parselog(raw):
         contribs = wsite.getUrl(con)
         contribnum = contribs.count('<li>') #This is not an accurate count, it just counts the first
                                             #50 contributions (but it works ^__^)
+        # That's a little trick to wait some times before continue to
+        # load users. It won't stress to much the servers.
+        if len(load) != 0:
+            res = len(load) / 10.0
+            resq = str(res).split('.')
+            if resq[1] == '0':
+                wikipedia.output(u"Sleeping for 10 seconds, %s...\n" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+                time.sleep(10)
         if contribnum >= number:
             wikipedia.output(username + u" has enough edits to be welcomed")
             users.append([username, contribnum])
             load.append([username, contribnum])
-            # That's a little trick to wait some times before continue to
-            # load users. It won't stress to much the servers.
-            res = len(load) / 10.0
-            resq = str(res).split('.')
-            if resq[1] == '0':
-                wikipedia.output(u"\nSleeping for 10 seconds, %s...\n" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-                time.sleep(10)
         elif contribnum < number:
             if contribnum == 0:
                 wikipedia.output(username + u" has no contributions")
