@@ -45,18 +45,32 @@ class Connection(object):
 		try:
 			return getattr(object, function_name)(*args, **kwargs)
 		except (MySQLdb.OperationalError, MySQLdb.InterfaceError):
-			self.connect()
+			if not self.connect():
+				raise
 			return getattr(self, function_name)(*args, **kwargs)
 		
 	# Mimic database object
 	def connect(self):
-		self.close()
+		try:
+			# Check whether connection is alive
+			self.database.ping()
+		except MySQL.Error:
+			# It's not alive, force close
+			self.close()
+		except AttributeError:
+			# First connect, do nothing
+			pass
+		else:
+			# Connection is still alive
+			return False
+			
 		while not self.connected:
 			self.wait()
 			try:
 				self._connect()
 			except (MySQLdb.OperationalError, MySQLdb.InterfaceError), e:
 				print e
+		return True
 	
 	def _connect(self):
 		self.database = MySQLdb.connect(*self.conn_args, **self.conn_kwargs)
