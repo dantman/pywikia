@@ -1611,7 +1611,7 @@ class Page(object):
             'format': 'json'
         }
         if max < RV_LIMIT: predata['rvlimit'] = str(max)
-        if since: predata['rvstart'] = since
+        if since: predata['rvend'] = since
 
         get_throttle(requestsize = 10)
         now = time.time()
@@ -1646,10 +1646,11 @@ class Page(object):
             if max - count < RV_LIMIT:
                 predata['rvlimit'] = str(max - count)
             if 'query-continue' in data:
-                predata.update(data['query-continue']['revisions'])
+                predata['rvstartid'] = str(data['query-continue']['revisions']['rvstartid'])
             else:
                 break
         return output
+    fullRevisionHistory = fullVersionHistory
                        
     def contributingUsers(self):
         """
