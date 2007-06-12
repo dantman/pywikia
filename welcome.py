@@ -143,6 +143,7 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
 # (C) Kyle/Orgullomoore, 2006-2007
 # (C) Siebrand Mazeland, 2006-2007
 # (C) Filnik, 2007
+# (C) Daniel Herding, 2007
 #
 # Distributed under the terms of the MIT license.
 #
@@ -318,7 +319,7 @@ project_inserted = ['ar', 'commons', 'de', 'en', 'it', 'nl', 'no', 'sq']
 ############################################################################
 ############################################################################
 
-def load_word_function(raw):
+def load_word_function(wsite, raw):
     # This is a function used to load the badword and the whitelist.
     list_loaded = list()
     pos = 0
@@ -342,7 +343,7 @@ def load_word_function(raw):
         if badword not in list_loaded:
              list_loaded.append(badword)
 
-def parselog(raw):
+def parselog(wsite, raw):
     # The function to load the users (only users who have a certain number of edits)
     done = list()
     users = list()
@@ -366,13 +367,13 @@ def parselog(raw):
         username = x.group(1)
         if username not in done:
             done.append(username)
-        userpage = wikipedia.Page(wikipedia.getSite(), username)
-        usertalkpage = wikipedia.Page(wikipedia.getSite(), talk + username)
+        userpage = wikipedia.Page(wsite, username)
+        usertalkpage = wikipedia.Page(wsite, talk + username)
         # Defing the contrib's page of the user
         # TODO: Doesn't work if path is not /wiki/
         con = '/wiki/Special:Contributions/'+ userpage.urlname()
         # Getting the contribs...
-        contribs = wikipedia.getSite().getUrl(con)
+        contribs = wsite.getUrl(con)
         contribnum = contribs.count('<li>') #This is not an accurate count, it just counts the first
                                             #50 contributions (but it works ^__^)
         # That's a little trick to wait some times before continue to
@@ -396,15 +397,16 @@ def parselog(raw):
                 load.append([username, contribnum])
     return users
 
-def report(rep_page, username, com, rep):
+def report(wsite, rep_page, username, com, rep):
     # I've used a function to report the username to a wiki-page.
-    another_page = wikipedia.Page(wikipedia.getSite(), rep_page)
+    another_page = wikipedia.Page(wsite, rep_page)
     if another_page.exists():
         text_get = another_page.get()
     else:
         text_get = "This is a report page for the Bad-username, please translate me. --[[User:%s|%s]]" % (config.usernames[project], config.usernames[project])
     pos = 0
     # The talk page includes "_" between the two names, in this way i replace them to " "
+    username = wikipedia.url2link(username, wsite, wsite)
     regex = username
     n = re.compile(regex, re.UNICODE)
     y = n.search(text_get, pos)
@@ -417,10 +419,10 @@ def report(rep_page, username, com, rep):
         pos = y.end()
         wikipedia.output(u"The user is already in the report page.")
 
-def blocked(username):
+def blocked(wsite, username):
     #A little function to check if the user has already been blocked (to skip him).
     reg = """<li>[0-9][0-9]:[0-9][0-9], [0-9]([0-9])? (.*?) [0-9][0-9][0-9][0-9] <a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a>"""
-    block_text = wikipedia.getSite().getUrl('/w/index.php?title=Special:Log/block&page=User:' + username)
+    block_text = wsite.getUrl('/w/index.php?title=Special:Log/block&page=User:' + username)
     numblock = re.findall(reg, block_text)
     # If the bot doesn't find block-line, it will return False otherwise True.
     if len(numblock) == 0:
@@ -428,9 +430,9 @@ def blocked(username):
     else:
         return True
 
-def defineSign(signPageTitle):
+def defineSign(wsite, signPageTitle):
     #A little function to load the random signs.
-    signPage = wikipedia.Page(wikipedia.getSite(), signPageTitle)
+    signPage = wikipedia.Page(wsite, signPageTitle)
     signText = signPage.get()
     reg = "\* ?(.*?)\n"
     listSign = re.findall(reg, signText)
@@ -469,47 +471,48 @@ if __name__ == "__main__":
                 numberlog = int(wikipedia.input(u'After how many welcomed users would you like to update the welcome log?'))
             else:
                 numberlog = int(arg[11:])
-
+    # The site
+    wsite = wikipedia.getSite()
     # A little block-statement to ensure that the bot won't start with en-parameters
-    if wikipedia.getSite().lang not in project_inserted:
+    if wsite.lang not in project_inserted:
         wikipedia.output(u"Your project is not supported by the framework. You have to edit the script and add it!")
         wikipedia.stopme()
 
     # The follow lines translate the language's parameters.
-    usernam = wikipedia.getSite().namespace(2)
-    welcomer = wikipedia.translate(wikipedia.getSite(), netext)
-    summ = wikipedia.translate(wikipedia.getSite(), summary)
-    logg = wikipedia.translate(wikipedia.getSite(), logbook)
-    summ2 = wikipedia.translate(wikipedia.getSite(), summary2)
-    contrib = wikipedia.translate(wikipedia.getSite(), con)
-    rep_page = wikipedia.translate(wikipedia.getSite(), report_page)
-    com = wikipedia.translate(wikipedia.getSite(), comment)
-    bad_page = wikipedia.translate(wikipedia.getSite(), bad_pag)
-    rep_text = wikipedia.translate(wikipedia.getSite(), report_text)
-    signPageTitle = wikipedia.translate(wikipedia.getSite(), random_sign)
-    wtlpg = wikipedia.translate(wikipedia.getSite(), whitelist_pg)
+    usernam = wsite.namespace(2)
+    welcomer = wikipedia.translate(wsite, netext)
+    summ = wikipedia.translate(wsite, summary)
+    logg = wikipedia.translate(wsite, logbook)
+    summ2 = wikipedia.translate(wsite, summary2)
+    contrib = wikipedia.translate(wsite, con)
+    rep_page = wikipedia.translate(wsite, report_page)
+    com = wikipedia.translate(wsite, comment)
+    bad_page = wikipedia.translate(wsite, bad_pag)
+    rep_text = wikipedia.translate(wsite, report_text)
+    signPageTitle = wikipedia.translate(wsite, random_sign)
+    wtlpg = wikipedia.translate(wsite, whitelist_pg)
 
     # There is the talk page ^__^ the talk_page's variable gives "Talk page" and
     # i change it "Talk_page:"
-    talk_page = wikipedia.getSite().namespace(3)
+    talk_page = wsite.namespace(3)
     talk = talk_page.replace(" ", "_") + ":"
 
     # If your User talk in your language has a special charachter the script won't work, that
     # block fix this bug. (i will find a better way to resolve this problem, as soon as possible).
 
-    if wikipedia.getSite().lang == 'ar':
+    if wsite.lang == 'ar':
         talk = '%D9%86%D9%82%D8%A7%D8%B4_%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AE%D8%AF%D9%85:'
-    elif wikipedia.getSite().lang == 'sq':
+    elif wsite.lang == 'sq':
         talk = 'P%C3%ABrdoruesi_diskutim:'
 
     # A parameter for different projects of the same language...
-    if wikipedia.getSite().family.name == "wikinews":
-        if lang == "it":
+    if wsite.family.name == "wikinews":
+        if wsite.lang == "it":
             logg = 'Wikinotizie:Benvenuto log'
             welcomer = "{{subst:benvenuto|%s}}"
             sign = 'Tooby'
-    elif wikipedia.getSite().family.name == "wiktionary":
-        if lang == "it":
+    elif wsite.family.name == "wiktionary":
+        if wsite.lang == "it":
             logg = 'Wiktionary:Benvenuto log'
             welcomer = '{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s'
 
@@ -551,11 +554,11 @@ if __name__ == "__main__":
                                 " v.f. ", "v. fighter",
                                 "vandal f.", "vandal fighter", 'wales jimmy', "wheels", "wales",
                                 "www."]
-                badword_page = wikipedia.Page(wikipedia.getSite(), bad_page)
+                badword_page = wikipedia.Page(wsite, bad_page)
                 if badword_page.exists():
-                    wikipedia.output(u"\nLoading the bad words list from " + wikipedia.getSite().hostname() + u"...")
+                    wikipedia.output(u"\nLoading the bad words list from " + wsite.hostname() + u"...")
                     text_bad = badword_page.get()
-                    list_loaded = load_word_function(text_bad)
+                    list_loaded = load_word_function(wsite,text_bad)
                 else:
                     wikipedia.output(u"\t\t>>>WARNING: The bad word page doesn't exist!<<<")
                     list_loaded = list()
@@ -570,11 +573,11 @@ if __name__ == "__main__":
             if filter_wp == True:
                 # That is the default whitelist (it contains few name because it has been improved in the latest days..)
                 whitelist_default = ['emiliano']
-                whitelist_page = wikipedia.Page(wikipedia.getSite(), wtlpg)
+                whitelist_page = wikipedia.Page(wsite, wtlpg)
                 if whitelist_page.exists():
-                    wikipedia.output(u"\nLoading the whitelist from " + wikipedia.getSite().hostname() + u"...")
+                    wikipedia.output(u"\nLoading the whitelist from " + wsite.hostname() + u"...")
                     text_white = whitelist_page.get()
-                    list_white = load_word_function(text_white)
+                    list_white = load_word_function(wsite,text_white)
                 else:
                     wikipedia.output(u"\t\t>>>WARNING: The whitelist's page doesn't exist!<<<")
                     list_white = list()
@@ -591,14 +594,14 @@ if __name__ == "__main__":
             # Here there is the URL of the new users, i've find that this url below is the same for all the project, so it
             # mustn't be changed
             URL = "/w/index.php?title=Special:Log&type=newusers&user=&page=&limit=%d" % limit
-            log = wikipedia.getSite().getUrl(URL)
-            wikipedia.output(u"Loading latest " + str(limit) + u" new users from " + (wikipedia.getSite().hostname()) + u"...\n")
-            parsed = parselog(log)
+            log = wsite.getUrl(URL)
+            wikipedia.output(u"Loading latest " + str(limit) + u" new users from " + (wsite.hostname()) + u"...\n")
+            parsed = parselog(wsite,log)
             # Defing what sign the Bot will use
             if random == True:
                 try:
                     wikipedia.output(u"Loading random signs...")
-                    signList = defineSign(signPageTitle)
+                    signList = defineSign(wsite,signPageTitle)
                 except wikipedia.NoPage:
                     wikipedia.output(u"The sign's list isn't available... using default sign...")
                     random = False
@@ -611,7 +614,7 @@ if __name__ == "__main__":
                 else:
                     welcom = welcomer % sign
                 username = str(found_result[0])
-                usertalkpage = wikipedia.Page(wikipedia.getSite(), talk + username)
+                usertalkpage = wikipedia.Page(wsite, talk + username)
                 baduser = False
                 # Check if the username is composed by only numbers.
                 try:
@@ -621,7 +624,7 @@ if __name__ == "__main__":
                     # Ok, no problem ^__^
                     pass
                 # Check if the user has been already blocked
-                ki = blocked(username)
+                ki = blocked(wsite,username)
                 if ki == 'Blocked':
                     wikipedia.output(username + u' has been blocked! Skipping him...')
                     continue
@@ -648,7 +651,7 @@ if __name__ == "__main__":
                             for w in block:
                                 if w in answer:
                                     if not usertalkpage.exists():
-                                        report(rep_page, username, com, rep_text)
+                                        report(wsite, rep_page, username, com, rep_text)
                                         break
                                     else:
                                         wikipedia.output(u'The discussion page of the bad-user already exist...')
@@ -660,7 +663,7 @@ if __name__ == "__main__":
                         elif ask == False:
                             wikipedia.output(u"%s is possibly not a wanted username. It will be reported." % username)
                             if not usertalkpage.exists():
-                                report(rep_page, username, com, rep_text)
+                                report(wsite, rep_page, username, com, rep_text)
                                 break
                             else:
                                 wikipedia.output(u'The discussion page of the bad-user already exist...')
@@ -700,20 +703,20 @@ if __name__ == "__main__":
                         day = str(rightime[2])
                         if len(month)==1:
                             month = '0' + month
-                            if wikipedia.getSite().lang == 'it':
+                            if wsite.lang == 'it':
                                 target = logg + '/' + day + '/' + month + '/' + year
-                            elif wikipedia.getSite().lang == 'commons':
+                            elif wsite.lang == 'commons':
                                 target = logg + '/' + month + '/' + day + '/' + year
                             else:
                                 target = logg + '/' + year + '/' + month + '/' + day
-                        page = wikipedia.Page(wikipedia.getSite(), target)
+                        page = wikipedia.Page(wsite, target)
                         try:
                             safety.append(page.get())
                         except wikipedia.NoPage:
                             #Add the table heading each new period. See http://commons.wikimedia.org/wiki/Commons:Welcome_log
-                            if wikipedia.getSite().lang == 'it':
+                            if wsite.lang == 'it':
                                 safety.append('[[Categoria:Benvenuto log|{{subst:PAGENAME}}]]\n{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
-                            elif wikipedia.getSite().lang == 'no':
+                            elif wsite.lang == 'no':
                                 safety.append('[[Kategori:Velkomstlogg|{{PAGENAME}}]]\n{| class="wikitable"')
                             else:
                                 safety.append('{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
@@ -725,7 +728,7 @@ if __name__ == "__main__":
                         for found_result in hechas:
                             # Adding the log... (don't take care of the variable's name... i've set them in a BOFH-time ^__^)
                             luserpage = str(found_result[0])
-                            luser = wikipedia.url2link(luserpage, wikipedia.getSite(), wikipedia.getSite())
+                            luser = wikipedia.url2link(luserpage, wsite, wsite)
                             cantidad = str(found_result[1])
                             logtext = '\n{{WLE|user=' + luser + '|contribs=' + cantidad + '}}'
                             safety.append(logtext)
