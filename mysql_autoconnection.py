@@ -54,7 +54,7 @@ class Connection(object):
 		try:
 			# Check whether connection is alive
 			self.database.ping()
-		except MySQL.Error:
+		except MySQLdb.Error:
 			# It's not alive, force close
 			self.close()
 		except AttributeError:
