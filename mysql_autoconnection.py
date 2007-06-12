@@ -51,18 +51,16 @@ class Connection(object):
 		
 	# Mimic database object
 	def connect(self):
-		try:
-			# Check whether connection is alive
-			self.database.ping()
-		except MySQLdb.Error:
-			# It's not alive, force close
-			self.close()
-		except AttributeError:
-			# First connect, do nothing
-			pass
-		else:
-			# Connection is still alive
-			return False
+		if self.connected:
+			try:
+				# Check whether connection is alive
+				self.database.ping()
+			except MySQLdb.Error:
+				# It's not alive, force close
+				self.close()
+			else:
+				# Connection is still alive
+				return False
 			
 		while not self.connected:
 			self.wait()
