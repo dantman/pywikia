@@ -576,9 +576,12 @@ class Page(object):
                 # and http://de.wikipedia.org/wiki/Wikipedia:Gesperrte_Lemmata
                 elif text.find(mediawiki_messages.get('viewsource', self.site())) != -1:
                     raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.' % self.aslink())
-                # on wikipedia:en, anonymous users can't create new articles. This seems
-                # to be MediaWiki hack, there is no internationalization yet.
-                elif text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
+                # search for 'Login required to edit' message
+                elif text.find(mediawiki_messages.get('whitelistedittitle', self.site())) != -1:
+                    raise LockedNoPage(u'Page editing is forbidden for anonymous users.')
+                # on wikipedia:en, anonymous users can't create new articles.
+                # older MediaWiki versions don't have the 'nocreatetitle' message.
+                elif mediawiki_messages.has('nocreatetitle', self.site() and text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
                     raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
                 else:
                     output( unicode(text) )

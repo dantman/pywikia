@@ -68,6 +68,13 @@ def get(key, site = None, allowreload = True):
     else:
         raise KeyError('MediaWiki Key %s not found' % key)
 
+def has(key, site = None, allowreload = True):
+    try:
+        get(key, site, allowreload)
+        return True
+    except KeyError:
+        return False
+
 def makepath(path):
     """ creates missing directories for the given path and
         returns a normalized absolute version of the path.
