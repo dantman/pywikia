@@ -1303,14 +1303,9 @@ class Page(object):
             return []
         thistxt = removeCategoryLinks(thistxt, self.site())
 
-        # remove HTML comments from text before processing
-        thistxt = re.sub("(?ms)<!--.*?-->", "", thistxt)
-
-        # remove nowiki sections from text before processing
-        thistxt = re.sub("(?ms)<nowiki>.*?</nowiki>", "", thistxt)
-
-        # remove includeonly sections from text before processing
-        thistxt = re.sub("(?ms)<includeonly>.*?</includeonly>", "", thistxt)
+        # remove HTML comments, nowiki sections, and includeonly sections
+        # from text before processing
+        thistxt = removeDisabledParts(thistxt)
 
         Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
@@ -1373,6 +1368,9 @@ class Page(object):
             thistxt = self.get()
         except IsRedirectPage:
             return []
+
+        # remove commented-out stuff etc.
+        thistxt  = removeDisabledParts(thistxt)
 
         result = []
         Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^\|]+?)(\|(?P<params>.+?))?}}', re.DOTALL)
@@ -2479,6 +2477,16 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
     text = text[:markerpos] + marker + text[markerpos:]
     return text
 
+def removeDisabledParts(text):
+    """
+    Removes those parts of a wiki text where wiki markup is disabled, i.e.
+    * HTML comments
+    * nowiki tags
+    * includeonly tags
+    """
+    toRemoveR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
+    return toRemoveR.sub('', text)
+
 # Part of library dealing with interwiki links
 
 def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
@@ -2489,9 +2497,8 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     if insite == None:
         insite = getSite()
     result = {}
-    # Ignore interwiki links within nowiki tags and HTML comments
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
-    text = nowikiOrHtmlCommentR.sub('', text)
+    # Ignore interwiki links within nowiki tags, includeonly tags, and HTML comments
+    text = removeDisabledParts(text)
 
     # This regular expression will find every link that is possibly an
     # interwiki link.
@@ -2647,12 +2654,8 @@ def getCategoryLinks(text, site):
        in the form {code:pagename}. Do not call this routine directly, use
        Page objects instead"""
     result = []
-    # Ignore interwiki links within nowiki tags and HTML comments
-    nowikiOrHtmlCommentR = re.compile(r'<nowiki>.*?</nowiki>|<!--.*?-->|<includeonly>.*?</includeonly>', re.IGNORECASE | re.DOTALL)
-    match = nowikiOrHtmlCommentR.search(text)
-    while match:
-        text = text[:match.start()] + text[match.end():]
-        match = nowikiOrHtmlCommentR.search(text)
+    # Ignore category links within nowiki tags, includeonly tags, and HTML comments
+    text = removeDisabledParts(text)
     catNamespace = '|'.join(site.category_namespaces())
     R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:\s*(?P<catName>.+?)(?:\|(?P<sortKey>.+?))?\s*\]\]' % catNamespace)
     for match in R.finditer(text):
