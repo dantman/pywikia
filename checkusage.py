@@ -268,6 +268,15 @@ class CheckUsage(object):
 		if self.cursor.execute(query) != 1: raise RuntimeError
 		return self.cursor.fetchone()[0]
 		
+	def exists(self, domain, image):
+		# Check whether the image still is deleted on Commons.
+		# BUG: This also returns true for images with a page, but
+		# without the image itself. Can be fixed by querying query.php
+		# instead of api.php.
+		return '-1' not in self.conn.query_api('api', domain,
+			action = 'query', titles = 'Image:' + image)['query']['pages']
+		
+		
 	def close(self):
 		try:
 			self.conn.close()
