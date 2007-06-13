@@ -45,15 +45,16 @@ class TextEditor:
             command += " -l %i -c %i" % (line, column)
         elif config.editor == 'gedit':
             command += " +%i" % (line + 1) # seems not to support columns
+        elif config.editor == 'emacs':
+            command += " +%i" % (line + 1) # seems not to support columns
         elif config.editor == 'jedit':
-            lineOfFirstOccurence += 1
-            command += " +line:%i" % line # seems not to support columns
-        #print command
+            command += " +line:%i" % (line + 1) # seems not to support columns
         elif config.editor == 'vim':
             command += " +%i" % (line + 1) # seems not to support columns
         elif config.editor == 'nano':
             command += " +%i,%i" % (line + 1, column + 1)
         command += ' %s' % tempFilename
+        #print command
         return command
 
     def edit(self, text, jumpIndex = None, highlight = None):
