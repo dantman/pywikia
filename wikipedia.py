@@ -2426,7 +2426,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
     # if we got a string, compile it as a regular expression
     if type(old) == type('') or type(old) == type(u''):
         if caseInsensitive:
-            old = re.compile(old, re.IGNORECASE)
+            old = re.compile(old, re.IGNORECASE | re.UNICODE)
         else:
             old = re.compile(old)
     
@@ -3555,7 +3555,8 @@ class Site(object):
 
     def redirectRegex(self):
         """
-        Regular expression recognizing redirect pages
+        Regular expression recognizing redirect pages, with a
+        group on the target title.
         """
         try:
             redirKeywords = [u'redirect'] + self.family.redirect[self.lang]
@@ -3566,7 +3567,7 @@ class Site(object):
         # A redirect starts with hash (#), followed by a keyword, then 
         # arbitrary stuff, then a wikilink. The link target ends before
         # either a | or a ].
-        return re.compile(r'#' + redirKeywordsR + '.*?\[\[(.*?)(?:\]|\|)', re.IGNORECASE)
+        return re.compile(r'#' + redirKeywordsR + '.*?\[\[(.*?)(?:\]|\|)', re.IGNORECASE | re.UNICODE)
 
     # The following methods are for convenience, so that you can access
     # methods of the Family class easier.
