@@ -391,6 +391,8 @@ class _Preloader(threading.Thread):
         self.queue = queue
         self.generator = generator
         self.pageNumber = pageNumber
+        # This thread dies when the main program terminates
+        self.setDaemon(True)
 
     def preload(self, pages):
         try:
