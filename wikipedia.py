@@ -2035,63 +2035,63 @@ class GetAll(object):
         self.pages = []
         self.throttle = throttle
         for pl in pages:
-            if ((not hasattr(pl,'_contents') and not hasattr(pl,'_getexception')) or force):
+            if (not hasattr(pl,'_contents') and not hasattr(pl,'_getexception')) or force:
                 self.pages.append(pl)
-            else:
-                if verbose:
-                    output(u"BUGWARNING: %s already done!" % pl.aslink())
+            elif verbose:
+                output(u"BUGWARNING: %s already done!" % pl.aslink())
 
     def run(self):
         dt=15
-        while True:
-            try:
-                data = self.getData()
-            except (socket.error, httplib.BadStatusLine, ServerError):
-                # Print the traceback of the caught exception
-                output(u''.join(traceback.format_exception(*sys.exc_info())))
-                output(u'DBG> got network error in GetAll.run. Sleeping for %d seconds...' % dt)
-                time.sleep(dt)
-                if dt <= 60:
-                    dt += 15
-                elif dt < 360:
-                    dt += 60
-            else:
-                # Because language lists are filled in a lazy way in the family
-                # files of Wikimedia projects (using Family.knownlanguages), you
-                # may encounter pages from non-existing wikis such as
-                # http://eo.wikisource.org/
-                if data.find("<title>Wiki does not exist</title>") != -1:
-                     return
-                elif data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
-                    output(u'Got incorrect export page. Sleeping for %d seconds...' % dt)
+        if self.pages != []:
+            while True:
+                try:
+                    data = self.getData()
+                except (socket.error, httplib.BadStatusLine, ServerError):
+                    # Print the traceback of the caught exception
+                    output(u''.join(traceback.format_exception(*sys.exc_info())))
+                    output(u'DBG> got network error in GetAll.run. Sleeping for %d seconds...' % dt)
                     time.sleep(dt)
                     if dt <= 60:
                         dt += 15
                     elif dt < 360:
                         dt += 60
                 else:
-                    break
-        R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
-        m = R.match(data)
-        if m:
-            data = m.group(2)
-        handler = xmlreader.MediaWikiXmlHandler()
-        handler.setCallback(self.oneDone)
-        handler.setHeaderCallback(self.headerDone)
-        #f = open("backup.txt", "w")
-        #f.write(data)
-        #f.close()
-        try:
-            xml.sax.parseString(data, handler)
-        except (xml.sax._exceptions.SAXParseException, ValueError), err:
-            debugDump( 'SaxParseBug', self.site, err, data )
-            raise
-        except PageNotFound:
-            return
-        # All of the ones that have not been found apparently do not exist
-        for pl in self.pages:
-            if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
-                pl._getexception = NoPage
+                    # Because language lists are filled in a lazy way in the family
+                    # files of Wikimedia projects (using Family.knownlanguages), you
+                    # may encounter pages from non-existing wikis such as
+                    # http://eo.wikisource.org/
+                    if data.find("<title>Wiki does not exist</title>") != -1:
+                        return
+                    elif data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
+                        output(u'Got incorrect export page. Sleeping for %d seconds...' % dt)
+                        time.sleep(dt)
+                        if dt <= 60:
+                            dt += 15
+                        elif dt < 360:
+                            dt += 60
+                    else:
+                        break
+            R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
+            m = R.match(data)
+            if m:
+                data = m.group(2)
+            handler = xmlreader.MediaWikiXmlHandler()
+            handler.setCallback(self.oneDone)
+            handler.setHeaderCallback(self.headerDone)
+            #f = open("backup.txt", "w")
+            #f.write(data)
+            #f.close()
+            try:
+                xml.sax.parseString(data, handler)
+            except (xml.sax._exceptions.SAXParseException, ValueError), err:
+                debugDump( 'SaxParseBug', self.site, err, data )
+                raise
+            except PageNotFound:
+                return
+            # All of the ones that have not been found apparently do not exist
+            for pl in self.pages:
+                if not hasattr(pl,'_contents') and not hasattr(pl,'_getexception'):
+                    pl._getexception = NoPage
 
     def oneDone(self, entry):
         title = entry.title
@@ -2171,8 +2171,6 @@ class GetAll(object):
                 output(u"WARNING: Missing namespace in family file %s: namespace['%s'][%i] (it is set to '%s')" % (self.site.family.name, lang, id, nshdr))
 
     def getData(self):
-        if self.pages == []:
-            return
         address = self.site.export_address()
         pagenames = [page.sectionFreeTitle() for page in self.pages]
         # We need to use X convention for requested page titles.
