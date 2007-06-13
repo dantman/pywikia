@@ -579,7 +579,7 @@ class Page(object):
                 # on wikipedia:en, anonymous users can't create new articles. This seems
                 # to be MediaWiki hack, there is no internationalization yet.
                 elif text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
-                    raise LockedNoPage((u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink()))
+                    raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
                 else:
                     output( unicode(text) )
                     # We assume that the server is down. Wait some time, then try again.
@@ -852,17 +852,12 @@ class Page(object):
         site = self.site()
         path = site.references_address(self.urlname())
         content = SoupStrainer("div", id="bodyContent")
-        # TODO: The 'next n' link can be recognized by the 'back' parameter
-        # in MediaWiki 1.10 (no idea what 'back' is for), but this
-        # solution does not work for older versions (tested with
-        # http://wiki.mozilla.org/index.php?title=Special:Whatlinkshere/Firefox&limit=5&from=12959&dir=prev
-        # which uses MediaWiki 1.6.8), so we need a better solution.
-        # see bug [ 1736191 ] for discussion:
-        # https://sourceforge.net/tracker/index.php?func=detail&aid=1736191&group_id=93107&atid=603138
-        nextLinkPattern = re.compile(".*?&limit=[0-9]+&from=[0-9]+&back=[0-9]+$")
+        next_msg = mediawiki_messages.get('nextn', site)
+        nextpattern = re.compile("^%s$" % next_msg.replace("$1", "[0-9]+"))
         delay = 1
         self._isredirectmessage = mediawiki_messages.get("Isredirect", site)
-        self._istemplatemessage = mediawiki_messages.get("Istemplate", site)
+        if site.versionnumber() >= 8:
+            self._istemplatemessage = mediawiki_messages.get("Istemplate", site)
         # to avoid duplicates
         refPages = set()
         while path:
@@ -871,9 +866,9 @@ class Page(object):
             body = BeautifulSoup(txt,
                                  convertEntities=BeautifulSoup.HTML_ENTITIES,
                                  parseOnlyThese=content)
-            nextLink = body.find('a', href=nextLinkPattern)
-            if nextLink is not None:
-                path = nextLink['href']
+            next_text = body.find(text=nextpattern)
+            if next_text is not None:
+                path = next_text.parent['href']
             else:
                 path = ""
             reflist = body.find("ul")
@@ -911,7 +906,8 @@ class Page(object):
                     if Page(self.site(), p.getRedirectTarget()
                             ).sectionFreeTitle() == self.sectionFreeTitle():
                         isredirect = True
-                if self._istemplatemessage in textafter:
+                if site.versionnumber() >= 8 \
+                        and self._istemplatemessage in textafter:
                     istemplate = True
 
             if (withTemplateInclusion or onlyTemplateInclusion or not istemplate
@@ -2072,8 +2068,6 @@ class GetAll(object):
                         dt += 60
                 else:
                     break
-        if not data:
-            return
         R = re.compile(r"\s*<\?xml([^>]*)\?>(.*)",re.DOTALL)
         m = R.match(data)
         if m:
@@ -4253,7 +4247,9 @@ def async_put():
             page.put(newtext, comment, watchArticle, minorEdit)
         except:
             tb = traceback.format_exception(*sys.exc_info())
-            output("Saving page [[%s]] failed:\n%s" % (page.title(), tb))
+            output("Saving page [[%s]] failed:\n%s"
+                    % (page.title(), "".join(tb))
+                   )
 
 _putthread = threading.Thread(target=async_put)
 _putthread.setDaemon(True)
