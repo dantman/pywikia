@@ -547,6 +547,14 @@ class Page(object):
         retry_idle_time = 1
         while not textareaFound:
             text = self.site().getUrl(path, sysop = sysop)
+
+            # Because language lists are filled in a lazy way in the family
+            # files of Wikimedia projects (using Family.knownlanguages), you
+            # may encounter pages from non-existing wikis such as
+            # http://eo.wikisource.org/
+            if text.find("<title>Wiki does not exist</title>") != -1:
+                raise NoPage(u'Wiki %s does not exist yet' % self.site())
+
             #Check for new messages
             if '<div class="usermessage">' in text:
                 self.site().messages=True
@@ -2049,7 +2057,13 @@ class GetAll(object):
                 elif dt < 360:
                     dt += 60
             else:
-                if data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
+                # Because language lists are filled in a lazy way in the family
+                # files of Wikimedia projects (using Family.knownlanguages), you
+                # may encounter pages from non-existing wikis such as
+                # http://eo.wikisource.org/
+                if data.find("<title>Wiki does not exist</title>") != -1:
+                     return
+                elif data.find("<siteinfo>") == -1: # This probably means we got a 'temporary unaivalable'
                     output(u'Got incorrect export page. Sleeping for %d seconds...' % dt)
                     time.sleep(dt)
                     if dt <= 60:
