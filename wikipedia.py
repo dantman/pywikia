@@ -581,7 +581,7 @@ class Page(object):
                     raise LockedNoPage(u'Page editing is forbidden for anonymous users.')
                 # on wikipedia:en, anonymous users can't create new articles.
                 # older MediaWiki versions don't have the 'nocreatetitle' message.
-                elif mediawiki_messages.has('nocreatetitle', self.site() and text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
+                elif mediawiki_messages.has('nocreatetitle', self.site()) and text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
                     raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
                 else:
                     output( unicode(text) )
