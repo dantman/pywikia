@@ -906,7 +906,7 @@ class Page(object):
                     if Page(self.site(), p.getRedirectTarget()
                             ).sectionFreeTitle() == self.sectionFreeTitle():
                         isredirect = True
-                if site.versionnumber() >= 8 \
+                if self.site().versionnumber() >= 8 \
                         and self._istemplatemessage in textafter:
                     istemplate = True
 
