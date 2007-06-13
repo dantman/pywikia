@@ -24,6 +24,7 @@ Specific arguments:
 -titleend:xxx   Use xxx in place of ''' for identifying the
                 end of page title
 -summary:xxx    Use xxx as the summary for the upload
+-minor          set minor edit flag on page edits
 -debug          Do not really upload pages, just check and report
                 messages
 
@@ -110,6 +111,7 @@ search_string = u""
 force = False
 append = None
 notitle = False
+minor=False
 debug = False
 
 def findpage(t):
@@ -143,24 +145,24 @@ def findpage(t):
                 commenttext_top = commenttext + " - " + wikipedia.translate(mysite,msg_top)
                 wikipedia.output(u"Page %s already exists, appending on top!"%title)
                 if not debug:
-                    page.put(contents, comment = commenttext_top, minorEdit = False)
+                    page.put(contents, comment = commenttext_top, minorEdit = minor)
             elif append == "Bottom":
                 old_text = page.get()
                 contents = old_text + contents
                 commenttext_bottom = commenttext + " - " + wikipedia.translate(mysite,msg_bottom)
                 wikipedia.output(u"Page %s already exists, appending on bottom!"%title)
                 if not debug:
-                    page.put(contents, comment = commenttext_bottom, minorEdit = False)
+                    page.put(contents, comment = commenttext_bottom, minorEdit = minor)
             elif force:
                 commenttext_force = commenttext + " *** " + wikipedia.translate(mysite,msg_force) + " ***"
                 wikipedia.output(u"Page %s already exists, ***overwriting!"%title)
                 if not debug:
-                    page.put(contents, comment = commenttext_force, minorEdit = False)
+                    page.put(contents, comment = commenttext_force, minorEdit = minor)
             else:
                 wikipedia.output(u"Page %s already exists, not adding!"%title)
         else:
             if not debug:
-                page.put(contents, comment = commenttext, minorEdit = False)
+                page.put(contents, comment = commenttext, minorEdit = minor)
     return location.end()
 
 def main():
@@ -200,6 +202,8 @@ for arg in wikipedia.handleArgs():
         append = None
     elif arg=='-notitle':
         notitle=True
+    elif arg=='-minor':
+        minor=True
     elif arg.startswith("-titlestart:"):
         titlestart=arg[12:]
     elif arg.startswith("-titleend:"):
