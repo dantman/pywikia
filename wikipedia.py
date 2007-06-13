@@ -844,10 +844,18 @@ class Page(object):
         site = self.site()
         path = site.references_address(self.urlname())
         content = SoupStrainer("div", id="bodyContent")
-        nextpattern = re.compile("^next [0-9]+$")
+        # TODO: The 'next n' link can be recognized by the 'back' parameter
+        # in MediaWiki 1.10 (no idea what 'back' is for), but this
+        # solution does not work for older versions (tested with
+        # http://wiki.mozilla.org/index.php?title=Special:Whatlinkshere/Firefox&limit=5&from=12959&dir=prev
+        # which uses MediaWiki 1.6.8), so we need a better solution.
+        # see bug [ 1736191 ] for discussion:
+        # https://sourceforge.net/tracker/index.php?func=detail&aid=1736191&group_id=93107&atid=603138
+        nextLinkPattern = re.compile(".*?&limit=[0-9]+&from=[0-9]+&back=[0-9]+$")
         delay = 1
         self._isredirectmessage = mediawiki_messages.get("Isredirect", site)
         self._istemplatemessage = mediawiki_messages.get("Istemplate", site)
+        # to avoid duplicates
         refPages = set()
         while path:
             output(u'Getting references to %s' % self.aslink())
@@ -855,9 +863,9 @@ class Page(object):
             body = BeautifulSoup(txt,
                                  convertEntities=BeautifulSoup.HTML_ENTITIES,
                                  parseOnlyThese=content)
-            next_text = body.find(text=nextpattern)
-            if next_text is not None:
-                path = next_text.parent['href']
+            nextLink = body.find('a', href=nextLinkPattern)
+            if nextLink is not None:
+                path = nextLink['href']
             else:
                 path = ""
             reflist = body.find("ul")
