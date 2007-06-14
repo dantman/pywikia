@@ -90,6 +90,8 @@ class LoginManager:
             except:
                 raise wikipedia.NoUsername(u'ERROR: Username for %s:%s is undefined.\nIf you have an account for that site, please add such a line to user-config.py:\n\nusernames[\'%s\'][\'%s\'] = \'myUsername\'' % (self.site.family.name, self.site.lang, self.site.family.name, self.site.lang))
         self.password = password
+        if getattr(config, 'password_file', ''):
+            self.readPassword()
 
     def botAllowed(self):
         """
@@ -173,6 +175,34 @@ class LoginManager:
         f = open(makepath(filename), 'w')
         f.write(data)
         f.close()
+
+    def readPassword(self):
+        """
+            Reads passwords from a file. DO NOT FORGET TO REMOVE READ 
+            ACCESS FOR OTHER USERS!!! Use chmod 600 password-file.
+            All lines below should be valid Python tuples in the form 
+            (code, family, username, password) or (username, password) 
+            to set a default password for an username. Default usernames
+            should occur above specific usernames.
+		
+            Example:
+            
+            ("my_username", "my_default_password")
+            ("my_sysop_user", "my_sysop_password")
+            ("en", "wikipedia", "my_en_user", "my_en_pass")
+        """
+        file = open(config.password_file)
+        for line in file:
+            if not line.strip(): continue
+            entry = eval(line)
+            if len(entry) == 2:
+                if entry[0] == self.username: self.password = entry[1]
+            elif len(entry) == 4:
+                if entry[0] == self.site.lang and \
+                  entry[1] == self.site.family.name and \
+                  entry[2] == self.username:
+                    self.password = entry[3]
+        file.close()
 
     def login(self, retry = False):
         if not self.password:

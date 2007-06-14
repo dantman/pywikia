@@ -52,6 +52,12 @@ disambiguation_comment = {}
 # 2. You must use the hostname of the site, not its family/language pair
 authenticate = {}
 
+# password_file = ".passwd"
+# A password file with default passwords. For more information, please
+# see LoginManager.readPassword in login.py.
+# By default you are asked for a password on the terminal.
+password_file = None
+
 # Get the names of all known families, and initialize
 # with empty dictionaries
 RfamilyFile = re.compile('(?P<name>.+)_family.py$')
