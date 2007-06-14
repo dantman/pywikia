@@ -2714,7 +2714,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
     if site is None:
         site = getSite()
     if site == Site('de', 'wikipedia'):
-        raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See de.wikipedia.org/wiki/Wikipedia_Diskussion:Personendaten#Position')
+        raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv2#Position_der_Personendaten_am_.22Artikelende.22')
 
     s = categoryFormat(new, insite = site)
     s2 = removeCategoryLinks(oldtext, site = site, marker = marker)
