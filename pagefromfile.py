@@ -62,6 +62,7 @@ msg={
 
 # The following messages are added to topic when the page already exists
 msg_top={
+    'de': u'ergänze am Anfang',
     'en': u'append on top',
     'he': u'הצמד בהתחלה',
     'fr': u'attaché en haut',
@@ -72,7 +73,9 @@ msg_top={
     'pl': u'dodaj na górze',
     'pt': u'adicionado no topo'
     }
+
 msg_bottom={
+    'de': u'ergänze am Ende',
     'en': u'append on bottom',
     'he': u'הצמד בסוף',
     'fr': u'attaché en bas',
@@ -83,7 +86,9 @@ msg_bottom={
     'pl': u'dodaj na dole',
     'pt': u'adicionando no fim'
     }
+
 msg_force={
+    'en': u'bestehender Text überschrieben',
     'en': u'existing text overwritten',
     'he': u'הטקסט הקיים נדרס',
     'fr': u'texte existant écrasé',
