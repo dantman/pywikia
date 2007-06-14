@@ -67,7 +67,7 @@ def get_content_type(filename):
 
 
 class UploadRobot:
-    def __init__(self, url, description = u'', keepFilename = False, verifyDescription = True, ignoreWarning = False, targetSite = None, urlEncoding = None):
+    def __init__(self, url, description = u'', useFilename = None, keepFilename = False, verifyDescription = True, ignoreWarning = False, targetSite = None, urlEncoding = None):
         """
         ignoreWarning - Set this to True if you want to upload even if another
                         file would be overwritten or another mistake would be
@@ -77,6 +77,7 @@ class UploadRobot:
         self.url = url
         self.urlEncoding = urlEncoding
         self.description = description
+        self.useFilename = useFilename
         self.keepFilename = keepFilename
         self.verifyDescription = verifyDescription
         self.ignoreWarning = ignoreWarning
@@ -123,6 +124,8 @@ class UploadRobot:
         if self.urlEncoding:
             filename = urllib.unquote(filename)
             filename = filename.decode(self.urlEncoding)
+        if self.useFilename:
+            filename = self.useFilename
         if not self.keepFilename:
             wikipedia.output(u"The filename on the target wiki will default to: %s" % filename)
             # ask newfn until it's valid
