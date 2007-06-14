@@ -1015,6 +1015,10 @@ class Page(object):
 
            If watchArticle is None, leaves the watchlist status unchanged.
         """
+        # Fetch the page to get an edit token. If we already have
+        # fetched a page, this will do nothing, because get() is cached.
+        self.get(force = True)
+
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
             output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % self.aslink())
@@ -1028,6 +1032,9 @@ class Page(object):
                 output(u'Page is locked, using sysop account.')
             except NoUsername:
                 raise LockedPage()
+            if getattr(self, '_editTime', '0') == '0':
+                # Force getting sysop tokens
+                self.get(force = True, sysop = True)
         else:
             self.site().forceLogin()
         if config.cosmetic_changes and not self.isTalkPage():
@@ -1062,6 +1069,7 @@ class Page(object):
 
         Don't use this directly, use put() instead.
         """
+
         newTokenRetrieved = False
         if self.site().versionnumber() >= 4:
             if gettoken or not token:
