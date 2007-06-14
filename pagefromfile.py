@@ -14,10 +14,10 @@ end text in the page, if you want to include that text, use
 the -include option.
 
 Specific arguments:
--start:xxx      Specify the text that is the beginning of a page
--end:xxx        Specify the text that is the end of a page
+-start:xxx      Specify the text that marks the beginning of a page
+-end:xxx        Specify the text that marks the end of a page
 -file:xxx       Give the filename we are getting our material from
--include        The beginning and end text should be included
+-include        The beginning and end markers should be included
                 in the page.
 -titlestart:xxx Use xxx in place of ''' for identifying the
                 beginning of page title
@@ -46,182 +46,229 @@ __version__='$Id$'
 import wikipedia, config
 import re, sys, codecs
 
-msg={
-    'de': u'Automatischer Import von Artikeln',
-    'en': u'Automated import of articles',
-    'fr': u'Import automatique',
-    'he': u'ייבוא ערכים אוטומטי',
-    'ia': u'Importation automatic de articulos',
-    'id': u'Impor artikel automatis',
-    'it': u'Caricamento automatico',
-    'ksh': u'Automatesch aanjelaat',
-    'nl': u'Geautomatiseerde import',
-    'pl': u'Automatyczny import artykułów',
-    'pt': u'Importação automática de artigos'
+class PageFromFileRobot:
+    """
+    Responsible for writing pages to the wiki, with the titles and contents
+    given by a PageFromFileReader.
+    """
+
+    msg = {
+        'de': u'Automatischer Import von Artikeln',
+        'en': u'Automated import of articles',
+        'fr': u'Import automatique',
+        'he': u'ייבוא ערכים אוטומטי',
+        'ia': u'Importation automatic de articulos',
+        'id': u'Impor artikel automatis',
+        'it': u'Caricamento automatico',
+        'ksh': u'Automatesch aanjelaat',
+        'nl': u'Geautomatiseerde import',
+        'pl': u'Automatyczny import artykułów',
+        'pt': u'Importação automática de artigos'
     }
 
-# The following messages are added to topic when the page already exists
-msg_top={
-    'de': u'ergänze am Anfang',
-    'en': u'append on top',
-    'he': u'הצמד בהתחלה',
-    'fr': u'attaché en haut',
-    'id': u'ditambahkan di atas',
-    'it': u'aggiungo in cima',
-    'ksh': u'Automatesch füürjesaz',
-    'nl': u'bovenaan toegevoegd',
-    'pl': u'dodaj na górze',
-    'pt': u'adicionado no topo'
+    # The following messages are added to topic when the page already exists
+    msg_top = {
+        'de': u'ergänze am Anfang',
+        'en': u'append on top',
+        'he': u'הצמד בהתחלה',
+        'fr': u'attaché en haut',
+        'id': u'ditambahkan di atas',
+        'it': u'aggiungo in cima',
+        'ksh': u'Automatesch füürjesaz',
+        'nl': u'bovenaan toegevoegd',
+        'pl': u'dodaj na górze',
+        'pt': u'adicionado no topo'
     }
 
-msg_bottom={
-    'de': u'ergänze am Ende',
-    'en': u'append on bottom',
-    'he': u'הצמד בסוף',
-    'fr': u'attaché en bas',
-    'id': u'ditambahkan di bawah',
-    'it': u'aggiungo in fondo',
-    'ksh': u'Automatesch aanjehange',
-    'nl': u'onderaan toegevoegd',
-    'pl': u'dodaj na dole',
-    'pt': u'adicionando no fim'
+    msg_bottom = {
+        'de': u'ergänze am Ende',
+        'en': u'append on bottom',
+        'he': u'הצמד בסוף',
+        'fr': u'attaché en bas',
+        'id': u'ditambahkan di bawah',
+        'it': u'aggiungo in fondo',
+        'ksh': u'Automatesch aanjehange',
+        'nl': u'onderaan toegevoegd',
+        'pl': u'dodaj na dole',
+        'pt': u'adicionando no fim'
     }
 
-msg_force={
-    'en': u'bestehender Text überschrieben',
-    'en': u'existing text overwritten',
-    'he': u'הטקסט הקיים נדרס',
-    'fr': u'texte existant écrasé',
-    'id': u'menimpa teks yang ada',
-    'it': u'sovrascritto il testo esistente',
-    'ksh': u'Automatesch ußjetuusch',
-    'nl': u'bestaande tekst overschreven',
-    'pl': u'aktualny tekst nadpisany',
-    'pt': u'sobrescrever texto'
+    msg_force = {
+        'en': u'bestehender Text überschrieben',
+        'en': u'existing text overwritten',
+        'he': u'הטקסט הקיים נדרס',
+        'fr': u'texte existant écrasé',
+        'id': u'menimpa teks yang ada',
+        'it': u'sovrascritto il testo esistente',
+        'ksh': u'Automatesch ußjetuusch',
+        'nl': u'bestaande tekst overschreven',
+        'pl': u'aktualny tekst nadpisany',
+        'pt': u'sobrescrever texto'
     }
 
-# TODO: make object-oriented
+    def __init__(self, reader, force, append, minor, debug):
+        self.reader = reader
+        self.force = force
+        self.append = append
+        self.minor = minor
+        self.debug = debug
 
-# Adapt these to the file you are using. 'starttext' and 'endtext' are
-# the beginning and end of each entry. Take text that should be included
-# and does not occur elsewhere in the text.
-starttext = "{{-start-}}"
-endtext = "{{-stop-}}"
-filename = "dict.txt"
-include = False
-#exclude = False
-titlestart = u"'''"
-titleend = u"'''"
-search_string = u""
-force = False
-append = None
-notitle = False
-minor=False
-debug = False
+    def run(self):
+        for title, contents in self.reader.run():
+            self.create(title, contents)
 
-def findpage(t):
-    search_string = titlestart + "(.*?)" + titleend
-    try:
-        location = re.search(starttext+"([^\Z]*?)"+endtext,t)
-        if include:
-            contents = location.group()
-        else:
-            contents = location.group(1)
-    except AttributeError:
-        print 'Start or end marker not found.'
-        return 0
-    try:
-        title = re.search(search_string, contents).group(1)
-    except AttributeError:
-        wikipedia.output(u"No title found - skipping a page.")
-        return 0
-    else:
+    def create(self, title, contents):
+        mysite = wikipedia.getSite()
+
         page = wikipedia.Page(mysite, title)
-        wikipedia.output(page.title())
-        if notitle:
-          #Remove title (to allow creation of redirects)
-          contents = re.sub(search_string, "", contents, count=1)
+        # Show the title of the page we're working on.
+        # Highlight the title in purple.
+        colors = [None] * 6 + [13] * len(title) + [None] * 4
+        wikipedia.output(u"\n\n>>> %s <<<" % title, colors = colors)
+        commenttext = wikipedia.translate(mysite, self.msg)
+
         #Remove trailing newlines (cause troubles when creating redirects)
         contents = re.sub('^[\r\n]*','',contents)
         if page.exists():
-            if append == "Top":
+            if self.append == "Top":
                 old_text = page.get()
                 contents = contents + old_text
-                commenttext_top = commenttext + " - " + wikipedia.translate(mysite,msg_top)
-                wikipedia.output(u"Page %s already exists, appending on top!"%title)
-                if not debug:
-                    page.put(contents, comment = commenttext_top, minorEdit = minor)
-            elif append == "Bottom":
+                commenttext_top = commenttext + " - " + wikipedia.translate(mysite, self.msg_top)
+                wikipedia.output(u"Page %s already exists, appending on top!" % title)
+                if not self.debug:
+                    page.put(contents, comment = commenttext_top, minorEdit = self.minor)
+            elif self.append == "Bottom":
                 old_text = page.get()
                 contents = old_text + contents
-                commenttext_bottom = commenttext + " - " + wikipedia.translate(mysite,msg_bottom)
+                commenttext_bottom = commenttext + " - " + wikipedia.translate(mysite, self.msg_bottom)
                 wikipedia.output(u"Page %s already exists, appending on bottom!"%title)
-                if not debug:
-                    page.put(contents, comment = commenttext_bottom, minorEdit = minor)
-            elif force:
-                commenttext_force = commenttext + " *** " + wikipedia.translate(mysite,msg_force) + " ***"
-                wikipedia.output(u"Page %s already exists, ***overwriting!"%title)
-                if not debug:
-                    page.put(contents, comment = commenttext_force, minorEdit = minor)
+                if not self.debug:
+                    page.put(contents, comment = commenttext_bottom, minorEdit = self.minor)
+            elif self.force:
+                commenttext_force = commenttext + " *** " + wikipedia.translate(mysite, self.msg_force) + " ***"
+                wikipedia.output(u"Page %s already exists, ***overwriting!" % title)
+                if not self.debug:
+                    page.put(contents, comment = commenttext_force, minorEdit = self.minor)
             else:
-                wikipedia.output(u"Page %s already exists, not adding!"%title)
+                wikipedia.output(u"Page %s already exists, not adding!" % title)
         else:
-            if not debug:
-                page.put(contents, comment = commenttext, minorEdit = minor)
-    return location.end()
+            if not self.debug:
+                page.put(contents, comment = commenttext, minorEdit = self.minor)
+
+class PageFromFileReader:
+    """
+    Responsible for reading the file.
+
+    The run() method yields a (title, contents) tuple for each found page.
+    """
+    def __init__(self, filename, pageStartMarker, pageEndMarker, titleStartMarker, titleEndMarker, include, notitle):
+        self.filename = filename
+        self.pageStartMarker = pageStartMarker
+        self.pageEndMarker = pageEndMarker
+        self.titleStartMarker = titleStartMarker
+        self.titleEndMarker = titleEndMarker
+        self.include = include
+        self.notitle = notitle
+
+    def run(self):
+        f = codecs.open(self.filename, 'r', encoding = config.textfile_encoding)
+        text = f.read()
+        position = 0
+        while True:
+            length, title, contents = self.findpage(text[position:])
+            if length == 0:
+                break
+            else:
+                position += length
+                yield title, contents
+
+    def findpage(self, text):
+        pageR = re.compile(self.pageStartMarker + "(.*?)" + self.pageEndMarker, re.DOTALL)
+        titleR = re.compile(self.titleStartMarker + "(.*?)" + self.titleEndMarker)
+
+        try:
+            location = pageR.search(text)
+            if self.include:
+                contents = location.group()
+            else:
+                contents = location.group(1)
+            if self.notitle:
+                #Remove title (to allow creation of redirects)
+                contents = titleR.sub('', contents, count = 1)
+        except AttributeError:
+            wikipedia.output(u'\nStart or end marker not found.')
+            return 0, None, None
+        try:
+            title = titleR.search(contents).group(1)
+        except AttributeError:
+            wikipedia.output(u'\nNo title found - skipping a page.')
+            return 0, None, None
+        else:
+            return location.end(), title, contents
 
 def main():
-    text = []
-    f = codecs.open(filename,'r', encoding = config.textfile_encoding)
-    text = f.read()
-    a = findpage(text)
-    position = a
-    while a>0:
-        a = findpage(text[position+1:])
-        position += a
+    # Adapt these to the file you are using. 'pageStartMarker' and 'pageEndMarker' are
+    # the beginning and end of each entry. Take text that should be included
+    # and does not occur elsewhere in the text.
 
-mysite = wikipedia.getSite()
-commenttext = wikipedia.translate(mysite,msg)
-for arg in wikipedia.handleArgs():
-    if arg.startswith("-start:"):
-        starttext=arg[7:]
-    elif arg.startswith("-end:"):
-        endtext=arg[5:]
-    elif arg.startswith("-file:"):
-        filename=arg[6:]
-    elif arg=="-include":
-        include = True
-    #elif arg=="-exclude":
-        #exclude = True
-    elif arg=="-appendtop":
-        append = "Top"
-    elif arg=="-appendbottom":
-        append = "Bottom"
-    elif arg=="-force":
-        force=True
-    elif arg=="-debug":
-        wikipedia.output(u"Debug mode enabled.")
-        debug = True
-    elif arg=="-safe":
-        force = False
-        append = None
-    elif arg=='-notitle':
-        notitle=True
-    elif arg=='-minor':
-        minor=True
-    elif arg.startswith("-titlestart:"):
-        titlestart=arg[12:]
-    elif arg.startswith("-titleend:"):
-        titleend=arg[10:]
-    elif arg.startswith("-summary:"):
-        commenttext=arg[9:]
+    # TODO: make config variables for these.
+    filename = "dict.txt"
+    pageStartMarker = "{{-start-}}"
+    pageEndMarker = "{{-stop-}}"
+    titleStartMarker = u"'''"
+    titleEndMarker = u"'''"
+
+    include = False
+    force = False
+    append = None
+    notitle = False
+    minor = False
+    debug = False
+
+    for arg in wikipedia.handleArgs():
+        if arg.startswith("-start:"):
+            pageStartMarker = arg[7:]
+        elif arg.startswith("-end:"):
+            pageEndMarker = arg[5:]
+        elif arg.startswith("-file:"):
+            filename = arg[6:]
+        elif arg == "-include":
+            include = True
+        elif arg == "-appendtop":
+            append = "Top"
+        elif arg == "-appendbottom":
+            append = "Bottom"
+        elif arg == "-force":
+            force=True
+        elif arg == "-debug":
+            wikipedia.output(u"Debug mode enabled.")
+            debug = True
+        elif arg == "-safe":
+            force = False
+            append = None
+        elif arg == '-notitle':
+            notitle = True
+        elif arg == '-minor':
+            minor = True
+        elif arg.startswith("-titlestart:"):
+            titleStartMarker = arg[12:]
+        elif arg.startswith("-titleend:"):
+            titleEndMarker = arg[10:]
+        elif arg.startswith("-summary:"):
+            commenttext = arg[9:]
+        else:
+            wikipedia.output(u"Disregarding unknown argument %s." % arg)
+
+    reader = PageFromFileReader(filename, pageStartMarker, pageEndMarker, titleStartMarker, titleEndMarker, include, notitle)
+
+    bot = PageFromFileRobot(reader, force, append, minor, debug)
+    bot.run()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except:
+        wikipedia.stopme()
+        raise
     else:
-        wikipedia.output(u"Disregarding unknown argument %s." % arg)
-
-try:
-    main()
-except:
-    wikipedia.stopme()
-    raise
-else:
-    wikipedia.stopme()
+        wikipedia.stopme()
