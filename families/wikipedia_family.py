@@ -163,7 +163,7 @@ class Family(family.Family):
             'lt': u'Wikipedia aptarimas',
             'lv': u'Wikipedia diskusija',
             'mk': u'Разговор за Википедија',
-            'ml': u'വിക്കിപീഡിയ talk',
+            'ml': u'വിക്കിപീഡിയ സംവാദം',
             'mr': u'Wikipedia चर्चा',
             'ms': u'Perbualan Wikipedia',
             'mt': u'Wikipedija talk',
