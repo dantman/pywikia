@@ -21,7 +21,8 @@ class Family(family.Family):
             'test':'test.wikipedia.org',
             'tokipona':'tokipona.wikipedia.org',
             'zh-cn':'zh.wikipedia.org',
-            'zh-tw':'zh.wikipedia.org'
+            'zh-tw':'zh.wikipedia.org',
+            'zh-classic': 'zh-classical.wikipedia.org'
             }
         for lang in self.knownlanguages:
             if lang not in self.langs:

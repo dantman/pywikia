@@ -4049,6 +4049,10 @@ def altlang(code):
         return ['be','be-x-old','ru']
     if code in ['kk','ky','tk']:
         return ['tr','ru']
+    if code == 'zh-classic':
+        return ['zh-classical','zh','zh-cn','zh-tw']
+    if code == 'zh-classic':
+        return ['zh-classical','zh','zh-cn','zh-tw']
     if code in ['diq','ug','uz']:
         return ['tr']
     if code in ['ja','minnan','zh','zh-cn']:
