@@ -856,7 +856,10 @@ class Page(object):
         path = site.references_address(self.urlname())
         iscontent = lambda text:text in ("bodyContent", "mainContent")
         content = SoupStrainer("div", id=iscontent)
-        next_msg = mediawiki_messages.get('whatlinkshere-next', site)
+        try:
+            next_msg = mediawiki_messages.get('whatlinkshere-next', site)
+        except KeyError:
+            next_msg = "next %i" % config.special_page_limit
         plural = (config.special_page_limit == 1) and "\\1" or "\\2"
         next_msg = re.sub(r"{{PLURAL:\$1\|(.*?)\|(.*?)}}", plural, next_msg)
         nextpattern = re.compile("^%s$" % next_msg.replace("$1", "[0-9]+"))
