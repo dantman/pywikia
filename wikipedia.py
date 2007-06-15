@@ -854,8 +854,11 @@ class Page(object):
         """
         site = self.site()
         path = site.references_address(self.urlname())
-        content = SoupStrainer("div", id="bodyContent")
-        next_msg = mediawiki_messages.get('nextn', site)
+        iscontent = lambda text:text in ("bodyContent", "mainContent")
+        content = SoupStrainer("div", id=iscontent)
+        next_msg = mediawiki_messages.get('whatlinkshere-next', site)
+        plural = (config.special_page_limit == 1) and "\\1" or "\\2"
+        next_msg = re.sub(r"{{PLURAL:\$1\|(.*?)\|(.*?)}}", plural, next_msg)
         nextpattern = re.compile("^%s$" % next_msg.replace("$1", "[0-9]+"))
         delay = 1
         self._isredirectmessage = mediawiki_messages.get("Isredirect", site)
@@ -1019,7 +1022,7 @@ class Page(object):
         # fetched a page, this will do nothing, because get() is cached.
         try:
             self.get(force = True)
-        except wikipedia.NoPage:
+        except NoPage:
             pass
 
         # If there is an unchecked edit restriction, we need to load the page
