@@ -257,7 +257,7 @@ report_page = {
     'it': u'Utente:Filbot/Report',
     'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
     'no': u'Bruker:JhsBot II/Rapport',
-    'sq': u'User:Eagleal/Report',
+    'sq': u'User:EagleBot/Report',
     }
 # The edit summary for reporting a possibly bad username.
 comment = {
@@ -417,7 +417,7 @@ def report(wsite, rep_page, username, com, rep):
         wikipedia.output(u"...Reported...")
     else:
         pos = y.end()
-        wikipedia.output(u"The user is already in the report page.")
+        wikipedia.output(username + u" is already in the report page.")
 
 def blocked(wsite, username):
     #A little function to check if the user has already been blocked (to skip him).
@@ -682,7 +682,8 @@ if __name__ == "__main__":
                             wikipedia.output(u"An edit conflict has occured, skipping this user.")
                             continue
                     else:
-                        wikipedia.output(u"Already welcomed when i was loading all the users... skipping")
+                        wikipedia.output(username + u" has been already welcomed when i was loading all the users... skipping")
+                        continue
                 # That's the log ^__^
                 if log_variable == True and logg:
                     if len(hechas) == 1:
@@ -757,3 +758,4 @@ if __name__ == "__main__":
                     break
     finally:
         wikipedia.stopme()
+
