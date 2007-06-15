@@ -20,6 +20,9 @@ class Family(family.Family):
             '_default': [u'MozillaWiki talk', self.namespaces[5]['_default']],
         }
 
+    def RversionTab(self, code):
+        return r'<li\s*><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>'
+
     def version(self, code):
         return "1.6.8"
 
