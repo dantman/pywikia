@@ -184,11 +184,12 @@ This script understands various command-line arguments:
     -bracket       only work on pages that have (in the home language) a bracket
                    in their title. All other pages are skipped.
 
+    -withoutinterwiki work on [[Special:Withoutinterwiki]] articles.
+
 Some configuration option can be used to change the working of this robot:
 
 interwiki_backlink: if set to True, all problems in foreign wikis will
                     be reported
-
 
 interwiki_shownew:  should interwiki.py display every new link it discovers?
 
