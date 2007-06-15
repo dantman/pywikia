@@ -1017,7 +1017,10 @@ class Page(object):
         """
         # Fetch the page to get an edit token. If we already have
         # fetched a page, this will do nothing, because get() is cached.
-        self.get(force = True)
+        try:
+            self.get(force = True)
+        except wikipedia.NoPage:
+            pass
 
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
