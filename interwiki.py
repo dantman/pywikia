@@ -1056,9 +1056,10 @@ class Subject(object):
                         except wikipedia.LockedPage:
                             wikipedia.output(u'Page %s is locked. Skipping.' % page.title())
                             raise SaveError
-                        except (wikipedia.EditConflict, wikipedia.SpamfilterError), error:
-                            # we can't resolve edit conflicts and spamfilter triggerings
-                            # automatically.
+                        except wikipedia.EditConflict:
+                            wikipedia.output(u'ERROR putting page: An edit conflict occurred. Giving up.')
+                            raise SaveError                            
+                        except (wikipedia.SpamfilterError), error:
                             wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % error.url)
                             raise SaveError
                         except (socket.error, IOError, wikipedia.PageNotSaved), error:
