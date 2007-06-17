@@ -1024,7 +1024,7 @@ class Page(object):
         # Fetch the page to get an edit token. If we already have
         # fetched a page, this will do nothing, because get() is cached.
         try:
-            self.get(force = True)
+            self.get(force = True, get_redirect = True)
         except NoPage:
             pass
 
