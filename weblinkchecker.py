@@ -44,7 +44,7 @@ __version__='$Id$'
 import wikipedia, config, pagegenerators
 import sys, re
 import codecs, pickle
-import httplib, socket, urlparse
+import httplib, socket, urlparse, urllib2
 import threading, time
 
 talk_report_msg = {
@@ -60,17 +60,25 @@ talk_report_msg = {
     'sr': u'Бот: Пријављивање непостојећих спољашњих повезница',
 }
 
+# The first %s will be replaced by the URL and the error report.
+# The second %s will be replaced by a hint to the Internet Archive,
+# in case the page has been archived there.
 talk_report = {
-    'de': u'== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich unerreichbar ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n--~~~~',
-    'en': u'== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n--~~~~',
-    'fr': u'== Lien mort ==\n\nPendant plusieurs patrouilles par bot, le lien suivant a été inaccessible. Veuillez vérifier si le lien est effectivement mort et corrigez ou retirez-le si oui.\n\n%s\n--~~~~',
-    'he': u'== קישור שבור ==\n\nבמהלך מספר ריצות אוטומטיות של הבוט, נמצא שהקישור החיצוני הבא אינו זמין. אנא בדקו אם הקישור אכן שבור, ותקנו אותו או הסירו את הפיסקאות הללו במקרה זה!\n\n%s\n--~~~~',
-    'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n--~~~~',
-    'nds': u'== Weblenk geiht nich mehr ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n--~~~~',
-    'nl': u'== Dode link ==\nTijdens enkele automatische controles bleek de onderstaande externe link onbereikbaar. Controleer alstublieft of de link inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe link.\n\n%s\n--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
-    'pl': u'== Martwy link ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n--~~~~',
+    'de': u'== Toter Weblink ==\n\nBei mehreren automatisierten Botläufen wurde der folgende Weblink als nicht verfügbar erkannt. Bitte überprüfe, ob der Link tatsächlich unerreichbar ist, und korrigiere oder entferne ihn in diesem Fall!\n\n%s\n%s--~~~~',
+    'en': u'== Dead link ==\n\nDuring several automated bot runs the following external link was found to be unavailable. Please check if the link is in fact down and fix or remove it in that case!\n\n%s\n%s--~~~~',
+    'fr': u'== Lien mort ==\n\nPendant plusieurs patrouilles par bot, le lien suivant a été inaccessible. Veuillez vérifier si le lien est effectivement mort et corrigez ou retirez-le si oui.\n\n%s\n%s--~~~~',
+    'he': u'== קישור שבור ==\n\nבמהלך מספר ריצות אוטומטיות של הבוט, נמצא שהקישור החיצוני הבא אינו זמין. אנא בדקו אם הקישור אכן שבור, ותקנו אותו או הסירו את הפיסקאות הללו במקרה זה!\n\n%s\n%s--~~~~',
+    'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n%s--~~~~',
+    'nds': u'== Weblenk geiht nich mehr ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n%s--~~~~',
+    'nl': u'== Dode link ==\nTijdens enkele automatische controles bleek de onderstaande externe link onbereikbaar. Controleer alstublieft of de link inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe link.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
+    'pl': u'== Martwy link ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n%s--~~~~',
     'pt': u'== Link quebrado ==\n\nFoi checado os links externos deste artigo por vários minutos. Verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
-    'sr': u'== Покварене спољашње повезнице ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n--~~~~',
+    'sr': u'== Покварене спољашње повезнице ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
+}
+
+talk_report_archive = {
+    'de': u'Die Webseite wurde vom Internet Archive gespeichert. Bitte verlinke gegebenenfalls eine geeignete archivierte Version: [%s]. ',
+    'en': u'\nThe web page has been saved by the Internet Archive. Please consider linking to an appropriate archived version: [%s]. ',
 }
 
 ignorelist = [
@@ -130,6 +138,25 @@ def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     text = re.sub('(?s)<nowiki>.*?</nowiki>|<!--.*?-->', '', text)
     for m in linkR.finditer(text):
         yield m.group('url')
+
+class InternetArchiveConsulter:
+    def __init__(self, url):
+        self.url = url
+
+    def getArchiveURL(self):
+        return 'http://web.archive.org/web/*/%s' % self.url
+
+    def isArchived(self):
+        wikipedia.output(u'Consulting the Internet Archive for %s' % self.url)
+        f = urllib2.urlopen(self.getArchiveURL())
+        text = f.read()
+        return text.find("Search Results for ") != -1
+
+    def getArchiveMessage(self):
+        if self.isArchived():
+            return wikipedia.translate(wikipedia.getSite(), talk_report_archive) % self.getArchiveURL()
+        else:
+            return u''
 
 class LinkChecker(object):
     '''
@@ -467,7 +494,11 @@ class DeadLinkReportThread(threading.Thread):
                         continue
                 except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                     content = u''
-                content += wikipedia.translate(wikipedia.getSite(), talk_report) % errorReport
+                # search for archived page
+                iac = InternetArchiveConsulter(url)
+                archiveMsg = iac.getArchiveMessage()
+
+                content += wikipedia.translate(wikipedia.getSite(), talk_report) % (errorReport, archiveMsg)
                 try:
                     talk.put(content)
                 except wikipedia.SpamfilterError, error:
