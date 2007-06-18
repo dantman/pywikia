@@ -270,8 +270,10 @@ class GiveUpOnPage(wikipedia.Error):
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
     'ar': (u'روبوت ', u'إضافة', u'إزالة', u'تعديل'),
+    'bat-smg': (u'Robots ', u'Pridedama', u'Keitama', u'Trėnama'),
     'be': (u'робат ', u'Дадаем', u'Выдаляем', u'Мяняем'),
     'be-x-old': (u'робат ', u'дадаў', u'выдаліў', u'зьмяніў'),
+    'bg': (u'Робот ', u'Добавяне', u'Изтриване', u'Промяна'),
     'br': (u'Robot ', u'ouzhpennet', u'tennet', u'kemmet'),
     'ca': (u'Robot ', u'afegeix', u'esborra', u'modifica'),
     'cs': (u'robot ', u'přidal', u'odebral', u'změnil'),
