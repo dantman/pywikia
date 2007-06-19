@@ -449,7 +449,7 @@ class Page(object):
         return _autoFormat
 
 
-    def get(self, force = False, get_redirect=False, throttle = True, sysop = False, nofollow_redirects=False):
+    def get(self, force = False, get_redirect=False, throttle = True, sysop = False, nofollow_redirects=False, change_edit_time = True):
         """The wiki-text of the page. This will retrieve the page if it has not
            been retrieved yet. This can raise the following exceptions that
            should be caught by the calling code:
@@ -464,6 +464,8 @@ class Page(object):
             Set get_redirect to True to follow redirects rather than raise an exception.
             Set force to True to ignore all exceptions (including redirects).
             Set nofollow_redirects to True to not follow redirects but obey all other exceptions.
+            Set change_version_date to False if you have already loaded the page before and
+                do not check this version for changes before saving
         """
         # NOTE: The following few NoPage exceptions could already be thrown at
         # the Page() constructor. They are raised here instead for convenience,
@@ -522,7 +524,7 @@ class Page(object):
                 raise
         return self._contents
 
-    def getEditPage(self, get_redirect=False, throttle = True, sysop = False, oldid = None, nofollow_redirects = False):
+    def getEditPage(self, get_redirect=False, throttle = True, sysop = False, oldid = None, nofollow_redirects = False, change_edit_time = True):
         """
         Get the contents of the Page via the edit page.
         Do not use this directly, use get() instead.
@@ -600,17 +602,18 @@ class Page(object):
             self.site().putToken(tokenloc.group(1), sysop = sysop)
         elif not self.site().getToken(getalways = False):
             self.site().putToken('', sysop = sysop)
-        # Get timestamps
-        m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
-        if m:
-            self._editTime = m.group(1)
-        else:
-            self._editTime = "0"
-        m = re.search('value="(\d+)" name=["\']wpStarttime["\']', text)
-        if m:
-            self._startTime = m.group(1)
-        else:
-            self._startTime = "0"
+        if change_edit_time:
+            # Get timestamps
+            m = re.search('value="(\d+)" name=["\']wpEdittime["\']', text)
+            if m:
+                self._editTime = m.group(1)
+            else:
+                self._editTime = "0"
+            m = re.search('value="(\d+)" name=["\']wpStarttime["\']', text)
+            if m:
+                self._startTime = m.group(1)
+            else:
+                self._startTime = "0"
         # Find out if page actually exists. Only existing pages have a
         # version history tab.
         if self.site().family.RversionTab(self.site().language()):
@@ -1024,14 +1027,14 @@ class Page(object):
         # Fetch the page to get an edit token. If we already have
         # fetched a page, this will do nothing, because get() is cached.
         try:
-            self.get(force = True, get_redirect = True)
+            self.site().sandboxpage.get(get_redirect = True)
         except NoPage:
             pass
 
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
             output(u'Page %s is semi-protected. Getting edit page to find out if we are allowed to edit.' % self.aslink())
-            self.get(force = True)
+            self.get(force = True, change_edit_time = False)
             self._editrestriction = False
         # If no comment is given for the change, use the default
         comment = comment or action
@@ -1041,9 +1044,6 @@ class Page(object):
                 output(u'Page is locked, using sysop account.')
             except NoUsername:
                 raise LockedPage()
-            if getattr(self, '_editTime', '0') == '0':
-                # Force getting sysop tokens
-                self.get(force = True, sysop = True)
         else:
             self.site().forceLogin()
         if config.cosmetic_changes and not self.isTalkPage():
@@ -3003,6 +3003,7 @@ class Site(object):
         for language in self.languages():
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
+        self.sandboxpage = Page(self,self.family.sandboxpage(code))
 
     def urlEncode(self, query):
         """This can encode a query so that it can be sent as a query using
@@ -3854,7 +3855,7 @@ class Site(object):
         if getagain or (getalways and ((sysop and not self._sysoptoken) or (not sysop and not self._token))):
             output(u"Getting page to get a token.")
             try:
-                Page(self, "%s:Sandbox" % self.family.namespace(self.lang, 4)).get(force = True, get_redirect = True, sysop = sysop)
+                self.site().sandboxpage.get(force = True, get_redirect = True, sysop = sysop)
                 #Page(self, "Non-existing page").get(force = True, sysop = sysop)
             except UserBlocked:
                 raise

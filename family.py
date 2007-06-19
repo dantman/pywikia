@@ -2337,7 +2337,7 @@ class Family:
         'nn': [u'omdiriger'],
         'ru': [u'перенаправление', u'перенапр'],
         'sk': [u'presmeruj'],
-        'sr': [u'преусмери'],
+        'sr': [u'преусмери',u'Преусмери'], # Using lowercase only doesn't work?
         'tt': [u'yünältü'],
         'yi': [u'ווייטערפירן']
     }
@@ -2579,3 +2579,9 @@ class Family:
         """Change this to some regular expression that shows the page we
         found is an existing page, in case the normal regexp does not work."""
         return None
+
+    def sandboxpage(self, code):
+        """Give the title of a sandbox page for a given language. It should be
+        a page with no edit restrictions, that is, if we can edit any page, we
+        should be able to edit this page."""
+        return "%s:Sandbox"%self.namespace(code,4)
