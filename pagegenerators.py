@@ -199,18 +199,22 @@ class GoogleSearchPageGenerator:
     def __init__(self, query = None):
         self.query = query or wikipedia.input(u'Please enter the search query:')
     
+    #########
+    # partially commented out because it is probably not in compliance with Google's "Terms of 
+    # service" (see 5.3, http://www.google.com/accounts/TOS?loc=US)
     def queryGoogle(self, query):
-        if config.google_key:
-            try:
+        #if config.google_key:
+        if True:
+            #try:
                 import google
                 for url in self.queryViaSoapApi(query):
                     yield url
                 return
-            except ImportError:
-                pass
+            #except ImportError:
+                #pass
         # No google license key, or pygoogle not installed. Do it the ugly way.
-        for url in self.queryViaWeb(query):
-            yield url
+        #for url in self.queryViaWeb(query):
+        #    yield url
 
     def queryViaSoapApi(self, query):
         google.LICENSE_KEY = config.google_key
@@ -242,30 +246,35 @@ class GoogleSearchPageGenerator:
             #print 'estimatedTotalResultsCount: ', estimatedTotalResultsCount
             offset += 10
 
-    def queryViaWeb(self, query):
-        """
-        Google has stopped giving out API license keys, and sooner or later
-        they will probably shut down the service.
-        This is a quick and ugly solution: we just grab the search results from
-        the normal web interface.
-        """
-        linkR = re.compile(r'<a href="([^>"]+?)" class=l>', re.IGNORECASE)
-        offset = 0
+    #########
+    # commented out because it is probably not in compliance with Google's "Terms of 
+    # service" (see 5.3, http://www.google.com/accounts/TOS?loc=US)
 
-        while True:
-            wikipedia.output("Google: Querying page %d" % (offset / 100 + 1))
-            address = "http://www.google.com/search?q=%s&num=100&hl=en&start=%d" % (urllib.quote_plus(query), offset)
-            # we fake being Firefox because Google blocks unknown browsers
-            request = urllib2.Request(address, None, {'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5'})
-            urlfile = urllib2.urlopen(request)
-            page = urlfile.read()
-            urlfile.close()
-            for url in linkR.findall(page):
-                yield url
-            if "<div id=nn>" in page: # Is there a "Next" link for next page of results?
-                offset += 100  # Yes, go to next page of results.
-            else:
-                return
+    #def queryViaWeb(self, query):
+        #"""
+        #Google has stopped giving out API license keys, and sooner or later
+        #they will probably shut down the service.
+        #This is a quick and ugly solution: we just grab the search results from
+        #the normal web interface.
+        #"""
+        #linkR = re.compile(r'<a href="([^>"]+?)" class=l>', re.IGNORECASE)
+        #offset = 0
+
+        #while True:
+            #wikipedia.output("Google: Querying page %d" % (offset / 100 + 1))
+            #address = "http://www.google.com/search?q=%s&num=100&hl=en&start=%d" % (urllib.quote_plus(query), offset)
+            ## we fake being Firefox because Google blocks unknown browsers
+            #request = urllib2.Request(address, None, {'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686; de; rv:1.8) Gecko/20051128 SUSE/1.5-0.1 Firefox/1.5'})
+            #urlfile = urllib2.urlopen(request)
+            #page = urlfile.read()
+            #urlfile.close()
+            #for url in linkR.findall(page):
+                #yield url
+            #if "<div id=nn>" in page: # Is there a "Next" link for next page of results?
+                #offset += 100  # Yes, go to next page of results.
+            #else:
+                #return
+    #########
 
     def __iter__(self):
         site = wikipedia.getSite()
