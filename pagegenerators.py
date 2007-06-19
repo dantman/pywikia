@@ -400,6 +400,8 @@ class _Preloader(threading.Thread):
         self.queue = queue
         self.generator = generator
         self.pageNumber = pageNumber
+        # identification for debugging purposes
+        self.setName('Preloader-Thread')
         # This thread dies when the main program terminates
         self.setDaemon(True)
 
@@ -415,24 +417,28 @@ class _Preloader(threading.Thread):
             pass
 
     def run(self):
-        # this array will contain up to pageNumber pages and will be flushed
-        # after these pages have been preloaded and yielded.
-        somePages = []
-        for page in self.generator:
-            somePages.append(page)
-            # We don't want to load too many pages at once using XML export.
-            # We only get a maximum number at a time.
-            if len(somePages) >= self.pageNumber:
+        try:
+            # this array will contain up to pageNumber pages and will be flushed
+            # after these pages have been preloaded and yielded.
+            somePages = []
+            for page in self.generator:
+                somePages.append(page)
+                # We don't want to load too many pages at once using XML export.
+                # We only get a maximum number at a time.
+                if len(somePages) >= self.pageNumber:
+                    self.preload(somePages)
+                    for refpage in somePages:
+                        self.queue.put(refpage)
+                    somePages = []
+            if somePages:
+                # preload remaining pages
                 self.preload(somePages)
                 for refpage in somePages:
                     self.queue.put(refpage)
-                somePages = []
-        if somePages:
-            # preload remaining pages
-            self.preload(somePages)
-            for refpage in somePages:
-                self.queue.put(refpage)
-        self.queue.put(None)    # to signal end of list
+            self.queue.put(None)    # to signal end of list
+        except Exception, e:
+            wikipedia.output(str(e))
+            self.queue.put(None)    # to signal end of list
 
 def PreloadingGenerator(generator, pageNumber=60):
     """
