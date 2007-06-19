@@ -150,9 +150,11 @@ class NowCommonsDeleteBot:
                 if md5 == commonsImagePage.getFileMd5Sum():
                     wikipedia.output(u'The image is identical to the one on Commons.')
                     if autonomous == False:
-                        wikipedia.output(u'\n>>>>>>> Description on %s <<<<<<\n' % localImagePage.aslink())
+                        colors = [None] * 22 + [12] * len(page.title()) + [None] * 6
+                        wikipedia.output(u'\n\n>>>> Description on %s <<<<\n' % page.title(), colors = colors)
                         wikipedia.output(localImagePage.get())
-                        wikipedia.output(u'\n>>>>>> Description on %s <<<<<<\n' % commonsImagePage.aslink())
+                        colors = [None] * 22 + [10] * len(commonsImagePage.title()) + [None] * 6
+                        wikipedia.output(u'\n\n>>>> Description on %s <<<<\n' % commonsImagePage.title(), colors = colors)
                         wikipedia.output(commonsText)
                         choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
                         if choice == 'y':
