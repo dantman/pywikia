@@ -44,7 +44,7 @@ __version__='$Id$'
 import wikipedia, config, pagegenerators
 import sys, re
 import codecs, pickle
-import httplib, socket, urlparse, urllib2
+import httplib, socket, urlparse, urllib, urllib2
 import threading, time
 
 talk_report_msg = {
@@ -176,8 +176,6 @@ class LinkChecker(object):
         resolveRedirect(). This is needed to detect redirect loops.
         """
         self.url = url
-        self.redirectChain = redirectChain + [url]
-        self.changeUrl(url)
         self.header = {
             # 'User-agent': wikipedia.useragent,
             # we fake being Firefox because some webservers block unknown
@@ -189,7 +187,30 @@ class LinkChecker(object):
             'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
             'Keep-Alive': '30',
             'Connection': 'keep-alive',
-            }
+        }
+        self.redirectChain = redirectChain + [url]
+        self.changeUrl(url)
+
+    def getConnection(self):
+        if self.scheme == 'http':
+            return httplib.HTTPConnection(self.host)
+        elif self.scheme == 'https':
+            return httplib.HTTPSConnection(self.host)
+
+    def getEncodingUsedByServer(self):
+        try:
+            conn = self.getConnection()
+            conn.request('HEAD', '/', None, self.header)
+            response = conn.getresponse()
+
+            ct = response.getheader('Content-Type')
+            charsetR = re.compile('charset=(.+)')
+            charset = charsetR.search(ct).group(1)
+            return charset
+        except:
+            wikipedia.output(u'Error retrieving server\'s default charset. Using UTF-8.')
+            return 'utf-8'
+
 
     def changeUrl(self, url):
         self.url = url
@@ -200,7 +221,16 @@ class LinkChecker(object):
         if self.query:
             self.query = '?' + self.query
         self.protocol = url.split(':', 1)[0]
-        
+        # check if there are non-ASCII characters inside path or query, and if
+        # so, encode them in an encoding that hopefully is the right one.
+        try:
+            self.path.encode('ascii')
+            self.query.encode('ascii')
+        except UnicodeEncodeError:
+            wikipedia.output(u'%s contains non-ASCII characters. Contacting server to find out its default encoding...' % self.url)
+            encoding = self.getEncodingUsedByServer()
+            self.path = unicode(urllib.quote(self.path.encode(encoding)))
+            self.query = unicode(urllib.quote(self.query.encode(encoding), '=&'))
 
     def resolveRedirect(self, useHEAD = True):
         '''
@@ -210,10 +240,7 @@ class LinkChecker(object):
         If useHEAD is true, uses the HTTP HEAD method, which saves bandwidth
         by not downloading the body. Otherwise, the HTTP GET method is used.
         '''
-        if self.scheme == 'http':
-            conn = httplib.HTTPConnection(self.host)
-        elif self.scheme == 'https':
-            conn = httplib.HTTPSConnection(self.host)
+        conn = self.getConnection()
         try:
             if useHEAD:
                 conn.request('HEAD', '%s%s' % (self.path, self.query), None, self.header)
@@ -290,10 +317,7 @@ class LinkChecker(object):
                 return redirChecker.check(useHEAD = useHEAD)
         else:
             try:
-                if self.scheme == 'http':
-                    conn = httplib.HTTPConnection(self.host)
-                elif self.scheme == 'https':
-                    conn = httplib.HTTPSConnection(self.host)
+                conn = self.getConnection()
             except httplib.error, arg:
                 return False, u'HTTP Error: %s' % arg
             try:
@@ -313,7 +337,7 @@ class LinkChecker(object):
 
 class LinkCheckThread(threading.Thread):
     '''
-    A thread responsible for checking one page. After checking the page, it
+    A thread responsible for checking one URL. After checking the page, it
     will die.
     '''
     def __init__(self, page, url, history):
@@ -321,6 +345,8 @@ class LinkCheckThread(threading.Thread):
         self.page = page
         self.url = url
         self.history = history
+        # identification for debugging purposes
+        self.setName((u'%s - %s' % (page.title(), url)).encode('utf-8', 'replace'))
         
     def run(self):
         linkChecker = LinkChecker(self.url)
@@ -560,6 +586,14 @@ class WeblinkCheckerRobot:
                 thread.setDaemon(True)
                 thread.start()
 
+def countLinkCheckThreads():
+    i = 0
+    for thread in threading.enumerate():
+        # print thread
+        if isinstance(thread, LinkCheckThread):
+            i += 1
+    return i
+
 def main():
     gen = None
     start = '!'
@@ -589,17 +623,17 @@ def main():
         finally:
             waitTime = 0
             # Don't wait longer than 30 seconds for threads to finish.
-            while threading.activeCount() > 2 and waitTime < 30:
+            while countLinkCheckThreads() > 0 and waitTime < 30:
                 try:
-                    wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 2)) # don't count the main thread and report thread
+                    wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % countLinkCheckThreads())
                     # wait 1 second
                     time.sleep(1)
                     waitTime += 1
                 except KeyboardInterrupt:
                     wikipedia.output(u'Interrupted.')
                     break
-            if threading.activeCount() > 2:
-                wikipedia.output(u'Remaining %i threads will be killed.' % (threading.activeCount() - 2))
+            if countLinkCheckThreads() > 0:
+                wikipedia.output(u'Remaining %i threads will be killed.' % countLinkCheckThreads())
                 # Threads will die automatically because they are daemonic.
             wikipedia.output(u'Saving history...')
             bot.history.save()
