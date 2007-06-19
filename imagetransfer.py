@@ -49,7 +49,7 @@ copy_message = {
 nowCommonsTemplate = {
     'de': u'{{NowCommons|%s}}',
     'fr': u'{{Désormais sur Commons|%s}}',
-    'en': u'{{NowCommons|Image:%s}}',
+    'en': u'{{subst:ncd|Image:%s}}',
     'he': u'{{תמונת ויקישיתוף|Image:%s}}',
     'ia': u'{{OraInCommons|Imagine:%s}}',
     'it': u'{{NowCommons unlink|%s}}',
@@ -60,11 +60,11 @@ nowCommonsTemplate = {
     'sr': u'{{NowCommons|%s}}',
 }
 
-nowCommonsThis = {
-    'en': u'{{NowCommonsThis|%s}}',
-    'it': u'{{NowCommons omonima|%s}}',
-    'pt': u'{{NowCommonsThis|%s}}',
-}
+#nowCommonsThis = {
+    #'en': u'{{NowCommonsThis|%s}}',
+    #'it': u'{{NowCommons omonima|%s}}',
+    #'pt': u'{{NowCommonsThis|%s}}',
+#}
 
 nowCommonsMessage = {
     'de': u'Datei ist jetzt auf Wikimedia Commons verfügbar.',
@@ -79,12 +79,12 @@ nowCommonsMessage = {
     'sr': u'Слика је сада доступна и на Викимедија Остави.',
 }
 
-nowCommonsThisMessage = {
-    'en': u'File is now available on Commons with the same name.',
-    'he': u'הקובץ זמין כעת בוויקישיתוף בשם זהה.',
-    'it': u'L\'immagine è adesso disponibile su Wikimedia Commons con lo stesso nome.',
-    'pt': u'Esta imagem está agora no Commons com o mesmo nome.',
-}
+#nowCommonsThisMessage = {
+    #'en': u'File is now available on Commons with the same name.',
+    #'he': u'הקובץ זמין כעת בוויקישיתוף בשם זהה.',
+    #'it': u'L\'immagine è adesso disponibile su Wikimedia Commons con lo stesso nome.',
+    #'pt': u'Esta imagem está agora no Commons com o mesmo nome.',
+#}
 
 # Translations for license templates.
 # Must only be given when they are in fact different.
