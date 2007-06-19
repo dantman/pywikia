@@ -222,7 +222,7 @@ netext = {
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}}%s',
     'it':u'{{subst:Utente:Filnik/benvenuto2}} %s',
-    'nl':u'{{subst:Welkomstbericht}}%s',
+    'nl':u'{{Welkomstbericht}}%s',
     'no':u'{{subst:bruker:jhs/vk}}%s',
     'sq':u'{{subst:tung}}%s',
     }
