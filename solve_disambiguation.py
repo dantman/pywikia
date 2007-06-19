@@ -559,7 +559,7 @@ class DisambiguationRobot(object):
     
                 n += 1
                 # how many bytes should be displayed around the current link
-                context = 30
+                context = 60
                 # This loop will run while the user doesn't choose an option
                 # that will actually change the page
                 while True:
