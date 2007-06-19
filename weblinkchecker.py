@@ -144,19 +144,14 @@ class InternetArchiveConsulter:
         self.url = url
 
     def getArchiveURL(self):
-        return 'http://web.archive.org/web/*/%s' % self.url
-
-    def isArchived(self):
         wikipedia.output(u'Consulting the Internet Archive for %s' % self.url)
-        f = urllib2.urlopen(self.getArchiveURL())
+        archiveURL = 'http://web.archive.org/web/*/%s' % self.url
+        f = urllib2.urlopen(archiveURL)
         text = f.read()
-        return text.find("Search Results for ") != -1
-
-    def getArchiveMessage(self):
-        if self.isArchived():
-            return wikipedia.translate(wikipedia.getSite(), talk_report_archive) % self.getArchiveURL()
+        if text.find("Search Results for ") != -1:
+            return archiveURL
         else:
-            return u''
+            return None
 
 class LinkChecker(object):
     '''
@@ -372,12 +367,15 @@ class History:
             # no saved history exists yet, or history dump broken
             self.historyDict = {}
 
-    def log(self, url, error, containingPage):
+    def log(self, url, error, containingPage, archiveURL):
         """
         Logs an error report to a text file in the deadlinks subdirectory.
         """
         site = wikipedia.getSite()
-        errorReport = u'* %s\n' % url
+        if archiveURL:
+            errorReport = u'* %s ([%s archive])\n' % (url, archiveURL)
+        else:
+            errorReport = u'* %s\n' % url
         for (pageTitle, date, error) in self.historyDict[url]:
             # ISO 8601 formulation
             isoDate = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(date))
@@ -392,7 +390,7 @@ class History:
         txtfile.write(errorReport)
         txtfile.close()
         if self.reportThread and not containingPage.isTalkPage():
-            self.reportThread.report(url, errorReport, containingPage)
+            self.reportThread.report(url, errorReport, containingPage, archiveURL)
     
             
     def setLinkDead(self, url, error, page):
@@ -412,7 +410,10 @@ class History:
             # it should probably be fixed or removed. We'll list it in a file
             # so that it can be removed manually.
             if timeSinceFirstFound > 60 * 60 * 24 * 7:
-                self.log(url, error, page)
+                # search for archived page
+                iac = InternetArchiveConsulter(url)
+                archiveURL = iac.getArchiveURL()
+                self.log(url, error, page, archiveURL)
         else:
             self.historyDict[url] = [(page.title(), now, error)]
         self.semaphore.release()
@@ -455,12 +456,12 @@ class DeadLinkReportThread(threading.Thread):
         self.finishing = False
         self.killed = False
     
-    def report(self, url, errorReport, containingPage):
+    def report(self, url, errorReport, containingPage, archiveURL):
         """
         Tries to add an error report to the talk page belonging to the page containing the dead link.
         """
         self.semaphore.acquire()
-        self.queue.append((url, errorReport, containingPage))
+        self.queue.append((url, errorReport, containingPage, archiveURL))
         self.semaphore.release()
 
     def shutdown(self):
@@ -480,7 +481,7 @@ class DeadLinkReportThread(threading.Thread):
                     time.sleep(0.1)
             else:
                 self.semaphore.acquire()
-                (url, errorReport, containingPage) = self.queue[0]
+                (url, errorReport, containingPage, archiveURL) = self.queue[0]
                 self.queue = self.queue[1:]
                 message = u'** Reporting dead link on ' + containingPage.toggleTalkPage().aslink() + '...'
                 wikipedia.output(message, colors = [11] * len(message))
@@ -494,11 +495,10 @@ class DeadLinkReportThread(threading.Thread):
                         continue
                 except (wikipedia.NoPage, wikipedia.IsRedirectPage):
                     content = u''
-                # search for archived page
-                iac = InternetArchiveConsulter(url)
-                archiveMsg = iac.getArchiveMessage()
 
-                content += wikipedia.translate(wikipedia.getSite(), talk_report) % (errorReport, archiveMsg)
+                if archiveURL:
+                    archiveMsg = wikipedia.translate(wikipedia.getSite(), talk_report_archive) % archiveURL
+                    content += wikipedia.translate(wikipedia.getSite(), talk_report) % (errorReport, archiveMsg)
                 try:
                     talk.put(content)
                 except wikipedia.SpamfilterError, error:
