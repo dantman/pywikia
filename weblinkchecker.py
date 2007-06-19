@@ -106,22 +106,28 @@ class Global(object):
 globalvar = Global()
 
 def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
+    text = wikipedia.removeDisabledParts(text)
+
+    # MediaWiki parses templates before parsing external links. Thus, there
+    # might be a | or a } directly after a URL which does not belong to
+    # the URL itself.
+    # Blow up templates with spaces to avoid these problems.
+    templateWithParamsR = re.compile(r'{{(.*?[^ ])\|([^ ].*?)}}')
+    while templateWithParamsR.search(text):
+        text = templateWithParamsR.sub(r'{{ \1 | \2 }}', text)
+
     # RFC 2396 says that URLs may only contain certain characters.
     # For this regex we also accept non-allowed characters, so that the bot
     # will later show these links as broken ('Non-ASCII Characters in URL').
     # Note: While allowing parenthesis inside URLs, MediaWiki will regard
     # right parenthesis at the end of the URL as not part of that URL.
     # The same applies to dot, comma, colon and some other characters.
-    # MediaWiki allows closing curly braces inside links, but such braces
-    # often come from templates where URLs are parameters, so as a
-    # workaround we won't allow them inside links here. The same is true
-    # for the vertical bar.
-    notAtEnd = '\]\s\)\.:;,<>}\|"'
+    notAtEnd = '\]\s\)\.:;,<>"'
     # So characters inside the URL can be anything except whitespace,
     # closing squared brackets, quotation marks, greater than and less
     # than, and the last character also can't be parenthesis or another
     # character disallowed by MediaWiki.
-    notInside = '\]\s<>}"'
+    notInside = '\]\s<>"'
     # The first half of this regular expression is required because '' is
     # not allowed inside links. For example, in this wiki text:
     #       ''Please see http://www.example.org.''
@@ -584,10 +590,14 @@ def main():
             waitTime = 0
             # Don't wait longer than 30 seconds for threads to finish.
             while threading.activeCount() > 2 and waitTime < 30:
-                wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 2)) # don't count the main thread and report thread
-                # wait 1 second
-                time.sleep(1)
-                waitTime += 1
+                try:
+                    wikipedia.output(u"Waiting for remaining %i threads to finish, please wait..." % (threading.activeCount() - 2)) # don't count the main thread and report thread
+                    # wait 1 second
+                    time.sleep(1)
+                    waitTime += 1
+                except KeyboardInterrupt:
+                    wikipedia.output(u'Interrupted.')
+                    break
             if threading.activeCount() > 2:
                 wikipedia.output(u'Remaining %i threads will be killed.' % (threading.activeCount() - 2))
                 # Threads will die automatically because they are daemonic.
@@ -597,12 +607,11 @@ def main():
                 bot.history.reportThread.shutdown()
                 # wait until the report thread is shut down; the user can interrupt
                 # it by pressing CTRL-C.
-                #try:
                 try:
                     while bot.history.reportThread.isAlive():
                         time.sleep(0.1)
                 except KeyboardInterrupt:
-                    print 'INTERRUPT'
+                    wikipedia.output(u'Report thread interrupted.')
                     bot.history.reportThread.kill()
     else:
         wikipedia.showHelp()
