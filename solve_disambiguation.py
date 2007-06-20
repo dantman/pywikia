@@ -788,7 +788,10 @@ or press enter to quit:""")
 
             self.makeAlternativesUnique()
             # sort possible choices
-            self.alternatives.sort()
+            if self.sortfnc:
+                self.alternatives.sort(self.sortfnc)
+            else:
+                self.alternatives.sort()
             self.listAlternatives()
     
             gen = ReferringPageGeneratorWithIgnore(disambPage, self.primary)
@@ -816,6 +819,9 @@ def main():
     pageTitle = []
     primary = False
     main_only = False
+
+    # For sorting the linked pages, case can be ignored
+    ignoreCase = False
 
     for arg in wikipedia.handleArgs():
         if arg.startswith('-primary:'):
@@ -858,6 +864,8 @@ def main():
             except wikipedia.NoPage:
                 print "Disambiguation category for your wiki is not known."
                 raise
+        elif arg.startswith("-ignorecase"):
+            ignoreCase = True
         elif arg.startswith("-"):
             print "Unrecognized command line argument: %s" % arg
             # show help text and exit
@@ -880,6 +888,9 @@ def main():
         generator = iter([page])
 
     bot = DisambiguationRobot(always, alternatives, getAlternatives, generator, primary, main_only)
+    if ignoreCase:
+        bot.sortfnc = lambda x,y: cmp(x.lower(), y.lower())
+        
     bot.run()
 
 if __name__ == "__main__":
