@@ -1378,7 +1378,7 @@ class Page(object):
                 imagePage = ImagePage(page.site(), page.title())
                 results.append(imagePage)
         # Find images in galleries
-        pageText = self.get()
+        pageText = self.get(get_redirect=followRedirects)
         galleryR = re.compile('<gallery>.*?</gallery>', re.DOTALL)
         galleryEntryR = re.compile('(?P<title>(%s|%s):.+?)(\|.+)?\n' % (self.site().image_namespace(), self.site().family.image_namespace(code = '_default')))
         for gallery in galleryR.findall(pageText):
