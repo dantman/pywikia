@@ -38,7 +38,6 @@ files = sys.argv[2:-3]
 
 input = sys.stdin.read()
 
-
 MESSAGE = """
 <message>
     <generator>
@@ -84,6 +83,9 @@ if logmsg:
     params['logmsg'] = re.sub('\s+',' ',logmsg.group('logmsg'))
 else:
     params['logmsg'] = 'Error parsing log message'
+
+print MESSAGE
+print params
 
 try:
     from xmlrpclib import ServerProxy
