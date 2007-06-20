@@ -1687,6 +1687,11 @@ class Family:
            'pt': u'[a-záâàãéêíóôõúüç]*',
            'ru': u'[a-zа-я]*',
         }
+
+        # Wikimedia wikis all use "bodyContent" as the id of the <div>
+        # element that contains the actual page content; change this for
+        # wikis that use something else (e.g., mozilla family)
+        self.content_id = "bodyContent"
         
         # A dictionary where keys are family codes that can be used in
         # inter-family interwiki links. Values are not used yet.

@@ -20,6 +20,8 @@ class Family(family.Family):
             '_default': [u'MozillaWiki talk', self.namespaces[5]['_default']],
         }
 
+        self.content_id = "mainContent"
+
     def RversionTab(self, code):
         return r'<li\s*><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>'
 
