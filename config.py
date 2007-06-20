@@ -130,7 +130,24 @@ except:
 ############## EXTERNAL EDITOR SETTINGS ##############
 # The command for the editor you want to use. If set to None, a simple Tkinter
 # editor will be used.
-editor = None
+# On Windows systems, this script tries to determine the default text editor.
+if sys.platform=='win32':
+    try:
+        import _winreg
+        key1 = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.txt\OpenWithProgids')
+        progID = _winreg.EnumValue(key1, 1)[0]
+        key2 = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '%s\shell\open\command' % progID)
+        cmd = _winreg.QueryValueEx(key2, None)[0]
+        editor = cmd.replace('%1', '')
+        # Notepad is even worse than our Tkinter editor. Nobody has
+        # deserved to use it.
+        if editor.lower().endswith('notepad.exe'):
+            editor = None
+    except:
+        #raise
+        editor = None
+else:
+    editor = None
 
 # Warning: DO NOT use an editor which doesn't support Unicode to edit pages!
 # You will BREAK non-ASCII symbols!
