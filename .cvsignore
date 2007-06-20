@@ -9,3 +9,4 @@ warning*.log
 check_extern.log
 throttle.log
 login-data
+password-file
