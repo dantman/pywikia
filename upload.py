@@ -24,7 +24,7 @@ __version__='$Id$'
 
 import os, sys, re
 import urllib, httplib
-import wikipedia, config, mediawiki_messages
+import wikipedia, config
 
 def post_multipart(site, address, fields, files, cookies):
     """
@@ -207,7 +207,7 @@ class UploadRobot:
             # Do we know how the "success!" HTML page should look like?
             # ATTENTION: if you changed your Wikimedia Commons account not to show
             # an English interface, this detection will fail!
-            success_msg = mediawiki_messages.get('successfulupload', site = self.targetSite)
+            success_msg = self.targetSite.mediawiki_message('successfulupload')
             if success_msg in returned_html or response.status == 302:
                  wikipedia.output(u"Upload successful.")
             # The following is not a good idea, because the server also gives a 200 when

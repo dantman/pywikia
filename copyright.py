@@ -3,12 +3,13 @@
 """
 This robot checks copyright text in Google and Yahoo.
 
-Google search requires to install the pyGoogle module from http://pygoogle.sf.net
-and get a Google API license key from http://code.google.com/apis/soapsearch/ (but
-since December 2006 Google is no longer issuing new SOAP API keys).
+Google search requires to install the pyGoogle module from
+http://pygoogle.sf.net and get a Google API license key from
+http://code.google.com/apis/soapsearch/ (but since December 2006 Google is
+no longer issuing new SOAP API keys).
 
-Yahoo! search requires pYsearch module from http://pysearch.sourceforge.net and
-a Yahoo AppID from http://developer.yahoo.com.
+Yahoo! search requires pYsearch module from http://pysearch.sourceforge.net
+and a Yahoo AppID from http://developer.yahoo.com.
 
 You can run the bot with the following commandline parameters:
 
@@ -18,9 +19,9 @@ You can run the bot with the following commandline parameters:
 -ny          - Do not use Yahoo!
 -maxquery    - Stop after a specified number of queries for page (default: 25)
 -skipquery   - Skip a number specified of queries
--new
-
--output      - Append results to a specified file (default: 'copyright/output.txt')
+-new         - 
+-output      - Append results to a specified file (default:
+               'copyright/output.txt')
 -file        - Work on all pages given in a local text file.
                Will read any [[wiki link]] and use these articles.
                Argument can also be given as "-file:filename".
@@ -30,8 +31,8 @@ You can run the bot with the following commandline parameters:
                subcategories of the selected category are also included.
                When -cat has not been selected, this has no effect.
 -page        - Only check a specific page.
-               Argument can also be given as "-page:pagetitle". You can give this
-               parameter multiple times to check multiple pages.
+               Argument can also be given as "-page:pagetitle". You can give
+               this parameter multiple times to check multiple pages.
 -ref         - Work on all pages that link to a certain page.
                Argument can also be given as "-ref:referredpagetitle".
 -filelinks   - Works on all pages that link to a certain image.
@@ -63,7 +64,7 @@ request, use this:
 
 from __future__ import generators
 import sys, re, codecs, os, time
-import wikipedia, pagegenerators, catlib, config, mediawiki_messages
+import wikipedia, pagegenerators, catlib, config
 
 __version__='$Id$'
 
@@ -74,20 +75,20 @@ appdir = "copyright/"
 output_file = appdir + "output.txt"
 
 pages_for_exclusion_database = [
-('it', 'User:RevertBot/Lista_di_esclusione', 'exclusion_list.txt'),
-('en', 'Wikipedia:Mirrors_and_forks/Abc', 'Abc.txt'),
-('en', 'Wikipedia:Mirrors_and_forks/Def', 'Def.txt'),
-('en', 'Wikipedia:Mirrors_and_forks/Ghi', 'Ghi.txt'),
-('en', 'Wikipedia:Mirrors_and_forks/Jkl', 'Jkl.txt'),
-('en', 'Wikipedia:Mirrors_and_forks/Mno', 'Mno.txt'),
-('en', 'Wikipedia:Mirrors_and_forks/Pqr', 'Pqr.txt'),
-('en', 'Wikipedia:Mirrors_and_forks/Stu', 'Stu.txt'),
-('en', 'Wikipedia:Mirrors_and_forks/Vwxyz', 'Vwxyz.txt'),
-#('de', 'Wikipedia:Weiternutzung', 'Weiternutzung.txt'),
-('it', 'Wikipedia:Cloni', 'Cloni.txt'),
-#('pl', 'Wikipedia:Mirrory_i_forki_polskiej_Wikipedii', 'Mirrory_i_forki_polskiej_Wikipedii.txt'),
-#('pt', 'Wikipedia:Clones_da_Wikipédia', 'Clones_da_Wikipédia.txt'),
-#('sv', 'Wikipedia:Spegelsidor', 'Spegelsidor.txt'),
+    ('it', 'User:RevertBot/Lista_di_esclusione', 'exclusion_list.txt'),
+    ('en', 'Wikipedia:Mirrors_and_forks/Abc', 'Abc.txt'),
+    ('en', 'Wikipedia:Mirrors_and_forks/Def', 'Def.txt'),
+    ('en', 'Wikipedia:Mirrors_and_forks/Ghi', 'Ghi.txt'),
+    ('en', 'Wikipedia:Mirrors_and_forks/Jkl', 'Jkl.txt'),
+    ('en', 'Wikipedia:Mirrors_and_forks/Mno', 'Mno.txt'),
+    ('en', 'Wikipedia:Mirrors_and_forks/Pqr', 'Pqr.txt'),
+    ('en', 'Wikipedia:Mirrors_and_forks/Stu', 'Stu.txt'),
+    ('en', 'Wikipedia:Mirrors_and_forks/Vwxyz', 'Vwxyz.txt'),
+    #('de', 'Wikipedia:Weiternutzung', 'Weiternutzung.txt'),
+    ('it', 'Wikipedia:Cloni', 'Cloni.txt'),
+    #('pl', 'Wikipedia:Mirrory_i_forki_polskiej_Wikipedii', 'Mirrory_i_forki_polskiej_Wikipedii.txt'),
+    #('pt', 'Wikipedia:Clones_da_Wikipédia', 'Clones_da_Wikipédia.txt'),
+    #('sv', 'Wikipedia:Spegelsidor', 'Spegelsidor.txt'),
 ]
 
 wikipedia_names = {
@@ -180,8 +181,8 @@ wikipedia_names = {
 }
 
 sections_to_skip = {
-'en':['References', 'Further reading', 'Citations', 'External links'],
-'it':['Bibliografia', 'Riferimenti bibliografici', "Collegamenti esterni"],
+    'en':['References', 'Further reading', 'Citations', 'External links'],
+    'it':['Bibliografia', 'Riferimenti bibliografici', "Collegamenti esterni"],
 }
 
 def skip_section(text):
@@ -214,7 +215,7 @@ def cut_section(text, sectC):
 def exclusion_file_list():
     for i in pages_for_exclusion_database:
         path = appdir + i[0] + '/' + i[2]
-        mediawiki_messages.makepath(path)
+        wikipedia.makepath(path)
         p = wikipedia.Page(wikipedia.getSite(i[0]),i[1])
         yield p, path
 
@@ -409,6 +410,7 @@ def query(lines = [], max_query_len = 1300):
 
     # Google limit queries to 32 words.
 
+
     output = u""
     n_query = 0
     previous_group_url = 'none'
@@ -436,11 +438,13 @@ def query(lines = [], max_query_len = 1300):
                 if results:
                     group_url_list = group_url.splitlines()
                     group_url_list.sort()
+
                     group_url = '\n'.join(group_url_list)
                     if previous_group_url == group_url:
                         if consecutive:
                             output += ' ' + search_words
                         else:
+
                             output += '\n**' + search_words
                     else:
                         output += group_url + '\n**' + search_words

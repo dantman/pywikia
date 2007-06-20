@@ -66,17 +66,19 @@ from Tkinter import *
 import os, sys, re, codecs
 import urllib, httplib, urllib2
 import catlib, thread, webbrowser
-import wikipedia, config, mediawiki_messages
+import wikipedia, config
 NL=''
+
 def pageText(url):
-	request=urllib2.Request(url)
-	user_agent='Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-	print url
-	request.add_header("User-Agent", user_agent)
-	response=urllib2.urlopen(request)
-	text=response.read()
-	response.close()
-	return text
+    request=urllib2.Request(url)
+    user_agent='Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
+    print url
+    request.add_header("User-Agent", user_agent)
+    response=urllib2.urlopen(request)
+    text=response.read()
+    response.close()
+    return text
+
 def post_multipart(host, selector, fields, files, cookies):
     """
     Post fields and files to an http host as multipart/form-data.
@@ -271,7 +273,7 @@ class UploadRobot:
             # Do we know how the "success!" HTML page should look like?
             # ATTENTION: if you changed your Wikimedia Commons account not to show
             # an English interface, this detection will fail!
-            success_msg = mediawiki_messages.get('successfulupload', site = self.targetSite)
+            success_msg = self.targetSite.mediawiki_message('successfulupload')
             if success_msg in returned_html or response.status == 302:
                  wikipedia.output(u"Upload successful.")
             # The following is not a good idea, because the server also gives a 200 when
@@ -482,6 +484,7 @@ class Tkstuff:
     def getnewname(self):
         self.root.mainloop()
         return (self.changename, self.skip)
+
 def doiskip(pagetext):
     saltos=getautoskip()
     print saltos
@@ -491,7 +494,9 @@ def doiskip(pagetext):
         if re.search(rex, pagetext):
             return True
     return False
+
 six=['These should', 'both be changed']
+
 def main(args):
 
     lang=u''
@@ -562,6 +567,7 @@ def main(args):
             continue
         
         thread.start_new_thread(getCH, (url, imageP, nn, tenemosuncambio))
+
 if __name__ == "__main__":
     try:
         main(sys.argv[1:])

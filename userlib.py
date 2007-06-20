@@ -4,7 +4,7 @@ Library to work with users, their pages and talk pages.
 """
 
 import re, httplib
-import wikipedia, mediawiki_messages
+import wikipedia
 
 class AutoblockUserError(wikipedia.Error):
     """
@@ -77,7 +77,7 @@ class User:
 
         offset = 0
         step = min(limit,500)
-        older_str = mediawiki_messages.get('sp-contributions-older').replace('$1',str(step))
+        older_str = self.site.mediawiki_message('sp-contributions-older').replace('$1',str(step))
         address = self.site.contribs_address(self.name,limit=step)
         while offset < limit:
             wikipedia.output(u'Querying [[Special:Contributions/%s]]...' % self.name)
