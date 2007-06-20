@@ -151,10 +151,10 @@ class MediaWikiXmlHandler(xml.sax.handler.ContentHandler):
             self.inContributorTag = False
         elif name == 'restrictions':
             self.editRestriction, self.moveRestriction = parseRestrictions(self.restrictions)
-            if self.editRestriction:
-                wikipedia.output(u'DBG: Edit restriction: %s' % self.editRestriction)
-            if self.moveRestriction:
-                wikipedia.output(u'DBG: Move restriction: %s' % self.moveRestriction)
+            #if self.editRestriction:
+                #wikipedia.output(u'DBG: Edit restriction: %s' % self.editRestriction)
+            #if self.moveRestriction:
+                #wikipedia.output(u'DBG: Move restriction: %s' % self.moveRestriction)
         elif name == 'revision':
             # All done for this.
             text = self.text
