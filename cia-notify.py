@@ -23,8 +23,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-__version__ = '$Id$'
-#
 import sys, re, time
 
 params = {
@@ -37,7 +35,6 @@ params['module'] = sys.argv[1]
 params['project'] = sys.argv[-1]
 params['user'] = sys.argv[-2]
 #files = sys.argv[2:-3]
-
 
 input = sys.stdin.read()
 
