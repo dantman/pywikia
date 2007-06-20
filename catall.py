@@ -118,36 +118,32 @@ def main():
             if generator:
                 gen = generator
     if gen:
-        try:
-            for p in generator:
-                try:
-                    text=p.get()
-                    cats=p.categories()
-                    if cats == []:
+        for p in generator:
+            try:
+                text=p.get()
+                cats=p.categories()
+                if cats == []:
+                    wikipedia.output(u"========== %s ==========" % p.title())
+                    print "No categories"
+                    print "----------------------------------------"
+                    newcats=choosecats(text)
+                    if newcats != [] and newcats is not None:
+                        make_categories(p, newcats, mysite)
+                else:
+                    if docorrections:
                         wikipedia.output(u"========== %s ==========" % p.title())
-                        print "No categories"
+                        for c in cats:
+                            print c.title()
                         print "----------------------------------------"
                         newcats=choosecats(text)
-                        if newcats != [] and newcats is not None:
+                        if newcats == None:
+                            make_categories(p, [], mysite)
+                        elif newcats != []:
                             make_categories(p, newcats, mysite)
-                    else:
-                        if docorrections:
-                            wikipedia.output(u"========== %s ==========" % p.title())
-                            for c in cats:
-                                print c.title()
-                            print "----------------------------------------"
-                            newcats=choosecats(text)
-                            if newcats == None:
-                                make_categories(p, [], mysite)
-                            elif newcats != []:
-                                make_categories(p, newcats, mysite)
-                except wikipedia.IsRedirectPage:
-                    pass
-                except wikipedia.NoPage:
-                    pass
-        finally:
-            pass
-        
+            except wikipedia.IsRedirectPage:
+                pass
+            except wikipedia.NoPage:
+                pass
     else:
         wikipedia.showHelp('catall')
 
