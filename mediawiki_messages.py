@@ -118,21 +118,25 @@ def refresh_messages(site = None):
     # we will save the found key:value pairs here
     dictionary = {}
 
-    for keytag in soup('a', href=ismediawiki):
-        # Key strings only contain ASCII characters, so we can save them as
-        # strs
-        key = str(keytag.find(text=True))
-        keyrow = keytag.parent.parent
-        if keyrow['class'] == "orig":
-            valrow = keyrow.findNextSibling('tr')
-            assert valrow['class'] == "new"
-            value = unicode(valrow.td.string).strip()
-        elif keyrow['class'] == 'def':
-            value = unicode(keyrow('td')[1].string).strip()
-        else:
-            raise AssertionError("Unknown tr class value: %s" % keyrow['class'])
-        dictionary[key] = value
-        
+    try:
+        for keytag in soup('a', href=ismediawiki):
+            # Key strings only contain ASCII characters, so we can save them as
+            # strs
+            key = str(keytag.find(text=True))
+            keyrow = keytag.parent.parent
+            if keyrow['class'] == "orig":
+                valrow = keyrow.findNextSibling('tr')
+                assert valrow['class'] == "new"
+                value = unicode(valrow.td.string).strip()
+            elif keyrow['class'] == 'def':
+                value = unicode(keyrow('td')[1].string).strip()
+            else:
+                raise AssertionError("Unknown tr class value: %s" % keyrow['class'])
+            dictionary[key] = value
+    except Exception, e:
+        wikipedia.debugDump( 'MediaWiki_Msg', site, u'%s: %s while processing URL: %s' % (repr(e), str(e), unicode(path)), allmessages)
+        raise
+
     # Save the dictionary to disk
     # The file is stored in the mediawiki_messages subdir. Create if necessary. 
     if dictionary == {}:
