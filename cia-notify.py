@@ -34,7 +34,7 @@ params = {
 params['module'] = sys.argv[1]
 params['project'] = sys.argv[-1]
 params['user'] = sys.argv[-2]
-files = sys.argv[2:-3]
+#files = sys.argv[2:-3]
 
 input = sys.stdin.read()
 
@@ -65,8 +65,11 @@ MESSAGE += """
            <author>%(user)s</author>
            <files>"""
 
-for f in files:
-    MESSAGE += """
+files = re.search('Modified Files:\n\s+(?P<files>.*)',input)
+if files:
+    for f in files.group('files').split(' '):
+        if f:
+            MESSAGE += """
                <file>%s</file>""" % f
 
 MESSAGE += """
@@ -83,9 +86,6 @@ if logmsg:
     params['logmsg'] = re.sub('\s+',' ',logmsg.group('logmsg'))
 else:
     params['logmsg'] = 'Error parsing log message'
-
-print MESSAGE
-print params
 
 try:
     from xmlrpclib import ServerProxy
