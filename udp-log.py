@@ -8,7 +8,7 @@
 import sys, re, socket
 
 TARGET_HOST = 'tools.wikimedia.de'
-TARGET_PORT = 31338
+TARGET_PORT = 42448
 
 input = sys.stdin.read()
 log = re.search('Versions: (?P<ver>.*?)\n.*Log Message:\n(?P<logmsg>.*)',input,re.DOTALL)
