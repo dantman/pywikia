@@ -38,6 +38,7 @@ files = sys.argv[2:-3]
 
 input = sys.stdin.read()
 
+
 MESSAGE = """
 <message>
     <generator>
