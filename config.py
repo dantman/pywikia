@@ -194,6 +194,8 @@ without_interwiki = False
 # disambiguation_comment['wikipedia']['en'] = \
 #    "Robot-assisted disambiguation ([[WP:DPL|you can help!]]): %s"
 
+sort_ignore_case = False
+
 ############## IMAGE RELATED SETTINGS ##############
 # If you set this to True, images will be uploaded to Wikimedia
 # Commons by default.

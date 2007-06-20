@@ -788,8 +788,8 @@ or press enter to quit:""")
 
             self.makeAlternativesUnique()
             # sort possible choices
-            if self.sortfnc:
-                self.alternatives.sort(self.sortfnc)
+            if wikipedia.config.sort_ignore_case:
+                self.alternatives.sort(lambda x,y: cmp(x.lower(), y.lower()))
             else:
                 self.alternatives.sort()
             self.listAlternatives()
@@ -864,8 +864,6 @@ def main():
             except wikipedia.NoPage:
                 print "Disambiguation category for your wiki is not known."
                 raise
-        elif arg.startswith("-ignorecase"):
-            ignoreCase = True
         elif arg.startswith("-"):
             print "Unrecognized command line argument: %s" % arg
             # show help text and exit
@@ -888,9 +886,6 @@ def main():
         generator = iter([page])
 
     bot = DisambiguationRobot(always, alternatives, getAlternatives, generator, primary, main_only)
-    if ignoreCase:
-        bot.sortfnc = lambda x,y: cmp(x.lower(), y.lower())
-        
     bot.run()
 
 if __name__ == "__main__":
