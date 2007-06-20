@@ -270,7 +270,7 @@ class GiveUpOnPage(wikipedia.Error):
 msg = {
     'af': (u'robot ', u'Bygevoeg', u'Verwyder', u'Verander'),
     'ar': (u'روبوت ', u'إضافة', u'إزالة', u'تعديل'),
-    'bat-smg': (u'Robots ', u'Pridedama', u'Keitama', u'Trėnama'),
+    'bat-smg': (u'robots ', u'Pridedama', u'Trėnama', u'Keitama'),
     'be': (u'робат ', u'Дадаем', u'Выдаляем', u'Мяняем'),
     'be-x-old': (u'робат ', u'дадаў', u'выдаліў', u'зьмяніў'),
     'bg': (u'Робот ', u'Добавяне', u'Изтриване', u'Промяна'),
@@ -312,6 +312,7 @@ msg = {
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
     'pms': (u'ël trigomiro ', u'a gionta', u'a modìfica', u'a gava'),
     'pt': (u'Bot: ', u'Adicionando', u'Removendo',u'Modificando'),
+    'qu': (u'Rurana antacha ', u'Yapasqa', u'Qullusqa', u'Hukchasqa'),
     'ro': (u'Robot interwiki: ', u'Adãugat', u'Înlãturat',u'Modificat'),
     'ru': (u'робот ', u'добавил', u'удалил', u'изменил'),
     'sk': (u'robot ', u'Pridal', u'Odobral',u'Zmenil' ),
