@@ -39,8 +39,8 @@ Page: A MediaWiki page
     namespace             : The namespace in which the page is
     permalink (*)         : The url of the permalink of the current version
     move                  : Move the page to another title
-
     put(newtext)          : Saves the page
+    put_async(newtext)    : Queues the page to be saved asynchronously
     delete                : Deletes the page (requires being logged in)
 
     (*) : This loads the page if it has not been loaded before; permalink might
@@ -48,9 +48,13 @@ Page: A MediaWiki page
 
 Site: a MediaWiki site
     messages              : There are new messages on the site
-    forceLogin(): Does not continue until the user has logged in to the site
-    getUrl(): Retrieve an URL from the site
-
+    forceLogin()          : Does not continue until the user has logged in to
+                            the site
+    getUrl()              : Retrieve an URL from the site
+    mediawiki_message(key): Retrieve the text of the MediaWiki message with
+                            the key "key"
+    has_mediawiki_message(key) : True if this site defines a MediaWiki message
+                                 with the key "key"
     Special pages:
         Dynamic pages:
             allpages(): Special:Allpages
@@ -108,7 +112,7 @@ from __future__ import generators
 # Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
-#
+
 import os, sys
 import httplib, socket, urllib
 import traceback
@@ -120,7 +124,7 @@ import htmlentitydefs
 import warnings
 import unicodedata
 
-import config, mediawiki_messages, login
+import config, login
 import xmlreader
 from BeautifulSoup import *
 import simplejson
@@ -569,21 +573,29 @@ class Page(object):
                 textareaFound = True
             except AttributeError:
                 # find out if the username or IP has been blocked
-                if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
+##                if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
+##                    raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
+                if text.find(self.site().mediawiki_message('blockedtitle')) != -1:
                     raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
                 # If there is no text area and the heading is 'View Source',
                 # it is a non-existent page with a title protected via
                 # cascading protection.
                 # See http://en.wikipedia.org/wiki/Wikipedia:Protected_titles
                 # and http://de.wikipedia.org/wiki/Wikipedia:Gesperrte_Lemmata
-                elif text.find(mediawiki_messages.get('viewsource', self.site())) != -1:
+##                elif text.find(mediawiki_messages.get('viewsource', self.site())) != -1:
+##                    raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.' % self.aslink())
+                elif text.find(self.site().mediawiki_message('viewsource')) != -1:
                     raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.' % self.aslink())
                 # search for 'Login required to edit' message
-                elif text.find(mediawiki_messages.get('whitelistedittitle', self.site())) != -1:
+##                elif text.find(mediawiki_messages.get('whitelistedittitle', self.site())) != -1:
+##                    raise LockedNoPage(u'Page editing is forbidden for anonymous users.')
+                elif text.find(self.site().mediawiki_message('whitelistedittitle')) != -1:
                     raise LockedNoPage(u'Page editing is forbidden for anonymous users.')
                 # on wikipedia:en, anonymous users can't create new articles.
                 # older MediaWiki versions don't have the 'nocreatetitle' message.
-                elif mediawiki_messages.has('nocreatetitle', self.site()) and text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
+##                elif mediawiki_messages.has('nocreatetitle', self.site()) and text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
+##                    raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
+                elif self.site().has_mediawiki_message('nocreatetitle') and text.find(self.site().mediawiki_message('nocreatetitle')) != -1:
                     raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
                 else:
                     output( unicode(text) )
@@ -857,19 +869,21 @@ class Page(object):
         """
         site = self.site()
         path = site.references_address(self.urlname())
-        iscontent = lambda text:text in ("bodyContent", "mainContent")
-        content = SoupStrainer("div", id=iscontent)
+        content = SoupStrainer("div", id=self.site().family.content_id)
         try:
-            next_msg = mediawiki_messages.get('whatlinkshere-next', site)
+##            next_msg = mediawiki_messages.get('whatlinkshere-next', site)
+            next_msg = site.mediawiki_message('whatlinkshere-next')
         except KeyError:
             next_msg = "next %i" % config.special_page_limit
         plural = (config.special_page_limit == 1) and "\\1" or "\\2"
         next_msg = re.sub(r"{{PLURAL:\$1\|(.*?)\|(.*?)}}", plural, next_msg)
         nextpattern = re.compile("^%s$" % next_msg.replace("$1", "[0-9]+"))
         delay = 1
-        self._isredirectmessage = mediawiki_messages.get("Isredirect", site)
-        if site.versionnumber() >= 8:
-            self._istemplatemessage = mediawiki_messages.get("Istemplate", site)
+##        self._isredirectmessage = mediawiki_messages.get("Isredirect", site)
+        self._isredirectmessage = site.mediawiki_message("Isredirect")
+        if site.has_mediawiki_message("Istemplate"):
+##            self._istemplatemessage = mediawiki_messages.get("Istemplate", site)
+            self._istemplatemessage = site.mediawiki_message("Istemplate")
         # to avoid duplicates
         refPages = set()
         while path:
@@ -918,7 +932,7 @@ class Page(object):
                     if Page(self.site(), p.getRedirectTarget()
                             ).sectionFreeTitle() == self.sectionFreeTitle():
                         isredirect = True
-                if self.site().versionnumber() >= 8 \
+                if self.site().has_mediawiki_message("Istemplate") \
                         and self._istemplatemessage in textafter:
                     istemplate = True
 
@@ -1158,9 +1172,11 @@ class Page(object):
                                     newPage, token, False, sysop)
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
-            elif mediawiki_messages.get('spamprotectiontitle', self.site()) in data:
+##            elif mediawiki_messages.get('spamprotectiontitle', self.site()) in data:
+            elif self.site().mediawiki_message('spamprotectiontitle') in data:
                 try:
-                    reasonR = re.compile(re.escape(mediawiki_messages.get('spamprotectionmatch', self.site())).replace('\$1', '(?P<url>[^<]*)'))
+##                    reasonR = re.compile(re.escape(mediawiki_messages.get('spamprotectionmatch', self.site())).replace('\$1', '(?P<url>[^<]*)'))
+                    reasonR = re.compile(re.escape(self.site().mediawiki_message('spamprotectionmatch')).replace('\$1', '(?P<url>[^<]*)'))
                     url = reasonR.search(data).group('url')
                 except:
                     # Some wikis have modified the spamprotectionmatch
@@ -1186,7 +1202,8 @@ class Page(object):
                 # Make sure your system clock is correct if this error occurs
                 # without any reason!
                 raise EditConflict(u'Someone deleted the page.')
-            elif mediawiki_messages.get('viewsource') in data:
+##            elif mediawiki_messages.get('viewsource') in data:
+            elif self.site().mediawiki_message('viewsource') in data:
                 # The page is locked. This should have already been detected
                 # when getting the page, but there are some reasons why this
                 # didn't work, e.g. the page might be locked via a cascade
@@ -1724,8 +1741,9 @@ class Page(object):
         else:
             response, data = self.site().postForm(address, predata, sysop = sysop)
         if data != u'':
-            if mediawiki_messages.get('pagemovedsub') in data:
-                output(u'Page %s moved to %s'%(self.title(), newtitle))
+##            if mediawiki_messages.get('pagemovedsub') in data:
+            if self.site().mediawiki_message('pagemovedsub') in data:
+                output(u'Page %s moved to %s' % (self.title(), newtitle))
                 return True
             else:
                 output(u'Page move failed.')
@@ -1777,7 +1795,8 @@ class Page(object):
             else:
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
-                if mediawiki_messages.get('actioncomplete') in data:
+##                if mediawiki_messages.get('actioncomplete') in data:
+                if self.site().mediawiki_message('actioncomplete') in data:
                     output(u'Deletion successful.')
                     return True
                 else:
@@ -1881,7 +1900,8 @@ class Page(object):
                 'target': self.title(),
                 'wpComment': comment,
                 'wpEditToken': token,
-                'restore': mediawiki_messages.get('undeletebtn')
+##                'restore': mediawiki_messages.get('undeletebtn')
+                'restore': self.site().mediawiki_message('undeletebtn')
                 }
 
         if self._deletedRevs != None and self._deletedRevsModified:
@@ -2991,6 +3011,7 @@ class Site(object):
             self.lang = self.family.obsolete[self.lang]
 
         self.messages=False
+        self._mediawiki_messages = {}
         self.nocapitalize = self.lang in self.family.nocapitalize
         self.user = user
         self._token = None
@@ -3151,7 +3172,6 @@ class Site(object):
         # case the server is down or overloaded).
         # Wait for retry_idle_time minutes (growing!) between retries.
         retry_idle_time = 1
-        starttime = time.time()
         retrieved = False
         while not retrieved:
             try:
@@ -3197,7 +3217,53 @@ class Site(object):
             text = unicode(text, charset, errors = 'replace')
         return text
 
+    def mediawiki_message(self, key):
+        """Return the MediaWiki message text for key "key" """
+        global mwpage, tree
+        if key not in self._mediawiki_messages.keys():
+            retry_idle_time = 1
+            while True:
+                mwpage = self.getUrl("%s?title=%s:%s&action=edit"
+                         % (self.path(), urllib.quote(
+                                self.namespace(8).replace(' ', '_').encode(
+                                    self.encoding())),
+                            key))
+                tree = BeautifulSoup(mwpage,
+                                     convertEntities=BeautifulSoup.HTML_ENTITIES,
+                                     parseOnlyThese=SoupStrainer("textarea"))
+                if tree.textarea is None:
+                    # We assume that the server is down.
+                    # Wait some time, then try again.
+                    output(
+u"""WARNING: No text area found on %s%s?title=MediaWiki:%s&action=edit.
+Maybe the server is down. Retrying in %i minutes..."""
+                        % (self.hostname(), self.path(), key, retry_idle_time)
+                    )
+                    time.sleep(retry_idle_time * 60)
+                    # Next time wait longer, but not longer than half an hour
+                    retry_idle_time *= 2
+                    if retry_idle_time > 30:
+                        retry_idle_time = 30
+                    continue
+                break
+            value = tree.textarea.string.strip()
+            if value:
+                self._mediawiki_messages[key] = value
+            else:
+                self._mediawiki_messages[key] = None
 
+        if self._mediawiki_messages[key] is None:
+            raise KeyError("MediaWiki key '%s' does not exist on %s"
+                           % (key, self))
+        return self._mediawiki_messages[key]
+
+    def has_mediawiki_message(self, key):
+        """Return True iff this site defines a MediaWiki message for key "key" """
+        try:
+            v = self.mediawiki_message(key)
+            return True
+        except KeyError:
+            return False
     def newpages(self, number = 10, get_redirect = False, repeat = False):
         """Generator which yields new articles subsequently.
            It starts with the article created 'number' articles
@@ -4161,6 +4227,26 @@ def showDiff(oldtext, newtext):
 
     output(diff, colors = colors)
 
+def makepath(path):
+    """ creates missing directories for the given path and
+        returns a normalized absolute version of the path.
+
+    - if the given path already exists in the filesystem
+      the filesystem is not modified.
+
+    - otherwise makepath creates directories along the given path
+      using the dirname() of the path. You may append
+      a '/' to the path if you want it to be a directory path.
+
+    from holger@trillke.net 2002/03/18
+    """
+    from os import makedirs
+    from os.path import normpath,dirname,exists,abspath
+
+    dpath = normpath(dirname(path))
+    if not exists(dpath): makedirs(dpath)
+    return normpath(abspath(path))
+    
 def activateLog(logname):
     global logfile
     import wikipediatools as _wt
@@ -4265,13 +4351,15 @@ def async_put():
         page, newtext, comment, watchArticle, minorEdit = page_put_queue.get()
         if page is None:
             # needed for compatibility with Python 2.3 and 2.4
-            # in 2.5, we could use the Queue's tak_done() and join() methods
+            # in 2.5, we could use the Queue's task_done() and join() methods
             return
         try:
             page.put(newtext, comment, watchArticle, minorEdit)
+        except PageNotSaved, ex:
+            output(u"Saving page [[%s]] failed: %s" % (page.title(), ex.message))
         except:
             tb = traceback.format_exception(*sys.exc_info())
-            output("Saving page [[%s]] failed:\n%s"
+            output(u"Saving page [[%s]] failed:\n%s"
                     % (page.title(), "".join(tb))
                    )
 
@@ -4286,10 +4374,10 @@ def stopme():
        when it has stopped doing so. After a bot has run stopme() it will
        not slow down other bots any more.
     """
-    get_throttle.drop()
     # wait for the page-putter to flush its queue
     page_put_queue.put((None, None, None, None, None))
     _putthread.join()
+    get_throttle.drop()
 
 def debugDump(name, site, error, data):
     import time
