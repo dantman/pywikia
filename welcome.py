@@ -4,22 +4,22 @@
 Script to welcome new users. This script works out of the box for Wikis that
 have been defined in the script. It is currently used on the Dutch, Norwegian,
 Arabian, Albanian, Italian Wikipedia, Wikimedia Commons and English Wikiquote.
- 
+
 Note: You can download the latest version available
 from here: http://botwiki.sno.cc/wiki/Python:Welcome.py
- 
+
 Ensure you have community support before running this bot!
- 
+
 URLs to current implementations:
 * Arabic Wikipedia: http://ar.wikipedia.org/wiki/ويكيبيديا:سجل الترحيب
 * Wikimedia Commons: http://commons.wikimedia.org/wiki/Commons:Welcome_log
 * Dutch Wikipedia: http://nl.wikipedia.org/wiki/Wikipedia:Logboek_welkom
 * Italian Wikipedia: http://it.wikipedia.org/wiki/Wikipedia:Benvenuto_log
 * English Wikiquote: http://en.wikiquote.org/wiki/Wikiquote:Welcome_log
- 
+
 Everything that needs customisation to support additional projects is
 indicated by comments.
- 
+
 Description of basic functionality:
 * Request a list of new users every period (default: 3600 seconds)
   You can choose to break the script after the first check (see arguments)
@@ -34,44 +34,44 @@ Description of basic functionality:
 * Optional: Once the set number of users have been welcomed, add this to the
   configured log page, one for each day (default: True)
 * If no log page exists, create a header for the log page first.
- 
+
 This script (by default not yet implemented) uses two templates that need to
 be on the local wiki:
 * {{WLE}}: contains mark up code for log entries (just copy it from Commons)
 * {{welcome}}: contains the information for new users
- 
+
 This script understands the following command-line arguments:
- 
+
     -edit[:#]      Define how many edits a new user needs to be welcomed
                    (default: 1)
- 
+
     -time[:#]      Define how many seconds the bot sleeps before restart
                    (default: 3600)
- 
+
     -break         Use it if you don't want that the Bot restart at the end
                    (it will break) (default: False)
- 
+
     -nlog          Use this parameter if you do not want the bot to log all
                    welcomed users (default: False)
- 
+
     -limit[:#]     Use this parameter to define how may users should be
                    checked (default:50)
- 
+
     -numberlog[:#] The number of users to welcome before refreshing the
                    welcome log (default: 4)
- 
+
     -filter        Enable the username checks for bad names (default: False)
- 
+
     -ask           Use this parameter if you want to confirm each possible
                    bad username (default: False)
- 
+
     -random        Use a random signature, taking the signatures from a wiki
                    page (for istruction, see below).
- 
+
 ********************************* GUIDE ***********************************
- 
+
 Report, Bad and white list guide:
- 
+
 1)  Set in the code which page it will use to load the badword, the
     whitelist and the report
 2)  In these page you have to add a "tuple" with the names that you want to
@@ -101,29 +101,29 @@ Report, Bad and white list guide:
             * Search if he's blocked, if yes he will be skipped
             * Search if he's in the report page, if yes he will be skipped
             * If no, he will be reported.
- 
+
 Random signature guide:
- 
+
 Some welcomed users will answer to the one who has signed the welcome message.
 When you welcome many new users, you might be overwhelmed with such answers.
 Therefore you can define usernames of other users who are willing to receive
 some of these messages from newbies.
- 
+
 1) Set the page that the bot will load
 2) Add the signatures in this way:
- 
+
 *<white space>SIGNATURE
 <new line>
- 
+
 Example:
 <pre>
 * [[User:Filnik|Filnik]]
 * [[User:Rock|Rock]]
 </pre>
- 
+
 NOTE: The white space and <pre></pre> aren't required but I suggest you to
       use them.
- 
+
 *************************** Known issues/FIXMEs ****************************
 * exits when wiki is down.
 * add variable for how many users to skip (e.g. the 10 latest users, that
@@ -149,10 +149,10 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
 #
 __version__ = '$Id: welcome.py,v 1.4 2007/04/14 18:05:42 siebrand Exp'
 #
- 
+
 import wikipedia
 import time, re, config
- 
+
 # Number = number of edits that an user required to be welcomed
 number = 1
 # Numberlog = number of users that are required to add the log :)
@@ -174,7 +174,7 @@ filter_wp = False
 sign = '--~~~~'
 # Setting if the sign must be random or not
 random = False
- 
+
 # Script users the class wikipedia.translate() to find the right
 # page/user/summary/etc so the need to specify language and project have
 # been eliminated.
@@ -182,14 +182,14 @@ random = False
 #       Add the following strings to customise for a language:
 #       logbook, talk_page, summary, netext, summary2, user, con, report_page
 #       comment, bad_pag, report_text, logt, random_sign and whitelist_pg.
- 
+
 ############################################################################
 ############################################################################
 ############################################################################
- 
+
 # The text below are dictionaries. Copy the 'en' line, change 'en' in your
 # language (e.g. 'de') and modify/translate the text.
- 
+
 #The page where the bot will save the log (e.g. Wikipedia:Welcome log).
 logbook = {
     'commons': u"Project:Welcome log" ,
@@ -281,7 +281,7 @@ bad_pag = {
     'no': u'Bruker:JhsBot/Daarlige ord',
     'sq': u'User:Eagleal/Bad_names',
     }
- 
+
 # The text for reporting a possibly bad username (e.g. *[[Talk_page:Username|Username]]).
 # TODO: don't get the time at initialization, but when the template is used.
 report_text = {
@@ -294,7 +294,7 @@ report_text = {
         'no':u'\n*{{bruker|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
         u'sq':'\n*[[User:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
         }
- 
+
 # Set where you load your list of signs that the bot will load if you use
 # the random argument (this parameter is optional).
 random_sign = {
@@ -309,16 +309,16 @@ whitelist_pg = {
         'en':u'User:Filnik/whitelist',
         'it':u'Utente:Filbot/whitelist',
         }
- 
+
 # Add your project (in alphabetical order) if you want that the bot start.
 project_inserted = ['ar', 'commons', 'de', 'en', 'it', 'nl', 'no', 'sq']
- 
+
 # Ok, that's all. What is below, is the rest of code, now the code is fixed
 # and it will run correctly in your project ;)
 ############################################################################
 ############################################################################
 ############################################################################
- 
+
 def load_word_function(wsite, raw):
     # This is a function used to load the badword and the whitelist.
     list_loaded = list()
@@ -342,7 +342,7 @@ def load_word_function(wsite, raw):
         badword = xl.group(2)
         if badword not in list_loaded:
              list_loaded.append(badword)
- 
+
 def parselog(wsite, raw):
     # The function to load the users (only users who have a certain number of edits)
     done = list()
@@ -396,7 +396,7 @@ def parselog(wsite, raw):
                 wikipedia.output(username + u" has only " + str(contribnum) + u" contributions")
                 load.append([username, contribnum])
     return users
- 
+
 def report(wsite, rep_page, username, com, rep):
     # I've used a function to report the username to a wiki-page.
     another_page = wikipedia.Page(wsite, rep_page)
@@ -418,7 +418,7 @@ def report(wsite, rep_page, username, com, rep):
     else:
         pos = y.end()
         wikipedia.output(username + u" is already in the report page.")
- 
+
 def blocked(wsite, username):
     #A little function to check if the user has already been blocked (to skip him).
     reg = """<li>[0-9][0-9]:[0-9][0-9], [0-9]([0-9])? (.*?) [0-9][0-9][0-9][0-9] <a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a>"""
@@ -429,7 +429,7 @@ def blocked(wsite, username):
         return False
     else:
         return True
- 
+
 def defineSign(wsite, signPageTitle):
     #A little function to load the random signs.
     signPage = wikipedia.Page(wsite, signPageTitle)
@@ -437,7 +437,7 @@ def defineSign(wsite, signPageTitle):
     reg = "\* ?(.*?)\n"
     listSign = re.findall(reg, signText)
     return listSign
- 
+
 if __name__ == "__main__":
     # The block below is used for the parameters
     for arg in wikipedia.handleArgs():
@@ -477,7 +477,7 @@ if __name__ == "__main__":
     if wsite.lang not in project_inserted:
         wikipedia.output(u"Your project is not supported by the framework. You have to edit the script and add it!")
         wikipedia.stopme()
- 
+
     # The follow lines translate the language's parameters.
     usernam = wsite.namespace(2)
     welcomer = wikipedia.translate(wsite, netext)
@@ -491,20 +491,20 @@ if __name__ == "__main__":
     rep_text = wikipedia.translate(wsite, report_text)
     signPageTitle = wikipedia.translate(wsite, random_sign)
     wtlpg = wikipedia.translate(wsite, whitelist_pg)
- 
+
     # There is the talk page ^__^ the talk_page's variable gives "Talk page" and
     # i change it "Talk_page:"
     talk_page = wsite.namespace(3)
     talk = talk_page.replace(" ", "_") + ":"
- 
+
     # If your User talk in your language has a special charachter the script won't work, that
     # block fix this bug. (i will find a better way to resolve this problem, as soon as possible).
- 
+
     if wsite.lang == 'ar':
         talk = '%D9%86%D9%82%D8%A7%D8%B4_%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AE%D8%AF%D9%85:'
     elif wsite.lang == 'sq':
         talk = 'P%C3%ABrdoruesi_diskutim:'
- 
+
     # A parameter for different projects of the same language...
     if wsite.family.name == "wikinews":
         if wsite.lang == "it":
@@ -515,7 +515,7 @@ if __name__ == "__main__":
         if wsite.lang == "it":
             logg = 'Wiktionary:Benvenuto log'
             welcomer = '{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s'
- 
+
     hechas = list()
     number_user = 0
     # Use try and finally, to put the wikipedia.stopme() always at the end of the code.
@@ -590,7 +590,7 @@ if __name__ == "__main__":
             block = ("B", "b", "Blocco", "blocco", "block", "bloc", "Block", "Bloc", 'Report', 'report')
             say_hi = ("S", "s", "Saluto", "saluto", "Welcome", "welcome", 'w', 'W', 'say hi',
                     'Say hi', 'Hi', 'hi', 'h', 'hello', 'Hello')
- 
+
             # Here there is the URL of the new users, i've find that this url below is the same for all the project, so it
             # mustn't be changed
             URL = "/w/index.php?title=Special:Log&type=newusers&user=&page=&limit=%d" % limit
@@ -735,7 +735,7 @@ if __name__ == "__main__":
                             safety.append('\n!' + usernam)
                             # The string below show how the "Contribs" will be notified
                             safety.append('\n!' + contrib)
- 
+
                         for found_result in hechas:
                             # Adding the log... (don't take care of the variable's name... i've set them in a BOFH-time ^__^)
                             luserpage = str(found_result[0])
