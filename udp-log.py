@@ -15,10 +15,12 @@ log = re.search('Versions: (?P<ver>.*?)\n.*Log Message:\n(?P<logmsg>.*)',input,r
 
 if log:
     print 'Routing commit data via UDP...'
+
     ver = log.group('ver')
+    user = log.group('user')
     logmsg = log.group('logmsg').replace('\n',' ')
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.connect((TARGET_HOST,TARGET_PORT))
-    sock.send('commited: \002%s\002 * \0032%s\003' % (ver,logmsg))
+    sock.send('\002%s\002 commited \002%s\002 * \0032%s\003' % (user,ver,logmsg))
     sock.close()
