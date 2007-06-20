@@ -41,6 +41,7 @@ class TextEditor:
             column = jumpIndex - (text[:jumpIndex].rfind('\n') + 1)
         else:
             line = column = 0
+        # Linux editors
         if config.editor == 'kate':
             command += " -l %i -c %i" % (line, column)
         elif config.editor == 'gedit':
@@ -53,9 +54,27 @@ class TextEditor:
             command += " +%i" % (line + 1) # seems not to support columns
         elif config.editor == 'nano':
             command += " +%i,%i" % (line + 1, column + 1)
+        # Windows editors
+        elif config.editor.lower().endswith('notepad++.exe'):
+            command += " -n%i" % (line + 1) # seems not to support columns
+
         command += ' %s' % tempFilename
         #print command
         return command
+
+    def convertLinebreaks(self, text):
+        if sys.platform=='win32':
+            return text.replace('\r\n', '\n')
+        # TODO: Mac OS handling
+        return text
+
+    def restoreLinebreaks(self, text):
+        if text is None:
+            return None
+        if sys.platform=='win32':
+            return text.replace('\n', '\r\n')
+        # TODO: Mac OS handling
+        return text
 
     def edit(self, text, jumpIndex = None, highlight = None):
         """
@@ -70,6 +89,7 @@ class TextEditor:
             * jumpIndex - an integer: position at which to put the caret
             * highlight - a substring; each occurence will be highlighted
         """
+        text = self.convertLinebreaks(text)
         if config.editor:
             tempFilename = '%s.%s' % (tempfile.mktemp(), config.editor_filename_extension)
             tempFile = open(tempFilename, 'w')
@@ -85,9 +105,9 @@ class TextEditor:
             else:
                 newcontent = open(tempFilename).read().decode(config.editor_encoding)
                 os.unlink(tempFilename)
-                return newcontent
+                return self.restoreLinebreaks(newcontent)
         else:
-            return wikipedia.ui.editText(text, jumpIndex = jumpIndex, highlight = highlight)
+            return self.restoreLinebreaks(wikipedia.ui.editText(text, jumpIndex = jumpIndex, highlight = highlight))
 
 class ArticleEditor:
     joinchars = string.letters + '[]' + string.digits # join lines if line starts with this ones
