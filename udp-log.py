@@ -11,7 +11,8 @@ TARGET_HOST = 'tools.wikimedia.de'
 TARGET_PORT = 42448
 
 input = sys.stdin.read()
-log = re.search('Versions: (?P<ver>.*?)\n.*Log Message:\n(?P<logmsg>.*)',input,re.DOTALL)
+log = re.search('Versions: (?P<ver>.*?)\nuid=\d+\((?P<user>\w+)\).*Log Message:\s*(?P<logmsg>.*)',input,re.DOTALL)
+l
 
 if log:
     print 'Routing commit data via UDP...'
