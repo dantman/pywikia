@@ -23,6 +23,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+__version__ = '$Id$'
+#
 import sys, re, time
 
 params = {
@@ -84,12 +86,16 @@ MESSAGE += """
 logmsg = re.search('Log Message:(?P<logmsg>.*)',input,re.DOTALL)
 if logmsg:
     params['logmsg'] = re.sub('\s+',' ',logmsg.group('logmsg'))
+    #Escape stuff
+    for v,k in {'&':'&amp;','<':'&lt;','>':'&gt;'}.iteritems():
+        params['logmsg'] = re.sub(v,k,params['logmsg'])
 else:
     params['logmsg'] = 'Error parsing log message'
 
 try:
+    print 'Sending notification to the CIA system...'
     from xmlrpclib import ServerProxy
     server = ServerProxy('http://cia.vc/RPC2')
-    server.hub.deliver(MESSAGE % params)
+    reply = server.hub.deliver(MESSAGE % params)
 finally:
     pass
