@@ -178,10 +178,12 @@ def PagesFromTitlesGenerator(iterable):
             break
         yield wikipedia.Page(wikipedia.getSite(), title)
 
-def LinksearchGenerator(site, link, step=500):
+def LinksearchPageGenerator(link, step=500, site = None):
     """Yields all pages that include a specified link, according to [[Special:Linksearch]].
     Retrieves in chunks of size "step" (default 500).
     Does not guarantee that resulting pages are unique."""
+    if site is None:
+        site = wikipedia.getSite()
     elRX = re.compile('<a .* class="external ?" .*</a>.*<a .*>(.*)</a>') #TODO: de-uglify?
     offset = 0
     found = step
@@ -542,6 +544,12 @@ class GeneratorFactory:
                 linkingPageTitle = arg[7:]
             linkingPage = wikipedia.Page(wikipedia.getSite(), linkingPageTitle)
             gen = LinkedPageGenerator(linkingPage)
+        elif arg.startswith('-weblink'):
+            if len(arg) == 8:
+                url = wikipedia.input(u'Pages with which weblink should be processed?')
+            else:
+                url = arg[9:]
+            gen = LinksearchPageGenerator(url)
         elif arg.startswith('-transcludes'):
             if len(arg) == len('-transcludes'):
                 transclusionPageTitle = wikipedia.input(u'Pages that transclude which page should be processed?')
