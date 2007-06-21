@@ -115,6 +115,12 @@ def LonelyPagesPageGenerator(number = 100, repeat = False, site = None):
     for page in site.lonelypages(number=number, repeat=repeat):
         yield page
 
+def UnwatchedPagesPageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.unwatchedpages(number=number, repeat=repeat):
+        yield page
+
 def AncientPagesPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
         site = wikipedia.getSite()
@@ -483,6 +489,11 @@ class GeneratorFactory:
                 gen = UnusedFilesGenerator()
             else:
                 gen = UnusedFilesGenerator(number = int(arg[13:]))
+        elif arg.startswith('-unwatched'):
+            if len(arg) == 10:
+                gen = UnwatchedPagesPageGenerator()
+            else:
+                gen = UnwatchedPagesPageGenerator(number = int(arg[11:]))
         elif arg.startswith('-withoutinterwiki'):
             if len(arg) == 17:
                 gen = WithoutInterwikiPageGenerator()

@@ -3131,7 +3131,10 @@ class Site(object):
         """Retrieve session cookies for login"""
         try:
             if sysop:
-                username = config.sysopnames[self.family.name][self.lang]
+                try:
+                    username = config.sysopnames[self.family.name][self.lang]
+                except KeyError:
+                    raise NoUsername('You tried to perform an action that requires admin privileges, but you haven\'t entered your sysop name in your user-config.py.')
             else:
                 username = config.usernames[self.family.name][self.lang]
         except KeyError:
@@ -3264,6 +3267,8 @@ Maybe the server is down. Retrying in %i minutes..."""
             return True
         except KeyError:
             return False
+
+    # TODO: avoid code duplication for the following methods
     def newpages(self, number = 10, get_redirect = False, repeat = False):
         """Generator which yields new articles subsequently.
            It starts with the article created 'number' articles
@@ -3417,6 +3422,24 @@ Maybe the server is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
+    def unwatchedpages(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        while True:
+            path = self.unwatchedpages_address(n=number)
+            get_throttle()
+            html = self.getUrl(path, sysop = True)
+            print html
+            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a>.+?</li>')
+            for m in entryR.finditer(html):
+                title = m.group('title')
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page
+            if not repeat:
+                break
+
     def uncategorizedcategories(self, number = 10, repeat = False):
         throttle = True
         seen = set()
@@ -3488,7 +3511,7 @@ Maybe the server is down. Retrying in %i minutes..."""
                     yield page
             if not repeat:
                 break
-            
+
     def withoutinterwiki(self, number = 10, repeat = False):
         throttle = True
         seen = set()
@@ -3763,6 +3786,9 @@ Maybe the server is down. Retrying in %i minutes..."""
 
     def lonelypages_address(self, n=500):
         return self.family.lonelypages_address(self.lang, n)
+
+    def unwatchedpages_address(self, n=500):
+        return self.family.unwatchedpages_address(self.lang, n)
 
     def uncategorizedcategories_address(self, n=500):
         return self.family.uncategorizedcategories_address(self.lang, n)

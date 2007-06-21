@@ -2553,6 +2553,9 @@ class Family:
     def lonelypages_address(self, code, limit=500):
         return "%s?title=%s:Lonelypages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
+    def unwatchedpages_address(self, code, limit=500):
+        return "%s?title=%s:Unwatchedpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+
     def uncategorizedcategories_address(self, code, limit=500):
         return "%s?title=%s:Uncategorizedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
     
