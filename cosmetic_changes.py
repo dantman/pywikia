@@ -228,6 +228,8 @@ class CosmeticChangesToolkit:
              38,     # Ampersand (&amp;)
              60,     # Less than (&lt;)
              62,     # Great than (&gt;)
+             91,     # Opening bracket - sometimes used intentionally inside links
+             93,     # Closing bracket - sometimes used intentionally inside links
             124,     # Vertical bar (??) - used intentionally in navigation bar templates on de:
             160,     # Non-breaking space (&nbsp;) - not supported by Firefox textareas
         ]
