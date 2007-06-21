@@ -141,23 +141,34 @@ class Family(family.Family):
         }
 
         self.namespaces[100] = {
-            '_default': u'Annex',
+            '_default': u'Appendix',
             'bg': u'Словоформи',
+            'fr': u'Annexe',
             'pl': u'Aneks'
         }
         self.namespaces[101] = {
-            
-            '_default': u'Annex talk',
+            '_default': u'Appendix talk',
             'bg': u'Словоформи беседа',
+            'fr': u'Discussion Annexe',
             'pl': u'Dyskusja aneksu'
         }
         self.namespaces[102] = {
-            '_default': u'Index',
+            '_default': u'Concordance',
+            'de': u'Verzeichnis',
+            'fr': u'Transwiki',
             'pl': u'Indeks'
         }
         self.namespaces[103] = {
-            '_default': u'Index talk',
+            '_default': u'Concordance talk',
+            'de': u'Verzeichnis Diskussion',
+            'fr': u'Discussion Transwiki',
             'pl': u'Dyskusja indeksu'
+        }
+        self.namespaces[104] = {
+            '_default': u'Index',
+        }
+        self.namespaces[105] = {
+            '_default': u'Index talk',
         }
 
 
