@@ -121,9 +121,11 @@ fixes = {
             (r'{{([^{}]+?)}(?!})',       r'{{\1}}'),
         ],
         'exceptions': [
-            r'http://.*?object=tx\|', # regular dash in URL
-            r'http://.*?allmusic\.com', # regular dash in URL
-            r'http://.*?allmovie\.com', # regular dash in URL
+            r'http://.*?object=tx\|',    # regular dash in URL
+            r'http://.*?allmusic\.com',  # regular dash in URL
+            r'http://.*?allmovie\.com',  # regular dash in URL
+            r'http://physics.nist.gov/', # regular dash in URL
+            r'\[CDATA\['                 # lots of brackets
         ]
     },
     # The same as syntax, but restricted to replacements that should
@@ -216,12 +218,23 @@ fixes = {
             'de': u'Bot: Korrigiere Datumsformat',
         },
         'replacements': [
-            (u'\(\*(\d{3,4})', u'(* \\1'),
-            (u'†(\d{3,4})', u'† \\1'),
-            (u'&dagger;(\d{3,4})', u'† \\1'),
-            (u'\(\*\[\[(\d)', u'(* [[\\1'),
-            (u'†\[\[(\d)', u'† [[\\1'),
-            (u'&dagger;\[\[(\d)', u'† [[\\1'),
+            # space after birth sign w/ year
+            #(u'\(\*(\d{3,4})', u'(* \\1'),
+            ## space after death sign w/ year
+            #(u'†(\d{3,4})', u'† \\1'),
+            #(u'&dagger;(\d{3,4})', u'† \\1'),
+            ## space after birth sign w/ linked date
+            #(u'\(\*\[\[(\d)', u'(* [[\\1'),
+            ## space after death sign w/ linked date
+            #(u'†\[\[(\d)', u'† [[\\1'),
+            #(u'&dagger;\[\[(\d)', u'† [[\\1'),
+            (u'\[\[(\d+\. (?:Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)) (\d{1,4})\]\]', u'[[\\1]] [[\\2]]'),
         ],
+        'exceptions': [
+            u'[[20. Juli 1944]]',
+            u'[[17. Juni 1953]]',
+            u'[[11. September 2001]]',
+        ]
+        
     },
 }
