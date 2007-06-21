@@ -461,7 +461,16 @@ def PreloadingGenerator(generator, pageNumber=60):
     preloader = _Preloader(pagequeue, generator, pageNumber) 
     preloader.start()
     while True:
-        p = pagequeue.get()
+        # Queue.get() blocks the main thread. This means that the
+        # program wouldn't react to CTRL-C while it is waiting for
+        # a queue element.
+        # Thus, there is a timeout to the blocking, so that Python
+        # can check once a second if there is a KeyboardInterrupt.
+        try:
+            p = pagequeue.get(timeout = 1)
+        except Queue.Empty:
+            # This is expected. Keep waiting.
+            continue
         if p is None:
             return
         yield p
