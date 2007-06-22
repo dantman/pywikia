@@ -226,7 +226,7 @@ class UploadRobot:
                 wikipedia.output(u'%i %s' % (response.status, response.reason))
                 answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
                 if answer in ["y", "Y"]:
-                    return upload_image(debug)
+                    return self.upload_image(debug)
                 else:
                     return
         return filename
