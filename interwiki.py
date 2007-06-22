@@ -1065,7 +1065,10 @@ class Subject(object):
                         except (wikipedia.SpamfilterError), error:
                             wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % error.url)
                             raise SaveError
-                        except (socket.error, IOError, wikipedia.PageNotSaved), error:
+                        except (wikipedia.PageNotSaved), error:
+                            wikipedia.output(u'ERROR putting page: %s' % error)
+                            raise SaveError
+                        except (socket.error, IOError), error:
                             if timeout>3600:
                                 raise
                             wikipedia.output(u'ERROR putting page: %s' % error)
