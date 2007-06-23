@@ -237,7 +237,10 @@ class Delinker(threadpool.Thread):
 						f.writelines(diff)
 						f.close()
 					
-					if config.CommonsDelinker.get('edit', True):
+					if self.CommonsDelinker.config.get('edit', True) and not \
+							(self.CommonsDelinker.site.lang == 'commons' ^ \
+							config.usernames.get('commons', {}).get(
+							'commons') == 'CommonsDelinker'):
 						page.put(new_text, summary)
 					return 'ok'
 				except wikipedia.EditConflict:
