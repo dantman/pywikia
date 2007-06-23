@@ -378,7 +378,7 @@ for _key in globals().keys():
             print "       Now: ",nt
         del nt,ot
     else:
-        print "WARNING: Configuration variable %s not known. Misspelled?"%_key
+        print "WARNING: Configuration variable %r is defined but unknown. Misspelled?"%_key
 del _key,_tp
 
 # Fix up default console_encoding
