@@ -142,7 +142,8 @@ class Category(wikipedia.Page):
         elif self.site().versionnumber() < 8:
             Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
         else:
-            Rtitle = re.compile('<ul><li><a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
+            Rtitle = re.compile(
+            '<li><a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
         if self.site().versionnumber() < 8:
             Rsubcat = None
         else:
