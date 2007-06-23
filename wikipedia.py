@@ -3675,7 +3675,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         # A redirect starts with hash (#), followed by a keyword, then 
         # arbitrary stuff, then a wikilink. The link target ends before
         # either a | or a ].
-        return re.compile(r'#' + redirKeywordsR + '.*?\[\[(.*?)(?:\]|\|)', re.IGNORECASE | re.UNICODE)
+        return re.compile(r'#' + redirKeywordsR + '.*?\[\[(.*?)(?:\]|\|)', re.IGNORECASE | re.UNICODE | re.DOTALL)
 
     # The following methods are for convenience, so that you can access
     # methods of the Family class easier.
