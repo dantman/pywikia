@@ -4142,8 +4142,9 @@ def altlang(code):
         return ['be','be-x-old','ru']
     if code in ['kk','ky','tk']:
         return ['tr','ru']
-    if code == 'zh-classical':
-        return ['zh','zh-cn','zh-tw']
+    if code == 'zh-classic':
+        # the database uses 'zh-classic' instead of 'zh-classical' as the field is varchar(10)
+        return ['zh-classical','zh','zh-cn','zh-tw']
     if code in ['diq','ug','uz']:
         return ['tr']
     if code in ['ja','minnan','zh','zh-cn']:
