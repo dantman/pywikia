@@ -1,9 +1,17 @@
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Library to work with category pages on Wikipedia
 """
 #
-# (C) Rob W.W. Hooft, Andre Engels, 2004
+# (C) Rob W.W. Hooft, Andre Engels, 2004-2007
+# (C) Daniel Herding, 2004-2007
+# (C) Gerrit, 2004
+# (C) Hashar, 2005
+# (C) Russell Blau, 2005
+# (C) Cyde Weys, 2005-2007
+# (C) Leonardo Gregianin, 2005-2007
+# (C) Filnik, 2007
 #
 # Distributed under the terms of the MIT license.
 #
@@ -133,7 +141,7 @@ class Category(wikipedia.Page):
         elif self.site().versionnumber() < 8:
             Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
         else:
-            Rtitle = re.compile('title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
+            Rtitle = re.compile('<ul><li><a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
         if self.site().versionnumber() < 8:
             Rsubcat = None
         else:
