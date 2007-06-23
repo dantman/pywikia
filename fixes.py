@@ -121,11 +121,13 @@ fixes = {
             (r'{{([^{}]+?)}(?!})',       r'{{\1}}'),
         ],
         'exceptions': [
-            r'http://.*?object=tx\|',    # regular dash in URL
-            r'http://.*?allmusic\.com',  # regular dash in URL
-            r'http://.*?allmovie\.com',  # regular dash in URL
-            r'http://physics.nist.gov/', # regular dash in URL
-            r'\[CDATA\['                 # lots of brackets
+            r'http://.*?object=tx\|',               # regular dash in URL
+            r'http://.*?allmusic\.com',             # regular dash in URL
+            r'http://.*?allmovie\.com',             # regular dash in URL
+            r'http://physics.nist.gov/',            # regular dash in URL
+            r'http://www.forum-seniorenarbeit.de/', # regular dash in URL
+            r'&object=med',                         # regular dash in URL
+            r'\[CDATA\['                            # lots of brackets
         ]
     },
     # The same as syntax, but restricted to replacements that should
