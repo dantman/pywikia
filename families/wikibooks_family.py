@@ -58,7 +58,7 @@ class Family(family.Family):
                       'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
                       'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
                       'sa','st','sq','si','simple','sk','sl','sr','su',
-                      'fi','sv','ta','tt','th','tlh','ur','vi','tokipona',
+                      'fi','sv','ta','tt','th','ur','vi','tokipona',
                       'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
                       'zh-tw']
 

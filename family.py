@@ -1651,7 +1651,6 @@ class Family:
                 'te': u'వర్గం చర్చ',
                 'tg': u'Баҳси гурӯҳ',
                 'th': u'คุยเรื่องหมวดหมู่',
-                'tlh': u"Segh ja'chuq",
                 'tr': u'Kategori tartışma',
                 'tt': u'Törkem bäxäse',
                 'ty': u'Discussion Catégorie',

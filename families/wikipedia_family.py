@@ -515,7 +515,7 @@ class Family(family.Family):
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
 
-        self.nocapitalize = ['jbo','tlh']
+        self.nocapitalize = ['jbo',]
 
 
         # A revised sorting order worked out on http://meta.wikimedia.org/wiki/Interwiki_sorting_order
@@ -536,7 +536,7 @@ class Family(family.Family):
             'pi','pag','pap','ps','km','pms','nds','pl','pt','kk-tr','ty','ksh','ro',
             'rmy','rm','qu','ru','se','sa','sg','sc','sco','st','tn','sq','ru-sib','scn',
             'si','simple','sd','ss','sk','sl','cu','so','sr','sh','fi','sv','tl',
-            'ta','kab','roa-tara','tt','te','tet','th','vi','ti','tlh','tg','tpi','chr','chy',
+            'ta','kab','roa-tara','tt','te','tet','th','vi','ti','tg','tpi','chr','chy',
             've','tr','tk','tw','udm','uk','ur','vec','vo','fiu-vro','wa',
             'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg',
             'zh','zh-tw','zh-cn']
@@ -561,7 +561,7 @@ class Family(family.Family):
             'pi', 'pam', 'pag', 'pap', 'ps', 'km', 'pms', 'nds', 'pl', 'pt', 'ty', 'ksh', 'ro', 'rmy', 'rm', 'qu',
             'ru', 'se', 'sa', 'sg', 'sc', 'sco', 'st', 'tn', 'sq', 'ru-sib', 'scn', 'si',
             'simple', 'sd', 'ss', 'sk', 'sl', 'cu', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
-            'ta', 'kab', 'roa-tara', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tlh', 'tg', 'tpi', 'cv', 'tr',
+            'ta', 'kab', 'roa-tara', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tg', 'tpi', 'cv', 'tr',
             'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'vls', 'war',
             'wo', 'wuu', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'cbk-zam', 'diq', 'zea', 'bat-msg', 'zh',
             'zh-tw', 'zh-cn']

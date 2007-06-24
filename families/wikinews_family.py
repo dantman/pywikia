@@ -37,7 +37,7 @@ class Family(family.Family):
             
         self.nocapitalize = ['cs', 'de', 'es', 'fa', 'fr', 'gu', 'hi', 'hr',
                         'hu', 'it', 'ja', 'ka', 'kn', 'ku', 'nl', 'sa',
-                        'scn', 'sq', 'sv', 'sw', 'tlh', 'tokipona', 'tr', 'vi']
+                        'scn', 'sq', 'sv', 'sw', 'tokipona', 'tr', 'vi']
     
         self.obsolete = {'nb':'no',
                     'minnan':'zh-min-nan',
