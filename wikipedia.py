@@ -3018,6 +3018,7 @@ class Site(object):
         self._sysoptoken = None
         self.loginStatusKnown = {}
         self._loggedInAs = None
+        self.userGroups = []
         # Calculating valid languages took quite long, so we calculate it once
         # in initialization instead of each time it is used.
         self._validlanguages = []
@@ -3152,6 +3153,7 @@ class Site(object):
                 self._cookies = '; '.join([x.strip() for x in f.readlines()])
                 f.close()
 
+    r_userGroups = re.compile(ur'var wgUserGroups \= (.*)\;')
     def getUrl(self, path, retry = True, sysop = False, data = None):
         """
         Low-level routine to get a URL from the wiki.
@@ -3218,6 +3220,17 @@ class Site(object):
             output(u'ERROR: Invalid characters found on http://%s%s, replaced by \\ufffd.' % (self.hostname(), path))
             # We use error='replace' in case of bad encoding.
             text = unicode(text, charset, errors = 'replace')
+
+        # Try and see whether we can extract the user groups
+        match = self.r_userGroups.search(text)
+        if match:
+            self.userGroups = []
+            if match.group(1) != 'null':
+                uG = match.group(1)[1:-1].split(', ')
+                for group in uG:
+                    if group.strip('"') != '*':
+                        self.userGroups.append(group.strip('"'))
+
         return text
 
     def mediawiki_message(self, key):
