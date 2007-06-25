@@ -125,7 +125,6 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
       use them.
 
 *************************** Known issues/FIXMEs ****************************
-* exits when wiki is down.
 * add variable for how many users to skip (e.g. the 10 latest users, that
   may not have made any edits)
 * use default pages if a wiki is not configured, so no configuration of
@@ -133,9 +132,7 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
   defaults.
 * The regex to load the user might be slightly different from project to project.
   (in this case, write to Filnik for help...)
-* If the User talk: translation has non-standard character it won't work.
 * Add in the report, the badword used to detect the user.
-* Add the template, without subst:
 * Make object-oriented
 """
 #
@@ -152,6 +149,7 @@ __version__ = '$Id: welcome.py,v 1.4 2007/04/14 18:05:42 siebrand Exp'
 
 import wikipedia
 import time, re, config
+import urllib
 
 number = 1           # number of edits that an user required to be welcomed
 numberlog = 4        # number of users that are required to add the log :)
@@ -209,7 +207,7 @@ netext = {
     'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}}%s',
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}}%s',
-    'it':u'{{Template:Benvebot}} %s',
+    'it':u'{{Benvebot}} %s',
     'nl':u'{{Welkomstbericht}}%s',
     'no':u'{{subst:bruker:jhs/vk}}%s',
     'sq':u'{{subst:tung}}%s',
@@ -272,29 +270,29 @@ bad_pag = {
 # The text for reporting a possibly bad username (e.g. *[[Talk_page:Username|Username]]).
 # TODO: don't get the time at initialization, but when the template is used.
 report_text = {
-        'commons':u"\n*{{user3|%s}}" + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'ar':u"\n*{{user13|%s}}" + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'de':u'\n*[[Benutzer Diskussion:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'en':u'\n*{{Userlinks|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'it':u"\n{{Reported|%s|",
-        'nl':u'\n*{{linkgebruiker%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        'no':u'\n*{{bruker|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
-        'sq':u'\n*[[User:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
-        }
-# Set where you load your list of signs that the bot will load if you use
+    'commons':u"\n*{{user3|%s}}" + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'ar':u"\n*{{user13|%s}}" + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'de':u'\n*[[Benutzer Diskussion:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'en':u'\n*{{Userlinks|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'it':u"\n{{Reported|%s|",
+    'nl':u'\n*{{linkgebruiker%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'no':u'\n*{{bruker|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+    'sq':u'\n*[[User:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    }
+# Set where you load your list of signatures that the bot will load if you use
 # the random argument (this parameter is optional).
 random_sign = {
-        'ar': u'ويكيبيديا:سجل الترحيب/توقيعات',
-        'en': u'User:Filnik/Sign',
-        'it': u'Project:Benvenuto log/User',
-        }
+    'ar': u'ويكيبيديا:سجل الترحيب/توقيعات',
+    'en': u'User:Filnik/Sign',
+    'it': u'Project:Benvenuto log/User',
+    }
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
 whitelist_pg = {
-        'ar':u'ويكيبيديا:سجل الترحيب/قائمةبيضاء',
-        'en':u'User:Filnik/whitelist',
-        'it':u'Utente:Filbot/whitelist',
-        }
+    'ar':u'ويكيبيديا:سجل الترحيب/قائمةبيضاء',
+    'en':u'User:Filnik/whitelist',
+    'it':u'Utente:Filbot/whitelist',
+    }
 # Add your project (in alphabetical order) if you want that the bot start.
 project_inserted = ['ar', 'commons', 'de', 'en', 'it', 'nl', 'no', 'sq']
 
@@ -303,6 +301,14 @@ project_inserted = ['ar', 'commons', 'de', 'en', 'it', 'nl', 'no', 'sq']
 ############################################################################
 ############################################################################
 ############################################################################
+
+# Function stolen from wikipedia.py and modified
+def urlname(talk_page, site):
+    """The name of the page this Page refers to, in a form suitable
+       for the URL of the page."""
+    title = talk_page.replace(" ", "_")
+    encodedTitle = title.encode(site.encoding())
+    return urllib.quote(encodedTitle)
 
 def load_word_function(wsite, raw):
     # This is a function used to load the badword and the whitelist.
@@ -415,7 +421,7 @@ def blocked(wsite, username):
         return True
 
 def defineSign(wsite, signPageTitle):
-    #A little function to load the random signs.
+    #A little function to load the random signatures.
     signPage = wikipedia.Page(wsite, signPageTitle)
     signText = signPage.get()
     reg = "\* ?(.*?)\n"
@@ -478,15 +484,7 @@ if __name__ == "__main__":
 
     # The talk_page's variable gives "Talk page"
     talk_page = wsite.namespace(3)
-    talk = talk_page.replace(" ", "_") + ":"
-
-    # If your User talk in your language has a special charachter the script won't work, that
-    # block fix this bug. (FIXME).
-
-    if wsite.lang == 'ar':
-        talk = '%D9%86%D9%82%D8%A7%D8%B4_%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AE%D8%AF%D9%85:'
-    elif wsite.lang == 'sq':
-        talk = 'P%C3%ABrdoruesi_diskutim:'
+    talk = urlname(talk_page, wsite) + ':'
 
     # A parameter for different projects of the same language...
     if wsite.family.name == "wikinews":
@@ -499,7 +497,7 @@ if __name__ == "__main__":
             logg = u'Wiktionary:Benvenuto log'
             welcomer = u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s'
 
-    hechas = list()
+    welcomed_users = list()
     number_user = 0
     # Use try and finally, to put the wikipedia.stopme() always at the end of the code.
     try:
@@ -580,16 +578,16 @@ if __name__ == "__main__":
             log = wsite.getUrl(URL)
             wikipedia.output(u'Loading latest ' + str(limit) + u' new users from ' + (wsite.hostname()) + u'...\n')
             parsed = parselog(wsite,log)
-            # Defing what sign the Bot will use
+            # Determine which signature to use
             if random == True:
                 try:
-                    wikipedia.output(u'Loading random signs...')
+                    wikipedia.output(u'Loading random signatures...')
                     signList = defineSign(wsite,signPageTitle)
                 except wikipedia.NoPage:
-                    wikipedia.output(u'The list with signs is not available... Using default sign...')
+                    wikipedia.output(u'The list with signatures is not available... Using default signature...')
                     random = False
             for found_result in parsed:
-                # Defing the final sign...
+                # Compiling the signature to be used
                 if random == True:
                     if number_user + 1> len(signList):
                         number_user = 0
@@ -668,7 +666,7 @@ if __name__ == "__main__":
                         try:
                             # make non-minor edit to trigger new talk page message
                             usertalkpage.put(welcom, summ, minorEdit = False)
-                            hechas.append(found_result)
+                            welcomed_users.append(found_result)
                             if random == True:
                                 number_user += 1
                         except wikipedia.EditConflict:
@@ -679,16 +677,16 @@ if __name__ == "__main__":
                         continue
                 # That's the log
                 if log_variable == True and logg:
-                    if len(hechas) == 1:
+                    if len(welcomed_users) == 1:
                         wikipedia.output(u'One user has been welcomed.')
-                    elif len(hechas) == 0:
+                    elif len(welcomed_users) == 0:
                         wikipedia.output(u'No users have been welcomed.')
                     else:
-                        wikipedia.output(u'%s users have been welcomed.' % str(len(hechas)) )
-                    if len(hechas) < numberlog:
+                        wikipedia.output(u'%s users have been welcomed.' % str(len(welcomed_users)) )
+                    if len(welcomed_users) < numberlog:
                         continue
                     # Update the welcome log each fifth welcome message
-                    elif len(hechas) >= numberlog:
+                    elif len(welcomed_users) >= numberlog:
                         safety = list()
                         # Deduct the correct sub page name form the current date.
                         rightime = time.localtime(time.time())
@@ -717,14 +715,14 @@ if __name__ == "__main__":
                             # The string below show how the "Contribs" will be notified
                             safety.append(u'\n!' + contrib)
 
-                        for found_result in hechas:
+                        for found_result in welcomed_users:
                             # Adding the log... (don't take care of the variable's name...)
                             luserpage = str(found_result[0])
                             luser = wikipedia.url2link(luserpage, wsite, wsite)
-                            cantidad = str(found_result[1])
-                            logtext = u'\n{{WLE|user=%s|contribs=%s}}' % ( luser, cantidad )
+                            edit_count = str(found_result[1])
+                            logtext = u'\n{{WLE|user=%s|contribs=%s}}' % ( luser, edit_count )
                             safety.append(logtext)
-                        hechas = list()
+                        welcomed_users = list()
                         try:
                             page.put(''.join(safety), summ2)
                         except wikipedia.EditConflict:
