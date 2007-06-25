@@ -867,28 +867,28 @@ class Page(object):
                                   used as a template.
         * redirectsOnly         - if True, only returns redirects to self.
         """
+        # Temporary bug-fix while researching more robust solution:
+        if config.special_page_limit > 999:
+            config.special_page_limit = 999
         site = self.site()
-        path = site.references_address(self.urlname())
+        path = self.site().references_address(self.urlname())
         content = SoupStrainer("div", id=self.site().family.content_id)
         try:
-##            next_msg = mediawiki_messages.get('whatlinkshere-next', site)
-            next_msg = site.mediawiki_message('whatlinkshere-next')
+            next_msg = self.site().mediawiki_message('whatlinkshere-next')
         except KeyError:
             next_msg = "next %i" % config.special_page_limit
         plural = (config.special_page_limit == 1) and "\\1" or "\\2"
         next_msg = re.sub(r"{{PLURAL:\$1\|(.*?)\|(.*?)}}", plural, next_msg)
         nextpattern = re.compile("^%s$" % next_msg.replace("$1", "[0-9]+"))
         delay = 1
-##        self._isredirectmessage = mediawiki_messages.get("Isredirect", site)
-        self._isredirectmessage = site.mediawiki_message("Isredirect")
-        if site.has_mediawiki_message("Istemplate"):
-##            self._istemplatemessage = mediawiki_messages.get("Istemplate", site)
-            self._istemplatemessage = site.mediawiki_message("Istemplate")
-        # to avoid duplicates
+        self._isredirectmessage = self.site().mediawiki_message("Isredirect")
+        if self.site().has_mediawiki_message("Istemplate"):
+            self._istemplatemessage = self.site().mediawiki_message("Istemplate")
+        # to avoid duplicates:
         refPages = set()
         while path:
             output(u'Getting references to %s' % self.aslink())
-            txt = site.getUrl(path)
+            txt = self.site().getUrl(path)
             body = BeautifulSoup(txt,
                                  convertEntities=BeautifulSoup.HTML_ENTITIES,
                                  parseOnlyThese=content)
