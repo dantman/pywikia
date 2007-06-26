@@ -18,11 +18,13 @@ deletion log from the shared image repository, and delink on that and local
 wikis. In local mode, it will read a local deletion log and also delink locally
 only.
 
-DO NOT RUN THIS BOT ON COMMONS WITHOUT CONSULTING BRYAN AND SIEBRAND. Running
+Do not run the bot on Commons without consulting Siebrand or Bryan. Running
 multiple instances will not only mess everything up, but also causes the 
 CommonsTicker to work no longer work correctly. Thank you.
 
-NON WIKIMEDIA WIKIS ARE CURRENTLY UNSUPPORTED.
+Non Wikimedia wikis are currently unsupported. This is due to a flaw in 
+CheckUsage. (To be precise: it won't work for wikis that don't have 
+/w/api.php on that location.)
 
 == Program flow ==
 === Delinker ===

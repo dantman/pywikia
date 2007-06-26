@@ -30,7 +30,7 @@ __version__ = '$Id$'
 # * Don't replace within <nowiki /> tags
 # * Make as many config settings site dependend
 
-import sys, threading, time
+import sys, os, threading, time
 import traceback
 import re, cgitb
 
@@ -454,7 +454,7 @@ class CheckUsage(threadpool.Thread):
 		except:
 			# Something unexpected happened. Report and die.
 			output('An exception occured in %s' % self, False)
-			print >>sys.stderr, cgitb.text(sys.exc_info())
+			traceback.print_exc(file = sys.stderr)
 			self.exit()
 			self.CommonsDelinker.thread_died()
 		
@@ -510,7 +510,7 @@ class Logger(threadpool.Thread):
 		except:
 			# Something unexpected happened. Report and die.
 			output('An exception occured in %s' % self, False)
-			print >>sys.stderr, cgitb.text(sys.exc_info())
+			traceback.print_exc(file = sys.stderr)
 			self.exit()
 			self.CommonsDelinker.thread_died()
 			
@@ -518,6 +518,7 @@ class CommonsDelinker(object):
 	def __init__(self):
 		self.config = config.CommonsDelinker
 		self.site = wikipedia.getSite()
+		self.site.forceLogin()
 		
 		# Initialize workers
 		self.CheckUsages = threadpool.ThreadPool(CheckUsage)
@@ -544,6 +545,13 @@ class CommonsDelinker(object):
 			# Don't edit as sysop
 			if hasattr(config, 'sysopnames'):
 				config.sysopnames = dict([(fam, {}) for fam in config.sysopnames.keys()])
+				
+		self.last_check = time.time()
+		
+		if 'bot' in self.site.userGroups:
+			self.log_limit = '5000'
+		else:
+			self.log_limit = '500'
 		
 	def connect_mysql(self):
 		self.database = connect_database()
@@ -586,7 +594,7 @@ class CommonsDelinker(object):
 			# the case, timeout should be set lower.
 			result = self.http.query_api('api', self.site.hostname(),
 				action = 'query', list = 'logevents', letype = 'delete', 
-				lelimit = '500', lestart = ts_from_s, leend = ts_end_s, 
+				lelimit = self.log_limit, lestart = ts_from_s, leend = ts_end_s, 
 				ledir = 'newer')
 			logevents = result['query']['logevents']
 		except Exception, e:
@@ -614,6 +622,41 @@ class CommonsDelinker(object):
 						None))
 				else:
 					output(u'Skipping deleted image: %s' % logevent['title'])
+	def read_deletion_log_db(self):
+		if not self.cursor.execute("""SELECT UNIX_TIMESTAMP() - last_activity
+				FROM %s WHERE name = 'deletion_log_updated'""" % \
+				self.config['bot_table']):
+			return False
+		if cursor.fetchone()[0] > 120: return False
+		
+		ts_format = '%Y%m%d%H%M%S'
+		wait = self.config['delink_wait']
+		exclusion = self.config['exclude_string']
+		
+		ts_from = self.last_check
+		# Truncate -> int()
+		ts_end = int(time.time())
+		self.last_check = ts_end
+		
+		# Format as a Mediawiki timestamp and substract a
+		# certain wait period.
+		ts_from_s = time.strftime(ts_format, time.gmtime(ts_from - wait + 1))
+		ts_end_s = time.strftime(ts_format, time.gmtime(ts_end - wait))
+		
+		self.cursor.execute("""SELECT timestamp, page_title, user, comment
+			FROM %s WHERE page_namespace = 6 AND action = 'delete'
+			AND timestamp >= %%s AND timestamp <= %%s""" % \
+			self.config['deletion_log_table'], (ts_from_s, ts_end_s))
+			
+		for timestamp, page_title, comment in self.cursor:
+			if exclusion not in comment:
+				output(u'Deleted image: %s' % page_title)
+				self.CheckUsages.append((page_title, timestamp, 
+					user, comment, None))
+			else:
+				output(u'Skipping deleted image: %s' % page_title)
+					
+		return True
 					
 	def read_replacement_log(self):
 		update = """UPDATE %s SET status = %%s WHERE id = %%s""" % \
@@ -645,7 +688,6 @@ class CommonsDelinker(object):
 		self.CheckUsages.start()
 		
 		# Give threads some time to initialize
-		self.last_check = time.time()
 		time.sleep(self.config['timeout'])
 		output(u'All workers started')
 		
@@ -659,9 +701,21 @@ class CommonsDelinker(object):
 		# Main loop
 		while True:
 			if self.config.get('enable_delinker', True):
-				self.read_deletion_log()
+				if 'deletion_log_table' in self.config:
+					if not self.read_deletion_log_db():
+						self.read_deletion_log()
+				else:
+					self.read_deletion_log()
 			if self.config.get('enable_replacer', False):
 				self.read_replacement_log()
+				
+			if 'bot_table' in self.config:
+				self.cursor.execute("""UPDATE %s SET 
+					last_activity = UNIX_TIMESTAMP()
+					WHERE name = 'CommonsDelinker'""" % \
+					self.config['bot_table'])
+				self.database.commit()
+				
 			time.sleep(self.config['timeout'])
 			
 	def thread_died(self):
@@ -702,9 +756,33 @@ def output(message, toStdout = True):
 		sys.stderr.flush()
 			
 if __name__ == '__main__':
+	try:
+		PID = int(os.readlink('/proc/self'))
+	except:
+		PID = 0
+	
 	output(u'Running CommonsDelinker.')
 	CD = CommonsDelinker()
 	output(u'This bot runs from: ' + str(CD.site))
+	
+	args = wikipedia.handleArgs()
+	if '-since' in args:
+		ts_format = '%Y-%m-%d %H:%M:%S'
+		try:
+			since = time.strptime(
+				args[args.index('-since') + 1], 
+				ts_format)
+		except ValueError:
+			if args[args.index('-since') + 1][0] == '[' and \
+					len(args) != args.index('-since') + 2:
+				since = time.strptime('%s %s' % \
+					args[args.index('-since') + 1],
+					'[%s]' % ts_format)
+			else:
+				raise ValueError('Incorrect time format!')
+		output(u'Reading deletion log since [%s]' %\
+			time.strftime(ts_format, since))
+		CD.last_check = time.mktime(since)
 	
 	try:
 		try:
