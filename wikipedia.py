@@ -894,7 +894,7 @@ class Page(object):
                                  parseOnlyThese=content)
             next_text = body.find(text=nextpattern)
             if next_text is not None:
-                path = next_text.parent['href']
+                path = next_text.parent['href'].replace("&amp;", "&")
             else:
                 path = ""
             reflist = body.find("ul")
@@ -4412,10 +4412,17 @@ def stopme():
        when it has stopped doing so. After a bot has run stopme() it will
        not slow down other bots any more.
     """
-    # wait for the page-putter to flush its queue
+    get_throttle.drop()
+
+def _flush():
+    '''Wait for the page-putter to flush its queue;
+       called automatically upon exiting from Python.
+    '''
     page_put_queue.put((None, None, None, None, None))
     _putthread.join()
-    get_throttle.drop()
+
+import atexit
+atexit.register(_flush)
 
 def debugDump(name, site, error, data):
     import time
