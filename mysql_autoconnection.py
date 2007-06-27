@@ -54,7 +54,7 @@ class Connection(object):
 		if self.connected:
 			try:
 				# Check whether connection is alive
-				self.database.ping()
+				self.cursor.execute('SELECT 1')
 			except MySQLdb.Error:
 				# It's not alive, force close
 				self.close()
@@ -140,7 +140,9 @@ if __name__ == '__main__':
 	print 'Query ok, please kill the connection...'
 	raw_input()
 	conn.execute('SELECT 1')
-	print 'Query ok!'
+	print 'Query ok!, please kill while connected...'
+	raw_input()
+	conn.execute('SELECT SLEEP(30), 1')
 	
 	print 'Now testing inserts...'
 	conn.execute('USE test')
