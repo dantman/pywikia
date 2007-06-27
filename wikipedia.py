@@ -418,13 +418,17 @@ class Page(object):
         """A more complete string representation"""
         return "%s{%s}" % (self.__class__.__name__, str(self))
 
-    def aslink(self, forceInterwiki = False):
+    def aslink(self, forceInterwiki = False, textlink=False):
         """
         A string representation in the form of a link. The link will
         be an interwiki link if needed.
 
         If you set forceInterwiki to True, the link will have the format
         of an interwiki link even if it points to the home wiki.
+
+        If you set textlink to True, the link will always appear in text
+        form (that is, links to the Category: and Image: namespaces will
+        be preceded by a : character).
 
         Note that the family is never included.
         """
@@ -433,6 +437,8 @@ class Page(object):
                 return '[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, self.title(savetitle=True))
             else:
                 return '[[%s:%s]]' % (self.site().lang, self.title(savetitle=True))
+        elif textlink and self.namespace() in (6, 14): # Image: or Category:
+                return '[[:%s]]' % self.title()
         else:
             return '[[%s]]' % self.title()
 
@@ -1172,10 +1178,8 @@ class Page(object):
                                     newPage, token, False, sysop)
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
-##            elif mediawiki_messages.get('spamprotectiontitle', self.site()) in data:
             elif self.site().mediawiki_message('spamprotectiontitle') in data:
                 try:
-##                    reasonR = re.compile(re.escape(mediawiki_messages.get('spamprotectionmatch', self.site())).replace('\$1', '(?P<url>[^<]*)'))
                     reasonR = re.compile(re.escape(self.site().mediawiki_message('spamprotectionmatch')).replace('\$1', '(?P<url>[^<]*)'))
                     url = reasonR.search(data).group('url')
                 except:
@@ -1202,7 +1206,6 @@ class Page(object):
                 # Make sure your system clock is correct if this error occurs
                 # without any reason!
                 raise EditConflict(u'Someone deleted the page.')
-##            elif mediawiki_messages.get('viewsource') in data:
             elif self.site().mediawiki_message('viewsource') in data:
                 # The page is locked. This should have already been detected
                 # when getting the page, but there are some reasons why this
@@ -4393,13 +4396,16 @@ def async_put():
             return
         try:
             page.put(newtext, comment, watchArticle, minorEdit)
+        except SpamfilterError, ex:
+            output(u"Saving page [[%s]] prevented by spam filter: %s"
+                   % (page.title(), ex.url))
         except PageNotSaved, ex:
-            output(u"Saving page [[%s]] failed: %s" % (page.title(), ex.message))
+            output(u"Saving page [[%s]] failed: %s"
+                   % (page.title(), ex.message))
         except:
             tb = traceback.format_exception(*sys.exc_info())
             output(u"Saving page [[%s]] failed:\n%s"
-                    % (page.title(), "".join(tb))
-                   )
+                    % (page.title(), "".join(tb)))
 
 _putthread = threading.Thread(target=async_put)
 # identification for debugging purposes
