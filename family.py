@@ -2335,7 +2335,7 @@ class Family:
         'fi': [u'uudelleenohjaus', u'ohjaus'],
         'ga': [u'athsheoladh'],
         'he': [u'הפניה'],
-        'id': [u'redirected'],
+        'id': [u'redirected', u'alih'],
         'is': [u'tilvísun'],
         'ka': [u'გადამისამართება'],
         'nn': [u'omdiriger'],
