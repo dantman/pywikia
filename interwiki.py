@@ -1066,12 +1066,12 @@ class Subject(object):
                             wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % error.url)
                             raise SaveError
                         except (wikipedia.PageNotSaved), error:
-                            wikipedia.output(u'ERROR putting page: %s' % error)
+                            wikipedia.output(u'ERROR putting page: %s' % error.args)
                             raise SaveError
                         except (socket.error, IOError), error:
                             if timeout>3600:
                                 raise
-                            wikipedia.output(u'ERROR putting page: %s' % error)
+                            wikipedia.output(u'ERROR putting page: %s' % error.args)
                             wikipedia.output(u'Sleeping %i seconds before trying again.' % timeout)
                             timeout *= 2
                             time.sleep(timeout)

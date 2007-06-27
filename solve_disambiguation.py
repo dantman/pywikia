@@ -514,7 +514,7 @@ class DisambiguationRobot(object):
                     try:
                         refPage.put(redir_text)
                     except wikipedia.PageNotSaved, error:
-                        wikipedia.output(u'Page not saved: %s' % error)
+                        wikipedia.output(u'Page not saved: %s' % error.args)
             else:
                 choice = wikipedia.inputChoice(u'Do you want to work on pages linking to %s?' % refPage.title(), ['yes', 'no', 'change redirect'], ['y', 'N', 'c'], 'N')
                 if choice in ['y', 'Y']:
@@ -707,7 +707,7 @@ class DisambiguationRobot(object):
                 try:
                     refPage.put(text)
                 except wikipedia.PageNotSaved, error:
-                    wikipedia.output(u'Page not saved: %s' % error)
+                    wikipedia.output(u'Page not saved: %s' % error.args)
         return True
     
     def findAlternatives(self, disambPage):
