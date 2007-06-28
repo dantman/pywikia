@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Script to copy images to Wikimedia Commons, or to another wiki.
 
@@ -54,7 +54,7 @@ nowCommonsTemplate = {
     'ia': u'{{OraInCommons|Imagine:%s}}',
     'it': u'{{NowCommons unlink|%s}}',
     'lt': u'{{NowCommons|Image:%s}}',
-    'nl': u'{{NuCommons|%s}}',
+    'nl': u'{{NuCommons|Image:%s}}',
     'pl': u'{{NowCommons|%s}}',
     'pt': u'{{NowCommons|%s}}',
     'sr': u'{{NowCommons|%s}}',
