@@ -113,20 +113,20 @@ msg_change={
     }
 
 deletion_reason_move = {
-    'de':u'Bot: Kategorie wurde nach [[%s]] verschoben',
-    'en':u'Robot: Category was moved to [[%s]]',
-    'fr':u'Robot : catégorie déplacée sur [[%s]]',
-    'he':u'רובוט: הקטגוריה הועברה לשם [[%s]]',
-    'ia':u'Robot: Categoria transferite a [[%s]]',
-    'id':u'Bot: Kategori dipindahkan ke [[%s]]',
-    'lt':u'robotas: Kategorija pervadinta į [[%s]]',
-    'nds':u'Kat-Bot: Kategorie na [[%s]] schaven',
-    'nl':u'Bot: Categorie is hernoemd naar [[%s]]',
-    'no':u'Robot: Kategorien ble flyttet til [[%s]]',
-    'pt':u'Bot: Categoria [[%s]] foi movida',
-    'pl':u'Robot przenosi kategorię do [[%s]]',
-    'sr':u'Бот: Категорија премештена у [[%s]]',
-    'sv':u'Robot: Kategori flyttades till [[%s]]',
+    'de':u'Bot: Kategorie wurde nach [[Category:%s|%s]] verschoben',
+    'en':u'Robot: Category was moved to [[Category:%s|%s]]',
+    'fr':u'Robot : catégorie déplacée sur [[Category:%s|%s]]',
+    'he':u'רובוט: הקטגוריה הועברה לשם [[Category:%s|%s]]',
+    'ia':u'Robot: Categoria transferite a [[Category:%s|%s]]',
+    'id':u'Bot: Kategori dipindahkan ke [[Category:%s|%s]]',
+    'lt':u'robotas: Kategorija pervadinta į [[Category:%s|%s]]',
+    'nds':u'Kat-Bot: Kategorie na [[Category:%s|%s]] schaven',
+    'nl':u'Bot: Categorie is hernoemd naar [[Category:%s|%s]]',
+    'no':u'Robot: Kategorien ble flyttet til [[Category:%s|%s]]',
+    'pt':u'Bot: Categoria [[Category:%s|%s]] foi movida',
+    'pl':u'Robot przenosi kategorię do [[Category:%s|%s]]',
+    'sr':u'Бот: Категорија премештена у [[Category:%s|%s]]',
+    'sv':u'Robot: Kategori flyttades till [[Category:%s|%s]]',
     }
 
 cfd_templates = {
@@ -358,7 +358,7 @@ class CategoryMoveRobot:
             # try to copy page contents to new cat page
             if self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
                 if self.oldCat.isEmpty():
-                    reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % self.newCatTitle
+                    reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
                     if self.batchMode:
                         self.oldCat.delete(reason, False)
                     else:
