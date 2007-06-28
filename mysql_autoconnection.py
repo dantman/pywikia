@@ -54,7 +54,7 @@ class Connection(object):
 		if self.connected:
 			try:
 				# Check whether connection is alive
-				self.cursor.execute('SELECT 1')
+				self.__cursor.execute('SELECT 1')
 			except MySQLdb.Error:
 				# It's not alive, force close
 				self.close()
