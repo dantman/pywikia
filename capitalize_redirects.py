@@ -1,10 +1,9 @@
 # -*- coding: utf-8  -*-
-"""
-The following scripts was copied from, with adaptations:
-http://en.wikipedia.org/wiki/User:Drinibot/CapitalizationRedirects
-Copyright es:user:Yrithinnd
 
-"""
+#
+# (C) Yrithinnd
+# Class licensed under terms of the MIT license
+#
 
 import time, sys
 import wikipedia, pagegenerators, catlib
