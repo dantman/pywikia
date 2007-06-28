@@ -143,11 +143,12 @@ class Category(wikipedia.Page):
             Rtitle = re.compile('/\S*(?: title\s?=\s?)?\"([^\"]*)\"')
         else:
             Rtitle = re.compile(
-            '<li><a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
+            '<li>(?:<span.*?>)?<a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
         if self.site().versionnumber() < 8:
             Rsubcat = None
         else:
-            Rsubcat = re.compile('CategoryTreeLabelCategory\"\s?href=\".+?\">(.+?)</a>')
+            Rsubcat = re.compile(
+                'CategoryTreeLabelCategory\"\s?href=\".+?\">(.+?)</a>')
         ns = self.site().category_namespaces()
         catsdone = []
         catstodo = [(self,recurse)]
