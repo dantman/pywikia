@@ -1996,12 +1996,15 @@ class ImagePage(Page):
         # * normal, large images with links like: Download high resolution version (1024x768, 200 KB)
         # * SVG images with links like: filename.svg (1KB, MIME type: image/svg)
         # This regular expression seems to work with all of them.
-        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>.+?)"', re.DOTALL)
+        # The part after the | is required for copying .ogg files from en:, as they do not
+        # have a "full image link" div. This might change in the future; on commons, there
+        # is a full image link for .ogg and .mid files.
+        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>.+?)"|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
         m = urlR.search(self.getImagePageHtml())
         try:
-            url = m.group('url')
+            url = m.group('url') or m.group('url2')
         except AttributeError:
-            raise NoPage(u'Image page %s not found.' % self.aslink(forceInterwiki = True))
+            raise NoPage(u'Image file URL for %s not found.' % self.aslink(forceInterwiki = True))
         return url
 
     def fileIsOnCommons(self):
