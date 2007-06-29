@@ -19,6 +19,14 @@ class Connection(object):
 	MySQL does not support cursors, so they can be safely wrapped
 	into one object.
 	"""
+	RECOVERABLE_ERRORS = (
+		1040, # Too many connections
+		1152, # Aborted connection
+		2002, # Connection error
+		2006, # Server gone
+		2013, # Server lost
+		2014, # Commands out of sync
+		)
 	
 	def __init__(self, retry_timeout = 60, max_retries = -1,
 		callback = lambda *args: None, *conn_args, **conn_kwargs):
@@ -44,23 +52,16 @@ class Connection(object):
 	def __call(self, (object, function_name), *args, **kwargs):
 		try:
 			return getattr(object, function_name)(*args, **kwargs)
-		except (MySQLdb.OperationalError, MySQLdb.InterfaceError):
-			if not self.connect():
+		except MySQLdb.Error, e:
+			if e[0] in self.RECOVERABLE_ERRORS:
+				self.connect()
+				return getattr(self, function_name)(*args, **kwargs)
+			else:
 				raise
-			return getattr(self, function_name)(*args, **kwargs)
 		
 	# Mimic database object
 	def connect(self):
-		if self.connected:
-			try:
-				# Check whether connection is alive
-				self.__cursor.execute('SELECT 1')
-			except MySQLdb.Error:
-				# It's not alive, force close
-				self.close()
-			else:
-				# Connection is still alive
-				return False
+		self.close()
 			
 		while not self.connected:
 			self.wait()
