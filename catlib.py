@@ -8,7 +8,7 @@ Library to work with category pages on Wikipedia
 # (C) Daniel Herding, 2004-2007
 # (C) Gerrit, 2004
 # (C) Hashar, 2005
-# (C) Russell Blau, 2005-2007
+# (C) Russell Blau, 2005
 # (C) Cyde Weys, 2005-2007
 # (C) Leonardo Gregianin, 2005-2007
 # (C) Filnik, 2007
@@ -19,7 +19,6 @@ __version__ = '$Id$'
 #
 import re, time
 import wikipedia
-
 try:
     set # introduced in Python 2.4: faster and future
 except NameError:
@@ -63,7 +62,7 @@ class Category(wikipedia.Page):
         self.sortKey = sortKey
         if self.namespace() != 14:
             raise ValueError(u'BUG: %s is not in the category namespace!' % title)
-        self.completelyCached = -1
+        self.completelyCached = False
         self.articleCache = []
         self.subcatCache = []
         self.supercatCache = []
@@ -85,8 +84,8 @@ class Category(wikipedia.Page):
         else:
             return '[[%s]]' % titleWithSortKey
 
-    
-    def _getContentsAndSupercats(self, recurse=0, purge=False, startFrom=None):
+	
+    def _getContentsAndSupercats(self, recurse = False, purge = False, startFrom = None):
         """
         Cache results of _parseCategory for a second call.
 
@@ -97,8 +96,8 @@ class Category(wikipedia.Page):
         This should not be used outside of this module.
         """
         if purge:
-            self.completelyCached = -1
-        if self.completelyCached >= recurse:
+            self.completelyCached = False
+        if self.completelyCached:
             for article in self.articleCache:
                 yield ARTICLE, article
             for subcat in self.subcatCache:
@@ -106,7 +105,7 @@ class Category(wikipedia.Page):
             for supercat in self.supercatCache:
                 yield SUPERCATEGORY, supercat
         else:
-            for type, title in self._parseCategory(recurse, purge, startFrom):
+            for type, title in self._parseCategory(recurse = recurse, purge = purge, startFrom = startFrom):
                 if type == ARTICLE:
                     self.articleCache.append(title)
                 elif type == SUBCATEGORY:
@@ -115,7 +114,7 @@ class Category(wikipedia.Page):
                     self.supercatCache.append(title)
                 yield type, title
             if not startFrom:
-                self.completelyCached = recurse
+                self.completelyCached = True
 
     def _parseCategory(self, recurse = False, purge = False, startFrom = None):
         """
@@ -372,18 +371,18 @@ class Category(wikipedia.Page):
             wikipedia.output('Moving text from %s to %s.' % (self.title(), targetCat.title()))
             authors = ', '.join(self.contributingUsers())
             creationSummary = wikipedia.translate(wikipedia.getSite(), msg_created_for_renaming) % (self.title(), authors)
-        newtext = self.get()
-        for regexName in cfdTemplates:
-            matchcfd = re.compile(r"{{%s.*?}}" % regexName, re.IGNORECASE)
-            newtext = matchcfd.sub('',newtext)
+	    newtext = self.get()
+	    for regexName in cfdTemplates:
+	        matchcfd = re.compile(r"{{%s.*?}}" % regexName, re.IGNORECASE)
+	        newtext = matchcfd.sub('',newtext)
             matchcomment = re.compile(r"<!--BEGIN CFD TEMPLATE-->.*<!--END CFD TEMPLATE-->", re.IGNORECASE | re.MULTILINE | re.DOTALL)
             newtext = matchcomment.sub('',newtext)
             pos = 0
             while (newtext[pos:pos+1] == "\n"):
                 pos = pos + 1
             newtext = newtext[pos:]
-        targetCat.put(newtext, creationSummary)
-        return True
+	    targetCat.put(newtext, creationSummary)
+            return True
 
 #def Category(code, name):
 #    """Factory method to create category link objects from the category name"""
