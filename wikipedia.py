@@ -894,6 +894,7 @@ class Page(object):
         refPages = set()
         while path:
             output(u'Getting references to %s' % self.aslink())
+            get_throttle()
             txt = self.site().getUrl(path)
             body = BeautifulSoup(txt,
                                  convertEntities=BeautifulSoup.HTML_ENTITIES,
@@ -4015,7 +4016,7 @@ def handleArgs():
     that are not global. This makes sure that global arguments are applied
     first, regardless of the order in which the arguments were given.
     '''
-    global default_code, default_family
+    global default_code, default_family, verbose
     # get commandline arguments
     args = sys.argv
     # get the name of the module calling this function. This is
