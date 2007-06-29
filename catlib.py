@@ -85,7 +85,7 @@ class Category(wikipedia.Page):
             return '[[%s]]' % titleWithSortKey
 
 	
-    def _getContentsAndSupercats(self, recurse = False, purge = False, startFrom = None):
+    def _getContentsAndSupercats(self, recurse=0, purge=False, startFrom=None):
         """
         Cache results of _parseCategory for a second call.
 
@@ -97,7 +97,7 @@ class Category(wikipedia.Page):
         """
         if purge:
             self.completelyCached = False
-        if self.completelyCached:
+        if self.completelyCached >= recurse:
             for article in self.articleCache:
                 yield ARTICLE, article
             for subcat in self.subcatCache:
@@ -105,7 +105,7 @@ class Category(wikipedia.Page):
             for supercat in self.supercatCache:
                 yield SUPERCATEGORY, supercat
         else:
-            for type, title in self._parseCategory(recurse = recurse, purge = purge, startFrom = startFrom):
+            for type, title in self._parseCategory(recurse, purge, startFrom):
                 if type == ARTICLE:
                     self.articleCache.append(title)
                 elif type == SUBCATEGORY:
@@ -114,7 +114,7 @@ class Category(wikipedia.Page):
                     self.supercatCache.append(title)
                 yield type, title
             if not startFrom:
-                self.completelyCached = True
+                self.completelyCached = recurse
 
     def _parseCategory(self, recurse = False, purge = False, startFrom = None):
         """
