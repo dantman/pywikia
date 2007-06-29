@@ -185,7 +185,8 @@ class Category(wikipedia.Page):
                 # save a copy of this text to find out self's supercategory.
                 # if recurse is true, this function should only return self's
                 # supercategory, not the ones of its subcats.
-                self_txt = txt
+                if cat == self:
+                    self_txt = txt
                 # index where subcategory listing begins
                 # this only works for the current version of the MonoBook skin
                 ibegin = txt.index('"clear:both;"')
