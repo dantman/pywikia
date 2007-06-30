@@ -764,7 +764,7 @@ class Subject(object):
         new = {}
         for page in self.done:
             site = page.site()
-            if site == mysite and page.exists() and not page.isRedirectPage():
+            if site == self.originPage.site() and page.exists() and not page.isRedirectPage():
                 if page != self.originPage:
                     self.problem("Found link to %s" % page.aslink(True) )
                     self.whereReport(page)
