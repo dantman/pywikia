@@ -13,7 +13,7 @@ __version__ = '$Id$'
 import config, wikipedia
 import re, time
 
-from delinker import wait_callback, output
+from delinker import wait_callback, output, connect_database
 
 def mw_timestamp(ts):
 	return '%s%s%s%s-%s%s-%s%sT%s%s:%s%s:%s%sZ' % tuple(ts)
