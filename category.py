@@ -327,13 +327,14 @@ def add_category(sort_by_last_name = False):
                             wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
 
 class CategoryMoveRobot:
-    def __init__(self, oldCatTitle, newCatTitle, batchMode = False, editSummary = '', inPlace = False, moveCatPage = True):
+    def __init__(self, oldCatTitle, newCatTitle, batchMode = False, editSummary = '', inPlace = False, moveCatPage = True, deleteEmptySourceCat = True):
         self.editSummary = editSummary
         self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
         self.inPlace = inPlace
         self.moveCatPage = moveCatPage
         self.batchMode = batchMode
+        self.deleteEmptySourceCat = deleteEmptySourceCat
         # set edit summary message
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
@@ -357,7 +358,7 @@ class CategoryMoveRobot:
         if self.oldCat.exists() and self.moveCatPage:
             # try to copy page contents to new cat page
             if self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
-                if self.oldCat.isEmpty():
+                if self.oldCat.isEmpty() and self.deleteEmptySourceCat == True:
                     reason = wikipedia.translate(wikipedia.getSite(), deletion_reason_move) % (self.newCatTitle, self.newCatTitle)
                     if self.batchMode:
                         self.oldCat.delete(reason, False)
