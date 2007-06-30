@@ -14,9 +14,9 @@ msg = {
     }
 
 class CapitalizeBot:
-    def __init__(self, generator, acceptall = False):
+    def __init__(self, generator, acceptall):
         self.generator = generator
-        self.acceptall = False
+        self.acceptall = acceptall
 
     def run(self):
         for page in self.generator:
