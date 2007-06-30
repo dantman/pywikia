@@ -1,35 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Add or change categories on a number of pages. Usage: catall.py [option].
+Add or change categories on a number of pages. Usage:
+catall.py name - goes through pages, starting at 'name'. Provides
+ the categories on the page and asks whether to change them. If no
+ starting name is provided, the bot starts at 'A'.
 
-Provides the categories on the page and asks whether to change them.
-
-Standard options:
-
-    -file          Work on all pages listed in a text file.
-                   Argument can also be given as "-file:filename".
-
-    -cat           Work on all pages which are in a specific category.
-                   Argument can also be given as "-cat:categoryname".
-
-    -ref           Work on all pages that link to a certain page.
-                   Argument can also be given as "-ref:referredpagetitle".
-
-    -links         Work on all pages that are linked from a certain page.
-                   Argument can also be given as "-link:linkingpagetitle".
-
-    -start         Work on all pages on the home wiki, starting at the named page.
-
-    -new           Work on the most recent new pages on the wiki.
-
-Only catall options:
-
-    -onlynew : Only run on pages that do not yet have a category.
-               use in set the standards options.
-
-    -uncat   : Give the list of articles in Special:Uncategorizedpages.
-               use: catall.py -uncat
-
+Options:
+-onlynew : Only run on pages that do not yet have a category.
 """
 #
 # (C) Rob W.W. Hooft, Andre Engels, 2004
@@ -39,8 +16,7 @@ Only catall options:
 __version__ = '$Id$'
 #
 
-import wikipedia, pagegenerators
-import sys
+import wikipedia,sys
 
 # This is a purely interactive robot. We set the delays lower.
 wikipedia.get_throttle.setDelay(5)
@@ -65,10 +41,9 @@ def choosecats(pagetext):
     print ("Give the new categories, one per line.")
     print ("Empty line: if the first, don't change. Otherwise: Ready.")
     print ("-: I made a mistake, let me start over.")
-    print ("e: Give the text of the page with graphical interface.")
+    print ("?: Give the text of the page with GUI.")
     print ("??: Give the text of the page in console.") 
     print ("xx: if the first, remove all categories and add no new.")
-    print ("x: quit.")
     while flag == False:
         choice=wikipedia.input(u"?")
         if choice=="":
@@ -76,7 +51,7 @@ def choosecats(pagetext):
         elif choice=="-":
             chosen=choosecats(pagetext)
             flag=True
-        elif choice=="e":
+        elif choice=="?":
             import editarticle
             editor = editarticle.TextEditor()
             newtext = editor.edit(pagetext)
@@ -99,56 +74,46 @@ def make_categories(page, list, site = None):
         pllist.append(wikipedia.Page(site,cattitle))
     page.put(wikipedia.replaceCategoryLinks(page.get(), pllist), comment = wikipedia.translate(site.lang, msg))
 
-def main():
-    docorrections=True
-    gen = None
-    mysite = wikipedia.getSite()
+docorrections=True
+start=[]
 
-    genFactory = pagegenerators.GeneratorFactory()
+for arg in wikipedia.handleArgs():
+    if arg == '-onlynew':
+        docorrections=False
+    else:
+        start.append(arg)
 
-    for arg in wikipedia.handleArgs():
-        if arg == '-onlynew':
-            docorrections=False
-        if arg == '-uncat':
-            generator = pagegenerators.UnCategorizedPageGenerator(number = 100)
-            if generator:
-                gen = generator
-        else:
-            generator = genFactory.handleArg(arg)
-            if generator:
-                gen = generator
-    if gen:
-        for p in generator:
-            try:
-                text=p.get()
-                cats=p.categories()
-                if cats == []:
+if start == []:
+    start='A'
+else:
+    start=' '.join(start)
+
+mysite = wikipedia.getSite()
+
+try:
+    for p in mysite.allpages(start = start):
+        try:
+            text=p.get()
+            cats=p.categories()
+            if cats == []:
+                wikipedia.output(u"========== %s ==========" % p.title())
+                print "No categories"
+                print "----------------------------------------"
+                newcats=choosecats(text)
+                if newcats != [] and newcats is not None:
+                    make_categories(p, newcats, mysite)
+            else:
+                if docorrections:
                     wikipedia.output(u"========== %s ==========" % p.title())
-                    print "No categories"
+                    for c in cats:
+                        print c.title()
                     print "----------------------------------------"
                     newcats=choosecats(text)
-                    if newcats != [] and newcats is not None:
+                    if newcats == None:
+                        make_categories(p, [], mysite)
+                    elif newcats != []:
                         make_categories(p, newcats, mysite)
-                else:
-                    if docorrections:
-                        wikipedia.output(u"========== %s ==========" % p.title())
-                        for c in cats:
-                            print c.title()
-                        print "----------------------------------------"
-                        newcats=choosecats(text)
-                        if newcats == None:
-                            make_categories(p, [], mysite)
-                        elif newcats != []:
-                            make_categories(p, newcats, mysite)
-            except wikipedia.IsRedirectPage:
-                pass
-            except wikipedia.NoPage:
-                pass
-    else:
-        wikipedia.showHelp('catall')
-
-if __name__ == '__main__':
-    try:
-        main()
-    finally:
-        wikipedia.stopme()
+        except wikipedia.IsRedirectPage:
+            pass
+finally:
+    wikipedia.stopme()
