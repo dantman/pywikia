@@ -56,7 +56,7 @@ talk_report_msg = {
     'nds': u'Lenk-Bot: Weblenk geiht nich mehr',
     'nl': u'Robot: Melding (tijdelijk) onbereikbare externe link',
     'pl': u'Robot zgłasza niedostępny link zewnętrzny',
-    'pt': u'Bot: Checando links externos',
+    'pt': u'Bot: Link externo não funcionando',
     'sr': u'Бот: Пријављивање непостојећих спољашњих повезница',
 }
 
@@ -72,7 +72,7 @@ talk_report = {
     'nds': u'== Weblenk geiht nich mehr ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n%s--~~~~',
     'nl': u'== Dode link ==\nTijdens enkele automatische controles bleek de onderstaande externe link onbereikbaar. Controleer alstublieft of de link inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe link.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
     'pl': u'== Martwy link ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n%s--~~~~',
-    'pt': u'== Link quebrado ==\n\nFoi checado os links externos deste artigo por vários minutos. Verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
+    'pt': u'== Link quebrado ==\n\nFoi checado os links externos deste artigo por vários minutos. Alguém verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
     'sr': u'== Покварене спољашње повезнице ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
 }
 
