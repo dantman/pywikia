@@ -1057,22 +1057,22 @@ class Subject(object):
                         try:
                             status, reason, data = page.put(newtext, comment = wikipedia.translate(page.site().lang, msg)[0] + mods)
                         except wikipedia.LockedPage:
-                            wikipedia.output(u'Page %s is locked. Skipping.' % page.title())
+                            wikipedia.output(u'Page %s is locked. Skipping.' % (page.title(),))
                             raise SaveError
                         except wikipedia.EditConflict:
                             wikipedia.output(u'ERROR putting page: An edit conflict occurred. Giving up.')
                             raise SaveError                            
                         except (wikipedia.SpamfilterError), error:
-                            wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % error.url)
+                            wikipedia.output(u'ERROR putting page: %s blacklisted by spamfilter. Giving up.' % (error.url,))
                             raise SaveError
                         except (wikipedia.PageNotSaved), error:
-                            wikipedia.output(u'ERROR putting page: %s' % error.args)
+                            wikipedia.output(u'ERROR putting page: %s' % (error.args,))
                             raise SaveError
                         except (socket.error, IOError), error:
                             if timeout>3600:
                                 raise
-                            wikipedia.output(u'ERROR putting page: %s' % error.args)
-                            wikipedia.output(u'Sleeping %i seconds before trying again.' % timeout)
+                            wikipedia.output(u'ERROR putting page: %s' % (error.args,))
+                            wikipedia.output(u'Sleeping %i seconds before trying again.' % (imeout,))
                             timeout *= 2
                             time.sleep(timeout)
                         else:
