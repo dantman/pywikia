@@ -25,7 +25,6 @@
 #
 import sys, re, time
 
-
 params = {
         'version'   : '1.0',
         'url'       : 'http://example.com/',
