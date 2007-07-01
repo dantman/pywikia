@@ -1,3 +1,5 @@
+{{commitMe|I don't remeber what i've fixed but i remember that it was important... test before commit ^_-}}
+<source lang="python">
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
@@ -740,17 +742,18 @@ if __name__ == "__main__":
                     # Update the welcome log each fifth welcome message
                     elif len(welcomed_users) >= numberlog:
                         logresult = logmaker(wsite, welcomed_users)
-                        if loresult == False:
+                        if logresult == False:
                             continue
                 # If we haven't to report, do nothing.
                 elif log_variable == False:
                     pass
             if log_variable == True and logg and len(welcomed_users) != 0:
                 if len(welcomed_users) == 1:
-                    wikipedia.output(u'Welcoming the latest user...')
+                    wikipedia.output(u'Putting the log of the latest user...')
                 else:
-                    wikipedia.output(u'Welcoming the latest %d users...' % len(welcomed_users))
+                    wikipedia.output(u'Putting the log of the latest %d users...' % len(welcomed_users))
                 logresult2 = logmaker(wsite, welcomed_users)
+                welcomed_users = list()
                 if logresult2 == False:
                     continue
             # If recursive, don't exit, repeat after one hour.
@@ -763,3 +766,4 @@ if __name__ == "__main__":
                     break
     finally:
         wikipedia.stopme()
+</source>
