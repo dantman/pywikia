@@ -278,7 +278,7 @@ class PageArchiver(object):
                 continue
             if mode == 1 and re.match('}}',line):
                 break
-            attRE = re.search(r'^\| *(\w+) *= *(.*)$',line)
+            attRE = re.search(r'^\| *(\w+) *= *(.*) *$',line)
             if mode == 1 and attRE:
                 self.set(attRE.group(1),attRE.group(2))
                 continue
