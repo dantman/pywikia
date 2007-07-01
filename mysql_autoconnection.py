@@ -23,6 +23,7 @@ class Connection(object):
 		1040, # Too many connections
 		1152, # Aborted connection
 		2002, # Connection error
+		2003, # Can't connect
 		2006, # Server gone
 		2013, # Server lost
 		2014, # Commands out of sync
@@ -54,6 +55,7 @@ class Connection(object):
 			return getattr(object, function_name)(*args, **kwargs)
 		except MySQLdb.Error, e:
 			if e[0] in self.RECOVERABLE_ERRORS:
+				self.error = e
 				self.connect()
 				return getattr(self, function_name)(*args, **kwargs)
 			else:
@@ -67,8 +69,8 @@ class Connection(object):
 			self.wait()
 			try:
 				self._connect()
-			except (MySQLdb.OperationalError, MySQLdb.InterfaceError), e:
-				print e
+			except MySQLdb.Error, e:
+				self.error = e
 		return True
 	
 	def _connect(self):
