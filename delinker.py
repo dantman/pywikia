@@ -61,6 +61,8 @@ def family(domain):
 	
 def wait_callback(object):
 	output(u'Connection has been lost in %s. Attempting reconnection.' % repr(object), False)
+	if hasattr(object, 'error'):
+		output(u'Error was %s: %s' % tuple(object.error))
 def universal_unicode(s):
 	if type(s) is str:
 		return s.decode('utf-8', 'ignore')
@@ -238,9 +240,9 @@ class Delinker(threadpool.Thread):
 						f.close()
 					
 					if self.CommonsDelinker.config.get('edit', True) and not \
-							(self.CommonsDelinker.site.lang == 'commons' ^ \
-							config.usernames.get('commons', {}).get(
-							'commons') == 'CommonsDelinker'):
+							((self.CommonsDelinker.site.lang == 'commons') ^ \
+							(config.usernames.get('commons', {}).get(
+							'commons') == 'CommonsDelinker')):
 						page.put(new_text, summary)
 					return 'ok'
 				except wikipedia.EditConflict:
@@ -790,7 +792,7 @@ if __name__ == '__main__':
 		except Exception, e:
 			if type(e) not in (SystemExit, KeyboardInterrupt):
 				output('An exception occured in the main thread!', False)
-				print >>sys.stderr, cgitb.text(sys.exc_info())
+				traceback.print_exc(file = sys.stderr)
 				threadpool.terminate()
 	finally:
 		output(u'Stopping CommonsDelinker')
