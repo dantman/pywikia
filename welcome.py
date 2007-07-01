@@ -132,7 +132,6 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
   defaults.
 * The regex to load the user might be slightly different from project to project.
   (in this case, write to Filnik for help...)
-* If the User talk: translation has non-standard character it won't work.
 * Add in the report, the badword used to detect the user.
 * Make object-oriented
 """
@@ -269,16 +268,16 @@ bad_pag = {
     'sq': u'User:Eagleal/Bad_names',
     }
 # The text for reporting a possibly bad username (e.g. *[[Talk_page:Username|Username]]).
-timeselected = u' {{subst:LOCALTIME}}, {{subst:CURRENTDAY}} {{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}} (UTC).'
+# TODO: don't get the time at initialization, but when the template is used.
 report_text = {
-    'commons':u"\n*{{user3|%s}}" + timeselected,
-    'ar':u"\n*{{user13|%s}}" + timeselected,
-    'de':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
-    'en':u'\n*{{Userlinks|%s}} ' + timeselected,
+    'commons':u"\n*{{user3|%s}}" + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'ar':u"\n*{{user13|%s}}" + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'de':u'\n*[[Benutzer Diskussion:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'en':u'\n*{{Userlinks|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
     'it':u"\n{{Reported|%s|",
-    'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
-    'no':u'\n*{{bruker|%s}} ' + timeselected,
-    'sq':u'\n*[[User:%s]] ' + timeselected,
+    'nl':u'\n*{{linkgebruiker%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
+    'no':u'\n*{{bruker|%s}} ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()),
+    'sq':u'\n*[[User:%s]] ' + time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.localtime()),
     }
 # Set where you load your list of signatures that the bot will load if you use
 # the random argument (this parameter is optional).
@@ -428,57 +427,6 @@ def defineSign(wsite, signPageTitle):
     reg = "\* ?(.*?)\n"
     listSign = re.findall(reg, signText)
     return listSign
-
-def logmaker(wsite, welcomed_users):
-    # Deduct the correct sub page name form the current date.
-    safety = list()
-    rightime = time.localtime(time.time())
-    year = str(rightime[0])
-    month = str(rightime[1])
-    day = str(rightime[2])
-    if len(month) == 1:
-        month = u'0' + month
-    if wsite.lang == 'it':
-        target = logg + '/' + day + '/' + month + '/' + year
-    else:
-        target = logg + '/' + year + '/' + month + '/' + day
-    page = wikipedia.Page(wsite, target)
-    try:
-        safety.append(page.get())
-    except wikipedia.NoPage:
-        #Add the table heading each new period. See http://commons.wikimedia.org/wiki/Commons:Welcome_log
-        if wsite.lang == 'it':
-            safety.append(u'[[Categoria:Benvenuto log|{{subst:PAGENAME}}]]\n{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
-        elif wsite.lang == 'no':
-            safety.append(u'[[Kategori:Velkomstlogg|{{PAGENAME}}]]\n{| class="wikitable"')
-        else:
-            safety.append(u'{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
-        # The string below show how the "Usernames" will be notified
-        safety.append('\n!' + usernam)
-        # The string below show how the "Contribs" will be notified
-        safety.append(u'\n!' + contrib)
-
-    for found_result in welcomed_users:
-        # Adding the log... (don't take care of the variable's name...)
-        luserpage = str(found_result[0])
-        luser = wikipedia.url2link(luserpage, wsite, wsite)
-        edit_count = str(found_result[1])
-        logtext = u'\n{{WLE|user=%s|contribs=%s}}' % (luser, edit_count)
-        safety.append(logtext)
-    welcomed_users = list()
-    try:
-        page.put(''.join(safety), summ2)
-        return True
-    except wikipedia.EditConflict:
-        wikipedia.output(u'An edit conflict has occured. Pausing for 10 seconds before continuing.')
-        time.sleep(10)
-        page = wikipedia.Page(wsite, target)
-        try:
-            page.put(u''.join(safety), summ2)
-            return True
-        except wikipedia.EditConflict:
-            wikipedia.output(u'Another edit conflict... Skipping...')
-            return False
 
 if __name__ == "__main__":
     # The block below is used for the parameters
@@ -643,7 +591,7 @@ if __name__ == "__main__":
                 if random == True:
                     if number_user + 1> len(signList):
                         number_user = 0
-                    welcom = welcomer % signList[number_user] + ' {{subst:LOCALTIME}}, {{subst:CURRENTDAY}} {{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}} (UTC).'
+                    welcom = welcomer % signList[number_user] + '{{subst:LOCALTIME}}, {{subst:CURRENTDAY}} {{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}} (UTC).'
                 else:
                     welcom = welcomer % sign
                 username = str(found_result[0])
@@ -704,7 +652,7 @@ if __name__ == "__main__":
                                     baduser = False
                                     break
                         elif ask == False:
-                            wikipedia.output(u'%s is possibly an unwanted username. He will be reported.' % username)
+                            wikipedia.output(u'%s is possibly an unwanted username. It will be reported.' % username)
                             if not usertalkpage.exists():
                                 report(wsite, rep_page, username, com, final_rep)
                                 break
@@ -739,21 +687,56 @@ if __name__ == "__main__":
                         continue
                     # Update the welcome log each fifth welcome message
                     elif len(welcomed_users) >= numberlog:
-                        logresult = logmaker(wsite, welcomed_users)
-                        if logresult == False:
-                            continue
+                        safety = list()
+                        # Deduct the correct sub page name form the current date.
+                        rightime = time.localtime(time.time())
+                        year = str(rightime[0])
+                        month = str(rightime[1])
+                        day = str(rightime[2])
+                        if len(month)==1:
+                            month = u'0' + month
+                        if wsite.lang == 'it':
+                            target = logg + '/' + day + '/' + month + '/' + year
+                        else:
+                            target = logg + '/' + year + '/' + month + '/' + day
+                        page = wikipedia.Page(wsite, target)
+                        try:
+                            safety.append(page.get())
+                        except wikipedia.NoPage:
+                            #Add the table heading each new period. See http://commons.wikimedia.org/wiki/Commons:Welcome_log
+                            if wsite.lang == 'it':
+                                safety.append(u'[[Categoria:Benvenuto log|{{subst:PAGENAME}}]]\n{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
+                            elif wsite.lang == 'no':
+                                safety.append(u'[[Kategori:Velkomstlogg|{{PAGENAME}}]]\n{| class="wikitable"')
+                            else:
+                                safety.append(u'{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
+                            # The string below show how the "Usernames" will be notified
+                            safety.append('\n!' + usernam)
+                            # The string below show how the "Contribs" will be notified
+                            safety.append(u'\n!' + contrib)
+
+                        for found_result in welcomed_users:
+                            # Adding the log... (don't take care of the variable's name...)
+                            luserpage = str(found_result[0])
+                            luser = wikipedia.url2link(luserpage, wsite, wsite)
+                            edit_count = str(found_result[1])
+                            logtext = u'\n{{WLE|user=%s|contribs=%s}}' % ( luser, edit_count )
+                            safety.append(logtext)
+                        welcomed_users = list()
+                        try:
+                            page.put(''.join(safety), summ2)
+                        except wikipedia.EditConflict:
+                            wikipedia.output(u'An edit conflict has occured. Pausing for 10 seconds before continuing.')
+                            time.sleep(10)
+                            page = wikipedia.Page(wsite, target)
+                            try:
+                                page.put(u''.join(safety), summ2)
+                            except wikipedia.EditConflict:
+                                wikipedia.output(u'Another edit conflict... Skipping...')
+                                continue
                 # If we haven't to report, do nothing.
                 elif log_variable == False:
                     pass
-            if log_variable == True and logg and len(welcomed_users) != 0:
-                if len(welcomed_users) == 1:
-                    wikipedia.output(u'Putting the log of the latest user...')
-                else:
-                    wikipedia.output(u'Putting the log of the latest %d users...' % len(welcomed_users))
-                logresult2 = logmaker(wsite, welcomed_users)
-                welcomed_users = list()
-                if logresult2 == False:
-                    continue
             # If recursive, don't exit, repeat after one hour.
             if recursive == True:
                     wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (str(time_variable), time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime())) )
