@@ -1,5 +1,3 @@
-{{commitMe|I don't remeber what i've fixed but i remember that it was important... test before commit ^_-}}
-<source lang="python">
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
@@ -481,7 +479,7 @@ def logmaker(wsite, welcomed_users):
         except wikipedia.EditConflict:
             wikipedia.output(u'Another edit conflict... Skipping...')
             return False
-       
+
 if __name__ == "__main__":
     # The block below is used for the parameters
     for arg in wikipedia.handleArgs():
@@ -766,4 +764,3 @@ if __name__ == "__main__":
                     break
     finally:
         wikipedia.stopme()
-</source>
