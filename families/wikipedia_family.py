@@ -279,7 +279,7 @@ class Family(family.Family):
             'kk': u'Портал талқылауы',
             'li': u'Euverlèk portaol',
             'lmo': u'Descüssiú Portal',
-            'ml': u'കവാടതതിനറെസംവാദം',
+            'ml': u'കവാടത്തിന്റെ സംവാദം',
             'nds':u'Portal Diskuschoon',
             'new':u'दबू खँलाबँला',
             'nl': u'Overleg portaal',
