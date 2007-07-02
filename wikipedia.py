@@ -1971,7 +1971,120 @@ class Page(object):
                 output(u'Protection failed:')
                 output(data)
                 return False
-
+                
+	def removeImage(self, image, put = False, summary = None):
+		return self.replaceImage(image, put, summary)
+	
+	def replaceImage(self, image, replacement = None, put = False, summary = None):
+		"""Replace all occurences of an image by another image.
+        Giving None as argument for replacement will delink 
+        instead of replace. 
+        
+        The argument image must be without namespace and all
+        spaces replaced by underscores.
+        
+        If put is false, the new text will be returned.
+        
+        If put is true, the edits will be saved to the wiki
+        and True will be returned on succes, and otherwise 
+        False. Edit errors propagate."""
+        
+        # Copyright (c) Orgullomoore, Bryan
+		
+		site = self.site()
+		
+		text = self.get()
+		new_text = text
+			
+		def create_regex(s):
+			s = re.escape(s)
+			return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
+		def create_regex_i(s):
+			return ur'(?:%s)' % u''.join((u'[%s%s]' % (c.upper(), c.lower()) for c in s))
+		
+		namespaces = ('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True)
+		r_namespace = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(create_regex_i, namespaces))
+		r_image = u'(%s)' % create_regex(image).replace(r'\_', '[ _]')
+			
+		def simple_replacer(match):
+			if replacement == None:
+				return u''
+			else:
+				groups = list(match.groups())
+				groups[1] = replacement
+				return u''.join(groups)
+					
+		# Previously links in image descriptions will cause 
+		# unexpected behaviour: [[Image:image.jpg|thumb|[[link]] in description]]
+		# will truncate at the first occurence of ]]. This cannot be
+		# fixed using one regular expression.
+		# This means that all ]] after the start of the image
+		# must be located. If it then does not have an associated
+		# [[, this one is the closure of the image.
+			
+		r_simple_s = u'(\[\[%s)%s' % (r_namespace, r_image)
+		r_s = '\[\['
+		r_e = '\]\]'
+		# First determine where wikilinks start and end
+		image_starts = [match.start() for match in re.finditer(r_simple_s, text)]
+		link_starts = [match.start() for match in re.finditer(r_s, text)]
+		link_ends = [match.end() for match in re.finditer(r_e, text)]
+				
+		r_simple = u'(\[\[%s)%s(.*)' % (r_namespace, r_image)
+		replacements = []
+		for image_start in image_starts:
+			current_link_starts = [link_start for link_start in link_starts 
+				if link_start > image_start]
+			current_link_ends = [link_end for link_end in link_ends 
+				if link_end > image_start]
+			end = image_start
+			if current_link_ends: end = current_link_ends[0]
+				
+			while current_link_starts and current_link_ends:
+				start = current_link_starts.pop(0)
+				end = current_link_ends.pop(0)
+				if end <= start and end > image_start:
+					# Found the end of the image
+					break
+				
+			# Add the replacement to the todo list. Doing the
+			# replacement right know would alter the indices.
+			replacements.append((new_text[image_start:end],
+				re.sub(r_simple, simple_replacer, 
+				new_text[image_start:end])))
+			
+		# Perform the replacements
+		for old, new in replacements:
+			if old: new_text = new_text.replace(old, new)
+			
+		# Remove the image from galleries
+		r_galleries = ur'(?s)(\<%s\>)(?s)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'), 
+			create_regex_i('gallery'))
+		r_gallery = ur'(?m)^((?:%s)?)(%s)(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
+		def gallery_replacer(match):
+			return ur'%s%s%s' % (match.group(1), re.sub(r_gallery, 
+				simple_replacer, match.group(2)), match.group(3))
+		new_text = re.sub(r_galleries, gallery_replacer, new_text)
+			
+		if text == new_text:
+			# All previous steps did not work, so the image is
+			# likely embedded in a complicated template.
+			r_templates = ur'(?s)(\{\{.*?\}\})'
+			r_complicated = u'(?s)((?:%s)?)%s' % (r_namespace, r_image)
+				
+			def template_replacer(match):
+				return re.sub(r_complicated, simple_replacer, match.group(1))
+			new_text = re.sub(r_templates, template_replacer, text)
+			
+        if put:
+            if text != new_text:
+                # Save to the wiki
+                self.put(new_text, summary)
+                return True
+            return False
+        else:
+            return new_text
+		
 class ImagePage(Page):
     # a Page in the Image namespace
     def __init__(self, site, title = None, insite = None):
