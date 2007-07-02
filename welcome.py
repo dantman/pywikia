@@ -57,6 +57,9 @@ This script understands the following command-line arguments:
     -limit[:#]     Use this parameter to define how may users should be
                    checked (default:50)
 
+    -offset[:#]    Skip the latest # new users to give interactive users
+                   a chance to welcome the new user (default: 0)
+
     -numberlog[:#] The number of users to welcome before refreshing the
                    welcome log (default: 4)
 
@@ -153,8 +156,9 @@ import time, re, config
 import urllib
 
 number = 1           # number of edits that an user required to be welcomed
-numberlog = 4        # number of users that are required to add the log :)
+numberlog = 15       # number of users that are required to add the log :)
 limit = 50           # number of users that the bot load to check
+offset_variable = 0  # number of newest users to skip each run
 recursive = True     # define if the Bot is recursive or not
 time_variable = 3600 # how much time (sec.) the bot sleeps before restart
 log_variable = True  # create the welcome log or not
@@ -223,17 +227,6 @@ summary2 = {
     'nl':u'Logboek bijwerken',
     'no':u'Oppdaterer logg',
     'sq':u'Rifreskoj log',
-    }
-# Contributions in the wiki language (e.g. Contribs).
-con = {
-    'commons':u'Contribs',
-    'ar':u'مساهمات',
-    'de':u'Beiträge',
-    'en':u'Contribs',
-    'it':u'Contributi',
-    'nl':u'Bijdragen',
-    'no':u'Bidrag',
-    'sq':u'Kontribute',
     }
 # The page where the bot will report users with a possibly bad username.
 report_page = {
@@ -478,7 +471,7 @@ def logmaker(wsite, welcomed_users):
         except wikipedia.EditConflict:
             wikipedia.output(u'Another edit conflict... Skipping...')
             return False
-       
+
 if __name__ == "__main__":
     # The block below is used for the parameters
     for arg in wikipedia.handleArgs():
@@ -492,6 +485,11 @@ if __name__ == "__main__":
                 time_variable = int(wikipedia.input(u'For how many seconds would you like to bot to sleep before checking again?'))
             else:
                 time_variable = int(arg[6:])
+        elif arg.startswith('-offset'):
+            if len(arg) == 7:
+                offset_variable = int(wikipedia.input(u'Which offset for new users would you like to use?'))
+            else:
+                offset_variable = int(arg[8:])
         elif arg == '-break':
             recursive = False
         elif arg == '-nlog':
@@ -525,7 +523,7 @@ if __name__ == "__main__":
     summ = wikipedia.translate(wsite, summary)
     logg = wikipedia.translate(wsite, logbook)
     summ2 = wikipedia.translate(wsite, summary2)
-    contrib = wikipedia.translate(wsite, con)
+    contrib = wsite.mediawiki_message('contribslink') #FIXME: needs to be capitalised
     rep_page = wikipedia.translate(wsite, report_page)
     com = wikipedia.translate(wsite, comment)
     bad_page = wikipedia.translate(wsite, bad_pag)
@@ -618,14 +616,13 @@ if __name__ == "__main__":
                 whitelist_default = list()
             # Joined the whitelist words
             whitelist = list_white + whitelist_default
-            # List of word that the Bot understand when it ask you something...
+            # List of words that the bot understands when it asks the operator for input.
             block = ("B", "b", "Blocco", "blocco", "block", "bloc", "Block", "Bloc", 'Report', 'report')
             say_hi = ("S", "s", "Saluto", "saluto", "Welcome", "welcome", 'w', 'W', 'say hi',
                     'Say hi', 'Hi', 'hi', 'h', 'hello', 'Hello')
 
-            # Here there is the URL of the new users, i've find that this url below is the same for all the project, so it
-            # mustn't be changed
-            URL = "/w/index.php?title=Special:Log&type=newusers&user=&page=&limit=%d" % limit
+            # The URL for new users is the same in every project. It should not be changed.
+            URL = "/w/index.php?title=Special:Log&type=newusers&limit=%d&offset=%d" % (limit, offset_variable)
             log = wsite.getUrl(URL)
             wikipedia.output(u'Loading latest ' + str(limit) + u' new users from ' + (wsite.hostname()) + u'...\n')
             parsed = parselog(wsite,log)
@@ -658,7 +655,7 @@ if __name__ == "__main__":
                 # Check if the user has been already blocked
                 ki = blocked(wsite,username)
                 if ki == True:
-                    wikipedia.output(u'%s has been blocked! Skipping him...' % username)
+                    wikipedia.output(u'%s has been blocked! Skipping...' % username)
                     continue
                 # Understand if the user has a bad-username
                 for word in elenco:
