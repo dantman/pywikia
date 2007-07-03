@@ -151,7 +151,7 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
 __version__ = '$Id: welcome.py,v 1.4 2007/04/14 18:05:42 siebrand Exp'
 #
 
-import wikipedia
+import wikipedia, string
 import time, re, config
 import urllib
 
@@ -523,7 +523,7 @@ if __name__ == "__main__":
     summ = wikipedia.translate(wsite, summary)
     logg = wikipedia.translate(wsite, logbook)
     summ2 = wikipedia.translate(wsite, summary2)
-    contrib = wsite.mediawiki_message('contribslink') #FIXME: needs to be capitalised
+    contrib = string.capitalize(wsite.mediawiki_message('contribslink'))
     rep_page = wikipedia.translate(wsite, report_page)
     com = wikipedia.translate(wsite, comment)
     bad_page = wikipedia.translate(wsite, bad_pag)
