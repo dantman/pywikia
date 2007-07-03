@@ -579,8 +579,6 @@ class Page(object):
                 textareaFound = True
             except AttributeError:
                 # find out if the username or IP has been blocked
-##                if text.find(mediawiki_messages.get('blockedtitle', self.site())) != -1:
-##                    raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
                 if text.find(self.site().mediawiki_message('blockedtitle')) != -1:
                     raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
                 # If there is no text area and the heading is 'View Source',
@@ -588,19 +586,13 @@ class Page(object):
                 # cascading protection.
                 # See http://en.wikipedia.org/wiki/Wikipedia:Protected_titles
                 # and http://de.wikipedia.org/wiki/Wikipedia:Gesperrte_Lemmata
-##                elif text.find(mediawiki_messages.get('viewsource', self.site())) != -1:
-##                    raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.' % self.aslink())
                 elif text.find(self.site().mediawiki_message('viewsource')) != -1:
                     raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.' % self.aslink())
                 # search for 'Login required to edit' message
-##                elif text.find(mediawiki_messages.get('whitelistedittitle', self.site())) != -1:
-##                    raise LockedNoPage(u'Page editing is forbidden for anonymous users.')
                 elif text.find(self.site().mediawiki_message('whitelistedittitle')) != -1:
                     raise LockedNoPage(u'Page editing is forbidden for anonymous users.')
                 # on wikipedia:en, anonymous users can't create new articles.
                 # older MediaWiki versions don't have the 'nocreatetitle' message.
-##                elif mediawiki_messages.has('nocreatetitle', self.site()) and text.find(mediawiki_messages.get('nocreatetitle', self.site())) != -1:
-##                    raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
                 elif self.site().has_mediawiki_message('nocreatetitle') and text.find(self.site().mediawiki_message('nocreatetitle')) != -1:
                     raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
                 else:
@@ -1179,7 +1171,8 @@ class Page(object):
                                     newPage, token, False, sysop)
             if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
                 raise EditConflict(u'An edit conflict has occured.')
-            elif self.site().mediawiki_message('spamprotectiontitle') in data:
+            elif self.site().has_mediawiki_message("spamprotectiontitle")\
+                    and self.site().mediawiki_message('spamprotectiontitle') in data:
                 try:
                     reasonR = re.compile(re.escape(self.site().mediawiki_message('spamprotectionmatch')).replace('\$1', '(?P<url>[^<]*)'))
                     url = reasonR.search(data).group('url')
@@ -1207,7 +1200,8 @@ class Page(object):
                 # Make sure your system clock is correct if this error occurs
                 # without any reason!
                 raise EditConflict(u'Someone deleted the page.')
-            elif self.site().mediawiki_message('viewsource') in data:
+            elif self.site().has_mediawiki_message("viewsource")\
+                    and self.site().mediawiki_message('viewsource') in data:
                 # The page is locked. This should have already been detected
                 # when getting the page, but there are some reasons why this
                 # didn't work, e.g. the page might be locked via a cascade
@@ -1745,7 +1739,6 @@ class Page(object):
         else:
             response, data = self.site().postForm(address, predata, sysop = sysop)
         if data != u'':
-##            if mediawiki_messages.get('pagemovedsub') in data:
             if self.site().mediawiki_message('pagemovedsub') in data:
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
                 return True
@@ -1799,7 +1792,6 @@ class Page(object):
             else:
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
-##                if mediawiki_messages.get('actioncomplete') in data:
                 if self.site().mediawiki_message('actioncomplete') in data:
                     output(u'Deletion successful.')
                     return True
@@ -1904,7 +1896,6 @@ class Page(object):
                 'target': self.title(),
                 'wpComment': comment,
                 'wpEditToken': token,
-##                'restore': mediawiki_messages.get('undeletebtn')
                 'restore': self.site().mediawiki_message('undeletebtn')
                 }
 
@@ -3356,9 +3347,11 @@ class Site(object):
     def mediawiki_message(self, key):
         """Return the MediaWiki message text for key "key" """
         global mwpage, tree
-        if key not in self._mediawiki_messages.keys():
+        if key not in self._mediawiki_messages.keys() \
+                and not hasattr(self, "_phploaded"):
             retry_idle_time = 1
             while True:
+                get_throttle()
                 mwpage = self.getUrl("%s?title=%s:%s&action=edit"
                          % (self.path(), urllib.quote(
                                 self.namespace(8).replace(' ', '_').encode(
@@ -3387,6 +3380,17 @@ Maybe the server is down. Retrying in %i minutes..."""
                 self._mediawiki_messages[key] = value
             else:
                 self._mediawiki_messages[key] = None
+                # Fallback in case MediaWiki: page method doesn't work
+                if verbose:
+                    output(
+                      u"Retrieving mediawiki messages from Special:Allmessages")
+                get_throttle()
+                phppage = self.getUrl(self.get_address("Special:Allmessages")
+                                      + "&ot=php")
+                Rphpvals = re.compile(r"'(.*?)' =&gt; '(.*?[^\\])',")
+                for (phpkey, phpval) in Rphpvals.findall(phppage):
+                    self._mediawiki_messages[str(phpkey)] = phpval
+                self._phploaded = True
 
         if self._mediawiki_messages[key] is None:
             raise KeyError("MediaWiki key '%s' does not exist on %s"
