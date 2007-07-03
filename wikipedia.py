@@ -3386,10 +3386,12 @@ Maybe the server is down. Retrying in %i minutes..."""
                       u"Retrieving mediawiki messages from Special:Allmessages")
                 get_throttle()
                 phppage = self.getUrl(self.get_address("Special:Allmessages")
-                                      + "&ot=php")
+                                      + "&ot=php").replace("\n", "\\n")
+                phpstart = phppage.find("$messages = array(")
                 Rphpvals = re.compile(r"'(.*?)' =&gt; '(.*?[^\\])',")
-                for (phpkey, phpval) in Rphpvals.findall(phppage):
-                    self._mediawiki_messages[str(phpkey)] = phpval
+                for (phpkey, phpval) in Rphpvals.findall(phppage, phpstart+18):
+                    self._mediawiki_messages[str(phpkey)] = \
+                            phpval.replace(u"\\n", u"\n")
                 self._phploaded = True
 
         if self._mediawiki_messages[key] is None:
