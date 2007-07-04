@@ -67,7 +67,8 @@ def get_content_type(filename):
 
 
 class UploadRobot:
-    def __init__(self, url, description = u'', useFilename = None, keepFilename = False, verifyDescription = True, ignoreWarning = False, targetSite = None, urlEncoding = None):
+    def __init__(self, url, urlEncoding = None, description = u'', useFilename = None, keepFilename = False,
+                 verifyDescription = True, ignoreWarning = False, targetSite = None):
         """
         ignoreWarning - Set this to True if you want to upload even if another
                         file would be overwritten or another mistake would be
