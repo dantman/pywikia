@@ -169,9 +169,12 @@ class Category(wikipedia.Page):
             '<li>(?:<span.*?>)?<a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"\>\+?[^\<\+]')
         if self.site().versionnumber() < 8:
             Rsubcat = None
+            Rimage = None
         else:
             Rsubcat = re.compile(
                 'CategoryTreeLabelCategory\"\s?href=\".+?\">(.+?)</a>')
+            Rimage = re.compile(
+                '<div class\s?=\s?\"thumb\"\sstyle=\"[^\"]*\"><a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"')
         ns = self.site().category_namespaces()
         # regular expression matching the "(next 200)" link
         RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
@@ -220,6 +223,10 @@ class Category(wikipedia.Page):
                     title = 'Category:%s' % titleWithoutNamespace
                     ncat = Category(self.site(), title)
                     yield SUBCATEGORY, ncat
+            if Rimage:
+                # For MediaWiki versions where images work through galleries
+                for title in Rimage.findall(txt):
+                    yield ARTICLE, wikipedia.Page(self.site(), title)
             # try to find a link to the next list page
             matchObj = RLinkToNextPage.search(txt)
             if matchObj:
