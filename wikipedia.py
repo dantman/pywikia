@@ -1991,7 +1991,7 @@ class Page(object):
 			s = re.escape(s)
 			return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
 		def create_regex_i(s):
-			return ur'(?:%s)' % u''.join((u'[%s%s]' % (c.upper(), c.lower()) for c in s))
+			return ur'(?:%s)' % u''.join([u'[%s%s]' % (c.upper(), c.lower()) for c in s])
 		
 		namespaces = ('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True)
 		r_namespace = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(create_regex_i, namespaces))
