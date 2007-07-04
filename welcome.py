@@ -753,7 +753,9 @@ if __name__ == "__main__":
                     continue
             # If recursive, don't exit, repeat after one hour.
             if recursive == True:
-                wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (str(time_variable), time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime())) )
+	        waitstr = unicode(time_variable)
+		strfstr = time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime())
+		wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (waitstr, strfstr))
                 time.sleep(time_variable)
             # If not recursive, break.
             elif recursive == False:
