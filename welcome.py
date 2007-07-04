@@ -155,7 +155,7 @@ import wikipedia, string
 import time, re, config
 import urllib
 import locale
-locale.setlocale('')
+locale.setlocale(locale.LC_ALL,'')
 
 number = 1           # number of edits that an user required to be welcomed
 numberlog = 15       # number of users that are required to add the log :)
@@ -756,7 +756,10 @@ if __name__ == "__main__":
             # If recursive, don't exit, repeat after one hour.
             if recursive == True:
                 waitstr = unicode(time_variable)
-                strfstr = time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()).decode(locale.getlocale()[1])
+		if locale.getlocale()[1]:
+		  strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()), locale.getlocale()[1])
+		else:
+		  strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
                 wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (waitstr, strfstr))
                 time.sleep(time_variable)
             # If not recursive, break.
