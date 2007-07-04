@@ -154,6 +154,8 @@ __version__ = '$Id: welcome.py,v 1.4 2007/04/14 18:05:42 siebrand Exp'
 import wikipedia, string
 import time, re, config
 import urllib
+import locale
+locale.setlocale('')
 
 number = 1           # number of edits that an user required to be welcomed
 numberlog = 15       # number of users that are required to add the log :)
@@ -686,10 +688,10 @@ if __name__ == "__main__":
                                 if w in answer:
                                     if not usertalkpage.exists():
                                         # Check if the user has been already blocked (second check)
- 	 	                        ki = blocked(wsite, username)
- 	 	                        if ki == True:
- 	 	                            wikipedia.output(u'%s has been blocked! Skipping him...' % username)
- 	 	                            continue
+                                        ki = blocked(wsite, username)
+                                        if ki == True:
+                                            wikipedia.output(u'%s has been blocked! Skipping him...' % username)
+                                            continue
                                         report(wsite, rep_page, username, com, final_rep)
                                         break
                                     else:
@@ -753,9 +755,9 @@ if __name__ == "__main__":
                     continue
             # If recursive, don't exit, repeat after one hour.
             if recursive == True:
-	        waitstr = unicode(time_variable)
-		strfstr = time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime())
-		wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (waitstr, strfstr))
+                waitstr = unicode(time_variable)
+                strfstr = time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()).decode(locale.getlocale()[1])
+                wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (waitstr, strfstr))
                 time.sleep(time_variable)
             # If not recursive, break.
             elif recursive == False:
