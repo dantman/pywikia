@@ -2845,6 +2845,8 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
     catNamespace = '|'.join(site.category_namespaces())
     categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\]' % (catNamespace, oldcat.titleWithoutNamespace()))
     text = replaceExcept(oldtext, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\]' % (catNamespace, oldcat.titleWithoutNamespace().replace(' ','_')))
+    text = replaceExcept(text, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
     return text
 
 def replaceCategoryLinks(oldtext, new, site = None):
