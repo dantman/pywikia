@@ -200,6 +200,7 @@ blanking = {
     'fr': u'blanchit, le contenu était "%s"',
     'he': u'רוקן, תוכן היה "%s"',
     'pl': u'wyczyszczony - zawartością było "%s"',
+    'pt': u'em branco - conteúdo é "%s"',
 }
 
 # do nothing if this is in it
@@ -362,4 +363,3 @@ if __name__ == "__main__":
     except:
         wikipedia.stopme()
         raise
-
