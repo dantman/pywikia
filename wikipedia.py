@@ -1077,6 +1077,16 @@ class Page(object):
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
         sysop = not not self.editRestriction
+        # If we are a sysop, we need to re-obtain the tokens.
+        if sysop:
+            if hasattr(self, '_contents'): del self._contents
+            try:
+                self.get(force = True, get_redirect = True,
+                    change_edit_time = True, sysop = True)
+            except NoPage:
+                pass
+
+
         # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
         # of Bordeaux
         if self.site().lang == 'eo':
