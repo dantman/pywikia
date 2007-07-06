@@ -1973,10 +1973,10 @@ class Page(object):
                 output(data)
                 return False
                 
-    def removeImage(self, image, put = False, summary = None):
-        return self.replaceImage(image, put, summary)
+    def removeImage(self, image, put = False, summary = None, safe = True):
+        return self.replaceImage(image, None, put, summary, safe)
     
-    def replaceImage(self, image, replacement = None, put = False, summary = None):
+    def replaceImage(self, image, replacement = None, put = False, summary = None, safe = True):
         """Replace all occurences of an image by another image.
         Giving None as argument for replacement will delink 
         instead of replace. 
@@ -2067,7 +2067,7 @@ class Page(object):
                 simple_replacer, match.group(2)), match.group(3))
         new_text = re.sub(r_galleries, gallery_replacer, new_text)
             
-        if text == new_text:
+        if (text == new_text) or (not safe):
             # All previous steps did not work, so the image is
             # likely embedded in a complicated template.
             r_templates = ur'(?s)(\{\{.*?\}\})'
