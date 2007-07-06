@@ -192,7 +192,7 @@ class CheckUsage(object):
 		if no_db: return
  
 		self.sql_host, self.sql_host_prefix = sql_host, sql_host_prefix
-		self.sql_user, self.sql_passwd = sql_user, sql_passwd
+		self.sql_user, self.sql_pass = sql_user, sql_pass
 		self.use_autoconn = use_autoconn
 		self.mysql_retry_timeout = mysql_retry_timeout
 		self.mysql_max_retries = mysql_max_retries
@@ -206,16 +206,16 @@ class CheckUsage(object):
  
 		database, cursor = self.connect(sql_host)
  
-		self.cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
-		for dbname, domain, server in self.cursor.fetchall():
+		cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
+		for dbname, domain, server in cursor.fetchall():
 			if server not in self.clusters:
-				for database, cursor in self.connections:
+				for _database, _cursor in self.connections:
 					try:
-						cursor.execute('USE ' + dbname)
-					except MySQL.Error, e:
-						if e[0] != 1044: raise
+						_cursor.execute('USE ' + dbname)
+					except MySQLdb.Error, e:
+						if e[0] != 1049: raise
 					else:
-						self.clusters[server] = (database, cursor)
+						self.clusters[server] = (_database, _cursor)
 				if not server in self.clusters:
 					self.clusters[server] = self.connect(sql_host_prefix + str(server))
 			
@@ -223,13 +223,13 @@ class CheckUsage(object):
 			self.databases[dbname] = self.clusters[server]
  
 		cursor.execute('SELECT dbname, ns_id, ns_name FROM toolserver.namespace')
-		self.namespaces = dict((((i[0], i[1]), i[2].decode('utf-8')) for i in self.cursor))
+		self.namespaces = dict((((i[0], i[1]), i[2].decode('utf-8')) for i in cursor))
  
 	def connect(self, host):
 		# A bug in MySQLdb 1.2.1_p will force you to set
 		# all your connections to use_unicode = False.
 		# Please upgrade to MySQLdb 1.2.2 or higher.
-		if use_autoconn:
+		if self.use_autoconn:
 			database = mysql_autoconnection.connect(
 				use_unicode = False, user = self.sql_user, 
 				passwd = self.sql_pass, host = host,
@@ -284,12 +284,14 @@ class CheckUsage(object):
 			res[image] = self.get_usage(image)
 		return res
  
+	'''
 	def get_replag(self, db):
 		query = """SELECT UNIX_TIMESTAMP() - UNIX_TIMESTAMP(rc_timestamp)
 	FROM %s.recentchanges ORDER BY rc_timestamp DESC LIMIT 1"""
 		if self.cursor.execute(query) != 1: raise RuntimeError
 		return self.cursor.fetchone()[0]
-		
+	'''
+	
 	def exists(self, domain, image):
 		# Check whether the image still is deleted on Commons.
 		# BUG: This also returns true for images with a page, but
@@ -300,9 +302,10 @@ class CheckUsage(object):
 		
 		
 	def close(self):
-		try:
-			self.conn.close()
-			self.database.close()
-		except: 
-			pass
+		for connection, cursor in self.clusters.itervalues():
+			try:
+				connection.close()
+			except: 
+				pass
+		self.conn.close()
 			
