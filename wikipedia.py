@@ -2075,7 +2075,7 @@ class Page(object):
                 
             def template_replacer(match):
                 return re.sub(r_complicated, simple_replacer, match.group(1))
-            new_text = re.sub(r_templates, template_replacer, text)
+            new_text = re.sub(r_templates, template_replacer, new_text)
             
         if put:
             if text != new_text:
