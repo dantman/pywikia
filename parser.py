@@ -11,74 +11,145 @@ __version__ = '$Id$'
 
 import re
 import xml.dom.minidom as dom
-class ParseError(Exception):
-    """ Error thrown when the wikiparser cannot use this function to parse """
 
-regexp =   {
-            'title': re.compile(r'[^\x23\x7c\x3c\x3e\x5b\x5d\x7b\x7d\x00-\x1f\x7f]+'),
-            'pl_begin': re.compile(r'\[\['),
-            'pl_end': re.compile(r'\]\]')
-           }
+# System loosely based on 'the dragon book':
+# Compilers, Principles, Techniques and Tools, Aho, Sethi, Ullman, 1st edition, 1986
 
-#parsers that return values or ParseErrors
-def subparseTitle(data, counter):
-    # The following characters are not allowed in page titles:
-    #   \x23 #      \x7c |      \x3c <      \x3e >
-    #   \x5b [      \x5d ]      \x7b {      \x7d}
-    # and the ASCII character codes 0-31 [\x00-\x1f] and 127. [\x7f]
-    match = regexp['title'].match(data[counter:])
-    if match:
-        return match.group()
-    else:
-        raise ParseError("Regexp 'title' did not match on column %i" % (counter,))
-        
-#parsers that return tuples of type (num chars, DOM object)
-def parseWikiLink(document, data, counter):
-    assert data[counter:counter+2] == '[['
-    
-    node = None
-    
-    try:
-        title = subparseTitle(data, counter+2)
-    except ParseError, e:
-        print "%r" % e
-        pass
-    else:
-        if data[counter+len(title)+2:counter+len(title)+4] == ']]':
-            node = document.createElement('wikilink')
-            node.setAttribute('href', title)
-            retval = (len(title) + 4, node)
-    if not retval:
-       retval = (2, document.createTextNode('[['))
-    return retval
+class OutOfCharsException(Exception):
+    """ lexer pwn error """
 
-def parseText(document, data, counter, endre=re.compile(r'$')):
-    node = document.createTextNode('')
-    while not endre.match(data[counter:]):
-        # check for pagelink
-        if regexp['pl_begin'].match(data[counter:]):
-            if len(node) > 0:
-                yield node
-            (move, node) = parseWikiLink(document, data, counter)
-            counter += move
-            yield node
-            node = document.createTextNode('')
-        else:
-            node.appendData(data[counter])
-            counter += 1
-    yield node
+class lexer:
+    class TEXT:
+        """ Text node. Text="""
+    class WL_OPEN:
+        """ Wikilink opener [[ """
+    class WL_CLOSE:
+        """ Wikilink closer ]] """
+    class PIPE:
+        """ Pipe symbol """
+    class CURL_OPEN:
+        """ Curl open symbols { N="""
+    class CURL_CLOSE:
+        """ Curl close symbols } N="""
+    class ANGL_OPEN:
+        """ Angular open symbol < """
+    class ANGL_CLOSE:
+        """ Anglular close symbol > """
+    class NEWPAR:
+        """ New paragraph """
+    class TAB_OPEN:
+        """ Table open {| """
+    class TAB_NEWLINE:
+        """ Table new row |- """
+    class TAB_CLOSE:
+        """ Table close |} """
+    class WHITESPACE:
+        """ Whitespace class. """
+     
+    def __init__(self, string):
+        self.wikipwn = (a for a in string)
+    
+    def lexer(self):
+        text = ''
+        try:
+            c = self.getchar()
+            while True:
+                if (c == '['):
+                    t = self.getchar()
+                    if (t == '['):
+                        if text:
+                            yield (lexer.TEXT, text)
+                            text = ''
+                        yield (lexer.WL_OPEN, None)
+                        c = self.getchar()
+                    else:
+                        text = text + c
+                        c = t
+                elif (c == ']'):
+                    t = self.getchar()
+                    if (t == ']'):
+                        if text:
+                            yield (lexer.TEXT, text)
+                            text = ''
+                        yield (lexer.WL_CLOSE, None)
+                        c = self.getchar()
+                    else:
+                        text = text + c
+                        c = t
+                elif (c == '{'):
+                    if text:
+                        yield (lexer.TEXT, text)
+                        text = ''
+                    c = self.getchar()
+                    if (c == '|'): # begin table
+                        yield (lexer.TAB_OPEN, None)
+                        c = self.getchar()
+                        continue #at the next while loop
+                    num = 1
+                    while (c == '{'):
+                        c = self.getchar()
+                        num += 1
+                    yield (lexer.CURL_OPEN, num)
+                elif (c == '}'):
+                    if text:
+                        yield (lexer.TEXT, text)
+                        text = ''
+                    num = 0
+                    while (c == '}'):
+                        self.getchar(c)
+                        num += 1
+                    yield (lexer.CURL_CLOSE, num)
+                elif (c == '<'):
+                    if text:
+                        yield (lexer.TEXT, text)
+                        text = ''
+                    yield (lexer.ANGL_OPEN, None)
+                    c = self.getchar()
+                elif (c == '>'):
+                    if text:
+                        yield (lexer.TEXT, text)
+                        text = ''
+                    yield (lexer.ANGL_OPEN, None)
+                    c = self.getchar()
+                elif (c == '|'):
+                    if text:
+                        yield (lexer.TEXT, text)
+                        text = ''
+                    t = self.getchar()
+                    if (t == '-'):
+                        yield (lexer.TAB_NEWLINE, None)
+                        c = self.getchar()
+                    elif (t == '}'):
+                        yield (lexer.TAB_CLOSE, None)
+                        c = self.getchar()
+                    else:
+                        yield (lexer.PIPE, None)
+                        c = t
+                elif (c == ' ' or c == '\t'):
+                    if text:
+                        yield (lexer.TEXT, text)
+                        text = ''
+                    yield (lexer.WHITESPACE, None)
+                    while (c == ' ' or c == '\t'):
+                        c = self.getchar()   #eat up remaining spaces
+                elif (c == '\n'):
+                    if text:
+                        yield (lexer.TEXT, text)
+                        text = ''
+                    t = self.getchar()
+                    while (t == ' '):
+                        t = self.getchar()  #ignore any spaces
+                    if (t == '\n'): #new paragraph
+                        yield (lexer.NEWPAR, None)
+                    while (c == '\n'): #eat up remaining newlines
+                        c = self.getchar()
+                else:
+                    text = text + c
+                    c = self.getchar()
+        except OutOfCharsException:
+            pass
 
-def doParse(data):
-    document = dom.Document()
-    document.appendChild(document.createElement('wiki'))
-    headnode = document.firstChild
-    for i in parseText(document, data, 0):
-        headnode.appendChild(i)
-    return document.toxml()
+    def getchar(self): 
+        return self.wikipwn.next()
         
-    
-        
-        
-    
-    
     
