@@ -174,67 +174,89 @@ class HTTPPool(list):
 		
  
 class CheckUsage(object):
-	LIVE = ['enwiki_p']
-	IGNORE = []
+	#LIVE = ['enwiki_p']
+	#IGNORE = []
  
-	def __init__(self, limit = 100, sql_host = 'localhost', sql_user = '', 
-			sql_pass = '', no_db = False, use_autoconn = False, 
+	def __init__(self, limit = 100, 
+			sql_host = 'sql', sql_user = '', sql_pass = '', 
+			sql_host_prefix = 'sql-s', no_db = False, use_autoconn = False, 
+			
 			http_retry_timeout = 30, http_max_retries = -1, 
-			http_callback = lambda *args: None, mysql_retry_timeout = 60,
+			http_callback = lambda *args: None,
+			
+			mysql_retry_timeout = 60,
 			mysql_max_retries = -1, mysql_callback = lambda *args: None):
 				
 		self.conn = HTTPPool(retry_timeout = http_retry_timeout, 
 			max_retries = http_max_retries, callback = http_callback)
 		if no_db: return
  
+		self.sql_host, self.sql_host_prefix = sql_host, sql_host_prefix
+		self.sql_user, self.sql_passwd = sql_user, sql_passwd
+		self.use_autoconn = use_autoconn
+		self.mysql_retry_timeout = mysql_retry_timeout
+		self.mysql_max_retries = mysql_max_retries
+		self.mysql_callback = mysql_callback
+ 
+		self.connections = []
+ 
+		self.databases = {}
+		self.clusters = {}
+		self.domains = {}
+ 
+		database, cursor = self.connect(sql_host)
+ 
+		self.cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
+		for dbname, domain, server in self.cursor.fetchall():
+			if server not in self.clusters:
+				for database, cursor in self.connections:
+					try:
+						cursor.execute('USE ' + dbname)
+					except MySQL.Error, e:
+						if e[0] != 1044: raise
+					else:
+						self.clusters[server] = (database, cursor)
+				if not server in self.clusters:
+					self.clusters[server] = self.connect(sql_host_prefix + str(server))
+			
+			self.domains[dbname] = domain
+			self.databases[dbname] = self.clusters[server]
+ 
+		cursor.execute('SELECT dbname, ns_id, ns_name FROM toolserver.namespace')
+		self.namespaces = dict((((i[0], i[1]), i[2].decode('utf-8')) for i in self.cursor))
+ 
+	def connect(self, host):
 		# A bug in MySQLdb 1.2.1_p will force you to set
 		# all your connections to use_unicode = False.
 		# Please upgrade to MySQLdb 1.2.2 or higher.
 		if use_autoconn:
-			self.database = mysql_autoconnection.connect(
-				use_unicode = False, user = sql_user, 
-				passwd = sql_pass, host = sql_host,
-				retry_timeout = mysql_retry_timeout, 
-				max_retries = mysql_max_retries, 
-				callback = mysql_callback)
+			database = mysql_autoconnection.connect(
+				use_unicode = False, user = self.sql_user, 
+				passwd = self.sql_pass, host = host,
+				retry_timeout = self.mysql_retry_timeout, 
+				max_retries = self.mysql_max_retries, 
+				callback = self.mysql_callback)
 		else:
-				self.database = MySQLdb.connect(use_unicode = False,
-					user = sql_user, passwd = sql_pass, 
-					host = sql_host)
-		self.cursor = self.database.cursor()
- 
-		self.fetch_live = []
-		self.fetch_database = []
- 
-		self.cursor.execute('SELECT dbname, domain FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
-		for dbname, domain in self.cursor.fetchall():
-			if dbname in self.IGNORE: continue
-			if dbname in self.LIVE:
-				self.fetch_live.append(domain)
-			else:
-				self.fetch_database.append(dbname)
-		self.cursor.execute('SELECT dbname, domain FROM toolserver.wiki')
-		self.databases = dict(self.cursor)
- 
-		self.cursor.execute('SELECT dbname, ns_id, ns_name FROM toolserver.namespace')
-		self.namespaces = dict((((i[0], i[1]), i[2].decode('utf-8')) for i in self.cursor))
+			database = MySQLdb.connect(use_unicode = False,
+				user = self.sql_user, 
+				passwd = self.sql_pass, host = host)
+		cursor = database.cursor()
+		self.connections.append((database, cursor))
+		return database, cursor
  
 	def get_usage(self, image):
-		for database in self.fetch_database:
-			for link in self.get_usage_db(database, image):
-				yield self.databases[database], link
-		for domain in self.fetch_live:
-			for link in self.get_usage_live(domain, image):
-				yield domain, link
+		for dbname in self.databases:
+			for link in self.get_usage_db(dbname, image):
+				yield self.domains[dbname], link
  
 	def get_usage_db(self, database, image):
 		image = strip_image(image)
 		query = """SELECT page_namespace, page_title FROM %s.page, %s.imagelinks
 	LEFT JOIN %s.image ON (il_to = img_name) WHERE img_name IS NULL AND
 	page_id = il_from AND il_to = %%s"""
-		self.cursor.execute(query % (database, database, database), 
+		self.databases[database][1].execute(query % (database, database, database), 
 			(image.encode('utf-8', 'ignore'), ))
-		for item in self.cursor:
+		for item in self.databases[database][1]:
 			stripped_title = item[1].decode('utf-8', 'ignore')
 			if item[0] != 0:
 				title = self.namespaces[(database, item[0])] + u':' + stripped_title
