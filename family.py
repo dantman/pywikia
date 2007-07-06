@@ -2343,7 +2343,7 @@ class Family:
         'cy': [u'ail-cyfeirio'],
         'et': [u'suuna'],
         'eu': [u'bidali'],
-        'fi': [u'uudelleenohjaus', u'ohjaus'],
+        'fi': [u'uudelleenohjaus', u'ohjaus', u'OHJAUS'],
         'ga': [u'athsheoladh'],
         'he': [u'הפניה'],
         'id': [u'redirected', u'alih'],
