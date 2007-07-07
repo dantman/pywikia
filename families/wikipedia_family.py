@@ -431,7 +431,7 @@ class Family(family.Family):
             'sv':  [u'Betydelselista', u'Disambig', u'Förgrening', u'Gaffel',
                     u'Efternamn', u'Gren', u'Förgreningssida', u'3LC',
                     u'Trebokstavsförkortning', u'TLAdisambig'],
-            'sw':  [u'Maana',u'Jaribio',],
+            'sw':  [u'Maana'],
             'th':  [u'แก้กำกวม', u'Disambig'],
             'tl':  [u'Paglilinaw', u'Disambig'],
             'tr':  [u'Anlam ayrım', u'Disambig', u'Anlam ayrımı'],
