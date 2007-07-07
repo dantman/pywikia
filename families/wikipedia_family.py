@@ -385,6 +385,7 @@ class Family(family.Family):
             'ga':  [u'Idirdhealú', u'Disambig'],
             'gl':  [u'Homónimos', u'Disambig'],
             'he':  [u'DisambiguationAfter', u'פירושונים', u'Disambig'],
+            'hi':  [u'बहुविकल्पी शब्द', u'Disambig',],
             'hr':  [u'Disambig', u'Razdvojba'],
             'hu':  [u'Egyert', u'Disambig',u'Egyért'],
             'ia':  [u'Disambiguation', u'Disambig'],
