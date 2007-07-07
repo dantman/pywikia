@@ -2896,6 +2896,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
                 newtext = replaceLanguageLinks(s2, interwiki, site)
         newtext = newtext.replace(marker,'')
     else:
+        s2 = s2.replace(marker,'')
         return s2
     return newtext
 
