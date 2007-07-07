@@ -590,6 +590,7 @@ class Family(family.Family):
             'en': self.alphabetic,
             'et': self.alphabetic_revised,
             'fi': self.alphabetic_revised,
+            'fiu-vro': self.alphabetic_revised,
             'fy': self.fyinterwiki,
             'he': ['en'],
             'hu': ['en'],
