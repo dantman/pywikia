@@ -74,24 +74,12 @@ def str2size(str):
         return (0,'B')
 
 
-MONTHS = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-        ]
-
-
 def int2month(num):
-    return MONTHS[num-1]
+    return locale.nl_langinfo(locale.MON_1+num-1).decode('utf-8')
+
+
+def int2month_short(num):
+    return locale.nl_langinfo(locale.ABMON_1+num-1).decode('utf-8')
 
 
 def txt2timestamp(txt, format):
@@ -123,7 +111,6 @@ class DiscussionThread(object):
             return
         self.content += line + '\n'
         #Update timestamp
-        monthnames = '|'.join(MONTHS + [m[:3] for m in MONTHS])
         TM = re.search(r'(\d\d):(\d\d), (\d\d?) (\w+) (\d\d\d\d) \(.*?\)', line)
         if not TM:
             TM = re.search(r'(\d\d):(\d\d), (\w+) (\d\d?), (\d\d\d\d) \(.*?\)', line)
@@ -317,7 +304,7 @@ class PageArchiver(object):
                         'year' : TStuple[0],
                         'month' : TStuple[1],
                         'monthname' : int2month(TStuple[1]),
-                        'monthnameshort' : int2month(TStuple[1])[:3],
+                        'monthnameshort' : int2month_short(TStuple[1]),
                         }
                 archive = archive % vars
                 if self.feedArchive(archive,t,maxArchSize):
@@ -350,8 +337,6 @@ class PageArchiver(object):
 
 
 def main():
-    locale.setlocale(locale.LC_TIME,('en_US','utf-8')) #Required for english month names
-
     from optparse import OptionParser
     parser = OptionParser(usage='usage: %prog [options] [LINKPAGE(s)]')
     parser.add_option('-f', '--file', dest='filename',
@@ -366,7 +351,12 @@ def main():
             help='override security options')
     parser.add_option('-c', '--calc', dest='calc',
             help='calculate key for PAGE and exit', metavar='PAGE')
+    parser.add_option('-l', '--locale', dest='locale',
+            help='switch to locale LOCALE', metavar='LOCALE')
     (options, args) = parser.parse_args()
+
+    if options.locale:
+        locale.setlocale(locale.LC_TIME,options.locale) #Required for english month names
 
     if options.calc:
         if not options.salt:
