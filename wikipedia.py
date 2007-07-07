@@ -188,6 +188,7 @@ class SpamfilterError(PageNotSaved):
     """Saving the page has failed because the MediaWiki spam filter detected a blacklisted URL."""
     def __init__(self, arg):
         self.url = arg
+        self.args = arg,
 
 class ServerError(Error):
     """Got unexpected server response"""
@@ -1165,7 +1166,7 @@ class Page(object):
             try:
                 response, data = self.site().postForm(address, predata, sysop)
             except httplib.BadStatusLine, line:
-                raise PageNotSaved('Bad status line: %s' % line)
+                raise PageNotSaved('Bad status line: %s' % line.line)
         if data != u'':
             # Saving unsuccessful. Possible reasons:
             # server lag, edit conflict or invalid edit token.
