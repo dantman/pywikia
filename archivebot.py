@@ -124,17 +124,17 @@ class DiscussionThread(object):
         self.content += line + '\n'
         #Update timestamp
         monthnames = '|'.join(MONTHS + [m[:3] for m in MONTHS])
-        TM = re.search(r'(\d\d):(\d\d), (\d\d?) (' + monthnames + ') (\d\d\d\d) \(UTC\)', line)
+        TM = re.search(r'(\d\d):(\d\d), (\d\d?) (\w+) (\d\d\d\d) \(.*?\)', line)
         if not TM:
-            TM = re.search(r'(\d\d):(\d\d), (' + monthnames + ') (\d\d?), (\d\d\d\d) \(UTC\)', line)
+            TM = re.search(r'(\d\d):(\d\d), (\w+) (\d\d?), (\d\d\d\d) \(.*?\)', line)
         if TM:
-            TIME = txt2timestamp(TM.group(0),"%H:%M, %d %B %Y (UTC)")
+            TIME = txt2timestamp(TM.group(0),"%H:%M, %d %B %Y (%Z)")
             if not TIME:
-                TIME = txt2timestamp(TM.group(0),"%H:%M, %d %b %Y (UTC)")
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %d %b %Y (%Z)")
             if not TIME:
-                TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d %Y (UTC)")
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d %Y (%Z)")
             if not TIME:
-                TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d, %Y (UTC)")
+                TIME = txt2timestamp(TM.group(0),"%H:%M, %b %d, %Y (%Z)")
             if TIME:
                 self.timestamp = max(self.timestamp,time.mktime(TIME))
 
