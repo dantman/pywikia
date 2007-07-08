@@ -146,7 +146,7 @@ class Delinker(threadpool.Thread):
 				s = re.escape(s)
 				return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
 			def create_regex_i(s):
-				return ur'(?:%s)' % u''.join((u'[%s%s]' % (c.upper(), c.lower()) for c in s))
+				return ur'(?:%s)' % u''.join([u'[%s%s]' % (c.upper(), c.lower()) for c in s])
 			
 			namespaces = ('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True)
 			r_namespace = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(create_regex_i, namespaces))
@@ -436,13 +436,12 @@ class CheckUsage(threadpool.Thread):
 		for domain in usage_domains.keys():
 			# FIXME: This will cause the bot to fail if it
 			# is run locally on enwiki.
-			if domain not in self.CheckUsage.fetch_live:
-				usage = list(self.CheckUsage.get_usage_live(
-					domain, image))
-				if not usage:
-					del usage_domains[domain]
-				else:
-					usage_domains[domain] = usage
+			usage = list(self.CheckUsage.get_usage_live(
+				domain, image))
+			if not usage:
+				del usage_domains[domain]
+			else:
+				usage_domains[domain] = usage
 			
 		output(u'%s %s used on %s wikis' % (self, image, count))
 		
