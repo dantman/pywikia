@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
@@ -258,9 +258,11 @@ class ReplaceRobot:
                         try:
                             page.put(new_text)
                         except wikipedia.EditConflict:
-                            wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
+                            wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
                         except wikipedia.SpamfilterError, e:
                             wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
+                        except wikipedia.LockedPage:
+                            wikipedia.output(u'Skipping %s (locked page)' % (page.title(),))
 
 def prepareRegexForMySQL(pattern):
     pattern = pattern.replace('\s', '[:space:]')
