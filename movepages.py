@@ -48,17 +48,19 @@ import sys
 import re
 
 summary={
+    'ar': u'نقل الصفحة بواسطة البوت',
     'en': u'Pagemove by bot',
     'de': u'Seite durch Bot verschoben',
     'el': u'Μετακίνηση σελίδων με bot',
     'fr': u'Page renommée par bot',
     'he': u'העברת דף באמצעות בוט',
-    'nl': u'Pagina hernoemd door robot',
+    'nl': u'Paginatitel gewijzigd door robot',
     'pl': u'Przeniesienie artykułu przez robota',
     'pt': u'Página movida por bot',
 }
 
 deletesummary={
+    'ar': u'حذف الصفحة بواسطة البوت',
     'en': u'Delete page by bot',
     'de': u'Seite durch Bot gelöscht',
     'el': u'Διαγραφή σελίδων με bot',
