@@ -3279,7 +3279,7 @@ class Site(object):
                 f.close()
 
     r_userGroups = re.compile(ur'var wgUserGroups \= (.*)\;')
-    def getUrl(self, path, retry = True, sysop = False, data = None):
+    def getUrl(self, path, retry = True, sysop = False, data = None, compress = True):
         """
         Low-level routine to get a URL from the wiki.
 
@@ -3298,6 +3298,12 @@ class Site(object):
             uo = MyURLopener()
             if self.cookies(sysop = sysop):
                 uo.addheader('Cookie', self.cookies(sysop = sysop))
+            if compress:
+                uo.addheader('Accept-encoding', 'gzip')
+
+        url = 'http://%s%s' % (self.hostname(), path)
+        data = self.urlEncode(data)
+
         # Try to retrieve the page until it was successfully loaded (just in
         # case the server is down or overloaded).
         # Wait for retry_idle_time minutes (growing!) between retries.
@@ -3306,9 +3312,15 @@ class Site(object):
         while not retrieved:
             try:
                 if self.hostname() in config.authenticate.keys():
-                    f = urllib2.urlopen('http://%s%s' % (self.hostname(), path), self.urlEncode(data))
+                    if compress:
+                        request = urllib2.Request(url, data)
+                        request.add_header('Accept-encoding', 'gzip')
+                        opener = urllib2.build_opener()
+                        f = opener.open(request)
+                    else:
+                        f = urllib2.urlopen(url, data)
                 else:
-                    f = uo.open('http://%s%s' % (self.hostname(), path), self.urlEncode(data))
+                    f = uo.open(url, data)
                 retrieved = True
             except KeyboardInterrupt:
                 raise
@@ -3325,6 +3337,12 @@ class Site(object):
                 else:
                     raise
         text = f.read()
+        if compress and f.headers.get('Content-Encoding') == 'gzip':
+            import StringIO, gzip
+            compressedstream = StringIO.StringIO(text)
+            gzipper = gzip.GzipFile(fileobj=compressedstream)
+            text = gzipper.read()
+            
         # Find charset in the content-type meta tag
         contentType = f.info()['Content-Type']
         R = re.compile('charset=([^\'\";]+)')
