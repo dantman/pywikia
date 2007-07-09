@@ -1072,7 +1072,7 @@ class Subject(object):
                             if timeout>3600:
                                 raise
                             wikipedia.output(u'ERROR putting page: %s' % (error.args,))
-                            wikipedia.output(u'Sleeping %i seconds before trying again.' % (imeout,))
+                            wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
                             timeout *= 2
                             time.sleep(timeout)
                         else:
