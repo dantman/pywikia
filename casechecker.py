@@ -51,23 +51,23 @@ class CaseChecker( object ):
     langs = {
         'ru': {
            'alphabet'  : u'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя',
-           'localsuspects': u'АаВЕеКкМНОопРрСсТуХх',
-           'latinsuspects': u'AaBEeKkMHOonPpCcTyXx',
+           'localsuspects': u'АаВЕеКкМНОоРрСсТуХх',
+           'latinsuspects': u'AaBEeKkMHOoPpCcTyXx',
            },
         'uk': {
            'alphabet'  : u'АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЮюЯяЬь',
-           'localsuspects': u'АаВЕеІіКкМНОопРрСсТУуХх',
-           'latinsuspects': u'AaBEeIiKkMHOonPpCcTYyXx',
+           'localsuspects': u'АаВЕеІіКкМНОоРрСсТУуХх',
+           'latinsuspects': u'AaBEeIiKkMHOoPpCcTYyXx',
            },
         'bg': {
            'alphabet'  : u'АаБбВвГгДдЕеЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЬьЮюЯя',
-           'localsuspects': u'АаВЕеКкМНОопРрСсТуХх',
-           'latinsuspects': u'AaBEeKkMHOonPpCcTyXx',
+           'localsuspects': u'АаВЕеКкМНОоРрСсТуХх',
+           'latinsuspects': u'AaBEeKkMHOoPpCcTyXx',
            },
         'be': {
            'alphabet'  : u'АаБбВвГгҐґДдЖжЗзЕеЁёЖжЗзІіЙйКкЛлМмНнОоПпРрСсТтУуЎўФфХхЦцЧчШшЫыЬьЭэЮюЯя',
-           'localsuspects': u'АаВЕеІіКкМНОопРрСсТуХх',
-           'latinsuspects': u'AaBEeIiKkMHOonPpCcTyXx',
+           'localsuspects': u'АаВЕеІіКкМНОоРрСсТуХх',
+           'latinsuspects': u'AaBEeIiKkMHOoPpCcTyXx',
            },
         }
         
@@ -165,6 +165,7 @@ class CaseChecker( object ):
     def Run(self):
         try:
             count = 0
+            lastLetter = ''
             for namespace in self.namespaces:
                 self.params['apnamespace'] = namespace
                 title = None
@@ -180,9 +181,15 @@ class CaseChecker( object ):
     
                     # Process received data
                     if 'pages' in data:
+                        firstItem = True
                         for pageID, page in data['pages'].iteritems():
                             printed = False
                             title = page['title']
+                            if firstItem:
+                                if lastLetter != title[0]:
+                                    print 'Processing ' + title
+                                    lastLetter = title[0]
+                                firstItem = False
                             if self.titles:
                                 err = self.ProcessTitle(title)
                                 if err:
@@ -259,6 +266,8 @@ class CaseChecker( object ):
                                             wikipedia.output(u'Case Replacements: %s' % u', '.join(msg))
                                             try:
                                                 pageObj.put(pageTxt, u'Case Replacements: %s' % u', '.join(msg))
+                                            except KeyboardInterrupt:
+                                                raise
                                             except:
                                                 self.WikiLog(u"* Error: Could not save updated page [[:%s]] (%s)" % (title, coloredMsg))
                                                 
