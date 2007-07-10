@@ -150,6 +150,7 @@ class Delinker(threadpool.Thread):
 			
 			namespaces = ('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True)
 			r_namespace = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(create_regex_i, namespaces))
+			# Note that this regex creates a group!
 			r_image = u'(%s)' % create_regex(image).replace(r'\_', '[ _]')
 			
 			def simple_replacer(match):
@@ -204,9 +205,9 @@ class Delinker(threadpool.Thread):
 				if old: new_text = new_text.replace(old, new)
 			
 			# Remove the image from galleries
-			r_galleries = ur'(?s)(\<%s\>)(?s)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'), 
+			r_galleries = ur'(?s)(\<%s\>)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'), 
 				create_regex_i('gallery'))
-			r_gallery = ur'(?m)^((?:%s)?)(%s)(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
+			r_gallery = ur'(?m)^((?:%s)?)%s(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
 			def gallery_replacer(match):
 				return ur'%s%s%s' % (match.group(1), re.sub(r_gallery, 
 					simple_replacer, match.group(2)), match.group(3))
@@ -428,25 +429,16 @@ class CheckUsage(threadpool.Thread):
 				count += 1
 		else:
 			count = 1
-			usage_domains = {self.site.hostname(): None}
-			
-		# The original delinker apparently does not trust
-		# results returned by Duesentrieb's CheckUsage
-		# and refetches live results.
-		for domain in usage_domains.keys():
-			# FIXME: This will cause the bot to fail if it
-			# is run locally on enwiki.
-			usage = list(self.CheckUsage.get_usage_live(
-				domain, image))
-			if not usage:
-				del usage_domains[domain]
-			else:
-				usage_domains[domain] = usage
+			usage_domains = {self.site.hostname(): list(
+				self.CheckUsage.get_usage_live(self.site.hostname(), 
+				image))}
+			count = int(bool(usage_domains[self.site.hostname()]))
 			
 		output(u'%s %s used on %s wikis' % (self, image, count))
 		
-		# Pass the usage to the Delinker pool along with other arguments
-		self.CommonsDelinker.Delinkers.append((image, usage_domains, 
+		if count:
+			# Pass the usage to the Delinker pool along with other arguments
+			self.CommonsDelinker.Delinkers.append((image, usage_domains, 
 				timestamp, admin, reason, replacement))
 		
 	def do(self, args):
