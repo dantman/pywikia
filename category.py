@@ -357,7 +357,8 @@ class CategoryMoveRobot:
             wikipedia.output(u'There are no subcategories in category ' + self.oldCat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.oldCat, newCat, inPlace=self.inPlace)
+                if not self.titleRegex or re.search.(self.titleRegex,category.title()):
+                    catlib.change_category(subcategory, self.oldCat, newCat, inPlace=self.inPlace)
         if self.oldCat.exists() and self.moveCatPage:
             # try to copy page contents to new cat page
             if self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
@@ -474,7 +475,8 @@ class CategoryRemoveRobot:
             wikipedia.output(u'There are no subcategories in category %s' % self.cat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.cat, None)
+                if not self.titleRegex or re.search.(self.titleRegex,category.title()):
+                    catlib.change_category(subcategory, self.cat, None)
         if self.cat.exists() and self.cat.isEmpty():
             if self.useSummaryForDeletion:
                 reason = self.editSummary
