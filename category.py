@@ -348,7 +348,7 @@ class CategoryMoveRobot:
         gen = pagegenerators.CategorizedPageGenerator(self.oldCat, recurse = False)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for article in preloadingGen:
-            if not self.titleRegex or re.search.(self.titleRegex,article.title()):
+            if not self.titleRegex or re.search(self.titleRegex,article.title()):
                 catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
 
         # TODO: create subcategory generator
@@ -357,7 +357,7 @@ class CategoryMoveRobot:
             wikipedia.output(u'There are no subcategories in category ' + self.oldCat.title())
         else:
             for subcategory in subcategories:
-                if not self.titleRegex or re.search.(self.titleRegex,category.title()):
+                if not self.titleRegex or re.search(self.titleRegex,subcategory.title()):
                     catlib.change_category(subcategory, self.oldCat, newCat, inPlace=self.inPlace)
         if self.oldCat.exists() and self.moveCatPage:
             # try to copy page contents to new cat page
@@ -467,7 +467,7 @@ class CategoryRemoveRobot:
             wikipedia.output(u'There are no articles in category %s' % self.cat.title())
         else:
             for article in articles:
-                if not self.titleRegex or re.search.(self.titleRegex,article.title()):
+                if not self.titleRegex or re.search(self.titleRegex,article.title()):
                     catlib.change_category(article, self.cat, None)
         # Also removes the category tag from subcategories' pages
         subcategories = self.cat.subcategoriesList(recurse = 0)
@@ -475,8 +475,7 @@ class CategoryRemoveRobot:
             wikipedia.output(u'There are no subcategories in category %s' % self.cat.title())
         else:
             for subcategory in subcategories:
-                if not self.titleRegex or re.search.(self.titleRegex,category.title()):
-                    catlib.change_category(subcategory, self.cat, None)
+                catlib.change_category(subcategory, self.cat, None)
         if self.cat.exists() and self.cat.isEmpty():
             if self.useSummaryForDeletion:
                 reason = self.editSummary
