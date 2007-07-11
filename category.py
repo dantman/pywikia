@@ -37,6 +37,7 @@ and option can be one of these:
  * -talkpages  - An option for listify, this outputs the links to talk pages of the
                  pages to be listified in addition to the pages themselves.
  * -recurse    - Recurse through all subcategories of categories.
+ * -match      - Only work on pages whose titles match the given regex (for move and remove actions).
 
 
 For the actions tidy and tree, the bot will store the category structure locally
@@ -327,7 +328,7 @@ def add_category(sort_by_last_name = False):
                             wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
 
 class CategoryMoveRobot:
-    def __init__(self, oldCatTitle, newCatTitle, batchMode = False, editSummary = '', inPlace = False, moveCatPage = True, deleteEmptySourceCat = True):
+    def __init__(self, oldCatTitle, newCatTitle, batchMode = False, editSummary = '', inPlace = False, moveCatPage = True, deleteEmptySourceCat = True, titleRegex = None):
         self.editSummary = editSummary
         self.oldCat = catlib.Category(wikipedia.getSite(), 'Category:' + oldCatTitle)
         self.newCatTitle = newCatTitle
@@ -335,6 +336,7 @@ class CategoryMoveRobot:
         self.moveCatPage = moveCatPage
         self.batchMode = batchMode
         self.deleteEmptySourceCat = deleteEmptySourceCat
+        self.titleRegex = titleRegex
         # set edit summary message
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
@@ -346,7 +348,8 @@ class CategoryMoveRobot:
         gen = pagegenerators.CategorizedPageGenerator(self.oldCat, recurse = False)
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         for article in preloadingGen:
-            catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
+            if not self.titleRegex or re.search.(self.titleRegex,article.title()):
+                catlib.change_category(article, self.oldCat, newCat, inPlace=self.inPlace)
 
         # TODO: create subcategory generator
         subcategories = self.oldCat.subcategoriesList(recurse = False)
@@ -445,12 +448,13 @@ class CategoryRemoveRobot:
         'sv':u'Robot: Tar bort från %s',
     }
 
-    def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False):
+    def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False, titleRegex = None):
         self.editSummary = editSummary
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
         self.useSummaryForDeletion = useSummaryForDeletion
         self.batchMode = batchMode
+        self.titleRegex = titleRegex
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
         else:
@@ -462,7 +466,8 @@ class CategoryRemoveRobot:
             wikipedia.output(u'There are no articles in category %s' % self.cat.title())
         else:
             for article in articles:
-                catlib.change_category(article, self.cat, None)
+                if not self.titleRegex or re.search.(self.titleRegex,article.title()):
+                    catlib.change_category(article, self.cat, None)
         # Also removes the category tag from subcategories' pages
         subcategories = self.cat.subcategoriesList(recurse = 0)
         if len(subcategories) == 0:
@@ -742,6 +747,7 @@ if __name__ == "__main__":
     showImages = False
     talkPages = False
     recurse = False
+    titleRegex = None
 
     #If this is set to true then the custom edit summary given for removing
     #categories from articles will also be used as the deletion reason.
@@ -786,6 +792,8 @@ if __name__ == "__main__":
                 showImages = True
             elif arg.startswith('-summary:'):
                 editSummary = arg[len('-summary:'):]
+            elif arg.startswith('-match:'):
+                titleRegex = arg[len('-match:'):]
             elif arg == '-talkpages':
                 talkPages = True
             elif arg == '-recurse':
@@ -803,7 +811,7 @@ if __name__ == "__main__":
                 oldCatTitle = wikipedia.input(u'Please enter the old name of the category:')
             if (toGiven == False):
                 newCatTitle = wikipedia.input(u'Please enter the new name of the category:')
-            bot = CategoryMoveRobot(oldCatTitle, newCatTitle, batchMode, editSummary, inPlace)
+            bot = CategoryMoveRobot(oldCatTitle, newCatTitle, batchMode, editSummary, inPlace, titleRegex = titleRegex)
             bot.run()
         elif action == 'tidy':
             catTitle = wikipedia.input(u'Which category do you want to tidy up?')
