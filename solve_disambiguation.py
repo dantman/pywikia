@@ -284,6 +284,15 @@ ignore_title = {
             u'Gebruiker:Al/Informatie Roemenië/.*',
             u'Gebruiker:GruffiGummi:Problemen',
             u'Gebruiker:Thor NL/Onderhanden werk/.+',
+            u"Wikipedia:Links naar doorverwijspagina's/20070202 dump",
+            u"Wikipedia:Links naar doorverwijspagina's/20070326 dump",
+            u"Wikipedia:Links naar doorverwijspagina's/20070420 dump",
+            u'Gebruiker:Michiel1972/Project Zwitserse gemeentes/Notaddedpages',
+            u'Gebruiker:Magalhães/Filipijnse geografie',
+            u'Overleg Wikipedia:Discussie spelling 2005',
+            u'Wikipedia:Top 1000 van meest bekeken artikelen',
+            u"Wikipedia:Links naar doorverwijspagina's/Winkeldochters",
+            u"Gebruiker:Jeroenvrp/complete lijst",
          ],
         'pl': [
             u'Wikipedysta:.+',
@@ -706,6 +715,8 @@ class DisambiguationRobot(object):
                 # save the page
                 try:
                     refPage.put(text)
+                except wikipedia.LockedPage:
+                    wikipedia.output(u'Page not saved: page is locked')
                 except wikipedia.PageNotSaved, error:
                     wikipedia.output(u'Page not saved: %s' % error.args)
         return True
