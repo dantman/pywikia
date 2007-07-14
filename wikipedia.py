@@ -175,7 +175,7 @@ class LockedNoPage(NoPage, LockedPage):
 class NoSuchEntity(ValueError):
     """No entity exist for this character"""
 
-class SectionError(ValueError):
+class SectionError(Error):
     """The section specified by # does not exist"""
 
 class PageNotSaved(Error):
