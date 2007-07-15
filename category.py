@@ -358,7 +358,7 @@ class CategoryMoveRobot:
         else:
             for subcategory in subcategories:
                 if not self.titleRegex or re.search(self.titleRegex,subcategory.title()):
-                    catlib.change_category(subcategory, self.oldCat, newCat, inPlace=self.inPlace)
+                    catlib.change_category(subcategory, self.oldCat, newCat, comment = self.editSummary, inPlace=self.inPlace)
         if self.oldCat.exists() and self.moveCatPage:
             # try to copy page contents to new cat page
             if self.oldCat.copyAndKeep(self.newCatTitle, wikipedia.translate(wikipedia.getSite(), cfd_templates)):
