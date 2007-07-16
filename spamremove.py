@@ -14,20 +14,31 @@ all the lines where that url occurs. You can choose to:
 * accept the changes as proposed
 * edit the page yourself to remove the offending link
 * not change the page in question
+
+Command line options:
+* -automatic: Do not ask, but remove the lines automatically. Be very careful
+              in using this option!
+
 """
 
 try:
+   automatic = False
    msg = {'en': 'Removing links to spammed site %s',
           'nl': 'Links naar gespamde site %s verwijderd',
           }
    site = ''
    for arg in wikipedia.handleArgs():
-      site = arg
+      if arg.startswith("-automatic"):
+         automatic = True
+      else:
+         site = arg
+   if not automatic:
+      wikipedia.put_throttle.setDelay(1)
    if not site:
       print "No site specified."
       sys.exit()
    mysite = wikipedia.getSite()
-   pages = list(mysite.linksearch(site))
+   pages = list(set(mysite.linksearch(site)))
    wikipedia.getall(mysite,pages)
    for p in pages:
       if not site in p.get():
@@ -47,9 +58,12 @@ try:
             newpage.append(line)
             if line.strip():
                if lastok is None:
-                  print line
+                  wikipedia.output(line)
                lastok = line
-      answer = "blablabla"
+      if automatic:
+         answer = "Y"
+      else:
+         answer = "blablabla"
       while not answer in "yYnNeE":
          answer = wikipedia.input("Delete the red lines ([Y]es, [N]o, [E]dit)?")[0]
       if answer in "nN":
