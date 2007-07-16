@@ -2578,6 +2578,9 @@ class Family:
     def withoutinterwiki_address(self, code, limit=500):
         return "%s?title=%s:Withoutinterwiki&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
+    def linksearch_address(self, code, url, limit=500):
+        return "%s?title=%s:Linksearch&target=%s&limit=%d" % (self.path(code), self.special_namespace_url(code), url, limit)
+
     def code2encoding(self, code):
         """Return the encoding for a specific language wiki"""
         return 'utf-8'
@@ -2603,3 +2606,7 @@ class Family:
         a page with no edit restrictions, that is, if we can edit any page, we
         should be able to edit this page."""
         return "%s:Sandbox"%self.namespace(code,4)
+
+    def has_query_api(self,code):
+        """Is query.php installed in the wiki?"""
+        return False

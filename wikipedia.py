@@ -3772,6 +3772,26 @@ Maybe the server is down. Retrying in %i minutes..."""
                 else:
                     break
 
+    def linksearch(self,siteurl):
+        # gives a list of page items, being the pages found on a linksearch
+        # for site site.
+        if siteurl.startswith('*.'):
+            siteurl = siteurl[2:]
+        for url in [siteurl,"*."+siteurl]:
+            path = self.family.linksearch_address(self.lang,url)
+            get_throttle()
+            html = self.getUrl(path)
+            loc = html.find('<div class="mw-spcontent">')
+            if loc > -1:
+                html = html[loc:]
+            loc = html.find('<div class="printfooter">')
+            if loc > -1:
+                html = html[:loc]
+            R = re.compile('title ?=\"(.*?)\"')
+            for title in R.findall(html):
+                if not siteurl in title: # the links themselves have similar form
+                    yield Page(self,title)
+
     def __repr__(self):
         return self.family.name+":"+self.lang
 
