@@ -44,7 +44,7 @@ try:
       if not site in p.get():
          continue
       print
-      wikipedia.output(u"=== %s ==="%p)
+      wikipedia.output(u"=== [[%s]] ==="%p.title())
       lines = p.get().split('\n')
       newpage = []
       lastok = ""
