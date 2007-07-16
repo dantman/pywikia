@@ -51,7 +51,7 @@ try:
       for line in lines:
          if site in line:
             if lastok:
-               print lastok
+               wikipedia.output(lastok)
             wikipedia.output(line,colors = [12] * len(line))
             lastok = None
          else:
