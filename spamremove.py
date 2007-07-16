@@ -70,7 +70,7 @@ try:
          continue
       elif answer in "eE":
          editor = editarticle.TextEditor()
-         newtext = editor.edit(page.get(), highlight = site)
+         newtext = editor.edit(p.get(), highlight = site)
       else:
          newtext = "\n".join(newpage)
       if newtext != p.get():
