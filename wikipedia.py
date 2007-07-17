@@ -1423,7 +1423,7 @@ class Page(object):
         thistxt  = removeDisabledParts(thistxt)
 
         result = []
-        Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^\|]+?)(\|(?P<params>.+?))?}}', re.DOTALL)
+        Rtemplate = re.compile(r'{{(msg:)?(?P<name>[^{\|]+?)(\|(?P<params>.+?))?}}', re.DOTALL)
         for m in Rtemplate.finditer(thistxt):
             paramString = m.group('params')
             params = []
