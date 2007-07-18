@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 import family
 
 # The Anarchopedia family
@@ -17,12 +17,14 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Anarchopedia talk'],
         }
-    
+        
+        self.nocapitalize = self.langs.keys()    
+        
         alphabetic = ['ar','id','da', 'de', 'es', 'eo', 'fr', 'hr', 'it',
                       'nl', 'no', 'nn', 'pl', 'pt', 'en', 'ru', 'sr', 'sv']
             
     def version(self, code):
-        return "1.6alpha"
+        return "1.6.8"
 
     def path(self, code):
         return '/index.php'
