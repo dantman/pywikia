@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -3159,6 +3159,10 @@ class Site(object):
             return None
         l = []
         for key, value in query.iteritems():
+            if isinstance(key, unicode):
+                key = key.encode('utf-8')
+            if isinstance(value, unicode):
+                value = value.encode('utf-8')
             key = urllib.quote(key)
             value = urllib.quote(value)
             l.append(key + '=' + value)
@@ -3260,7 +3264,7 @@ class Site(object):
                 try:
                     username = config.sysopnames[self.family.name][self.lang]
                 except KeyError:
-                    raise NoUsername('You tried to perform an action that requires admin privileges, but you haven\'t entered your sysop name in your user-config.py.')
+                    raise NoUsername('You tried to perform an action that requires admin privileges, but you haven\'t entered your sysop name in your user-config.py. Please add sysopnames[\'%s\'][\'%s\']=\'name\' to your user-config.py' % (self.family.name, self.lang))
             else:
                 username = config.usernames[self.family.name][self.lang]
         except KeyError:
