@@ -157,6 +157,8 @@ ignore_title = {
             u'Benutzer Diskussion:.+',
             u'GISLexikon \([A-Z]\)',
             u'Lehnwort',
+            u'Liste griechischer Wortstämme in deutschen Fremdwörtern',
+            u'Liste von Gräzismen',
             u'Wikipedia:Archiv:.+',
             u'Wikipedia:Artikelwünsche/Ding-Liste/[A-Z]',
             u'Wikipedia:Begriffsklärung.*',
