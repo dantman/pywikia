@@ -23,3 +23,4 @@ else:
     wikipedia.output(u"You are not logged in on %s." % repr(mysite))
 
 wikipedia.stopme()
+
