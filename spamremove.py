@@ -43,14 +43,15 @@ def main():
     pages = list(set(mysite.linksearch(spamSite)))
     wikipedia.getall(mysite, pages)
     for p in pages:
-        if not spamSite in p.get():
+        text = p.get()
+        if not spamSite in text:
             continue
         wikipedia.output(u'')
         # Show the title of the page where the link was found.
         # Highlight the title in purple.
         colors = [None] * 6 + [13] * len(p.title()) + [None] * 4
         wikipedia.output(u"\n\n>>> %s <<<" % p.title(), colors = colors)
-        lines = p.get().split('\n')
+        lines = text.split('\n')
         newpage = []
         lastok = ""
         for line in lines:
@@ -66,19 +67,17 @@ def main():
                         wikipedia.output(line)
                     lastok = line
         if automatic:
-            answer = "Y"
+            answer = "y"
         else:
-            answer = "blablabla"
-        while not answer in "yYnNeE":
-            answer = wikipedia.input("Delete the red lines ([Y]es, [N]o, [E]dit)?")[0]
-        if answer in "nN":
+            answer = wikipedia.inputChoice(u'\nDelete the red lines?',  ['yes', 'no', 'edit'], ['y', 'N', 'e'], 'n')
+        if answer == "n":
             continue
-        elif answer in "eE":
+        elif answer == "e":
             editor = editarticle.TextEditor()
-            newtext = editor.edit(p.get(), highlight = spamSite)
+            newtext = editor.edit(text, highlight = spamSite, jumpIndex = text.find(spamSite))
         else:
             newtext = "\n".join(newpage)
-        if newtext != p.get():
+        if newtext != text:
             p.put(newtext, wikipedia.translate(mysite, msg) % spamSite)
 
 try:
