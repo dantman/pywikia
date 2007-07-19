@@ -196,7 +196,7 @@ class Category(wikipedia.Page):
             self_txt = txt
             # index where subcategory listing begins
             # this only works for the current version of the MonoBook skin
-            ibegin = txt.index('"clear:both;"')
+            ibegin = txt.index('Saved in parser cache')
             # index where article listing ends
             try:
                 iend = txt.index('<div class="printfooter">')
