@@ -48,7 +48,7 @@ class TemplateCountRobot:
 			finalText.append(u'%s: %d' % (template, count))
 			total = total + count
 		for line in finalText:
-			wikipedia.output(line)
+			wikipedia.output(line, toStdout=True)
 		wikipedia.output(u'TOTAL: %d' % total, toStdout=True)
 		wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
 
