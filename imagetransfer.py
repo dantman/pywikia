@@ -169,26 +169,24 @@ class ImageTransferBot:
             try:
                 # Show the image description page's contents
                 wikipedia.output(image.get(throttle=False))
+                # look if page already exists with this name.
+                # TODO: consider removing this: a different image of the same
+                # name may exist on the target wiki, and the bot user may want
+                # to upload anyway, using another name.
                 try:
                     # Maybe the image is on the target site already
                     targetTitle = '%s:%s' % (self.targetSite.image_namespace(), image.title().split(':', 1)[1])
                     targetImage = wikipedia.Page(self.targetSite, targetTitle)
-                    if targetImage.get(throttle=False):
-                        wikipedia.output(u"Image is already on %s." % self.targetSite)
-                        print "-"*60
-                        wikipedia.output(targetImage.get(throttle=False))
-                        # add the nowCommonsThis template.
-                        #wikipedia.output(u'Adding nowCommonsThis template to %s' % image.title())
-                        #image.put(image.get() + '\n\n' + nowCommonsThis['en'] % image.title(), comment = nowCommonsThisMessage['en'])
-                        sys.exit()
-                    else:
-                        print "Description empty."
+                    targetImage.get(throttle=False)
+                    wikipedia.output(u"Image with this name is already on %s." % self.targetSite)
+                    print "-"*60
+                    wikipedia.output(targetImage.get(throttle=False))
+                    sys.exit()
                 except wikipedia.NoPage:
-                    print "Description empty."
+                    # That's the normal case
+                    pass
                 except wikipedia.IsRedirectPage:
-                    print "Description page on Wikimedia Commons is redirect?!"
-                except wikipedia.IsRedirectPage:
-                    print "Description page is redirect?!"
+                    wikipedia.output(u"Description page on target wiki is redirect?!")
 
             except wikipedia.NoPage:
                 break
