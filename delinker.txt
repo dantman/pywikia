@@ -45,7 +45,7 @@ Both bots allow the use of on-wiki summary templates. Refer to
 [[m:User:CommonsDelinker]] for information on the syntax.
 
 == Requirements ==
-* A recent CVS checkout of the pywikipedia framework
+* A recent SVN checkout of the pywikipedia framework
 * Python 2.4 or higher
 * A MySQL database and the MySQLdb api for Python, version 1.2.1_p or higher
 ** In the future, probably also sqlite3 will be supported.
