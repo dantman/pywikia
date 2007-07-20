@@ -117,9 +117,10 @@ class Delinker(threadpool.Thread):
 					# Delink the image
 					output(u'%s Delinking %s from %s' % (self, image, domain))
 					
-					result = self.replace_image(image, site, title, summary, replacement)
-					
-					self.CommonsDelinker.unset_edit(domain, title)
+					try:
+						result = self.replace_image(image, site, title, summary, replacement)
+					finally:
+						self.CommonsDelinker.unset_edit(domain, title)
 					# Add to logging queue
 					self.CommonsDelinker.Loggers.append((timestamp, image, domain, 
 						page_namespace, page_title, result, replacement))
