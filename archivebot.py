@@ -1,10 +1,31 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-General purpose archiving bot.
+archivebot.py - discussion page archiving bot.
 
-To get usage help, type:
-    python archivebot.py --help
+usage:
+
+    python archivebot.py [OPTIONS] TEMPLATE_PAGE
+
+Bot examines backlinks (Special:Whatlinkshere) to TEMPLATE_PAGE.
+Then goes through all pages (unless a specific page specified using options)
+and archives old discussions. This is done by breaking a page into threads,
+then scanning each thread for timestamps. Threads older than a specified
+treshold are then moved to another page (the archive), which can be named
+either basing on the thread's name or then name can contain a counter which
+will be incremented when the archive reaches a certain size.
+
+Options:
+  -h, --help            show this help message and exit
+  -f FILE, --file=FILE  load list of pages from FILE
+  -p PAGE, --page=PAGE  archive a single PAGE
+  -n NAMESPACE, --namespace=NAMESPACE
+                        only archive pages from a given namespace
+  -s SALT, --salt=SALT  specify salt
+  -F, --force           override security options
+  -c PAGE, --calc=PAGE  calculate key for PAGE and exit
+  -l LOCALE, --locale=LOCALE
+                        switch to locale LOCALE
 """
 #
 # (C) Misza13, 2006-2007
@@ -18,7 +39,7 @@ Site = wikipedia.getSite()
 
 import re, time, locale, traceback, string
 
-try:
+try: #Get a constructor for the MD5 hash object
     import hashlib
     new_hash = hashlib.md5
 except ImportError: #Old python?
@@ -26,20 +47,22 @@ except ImportError: #Old python?
     new_hash = md5.md5
 
 
-class MalformedConfigError(Exception):
-    pass
+class MalformedConfigError(wikipedia.Error):
+    """There is an error in the configuration template."""
 
 
-class MissingConfigError(Exception):
-    pass
+class MissingConfigError(wikipedia.Error):
+    """The config is missing in the header (either it's in one of the threads
+    or transcluded from another page)."""
 
 
-class AlgorithmError(Exception):
-    pass
+class AlgorithmError(MalformedConfigError):
+    """Invalid specification of archiving algorithm."""
 
 
-class ArchiveSecurityError(Exception):
-    pass
+class ArchiveSecurityError(wikipedia.Error):
+    """Archive is not a subpage of page being archived and key not specified
+    (or incorrect)."""
 
 
 def str2time(str):
@@ -75,14 +98,18 @@ def str2size(str):
 
 
 def int2month(num):
+    """Returns the locale's full name of month 'num' (1-12)."""
     return locale.nl_langinfo(locale.MON_1+num-1).decode('utf-8')
 
 
 def int2month_short(num):
+    """Returns the locale's abbreviated name of month 'num' (1-12)."""
     return locale.nl_langinfo(locale.ABMON_1+num-1).decode('utf-8')
 
 
 def txt2timestamp(txt, format):
+    """Attempts to convert the timestamp 'txt' according to given 'format'.
+    On success, returns the time tuple; on failure, returns None."""
     try:
         return time.strptime(txt,format)
     except ValueError:
