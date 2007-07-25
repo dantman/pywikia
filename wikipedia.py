@@ -1038,10 +1038,10 @@ class Page(object):
 
            If watchArticle is None, leaves the watchlist status unchanged.
         """
-        # Fetch the page to get an edit token. If we already have
+        # Fetch a page to get an edit token. If we already have
         # fetched a page, this will do nothing, because get() is cached.
         try:
-            self.get(force = True, get_redirect = True)
+            self.site().sandboxpage.get(force = True, get_redirect = True)
         except NoPage:
             pass
 
