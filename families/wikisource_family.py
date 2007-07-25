@@ -123,10 +123,12 @@ class Family(family.Family):
         }
 
         self.namespaces[104] = {
+            '_default': u'Page',
             'en': u'Page',
         }
 
         self.namespaces[105] = {
+            '_default': u'Page talk',
             'en': u'Page talk',
         }
         
@@ -137,5 +139,3 @@ class Family(family.Family):
                       'no','pl','pt','ro','ru','sk','sl','sr',
                       'sv','te','th','tr','uk','vi','yi','zh']
 
-    def version(self, code):
-        return "1.11"
