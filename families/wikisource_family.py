@@ -139,3 +139,6 @@ class Family(family.Family):
                       'no','pl','pt','ro','ru','sk','sl','sr',
                       'sv','te','th','tr','uk','vi','yi','zh']
 
+    def version(self, code): 	 
+        return "1.11"
+    
