@@ -2162,30 +2162,6 @@ class ImagePage(Page):
             result.append(Page(self.site(), match.group('title')))
         return result
 
-class XmlPage(Page):
-    # In my opinion, this should be deleted. --Daniel Herding
-    '''A subclass of Page that wraps an XMLEntry object (from xmlreader.py).
-
-    Sample usage:
-    >>> source = xmlreader.XmlDump(some_file_name)
-    >>> for entry in source.parse():
-    ...     page = XmlPage(getSite(), entry)
-    ...     # do something with page...
-    '''
-
-    def __init__(self, site, xmlentry):
-        if not isinstance(xmlentry, xmlreader.XmlEntry):
-            raise TypeError("Invalid argument to XmlPage constructor.")
-        Page.__init__(self, site, xmlentry.title)
-        self.editRestriction = xmlentry.editRestriction
-        self.moveRestriction = xmlentry.moveRestriction
-        self._contents = xmlentry.text
-        self._xml = xmlentry    # save XML source in case we need it later
-        m = self.site().redirectRegex().match(self._contents)
-        if m:
-            self._redirarg = m.group(1)
-            self._getexception = IsRedirectPage
-
 class GetAll(object):
     def __init__(self, site, pages, throttle, force):
         """First argument is Site object.

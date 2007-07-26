@@ -2578,9 +2578,6 @@ class Family:
     def withoutinterwiki_address(self, code, limit=500):
         return "%s?title=%s:Withoutinterwiki&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
 
-    def linksearch_address(self, code, url, limit=500):
-        return "%s?title=%s:Linksearch&target=%s&limit=%d" % (self.path(code), self.special_namespace_url(code), url, limit)
-
     def code2encoding(self, code):
         """Return the encoding for a specific language wiki"""
         return 'utf-8'
