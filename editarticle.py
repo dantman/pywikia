@@ -41,18 +41,18 @@ class TextEditor:
             column = jumpIndex - (text[:jumpIndex].rfind('\n') + 1)
         else:
             line = column = 0
-        # Linux editors
-        if config.editor == 'kate':
+        # Linux editors. We use startswith() because some users might use parameters.
+        if config.editor.startswith('kate'):
             command += " -l %i -c %i" % (line, column)
-        elif config.editor == 'gedit':
+        elif config.editor.startswith('gedit'):
             command += " +%i" % (line + 1) # seems not to support columns
-        elif config.editor == 'emacs':
+        elif config.editor.startswith('emacs'):
             command += " +%i" % (line + 1) # seems not to support columns
-        elif config.editor == 'jedit':
+        elif config.editor.startswith('jedit'):
             command += " +line:%i" % (line + 1) # seems not to support columns
-        elif config.editor == 'vim':
+        elif config.editor.startswith('vim'):
             command += " +%i" % (line + 1) # seems not to support columns
-        elif config.editor == 'nano':
+        elif config.editor.startswith('nano'):
             command += " +%i,%i" % (line + 1, column + 1)
         # Windows editors
         elif config.editor.lower().endswith('notepad++.exe'):
