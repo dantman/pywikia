@@ -9,5 +9,6 @@ class UI:
         if toStdout:
             sys.stdout.write(text.encode('UTF-8', 'replace'))
     
-    def input(self, question, colors = None):
+    def input(self, question, colors = None, password = False):
+        # CGI is output-only.
         self.output(question + ' ', newline = False, toStdout = True)

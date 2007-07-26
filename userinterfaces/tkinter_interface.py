@@ -196,11 +196,11 @@ class UI:
             # auto-scroll down
             self.logBox.see(END)
 
-    def input(self, question, colors=None):
+    def input(self, question, colors=None, password = False):
         """
         Returns a unicode string.
         """
-
+        # TODO: hide input if password = True
         answer = tkSimpleDialog.askstring('title', question)
         return answer
 
@@ -215,4 +215,4 @@ class UI:
         d = CustomMessageBox(self.parent, question, options, hotkeys)
         self.parent.wait_window(d.top)
         answer = d.ask()
-        return answer.lower()
+        return answer

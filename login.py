@@ -8,26 +8,30 @@ sure this robot account is well known on your home wikipedia before using.
 
 Parameters:
 
-   -pass:XXXX   Uses XXXX as password. Be careful if you use this
-                parameter because your password will be shown on your
-                screen.
-   
-   -sysop       Log in with your sysop account.
-   
    -all         Try to log in on all sites where a username is defined in
                 user-config.py.
-                
-   -force       When doing -all, ignores if the user is already loged in,
-                and tries to login for all listed sites.
-                This may be useful if you have changed the account name
-                and need to aquire new login cookies.
+
+   -pass        Useful in combination with -all when you have accounts for
+                several sites and use the same password for all of them.
+                Asks you for the password, then logs in on all given sites.
+
+   -pass:XXXX   Uses XXXX as password. Be careful if you use this
+                parameter because your password will be shown on your
+                screen, and will probably be saved in your command line
+                history. This is NOT RECOMMENDED for use on computers
+                where others have either physical or remote access.
+                Use -pass instead.
+
+   -sysop       Log in with your sysop account.
+
+   -force       Ignores if the user is already logged in, and tries to log in.
 
 If not given as parameter, the script will ask for your username and password
 (password entry will be hidden), log in to your home wiki using this
 combination, and store the resulting cookies (containing your password hash,
 so keep it secured!) in a file in the login-data subdirectory.
 
-All bots in this library will be looking for this cookie file and will use the
+All scripts in this library will be looking for this cookie file and will use the
 login information if it is present.
 
 To log out, throw away the XX-login.data file that is created in the login-data
@@ -40,7 +44,7 @@ subdirectory.
 #
 __version__='$Id$'
 
-import re, sys, getpass
+import re, sys
 import httplib, urllib2
 import wikipedia, config
 
@@ -206,13 +210,9 @@ class LoginManager:
 
     def login(self, retry = False):
         if not self.password:
-            # As we don't want the password to appear on the screen, we use getpass().
-            s = u'Password for user %s on %s: ' % (self.username, self.site)
-            self.password = getpass.getpass(s.encode(config.console_encoding))
-            # Convert the password from the encoding your shell uses to the one your wiki
-            # uses, via Unicode. This is the same as wikipedia.input() does with the 
-            # username, but input() uses raw_input() instead of getpass().
-            self.password = unicode(self.password, config.console_encoding)
+            # As we don't want the password to appear on the screen, we set
+            # password = True
+            self.password = wikipedia.input(u'Password for user %s on %s:' % (self.username, self.site), password = True)
 
         self.password = self.password.encode(self.site.encoding())
 
@@ -239,8 +239,11 @@ def main():
     logall = False
     forceLogin = False
     for arg in wikipedia.handleArgs():
-        if arg.startswith("-pass:"):
-            password = arg[6:]
+        if arg.startswith("-pass"):
+            if len(arg) == 5:
+                password = wikipedia.input(u'Password for all accounts:', password = True)
+            else:
+                password = arg[6:]
         elif arg == "-sysop":
             sysop = True
         elif arg == "-all":

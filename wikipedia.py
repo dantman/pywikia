@@ -4467,7 +4467,7 @@ def output(text, decoder = None, colors = [], newline = True, toStdout = False):
 
     If toStdout is True, the text will be sent to standard output,
     so that it can be piped to another process. All other text will
-    be sent to stderr.
+    be sent to stderr. See: http://en.wikipedia.org/wiki/Pipeline_%28Unix%29
     """
     output_lock.acquire()
     try:
@@ -4490,11 +4490,39 @@ def output(text, decoder = None, colors = [], newline = True, toStdout = False):
     finally:
         output_lock.release()
 
-def input(question, colors = None):
-    return ui.input(question, colors)
+def input(question, colors = None, password = False):
+    """
+    Asks the user a question, then returns the user's answer.
+
+    Parameters:
+    * question - a unicode string that will be shown to the user. Don't add a
+                 space after the question mark/colon, this method will do this
+                 for you.
+    * colors   - same as in output().
+    * password - if True, hides the user's input (for password entry).
+
+    Returns a unicode string.
+    """
+    return ui.input(question, colors, password)
 
 def inputChoice(question, answers, hotkeys, default = None):
-    return ui.inputChoice(question, answers, hotkeys, default)
+    """
+    Asks the user a question and offers several options, then returns the
+    user's choice. The user's input will be case-insensitive, so the hotkeys
+    should be distinctive case-insensitively.
+
+    Parameters:
+    * question - a unicode string that will be shown to the user. Don't add a
+                 space after the question mark, this method will do this
+                 for you.
+    * answers  - a list of strings that represent the options.
+    * hotkeys  - a list of one-letter strings, one for each answer.
+    * default  - an element of hotkeys, or None. The default choice that will
+                 be returned when the user just presses Enter.
+
+    Returns a one-letter string in lowercase.
+    """
+    return ui.inputChoice(question, answers, hotkeys, default).lower()
 
 def showHelp(moduleName = None):
     # the parameter moduleName is deprecated and should be left out.

@@ -23,16 +23,14 @@ class UI:
             # comma at the end means "don't print newline"
             print text.encode(config.console_encoding, 'replace'),
 
-    def input(self, question, colors = None):
+    def input(self, question, colors = None, password = False):
         """
         Works like raw_input(), but returns a unicode string instead of ASCII.
 
         Unlike raw_input, this function automatically adds a space after the
         question.
         """
-
-        # sound the terminal bell to notify the user
-        #sys.stdout.write('\07')
+        # TODO: hide input if password = True
         answer = dialog = wxTextEntryDialog ( None, 'question', 'Title Here', '' )
 
 #tkSimpleDialog.askstring('title', question)
@@ -54,6 +52,6 @@ class UI:
             prompt = '%s (%s)' % (question, ', '.join(options))
             answer = self.input(prompt)
             if answer.lower() in hotkeys or answer.upper() in hotkeys:
-                return answer.lower()
+                return answer
 ui = UI()
 print ui.input('Test?')

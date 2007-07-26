@@ -169,7 +169,7 @@ class UI:
             targetStream = sys.stderr
         self.printColorized(text, colors, targetStream)
 
-    def input(self, question, colors = None):
+    def input(self, question, colors = None, password = False):
         """
         Works like raw_input(), but returns a unicode string instead of ASCII.
 
@@ -184,7 +184,11 @@ class UI:
             self.output(question + ' ', colors = colors + [None], newline=False)
         else:
             self.output(question + ' ', newline = False)
-        text = raw_input()
+        if password:
+            import getpass
+            text = getpass.getpass('')
+        else:
+            text = raw_input()
         text = unicode(text, config.console_encoding)
         return text
 
@@ -204,7 +208,7 @@ class UI:
             prompt = '%s (%s)' % (question, ', '.join(options))
             answer = self.input(prompt)
             if answer.lower() in hotkeys or answer.upper() in hotkeys:
-                return answer.lower()
+                return answer
             elif default and answer=='':		# empty string entered
                 return default
 
