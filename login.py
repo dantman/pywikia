@@ -53,7 +53,9 @@ import wikipedia, config
 botList = {
     'wikipedia': {
         'en': u'Wikipedia:Registered bots',
-        'simple': u'Wikipedia:Bots',
+        # Disabled because they are now using a template system which
+        # we can't check with our current code.
+        #'simple': u'Wikipedia:Bots',
     },
     'gentoo': {
         'en': u'Help:Bots',
@@ -219,7 +221,7 @@ class LoginManager:
         wikipedia.output(u"Logging in to %s as %s" % (self.site, self.username))
         # Ensure bot policy on the English Wikipedia
         if not self.botAllowed():
-            wikipedia.output(u'*** Your username is not listed on [[Wikipedia:Bots]].\n*** Please make sure you are allowed to use the robot before actually using it!')
+            wikipedia.output(u'*** Your username is not listed on [[%s]].\n*** Please make sure you are allowed to use the robot before actually using it!' % botList[self.site.family.name][self.site.lang])
         cookiedata = self.getCookie()
         if cookiedata:
             self.storecookiedata(cookiedata)
