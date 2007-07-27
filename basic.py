@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 This is not a complete bot; rather, it is a template from which simple
@@ -18,6 +18,7 @@ There is one standard command line option:
 
 -debug: Don't do any changes.
 """
+__version__ = '$Id$'
 import wikipedia
 import pagegenerators
 import sys

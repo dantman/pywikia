@@ -1,4 +1,4 @@
-"""
+﻿"""
 This script will display the list of pages transcluding a given list of templates.
 It can also be used to simply count the number of pages (rather than listing each
 individually).
@@ -25,6 +25,7 @@ Lists all the category pages that transclude {{cfd}} and {{cfdu}}.
      python templatecount.py -list -namespace:14 cfd cfdu
 
 """
+__version__ = '$Id$'
 
 import wikipedia, config
 import replace, pagegenerators

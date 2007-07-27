@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 This bot is used to quickly trawl through candidates for speedy deletion in a fast
 and semi-automated fashion.  The bot displays the contents of each page one at a
@@ -29,6 +29,7 @@ Examples:
     none needed yet
 
 """
+__version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #

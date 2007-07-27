@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #!/usr/bin/python
 
 import wikipedia, editarticle
@@ -20,6 +20,7 @@ Command line options:
               in using this option!
 
 """
+__version__ = '$Id$'
 
 def main():
     automatic = False

@@ -1,4 +1,4 @@
-#/usr/bin/env python
+﻿#/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # (C) Misza13 <misza1313@gmail.com>, 2007
@@ -6,6 +6,7 @@
 # Distributed under the terms of the MIT license.
 #
 import sys, re, socket
+__version__ = '$Id$'
 
 TARGET_HOST = 'tools.wikimedia.de'
 TARGET_PORT = 42448

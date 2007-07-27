@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This module can do slight modifications to a wiki page source code such that
 the code looks cleaner. The changes are not supposed to change the look of the
@@ -6,7 +6,7 @@ rendered wiki page.
 
 WARNING: This module needs more testing!
 """
-
+__version__ = '$Id$'
 import wikipedia, pagegenerators
 import sys
 import re

@@ -1,7 +1,8 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 
 """Unit tests for Wiktionary.py"""
+__version__ = '$Id$'
 
 import wiktionary
 import unittest

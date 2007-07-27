@@ -1,3 +1,6 @@
+﻿""" Please describe your module here ;) """
+
+__version__ = '$Id$'
 import wikipedia
 import simplejson
 import urllib

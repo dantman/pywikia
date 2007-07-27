@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 This script can be used to change one image to another or remove an image entirely.
 
@@ -30,6 +30,7 @@ The image "Flag.svg" has been uploaded, making the old "Flag.jpg" obselete:
     python image.py Flag.jpg Flag.svg
 
 """
+__version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #

@@ -1,5 +1,6 @@
-# -*- coding: utf-8  -*-
-
+﻿# -*- coding: utf-8  -*-
+""" File containing all standard fixes """
+__version__ = '$Id$'
 fixes = {
     # These replacements will convert HTML to wiki syntax where possible, and
     # make remaining tags XHTML compliant.

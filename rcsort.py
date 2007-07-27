@@ -1,10 +1,11 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 # A tool to see the recentchanges ordered by user instead of by date. This
 # is meant to be run as a CGI script.
 # Currently only works on Dutch Wikipedia, I do intend to make it more generally
 # usable.
 # Permission has been asked to run this on the toolserver.
+__version__ = '$Id$'
 
 import cgi
 import cgitb

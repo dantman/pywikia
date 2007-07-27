@@ -1,4 +1,4 @@
-#coding: utf-8
+﻿#coding: utf-8
 """
 Check pages on the English Wikipedia whether they are in the form
 Something, State, and if so, create a redirect from Something, ST.
@@ -14,6 +14,7 @@ Specific arguments:
 -force: Don't ask whether to create pages, just create them.
 
 """
+__version__ = '$Id$'
 #
 # (C) Andre Engels, 2004
 #

@@ -1,3 +1,4 @@
+﻿__version__ = '$Id$'
 import os, sys
 
 def absoluteFilename(*f):

@@ -1,3 +1,5 @@
+﻿""" Module with the graphviz drawing calls """
+__version__ = '$Id$'
 import threading
 pydotfound = True
 try:

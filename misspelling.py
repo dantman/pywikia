@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This script works similar to solve_disambiguation.py. It is supposed to fix
 links that contain common spelling mistakes. This is only possible on wikis
@@ -20,6 +20,7 @@ Command line options:
    -main       only check pages in the main namespace, not in the talk,
                wikipedia, user, etc. namespaces.
 """
+__version__ = '$Id$'
 
 # (C) Daniel Herding, 2007
 #

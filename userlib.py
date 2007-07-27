@@ -1,10 +1,13 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to work with users, their pages and talk pages.
 """
+__version__ = '$Id$'
 
 import re, httplib
 import wikipedia
+
+
 
 class AutoblockUserError(wikipedia.Error):
     """

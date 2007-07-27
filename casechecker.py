@@ -1,8 +1,9 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """ Script to enumerate all pages on the wiki and find all titles
 with mixed latin and cyrilic alphabets.
 """
+__version__ = '$Id$'
 
 #
 # Permutations code was taken from http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/190465

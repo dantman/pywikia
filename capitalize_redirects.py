@@ -1,9 +1,10 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 #
 # (C) Yrithinnd
 # Class licensed under terms of the MIT license
 #
+__version__ = '$Id$'
 
 import time, sys
 import wikipedia, pagegenerators, catlib

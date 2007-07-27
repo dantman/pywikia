@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 This script can be used to delete and undelete pages en masse.
 Of course, you will need an admin account on the relevant wiki.
@@ -24,6 +24,7 @@ Delete everything in the category "To delete" without prompting.
 
     python delete.py -cat:"To delete" -always
 """
+__version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #

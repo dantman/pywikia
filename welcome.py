@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to welcome new users. This script works out of the box for Wikis that
@@ -11,12 +11,12 @@ from here: http://botwiki.sno.cc/wiki/Python:Welcome.py
 Ensure you have community support before running this bot!
 
 URLs to current implementations:
-* Arabic Wikipedia: http://ar.wikipedia.org/wiki/ويكيبيديا:سجل الترحيب
+* Arabic Wikipedia: http://ar.wikipedia.org/wiki/?????????:??? ???????
 * Wikimedia Commons: http://commons.wikimedia.org/wiki/Commons:Welcome_log
 * Dutch Wikipedia: http://nl.wikipedia.org/wiki/Wikipedia:Logboek_welkom
 * Italian Wikipedia: http://it.wikipedia.org/wiki/Wikipedia:Benvenuto_log
 * English Wikiquote: http://en.wikiquote.org/wiki/Wikiquote:Welcome_log
-* Persian Wikipedia: http://fa.wikipedia.org/wiki/ویکی‌پدیا:سیاهه خوشامد
+* Persian Wikipedia: http://fa.wikipedia.org/wiki/?????????:????? ??????
 
 Everything that needs customisation to support additional projects is
 indicated by comments.
@@ -149,7 +149,7 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: welcome.py,v 1.4 2007/04/14 18:05:42 siebrand Exp'
+__version__ = '$Id$'
 #
 
 import wikipedia, string
@@ -188,10 +188,10 @@ random = False       # should signature be random or not
 #The page where the bot will save the log (e.g. Wikipedia:Welcome log).
 logbook = {
     'commons': u'Project:Welcome log',
-    'ar': u'Project:سجل الترحيب',
+    'ar': u'Project:??? ???????',
     'de': None, # no welcome log on de:
     'en': u'Project:Welcome log',
-    'fa': u'Project:سیاهه خوشامد',
+    'fa': u'Project:????? ??????',
     'it': u'Project:Benvenuto log',
     'nl': u'Project:Logboek welkom',
     'no': u'Project:Velkomstlogg',
@@ -200,10 +200,10 @@ logbook = {
 #The edit summary for the welcome message (e.g. Welcome!).
 summary = {
     'commons':u'Welcome!',
-    'ar':u'مرحبا!',
+    'ar':u'?????!',
     'de':u'Herzlich willkommen!',
     'en':u'Welcome!',
-    'fa':u'خوش آمدید!',
+    'fa':u'??? ?????!',
     'it':u'Benvenuto!',
     'nl':u'Welkom!',
     'no':u'Velkommen!',
@@ -214,10 +214,10 @@ summary = {
 # sign, so in this way it will change according to your parameters).
 netext = {
     'commons':u'{{subst:welcome}}%s',
-    'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}}%s',
+    'ar':u'{{???:??????:Alnokta/?????}}%s',
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}}%s',
-    'fa':u'{{جا:خوشامد}}%s',
+    'fa':u'{{??:??????}}%s',
     'it':u'{{Benvebot}} %s',
     'nl':u'{{Welkomstbericht}}%s',
     'no':u'{{subst:bruker:jhs/vk}}%s',
@@ -226,10 +226,10 @@ netext = {
 # The edit summary for updating the welcome log (e.g. Updating log).
 summary2 = {
     'commons':u'Updating log',
-    'ar':u'تحديث السجل',
+    'ar':u'????? ?????',
     'de':u'Aktualisiere Logdatei',
     'en':u'Updating log',
-    'fa':u'به روز رسانی سیاهه',
+    'fa':u'?? ??? ????? ?????',
     'it':u'Aggiorno il log',
     'nl':u'Logboek bijwerken',
     'no':u'Oppdaterer logg',
@@ -238,10 +238,10 @@ summary2 = {
 # The page where the bot will report users with a possibly bad username.
 report_page = {
     'commons': u'Project:Administrators\' noticeboard/User problems/Usernames to be checked',
-    'ar': 'Project:إخطار الإداريين/أسماء مستخدمين للفحص',
+    'ar': 'Project:????? ?????????/????? ???????? ?????',
     'de': u'Benutzer:Filnik/Report',
     'en': u'Project:Administrator intervention against vandalism',
-    'fa': u'Project:تابلوی اعلانات مدیران/گزارش ربات',
+    'fa': u'Project:?????? ??????? ??????/????? ????',
     'it': u'Utente:Filbot/Report',
     'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
     'no': u'Bruker:JhsBot II/Rapport',
@@ -250,10 +250,10 @@ report_page = {
 # The edit summary for reporting a possibly bad username.
 comment = {
     'commons':u'Adding a username that needs to be checked',
-    'ar':u'إضافة اسم مستخدم يحتاج للفحص',
+    'ar':u'????? ??? ?????? ????? ?????',
     'de':u'Ergänze zu überprüfenden Benutzernamen',
     'en':u'Adding a username that needs to be checked',
-    'fa':u'افزودن حساب کاربری نیازمند بررسی',
+    'fa':u'?????? ???? ?????? ??????? ?????',
     'it':u'Aggiunto utente da controllare',
     'nl':u'Te controleren gebruikersnaam toegevoegd',
     'no':u'Legger til et brukernavn som m? sjekkes',
@@ -263,9 +263,9 @@ comment = {
 # (this parameter is optional).
 bad_pag = {
     'commons': u'Project:Welcome log/Bad_names',
-    'ar': u'Project:سجل الترحيب/أسماء سيئة',
+    'ar': u'Project:??? ???????/????? ????',
     'en': u'Project:Welcome log/Bad_names',
-    'fa': u'Project:سیاهه خوشامد/نام بد',
+    'fa': u'Project:????? ??????/??? ??',
     'it': u'Utente:Filbot/Bad_words',
     'nl': u'Project:Logboek_welkom/Bad_names',
     'no': u'Bruker:JhsBot/Daarlige ord',
@@ -278,7 +278,7 @@ report_text = {
     'ar':u"\n*{{user13|%s}}" + timeselected,
     'de':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
     'en':u'\n*{{Userlinks|%s}} ' + timeselected,
-    'fa':u'\n*{{کاربر|%s}}' + timeselected,
+    'fa':u'\n*{{?????|%s}}' + timeselected,
     'it':u"\n{{Reported|%s|",
     'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
     'no':u'\n*{{bruker|%s}} ' + timeselected,
@@ -287,15 +287,15 @@ report_text = {
 # Set where you load your list of signatures that the bot will load if you use
 # the random argument (this parameter is optional).
 random_sign = {
-    'ar': u'ويكيبيديا:سجل الترحيب/توقيعات',
-    'fa': u'Project:سیاهه خوشامد/امضاها',
+    'ar': u'?????????:??? ???????/???????',
+    'fa': u'Project:????? ??????/??????',
     'en': u'User:Filnik/Sign',
     'it': u'Project:Benvenuto log/User',
     }
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
 whitelist_pg = {
-    'ar':u'ويكيبيديا:سجل الترحيب/قائمةبيضاء',
+    'ar':u'?????????:??? ???????/??????????',
     'en':u'User:Filnik/whitelist',
     'it':u'Utente:Filbot/whitelist',
     }

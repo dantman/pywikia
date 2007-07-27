@@ -1,4 +1,4 @@
-"""
+﻿"""
 This script checks references to see if they are properly formatted.  Right now
 it just counts the total number of transclusions of any number of given templates.
 
@@ -18,6 +18,7 @@ Counts how many time {{ref}} and {{note}} are transcluded in articles.
      python refcheck.py -count ref note -namespace:0
 
 """
+__version__ = '$Id$'
 
 import wikipedia, config
 import replace, pagegenerators

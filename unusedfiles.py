@@ -1,10 +1,12 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 This bot appends some text to all unused images and other text to the respective uploaders.
 
 You are asked for confirmation before every change.
 """
+__version__ = '$Id$'
+
 import wikipedia
 import pagegenerators
 import sys
