@@ -637,8 +637,6 @@ def main():
             if countLinkCheckThreads() > 0:
                 wikipedia.output(u'Remaining %i threads will be killed.' % countLinkCheckThreads())
                 # Threads will die automatically because they are daemonic.
-            wikipedia.output(u'Saving history...')
-            bot.history.save()
             if bot.history.reportThread:
                 bot.history.reportThread.shutdown()
                 # wait until the report thread is shut down; the user can interrupt
@@ -649,6 +647,8 @@ def main():
                 except KeyboardInterrupt:
                     wikipedia.output(u'Report thread interrupted.')
                     bot.history.reportThread.kill()
+            wikipedia.output(u'Saving history...')
+            bot.history.save()
     else:
         wikipedia.showHelp()
     
