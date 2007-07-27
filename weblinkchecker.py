@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This bot is used for checking external links found at the wiki. It checks
 several pages at once, with a limit set by the config variable
@@ -474,7 +474,7 @@ class History:
         Saves the .dat file to disk.
         """
         datfile = open(self.datfilename, 'w')
-        self.historyDict = pickle.dump(self.historyDict, datfile)
+        pickle.dump(self.historyDict, datfile)
         datfile.close()
 
 class DeadLinkReportThread(threading.Thread):
