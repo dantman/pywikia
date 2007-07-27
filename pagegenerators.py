@@ -564,7 +564,7 @@ class GeneratorFactory:
                 firstPageTitle = arg[7:]
             namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
             firstPageTitle = wikipedia.Page(wikipedia.getSite(), firstPageTitle).titleWithoutNamespace()
-            gen = AllpagesPageGenerator(firstPageTitle, namespace)
+            gen = AllpagesPageGenerator(firstPageTitle, namespace, includeredirects = False)
         elif arg.startswith('-new'):
             if len(arg) >=5:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
