@@ -16,6 +16,7 @@ URLs to current implementations:
 * Dutch Wikipedia: http://nl.wikipedia.org/wiki/Wikipedia:Logboek_welkom
 * Italian Wikipedia: http://it.wikipedia.org/wiki/Wikipedia:Benvenuto_log
 * English Wikiquote: http://en.wikiquote.org/wiki/Wikiquote:Welcome_log
+* Persian Wikipedia: http://fa.wikipedia.org/wiki/ویکی‌پدیا:سیاهه خوشامد
 
 Everything that needs customisation to support additional projects is
 indicated by comments.
@@ -190,6 +191,7 @@ logbook = {
     'ar': u'Project:سجل الترحيب',
     'de': None, # no welcome log on de:
     'en': u'Project:Welcome log',
+    'fa': u'Project:سیاهه خوشامد',
     'it': u'Project:Benvenuto log',
     'nl': u'Project:Logboek welkom',
     'no': u'Project:Velkomstlogg',
@@ -201,6 +203,7 @@ summary = {
     'ar':u'مرحبا!',
     'de':u'Herzlich willkommen!',
     'en':u'Welcome!',
+    'fa':u'خوش آمدید!',
     'it':u'Benvenuto!',
     'nl':u'Welkom!',
     'no':u'Velkommen!',
@@ -214,6 +217,7 @@ netext = {
     'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}}%s',
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}}%s',
+    'fa':u'{{جا:خوشامد}}%s',
     'it':u'{{Benvebot}} %s',
     'nl':u'{{Welkomstbericht}}%s',
     'no':u'{{subst:bruker:jhs/vk}}%s',
@@ -225,6 +229,7 @@ summary2 = {
     'ar':u'تحديث السجل',
     'de':u'Aktualisiere Logdatei',
     'en':u'Updating log',
+    'fa':u'به روز رسانی سیاهه',
     'it':u'Aggiorno il log',
     'nl':u'Logboek bijwerken',
     'no':u'Oppdaterer logg',
@@ -236,6 +241,7 @@ report_page = {
     'ar': 'Project:إخطار الإداريين/أسماء مستخدمين للفحص',
     'de': u'Benutzer:Filnik/Report',
     'en': u'Project:Administrator intervention against vandalism',
+    'fa': u'Project:تابلوی اعلانات مدیران/گزارش ربات',
     'it': u'Utente:Filbot/Report',
     'nl': u'Project:Verzoekpagina voor moderatoren/RegBlok/Te controleren gebruikersnamen',
     'no': u'Bruker:JhsBot II/Rapport',
@@ -247,6 +253,7 @@ comment = {
     'ar':u'إضافة اسم مستخدم يحتاج للفحص',
     'de':u'Ergänze zu überprüfenden Benutzernamen',
     'en':u'Adding a username that needs to be checked',
+    'fa':u'افزودن حساب کاربری نیازمند بررسی',
     'it':u'Aggiunto utente da controllare',
     'nl':u'Te controleren gebruikersnaam toegevoegd',
     'no':u'Legger til et brukernavn som m? sjekkes',
@@ -258,6 +265,7 @@ bad_pag = {
     'commons': u'Project:Welcome log/Bad_names',
     'ar': u'Project:سجل الترحيب/أسماء سيئة',
     'en': u'Project:Welcome log/Bad_names',
+    'fa': u'Project:سیاهه خوشامد/نام بد',
     'it': u'Utente:Filbot/Bad_words',
     'nl': u'Project:Logboek_welkom/Bad_names',
     'no': u'Bruker:JhsBot/Daarlige ord',
@@ -270,6 +278,7 @@ report_text = {
     'ar':u"\n*{{user13|%s}}" + timeselected,
     'de':u'\n*[[Benutzer Diskussion:%s]] ' + timeselected,
     'en':u'\n*{{Userlinks|%s}} ' + timeselected,
+    'fa':u'\n*{{کاربر|%s}}' + timeselected,
     'it':u"\n{{Reported|%s|",
     'nl':u'\n*{{linkgebruiker%s}} ' + timeselected,
     'no':u'\n*{{bruker|%s}} ' + timeselected,
@@ -279,6 +288,7 @@ report_text = {
 # the random argument (this parameter is optional).
 random_sign = {
     'ar': u'ويكيبيديا:سجل الترحيب/توقيعات',
+    'fa': u'Project:سیاهه خوشامد/امضاها',
     'en': u'User:Filnik/Sign',
     'it': u'Project:Benvenuto log/User',
     }
@@ -290,7 +300,7 @@ whitelist_pg = {
     'it':u'Utente:Filbot/whitelist',
     }
 # Add your project (in alphabetical order) if you want that the bot start.
-project_inserted = ['ar', 'commons', 'de', 'en', 'it', 'nl', 'no', 'sq']
+project_inserted = ['ar', 'commons', 'de', 'en', 'fa', 'it', 'nl', 'no', 'sq']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed
 # and it will run correctly in your project ;)
