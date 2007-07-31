@@ -31,7 +31,12 @@ def translate(page, hints = None, auto = True):
                 # if given as -hint:xy or -hint:xy:, assume that there should
                 # be a page in language xy with the same title as the page 
                 # we're currently working on
-                newname = page.title()
+                ns = page.namespace()
+                if ns:
+                    newname = u'%s:%s' % (site.family.namespace('_default', ns), page.titleWithoutNamespace())
+                else:
+                    # article in the main namespace
+                    newname = page.title()
             try:
                 number = int(codes)
                 codes = site.family.languages_by_size[:number]
