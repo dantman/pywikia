@@ -568,7 +568,7 @@ class CategoryTidyRobot:
             # layout: we don't expect a cat to have more than 100 subcats
             wikipedia.output(u'%2d - Move down to %s' % (i, subcatlist[i].title()))
         print ' j - Jump to another category'
-        print ' n - Skip this article'
+        print ' s - Skip this article'
         print ' r - Remove this category tag'
         print ' ? - Print first part of the page (longer and longer)'
         wikipedia.output(u'Enter - Save category as %s' % current_cat.title())
@@ -577,7 +577,7 @@ class CategoryTidyRobot:
         while not flag:
             print ''
             choice=wikipedia.input(u'Choice:')
-            if choice == 'n':
+            if choice in ['s', 'S']:
                 flag = True
             elif choice == '':
                 wikipedia.output(u'Saving category as %s' % current_cat.title())
@@ -586,13 +586,13 @@ class CategoryTidyRobot:
                 else:
                     catlib.change_category(article, original_cat, current_cat)
                 flag = True
-            elif choice == 'j':
+            elif choice in ['j', 'J']:
                 newCatTitle = wikipedia.input(u'Please enter the category the article should be moved to:')
                 newCat = catlib.Category(wikipedia.getSite(), 'Category:' + newCatTitle)
                 # recurse into chosen category
                 self.move_to_category(article, original_cat, newCat)
                 flag = True
-            elif choice == 'r':
+            elif choice in ['r', 'R']:
                 # remove the category tag
                 catlib.change_category(article, original_cat, None)
                 flag = True
