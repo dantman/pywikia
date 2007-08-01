@@ -269,7 +269,10 @@ class LinkChecker(object):
             # e.g. http://www.radiorus.ru/ which is running on a very old
             # Apache server. Using GET instead works on these (but it uses
             # more bandwidth).
-            return self.resolveRedirect(useHEAD = False)
+            if useHEAD:
+                return self.resolveRedirect(useHEAD = False)
+            else:
+                raise
         if response.status >= 300 and response.status <= 399:
             #print response.getheaders()
             redirTarget = response.getheader('Location')
