@@ -147,7 +147,12 @@ class InternetArchiveConsulter:
     def getArchiveURL(self):
         wikipedia.output(u'Consulting the Internet Archive for %s' % self.url)
         archiveURL = 'http://web.archive.org/web/*/%s' % self.url
-        f = urllib2.urlopen(archiveURL)
+        try:
+            f = urllib2.urlopen(archiveURL)
+        except urllib2.HTTPError:
+            # The Internet Archive yields a 403 error when the site was not
+            # archived due to robots.txt restrictions.
+            return None
         text = f.read()
         if text.find("Search Results for ") != -1:
             return archiveURL
