@@ -170,12 +170,13 @@ class LinkChecker(object):
     Warning: Also returns false if your Internet connection isn't working
     correctly! (This will give a Socket Error)
     '''
-    def __init__(self, url, redirectChain = []):
+    def __init__(self, url, redirectChain = [], serverEncoding = None):
         """
         redirectChain is a list of redirects which were resolved by
         resolveRedirect(). This is needed to detect redirect loops.
         """
         self.url = url
+        self.serverEncoding = serverEncoding
         self.header = {
             # 'User-agent': wikipedia.useragent,
             # we fake being Firefox because some webservers block unknown
@@ -198,21 +199,34 @@ class LinkChecker(object):
             return httplib.HTTPSConnection(self.host)
 
     def getEncodingUsedByServer(self):
-        # TODO: We could maybe save a few accesses here by caching.
-        try:
-            conn = self.getConnection()
-            conn.request('HEAD', '/', None, self.header)
-            response = conn.getresponse()
+        if not self.serverEncoding:
+            try:
+                print conn.__dict__
+                wikipedia.output(u'Contacting server %s to find out its default encoding...' % self.conn)
+                conn = self.getConnection()
+                conn.request('HEAD', '/', None, self.header)
+                response = conn.getresponse()
 
-            ct = response.getheader('Content-Type')
-            charsetR = re.compile('charset=(.+)')
-            charset = charsetR.search(ct).group(1)
-            return charset
-        except:
-            wikipedia.output(u'Error retrieving server\'s default charset. Using ISO 8859-1.')
-            # most browsers use ISO 8859-1 (Latin-1) as the default.
-            return 'iso8859-1'
+                self.readEncodingFromResponse()
+            except:
+                pass
+            if not self.serverEncoding:
+                # TODO: We might also load a page, then check for an encoding
+                # definition in a HTML meta tag.
+                wikipedia.output(u'Error retrieving server\'s default charset. Using ISO 8859-1.')
+                # most browsers use ISO 8859-1 (Latin-1) as the default.
+                self.serverEncoding = 'iso8859-1'
+        return self.serverEncoding
 
+    def readEncodingFromResponse(self, response):
+        if not self.serverEncoding:
+            try:
+                ct = response.getheader('Content-Type')
+                charsetR = re.compile('charset=(.+)')
+                charset = charsetR.search(ct).group(1)
+                self.serverEncoding = charset
+            except:
+                pass
 
     def changeUrl(self, url):
         self.url = url
@@ -229,7 +243,6 @@ class LinkChecker(object):
             self.path.encode('ascii')
             self.query.encode('ascii')
         except UnicodeEncodeError:
-            wikipedia.output(u'%s contains non-ASCII characters. Contacting server to find out its default encoding...' % self.url)
             encoding = self.getEncodingUsedByServer()
             self.path = unicode(urllib.quote(self.path.encode(encoding)))
             self.query = unicode(urllib.quote(self.query.encode(encoding), '=&'))
@@ -249,6 +262,8 @@ class LinkChecker(object):
             else:
                 conn.request('GET', '%s%s' % (self.path, self.query), None, self.header)
             response = conn.getresponse()
+            # read the server's encoding, in case we need it later
+            self.readEncodingFromResponse(response)
         except httplib.BadStatusLine:
             # Some servers don't seem to handle HEAD requests properly,
             # e.g. http://www.radiorus.ru/ which is running on a very old
@@ -258,7 +273,10 @@ class LinkChecker(object):
         if response.status >= 300 and response.status <= 399:
             #print response.getheaders()
             redirTarget = response.getheader('Location')
-            redirTarget = unicode(redirTarget, self.getEncodingUsedByServer())
+            try:
+                redirTarget.encode('ascii')
+            except UnicodeError:
+                redirTarget = unicode(redirTarget, self.getEncodingUsedByServer())
             #print "redirTarget:", redirTarget
             if redirTarget:
                 if redirTarget.startswith('http://') or redirTarget.startswith('https://'):
@@ -283,7 +301,7 @@ class LinkChecker(object):
                     return True
         else:
             return False # not a redirect
-            
+
     def check(self, useHEAD = True):
         """
         Returns True and the server status message if the page is alive.
@@ -304,7 +322,7 @@ class LinkChecker(object):
                     # which leads to a cyclic list of redirects.
                     # We simply start from the beginning, but this time,
                     # we don't use HEAD, but GET requests.
-                    redirChecker = LinkChecker(self.redirectChain[0])
+                    redirChecker = LinkChecker(self.redirectChain[0], self.serverEncoding)
                     return redirChecker.check(useHEAD = False)
                 else:
                     return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [self.url])
@@ -314,12 +332,12 @@ class LinkChecker(object):
                     # which leads to a long (or infinite) list of redirects.
                     # We simply start from the beginning, but this time,
                     # we don't use HEAD, but GET requests.
-                    redirChecker = LinkChecker(self.redirectChain[0])
+                    redirChecker = LinkChecker(self.redirectChain[0], self.serverEncoding)
                     return redirChecker.check(useHEAD = False)
                 else:
                     return False, u'Long Chain of Redirects: %s' % ' -> '.join(self.redirectChain + [self.url])
             else:
-                redirChecker = LinkChecker(self.url, self.redirectChain)
+                redirChecker = LinkChecker(self.url, self.redirectChain, self.serverEncoding)
                 return redirChecker.check(useHEAD = useHEAD)
         else:
             try:
@@ -336,7 +354,8 @@ class LinkChecker(object):
                 response = conn.getresponse()
             except Exception, arg:
                 return False, u'Error: %s' % arg
-            #wikipedia.output('%s: %s' % (self.url, response.status))
+            # read the server's encoding, in case we need it later
+            self.readEncodingFromResponse(response)
             # site down if the server status is between 400 and 499
             siteDown = response.status in range(400, 500)
             return not siteDown, '%s %s' % (response.status, response.reason)
