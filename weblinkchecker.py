@@ -198,6 +198,7 @@ class LinkChecker(object):
             return httplib.HTTPSConnection(self.host)
 
     def getEncodingUsedByServer(self):
+        # TODO: We could maybe save a few accesses here by caching.
         try:
             conn = self.getConnection()
             conn.request('HEAD', '/', None, self.header)
@@ -208,8 +209,9 @@ class LinkChecker(object):
             charset = charsetR.search(ct).group(1)
             return charset
         except:
-            wikipedia.output(u'Error retrieving server\'s default charset. Using UTF-8.')
-            return 'utf-8'
+            wikipedia.output(u'Error retrieving server\'s default charset. Using ISO 8859-1.')
+            # most browsers use ISO 8859-1 (Latin-1) as the default.
+            return 'iso8859-1'
 
 
     def changeUrl(self, url):
@@ -256,13 +258,14 @@ class LinkChecker(object):
         if response.status >= 300 and response.status <= 399:
             #print response.getheaders()
             redirTarget = response.getheader('Location')
+            redirTarget = unicode(redirTarget, self.getEncodingUsedByServer())
             #print "redirTarget:", redirTarget
             if redirTarget:
                 if redirTarget.startswith('http://') or redirTarget.startswith('https://'):
                     self.changeUrl(redirTarget)
                     return True
                 elif redirTarget.startswith('/'):
-                    self.changeUrl('%s://%s%s' % (self.protocol, self.host, redirTarget))
+                    self.changeUrl(u'%s://%s%s' % (self.protocol, self.host, redirTarget))
                     return True
                 else: # redirect to relative position
                     # cut off filename
