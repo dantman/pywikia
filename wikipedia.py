@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -2850,7 +2850,7 @@ def replaceCategoryLinks(oldtext, new, site = None):
 
     if site is None:
         site = getSite()
-    if site == Site('de', 'wikipedia'):
+    if site.sitename() == 'wikipedia:de':
         raise Error('The PyWikipediaBot is no longer allowed to touch categories on the German Wikipedia. See http://de.wikipedia.org/wiki/Hilfe_Diskussion:Personendaten/Archiv2#Position_der_Personendaten_am_.22Artikelende.22')
 
     s = categoryFormat(new, insite = site)
