@@ -322,7 +322,7 @@ class LinkChecker(object):
                     # which leads to a cyclic list of redirects.
                     # We simply start from the beginning, but this time,
                     # we don't use HEAD, but GET requests.
-                    redirChecker = LinkChecker(self.redirectChain[0], self.serverEncoding)
+                    redirChecker = LinkChecker(self.redirectChain[0], serverEncoding = self.serverEncoding)
                     return redirChecker.check(useHEAD = False)
                 else:
                     return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [self.url])
@@ -332,7 +332,7 @@ class LinkChecker(object):
                     # which leads to a long (or infinite) list of redirects.
                     # We simply start from the beginning, but this time,
                     # we don't use HEAD, but GET requests.
-                    redirChecker = LinkChecker(self.redirectChain[0], self.serverEncoding)
+                    redirChecker = LinkChecker(self.redirectChain[0], serverEncoding = self.serverEncoding)
                     return redirChecker.check(useHEAD = False)
                 else:
                     return False, u'Long Chain of Redirects: %s' % ' -> '.join(self.redirectChain + [self.url])
