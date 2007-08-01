@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -75,7 +75,7 @@ import re, sys, codecs
 import wikipedia, pagegenerators, editarticle
 
 # This is a purely interactive robot. We set the delays lower.
-wikipedia.put_throttle.setDelay(4)
+#wikipedia.put_throttle.setDelay(4)
 
 # Summary message when working on disambiguation pages
 msg = {
@@ -523,7 +523,7 @@ class DisambiguationRobot(object):
                 if choice in ['y', 'Y']:
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     try:
-                        refPage.put(redir_text)
+                        refPage.put_async(redir_text)
                     except wikipedia.PageNotSaved, error:
                         wikipedia.output(u'Page not saved: %s' % error.args)
             else:
@@ -716,7 +716,7 @@ class DisambiguationRobot(object):
                 wikipedia.output(u'')
                 # save the page
                 try:
-                    refPage.put(text)
+                    refPage.put_async(text)
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Page not saved: page is locked')
                 except wikipedia.PageNotSaved, error:
@@ -899,7 +899,10 @@ def main():
         generator = iter([page])
 
     bot = DisambiguationRobot(always, alternatives, getAlternatives, generator, primary, main_only)
-    bot.run()
+    try:
+        bot.run()
+    finally:
+        wikipedia.output(u'\n\nPlease wait for the asynchronous page edits to finish...')
 
 if __name__ == "__main__":
     try:

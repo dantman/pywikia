@@ -4454,7 +4454,8 @@ def activateLog(logname):
         logfile = codecs.open(logfn, 'w', 'utf-8')
 
 output_lock = threading.Lock()
-
+input_lock = threading.Lock()
+output_cache = []
 def output(text, decoder = None, colors = [], newline = True, toStdout = False):
     """
     Works like print, but uses the encoding used by the user's console
@@ -4489,7 +4490,10 @@ def output(text, decoder = None, colors = [], newline = True, toStdout = False):
             # save the text in a logfile (will be written in utf-8)
             logfile.write(text + '\n')
             logfile.flush()
-        ui.output(text, colors = colors, newline = newline, toStdout = toStdout)
+        if input_lock.locked():
+            output_cache.append(((text,), {'colors': colors, 'newline': newline, 'toStdout': toStdout}))
+        else:
+            ui.output(text, colors = colors, newline = newline, toStdout = toStdout)
     finally:
         output_lock.release()
 
@@ -4506,7 +4510,17 @@ def input(question, colors = None, password = False):
 
     Returns a unicode string.
     """
-    return ui.input(question, colors, password)
+    input_lock.acquire()
+    try:
+        data = ui.input(question, colors, password)
+    finally:
+        for output in output_cache:
+            ui.output(*output[0], **output[1])
+        input_lock.release()
+    for output in output_cache: #for output added between the start of the for loop and the lock release
+        ui.output(*output[0], **output[1])
+        
+    return data
 
 def inputChoice(question, answers, hotkeys, default = None):
     """

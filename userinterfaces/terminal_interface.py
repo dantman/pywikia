@@ -1,4 +1,4 @@
-
+﻿
 __version__ = '$Id$'
 
 import config, transliteration
@@ -221,6 +221,10 @@ class UI:
             * jumpIndex - an integer: position at which to put the caret
             * highlight - a substring; each occurence will be highlighted
         """
-        import gui
+        try:
+            import gui
+        except ImportError, e:
+            print 'Could not load GUI modules: %s' % e
+            return text
         editor = gui.EditBoxWindow()
         return editor.edit(text, jumpIndex = jumpIndex, highlight = highlight)
