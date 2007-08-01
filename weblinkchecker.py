@@ -270,9 +270,12 @@ class LinkChecker(object):
                     # handle redirect to parent directory
                     while redirTarget.startswith('../'):
                         redirTarget = redirTarget[3:]
-                        # change /foo/bar/ to /foo/
-                        directory = directory[:-1]
-                        directory = directory[:directory.rindex('/') + 1]
+                        # some servers redirect to .. although we are already
+                        # in the root directory; ignore this.
+                        if directory != '/':
+                            # change /foo/bar/ to /foo/
+                            directory = directory[:-1]
+                            directory = directory[:directory.rindex('/') + 1]
                     self.changeUrl('%s://%s%s%s' % (self.protocol, self.host, directory, redirTarget))
                     return True
         else:
