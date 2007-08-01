@@ -13,6 +13,9 @@ unavailable, the bot ONLY reports links which were reported dead at least
 two times, with a time lag of at least one week. Such links will be logged to a
 .txt file in the deadlinks subdirectory.
 
+After running the bot and waiting for at least one weak, you can re-check those
+pages where dead links where found, using the -repeat parameter.
+
 In addition to the logging step, it is possible to automatically report dead
 links to the talk page of the article where the link was found. To use this
 feature, set report_dead_links_on_talk = True in your user-config.py, or
@@ -30,8 +33,14 @@ Syntax examples:
         Loads all wiki pages using the Special:Allpages feature, starting at
         "Example page"
 
+    python weblinkchecker.py -weblink:www.example.org
+        Loads all wiki pages that link to www.example.org
+
     python weblinkchecker.py Example page
         Only checks links found in the wiki page "Example page"
+
+    python weblinkchecker.py -repeat
+        Loads all wiki pages where dead links were found during a prior run
 """
 
 #
@@ -571,6 +580,19 @@ class WeblinkCheckerRobot:
                 thread.setDaemon(True)
                 thread.start()
 
+def RepeatPageGenerator():
+    history = History(None)
+    pageTitles = set()
+    for (key, value) in history.historyDict.iteritems():
+        for entry in value:
+            pageTitle = entry[0]
+            pageTitles.add(pageTitle)
+    pageTitles = list(pageTitles)
+    pageTitles.sort()
+    for pageTitle in pageTitles:
+        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+        yield page
+
 def countLinkCheckThreads():
     i = 0
     for thread in threading.enumerate():
@@ -597,6 +619,8 @@ def main():
             config.report_dead_links_on_talk = False
         elif arg.startswith('-namespace:'):
             namespaces.append(int(arg[11:]))
+        elif arg == '-repeat':
+            gen = RepeatPageGenerator()
         else:
             generator = genFactory.handleArg(arg)
             if generator:
