@@ -308,6 +308,8 @@ class LinkChecker(object):
         """
         try:
             wasRedirected = self.resolveRedirect(useHEAD = useHEAD)
+        except UnicodeError, arg:
+            return False, u'Encoding Error: %s' % arg
         except httplib.error, arg:
             return False, u'HTTP Error: %s' % arg
         except socket.error, arg:
