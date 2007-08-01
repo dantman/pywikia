@@ -4203,6 +4203,9 @@ def handleArgs():
             global logfile
             logfile = None
         elif arg == '-verbose' or arg == "-v":
+            import version
+            output('Pywikipediabot %s' % (version.getversion()))
+            output('Python %s' % (sys.version))
             verbose += 1
         else:
             # the argument is not global. Let the specific bot script care
@@ -4648,3 +4651,11 @@ if config.authenticate:
     authhandler = urllib2.HTTPBasicAuthHandler(passman)
     authenticateURLopener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),authhandler)
     urllib2.install_opener(authenticateURLopener)
+
+if __name__ == '__main__':
+    import version, doctest
+    print 'Pywikipediabot %s' % version.getversion()
+    print 'Python %s' % sys.version
+    doctest.testmod()
+    
+    
