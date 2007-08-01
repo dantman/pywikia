@@ -9,7 +9,7 @@ people can fix or remove the links themselves.
 
 The bot will store all links found dead in a .dat file in the deadlinks
 subdirectory. To avoid the removing of links which are only temporarily
-unavailable, the bot only reports links which were reported dead at least
+unavailable, the bot ONLY reports links which were reported dead at least
 two times, with a time lag of at least one week. Such links will be logged to a
 .txt file in the deadlinks subdirectory.
 
@@ -29,7 +29,7 @@ Syntax examples:
     python weblinkchecker.py -start:Example_page
         Loads all wiki pages using the Special:Allpages feature, starting at
         "Example page"
-    
+
     python weblinkchecker.py Example page
         Only checks links found in the wiki page "Example page"
 """
@@ -90,22 +90,6 @@ ignorelist = [
     re.compile('.*[\./@]gso.gbv.de(/.*)?'),  # bot somehow can't handle their redirects 
     re.compile('.*[\./@]berlinonline.de(/.*)?'), # a de: user wants to fix them by hand and doesn't want them to be deleted, see [[de:Benutzer:BLueFiSH.as/BZ]].
 ]
-
-class Global(object):
-    talk = config.report_dead_links_on_talk
-
-    def handleArgs(self, args):
-        unhandledArguments = []
-        for arg in args:
-            if arg == '-talk':
-                self.talk = True
-            elif arg == '-notalk':
-                self.talk = False
-            else:
-                unhandledArguments.append(arg)
-        return unhandledArguments
-
-globalvar = Global()
 
 def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     text = wikipedia.removeDisabledParts(text)
@@ -546,10 +530,9 @@ class WeblinkCheckerRobot:
     Robot which will use several LinkCheckThreads at once to search for dead
     weblinks on pages provided by the given generator.
     '''
-    def __init__(self, generator, start ='!'):
+    def __init__(self, generator):
         self.generator = generator
-        self.start = start
-        if globalvar.talk:
+        if config.report_dead_links_on_talk:
             #wikipedia.output("Starting talk page thread")
             reportThread = DeadLinkReportThread()
             # thread dies when program terminates
@@ -598,25 +581,37 @@ def countLinkCheckThreads():
 
 def main():
     gen = None
-    start = '!'
-    pageTitle = []
-    args = wikipedia.handleArgs()
-    args = globalvar.handleArgs(args)
-    
-    for arg in args:
-        if arg.startswith('-start:'):
-            start = arg[7:]
-        else:
-            pageTitle.append(arg)
+    singlePageTitle = []
+    # Which namespaces should be processed?
+    # default to [] which means all namespaces will be processed
+    namespaces = []
+    # This factory is responsible for processing command line arguments
+    # that are also used by other scripts and that determine on which pages
+    # to work on.
+    genFactory = pagegenerators.GeneratorFactory()
 
-    if pageTitle:
-        pageTitle = ' '.join(pageTitle)
-        page = wikipedia.Page(wikipedia.getSite(), pageTitle)
+    for arg in wikipedia.handleArgs():
+        if arg == '-talk':
+            config.report_dead_links_on_talk = True
+        elif arg == '-notalk':
+            config.report_dead_links_on_talk = False
+        elif arg.startswith('-namespace:'):
+            namespaces.append(int(arg[11:]))
+        else:
+            generator = genFactory.handleArg(arg)
+            if generator:
+                gen = generator
+            else:
+                singlePageTitle.append(arg)
+
+    if singlePageTitle:
+        singlePageTitle = ' '.join(singlePageTitle)
+        page = wikipedia.Page(wikipedia.getSite(), singlePageTitle)
         gen = iter([page])
-    else:
-        gen = pagegenerators.AllpagesPageGenerator(start)
 
     if gen:
+        if namespaces != []:
+            gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
         gen = pagegenerators.PreloadingGenerator(gen, pageNumber = 240)
         gen = pagegenerators.RedirectFilterPageGenerator(gen)
         bot = WeblinkCheckerRobot(gen)
@@ -651,7 +646,7 @@ def main():
             bot.history.save()
     else:
         wikipedia.showHelp()
-    
+
 if __name__ == "__main__":
     try:
         main()
