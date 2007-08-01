@@ -273,12 +273,11 @@ class LinkChecker(object):
         if response.status >= 300 and response.status <= 399:
             #print response.getheaders()
             redirTarget = response.getheader('Location')
-            try:
-                redirTarget.encode('ascii')
-            except UnicodeError:
-                redirTarget = unicode(redirTarget, self.getEncodingUsedByServer())
-            #print "redirTarget:", redirTarget
             if redirTarget:
+                try:
+                    redirTarget.encode('ascii')
+                except UnicodeError:
+                    redirTarget = redirTarget.decode(self.getEncodingUsedByServer())
                 if redirTarget.startswith('http://') or redirTarget.startswith('https://'):
                     self.changeUrl(redirTarget)
                     return True
