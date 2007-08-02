@@ -195,8 +195,14 @@ class Category(wikipedia.Page):
             # save a copy of this text to find out self's supercategory.
             self_txt = txt
             # index where subcategory listing begins
-            # this only works for the current version of the MonoBook skin
-            ibegin = txt.index('Saved in parser cache')
+            try:
+                ibegin = txt.index('<div id="mw-subcategories">')
+            except ValueError:
+                try:
+                    ibegin = txt.index('<div id="mw-pages">')
+                except ValueError:
+                    wikipedia.output("\nCategory page detection is not bug free. Please report this error!")
+                    raise
             # index where article listing ends
             try:
                 iend = txt.index('<div class="printfooter">')
