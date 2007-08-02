@@ -4539,7 +4539,17 @@ def inputChoice(question, answers, hotkeys, default = None):
 
     Returns a one-letter string in lowercase.
     """
-    return ui.inputChoice(question, answers, hotkeys, default).lower()
+    input_lock.acquire()
+    try:
+        data = ui.inputChoice(question, answers, hotkeys, default).lower()
+    finally:
+        for output in output_cache:
+            ui.output(*output[0], **output[1])
+        input_lock.release()
+    for output in output_cache: #for output added between the start of the for loop and the lock release
+        ui.output(*output[0], **output[1])
+     
+    return data
 
 def showHelp(moduleName = None):
     # the parameter moduleName is deprecated and should be left out.
@@ -4581,7 +4591,6 @@ Global arguments available for all bots:
         output(u'Sorry, no help available for %s' % moduleName)
 
 page_put_queue = Queue.Queue()
-
 def async_put():
     '''
     Daemon that takes pages from the queue and tries to save them on the wiki.
@@ -4622,8 +4631,22 @@ def _flush():
     '''Wait for the page-putter to flush its queue;
        called automatically upon exiting from Python.
     '''
+    if page_put_queue.qsize() > 0:
+        import datetime
+        remaining = datetime.timedelta(seconds=(page_put_queue.qsize()+1) * config.put_throttle)
+        output('Waiting for %i pages to be put. Estimated time remaining: %s' % (page_put_queue.qsize()+1, remaining))
+        
     page_put_queue.put((None, None, None, None, None))
-    _putthread.join()
+    
+    while(_putthread.isAlive()):
+        try:
+            _putthread.join(1)
+        except KeyboardInterrupt:
+            answer = inputChoice(u'There are %i pages remaining in the queue. Estimated time remaining: %s\nReally exit?'
+                             % (page_put_queue.qsize(), datetime.timedelta(seconds=(page_put_queue.qsize()) * config.put_throttle)),
+                             ['yes', 'no'], ['y', 'N'], 'N')
+            if answer in ['y', 'Y']:
+                break
 
 import atexit
 atexit.register(_flush)
