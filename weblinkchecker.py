@@ -550,13 +550,13 @@ class DeadLinkReportThread(threading.Thread):
                 self.semaphore.acquire()
                 (url, errorReport, containingPage, archiveURL) = self.queue[0]
                 self.queue = self.queue[1:]
-                message = u'** Reporting dead link on ' + containingPage.toggleTalkPage().aslink() + '...'
+                talkPage = containingPage.toggleTalkPage()
+                message = u'** Reporting dead link on ' + talkPage.aslink() + '...'
                 wikipedia.output(message, colors = [11] * len(message))
-                talk = containingPage.toggleTalkPage()
                 try:
-                    content = talk.get() + "\n\n"
+                    content = talkPage.get() + "\n\n"
                     if url in content:
-                        message = u'** Dead link seems to have already been reported on ' + containingPage.toggleTalkPage().aslink() + '.'
+                        message = u'** Dead link seems to have already been reported on ' + talkPage.aslink() + '.'
                         wikipedia.output(message, colors = [11] * len(message))
                         self.semaphore.release()
                         continue
@@ -565,11 +565,13 @@ class DeadLinkReportThread(threading.Thread):
 
                 if archiveURL:
                     archiveMsg = wikipedia.translate(wikipedia.getSite(), talk_report_archive) % archiveURL
-                    content += wikipedia.translate(wikipedia.getSite(), talk_report) % (errorReport, archiveMsg)
+                else:
+                    archiveMsg = u''
+                content += wikipedia.translate(wikipedia.getSite(), talk_report) % (errorReport, archiveMsg)
                 try:
-                    talk.put(content)
+                    talkPage.put(content)
                 except wikipedia.SpamfilterError, error:
-                    message = u'** SpamfilterError while trying to change %s: %s' % (containingPage.toggleTalkPage().aslink(), error.url)
+                    message = u'** SpamfilterError while trying to change %s: %s' % (talkPage.aslink(), error.url)
                     wikipedia.output(message, colors = [11] * len(message))
                     
                 self.semaphore.release()
