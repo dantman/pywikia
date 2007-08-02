@@ -203,12 +203,12 @@ class LinkChecker(object):
     def getEncodingUsedByServer(self):
         if not self.serverEncoding:
             try:
-                wikipedia.output(u'Contacting server %s to find out its default encoding...' % self.conn)
+                wikipedia.output(u'Contacting server %s to find out its default encoding...' % self.host)
                 conn = self.getConnection()
                 conn.request('HEAD', '/', None, self.header)
                 response = conn.getresponse()
 
-                self.readEncodingFromResponse()
+                self.readEncodingFromResponse(response)
             except:
                 pass
             if not self.serverEncoding:
