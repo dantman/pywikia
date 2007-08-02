@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -456,7 +456,7 @@ class Family(family.Family):
             'be':  u'Disambig',
             'be-x-old':  u'Вікіпэдыя:Неадназначнасьці',
             'bg':  u'Пояснителни страници',
-            'ca':  u'Registre de pàginas de desambiguació',
+            'ca':  u'Viquipèdia:Registre de pàgines de desambiguació',
             'cs':  u'Rozcestníky',
             'cy':  u'Gwahaniaethu',
             'da':  u'Flertdig',
