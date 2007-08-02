@@ -4491,12 +4491,20 @@ def output(text, decoder = None, colors = [], newline = True, toStdout = False):
             logfile.write(text + '\n')
             logfile.flush()
         if input_lock.locked():
-            output_cache.append(((text,), {'colors': colors, 'newline': newline, 'toStdout': toStdout}))
+            cache_output(text, colors = colors, newline = newline, toStdout = toStdout)
         else:
             ui.output(text, colors = colors, newline = newline, toStdout = toStdout)
     finally:
         output_lock.release()
 
+def cache_output(*args, **kwargs):
+    output_cache.append((args, kwargs))
+
+def flush_output_cache():
+    while(output_cache):
+        (args, kwargs) = output_cache.pop(0)
+        ui.output(*args, **kwargs)
+        
 def input(question, colors = None, password = False):
     """
     Asks the user a question, then returns the user's answer.
@@ -4513,15 +4521,12 @@ def input(question, colors = None, password = False):
     input_lock.acquire()
     try:
         data = ui.input(question, colors, password)
-    finally:
-        for output in output_cache:
-            ui.output(*output[0], **output[1])
+    finally:    
+        flush_output_cache()
         input_lock.release()
-    for output in output_cache: #for output added between the start of the for loop and the lock release
-        ui.output(*output[0], **output[1])
-        
+ 
     return data
-
+    
 def inputChoice(question, answers, hotkeys, default = None):
     """
     Asks the user a question and offers several options, then returns the
@@ -4543,12 +4548,9 @@ def inputChoice(question, answers, hotkeys, default = None):
     try:
         data = ui.inputChoice(question, answers, hotkeys, default).lower()
     finally:
-        for output in output_cache:
-            ui.output(*output[0], **output[1])
+        flush_output_cache()
         input_lock.release()
-    for output in output_cache: #for output added between the start of the for loop and the lock release
-        ui.output(*output[0], **output[1])
-     
+
     return data
 
 def showHelp(moduleName = None):
@@ -4646,7 +4648,7 @@ def _flush():
                              % (page_put_queue.qsize(), datetime.timedelta(seconds=(page_put_queue.qsize()) * config.put_throttle)),
                              ['yes', 'no'], ['y', 'N'], 'N')
             if answer in ['y', 'Y']:
-                break
+                return
 
 import atexit
 atexit.register(_flush)
