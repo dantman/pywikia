@@ -320,7 +320,7 @@ class LinkChecker(object):
             # TODO: decode arg[1]. On Linux, it's encoded in UTF-8.
             # How is it encoded in Windows? Or can we somehow just
             # get the English message?
-            return False, u'Socket Error: %s' % arg[1]
+            return False, u'Socket Error: %s' % repr(arg[1])
         #except UnicodeEncodeError, arg:
         #    return False, u'Non-ASCII Characters in URL: %s' % arg
         if wasRedirected:
@@ -357,7 +357,7 @@ class LinkChecker(object):
             try:
                 conn.request('GET', '%s%s' % (self.path, self.query), None, self.header)
             except socket.error, arg:
-                return False, u'Socket Error: %s' % arg[1]
+                return False, u'Socket Error: %s' % repr(arg[1])
             #except UnicodeEncodeError, arg:
             #    return False, u'Non-ASCII Characters in URL: %s' % arg
             try:
