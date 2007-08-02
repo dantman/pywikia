@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+## -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -2003,62 +2003,32 @@ class Page(object):
             return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
         def create_regex_i(s):
             return ur'(?:%s)' % u''.join([u'[%s%s]' % (c.upper(), c.lower()) for c in s])
-        
+
         namespaces = ('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True)
+        # note that the colon is already included here
         r_namespace = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(create_regex_i, namespaces))
         r_image = u'(%s)' % create_regex(image).replace(r'\_', '[ _]')
             
-        def simple_replacer(match):
+        def simple_replacer(match, groupNumber = 1):
             if replacement == None:
                 return u''
             else:
                 groups = list(match.groups())
-                groups[1] = replacement
+                groups[groupNumber] = replacement
                 return u''.join(groups)
-                    
-        # Previously links in image descriptions will cause 
-        # unexpected behaviour: [[Image:image.jpg|thumb|[[link]] in description]]
-        # will truncate at the first occurence of ]]. This cannot be
-        # fixed using one regular expression.
-        # This means that all ]] after the start of the image
-        # must be located. If it then does not have an associated
-        # [[, this one is the closure of the image.
-            
-        r_simple_s = u'(\[\[%s)%s' % (r_namespace, r_image)
-        r_s = '\[\['
-        r_e = '\]\]'
-        # First determine where wikilinks start and end
-        image_starts = [match.start() for match in re.finditer(r_simple_s, text)]
-        link_starts = [match.start() for match in re.finditer(r_s, text)]
-        link_ends = [match.end() for match in re.finditer(r_e, text)]
-                
-        r_simple = u'(\[\[%s)%s(.*)' % (r_namespace, r_image)
-        replacements = []
-        for image_start in image_starts:
-            current_link_starts = [link_start for link_start in link_starts 
-                if link_start > image_start]
-            current_link_ends = [link_end for link_end in link_ends 
-                if link_end > image_start]
-            end = image_start
-            if current_link_ends: end = current_link_ends[0]
-                
-            while current_link_starts and current_link_ends:
-                start = current_link_starts.pop(0)
-                end = current_link_ends.pop(0)
-                if end <= start and end > image_start:
-                    # Found the end of the image
-                    break
-                
-            # Add the replacement to the todo list. Doing the
-            # replacement right know would alter the indices.
-            replacements.append((new_text[image_start:end],
-                re.sub(r_simple, simple_replacer, 
-                new_text[image_start:end])))
-            
-        # Perform the replacements
-        for old, new in replacements:
-            if old: new_text = new_text.replace(old, new)
-            
+
+        # The group params contains parameters such as thumb and 200px, as well
+        # as the image caption. The caption can contain wiki links, but each
+        # link has to be closed properly.
+        r_param = r'(?:\|(?:(?!\[\[).|\[\[.*?\]\])*?)'
+        rImage = re.compile(ur'(\[\[)(?P<namespace>%s)%s(?P<params>%s*?)(\]\])' % (r_namespace, r_image, r_param))
+
+        while True:
+            m = rImage.search(new_text)
+            if not m:
+                break
+            new_text = new_text[:m.start()] +  simple_replacer(m, 2) + new_text[m.end():]
+
         # Remove the image from galleries
         r_galleries = ur'(?s)(\<%s\>)(?s)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'), 
             create_regex_i('gallery'))
