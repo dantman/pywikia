@@ -899,10 +899,9 @@ def main():
         generator = iter([page])
 
     bot = DisambiguationRobot(always, alternatives, getAlternatives, generator, primary, main_only)
-    try:
-        bot.run()
-    finally:
-        wikipedia.output(u'\n\nPlease wait for the asynchronous page edits to finish...')
+    bot.run()
+
+
 
 if __name__ == "__main__":
     try:
