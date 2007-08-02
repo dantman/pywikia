@@ -153,6 +153,8 @@ class InternetArchiveConsulter:
             # The Internet Archive yields a 403 error when the site was not
             # archived due to robots.txt restrictions.
             return None
+        except UnicodeEncodeError:
+            return None
         text = f.read()
         if text.find("Search Results for ") != -1:
             return archiveURL
@@ -201,7 +203,6 @@ class LinkChecker(object):
     def getEncodingUsedByServer(self):
         if not self.serverEncoding:
             try:
-                print conn.__dict__
                 wikipedia.output(u'Contacting server %s to find out its default encoding...' % self.conn)
                 conn = self.getConnection()
                 conn.request('HEAD', '/', None, self.header)
@@ -312,11 +313,14 @@ class LinkChecker(object):
         try:
             wasRedirected = self.resolveRedirect(useHEAD = useHEAD)
         except UnicodeError, arg:
-            return False, u'Encoding Error: %s' % arg
+            return False, u'Encoding Error: %s (%s)' % (arg.__class__.__name__, unicode(arg))
         except httplib.error, arg:
-            return False, u'HTTP Error: %s' % arg
+            return False, u'HTTP Error: %s (%s)' % (arg.__class__.__name__, arg.line)
         except socket.error, arg:
-            return False, u'Socket Error: %s' % arg
+            # TODO: decode arg[1]. On Linux, it's encoded in UTF-8.
+            # How is it encoded in Windows? Or can we somehow just
+            # get the English message?
+            return False, u'Socket Error: %s' % arg[1]
         #except UnicodeEncodeError, arg:
         #    return False, u'Non-ASCII Characters in URL: %s' % arg
         if wasRedirected:
@@ -329,7 +333,8 @@ class LinkChecker(object):
                     redirChecker = LinkChecker(self.redirectChain[0], serverEncoding = self.serverEncoding)
                     return redirChecker.check(useHEAD = False)
                 else:
-                    return False, u'HTTP Redirect Loop: %s' % ' -> '.join(self.redirectChain + [self.url])
+                    urlList = ['[%s]' % url for url in self.redirectChain + [self.url]]
+                    return False, u'HTTP Redirect Loop: %s' % ' -> '.join(urlList)
             elif len(self.redirectChain) >= 19:
                 if useHEAD:
                     # Some servers don't seem to handle HEAD requests properly,
@@ -339,7 +344,8 @@ class LinkChecker(object):
                     redirChecker = LinkChecker(self.redirectChain[0], serverEncoding = self.serverEncoding)
                     return redirChecker.check(useHEAD = False)
                 else:
-                    return False, u'Long Chain of Redirects: %s' % ' -> '.join(self.redirectChain + [self.url])
+                    urlList = ['[%s]' % url for url in self.redirectChain + [self.url]]
+                    return False, u'Long Chain of Redirects: %s' % ' -> '.join(urlList)
             else:
                 redirChecker = LinkChecker(self.url, self.redirectChain, self.serverEncoding)
                 return redirChecker.check(useHEAD = useHEAD)
@@ -347,13 +353,13 @@ class LinkChecker(object):
             try:
                 conn = self.getConnection()
             except httplib.error, arg:
-                return False, u'HTTP Error: %s' % arg
+                return False, u'HTTP Error: %s (%s)' % (arg.__class__.__name__, arg.line)
             try:
                 conn.request('GET', '%s%s' % (self.path, self.query), None, self.header)
             except socket.error, arg:
-                return False, u'Socket Error: %s' % arg
-            except UnicodeEncodeError, arg:
-                return False, u'Non-ASCII Characters in URL: %s' % arg
+                return False, u'Socket Error: %s' % arg[1]
+            #except UnicodeEncodeError, arg:
+            #    return False, u'Non-ASCII Characters in URL: %s' % arg
             try:
                 response = conn.getresponse()
             except Exception, arg:
