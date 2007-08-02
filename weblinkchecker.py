@@ -230,6 +230,7 @@ class LinkChecker(object):
                 pass
 
     def changeUrl(self, url):
+        print url
         self.url = url
         # we ignore the fragment
         self.scheme, self.host, self.path, self.query, self.fragment = urlparse.urlsplit(self.url)
@@ -248,7 +249,7 @@ class LinkChecker(object):
             self.path = unicode(urllib.quote(self.path.encode(encoding)))
             self.query = unicode(urllib.quote(self.query.encode(encoding), '=&'))
 
-    def resolveRedirect(self, useHEAD = True):
+    def resolveRedirect(self, useHEAD = False):
         '''
         Requests the header from the server. If the page is an HTTP redirect,
         returns the redirect target URL as a string. Otherwise returns None.
@@ -305,24 +306,22 @@ class LinkChecker(object):
         else:
             return False # not a redirect
 
-    def check(self, useHEAD = True):
+    def check(self, useHEAD = False):
         """
         Returns True and the server status message if the page is alive.
         Otherwise returns false
         """
         try:
             wasRedirected = self.resolveRedirect(useHEAD = useHEAD)
-        except UnicodeError, arg:
-            return False, u'Encoding Error: %s (%s)' % (arg.__class__.__name__, unicode(arg))
-        except httplib.error, arg:
-            return False, u'HTTP Error: %s (%s)' % (arg.__class__.__name__, arg.line)
-        except socket.error, arg:
-            # TODO: decode arg[1]. On Linux, it's encoded in UTF-8.
+        except UnicodeError, error:
+            return False, u'Encoding Error: %s (%s)' % (error.__class__.__name__, unicode(error))
+        except httplib.error, error:
+            return False, u'HTTP Error: %s' % error.__class__.__name__
+        except socket.error, error:
+            # TODO: decode error[1]. On Linux, it's encoded in UTF-8.
             # How is it encoded in Windows? Or can we somehow just
             # get the English message?
-            return False, u'Socket Error: %s' % repr(arg[1])
-        #except UnicodeEncodeError, arg:
-        #    return False, u'Non-ASCII Characters in URL: %s' % arg
+            return False, u'Socket Error: %s' % repr(error[1])
         if wasRedirected:
             if self.url in self.redirectChain:
                 if useHEAD:
@@ -352,18 +351,16 @@ class LinkChecker(object):
         else:
             try:
                 conn = self.getConnection()
-            except httplib.error, arg:
-                return False, u'HTTP Error: %s (%s)' % (arg.__class__.__name__, arg.line)
+            except httplib.error, error:
+                return False, u'HTTP Error: %s' % error.__class__.__name__
             try:
                 conn.request('GET', '%s%s' % (self.path, self.query), None, self.header)
-            except socket.error, arg:
-                return False, u'Socket Error: %s' % repr(arg[1])
-            #except UnicodeEncodeError, arg:
-            #    return False, u'Non-ASCII Characters in URL: %s' % arg
+            except socket.error, error:
+                return False, u'Socket Error: %s' % repr(error[1])
             try:
                 response = conn.getresponse()
-            except Exception, arg:
-                return False, u'Error: %s' % arg
+            except Exception, error:
+                return False, u'Error: %s' % error
             # read the server's encoding, in case we need it later
             self.readEncodingFromResponse(response)
             # site down if the server status is between 400 and 499
