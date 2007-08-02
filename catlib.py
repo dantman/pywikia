@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Library to work with category pages on Wikipedia
@@ -295,7 +295,7 @@ class Category(wikipedia.Page):
         Results are unsorted (except as sorted by MediaWiki), and need not
         be unique.
         """
-        for tag, page in self._getContentsAndSupercats(recurse, startFrom):
+        for tag, page in self._getContentsAndSupercats(recurse, startFrom=startFrom):
             if tag == ARTICLE:
                 yield page
 
