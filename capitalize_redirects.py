@@ -1,5 +1,39 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
+'''
+Bot to create redirects.
+
+Command-line arguments:
+
+    -file          Work on all pages listed in a text file.
+                   Argument can also be given as "-file:filename".
+
+    -cat           Work on all pages which are in a specific category.
+                   Argument can also be given as "-cat:categoryname".
+
+    -ref           Work on all pages that link to a certain page.
+                   Argument can also be given as "-ref:referredpagetitle".
+
+    -links         Work on all pages that are linked from a certain page.
+                   Argument can also be given as "-link:linkingpagetitle".
+
+    -start         Work on all pages on the home wiki, starting at the named page.
+                   
+    -page          Work on a single page.
+
+
+    -namespace     Run over especific namespace.
+                   Argument can also be given as "-namespace:100".
+                   
+    -always        Don't prompt to make changes, just do them.
+
+
+p.e.: "python capitalize_redirects.py -start:B -always"
+
+"""
+
+
+'''
 #
 # (C) Yrithinnd
 # Class licensed under terms of the MIT license
