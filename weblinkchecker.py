@@ -107,7 +107,7 @@ def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     # might be a | or a } directly after a URL which does not belong to
     # the URL itself.
     # Blow up templates with spaces to avoid these problems.
-    templateWithParamsR = re.compile(r'{{(.*?[^ ])\|([^ ].*?)}}', re.DOTALL)
+    templateWithParamsR = re.compile(r'{{([^}]*?[^ ])\|([^ ][^}]*?)}}', re.DOTALL)
     while templateWithParamsR.search(text):
         text = templateWithParamsR.sub(r'{{ \1 | \2 }}', text)
 
