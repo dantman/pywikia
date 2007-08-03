@@ -201,8 +201,11 @@ class Category(wikipedia.Page):
                 try:
                     ibegin = txt.index('<div id="mw-pages">')
                 except ValueError:
-                    wikipedia.output("\nCategory page detection is not bug free. Please report this error!")
-                    raise
+                    try:
+                        ibegin = txt.index('<!-- start content -->') # does not work for cats without text
+                    except ValueError:
+                        wikipedia.output("\nCategory page detection is not bug free. Please report this error!")
+                        raise
             # index where article listing ends
             try:
                 iend = txt.index('<div class="printfooter">')
