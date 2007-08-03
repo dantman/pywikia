@@ -230,7 +230,6 @@ class LinkChecker(object):
                 pass
 
     def changeUrl(self, url):
-        print url
         self.url = url
         # we ignore the fragment
         self.scheme, self.host, self.path, self.query, self.fragment = urlparse.urlsplit(self.url)
@@ -537,7 +536,6 @@ class DeadLinkReportThread(threading.Thread):
     
     def run(self):
         while not self.killed:
-            # print 'RUN, queue length: %i' % len(self.queue)
             if len(self.queue) == 0:
                 if self.finishing:
                     break
@@ -635,7 +633,6 @@ def RepeatPageGenerator():
 def countLinkCheckThreads():
     i = 0
     for thread in threading.enumerate():
-        # print thread
         if isinstance(thread, LinkCheckThread):
             i += 1
     return i
