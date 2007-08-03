@@ -425,6 +425,7 @@ class CategoryRemoveRobot:
     Does not remove category tags pointing at subcategories.
     '''
     deletion_reason_remove = {
+        'da':u'Robot: Kategorien blev opløst',
         'de':u'Bot: Kategorie wurde aufgelöst',
         'en':u'Robot: Category was disbanded',
         'he':u'רובוט: הקטגוריה פורקה',
