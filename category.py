@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -114,6 +114,7 @@ msg_change={
     }
 
 deletion_reason_move = {
+    'da':u'Robot: Kategori flyttet til [[Category:%s|%s]]',
     'de':u'Bot: Kategorie wurde nach [[Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[Category:%s|%s]]',
     'fr':u'Robot : catégorie déplacée sur [[Category:%s|%s]]',
