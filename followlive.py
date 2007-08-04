@@ -32,56 +32,67 @@ What is it? """
 #       templates contains a message and its position 
 templates = {
     'en': {
-        '{{delete}}': {
-            'msg' : 'This article should be deleted',
-            'pos': 'top'
-        },
-        '{{cleanup}}': {
-            'msg' : 'This article need cleanup',
-            'pos': 'top'
-        },
-        '{{stub}}': {
-            'msg' : 'This article is a stub',
-            'pos': 'bottom'
-        },
-        '{{categorize}}': {
-            'msg' : 'This article needs to be [[Wikipedia:Categorization|categorized]]',
-            'pos' : 'top'
-        },
-        '{{notability}}': {
-            'msg' : 'The [[Wikipedia:Notability|notability]] of this article is unclear.',
-            'pos': 'top'
-        },
-        '{{verify}}': {
-            'msg' : 'This article needs to be checked for factuality.',
-            'pos': 'top'
-        },
-        '{{copyedit}}': {
-            'msg' : 'The writing of this article needs to be [[Wikipedia:How to copy-edit|copyeditted]] and improved.',
-            'pos' : 'top'
-        },
-        '{{unreferenced}}': {
-            'msg' : 'This article needs [[Wikipedia:Citing sources|references]] so it can be verified.',
-            'pos': 'bottom'
-        },
-        '{{wikify}}': {
-            'msg' : 'This article needs to be wikified per the [[Wikipedia:Manual of Style|Manual of Style]]',
-            'pos' : 'top'
-        },
+        '{{db-reason}}' :{
+            'msg' : 'Robot-assisted tagging: this article should be deleted',
+            'pos': 'top'},
+        
+        '{{cleanup}}' :{
+            'msg' : 'Robot-assisted tagging: this article need cleanup',
+            'pos': 'top'},
+
+        '{{stub}}':{
+            'msg' : 'Robot-assisted tagging: this article is a stub',
+            'pos': 'bottom'},
+
+        '{{uncategorized}}' :{
+            'msg' : 'Robot-assisted tagging: This article needs to be [[Wikipedia:Categorization|categorized]]',
+            'pos' : 'top'},
+
+        '{{notability}}':{
+            'msg' : 'Robot-assisted tagging: the [[Wikipedia:Notability|notability]] of this article is unclear.',
+            'pos': 'top'},
+
+        '{{not verified}}':{
+            'msg' : 'Robot-assisted tagging: this article needs to be checked for factuality.',
+            'pos': 'top'},
+
+        '{{copyedit}}':{
+            'msg' : 'Robot-assisted tagging: the writing of this article needs to be [[Wikipedia:How to copy-edit|copyedited]] and improved.',
+            'pos' : 'top'},
+
+        '{{unreferenced}}':{
+            'msg' : 'Robot-assisted tagging: this article needs [[Wikipedia:Citing sources|references]] so it can be verified.',
+            'pos': 'bottom'},
+
+        '{{wikify}}' :{
+            'msg' : 'Robot-assisted tagging: this article needs to be wikified per the [[Wikipedia:Manual of Style|Manual of Style]]',
+            'pos' : 'top'},
+    },
+    'ia':{
+        '{{Eliminar}}' :{
+            'msg' : 'Assistite per robot: iste articulo debe esser eliminate',
+            'pos': 'top'},
+        
+        '{{Revision}}' :{
+            'msg' : 'Assistite per robot: iste articulo require revision',
+            'pos': 'top'},
+
+        '{{Stub}}' :{
+            'msg' : 'Assistite per robot: iste articulo es in stato embryonic',
+            'pos': 'bottom'},
     },
     'fr':{
         u'{{suppression}}': {
-            'msg' : u'Cet article devrait être supprimé',
-            'pos': 'top'
-        },
-        u'{{à vérifier}}': {
-            'msg': u'Cet article est à vérifier',
-            'pos': 'top'
-        },
-        u'{{ébauche}}': {
-            'msg': u'Cet article est une ébauche',
-            'pos': 'bottom'
-        },
+            'msg' : u'à l\'aide du robot: cet article devrait être supprimé',
+            'pos': 'top'},
+
+        u'{{à vérifier}}' : {
+            'msg': u'à l\'aide du robot: cet article est à vérifier',
+            'pos': 'top'},
+
+        u'{{ébauche}}' : {
+            'msg': u'à l\'aide du robot: cet article est une ébauche',
+            'pos': 'bottom'},
     },
     'he':{
         u'{{מחק}}': {
@@ -102,10 +113,9 @@ templates = {
         },
         u'{{עריכה}}': {
             'msg' : u'ערך זה דורש עריכה',
-            'pos': 'top'
-        },
+            'pos': 'top'},
     },
-	'ia':{
+    'ia':{
         u'{{Eliminar}}': {
             'msg' : u'Iste articulo debe esser eliminate',
             'pos': 'top'
@@ -167,30 +177,30 @@ templates = {
             'pos':'bottom'
         },
     },
-   'pt': {
-        u'{{wikificar}}': {
-            'msg': '{{wikificar}}', 'pos':'top'
-        },
-        u'{{reciclar}}': {
-            'msg': u'{{reciclar}}',
-            'pos':'top'
-        },
-        u'{{lixo|~~~~}}': {
-            'msg': u'{{lixo}}',
-            'pos':'top'
-        },
-        u'{{revisão}}': {
-            'msg': u'{{revisão}}',
-            'pos':'top'
-        },
-        u'{{impróprio}}': {
-            'msg': u'{{impróprio}}',
-            'pos':'top'
-        },
-        u'{{apagar vaidade}}': {
-            'msg': '{{apagar vaidade}}',
-            'pos':'top'
-        },
+    'pt': {
+        u'{{wikificar}}' : {
+            'msg': 'Assistida por bot: {{wikificar}}',
+            'pos':'top'},
+        
+        u'{{reciclar}}'  : {
+            'msg': 'Assistida por bot: {{reciclar}}',
+            'pos':'top'},
+
+        u'{{lixo|~~~~}}' : {
+            'msg': 'Assistida por bot: {{lixo}}',
+            'pos':'top'},
+
+        u'{{revisão}}' : {
+            'msg': 'Assistida por bot: {{revisão}}',
+            'pos':'top'},
+
+        u'{{impróprio}}' : {
+            'msg': 'Assistida por bot: {{impróprio}}',
+            'pos':'top'},
+
+        u'{{apagar vaidade}}' : {
+            'msg': 'Assistida por bot: {{apagar vaidade}}',
+            'pos':'top'},
     },
 }
 
@@ -205,13 +215,25 @@ blanking = {
 
 # do nothing if this is in it
 done = {
-    'en':('{{delete}}', '{{deletedpage}}', '{{disambig}}', '{{verify}}', '{{speedy}}',
-          '{{VfD}}', '{{AfD}}', '{{cleanup}}', '{{nonsense}}', '{{deletedpage}}'),
-    'fr':(u'{{suppression}}', u'{{à vérifier}}'),
+    'en':('{{VfD}}', '{{AfD}}', '{{AfD1}}', '{{cleanup}}', '{{nonsense}}', '{{deletedpage}}',
+          '{{db-reason}}', '{{notability}}', '{{not verified}}', '{{unreferenced}}', '{{db-empty}}',
+          '{{db-nocontext}}', '{{db-foreign}}', '{{db-notenglish}}', '{{db-nocontent}}', '{{db-blankcsd}}',
+          '{{db-transwiki}}', '{{db-attack}}', '{{db-band}}', '{{db-club}}', '{{db-bio}}', '{{db-bio-notenglish}}',
+          '{{db-inc}}', '{{db-bio-photo}}', '{{db-catempty}}', '{{db-c2}}', '{{db-catfd}}', '{{badname}}', '{{db-pagemove}}',
+          '{{db-nonsense}}', '{{db-spam}}', '{{db-copyvio}}', '{{db-test}}', '{{db-vandalism}}', '{{db-repost}}', '{{db-banned}}',
+          '{{db-histmerge}}', '{{db-move}}', '{{db-g6}}', '{{db-afd}}', '{{db-disambig}}', '{{db-authora}}', '{{db-author}}',
+          '{{db-blanked}}', '{{csd:g7}}', '{{db-talk}}', '{{db-botnomain}}', '{{db-redundantimage}}', '{{db-noimage}}', '{{db-noncom}}',
+          '{{db-ccnoncom}}', '{{db-unksource}}', '{{db-norat}}', '{{db-badfairuse}}', '{{duplicate}}', '{{db-meta}}',
+          '{{db-emptyportal}}', '{{db-redirnone}}', '{{db-rediruser}}', '{{db-redirtypo}}', '{{csd-c3}}', '{{cc-by-nc-sa}}',
+          '{{cc-nd-nc}}', '{{cc-nc}}', '{{cc-by-nc-2.0}}', '{{cc-by-nc-sa-2.0}}', '{{cc-by-nd-nc-2.0}}', '{{cc-by-2.0-nc-nd}}',
+          '{{cc-by-nc-nd-2.0}}', '{{db-contact}}', '{{db-i2}}', '{{db-i1}}', '{{communityuseonly}}', '{{db-disparage}}', '{{db-web}}',
+          '{{db-userreq}}', '{{db-nouser}}', '{{db-u3}}', '{{db-unfree}}'),
+    'fr':(u'{{suppression}}', u'{{à vérifier}}', u'{{ébauche}}'),
+    'ia':(u'{{Eliminar}}', u'{{Revision}}', u'{{Stub}}'),
     'he':(u'{{מחק}}', u'{{פירושונים}}', u'{{הצבעת מחיקה}}'),
     'nl':('{{nuweg}}', '{{weg}}', '{{wb}}', '{{wiu}}', '{{nocat}}'),
     'pl':('{{ek}}', u'{{dopracować}}', '{{linki}}', u'{{źródła}}', u'{{stub}}'),
-    'pt':('{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}'),
+    'pt':('{{wikificar}}', '{{reciclar}}', '{{lixo}}', u'{{revisão}}', u'{{impróprio}}', u'{{apagar vaidade}}'),
     }
 
 # TODO: merge 'done' with 'templates' above
