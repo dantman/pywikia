@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
 Scripts to manage categories.
@@ -72,6 +72,7 @@ import wikipedia, catlib, config, pagegenerators
 
 # Summary messages
 msg_add={
+    'ar':u'إضافة [[تصنيف:%s]]',
     'da':u'Robot: Tilføjer [[Kategori:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
     'en':u'Adding [[Category:%s]]',
@@ -93,6 +94,7 @@ msg_add={
     }
 
 msg_change={
+    'ar':u'روبوت: تغيير %s',
     'da':u'Robot: Ændrer %s',
     'de':u'Bot: Ändere %s',
     'en':u'Robot: Changing %s',
@@ -114,6 +116,7 @@ msg_change={
     }
 
 deletion_reason_move = {
+    'ar':u'روبوت: التصنيف نقل إلى [[تصنيف:%s|%s]]',
     'da':u'Robot: Kategori flyttet til [[Category:%s|%s]]',
     'de':u'Bot: Kategorie wurde nach [[Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[Category:%s|%s]]',
