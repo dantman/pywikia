@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
@@ -19,6 +19,8 @@ You can run the bot with the following commandline parameters:
                parameter multiple times to edit multiple pages.
 -ref         - Work on all pages that link to a certain page.
                Argument can also be given as "-ref:referredpagetitle".
+-linksearch  - Retrieve all the results using Special:Linksearch.
+               Argument can also be given as "-linksearch:url".
 -filelinks   - Works on all pages that link to a certain image.
                Argument can also be given as "-filelinks:ImageName".
 -links       - Work on all pages that are linked to from a certain page.
@@ -350,6 +352,9 @@ def main():
             summary_commandline = True
         elif arg.startswith('-allowoverlap'):
             allowoverlap = True
+        elif arg.startswith('-linksearch:'):
+            linkselected = (arg[12:])
+            gen = pagegenerators.LinksearchPageGenerator(linkselected)
         else:
             generator = genFactory.handleArg(arg)
             if generator:

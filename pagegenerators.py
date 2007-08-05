@@ -30,7 +30,7 @@ def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True)
         namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
     for page in wikipedia.getSite().allpages(start=start, namespace=namespace, includeredirects = includeredirects):
         yield page
-    
+
 def PrefixingPageGenerator(prefix, namespace=None):
     for page in AllpagesPageGenerator(prefix, namespace):
         if page.titleWithoutNamespace().startswith(prefix):
@@ -43,7 +43,7 @@ def NewpagesPageGenerator(number = 100, get_redirect = False, repeat = False, si
         site = wikipedia.getSite()
     for page in site.newpages(number=number, get_redirect=get_redirect, repeat=repeat):
         yield page[0]
-        
+
 def FileLinksGenerator(referredPage):
     for page in referredPage.getFileLinks():
         yield page
@@ -56,7 +56,7 @@ def UnusedFilesGenerator(number = 100, repeat = False, site = None):
     if site is None:
         site = wikipedia.getSite()
     for page in site.unusedfiles(number=number, repeat=repeat):
-        yield wikipedia.ImagePage(page.site(), page.title()) 
+        yield wikipedia.ImagePage(page.site(), page.title())
 
 def WithoutInterwikiPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
@@ -186,6 +186,7 @@ def LinksearchPageGenerator(link, step=500, site = None):
         site = wikipedia.getSite()
     elRX = re.compile('<a .* class="external ?" .*</a>.*<a .*>(.*)</a>') #TODO: de-uglify?
     offset = 0
+    pageyeldlist = list()
     found = step
     while found == step:
         found = 0
@@ -194,7 +195,12 @@ def LinksearchPageGenerator(link, step=500, site = None):
         data = site.getUrl(url)
         for elM in elRX.finditer(data):
             found += 1
-            yield wikipedia.Page(site,elM.group(1))
+            pagenameofthelink = elM.group(1)
+            if pagenameofthelink in pageyeldlist:
+                continue
+            else:
+                pageyeldlist.append(pagenameofthelink)
+                yield wikipedia.Page(site, pagenameofthelink)
         offset += step
 
 class GoogleSearchPageGenerator:
@@ -206,9 +212,9 @@ class GoogleSearchPageGenerator:
     '''
     def __init__(self, query = None):
         self.query = query or wikipedia.input(u'Please enter the search query:')
-    
+
     #########
-    # partially commented out because it is probably not in compliance with Google's "Terms of 
+    # partially commented out because it is probably not in compliance with Google's "Terms of
     # service" (see 5.3, http://www.google.com/accounts/TOS?loc=US)
     def queryGoogle(self, query):
         #if config.google_key:
@@ -230,7 +236,7 @@ class GoogleSearchPageGenerator:
         estimatedTotalResultsCount = None
         while not estimatedTotalResultsCount or offset < estimatedTotalResultsCount:
             while (True):
-                # Google often yields 502 errors. 
+                # Google often yields 502 errors.
                 try:
                     wikipedia.output(u'Querying Google, offset %i' % offset)
                     data = google.doGoogleSearch(query, start = offset, filter = False)
@@ -255,7 +261,7 @@ class GoogleSearchPageGenerator:
             offset += 10
 
     #########
-    # commented out because it is probably not in compliance with Google's "Terms of 
+    # commented out because it is probably not in compliance with Google's "Terms of
     # service" (see 5.3, http://www.google.com/accounts/TOS?loc=US)
 
     #def queryViaWeb(self, query):
@@ -460,7 +466,7 @@ def PreloadingGenerator(generator, pageNumber=60):
     if pageNumber < 2:
         raise ValueError("PreloadingGenerator needs to load more than 1 page.")
     pagequeue = Queue.Queue(min(pageNumber//2, 10))
-    preloader = _Preloader(pagequeue, generator, pageNumber) 
+    preloader = _Preloader(pagequeue, generator, pageNumber)
     preloader.start()
     while True:
         # Queue.get() blocks the main thread. This means that the
@@ -476,7 +482,7 @@ def PreloadingGenerator(generator, pageNumber=60):
         if p is None:
             return
         yield p
-    
+
 class GeneratorFactory:
     """
     This factory is responsible for processing command line arguments
@@ -593,4 +599,3 @@ if __name__ == "__main__":
             wikipedia.output(page.title(), toStdout = True)
     finally:
         wikipedia.stopme()
-
