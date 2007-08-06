@@ -4561,7 +4561,7 @@ Global arguments available for all bots:
         helpText = module.__doc__.decode('utf-8')
         if hasattr(module, 'docuReplacements'):
             for key, value in module.docuReplacements.iteritems():
-                helpText = helpText.replace(key, value)
+                helpText = helpText.replace(key, value.strip('\n\r'))
         output(helpText)
     except:
         raise
