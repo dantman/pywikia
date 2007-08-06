@@ -31,7 +31,7 @@ content = {
     'nl': u'{{subst:Wikipedia:Zandbak/schoon zand}}',
     'pl': u'{{Prosimy - NIE ZMIENIAJ, NIE KASUJ, NIE PRZENOŚ tej linijki - pisz niżej}}',
     'pt': u'<!--não apague esta linha-->{{página de testes}}<!--não apagar-->\r\n',
-    'commons': u'{{subst:Sandbox}}<!-- Please edit only below this line. -->\n'
+    'commons': u'{{Sandbox}}\n<!-- Please edit only below this line. -->'
     }
 
 msg = {
