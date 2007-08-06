@@ -30,10 +30,7 @@ Furthermore, the following command line parameters are supported:
                    The -regex argument and given replacements will be ignored if
                    you use -fix.
                    Currently available predefined fixes are:
-                       * HTML - convert HTML tags to wiki syntax, and fix XHTML
-                       * syntax - try to fix bad wiki markup.
-                       * case-de - fix upper/lower case errors in German
-                       * grammar-de - fix grammar and typography in German
+&fixes-help;
     -namespace:n   Number of namespace to process. The parameter can be used
                    multiple times. It works in combination with all other
                    parameters, except for the -start parameter. If you e.g.
@@ -78,14 +75,15 @@ from __future__ import generators
 import sys, re
 import wikipedia, pagegenerators,catlib, config
 
+# Imports predefined replacements tasks from fixes.py
+import fixes
+
 # This is required for the text that is shown when you run this script
 # with the parameter -help.
 docuReplacements = {
-    '&params;': pagegenerators.parameterHelp
+    '&params;':     pagegenerators.parameterHelp,
+    '&fixes-help;': fixes.help,
 }
-
-# Imports predefined replacements tasks from fixes.py
-from fixes import fixes
 
 __version__='$Id$'
 
@@ -392,9 +390,9 @@ def main():
     else:
         # Perform one of the predefined actions.
         try:
-            fix = fixes[fix]
+            fix = fixes.fixes[fix]
         except KeyError:
-            wikipedia.output(u'Available predefined fixes are: %s' % fixes.keys())
+            wikipedia.output(u'Available predefined fixes are: %s' % fixes.fixes.keys())
             wikipedia.stopme()
             sys.exit()
         if fix.has_key('regex'):

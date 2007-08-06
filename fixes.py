@@ -1,6 +1,19 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """ File containing all standard fixes """
 __version__ = '$Id$'
+
+help = """
+                       * HTML       -  Convert HTML tags to wiki syntax, and
+                                       fix XHTML.
+                       * syntax     -  Try to fix bad wiki markup. Do not run
+                                       this in automatic mode, as the bot may
+                                       make mistakes.
+                       * syntax-safe - Like syntax, but less risky, so you can
+                                       run this in automatic mode.
+                       * case-de - fix upper/lower case errors in German
+                       * grammar-de - fix grammar and typography in German
+"""
+
 fixes = {
     # These replacements will convert HTML to wiki syntax where possible, and
     # make remaining tags XHTML compliant.
