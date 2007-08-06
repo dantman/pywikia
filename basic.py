@@ -1,30 +1,32 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 This is not a complete bot; rather, it is a template from which simple
-bots can be made. Change workon to edit the contents of a Wikipedia page,
-save the result as mybot.py, and then just run:
+bots can be made. You can rename it to mybot.py, then edit it in
+whatever way you want.
 
-python mybot.py
+The following parameters are supported:
 
-to have your change be done on all pages of the wiki. If that takes too
-long to work in one stroke, run:
+&params;
 
-python mybot.py Pagename
+    -debug         If given, doesn't do any real changes, but only shows
+                   what would have been changed.
 
-to do all pages starting at pagename.
-
-There is one standard command line option:
-
--debug: Don't do any changes.
+All other parameters will be regarded as part of the title of a single page,
+and the bot will only work on that single page.
 """
 __version__ = '$Id$'
 import wikipedia
 import pagegenerators
 import sys
 
-class BasicBot:
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;': pagegenerators.parameterHelp
+}
 
+class BasicBot:
     # Edit summary message that should be used.
     # NOTE: Put a good description here, and add translations, if possible!
     msg = {
@@ -37,7 +39,7 @@ class BasicBot:
         Constructor. Parameters:
             * generator - The page generator that determines on which pages
                           to work on.
-            * debug     - If True, doesn't do any real changes, but only show
+            * debug     - If True, doesn't do any real changes, but only shows
                           what would have been changed.
         """
         self.generator = generator
@@ -50,7 +52,11 @@ class BasicBot:
             self.treat(page)
 
     def treat(self, page):
+        """
+        Loads the given page, does some changes, and saves it.
+        """
         try:
+            # Load the page
             text = page.get()
         except wikipedia.NoPage:
             wikipedia.output(u"Page %s does not exist; skipping." % page.aslink())
@@ -62,15 +68,17 @@ class BasicBot:
             wikipedia.output(u"Page %s is locked; skipping." % page.aslink())
             return
 
-        # NOTE: Here you can modify the text in whatever way you want.
-        # If you find you do not want to edit this page, just return
+        ################################################################
+        # NOTE: Here you can modify the text in whatever way you want. #
+        ################################################################
 
-        # Example: This puts the text 'Foobar' at the beginning of the page.
-        text = 'Foobar ' + text
+        # If you find out that you do not want to edit this page, just return.
+        # Example: This puts the text 'Test' at the beginning of the page.
+        text = 'Test ' + text
 
         # only save if something was changed
         if text != page.get():
-            # Show the title of the page where the link was found.
+            # Show the title of the page we're working on.
             # Highlight the title in purple.
             colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
             wikipedia.output(u"\n\n>>> %s <<<" % page.title(), colors = colors)
@@ -80,11 +88,12 @@ class BasicBot:
                 choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No'], ['y', 'N'], 'N')
                 if choice == 'y':
                     try:
+                        # Save the page
                         page.put(text)
                     except wikipedia.EditConflict:
                         wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                    except wikipedia.SpamfilterError, e:
-                        wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
+                    except wikipedia.SpamfilterError, error:
+                        wikipedia.output(u'Cannot change %s because of spam blacklist entry %s' % (page.title(), error.url))
 
 
 def main():
