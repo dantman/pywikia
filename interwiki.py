@@ -9,75 +9,16 @@ no more links that are encountered. A rationalization process then selects the
 right interwiki links, and if this is unambiguous, the interwiki links in the
 original page will be automatically updated and the modified page uploaded.
 
-This script understands various command-line arguments:
+These command-line arguments can be used to specify which pages to work on:
 
 &pagegenerators_help;
 
-    -force:        do not ask permission to make "controversial" changes,
-                   like removing a language because none of the found
-                   alternatives actually exists.
-
-    -hint:         used as -hint:de:Anweisung to give the robot a hint
-                   where to start looking for translations. This is only
-                   useful if you specify a single page to work on. If no
-                   text is given after the second ':', the name of the page
-                   itself is used as the title for the hint.
-
-    There are some special hints, trying a number of languages at once:
-    all:    Provides the hint for all languages with at least ca. 100 pages
-    10:     Provides the hint for ca. 10 of the largest languages
-    20:, 30:, 50: Analogous to 10: with ca. 20, 30 and 50 languages 
-    cyril:  Provides the hint for all languages that use the cyrillic alphabet
-
-    -new           Work on the most recent new pages on the wiki
-
-    -same:         looks over all 'serious' languages for the same title.
-                   -same is equivalent to -hint:all:
-
-    -wiktionary:   similar to -same, but will ONLY accept names that are
-                   identical to the original. Also, if the title is not
-                   capitalized, it will only go through other wikis without
-                   automatic capitalization.
-
-    -askhints:     for each page one or more hints are asked. See hint: above
-                   for the format, one can for example give "en:something" or
-                   "20:" as hint.
-
-    -untranslated: works normally on pages with at least one interlanguage
-                   link; asks hints for pages that have none.
-
-    -untranslatedonly: same as -untranslated, but pages which already have a
-                   translation are skipped. Hint: do NOT use this in
-                   combination with -start without a -number limit, because
-                   you will go through the whole alphabet before any queries
-                   are performed!
-
-    -confirm:      ask for confirmation before any page is changed on the
-                   live wiki. Without this argument, additions and
-                   unambiguous modifications are made without confirmation.
-
-    -select:       ask for each link whether it should be include before
-                   changing any page. This is useful if you want to remove
-                   invalid interwiki and if you do multiple hints of which
-                   some might be correct and others incorrect. Combining
-                   -select and -confirm is possible, but seems like overkill.
-
-    -autonomous:   run automatically, do not ask any questions. If a question
-                   to an operator is needed, write the name of the page
-                   to autonomous_problems.dat and continue on the next page.
-
-    -nobacklink:   switch off the backlink warnings
-
-    -number:       used as -number:#, specifies that the robot should process
-                   that amount of pages and then stop. This is only useful in
-                   combination with -start. The default is not to stop.
-
-    -array:        used as -array:#, specifies that the robot should process
-                   that amount of pages at once, only starting to load new
-                   pages in the original language when the total falls below
-                   that number. Default is to process (at least) 100 pages at
-                   once. The number of new ones loaded is equal to the number
-                   that is loaded at once from another language (default 60)
+    -days:         Like -years, but runs through all date pages. Stops at
+                   Dec 31.  If the argument is given in the form -days:X,
+                   it will start at month no. X through Dec 31. If the
+                   argument is simply given as -days, it will run from
+                   Jan 1 through Dec 31.  E.g. for -days:9 it will run
+                   from Sep 1 through Dec 31.
 
     -years:        run on all year pages in numerical order. Stop at year 2050.
                    If the argument is given in the form -years:XYZ, it
@@ -88,26 +29,10 @@ This script understands various command-line arguments:
 
                    This implies -noredirect.
 
-    -noauto:       Do not use the automatic translation feature for years and
-                   dates, only use found links and hints.
-
-    -days:         Like -years, but runs through all date pages. Stops at
-                   Dec 31.  If the argument is given in the form -days:X,
-                   it will start at month no. X through Dec 31. If the
-                   argument is simply given as -days, it will run from
-                   Jan 1 through Dec 31.  E.g. for -days:9 it will run
-                   from Sep 1 through Dec 31.
-
-    -skipfile:     used as -skipfile:filename, skip all links mentioned in
-                   the given file. This does not work with -number!
-
-    -skipauto:     use to skip all pages that can be translated automatically,
-                   like dates, centuries, months, etc.
-
     -restore:      restore a set of "dumped" pages the robot was working on
                    when it terminated.
 
-    -continue:     as restore, but after having gone through the dumped pages,
+    -continue:     like restore, but after having gone through the dumped pages,
                    continue alphabetically starting at the last of the dumped
                    pages.
 
@@ -117,11 +42,94 @@ This script understands various command-line arguments:
                    treats all the mentioned pages. A quicker way to
                    implement warnfile suggestions without verifying them
                    against the live wiki is using the warnfile.py
-                   robot.
+                   script.
+
+Additionaly, these arguments can be used to restrict the bot to certain pages:
+
+    -number:       used as -number:#, specifies that the robot should process
+                   that amount of pages and then stop. This is only useful in
+                   combination with -start. The default is not to stop.
+
+    -bracket       only work on pages that have (in the home language) parenthesis
+                   in their title. All other pages are skipped.
+
+    -skipfile:     used as -skipfile:filename, skip all links mentioned in
+                   the given file. This does not work with -number!
+
+    -skipauto:     use to skip all pages that can be translated automatically,
+                   like dates, centuries, months, etc.
+
+These arguments are useful to provide hints to the bot:
+
+    -hint:         used as -hint:de:Anweisung to give the robot a hint
+                   where to start looking for translations. This is only
+                   useful if you specify a single page to work on. If no
+                   text is given after the second ':', the name of the page
+                   itself is used as the title for the hint.
+
+                   There are some special hints, trying a number of languages
+                   at once:
+                       * all:     All languages with at least ca. 100 articles.
+                       * 10:      The 10 largest languages (sites with most
+                                  articles). Analogous for any other natural
+                                  number.
+                       * cyril:   All languages that use the Cyrillic alphabet.
+                       * chinese: All Chinese dialects.
+                       * scand:   All Scandinavian languages.
+
+    -askhints:     for each page one or more hints are asked. See hint: above
+                   for the format, one can for example give "en:something" or
+                   "20:" as hint.
+
+    -same:         looks over all 'serious' languages for the same title.
+                   -same is equivalent to -hint:all:
+
+    -wiktionary:   similar to -same, but will ONLY accept names that are
+                   identical to the original. Also, if the title is not
+                   capitalized, it will only go through other wikis without
+                   automatic capitalization.
+
+    -untranslated: works normally on pages with at least one interlanguage
+                   link; asks for hints for pages that have none.
+
+    -untranslatedonly: same as -untranslated, but pages which already have a
+                   translation are skipped. Hint: do NOT use this in
+                   combination with -start without a -number limit, because
+                   you will go through the whole alphabet before any queries
+                   are performed!
+
+    -showpage      when asking for hints, show the first bit of the text
+                   of the page always, rather than doing so only when being
+                   asked for (by typing '?'). Only useful in combination
+                   with a hint-asking option like -untranslated, -askhints
+                   or -untranslatedonly
+
+    -noauto:       Do not use the automatic translation feature for years and
+                   dates, only use found links and hints.
+
+These arguments define how much user confirmation is required:
+
+    -autonomous:   run automatically, do not ask any questions. If a question
+                   to an operator is needed, write the name of the page
+                   to autonomous_problems.dat and continue on the next page.
+
+    -confirm:      ask for confirmation before any page is changed on the
+                   live wiki. Without this argument, additions and
+                   unambiguous modifications are made without confirmation.
+
+    -force:        do not ask permission to make "controversial" changes,
+                   like removing a language because none of the found
+                   alternatives actually exists.
+
+    -select:       ask for each link whether it should be include before
+                   changing any page. This is useful if you want to remove
+                   invalid interwiki and if you do multiple hints of which
+                   some might be correct and others incorrect. Combining
+                   -select and -confirm is possible, but seems like overkill.
+
+These arguments specify in which way the bot should follow interwiki links:
 
     -noredirect    do not follow redirects (note: without ending columns).
-
-    -noshownew:    don't show the source of every new pagelink found.
 
     -neverlink:    used as -neverlink:xx where xx is a language code:
                    Disregard any links found to language xx. You can also
@@ -134,11 +142,8 @@ This script understands various command-line arguments:
     -ignorefile:   similar to -ignore, except that the pages are taken from
                    the given file instead of the command line.
 
-    -showpage      when asking for hints, show the first bit of the text
-                   of the page always, rather than doing so only when being
-                   asked for (by typing '?'). Only useful in combination
-                   with a hint-asking option like -untranslated, -askhints
-                   or -untranslatedonly
+The following arguments are only important for users who have accounts for
+multiple languages, and specify on which sites the bot should modify pages:
 
     -localonly     only work on the local wiki, not on other wikis in the family
                    I have a login at
@@ -161,10 +166,18 @@ This script understands various command-line arguments:
                    will be changed if there are that number or more links to
                    change or add
 
-    -bracket       only work on pages that have (in the home language) a bracket
-                   in their title. All other pages are skipped.
+Other arguments:
 
-    -withoutinterwiki work on [[Special:Withoutinterwiki]] articles.
+    -noshownew:    don't show the source of every new pagelink found.
+
+    -nobacklink:   switch off the backlink warnings
+
+    -array:        used as -array:#, specifies that the robot should process
+                   that amount of pages at once, only starting to load new
+                   pages in the original language when the total falls below
+                   that number. Default is to process (at least) 100 pages at
+                   once. The number of new ones loaded is equal to the number
+                   that is loaded at once from another language (default 60)
 
 Some configuration option can be used to change the working of this robot:
 
