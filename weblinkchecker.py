@@ -24,6 +24,13 @@ irrespective of the configuration variable.
 
 When a link is found alive, it will be removed from the .dat file.
 
+The following parameters are supported:
+
+&params;
+
+All other parameters will be regarded as part of the title of a single page,
+and the bot will only work on that single page.
+
 Syntax examples:
     python weblinkchecker.py
         Loads all wiki pages in alphabetical order using the Special:Allpages
@@ -55,6 +62,10 @@ import sys, re
 import codecs, pickle
 import httplib, socket, urlparse, urllib, urllib2
 import threading, time
+
+docuReplacements = {
+    '&params;': pagegenerators.parameterHelp
+}
 
 talk_report_msg = {
     'de': u'Bot: Berichte nicht verfügbaren Weblink',
