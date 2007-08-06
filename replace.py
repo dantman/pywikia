@@ -4,63 +4,51 @@ This bot will make direct text replacements. It will retrieve information on
 which pages might need changes either from an XML dump or a text file, or only
 change a single page.
 
-You can run the bot with the following commandline parameters:
+These command line parameters can be used to specify which pages to work on:
 
--xml         - Retrieve information from a local XML dump (pages_current, see
-               http://download.wikimedia.org).
-               Argument can also be given as "-xml:filename".
--file        - Work on all pages given in a local text file.
-               Will read any [[wiki link]] and use these articles.
-               Argument can also be given as "-file:filename".
--cat         - Work on all pages which are in a specific category.
-               Argument can also be given as "-cat:categoryname".
--page        - Only edit a specific page.
-               Argument can also be given as "-page:pagetitle". You can give this
-               parameter multiple times to edit multiple pages.
--ref         - Work on all pages that link to a certain page.
-               Argument can also be given as "-ref:referredpagetitle".
--linksearch  - Retrieve all the results using Special:Linksearch.
-               Argument can also be given as "-linksearch:url".
--filelinks   - Works on all pages that link to a certain image.
-               Argument can also be given as "-filelinks:ImageName".
--links       - Work on all pages that are linked to from a certain page.
-               Argument can also be given as "-links:linkingpagetitle".
--start       - Work on all pages in the wiki, starting at a given page. Choose
-               "-start:!" to start at the beginning.
-               NOTE: You are advised to use -xml instead of this option; this is
-               meant for cases where there is no recent XML dump.
--regex       - Make replacements using regular expressions. If this argument
-               isn't given, the bot will make simple text replacements.
--except:XYZ  - Ignore pages which contain XYZ. If the -regex argument is given,
-               XYZ will be regarded as a regular expression.
--summary:XYZ - Set the summary message text for the edit to XYZ, bypassing the
-               predefined message texts with original and replacements inserted.
--fix:XYZ     - Perform one of the predefined replacements tasks, which are given
-               in the dictionary 'fixes' defined inside the file fixes.py.
-               The -regex argument and given replacements will be ignored if
-               you use -fix.
-               Currently available predefined fixes are:
-                   * HTML - convert HTML tags to wiki syntax, and fix XHTML
-                   * syntax - try to fix bad wiki markup.
-                   * case-de - fix upper/lower case errors in German
-                   * grammar-de - fix grammar and typography in German
--namespace:n - Number of namespace to process. The parameter can be used
-               multiple times. It works in combination with all other
-               parameters, except for the -start parameter. If you e.g. want to
-               iterate over all user pages starting at User:M, use
-               -start:User:M.
--always      - Don't prompt you for each replacement
--recursive   - Recurse replacement until possible.
--nocase      - Use case insensitive regular expressions.
--allowoverlap - When occurences of the pattern overlap, replace all of them.
-               Warning! Don't use this option if you don't know what you're
-               doing, because it might easily lead to infinite loops then.
-other:       - First argument is the old text, second argument is the new text.
-               If the -regex argument is given, the first argument will be
-               regarded as a regular expression, and the second argument might
-               contain expressions like \\1 or \g<name>.
+&params;
 
-NOTE: Only use either -xml or -file or -page, but don't mix them.
+    -xml           Retrieve information from a local XML dump (pages-articles
+                   or pages-meta-current, see http://download.wikimedia.org).
+                   Argument can also be given as "-xml:filename".
+    -page          Only edit a specific page.
+                   Argument can also be given as "-page:pagetitle". You can
+                   give this parameter multiple times to edit multiple pages.
+
+Furthermore, the following command line parameters are supported:
+
+    -regex         Make replacements using regular expressions. If this argument
+                   isn't given, the bot will make simple text replacements.
+    -except:XYZ    Ignore pages which contain XYZ. If the -regex argument is
+                   given, XYZ will be regarded as a regular expression.
+    -summary:XYZ   Set the summary message text for the edit to XYZ, bypassing
+                   the predefined message texts with original and replacements
+                   inserted.
+    -fix:XYZ       Perform one of the predefined replacements tasks, which are
+                   given in the dictionary 'fixes' defined inside the file
+                   fixes.py.
+                   The -regex argument and given replacements will be ignored if
+                   you use -fix.
+                   Currently available predefined fixes are:
+                       * HTML - convert HTML tags to wiki syntax, and fix XHTML
+                       * syntax - try to fix bad wiki markup.
+                       * case-de - fix upper/lower case errors in German
+                       * grammar-de - fix grammar and typography in German
+    -namespace:n   Number of namespace to process. The parameter can be used
+                   multiple times. It works in combination with all other
+                   parameters, except for the -start parameter. If you e.g.
+                   want to iterate over all categories starting at M, use
+                   -start:Category:M.
+    -always        Don't prompt you for each replacement
+    -recursive     Recurse replacement until possible. Be careful, this might
+                   lead to an infinite loop.
+    -nocase        Use case insensitive regular expressions.
+    -allowoverlap  When occurences of the pattern overlap, replace all of them.
+                   Be careful, this might lead to an infinite loop.
+    other:         First argument is the old text, second argument is the new text.
+                   If the -regex argument is given, the first argument will be
+                   regarded as a regular expression, and the second argument might
+                   contain expressions like \\1 or \g<name>.
 
 Examples:
 
@@ -70,10 +58,10 @@ http://download.wikimedia.org, then use this command:
 
     python replace.py -xml -regex "{{msg:(.*?)}}" "{{\\1}}"
 
-If you have a dump called foobar.xml and want to fix typos, e.g.
+If you have a dump called foobar.xml and want to fix typos in articles, e.g.
 Errror -> Error, use this:
 
-    python replace.py -xml:foobar.xml "Errror" "Error"
+    python replace.py -xml:foobar.xml "Errror" "Error" -namespace:0
 
 If you have a page called 'John Doe' and want to convert HTML tags to wiki
 syntax, use:
@@ -89,6 +77,12 @@ syntax, use:
 from __future__ import generators
 import sys, re
 import wikipedia, pagegenerators,catlib, config
+
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;': pagegenerators.parameterHelp
+}
 
 # Imports predefined replacements tasks from fixes.py
 from fixes import fixes
