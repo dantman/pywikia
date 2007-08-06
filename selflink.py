@@ -5,33 +5,22 @@
 This bot goes over multiple pages of the home wiki, searches for selflinks, and
 allows removing them.
 
-This script understands various command-line arguments:
+These command line parameters can be used to specify which pages to work on:
 
-    -start:        used as -start:page_name, specifies that the robot should
-                   go alphabetically through all pages on the home wiki,
-                   starting at the named page.
+&params;
 
-    -file:         used as -file:file_name, read a list of pages to treat
-                   from the named textfile. Page titles should be enclosed
-                   in [[double-squared brackets]].
+    -xml           Retrieve information from a local XML dump (pages-articles
+                   or pages-meta-current, see http://download.wikimedia.org).
+                   Argument can also be given as "-xml:filename".
 
-    -ref:          used as -ref:page_name, specifies that the robot should
-                   work on all pages referring to the named page.
-
-    -links:        used as -links:page_name, specifies that the robot should
-                   work on all pages referred to from the named page.
-
-    -cat:          used as -cat:category_name, specifies that the robot should
-                   work on all pages in the named category.
-
-    -namespace:n - Number of namespace to process. The parameter can be used
+    -namespace:n   Number of namespace to process. The parameter can be used
                    multiple times. It works in combination with all other
                    parameters, except for the -start parameter. If you e.g.
-                   want to iterate over all user pages starting at User:M, use
-                   -start:User:M.
+                   want to iterate over all categories starting at M, use
+                   -start:Category:M.
 
-All other parameters will be regarded as a page title; in this case, the bot
-will only work on a single page.
+All other parameters will be regarded as part of the title of a single page,
+and the bot will only work on that single page.
 """
 
 __version__='$Id$'
@@ -39,6 +28,12 @@ __version__='$Id$'
 import wikipedia, pagegenerators, catlib
 import editarticle
 import re, sys
+
+# This is required for the text that is shown when you run this script
+# with the parameter -help.
+docuReplacements = {
+    '&params;':     pagegenerators.parameterHelp,
+}
 
 # Summary messages in different languages
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
