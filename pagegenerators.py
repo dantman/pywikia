@@ -6,9 +6,41 @@ object that is iterable (see http://www.python.org/dev/peps/pep-0255/ ) and
 that yields page objects on which other scripts can then work.
 
 In general, there is no need to run this script directly. It can, however,
-be run for testing purposes.
+be run for testing purposes. It will then print the page titles to standard
+output.
+
+These parameters are supported to specify which pages titles to print:
+
+&params;
 """
 __version__='$Id$'
+
+parameterHelp = """    -cat           Work on all pages which are in a specific category.
+                   Argument can also be given as "-cat:categoryname".
+
+    -subcat        Like -cat, but also includes pages in subcategories of the
+                   given category.
+                   Argument can also be given as "-subcat:categoryname".
+
+    -start:        Specifies that the robot should go alphabetically through
+                   all pages on the home wiki, starting at the named page.
+                   Argument can also be given as "-subcat:pagetitle".
+
+    -ref           Work on all pages that link to a certain page.
+                   Argument can also be given as "-ref:referredpagetitle".
+
+    -links         Work on all pages that are linked from a certain page.
+                   Argument can also be given as "-links:linkingpagetitle".
+
+    -file:         used as -file:filename, read a list of pages to treat
+                   from the named text file.
+                   Page titles in the file must be enclosed with [[brackets]]. 
+                   Argument can also be given as "-file:filename"."""
+
+docuReplacements = {
+    '&params;': parameterHelp
+}
+
 
 # Standard library imports
 import re, codecs, sys

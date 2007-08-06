@@ -4531,7 +4531,7 @@ def showHelp(moduleName = None):
     except ValueError: # There was no \ in the module name, so presumably no problem
         pass
     globalHelp =u'''
-    
+
 Global arguments available for all bots:
 
 -lang:xx          Set the language of the wiki you want to work on, overriding
@@ -4558,8 +4558,13 @@ Global arguments available for all bots:
     output(globalHelp)
     try:
         exec('import %s as module' % moduleName)
-        output(module.__doc__, 'utf-8')
+        helpText = module.__doc__.decode('utf-8')
+        if hasattr(module, 'docuReplacements'):
+            for key, value in module.docuReplacements.iteritems():
+                helpText = helpText.replace(key, value)
+        output(helpText)
     except:
+        raise
         output(u'Sorry, no help available for %s' % moduleName)
 
 page_put_queue = Queue.Queue()
