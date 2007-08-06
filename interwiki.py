@@ -166,19 +166,6 @@ multiple languages, and specify on which sites the bot should modify pages:
                    will be changed if there are that number or more links to
                    change or add
 
-Other arguments:
-
-    -noshownew:    don't show the source of every new pagelink found.
-
-    -nobacklink:   switch off the backlink warnings
-
-    -array:        used as -array:#, specifies that the robot should process
-                   that amount of pages at once, only starting to load new
-                   pages in the original language when the total falls below
-                   that number. Default is to process (at least) 100 pages at
-                   once. The number of new ones loaded is equal to the number
-                   that is loaded at once from another language (default 60)
-
 Some configuration option can be used to change the working of this robot:
 
 interwiki_backlink: if set to True, all problems in foreign wikis will
@@ -330,16 +317,13 @@ class Global(object):
     """Container class for global settings.
        Use of globals outside of this is to be avoided."""
     autonomous = False
-    backlink = config.interwiki_backlink
     confirm = False
     select = False
     debug = True
     followredirect = True
     force = False
-    minarraysize = 100
     maxquerysize = 60
     same = False
-    shownew = config.interwiki_shownew
     skip = set()
     skipauto = False
     untranslated = False
@@ -659,7 +643,7 @@ class Subject(object):
                     else:
                         if not (self.isIgnored(redirectTargetPage) or self.namespaceMismatch(page, redirectTargetPage) or self.wiktionaryMismatch(redirectTargetPage) or (page.site().family != redirectTargetPage.site().family)):
                             if self.addIfNew(redirectTargetPage, counter, page):
-                                if globalvar.shownew:
+                                if config.interwiki_shownew:
                                     wikipedia.output(u"%s: %s gives new redirect %s" %  (self.originPage.aslink(), page.aslink(True), redirectTargetPage.aslink(True)))
                 except wikipedia.NoPage:
                     wikipedia.output(u"NOTE: %s does not exist" % page.aslink(True))
@@ -712,7 +696,7 @@ class Subject(object):
                                         wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
                                         break
                                 else:
-                                    if globalvar.shownew:
+                                    if config.interwiki_shownew:
                                         wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
@@ -856,7 +840,7 @@ class Subject(object):
         """Round up the subject, making any necessary changes. This method
            should be called exactly once after the todo list has gone empty.
 
-           This contains a shortcut: if a subject array is given in the argument
+           This contains a shortcut: if a subject list is given in the argument
            bot, just before submitting a page change to the live wiki it is
            checked whether we will have to wait. If that is the case, the bot will
            be told to make another get request first."""
@@ -947,7 +931,7 @@ class Subject(object):
         #    self.createGraph()
             
         # don't report backlinks for pages we already changed
-        if globalvar.backlink:
+        if config.interwiki_backlink:
             self.reportBacklinks(new, updatedSites)
 
     def replaceLinks(self, page, newPages, bot):
@@ -1236,7 +1220,7 @@ class InterwikiBot(object):
         # Do we still have enough subjects to work on for which the
         # home language has been retrieved? This is rough, because
         # some subjects may need to retrieve a second home-language page!
-        if len(self.subjects) - mycount < globalvar.minarraysize:
+        if len(self.subjects) - mycount < config.interwiki_min_subjects:
             # Can we make more home-language queries by adding subjects?
             if self.pageGenerator and mycount < globalvar.maxquerysize:
                 timeout = 60
@@ -1430,10 +1414,6 @@ if __name__ == "__main__":
                 globalvar.select = True
             elif arg == '-autonomous':
                 globalvar.autonomous = True
-            elif arg == '-noshownew':
-                globalvar.shownew = False
-            elif arg == '-nobacklink':
-                globalvar.backlink = False
             elif arg == '-noredirect':
                 globalvar.followredirect = False
             elif arg == '-localonly':
@@ -1482,8 +1462,6 @@ if __name__ == "__main__":
             # deprecated for consistency with other scripts
             elif arg.startswith('-number:'):
                 number = int(arg[8:])
-            elif arg.startswith('-array:'):
-                globalvar.minarraysize = int(arg[7:])
             elif arg.startswith('-neverlink:'):
                 globalvar.neverlink += arg[11:].split(",")
             elif arg.startswith('-ignore:'):

@@ -178,6 +178,12 @@ interwiki_shownew = True
 # You need pydot for this: http://dkbza.org/pydot.html
 interwiki_graph = False
 
+# Specifies that the robot should process that amount of subjects at a time,
+# only starting to load new pages in the original language when the total
+# falls below that number. Default is to process (at least) 100 subjects at
+# once.
+interwiki_min_subjects = 100
+
 # If interwiki graphs are enabled, which format(s) should be used?
 # Supported formats include png, jpg, ps, and svg. See:
 # http://www.graphviz.org/doc/info/output.html
