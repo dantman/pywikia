@@ -352,9 +352,6 @@ def main():
             summary_commandline = True
         elif arg.startswith('-allowoverlap'):
             allowoverlap = True
-        elif arg.startswith('-linksearch:'):
-            linkselected = (arg[12:])
-            gen = pagegenerators.LinksearchPageGenerator(linkselected)
         else:
             generator = genFactory.handleArg(arg)
             if generator:
