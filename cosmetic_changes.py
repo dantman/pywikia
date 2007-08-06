@@ -1,15 +1,43 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This module can do slight modifications to a wiki page source code such that
 the code looks cleaner. The changes are not supposed to change the look of the
 rendered wiki page.
 
-WARNING: This module needs more testing!
+The following parameters are supported:
+
+&params;
+
+All other parameters will be regarded as part of the title of a single page,
+and the bot will only work on that single page.
+
+&warning;
+
+For regular use, it is recommended to put this line into your user-config.py:
+
+    cosmetic_changes = True
+
+There is another config variable: You can set
+
+    cosmetic_changes_mylang_only = False
+
+if you're running a bot on multiple sites and want to do cosmetic changes on
+all of them, but be careful if you do.
 """
 __version__ = '$Id$'
 import wikipedia, pagegenerators
 import sys
 import re
+
+warning = """ATTENTION: You can run this script as a stand-alone for testing purposes.
+However, the changes are that are made are only minor, and other users
+might get angry if you fill the version histories and watchlists with such
+irrelevant changes."""
+
+docuReplacements = {
+    '&params;': pagegenerators.parameterHelp,
+    '&warning;': warning,
+}
 
 # Summary message when using this module as a stand-alone script
 msg_standalone = {
@@ -20,7 +48,7 @@ msg_standalone = {
     'nl': u'Bot: Cosmetische veranderingen',
     'pl': u'Robot dokonuje poprawek kosmetycznych',
     'pt': u'Bot: Mudanças triviais',
-    }
+}
 
 # Summary message  that will be appended to the normal message when
 # cosmetic changes are made on the fly
@@ -32,7 +60,7 @@ msg_append = {
     'nl': u'; cosmetische veranderingen',
     'pl': u'; zmiany kosmetyczne',
     'pt': u'; mudanças triviais',
-    }
+}
 
 deprecatedTemplates = {
     'wikipedia': {
@@ -316,19 +344,21 @@ def main():
         else:
             pageTitle.append(arg)
 
-    if wikipedia.getSite() == wikipedia.getSite('nl','wikipedia'):
-        print "Deze bot is op WikipediaNL niet gewenst."
-        print "Het toevoegen van cosmetic changes bij andere veranderingen is toegestaan,"
-        print "maar cosmetic_changes als stand-alone bot niet."
-        print "Vind a.u.b. een nuttig gebruik voor uw bot."
-        sys.exit()
+    # Disabled this check. Although the point is still valid, there
+    # is now a warning and a prompt (see below).
+    #if wikipedia.getSite() == wikipedia.getSite('nl','wikipedia'):
+        #print "Deze bot is op WikipediaNL niet gewenst."
+        #print "Het toevoegen van cosmetic changes bij andere veranderingen is toegestaan,"
+        #print "maar cosmetic_changes als stand-alone bot niet."
+        #print "Vind a.u.b. een nuttig gebruik voor uw bot."
+        #sys.exit()
 
     if pageTitle:
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = iter([page])
     if not gen:
         wikipedia.showHelp()
-    else:
+    elif wikipedia.inputChoice(warning + '\nDo you really want to continue?', ['yes', 'no'], ['y', 'N'], 'N') == 'y':
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = CosmeticChangesBot(preloadingGen)
         bot.run()
