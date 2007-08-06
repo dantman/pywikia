@@ -1784,8 +1784,12 @@ class Page(object):
             host = self.site().hostname()
             address = self.site().delete_address(self.urlname())
 
-            self.site().forceLogin(sysop = True)
-
+            try:
+                self.site().forceLogin(sysop = True)
+            except NoUsername, error:
+                # user hasn't entered an admin username.
+                output(str(error))
+                return
             token = self.site().getToken(self, sysop = True)
             predata = {
                 'wpReason': reason,
