@@ -18,24 +18,58 @@ __version__='$Id$'
 parameterHelp = """    -cat           Work on all pages which are in a specific category.
                    Argument can also be given as "-cat:categoryname".
 
-    -subcat        Like -cat, but also includes pages in subcategories of the
-                   given category.
-                   Argument can also be given as "-subcat:categoryname".
+    -file          Read a list of pages to treat from the named text file.
+                   Page titles in the file must be enclosed with [[brackets]]. 
+                   Argument can also be given as "-file:filename".
 
-    -start:        Specifies that the robot should go alphabetically through
-                   all pages on the home wiki, starting at the named page.
-                   Argument can also be given as "-subcat:pagetitle".
+    -filelinks     Work on all pages that use a certain image/media file.
+                   Argument can also be given as "-file:filename".
 
-    -ref           Work on all pages that link to a certain page.
-                   Argument can also be given as "-ref:referredpagetitle".
+    -google        Work on all pages that are found in a Google search.
+                   You need a Google Web API license key. Note that Google
+                   doesn't give out license keys anymore. See google_key in
+                   config.py for instructions.
+                   Argument can also be given as "-google:searchstring".
 
     -links         Work on all pages that are linked from a certain page.
                    Argument can also be given as "-links:linkingpagetitle".
 
-    -file:         used as -file:filename, read a list of pages to treat
-                   from the named text file.
-                   Page titles in the file must be enclosed with [[brackets]]. 
-                   Argument can also be given as "-file:filename"."""
+    -new           Work on the 60 newest pages. If given as -new:x, will work
+                   on the x newest pages.
+
+    -ref           Work on all pages that link to a certain page.
+                   Argument can also be given as "-ref:referredpagetitle".
+
+    -start         Specifies that the robot should go alphabetically through
+                   all pages on the home wiki, starting at the named page.
+                   Argument can also be given as "-subcat:pagetitle".
+
+    -subcat        Like -cat, but also includes pages in subcategories of the
+                   given category.
+                   Argument can also be given as "-subcat:categoryname".
+
+    -transcludes   Work on all pages that use a certain template.
+                   Argument can also be given as "-transcludes:Template:Title".
+
+    -unusedfiles   Work on all description pages of images/media files that are
+                   not used anywhere.
+                   Argument can also be given as "-unusedfiles:n" where
+                   n is some number (??).
+
+    -unwatched     Work on all articles that are not watched by anyone.
+                   Argument can also be given as "-unusedfiles:n" where
+                   n is some number (??).
+
+    -weblink       Specifies that the robot should go alphabetically through
+                   all pages on the home wiki, starting at the named page.
+                   Argument can also be given as "-subcat:pagetitle".
+
+    -withoutinterwiki Work on all pages that don't have interlanguage links.
+                   Argument can also be given as "-withoutinterwiki:n" where
+                   n is some number (??).
+"""
+
+
 
 docuReplacements = {
     '&params;': parameterHelp
@@ -593,7 +627,7 @@ class GeneratorFactory:
                 transclusionPageTitle = wikipedia.input(u'Pages that transclude which page should be processed?')
             else:
                 transclusionPageTitle = arg[len('-transcludes:'):]
-            transclusionPage = wikipedia.Page(wikipedia.getSite(), transclusionPageTitle)
+            transclusionPage = wikipedia.Page(wikipedia.getSite(), 'Template:%s' % transclusionPageTitle)
             gen = ReferringPageGenerator(transclusionPage, onlyTemplateInclusion = True)
         elif arg.startswith('-start'):
             if len(arg) == 6:
@@ -622,12 +656,16 @@ class GeneratorFactory:
 
 if __name__ == "__main__":
     try:
+        gen = None
         genFactory = GeneratorFactory()
         for arg in wikipedia.handleArgs():
             generator = genFactory.handleArg(arg)
             if generator:
                 gen = generator
-        for page in gen:
-            wikipedia.output(page.title(), toStdout = True)
+        if gen:
+            for page in gen:
+                wikipedia.output(page.title(), toStdout = True)
+        else:
+            wikipedia.showHelp('pagegenerators')
     finally:
         wikipedia.stopme()
