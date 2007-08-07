@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Script to upload images to wikipedia.
 
@@ -262,7 +262,7 @@ def main(args):
             else:
                 description.append(arg)
     description = u' '.join(description)
-    bot = UploadRobot(url, description, keepFilename, verifyDescription)
+    bot = UploadRobot(url, description=description, keepFilename=keepFilename, verifyDescription=verifyDescription)
     bot.run()
 
 if __name__ == "__main__":
