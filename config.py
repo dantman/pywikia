@@ -85,6 +85,8 @@ textfile_encoding = 'utf-8'
 # tkinter isn't yet ready
 userinterface = 'terminal'
 
+userinterface_lang = None
+
 # What color should we used for text? This should match your
 # operating system's default color for console text.
 # Note: This setting is only required for Windows users.

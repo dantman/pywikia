@@ -118,11 +118,12 @@ import httplib, socket, urllib
 import traceback
 import time, threading, Queue
 import math
-import re, md5, codecs, difflib, locale
+import re, md5, codecs, difflib
 import xml.sax, xml.sax.handler
 import htmlentitydefs
 import warnings
 import unicodedata
+import gettext, locale
 
 import config, login
 import xmlreader
@@ -2410,7 +2411,7 @@ class Throttle(object):
                 f.write(str(p)+' '+str(processes[p])+'\n')
             f.close()
             self.process_multiplicity = count
-            output(u"Checked for running processes. %s processes currently running, including the current process." % count)
+            output(_(u"Checked for running processes. %i processes currently running, including the current process.") % count)
         finally:
             self.lock.release()
 
@@ -4215,6 +4216,8 @@ For other possible configuration variables check config.py.
 """)
     sys.exit(1)
 
+ui_langs = [(config.userinterface_lang or config.mylang), 'en']
+gettext.translation(domain = 'pywikipedia', localedir = _wt.absoluteFilename('translations'), languages = ui_langs).install(unicode = True)
 
 # Languages to use for comment text after the actual language but before
 # en:. For example, if for language 'xx', you want the preference of

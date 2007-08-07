@@ -1,0 +1,29 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2007-08-07 16:25+CEST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: selflink.py:111
+msgid ""
+"\n"
+"What shall be done with this selflink?"
+msgstr "Was soll mit diesem Selbstlink gemacht werden?"
+
+#: wikipedia.py:2414
+msgid ""
+"Checked for running processes. %i processes currently running, including the "
+"current process."
+msgstr ""
+"Prüfe auf laufende Prozesse. %i Prozesse laufen momentan, diesen Prozess "
+"eingeschlossen."

@@ -36,8 +36,6 @@ docuReplacements = {
 }
 
 # Summary messages in different languages
-# NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
-# below.
 msg = {
           'de':u'Bot: Entferne Selbstlinks',
           'en':u'Robot: Removing selflinks',
@@ -110,7 +108,7 @@ class SelflinkBot:
             # at the end of the link, reset the color to default
             colors = [None for c in text[max(0, match.start() - context) : match.start()]] + [12 for c in text[match.start() : match.end()]] + [None for c in text[match.end() : match.end() + context]]
             wikipedia.output(text[max(0, match.start() - context) : match.end() + context], colors = colors)
-            choice = wikipedia.inputChoice(u'\nWhat shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'edit', 'more context'], ['U', 'b', 's', 'e', 'm'], 'u')
+            choice = wikipedia.inputChoice(_(u'\nWhat shall be done with this selflink?'),  ['unlink', 'make bold', 'skip', 'edit', 'more context'], ['u', 'b', 's', 'e', 'm'], 'u')
             wikipedia.output(u'')
 
             if choice == 's':
