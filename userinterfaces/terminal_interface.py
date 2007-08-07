@@ -1,4 +1,4 @@
-﻿
+
 __version__ = '$Id$'
 
 import config, transliteration
@@ -198,11 +198,15 @@ class UI:
             hotkey = hotkeys[i]
             # try to mark a part of the option name as the hotkey
             m = re.search('[%s%s]' % (hotkey.lower(), hotkey.upper()), option)
+            if hotkey == default:
+                caseHotkey = hotkey.upper()
+            else:
+                caseHotkey = hotkey
             if m:
                 pos = m.start()
-                options[i] = '%s[%s]%s' % (option[:pos], hotkey, option[pos+1:])
+                options[i] = '%s[%s]%s' % (option[:pos], caseHotkey, option[pos+1:])
             else:
-                options[i] = '%s [%s]' % (option, hotkey)
+                options[i] = '%s [%s]' % (option, caseHotkey)
         # loop until the user entered a valid choice
         while True:
             prompt = '%s (%s)' % (question, ', '.join(options))
