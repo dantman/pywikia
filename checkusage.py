@@ -64,6 +64,7 @@ def strip_image(title):
  
 class HTTP(object):
 	def __init__(self, host):
+		self.host = host
 		self._conn = httplib.HTTPConnection(host)
 		#self._conn.set_debuglevel(100)
 		self._conn.connect()
@@ -105,10 +106,16 @@ class HTTP(object):
 		else:
 			raise ValueError('Unknown api %s' % repr(api))
  
-		res = self.request(method, query_string,
-			{'Host': host, 'Content-Type': 'application/x-www-form-urlencoded'}, data)
-		data = simplejson.load(res)
-		res.close()
+		try:
+			res = self.request(method, query_string,
+				{'Host': host, 'Content-Type': 'application/x-www-form-urlencoded'}, data)
+		except httplib.ImproperConnectionState:
+			self._conn.close()
+			self.__init__(self.host)
+		try:
+			data = simplejson.load(res)
+		finally:
+			res.close()
 		return data
 	def close(self):
 		self._conn.close()
