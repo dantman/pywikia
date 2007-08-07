@@ -38,7 +38,7 @@ Returns the time in seconds since the latest known edit of dbname.
 __version__ = '$Id$'
 #
  
-import httplib, urlparse, socket
+import httplib, urlparse, socket, time
 from urllib import urlencode
 import simplejson
  
