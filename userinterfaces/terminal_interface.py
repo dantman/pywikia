@@ -58,14 +58,14 @@ class UI:
     # NOTE: We use sys.stdout.write() instead of print because print adds a
     # newline.
     
-    def printColorizedInUnix(self, text, colors, targetStream):
+    def printColorizedInUnix(self, text, targetStream):
         lastColor = None
         for key, value in unixColors.iteritems():
             text = text.replace('\03{%s}' % key, value)
         text = text.replace('\03{default}', chr(27) + '[0m')     # Unix end tag to switch back to default
         targetStream.write(text.encode(config.console_encoding, 'replace'))
 
-    def printColorizedInWindows(self, text, colors, targetStream):
+    def printColorizedInWindows(self, text, targetStream):
         """
         This only works in Python 2.5 or higher.
         """
@@ -101,28 +101,21 @@ class UI:
                 line += '\n'
                 targetStream.write(line.encode(config.console_encoding, 'replace'))
 
-    def printColorized(self, text, colors, targetStream):
-        if colors and config.colorized_output:
+    def printColorized(self, text, targetStream):
+        if config.colorized_output:
             if sys.platform == 'win32':
-                self.printColorizedInWindows(text, colors, targetStream)
+                self.printColorizedInWindows(text, targetStream)
             else:
-                self.printColorizedInUnix(text, colors, targetStream)
+                self.printColorizedInUnix(text, targetStream)
         else:
             targetStream.write(text.encode(config.console_encoding, 'replace'))
 
-    def output(self, text, colors = None, newline = True, toStdout = False):
+    def output(self, text, newline = True, toStdout = False):
         """
         If a character can't be displayed in the encoding used by the user's
         terminal, it will be replaced with a question mark or by a
         transliteration.
         """
-        if colors:
-            if len(colors) != len(text):
-                print "DBG> BUG: Text color list length different from text length!"
-                print traceback.print_stack()
-                print "DBG> Attempting to recover, but please report this problem"
-        else:
-            colors = [None for char in text]
         if config.transliterate:
             # Encode our unicode string in the encoding used by the user's console,
             # and decode it back to unicode. Then we can see which characters
@@ -159,15 +152,14 @@ class UI:
             text = transliteratedText
         if newline:
             text += u'\n'
-            colors.append(None)
 
         if toStdout:
             targetStream = sys.stdout
         else:
             targetStream = sys.stderr
-        self.printColorized(text, colors, targetStream)
+        self.printColorized(text, targetStream)
 
-    def input(self, question, colors = None, password = False):
+    def input(self, question, password = False):
         """
         Works like raw_input(), but returns a unicode string instead of ASCII.
 
@@ -178,10 +170,7 @@ class UI:
         # sound the terminal bell to notify the user
         if config.ring_bell:
             sys.stdout.write('\07')
-        if colors:
-            self.output(question + ' ', colors = colors + [None], newline=False)
-        else:
-            self.output(question + ' ', newline = False)
+        self.output(question + ' ', newline = False)
         if password:
             import getpass
             text = getpass.getpass('')

@@ -155,7 +155,7 @@ class UI:
 
         MainloopThread(self.parent).start()
 
-    def output(self, text, urgency = 1, colors = None, newline = True, toStdout = False):
+    def output(self, text, urgency = 1, newline = True, toStdout = False):
         """
         urgency levels:
             0 - Debug output. Won't be shown in normal mode.
@@ -174,21 +174,22 @@ class UI:
             # Save the line number before appending text
             lineCount = float(self.logBox.index(END).split('.')[0]) - 1
             self.logBox.insert(END, text)
-            if colors:
-                # How many characters we already added in this line
-                offset = 0
-                # We create a tag region for each colored character.
-                # It would be more efficient to try to use longer
-                # regions.
-                for i in range(len(colors)):
-                    if text[i] == '\n':
-                        lineCount += 1
-                        offset = i + 1
-                    if colors[i]:
-                        startidx = '%i.%i' % (lineCount, i - offset)
-                        endidx = '%i.%i' % (lineCount, i + 1 - offset)
-                        # tag the whole occurence (start included, stop excluded)
-                        self.logBox.tag_add(colors[i], startidx , endidx)
+            # colors support currently broken, sorry.
+            #if colors:
+                ## How many characters we already added in this line
+                #offset = 0
+                ## We create a tag region for each colored character.
+                ## It would be more efficient to try to use longer
+                ## regions.
+                #for i in range(len(colors)):
+                    #if text[i] == '\n':
+                        #lineCount += 1
+                        #offset = i + 1
+                    #if colors[i]:
+                        #startidx = '%i.%i' % (lineCount, i - offset)
+                        #endidx = '%i.%i' % (lineCount, i + 1 - offset)
+                        ## tag the whole occurence (start included, stop excluded)
+                        #self.logBox.tag_add(colors[i], startidx , endidx)
                         
                         
             if newline:
@@ -196,7 +197,7 @@ class UI:
             # auto-scroll down
             self.logBox.see(END)
 
-    def input(self, question, colors=None, password = False):
+    def input(self, question, password = False):
         """
         Returns a unicode string.
         """

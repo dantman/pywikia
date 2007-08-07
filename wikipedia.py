@@ -4440,16 +4440,12 @@ def activateLog(logname):
 output_lock = threading.Lock()
 input_lock = threading.Lock()
 output_cache = []
-def output(text, decoder = None, colors = [], newline = True, toStdout = False):
+def output(text, decoder = None, newline = True, toStdout = False):
     """
     Works like print, but uses the encoding used by the user's console
     (console_encoding in the configuration file) instead of ASCII.
     If decoder is None, text should be a unicode string. Otherwise it
     should be encoded in the given encoding.
-
-    colors is a list of integers, one for each character of text. If a
-    list entry is None, the default color will be used for the
-    character at that position.
 
     If newline is True, a linebreak will be added after printing the text.
 
@@ -4475,9 +4471,9 @@ def output(text, decoder = None, colors = [], newline = True, toStdout = False):
             logfile.write(text + '\n')
             logfile.flush()
         if input_lock.locked():
-            cache_output(text, colors = colors, newline = newline, toStdout = toStdout)
+            cache_output(text, newline = newline, toStdout = toStdout)
         else:
-            ui.output(text, colors = colors, newline = newline, toStdout = toStdout)
+            ui.output(text, newline = newline, toStdout = toStdout)
     finally:
         output_lock.release()
 
@@ -4489,7 +4485,7 @@ def flush_output_cache():
         (args, kwargs) = output_cache.pop(0)
         ui.output(*args, **kwargs)
         
-def input(question, colors = None, password = False):
+def input(question, password = False):
     """
     Asks the user a question, then returns the user's answer.
 
@@ -4497,14 +4493,13 @@ def input(question, colors = None, password = False):
     * question - a unicode string that will be shown to the user. Don't add a
                  space after the question mark/colon, this method will do this
                  for you.
-    * colors   - same as in output().
     * password - if True, hides the user's input (for password entry).
 
     Returns a unicode string.
     """
     input_lock.acquire()
     try:
-        data = ui.input(question, colors, password)
+        data = ui.input(question, password)
     finally:    
         flush_output_cache()
         input_lock.release()
