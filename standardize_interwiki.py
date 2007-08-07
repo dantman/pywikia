@@ -44,57 +44,7 @@ for arg in wikipedia.handleArgs():
             start = str(wikipedia.input(u'From what page do you want to start?'))
         else:
             start = str(arg[7:])
- 
-# Function stolen from wikipedia.py and modified ad hoc by Filnik.
-def Diff(oldtext, newtext):
-    """
-    Prints a string showing the differences between oldtext and newtext.
-    The differences are highlighted (only on Unix systems) to show which
-    changes were made.
-    """
-    # For information on difflib, see http://pydoc.org/2.3/difflib.html
-    color = {
-        '+': 10, # green
-        '-': 12  # red
-    }
-    diff = u''
-    colors = []
-    # This will store the last line beginning with + or -.
-    lastline = None
-    # For testing purposes only: show original, uncolored diff
-    #     for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
-    #         print line
-    for line in difflib.ndiff(oldtext.splitlines(), newtext.splitlines()):
-        if line.startswith('?'):
-            # initialize color vector with None, which means default color
-            lastcolors = [None for c in lastline]
-            # colorize the + or - sign
-            lastcolors[0] = color[lastline[0]]
-            # colorize changed parts in red or green
-            for i in range(min(len(line), len(lastline))):
-                if line[i] != ' ':
-                    lastcolors[i] = color[lastline[0]]
-            diff += lastline + '\n'
-            # append one None (default color) for the newline character
-            colors += lastcolors + [None]
-        elif lastline:
-            diff += lastline + '\n'
-            # colorize the + or - sign only
-            lastcolors = [None for c in lastline]
-            lastcolors[0] = color[lastline[0]]
-            colors += lastcolors + [None]
-        lastline = None
-        if line[0] in ('+', '-'):
-            lastline = line
-    # there might be one + or - line left that wasn't followed by a ? line.
-    if lastline:
-        diff += lastline + '\n'
-        # colorize the + or - sign only
-        lastcolors = [None for c in lastline]
-        lastcolors[0] = color[lastline[0]]
-        colors += lastcolors + [None]
-    return (diff, colors)
- 
+
 # What follows is the main part of the code.
 try:
     for pl in site.allpages(start):
@@ -112,15 +62,7 @@ try:
         newtext = wikipedia.replaceLanguageLinks(oldtext, new)
         if new:
             if oldtext != newtext:
-                # Display the diff
-                data = Diff(oldtext, newtext)
-                diff = data[0]
-                colors = data[1]
-                if diff == '':
-                    wikipedia.output(u'No changes needed.')
-                    continue
-                else:
-                    wikipedia.output(diff, colors = colors)
+                wikipedia.showDiff(oldtext, newtext)
                 # Submit changes
                 try:
                     status, reason, data = pl.put(newtext, comment=comm)
