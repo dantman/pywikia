@@ -302,10 +302,9 @@ class CosmeticChangesBot:
 
     def treat(self, page):
         try:
-            # Show the title of the page where the link was found.
+            # Show the title of the page we're working on.
             # Highlight the title in purple.
-            colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
-            wikipedia.output(u'\n>>> %s <<<' % page.title(), colors = colors)
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             ccToolkit = CosmeticChangesToolkit(page.site(), debug = True)
             changedText = ccToolkit.change(page.get())
             if changedText != page.get():

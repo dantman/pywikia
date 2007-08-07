@@ -534,8 +534,7 @@ class CategoryTidyRobot:
         wikipedia.output(u'')
         # Show the title of the page where the link was found.
         # Highlight the title in purple.
-        colors = [None] * 14 + [13] * len(article.title()) + [None] * 15 + [13] * len(current_cat.title())
-        wikipedia.output(u'Treating page %s, currently in %s' % (article.title(), current_cat.title()), colors = colors)
+        wikipedia.output(u'Treating page \03{lightpurple}%s\03{default}, currently in \03{lightpurple}%s\03{default}' % (article.title(), current_cat.title()))
 
         # Determine a reasonable amount of context to print
         try:

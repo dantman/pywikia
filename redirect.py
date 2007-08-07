@@ -198,10 +198,9 @@ class RedirectRobot:
 
         for redir_name in self.generator.retrieve_broken_redirects():
             redir_page = wikipedia.Page(wikipedia.getSite(), redir_name)
-            # Show the title of the page where the link was found.
+            # Show the title of the page we're working on.
             # Highlight the title in purple.
-            colors = [None] * 5 + [13] * len(redir_page.title()) + [None] * 4
-            wikipedia.output(u'\n>>> %s <<<' % redir_page.title(), colors = colors)
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % redir_page.title())
             try:
                 target_name = redir_page.getRedirectTarget()
             except wikipedia.IsNotRedirectPage:
@@ -226,10 +225,9 @@ class RedirectRobot:
         mysite = wikipedia.getSite()
         for redir_name in self.generator.retrieve_double_redirects():
             redir = wikipedia.Page(mysite, redir_name)
-            # Show the title of the page where the link was found.
+            # Show the title of the page we're working on.
             # Highlight the title in purple.
-            colors = [None] * 5 + [13] * len(redir.title()) + [None] * 4
-            wikipedia.output(u'\n>>> %s <<<' % redir.title(), colors = colors)
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % redir.title())
             try:
                 target = redir.getRedirectTarget()
             except wikipedia.IsNotRedirectPage:

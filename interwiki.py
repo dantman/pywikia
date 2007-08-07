@@ -948,9 +948,7 @@ class Subject(object):
             wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % page.aslink(True))
             raise SaveError
         # Show a message in purple.
-        text = u"Updating links on page %s." % page.aslink(True)
-        colors = [13] * len(text)
-        wikipedia.output(text, colors = colors)
+        wikipedia.output("\03{lightpurple}Updating links on page %s.\03{default}" % page.aslink(True))
 
         # clone original newPages dictionary, so that we can modify it to the local page's needs
         new = dict(newPages)

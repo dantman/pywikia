@@ -56,9 +56,9 @@ class CapitalizeBot:
     def run(self):
         for page in self.generator:
             page_t = page.title()
-            np = wikipedia.Page(wikipedia.getSite(), page_t.capitalize())
-            colors = [None] * 3 + [13] * len(page_t) + [None] * 4
-            wikipedia.output(u'>> %s <<\n' % page_t, colors = colors)
+            # Show the title of the page we're working on.
+            # Highlight the title in purple.
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page_t)
             if not np.exists():
                 wikipedia.output(u'%s don\'t exist' % np.title())
                 if not self.acceptall:

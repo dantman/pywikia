@@ -123,8 +123,7 @@ class PageFromFileRobot:
         page = wikipedia.Page(mysite, title)
         # Show the title of the page we're working on.
         # Highlight the title in purple.
-        colors = [None] * 6 + [13] * len(title) + [None] * 4
-        wikipedia.output(u"\n\n>>> %s <<<" % title, colors = colors)
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         commenttext = wikipedia.translate(mysite, self.msg)
 
         #Remove trailing newlines (cause troubles when creating redirects)

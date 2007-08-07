@@ -44,13 +44,11 @@ def treat(text, linkedPage, targetPage):
 
         # how many bytes should be displayed around the current link
         context = 30
-        # This loop will run while the user doesn't choose an option
-        # that will actually change the page
-        colors = [None for c in text[max(0, m.start() - context) : m.start()]] + [12 for c in text[m.start() : m.end()]] + [None for c in text[m.end() : m.end() + context]]
-        wikipedia.output(text[max(0, m.start() - context) : m.end() + context], colors = colors)
+                    # at the beginning of the link, start red color.
+                    # at the end of the link, reset the color to default
+                    wikipedia.output(text[m.start() - context : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
         while True:
-            colors = [None for c in u"Option (n=do not change, y=change link to "] + [14 for c in targetPage.title()] + [None for c in u", r=change and replace text, u=unlink)"]
-            choice = wikipedia.input(u"Option (n=do not change, y=change link to %s, r=change and replace text, u=unlink)"%targetPage.title(),colors=colors)
+            choice = wikipedia.input(u"Option (n=do not change, y=change link to \03{lightpurple}%s\03{default}, r=change and replace text, u=unlink)"%targetPage.title())
             try:
                 choice = choice[0]
             except:
@@ -104,10 +102,9 @@ def workon(page):
         text = page.get()
     except wikipedia.IsRedirectPage:
         return
-    # Show the title of the page where the link was found.
+    # Show the title of the page we're working on.
     # Highlight the title in purple.
-    colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
-    wikipedia.output(u"\n\n>>> %s <<<" % page.title(), colors = colors)
+    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
     links = page.linkedPages()
     wikipedia.getall(mysite,links)
     for page2 in links:

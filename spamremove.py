@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #!/usr/bin/python
 
 import wikipedia, editarticle
@@ -47,11 +47,9 @@ def main():
         text = p.get()
         if not spamSite in text:
             continue
-        wikipedia.output(u'')
-        # Show the title of the page where the link was found.
+        # Show the title of the page we're working on.
         # Highlight the title in purple.
-        colors = [None] * 6 + [13] * len(p.title()) + [None] * 4
-        wikipedia.output(u"\n\n>>> %s <<<" % p.title(), colors = colors)
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         lines = text.split('\n')
         newpage = []
         lastok = ""
@@ -59,7 +57,7 @@ def main():
             if spamSite in line:
                 if lastok:
                     wikipedia.output(lastok)
-                wikipedia.output(line, colors = [12] * len(line))
+                wikipedia.output('\03{lightred}%s\03{default}' % line)
                 lastok = None
             else:
                 newpage.append(line)

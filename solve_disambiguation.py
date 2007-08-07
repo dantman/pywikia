@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Script to help a human solve disambiguations by presenting a set of options.
@@ -576,15 +576,11 @@ class DisambiguationRobot(object):
                 while True:
                     # Show the title of the page where the link was found.
                     # Highlight the title in purple.
-                    colors = [None] * 6 + [13] * len(refPage.title()) + [None] * 4
-                    wikipedia.output(u"\n\n>>> %s <<<" % refPage.title(), colors = colors)
-                    
+                    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} \<<<" % refPage.title())
                     
                     # at the beginning of the link, start red color.
                     # at the end of the link, reset the color to default
-                    
-                    colors = [None for c in text[max(0, m.start() - context) : m.start()]] + [12 for c in text[m.start() : m.end()]] + [None for c in text[m.end() : m.end() + context]]
-                    wikipedia.output(text[max(0, m.start() - context) : m.end() + context], colors = colors)
+                    wikipedia.output(text[m.start() - context : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
 
                     if not self.always:
                         if edited:

@@ -80,8 +80,7 @@ class BasicBot:
         if text != page.get():
             # Show the title of the page we're working on.
             # Highlight the title in purple.
-            colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
-            wikipedia.output(u"\n\n>>> %s <<<" % page.title(), colors = colors)
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             # show what was changed
             wikipedia.showDiff(page.get(), text)
             if not self.debug:

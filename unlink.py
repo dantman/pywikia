@@ -75,8 +75,7 @@ class UnlinkBot:
         else:
             # at the beginning of the link, start red color.
             # at the end of the link, reset the color to default
-            colors = [None for c in text[max(0, match.start() - context) : match.start()]] + [12 for c in text[match.start() : match.end()]] + [None for c in text[match.end() : match.end() + context]]
-            wikipedia.output(text[max(0, match.start() - context) : match.end() + context], colors = colors)
+            wikipedia.output(text[m.start() - context : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
             choice = wikipedia.inputChoice(u'\nWhat shall be done with this link?',  ['unlink', 'skip', 'edit', 'more context'], ['U', 's', 'e', 'm'], 'u')
             wikipedia.output(u'')
 
@@ -100,10 +99,9 @@ class UnlinkBot:
                 return text[:match.start()] + new + text[match.end():], False
     
     def treat(self, page):
-        # Show the title of the page where the link was found.
+        # Show the title of the page we're working on.
         # Highlight the title in purple.
-        colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
-        wikipedia.output(u"\n\n>>> %s <<<" % page.title(), colors = colors)
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         try:
             oldText = page.get()
             text = oldText

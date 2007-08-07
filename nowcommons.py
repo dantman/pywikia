@@ -120,10 +120,9 @@ class NowCommonsDeleteBot:
         comment = wikipedia.translate(self.site, nowCommonsMessage)
 
         for page in self.getPageGenerator():
-            # Show the title of the image page.
+            # Show the title of the page we're working on.
             # Highlight the title in purple.
-            colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
-            wikipedia.output(u'\n\n>> %s <<\n' % page.title(), colors = colors)
+            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
             try:
                 localImagePage = wikipedia.ImagePage(self.site, page.title())
                 if localImagePage.fileIsOnCommons():
@@ -150,11 +149,9 @@ class NowCommonsDeleteBot:
                 if md5 == commonsImagePage.getFileMd5Sum():
                     wikipedia.output(u'The image is identical to the one on Commons.')
                     if autonomous == False:
-                        colors = [None] * 22 + [12] * len(page.title()) + [None] * 6
-                        wikipedia.output(u'\n\n>>>> Description on %s <<<<\n' % page.title(), colors = colors)
+                        wikipedia.output(u'\n\n>>>> Description on \03{lightpurple}%s\03{default} <<<<\n' % page.title())
                         wikipedia.output(localImagePage.get())
-                        colors = [None] * 22 + [10] * len(commonsImagePage.title()) + [None] * 6
-                        wikipedia.output(u'\n\n>>>> Description on %s <<<<\n' % commonsImagePage.title(), colors = colors)
+                        wikipedia.output(u'\n\n>>>> Description on \03{lightpurple}%s\03{default} <<<<\n' % commonsImagePage.title())
                         wikipedia.output(commonsText)
                         choice = wikipedia.inputChoice(u'Does the description on Commons contain all required source and license information?', ['yes', 'no'], ['y', 'N'], 'N')
                         if choice == 'y':

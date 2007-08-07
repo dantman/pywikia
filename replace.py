@@ -249,10 +249,9 @@ class ReplaceRobot:
                         if self.addedCat not in cats:
                             cats.append(self.addedCat)
                             new_text = wikipedia.replaceCategoryLinks(new_text, cats)
-                    # Show the title of the page where the link was found.
+                    # Show the title of the page we're working on.
                     # Highlight the title in purple.
-                    colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
-                    wikipedia.output(u'\n>>> %s <<<' % page.title(), colors = colors)
+                    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
                     wikipedia.showDiff(original_text, new_text)
                     if not self.acceptall:
                         choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')

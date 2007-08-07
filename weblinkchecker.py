@@ -557,13 +557,11 @@ class DeadLinkReportThread(threading.Thread):
                 (url, errorReport, containingPage, archiveURL) = self.queue[0]
                 self.queue = self.queue[1:]
                 talkPage = containingPage.toggleTalkPage()
-                message = u'** Reporting dead link on ' + talkPage.aslink() + '...'
-                wikipedia.output(message, colors = [11] * len(message))
+                wikipedia.output(u'\03{lightaqua}** Reporting dead link on %s...\03{default}' % talkPage.aslink())
                 try:
                     content = talkPage.get() + "\n\n"
                     if url in content:
-                        message = u'** Dead link seems to have already been reported on ' + talkPage.aslink() + '.'
-                        wikipedia.output(message, colors = [11] * len(message))
+                        wikipedia.output(u'\03{lightaqua}** Dead link seems to have already been reported on %s\03{default}' % talkPage.aslink())
                         self.semaphore.release()
                         continue
                 except (wikipedia.NoPage, wikipedia.IsRedirectPage):
@@ -577,9 +575,8 @@ class DeadLinkReportThread(threading.Thread):
                 try:
                     talkPage.put(content)
                 except wikipedia.SpamfilterError, error:
-                    message = u'** SpamfilterError while trying to change %s: %s' % (talkPage.aslink(), error.url)
-                    wikipedia.output(message, colors = [11] * len(message))
-                    
+                    wikipedia.output(u'\03{lightaqua}** SpamfilterError while trying to change %s: %s\03{default}' % (talkPage.aslink(), error.url))
+
                 self.semaphore.release()
 
 class WeblinkCheckerRobot:

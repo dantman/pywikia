@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 This bot is used to quickly trawl through candidates for speedy deletion in a fast
 and semi-automated fashion.  The bot displays the contents of each page one at a
@@ -185,8 +185,7 @@ class SpeedyRobot:
 
     def getReasonForDeletion(self, page):
         suggestedReason = self.guessReasonForDeletion(page)
-        colors = [None] * 25 + [12] * len(suggestedReason)
-        wikipedia.output(u'The suggested reason is: %s' % suggestedReason, colors = colors)
+        wikipedia.output(u'The suggested reason is: \03{lightred}%s\03{default}' % suggestedReason)
 
         # We don't use wikipedia.translate() here because for some languages the
         # entry is intentionally left out.
@@ -225,8 +224,9 @@ class SpeedyRobot:
                 except wikipedia.NoPage:
                     wikipedia.output(u'Page %s does not exist or has already been deleted, skipping.' % page.aslink())
                     continue
-                colors = [None] * 5 + [13] * len(page.title()) + [None] * 4
-                wikipedia.output(u'\n>>> %s <<<' % page.title(), colors = colors)
+                # Show the title of the page we're working on.
+                # Highlight the title in purple.
+                wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
                 wikipedia.output(pageText)
                 wikipedia.output(u'-  -  -  -  -  -  -  -  -  ')
@@ -241,8 +241,7 @@ class SpeedyRobot:
                     break
                 elif choice == 'd':
                     reason = self.getReasonForDeletion(page)
-                    colors = [None] * 22 + [12] * len(reason)
-                    wikipedia.output(u'The chosen reason is: %s' % reason, colors = colors)
+                    wikipedia.output(u'The chosen reason is: \03{lightred}%s\03{default}' % reason)
                     page.delete(reason, prompt = False)
                 elif choice == 's' or True:
                     wikipedia.output(u'Skipping page %s' % page.title())
