@@ -118,12 +118,11 @@ import httplib, socket, urllib
 import traceback
 import time, threading, Queue
 import math
-import re, md5, codecs, difflib
+import re, md5, codecs, difflib, locale
 import xml.sax, xml.sax.handler
 import htmlentitydefs
 import warnings
 import unicodedata
-import gettext, locale
 
 import config, login
 import xmlreader
@@ -549,7 +548,7 @@ class Page(object):
         isWatched = False
         editRestriction = None
         if verbose:
-            output(_(u'Getting page %s') % self.aslink())
+            output(u'Getting page %s' % self.aslink())
         path = self.site().edit_address(self.urlname())
         if oldid:
             path = path + "&oldid="+oldid
@@ -1151,9 +1150,9 @@ class Page(object):
             predata['masteredit'] = '1'
 
         if newPage:
-            output(_(u'Creating page %s...') % self.aslink(forceInterwiki=True))
+            output(u'Creating page %s' % self.aslink(forceInterwiki=True))
         else:
-            output(_(u'Changing page %s...') % self.aslink(forceInterwiki=True))
+            output(u'Changing page %s' % self.aslink(forceInterwiki=True))
         # Submit the prepared information
         if self.site().hostname() in config.authenticate.keys():
             predata.append(("Content-type","application/x-www-form-urlencoded"))
@@ -2316,7 +2315,7 @@ class GetAll(object):
         return data
 
 def getall(site, pages, throttle = True, force = False):
-    output(_(u'Getting %i pages from %s...') % (len(pages), site))
+    output(u'Getting %d pages from %s...' % (len(pages), site))
     return GetAll(site, pages, throttle, force).run()
 
 # Library functions
@@ -2411,7 +2410,7 @@ class Throttle(object):
                 f.write(str(p)+' '+str(processes[p])+'\n')
             f.close()
             self.process_multiplicity = count
-            output(_(u"Checked for running processes. %i processes currently running, including the current process.") % count)
+            output(u"Checked for running processes. %s processes currently running, including the current process." % count)
         finally:
             self.lock.release()
 
@@ -3180,7 +3179,7 @@ class Site(object):
         """
         self._loadCookies(sysop = sysop)
         if not self.loginStatusKnown:
-            output(_(u'Getting a page to check if we\'re logged in on %s...') % self)
+            output(u'Getting a page to check if we\'re logged in on %s' % self)
             path = self.put_address('Non-existing_page')
             text = self.getUrl(path, sysop = sysop)
             # Search for the "my talk" link at the top
@@ -3191,7 +3190,7 @@ class Site(object):
                 self._loggedInAs = m.group('username')
                 # While we're at it, check if we have got unread messages
                 if '<div class="usermessage">' in text:
-                    output(_(u'NOTE: You have unread messages on %s') % self)
+                    output(u'NOTE: You have unread messages on %s' % self)
                     messages=True
                 else:
                     messages=False
@@ -4216,8 +4215,6 @@ For other possible configuration variables check config.py.
 """)
     sys.exit(1)
 
-ui_langs = [(config.userinterface_lang or config.mylang), 'en']
-gettext.translation(domain = 'pywikipedia', localedir = _wt.absoluteFilename('translations'), languages = ui_langs).install(unicode = True)
 
 # Languages to use for comment text after the actual language but before
 # en:. For example, if for language 'xx', you want the preference of

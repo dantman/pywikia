@@ -36,6 +36,8 @@ docuReplacements = {
 }
 
 # Summary messages in different languages
+# NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
+# below.
 msg = {
           'de':u'Bot: Entferne Selbstlinks',
           'en':u'Robot: Removing selflinks',
@@ -108,13 +110,13 @@ class SelflinkBot:
             # at the end of the link, reset the color to default
             colors = [None for c in text[max(0, match.start() - context) : match.start()]] + [12 for c in text[match.start() : match.end()]] + [None for c in text[match.end() : match.end() + context]]
             wikipedia.output(text[max(0, match.start() - context) : match.end() + context], colors = colors)
-            choice = wikipedia.inputChoice(_(u'\nWhat shall be done with this selflink?'),  [_('unlink'), _('make bold'), _('skip'), _('edit'), _('more context')], [_('u [unlink hotkey]'), _('b [make bold hotkey]'), _('s [skip hotkey]'), _('e [edit hotkey]'), _('m [more context hotkey]')], _('u [unlink hotkey]'))
+            choice = wikipedia.inputChoice(u'\nWhat shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'edit', 'more context'], ['U', 'b', 's', 'e', 'm'], 'u')
             wikipedia.output(u'')
 
-            if choice == _('s [skip hotkey]'):
+            if choice == 's':
                 # skip this link
                 return text, False
-            elif choice == _('e [edit hotkey]'):
+            elif choice == 'e':
                 editor = editarticle.TextEditor()
                 newText = editor.edit(text, jumpIndex = match.start())
                 # if user didn't press Cancel
@@ -122,13 +124,13 @@ class SelflinkBot:
                     return newText, True
                 else:
                     return text, True
-            elif choice == _('m [more context hotkey]'):
+            elif choice == 'm':
                 # show more context by recursive self-call
                 return self.handleNextLink(page, text, match, context = context + 100)
             else:
                 new = match.group('label') or match.group('title')
                 new += match.group('linktrail')
-                if choice == _('u [unlink hotkey]'):
+                if choice == 'u':
                     return text[:match.start()] + new + text[match.end():], False
                 else:
                     # make bold
@@ -154,16 +156,16 @@ class SelflinkBot:
                     curpos = 0
 
             if oldText == text:
-                wikipedia.output(_(u'No changes necessary.'))
+                wikipedia.output(u'No changes necessary.')
             else:
                 wikipedia.showDiff(oldText, text)
                 page.put(text)
         except wikipedia.NoPage:
-            wikipedia.output(_(u"Page %s does not exist; skipping.") % page.aslink())
+            wikipedia.output(u"Page %s does not exist?!" % page.aslink())
         except wikipedia.IsRedirectPage:
-            wikipedia.output(_(u"Page %s is a redirect; skipping.") % page.aslink())
+            wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
         except wikipedia.LockedPage:
-            wikipedia.output(_(u"Page %s is locked; skipping.") % page.aslink())
+            wikipedia.output(u"Page %s is locked?!" % page.aslink())
 
     def run(self):
         comment = wikipedia.translate(wikipedia.getSite(), msg)
@@ -189,7 +191,7 @@ def main():
     for arg in wikipedia.handleArgs():
         if arg.startswith('-xml'):
             if len(arg) == 4:
-                xmlFilename = wikipedia.input(_(u'Please enter the XML dump\'s filename:'))
+                xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
             else:
                 xmlFilename = arg[5:]
             gen = XmlDumpSelflinkPageGenerator(xmlFilename)
