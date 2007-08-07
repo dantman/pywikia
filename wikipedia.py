@@ -549,7 +549,7 @@ class Page(object):
         isWatched = False
         editRestriction = None
         if verbose:
-            output(u'Getting page %s' % self.aslink())
+            output(_(u'Getting page %s') % self.aslink())
         path = self.site().edit_address(self.urlname())
         if oldid:
             path = path + "&oldid="+oldid
@@ -1151,9 +1151,9 @@ class Page(object):
             predata['masteredit'] = '1'
 
         if newPage:
-            output(u'Creating page %s' % self.aslink(forceInterwiki=True))
+            output(_(u'Creating page %s...') % self.aslink(forceInterwiki=True))
         else:
-            output(u'Changing page %s' % self.aslink(forceInterwiki=True))
+            output(_(u'Changing page %s...') % self.aslink(forceInterwiki=True))
         # Submit the prepared information
         if self.site().hostname() in config.authenticate.keys():
             predata.append(("Content-type","application/x-www-form-urlencoded"))
@@ -2316,7 +2316,7 @@ class GetAll(object):
         return data
 
 def getall(site, pages, throttle = True, force = False):
-    output(u'Getting %d pages from %s...' % (len(pages), site))
+    output(_(u'Getting %i pages from %s...') % (len(pages), site))
     return GetAll(site, pages, throttle, force).run()
 
 # Library functions
@@ -3180,7 +3180,7 @@ class Site(object):
         """
         self._loadCookies(sysop = sysop)
         if not self.loginStatusKnown:
-            output(u'Getting a page to check if we\'re logged in on %s' % self)
+            output(_(u'Getting a page to check if we\'re logged in on %s...') % self)
             path = self.put_address('Non-existing_page')
             text = self.getUrl(path, sysop = sysop)
             # Search for the "my talk" link at the top
@@ -3191,7 +3191,7 @@ class Site(object):
                 self._loggedInAs = m.group('username')
                 # While we're at it, check if we have got unread messages
                 if '<div class="usermessage">' in text:
-                    output(u'NOTE: You have unread messages on %s' % self)
+                    output(_(u'NOTE: You have unread messages on %s') % self)
                     messages=True
                 else:
                     messages=False
