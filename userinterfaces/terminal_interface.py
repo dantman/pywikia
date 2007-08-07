@@ -12,14 +12,27 @@ except ImportError:
 
 # TODO: other colors
 unixColors = {
-    None: chr(27) + '[0m',     # Unix end tag to switch back to default
-    9:    chr(27) + '[94;1m',  # Light Blue start tag
-    10:   chr(27) + '[92;1m',  # Light Green start tag
-    11:   chr(27) + '[36;1m',  # Light Aqua start tag
-    12:   chr(27) + '[91;1m',  # Light Red start tag
-    13:   chr(27) + '[35;1m',  # Light Purple start tag
-    14:   chr(27) + '[33;1m',  # Light Yellow start tag
+    #None:          chr(27) + '[0m',     # Unix end tag to switch back to default
+    'lightblue':   chr(27) + '[94;1m',  # Light Blue start tag
+    'lightgreen':  chr(27) + '[92;1m',  # Light Green start tag
+    'lightaqua':   chr(27) + '[36;1m',  # Light Aqua start tag
+    'lightred':    chr(27) + '[91;1m',  # Light Red start tag
+    'lightpurple': chr(27) + '[35;1m',  # Light Purple start tag
+    'lightyellow': chr(27) + '[33;1m',  # Light Yellow start tag
 }
+
+windowsColors = {
+    'lightblue':   9,
+    'lightgreen':  10,
+    'lightaqua':   11,
+    'lightred':    12,
+    'lightpurple': 13,
+    'lightyellow': 14,
+}
+
+
+startTagR = re.compile('\03{(?P<name>%s)}' % '|'.join(unixColors.keys()))
+endTagR =   re.compile('\03{default}')
 
 class UI:
     def __init__(self):
@@ -29,19 +42,11 @@ class UI:
     # newline.
     
     def printColorizedInUnix(self, text, colors, targetStream):
-        result = ""
         lastColor = None
-        for i in range(0, len(colors)):
-            if colors[i] != lastColor:
-                # add an ANSI escape character
-                result += unixColors[colors[i]]
-            # append one text character
-            result += text[i]
-            lastColor = colors[i]
-        if lastColor != None:
-            # reset the color to default at the end
-            result += unixColors[None]
-        targetStream.write(result.encode(config.console_encoding, 'replace'))
+        for key, value in unixColors.iteritems():
+            text = text.replace('\03{%s}' % key, value)
+        text = text.replace('\03{default}', chr(27) + '[0m')     # Unix end tag to switch back to default
+        targetStream.write(text.encode(config.console_encoding, 'replace'))
 
     def printColorizedInWindows(self, text, colors, targetStream):
         """
@@ -50,34 +55,35 @@ class UI:
         if ctypes_found:
             std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
             lastColor = None
-            for i in range(0, len(colors)):
-                if colors[i] != lastColor:
-                    #targetStream.flush()
-                    if colors[i] == None:
-                        ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, config.defaultcolor)
-                    else:
-                        ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, colors[i])
-                # print one text character.
-                targetStream.write(text[i].encode(config.console_encoding, 'replace'))
-                lastColor = colors[i]
-            if lastColor != None:
-                # reset the color to default at the end
-                ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, config.defaultcolor)
+            #for i in range(0, len(colors)):
+            # this relies on non-overlapping color tags that are all properly closed.
+            startM = True
+            while startM:
+                startM = startTagR.search(text)
+                if startM:
+                    # print the text up to the tag.
+                    targetStream.write(text[:startM.start()].encode(config.console_encoding, 'replace'))
+                    ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, windowsColors[startM.group('name')])
+                    # print the colored text inside the tag.
+                    endM = endTagR.search(text)
+                    targetStream.write(text[startM.end():endM.start()].encode(config.console_encoding, 'replace'))
+                    # reset to default color
+                    ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, config.defaultcolor)
+                    text = text[endM.end():]
+            # print the rest of the text
+            targetStream.write(text.encode(config.console_encoding, 'replace'))
         else:
             # ctypes is only available since Python 2.5, and we won't
             # try to colorize without it. Instead we add *** after the text as a whole
             # if anything needed to be colorized.
-            somecolor = False
-            for i in colors:
-                if not i is None:
-                    somecolor = True
-            if somecolor:
-                if text[-1] == "\n":
-                    targetStream.write((text[:-1]+"***\n").encode(config.console_encoding, 'replace'))
-                else:
-                    targetStream.write((text+"***").encode(config.console_encoding, 'replace'))
-            else:
-                targetStream.write(text.encode(config.console_encoding, 'replace'))
+            lines = '\n'.split(text)
+            for line in lines:
+                line, count = startTagR.subn('', line)
+                line = endTagR.sub('', line)
+                if count > 0:
+                    line += '***'
+                line += '\n'
+                targetStream.write(line.encode(config.console_encoding, 'replace'))
 
     def printColorized(self, text, colors, targetStream):
         if colors and config.colorized_output:

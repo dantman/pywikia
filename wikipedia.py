@@ -4356,8 +4356,8 @@ def showDiff(oldtext, newtext):
     """
     # For information on difflib, see http://pydoc.org/2.3/difflib.html
     color = {
-        '+': 10, # green
-        '-': 12  # red
+        '+': 'lightgreen',
+        '-': 'lightred',
     }
     diff = u''
     colors = []
@@ -4396,7 +4396,17 @@ def showDiff(oldtext, newtext):
         lastcolors[0] = color[lastline[0]]
         colors += lastcolors + [None]
 
-    output(diff, colors = colors)
+    result = u''
+    lastcolor = None
+    for i in range(len(diff)):
+        if colors[i] != lastcolor:
+            if lastcolor is None:
+                result += '\03{%s}' % colors[i]
+            else:
+                result += '\03{default}'
+        lastcolor = colors[i]
+        result += diff[i]
+    output(result)
 
 def makepath(path):
     """ creates missing directories for the given path and
