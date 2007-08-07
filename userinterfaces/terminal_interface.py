@@ -29,7 +29,7 @@ except ImportError:
         #15 = Bright White
 
 unixColors = {
-    #None:          chr(27) + '[0m',     # Unix end tag to switch back to default
+    'default':     chr(27) + '[0m',     # Unix end tag to switch back to default
     'lightblue':   chr(27) + '[94;1m',  # Light Blue start tag
     'lightgreen':  chr(27) + '[92;1m',  # Light Green start tag
     'lightaqua':   chr(27) + '[36;1m',  # Light Aqua start tag
@@ -39,6 +39,7 @@ unixColors = {
 }
 
 windowsColors = {
+    'default':     config.defaultcolor,
     'lightblue':   9,
     'lightgreen':  10,
     'lightaqua':   11,
@@ -48,8 +49,7 @@ windowsColors = {
 }
 
 
-startTagR = re.compile('\03{(?P<name>%s)}' % '|'.join(unixColors.keys()))
-endTagR =   re.compile('\03{default}')
+colorTagR = re.compile('\03{(?P<name>%s)}' % '|'.join(windowsColors.keys()))
 
 class UI:
     def __init__(self):
@@ -62,7 +62,9 @@ class UI:
         lastColor = None
         for key, value in unixColors.iteritems():
             text = text.replace('\03{%s}' % key, value)
-        text = text.replace('\03{default}', chr(27) + '[0m')     # Unix end tag to switch back to default
+        # just to be sure, reset the color
+        text += unixColors['default']
+
         targetStream.write(text.encode(config.console_encoding, 'replace'))
 
     def printColorizedInWindows(self, text, targetStream):
@@ -71,23 +73,33 @@ class UI:
         """
         if ctypes_found:
             std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
-            # this relies on non-overlapping, non-cascading color tags that are all properly closed.
-            # TODO: This assumption is wrong: with transliteration, there can be cascading color tags.
-            startM = True
-            while startM:
-                startM = startTagR.search(text)
-                if startM:
+            # Color tags might be cascaded, e.g. because of transliteration.
+            # Therefore we need this stack.
+            colorStack = []
+            tagM = True
+            while tagM:
+                tagM = colorTagR.search(text)
+                if tagM:
                     # print the text up to the tag.
-                    targetStream.write(text[:startM.start()].encode(config.console_encoding, 'replace'))
-                    ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, windowsColors[startM.group('name')])
-                    # print the colored text inside the tag.
-                    endM = endTagR.search(text)
-                    targetStream.write(text[startM.end():endM.start()].encode(config.console_encoding, 'replace'))
-                    # reset to default color
-                    ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, config.defaultcolor)
-                    text = text[endM.end():]
+                    targetStream.write(text[:tagM.start()].encode(config.console_encoding, 'replace'))
+                    newColor = tagM.group('name')
+                    if newColor == 'default':
+                        if len(colorStack) > 0:
+                            colorStack.pop()
+                            if len(colorStack) > 0:
+                                lastColor = colorStack[-1]
+                            else:
+                                lastColor = 'default'
+                            ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, windowsColors[lastColor])
+                    else:
+                        colorStack.append(newColor)
+                        # set the new color
+                        ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, windowsColors[newColor])
+                    text = text[tagM.end():]
             # print the rest of the text
             targetStream.write(text.encode(config.console_encoding, 'replace'))
+            # just to be sure, reset the color
+            ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, windowsColors['default'])
         else:
             # ctypes is only available since Python 2.5, and we won't
             # try to colorize without it. Instead we add *** after the text as a whole
