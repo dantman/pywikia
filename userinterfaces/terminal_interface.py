@@ -10,7 +10,24 @@ try:
 except ImportError:
     ctypes_found = False
 
-# TODO: other colors
+# TODO: other colors:
+         #0 = Black
+         #1 = Blue
+         #2 = Green
+         #3 = Aqua
+         #4 = Red
+         #5 = Purple
+         #6 = Yellow
+         #7 = White
+         #8 = Gray
+         #9 = Light Blue
+        #10 = Light Green
+        #11 = Light Aqua
+        #12 = Light Red
+        #13 = Light Purple
+        #14 = Light Yellow
+        #15 = Bright White
+
 unixColors = {
     #None:          chr(27) + '[0m',     # Unix end tag to switch back to default
     'lightblue':   chr(27) + '[94;1m',  # Light Blue start tag
@@ -54,9 +71,8 @@ class UI:
         """
         if ctypes_found:
             std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
-            lastColor = None
-            #for i in range(0, len(colors)):
-            # this relies on non-overlapping color tags that are all properly closed.
+            # this relies on non-overlapping, non-cascading color tags that are all properly closed.
+            # TODO: This assumption is wrong: with transliteration, there can be cascading color tags.
             startM = True
             while startM:
                 startM = startTagR.search(text)
@@ -99,28 +115,6 @@ class UI:
         If a character can't be displayed in the encoding used by the user's
         terminal, it will be replaced with a question mark or by a
         transliteration.
-
-        colors is a list of integers, one for each character of text. If a
-        list entry is None, the default terminal color will be used for the
-        character at that position. Take care that the length of the colors
-        list equals the text length.
-
-         0 = Black
-         1 = Blue
-         2 = Green
-         3 = Aqua
-         4 = Red
-         5 = Purple
-         6 = Yellow
-         7 = White
-         8 = Gray
-         9 = Light Blue
-        10 = Light Green
-        11 = Light Aqua
-        12 = Light Red
-        13 = Light Purple
-        14 = Light Yellow
-        15 = Bright White
         """
         if colors:
             if len(colors) != len(text):
@@ -151,13 +145,11 @@ class UI:
                         transliterated = transliteration.trans(text[i], default = '?', prev = prev, next = ' ')
                     # transliteration was successful. The replacement
                     # could consist of multiple letters.
-                    transliteratedText += transliterated
-                    transLength = len(transliterated)
                     # mark the transliterated letters in yellow.
-                    color = colors[i + sizeIncrease] or 14
-                    colors = colors[:i + sizeIncrease] + [color] * transLength + colors[i + sizeIncrease + 1:]
+                    transliteratedText += '\03{lightyellow}%s\03{default}' % transliterated
+                    transLength = len(transliterated)
                     # memorize if we replaced a single letter by multiple letters.
-                    sizeIncrease += transLength - 1
+                    sizeIncrease += transLength - 1 + len('\03{lightyellow}\03{default}')
                     if len(transliterated) > 0:
                         prev = transliterated[-1]
                 else:
