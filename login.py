@@ -44,8 +44,8 @@ subdirectory.
 #
 __version__='$Id$'
 
-import re, sys
-import httplib, urllib2
+import re
+import urllib2
 import wikipedia, config
 
 # On some wikis you are only allowed to run a bot if there is a link to
@@ -254,7 +254,7 @@ def main():
             forceLogin = True
         else:
             wikipedia.showHelp('login')
-            sys.exit()
+            return
     if logall:
         if sysop:
             namedict = config.sysopnames
