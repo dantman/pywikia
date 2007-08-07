@@ -52,6 +52,9 @@ def family(domain):
 	# Special Wikimedia wiki
 	if wiki[1] == 'wikimedia':
 		return wiki[0], wiki[0]
+	# Multilingual wikisource
+	if domain == 'wikisource.org':
+		return '', 'wikisource'
 	# My local test wiki
 	if wiki[-1] == 'localhost':
 		if len(wiki) == 1:
@@ -267,7 +270,8 @@ class Delinker(threadpool.Thread):
 			self.delink_image(*args)
 		except:
 			output(u'An exception occured in %s' % self, False)
-			print >>sys.stderr, cgitb.text(sys.exc_info())
+			traceback.print_exc(file = sys.stderr)
+			#print >>sys.stderr, cgitb.text(sys.exc_info())
 		
 	def get_summary(self, site, domain, image, admin, reason, replacement):
 		""" Get the summary template and substitute the 
