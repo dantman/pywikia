@@ -216,6 +216,12 @@ class UploadRobot:
             #if response.status in [200, 302]:
             #    wikipedia.output(u"Upload successful.")
             
+            elif response.status == 301:
+                wikipedia.output(u"Following redirect...")
+                address = response.getheader('Location')
+                wikipedia.output(u"Changed upload address to %s. Please update %s.py" % (address, self.targetSite.family.__module__))
+                exec('self.targetSite.upload_address = lambda: %r' % address, locals(), globals())
+                return self.upload_image(debug)
             else:
                 try:
                     # Try to find the error message within the HTML page.
