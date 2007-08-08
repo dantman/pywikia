@@ -1,4 +1,4 @@
-
+﻿
 __version__ = '$Id$'
 
 import config, transliteration
@@ -192,6 +192,7 @@ class UI:
         return text
 
     def inputChoice(self, question, options, hotkeys, default = None):
+        options = options[:] # we don't want to edit the passed parameter
         for i in range(len(options)):
             option = options[i]
             hotkey = hotkeys[i]
