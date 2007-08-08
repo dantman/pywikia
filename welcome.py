@@ -213,15 +213,15 @@ summary = {
 # that is your signature (the bot has a random parameter to add different
 # sign, so in this way it will change according to your parameters).
 netext = {
-    'commons':u'{{subst:welcome}}%s',
-    'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}}%s',
+    'commons':u'{{subst:welcome}} %s',
+    'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}} %s',
     'de':u'{{subst:Hallo}} %s',
-    'en':u'{{subst:welcome}}%s',
-    'fa':u'{{جا:خوشامد}}%s',
+    'en':u'{{subst:welcome}} %s',
+    'fa':u'{{جا:خوشامد}} %s',
     'it':u'{{Benvebot}} %s',
-    'nl':u'{{Welkomstbericht}}%s',
-    'no':u'{{subst:bruker:jhs/vk}}%s',
-    'sq':u'{{subst:tung}}%s',
+    'nl':u'{{Welkomstbericht}} %s',
+    'no':u'{{subst:bruker:jhs/vk}} %s',
+    'sq':u'{{subst:tung}} %s',
     }
 # The edit summary for updating the welcome log (e.g. Updating log).
 summary2 = {
