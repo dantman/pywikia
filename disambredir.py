@@ -44,9 +44,9 @@ def treat(text, linkedPage, targetPage):
 
         # how many bytes should be displayed around the current link
         context = 30
-                    # at the beginning of the link, start red color.
-                    # at the end of the link, reset the color to default
-                    wikipedia.output(text[m.start() - context : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
+        # at the beginning of the link, start red color.
+        # at the end of the link, reset the color to default
+        wikipedia.output(text[m.start() - context : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
         while True:
             choice = wikipedia.input(u"Option (n=do not change, y=change link to \03{lightpurple}%s\03{default}, r=change and replace text, u=unlink)"%targetPage.title())
             try:
