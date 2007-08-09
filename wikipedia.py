@@ -4132,6 +4132,18 @@ def setSite(site):
     default_code = site.language
     default_family = site.family
 
+def calledModuleName():
+    """
+    Gets the name of the module calling this function. This is
+    required because the -help option loads the module's docstring
+    and because the module name will be used for the filename of the
+    log.
+    """
+    # get commandline arguments
+    args = sys.argv
+    # TODO: check if the following line is platform-independent
+    return args[0][:args[0].rindex('.')]
+
 def handleArgs():
     '''
     Takes the commandline arguments, converts them to Unicode, processes all
@@ -4146,7 +4158,7 @@ def handleArgs():
     # required because the -help option loads the module's docstring and because
     # the module name will be used for the filename of the log.
     # TODO: check if the following line is platform-independent
-    moduleName = args[0][:args[0].rindex('.')]
+    moduleName = calledModuleName()
     nonGlobalArgs = []
     for arg in args[1:]:
         if sys.platform=='win32':
@@ -4170,12 +4182,11 @@ def handleArgs():
         elif arg.startswith('-pt:'):
             put_throttle.setDelay(int(arg[4:]), absolute = True)
         elif arg == '-log':
-            activateLog('%s.log' % moduleName)
+            setLogfileStatus(True)
         elif arg.startswith('-log:'):
-            activateLog(arg[5:])
+            setLogfileStatus(True, arg[5:])
         elif arg == '-nolog':
-            global logfile
-            logfile = None
+            setLogfileStatus(False)
         elif arg == '-verbose' or arg == "-v":
             import version
             output('Pywikipediabot %s' % (version.getversion()))
@@ -4427,15 +4438,24 @@ def makepath(path):
     dpath = normpath(dirname(path))
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
-    
-def activateLog(logname):
+
+def setLogfileStatus(enabled, logname = None):
     global logfile
-    import wikipediatools as _wt
-    logfn = _wt.absoluteFilename('logs', logname)
-    try:
-        logfile = codecs.open(logfn, 'a', 'utf-8')
-    except IOError:
-        logfile = codecs.open(logfn, 'w', 'utf-8')
+    if enabled:
+        if not logname:
+            logname = '%s.log' % calledModuleName()
+        import wikipediatools as _wt
+        logfn = _wt.absoluteFilename('logs', logname)
+        try:
+            logfile = codecs.open(logfn, 'a', 'utf-8')
+        except IOError:
+            logfile = codecs.open(logfn, 'w', 'utf-8')
+    else:
+        # disable the log file
+        logfile = None
+
+if config.log == 'all' or calledModuleName() in config.log:
+    setLogfileStatus(True)
 
 output_lock = threading.Lock()
 input_lock = threading.Lock()

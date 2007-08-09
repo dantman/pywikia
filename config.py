@@ -159,11 +159,16 @@ editor_filename_extension = 'wiki'
 
 ############## LOGFILE SETTINGS ##############
 
-# Should all bots keep a logfile?
-# TODO: Not used yet
-always_log = False
-# Should no bot, not even interwiki.py, keep a logfile?
-never_log = False
+# Defines for which scripts a logfile should be enabled. Logfiles will be
+# saved in the 'logs' subdirectory.
+# Example:
+#     log = ['interwiki', 'weblinkchecker', 'table2wiki']
+# It is also possible to enable logging for all scripts, using this line:
+#     log = 'all'
+# Per default, logging of interwiki.py is enabled because its logfiles can
+# be used to generate so-called warnfiles.
+# This setting can be overridden by the -log or -nolog command-line arguments.
+log = ['interwiki']
 
 ############## INTERWIKI SETTINGS ##############
 

@@ -1378,9 +1378,6 @@ if __name__ == "__main__":
         # that are also used by other scripts and that determine on which pages
         # to work on.
         genFactory = pagegenerators.GeneratorFactory()
-        
-        if not config.never_log:
-            wikipedia.activateLog('interwiki.log')
 
         for arg in wikipedia.handleArgs():
             if arg == '-noauto':
