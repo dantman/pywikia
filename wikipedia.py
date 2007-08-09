@@ -4457,7 +4457,7 @@ def setLogfileStatus(enabled, logname = None):
         # disable the log file
         logfile = None
 
-if config.log == 'all' or calledModuleName() in config.log:
+if '*' in config.log or calledModuleName() in config.log:
     setLogfileStatus(True)
 
 output_lock = threading.Lock()
