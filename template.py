@@ -128,6 +128,7 @@ class XmlDumpTemplatePageGenerator:
         # TODO: check site.nocapitalize()
         templateName = self.template.titleWithoutNamespace()
         if wikipedia.getSite().nocapitalize:
+            # FIXME
             old = self.old
         else:
             templateName = '[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:]
@@ -288,7 +289,7 @@ class TemplateRobot:
             else:
                 pattern = re.escape(old)
             pattern = re.sub('_|\\\\ ', '[_ ]', pattern)
-            templateRegex = re.compile(r'\{\{ *([Tt]emplate:|[mM][sS][gG]:)?' + pattern + '\s*(?P<parameters>\|.+?|) *}}', re.DOTALL)
+            templateRegex = re.compile(r'\{\{ *([Tt]emplate:|[mM][sS][gG]:)?' + pattern + '(?P<parameters>\s*\|.+?|) *}}', re.DOTALL)
 
             if self.remove:
                 replacements.append((templateRegex, ''))
