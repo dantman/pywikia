@@ -29,6 +29,10 @@ __version__ = '$Id$'
 # TODO:
 # * Don't replace within <nowiki /> tags
 # * Make as many config settings site dependend
+# BUGS:
+# * There is a problem with images in the es.wikisource project namespace.
+#   The exact problem is described somewhere in Bryan's IRC logs, but it is
+#   unknown where exactly.
 
 import sys, os, threading, time
 import traceback
@@ -130,7 +134,7 @@ class Delinker(threadpool.Thread):
 		
 		if skipped_images:
 			time.sleep(self.CommonsDelinker.config['timeout'])
-			return self.delink_image(image, skipped_images, timestamp, admin, reason)
+			return self.delink_image(image, skipped_images, timestamp, admin, reason, replacement)
 		elif replacement:
 			# Let them know that we are done replacing.
 			self.CommonsDelinker.Loggers.append((timestamp, image, replacement))
@@ -793,3 +797,6 @@ if __name__ == '__main__':
 	finally:
 		output(u'Stopping CommonsDelinker')
 		wikipedia.stopme()
+		# Flush the standard streams
+		sys.stdout.flush()
+		sys.stderr.flush()
