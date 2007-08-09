@@ -32,7 +32,10 @@ class Replacer(object):
 		self.config = config.CommonsDelinker
 		self.config.update(getattr(config, 'Replacer', ()))
 		self.template = re.compile(r'\{\{%s\|([^|]*?)\|([^|]*?)(?:(?:\|reason\=(.*?))?)\}\}' % \
-				self.config['template'])
+				self.config['replace_template'])
+		self.disallowed_replacements = [(re.compile(i[0]), re.compile(i[1])) 
+			for i in self.config.get('disallowed_replacements', ())]
+				
 		self.site = wikipedia.getSite()
 		
 		self.database = connect_database()
@@ -67,11 +70,15 @@ class Replacer(object):
 		revisions.sort(key = lambda rev: rev[0])
 		replacements = self.template.finditer(text)
 		
+		if self.config.get('clean_list', False):
+			username = config.sysopnames[self.site.family.name][self.site.lang]
+		else:
+			username = None
+		
 		for replacement in replacements:
 			res = self.examine_revision_history(
-				revisions, replacement,
-				config.sysopnames['commons']['commons'])
-			if res:
+				revisions, replacement, username)
+			if res and self.allowed_replacement(replacement):
 				self.cursor.execute(insert, res)
 				text = text.replace(replacement.group(0), '')
 				output('Replacing %s by %s: %s' % replacement.groups())
@@ -103,6 +110,13 @@ class Replacer(object):
 			self.read_replace_log()
 			# Replacer should not loop as often as delinker
 			time.sleep(self.config['timeout'] * 2)
+			
+	def allowed_replacement(self, replacement):
+		for source, target in self.disallowed_replacements:
+			if source.search(replacement.group(1)) and \
+					target.search(replacement.group(2)):
+				return False
+		return True
 
 if __name__ == '__main__':
 	import sys, cgitb

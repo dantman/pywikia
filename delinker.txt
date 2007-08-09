@@ -104,6 +104,8 @@ Those variables only need to be set if the replacer is enabled.
   give the bot commands.
 * ''clean_list = False'': Auto clean the list. Only use this if the bot 
   actually has edit permissions to the list.
+* ''disallowed_replacements = [(r'\.png$', r'\.svg$')]'': List of regular expressions
+  of refused replacements.
 
 ==== SQL settings ====
 * ''sql_engine = "mysql"'': Database engine to use. Currently supported: 
@@ -208,6 +210,7 @@ CommonsDelinker['command_page'] = 'User:CommonsDelinker/commands'
 # Auto clean the list. Only use this if the bot actually 
 # has edit permissions to the list.
 CommonsDelinker['clean_list'] = False
+CommonsDelinker['disallowed_replacements'] = [(r'\.png$', r'\.svg$')]
 
 ## SQL connection information.
 # Database engine to use. Currently supported: MySQL, sqlite3.
