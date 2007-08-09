@@ -4141,8 +4141,11 @@ def calledModuleName():
     """
     # get commandline arguments
     args = sys.argv
-    # TODO: check if the following line is platform-independent
-    return args[0][:args[0].rindex('.')]
+    try:
+        # clip off the '.py' filename extension
+        return args[0][:args[0].rindex('.')]
+    except ValueError:
+        return args[0]
 
 def handleArgs():
     '''
