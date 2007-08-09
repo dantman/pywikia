@@ -11,7 +11,7 @@ class Family(family.Family):
         self.name = 'wikisource'
        
         self.langs = {
-            '':'wikisource.org',
+            '-':'wikisource.org',
             'dk':'da.wikisource.org',
             'jp':'ja.wikisource.org',
             'minnan':'zh-min-nan.wikisource.org',
