@@ -60,7 +60,7 @@ Set the variables ''mylang'' and ''family'' to the appropriate language and
 family. Also setup the usernames[][] variables.
 
 === Delinker variables ===
-Due to history reasons, the configuration variable is called ''CommonsDelinker''.
+Due to historical reasons, the configuration variable is called ''CommonsDelinker''.
 First setup the dictionary ''CommonsDelinker'', by adding to the config:
 CommonsDelinker = {}
 
@@ -84,7 +84,7 @@ CommonsDelinker = {}
 		[[:Image:$2]] by administrator [[User:$3]]: ''$4''."''
   }: Default settings, in case no on-wiki settings are found. For the meaning
   of the variables, please refer to [[m:User:CommonsDelinker]].
-* ''global = False'': Set global or local delink. DO NOT RUN THIS BOT ON 
+* ''global = False'': Set global or local delink. DO NOT RUN THIS BOT
   GLOBALLY WITHOUT CONSULTING BRYAN AND SIEBRAND. Thank you.
 * ''no_sysop = True'': Disable delinking as sysop.
 
@@ -96,6 +96,8 @@ Those variables only need to be set if the delinker is enabled.
   summary, the file is not delinked.
 * ''summary_cache = 3600'': Time before on-wiki settings are updated.
 
+==== Replacer settings ====
+Those variables only need to be set if the replacer is enabled.
 * ''replace_template = "replace image"'': The template for to command 
   replacement.
 * ''command_page = "User:CommonsDelinker/commands"'': The page were sysops can
