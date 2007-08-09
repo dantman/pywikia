@@ -155,7 +155,7 @@ class UI:
 
         MainloopThread(self.parent).start()
 
-    def output(self, text, urgency = 1, newline = True, toStdout = False):
+    def output(self, text, urgency = 1, toStdout = False):
         """
         urgency levels:
             0 - Debug output. Won't be shown in normal mode.
@@ -192,8 +192,6 @@ class UI:
                         #self.logBox.tag_add(colors[i], startidx , endidx)
                         
                         
-            if newline:
-                self.logBox.insert(END, '\n')
             # auto-scroll down
             self.logBox.see(END)
 

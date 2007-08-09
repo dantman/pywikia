@@ -1,4 +1,4 @@
-﻿
+
 __version__ = '$Id$'
 
 import config, transliteration
@@ -122,7 +122,7 @@ class UI:
         else:
             targetStream.write(text.encode(config.console_encoding, 'replace'))
 
-    def output(self, text, newline = True, toStdout = False):
+    def output(self, text, toStdout = False):
         """
         If a character can't be displayed in the encoding used by the user's
         terminal, it will be replaced with a question mark or by a
@@ -162,8 +162,6 @@ class UI:
                     transliteratedText += codecedText[i]
                     prev = codecedText[i]
             text = transliteratedText
-        if newline:
-            text += u'\n'
 
         if toStdout:
             targetStream = sys.stdout
@@ -182,7 +180,8 @@ class UI:
         # sound the terminal bell to notify the user
         if config.ring_bell:
             sys.stdout.write('\07')
-        self.output(question + ' ', newline = False)
+        # TODO: make sure this is logged as well
+        self.output(question + ' ')
         if password:
             import getpass
             text = getpass.getpass('')

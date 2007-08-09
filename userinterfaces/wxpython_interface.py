@@ -12,16 +12,13 @@ class UI:
     def __init__(self):
         pass
 
-    def output(self, text, newline = True):
+    def output(self, text, ):
         """
         If a character can't be displayed, it will be replaced with a
         question mark.
         """
-        if newline:
-            print text.encode(config.console_encoding, 'replace')
-        else:
-            # comma at the end means "don't print newline"
-            print text.encode(config.console_encoding, 'replace'),
+        # comma at the end means "don't print newline"
+        print text.encode(config.console_encoding, 'replace'),
 
     def input(self, question, password = False):
         """

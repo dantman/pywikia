@@ -4,7 +4,7 @@ class UI:
     def __init__(self):
         pass
 
-    def output(self, text, newline = True, toStdout = False):
+    def output(self, text, toStdout = False):
         # all debug output etc. will be ignored.
         if toStdout:
             sys.stdout.write(text.encode('UTF-8', 'replace'))

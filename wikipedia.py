@@ -4471,7 +4471,7 @@ def log(text):
         # TODO: consider pre-compiling this regex for speed improvements
         plaintext = colorTagR.sub('', text)
         # save the text in a logfile (will be written in utf-8)
-        logfile.write(plaintext + '\n')
+        logfile.write(plaintext)
         logfile.flush()
 
 
@@ -4509,11 +4509,13 @@ def output(text, decoder = None, newline = True, toStdout = False):
                 text = unicode(text, 'utf-8')
             except UnicodeDecodeError:
                 text = unicode(text, 'iso8859-1')
+        if newline:
+            text += u'\n'
         log(text)
         if input_lock.locked():
-            cache_output(text, newline = newline, toStdout = toStdout)
+            cache_output(text, toStdout = toStdout)
         else:
-            ui.output(text, newline = newline, toStdout = toStdout)
+            ui.output(text, toStdout = toStdout)
     finally:
         output_lock.release()
 
