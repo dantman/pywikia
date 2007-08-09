@@ -4460,6 +4460,22 @@ def setLogfileStatus(enabled, logname = None):
 if '*' in config.log or calledModuleName() in config.log:
     setLogfileStatus(True)
 
+colorTagR = re.compile('\03{.*?}', re.UNICODE)
+
+def log(text):
+    """
+    Writes the given text to the logfile.
+    """
+    if logfile:
+        # remove all color markup
+        # TODO: consider pre-compiling this regex for speed improvements
+        plaintext = colorTagR.sub('', text)
+        # save the text in a logfile (will be written in utf-8)
+        logfile.write(plaintext + '\n')
+        logfile.flush()
+
+
+
 output_lock = threading.Lock()
 input_lock = threading.Lock()
 output_cache = []
@@ -4475,6 +4491,10 @@ def output(text, decoder = None, newline = True, toStdout = False):
     If toStdout is True, the text will be sent to standard output,
     so that it can be piped to another process. All other text will
     be sent to stderr. See: http://en.wikipedia.org/wiki/Pipeline_%28Unix%29
+
+    text can contain special sequences to create colored output. These
+    consist of the escape character \03 and the color name in curly braces,
+    e. g. \03{lightpurple}. \03{default} resets the color.
     """
     output_lock.acquire()
     try:
@@ -4489,10 +4509,7 @@ def output(text, decoder = None, newline = True, toStdout = False):
                 text = unicode(text, 'utf-8')
             except UnicodeDecodeError:
                 text = unicode(text, 'iso8859-1')
-        if logfile:
-            # save the text in a logfile (will be written in utf-8)
-            logfile.write(text + '\n')
-            logfile.flush()
+        log(text)
         if input_lock.locked():
             cache_output(text, newline = newline, toStdout = toStdout)
         else:
