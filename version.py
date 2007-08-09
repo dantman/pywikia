@@ -1,4 +1,4 @@
-""" Module to determine the pywikipedia version (tag, revision and date) """
+﻿""" Module to determine the pywikipedia version (tag, revision and date) """
 #
 # (C) Merlijn 'valhallasw' van Deen
 #
@@ -14,6 +14,9 @@ class ParseError(Exception):
     """ Parsing went wrong """
 
 def getversion():
+    return '%(tag)s (r%(rev)s, %(date)s)' % getversiondict()
+    
+def getversiondict():
     try:
         (tag, rev, date) = getversion_svn()
     except Exception, e:
@@ -25,15 +28,17 @@ def getversion():
             tag = ''
             date = time.strptime('T'.join(d[3:5]), '%Y-%m-%dT%H:%M:%SZ')
             rev = d[2] + ' (wikipedia.py)'
-
-    datestring = time.strftime('%b %d %Y, %H:%M:%S', date)        
-    return '%s (r%s, %s)' % (tag, rev, datestring) 
-        
+    
+    datestring = time.strftime('%b %d %Y, %H:%M:%S', date)
+    return {'tag': tag, 'rev': rev, 'date': datestring}          
 def getversion_svn():
     entries = open(wikipediatools.absoluteFilename('.svn/entries'))
     for i in range(4):
         entries.readline()
-    tag = entries.readline().replace('svn+ssh://svn.wikimedia.org/svnroot/pywikipedia/', '').strip()
+    tag = entries.readline().strip()
+    t = tag.split('://')
+    t[1] = t[1].replace('svn.wikimedia.org/svnroot/pywikipedia/', '')
+    tag = '[%s] %s' % (t[0], t[1])
     for i in range(4):
         entries.readline()
     date = time.strptime(entries.readline()[:19],'%Y-%m-%dT%H:%M:%S')
