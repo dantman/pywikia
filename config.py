@@ -165,6 +165,8 @@ editor_filename_extension = 'wiki'
 #     log = ['interwiki', 'weblinkchecker', 'table2wiki']
 # It is also possible to enable logging for all scripts, using this line:
 #     log = ['*']
+# To disable all logging, use this:
+#     log = []
 # Per default, logging of interwiki.py is enabled because its logfiles can
 # be used to generate so-called warnfiles.
 # This setting can be overridden by the -log or -nolog command-line arguments.
