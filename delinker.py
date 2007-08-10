@@ -58,7 +58,7 @@ def family(domain):
 		return wiki[0], wiki[0]
 	# Multilingual wikisource
 	if domain == 'wikisource.org':
-		return '', 'wikisource'
+		return '-', 'wikisource'
 	# My local test wiki
 	if wiki[-1] == 'localhost':
 		if len(wiki) == 1:
@@ -93,6 +93,8 @@ def connect_database():
 		return mysql_autoconnection.connect(**kwargs)
 	# TODO: Add support for sqlite3
 	raise RuntimeError('Unsupported database engine %s' % engine)
+	
+# TODO: Make configurable
 SHARED = 'commons.wikimedia.org'
 
 
@@ -257,6 +259,7 @@ class Delinker(threadpool.Thread):
 				except wikipedia.EditConflict:
 					# Try once, if this fails as well, we will
 					# return "failed"
+					# BUG: Should not discard, but rather try again
 					try:
 						page.put(new_text, summary)
 					except:
@@ -425,10 +428,11 @@ class CheckUsage(threadpool.Thread):
 			output(u'%s %s exists again!' % (self, image))
 			return
 		
-		usage = self.CheckUsage.get_usage(image)
-		usage_domains = {}
 		
 		if self.CommonsDelinker.config['global']:
+			usage = self.CheckUsage.get_usage(image)
+			usage_domains = {}
+			
 			count = 0
 			# Sort usage per domain
 			for domain, page in usage:
@@ -437,13 +441,12 @@ class CheckUsage(threadpool.Thread):
 				usage_domains[domain].append(page)
 				count += 1
 		else:
-			count = 1
 			usage_domains = {self.site.hostname(): list(
 				self.CheckUsage.get_usage_live(self.site.hostname(), 
 				image))}
-			count = int(bool(usage_domains[self.site.hostname()]))
+			count = len(usage_domains[self.site.hostname()])
 			
-		output(u'%s %s used on %s wikis' % (self, image, count))
+		output(u'%s %s used on %s pages' % (self, image, count))
 		
 		if count:
 			# Pass the usage to the Delinker pool along with other arguments
@@ -516,7 +519,7 @@ class Logger(threadpool.Thread):
 			self.exit()
 			self.CommonsDelinker.thread_died()
 			
-class CommonsDelinker(object):	
+class CommonsDelinker(object):
 	def __init__(self):
 		self.config = config.CommonsDelinker
 		self.site = wikipedia.getSite()
@@ -532,7 +535,6 @@ class CommonsDelinker(object):
 		self.Loggers = threadpool.ThreadPool(Logger)
 		[self.Loggers.add_thread(self) for i in xrange(self.config['logger_instances'])]
 		
-		# Globalize
 		self.http = checkusage.HTTP(self.site.hostname())
 		
 		self.edit_list = []
@@ -625,6 +627,9 @@ class CommonsDelinker(object):
 				else:
 					output(u'Skipping deleted image: %s' % logevent['title'])
 	def read_deletion_log_db(self):
+		# NOTE: Unused method currently, and not likely 
+		# to be used in the nearby future. Should be removed?
+		
 		if not self.cursor.execute("""SELECT UNIX_TIMESTAMP() - last_activity
 				FROM %s WHERE name = 'deletion_log_updated'""" % \
 				self.config['bot_table']):
@@ -661,6 +666,7 @@ class CommonsDelinker(object):
 		return True
 					
 	def read_replacement_log(self):
+		# TODO: Make sqlite3 ready
 		update = """UPDATE %s SET status = %%s WHERE id = %%s""" % \
 			self.config['replacer_table']
 		self.cursor.execute("""SELECT id, timestamp, old_image, new_image, user, comment
@@ -668,7 +674,8 @@ class CommonsDelinker(object):
 		result = ([universal_unicode(s) for s in i] for i in self.cursor.fetchall())
 
 
-		for id, timestamp, old_image, new_image, user, comment in result:	
+		for id, timestamp, old_image, new_image, user, comment in result:
+			# TODO: remove code; should now be part of the replacer
 			if (not old_image.lower().endswith('.svg')) and \
 					new_image.lower().endswith('.svg'):
 				output(u'Refused to replace %s by %s' % (old_image, new_image))
@@ -712,6 +719,7 @@ class CommonsDelinker(object):
 				self.read_replacement_log()
 				
 			if 'bot_table' in self.config:
+				# NOTE: Unused
 				self.cursor.execute("""UPDATE %s SET 
 					last_activity = UNIX_TIMESTAMP()
 					WHERE name = 'CommonsDelinker'""" % \
@@ -723,7 +731,7 @@ class CommonsDelinker(object):
 	def thread_died(self):
 		# A thread died, it may be possible that we cannot 
 		# function any more. Currently only for CheckUsages
-		# and Loggers. Delinkers can't die.
+		# and Loggers. Delinkers should not be able to die.
 		cu = 0
 		self.CheckUsages.jobLock.acquire()
 		for thread in self.CheckUsages.threads:
@@ -758,6 +766,7 @@ def output(message, toStdout = True):
 		sys.stderr.flush()
 			
 if __name__ == '__main__':
+	# NOTE: Unused
 	try:
 		PID = int(os.readlink('/proc/self'))
 	except:
@@ -769,6 +778,7 @@ if __name__ == '__main__':
 	
 	args = wikipedia.handleArgs()
 	if '-since' in args:
+		# NOTE: Untested
 		ts_format = '%Y-%m-%d %H:%M:%S'
 		try:
 			since = time.strptime(
