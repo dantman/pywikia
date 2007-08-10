@@ -4637,6 +4637,8 @@ def async_put():
         except PageNotSaved, ex:
             output(u"Saving page [[%s]] failed: %s"
                    % (page.title(), ex.message))
+        except LockedPage, ex:
+            output(u"Page [[%s]] is locked; not saved." % page.title())
         except:
             tb = traceback.format_exception(*sys.exc_info())
             output(u"Saving page [[%s]] failed:\n%s"
