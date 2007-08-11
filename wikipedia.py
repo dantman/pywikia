@@ -1045,10 +1045,11 @@ class Page(object):
         """
         # Fetch a page to get an edit token. If we already have
         # fetched a page, this will do nothing, because get() is cached.
-        try:
-            self.site().sandboxpage.get(force = True, get_redirect = True)
-        except NoPage:
-            pass
+        # Disabled in r4027
+        #try:
+        #    self.site().sandboxpage.get(force = True, get_redirect = True)
+        #except NoPage:
+        #    pass
 
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
