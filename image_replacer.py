@@ -78,7 +78,8 @@ class Replacer(object):
 		for replacement in replacements:
 			res = self.examine_revision_history(
 				revisions, replacement, username)
-			if res and self.allowed_replacement(replacement):
+			if res and self.allowed_replacement(replacement) and \
+					replacement.group(1) != replacement.group(2):
 				self.cursor.execute(insert, res)
 				text = text.replace(replacement.group(0), '')
 				output('Replacing %s by %s: %s' % replacement.groups())
