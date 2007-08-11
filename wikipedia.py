@@ -600,7 +600,7 @@ class Page(object):
                 elif self.site().has_mediawiki_message('nocreatetitle') and text.find(self.site().mediawiki_message('nocreatetitle')) != -1:
                     raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
                 elif text.find('var wgPageName = "Special:Badtitle";'):
-                    raise BadTitle(u'BadTitle: %s' % self)
+                    raise BadTitle('BadTitle: %s' % self)
                 else:
                     output( unicode(text) )
                     # We assume that the server is down. Wait some time, then try again.
