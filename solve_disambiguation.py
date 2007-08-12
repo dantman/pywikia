@@ -576,8 +576,8 @@ class DisambiguationRobot(object):
                 while True:
                     # Show the title of the page where the link was found.
                     # Highlight the title in purple.
-                    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} \<<<" % refPage.title())
-                    
+                    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % refPage.title())
+
                     # at the beginning of the link, start red color.
                     # at the end of the link, reset the color to default
                     wikipedia.output(text[m.start() - context : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
