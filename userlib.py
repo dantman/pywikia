@@ -97,7 +97,7 @@ class User:
             else:
                 break
 
-    def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False, enableAutoblock=False):
+    def block(self, expiry=None, reason=None, anonOnly=True, noSignup=False, enableAutoblock=False, emailBan=False):
         """
         Block the user.
 
@@ -108,6 +108,7 @@ class User:
         anonOnly - is the block affecting only anonymous users?
         noSignup - does the block disable account creation?
         enableAutoblock - is autoblock enabled on the block?
+        emailBan - prevent user from sending e-mail?
 
         The default values for block options are set to as most unrestrictive
         """
@@ -134,6 +135,7 @@ class User:
             'wpAnonOnly': boolStr[anonOnly],
             'wpCreateAccount': boolStr[noSignup],
             'wpEnableAutoblock': boolStr[enableAutoblock],
+            'wpEmailBan': boolStr[emailBan],
             'wpBlock': 'Block this user',
             'wpEditToken': token
         }
