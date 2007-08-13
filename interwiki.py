@@ -292,7 +292,7 @@ msg = {
     'nds-nl': (u'bot', u'derbie', u'derof', u'aanders'),
     'nl': (u'robot ', u'Erbij', u'Eraf', u'Anders'),
     'nn': (u'robot ', u'la til', u'fjerna', u'endra'),
-    'no': (u'robot ', u'Tilføyer', u'Fjerner', u'Endrer'),
+    'no': (u'robot ', u'legger til', u'fjerner', u'endrer'),
     'os': (u'Робот', u'баххæст кодта', u'Баивта', u'Аиуварс'),
     'pl': (u'robot ', u'dodaje', u'usuwa', u'poprawia'),
     'pms': (u'ël trigomiro ', u'a gionta', u'a modìfica', u'a gava'),

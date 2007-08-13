@@ -75,6 +75,7 @@ talk_report_msg = {
     'ia': u'Robot: Reporto de un ligamine externe non functionante',
     'nds': u'Lenk-Bot: Weblenk geiht nich mehr',
     'nl': u'Robot: Melding (tijdelijk) onbereikbare externe link',
+    'no': u'bot: Rapporter død eksternlenke',
     'pl': u'Robot zgłasza niedostępny link zewnętrzny',
     'pt': u'Bot: Link externo não funcionando',
     'sr': u'Бот: Пријављивање непостојећих спољашњих повезница',
@@ -91,6 +92,7 @@ talk_report = {
     'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n%s--~~~~',
     'nds': u'== Weblenk geiht nich mehr ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n%s--~~~~',
     'nl': u'== Dode link ==\nTijdens enkele automatische controles bleek de onderstaande externe link onbereikbaar. Controleer alstublieft of de link inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe link.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
+    'no': u'{{subst:Bruker:JhsBot/Død lenke}}\n\n%s\n%s~~~~\n\n{{ødelagt lenke}}',
     'pl': u'== Martwy link ==\n\nW czasie kilku automatycznych przebiegów bota, poniższy link zewnętrzny był niedostępny. Proszę sprawdzić czy odnośnik jest faktycznie niedziałający i ewentualnie go usunąć.\n\n%s\n%s--~~~~',
     'pt': u'== Link quebrado ==\n\nFoi checado os links externos deste artigo por vários minutos. Alguém verifique por favor se a ligação estiver fora do ar e tente arrumá-lo ou removê-la!\n\n%s\n --~~~~ ',
     'sr': u'== Покварене спољашње повезнице ==\n\nТоком неколико аутоматски провера, бот је пронашао покварене спољашње повезнице. Молимо вас проверите да ли је повезница добра, поправите је или је уклоните!\n\n%s\n%s--~~~~',
@@ -100,6 +102,7 @@ talk_report_archive = {
     'de': u'Die Webseite wurde vom Internet Archive gespeichert. Bitte verlinke gegebenenfalls eine geeignete archivierte Version: [%s]. ',
     'en': u'\nThe web page has been saved by the Internet Archive. Please consider linking to an appropriate archived version: [%s]. ',
     'nl': u'\nDeze website is bewaard in het Internet Archief. Overweeg te linken naar een gearchiveerde pagina: [%s]. ',
+    'no': u'\nDenne nettsiden er lagra i Internet Archive. Vurder om lenka kan endres til å peke til en av de arkiverte versjonene: [%s]. ',
     'pt': u'Esta página web foi gravada na Internet Archive. Por favor considere o link para a versão arquivada: [%s]. ',
 }
 
@@ -109,6 +112,7 @@ ignorelist = [
     re.compile('.*[\./@]example.org(/.*)?'), # reserved for documentation
     re.compile('.*[\./@]gso.gbv.de(/.*)?'),  # bot somehow can't handle their redirects 
     re.compile('.*[\./@]berlinonline.de(/.*)?'), # a de: user wants to fix them by hand and doesn't want them to be deleted, see [[de:Benutzer:BLueFiSH.as/BZ]].
+    re.compile('.*[\./@]bodo.kommune.no(/.*)?'), # bot can't handle their redirects
 ]
 
 def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):

@@ -23,6 +23,7 @@ import difflib
 # The summary that the Bot will use.
 comment = {
     'en':u'Robot: interwiki standardization',
+    'no':u'bot: Språklenkestandardisering',
     'it':u'Bot: Standardizzo interwiki',
     }
 site = wikipedia.getSite()

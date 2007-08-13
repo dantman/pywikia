@@ -60,6 +60,7 @@ msg_no_warnings = {'de':u'Bot: Tabellensyntax konvertiert',
                    'ia':u'Robot controlate: Syntaxe del tabella cambiate de HTML a Wiki',
                    'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė',
                    'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax',
+                   'no':u'bot: Konverter tabellsyntaks',
                    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli',
                    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada',
                   }
@@ -72,6 +73,7 @@ msg_one_warning = {'de':u'Bot: Tabellensyntax konvertiert - %d Warnung!',
                    'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimento!',
                    'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimas!',
                    'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwing!',
+		   'no':u'bot: Konverterer tabellsyntaks – %d advarsel!',
                    'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżenie!',
                    'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d aviso',
                   }
@@ -84,6 +86,7 @@ msg_multiple_warnings = {'de':u'Bot: Tabellensyntax konvertiert - %d Warnungen!'
                          'ia':u'Robot controlate: Syntaxe del tabella cambiate - %d advertimentos!',
                          'lt':u'kontroliuojamas robotas: atnaujinta lentelės sintaksė - %d įspėjimai!',
                          'nl':u'Tabel gewijzigd van HTML- naar Wikisyntax - %d waarschuwingen!',
+                         'no':u'bot: Konverterer tabellsyntaks – %d advarsler!',
                          'pl':u'Kontrolowany przez użytkownika robot poprawia składnię tabeli - %d ostrzeżeń!',
                          'pt':u'Bot: Sintaxe da tabela HTML para Wiki atualizada - %d avisos',
                         }

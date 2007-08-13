@@ -55,6 +55,7 @@ summary={
     'fr': u'Page renommée par bot',
     'he': u'העברת דף באמצעות בוט',
     'nl': u'Paginatitel gewijzigd door robot',
+    'no': u'bot: Flytter side',
     'pl': u'Przeniesienie artykułu przez robota',
     'pt': u'Página movida por bot',
 }
@@ -66,6 +67,7 @@ deletesummary={
     'el': u'Διαγραφή σελίδων με bot',
     'fr': u'Page supprimée par bot',
     'nl': u'Pagina verwijderd door robot',
+    'no': u'bot: Sletter side',
     'pl': u'Usunięcie artykułu przez robota',
     'pt': u'Página apagada por bot',
 }

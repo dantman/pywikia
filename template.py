@@ -155,6 +155,7 @@ class TemplateRobot:
         'hu':u'Robot: Sablon csere: %s',
         'lt':u'robotas: Keičiamas šablonas: %s',
         'nds':u'Bot: Vörlaag utwesselt: %s',
+        'no':u'bot: Endrer mal: %s',
         'pl':u'Robot zmienia szablon: %s',
         'pt':u'Bot: Alterando predefinição: %s',
         'sr':u'Бот: Измена шаблона: %s',
@@ -167,6 +168,7 @@ class TemplateRobot:
         'fr':u'Bot: Modifie modèles %s',
         'lt':u'robotas: Keičiami šablonai: %s',
         'nds':u'Bot: Vörlagen utwesselt: %s',
+        'no':u'bot: Endrer maler: %s',
         'pl':u'Robot zmienia szablony: %s',
         'pt':u'Bot: Alterando predefinição: %s',
     }
@@ -181,6 +183,7 @@ class TemplateRobot:
         'hu':u'Robot: Sablon eltávolítása: %s',
         'lt':u'robotas: Šalinamas šablonas: %s',
         'nds':u'Bot: Vörlaag rut: %s',
+        'no':u'bot: Fjerner mal: %s',
         'pl':u'Robot usuwa szablon: %s',
         'pt':u'Bot: Removendo predefinição: %s',
         'sr':u'Бот: Уклањање шаблона: %s',
@@ -193,6 +196,7 @@ class TemplateRobot:
         'fr':u'Bot: Enlève modèles : %s',
         'lt':u'robotas: Šalinami šablonai: %s',
         'nds':u'Bot: Vörlagen rut: %s',
+        'no':u'bot: Fjerner maler: %s',
         'pl':u'Robot usuwa szablony: %s',
         'pt':u'Bot: Removendo predefinição: %s',
     }
@@ -204,6 +208,7 @@ class TemplateRobot:
         'fr':u'Bot: Remplace modèle : %s',
         'he':u'רובוט: מכליל תבנית בקוד הדף: %s',
         'nds':u'Bot: Vörlaag in Text övernahmen: %s',
+        'no':u'bot: Erstatter mal: %s',
         'pl':u'Robot podmienia szablon: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
     }
@@ -214,6 +219,7 @@ class TemplateRobot:
         'fr':u'Bot: Remplace modèles : %s',
         'he':u'רובוט: מכליל תבניות בקוד הדף: %s',
         'nds':u'Bot: Vörlagen in Text övernahmen: %s',
+        'no':u'bot: Erstatter maler: %s',
         'pl':u'Robot podmienia szablony: %s',
         'pt':u'Bot: Substituindo predefinição: %s',
     }

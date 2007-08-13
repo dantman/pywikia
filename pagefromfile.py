@@ -62,6 +62,7 @@ class PageFromFileRobot:
         'it': u'Caricamento automatico',
         'ksh': u'Automatesch aanjelaat',
         'nl': u'Geautomatiseerde import',
+        'no': u'bot: Automatisk import',
         'pl': u'Automatyczny import artykułów',
         'pt': u'Importação automática de artigos'
     }
@@ -76,6 +77,7 @@ class PageFromFileRobot:
         'it': u'aggiungo in cima',
         'ksh': u'Automatesch füürjesaz',
         'nl': u'bovenaan toegevoegd',
+        'no': u'legger til øverst',
         'pl': u'dodaj na górze',
         'pt': u'adicionado no topo'
     }
@@ -89,6 +91,7 @@ class PageFromFileRobot:
         'it': u'aggiungo in fondo',
         'ksh': u'Automatesch aanjehange',
         'nl': u'onderaan toegevoegd',
+        'no': u'legger til nederst',
         'pl': u'dodaj na dole',
         'pt': u'adicionando no fim'
     }
@@ -102,6 +105,7 @@ class PageFromFileRobot:
         'it': u'sovrascritto il testo esistente',
         'ksh': u'Automatesch ußjetuusch',
         'nl': u'bestaande tekst overschreven',
+        'no': u'erstatter eksisterende tekst',
         'pl': u'aktualny tekst nadpisany',
         'pt': u'sobrescrever texto'
     }

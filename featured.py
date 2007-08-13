@@ -49,6 +49,7 @@ msg = {
     'ka': u'რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
     'lt': u'Pavyzdinis straipsnis [[%s:%s]]',
     'nl': u'Etalage-artikel link voor [[%s:%s]]',
+    'no': u'bot: [[%s:%s]] er en utmerka artikkel',
     'pl': u'Link do artykułu wyróżnionego [[%s:%s]]',
     'pt': u'Ligando artigos destacados para [[%s:%s]]',
     'sr': u'Међувики за изабране чланке за [[%s:%s]]',

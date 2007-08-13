@@ -29,6 +29,7 @@ content = {
     'de': u'{{Bitte erst NACH dieser Zeile schreiben! (Begrüßungskasten)}}\r\n',
     'en': u'{{Please leave this line alone (sandbox heading)}}\n <!-- Hello! Feel free to try your formatting and editing skills below this line. As this page is for editing experiments, this page will automatically be cleaned every 12 hours. -->',
     'nl': u'{{subst:Wikipedia:Zandbak/schoon zand}}',
+    'no': u'{{Sandkasse}}\n<!-- VENNLIGST EKSPERIMENTER NEDENFOR DENNE SKJULTE TEKSTLINJEN! SANDKASSEMALEN {{Sandkasse}} SKAL IKKE FJERNES! -->}}',
     'pl': u'{{Prosimy - NIE ZMIENIAJ, NIE KASUJ, NIE PRZENOŚ tej linijki - pisz niżej}}',
     'pt': u'<!--não apague esta linha-->{{página de testes}}<!--não apagar-->\r\n',
     'commons': u'{{Sandbox}}\n<!-- Please edit only below this line. -->'
@@ -39,6 +40,7 @@ msg = {
     'de': u'Bot: Setze Seite zurück.',
     'en': u'Robot: This page will automatically be cleaned.',
     'nl': u'Robot: Automatisch voorzien van schoon zand.',
+    'no': u'bot: Rydder sandkassa.',
     'pl': u'Robot czyści brudnopis',
     'pt': u'Bot: Limpeza da página de testes',
     }
@@ -48,6 +50,7 @@ sandboxTitle = {
     'de': u'Wikipedia:Spielwiese',
     'en': u'Wikipedia:Sandbox',
     'nl': u'Wikipedia:Zandbak',
+    'no': u'Wikipedia:Sandkasse',
     'pl': u'Wikipedia:Brudnopis',
     'pt': u'Wikipedia:Página de testes',
     'commons': u'Commons:Sandbox'
