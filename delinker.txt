@@ -64,7 +64,7 @@ Due to historical reasons, the configuration variable is called ''CommonsDelinke
 First setup the dictionary ''CommonsDelinker'', by adding to the config:
 CommonsDelinker = {}
 
-==== General settings ====
+=== General settings ===
 * ''timeout = 60'': A general timeout, used for fetching the log and other 
   timeouts. Set to 60 for medium sized wikis, such as English Wikipedia,
   and 60-120 for smaller wikis such as German Wikipedia. Note that during 
@@ -88,7 +88,7 @@ CommonsDelinker = {}
   GLOBALLY WITHOUT CONSULTING BRYAN AND SIEBRAND. Thank you.
 * ''no_sysop = True'': Disable delinking as sysop.
 
-==== Delinker settings ====
+=== Delinker settings ===
 Those variables only need to be set if the delinker is enabled.
 * ''delink_wait = 600'': The time to wait after deletion before the image is 
   delinked.
@@ -96,7 +96,7 @@ Those variables only need to be set if the delinker is enabled.
   summary, the file is not delinked.
 * ''summary_cache = 3600'': Time before on-wiki settings are updated.
 
-==== Replacer settings ====
+=== Replacer settings ===
 Those variables only need to be set if the replacer is enabled.
 * ''replace_template = "replace image"'': The template for to command 
   replacement.
@@ -107,7 +107,7 @@ Those variables only need to be set if the replacer is enabled.
 * ''disallowed_replacements = [(r'\.png$', r'\.svg$')]'': List of regular expressions
   of refused replacements.
 
-==== SQL settings ====
+=== SQL settings ===
 * ''sql_engine = "mysql"'': Database engine to use. Currently supported: 
   MySQL. Support for sqlite3 is planned. The Global delinker requires MySQL.
 * ''sql_config = {\
@@ -120,6 +120,31 @@ Those variables only need to be set if the replacer is enabled.
 * ''log_table = "database.delinker"'': The database.table to log to.
 * ''replacer_table = "database.replacer"'': The database.table for the 
   replacer. Only required if the replacer is activated.
+  
+==== SQL table layout ====
+<code lang="sql">
+CREATE TABLE delinker (
+	timestamp CHAR(14),
+	img VARBINARY(255),
+	wiki VARBINARY(255),
+	page_title VARBINARY(255),
+	namespace INT,
+	status ENUM('ok', 'skipped', 'failed'),
+	newimg VARBINARY(255)
+);
+CREATE TABLE replacer (
+	id INT NOT NULL AUTO_INCREMENT, 
+	timestamp VARBINARY(14), 
+	old_image VARBINARY(255),
+	new_image VARBINARY(255),
+	status ENUM('pending', 'ok', 'refused', 'done'),
+	user VARBINARY(255),
+	comment VARBINARY(255),
+	
+	PRIMARY KEY(id),
+	INDEX(status)
+);
+</code>
   
 ==== Edit and debugging settings ====
 * ''save_diff = False'': Save all changes to a diff. Create a directory diff/
