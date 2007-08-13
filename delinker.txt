@@ -245,6 +245,10 @@ CommonsDelinker['command_page'] = 'User:CommonsDelinker/commands'
 CommonsDelinker['clean_list'] = False
 CommonsDelinker['disallowed_replacements'] = [(r'\.png$', r'\.svg$')]
 
+CommonsDelinker['replacer_report_replacements'] = False
+CommonsDelinker['replacer_report_template'] = 'universally replaced'
+
+
 ## SQL connection information.
 # Database engine to use. Currently supported: MySQL, sqlite3.
 # Global delinker requires MySQL.

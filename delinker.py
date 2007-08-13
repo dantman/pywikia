@@ -452,6 +452,8 @@ class CheckUsage(threadpool.Thread):
 			# Pass the usage to the Delinker pool along with other arguments
 			self.CommonsDelinker.Delinkers.append((image, usage_domains, 
 				timestamp, admin, reason, replacement))
+		elif replacement:
+			self.CommonsDelinker.Loggers.append((timestamp, image, replacement))
 		
 	def do(self, args):
 		try:

@@ -31,9 +31,8 @@ def strip_image(img):
 def site_prefix(site):
 	if site.lang == site.family.name:
 		return site.lang
-	# TODO: fix
-	#if (site.lang, site.family.name) == ('-', 'wikisource'):
-	#	return 'wikisource'
+	if (site.lang, site.family.name) == ('-', 'wikisource'):
+		return 'oldwikisource'
 	return '%s:%s' % (site.family.name, site.lang)
 
 class Replacer(object):
@@ -52,7 +51,7 @@ class Replacer(object):
 		
 		self.first_revision = 0
 		if self.config.get('replacer_report_replacements', False):
-			self.reporters = threadpool.ThreadPool(self.reporter)
+			self.reporters = threadpool.ThreadPool(Reporter)
 			self.reporters.add_thread(self.site, self.config)
 			
 		
@@ -113,8 +112,8 @@ class Replacer(object):
 		for timestamp, user, text in revisions[1:]:
 			if replacement.group(0) in text and user != username:
 				db_time = db_timestamp(timestamp)
-				if db_time < self.first_revision or not revision:
-					self.first_revision = db_time
+				if db_time < self.first_revision or not self.first_revision:
+					self.first_revision = int(db_time)
 				return (db_time, strip_image(replacement.group(1)),
 					strip_image(replacement.group(2)),
 					user, replacement.group(3))
@@ -137,7 +136,7 @@ class Replacer(object):
 		for old_image, new_image, user, comment in finished_images:
 			self.cursor.execute("""SELECT wiki, namespace, page_title 
 				FROM %s WHERE img = %%s AND status <> 'ok'""" % 
-				self.config['delinker_table'], (old_image, ))
+				self.config['log_table'], (old_image, ))
 			not_ok = list(self.cursor)
 			
 			self.reporters.append((old_image, new_image, user, 
@@ -161,11 +160,11 @@ class Replacer(object):
 		return True
 
 class Reporter(threadpool.Thread):
-	def __init__(self, site, config):
+	def __init__(self, pool, site, config):
 		self.site = site
 		self.config = config
 		
-		threadpool.Thread.__init__(self)
+		threadpool.Thread.__init__(self, pool)
 	def do(self, (old_image, new_image, user, comment, not_ok)):
 		not_ok_items = []
 		for wiki, namespace, page_title in not_ok:
