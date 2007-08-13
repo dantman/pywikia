@@ -1076,6 +1076,7 @@ class Subject(object):
         reporting of missing backlinks for pages we already fixed
 
         """
+        # use sets because searching an element is faster than in lists
         expectedPages = set(new.values())
         expectedSites = set([page.site() for page in expectedPages])
         try:
@@ -1086,6 +1087,8 @@ class Subject(object):
                     except wikipedia.NoPage:
                         wikipedia.output(u"WARNING: Page %s does no longer exist?!" % page.title())
                         break
+                    # To speed things up, create a dictionary which maps sites to pages.
+                    # This assumes that there is only one interwiki link per language.
                     linkedPagesDict = {}
                     for linkedPage in linkedPages:
                         linkedPagesDict[linkedPage.site()] = linkedPage
