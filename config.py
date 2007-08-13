@@ -247,8 +247,10 @@ put_throttle = 10
 # than 'noisysleep' seconds, it is logged on the screen.
 noisysleep = 3.0
 
-# Defer bot edits during periods of server lag.  For details, see
+# Defer bot edits during periods of database server lag.  For details, see
 # http://www.mediawiki.org/wiki/Maxlag_parameter
+# You can set this variable to a number of seconds, or to None to disable
+# this behavior.
 # It is recommended that you do not change this parameter unless you know
 # what you are doing and have a good reason for it!
 maxlag = 5
