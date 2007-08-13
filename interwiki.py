@@ -1076,34 +1076,33 @@ class Subject(object):
         reporting of missing backlinks for pages we already fixed
 
         """
+        expectedPages = set(new.values())
+        expectedSites = set([page.site() for page in expectedPages])
         try:
             for site, page in new.iteritems():
                 if site not in updatedSites and not page.section():
-                    shouldlink = new.values()
                     try:
-                        linked = page.interwiki()
+                        linkedPages = set(page.interwiki())
                     except wikipedia.NoPage:
                         wikipedia.output(u"WARNING: Page %s does no longer exist?!" % page.title())
                         break
-                    for xpage in shouldlink:
-                        if xpage != page and not xpage in linked:
-                            for l in linked:
-                                if l.site() == xpage.site():
-                                    wikipedia.output(u"WARNING: %s: %s does not link to %s but to %s" % (page.site().family.name, page.aslink(True), xpage.aslink(True), l.aslink(True)))
-                                    break
-                            else:
-                                wikipedia.output(u"WARNING: %s: %s does not link to %s" % (page.site().family.name, page.aslink(True), xpage.aslink(True)))
+                    linkedPagesDict = {}
+                    for linkedPage in linkedPages:
+                        linkedPagesDict[linkedPage.site()] = linkedPage
+                    for expectedPage in expectedPages:
+                        if expectedPage != page and expectedPage not in linkedPages:
+                            try:
+                                linkedPage = linkedPagesDict[expectedPage.site()]
+                                wikipedia.output(u"WARNING: %s: %s does not link to %s but to %s" % (page.site().family.name, page.aslink(True), expectedPage.aslink(True), linkedPage.aslink(True)))
+                            except KeyError:
+                                wikipedia.output(u"WARNING: %s: %s does not link to %s" % (page.site().family.name, page.aslink(True), expectedPage.aslink(True)))
                     # Check for superfluous links
-                    for xpage in linked:
-                        if not xpage in shouldlink:
+                    for linkedPage in linkedPages:
+                        if linkedPage not in expectedPages:
                             # Check whether there is an alternative page on that language.
-                            for l in shouldlink:
-                                if l.site() == xpage.site():
-                                    # Already reported above.
-                                    break
-                            else:
-                                # New warning
-                                wikipedia.output(u"WARNING: %s: %s links to incorrect %s" % (page.site().family.name, page.aslink(True), xpage.aslink(True)))
+                            # In this case, it was already reported above.
+                            if linkedPage.site() not in expectedSites:
+                                wikipedia.output(u"WARNING: %s: %s links to incorrect %s" % (page.site().family.name, page.aslink(True), linkedPage.aslink(True)))
         except (socket.error, IOError):
             wikipedia.output(u'ERROR: could not report backlinks')
     
