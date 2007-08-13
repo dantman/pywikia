@@ -12,8 +12,9 @@ Please refer to delinker.txt for full documentation.
 __version__ = '$Id$'
 import config, wikipedia
 import re, time
+import threadpool
 
-from delinker import wait_callback, output, connect_database
+from delinker import wait_callback, output, connect_database, family
 
 def mw_timestamp(ts):
 	return '%s%s%s%s-%s%s-%s%sT%s%s:%s%s:%s%sZ' % tuple(ts)
@@ -26,6 +27,14 @@ def strip_image(img):
 	img = img.replace(' ', '_')
 	img = img[0].upper() + img[1:]
 	return img.strip()
+
+def site_prefix(site):
+	if site.lang == site.family.name:
+		return site.lang
+	# TODO: fix
+	#if (site.lang, site.family.name) == ('-', 'wikisource'):
+	#	return 'wikisource'
+	return '%s:%s' % (site.family.name, site.lang)
 
 class Replacer(object):
 	def __init__(self):
@@ -40,6 +49,12 @@ class Replacer(object):
 		
 		self.database = connect_database()
 		self.cursor = self.database.cursor()
+		
+		self.first_revision = 0
+		if self.config.get('replacer_report_replacements', False):
+			self.reporters = threadpool.ThreadPool(self.reporter)
+			self.reporters.add_thread(self.site, self.config)
+			
 		
 	def read_replace_log(self):
 		# FIXME: Make sqlite3 compatible
@@ -97,18 +112,44 @@ class Replacer(object):
 				
 		for timestamp, user, text in revisions[1:]:
 			if replacement.group(0) in text and user != username:
-				return (db_timestamp(timestamp), 
-					strip_image(replacement.group(1)),
+				db_time = db_timestamp(timestamp)
+				if db_time < self.first_revision or not revision:
+					self.first_revision = db_time
+				return (db_time, strip_image(replacement.group(1)),
 					strip_image(replacement.group(2)),
 					user, replacement.group(3))
 					
 		output('Warning! Could not find out who did %s' % \
 				repr(replacement.group(0)), False)
 		return
+		
+	def read_finished_replacements(self):
+		self.cursor.execute('START TRANSACTION WITH CONSISTENT SNAPSHOT')
+		self.cursor.execute("""SELECT old_image, new_image, user, comment FROM
+			%s WHERE status = 'done' AND timestamp >= %i""" % \
+			(self.config['replacer_table'], self.first_revision))
+		finished_images = list(self.cursor)
+		self.cursor.execute("""UPDATE %s SET status = 'reported' 
+			WHERE status = 'done' AND timestamp >= %i""" % \
+			(self.config['replacer_table'], self.first_revision))
+		self.cursor.commit()
+		
+		for old_image, new_image, user, comment in finished_images:
+			self.cursor.execute("""SELECT wiki, namespace, page_title 
+				FROM %s WHERE img = %%s AND status <> 'ok'""" % 
+				self.config['delinker_table'], (old_image, ))
+			not_ok = list(self.cursor)
+			
+			self.reporters.append((old_image, new_image, user, 
+				comment, not_ok))
+		
 			
 	def start(self):
 		while True:
 			self.read_replace_log()
+			if self.config.get('replacer_report_replacements', False):
+				self.read_finished_replacements()
+			
 			# Replacer should not loop as often as delinker
 			time.sleep(self.config['timeout'] * 2)
 			
@@ -118,6 +159,36 @@ class Replacer(object):
 					target.search(replacement.group(2)):
 				return False
 		return True
+
+class Reporter(threadpool.Thread):
+	def __init__(self, site, config):
+		self.site = site
+		self.config = config
+		
+		threadpool.Thread.__init__(self)
+	def do(self, (old_image, new_image, user, comment, not_ok)):
+		not_ok_items = []
+		for wiki, namespace, page_title in not_ok:
+			site = family(wiki)
+			if unicode(site) == unicode(self.site):
+				title = u'%s:%s' % (site.namespace(namespace), page_title)
+			else:
+				title = u'%s:%s:%s' % (site_prefix(site),
+					site.namespace(namespace), page_title)
+			not_ok_items.append(title)
+		
+		page = wikipedia.Page(self.site, u'Image:' + old_image)
+		text = page.get()
+		template = u'{{%s|new_image=%s|user=%s|comment=%s|not_ok=%}}' % \
+			(self.config['replacer_report_template'],
+			new_image, user, comment, 
+			self.config.get('replacer_report_seperator', u', ').join(not_ok))
+		page.put(u'%s\n%s' % (template, text), 
+			comment = u'This image has been replaced by ' + new_image)
+			
+		output(u'Reporting replacement of %s by %s to %s' % \
+			(old_image, new_image))
+			
 
 if __name__ == '__main__':
 	import sys, cgitb

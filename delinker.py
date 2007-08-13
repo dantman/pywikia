@@ -317,7 +317,7 @@ class SummaryCache(object):
 				self.summaries[type] = {}
 			if domain in self.summaries[type]:
 				if (time.time() - self.summaries[type][domain][1]) < \
-					self.CommonsDelinker.config['summary_cache']:
+						self.CommonsDelinker.config['summary_cache']:
 					# Return cached result
 					return self.summaries[type][domain][0]
 					

@@ -106,6 +106,13 @@ Those variables only need to be set if the replacer is enabled.
   actually has edit permissions to the list.
 * ''disallowed_replacements = [(r'\.png$', r'\.svg$')]'': List of regular expressions
   of refused replacements.
+  
+==== Reporting replacements ====
+The replacer can insert a report on replaced images.
+* ''replacer_report_replacements = False'': Set to True to enable reporting.
+* ''replacer_report_template = universally replaced'': The template to insert. The 
+  template will be called with the following parameters: ''new_image, user, comment,
+  not_ok''.
 
 === SQL settings ===
 * ''sql_engine = "mysql"'': Database engine to use. Currently supported: 
@@ -132,6 +139,7 @@ CREATE TABLE delinker (
 	status ENUM('ok', 'skipped', 'failed'),
 	newimg VARBINARY(255)
 );
+
 CREATE TABLE replacer (
 	id INT NOT NULL AUTO_INCREMENT, 
 	timestamp VARBINARY(14), 
@@ -146,7 +154,7 @@ CREATE TABLE replacer (
 );
 </code>
   
-==== Edit and debugging settings ====
+=== Edit and debugging settings ===
 * ''save_diff = False'': Save all changes to a diff. Create a directory diff/
   before running.
 * ''edit = True'': Actually edit to the wiki.
