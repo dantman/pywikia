@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to welcome new users. This script works out of the box for Wikis that
@@ -71,6 +71,9 @@ This script understands the following command-line arguments:
 
     -random        Use a random signature, taking the signatures from a wiki
                    page (for istruction, see below).
+
+    -savedata      This feature saves the random signature index to allow to
+                   continue to welcome with the last signature used.
 
 ********************************* GUIDE ***********************************
 
@@ -152,23 +155,25 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
 __version__ = '$Id: welcome.py,v 1.4 2007/04/14 18:05:42 siebrand Exp$'
 #
 
-import wikipedia, string
-import time, re, config
-import urllib
-import locale
+import wikipedia, config, string, locale
+import time, re, cPickle, os, urllib
+
 locale.setlocale(locale.LC_ALL,'')
 
-number = 1           # number of edits that an user required to be welcomed
-numberlog = 15       # number of users that are required to add the log :)
-limit = 50           # number of users that the bot load to check
-offset_variable = 0  # number of newest users to skip each run
-recursive = True     # define if the Bot is recursive or not
-time_variable = 3600 # how much time (sec.) the bot sleeps before restart
-log_variable = True  # create the welcome log or not
-ask = False          # should bot ask to add username to bad-username list
-filter_wp = False    # check if the username is ok or not
-sign = ' ~~~~'       # default signature
-random = False       # should signature be random or not
+number = 1                  # number of edits that an user required to be welcomed
+numberlog = 15              # number of users that are required to add the log :)
+limit = 50                  # number of users that the bot load to check
+offset_variable = 0         # number of newest users to skip each run
+recursive = True            # define if the Bot is recursive or not
+time_variable = 3600        # how much time (sec.) the bot sleeps before restart
+log_variable = True         # create the welcome log or not
+ask = False                 # should bot ask to add username to bad-username list
+filter_wp = False           # check if the username is ok or not
+sign = ' --~~~~'            # default signature
+random = False              # should signature be random or not
+savedata = False            # should save the signature index or not
+filename = 'welcome.data'   # file where is stored the random signature index
+directory = str(os.getcwd())
 
 # Script users the class wikipedia.translate() to find the right
 # page/user/summary/etc so the need to specify language and project have
@@ -510,6 +515,8 @@ if __name__ == "__main__":
             ask = True
         elif arg == '-filter':
             filter_wp = True
+        elif arg == '-savedata':
+            savedata = True
         elif arg == '-random':
             random = True
         elif arg.startswith('-limit'):
@@ -559,13 +566,17 @@ if __name__ == "__main__":
             welcomer = u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s'
 
     welcomed_users = list()
-    number_user = 0
+    if savedata == True and os.path.exists(directory + '/' + filename):
+        f = file(filename)
+        number_user = cPickle.load(f)
+    else:
+        number_user = 0
     # Use try and finally, to put the wikipedia.stopme() always at the end of the code.
     try:
         # Here there is the main loop.
         while True:
             if filter_wp == True:
-                # A standard list of bad username components (you can change/delate it in your project...) [ i divide the list into two to make it smaller...]
+                # A standard list of bad username components (you can change/delate it in your project...) [ i divide the list into three to make it smaller...]
                 elencoaf = [' ano', ' anus', 'anal ', 'babies', 'baldracca', 'balle', 'bastardo',
                             'bestiali', 'bestiale', 'bastarda', 'b.i.t.c.h.', 'bitch', 'boobie',
                             'bordello', 'breast', 'cacata', 'cacca', 'cachapera', 'cagata',
@@ -642,7 +653,7 @@ if __name__ == "__main__":
             if random == True:
                 try:
                     wikipedia.output(u'Loading random signatures...')
-                    signList = defineSign(wsite,signPageTitle)
+                    signList = defineSign(wsite, signPageTitle)
                 except wikipedia.NoPage:
                     wikipedia.output(u'The list with signatures is not available... Using default signature...')
                     random = False
@@ -766,10 +777,10 @@ if __name__ == "__main__":
             # If recursive, don't exit, repeat after one hour.
             if recursive == True:
                 waitstr = unicode(time_variable)
-		if locale.getlocale()[1]:
-		  strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()), locale.getlocale()[1])
-		else:
-		  strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
+                if locale.getlocale()[1]:
+                    strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()), locale.getlocale()[1])
+                else:
+                    strfstr = unicode(time.strftime(u"%d %b %Y %H:%M:%S (UTC)", time.gmtime()))
                 wikipedia.output(u'Sleeping %s seconds before rerun. %s' % (waitstr, strfstr))
                 time.sleep(time_variable)
             # If not recursive, break.
@@ -777,4 +788,9 @@ if __name__ == "__main__":
                 wikipedia.output(u'Stop!')
                 break
     finally:
+        if random == True:
+            if savedata == True:
+                f = file(filename, 'w')
+                cPickle.dump(number_user, f)
+                f.close()
         wikipedia.stopme()
