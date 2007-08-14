@@ -145,7 +145,8 @@ CREATE TABLE replacer (
 	timestamp VARBINARY(14), 
 	old_image VARBINARY(255),
 	new_image VARBINARY(255),
-	status ENUM('pending', 'ok', 'refused', 'done'),
+	status ENUM('pending', 'ok', 'refused', 
+		'done', 'reported'),
 	user VARBINARY(255),
 	comment VARBINARY(255),
 	

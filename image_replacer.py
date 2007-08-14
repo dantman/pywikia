@@ -53,6 +53,7 @@ class Replacer(object):
 		if self.config.get('replacer_report_replacements', False):
 			self.reporters = threadpool.ThreadPool(Reporter)
 			self.reporters.add_thread(self.site, self.config)
+			self.reporters.start()
 			
 		
 	def read_replace_log(self):
@@ -176,16 +177,16 @@ class Reporter(threadpool.Thread):
 					site.namespace(namespace), page_title)
 			not_ok_items.append(title)
 		
-		page = wikipedia.Page(self.site, u'Image:' + old_image)
-		text = page.get()
-		template = u'{{%s|new_image=%s|user=%s|comment=%s|not_ok=%}}' % \
+		template = u'{{%s|new_image=%s|user=%s|comment=%s|not_ok=%s}}' % \
 			(self.config['replacer_report_template'],
 			new_image, user, comment, 
 			self.config.get('replacer_report_seperator', u', ').join(not_ok))
+		page = wikipedia.Page(self.site, u'Image:' + old_image)
+		text = page.get()
 		page.put(u'%s\n%s' % (template, text), 
 			comment = u'This image has been replaced by ' + new_image)
 			
-		output(u'Reporting replacement of %s by %s to %s' % \
+		output(u'Reporting replacement of %s by %s.' % \
 			(old_image, new_image))
 			
 
