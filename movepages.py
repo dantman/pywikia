@@ -94,8 +94,7 @@ class MovePagesBot:
             wikipedia.output(u'Page %s is locked!' % page.title())
             
     def treat(self,page):
-        colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
-        wikipedia.output(u'\n>>>> %s <<<<' % page.title())
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"% page.title())
         pagetitle = page.titleWithoutNamespace()
         namesp = page.site().namespace(page.namespace())
         if self.appendAll == True:
@@ -222,7 +221,7 @@ def main():
                 gen = generator
 
     if ((FromName and ToName) == True):
-        wikipedia.output(u'Do you want to move %s to %s?' % (oldName, newName))
+        wikipedia.output(u'Do you move %s to %s!!' % (oldName, newName))
         page = wikipedia.Page(wikipedia.getSite(), oldName)
         bot = MovePagesBot(None, prefix, delete, always)
         bot.moveOne(page,newName,delete)
