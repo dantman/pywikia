@@ -164,6 +164,7 @@ def featuredArticles(site):
 def findTranslated(page, oursite=None):
     if not oursite:
         oursite=wikipedia.getSite()
+    wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"% page.title())
     if page.isRedirectPage():
         page=wikipedia.Page(page.site(), page.getRedirectTarget())
     try:
