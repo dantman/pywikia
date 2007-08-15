@@ -27,9 +27,9 @@ Command-line arguments:
                    its functionality is delete old page that was moved.
                    For example: "movepages.py pagetitle -del".
 
-    -addprefix     Move pages by adding a namespace prefix to the names of the pages.
+    -prefix        Move pages by adding a namespace prefix to the names of the pages.
                    (Will remove the old namespace prefix if any)
-                   Argument can also be given as "-addprefix:namespace:".
+                   Argument can also be given as "-prefix:namespace:".
 
     -always        Don't prompt to make changes, just do them.
 
@@ -55,7 +55,6 @@ summary={
     'fr': u'Page renommée par bot',
     'he': u'העברת דף באמצעות בוט',
     'nl': u'Paginatitel gewijzigd door robot',
-    'no': u'bot: Flytter side',
     'pl': u'Przeniesienie artykułu przez robota',
     'pt': u'Página movida por bot',
 }
@@ -67,7 +66,6 @@ deletesummary={
     'el': u'Διαγραφή σελίδων με bot',
     'fr': u'Page supprimée par bot',
     'nl': u'Pagina verwijderd door robot',
-    'no': u'bot: Sletter side',
     'pl': u'Usunięcie artykułu przez robota',
     'pt': u'Página apagada por bot',
 }
@@ -96,6 +94,7 @@ class MovePagesBot:
             wikipedia.output(u'Page %s is locked!' % page.title())
             
     def treat(self,page):
+        colors = [None] * 6 + [13] * len(page.title()) + [None] * 4
         wikipedia.output(u'\n>>>> %s <<<<' % page.title())
         pagetitle = page.titleWithoutNamespace()
         namesp = page.site().namespace(page.namespace())
