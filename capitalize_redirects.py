@@ -59,8 +59,8 @@ class CapitalizeBot:
             # Show the title of the page we're working on.
             # Highlight the title in purple.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page_t)
-            if not np.exists():
-                wikipedia.output(u'%s don\'t exist' % np.title())
+            if not page_t.exists():
+                wikipedia.output(u'%s don\'t exist' % page_t.title())
                 if not self.acceptall:
                     choice = wikipedia.inputChoice(u'Do you want create redirect?',  ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
                     if choice in ['a', 'A']:
@@ -75,7 +75,7 @@ class CapitalizeBot:
                         time.sleep(15)
                         continue
             else:
-                wikipedia.output(u'%s already exist, skipping...\n' % np.title())
+                wikipedia.output(u'%s already exist, skipping...\n' % page_t.title())
     
 def main():
     gen = None
