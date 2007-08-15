@@ -136,7 +136,7 @@ class LoginManager:
                 "User-agent": wikipedia.useragent
             }
             data = self.site.urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data, headers))
+            response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data, headers))
             data = response.read()
             wikipedia.cj.save(wikipedia.COOKIEFILE)
             return "Ok"

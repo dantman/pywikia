@@ -680,7 +680,7 @@ class Page(object):
         """
         Get the permalink page for this page
         """
-        return "http://%s%s&oldid=%i"%(self.site().hostname(), self.site().get_address(self.title()), self.latestRevision())
+        return "%s://%s%s&oldid=%i"%(self.site().protocol, self.site().hostname(), self.site().get_address(self.title()), self.latestRevision())
     
     def latestRevision(self):
         """
@@ -1164,7 +1164,7 @@ class Page(object):
             predata.append(("Content-type","application/x-www-form-urlencoded"))
             predata.append(("User-agent", useragent))
             data = self.site().urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+            response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
             # I'm not sure what to check in this case, so I just assume things went ok.
             # Very naive, I agree.
             data = u''
@@ -1686,7 +1686,7 @@ class Page(object):
                 predata["Content-type"] = "application/x-www-form-urlencoded"
                 predata["User-agent"] = useragent
                 data = self.site.urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
+                response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data))
                 data = response.read().decode(self.site().encoding())
             else:
                 response, data = self.site().postForm(address, predata)
@@ -1751,7 +1751,7 @@ class Page(object):
             predata['Content-type'] = 'application/x-www-form-urlencoded'
             predata['User-agent'] = useragent
             data = self.site().urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+            response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
             data = ''
         else:
             response, data = self.site().postForm(address, predata, sysop = sysop)
@@ -1808,7 +1808,7 @@ class Page(object):
                 predata['Content-type'] = 'application/x-www-form-urlencoded'
                 predata['User-agent'] = useragent
                 data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+                response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
                 data = u''
             else:
                 response, data = self.site().postForm(address, predata, sysop = True)
@@ -1970,7 +1970,7 @@ class Page(object):
                 predata["Content-type"] = "application/x-www-form-urlencoded"
                 predata["User-agent"] = useragent
                 data = self.site().urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request('http://' + self.site().hostname() + address, data))
+                response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
                 data = ''
             else:
                 data, response = self.site().postForm(address, predata, sysop = True)
@@ -2082,7 +2082,6 @@ class ImagePage(Page):
         """
         if not self._imagePageHtml:
             path = self.site().get_address(self.urlname())
-            #output(u'Getting http://%s%s' % (self.site().hostname(), path))
             self._imagePageHtml = self.site().getUrl(path)
         return self._imagePageHtml
 
@@ -2310,7 +2309,7 @@ class GetAll(object):
             predata["Content-type"] = "application/x-www-form-urlencoded"
             predata["User-agent"] = useragent
             data = self.site.urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
+            response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data))
             data = response.read()
         else:
             response, data = self.site.postForm(address, predata)
@@ -3149,7 +3148,11 @@ class Site(object):
         # TODO: add the authenticate stuff here
 
         # Encode all of this into a HTTP request
-        conn = httplib.HTTPConnection(self.hostname())
+        if self.protocol() == 'http':
+            conn = httplib.HTTPConnection(self.hostname())
+        elif self.protocol() == 'https':
+            conn = httplib.HTTPSConnection(self.hostname())
+        # otherwise, it will crash, as other protocols are not supported
 
         conn.putrequest('POST', address)
         conn.putheader('Content-Length', str(len(data)))
@@ -3261,7 +3264,7 @@ class Site(object):
             if compress:
                 uo.addheader('Accept-encoding', 'gzip')
 
-        url = 'http://%s%s' % (self.hostname(), path)
+        url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
         data = self.urlEncode(data)
 
         # Try to retrieve the page until it was successfully loaded (just in
@@ -3288,7 +3291,7 @@ class Site(object):
                 if retry:
                     # We assume that the server is down. Wait some time, then try again.
                     output(u"%s" % e)
-                    output(u"WARNING: Could not open 'http://%s%s'. Maybe the server or your connection is down. Retrying in %i minutes..." % (self.hostname(), path, retry_idle_time))
+                    output(u"WARNING: Could not open '%s://%s%s'. Maybe the server or your connection is down. Retrying in %i minutes..." % (self.protocol(), self.hostname(), path, retry_idle_time))
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
@@ -3320,7 +3323,7 @@ class Site(object):
             text = unicode(text, charset, errors = 'strict')
         except UnicodeDecodeError, e:
             print e
-            output(u'ERROR: Invalid characters found on http://%s%s, replaced by \\ufffd.' % (self.hostname(), path))
+            output(u'ERROR: Invalid characters found on %s://%s%s, replaced by \\ufffd.' % (self.protocol(), self.hostname(), path))
             # We use error='replace' in case of bad encoding.
             text = unicode(text, charset, errors = 'replace')
 
@@ -3847,6 +3850,9 @@ Maybe the server is down. Retrying in %i minutes..."""
         return self.family.query_address(self.lang)
     def api_address(self):
         return self.family.api_address(self.lang)
+
+    def protocol(self):
+        return self.family.protocol(self.lang)
 
     def hostname(self):
         return self.family.hostname(self.lang)

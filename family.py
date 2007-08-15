@@ -2402,6 +2402,13 @@ class Family:
         
     # Methods
     
+    def protocol(self, code):
+        """
+        Can be overridden to return 'https'.
+        Other protocols are not supported.
+        """
+        return 'http'
+
     def hostname(self, code):
         return self.langs[code]
     
