@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 This script can be used to delete and undelete pages en masse.
 Of course, you will need an admin account on the relevant wiki.
@@ -36,6 +36,7 @@ msg_simple_delete = {
     'en': u'Bot: Deleting a list of files.',
     'nl': u'Bot: verwijdert een lijst met pagina\'s.',
     'pl': u'Robot usuwa pliki z listy.',
+    'pt': u'Bot: Apagando um lista de arquivos.',
 }
 msg_delete_category = {
     'de': u'Bot: Lösche alle Seiten in Kategorie %s',
