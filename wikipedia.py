@@ -3850,6 +3850,8 @@ Maybe the server is down. Retrying in %i minutes..."""
         return self.family.query_address(self.lang)
     def api_address(self):
         return self.family.api_address(self.lang)
+    def apipath(self):
+        return self.family.apipath(self.lang)
 
     def protocol(self):
         return self.family.protocol(self.lang)
@@ -4002,6 +4004,10 @@ Maybe the server is down. Retrying in %i minutes..."""
             else:
                 self._mw_version = self.family.version(self.lang).split(".")
         return self._mw_version
+
+    def shared_image_repository(self):
+        sir = self.family.shared_image_repository()
+        return getSite(sir[0], sir[1])
 
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
