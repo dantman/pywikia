@@ -595,7 +595,7 @@ class CommonsDelinker(object):
 			# Assume less than 500 deletion have been made between
 			# this and the previous check of the log. If this is not 
 			# the case, timeout should be set lower.
-			result = self.http.query_api('api', self.site.hostname(), self.site.apipath(),
+			result = self.http.query_api(self.site.hostname(), self.site.apipath(),
 				action = 'query', list = 'logevents', letype = 'delete', 
 				lelimit = self.log_limit, lestart = ts_from_s, leend = ts_end_s, 
 				ledir = 'newer')
@@ -726,7 +726,7 @@ if __name__ == '__main__':
 	except:
 		PID = 0
 	
-	output(u'Running CommonsDelinker.')
+	output(u'Running ' + __version__)
 	CD = CommonsDelinker()
 	output(u'This bot runs from: ' + str(CD.site))
 	

@@ -65,6 +65,9 @@ def strip_image(title):
 	return title
 	
 def family(domain):
+	if domain is None:
+		raise RuntimeError('None is not a valid family')
+	
 	wiki = domain.split('.')
 	# Standard family
 	if wiki[1] in ('wikipedia', 'wiktionary', 'wikibooks', 
@@ -114,14 +117,14 @@ class HTTP(object):
  
 		return res
  
-	def query_api(self, api, host, path, **kwargs):
+	def query_api(self, host, path, **kwargs):
 		data = urlencode([(k, v.encode('utf-8')) for k, v in kwargs.iteritems()])
-		if api == 'query':
+		if path.endswith('query.php'):
 			query_string = '%s?format=json&%s' % (path, data)
 			method = 'GET'
 			data = ''
-		elif api == 'api':
-			query_string = '%s?format=json%s' % (path, data)
+		elif path.endswith('api.php'):
+			query_string = '%s?format=json' % path
 			method = 'POST'
 		else:
 			raise ValueError('Unknown api %s' % repr(api))
@@ -151,11 +154,11 @@ class HTTPPool(list):
 		
 		list.__init__(self, ())
 		
-	def query_api(self, api, host, path, **kwargs):
+	def query_api(self, host, path, **kwargs):
 		conn = self.find_conn(host)
 		while True:
 			try:
-				res = conn.query_api(api, host, path, **kwargs)
+				res = conn.query_api(host, path, **kwargs)
 				self.current_retry = 0
 				return res
 			except RuntimeError:
@@ -252,11 +255,14 @@ class CheckUsage(object):
 				#		self.clusters[server] = (_database, _cursor)
 				#if not server in self.clusters:
 				#	self.clusters[server] = self.connect(sql_host_prefix + str(server))
-				self.databases[server] = self.connect_mysql(sql_host_prefix + str(server))
+				self.servers[server] = self.connect_mysql(mysql_host_prefix + str(server))
 			
-			self.sites[dbname] = family(domain)
-			self.families[dbname] = (self.sites[dbname][0], 
-				wikipedia.Family(self.sites[dbname][1]))
+			# FIXME: wikimediafoundation!
+			try:
+				self.families[dbname] = family(domain)
+			except RuntimeError:
+				continue
+			self.databases[dbname] = self.servers[server]
  
 		# Localized namespaces
 		#cursor.execute('SELECT dbname, ns_id, ns_name FROM toolserver.namespace')
@@ -292,7 +298,7 @@ class CheckUsage(object):
  
 	def get_usage_db(self, dbname, image):
 		#image = strip_image(image)
-		lang, family = self.families(dbname)
+		lang, family = self.families[dbname]
 		
 		if family.shared_image_repository() == (lang, family.name):
 			left_join = '';
@@ -315,7 +321,7 @@ class CheckUsage(object):
 		
 		#image = strip_image(image)
 		# BUG: This is ugly.
-		res = self.http.query_api('api', site.hostname(), site.apipath(),
+		res = self.http.query_api(site.hostname(), site.apipath(),
 			action = 'query', list = 'imageusage', 
 			prop = 'info', iulimit = '500', titles = 'Image:' + image)
 		if '-1' in res['query']['pages']:
@@ -335,7 +341,7 @@ class CheckUsage(object):
 		# without the image itself. Can be fixed by querying query.php
 		# instead of api.php.
 		# BUG: This is ugly.
-		return '-1' not in self.http.query_api('api', site.hostname(), site.apipath(),
+		return '-1' not in self.http.query_api(site.hostname(), site.apipath(),
 			action = 'query', titles = 'Image:' + image)['query']['pages']
 		
 		
