@@ -41,6 +41,8 @@ __version__ = '$Id$'
 import httplib, urlparse, socket, time
 from urllib import urlencode
 import simplejson
+
+import family
  
 try:
 	import MySQLdb
@@ -61,7 +63,25 @@ def strip_image(title):
 	if title.startswith('Image:'):
 		return strip_ns(title)
 	return title
- 
+	
+def family(domain):
+	wiki = domain.split('.')
+	# Standard family
+	if wiki[1] in ('wikipedia', 'wiktionary', 'wikibooks', 
+		'wikiquote', 'wikisource', 'wikinews', 'wikiversity'):
+		return wiki[0], wiki[1]
+	# Family on own domain
+	if wiki[0] == 'www':
+		return wiki[1], wiki[1]
+	# Special Wikimedia wiki
+	if wiki[1] == 'wikimedia':
+		return wiki[0], wiki[0]
+	# Multilingual wikisource
+	if domain == 'wikisource.org':
+		return '-', 'wikisource'
+	raise RuntimeError('Unknown family ' + domain)
+
+# Not sure whether this belongs here
 class HTTP(object):
 	def __init__(self, host):
 		self.host = host
@@ -94,14 +114,14 @@ class HTTP(object):
  
 		return res
  
-	def query_api(self, api, host, **kwargs):
+	def query_api(self, api, host, path, **kwargs):
 		data = urlencode([(k, v.encode('utf-8')) for k, v in kwargs.iteritems()])
 		if api == 'query':
-			query_string = '/w/query.php?format=json&' + data
+			query_string = '%s?format=json&%s' % (path, data)
 			method = 'GET'
 			data = ''
 		elif api == 'api':
-			query_string = '/w/api.php?format=json'
+			query_string = '%s?format=json%s' % (path, data)
 			method = 'POST'
 		else:
 			raise ValueError('Unknown api %s' % repr(api))
@@ -131,11 +151,11 @@ class HTTPPool(list):
 		
 		list.__init__(self, ())
 		
-	def query_api(self, api, host, **kwargs):
+	def query_api(self, api, host, path, **kwargs):
 		conn = self.find_conn(host)
 		while True:
 			try:
-				res = conn.query_api(api, host, **kwargs)
+				res = conn.query_api(api, host, path, **kwargs)
 				self.current_retry = 0
 				return res
 			except RuntimeError:
@@ -181,12 +201,9 @@ class HTTPPool(list):
 		
  
 class CheckUsage(object):
-	#LIVE = ['enwiki_p']
-	#IGNORE = []
- 
 	def __init__(self, limit = 100, 
-			sql_host = 'sql', sql_user = '', sql_pass = '', 
-			sql_host_prefix = 'sql-s', no_db = False, use_autoconn = False, 
+			mysql_default_server = 2, mysql_host_prefix = 'sql-s', mysql_kwargs = {}, 
+			no_db = False, use_autoconn = False, 
 			
 			http_retry_timeout = 30, http_max_retries = -1, 
 			http_callback = lambda *args: None,
@@ -194,86 +211,111 @@ class CheckUsage(object):
 			mysql_retry_timeout = 60,
 			mysql_max_retries = -1, mysql_callback = lambda *args: None):
 				
-		self.conn = HTTPPool(retry_timeout = http_retry_timeout, 
-			max_retries = http_max_retries, callback = http_callback)
+		self.http = None 
 		if no_db: return
  
-		self.sql_host, self.sql_host_prefix = sql_host, sql_host_prefix
-		self.sql_user, self.sql_pass = sql_user, sql_pass
+		self.mysql_host, self.mysql_host_prefix = mysql_host, mysql_host_prefix
+		self.mysql_kwargs = mysql_kwargs
 		self.use_autoconn = use_autoconn
 		self.mysql_retry_timeout = mysql_retry_timeout
 		self.mysql_max_retries = mysql_max_retries
 		self.mysql_callback = mysql_callback
+		
+		self.http_retry_timeout = http_retry_timeout
+		self.http_max_retries = http_max_retries
+		self.http_callback = http_callback
  
 		self.connections = []
- 
+		
+		# Mapping database name -> mysql connection
 		self.databases = {}
-		self.clusters = {}
-		self.domains = {}
+		# Mapping server id -> mysql connection
+		self.servers = {}
+		# Mapping database name -> (lang, family object)
+		self.families = {}
  
-		database, cursor = self.connect(sql_host)
+		database, cursor = self.connect(mysql_host_prefix + str(mysql_default_server))
+		self.clusters[mysql_default_server] = (database, cursor)
  
+		# Find where the databases are located
 		cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
 		for dbname, domain, server in cursor.fetchall():
-			if server not in self.clusters:
-				for _database, _cursor in self.connections:
-					try:
-						_cursor.execute('USE ' + dbname)
-					except MySQLdb.Error, e:
-						if e[0] != 1049: raise
-					else:
-						self.clusters[server] = (_database, _cursor)
-				if not server in self.clusters:
-					self.clusters[server] = self.connect(sql_host_prefix + str(server))
+			if server not in self.servers:
+				# Disabled: Multiple clusters per server
+				#for _database, _cursor in self.connections:
+				#	try:
+				#		_cursor.execute('USE ' + dbname)
+				#	except MySQLdb.Error, e:
+				#		if e[0] != 1049: raise
+				#	else:
+				#		self.clusters[server] = (_database, _cursor)
+				#if not server in self.clusters:
+				#	self.clusters[server] = self.connect(sql_host_prefix + str(server))
+				self.clusters[server] = self.connect_mysql(sql_host_prefix + str(server))
 			
-			self.domains[dbname] = domain
-			self.databases[dbname] = self.clusters[server]
+			self.sites[dbname] = family(domain)
+			self.families[dbname] = (self.sites[dbname][0], 
+				wikipedia.Family(self.sites[dbname][1]))
  
-		cursor.execute('SELECT dbname, ns_id, ns_name FROM toolserver.namespace')
-		self.namespaces = dict((((i[0], i[1]), i[2].decode('utf-8')) for i in cursor))
+		# Localized namespaces
+		#cursor.execute('SELECT dbname, ns_id, ns_name FROM toolserver.namespace')
+		# self.namespaces = dict((((i[0], i[1]), i[2].decode('utf-8')) for i in cursor))
  
-	def connect(self, host):
+	def connect_mysql(self, host):
 		# A bug in MySQLdb 1.2.1_p will force you to set
 		# all your connections to use_unicode = False.
 		# Please upgrade to MySQLdb 1.2.2 or higher.
 		if self.use_autoconn:
 			database = mysql_autoconnection.connect(
-				use_unicode = False, user = self.sql_user, 
-				passwd = self.sql_pass, host = host,
+				use_unicode = False, host = host,
 				retry_timeout = self.mysql_retry_timeout, 
 				max_retries = self.mysql_max_retries, 
-				callback = self.mysql_callback)
+				callback = self.mysql_callback,
+				**self.mysql_kwargs)
 		else:
 			database = MySQLdb.connect(use_unicode = False,
-				user = self.sql_user, 
-				passwd = self.sql_pass, host = host)
+				host = host, **mysql_kwargs)
 		cursor = database.cursor()
 		self.connections.append((database, cursor))
 		return database, cursor
+	def connect_http(self):
+		if not self.http:
+			self.http = HTTPPool(retry_timeout = self.http_retry_timeout, 
+				max_retries = self.http_max_retries, callback = self.http_callback)
+
  
 	def get_usage(self, image):
 		for dbname in self.databases:
 			for link in self.get_usage_db(dbname, image):
-				yield self.domains[dbname], link
+				yield self.families[dbname], link
  
-	def get_usage_db(self, database, image):
-		image = strip_image(image)
+	def get_usage_db(self, dbname, image):
+		#image = strip_image(image)
+		lang, family = self.families(dbname)
+		
+		if family.shared_image_repository() == (lang, family.name):
+			left_join = '';
+		else:
+			left_join = 'LEFT JOIN %s.image ON (il_to = img_name)'
 		query = """SELECT page_namespace, page_title FROM %s.page, %s.imagelinks
-	LEFT JOIN %s.image ON (il_to = img_name) WHERE img_name IS NULL AND
-	page_id = il_from AND il_to = %%s"""
-		self.databases[database][1].execute(query % (database, database, database), 
+	%s WHERE img_name IS NULL AND page_id = il_from AND il_to = %%s"""
+		self.databases[database][1].execute(query % (dbname, dbname, left_join), 
 			(image.encode('utf-8', 'ignore'), ))
-		for item in self.databases[database][1]:
-			stripped_title = item[1].decode('utf-8', 'ignore')
-			if item[0] != 0:
-				title = self.namespaces[(database, item[0])] + u':' + stripped_title
+		for page_namespace, page_title in self.databases[database][1]:
+			stripped_title = page_title.decode('utf-8', 'ignore')
+			if page_namespace != 0:
+				title = family.namespace(lang, page_namespace) + u':' + stripped_title
 			else:
 				title = stripped_title
-			yield item[0], stripped_title, title
+			yield page_namespace, stripped_title, title
  
-	def get_usage_live(self, domain, image):
-		image = strip_image(image)
-		res = self.conn.query_api('api', domain, action = 'query', list = 'imageusage', 
+	def get_usage_live(self, site, image):
+		self.connect_http()
+		
+		#image = strip_image(image)
+		# BUG: This is ugly.
+		res = self.http.query_api('api', site.hostname(), site.apipath(),
+			action = 'query', list = 'imageusage', 
 			prop = 'info', iulimit = '500', titles = 'Image:' + image)
 		if '-1' in res['query']['pages']:
 			for usage in res['query'].get('imageusage', ()):
@@ -284,27 +326,15 @@ class CheckUsage(object):
 				else:
 					stripped_title = title
 				yield namespace, stripped_title, title
- 
-	def get_usage_multi(self, images):
-		res = {}
-		for image in images:
-			res[image] = self.get_usage(image)
-		return res
- 
-	'''
-	def get_replag(self, db):
-		query = """SELECT UNIX_TIMESTAMP() - UNIX_TIMESTAMP(rc_timestamp)
-	FROM %s.recentchanges ORDER BY rc_timestamp DESC LIMIT 1"""
-		if self.cursor.execute(query) != 1: raise RuntimeError
-		return self.cursor.fetchone()[0]
-	'''
+
 	
-	def exists(self, domain, image):
+	def exists(self, site, image):
 		# Check whether the image still is deleted on Commons.
 		# BUG: This also returns true for images with a page, but
 		# without the image itself. Can be fixed by querying query.php
 		# instead of api.php.
-		return '-1' not in self.conn.query_api('api', domain,
+		# BUG: This is ugly.
+		return '-1' not in self.http.query_api('api', site.hostname(), site.apipath(),
 			action = 'query', titles = 'Image:' + image)['query']['pages']
 		
 		
@@ -314,5 +344,6 @@ class CheckUsage(object):
 				connection.close()
 			except: 
 				pass
-		self.conn.close()
+		if self.http:
+			self.conn.close()
 			
