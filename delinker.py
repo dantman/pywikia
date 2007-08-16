@@ -54,7 +54,7 @@ def universal_unicode(s):
 	return unicode(s)
 def connect_database():
 	engine = config.CommonsDelinker['sql_engine']
-	kwargs = config.CommonsDelinker['sql_config']
+	kwargs = config.CommonsDelinker['sql_config'].copy()
 	if engine == 'mysql':
 		import mysql_autoconnection
 		# This setting is required for MySQL

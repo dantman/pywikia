@@ -214,7 +214,8 @@ class CheckUsage(object):
 		self.http = None 
 		if no_db: return
  
-		self.mysql_host, self.mysql_host_prefix = mysql_host, mysql_host_prefix
+		self.mysql_host_prefix = mysql_host_prefix
+		if 'host' in mysql_kwargs: del mysql_kwargs['host']
 		self.mysql_kwargs = mysql_kwargs
 		self.use_autoconn = use_autoconn
 		self.mysql_retry_timeout = mysql_retry_timeout
@@ -234,8 +235,8 @@ class CheckUsage(object):
 		# Mapping database name -> (lang, family object)
 		self.families = {}
  
-		database, cursor = self.connect(mysql_host_prefix + str(mysql_default_server))
-		self.clusters[mysql_default_server] = (database, cursor)
+		database, cursor = self.connect_mysql(mysql_host_prefix + str(mysql_default_server))
+		self.databases[mysql_default_server] = (database, cursor)
  
 		# Find where the databases are located
 		cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
@@ -251,7 +252,7 @@ class CheckUsage(object):
 				#		self.clusters[server] = (_database, _cursor)
 				#if not server in self.clusters:
 				#	self.clusters[server] = self.connect(sql_host_prefix + str(server))
-				self.clusters[server] = self.connect_mysql(sql_host_prefix + str(server))
+				self.databases[server] = self.connect_mysql(sql_host_prefix + str(server))
 			
 			self.sites[dbname] = family(domain)
 			self.families[dbname] = (self.sites[dbname][0], 
@@ -339,7 +340,7 @@ class CheckUsage(object):
 		
 		
 	def close(self):
-		for connection, cursor in self.clusters.itervalues():
+		for connection, cursor in self.databases.itervalues():
 			try:
 				connection.close()
 			except: 
