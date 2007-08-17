@@ -42,7 +42,7 @@ import httplib, urlparse, socket, time
 from urllib import urlencode
 import simplejson
 
-import family
+import wikipedia, family
  
 try:
 	import MySQLdb
@@ -237,9 +237,11 @@ class CheckUsage(object):
 		self.servers = {}
 		# Mapping database name -> (lang, family object)
 		self.families = {}
+		
+		self.unknown_families = []
  
 		database, cursor = self.connect_mysql(mysql_host_prefix + str(mysql_default_server))
-		self.databases[mysql_default_server] = (database, cursor)
+		self.servers[mysql_default_server] = (database, cursor)
  
 		# Find where the databases are located
 		cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
@@ -259,9 +261,12 @@ class CheckUsage(object):
 			
 			# FIXME: wikimediafoundation!
 			try:
-				self.families[dbname] = family(domain)
-			except RuntimeError:
+				lang, fam = family(domain)
+				self.families[dbname] = (lang, wikipedia.Family(fam, fatal = False))
+			except (RuntimeError, ValueError):
+				self.unknown_families.append(domain)
 				continue
+				
 			self.databases[dbname] = self.servers[server]
  
 		# Localized namespaces
@@ -301,14 +306,14 @@ class CheckUsage(object):
 		lang, family = self.families[dbname]
 		
 		if family.shared_image_repository() == (lang, family.name):
-			left_join = '';
+			left_join = 'WHERE';
 		else:
-			left_join = 'LEFT JOIN %s.image ON (il_to = img_name)'
+			left_join = 'LEFT JOIN %s.image ON (il_to = img_name) WHERE img_name IS NULL AND' % dbname
 		query = """SELECT page_namespace, page_title FROM %s.page, %s.imagelinks
-	%s WHERE img_name IS NULL AND page_id = il_from AND il_to = %%s"""
-		self.databases[database][1].execute(query % (dbname, dbname, left_join), 
+	%s page_id = il_from AND il_to = %%s"""
+		self.databases[dbname][1].execute(query % (dbname, dbname, left_join), 
 			(image.encode('utf-8', 'ignore'), ))
-		for page_namespace, page_title in self.databases[database][1]:
+		for page_namespace, page_title in self.databases[dbname][1]:
 			stripped_title = page_title.decode('utf-8', 'ignore')
 			if page_namespace != 0:
 				title = family.namespace(lang, page_namespace) + u':' + stripped_title

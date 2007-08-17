@@ -88,14 +88,15 @@ class Delinker(threadpool.Thread):
 			site = self.CommonsDelinker.get_site(lang, family)
 			
 			try:
-				summary = self.get_summary(site, site, image, admin, reason, replacement)
+				summary = self.get_summary(site, image, admin, reason, replacement)
 				
-				for title in pages:
+				for page_namespace, page_title, title in pages:
 					if self.CommonsDelinker.set_edit(str(site), title):
 						# The page is currently being editted. Postpone.
-						if domain not in skipped_images:
+						if (lang, family) not in skipped_images:
 							skipped_images[(lang, family)] = []
-						skipped_images[(lang, family)].append(title)
+						skipped_images[(lang, family)].append(
+							(page_namespace, page_title, title))
 					else:
 						# Delink the image
 						output(u'%s Delinking %s from %s' % (self, image, site))
@@ -313,12 +314,13 @@ class SummaryCache(object):
 		# wikiquote, wikisource, wikinews, wikiversity
 		# This will cause the bot to function even on special wikis
 		# like mediawiki.org and meta and species.
-		output(u'%s Using default summary for %s' % (self, domain))
+		output(u'%s Using default summary for %s' % (self, site))
 				
 		if site.family.name != 'wikipedia' and self.CommonsDelinker.config['global']:
 			if site.family.name in ('wiktionary', 'wikibooks', 'wikiquote', 
 					'wikisource', 'wikinews', 'wikiversity'):
-				newsite = wikipedia.getSite(site.lang, 'wikipedia')
+				newsite = self.CommonsDelinker.get_site(site.lang, 
+					wikipedia.Family('wikipedia'))
 				return self.get(newsite, type)
 		return self.CommonsDelinker.config['default_settings'].get(type, '')
 				
@@ -387,13 +389,14 @@ class CheckUsage(threadpool.Thread):
 		# without the image itself. Can be fixed by querying query.php
 		# instead of api.php. Also should this be made as an exits() 
 		# method of checkusage.CheckUsage?
-		shared_image_repository = self.CommonsDelinker.get_site(
-			*self.site.shared_image_repository())
+		#shared_image_repository = self.CommonsDelinker.get_site(
+		#	*self.site.family.shared_image_repository())
+		shared_image_repository = self.site.shared_image_repository()
 		if self.CheckUsage.exists(shared_image_repository, image) \
 				and not bool(replacement):
 			output(u'%s %s exists on the shared image repository!' % (self, image))
 			return
-		if self.CheckUsage.exists(self.site.hostname(), image) and \
+		if self.CheckUsage.exists(self.site, image) and \
 				not bool(replacement):
 			output(u'%s %s exists again!' % (self, image))
 			return
@@ -408,7 +411,7 @@ class CheckUsage(threadpool.Thread):
 			for (lang, family), (page_namespace, page_title, title) in usage:
 				if (lang, family) not in usage_domains:
 					usage_domains[(lang, family)] = []
-				usage_domains[(lang, family)].append(title)
+				usage_domains[(lang, family)].append((page_namespace, page_title, title))
 				count += 1
 		else:
 			#FIX!
@@ -556,17 +559,17 @@ class CommonsDelinker(object):
 		
 	def get_site(self, code, fam):
 		# Threadsafe replacement of wikipedia.getSite 
-		key = '%s:%s' % (code, fam)
+		key = '%s:%s' % (code, fam.name)
 		self.siteLock.acquire()
 		try:
 			if key not in self.sites:
 				self.sites[key] = []
 			for site, used in self.sites[key]:
 				if not used:
-					self.sites[self.sites.index((site, False))] = (site, True)
+					self.sites[key][self.sites[key].index((site, False))] = (site, True)
 					return site
 			site = wikipedia.Site(code, fam)
-			self.sites[key].append(site)
+			self.sites[key].append((site, True))
 			return site
 		finally:
 			self.siteLock.release()
@@ -574,7 +577,7 @@ class CommonsDelinker(object):
 		key = '%s:%s' % (site.lang, site.family.name)
 		self.siteLock.acquire()
 		try:
-			self.sites[self.sites.index((site, True))] = (site, False)
+			self.sites[key][self.sites[key].index((site, True))] = (site, False)
 		finally:
 			self.siteLock.release()
 		
