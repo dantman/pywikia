@@ -14,7 +14,8 @@ import config, wikipedia
 import re, time
 import threadpool
 
-from delinker import wait_callback, output, connect_database, family
+from delinker import wait_callback, output, connect_database
+from checkusage import family
 
 def mw_timestamp(ts):
 	return '%s%s%s%s-%s%s-%s%sT%s%s:%s%s:%s%sZ' % tuple(ts)
@@ -138,10 +139,13 @@ class Replacer(object):
 			self.cursor.execute("""SELECT wiki, namespace, page_title 
 				FROM %s WHERE img = %%s AND status <> 'ok'""" % 
 				self.config['log_table'], (old_image, ))
-			not_ok = list(self.cursor)
+			not_ok = [(wiki, namespace, page_title.decode('utf-8', 'ignore'))
+				for wiki, namespace, page_title in self.cursor]
 			
-			self.reporters.append((old_image, new_image, user, 
-				comment, not_ok))
+			self.reporters.append((old_image.decode('utf-8', 'ignore'),
+				new_image.decode('utf-8', 'ignore'), 
+				user.decode('utf-8', 'ignore'), 
+				comment.decode('utf-8', 'ignore'), not_ok))
 		
 			
 	def start(self):

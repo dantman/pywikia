@@ -336,6 +336,7 @@ class CheckUsage(object):
 
 	
 	def exists(self, site, image):
+		self.connect_http()
 		# Check whether the image still is deleted on Commons.
 		# BUG: This also returns true for images with a page, but
 		# without the image itself. Can be fixed by querying query.php
