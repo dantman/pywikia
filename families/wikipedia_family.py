@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -249,6 +249,7 @@ class Family(family.Family):
             'sk': u'Portál',
             'sr': u'Портал',
             'tg': u'Портал',
+            'uk': u'Портал',
             'vo': u'Bespik dö Vükiped',
             'zh-classical': u'門',
         }
@@ -297,6 +298,7 @@ class Family(family.Family):
             'sv': u'Portaldiskussion',
             'tg': u'Баҳси портал',
             'tr': u'Portal tartışma',
+            'uk': u'Обговорення порталу',
             'zh-classical': u'議',
         }
 
@@ -328,13 +330,14 @@ class Family(family.Family):
             '_default': u'Reference',
             'es': u'Anexo',
             'fr': u'Référence',
-
+            'lt': u'Sąrašas',
         }
 
         self.namespaces[105] = {
             '_default': u'Reference talk',
             'es': u'Anexo Discusión',
-            'fr' : u'Discussion Référence',
+            'fr': u'Discussion Référence',
+            'lt': u'Sąrašo aptarimas',
         }
 
         self.namespaces[106] = {
