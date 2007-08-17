@@ -2614,6 +2614,8 @@ class Family:
             return cmp(self.name, otherfamily.name)
         except AttributeError:
             return cmp(id(self), id(otherfamily))
+    def __hash__(self):
+        return hash(self.name)
 
     def RversionTab(self, code):
         """Change this to some regular expression that shows the page we
