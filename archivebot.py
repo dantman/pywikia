@@ -321,6 +321,8 @@ class PageArchiver(object):
         T = time.mktime(time.gmtime())
         whys = []
         for t in oldthreads:
+            if len(oldthreads) - self.archivedThreads <= self.get('minthreadsleft',5):
+                break #Because there's too little threads left.
             #TODO: Make an option so that unstamped (unsigned) posts get archived.
             why = t.shouldBeArchived(self)
             if why:
@@ -345,8 +347,10 @@ class PageArchiver(object):
 
     def run(self):
         whys = self.analyzePage()
+        if self.archivedThreads < self.get('minthreadstoarchive',2):
+            return #We might not want to archive a measly few threads (lowers edit frequency)
         if whys:
-            #Save the archives first (so that bugs don't cause a loss of data
+            #Save the archives first (so that bugs don't cause a loss of data)
             for a in sorted(self.archives.keys()):
                 self.commentParams['count'] = self.archives[a].archivedThreads
                 comment = self.archiveSummary % self.commentParams
