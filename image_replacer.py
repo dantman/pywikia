@@ -82,7 +82,11 @@ class Replacer(object):
 			output(u'Warning! Unable to read replacement log.', False)
 			output('%s: %s' % (e.__class__.__name__, str(e)), False)
 			return time.sleep(self.config['timeout'])
-			
+		
+		if text.lower().find('{{stop}}') != -1:
+			output(u'Found {{stop}} on command page. Not replacing anything.')
+			return time.sleep(self.config['timeout'])
+		
 		revisions.sort(key = lambda rev: rev[0])
 		replacements = self.template.finditer(text)
 		
@@ -187,23 +191,29 @@ class Reporter(threadpool.Thread):
 			self.config.get('replacer_report_seperator', u', ').join(not_ok))
 		page = wikipedia.Page(self.site, u'Image:' + old_image)
 		text = page.get()
-		page.put(u'%s\n%s' % (template, text), 
-			comment = u'This image has been replaced by ' + new_image)
-			
-		output(u'Reporting replacement of %s by %s.' % \
-			(old_image, new_image))
+		
+		try:
+			page.put(u'%s\n%s' % (template, text), 
+				comment = u'This image has been replaced by ' + new_image)
+		except PageNotSaved, e:
+			output(u'Warning! Unable to report replacement to %s.' % old_image, False)
+			output('%s: %s' % (e.__class__.__name__, str(e)), False)
+		else:
+			output(u'Reporting replacement of %s by %s.' % \
+				(old_image, new_image))
 			
 
 if __name__ == '__main__':
 	import sys, cgitb
+	output(u'Running ' + __version__)
+
 	try:
 		# FIXME: Add support for single-process replacer.
 		r = Replacer()
+		output(u'This bot runs from: ' + str(r.site))
 		r.start()
-	except StandardError, e:
+	except Exception, e:
 		if type(e) not in (SystemExit, KeyboardInterrupt):
 			output('A critical error has occured! Aborting!')
 			print >>sys.stderr, cgitb.text(sys.exc_info())
-	except:
-		pass
 	wikipedia.stopme()
