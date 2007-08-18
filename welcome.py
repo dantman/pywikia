@@ -72,6 +72,9 @@ This script understands the following command-line arguments:
     -random        Use a random signature, taking the signatures from a wiki
                    page (for istruction, see below).
 
+    -file[:#]      Use a file instead of a wikipage to take the random sign.
+                   N.B. If you use this parameter, you don't need to use -random.
+
     -savedata      This feature saves the random signature index to allow to
                    continue to welcome with the last signature used.
 
@@ -157,6 +160,7 @@ __version__ = '$Id: welcome.py,v 1.4 2007/04/14 18:05:42 siebrand Exp$'
 
 import wikipedia, config, string, locale
 import time, re, cPickle, os, urllib
+import codecs, wikipediatools
 
 locale.setlocale(locale.LC_ALL,'')
 
@@ -173,7 +177,7 @@ sign = ' --~~~~'            # default signature
 random = False              # should signature be random or not
 savedata = False            # should save the signature index or not
 filename = 'welcome.data'   # file where is stored the random signature index
-directory = str(os.getcwd())
+fileOption = False          # check if the user wants to use a file or the wikipage
 
 # Script users the class wikipedia.translate() to find the right
 # page/user/summary/etc so the need to specify language and project have
@@ -328,7 +332,7 @@ def load_word_function(wsite, raw):
     # I search with a regex how many user have not the talk page
     # and i put them in a list (i find it more easy and secure)
     while 1:
-        regl = "(\"|\')(.*?)(\"|\')(, |\))"
+        regl = r"(\"|\')(.*?)(\"|\')(, |\))"
         page = re.compile(regl, re.UNICODE)
         xl = page.search(raw, pos)
         if xl == None:
@@ -355,7 +359,7 @@ def parselog(wsite, raw):
     # and i put them in a list (i find it more easy and secure)
     while 1:
         # FIXME: That's the regex, if there are problems, take a look here.
-        reg = '\(<a href=\"/w/index.php\?title=' + talk + '(.*?)&(amp;|)action=edit\"'
+        reg = r'\(<a href=\"/w/index.php\?title=' + talk + r'(.*?)&(amp;|)action=edit\"'
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
@@ -372,8 +376,7 @@ def parselog(wsite, raw):
         userpage = wikipedia.Page(wsite, username)
         usertalkpage = wikipedia.Page(wsite, talk + username)
         # Defing the contrib's page of the user
-        # TODO: Doesn't work if path is not /wiki/
-        con = '/wiki/Special:Contributions/'+ userpage.urlname()
+        con = pathWiki + 'Special:Contributions/'+ userpage.urlname()
         # Getting the contribs...
         contribs = wsite.getUrl(con)
         contribnum = contribs.count('<li>') # Maxes at 50, but not important
@@ -421,8 +424,9 @@ def report(wsite, rep_page, username, com, rep):
         wikipedia.output(u'%s is already in the report page.' % username)
 
 def blocked(wsite, username):
+    pathWiki = wsite.family.nicepath(wsite.lang)
     #A little function to check if the user has already been blocked (to skip him).
-    reg = """<li>[0-9][0-9]:[0-9][0-9], [0-9]([0-9])? (.*?) [0-9][0-9][0-9][0-9] <a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"/wiki/(.*?)\" title=\"(.*?)\">(.*?)</a>"""
+    reg = r"""<li>[0-9][0-9]:[0-9][0-9], [0-9]([0-9])? (.*?) [0-9][0-9][0-9][0-9] <a href=\"""" + pathWiki + r"""(.*?)\" title=\"(.*?)\">(.*?)</a> \(<a href=\"""" + pathWiki + r"""(.*?)\" title=\"(.*?)\">(.*?)</a>"""
     block_text = wsite.getUrl('/w/index.php?title=Special:Log/block&page=User:' + username)
     numblock = re.findall(reg, block_text)
     # If the bot doesn't find block-line, it will return False otherwise True.
@@ -431,12 +435,22 @@ def blocked(wsite, username):
     else:
         return True
 
-def defineSign(wsite, signPageTitle):
+def defineSign(wsite, signPageTitle, fileSignName, fileOption = False):
     #A little function to load the random signatures.
-    signPage = wikipedia.Page(wsite, signPageTitle)
-    signText = signPage.get()
-    reg = "\* ?(.*?)\n"
-    listSign = re.findall(reg, signText)
+    reg = r"^\* ?(.*?)$"
+    creg = re.compile(reg, re.M)
+    if fileOption == False:
+        signPage = wikipedia.Page(wsite, signPageTitle)
+        signText = signPage.get()
+    else:
+        try:
+            f = codecs.open(wikipediatools.absoluteFilename(fileSignName), 'r', encoding = config.console_encoding)
+        except:
+            f = codecs.open(wikipediatools.absoluteFilename(fileSignName), 'r', encoding = 'utf-8')
+        signText = f.read()
+        f.close()
+
+    listSign = creg.findall(signText)
     return listSign
 
 def logmaker(wsite, welcomed_users):
@@ -507,6 +521,13 @@ if __name__ == "__main__":
                 offset_variable = int(wikipedia.input(u'Which offset for new users would you like to use?'))
             else:
                 offset_variable = int(arg[8:])
+        elif arg.startswith('-file:'):
+            random = True
+            fileOption = True
+            if len(arg) == 6:
+                fileSignName = wikipedia.input(u'Where have you saved your signatures?')
+            else:
+                fileSignName = arg[6:]
         elif arg == '-break':
             recursive = False
         elif arg == '-nlog':
@@ -531,6 +552,7 @@ if __name__ == "__main__":
                 numberlog = int(arg[11:])
     # The site
     wsite = wikipedia.getSite()
+    pathWiki = wsite.family.nicepath(wsite.lang)
     # A little block-statement to ensure that the bot won't start with en-parameters
     if wsite.lang not in project_inserted:
         wikipedia.output(u'Your project is not supported by the framework. You have to edit the script and add it!')
@@ -555,18 +577,16 @@ if __name__ == "__main__":
     talk = urlname(talk_page, wsite) + ':'
 
     # A parameter for different projects of the same language...
-    if wsite.family.name == "wikinews":
-        if wsite.lang == "it":
-            logg = u'Wikinotizie:Benvenuto log'
-            welcomer = u'{{subst:benvenuto|%s}}'
-            sign = 'Tooby'
-    elif wsite.family.name == "wiktionary":
-        if wsite.lang == "it":
-            logg = u'Wiktionary:Benvenuto log'
-            welcomer = u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s'
+    if wsite.family.name == "wikinews" and wsite.lang == "it":
+        welcomer = u'{{subst:benvenuto|%s}}'
+        sign = 'Tooby'
+    elif wsite.family.name == "wiktionary" and wsite.lang == "it":
+        welcomer = u'{{subst:Utente:Filnik/Benve|nome={{subst:PAGENAME}}}} %s'
+    elif wsite.family.name == "wikiversity" and wsite.lang == "it":
+        welcomer = u'{{subst:Benvenuto}} %s'
 
     welcomed_users = list()
-    if savedata == True and os.path.exists(directory + '/' + filename):
+    if savedata == True and os.path.exists(wikipediatools.absoluteFilename(filename)):
         f = file(filename)
         number_user = cPickle.load(f)
     else:
@@ -653,7 +673,7 @@ if __name__ == "__main__":
             if random == True:
                 try:
                     wikipedia.output(u'Loading random signatures...')
-                    signList = defineSign(wsite, signPageTitle)
+                    signList = defineSign(wsite, signPageTitle, fileSignName, fileOption)
                 except wikipedia.NoPage:
                     wikipedia.output(u'The list with signatures is not available... Using default signature...')
                     random = False
