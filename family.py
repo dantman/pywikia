@@ -2632,6 +2632,6 @@ class Family:
         """Is query.php installed in the wiki?"""
         return False
         
-    def shared_image_repository(self):
+    def shared_image_repository(self, code):
         """Return the shared image repository, if any."""
         return (None, None)
