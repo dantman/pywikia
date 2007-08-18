@@ -106,8 +106,7 @@ class UI:
             # if anything needed to be colorized.
             lines = '\n'.split(text)
             for line in lines:
-                line, count = startTagR.subn('', line)
-                line = endTagR.sub('', line)
+                line, count = colorTagR.subn('', line)
                 if count > 0:
                     line += '***'
                 line += '\n'
