@@ -126,7 +126,10 @@ class Delinker(threadpool.Thread):
 		
 		# TODO: Per site config.
 		if page.namespace() in self.CommonsDelinker.config['delink_namespaces']:
-			text = page.get()
+			try:
+				text = page.get()
+			except wikipedia.NoPage:
+				return 'failed'
 			new_text = text
 			
 			def create_regex(s):
@@ -257,9 +260,9 @@ class Delinker(threadpool.Thread):
 		""" Get the summary template and substitute the 
 		correct values."""
 		if replacement:
-			tlp = self.CommonsDelinker.SummaryCache.get(site, str(site), 'replace-I18n')
+			tlp = self.CommonsDelinker.SummaryCache.get(site, 'replace-I18n')
 		else:
-			tlp = self.CommonsDelinker.SummaryCache.get(site, str(site), 'summary-I18n')
+			tlp = self.CommonsDelinker.SummaryCache.get(site, 'summary-I18n')
 		
 		tlp = tlp.replace('$1', image)
 		if replacement:
@@ -279,10 +282,13 @@ class SummaryCache(object):
 		self.lock = threading.Lock()
 		self.CommonsDelinker = CommonsDelinker
 		
-	def get(self, site, key, type):
+	def get(self, site, type, key = None):
 		# This can probably also provide something for 
 		# localised settings, but then it first needs to 
 		# check whether the page is sysop only.
+		if not key:
+			key = str(site)
+			
 		self.lock.acquire()
 		try:
 			if type not in self.summaries:
@@ -321,7 +327,7 @@ class SummaryCache(object):
 					'wikisource', 'wikinews', 'wikiversity'):
 				newsite = self.CommonsDelinker.get_site(site.lang, 
 					wikipedia.Family('wikipedia'))
-				return self.get(newsite, type)
+				return self.get(newsite, type, key = key)
 		return self.CommonsDelinker.config['default_settings'].get(type, '')
 				
 	def check_user_page(self, site):
