@@ -4006,8 +4006,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         return self._mw_version
 
     def shared_image_repository(self):
-        sir = self.family.shared_image_repository()
-        return getSite(sir[0], sir[1])
+        return self.family.shared_image_repository(self.lang)
 
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
