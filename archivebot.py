@@ -177,15 +177,19 @@ class DiscussionPage(object):
     Feed threads to it and run an update() afterwards."""
     #TODO: Make it a subclass of wikipedia.Page
 
-    def __init__(self, title, header='{{talkarchive}}'):
+    def __init__(self, title, archiver, vars=None):
         self.title = title
         self.threads = []
         self.Page = wikipedia.Page(Site,self.title)
         self.full = False
+        self.archiver = archiver
+        self.vars = vars
         try:
             self.loadPage()
         except wikipedia.NoPage:
-            self.header = header
+            self.header = archiver.get('archiveheader','{{talkarchive}}')
+            if self.vars:
+                self.header = self.header % self.vars
 
     def loadPage(self):
         """Loads the page to be archived and breaks it up into threads."""
@@ -257,7 +261,7 @@ class PageArchiver(object):
         self.tpl = tpl
         self.salt = salt
         self.force = force
-        self.Page = DiscussionPage(Page.title())
+        self.Page = DiscussionPage(Page.title(),self)
         self.loadConfig()
         self.commentParams = {
                 'from' : self.Page.title,
@@ -300,7 +304,7 @@ class PageArchiver(object):
         if mode == 0 or not self.get('algo',''):
             raise MissingConfigError
 
-    def feedArchive(self, archive, thread, maxArchiveSize):
+    def feedArchive(self, archive, thread, maxArchiveSize, vars=None):
         """Feed the thread to one of the archives.
         If it doesn't exist yet, create it.
         If archive name is an empty string (or None), discard the thread (/dev/null).
@@ -310,7 +314,7 @@ class PageArchiver(object):
         if not self.force and not self.Page.title+'/' == archive[:len(self.Page.title)+1] and not self.key_ok():
             raise ArchiveSecurityError
         if not self.archives.has_key(archive):
-            self.archives[archive] = DiscussionPage(archive)
+            self.archives[archive] = DiscussionPage(archive,self,vars)
         return self.archives[archive].feedThread(thread,maxArchiveSize)
 
     def analyzePage(self):
@@ -321,7 +325,7 @@ class PageArchiver(object):
         T = time.mktime(time.gmtime())
         whys = []
         for t in oldthreads:
-            if len(oldthreads) - self.archivedThreads <= self.get('minthreadsleft',5):
+            if len(oldthreads) - self.archivedThreads <= int(self.get('minthreadsleft',5)):
                 break #Because there's too little threads left.
             #TODO: Make an option so that unstamped (unsigned) posts get archived.
             why = t.shouldBeArchived(self)
@@ -336,7 +340,7 @@ class PageArchiver(object):
                         'monthnameshort' : int2month_short(TStuple[1]),
                         }
                 archive = archive % vars
-                if self.feedArchive(archive,t,maxArchSize):
+                if self.feedArchive(archive,t,maxArchSize,vars):
                     archCounter += 1
                     self.set('counter',str(archCounter))
                 whys.append(why)
@@ -347,7 +351,7 @@ class PageArchiver(object):
 
     def run(self):
         whys = self.analyzePage()
-        if self.archivedThreads < self.get('minthreadstoarchive',2):
+        if self.archivedThreads < int(self.get('minthreadstoarchive',2)):
             return #We might not want to archive a measly few threads (lowers edit frequency)
         if whys:
             #Save the archives first (so that bugs don't cause a loss of data)
