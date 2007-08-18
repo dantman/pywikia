@@ -177,7 +177,7 @@ class Category(wikipedia.Page):
                 '<div class\s?=\s?\"thumb\"\sstyle=\"[^\"]*\"><a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"')
         ns = self.site().category_namespaces()
         # regular expression matching the "(next 200)" link
-        RLinkToNextPage = re.compile('&amp;from=(.*?)\" title=\"[^\"]*\">next 200</a>');
+        RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
 
         currentPageOffset = startFrom
         while True:
@@ -197,12 +197,15 @@ class Category(wikipedia.Page):
             # index where subcategory listing begins
             try:
                 ibegin = txt.index('<div id="mw-subcategories">')
+                skippedCategoryDescription = True
             except ValueError:
                 try:
                     ibegin = txt.index('<div id="mw-pages">')
+                    skippedCategoryDescription = True
                 except ValueError:
                     try:
                         ibegin = txt.index('<!-- start content -->') # does not work for cats without text
+                        skippedCategoryDescription = False
                     except ValueError:
                         wikipedia.output("\nCategory page detection is not bug free. Please report this error!")
                         raise
@@ -237,13 +240,19 @@ class Category(wikipedia.Page):
                 for title in Rimage.findall(txt):
                     yield ARTICLE, wikipedia.Page(self.site(), title)
             # try to find a link to the next list page
-            matchObj = RLinkToNextPage.search(txt)
-            if matchObj:
-                currentPageOffset = matchObj.group(1)
-                wikipedia.output('There are more articles in %s.'
-                                 % self.title())
+            # If skippedCategoryDescription is False, then there are no pages
+            # or subcategories, so there cannot be a next list page
+            if skippedCategoryDescription:
+                matchObj = RLinkToNextPage.search(txt)
+                if matchObj:
+                    currentPageOffset = matchObj.group(1)
+                    wikipedia.output('There are more articles in %s.'
+                                     % self.title())
+                else:
+                    break
             else:
                 break
+            
         # get supercategories
         try:
             ibegin = self_txt.index('<div id="catlinks">')
