@@ -189,3 +189,5 @@ class Family(family.Family):
         if code == 'ru':
             return 'utf-8', 'iso8859-5'
         return self.code2encoding(code),
+    def shared_image_repository(self, code):
+        return ('commons', 'commons')
