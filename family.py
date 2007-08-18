@@ -388,7 +388,7 @@ class Family:
                 'hi': u'सदस्य',
                 'hr': u'Suradnik',
                 'hsb': u'Wužiwar',
-                'ht': 'Itilizatè',
+                'ht': u'Itilizatè',
                 'hy': u'Մասնակից',
                 'ia': u'Usator',
                 'id': u'Pengguna',
