@@ -177,7 +177,7 @@ class Category(wikipedia.Page):
                 '<div class\s?=\s?\"thumb\"\sstyle=\"[^\"]*\"><a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"')
         ns = self.site().category_namespaces()
         # regular expression matching the "(next 200)" link
-        RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
+        RLinkToNextPage = re.compile('&amp;from=(.*?)\" title=\"[^\"]*\">next 200</a>');
 
         currentPageOffset = startFrom
         while True:
