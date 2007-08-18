@@ -259,6 +259,8 @@ class Delinker(threadpool.Thread):
 	def get_summary(self, site, image, admin, reason, replacement):
 		""" Get the summary template and substitute the 
 		correct values."""
+		# FIXME: Don't insert commons: on local delink
+		# FIXME: Hardcode is EVIL
 		if replacement:
 			tlp = self.CommonsDelinker.SummaryCache.get(site, 'replace-I18n')
 		else:
@@ -397,11 +399,14 @@ class CheckUsage(threadpool.Thread):
 		# method of checkusage.CheckUsage?
 		#shared_image_repository = self.CommonsDelinker.get_site(
 		#	*self.site.family.shared_image_repository())
-		shared_image_repository = self.site.shared_image_repository()
-		if self.CheckUsage.exists(shared_image_repository, image) \
-				and not bool(replacement):
-			output(u'%s %s exists on the shared image repository!' % (self, image))
-			return
+		shared_image_repository = self.CommonsDelinker.get_site(*self.site.shared_image_repository())
+		try:
+			if self.CheckUsage.exists(shared_image_repository, image) \
+					and not bool(replacement):
+				output(u'%s %s exists on the shared image repository!' % (self, image))
+				return
+		finally:
+			self.CommonsDelinker.unlock_site(shared_image_repository)
 		if self.CheckUsage.exists(self.site, image) and \
 				not bool(replacement):
 			output(u'%s %s exists again!' % (self, image))
@@ -565,7 +570,7 @@ class CommonsDelinker(object):
 		
 	def get_site(self, code, fam):
 		# Threadsafe replacement of wikipedia.getSite 
-		key = '%s:%s' % (code, fam.name)
+		key = '%s:%s' % (code, fam)
 		self.siteLock.acquire()
 		try:
 			if key not in self.sites:

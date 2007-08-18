@@ -235,10 +235,12 @@ class CheckUsage(object):
 		self.databases = {}
 		# Mapping server id -> mysql connection
 		self.servers = {}
-		# Mapping database name -> (lang, family object)
-		self.families = {}
+		# Mapping database name -> (lang, family)
+		self.sites = {}
 		
 		self.unknown_families = []
+		# Mapping family name -> family object
+		self.known_families = {}
  
 		database, cursor = self.connect_mysql(mysql_host_prefix + str(mysql_default_server))
 		self.servers[mysql_default_server] = (database, cursor)
@@ -247,27 +249,18 @@ class CheckUsage(object):
 		cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
 		for dbname, domain, server in cursor.fetchall():
 			if server not in self.servers:
-				# Disabled: Multiple clusters per server
-				#for _database, _cursor in self.connections:
-				#	try:
-				#		_cursor.execute('USE ' + dbname)
-				#	except MySQLdb.Error, e:
-				#		if e[0] != 1049: raise
-				#	else:
-				#		self.clusters[server] = (_database, _cursor)
-				#if not server in self.clusters:
-				#	self.clusters[server] = self.connect(sql_host_prefix + str(server))
 				self.servers[server] = self.connect_mysql(mysql_host_prefix + str(server))
 			
 			# FIXME: wikimediafoundation!
 			try:
 				lang, fam = family(domain)
-				self.families[dbname] = (lang, wikipedia.Family(fam, fatal = False))
+				if fam not in self.known_families:
+					self.known_families[fam] = wikipedia.Family(fam, fatal = False)
 			except (RuntimeError, ValueError):
 				self.unknown_families.append(domain)
-				continue
-				
-			self.databases[dbname] = self.servers[server]
+			else:
+				self.sites[dbname] = (lang, fam)
+				self.databases[dbname] = self.servers[server]
  
 		# Localized namespaces
 		#cursor.execute('SELECT dbname, ns_id, ns_name FROM toolserver.namespace')
@@ -299,13 +292,14 @@ class CheckUsage(object):
 	def get_usage(self, image):
 		for dbname in self.databases:
 			for link in self.get_usage_db(dbname, image):
-				yield self.families[dbname], link
+				yield self.sites[dbname], link
  
 	def get_usage_db(self, dbname, image):
 		#image = strip_image(image)
-		lang, family = self.families[dbname]
+		lang, family_name = self.sites[dbname]
+		family = self.known_families[family_name]
 		
-		if family.shared_image_repository() == (lang, family.name):
+		if family.shared_image_repository(lang) == (lang, family_name):
 			left_join = 'WHERE';
 		else:
 			left_join = 'LEFT JOIN %s.image ON (il_to = img_name) WHERE img_name IS NULL AND' % dbname
