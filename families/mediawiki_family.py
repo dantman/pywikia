@@ -29,4 +29,3 @@ class Family(family.Family):
         return "1.11"
     def shared_image_repository(self, code):
         return ('commons', 'commons')
-s
