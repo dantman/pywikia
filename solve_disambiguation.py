@@ -583,7 +583,7 @@ class DisambiguationRobot(object):
 
                     # at the beginning of the link, start red color.
                     # at the end of the link, reset the color to default
-                    wikipedia.output(text[m.start() - context : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
+                    wikipedia.output(text[max(0, m.start() - context) : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
 
                     if not self.always:
                         if edited:

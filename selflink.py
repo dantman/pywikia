@@ -108,7 +108,7 @@ class SelflinkBot:
         else:
             # at the beginning of the link, start red color.
             # at the end of the link, reset the color to default
-            wikipedia.output(text[match.start() - context : match.start()] + '\03{lightred}' + text[match.start() : match.end()] + '\03{default}' + text[match.end() : match.end() + context])
+            wikipedia.output(text[match.start() - context) : match.start()] + '\03{lightred}' + text[match.start() : match.end()] + '\03{default}' + text[match.end() : match.end() + context])
             choice = wikipedia.inputChoice(u'\nWhat shall be done with this selflink?',  ['unlink', 'make bold', 'skip', 'edit', 'more context'], ['U', 'b', 's', 'e', 'm'], 'u')
             wikipedia.output(u'')
 
