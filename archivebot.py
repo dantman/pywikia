@@ -326,7 +326,8 @@ class PageArchiver(object):
         whys = []
         for t in oldthreads:
             if len(oldthreads) - self.archivedThreads <= int(self.get('minthreadsleft',5)):
-                break #Because there's too little threads left.
+                self.Page.threads.append(t)
+                continue #Because there's too little threads left.
             #TODO: Make an option so that unstamped (unsigned) posts get archived.
             why = t.shouldBeArchived(self)
             if why:
