@@ -318,6 +318,9 @@ project_inserted = ['ar', 'commons', 'de', 'en', 'fa', 'it', 'nl', 'no', 'sq']
 ############################################################################
 ############################################################################
 
+class FilenameNotSet(wikipedia.Error):
+    """An exception indicating that a signature filename was not specifed."""
+
 # Function stolen from wikipedia.py and modified
 def urlname(talk_page, site):
     """The name of the page this Page refers to, in a form suitable
@@ -446,7 +449,7 @@ def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
     else:
         if fileSignName == None:
             wikipedia.output(u'Error! - No fileName!')
-            exit()        
+            raise FilenameNotSet("No signature filename specified.")  
         try:
             f = codecs.open(wikipediatools.absoluteFilename(fileSignName), 'r', encoding = config.console_encoding)
         except:
