@@ -157,7 +157,7 @@ class SelflinkBot:
                 wikipedia.output(u'No changes necessary.')
             else:
                 wikipedia.showDiff(oldText, text)
-                page.put(text)
+                page.put_async(text)
         except wikipedia.NoPage:
             wikipedia.output(u"Page %s does not exist?!" % page.aslink())
         except wikipedia.IsRedirectPage:
