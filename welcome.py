@@ -178,6 +178,7 @@ random = False              # should signature be random or not
 savedata = False            # should save the signature index or not
 filename = 'welcome.data'   # file where is stored the random signature index
 fileOption = False          # check if the user wants to use a file or the wikipage
+fileSignName = None         # File name, default: None
 
 # Script users the class wikipedia.translate() to find the right
 # page/user/summary/etc so the need to specify language and project have
@@ -435,7 +436,7 @@ def blocked(wsite, username):
     else:
         return True
 
-def defineSign(wsite, signPageTitle, fileSignName, fileOption = False):
+def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
     #A little function to load the random signatures.
     reg = r"^\* ?(.*?)$"
     creg = re.compile(reg, re.M)
@@ -443,6 +444,9 @@ def defineSign(wsite, signPageTitle, fileSignName, fileOption = False):
         signPage = wikipedia.Page(wsite, signPageTitle)
         signText = signPage.get()
     else:
+        if fileSignName == None:
+            wikipedia.output(u'Error! - No fileName!')
+            exit()        
         try:
             f = codecs.open(wikipediatools.absoluteFilename(fileSignName), 'r', encoding = config.console_encoding)
         except:
