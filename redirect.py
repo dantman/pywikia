@@ -59,6 +59,7 @@ msg_double={
     'pt':u'Bot: Corrigido duplo redirecionamento',
     'ru':u'Робот: исправление двойного перенаправления',
     'sr':u'Бот: Поправка дуплих преусмерења',
+    'tr':u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
     }
 
 # Reason for deleting broken redirects
@@ -76,6 +77,7 @@ reason_broken={
     'pt':u'Bot: Redirecionamento não existe',
     'ru':u'Робот: перенаправление в никуда',
     'sr':u'Бот: Преусмерење не постоји',
+    'tr':u'Bot değişikliği: Var olmayan sayfaya olan yönlendirme',
     }
 
 class RedirectGenerator:
