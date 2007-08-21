@@ -1,11 +1,10 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 # A tool to see the recentchanges ordered by user instead of by date. This
 # is meant to be run as a CGI script.
 # Currently only works on Dutch Wikipedia, I do intend to make it more generally
 # usable.
 # Permission has been asked to run this on the toolserver.
-__version__ = '$Id$'
 
 import cgi
 import cgitb
@@ -26,9 +25,8 @@ print "<!--"
 import wikipedia
 print "-->"
 mysite = wikipedia.getSite()
-special = mysite.family.special_namespace(mysite.lang)
 
-post = 'title=%s:Recentchanges' % special
+post = 'title=Speciaal:RecenteWijzigingen'
 for element in form:
     post += '&%s=%s'%(element,form[element].value)
 if not 'limit' in form:
@@ -38,7 +36,7 @@ text = mysite.getUrl('/w/index.php?%s'%post)
 text = text.split('\n')
 rcoptions = False
 lines = []
-Ruser = re.compile('title=\"%s\:Contributions\/([^\"]*)\"' % special)
+Ruser = re.compile('title=\"Speciaal\:Bijdragen\/([^\"]*)\"')
 Rnumber = re.compile('tabindex=\"(\d*)\"')
 count = 0
 for line in text:
@@ -50,9 +48,8 @@ for line in text:
                 user = None
             count += 1
             lines.append((user,count,line))
-            print
     elif line.find('rcoptions') > -1:
-        print line.replace("/w/index.php?title=%s:Recentchanges&amp;" % special,"rcsort.py?")
+        print line.replace("/w/index.php?title=Speciaal:RecenteWijzigingen&amp;","rcsort.py?")
         rcoptions = True
 lines.sort()
 last = 0
@@ -63,10 +60,10 @@ for line in lines:
         if line[0] == None:
             print "<h2>Gebruiker onbekend</h2>"
         else:
-            wikipedia.output(u"<h2>%s</h2>"%line[0], toStdout=True)
+            wikipedia.output(u"<h2>%s</h2>"%line[0],showcgi=True)
         print "<ul>"
         last = line[0]
-    wikipedia.output(line[2].replace('href="/w','href="http://nl.wikipedia.org/w'), toStdout = True)
+    wikipedia.output(line[2].replace('href="/w','href="http://nl.wikipedia.org/w'), showcgi = True)
     print
 
 print "</ul>"
