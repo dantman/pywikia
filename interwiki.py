@@ -308,6 +308,7 @@ msg = {
     'tet': (u'bot ', u'tau tan', u'hasai', u'filak'),
     'tg': (u'робот ', u'илова карда истодааст', u'дигаргуни карда истодааст', u'ҳaвз карда истодааст'),
     'to': (u'mīsini', u'ʻoku tānaki', u'ʻoku toʻo', u'ʻoku liliu'),
+    'tr': (u'Bot değişikliği', u'Ekleniyor', u'Kaldırılıyor', u'Değiştiriliyor'),
     'uk': (u'робот', u'додав', u'видалив', u'змінив'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
