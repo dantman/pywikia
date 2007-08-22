@@ -20,14 +20,18 @@ You can run the bot with the following commandline parameters:
 -ng          - Do not use Google
 -y           - Use Yahoo! search engine
 -ny          - Do not use Yahoo!
+-l           - Use Windows Live Search engine
+-nl          - Do not use Windows Live Search
 -maxquery    - Stop after a specified number of queries for page (default: 25)
 -skipquery   - Skip a number specified of queries
--new         - 
 -output      - Append results to a specified file (default:
                'copyright/output.txt')
+
 -file        - Work on all pages given in a local text file.
                Will read any [[wiki link]] and use these articles.
                Argument can also be given as "-file:filename".
+-new         - Work on the 60 newest pages. If given as -new:x, will work
+               on the x newest pages.
 -cat         - Work on all pages which are in a specific category.
                Argument can also be given as "-cat:categoryname".
 -subcat      - When the pages to work on have been chosen by -cat, pages in
@@ -66,12 +70,16 @@ request, use this:
 #
 
 from __future__ import generators
-import sys, re, codecs, os, time
+import sys, re, codecs, os, time, urllib2, httplib
 import wikipedia, pagegenerators, catlib, config
 
 __version__='$Id$'
 
+# Try to skip quoted text
 exclude_quote = True
+
+# No checks if the page is a disambiguation page
+skip_disambig = True
 
 appdir = "copyright/"
 output_file = appdir + "output.txt"
@@ -265,7 +273,7 @@ def exclusion_list():
 
     for page, path in exclusion_file_list():
         if 'exclusion_list.txt' in path:
-            result_list += re.sub("</?pre>","", read_file(path, cut_comment = True)).splitlines()
+            result_list += re.sub("</?pre>","", read_file(path, cut_comment = True, cut_newlines = True)).splitlines()
         else:
             data = read_file(path)
             # wikipedia:en:Wikipedia:Mirrors and forks
@@ -291,17 +299,21 @@ def exclusion_list():
             else:
                 result_list += [re.sub(" .*", "", entry)]
 
-    result_list += read_file(appdir + 'exclusion_list.txt', cut_comment = True).splitlines()
+    result_list += read_file(appdir + 'exclusion_list.txt', cut_comment = True, cut_newlines = True).splitlines()
     return result_list
 
-def read_file(filename, cut_comment = False):
+def read_file(filename, cut_comment = False, cut_newlines = False):
     text = u""
+
     f = codecs.open(filename, 'r','utf-8')
     text = f.read()
     f.close()
 
     if cut_comment:
         text = re.sub(" ?#.*", "", text)
+
+    if cut_newlines:
+        text = re.sub("(?m)^\r?\n", "", text)
 
     return text
 
@@ -422,7 +434,6 @@ def query(lines = [], max_query_len = 1300):
 
     # Google limit queries to 32 words.
 
-
     output = u""
     n_query = 0
     previous_group_url = 'none'
@@ -450,13 +461,11 @@ def query(lines = [], max_query_len = 1300):
                 if results:
                     group_url_list = group_url.splitlines()
                     group_url_list.sort()
-
                     group_url = '\n'.join(group_url_list)
                     if previous_group_url == group_url:
                         if consecutive:
                             output += ' ' + search_words
                         else:
-
                             output += '\n**' + search_words
                     else:
                         output += group_url + '\n**' + search_words
@@ -632,6 +641,11 @@ class CheckRobot:
             except wikipedia.IsRedirectPage:
                 original_text = page.get(get_redirect=True)
 
+            if skip_disambig:
+                if page.isDisambig():
+                    wikipedia.output(u'Page %s is a disambiguation page' % page.title())
+                    continue
+
 #            colors = [13] * len(page.title())
     	    wikipedia.output(page.title())
 
@@ -648,8 +662,11 @@ def check_config(var, license_id, license_name):
             return False
     return var
 
-def main():
+def setSavepath(path):
     global output_file
+    output_file = path
+
+def main():
     gen = None
     # pages which will be processed when the -page parameter is used
     PageTitles = []
@@ -682,13 +699,17 @@ def main():
             config.copyright_yahoo = True
         elif arg == '-g':
             config.copyright_google = True
+        elif arg == '-l':
+            config.copyright_msn = True
         elif arg == '-ny':
             config.copyright_yahoo = False
         elif arg == '-ng':
             config.copyright_google = False
+        elif arg == '-nl':
+            config.copyright_msn = False
         elif arg.startswith('-output'):
             if len(arg) >= 8:
-                output_file = arg[8:]
+                setSavepath(arg[8:])
         elif arg.startswith('-maxquery'):
             if len(arg) >= 10:
                 config.copyright_max_query_for_page = int(arg[10:])
