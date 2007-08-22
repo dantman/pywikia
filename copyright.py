@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-This robot checks copyright text in Google and Yahoo.
+This robot checks copyright text in Google, Yahoo and Live Search.
 
 Google search requires to install the pyGoogle module from
 http://pygoogle.sf.net and get a Google API license key from
@@ -10,6 +10,9 @@ no longer issuing new SOAP API keys).
 
 Yahoo! search requires pYsearch module from http://pysearch.sourceforge.net
 and a Yahoo AppID from http://developer.yahoo.com.
+
+Windows Live Search requires to install the SOAPpy module from
+http://pywebsvcs.sf.net and get an AppID from http://search.msn.com/developer.
 
 You can run the bot with the following commandline parameters:
 
@@ -182,7 +185,7 @@ wikipedia_names = {
 
 sections_to_skip = {
     'en':['References', 'Further reading', 'Citations', 'External links'],
-    'it':['Bibliografia', 'Riferimenti bibliografici', "Collegamenti esterni"],
+    'it':['Bibliografia', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni principali'],
 }
 
 def skip_section(text):
@@ -222,23 +225,27 @@ def exclusion_file_list():
 def load_pages(force_update = False):
     for page, path in exclusion_file_list():
         try:
-            length = 0
-            length = os.path.getsize(path)
-            file_age = time.time() - os.path.getmtime(path)
-            if file_age > 24 * 60 * 60:
-                print 'Updating page [[' + page.title() + ']] to exclude new URLs...'
-                length = 0
+            if not os.path.exists(path):
+                    print 'Creating file \'%s\' ([[%s]])' % (path, page.title())
+                    force_update = True
+            else:
+                file_age = time.time() - os.path.getmtime(path)
+                if file_age > 24 * 60 * 60:
+                    print 'Updating file \'%s\' ([[%s]])' % (path, page.title())
+                    force_update = True
         except OSError:
-            pass
+            raise
 
-        if length == 0 or force_update:
+        if force_update:
             try:
                 data = page.get()
                 f = codecs.open(path, 'w', 'utf-8')
                 f.write(data)
                 f.close()
-            except wikipedia.IsRedirectPage:
-                data = page.get(get_redirect=True)
+            except KeyboardInterrupt:
+                raise
+            except wikipedia.IsRedirectPage, arg:
+                data = wikipedia.Page(page.site(), arg).get()
             except:
                 print 'Getting page failed'
     return
@@ -666,13 +673,13 @@ def main():
     for arg in wikipedia.handleArgs():
         #if arg.startswith('-repeat'):
         #    repeat = True
-        if arg.startswith('-y'):
+        if arg == '-y':
             config.copyright_yahoo = True
-        elif arg.startswith('-g'):
+        elif arg == '-g':
             config.copyright_google = True
-        elif arg.startswith('-ny'):
+        elif arg == '-ny':
             config.copyright_yahoo = False
-        elif arg.startswith('-ng'):
+        elif arg == '-ng':
             config.copyright_google = False
         elif arg.startswith('-output'):
             if len(arg) >= 8:
