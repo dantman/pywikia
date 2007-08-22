@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This bot is used for checking external links found at the wiki. It checks
 several pages at once, with a limit set by the config variable
@@ -101,7 +101,7 @@ talk_report = {
 talk_report_archive = {
     'de': u'Die Webseite wurde vom Internet Archive gespeichert. Bitte verlinke gegebenenfalls eine geeignete archivierte Version: [%s]. ',
     'en': u'\nThe web page has been saved by the Internet Archive. Please consider linking to an appropriate archived version: [%s]. ',
-    'nl': u'\nDeze website is bewaard in het Internet Archief. Overweeg te linken naar een gearchiveerde pagina: [%s]. ',
+    'nl': u'\nDeze website is bewaard in het Internet Archive. Overweeg te linken naar een gearchiveerde pagina: [%s]. ',
     'no': u'\nDenne nettsiden er lagra i Internet Archive. Vurder om lenka kan endres til å peke til en av de arkiverte versjonene: [%s]. ',
     'pt': u'Esta página web foi gravada na Internet Archive. Por favor considere o link para a versão arquivada: [%s]. ',
 }
