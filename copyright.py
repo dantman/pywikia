@@ -659,6 +659,20 @@ def add_in_urllist(url, add_item, engine):
     url.append((add_item, engine, comment))
     return
 
+def exceeded_in_queries(engine):
+    """Behavior if an exceeded error occur."""
+
+    # Disable search engine
+    if config.copyright_exceeded_in_queries == 1:
+        exec('config.copyright_' + engine + ' = False')
+    # Sleeping
+    if config.copyright_exceeded_in_queries == 2:
+        print "Got a queries exceeded error. Sleeping for %d hours..." % (config.copyright_exceeded_in_queries_sleep_hours)
+        time.sleep(config.copyright_exceeded_in_queries_sleep_hours * 60 * 60)
+    # Stop execution
+    if config.copyright_exceeded_in_queries == 3:
+        raise 'Got a queries exceeded error.'
+
 def get_results(query, numresults = 10):
     url = list()
     query = re.sub("[()\"<>]", "", query)
@@ -677,9 +691,13 @@ def get_results(query, numresults = 10):
             except KeyboardInterrupt:
                 raise
             except Exception, err:
-                #SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
-                # Daily limit of 1000 queries exceeded for key xxx>
                 print "Got an error ->", err
+                #
+                # SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
+                # Daily limit of 1000 queries exceeded for key ***>
+                #
+                if 'Daily limit' in str(err):
+                    exceeded_in_queries('google')
                 if search_request_retry:
                     search_request_retry -= 1
     if config.copyright_yahoo:
@@ -696,6 +714,8 @@ def get_results(query, numresults = 10):
                 search_request_retry = 0
             except Exception, err:
                 print "Got an error ->", err
+                if 'limit exceeded' in str(err):
+                    exceeded_in_queries('yahoo')
                 if search_request_retry:
                     search_request_retry -= 1
     if config.copyright_msn:

@@ -288,10 +288,10 @@ db_password = ''
 
 ############## SEARCH ENGINE SETTINGS ##############
 
-# Some scripts allow querying Google via the Google Web API. To use this feature, you must
-# install the pyGoogle module from http://pygoogle.sf.net/ and have a Google
-# Web API license key. Note that
-# Google doesn't give out license keys anymore.
+# Some scripts allow querying Google via the Google Web API. To use this feature,
+# you must install the pyGoogle module from http://pygoogle.sf.net/ and have a
+# Google Web API license key. Note that Google doesn't give out license keys
+# anymore.
 google_key = ''
 
 # Some scripts allow using the Yahoo! Search Web Services. To use this feature,
@@ -325,6 +325,18 @@ copyright_skip_query = 0
 
 # Number of attempts on connection error.
 copyright_connection_tries = 10
+
+# Behavior if an exceeded error occur.
+#
+# Possibilities:
+#
+#    0 = None
+#    1 = Disable search engine
+#    2 = Sleep (default)
+#    3 = Stop
+
+copyright_exceeded_in_queries = 2
+copyright_exceeded_in_queries_sleep_hours = 6
 
 # Append last modified date of URL to script result
 copyright_show_date = True
