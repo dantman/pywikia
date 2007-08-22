@@ -71,7 +71,6 @@ import wikipedia, pagegenerators, catlib, config
 
 __version__='$Id$'
 
-#search_in_msn = False
 exclude_quote = True
 
 appdir = "copyright/"
@@ -250,12 +249,12 @@ def load_pages(force_update = False):
                 print 'Getting page failed'
     return
 
-def check_list(text, cl, debug=False):
+def check_list(text, cl, verbose = False):
     for entry in cl:
         if entry:
             if text.find(entry) != -1:
                 #print entry
-                if debug:
+                if verbose:
                     print 'SKIP URL ' + text
                 return True
 
@@ -299,9 +298,11 @@ def read_file(filename, cut_comment = False):
     text = u""
     f = codecs.open(filename, 'r','utf-8')
     text = f.read()
+    f.close()
+
     if cut_comment:
         text = re.sub(" ?#.*", "", text)
-    f.close()
+
     return text
 
 def write_log(text, filename = output_file):
@@ -329,10 +330,10 @@ reWikipediaC = re.compile('(' + '|'.join(wikipedia_names.values()) + ')', re.I)
 def cleanwikicode(text):
     if not text:
         return ""
-    #write_log(text+'\n', "debug_cleanwikicode1.txt")
-    text = re.sub('(?i)<p.*?>' ,'', text)
-    text = re.sub('(?i)</?div.*?>' ,'', text)
-    text = re.sub("(?i)</*small>", "", text)
+
+    #write_log(text+'\n', "copyright/debug_cleanwikicode1.txt")
+
+    text = re.sub('(?i)</?(p|u|i|b|em|div|span|font|small|big|code|tt).*?>', '', text)
     text = re.sub('(?i)<(/\s*)?br(\s*/)?>', '', text)
     text = re.sub('<!--.*?-->', '', text)
     text = re.sub('&lt;', '<', text)
@@ -345,34 +346,38 @@ def cleanwikicode(text):
         text = re.sub('^[:*]?\s*[«][^»]+[»]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
         text = re.sub('^[:*]?\s*[“][^”]+[”]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
 
-    # exclude <ref> notes
-    text = re.sub ("<ref.*?>.*?</ref>", "", text)
-    # exclude wikitable
-    text = re.sub('(?m)^[ \t]*({\||[|!]).*', "", text)
     # remove URL
     text = re.sub('https?://[\w/.,;:@&=%#\\\?_!~*\'|()\"+-]+', ' ', text)
+
     # remove Image tags
     text = reImageC.sub("", text)
+
     # replace piped wikilink
     text = re.sub("\[\[[^\]]*?\|(.*?)\]\]", "\\1", text)
+
     # remove unicode and polytonic template
     text = re.sub("(?i){{(unicode|polytonic)\|(.*?)}}", "\\1", text)
-    # remove <nowiki> tags
-    text = re.sub("</*nowiki>", "", text)
-    # remove template
-    text = re.sub('{{.*?}}', '', text)
-    # remove LaTeX staff
-    text = re.sub('<math>.*?</math>', '', text)
-    #text = text.replace("''", "")
-    text = text.replace("[", "")
-    text = text.replace("]", "")
-    text = re.sub('^[*:;]', '', text)
 
-    text = text.replace("<!--", "")
-    text = text.replace("-->", "")
+    text = re.sub("""
+    (?xim)
+    (
+        <ref.*?>.*?</ref>    | # exclude <ref> notes
+        ^[\ \t]*({\||[|!]).* | # exclude wikitable
+        </*nowiki>           | # remove <nowiki> tags
+        {{.*?}}              | # remove template
+        <math>.*?</math>     | # remove LaTeX staff
+        [\[\]]               | # remove [, ]
+        ^[*:;]+              | # remove *, :, ; in begin of line
+        <!--                 |
+        -->                  |
+    )
+    """, "", text)
+
+    # remove useless spaces
+    text = re.sub("(?m)(^[ \t]+|[ \t]+$)", "", text)
 
     #if text:
-    #    write_log(text+'\n', "debug_cleanwikicode2.txt")
+    #    write_log(text+'\n', "copyright/debug_cleanwikicode2.txt")
     return text
 
 excl_list = exclusion_list()
@@ -522,7 +527,7 @@ def get_results(query, numresults = 10):
     if config.copyright_google:
         import google
         google.LICENSE_KEY = config.google_key
-        print "  google query..."
+        print "  Google query..."
         search_request_retry = config.copyright_connection_tries
         while search_request_retry:
             try:
@@ -543,7 +548,7 @@ def get_results(query, numresults = 10):
                     search_request_retry -= 1
     if config.copyright_yahoo:
         import yahoo.search.web
-        print "  yahoo query..."
+        print "  Yahoo query..."
         data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"' +
                                           query.encode('utf_8') +
                                           '" -Wikipedia', results=numresults)
@@ -588,7 +593,7 @@ def get_results(query, numresults = 10):
 
     offset = 0
     for i in range(len(url)):
-        if check_list(url[i + offset][0], excl_list, debug = True):
+        if check_list(url[i + offset][0], excl_list, verbose = True):
             url.pop(i + offset)
             offset += -1
     return url
