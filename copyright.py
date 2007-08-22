@@ -456,8 +456,11 @@ def query(lines = [], max_query_len = 1300):
                          search_words = search_words[:search_words.rindex(" ")]
                 results = get_results(search_words)
                 group_url = ''
-                for url, engine in results:
-                    group_url += '\n*%s - %s' % (engine, url)
+                for url, engine, comment in results:
+                    if comment:
+                        group_url += '\n*%s - %s (%s)' % (engine, url, "; ".join(comment))
+                    else:
+                        group_url += '\n*%s - %s' % (engine, url)
                 if results:
                     group_url_list = group_url.splitlines()
                     group_url_list.sort()
@@ -482,51 +485,177 @@ def query(lines = [], max_query_len = 1300):
 source_seen = set()
 positive_source_seen = set()
 
-def check_in_source(url):
+class NoWebPage(Exception):
+    """Web page does not exist (404)"""
+
+class URL_exclusion(Exception):
+    """URL in exclusion list"""
+
+class WebPage(object):
     """
-    Sources may be different from search engine database and include mentions of
-    Wikipedia. This function avoid also errors in search results that can occurs
-    either with Google and Yahoo! service.
     """
-    import urllib2
-    global excl_list, source_seen, positive_source_seen
 
-    if url in positive_source_seen:
-        return True
+    def __init__(self, url):
+        """
+        """
 
-    if url in source_seen:
-        return False
+        if check_list(url, excl_list):
+            raise URL_exclusion
 
-    if check_list(url, excl_list):
-        return False
+        self._url = url
 
-    # very experimental code
-    if not url[-4:] in [".pdf", ".doc", ".ppt"]:
         try:
-            resp = urllib2.urlopen(url)
-            text = resp.read()
-            #resp.close()
-        except urllib2.HTTPError:
+            self._urldata = urllib2.urlopen(urllib2.Request(self._url, None, { 'User-Agent': wikipedia.useragent }))
+        #except httplib.BadStatusLine, line:
+        #    print 'URL: %s\nBad status line: %s' % (url, line)
+        except urllib2.HTTPError, err:
+            print "HTTP error: %d / %s (%s)" % (err.code, err.msg, url)
+            #if err.code == 404:
+            if err.code >= 400:
+                raise NoWebPage
+            return None
+            #except urllib2.URLError:
+        except Exception, err:
+                print "ERROR: %s" % (err)
+
+        self._lastmodified = self._urldata.info().getdate('Last-Modified')
+        self._length = self._urldata.info().getheader('Content-Length')
+        self._content_type = self._urldata.info().getheader('Content-Type')
+
+    def length(self):
+         if hasattr(self, '_length'):
+             if self._length:
+                 return int(self._length)
+         if hasattr(self, '_contents'):
+             return len(self._contents)
+
+         # print "No length for " + self._url
+
+         return None
+
+    def lastmodified(self):
+         if hasattr(self, '_lastmodified'):
+             return self._lastmodified
+         return None
+
+    def get(self, force = False):
+        """
+        """
+
+        # Exclude URL with listed file extension.
+        if self._url[-4:] in [".pdf", ".doc", ".ppt"]:
+            raise URL_exclusion
+
+        # Make sure we did try to get the contents once
+        if not hasattr(self, '_contents'):
+            self._contents = self._urldata.read()
+            return self._contents
+        return None
+
+    def check_in_source(self):
+        """
+        Sources may be different from search engine database and include mentions of
+        Wikipedia. This function avoid also errors in search results that can occurs
+        either with Google and Yahoo! service.
+        """
+        global excl_list, source_seen, positive_source_seen
+
+        if not hasattr(self, '_urldata'):
             return False
 
-        if reWikipediaC.search(text):
-            # if 'wikipedia' in text.lower():
-            excl_list += [url]
-            #write_log(url + '\n', "copyright/sites_with_'wikipedia'.txt")
-            positive_source_seen.add(url)
+        if self._url in positive_source_seen:
             return True
-        else:
-            #write_log(url + '\n', "copyright/sites_without_'wikipedia'.txt")
-            source_seen.add(url)
-    return False
+
+        if self._url in source_seen:
+            return False
+
+        text = self.get()
+
+        # Character encoding conversion if 'Content-Type' field has
+        # charset attribute set to UTF-8.
+
+        if text:
+            if 'utf-8' in self._content_type.lower():
+                text = text.decode("utf-8", 'replace')
+            else:
+                # <META> declaration with "http-equiv" set to "Content-Type" in HTML document.
+                if 'text/html' in self._content_type and (re.search("(?is)<meta\s.*?charset\s*=\s*[\"\']*\s*UTF-8.*?>", text) or re.search("(?is)<\?.*?encoding\s*=\s*[\"\']*\s*UTF-8.*?\?>", text)):
+                    text = text.decode("utf-8", 'replace')
+
+            m = reWikipediaC.search(text)
+            if m:
+                excl_list += [self._url]
+                write_log("%s (%s)\n" % (self._url, m.group()), "copyright/sites_with_'wikipedia'.txt")
+                positive_source_seen.add(self._url)
+                return True
+            else:
+                write_log(self._url + '\n', "copyright/sites_without_'wikipedia'.txt")
+        source_seen.add(self._url)
+        return False
 
 def add_in_urllist(url, add_item, engine):
+
+    if (engine == 'google' and config.copyright_check_in_source_google) or \
+    (engine == 'yahoo' and config.copyright_check_in_source_yahoo):
+        check_in_source = True
+    else:
+        check_in_source = False
+
+    if check_in_source or config.copyright_show_date or config.copyright_show_length:
+        s = None
+        cache = False
+
+        # list to store date, length, cache URL
+        comment = list()
+
+        try:
+            s = WebPage(add_item)
+        except URL_exclusion:
+            pass
+        except NoWebPage:
+            cache = True
+
+        if s:
+            # Before of add url in result list, perform the check in source
+            if check_in_source:
+                if s.check_in_source():
+                    return
+
+            if config.copyright_show_date:
+                date = s.lastmodified()
+                if date:
+                    if date[:3] != time.localtime()[:3]:
+                        comment.append("%s/%s/%s" % (date[2], date[1], date[0]))
+
+            unit = 'bytes'
+
+            if config.copyright_show_length:
+                length = s.length()
+                if length:
+                    # convert in kilobyte
+                    length /= 1024
+                    unit = 'KB'
+                    if length > 1024:
+                        # convert in megabyte
+                        length /= 1024
+                        unit = 'MB'
+                    if length > 0:
+                        comment.append("%d %s" % (length, unit))
+
+            if cache:
+                if engine == 'google':
+                    comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s google cache]' % add_item[7:])
+                elif engine == 'yahoo':
+                    cache = False
+                elif engine == 'msn':
+                    cache = False
+
     for i in range(len(url)):
         if add_item in url[i]:
             if engine not in url[i][1]:
-                url[i] = (add_item, url[i][1] + ', ' + engine)
+                url[i] = (add_item, url[i][1] + ', ' + engine, comment)
             return
-    url.append((add_item, engine))
+    url.append((add_item, engine, comment))
     return
 
 def get_results(query, numresults = 10):
@@ -543,9 +672,6 @@ def get_results(query, numresults = 10):
                 data = google.doGoogleSearch('-Wikipedia "' + query + '"')
                 search_request_retry = 0
                 for entry in data.results:
-                    if config.copyright_check_in_source_google:
-                        if check_in_source(entry.URL):
-                            continue
                     add_in_urllist(url, entry.URL, 'google')
             except KeyboardInterrupt:
                 raise
@@ -565,9 +691,6 @@ def get_results(query, numresults = 10):
         while search_request_retry:
             try:
                 for entry in data.parse_results():
-                    if config.copyright_check_in_source_yahoo:
-                        if check_in_source(entry.Url):
-                            continue
                     add_in_urllist(url, entry.Url, 'yahoo')
                 search_request_retry = 0
             except Exception, err:

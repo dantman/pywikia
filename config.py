@@ -323,6 +323,12 @@ copyright_skip_query = 0
 # Number of attempts on connection error.
 copyright_connection_tries = 10
 
+# Append last modified date of URL to script result
+copyright_show_date = True
+
+# Append length of URL to script result
+copyright_show_length = True
+
 ############## FURTHER SETTINGS ##############
 
 # The bot can make some additional changes to each page it edits, e.g. fix
