@@ -596,7 +596,8 @@ class WebPage(object):
 def add_in_urllist(url, add_item, engine):
 
     if (engine == 'google' and config.copyright_check_in_source_google) or \
-    (engine == 'yahoo' and config.copyright_check_in_source_yahoo):
+    (engine == 'yahoo' and config.copyright_check_in_source_yahoo) or \
+    (engine == 'msn' and config.copyright_check_in_source_msn):
         check_in_source = True
     else:
         check_in_source = False
@@ -697,31 +698,39 @@ def get_results(query, numresults = 10):
                 print "Got an error ->", err
                 if search_request_retry:
                     search_request_retry -= 1
-    #if search_in_msn:
-    #    ## max_query_len = 150?
-    #    from __SOAPpy import WSDL
-    #    print "  msn query..."
-    #    wsdl_url = 'http://soap.search.msn.com/webservices.asmx?wsdl'
-    #    server = WSDL.Proxy(wsdl_url)
-    #    params = {'AppID': config.msn_appid, 'Query': '-Wikipedia "' + query + '"', 'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
-    #             'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
-    #
-    #    search_request_retry = config.copyright_connection_tries
-    #    results = ''
-    #    while search_request_retry:
-    #        try:
-    #            server_results = server.Search(Request = params)
-    #            search_request_retry = 0
-    #            if server_results.Responses[0].Results:
-    #                results = server_results.Responses[0].Results[0]
-    #        except Exception, err:
-    #            print "Got an error ->", err
-    #            search_request_retry -= 1
-    #    for entry in results:
-    #         try:
-    #             add_in_urllist(url, entry.Url, 'msn')
-    #         except AttributeError:
-    #             print "attrib ERROR"
+    if config.copyright_msn:
+        #max_query_len = 150?
+        from SOAPpy import WSDL
+        print "  Live query..."
+
+        try:
+            server = WSDL.Proxy('http://soap.search.msn.com/webservices.asmx?wsdl')
+        except:
+            print "Live Search Error"
+            raise
+        params = {'AppID': config.msn_appid, 'Query': '-Wikipedia "' + query + '"', 'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
+                 'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
+
+        search_request_retry = config.copyright_connection_tries
+        results = ''
+        while search_request_retry:
+            try:
+                server_results = server.Search(Request = params)
+                search_request_retry = 0
+                if server_results.Responses[0].Results:
+                    results = server_results.Responses[0].Results[0]
+            except Exception, err:
+                print "Got an error ->", err
+                if search_request_retry:
+                    search_request_retry -= 1
+
+        if results:
+            # list or instance?
+            if type(results) == type([]):
+                for entry in results:
+                    add_in_urllist(url, entry.Url, 'msn')
+            else:
+                add_in_urllist(url, results.Url, 'msn')
 
     offset = 0
     for i in range(len(url)):

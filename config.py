@@ -288,13 +288,10 @@ db_password = ''
 
 ############## SEARCH ENGINE SETTINGS ##############
 
-# Some scripts allow querying Google either via the Google Web API, or by
-# just parsing the HTML from the Google website.
-# To use the Google Web API, you must install the pyGoogle module from
-# http://pygoogle.sf.net/ and have a Google Web API license key. Note that
+# Some scripts allow querying Google via the Google Web API. To use this feature, you must
+# install the pyGoogle module from http://pygoogle.sf.net/ and have a Google
+# Web API license key. Note that
 # Google doesn't give out license keys anymore.
-# If you don't enter a google license key in your user config file, the scripts
-# will just parse the raw HTML code from the website.
 google_key = ''
 
 # Some scripts allow using the Yahoo! Search Web Services. To use this feature,
@@ -302,17 +299,23 @@ google_key = ''
 # and get a Yahoo AppID from http://developer.yahoo.com
 yahoo_appid = ''
 
+# To use Windows Live Search web service you must get an AppID from
+# http://search.msn.com/developer
+msn_appid = ''
+
 ############## COPYRIGHT SETTINGS ##############
 
 # Enable/disable search engine in copyright.py script
 copyright_google = True
 copyright_yahoo = True
+copyright_msn = False
 
 # Perform a deep check, loading URLs to search if 'Wikipedia' is present.
 # This may be useful to improve number of correct results. If you haven't
 # a fast connection, you might want to keep they disabled.
 copyright_check_in_source_google = False
 copyright_check_in_source_yahoo = False
+copyright_check_in_source_msn = False
 
 # Limit number of queries for page.
 copyright_max_query_for_page = 25
