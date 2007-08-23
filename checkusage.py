@@ -98,7 +98,11 @@ class HTTP(object):
 		headers['Connection'] = 'Keep-Alive'
 		headers['User-Agent'] = 'MwClient/' + __ver__
  
-		self._conn.request(method, path, data, headers)
+		try:
+			self._conn.request(method, path, data, headers)
+		except socket.error, e:
+			self._conn.close()
+			raise
  
 		try:
 			res = self._conn.getresponse()
