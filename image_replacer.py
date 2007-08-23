@@ -146,6 +146,8 @@ class Replacer(object):
 			not_ok = [(wiki, namespace, page_title.decode('utf-8', 'ignore'))
 				for wiki, namespace, page_title in self.cursor]
 			
+			if not comment: comment = ''
+			
 			self.reporters.append((old_image.decode('utf-8', 'ignore'),
 				new_image.decode('utf-8', 'ignore'), 
 				user.decode('utf-8', 'ignore'), 
