@@ -1,4 +1,4 @@
-## -*- coding: utf-8  -*-
+﻿## -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -1030,13 +1030,13 @@ class Page(object):
                 yield Page(site, fileLink)
 
     def put_async(self, newtext,
-                  comment=None, watchArticle=None, minorEdit=True):
+                  comment=None, watchArticle=None, minorEdit=True, force=False):
         """Asynchronous version of put (takes the same arguments), which
            places pages on a queue to be saved by a daemon thread.
         """
-        page_put_queue.put((self, newtext, comment, watchArticle, minorEdit))
+        page_put_queue.put((self, newtext, comment, watchArticle, minorEdit, force))
 
-    def put(self, newtext, comment=None, watchArticle = None, minorEdit = True):
+    def put(self, newtext, comment=None, watchArticle = None, minorEdit = True, force=False):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
@@ -1050,6 +1050,11 @@ class Page(object):
         #    self.site().sandboxpage.get(force = True, get_redirect = True)
         #except NoPage:
         #    pass
+
+        # Determine if we are allowed to edit
+        if not force:
+            if not self.botMayEdit():
+                raise LockedPage(u'Not allowed to edit %s because of a restricting template' % self.aslink())
 
         # If there is an unchecked edit restriction, we need to load the page
         if self._editrestriction:
@@ -4641,13 +4646,13 @@ def async_put():
     Daemon that takes pages from the queue and tries to save them on the wiki.
     '''
     while True:
-        page, newtext, comment, watchArticle, minorEdit = page_put_queue.get()
+        page, newtext, comment, watchArticle, minorEdit, force = page_put_queue.get()
         if page is None:
             # needed for compatibility with Python 2.3 and 2.4
             # in 2.5, we could use the Queue's task_done() and join() methods
             return
         try:
-            page.put(newtext, comment, watchArticle, minorEdit)
+            page.put(newtext, comment, watchArticle, minorEdit, force)
         except SpamfilterError, ex:
             output(u"Saving page [[%s]] prevented by spam filter: %s"
                    % (page.title(), ex.url))
@@ -4683,7 +4688,7 @@ def _flush():
         remaining = datetime.timedelta(seconds=(page_put_queue.qsize()+1) * config.put_throttle)
         output('Waiting for %i pages to be put. Estimated time remaining: %s' % (page_put_queue.qsize()+1, remaining))
         
-    page_put_queue.put((None, None, None, None, None))
+    page_put_queue.put((None, None, None, None, None, None))
     
     while(_putthread.isAlive()):
         try:
@@ -4694,6 +4699,7 @@ def _flush():
                              ['yes', 'no'], ['y', 'N'], 'N')
             if answer in ['y', 'Y']:
                 return
+    get_throttle.drop()
 
 import atexit
 atexit.register(_flush)
