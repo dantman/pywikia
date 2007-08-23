@@ -750,8 +750,8 @@ class Page(object):
         import re;
         p = re.compile(r"\{\{(?P<type>bots|nobots)\|?(?P<data>.*?)\}\}")
         try:
-            txt = self.get();
-        except NoPage:
+            txt = self.get(force=True);
+        except (NoPage, IsRedirectPage):
             return True
 
         m = p.search(txt);
