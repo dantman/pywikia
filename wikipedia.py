@@ -3138,7 +3138,10 @@ class Site(object):
         body of the response.
         """
         data = self.urlEncode(predata)
-        return self.postData(address, data, sysop = sysop, useCookie=useCookie)
+        try:
+            return self.postData(address, data, sysop = sysop, useCookie=useCookie)
+        except socket.error, e:
+            raise ServerError(e)
 
     def postData(self, address, data, contentType = 'application/x-www-form-urlencoded', sysop = False, useCookie=True):
         """
