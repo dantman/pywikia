@@ -127,7 +127,7 @@ class Delinker(threadpool.Thread):
 		# TODO: Per site config.
 		if page.namespace() in self.CommonsDelinker.config['delink_namespaces']:
 			try:
-				text = page.get()
+				text = page.get(nofollow_redirects = True)
 			except wikipedia.NoPage:
 				return 'failed'
 			new_text = text
@@ -302,7 +302,8 @@ class SummaryCache(object):
 					return self.summaries[type][key][0]
 					
 			output(u'%s Fetching new summary for %s' % (self, site))
-						
+			
+			# FIXME: evil
 			if self.CommonsDelinker.config['global']:
 				self.check_user_page(site)
 			page = wikipedia.Page(site, '%s%s' % \
@@ -397,8 +398,6 @@ class CheckUsage(threadpool.Thread):
 		# without the image itself. Can be fixed by querying query.php
 		# instead of api.php. Also should this be made as an exits() 
 		# method of checkusage.CheckUsage?
-		#shared_image_repository = self.CommonsDelinker.get_site(
-		#	*self.site.family.shared_image_repository())
 		shared_image_repository = self.CommonsDelinker.get_site(*self.site.shared_image_repository())
 		try:
 			if self.CheckUsage.exists(shared_image_repository, image) \
@@ -736,16 +735,12 @@ def output(message, toStdout = True):
 	else:
 		sys.stderr.flush()
 			
-if __name__ == '__main__':
-	# NOTE: Unused
-	try:
-		PID = int(os.readlink('/proc/self'))
-	except:
-		PID = 0
-	
+if __name__ == '__main__':	
 	output(u'Running ' + __version__)
 	CD = CommonsDelinker()
 	output(u'This bot runs from: ' + str(CD.site))
+	
+	re._MAXCACHE = 4
 	
 	args = wikipedia.handleArgs()
 	if '-since' in args:
