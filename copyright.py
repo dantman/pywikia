@@ -75,10 +75,15 @@ import wikipedia, pagegenerators, catlib, config
 
 __version__='$Id$'
 
-# Try to skip quoted text
+# Try to skip quoted text.
 exclude_quote = True
 
-# No checks if the page is a disambiguation page
+# If ratio between query length and number of commas is greater or equal
+# to 'comma_ratio' then the script identify a comma separated list and
+# don't send data to search engine.
+comma_ratio = 5
+
+# No checks if the page is a disambiguation page.
 skip_disambig = True
 
 appdir = "copyright/"
@@ -323,6 +328,27 @@ def write_log(text, filename = output_file):
     f.close()
 
 #
+# Ignore text that contents comma separated list, only numbers,
+# punctuation...
+
+def economize_query(text)
+    # Comma separated list
+    if text.count(', ') > 4:
+        l = len(text)
+        c = text.count(', ')
+        r = 100 * c / l
+
+        if r >= comma_ratio
+            return True
+
+        # write_log("%d/%d/%d: %s\n" % (l,c,r,text), "copyright/skip" + str(r) + ".txt")
+
+    # Numbers
+    if re.search('[^0-9\'*/,. +?:;-]{5}', text):
+        return False
+    return True
+
+#
 # Set regex used in cleanwikicode() to remove [[Image:]] tags
 # and regex used in check_in_source() to reject pages with
 # 'Wikipedia'.
@@ -442,6 +468,11 @@ def query(lines = [], max_query_len = 1300):
         line = cleanwikicode(line)
         for search_words in mysplit(line, 31, " "):
             if len(search_words) > 120:
+                if config.copyright_economize_query:
+                    if economize_query(search_words):
+                        wikipedia.output('SKIP TEXT: ' + search_words)
+                        consecutive = False
+                        continue
                 n_query += 1
                 #wikipedia.output(search_words)
                 if config.copyright_max_query_for_page and n_query > config.copyright_max_query_for_page:

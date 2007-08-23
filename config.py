@@ -344,6 +344,14 @@ copyright_show_date = True
 # Append length of URL to script result
 copyright_show_length = True
 
+# By default the script try to identify and skip text that contents a wide
+# comma separated list or only numbers. But sometimes that might be the
+# only part unmodified of a slightly edited and not otherwise reported
+# copyright violation. You can disable this feature to try to increase
+# accuracy.
+
+copyright_economize_query = True
+
 ############## FURTHER SETTINGS ##############
 
 # The bot can make some additional changes to each page it edits, e.g. fix
