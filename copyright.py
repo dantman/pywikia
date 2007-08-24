@@ -331,14 +331,14 @@ def write_log(text, filename = output_file):
 # Ignore text that contents comma separated list, only numbers,
 # punctuation...
 
-def economize_query(text)
+def economize_query(text):
     # Comma separated list
     if text.count(', ') > 4:
         l = len(text)
         c = text.count(', ')
         r = 100 * c / l
 
-        if r >= comma_ratio
+        if r >= comma_ratio:
             return True
 
         # write_log("%d/%d/%d: %s\n" % (l,c,r,text), "copyright/skip" + str(r) + ".txt")
@@ -873,6 +873,7 @@ def main():
 
     config.copyright_yahoo = check_config(config.copyright_yahoo, config.yahoo_appid, "Yahoo AppID")
     config.copyright_google = check_config(config.copyright_google, config.google_key, "Google Web API license key")
+    config.copyright_msn = check_config(config.copyright_msn, config.msn_appid, "Live Search AppID")    
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
