@@ -760,59 +760,42 @@ class Page(object):
         if ignore_bot_templates: #Check the "master ignore switch"
             return True
 
-        import re;
-        p = re.compile(r"\{\{(?P<type>bots|nobots)\|?(?P<data>.*?)\}\}")
         try:
-            txt = self.get(force=True);
-        except (NoPage, IsRedirectPage):
+            templates = self.templatesWithParams();
+        except (NoPage, IsRedirectPage, SectionError):
             return True
-
-        m = p.search(txt);
         
-        if m == None:
-            return True
-
-        if m.group('data') == '':
-            if m.group('type') == 'bots':
-                return True
-            return False
-
-        p = re.compile(r"(?P<type>allow|deny)=(?P<bots>.*)")
-        n = p.search(m.group('data'))
-        listed_bots = n.group('bots').split(',')
-        restriction_type = n.group('type')
-
-        if self.editRestriction:
-            userdict = config.sysopnames
-        else:
-            userdict = config.usernames
-
         try:
-            this_bot = userdict[self.site().family.name][self.site().lang]
-            if restriction_type == 'allow':
-                if this_bot in listed_bots:
-                    return True
-                elif 'all' in listed_bots:
-                    return True
-                elif 'none' in listed_bots:
-                    return False
-                else:
-                    return False
-            elif restriction_type == 'deny':
-                if this_bot in listed_bots:
-                    return False
-                elif 'all' in listed_bots:
-                    return False
-                elif 'none' in listed_bots:
-                    return True
-                else:
-                    return True
-
-        except :
-            # We don't have a user account for that wiki, or the
-            # page is locked and we don't have a sysop account.
+            if self.editRestriction:
+                self.site().forceLogin(sysop=True)
+            else:
+                self.site().forceLogin()
+        except NoUsername:
             return False
+        username = self.site()._loggedInAs
 
+        for template in templates:
+            if template[0] == 'Nobots':
+                return False
+            elif template[0] == 'Bots':
+                if len(template[1]) == 0:
+                    return True
+                else:
+                    (type, bots) = template[1][0].split('=', 1)
+                    bots = bots.split(',')
+                    if type == 'allow':
+                        if 'all' in bots or username in bots:
+                            return True
+                        else:
+                            return False
+                    if type == 'deny':
+                        if 'all' in bots or username in bots:
+                            return False
+                        else:
+                            return True
+        # no restricting template found
+        return True
+ 
     def userName(self):
         return self._userName
         
