@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -954,6 +954,17 @@ class Subject(object):
         # clone original newPages dictionary, so that we can modify it to the local page's needs
         new = dict(newPages)
         
+        # remove interwiki links to ignore
+        for iw in re.finditer('<!-- *\[\[(.*?):(.*?)\]\] *-->', page.get()):
+            ignorepage = wikipedia.Page(*iw.groups()[:2])
+            
+            try:
+                if (new[ignorepage.site()] == ignorepage):
+                    wikipedia.output(u"Ignoring link to %(to)s for %(from)s" % {'to': ignorepage, 'from': page})
+                    new.pop(ignorepage.site())
+            except KeyError:
+                pass
+
         # sanity check - the page we are fixing must be the only one for that site.
         pltmp = new[page.site()]
         if pltmp != page:
