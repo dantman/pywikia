@@ -485,7 +485,7 @@ class Page(object):
             SectionError: The subject does not exist on a page with a # link
 
             Set get_redirect to True to follow redirects rather than raise an exception.
-            Set force to True to ignore all exceptions (including redirects).
+            Set force to True to force a reload of all page attributes, including errors.
             Set nofollow_redirects to True to not follow redirects but obey all other exceptions.
             Set change_version_date to False if you have already loaded the page before and
                 do not check this version for changes before saving
