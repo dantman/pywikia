@@ -747,6 +747,9 @@ class Page(object):
         is desired to implement authorization-checking for a particular
         bot, the bot must call this method before editing.
         """
+        if config.ignore_bot_templates: #Check the "master ignore switch"
+            return True
+
         import re;
         p = re.compile(r"\{\{(?P<type>bots|nobots)\|?(?P<data>.*?)\}\}")
         try:

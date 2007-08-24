@@ -369,6 +369,12 @@ cosmetic_changes = False
 # foreign wiki, set cosmetic_changes_mylang_only to False, but be careful!
 cosmetic_changes_mylang_only = True
 
+# If ignore_bot_templates is True, the bot will always ignore {{bots}}
+# and {{nobots}} templates - botMayEdit() will always return True.
+# In the default (False) state, it will honor these directives and
+# refuse to save pages that forbid it from editing.
+ignore_bot_templates = False
+
 # End of configuration section
 # ============================
 # System-level and User-level changes.
