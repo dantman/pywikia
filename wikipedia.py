@@ -149,6 +149,15 @@ except ValueError:
     WIDEBUILD = False
 
 
+# Local settings
+
+# If ignore_bot_templates is True, the bot will always ignore {{bots}}
+# and {{nobots}} templates - botMayEdit() will always return True.
+# In the default (False) state, it will honor these directives and
+# refuse to save pages that forbid it from editing.
+ignore_bot_templates = False
+
+
 # Local exceptions
 
 class Error(Exception):
@@ -747,7 +756,8 @@ class Page(object):
         is desired to implement authorization-checking for a particular
         bot, the bot must call this method before editing.
         """
-        if config.ignore_bot_templates: #Check the "master ignore switch"
+        global ignore_bot_templates
+        if ignore_bot_templates: #Check the "master ignore switch"
             return True
 
         import re;
