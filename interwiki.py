@@ -955,11 +955,11 @@ class Subject(object):
         new = dict(newPages)
         
         # remove interwiki links to ignore
-        for iw in re.finditer('<!-- *\[\[(.*?):(.*?)\]\] *-->', page.get()):
-            ignorepage = wikipedia.Page(*iw.groups()[:2])
+        for iw in re.finditer('<!-- *\[\[(.*?:.*?)\]\] *-->', page.get()):
+            ignorepage = wikipedia.Page(page.site(), iw.groups()[0])
             
             try:
-                if (new[ignorepage.site()] == ignorepage):
+                if (new[ignorepage.site()] == ignorepage) and (ignorepage.site() != page.site()):
                     wikipedia.output(u"Ignoring link to %(to)s for %(from)s" % {'to': ignorepage, 'from': page})
                     new.pop(ignorepage.site())
             except KeyError:
