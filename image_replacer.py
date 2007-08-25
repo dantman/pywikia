@@ -13,6 +13,7 @@ __version__ = '$Id$'
 import config, wikipedia
 import re, time
 import threadpool
+import sys, os, signal, traceback
 
 from delinker import wait_callback, output, connect_database
 from checkusage import family
@@ -176,10 +177,22 @@ class Reporter(threadpool.Thread):
 		self.config = config
 		
 		threadpool.Thread.__init__(self, pool)
-	def do(self, (old_image, new_image, user, comment, not_ok)):
+		
+	def do(self, args):
+		try:
+			self.report(args)
+		except Exception, e:
+			output(u'A critical error during reporting has occured!')
+			output('%s: %s' % (e.__class__.__name__, str(e)), False)
+			traceback.print_exc(file = sys.stderr)
+			self.exit()
+			os.kill(0, signal.SIGTERM)
+			
+	def report(self, (old_image, new_image, user, comment, not_ok)):
 		not_ok_items = []
 		for wiki, namespace, page_title in not_ok:
-			site = family(wiki)
+			# Threadsafety?
+			site = wikipedia.getSite(family(wiki))
 			if unicode(site) == unicode(self.site):
 				title = u'%s:%s' % (site.namespace(namespace), page_title)
 			else:
