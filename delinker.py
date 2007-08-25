@@ -543,10 +543,11 @@ class CommonsDelinker(object):
 				
 		self.last_check = time.time()
 		
-		if 'bot' in self.site.userGroups:
-			self.log_limit = '5000'
-		else:
-			self.log_limit = '500'
+		#if 'bot' in self.site.userGroups:
+		#	self.log_limit = '5000'
+		#else:
+		#	self.log_limit = '500'
+		self.log_limit = '500'
 		
 	def connect_mysql(self):
 		self.database = connect_database()
