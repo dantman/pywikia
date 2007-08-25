@@ -143,6 +143,11 @@ class HTTP(object):
 			data = simplejson.load(res)
 		finally:
 			res.close()
+			
+		if 'error' in data:
+			raise wikipedia.Error(data['error']['code'], 
+				data['error']['info'])
+			
 		return data
 	def close(self):
 		self._conn.close()
