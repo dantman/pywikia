@@ -960,8 +960,11 @@ class Subject(object):
             
             try:
                 if (new[ignorepage.site()] == ignorepage) and (ignorepage.site() != page.site()):
-                    wikipedia.output(u"Ignoring link to %(to)s for %(from)s" % {'to': ignorepage, 'from': page})
-                    new.pop(ignorepage.site())
+                    if (ignorepage not in page.interwiki()):
+                        wikipedia.output(u"Ignoring link to %(to)s for %(from)s" % {'to': ignorepage.aslink(), 'from': page.aslink()})
+                        new.pop(ignorepage.site())
+                    else:
+                        wikipedia.output(u"NOTE: Not removing interwiki from %(from)s to %(to)s (exists both commented and non-commented)" % {'to': ignorepage.aslink(), 'from': page.aslink()})
             except KeyError:
                 pass
 
