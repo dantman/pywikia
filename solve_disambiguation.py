@@ -74,9 +74,6 @@ import re, sys, codecs
 # Application specific imports
 import wikipedia, pagegenerators, editarticle
 
-# This is a purely interactive robot. We set the delays lower.
-#wikipedia.put_throttle.setDelay(4)
-
 # Summary message when working on disambiguation pages
 msg = {
     'cs': u'Odstranění linku na rozcestník [[%s]] s použitím robota',
@@ -452,6 +449,7 @@ class DisambiguationRobot(object):
 
         self.mysite = wikipedia.getSite()
         self.mylang = self.mysite.language()
+        self.comment = None
 
         self.setupRegexes()
         
@@ -526,7 +524,7 @@ class DisambiguationRobot(object):
                 if choice in ['y', 'Y']:
                     redir_text = '#%s [[%s]]' % (self.mysite.redirect(default=True), target)
                     try:
-                        refPage.put_async(redir_text)
+                        refPage.put_async(redir_text,comment=self.comment)
                     except wikipedia.PageNotSaved, error:
                         wikipedia.output(u'Page not saved: %s' % error.args)
             else:
@@ -715,7 +713,7 @@ class DisambiguationRobot(object):
                 wikipedia.output(u'')
                 # save the page
                 try:
-                    refPage.put_async(text)
+                    refPage.put_async(text,comment=self.comment)
                 except wikipedia.LockedPage:
                     wikipedia.output(u'Page not saved: page is locked')
                 except wikipedia.PageNotSaved, error:
@@ -770,17 +768,15 @@ or press enter to quit:""")
     def setSummaryMessage(self, disambPage):
         # first check whether user has customized the edit comment
         if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
-            comment = wikipedia.translate(self.mysite,
+            self.comment = wikipedia.translate(self.mysite,
                             wikipedia.config.disambiguation_comment[
                             self.mysite.family.name]
                             ) % disambPage.title()
         elif disambPage.isRedirectPage():
             # when working on redirects, there's another summary message
-            comment = wikipedia.translate(self.mysite, msg_redir) % disambPage.title()
+            self.comment = wikipedia.translate(self.mysite, msg_redir) % disambPage.title()
         else:
-            comment = wikipedia.translate(self.mysite, msg) % disambPage.title()
-
-        wikipedia.setAction(comment)
+            self.comment = wikipedia.translate(self.mysite, msg) % disambPage.title()
         
     def run(self):
         if self.main_only:
