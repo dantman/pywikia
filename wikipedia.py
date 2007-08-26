@@ -1798,6 +1798,7 @@ class Page(object):
             token = self.site().getToken(self, sysop = True)
             predata = {
                 'wpReason': reason,
+                'wpComment': reason,
                 'wpConfirm': '1',
                 'wpConfirmB': '1'
             }
