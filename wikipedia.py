@@ -1,4 +1,4 @@
-## -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -4507,8 +4507,6 @@ def log(text):
         logfile.write(plaintext)
         logfile.flush()
 
-
-
 output_lock = threading.Lock()
 input_lock = threading.Lock()
 output_cache = []
@@ -4722,7 +4720,8 @@ def debugDump(name, site, error, data):
     site = unicode(repr(site).replace(u':',u'_'))
     filename = '%s_%s__%s.dump' % (name, site, time.asctime())
     filename = filename.replace(' ','_').replace(':','-')
-    f = file(filename, 'wb') #trying to write it in binary   #f = codecs.open(filename, 'w', 'utf-8')
+    f = file(filename, 'wb') #trying to write it in binary
+    #f = codecs.open(filename, 'w', 'utf-8')
     f.write(u'Error reported: %s\n\n' % error)
     try:
         f.write(data.encode("utf8"))
@@ -4758,4 +4757,3 @@ if __name__ == '__main__':
     print 'Pywikipediabot %s' % version.getversion()
     print 'Python %s' % sys.version
     doctest.testmod()
-﻿
