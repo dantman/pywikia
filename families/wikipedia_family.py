@@ -420,7 +420,7 @@ class Family(family.Family):
             'nl':  [u'Dp', u'DP', u'Dp2', u'Dpintro', u'Cognomen'],
             'nn':  [u'Fleirtyding'],
             'no':  [u'Peker', u'Etternavn', u'Disambig', u'Tobokstavsforkortelse',
-                    u'Trebokstavsforkortelse'],
+                    u'Trebokstavsforkortelse', u'Flertydig', u'Pekerside'],
             'nov': [u'Desambig'],
             'oc':  [u'Omonimia',],
             'pl':  [u'Disambig', u'DisambRulers', u'DisambigC',u'Strona ujednoznaczniająca'],
