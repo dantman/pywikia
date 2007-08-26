@@ -398,14 +398,15 @@ class CheckUsage(threadpool.Thread):
 		# without the image itself. Can be fixed by querying query.php
 		# instead of api.php. Also should this be made as an exits() 
 		# method of checkusage.CheckUsage?
-		shared_image_repository = self.CommonsDelinker.get_site(*self.site.shared_image_repository())
-		try:
-			if self.CheckUsage.exists(shared_image_repository, image) \
-					and not bool(replacement):
-				output(u'%s %s exists on the shared image repository!' % (self, image))
-				return
-		finally:
-			self.CommonsDelinker.unlock_site(shared_image_repository)
+		if self.site.shared_image_repository() != (None, None):
+			shared_image_repository = self.CommonsDelinker.get_site(*self.site.shared_image_repository())
+			try:
+				if self.CheckUsage.exists(shared_image_repository, image) \
+						and not bool(replacement):
+					output(u'%s %s exists on the shared image repository!' % (self, image))
+					return
+			finally:
+				self.CommonsDelinker.unlock_site(shared_image_repository)
 		if self.CheckUsage.exists(self.site, image) and \
 				not bool(replacement):
 			output(u'%s %s exists again!' % (self, image))

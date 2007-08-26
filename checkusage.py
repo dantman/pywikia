@@ -224,6 +224,10 @@ class CheckUsage(object):
 			mysql_max_retries = -1, mysql_callback = lambda *args: None):
 				
 		self.http = None 
+		self.http_retry_timeout = http_retry_timeout
+		self.http_max_retries = http_max_retries
+		self.http_callback = http_callback
+		
 		if no_db: return
  
 		self.mysql_host_prefix = mysql_host_prefix
@@ -234,10 +238,6 @@ class CheckUsage(object):
 		self.mysql_max_retries = mysql_max_retries
 		self.mysql_callback = mysql_callback
 		
-		self.http_retry_timeout = http_retry_timeout
-		self.http_max_retries = http_max_retries
-		self.http_callback = http_callback
- 
 		self.connections = []
 		
 		# Mapping database name -> mysql connection
