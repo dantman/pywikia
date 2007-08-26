@@ -1,4 +1,4 @@
-﻿## -*- coding: utf-8  -*-
+## -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -201,7 +201,7 @@ class SpamfilterError(PageNotSaved):
 
 class ServerError(Error):
     """Got unexpected server response"""
-    
+
 class BadTitle(Error):
     """Server responded with BadTitle."""
 
@@ -237,12 +237,12 @@ class Page(object):
             # to have an edit restriction, but we do not know yet whether the
             # restriction affects us or not
             self._editrestriction = False
-            
+
             if site == None:
                 site = getSite()
             elif type(site) in [type(''), type(u'')]:
                 site = getSite(site)
-            
+
             self._site = site
 
             if not insite:
@@ -250,16 +250,16 @@ class Page(object):
 
             # Convert HTML entities to unicode
             t = html2unicode(title)
-            
+
             # Convert URL-encoded characters to unicode
             # Sometimes users copy the link to a site from one to another. Try both the source site and the destination site to decode.
             t = url2unicode(t, site = insite, site2 = site)
-            
+
             #Normalize unicode string to a NFC (composed) format to allow proper string comparisons
             # According to http://svn.wikimedia.org/viewvc/mediawiki/branches/REL1_6/phase3/includes/normal/UtfNormal.php?view=markup
             # the mediawiki code normalizes everything to NFC, not NFKC (which might result in information loss).
             t = unicodedata.normalize('NFC', t)
-            
+
             # Clean up the name, it can come from anywhere.
             # Replace underscores by spaces, also multiple spaces and underscores with a single space
             # Strip spaces at both ends
@@ -328,7 +328,7 @@ class Page(object):
             if sectionStart >= 0:
                 self._section = t[sectionStart+1:].strip()
                 self._section = sectionencode(self._section, self.site().encoding())
-                if self._section == u'': self._section = None          
+                if self._section == u'': self._section = None
                 t = t[:sectionStart].strip()
             else:
                 self._section = None
@@ -341,10 +341,10 @@ class Page(object):
 
             if self._namespace != 0:
                 t = self.site().namespace(self._namespace) + u':' + t
-                
+
             if self._section:
                 t += u'#' + self._section
-                
+
             self._title = t
             self.editRestriction = None
             self._permalink = None
@@ -690,7 +690,7 @@ class Page(object):
         Get the permalink page for this page
         """
         return "%s://%s%s&oldid=%i"%(self.site().protocol, self.site().hostname(), self.site().get_address(self.title()), self.latestRevision())
-    
+
     def latestRevision(self):
         """
         Get the latest revision for this page
@@ -764,7 +764,7 @@ class Page(object):
             templates = self.templatesWithParams();
         except (NoPage, IsRedirectPage, SectionError):
             return True
-        
+
         try:
             if self.editRestriction:
                 self.site().forceLogin(sysop=True)
@@ -795,10 +795,10 @@ class Page(object):
                             return True
         # no restricting template found
         return True
- 
+
     def userName(self):
         return self._userName
-        
+
     def isIpEdit(self):
         return self._ipedit
 
@@ -1442,7 +1442,7 @@ class Page(object):
             name = Page(self.site(), name).title()
             result.append((name, params))
         return result
-        
+
     def templatePages(self):
         """
         Gives a list of Page objects containing the templates used on the page. Template parameters are ignored.
@@ -1680,7 +1680,7 @@ class Page(object):
         now = time.time()
 
         count = 0
-        output = []    
+        output = []
 
         while count < max and max != -1:
             if self.site().hostname() in config.authenticate.keys():
@@ -1691,16 +1691,16 @@ class Page(object):
                 data = response.read().decode(self.site().encoding())
             else:
                 response, data = self.site().postForm(address, predata)
-        
+
             get_throttle.setDelay(time.time() - now)
             data = simplejson.loads(data)
-            page = data['query']['pages'].values()[0]        
+            page = data['query']['pages'].values()[0]
             if 'missing' in page:
                 raise NoPage, 'Page %s not found' % self
             revisions = page.get('revisions', ())
             for revision in revisions:
                 if not comment:
-                    output.append((revision['timestamp'], 
+                    output.append((revision['timestamp'],
                       revision['user'], revision.get('*', u'')))
                 else:
                     output.append((revision['timestamp'], revision['user'],
@@ -1714,7 +1714,7 @@ class Page(object):
                 break
         return output
     fullRevisionHistory = fullVersionHistory
-                       
+
     def contributingUsers(self):
         """
         Returns a set of all user names (including anonymous IPs) of those who
@@ -1929,7 +1929,7 @@ class Page(object):
         self._deletedRevs = None
         #TODO: Check for errors below (have we succeeded? etc):
         return self.site().postForm(address,formdata,sysop=True)
- 
+
     def protect(self, edit = 'sysop', move = 'sysop', unprotect = False, reason = None, prompt = True, throttle = False):
         """(Un)protects a wiki page. Requires administrator status. If reason is None,
            asks for a reason. If prompt is True, asks the user if he wants to protect the page.
@@ -1951,7 +1951,7 @@ class Page(object):
             answer = inputChoice(u'Do you want to (un)protect %s?' % self.aslink(forceInterwiki = True), ['Yes', 'No'], ['y', 'N'], 'N')
         if answer in ['y', 'Y']:
             host = self.site().hostname()
-            
+
             self.site().forceLogin(sysop = True)
 
             token = self.site().getToken(self, sysop = True)
@@ -1984,31 +1984,31 @@ class Page(object):
                 output(u'Protection failed:')
                 output(data)
                 return False
-                
+
     def removeImage(self, image, put = False, summary = None, safe = True):
         return self.replaceImage(image, None, put, summary, safe)
-    
+
     def replaceImage(self, image, replacement = None, put = False, summary = None, safe = True):
         """Replace all occurences of an image by another image.
-        Giving None as argument for replacement will delink 
-        instead of replace. 
-        
+        Giving None as argument for replacement will delink
+        instead of replace.
+
         The argument image must be without namespace and all
         spaces replaced by underscores.
-        
+
         If put is false, the new text will be returned.
-        
+
         If put is true, the edits will be saved to the wiki
-        and True will be returned on succes, and otherwise 
+        and True will be returned on succes, and otherwise
         False. Edit errors propagate."""
-        
+
         # Copyright (c) Orgullomoore, Bryan
-        
+
         site = self.site()
-        
+
         text = self.get()
         new_text = text
-            
+
         def create_regex(s):
             s = re.escape(s)
             return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
@@ -2019,7 +2019,7 @@ class Page(object):
         # note that the colon is already included here
         r_namespace = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(create_regex_i, namespaces))
         r_image = u'(%s)' % create_regex(image).replace(r'\_', '[ _]')
-            
+
         def simple_replacer(match, groupNumber = 1):
             if replacement == None:
                 return u''
@@ -2041,24 +2041,24 @@ class Page(object):
             new_text = new_text[:m.start()] +  simple_replacer(m, 2) + new_text[m.end():]
 
         # Remove the image from galleries
-        r_galleries = ur'(?s)(\<%s\>)(?s)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'), 
+        r_galleries = ur'(?s)(\<%s\>)(?s)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'),
             create_regex_i('gallery'))
         r_gallery = ur'(?m)^((?:%s)?)(%s)(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
         def gallery_replacer(match):
-            return ur'%s%s%s' % (match.group(1), re.sub(r_gallery, 
+            return ur'%s%s%s' % (match.group(1), re.sub(r_gallery,
                 simple_replacer, match.group(2)), match.group(3))
         new_text = re.sub(r_galleries, gallery_replacer, new_text)
-            
+
         if (text == new_text) or (not safe):
             # All previous steps did not work, so the image is
             # likely embedded in a complicated template.
             r_templates = ur'(?s)(\{\{.*?\}\})'
             r_complicated = u'(?s)((?:%s)?)%s' % (r_namespace, r_image)
-                
+
             def template_replacer(match):
                 return re.sub(r_complicated, simple_replacer, match.group(1))
             new_text = re.sub(r_templates, template_replacer, new_text)
-            
+
         if put:
             if text != new_text:
                 # Save to the wiki
@@ -2067,7 +2067,7 @@ class Page(object):
             return False
         else:
             return new_text
-        
+
 class ImagePage(Page):
     # a Page in the Image namespace
     def __init__(self, site, title = None, insite = None):
@@ -2114,18 +2114,20 @@ class ImagePage(Page):
 
     def getFileVersionHistory(self):
         result = []
-        history = re.search('(?s)<ul class="special">.+?</ul>', self.getImagePageHtml())
-
-        if history:
-            lineR = re.compile('<li> \(.+?\) \(.+?\) <a href=".+?" title=".+?">(?P<datetime>.+?)</a> . . <a href=".+?" title=".+?">(?P<username>.+?)</a> \(.+?\) . . (?P<resolution>\d+.+?\d+) \((?P<size>[\d,\.]+) .+?\)( <span class="comment">(?P<comment>.*?)</span>)?</li>')
-            
-            for match in lineR.finditer(history.group()):
-                datetime = match.group('datetime')
-                username = match.group('username')
-                resolution = match.group('resolution')
-                size = match.group('size')
-                comment = match.group('comment') or ''
-                result.append((datetime, username, resolution, size, comment))
+        history = self.getImagePageHtml()
+        pat = re.compile(r'</p><table class=\"filehistory\">((.*?\n)*?)</table>', re.M)
+        lineR = re.findall(pat, history)[0][0]
+        for match in lineR.split('\n'):
+            if not '(<a href=' in match:
+                continue
+            res = re.findall(r'\">(\d\d:\d\d, \d\d .*? \d\d\d\d)</a></td><td><a href=\".*?\" (?:class=\"new\" |)title=\".*?\">(.*?)</a> ' + \
+                             '\(.*?\)</td><td>(.*?)</td><td class=\"mw-imagepage-filesize\">(.*?)</td><td>(.*?)</td></tr>', match)[0]
+            datetime = res[0]
+            username = res[1]
+            size = res[2]
+            resolution = res[3]
+            comment = res[4]
+            result.append((datetime, username, resolution, size, comment))
         return result
 
     def getFileVersionHistoryTable(self):
@@ -2249,7 +2251,7 @@ class GetAll(object):
         # seems to be the safest possible time.
         page2._startTime = str(int(timestamp)+1)
         if section:
-            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))                    
+            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))
             if not m:
                 try:
                     page2._getexception
@@ -2259,7 +2261,7 @@ class GetAll(object):
                     page2._getexception = SectionError
         # Store the content
         page2._contents = text
- 
+
     def headerDone(self, header):
         # Verify our family data
         lang = self.site.lang
@@ -2377,7 +2379,7 @@ class Throttle(object):
     def logfn(self):
         import wikipediatools as _wt
         return _wt.absoluteFilename('throttle.log')
-        
+
     def checkMultiplicity(self):
         self.lock.acquire()
         try:
@@ -2545,7 +2547,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
             old = re.compile(old, re.IGNORECASE | re.UNICODE)
         else:
             old = re.compile(old)
-    
+
     #noTouch = '|'.join([exceptions[name] for name in exceptList])
     #noTouchR = re.compile(noTouch)
     # How much of the text we have looked at so far
@@ -3319,7 +3321,7 @@ class Site(object):
             compressedstream = StringIO.StringIO(text)
             gzipper = gzip.GzipFile(fileobj=compressedstream)
             text = gzipper.read()
-            
+
         # Find charset in the content-type meta tag
         contentType = f.info()['Content-Type']
         R = re.compile('charset=([^\'\";]+)')
@@ -3438,7 +3440,7 @@ Maybe the server is down. Retrying in %i minutes..."""
             path = self.newpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            
+
             entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?" title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>\d+)[^\)\]]*[\)\]] .?<a href=".+?" title=".+?:(?P<username>.+?)">')
             for m in entryR.finditer(html):
                 date = m.group('date')
@@ -3838,7 +3840,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         except KeyError:
             # no localized keyword for redirects
             redirKeywordsR = r'redirect'
-        # A redirect starts with hash (#), followed by a keyword, then 
+        # A redirect starts with hash (#), followed by a keyword, then
         # arbitrary stuff, then a wikilink. The link target ends before
         # either a | or a ].
         return re.compile(r'#' + redirKeywordsR + '.*?\[\[(.*?)(?:\]|\|)', re.IGNORECASE | re.UNICODE | re.DOTALL)
@@ -4106,7 +4108,7 @@ Maybe the server is down. Retrying in %i minutes..."""
 
     def languages(self):
         return self.family.langs.keys()
-    
+
     def validLanguageLinks(self):
         return self._validlanguages
 
@@ -4557,7 +4559,7 @@ def flush_output_cache():
     while(output_cache):
         (args, kwargs) = output_cache.pop(0)
         ui.output(*args, **kwargs)
-        
+
 def input(question, password = False):
     """
     Asks the user a question, then returns the user's answer.
@@ -4573,12 +4575,12 @@ def input(question, password = False):
     input_lock.acquire()
     try:
         data = ui.input(question, password)
-    finally:    
+    finally:
         flush_output_cache()
         input_lock.release()
- 
+
     return data
-    
+
 def inputChoice(question, answers, hotkeys, default = None):
     """
     Asks the user a question and offers several options, then returns the
@@ -4680,7 +4682,7 @@ _putthread = threading.Thread(target=async_put)
 _putthread.setName('Put-Thread')
 _putthread.setDaemon(True)
 _putthread.start()
-                 
+
 def stopme():
     """This should be run when a bot does not interact with the Wiki, or
        when it has stopped doing so. After a bot has run stopme() it will
@@ -4696,9 +4698,9 @@ def _flush():
         import datetime
         remaining = datetime.timedelta(seconds=(page_put_queue.qsize()+1) * config.put_throttle)
         output('Waiting for %i pages to be put. Estimated time remaining: %s' % (page_put_queue.qsize()+1, remaining))
-        
+
     page_put_queue.put((None, None, None, None, None, None))
-    
+
     while(_putthread.isAlive()):
         try:
             _putthread.join(1)
@@ -4756,5 +4758,4 @@ if __name__ == '__main__':
     print 'Pywikipediabot %s' % version.getversion()
     print 'Python %s' % sys.version
     doctest.testmod()
-    
-    
+﻿
