@@ -2112,20 +2112,18 @@ class ImagePage(Page):
 
     def getFileVersionHistory(self):
         result = []
-        history = self.getImagePageHtml()
-        pat = re.compile(r'</p><table class=\"filehistory\">((.*?\n)*?)</table>', re.M)
-        lineR = re.findall(pat, history)[0][0]
-        for match in lineR.split('\n'):
-            if not '(<a href=' in match:
-                continue
-            res = re.findall(r'\">(\d\d:\d\d, \d\d .*? \d\d\d\d)</a></td><td><a href=\".*?\" (?:class=\"new\" |)title=\".*?\">(.*?)</a> ' + \
-                             '\(.*?\)</td><td>(.*?)</td><td class=\"mw-imagepage-filesize\">(.*?)</td><td>(.*?)</td></tr>', match)[0]
-            datetime = res[0]
-            username = res[1]
-            size = res[2]
-            resolution = res[3]
-            comment = res[4]
-            result.append((datetime, username, resolution, size, comment))
+        history = re.search('(?s)<table class="filehistory">.+?</table>', self.getImagePageHtml())
+
+        if history:
+            lineR = re.compile('<tr><td>.*?</td><td><a href=".+?">(?P<datetime>.+?)</a></td><td><a href=".+?" title=".+?">(?P<username>.+?)</a>.*?</td><td>(?P<resolution>.+?)</td><td class=".+?">(?P<filesize>.+?)</td><td>(?P<comment>.*?)</td></tr>')
+            
+            for match in lineR.finditer(history.group()):
+                datetime = match.group('datetime')
+                username = match.group('username')
+                resolution = match.group('resolution')
+                size = match.group('filesize')
+                comment = match.group('comment') or ''
+                result.append((datetime, username, resolution, size, comment))
         return result
 
     def getFileVersionHistoryTable(self):
