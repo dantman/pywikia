@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Script to check language links for general pages. This works by downloading the
@@ -141,6 +141,11 @@ These arguments specify in which way the bot should follow interwiki links:
 
     -ignorefile:   similar to -ignore, except that the pages are taken from
                    the given file instead of the command line.
+
+    -localright:   do not follow interwiki from other pages than the starting
+                   page. (Warning! Should be used very sparingly, only when
+                   you are sure you have first gotten the interwiki on the
+                   starting page exactly right)
 
 The following arguments are only important for users who have accounts for
 multiple languages, and specify on which sites the bot should modify pages:
@@ -341,6 +346,7 @@ class Global(object):
     ignore = []
     bracketonly = False
     rememberno = False
+    followinterwiki = True
 
 class Subject(object):
     """
@@ -680,25 +686,22 @@ class Subject(object):
                         if page in self.done: #XXX: Ugly bugfix - the following line has reportedly thrown "ValueError: list.remove(x): x not in list"
                             self.done.remove(page)
                         iw = ()
-                    # Temporary change because of be/be-x-old issue
-                    for linkedPage in iw:
-                        if linkedPage.site() == wikipedia.getSite('be','wikipedia'):
-                            iw.append(wikipedia.Page(wikipedia.getSite('be-x-old','wikipedia'),linkedPage.title()))
                     for linkedPage in iw:
                         if not (self.isIgnored(linkedPage) or self.namespaceMismatch(page, linkedPage) or self.wiktionaryMismatch(linkedPage)):
-                            if self.addIfNew(linkedPage, counter, page):
-                                # It is new. Also verify whether it is the second on the
-                                # same site
-                                lpsite=linkedPage.site()
-                                for prevPage in self.foundIn.keys():
-                                    if prevPage != linkedPage and prevPage.site() == lpsite:
-                                        # Still, this could be "no problem" as either may be a
-                                        # redirect to the other. No way to find out quickly!
-                                        wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
-                                        break
-                                else:
-                                    if config.interwiki_shownew:
-                                        wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                            if globalvar.followinterwiki or page == self.originPage:
+                                if self.addIfNew(linkedPage, counter, page):
+                                    # It is new. Also verify whether it is the second on the
+                                    # same site
+                                    lpsite=linkedPage.site()
+                                    for prevPage in self.foundIn.keys():
+                                        if prevPage != linkedPage and prevPage.site() == lpsite:
+                                            # Still, this could be "no problem" as either may be a
+                                            # redirect to the other. No way to find out quickly!
+                                            wikipedia.output(u"NOTE: %s: %s gives duplicate interwiki on same site %s" % (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
+                                            break
+                                    else:
+                                        if config.interwiki_shownew:
+                                            wikipedia.output(u"%s: %s gives new interwiki %s"% (self.originPage.aslink(), page.aslink(True), linkedPage.aslink(True)))
 
         # These pages are no longer 'in progress'
         self.pending = []
@@ -1014,14 +1017,8 @@ class Subject(object):
                 # Determine whether we need permission to submit
                 ask = False
                 if removing and removing != [page]:   # Allow for special case of a self-pointing interwiki link
-                    # Temporary because of be/be-x-old issue - removing be: is ok if there is a be-x-old: link
-                    if len(removing) == 1 and removing[0].site() == wikipedia.getSite('be','wikipedia') and wikipedia.getSite('be-x-old','wikipedia') in new:
-                        pass
-                    elif len(removing) == 1 and removing[0].site() == wikipedia.getSite('be-x-old','wikipedia') and wikipedia.getSite('be','wikipedia') in new:
-                        pass                    
-                    else:
-                        self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)), createneed = False)
-                        ask = True
+                    self.problem('Found incorrect link to %s in %s'% (",".join([x.site().lang for x in removing]), page.aslink(True)), createneed = False)
+                    ask = True
                 if globalvar.force:
                     ask = False
                 if globalvar.confirm:
@@ -1490,6 +1487,8 @@ if __name__ == "__main__":
                 config.interwiki_graph = True
             elif arg == '-bracket':
                 globalvar.bracketonly = True
+            elif arg == '-localright':
+                globalvar.followinterwiki = False
             else:
                 generator = genFactory.handleArg(arg)
                 if generator:
