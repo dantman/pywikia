@@ -300,18 +300,18 @@ class CheckUsage(object):
  
 	def get_usage(self, image):
 		for dbname in self.databases:
-			for link in self.get_usage_db(dbname, image):
+			for link in self.get_usage_db(dbname, image, True):
 				yield self.sites[dbname], link
  
-	def get_usage_db(self, dbname, image):
+	def get_usage_db(self, dbname, image, shared = False):
 		#image = strip_image(image)
 		lang, family_name = self.sites[dbname]
 		family = self.known_families[family_name]
 		
-		if family.shared_image_repository(lang) == (lang, family_name):
-			left_join = 'WHERE';
-		else:
+		if family.shared_image_repository(lang) != (lang, family_name) and shared:
 			left_join = 'LEFT JOIN %s.image ON (il_to = img_name) WHERE img_name IS NULL AND' % dbname
+		else:
+			left_join = 'WHERE';
 		query = """SELECT page_namespace, page_title FROM %s.page, %s.imagelinks
 	%s page_id = il_from AND il_to = %%s"""
 		self.databases[dbname][1].execute(query % (dbname, dbname, left_join), 
@@ -324,23 +324,38 @@ class CheckUsage(object):
 				title = stripped_title
 			yield page_namespace, stripped_title, title
  
-	def get_usage_live(self, site, image):
+	def get_usage_live(self, site, image, shared = False):
 		self.connect_http()
 		
-		#image = strip_image(image)
-		# BUG: This is ugly.
+		# FIXME: Use continue
+		kwargs = {'action': 'query', 'titles': u'Image:' + image,
+			'prop': 'info'}
+		if site.live_version()[:2] > (1, 10):
+			kwargs['list'] = 'imageusage'
+			kwargs['iulimit'] = '500'
+		else:
+			kwargs['list'] = 'imagelinks'
+			kwargs['illimit'] = '500'
+		
 		res = self.http.query_api(site.hostname(), site.apipath(),
-			action = 'query', list = 'imageusage', 
-			prop = 'info', iulimit = '500', titles = 'Image:' + image)
-		if '-1' in res['query']['pages']:
-			for usage in res['query'].get('imageusage', ()):
-				title = usage['title'].replace(' ', '_')
-				namespace = usage['ns']
-				if namespace != 0:
-					stripped_title = strip_ns(title)
-				else:
-					stripped_title = title
-				yield namespace, stripped_title, title
+			**kwargs)
+		if '-1' not in res['query']['pages'] and shared:
+			return
+			
+		if site.live_version()[:2] > (1, 10):
+			usages = res['query'].get('imageusage', ())
+		else:
+			usages = res['query'].get('imagelinks', {}).itervalues()
+
+			
+		for usage in usages:
+			title = usage['title'].replace(' ', '_')
+			namespace = usage['ns']
+			if namespace != 0:
+				stripped_title = strip_ns(title)
+			else:
+				stripped_title = title
+			yield namespace, stripped_title, title
 
 	
 	def exists(self, site, image):

@@ -77,7 +77,7 @@ class Delinker(threadpool.Thread):
 	def __init__(self, pool, CommonsDelinker):
 		threadpool.Thread.__init__(self, pool)
 		self.CommonsDelinker = CommonsDelinker
-		self.summaries = {}
+		self.sql_layout = self.CommonsDelinker.config.get('sql_layout', 'new')
 		
 	def delink_image(self, image, usage, timestamp, admin, reason, replacement = None):
 		""" Performs the delink for image on usage. """
@@ -105,9 +105,15 @@ class Delinker(threadpool.Thread):
 							result = self.replace_image(image, site, title, summary, replacement)
 						finally:
 							self.CommonsDelinker.unset_edit(str(site), title)
+						
 						# Add to logging queue
-						self.CommonsDelinker.Loggers.append((timestamp, image, site.hostname(), 
-							page_namespace, page_title, result, replacement))
+						if self.sql_layout == 'new':
+							self.CommonsDelinker.Loggers.append((timestamp, image, 
+								site.lang, site.family.name, page_namespace, page_title,
+								result, replacement))
+						else:
+							self.CommonsDelinker.Loggers.append((timestamp, image, site.hostname(), 
+								page_namespace, page_title, result, replacement))
 			finally:
 				self.CommonsDelinker.unlock_site(site)
 		
@@ -426,10 +432,10 @@ class CheckUsage(threadpool.Thread):
 				count += 1
 		else:
 			#FIX!
-			usage_domains = {self.site.hostname(): list(
-				self.CheckUsage.get_usage_live(self.site.hostname(), 
-				image))}
-			count = len(usage_domains[self.site.hostname()])
+			usage_domains = {(self.site.lang, self.site.family.name): 
+				list(self.CheckUsage.get_usage_live(self.site, 
+					image))}
+			count = len(usage_domains[(self.site.lang, self.site.family.name)])
 			
 		output(u'%s %s used on %s pages' % (self, image, count))
 		
@@ -455,6 +461,7 @@ class Logger(threadpool.Thread):
 	def __init__(self, pool, CommonsDelinker):
 		threadpool.Thread.__init__(self, pool)
 		self.CommonsDelinker = CommonsDelinker
+		self.sql_layout = self.CommonsDelinker.config.get('sql_layout', 'new')
 		
 	def run(self):
 		self.connect()
@@ -465,9 +472,8 @@ class Logger(threadpool.Thread):
 		self.cursor = self.database.cursor()
 		
 		
-	def log_result(self, timestamp, image, domain, namespace, page, status = "ok", newimage = None):
+	def log_result_legacy(self, timestamp, image, domain, namespace, page, status = "ok", newimage = None):
 		# TODO: Make sqlite3 ready
-		# FIXME: domain is BAD, BAD, BAD!!!
 		
 		# The original delinker code cached log results,
 		# in order to limit the number of connections.
@@ -482,9 +488,20 @@ class Logger(threadpool.Thread):
 	namespace, status, newimg) VALUES
 	(%%s, %%s, %%s, %%s, %%s, %%s, %%s)""" % self.CommonsDelinker.config['log_table'],
 			(timestamp, image, domain, page, namespace, status, newimage))
-			
-			
 		self.database.commit()
+			
+	def log_result_new(self, timestamp, image, site_lang, site_family, 
+			page_namespace, page_title, status = 'ok', new_image = None):
+				
+		output(u'%s Logging %s for %s on %s' % (self, repr(status), image, page_title))
+
+		self.cursor.execute("""INSERT INTO %s (timestamp, image, site_lang, site_family,
+	page_namespace, page_title, status, new_image) VALUES
+	(%%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s)""" % self.CommonsDelinker.config['log_table'],
+			(timestamp, image, site_lang, site_family, page_namespace, page_title, 
+				status, new_image))
+		self.database.commit()
+			
 	def log_replacement(self, timestamp, old_image, new_image):
 		# TODO: Same as above
 		
@@ -500,7 +517,10 @@ class Logger(threadpool.Thread):
 			if len(args) == 3:
 				self.log_replacement(*args)
 			else:
-				self.log_result(*args)
+				if self.sql_layout == 'new':
+					self.log_result_new(*args)
+				else:
+					self.log_result_legacy(*args)
 		except:
 			# Something unexpected happened. Report and die.
 			output('An exception occured in %s' % self, False)

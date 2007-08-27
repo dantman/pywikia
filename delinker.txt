@@ -124,6 +124,7 @@ The replacer can insert a report on replaced images.
   }'': The configuration variables to be passed to the connect method of 
   the database engine. Please refer to your database api manual for a full
   overview of the options.
+* ''sql_layout = "new"'': Set to "legacy" for the old table layout.
 * ''log_table = "database.delinker"'': The database.table to log to.
 * ''replacer_table = "database.replacer"'': The database.table for the 
   replacer. Only required if the replacer is activated.
@@ -132,12 +133,13 @@ The replacer can insert a report on replaced images.
 <code lang="sql">
 CREATE TABLE delinker (
 	timestamp CHAR(14),
-	img VARBINARY(255),
-	wiki VARBINARY(255),
+	image VARBINARY(255),
+	site_lang VARBINARY(31),
+	site_family VARBINARY(255),
+	page_namespace INT,
 	page_title VARBINARY(255),
-	namespace INT,
 	status ENUM('ok', 'skipped', 'failed'),
-	newimg VARBINARY(255)
+	new_image VARBINARY(255)
 );
 
 CREATE TABLE replacer (
@@ -152,6 +154,20 @@ CREATE TABLE replacer (
 	
 	PRIMARY KEY(id),
 	INDEX(status)
+);
+</code>
+
+However, if you use CommonsDelinker with CommonsTicker, you will need to have
+a different table layout:
+<code lang="sql">
+CREATE TABLE delinker (
+	timestamp CHAR(14),
+	img VARBINARY(255),
+	wiki VARBINARY(255),
+	page_title VARBINARY(255),
+	namespace INT,
+	status ENUM('ok', 'skipped', 'failed'),
+	newimg VARBINARY(255)
 );
 </code>
   
