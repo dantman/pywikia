@@ -40,7 +40,18 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Wikibooks talk', self.namespaces[5]['_default']],
             'cs': u'Wikiknihy diskuse',
+            'it': u'Discussioni Wikibooks',
             'pt': u'Wikibooks Discussão',
+        }
+
+        self.namespaces[100] = {
+            '_default': u'Portal',
+            'it': u'Portale',
+        }
+        
+        self.namespaces[101] = {
+            '_default': u'Portal talk',
+            'it': u'Discussioni portale',
         }
 
         # Which languages have a special order for putting interlanguage links,
