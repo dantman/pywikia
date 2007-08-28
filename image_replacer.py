@@ -203,7 +203,7 @@ class Reporter(threadpool.Thread):
 		template = u'{{%s|new_image=%s|user=%s|comment=%s|not_ok=%s}}' % \
 			(self.config['replacer_report_template'],
 			new_image, user, comment, 
-			self.config.get('replacer_report_seperator', u', ').join(not_ok))
+			self.config.get('replacer_report_seperator', u', ').join(not_ok_items))
 		page = wikipedia.Page(self.site, u'Image:' + old_image)
 		text = page.get()
 		
