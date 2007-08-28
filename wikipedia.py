@@ -765,12 +765,14 @@ class Page(object):
         except (NoPage, IsRedirectPage, SectionError):
             return True
 
-        if self.editRestriction:
-            self.site().forceLogin(sysop=True)
-        else:
-            self.site().forceLogin()
-
-        username = self.site()._loggedInAs
+        try:
+            if self.editRestriction:
+                self.site().forceLogin(sysop=True)
+            else:
+                self.site().forceLogin()
+            username = self.site()._loggedInAs
+        except NoUsername:
+            username = None
 
         for template in templates:
             if template[0] == 'Nobots':
