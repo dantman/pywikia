@@ -90,6 +90,7 @@ class Family(family.Family):
             'tr': u'Vikipedi',
             'uk': u'Вікіпедія',
             'ur': u'منصوبہ',
+            'uz': u'Vikipediya',
             'vo': u'Vükiped',
             'yi': u'װיקיפּעדיע',
         }
@@ -202,14 +203,14 @@ class Family(family.Family):
             'ta': [u'Wikipedia பேச்சு', u'விக்கிபீடியா பேச்சு'],
             'te': u'వికీపీడియా చర్చ',
             'tg': u'Баҳси Википедиа',
-            'th': u'คุยเรื่อง วิกิพีเดีย',
+            'th': u'คุยเรื่องวิกิพีเดีย',
             'tr': u'Vikipedi tartışma',
             'tt': u'Wikipedia bäxäse',
             'ty': u'Discussion Wikipedia',
             'udm': u'Wikipedia сярысь вераськон',
             'uk': u'Обговорення Вікіпедії',
             'ur': u'تبادلۂ خیال منصوبہ',
-            'uz': u'Wikipedia munozarasi',
+            'uz': u'Vikipediya munozarasi',
             'vec':u'Discussion Wikipedia',
             'vi': u'Thảo luận Wikipedia',
             'vls': u'Discuusje Wikipedia',
@@ -312,6 +313,7 @@ class Family(family.Family):
             'it': u'Progetto',
             'lmo': u'Purtaal',
             'pl': u'Wikiprojekt',
+            'pt': u'Anexo',
         }
 
         self.namespaces[103] = {
@@ -324,6 +326,7 @@ class Family(family.Family):
             'it': u'Discussioni progetto',
             'lmo': u'Descüssiun Purtaal',
             'pl': u'Dyskusja Wikiprojektu',
+            'pt': u'Anexo Discussão',
         }
 
         self.namespaces[104] = {
