@@ -3090,13 +3090,18 @@ def Family(fam = None, fatal = True):
     return myfamily.Family()
 
 class Site(object):
-    def __init__(self, code, fam=None, user=None):
-        """Constructor takes three arguments:
+    def __init__(self, code, fam=None, user=None, persistent_http = None):
+        """Constructor takes four arguments:
 
         code    language code for Site
         fam     Wikimedia family (optional: defaults to configured).
                 Can either be a string or a Family object.
-        user    User to use (optional: defaults to configured)"""
+        user    User to use (optional: defaults to configured)
+        persistent_http Use a persistent http connection. An http connection
+                has to be established only once, making stuff a whole lot
+                faster. Do NOT EVER use this if you share Site objects 
+                across threads without proper locking.
+        """
 
         self.lang = code.lower()
         if isinstance(fam, basestring) or fam is None:
@@ -3125,6 +3130,15 @@ class Site(object):
         for language in self.languages():
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
+                
+        self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
+        if persistent_http:
+            if self.protocol() == 'http':
+                self.conn = httplib.HTTPConnection(self.hostname())
+            elif self.protocol() == 'https':
+                self.conn = httplib.HTTPSConnection(self.hostname())
+                
+                
         self.sandboxpage = Page(self,self.family.sandboxpage(code))
 
     def urlEncode(self, query):
@@ -3170,28 +3184,41 @@ class Site(object):
 
         # TODO: add the authenticate stuff here
 
-        # Encode all of this into a HTTP request
-        if self.protocol() == 'http':
-            conn = httplib.HTTPConnection(self.hostname())
-        elif self.protocol() == 'https':
-            conn = httplib.HTTPSConnection(self.hostname())
-        # otherwise, it will crash, as other protocols are not supported
-
+        if self.persistent_http:
+            conn = self.conn
+        else:
+            # Encode all of this into a HTTP request
+            if self.protocol() == 'http':
+                conn = httplib.HTTPConnection(self.hostname())
+            elif self.protocol() == 'https':
+                conn = httplib.HTTPSConnection(self.hostname())
+            # otherwise, it will crash, as other protocols are not supported
+    
         conn.putrequest('POST', address)
         conn.putheader('Content-Length', str(len(data)))
         conn.putheader('Content-type', contentType)
         conn.putheader('User-agent', useragent)
         if useCookie and self.cookies(sysop = sysop):
             conn.putheader('Cookie', self.cookies(sysop = sysop))
+        if self.persistent_http:
+            conn.putheader('Connection', 'Keep-Alive')
         conn.endheaders()
         conn.send(data)
 
         # Prepare the return values
         # Note that this can raise network exceptions which are not
         # caught here.
-        response = conn.getresponse()
+        try:
+            response = conn.getresponse()
+        except httplib.BadStatusLine:
+            # Blub.
+            conn.close()
+            conn.connect()
+            return self.postData(address, data, contentType, sysop, useCookie)
         data = response.read().decode(self.encoding())
-        conn.close()
+        response.close()
+        if not self.persistent_http:
+            conn.close()
         return response, data
 
     def forceLogin(self, sysop = False):
@@ -3278,59 +3305,92 @@ class Site(object):
 
            Returns the HTML text of the page converted to unicode.
         """
-        if self.hostname() in config.authenticate.keys():
-            uo = authenticateURLopener
-        else:
-            uo = MyURLopener()
-            if self.cookies(sysop = sysop):
-                uo.addheader('Cookie', self.cookies(sysop = sysop))
+        if self.persistent_http and not data:
+            self.conn.putrequest('GET', path)
+            self.conn.putheader('User-agent', useragent)
+            self.conn.putheader('Cookie', self.cookies(sysop = sysop))
+            self.conn.putheader('Connection', 'Keep-Alive')
             if compress:
-                uo.addheader('Accept-encoding', 'gzip')
-
-        url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
-        data = self.urlEncode(data)
-
-        # Try to retrieve the page until it was successfully loaded (just in
-        # case the server is down or overloaded).
-        # Wait for retry_idle_time minutes (growing!) between retries.
-        retry_idle_time = 1
-        retrieved = False
-        while not retrieved:
+                    self.conn.putheader('Accept-encoding', 'gzip')
+            self.conn.endheaders()
+            
+            # Prepare the return values
+            # Note that this can raise network exceptions which are not
+            # caught here.
             try:
-                if self.hostname() in config.authenticate.keys():
-                    if compress:
-                        request = urllib2.Request(url, data)
-                        request.add_header('Accept-encoding', 'gzip')
-                        opener = urllib2.build_opener()
-                        f = opener.open(request)
+                response = self.conn.getresponse()
+            except httplib.BadStatusLine:
+                # Blub.
+                self.conn.close()
+                self.conn.connect()
+                return self.getUrl(path, retry, sysop, data, compress)
+            
+            text = response.read()            
+            contentType = response.getheader('Content-Type')
+            contentEncoding = response.getheader('Content-Encoding')
+        else:
+            if self.hostname() in config.authenticate.keys():
+                uo = authenticateURLopener
+            else:
+                uo = MyURLopener()
+                if self.cookies(sysop = sysop):
+                    uo.addheader('Cookie', self.cookies(sysop = sysop))
+                if compress:
+                    uo.addheader('Accept-encoding', 'gzip')
+    
+            url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
+            data = self.urlEncode(data)
+    
+            # Try to retrieve the page until it was successfully loaded (just in
+            # case the server is down or overloaded).
+            # Wait for retry_idle_time minutes (growing!) between retries.
+            retry_idle_time = 1
+            retrieved = False
+            while not retrieved:
+                try:
+                    if self.hostname() in config.authenticate.keys():
+                        if compress:
+                            request = urllib2.Request(url, data)
+                            request.add_header('Accept-encoding', 'gzip')
+                            opener = urllib2.build_opener()
+                            f = opener.open(request)
+                        else:
+                            f = urllib2.urlopen(url, data)
                     else:
-                        f = urllib2.urlopen(url, data)
-                else:
-                    f = uo.open(url, data)
-                retrieved = True
-            except KeyboardInterrupt:
-                raise
-            except Exception, e:
-                if retry:
-                    # We assume that the server is down. Wait some time, then try again.
-                    output(u"%s" % e)
-                    output(u"WARNING: Could not open '%s://%s%s'. Maybe the server or your connection is down. Retrying in %i minutes..." % (self.protocol(), self.hostname(), path, retry_idle_time))
-                    time.sleep(retry_idle_time * 60)
-                    # Next time wait longer, but not longer than half an hour
-                    retry_idle_time *= 2
-                    if retry_idle_time > 30:
-                        retry_idle_time = 30
-                else:
+                        f = uo.open(url, data)
+                    retrieved = True
+                except KeyboardInterrupt:
                     raise
-        text = f.read()
-        if compress and f.headers.get('Content-Encoding') == 'gzip':
-            import StringIO, gzip
-            compressedstream = StringIO.StringIO(text)
+                except Exception, e:
+                    if retry:
+                        # We assume that the server is down. Wait some time, then try again.
+                        output(u"%s" % e)
+                        output(u"WARNING: Could not open '%s://%s%s'. Maybe the server or your connection is down. Retrying in %i minutes..." % (self.protocol(), self.hostname(), path, retry_idle_time))
+                        time.sleep(retry_idle_time * 60)
+                        # Next time wait longer, but not longer than half an hour
+                        retry_idle_time *= 2
+                        if retry_idle_time > 30:
+                            retry_idle_time = 30
+                    else:
+                        raise
+            text = f.read()
+    
+            # Find charset in the content-type meta tag
+            contentType = f.info()['Content-Type']
+            contentEncoding = f.headers.get('Content-Encoding')
+            
+        if compress and contentEncoding == 'gzip':
+            # Use cStringIO if available
+            # TODO: rewrite gzip.py such that it supports unseekable fileobjects.
+            try:
+                from cStringIO import StringIO
+            except ImportError:
+                from StringIO import StringIO
+            import gzip
+            compressedstream = StringIO(text)
             gzipper = gzip.GzipFile(fileobj=compressedstream)
             text = gzipper.read()
-
-        # Find charset in the content-type meta tag
-        contentType = f.info()['Content-Type']
+                
         R = re.compile('charset=([^\'\";]+)')
         m = R.search(contentType)
         if m:
@@ -4158,14 +4218,14 @@ Maybe the server is down. Retrying in %i minutes..."""
 _sites = {}
 _namespaceCache = {}
 
-def getSite(code = None, fam = None, user=None):
+def getSite(code = None, fam = None, user=None, persistent_http=None):
     if code == None:
         code = default_code
     if fam == None:
         fam = default_family
-    key = '%s:%s'%(fam,code)
+    key = '%s:%s:%s:%s'%(fam,code,user,persistent_http)
     if not _sites.has_key(key):
-        _sites[key] = Site(code=code, fam=fam, user=user)
+        _sites[key] = Site(code=code, fam=fam, user=user, persistent_http=persistent_http)
     return _sites[key]
 
 def setSite(site):
