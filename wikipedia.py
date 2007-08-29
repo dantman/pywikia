@@ -1030,6 +1030,14 @@ class Page(object):
         """Asynchronous version of put (takes the same arguments), which
            places pages on a queue to be saved by a daemon thread.
         """
+        try:
+            page_put_queue.mutex.acquire()
+            try:
+                _putthread.start()
+            except AssertionError:
+                pass
+        finally:
+            page_put_queue.mutex.release()
         page_put_queue.put((self, newtext, comment, watchArticle, minorEdit, force))
 
     def put(self, newtext, comment=None, watchArticle = None, minorEdit = True, force=False):
@@ -4678,7 +4686,8 @@ _putthread = threading.Thread(target=async_put)
 # identification for debugging purposes
 _putthread.setName('Put-Thread')
 _putthread.setDaemon(True)
-_putthread.start()
+## Don't start the queue if it is not necessary.
+#_putthread.start()
 
 def stopme():
     """This should be run when a bot does not interact with the Wiki, or
