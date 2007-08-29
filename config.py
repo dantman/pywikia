@@ -317,6 +317,13 @@ copyright_check_in_source_google = False
 copyright_check_in_source_yahoo = False
 copyright_check_in_source_msn = False
 
+# Web pages may content a Wikipedia text without 'Wikipedia' word but with
+# typical '[edit]' tag result of copy & paste procedure. You can want no
+# report for this kind of URLs, even if they are copyright violation.
+# However, when enabled these URLs are logged in a file.
+
+copyright_check_in_source_section_names = False
+
 # Limit number of queries for page.
 copyright_max_query_for_page = 25
 

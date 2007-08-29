@@ -195,6 +195,14 @@ wikipedia_names = {
     'zh-yue': u'維基百科',
 }
 
+editsection_names = {
+    'en': u'\[edit\]',
+    'fr': u'\[modifier\]',
+    'de': u'\[Bearbeiten\]',
+    'es,pt': u'\[editar\]',
+    'it': u'\[modifica\]',
+}
+
 sections_to_skip = {
     'en':['References', 'Further reading', 'Citations', 'External links'],
     'it':['Bibliografia', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni principali'],
@@ -364,6 +372,7 @@ def join_family_data(reString, namespace):
 
 reImageC = re.compile('\[\[' + join_family_data('Image', 6) + ':.*?\]\]', re.I)
 reWikipediaC = re.compile('(' + '|'.join(wikipedia_names.values()) + ')', re.I)
+reSectionNamesC = re.compile('(' + '|'.join(editsection_names.values()) + ')')
 
 def cleanwikicode(text):
     if not text:
@@ -545,9 +554,11 @@ class WebPage(object):
             if err.code >= 400:
                 raise NoWebPage
             return None
-            #except urllib2.URLError:
+        except urllib2.URLError, arg:
+            print "URL error: %s / %s" % (url, arg)
+            return None
         except Exception, err:
-                print "ERROR: %s" % (err)
+            print "ERROR: %s" % (err)
 
         self._lastmodified = self._urldata.info().getdate('Last-Modified')
         self._length = self._urldata.info().getheader('Content-Length')
@@ -580,8 +591,18 @@ class WebPage(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             self._contents = self._urldata.read()
-            return self._contents
-        return None
+
+        return self._contents
+
+    def check_regexp(self, reC, text, filename = None):
+        m = reC.search(text)
+        if m:
+            global excl_list, positive_source_seen
+            excl_list += [self._url]
+            positive_source_seen.add(self._url)
+            if filename:
+                write_log("%s (%s)\n" % (self._url, m.group()), filename)
+            return True
 
     def check_in_source(self):
         """
@@ -589,7 +610,7 @@ class WebPage(object):
         Wikipedia. This function avoid also errors in search results that can occurs
         either with Google and Yahoo! service.
         """
-        global excl_list, source_seen, positive_source_seen
+        global source_seen
 
         if not hasattr(self, '_urldata'):
             return False
@@ -600,7 +621,10 @@ class WebPage(object):
         if self._url in source_seen:
             return False
 
-        text = self.get()
+        try:
+            text = self.get()
+        except URL_exclusion:
+            return False
 
         # Character encoding conversion if 'Content-Type' field has
         # charset attribute set to UTF-8.
@@ -613,14 +637,13 @@ class WebPage(object):
                 if 'text/html' in self._content_type and (re.search("(?is)<meta\s.*?charset\s*=\s*[\"\']*\s*UTF-8.*?>", text) or re.search("(?is)<\?.*?encoding\s*=\s*[\"\']*\s*UTF-8.*?\?>", text)):
                     text = text.decode("utf-8", 'replace')
 
-            m = reWikipediaC.search(text)
-            if m:
-                excl_list += [self._url]
-                write_log("%s (%s)\n" % (self._url, m.group()), "copyright/sites_with_'wikipedia'.txt")
-                positive_source_seen.add(self._url)
+            if config.copyright_check_in_source_section_names:
+                if self.check_regexp(reSectionNamesC, text, "copyright/sites_with_'[edit]'.txt"):
+                    return True
+
+            if self.check_regexp(reWikipediaC, text, "copyright/sites_with_'wikipedia'.txt"):
                 return True
-            else:
-                write_log(self._url + '\n', "copyright/sites_without_'wikipedia'.txt")
+
         source_seen.add(self._url)
         return False
 
@@ -862,7 +885,9 @@ def main():
     # default to [] which means all namespaces will be processed
     namespaces = []
     #
-    #repeat = False
+    repeat = False
+    #
+    text = None
 
     firstPageTitle = None
     # This factory is responsible for processing command line arguments
@@ -873,12 +898,10 @@ def main():
 
     config.copyright_yahoo = check_config(config.copyright_yahoo, config.yahoo_appid, "Yahoo AppID")
     config.copyright_google = check_config(config.copyright_google, config.google_key, "Google Web API license key")
-    config.copyright_msn = check_config(config.copyright_msn, config.msn_appid, "Live Search AppID")    
+    config.copyright_msn = check_config(config.copyright_msn, config.msn_appid, "Live Search AppID")
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
-        #if arg.startswith('-repeat'):
-        #    repeat = True
         if arg == '-y':
             config.copyright_yahoo = True
         elif arg == '-g':
@@ -900,6 +923,9 @@ def main():
         elif arg.startswith('-skipquery'):
             if len(arg) >= 11:
                 config.copyright_skip_query = int(arg[11:])
+        elif arg.startswith('-text'):
+            if len(arg) >= 6:
+              text = arg[6:]
         elif arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
@@ -914,6 +940,13 @@ def main():
             namespaces.append(int(arg[11:]))
         elif arg.startswith('-forceupdate'):
             load_pages(force_update = True)
+        elif arg == '-repeat':
+            repeat = True
+        elif arg.startswith('-new'):
+            if len(arg) >=5:
+              gen = pagegenerators.NewpagesPageGenerator(number=int(arg[5:]), repeat = repeat)
+            else:
+              gen = pagegenerators.NewpagesPageGenerator(number=60, repeat = repeat)
         else:
             generator = genFactory.handleArg(arg)
             if generator:
@@ -926,9 +959,15 @@ def main():
     if ids:
         checks_by_ids(ids)
 
-    if not gen and not ids:
+    if not gen and not ids and not text:
         # syntax error, show help text from the top of this file
         wikipedia.output(__doc__, 'utf-8')
+        
+    if text:
+        output = query(lines = text.splitlines())
+        if output:
+            wikipedia.output(output)
+
     if not gen:
         wikipedia.stopme()
         sys.exit()
