@@ -396,7 +396,7 @@ class CheckUsage(threadpool.Thread):
 				http_callback = wait_callback, no_db = True)
 		
 		
-	def check_usage(self, image, timestamp, admin, reason, replacement):
+	def check_usage(self, image, timestamp, admin, reason, replacement, namespace = None):
 		""" Check whether this image needs to be delinked. """
 		
 		# Check whether the image still is deleted on Commons.
@@ -420,7 +420,7 @@ class CheckUsage(threadpool.Thread):
 		
 		
 		if self.CommonsDelinker.config['global']:
-			usage = self.CheckUsage.get_usage(image)
+			usage = self.CheckUsage.get_usage(image, namespace = namespace)
 			usage_domains = {}
 			
 			count = 0
@@ -434,12 +434,15 @@ class CheckUsage(threadpool.Thread):
 			#FIX!
 			usage_domains = {(self.site.lang, self.site.family.name): 
 				list(self.CheckUsage.get_usage_live(self.site, 
-					image))}
+					image, namespace = namespace))}
 			count = len(usage_domains[(self.site.lang, self.site.family.name)])
 			
 		output(u'%s %s used on %s pages' % (self, image, count))
 		
 		if count:
+			if count > self.CommonsDelinker.config.get('template_threshold', sys.maxint):
+				output('%s Only delinking %s from template namespace' % (self, image))
+				return check_usage(image, timestamp, admin, reason, replacement, 10)
 			# Pass the usage to the Delinker pool along with other arguments
 			self.CommonsDelinker.Delinkers.append((image, usage_domains, 
 				timestamp, admin, reason, replacement))

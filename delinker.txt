@@ -95,6 +95,8 @@ Those variables only need to be set if the delinker is enabled.
 * ''exclude_string = "no-delink"'': If this string is included in the deletion
   summary, the file is not delinked.
 * ''summary_cache = 3600'': Time before on-wiki settings are updated.
+* ''template_threshold = 1000'': If more an image is used more often than this
+  value, only delink from the template namespace.
 
 === Replacer settings ===
 Those variables only need to be set if the replacer is enabled.
