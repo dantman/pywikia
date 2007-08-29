@@ -96,18 +96,27 @@ class Replacer(object):
 		else:
 			username = None
 		
+		remove_from_list = []
 		for replacement in replacements:
 			res = self.examine_revision_history(
 				revisions, replacement, username)
 			if res and self.allowed_replacement(replacement) and \
 					replacement.group(1) != replacement.group(2):
 				self.cursor.execute(insert, res)
-				text = text.replace(replacement.group(0), '')
+				remove_from_list.append(replacement.group(0))
 				output('Replacing %s by %s: %s' % replacement.groups())
 		self.database.commit()
 		
-		if text != old_text and self.config.get('clean_list', False):
-			page.put(text.strip(), comment = 'Removing images being processed')
+		if remove_from_list and self.config.get('clean_list', False):
+			while True:
+				try:
+					for remove in remove_from_list:
+						text = text.replace(remove, u'')
+					page.put(text.strip(), comment = 'Removing images being processed')
+					return
+				except wikipedia.EditConflict:
+					text = page.get()
+		
 		
 	def examine_revision_history(self, revisions, replacement, username):
 		if replacement.group(0) in revisions[0][2]:
@@ -194,9 +203,10 @@ class Reporter(threadpool.Thread):
 			# Threadsafety?
 			site = wikipedia.getSite(family(wiki))
 			if unicode(site) == unicode(self.site):
-				title = u'%s:%s' % (site.namespace(namespace), page_title)
+				if (namespace, page_title) != (6, old_image):
+					title = u'[[:%s:%s]]' % (site.namespace(namespace), page_title)
 			else:
-				title = u'%s:%s:%s' % (site_prefix(site),
+				title = u'[[:%s:%s:%s]]' % (site_prefix(site),
 					site.namespace(namespace), page_title)
 			not_ok_items.append(title)
 		
