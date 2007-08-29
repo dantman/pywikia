@@ -24,7 +24,7 @@ class Family(family.Family):
         
         # Override defaults
         self.namespaces[2]['pl'] = u'Wikireporter'
-        self.namespaces[2]['pl'] = u'Dyskusja Wikireportera'
+        self.namespaces[3]['pl'] = u'Dyskusja Wikireportera'
 
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
@@ -48,7 +48,7 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Wikinews talk', self.namespaces[5]['_default']],
             'ar': u'نقاش ويكي الأخبار',
-            'bg': u'Уикиновини',
+            'bg': u'Уикиновини беседа',
             'bs': u'Razgovor s Wikivijestima',
             'ca': u'Viquinotícies Discussió',
             'de': u'Wikinews Diskussion',
@@ -65,22 +65,28 @@ class Family(family.Family):
             'ru': u'Обсуждение ВикиНовостей',
             'sr': u'Разговор о Викивестима',
             'sv': u'Wikinewsdiskussion',
+            'ta': u'Wikinews பேச்ச',
             'th': u'คุยเรื่องวิกิข่าว',
             'uk': u'Обговорення ВікіНовини',
         }   
         
         self.namespaces[100] = {
             '_default': u'Portal',
+            'he': u'פורטל',
             'it': u'Portale',
-            'fr': u'Wikinytt',
+            'ja': u'ポータル',
+            'zh': u'频道',
         }   
 
         self.namespaces[101] = {
             '_default': u'Portal talk',
+            'he': u'שיחת פורטל',
             'it': u'Discussioni portale',
-            'fr': u'Wikinytt',
+            'ja': u'ポータル‐ノート',
+            'de': u'Portal Diskussion',
             'pl': u'Dyskusja portalu',
             'pt': u'Portal Discussão',
+            'zh': u'频道 talk',
         }   
 
         self.namespaces[102] = {
@@ -105,6 +111,14 @@ class Family(family.Family):
 
         self.namespaces[107] = {
             'fr': u'Discussion Dossier',
+        }   
+
+        self.namespaces[108] = {
+            'ja': u'短信',
+        }   
+
+        self.namespaces[109] = {
+            'ja': u'短信‐ノート',
         }   
 
 
