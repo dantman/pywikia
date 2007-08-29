@@ -298,12 +298,12 @@ class CheckUsage(object):
 				max_retries = self.http_max_retries, callback = self.http_callback)
 
  
-	def get_usage(self, image):
+	def get_usage(self, image, namespace = None):
 		for dbname in self.databases:
-			for link in self.get_usage_db(dbname, image, True):
+			for link in self.get_usage_db(dbname, image, True, namespace):
 				yield self.sites[dbname], link
  
-	def get_usage_db(self, dbname, image, shared = False):
+	def get_usage_db(self, dbname, image, shared = False, namespace = None):
 		#image = strip_image(image)
 		lang, family_name = self.sites[dbname]
 		family = self.known_families[family_name]
@@ -314,8 +314,13 @@ class CheckUsage(object):
 			left_join = 'WHERE';
 		query = """SELECT page_namespace, page_title FROM %s.page, %s.imagelinks
 	%s page_id = il_from AND il_to = %%s"""
-		self.databases[dbname][1].execute(query % (dbname, dbname, left_join), 
-			(image.encode('utf-8', 'ignore'), ))
+		query = query % (dbname, dbname, left_join)
+		if not namespace is None:
+			self.databases[dbname][1].execute(query + ' AND page_namespace = %s', 
+				(image.encode('utf-8', 'ignore'), namespace))
+		else:
+			self.databases[dbname][1].execute(query % (dbname, dbname, left_join), 
+				(image.encode('utf-8', 'ignore'), ))
 		for page_namespace, page_title in self.databases[dbname][1]:
 			stripped_title = page_title.decode('utf-8', 'ignore')
 			if page_namespace != 0:
@@ -324,7 +329,7 @@ class CheckUsage(object):
 				title = stripped_title
 			yield page_namespace, stripped_title, title
  
-	def get_usage_live(self, site, image, shared = False):
+	def get_usage_live(self, site, image, shared = False, namespace = None):
 		self.connect_http()
 		
 		# FIXME: Use continue
@@ -333,9 +338,13 @@ class CheckUsage(object):
 		if site.live_version()[:2] > (1, 10):
 			kwargs['list'] = 'imageusage'
 			kwargs['iulimit'] = '500'
+			if not namespace is None:
+				kwargs['iunamespace'] = str(namespace)
 		else:
 			kwargs['list'] = 'imagelinks'
 			kwargs['illimit'] = '500'
+			if not namespace is None:
+				kwargs['ilnamespace'] = str(namespace)
 		
 		res = self.http.query_api(site.hostname(), site.apipath(),
 			**kwargs)
