@@ -241,4 +241,6 @@ if __name__ == '__main__':
 		if type(e) not in (SystemExit, KeyboardInterrupt):
 			output('A critical error has occured! Aborting!')
 			print >>sys.stderr, cgitb.text(sys.exc_info())
+	r.reporters.exit()
+	output(u'Stopping ImageReplacer')
 	wikipedia.stopme()

@@ -608,7 +608,7 @@ class Page(object):
                 # older MediaWiki versions don't have the 'nocreatetitle' message.
                 elif self.site().has_mediawiki_message('nocreatetitle') and text.find(self.site().mediawiki_message('nocreatetitle')) != -1:
                     raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
-                elif text.find('var wgPageName = "Special:Badtitle";'):
+                elif text.find('var wgPageName = "Special:Badtitle";') != -1:
                     raise BadTitle('BadTitle: %s' % self)
                 else:
                     output( unicode(text) )
