@@ -2,11 +2,12 @@
 # -*- coding: utf-8  -*-
 """
 This script keeps track of image deletions and delinks removed files 
-from (any) wiki. Usage on protected pages or pages containing blacklisted
-external links cannot be processed.
+from (any) wiki. Usage
+on protected pages or pages containing blacklisted external links cannot
+be processed.
 
 This script is run by [[commons:User:Siebrand]] on the toolserver. It should
-not be run on Commons by other users without prior contact.
+not be run by other users without prior contact.
 
 Although the classes are called CommonsDelinker and Delinker, it is in fact
 a general delinker/replacer, also suitable for local use.
@@ -28,7 +29,6 @@ __version__ = '$Id$'
 # TODO:
 # * Don't replace within <nowiki /> tags
 # * Make as many config settings site dependend
-# * Implement sqlite3 mode
 # BUGS:
 # * There is a problem with images in the es.wikisource project namespace.
 #   The exact problem is described somewhere in Bryan's IRC logs, but it is
@@ -69,10 +69,7 @@ def connect_database():
 		kwargs['callback'] = wait_callback
 		
 		return mysql_autoconnection.connect(**kwargs)
-	elif engine == 'sqlite3':
-		import sqlite3
-		return sqlite3.connect(**kwargs)		
-	
+	# TODO: Add support for sqlite3
 	raise RuntimeError('Unsupported database engine %s' % engine)
 
 class Delinker(threadpool.Thread):
@@ -309,10 +306,6 @@ class SummaryCache(object):
 						self.CommonsDelinker.config['summary_cache']:
 					# Return cached result
 					return self.summaries[type][key][0]
-			else:
-				self.summaries[type][key] = \
-					(self.CommonsDelinker.config['default_settings'].get(type, ''), 
-					time.time())
 					
 			output(u'%s Fetching new summary for %s' % (self, site))
 			
@@ -343,9 +336,8 @@ class SummaryCache(object):
 					'wikisource', 'wikinews', 'wikiversity'):
 				newsite = self.CommonsDelinker.get_site(site.lang, 
 					wikipedia.Family('wikipedia'))
-				return self.get(newsite, type, key)
-				
-		return self.get(site, type, key)
+				return self.get(newsite, type, key = key)
+		return self.CommonsDelinker.config['default_settings'].get(type, '')
 				
 	def check_user_page(self, site):
 		"Check whether a userpage exists. Only used for CommonsDelinker."
@@ -361,8 +353,7 @@ class SummaryCache(object):
 			ftxt = f.read()
 			f.close()
 			if not '#' + str(site) in ftxt:
-				# BUG: Username does not exist
-				username = config.usernames[site.family.name][site.lang]
+				username = config.usernames[site.family.name][site.lang] 
 				
 				userpage = wikipedia.Page(site, 'User:' + username)
 				# Removed check for page existence. If it is not in our 
@@ -409,6 +400,10 @@ class CheckUsage(threadpool.Thread):
 		""" Check whether this image needs to be delinked. """
 		
 		# Check whether the image still is deleted on Commons.
+		# BUG: This also returns true for images with a page, but
+		# without the image itself. Can be fixed by querying query.php
+		# instead of api.php. Also should this be made as an exits() 
+		# method of checkusage.CheckUsage?
 		if self.site.shared_image_repository() != (None, None):
 			shared_image_repository = self.CommonsDelinker.get_site(*self.site.shared_image_repository())
 			try:
@@ -532,9 +527,6 @@ class Logger(threadpool.Thread):
 			traceback.print_exc(file = sys.stderr)
 			self.exit()
 			self.CommonsDelinker.thread_died()
-			
-	def format_query(self, query):
-		
 			
 class CommonsDelinker(object):
 	def __init__(self):

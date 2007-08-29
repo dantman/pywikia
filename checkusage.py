@@ -3,7 +3,7 @@
 """
 This module provides a way for users of the Wikimedia toolserver to check the 
 use of images from Commons on other Wikimedia wikis. It supports both running
-checkusage against the database and but also against the live wikis. It is very 
+checkusage against the database and against the live wikis. It is very 
 efficient as it only creates one HTTP connection and one MySQL connection 
 during its life time. It is not suitable for multithreading!
  
@@ -12,6 +12,23 @@ wikis that should be checked, an option to use it only live and the parameters
 to connect to the MySQL database. The top wikis in size will be checked. The 
 class provides multiple methods:
  
+get_usage(image)
+This method will return a generator object that generates the usage of the 
+image, returned as the following tuple: (page_namespace, page_title,
+full_title). page_namespace is the numeric namespace, page_title the page title
+without namespace, full_title the page title including localized namespace.
+ 
+get_usage_db(dbname, image), get_usage_live(domain, image)
+Those methods allow querying a specific wiki, respectively against the database
+and against the live wiki. They accept respectively the database name and the
+domain name. The return a generator which generates the same results as 
+get_usage().
+ 
+get_usage_multi(images)
+Calls get_usage for each image and returns a dictionary with usages.
+ 
+get_replag(dbname)
+Returns the time in seconds since the latest known edit of dbname.
 """
 #
 # (C) Bryan Tong Minh, 2007
