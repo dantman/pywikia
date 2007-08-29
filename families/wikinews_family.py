@@ -22,16 +22,92 @@ class Family(family.Family):
         for lang in self.knownlanguages:
             self.langs[lang] = lang+'.wikinews.org'
         
+        # Override defaults
+        self.namespaces[2]['pl'] = u'Wikireporter'
+        self.namespaces[2]['pl'] = u'Dyskusja Wikireportera'
+
         # Most namespaces are inherited from family.Family.
         self.namespaces[4] = {
             '_default': [u'Wikinews', self.namespaces[4]['_default']],
+            'ar': u'ويكي الأخبار',
+            'bg': u'Уикиновини',
+            'bs': u'Wikivijesti',
+            'ca': u'Viquinotícies',
+            'es': u'Wikinoticias',
+            'he': u'ויקיחדשות',
+            'it': u'Wikinotizie',
+            'ja': u'ウィキニュース',
+            'no': u'Wikinytt',
             'pt': u'Wikinotícias',
+            'ro': u'Wikiştiri',
+            'ru': u'ВикиНовости',
+            'sr': u'Викивести',
+            'th': u'วิกิข่าว',
+            'uk': u'ВікіНовини',
         }
         self.namespaces[5] = {
             '_default': [u'Wikinews talk', self.namespaces[5]['_default']],
-            'pt': u'Wikinotícias_Discussão',
+            'ar': u'نقاش ويكي الأخبار',
+            'bg': u'Уикиновини',
+            'bs': u'Razgovor s Wikivijestima',
+            'ca': u'Viquinotícies Discussió',
+            'de': u'Wikinews Diskussion',
+            'es': u'Wikinoticias Discusión',
+            'fr': u'Discussion Wikinews',
+            'he': u'שיחת ויקיחדשות',
+            'it': u'Discussioni Wikinotizie',
+            'ja': u'ウィキニュース‐ノート',
+            'nl': u'Overleg Wikinews',
+            'no': u'Wikinytt-diskusjon',
+            'pl': u'Dyskusja Wikinews',
+            'pt': u'Wikinotícias Discussão',
+            'ro': u'Discuţie Wikiştiri',
+            'ru': u'Обсуждение ВикиНовостей',
+            'sr': u'Разговор о Викивестима',
+            'sv': u'Wikinewsdiskussion',
+            'th': u'คุยเรื่องวิกิข่าว',
+            'uk': u'Обговорення ВікіНовини',
         }   
         
+        self.namespaces[100] = {
+            '_default': u'Portal',
+            'it': u'Portale',
+            'fr': u'Wikinytt',
+        }   
+
+        self.namespaces[101] = {
+            '_default': u'Portal talk',
+            'it': u'Discussioni portale',
+            'fr': u'Wikinytt',
+            'pl': u'Dyskusja portalu',
+            'pt': u'Portal Discussão',
+        }   
+
+        self.namespaces[102] = {
+            'fr': u'Transwiki',
+        }   
+
+        self.namespaces[103] = {
+            'fr': u'Discussion Transwiki',
+        }   
+
+        self.namespaces[104] = {
+            'fr': u'Page',
+        }   
+
+        self.namespaces[105] = {
+            'fr': u'Discussion Page',
+        }   
+
+        self.namespaces[106] = {
+            'fr': u'Dossier',
+        }   
+
+        self.namespaces[107] = {
+            'fr': u'Discussion Dossier',
+        }   
+
+
         # On most Wikipedias page names must start with a capital letter, but some
         # languages don't use this.
             
