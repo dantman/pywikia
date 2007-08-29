@@ -359,6 +359,12 @@ copyright_show_length = True
 
 copyright_economize_query = True
 
+############## HTTP SETTINGS ##############
+# Use a persistent http connection. An http connection has to be established 
+# only once per site object, making stuff a whole lot faster. Do NOT EVER 
+# use this if you share Site objects across threads without proper locking.
+persistent_http = False
+
 ############## FURTHER SETTINGS ##############
 
 # The bot can make some additional changes to each page it edits, e.g. fix

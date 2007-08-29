@@ -3131,6 +3131,7 @@ class Site(object):
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
                 
+        if persistent_http is None: persistent_http = config.persistent_http
         self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
         if persistent_http:
             if self.protocol() == 'http':
