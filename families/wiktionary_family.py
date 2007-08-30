@@ -28,38 +28,51 @@ class Family(family.Family):
         
         # Most namespaces are inherited from family.Family.
 
+        # Override defaults
+        self.namespaces[3]['pl'] = u'Dyskusja Wikipedysty'
+
         self.namespaces[4] = {
             '_default': [u'Wiktionary', self.namespaces[4]['_default']],
-            'ar': u'ويكيبيديا',
+            'ar': u'ويكاموس',
             'bg': u'Уикиречник',
-            'bn': u'উইকিপেডিয়া',
-            'csb': u'Wiki',
+            'bs': u'Vikirječnik',
+            'ca': u'Viccionari',
+            'cs': u'Wikislovník',
+            'cy': u'Wiciadur',
             'eo': u'Vikivortaro',
             'es': u'Wikcionario',
             'et': u'Vikisõnaraamat',
+            'fa': u'ویکی‌واژه',
             'fi': u'Wikisanakirja',
             'fo': u'Wiktionary',
             'fr': u'Wiktionnaire',
-            'ga': u'Vicipéid',
+            'ga': u'Vicífhoclóir',
             'gu': u'વિક્ષનરી',
             'he': u'ויקימילון',
             'hi': u'विक्षनरी',
+            'hr': u'Wječnik',
             'hu': u'Wikiszótár',
             'is': u'Wikiorðabók',
+            'it': u'Wikizionario',
             'ka': u'ვიქსიკონი',
+            'kk': u'Уикисөздік',
             'ko': u'위키낱말사전',
             'la': u'Victionarium',
+            'ml': u'വിക്കി‌‌ നിഘണ്ടു',
             'ms': u'Wiktionary',
             'nl': u'WikiWoordenboek',
-            'oc': u'Oiquipedià',
+            'oc': u'Wikiccionari',
             'pl': u'Wikisłownik',
             'pt': u'Wikcionário',
+            'ro': u'Wikţionar',
             'ru': u'Викисловарь',
             'sk': u'Wikislovník',
-            'sl': u'Wikipedija',
+            'sl': u'Wikislovar',
             'sr': u'Викиречник',
             'tr': u'Vikisözlük',
             'tt': u'Wiktionary',
+            'ur': u'وکی لغت',
+            'vo': u'Vükivödabuk',
             'yi': u'װיקיװערטערבוך',
         }
         
@@ -68,109 +81,204 @@ class Family(family.Family):
             'ab': u'Обсуждение Wiktionary',
             'af': u'Wiktionarybespreking',
             'als': u'Wiktionary Diskussion',
-            'ar': u'نقاش ويكيبيديا',
+            'an': u'Descusión Wiktionary',
+            'ar': u'نقاش ويكاموس',
             'ast': u'Wiktionary discusión',
             'av': u'Обсуждение Wiktionary',
             'ay': u'Wiktionary Discusión',
-            'ba': u'Обсуждение Wiktionary',
-            'be': u'Абмеркаваньне Wiktionary',
+            'az': u'Wiktionary müzakirəsi',
+            'ba': u'Wiktionary б-са фекер алышыу',
+            'be': u'Wiktionary размовы',
             'bg': u'Уикиречник беседа',
             'bm': u'Discussion Wiktionary',
-            'bn': u'উইকিপেডিয়া আলাপ',
+            'bn': u'Wiktionary আলাপ',
             'br': u'Kaozeadenn Wiktionary',
-            'ca': u'Wiktionary Discussió',
-            'cs': u'Wiktionary diskuse',
-            'csb': u'Diskùsëjô Wiki',
-            'cy': u'Sgwrs Wiktionary',
-            'da': u'Wiktionary diskussion',
+            'bs': u'Razgovor s Vikirječnikom',
+            'ca': u'Viccionari Discussió',
+            'cs': u'Wikislovník diskuse',
+            'csb': u'Diskùsëjô Wiktionary',
+            'cy': u'Sgwrs Wiciadur',
+            'da': u'Wiktionary-diskussion',
             'de': u'Wiktionary Diskussion',
             'el': u'Wiktionary συζήτηση',
             'eo': u'Vikivortaro diskuto',
             'es': u'Wikcionario Discusión',
             'et': u'Vikisõnaraamat arutelu',
             'eu': u'Wiktionary eztabaida',
-            'fa': u'بحث Wiktionary',
+            'fa': u'بحث ویکی‌واژه',
             'fi': u'Keskustelu Wikisanakirjasta',
             'fo': u'Wiktionary kjak',
             'fr': u'Discussion Wiktionnaire',
             'fy': u'Wiktionary oerlis',
-            'ga': u'Plé Vicipéide',
+            'ga': u'Plé Vicífhoclóra',
             'gn': u'Wiktionary Discusión',
             'gu': u'વિક્ષનરી talk',
             'he': u'שיחת ויקימילון',
             'hi': u'विक्षनरी वार्ता',
-            'hr': u'Razgovor Wiktionary',
+            'hr': u'Razgovor Wječnik',
             'hu': u'Wikiszótár vita',
+            'hy': u'Wiktionary քննարկում',
             'ia': u'Discussion Wiktionary',
             'id': u'Pembicaraan Wiktionary',
-            'is': u'Wikiorðabókspjall',
-            'it': u'Discussioni Wiktionary',
+            'is': u'Wikiorðabókarspjall',
+            'it': u'Discussioni Wikizionario',
             'ja': u'Wiktionary‐ノート',
+            'jv': u'Dhiskusi Wiktionary',
             'ka': u'ვიქსიკონი განხილვა',
+            'kk': u'Уикисөздік талқылауы',
+            'kn': u'Wiktionary ಚರ್ಚೆ',
             'ko': u'위키낱말사전토론',
             'ku': u'Wiktionary nîqaş',
             'la': u'Disputatio Victionarii',
-            'li': u'Euverlik Wiktionary',
+            'li': u'Euverlèk Wiktionary',
             'lt': u'Wiktionary aptarimas',
-            'mk': u'Wiktionary разговор',
+            'lv': u'Wiktionary diskusija',
+            'mk': u'Разговор за Wiktionary',
+            'ml': u'വിക്കി‌‌ നിഘണ്ടു സംവാദം',
+            'mr': u'Wiktionary चर्चा',
             'ms': u'Perbualan Wiktionary',
+            'nah': u'Wiktionary Discusión',
             'nds': u'Wiktionary Diskuschoon',
             'nl': u'Overleg WikiWoordenboek',
             'nn': u'Wiktionary-diskusjon',
             'no': u'Wiktionary-diskusjon',
-            'oc': u'Discutida Oiquipedià',
+            'oc': u'Discussion Wikiccionari',
             'pa': u'Wiktionary ਚਰਚਾ',
             'pl': u'Wikidyskusja',
             'pt': u'Wikcionário Discussão',
             'qu': u'Wiktionary Discusión',
-            'ro': u'Discuţie Wiktionary',
+            'ro': u'Discuţie Wikţionar',
             'ru': u'Обсуждение Викисловаря',
+            'sa': u'Wiktionaryसंभाषणं',
             'sc': u'Wiktionary discussioni',
             'sk': u'Diskusia k Wikislovníku',
-            'sl': u'Pogovor k Wikipediji',
+            'sl': u'Pogovor o Wikislovarju',
             'sq': u'Wiktionary diskutim',
             'sr': u'Разговор о викиречнику',
+            'su': u'Obrolan Wiktionary',
             'sv': u'Wiktionarydiskussion',
             'ta': u'Wiktionary பேச்சு',
+            'te': u'Wiktionary చర్చ',
+            'tg': u'Баҳси Wiktionary',
+            'th': u'คุยเรื่องWiktionary',
             'tr': u'Vikisözlük tartışma',
             'tt': u'Wiktionary bäxäse',
             'uk': u'Обговорення Wiktionary',
+            'ur': u'تبادلۂ خیال وکی لغت',
+            'uz': u'Wiktionary munozarasi',
             'vi': u'Thảo luận Wiktionary',
+            'vo': u'Bespik dö Vükivödabuk',
             'wa': u'Wiktionary copene',
+            'wo': u'Discussion Wiktionary',
             'yi': u'װיקיװערטערבוך רעדן',
         }
 
         self.namespaces[100] = {
             '_default': u'Appendix',
             'bg': u'Словоформи',
+            'bs': u'Portal',
+            'cy': u'Atodiad',
             'fr': u'Annexe',
-            'pl': u'Aneks'
+            'he': u'נספח',
+            'it': u'Appendice',
+            'ko': u'부록',
+            'pl': u'Aneks',
+            'ro': u'Portal',
+            'ru': u'Приложение',
+            'sr': u'Портал',
+            'sv': u'WT',
         }
         self.namespaces[101] = {
             '_default': u'Appendix talk',
             'bg': u'Словоформи беседа',
+            'bs': u'Razgovor o Portalu',
+            'cy': u'Sgwrs Atodiad',
             'fr': u'Discussion Annexe',
-            'pl': u'Dyskusja aneksu'
-        }
-        self.namespaces[102] = {
-            '_default': u'Concordance',
-            'de': u'Verzeichnis',
-            'fr': u'Transwiki',
-            'pl': u'Indeks'
-        }
-        self.namespaces[103] = {
-            '_default': u'Concordance talk',
-            'de': u'Verzeichnis Diskussion',
-            'fr': u'Discussion Transwiki',
-            'pl': u'Dyskusja indeksu'
-        }
-        self.namespaces[104] = {
-            '_default': u'Index',
-        }
-        self.namespaces[105] = {
-            '_default': u'Index talk',
+            'he': u'שיחת נספח',
+            'it': u'Discussioni appendice',
+            'ko': u'부록 토론',
+            'pl': u'Dyskusja aneksu',
+            'ro': u'Discuţie Portal',
+            'ru': u'Обсуждение приложения',
+            'sr': u'Разговор о порталу',
+            'sv': u'WT-diskussion',
         }
 
+        self.namespaces[102] = {
+            '_default': u'Concordance',
+            'bs': u'Indeks',
+            'cy': u'Odliadur',
+            'de': u'Verzeichnis',
+            'fr': u'Transwiki',
+            'pl': u'Indeks',
+            'ro': u'Apendice',
+            'ru': u'Конкорданс',
+            'sv': u'Appendix',
+        }
+
+        self.namespaces[103] = {
+            '_default': u'Concordance talk',
+            'bs': u'Razgovor o Indeksu',
+            'cy': u'Sgwrs Odliadur',
+            'de': u'Verzeichnis Diskussion',
+            'fr': u'Discussion Transwiki',
+            'pl': u'Dyskusja indeksu',
+            'ro': u'Discuţie Apendice',
+            'ru': u'Обсуждение конкорданса',
+            'sv': u'Appendixdiskussion',
+        }
+
+        self.namespaces[104] = {
+            '_default': u'Index',
+            'bs': u'Dodatak',
+            'cy': u'WiciSawrws',
+            'fr': u'Portail',
+            'ru': u'Индекс',
+        }
+
+        self.namespaces[105] = {
+            '_default': u'Index talk',
+            'bs': u'Razgovor o Dodatku',
+            'cy': u'Sgwrs WiciSawrws',
+            'fr': u'Discussion Portail',
+            'ru': u'Обсуждение индекса',
+        }
+
+        self.namespaces[106] = {
+            'en': u'Rhymes',
+            'is': u'Viðauki',
+            'ru': u'Рифмы',
+        }
+
+        self.namespaces[107] = {
+            'en': u'Rhymes talk',
+            'is': u'Viðaukaspjall',
+            'ru': u'Обсуждение рифм',
+        }
+
+        self.namespaces[108] = {
+            'en': u'Transwiki',
+        }
+
+        self.namespaces[109] = {
+            'en': u'Transwiki talk',
+        }
+
+        self.namespaces[110] = {
+            'en': u'Wikisaurus',
+        }
+
+        self.namespaces[111] = {
+            'en': u'Wikisaurus talk',
+        }
+
+        self.namespaces[112] = {
+            'en': u'WT',
+        }
+
+        self.namespaces[113] = {
+            'en': u'WT talk',
+        }
 
         # Other than most Wikipedias, page names must not start with a capital
         # letter on ALL Wiktionaries.
