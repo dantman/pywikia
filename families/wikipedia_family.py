@@ -252,7 +252,7 @@ class Family(family.Family):
             'tg': u'Портал',
             'uk': u'Портал',
             'vo': u'Bespik dö Vükiped',
-            'zh-classical': u'門',
+            'zh-classic': u'門',
         }
 
         self.namespaces[101] = {
@@ -300,7 +300,7 @@ class Family(family.Family):
             'tg': u'Баҳси портал',
             'tr': u'Portal tartışma',
             'uk': u'Обговорення порталу',
-            'zh-classical': u'議',
+            'zh-classic': u'議',
         }
 
         self.namespaces[102] = {
