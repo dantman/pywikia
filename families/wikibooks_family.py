@@ -46,6 +46,8 @@ class Family(family.Family):
             'el': u'Βικιβιβλία',
             'eo': u'Vikilibroj',
             'es': u'Wikilibros',
+            'fa': u'ویکی‌نسک',
+            'fi': u'Wikikirjasto',
             'ga': u'Vicíleabhair',
             'he': u'ויקיספר',
             'hr': u'Wikiknjige',
@@ -55,8 +57,10 @@ class Family(family.Family):
             'ka': u'ვიკიწიგნები',
             'la': u'Vicilibri',
             'ml': u'വിക്കി പുസ്തകശാല',
+            'no': u'Wikibøker',
             'oc': u'Oiquilibre',
             'ru': u'Викиучебник',
+            'sr': u'Викикњиге',
             'tr': u'Vikikitap',
             'ur': u'وکی کتب',
         }
@@ -69,6 +73,8 @@ class Family(family.Family):
             'als':u'Wikibooks Diskussion',
             'ar': u'نقاش ويكي الكتب',
             'ast':u'Wikibooks discusión',
+            'ay': u'Wikibooks Discusión',
+            'az': u'Wikibooks müzakirəsi',
             'ba': u'Wikibooks б-са фекер алышыу',
             'be': u'Wikibooks размовы',
             'bg': u'Уикикниги беседа',
@@ -86,9 +92,12 @@ class Family(family.Family):
             'es': u'Wikilibros Discusión',
             'et': u'Wikibooks arutelu',
             'eu': u'Wikibooks eztabaida',
+            'fy': u'Wikibooks oerlis',
             'he': u'שיחת ויקיספר',
             'hr': u'Razgovor Wikiknjige',
             'hu': u'Wikikönyvek vita',
+            'fa': u'بحث ویکی‌نسک',
+            'fi': u'Keskustelu Wikikirjastosta',
             'fr': u'Discussion Wikilivres',
             'ga': u'Plé Vicíleabhar',
             'gn': u'Wikibooks Discusión',
@@ -109,6 +118,7 @@ class Family(family.Family):
             'ms': u'Perbualan Wikibooks',
             'nds':u'Wikibooks Diskuschoon',
             'nl': u'Overleg Wikibooks',
+            'no': u'Wikibøker-diskusjon',
             'oc': u'Discussion Oiquilibre',
             'pa': u'Wikibooks ਚਰਚਾ',
             'pl': u'Dyskusja Wikibooks',
@@ -116,7 +126,10 @@ class Family(family.Family):
             'qu': u'Wikibooks Discusión',
             'ro': u'Discuţie Wikibooks',
             'ru': u'Обсуждение Викиучебника',
+            'sa': u'Wikibooksसंभाषणं',
+            'sk': u'Diskusia k Wikibooks',
             'sq': u'Wikibooks diskutim',
+            'sr': u'Разговор о викикњигама',
             'su': u'Obrolan Wikibooks',
             'sv': u'Wikibooksdiskussion',
             'ta': u'Wikibooks பேச்ச',
@@ -129,6 +142,7 @@ class Family(family.Family):
             'ur': u'تبادلۂ خیال وکی کتب',
             'uz': u'Wikibooks munozarasi',
             'vi': u'Thảo luận Wikibooks',
+            'vo': u'Bespik dö Wikibooks',
             'wa': u'Wikibooks copene',
         }
 
@@ -156,6 +170,8 @@ class Family(family.Family):
             'en': u'Cookbook',
             'es': u'Wikiversidad',
             'id': u'Wisata',
+            'nl': u'Transwiki',
+            'sr': u'Кувар',
         }   
 
         self.namespaces[103] = {
@@ -164,14 +180,18 @@ class Family(family.Family):
             'en': u'Cookbook talk',
             'es': u'Wikiversidad Discusión',
             'id': u'Pembicaraan Wisata',
+            'nl': u'Overleg transwiki',
+            'sr': u'Разговор о кувару',
         }   
 
         self.namespaces[104] = {
             'he': u'מדף',
+            'nl': u'Wikijunior',
         }   
 
         self.namespaces[105] = {
             'he': u'שיחת מדף',
+            'nl': u'Overleg wikijunior',
         }   
 
         self.namespaces[108] = {
