@@ -204,11 +204,11 @@ class Reporter(threadpool.Thread):
 			site = wikipedia.getSite(family(wiki))
 			if unicode(site) == unicode(self.site):
 				if (namespace, page_title) != (6, old_image):
-					title = u'[[:%s:%s]]' % (site.namespace(namespace), page_title)
+					not_ok_items.append(u'[[:%s:%s]]' % \
+						(site.namespace(namespace), page_title))
 			else:
-				title = u'[[:%s:%s:%s]]' % (site_prefix(site),
-					site.namespace(namespace), page_title)
-			not_ok_items.append(title)
+				not_ok_items.append(u'[[:%s:%s:%s]]' % (site_prefix(site),
+					site.namespace(namespace), page_title))
 		
 		template = u'{{%s|new_image=%s|user=%s|comment=%s|not_ok=%s}}' % \
 			(self.config['replacer_report_template'],
