@@ -55,17 +55,17 @@ class Family(family.Family):
             'is': u'Wikibækur',
             'fr': u'Wikilivres',
             'ka': u'ვიკიწიგნები',
+            'kk': u'Уикикітап',
             'la': u'Vicilibri',
             'ml': u'വിക്കി പുസ്തകശാല',
             'no': u'Wikibøker',
             'oc': u'Oiquilibre',
             'ru': u'Викиучебник',
+            'sl': u'Wikiknjige',
             'sr': u'Викикњиге',
             'tr': u'Vikikitap',
             'ur': u'وکی کتب',
         }
-
-            #'': u'',
 
         self.namespaces[5] = {
             '_default': [u'Wikibooks talk', self.namespaces[5]['_default']],
@@ -109,6 +109,10 @@ class Family(family.Family):
             'it': u'Discussioni Wikibooks',
             'ja': u'Wikibooks‐ノート',
             'ka': u'ვიკიწიგნები განხილვა',
+            'kk': u'Уикикітап талқылауы',
+            'kn': u'Wikibooks ಚರ್ಚೆ',
+            'ko': u'Wikibooks토론',
+            'ku': u'Wikibooks nîqaş',
             'la': u'Disputatio Vicilibrorum',
             'lt': u'Wikibooks aptarimas',
             'lv': u'Wikibooks diskusija',
@@ -116,6 +120,7 @@ class Family(family.Family):
             'ml': u'വിക്കി പുസ്തകശാല സംവാദം',
             'mr': u'Wikibooks चर्चा',
             'ms': u'Perbualan Wikibooks',
+            'nah': u'Wikibooks Discusión',
             'nds':u'Wikibooks Diskuschoon',
             'nl': u'Overleg Wikibooks',
             'no': u'Wikibøker-diskusjon',
@@ -128,11 +133,12 @@ class Family(family.Family):
             'ru': u'Обсуждение Викиучебника',
             'sa': u'Wikibooksसंभाषणं',
             'sk': u'Diskusia k Wikibooks',
+            'sl': u'Pogovor o Wikiknjigah',
             'sq': u'Wikibooks diskutim',
             'sr': u'Разговор о викикњигама',
             'su': u'Obrolan Wikibooks',
             'sv': u'Wikibooksdiskussion',
-            'ta': u'Wikibooks பேச்ச',
+            'ta': u'Wikibooks பேச்சு',
             'te': u'Wikibooks చర్చ',
             'tg': u'Баҳси Wikibooks',
             'th': u'คุยเรื่องWikibooks',
@@ -186,12 +192,14 @@ class Family(family.Family):
 
         self.namespaces[104] = {
             'he': u'מדף',
+            'ka': u'თარო',
             'nl': u'Wikijunior',
         }   
 
         self.namespaces[105] = {
             'he': u'שיחת מדף',
-            'nl': u'Overleg wikijunior',
+            'ka': u'თარო განხილვა',
+            'nl': u'Overleg Wikijunior',
         }   
 
         self.namespaces[108] = {
