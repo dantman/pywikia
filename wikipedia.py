@@ -3649,7 +3649,7 @@ Maybe the server is down. Retrying in %i minutes..."""
             path = self.unwatchedpages_address(n=number)
             get_throttle()
             html = self.getUrl(path, sysop = True)
-            print html
+            output(html)
             entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a>.+?</li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
