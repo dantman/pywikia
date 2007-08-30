@@ -429,13 +429,17 @@ def cleanwikicode(text):
 
 excl_list = exclusion_list()
 
-def exclusion_list_dump():
-    res = ''
+def exclusion_list_sanity_check():
+    print "Exclusion list sanity check..."
     for entry in excl_list:
-        res += entry + '\n'
+        if (not '.' in entry and not '/' in entry) or len(entry) < 5:
+            print "** " + entry
+
+def exclusion_list_dump():
     f = open(appdir + 'exclusion_list.dump', 'w')
-    f.write(res)
+    f.write('\n'.join(excl_list))
     f.close()
+    print "Exclusion list dump saved."
 
 def n_index(text, n, sep):
     pos = 0
