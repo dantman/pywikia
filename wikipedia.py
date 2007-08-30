@@ -1331,7 +1331,11 @@ class Page(object):
         The return value is a list of Category objects, one for each of the
         category links in the page text.
         """
-        return getCategoryLinks(self.get(nofollow_redirects=nofollow_redirects), self.site())
+        try:
+	    category_links_to_return = getCategoryLinks(self.get(nofollow_redirects=nofollow_redirects), self.site())
+        except NoPage:
+            category_links_to_return = []
+        return category_links_to_return
 
     def __cmp__(self, other):
         """Pseudo method to be able to use equality and inequality tests on
