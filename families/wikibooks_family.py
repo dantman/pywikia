@@ -29,30 +29,103 @@ class Family(family.Family):
                     'zh-tw':'zh',
                     'zh-cn':'zh'}
 
+        # Override defaults
+        self.namespaces[3]['pl'] = u'Dyskusja Wikipedysty'
+
         # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': [u'Wikibooks', self.namespaces[4]['_default']],
+            'bg': u'Уикикниги',
             'cs': u'Wikiknihy',
+            'cy': u'Wicillyfrau',
+            'el': u'Βικιβιβλία',
+            'es': u'Wikilibros',
+            'he': u'ויקיספר',
+            'hu': u'Wikikönyvek',
+            'is': u'Wikibækur',
+            'fr': u'Wikilivres',
+            'ka': u'ვიკიწიგნები',
+            'ru': u'Викиучебник',
         }
 
         self.namespaces[5] = {
             '_default': [u'Wikibooks talk', self.namespaces[5]['_default']],
+            'bg': u'Уикикниги беседа',
             'cs': u'Wikiknihy diskuse',
+            'cy': u'Sgwrs Wicillyfrau',
+            'da': u'Wikibooks-diskussion',
+            'de': u'Wikibooks Diskussion',
+            'el': u'Βικιβιβλία συζήτηση',
+            'es': u'Wikilibros Discusión',
+            'he': u'שיחת ויקיספר',
+            'hu': u'Wikikönyvek vita',
+            'fr': u'Discussion Wikilivres',
+            'id': u'Pembicaraan Wikibooks',
+            'is': u'Wikibækurspjall',
             'it': u'Discussioni Wikibooks',
+            'ja': u'Wikibooks‐ノート',
+            'ka': u'ვიკიწიგნები განხილვა',
+            'lt': u'Wikibooks aptarimas',
+            'nl': u'Overleg Wikibooks',
+            'pl': u'Dyskusja Wikibooks',
             'pt': u'Wikibooks Discussão',
+            'ru': u'Обсуждение Викиучебника',
+            'su': u'Obrolan Wikibooks',
+            'sv': u'Wikibooksdiskussion',
+            'th': u'คุยเรื่องWikibooks',
+            'uk': u'Обговорення Wikibooks',
+            'vi': u'Thảo luận Wikibooks',
         }
 
         self.namespaces[100] = {
             '_default': u'Portal',
+            'id': u'Resep',
+            'fr': u'Transwiki',
+            'he': u'שער',
             'it': u'Portale',
         }
         
         self.namespaces[101] = {
             '_default': u'Portal talk',
+            'id': u'Pembicaraan Resep',
+            'fr': u'Discussion Transwiki',
+            'he': u'שיחת שער',
             'it': u'Discussioni portale',
         }
+
+        self.namespaces[102] = {
+            'en': u'Cookbook',
+        }   
+
+        self.namespaces[103] = {
+            'en': u'Cookbook talk',
+        }   
+
+        self.namespaces[104] = {
+            'he': u'מדף',
+        }   
+
+        self.namespaces[105] = {
+            'he': u'שיחת מדף',
+        }   
+
+        self.namespaces[108] = {
+            'en': u'Transwiki',
+        }   
+
+        self.namespaces[109] = {
+            'en': u'Transwiki talk',
+        }   
+
+        self.namespaces[110] = {
+            'en': u'Wikijunior',
+        }   
+
+        self.namespaces[111] = {
+            'en': u'Wikijunior talk',
+        }   
 
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
