@@ -41,76 +41,137 @@ class Family(family.Family):
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
 
+        # Override defaults
+        self.namespaces[2]['pl'] = u'Użytkownik'
+        self.namespaces[3]['pl'] = u'Dyskusja użytkownika'
+
         self.namespaces[4] = {
             '_default': [u'Wikiquote', self.namespaces[4]['_default']],
             'ar':       u'ويكي الاقتباس',
             'bg':       u'Уикицитат',
             'bs':       u'Wikicitati',
+            'ca':       u'Viquidites',
+            'cs':       u'Wikicitáty',
+            'el':       u'Βικιφθέγματα',
             'eo':       u'Vikicitaro',
             'fa':       u'ویکی‌گفتاورد',
             'fi':       u'Wikisitaatit',
+            'ga':       u'Vicísliocht',
             'he':       u'ויקיציטוט',
             'hu':       u'Wikidézet',
             'hr':       u'Wikicitat',
+            'is':       u'Wikivitnun',
             'ka':       u'ვიკიციტატა',
+            'kk':       u'Уикидәйек',
             'la':       u'Vicicitatio',
+            'ml':       u'വിക്കി ചൊല്ലുകള്‍',
             'pl':       u'Wikicytaty',
             'ro':       u'Wikicitat',
             'ru':       u'Викицитатник',
             'sl':       u'Wikinavedek',
             'sk':       u'Wikicitáty',
             'tr':       u'Vikisöz',
-            
+            'ur':       u'وکی اقتباسات',
         }
+
         self.namespaces[5] = {
             '_default': [u'Wikiquote talk', self.namespaces[5]['_default']],
+            'af':       u'Wikiquotebespreking',
+            'als':      u'Wikiquote Diskussion',
             'ar':       u'نقاش ويكي الاقتباس',
+            'ast':      u'Wikiquote discusión',
+            'az':       u'Wikiquote müzakirəsi',
+            'be':       u'Wikiquote размовы',
             'bg':       u'Уикицитат беседа',
+            'bm':       u'Discussion Wikiquote',
             'bs':       u'Razgovor s Wikicitatima',
-            'ca':       u'Wikiquote Discussió',
-            'cs':       u'Wikiquote diskuse',
+            'ca':       u'Viquidites Discussió',
+            'cs':       u'Wikicitáty diskuse',
+            'cy':       u'Sgwrs Wikiquote',
             'da':       u'Wikiquote-diskussion',
             'de':       u'Wikiquote Diskussion',
             'eo':       u'Vikicitaro diskuto',
-            'el':       u'Wikiquote συζήτηση',
+            'el':       u'Βικιφθέγματα συζήτηση',
             'es':       u'Wikiquote Discusión',
             'et':       u'Wikiquote arutelu',
             'eu':       u'Wikiquote eztabaida',
             'fa':       u'بحث ویکی‌گفتاورد',
-            'fi':       u'Keskustelu Wikisitaateista',
+            'fi':       u'Keskustelu Wikisitaatitista',
             'fr':       u'Discussion Wikiquote',
+            'ga':       u'Plé Vicísliocht',
             'he':       u'שיחת ויקיציטוט',
+            'hi':       u'Wikiquote वार्ता',
             'hr':       u'Razgovor Wikicitat',
             'hu':       u'Wikidézet vita',
+            'hy':       u'Wikiquote քննարկում',
+            'id':       u'Pembicaraan Wikiquote',
+            'is':       u'Wikivitnunspjall',
             'it':       u'Discussioni Wikiquote',
             'ja':       u'Wikiquote‐ノート',
             'ka':       u'ვიკიციტატა განხილვა',
+            'kk':       u'Уикидәйек талқылауы',
+            'kn':       u'Wikiquote ಚರ್ಚೆ',
             'ko':       u'Wikiquote토론',
             'ku':       u'Wikiquote nîqaş',
             'la':       u'Disputatio Vicicitationis',
             'lt':       u'Wikiquote aptarimas',
+            'ml':       u'വിക്കി ചൊല്ലുകള്‍ സംവാദം',
+            'mr':       u'Wikiquote चर्चा',
+            'nds':      u'Wikiquote Diskuschoon',
             'nl':       u'Overleg Wikiquote',
+            'nn':       u'Wikiquote-diskusjon',
             'no':       u'Wikiquote-diskusjon',
             'pl':       u'Dyskusja Wikicytatów',
             'pt':       u'Wikiquote Discussão',
+            'qu':       u'Wikiquote Discusión',
             'ro':       u'Discuţie Wikicitat',
             'ru':       u'Обсуждение Викицитатника',
             'sk':       u'Diskusia k Wikicitátom',
             'sl':       u'Pogovor o Wikinavedku',
+            'sq':       u'Wikiquote diskutim',
             'sr':       u'Разговор о Wikiquote',
+            'su':       u'Obrolan Wikiquote',
             'sv':       u'Wikiquotediskussion',
+            'ta':       u'Wikiquote பேச்சு',
+            'te':       u'Wikiquote చర్చ',
+            'th':       u'คุยเรื่องWikiquote',
             'tr':       u'Vikisöz tartışma',
+            'tt':       u'Wikiquote bäxäse',
             'uk':       u'Обговорення Wikiquote',
+            'ur':       u'تبادلۂ خیال وکی اقتباسات',
+            'uz':       u'Wikiquote munozarasi',
+            'vi':       u'Thảo luận Wikiquote',
+            'vo':       u'Bespik dö Wikiquote',
+            'wo':       u'Discussion Wikiquote',
         }
         
         self.namespaces[100] = {
             '_default': u'Portal',
             'he':       u'פורטל',
+            'fr':       u'Portail',
             }
         
         self.namespaces[101] = {
             '_default': u'Portal talk',
+            'de':       u'Portal Diskussion',
             'he':       u'שיחת פורטל',
+            'fr':       u'Discussion Portail',
+            }
+
+        self.namespaces[102] = {
+            'fr':       u'Projet',
+            }
+
+        self.namespaces[103] = {
+            'fr':       u'Discussion Projet',
+            }
+
+        self.namespaces[104] = {
+            'fr':       u'Référence',
+            }
+
+        self.namespaces[105] = {
+            'fr':       u'Discussion Référence',
             }
 
         self.namespaces[108] = {
