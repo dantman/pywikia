@@ -7,16 +7,20 @@ from wikipedia import output
 import simplejson
 
 def check_namespaces(site):
+	if not site.apipath():
+		output(u'Warning! %s has no apipath() defined!' % site)
+		return
 	predata = {'action': 'query',
 		'meta': 'siteinfo',
 		'siprop': 'namespaces',
 		'format': 'json'}
 	response, json = site.postForm(site.apipath(), predata)
-	if '<h1 class="firstHeading">Wiki does not exist</h1>' in json:
+	try:
+		data = simplejson.loads(json)
+	except ValueError:
 		output(u'Warning! %s is defined but does not exist!' % site)
 		return
 	
-	data = simplejson.loads(json)
 	result = []
 	for namespace in data['query']['namespaces'].itervalues():
 		try:
@@ -27,7 +31,7 @@ def check_namespaces(site):
 			defined_namespace = None
 		
 		if defined_namespace != namespace['*'] and namespace['*']:
-			result.append((namespace['id'], namespace['*']))
+			result.append((namespace['id'], namespace['*'], defined_namespace))
 	return result
 			
 def check_family(family):
@@ -38,9 +42,9 @@ def check_family(family):
 		output(u'Checking %s' % site)
 		namespaces = check_namespaces(site)
 		if namespaces: 
-			for id, name in namespaces:
+			for id, name, defined_namespace in namespaces:
 				output(u'Namespace %s for %s is %s, %s is defined in family file.' % \
-					(id, site, name, site.namespace(id)))
+					(id, site, name, defined_namespace))
 			result[lang] = namespaces
 	return result
 	
@@ -49,4 +53,5 @@ if __name__ == '__main__':
 	family = wikipedia.Family(wikipedia.default_family)
 	result = check_family(family)
 	output(u'Writing raw Python dictionary to stdout.')
+	output(u'Format is: (namespace_id, namespace_name, predefined_namespace)')
 	print result
