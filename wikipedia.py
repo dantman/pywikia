@@ -1028,9 +1028,17 @@ class Page(object):
                 yield Page(site, fileLink)
 
     def put_async(self, newtext,
-                  comment=None, watchArticle=None, minorEdit=True, force=False):
+                  comment=None, watchArticle=None, minorEdit=True, force=False,
+                  callback=None):
         """Asynchronous version of put (takes the same arguments), which
            places pages on a queue to be saved by a daemon thread.
+           All arguments are the same as for .put(), except --
+           callback: a callable object that will be called after the page put
+                     operation; this object must take two arguments:
+                     (1) a Page object, and (2) an exception instance, which
+                     will be None if the page was saved successfully.
+           The callback is intended to be used by bots that need to keep track
+           of which saves were successful.
         """
         try:
             page_put_queue.mutex.acquire()
@@ -1040,9 +1048,11 @@ class Page(object):
                 pass
         finally:
             page_put_queue.mutex.release()
-        page_put_queue.put((self, newtext, comment, watchArticle, minorEdit, force))
+        page_put_queue.put((self, newtext, comment, watchArticle, minorEdit,
+                            force, callback))
 
-    def put(self, newtext, comment=None, watchArticle = None, minorEdit = True, force=False):
+    def put(self, newtext, comment=None, watchArticle=None, minorEdit=True,
+            force=False):
         """Replace the new page with the contents of the first argument.
            The second argument is a string that is to be used as the
            summary for the modification
@@ -4732,25 +4742,34 @@ def async_put():
     Daemon that takes pages from the queue and tries to save them on the wiki.
     '''
     while True:
-        page, newtext, comment, watchArticle, minorEdit, force = page_put_queue.get()
+        (page, newtext, comment, watchArticle,
+                 minorEdit, force, callback) = page_put_queue.get()
         if page is None:
-            # needed for compatibility with Python 2.3 and 2.4
-            # in 2.5, we could use the Queue's task_done() and join() methods
+            # an explicit end-of-Queue marker is needed for compatibility
+            # with Python 2.4; in 2.5, we could use the Queue's task_done()
+            # and join() methods
             return
         try:
             page.put(newtext, comment, watchArticle, minorEdit, force)
-        except SpamfilterError, ex:
+            error = None
+        except Exception, error:
+            pass
+        if callback is not None:
+            callback(page, error)
+            # if callback is provided, it is responsible for exception handling
+            continue
+        if isinstance(error, SpamfilterError):
             output(u"Saving page [[%s]] prevented by spam filter: %s"
-                   % (page.title(), ex.url))
-        except PageNotSaved, ex:
+                       % (page.title(), error.url))
+        elif isinstance(error, PageNotSaved):
             output(u"Saving page [[%s]] failed: %s"
-                   % (page.title(), ex.message))
-        except LockedPage, ex:
+                       % (page.title(), error.message))
+        elif isinstance(error, LockedPage):
             output(u"Page [[%s]] is locked; not saved." % page.title())
-        except NoUsername, ex:
+        elif isinstance(error, NoUsername):
             output(u"Page [[%s]] not saved; sysop privileges required."
-                   % page.title())
-        except:
+                       % page.title())
+        elif error is not None:
             tb = traceback.format_exception(*sys.exc_info())
             output(u"Saving page [[%s]] failed:\n%s"
                     % (page.title(), "".join(tb)))
