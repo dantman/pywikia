@@ -2132,8 +2132,8 @@ class ImagePage(Page):
         history = re.search('(?s)<table class="filehistory">.+?</table>', self.getImagePageHtml())
 
         if history:
-            lineR = re.compile('<tr><td>.*?</td><td><a href=".+?">(?P<datetime>.+?)</a></td><td><a href=".+?" title=".+?">(?P<username>.+?)</a>.*?</td><td>(?P<resolution>.+?)</td><td class=".+?">(?P<filesize>.+?)</td><td>(?P<comment>.*?)</td></tr>')
-            
+            lineR = re.compile('<tr><td>.*?</td><td><a href=".+?">(?P<datetime>.+?)</a></td><td><a href=".+?"(?: class="new"|) title=".+?">(?P<username>.+?)</a>.*?</td><td>(?P<resolution>.*?)</td><td class=".+?">(?P<filesize>.+?)</td><td>(?P<comment>.*?)</td></tr>')
+
             for match in lineR.finditer(history.group()):
                 datetime = match.group('datetime')
                 username = match.group('username')
@@ -3105,7 +3105,7 @@ class Site(object):
         user    User to use (optional: defaults to configured)
         persistent_http Use a persistent http connection. An http connection
                 has to be established only once, making stuff a whole lot
-                faster. Do NOT EVER use this if you share Site objects 
+                faster. Do NOT EVER use this if you share Site objects
                 across threads without proper locking.
         """
 
@@ -3136,7 +3136,7 @@ class Site(object):
         for language in self.languages():
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
-                
+
         if persistent_http is None: persistent_http = config.persistent_http
         self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
         if persistent_http:
@@ -3144,8 +3144,8 @@ class Site(object):
                 self.conn = httplib.HTTPConnection(self.hostname())
             elif self.protocol() == 'https':
                 self.conn = httplib.HTTPSConnection(self.hostname())
-                
-                
+
+
         self.sandboxpage = Page(self,self.family.sandboxpage(code))
 
     def urlEncode(self, query):
@@ -3200,7 +3200,7 @@ class Site(object):
             elif self.protocol() == 'https':
                 conn = httplib.HTTPSConnection(self.hostname())
             # otherwise, it will crash, as other protocols are not supported
-    
+
         conn.putrequest('POST', address)
         conn.putheader('Content-Length', str(len(data)))
         conn.putheader('Content-type', contentType)
@@ -3320,7 +3320,7 @@ class Site(object):
             if compress:
                     self.conn.putheader('Accept-encoding', 'gzip')
             self.conn.endheaders()
-            
+
             # Prepare the return values
             # Note that this can raise network exceptions which are not
             # caught here.
@@ -3331,8 +3331,8 @@ class Site(object):
                 self.conn.close()
                 self.conn.connect()
                 return self.getUrl(path, retry, sysop, data, compress)
-            
-            text = response.read()            
+
+            text = response.read()
             contentType = response.getheader('Content-Type')
             contentEncoding = response.getheader('Content-Encoding')
         else:
@@ -3344,10 +3344,10 @@ class Site(object):
                     uo.addheader('Cookie', self.cookies(sysop = sysop))
                 if compress:
                     uo.addheader('Accept-encoding', 'gzip')
-    
+
             url = '%s://%s%s' % (self.protocol(), self.hostname(), path)
             data = self.urlEncode(data)
-    
+
             # Try to retrieve the page until it was successfully loaded (just in
             # case the server is down or overloaded).
             # Wait for retry_idle_time minutes (growing!) between retries.
@@ -3381,11 +3381,11 @@ class Site(object):
                     else:
                         raise
             text = f.read()
-    
+
             # Find charset in the content-type meta tag
             contentType = f.info()['Content-Type']
             contentEncoding = f.headers.get('Content-Encoding')
-            
+
         if compress and contentEncoding == 'gzip':
             # Use cStringIO if available
             # TODO: rewrite gzip.py such that it supports unseekable fileobjects.
@@ -3397,7 +3397,7 @@ class Site(object):
             compressedstream = StringIO(text)
             gzipper = gzip.GzipFile(fileobj=compressedstream)
             text = gzipper.read()
-                
+
         R = re.compile('charset=([^\'\";]+)')
         m = R.search(contentType)
         if m:
@@ -4832,3 +4832,4 @@ if __name__ == '__main__':
     print 'Pywikipediabot %s' % version.getversion()
     print 'Python %s' % sys.version
     doctest.testmod()
+
