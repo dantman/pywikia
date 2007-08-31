@@ -14,7 +14,11 @@ def check_namespaces(site):
 		'meta': 'siteinfo',
 		'siprop': 'namespaces',
 		'format': 'json'}
-	response, json = site.postForm(site.apipath(), predata)
+	try:
+		response, json = site.postForm(site.apipath(), predata)
+	except wikipedia.ServerError, e:
+		output(u'Warning! %s: %s' % (site, e))
+		return
 	try:
 		data = simplejson.loads(json)
 	except ValueError:
