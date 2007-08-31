@@ -2159,8 +2159,6 @@ class ImagePage(Page):
 
 class GetAll(object):
     def __init__(self, site, pages, throttle, force):
-        """First argument is Site object.
-        Second argument is list (should have .append and be iterable)"""
         self.site = site
         self.pages = []
         self.throttle = throttle
@@ -2172,7 +2170,7 @@ class GetAll(object):
 
     def run(self):
         dt=15
-        if self.pages != []:
+        if self.pages:
             while True:
                 try:
                     data = self.getData()
@@ -2234,8 +2232,9 @@ class GetAll(object):
         page = Page(self.site, title)
         for page2 in self.pages:
             if page2.sectionFreeTitle() == page.sectionFreeTitle():
-                if not hasattr(page2,'_contents') and not hasattr(page2,'_getexception'):
-                    break
+                if hasattr(page2,'_contents') or hasattr(page2,'_getexception'):
+                    return
+                break
         else:
             output(u"BUG>> title %s (%s) not found in list" % (title, page.aslink(forceInterwiki=True)))
             output(u'Expected one of: %s' % u','.join([page2.aslink(forceInterwiki=True) for page2 in self.pages]))
@@ -2335,7 +2334,11 @@ class GetAll(object):
         get_throttle.setDelay(time.time() - now)
         return data
 
-def getall(site, pages, throttle = True, force = False):
+def getall(site, pages, throttle=True, force=False):
+    """Use Special:Export to bulk-retrieve a group of pages from site
+       Arguments: site = Site object
+                  pages = iterable that yields Page objects
+    """
     output(u'Getting %d pages from %s...' % (len(pages), site))
     return GetAll(site, pages, throttle, force).run()
 
@@ -4744,6 +4747,9 @@ def async_put():
                    % (page.title(), ex.message))
         except LockedPage, ex:
             output(u"Page [[%s]] is locked; not saved." % page.title())
+        except NoUsername, ex:
+            output(u"Page [[%s]] not saved; sysop privileges required."
+                   % page.title())
         except:
             tb = traceback.format_exception(*sys.exc_info())
             output(u"Saving page [[%s]] failed:\n%s"
