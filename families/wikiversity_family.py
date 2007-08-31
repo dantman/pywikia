@@ -28,7 +28,7 @@ class Family(family.Family):
         self.namespaces[5] = {
             '_default': [u'Wikiversity talk', self.namespaces[5]['_default']],
             'de': u'Wikiversity Diskussion',
-            'es': u'Wikiversidad Discusiòn',
+            'es': u'Wikiversidad Discusión',
             'fr': u'Discussion Wikiversité',
             'it': u'Discussioni Wikiversità',
         }
