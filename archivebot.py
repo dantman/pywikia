@@ -52,9 +52,16 @@ messages = {
         '_default': {
             'ArchiveFull': u'(ARCHIVE FULL)',
             'InitialArchiveHeader': u'{{talkarchive}}',
-            'PageSummary': 'Archiving %(count)d thread(s) (%(why)s) to %(archives)s.',
-            'ArchiveSummary': 'Archiving %(count)d thread(s) from [[%(from)s]].',
-            'OlderThanSummary': 'older than',
+            'PageSummary': u'Archiving %(count)d thread(s) (%(why)s) to %(archives)s.',
+            'ArchiveSummary': u'Archiving %(count)d thread(s) from [[%(from)s]].',
+            'OlderThanSummary': u'older than',
+            },
+        '_default': {
+            'ArchiveFull': u'(ARCHIWUM PEŁNE)',
+            'InitialArchiveHeader': u'{{archiwum}}',
+            'PageSummary': u'Archiwizacja %(count)d wątków (%(why)s) do %(archives)s.',
+            'ArchiveSummary': u'Archiwizacja %(count)d wątków z [[%(from)s]].',
+            'OlderThanSummary': u'starsze niż',
             },
         }
 
