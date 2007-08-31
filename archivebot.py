@@ -47,6 +47,23 @@ except ImportError: #Old python?
     new_hash = md5.md5
 
 
+language = Site.language()
+messages = {
+        '_default': {
+            'ArchiveFull': u'(ARCHIVE FULL)',
+            'InitialArchiveHeader': u'{{talkarchive}}',
+            'PageSummary': 'Archiving %(count)d thread(s) (%(why)s) to %(archives)s.',
+            'ArchiveSummary': 'Archiving %(count)d thread(s) from [[%(from)s]].',
+            'OlderThanSummary': 'older than',
+            },
+        }
+
+def message(key, lang=Site.language()):
+    if not messages.has_key(lang):
+        lang = '_default'
+    return messages[lang][key]
+
+
 class MalformedConfigError(wikipedia.Error):
     """There is an error in the configuration template."""
 
@@ -168,7 +185,7 @@ class DiscussionThread(object):
                 #return 'unsigned'
             maxage = str2time(reT.group(1))
             if self.timestamp + maxage < time.time():
-                return 'older than ' + reT.group(1)
+                return message('OlderThanSummary') + ' ' + reT.group(1)
         return ''
 
 
@@ -187,7 +204,7 @@ class DiscussionPage(object):
         try:
             self.loadPage()
         except wikipedia.NoPage:
-            self.header = archiver.get('archiveheader','{{talkarchive}}')
+            self.header = archiver.get('archiveheader',message('InitialArchiveHeader'))
             if self.vars:
                 self.header = self.header % self.vars
 
@@ -237,7 +254,7 @@ class DiscussionPage(object):
         for t in self.threads:
             newtext += t.toText()
         if self.full:
-            summary += ' (ARCHIVE FULL)'
+            summary += ' ' + message('ArchiveFull')
         self.Page.put(newtext, minorEdit=True, comment=summary)
 
 
@@ -247,8 +264,8 @@ class PageArchiver(object):
     Execute by running the .run() method."""
 
     algo = 'none'
-    pageSummary = 'Archiving %(count)d thread(s) (%(why)s) to %(archives)s.'
-    archiveSummary = 'Archiving %(count)d thread(s) from [[%(from)s]].'
+    pageSummary = message('PageSummary')
+    archiveSummary = message('ArchiveSummary')
 
     def __init__(self, Page, tpl, salt, force=False):
         self.attributes = {
