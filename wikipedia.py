@@ -881,7 +881,8 @@ class Page(object):
         next_msg = re.sub(r"{{PLURAL:\$1\|(.*?)\|(.*?)}}", plural, next_msg)
         nextpattern = re.compile("^%s$" % next_msg.replace("$1", "[0-9]+"))
         delay = 1
-        self._isredirectmessage = self.site().mediawiki_message("Isredirect")
+        if self.site().has_mediawiki_message("Isredirect"):
+            self._isredirectmessage = self.site().mediawiki_message("Isredirect")
         if self.site().has_mediawiki_message("Istemplate"):
             self._istemplatemessage = self.site().mediawiki_message("Istemplate")
         # to avoid duplicates:
@@ -926,7 +927,8 @@ class Page(object):
             isredirect, istemplate = False, False
             textafter = link.a.findNextSibling(text=True)
             if textafter is not None:
-                if self._isredirectmessage in textafter:
+                if self.site().has_mediawiki_message("Isredirect") \
+                        and self._isredirectmessage in textafter:
                     # make sure this is really a redirect to this page
                     # (MediaWiki will mark as a redirect any link that follows
                     # a #REDIRECT marker, not just the first one).
