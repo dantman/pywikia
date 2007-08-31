@@ -213,13 +213,13 @@ parameter, e.g.
 
     python interwiki.py -help
 
-You need to have at least python version 2.5 (http://www.python.org/download/) 
+You need to have at least python version 2.4 (http://www.python.org/download/) 
 installed on your computer to be able to run any of the code in this package.
 Support for older versions of python is not planned.
 
 You do not need to "install" this package to be able to make use of
 it. You can actually just run it from the directory where you unpacked
-it or where you have your copy of the CVS sources.
+it or where you have your copy of the SVN sources.
 
 Before you run any of the programs, you need to create a file named
 user-config.py in your current directory. It needs at least two lines: 
