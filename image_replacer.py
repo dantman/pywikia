@@ -46,7 +46,7 @@ class Replacer(object):
 		self.disallowed_replacements = [(re.compile(i[0]), re.compile(i[1])) 
 			for i in self.config.get('disallowed_replacements', ())]
 				
-		self.site = wikipedia.getSite()
+		self.site = wikipedia.getSite(persistent_http = True)
 		
 		self.database = connect_database()
 		self.cursor = self.database.cursor()
@@ -119,13 +119,13 @@ class Replacer(object):
 		
 		
 	def examine_revision_history(self, revisions, replacement, username):
-		if replacement.group(0) in revisions[0][2]:
-			return (db_timestamp(revisions[0][0]),
-				strip_image(replacement.group(1)),
-				strip_image(replacement.group(2)),
-				'<Unknown>', replacement.group(3))
+		#if replacement.group(0) in revisions[0][2]:
+		#	return (db_timestamp(revisions[0][0]),
+		#		strip_image(replacement.group(1)),
+		#		strip_image(replacement.group(2)),
+		#		'<Unknown>', replacement.group(3))
 				
-		for timestamp, user, text in revisions[1:]:
+		for timestamp, user, text in revisions:
 			if replacement.group(0) in text and user != username:
 				db_time = db_timestamp(timestamp)
 				if db_time < self.first_revision or not self.first_revision:
@@ -201,22 +201,33 @@ class Reporter(threadpool.Thread):
 		not_ok_items = []
 		for wiki, namespace, page_title in not_ok:
 			# Threadsafety?
-			site = wikipedia.getSite(family(wiki))
+			site = wikipedia.getSite(*family(wiki))
+			namespace_name = site.namespace(namespace)
+			if namespace_name:
+				namespace_name = namespace_name + u':'
+			else:
+				namespace_name = u''
+			
 			if unicode(site) == unicode(self.site):
 				if (namespace, page_title) != (6, old_image):
-					not_ok_items.append(u'[[:%s:%s]]' % \
-						(site.namespace(namespace), page_title))
+					not_ok_items.append(u'[[:%s%s]]' % \
+						(namespace_name, page_title))
 			else:
-				not_ok_items.append(u'[[:%s:%s:%s]]' % (site_prefix(site),
-					site.namespace(namespace), page_title))
+				not_ok_items.append(u'[[:%s:%s%s]]' % (site_prefix(site),
+					namespace_name, page_title))
 		
 		template = u'{{%s|new_image=%s|user=%s|comment=%s|not_ok=%s}}' % \
 			(self.config['replacer_report_template'],
 			new_image, user, comment, 
 			self.config.get('replacer_report_seperator', u', ').join(not_ok_items))
 		page = wikipedia.Page(self.site, u'Image:' + old_image)
-		text = page.get()
 		
+		try:
+			text = page.get()
+		except wikipedia.NoPage:
+			output(u'Warning! Unable to report replacement to %s. Page does not exist!' % old_image)
+			return
+			
 		try:
 			page.put(u'%s\n%s' % (template, text), 
 				comment = u'This image has been replaced by ' + new_image)
@@ -241,4 +252,5 @@ if __name__ == '__main__':
 		if type(e) not in (SystemExit, KeyboardInterrupt):
 			output('A critical error has occured! Aborting!')
 			print >>sys.stderr, cgitb.text(sys.exc_info())
+	r.reporters.exit()
 	wikipedia.stopme()
