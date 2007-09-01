@@ -650,7 +650,7 @@ class Family(family.Family):
             'rm','wo','or','roa-rup','kab','ig','tpi','zea','eml','ie',
             'gv','arc','tet','mg','sc','kg','ky','so','na','cbk-zam',
             'ks','gu','km','wuu','glk','cu','om','pa','udm','ee',
-            'rmy','sm','iu','hak','bo','lo','cdo','bm','chr','si'
+            'rmy','sm','iu','hak','bo','lo','cdo','bm','chr','si',
             'got','sd','cr','ba','ti','pap','as','nv','zu','av',
             'ce'
            ]
