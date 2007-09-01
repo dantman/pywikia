@@ -953,6 +953,11 @@ class Subject(object):
             # This is not a page, but a subpage. Do not edit it.
             wikipedia.output(u"Not editing %s: not doing interwiki on subpages" % page.aslink(True))
             raise SaveError
+
+        if not page.exists():
+            wikipedia.output(u"Not editing %s: page does not exist" % page.aslink(True))
+            raise SaveError
+        
         # Show a message in purple.
         wikipedia.output("\03{lightpurple}Updating links on page %s.\03{default}" % page.aslink(True))
 
