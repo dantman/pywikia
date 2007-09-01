@@ -4797,7 +4797,7 @@ def _flush():
         remaining = datetime.timedelta(seconds=(page_put_queue.qsize()+1) * config.put_throttle)
         output('Waiting for %i pages to be put. Estimated time remaining: %s' % (page_put_queue.qsize()+1, remaining))
 
-    page_put_queue.put((None, None, None, None, None, None))
+    page_put_queue.put((None, None, None, None, None, None, None))
 
     while(_putthread.isAlive()):
         try:
