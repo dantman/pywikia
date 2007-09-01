@@ -91,8 +91,8 @@ class Delinker(threadpool.Thread):
 				summary = self.get_summary(site, image, admin, reason, replacement)
 				
 				for page_namespace, page_title, title in pages:
-					if (site.lang, site.family.name) == (self.CommmonsDelinker.site.lang,
-							self.CommmonsDelinker.site.family.name) and \
+					if (site.lang, site.family.name) == (self.CommonsDelinker.site.lang,
+							self.CommonsDelinker.site.family.name) and \
 							(page_namespace, page_title) == (6, image):
 						continue
 						
