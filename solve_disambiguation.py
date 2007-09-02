@@ -144,8 +144,10 @@ ignore_title = {
             u'Wikipedie:Chybějící interwiki/.+',
             u'Wikipedie:Rozcestníky',
             u'Wikipedie diskuse:Rozcestníky',
+            u'Wikipedie:Seznam nejvíce odkazovaných rozcestníků',
             u'Wikipedie:Seznam rozcestníků/první typ',
             u'Wikipedie:Seznam rozcestníků/druhý typ',
+            u'Wikipedista:Zirland/okres',
         ],
         'da': [
             u'Wikipedia:Links til sider med flertydige titler'
@@ -220,10 +222,10 @@ ignore_title = {
             u'Discussion Usator:.+',
         ],
         'it': [
- 	    u'Aiuto:Disambigua/Disorfanamento',
- 	    u'Discussioni utente:.+',
- 	    u'Utente:Civvi/disorfanamento',
- 	],
+            u'Aiuto:Disambigua/Disorfanamento',
+            u'Discussioni utente:.+',
+            u'Utente:Civvi/disorfanamento',
+        ],
         'lt': [
             u'Wikipedia:Rodomi nukreipiamieji straipsniai',
         ],
