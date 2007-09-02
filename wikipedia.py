@@ -4248,7 +4248,8 @@ def getSite(code = None, fam = None, user=None, persistent_http=None):
     return _sites[key]
 
 def setSite(site):
-    default_code = site.language
+    global default_code, default_family
+    default_code = site.language()
     default_family = site.family
 
 def calledModuleName():
