@@ -174,7 +174,7 @@ class Category(wikipedia.Page):
             Rsubcat = re.compile(
                 'CategoryTreeLabelCategory\"\s?href=\".+?\">(.+?)</a>')
             Rimage = re.compile(
-                '<div class\s?=\s?\"thumb\"\sstyle=\"[^\"]*\"><a href=\".*?\"\s?title\s?=\s?\"([^\"]*)\"')
+                '<div class\s?=\s?\"thumb\"\sstyle=\"[^\"]*\">(?:<div style=\"[^\"]*\">)?<a href=\".*?\"(?:\sclass="image")?\stitle\s?=\s?\"([^\"]*)\"')
         ns = self.site().category_namespaces()
         # regular expression matching the "(next 200)" link
         RLinkToNextPage = re.compile('&amp;from=(.*?)" title="');
