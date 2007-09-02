@@ -865,6 +865,18 @@ class CheckRobot:
                 if output:
                    write_log('=== [[' + page.title() + ']] ===' + output + '\n', filename = output_file)
 
+def put(page, text, comment):
+    while True:
+        try:
+            page.put(text, comment = comment)
+            break
+        except wikipedia.SpamfilterError, url:
+            print "Spam filter"
+            text = re.sub(url[0], '<blacklist>' + url[0][7:], text)
+        except wikipedia.EditConflict:
+            print "Edit conflict"
+            raise wikipedia.EditConflict
+
 def check_config(var, license_id, license_name):
     if var:
         if not license_id:
