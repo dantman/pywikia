@@ -3921,7 +3921,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         group on the target title.
         """
         try:
-            redirKeywords = [u'redirect'] + self.family.redirect[self.lang]
+            redirKeywords = [u'redirect'] + [self.family.redirect[self.lang]]
             redirKeywordsR = r'(?:' + '|'.join(redirKeywords) + ')'
         except KeyError:
             # no localized keyword for redirects
