@@ -238,7 +238,7 @@ class Category(wikipedia.Page):
             if Rimage:
                 # For MediaWiki versions where images work through galleries
                 for title in Rimage.findall(txt):
-                    yield ARTICLE, wikipedia.ImagePage(self.site(), title)
+                    yield ARTICLE, wikipedia.ImagePage(self.site(), "Image:%s" % title)
             # try to find a link to the next list page
             # If skippedCategoryDescription is False, then there are no pages
             # or subcategories, so there cannot be a next list page
