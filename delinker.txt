@@ -87,6 +87,7 @@ CommonsDelinker = {}
 * ''global = False'': Set global or local delink. DO NOT RUN THIS BOT
   GLOBALLY WITHOUT CONSULTING BRYAN AND SIEBRAND. Thank you.
 * ''no_sysop = True'': Disable delinking as sysop.
+* ''enable_logging = True'': Enable logging actions to database.
 
 === Delinker settings ===
 Those variables only need to be set if the delinker is enabled.
@@ -115,6 +116,7 @@ The replacer can insert a report on replaced images.
   not_ok''.
 
 === SQL settings ===
+You do not need to set these if you have logging disabled.
 * ''sql_engine = "mysql"'': Database engine to use. Currently supported: 
   MySQL. Support for sqlite3 is planned. The Global delinker requires MySQL.
 * ''sql_config = {\
@@ -125,8 +127,8 @@ The replacer can insert a report on replaced images.
   the database engine. Please refer to your database api manual for a full
   overview of the options.
 * ''sql_layout = "new"'': Set to "legacy" for the old table layout.
-* ''log_table = "database.delinker"'': The database.table to log to.
-* ''replacer_table = "database.replacer"'': The database.table for the 
+* ''log_table = "database_name.delinker_table"'': The database.table to log to.
+* ''replacer_table = "database_name.replacer_table"'': The database.table for the 
   replacer. Only required if the replacer is activated.
   
 ==== SQL table layout ====

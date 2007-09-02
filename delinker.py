@@ -467,6 +467,7 @@ class Logger(threadpool.Thread):
 		threadpool.Thread.__init__(self, pool)
 		self.CommonsDelinker = CommonsDelinker
 		self.sql_layout = self.CommonsDelinker.config.get('sql_layout', 'new')
+		self.enabled = self.CommonsDelinker.config.get('enable_logging', True)
 		
 	def run(self):
 		self.connect()
@@ -518,6 +519,7 @@ class Logger(threadpool.Thread):
 		self.database.commit()
 		
 	def do(self, args):
+		if not self.enabled: return
 		try:
 			if len(args) == 3:
 				self.log_replacement(*args)
@@ -547,7 +549,10 @@ class CommonsDelinker(object):
 		[self.Delinkers.add_thread(self) for i in xrange(self.config['delinker_instances'])]
 			
 		self.Loggers = threadpool.ThreadPool(Logger)
-		[self.Loggers.add_thread(self) for i in xrange(self.config['logger_instances'])]
+		if self.config.get('enable_logging', True):
+			[self.Loggers.add_thread(self) for i in xrange(self.config['logger_instances'])]
+		else:
+			self.Loggers.add_thread(self)
 		
 		self.http = checkusage.HTTP(self.site.hostname())
 		
