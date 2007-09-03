@@ -224,7 +224,7 @@ ignore_title = {
         'it': [
             u'Aiuto:Disambigua/Disorfanamento',
             u'Discussioni utente:.+',
-            u'Utente:Civvi/disorfanamento',
+            u'Utente:Civvì/disorfanamento',
         ],
         'lt': [
             u'Wikipedia:Rodomi nukreipiamieji straipsniai',
