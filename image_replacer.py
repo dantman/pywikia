@@ -240,7 +240,7 @@ class Reporter(threadpool.Thread):
 			
 
 if __name__ == '__main__':
-	import sys, cgitb
+	import sys, traceback
 	output(u'Running ' + __version__)
 
 	try:
@@ -251,6 +251,6 @@ if __name__ == '__main__':
 	except Exception, e:
 		if type(e) not in (SystemExit, KeyboardInterrupt):
 			output('A critical error has occured! Aborting!')
-			print >>sys.stderr, cgitb.text(sys.exc_info())
+			traceback.print_exc(file = sys.stderr)
 	r.reporters.exit()
 	wikipedia.stopme()
