@@ -1384,7 +1384,7 @@ class Page(object):
             return []
         thistxt = removeCategoryLinks(thistxt, self.site())
 
-        # remove HTML comments, nowiki sections, and includeonly sections
+        # remove HTML comments, pre, nowiki, and includeonly sections
         # from text before processing
         thistxt = removeDisabledParts(thistxt)
 
@@ -2634,15 +2634,17 @@ def removeDisabledParts(text, parts=['*']):
     Removes those parts of a wiki text where wiki markup is disabled, i.e.
     * HTML comments
     * nowiki tags
+    * pre tags
     * includeonly tags
 
-    The exact set of parts which are removed is passed as the 'parts' parameter
-    and defaults to all.
+    The exact set of parts which should be removed can be passed as the
+    'parts' parameter, which defaults to all.
     """
     regexes = {
-            'nowiki' : r'<nowiki>.*?</nowiki>',
-            'comments' : r'<!--.*?-->',
-            'includeonly' : r'<includeonly>.*?</includeonly>',
+            'comments' :   r'<!--.*?-->',
+            'includeonly': r'<includeonly>.*?</includeonly>',
+            'nowiki':      r'<nowiki>.*?</nowiki>',
+            'pre':         r'<pre>.*?</pre>',
             }
     if '*' in parts:
         parts = regexes.keys()
@@ -2659,7 +2661,8 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     if insite == None:
         insite = getSite()
     result = {}
-    # Ignore interwiki links within nowiki tags, includeonly tags, and HTML comments
+    # Ignore interwiki links within nowiki tags, includeonly tags, pre tags,
+    # and HTML comments
     text = removeDisabledParts(text)
 
     # This regular expression will find every link that is possibly an
@@ -2816,7 +2819,8 @@ def getCategoryLinks(text, site):
        in the form {code:pagename}. Do not call this routine directly, use
        Page objects instead"""
     result = []
-    # Ignore category links within nowiki tags, includeonly tags, and HTML comments
+    # Ignore category links within nowiki tags, pre tags, includeonly tags,
+    # and HTML comments
     text = removeDisabledParts(text)
     catNamespace = '|'.join(site.category_namespaces())
     R = re.compile(r'\[\[\s*(?P<namespace>%s)\s*:\s*(?P<catName>.+?)(?:\|(?P<sortKey>.+?))?\s*\]\]' % catNamespace)
