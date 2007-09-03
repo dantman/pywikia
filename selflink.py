@@ -37,16 +37,16 @@ docuReplacements = {
 
 # Summary messages in different languages
 # NOTE: Predefined replacement tasks might use their own dictionary, see 'fixes'
-# below.
+# in fixes.py.
 msg = {
-          'de':u'Bot: Entferne Selbstlinks',
-          'en':u'Robot: Removing selflinks',
-          'he':u'רובוט: מסיר קישורים של הדף לעצמו',
-          'fr':u'Bot: Enlève autoliens',
-          'nl':u'Bot: links naar pagina zelf verwijderd',
-          'pl':u'Robot automatycznie usuwa linki zwrotne',
-          'pt':u'Bot: Retirando link para o próprio artigo'
-       }
+    'de':u'Bot: Entferne Selbstlinks',
+    'en':u'Robot: Removing selflinks',
+    'he':u'רובוט: מסיר קישורים של הדף לעצמו',
+    'fr':u'Bot: Enlève autoliens',
+    'nl':u'Bot: links naar pagina zelf verwijderd',
+    'pl':u'Robot automatycznie usuwa linki zwrotne',
+    'pt':u'Bot: Retirando link para o próprio artigo'
+}
 
 class XmlDumpSelflinkPageGenerator:
     """
@@ -141,6 +141,12 @@ class SelflinkBot:
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         try:
             oldText = page.get()
+            # Inside image maps, don't touch selflinks, as they're used
+            # to create tooltip labels. See for example:
+            # http://de.wikipedia.org/w/index.php?title=Innenstadt_%28Bautzen%29&diff=next&oldid=35721641
+            if '<imagemap>' in oldText:
+                wikipedia.output(u'Skipping page %s because it contains an image map.' % page.aslink())
+                return
             text = oldText
             curpos = 0
             while curpos < len(text):
