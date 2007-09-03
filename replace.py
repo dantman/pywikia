@@ -373,7 +373,10 @@ def main():
             for i in xrange (0,len(commandline_replacements),2):
                 replacements.append((commandline_replacements[i],
                                      commandline_replacements[i+1]))
-
+            if summary_commandline == None:
+                pairs = [(commandline_replacements[i], commandline_replacements[i + 1]) for i in range(0, len(commandline_replacements), 2)]
+                replacementsDescription = '(' + ', '.join([('-' + pair[0] + ' +' + pair[1]) for pair in pairs]) + ')'
+                wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % replacementsDescription)
         else:
            raise wikipedia.Error, 'Specifying -fix with replacements is undefined'
     elif fix == None:
