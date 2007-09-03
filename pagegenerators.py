@@ -552,7 +552,7 @@ def PreloadingGenerator(generator, pageNumber=60):
 class GeneratorFactory:
     """
     This factory is responsible for processing command line arguments
-    that are used many scripts and that determine on which pages
+    that are used by many scripts and that determine on which pages
     to work on.
     """
     def __init__(self):
