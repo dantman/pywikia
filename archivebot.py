@@ -56,7 +56,7 @@ messages = {
             'ArchiveSummary': u'Archiving %(count)d thread(s) from [[%(from)s]].',
             'OlderThanSummary': u'older than',
             },
-        '_default': {
+        'pl': {
             'ArchiveFull': u'(ARCHIWUM PEŁNE)',
             'InitialArchiveHeader': u'{{archiwum}}',
             'PageSummary': u'Archiwizacja %(count)d wątków (%(why)s) do %(archives)s.',
