@@ -205,6 +205,7 @@ editsection_names = {
 
 sections_to_skip = {
     'en':['References', 'Further reading', 'Citations', 'External links'],
+    'fr':['Liens externes'],
     'it':['Bibliografia', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni principali'],
 }
 
@@ -308,11 +309,18 @@ def exclusion_list():
         entry = re.sub("</?nowiki>", "", entry)
         if entry:
             if '/' in entry:
-                result_list += [re.sub(" .*", "", entry[:entry.rfind('/')])]
-            else:
-                result_list += [re.sub(" .*", "", entry)]
+                entry = entry[:entry.rfind('/')]
+
+            entry = re.sub("\s.*", "", entry)
+
+            if len(entry) > 4:
+                result_list.append(entry)
 
     result_list += read_file(appdir + 'exclusion_list.txt', cut_comment = True, cut_newlines = True).splitlines()
+
+    for i in range(len(result_list)):
+            result_list[i] = re.sub('\s+$', '', result_list[i])
+
     return result_list
 
 def read_file(filename, cut_comment = False, cut_newlines = False):
