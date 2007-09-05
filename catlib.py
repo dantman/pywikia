@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 Library to work with category pages on Wikipedia
@@ -50,6 +50,7 @@ def unique(l):
     l.sort()
     return l
 
+
 class Category(wikipedia.Page):
     """Subclass of Page that has some special tricks that only work for
        category: pages"""
@@ -81,7 +82,6 @@ class Category(wikipedia.Page):
         else:
             return '[[%s]]' % titleWithSortKey
 
-	
     def _getContentsAndSupercats(self, recurse=False, purge=False,
                                  startFrom=None):
         """
@@ -392,17 +392,17 @@ class Category(wikipedia.Page):
             wikipedia.output('Moving text from %s to %s.' % (self.title(), targetCat.title()))
             authors = ', '.join(self.contributingUsers())
             creationSummary = wikipedia.translate(wikipedia.getSite(), msg_created_for_renaming) % (self.title(), authors)
-	    newtext = self.get()
-	    for regexName in cfdTemplates:
-	        matchcfd = re.compile(r"{{%s.*?}}" % regexName, re.IGNORECASE)
-	        newtext = matchcfd.sub('',newtext)
+            newtext = self.get()
+        for regexName in cfdTemplates:
+            matchcfd = re.compile(r"{{%s.*?}}" % regexName, re.IGNORECASE)
+            newtext = matchcfd.sub('',newtext)
             matchcomment = re.compile(r"<!--BEGIN CFD TEMPLATE-->.*<!--END CFD TEMPLATE-->", re.IGNORECASE | re.MULTILINE | re.DOTALL)
             newtext = matchcomment.sub('',newtext)
             pos = 0
             while (newtext[pos:pos+1] == "\n"):
                 pos = pos + 1
             newtext = newtext[pos:]
-	    targetCat.put(newtext, creationSummary)
+            targetCat.put(newtext, creationSummary)
             return True
 
 #def Category(code, name):
@@ -461,9 +461,15 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         try:
             article.put(text, comment)
         except wikipedia.EditConflict:
-            wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
+            wikipedia.output(
+                    u'Skipping %s because of edit conflict' % article.title())
         except wikipedia.SpamfilterError, e:
-            wikipedia.output(u'Skipping %s because of blacklist entry %s' % (page.title(), e.url))
+            wikipedia.output(
+                    u'Skipping %s because of blacklist entry %s'
+                    % (page.title(), e.url))
+        except wikipedia.LockedPage:
+            wikipedia.output(
+                    u'Skipping %s because page is locked' % article.title())
 
 def test():
     site = wikipedia.getSite()
