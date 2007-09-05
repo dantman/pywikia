@@ -386,7 +386,8 @@ class PageArchiver(object):
                 self.archives[a].update(comment)
 
             #Save the page itself
-            self.Page.header = re.sub('{{'+self.tpl+'\n.*?\n}}',self.attr2text(),self.Page.header,re.DOTALL)
+            rx = re.compile('{{'+self.tpl+'\n.*?\n}}',re.DOTALL)
+            self.Page.header = rx.sub(self.attr2text(),self.Page.header)
             self.commentParams['count'] = self.archivedThreads
             self.commentParams['archives'] = ', '.join(['[['+a.title+']]' for a in self.archives.values()])
             if not self.commentParams['archives']:
