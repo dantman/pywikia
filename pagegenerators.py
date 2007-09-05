@@ -581,7 +581,7 @@ class GeneratorFactory:
             if len(arg) == 17:
                 gen = WithoutInterwikiPageGenerator()
             else:
-                gen = WithoutInterwikiPageGenerator(number = int(arg[13:]))
+                gen = WithoutInterwikiPageGenerator(number = int(arg[18:]))
         elif arg.startswith('-file'):
             if len(arg) == 5:
                 textfilename = wikipedia.input(u'Please enter the local file name:')
