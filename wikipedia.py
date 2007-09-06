@@ -2120,7 +2120,7 @@ class ImagePage(Page):
         # The part after the | is required for copying .ogg files from en:, as they do not
         # have a "full image link" div. This might change in the future; on commons, there
         # is a full image link for .ogg and .mid files.
-        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>.+?)"|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
+        urlR = re.compile(r'<div class="fullImageLink" id="file">.*?<a href="(?P<url>[^ ]+?)"(?! class="image")|<span class="dangerousLink"><a href="(?P<url2>.+?)"', re.DOTALL)
         m = urlR.search(self.getImagePageHtml())
         try:
             url = m.group('url') or m.group('url2')
