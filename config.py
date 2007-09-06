@@ -211,9 +211,6 @@ interwiki_graph_formats = ['png']
 # 'http://www.example.org/~yourname/interwiki-graphs/'
 interwiki_graph_url = None
 
-# Save file with local articles without interwikis.
-without_interwiki = False
-
 ############## SOLVE_DISAMBIGUATION SETTINGS ############
 #
 # Set disambiguation_comment[FAMILY][LANG] to a non-empty string to override
