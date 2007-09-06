@@ -173,6 +173,9 @@ multiple languages, and specify on which sites the bot should modify pages:
 
 Some configuration option can be used to change the working of this robot:
 
+interwiki_min_subjects: the minimum amount of subjects that should be processed
+                    at the same time.
+
 interwiki_backlink: if set to True, all problems in foreign wikis will
                     be reported
 
