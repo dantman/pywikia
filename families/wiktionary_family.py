@@ -183,6 +183,7 @@ class Family(family.Family):
             'it': u'Appendice',
             'ko': u'부록',
             'pl': u'Aneks',
+            'pt': u'Apêndice',
             'ro': u'Portal',
             'ru': u'Приложение',
             'sr': u'Портал',
@@ -198,6 +199,7 @@ class Family(family.Family):
             'it': u'Discussioni appendice',
             'ko': u'부록 토론',
             'pl': u'Dyskusja aneksu',
+            'pt': u'Apêndice Discussão',
             'ro': u'Discuţie Portal',
             'ru': u'Обсуждение приложения',
             'sr': u'Разговор о порталу',
@@ -211,6 +213,7 @@ class Family(family.Family):
             'de': u'Verzeichnis',
             'fr': u'Transwiki',
             'pl': u'Indeks',
+            'pt': u'Vocabulário',
             'ro': u'Apendice',
             'ru': u'Конкорданс',
             'sv': u'Appendix',
@@ -223,6 +226,7 @@ class Family(family.Family):
             'de': u'Verzeichnis Diskussion',
             'fr': u'Discussion Transwiki',
             'pl': u'Dyskusja indeksu',
+            'pt': u'Vocabulário Discussão',
             'ro': u'Discuţie Apendice',
             'ru': u'Обсуждение конкорданса',
             'sv': u'Appendixdiskussion',
@@ -233,6 +237,7 @@ class Family(family.Family):
             'bs': u'Dodatak',
             'cy': u'WiciSawrws',
             'fr': u'Portail',
+            'pt': u'Rimas',
             'ru': u'Индекс',
         }
 
@@ -241,18 +246,21 @@ class Family(family.Family):
             'bs': u'Razgovor o Dodatku',
             'cy': u'Sgwrs WiciSawrws',
             'fr': u'Discussion Portail',
+            'pt': u'Rimas Discussão',
             'ru': u'Обсуждение индекса',
         }
 
         self.namespaces[106] = {
             'en': u'Rhymes',
             'is': u'Viðauki',
+            'pt': u'Portal',
             'ru': u'Рифмы',
         }
 
         self.namespaces[107] = {
             'en': u'Rhymes talk',
             'is': u'Viðaukaspjall',
+            'pt': u'Portal Discussão',
             'ru': u'Обсуждение рифм',
         }
 

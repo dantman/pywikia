@@ -65,7 +65,7 @@ class Family(family.Family):
             'ru': u'Обсуждение ВикиНовостей',
             'sr': u'Разговор о Викивестима',
             'sv': u'Wikinewsdiskussion',
-            'ta': u'Wikinews பேச்ச',
+            'ta': u'Wikinews பேச்சு',
             'th': u'คุยเรื่องวิกิข่าว',
             'uk': u'Обговорення ВікіНовини',
         }   
@@ -91,10 +91,12 @@ class Family(family.Family):
 
         self.namespaces[102] = {
             'fr': u'Transwiki',
+            'pt': u'Efeméride',
         }   
 
         self.namespaces[103] = {
             'fr': u'Discussion Transwiki',
+            'pt': u'Efeméride Discussão',
         }   
 
         self.namespaces[104] = {

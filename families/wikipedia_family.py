@@ -236,7 +236,6 @@ class Family(family.Family):
             'fa': u'درگاه',
             'fi': u'Teemasivu',
             'fr': u'Portail',
-            'it': u'Portale',
             'he': u'פורטל',
             'hi': u'प्रवेशद्वार',
             'hu': u'Portál',
@@ -255,7 +254,7 @@ class Family(family.Family):
             'tg': u'Портал',
             'uk': u'Портал',
             'vo': u'Bespik dö Vükiped',
-            'zh-classic': u'門',
+            'zh-classical': u'門',
         }
 
         self.namespaces[101] = {
@@ -288,8 +287,8 @@ class Family(family.Family):
             'lmo': u'Descüssiú Portal',
             'mk': u'Разговор за Портал',
             'ml': u'കവാടത്തിന്റെ സംവാദം',
-            'nds':u'Portal Diskuschoon',
-            'new':u'दबू खँलाबँला',
+            'nds': u'Portal Diskuschoon',
+            'new': u'दबू खँलाबँला',
             'nl': u'Overleg portaal',
             'no': u'Portaldiskusjon',
             'pl': u'Dyskusja portalu',
@@ -304,7 +303,7 @@ class Family(family.Family):
             'tg': u'Баҳси портал',
             'tr': u'Portal tartışma',
             'uk': u'Обговорення порталу',
-            'zh-classic': u'議',
+            'zh-classical': u'議',
         }
 
         self.namespaces[102] = {
