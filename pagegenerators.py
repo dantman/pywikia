@@ -31,6 +31,13 @@ parameterHelp = """    -cat           Work on all pages which are in a specific 
                    config.py for instructions.
                    Argument can also be given as "-google:searchstring".
 
+    -interwiki     Work on the given page and all equivalent pages in other
+                   languages. This can, for example, be used to fight
+                   multi-site spamming.
+                   Attention: this will cause the bot to modify
+                   pages on several wiki sites, this is not well tested,
+                   so check your edits!
+
     -links         Work on all pages that are linked from a certain page.
                    Argument can also be given as "-links:linkingpagetitle".
 
@@ -129,6 +136,11 @@ def WithoutInterwikiPageGenerator(number = 100, repeat = False, site = None):
         site = wikipedia.getSite()
     for page in site.withoutinterwiki(number=number, repeat=repeat):
         yield page
+
+def InterwikiPageGenerator(page):
+    yield page
+    for iwPage in page.interwiki():
+        yield iwPage
 
 def ReferringPageGenerator(referredPage, followRedirects=False,
                            withTemplateInclusion=True,
@@ -582,6 +594,13 @@ class GeneratorFactory:
                 gen = WithoutInterwikiPageGenerator()
             else:
                 gen = WithoutInterwikiPageGenerator(number = int(arg[18:]))
+        elif arg.startswith('-interwiki'):
+            if len(arg) == 10:
+                title = wikipedia.input(u'Which page should be processed?')
+            else:
+                title = arg[11:]
+            page = wikipedia.Page(wikipedia.getSite(), title)
+            gen = InterwikiPageGenerator(page)
         elif arg.startswith('-file'):
             if len(arg) == 5:
                 textfilename = wikipedia.input(u'Please enter the local file name:')
