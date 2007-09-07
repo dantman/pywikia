@@ -186,6 +186,8 @@ interwiki_graph:    output a graph PNG file on conflicts? You need pydot for
 
 interwiki_graph_format: the file format for interwiki graphs 
 
+without_interwiki:  save file with local articles without interwikis
+
 All these options can be changed through the user-config.py configuration file.
 
 If interwiki.py is terminated before it is finished, it will write a dump file
@@ -577,6 +579,13 @@ class Subject(object):
             return True
         return False
 
+    def reportInterwikilessPage(self, page):
+        wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
+        if config.without_interwiki:
+            f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
+            f.write("# %s \n" % page.aslink())
+            f.close()
+
     def askForHints(self, counter):
         if (self.untranslated or globalvar.askhints) and not self.hintsAsked and not self.originPage.isRedirectPage():
             # Only once!
@@ -704,7 +713,7 @@ class Subject(object):
         self.pending = []
         # Check whether we need hints and the user offered to give them
         if self.untranslated and not self.hintsAsked:
-            wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
+            self.reportInterwikilessPage(page)
         self.askForHints(counter)
 
     def isDone(self):
