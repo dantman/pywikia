@@ -499,10 +499,16 @@ class _Preloader(threading.Thread):
 
     def preload(self, pages):
         try:
-            site = pages[0].site()
-            # filter out pages that are on other sites
-            pages = filter(lambda p: p.site() == site, pages)
-            wikipedia.getall(site, pages, throttle=False)
+            while len(pages) > 0:
+                # It might be that the pages are on different sites,
+                # e.g. because the -interwiki parameter was used.
+                # Query the sites one by one.
+                site = pages[0].site()
+                pagesThisSite = [page for page in pages if page.site() == site]
+                pages = [page for page in pages if page.site() != site]
+                wikipedia.getall(site, pagesThisSite, throttle=False)
+                for page in pagesThisSite:
+                    yield page
         except IndexError:
             # Can happen if the pages list is empty. Don't care.
             pass
@@ -520,14 +526,12 @@ class _Preloader(threading.Thread):
                 # We don't want to load too many pages at once using XML export.
                 # We only get a maximum number at a time.
                 if len(somePages) >= self.pageNumber:
-                    self.preload(somePages)
-                    for refpage in somePages:
+                    for refpage in self.preload(somePages):
                         self.queue.put(refpage)
                     somePages = []
             if somePages:
                 # preload remaining pages
-                self.preload(somePages)
-                for refpage in somePages:
+                for refpage in self.preload(somePages):
                     self.queue.put(refpage)
             self.queue.put(None)    # to signal end of list
         except Exception, e:

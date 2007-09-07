@@ -223,21 +223,21 @@ class ReplaceRobot:
                 # Load the page's text from the wiki
                 original_text = page.get()
                 if not page.canBeEdited():
-                    wikipedia.output(u'Skipping locked page %s' % page.title())
+                    wikipedia.output(u'Skipping locked page %s' % page.aslink())
                     continue
             except wikipedia.NoPage:
-                wikipedia.output(u'Page %s not found' % page.title())
+                wikipedia.output(u'Page %s not found' % page.aslink())
                 continue
             except wikipedia.IsRedirectPage:
                 original_text = page.get(get_redirect=True)
             match = self.checkExceptions(original_text)
             # skip all pages that contain certain texts
             if match:
-                wikipedia.output(u'Skipping %s because it contains %s' % (page.title(), match))
+                wikipedia.output(u'Skipping %s because it contains %s' % (page.aslink(), match))
             else:
                 new_text = self.doReplacements(original_text)
                 if new_text == original_text:
-                    wikipedia.output('No changes were necessary in %s' % page.title())
+                    wikipedia.output('No changes were necessary in %s' % page.aslink())
                 else:
                     if self.recursive:
                         newest_text = self.doReplacements(new_text)
