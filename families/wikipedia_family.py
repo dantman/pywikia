@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -22,8 +22,6 @@ class Family(family.Family):
             'tokipona':'tokipona.wikipedia.org',
             'zh-cn':'zh.wikipedia.org',
             'zh-tw':'zh.wikipedia.org',
-            'zh-classic': 'zh-classical.wikipedia.org'
-            # database thinks 'zh-classical' is 'zh-classic' as field type is varchar(10)
             }
         for lang in self.knownlanguages:
             if lang not in self.langs:

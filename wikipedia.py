@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -242,7 +242,7 @@ class Page(object):
                 site = getSite()
             elif type(site) in [type(''), type(u'')]:
                 site = getSite(site)
-
+            
             self._site = site
 
             if not insite:
@@ -3144,8 +3144,13 @@ class Site(object):
             self.family = Family(fam, fatal = False)
         else:
             self.family = fam
+            
         if self.lang not in self.languages():
-            raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
+            if self.lang == 'zh-classic' and 'zh-classical' in self.languages():
+                self.lang = 'zh-classical'
+                # ev0l database hack (database is varchar[10] -> zh-classical is cut to zh-classic.
+            else:                
+                raise KeyError("Language %s does not exist in family %s"%(self.lang,self.family.name))
 
         # if we got an outdated language code, use the new one instead.
         if self.lang in self.family.obsolete and self.family.obsolete[self.lang]:
@@ -4439,9 +4444,6 @@ def altlang(code):
         return ['be','be-x-old','ru']
     if code in ['kk','ky','tk']:
         return ['tr','ru']
-    if code == 'zh-classic':
-        # the database uses 'zh-classic' instead of 'zh-classical' as the field is varchar(10)
-        return ['zh-classical','zh','zh-cn','zh-tw']
     if code in ['diq','ug','uz']:
         return ['tr']
     if code in ['ja','minnan','zh','zh-cn']:
