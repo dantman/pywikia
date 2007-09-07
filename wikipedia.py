@@ -1136,10 +1136,6 @@ class Page(object):
                 token = self.site().getToken(getagain = gettoken, sysop = sysop)
                 newTokenRetrieved = True
 
-        # Check whether we are not too quickly after the previous putPage, and
-        # wait a bit until the interval is acceptable
-        put_throttle()
-        # Which web-site host are we submitting to?
         host = self.site().hostname()
         # Get the address of the page on that host.
         address = self.site().put_address(self.urlname())
@@ -1176,105 +1172,122 @@ class Page(object):
         if self.site().fam().name == 'loveto' and self.site().language() == 'recipes':
             predata['masteredit'] = '1'
 
-        if newPage:
-            output(u'Creating page %s' % self.aslink(forceInterwiki=True))
-        else:
-            output(u'Changing page %s' % self.aslink(forceInterwiki=True))
-        # Submit the prepared information
-        if self.site().hostname() in config.authenticate.keys():
-            predata.append(("Content-type","application/x-www-form-urlencoded"))
-            predata.append(("User-agent", useragent))
-            data = self.site().urlEncode(predata)
-            response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
-            # I'm not sure what to check in this case, so I just assume things went ok.
-            # Very naive, I agree.
-            data = u''
-        else:
-            try:
-                response, data = self.site().postForm(address, predata, sysop)
-            except httplib.BadStatusLine, line:
-                raise PageNotSaved('Bad status line: %s' % line.line)
-        if data != u'':
-            # Saving unsuccessful. Possible reasons:
-            # server lag, edit conflict or invalid edit token.
-            # A second text area means that an edit conflict has occured.
-            if response.status == 503 \
-               and 'x-database-lag' in response.msg.keys():
-                # server lag; Mediawiki recommends waiting 5 seconds and retrying
-                if verbose:
-                    output(data, newline=False)
-                output(u"Pausing 5 seconds due to excessive database server lag.")
-                time.sleep(5)
-                return self.putPage(text, comment, watchArticle, minorEdit,
-                                    newPage, token, False, sysop)
-            if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
-                raise EditConflict(u'An edit conflict has occured.')
-            elif self.site().has_mediawiki_message("spamprotectiontitle")\
-                    and self.site().mediawiki_message('spamprotectiontitle') in data:
-                try:
-                    reasonR = re.compile(re.escape(self.site().mediawiki_message('spamprotectionmatch')).replace('\$1', '(?P<url>[^<]*)'))
-                    url = reasonR.search(data).group('url')
-                except:
-                    # Some wikis have modified the spamprotectionmatch
-                    # template in a way that the above regex doesn't work,
-                    # e.g. on he.wikipedia the template includes a wikilink,
-                    # and on fr.wikipedia there is bold text.
-                    # This is a workaround for this: it takes the region
-                    # which should contain the spamfilter report and the URL.
-                    # It then searches for a plaintext URL.
-                    relevant = data[data.find('<!-- start content -->')+22:data.find('<!-- end content -->')].strip()
-                    # Throw away all the other links etc.
-                    relevant = re.sub('<.*?>', '', relevant)
-                    # MediaWiki only spam-checks HTTP links, and only the
-                    # domain name part of the URL.
-                    m = re.search('http://[\w\-\.]+', relevant)
-                    if m:
-                        url = m.group()
-                    else:
-                        # Can't extract the exact URL. Let the user search.
-                        url = relevant
-                raise SpamfilterError(url)
-            elif '<label for=\'wpRecreate\'' in data:
-                # Make sure your system clock is correct if this error occurs
-                # without any reason!
-                raise EditConflict(u'Someone deleted the page.')
-            elif self.site().has_mediawiki_message("viewsource")\
-                    and self.site().mediawiki_message('viewsource') in data:
-                # The page is locked. This should have already been detected
-                # when getting the page, but there are some reasons why this
-                # didn't work, e.g. the page might be locked via a cascade
-                # lock.
-                # We won't raise a LockedPage exception here because these
-                # exceptions are usually already raised when getting pages,
-                # not when putting them, and it would be too much work at this
-                # moment to rewrite all scripts. Maybe we can later create
-                # two different lock exceptions, one for getting and one for
-                # putting.
-                try:
-                    # Page is restricted - try using the sysop account, unless we're using one already
-                    if not sysop:
-                        self.site().forceLogin(sysop = True)
-                        output(u'Page is locked, retrying using sysop account.')
-                        return self.putPage(text, comment, watchArticle,
-                                            minorEdit, newPage, token=None,
-                                            gettoken=True, sysop=True)
-                except NoUsername:
-                    raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
-            elif not newTokenRetrieved and "<textarea" in data:
-                # We might have been using an outdated token
-                output(u"Changing page has failed. Retrying.")
-                return self.putPage(text = text, comment = comment,
-                        watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage,
-                        token = None, gettoken = True, sysop = sysop)
+        retry_delay = 1
+        while True:
+            # Check whether we are not too quickly after the previous
+            # putPage, and wait a bit until the interval is acceptable
+            put_throttle()
+            # Which web-site host are we submitting to?
+            if newPage:
+                output(u'Creating page %s' % self.aslink(forceInterwiki=True))
             else:
-                # Something went wrong, and we don't know what. Show the
-                # HTML code that hopefully includes some error message.
-                output(data)
-        if self.site().hostname() in config.authenticate.keys():
-            # No idea how to get the info now.
-            return None
-        else:
-            return response.status, response.reason, data
+                output(u'Changing page %s' % self.aslink(forceInterwiki=True))
+            # Submit the prepared information
+            if self.site().hostname() in config.authenticate.keys():
+                predata.append(("Content-type","application/x-www-form-urlencoded"))
+                predata.append(("User-agent", useragent))
+                data = self.site().urlEncode(predata)
+                response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
+                # I'm not sure what to check in this case, so I just assume
+                # things went ok.  Very naive, I agree.
+                data = u''
+            else:
+                try:
+                    response, data = self.site().postForm(address, predata, sysop)
+                except httplib.BadStatusLine, line:
+                    raise PageNotSaved('Bad status line: %s' % line.line)
+            if data != u'':
+                # Saving unsuccessful. Possible reasons:
+                # server lag, edit conflict or invalid edit token.
+                # A second text area means that an edit conflict has occured.
+                if response.status == 503 \
+                   and 'x-database-lag' in response.msg.keys():
+                    # server lag; Mediawiki recommends waiting 5 seconds and
+                    # retrying
+                    if verbose:
+                        output(data, newline=False)
+                    output(u"Pausing 5 seconds due to database server lag.")
+                    time.sleep(5)
+                    continue
+                if data.startswith(
+                        "<html>\n<head>\n<title>Wikimedia Error</title>"):
+                    output(
+            u"Wikimedia has technical problems; will retry in %i minutes."
+                            % retry_delay)
+                    time.sleep(60 * retry_delay)
+                    retry_delay *= 2
+                    if retry_delay > 30:
+                        retry_delay = 30
+                    continue
+                if 'id=\'wpTextbox2\' name="wpTextbox2"' in data:
+                    raise EditConflict(u'An edit conflict has occured.')
+                elif self.site().has_mediawiki_message("spamprotectiontitle")\
+                        and self.site().mediawiki_message('spamprotectiontitle') in data:
+                    try:
+                        reasonR = re.compile(re.escape(self.site().mediawiki_message('spamprotectionmatch')).replace('\$1', '(?P<url>[^<]*)'))
+                        url = reasonR.search(data).group('url')
+                    except:
+                        # Some wikis have modified the spamprotectionmatch
+                        # template in a way that the above regex doesn't work,
+                        # e.g. on he.wikipedia the template includes a
+                        # wikilink, and on fr.wikipedia there is bold text.
+                        # This is a workaround for this: it takes the region
+                        # which should contain the spamfilter report and the
+                        # URL. It then searches for a plaintext URL.
+                        relevant = data[data.find('<!-- start content -->')+22:data.find('<!-- end content -->')].strip()
+                        # Throw away all the other links etc.
+                        relevant = re.sub('<.*?>', '', relevant)
+                        # MediaWiki only spam-checks HTTP links, and only the
+                        # domain name part of the URL.
+                        m = re.search('http://[\w\-\.]+', relevant)
+                        if m:
+                            url = m.group()
+                        else:
+                            # Can't extract the exact URL. Let the user search.
+                            url = relevant
+                    raise SpamfilterError(url)
+                elif '<label for=\'wpRecreate\'' in data:
+                    # Make sure your system clock is correct if this error occurs
+                    # without any reason!
+                    raise EditConflict(u'Someone deleted the page.')
+                elif self.site().has_mediawiki_message("viewsource")\
+                        and self.site().mediawiki_message('viewsource') in data:
+                    # The page is locked. This should have already been
+                    # detected when getting the page, but there are some
+                    # reasons why this didn't work, e.g. the page might be
+                    # locked via a cascade lock.
+                    # We won't raise a LockedPage exception here because
+                    # these exceptions are usually already raised when
+                    # getting pages, not when putting them, and it would be
+                    # too much work at this moment to rewrite all scripts.
+                    # Maybe we can later create two different lock
+                    # exceptions, one for getting and one for putting.
+                    try:
+                        # Page is restricted - try using the sysop account, unless we're using one already
+                        if not sysop:
+                            self.site().forceLogin(sysop = True)
+                            output(u'Page is locked, retrying using sysop account.')
+                            return self.putPage(text, comment, watchArticle,
+                                                minorEdit, newPage, token=None,
+                                                gettoken=True, sysop=True)
+                    except NoUsername:
+                        raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
+                elif not newTokenRetrieved and "<textarea" in data:
+                    # We might have been using an outdated token
+                    output(u"Changing page has failed. Retrying.")
+                    return self.putPage(text = text, comment = comment,
+                            watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage,
+                            token = None, gettoken = True, sysop = sysop)
+                else:
+                    # Something went wrong, and we don't know what. Show the
+                    # HTML code that hopefully includes some error message.
+                    output(data)
+                    return response.status, response.reason, data
+            if self.site().hostname() in config.authenticate.keys():
+                # No idea how to get the info now.
+                return None
+            else:
+                return response.status, response.reason, data
 
     def canBeEdited(self):
         """
