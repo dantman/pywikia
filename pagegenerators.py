@@ -500,6 +500,8 @@ class _Preloader(threading.Thread):
     def preload(self, pages):
         try:
             site = pages[0].site()
+            # filter out pages that are on other sites
+            pages = filter(lambda p: p.site() == site, pages)
             wikipedia.getall(site, pages, throttle=False)
         except IndexError:
             # Can happen if the pages list is empty. Don't care.
