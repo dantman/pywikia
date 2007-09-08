@@ -85,6 +85,7 @@ class CosmeticChangesToolkit:
         text = self.standardizeCategories(text)
         text = self.cleanUpLinks(text)
         text = self.cleanUpSectionHeaders(text)
+        text = self.putSpacesInLists(text)
         text = self.translateAndCapitalizeNamespaces(text)
         text = self.removeDeprecatedTemplates(text)
         text = self.resolveHtmlEntities(text)
@@ -280,9 +281,30 @@ class CosmeticChangesToolkit:
         return text
 
     def cleanUpSectionHeaders(self, text):
+        """
+        For better readability of section header source code, puts a space
+        between the equal signs and the title.
+        Example: ==Section title== becomes == Section title ==
+
+        NOTE: This space is recommended in the syntax help on the English and
+        German Wikipedia. It might be that it is not wanted on other wikis.
+        If there are any complaints, please file a bug report.
+        """
         for level in range(1, 7):
             equals = '=' * level
             text = wikipedia.replaceExcept(text, r'\n' + equals + ' *(?P<title>[^=]+?) *' + equals + ' *\r\n', '\n' + equals + ' \g<title> ' + equals + '\r\n', ['comment', 'math', 'nowiki', 'pre'])
+        return text
+
+    def putSpacesInLists(self, text):
+        """
+        For better readability of bullet list and enumeration wiki source code,
+        puts a space between the * or # and the text.
+
+        NOTE: This space is recommended in the syntax help on the English, German,
+        and French Wikipedia. It might be that it is not wanted on other wikis.
+        If there are any complaints, please file a bug report.
+        """
+        text = wikipedia.replaceExcept(text, r'(?m)^(?P<bullet>(\*+|#+):*)(?P<char>[^\s\*#:].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     def removeDeprecatedTemplates(self, text):
