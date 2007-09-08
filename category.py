@@ -454,13 +454,14 @@ class CategoryRemoveRobot:
         'sv':u'Robot: Tar bort från %s',
     }
 
-    def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False, titleRegex = None):
+    def __init__(self, catTitle, batchMode = False, editSummary = '', useSummaryForDeletion = False, titleRegex = None, inPlace = False):
         self.editSummary = editSummary
         self.cat = catlib.Category(wikipedia.getSite(), 'Category:' + catTitle)
         # get edit summary message
         self.useSummaryForDeletion = useSummaryForDeletion
         self.batchMode = batchMode
         self.titleRegex = titleRegex
+        self.inPlace = inPlace
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
         else:
@@ -473,14 +474,14 @@ class CategoryRemoveRobot:
         else:
             for article in articles:
                 if not self.titleRegex or re.search(self.titleRegex,article.title()):
-                    catlib.change_category(article, self.cat, None)
+                    catlib.change_category(article, self.cat, None, inPlace = self.inPlace)
         # Also removes the category tag from subcategories' pages
         subcategories = self.cat.subcategoriesList(recurse = 0)
         if len(subcategories) == 0:
             wikipedia.output(u'There are no subcategories in category %s' % self.cat.title())
         else:
             for subcategory in subcategories:
-                catlib.change_category(subcategory, self.cat, None)
+                catlib.change_category(subcategory, self.cat, None, inPlace = self.inPlace)
         if self.cat.exists() and self.cat.isEmpty():
             if self.useSummaryForDeletion:
                 reason = self.editSummary
@@ -809,7 +810,7 @@ if __name__ == "__main__":
         elif action == 'remove':
             if (fromGiven == False):
                 oldCatTitle = wikipedia.input(u'Please enter the name of the category that should be removed:')
-            bot = CategoryRemoveRobot(oldCatTitle, batchMode, editSummary, useSummaryForDeletion)
+            bot = CategoryRemoveRobot(oldCatTitle, batchMode, editSummary, useSummaryForDeletion, inPlace = inPlace)
             bot.run()
         elif action == 'move':
             if (fromGiven == False):
