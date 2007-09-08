@@ -258,9 +258,11 @@ class ReplaceRobot:
                         choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
                         if choice in ['a', 'A']:
                             self.acceptall = True
-                    if self.acceptall or choice in ['y', 'Y']:
+                    if choice in ['y', 'Y']:
+                        page.put_async(new_text)
+                    elif self.acceptall:
                         try:
-                            page.put_async(new_text)
+                            page.put(new_text)
                         except wikipedia.EditConflict:
                             wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
                         except wikipedia.SpamfilterError, e:
