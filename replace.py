@@ -260,7 +260,7 @@ class ReplaceRobot:
                             self.acceptall = True
                     if self.acceptall or choice in ['y', 'Y']:
                         try:
-                            page.put(new_text)
+                            page.put_async(new_text)
                         except wikipedia.EditConflict:
                             wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
                         except wikipedia.SpamfilterError, e:
