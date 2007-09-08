@@ -143,6 +143,7 @@ fixes = {
             r'http://.*?allmovie\.com',             # regular dash in URL
             r'http://physics.nist.gov/',            # regular dash in URL
             r'http://www.forum-seniorenarbeit.de/', # regular dash in URL
+            r'http://kuenstlerdatenbank.ifa.de/',   # regular dash in URL
             r'&object=med',                         # regular dash in URL
             r'\[CDATA\['                            # lots of brackets
         ]
