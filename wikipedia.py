@@ -2577,7 +2577,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         'table':       re.compile(r'(?ims)^{\|.*?^\|}|<table>.*?</table>'),
         # templates with parameters often have whitespace that is used to
         # improve wiki source code readability.
-        'template':    re.compile(r'(?s)^{{.*?}}'),
+        'template':    re.compile(r'(?s){{.*?}}'),
     }
 
     # if we got a string, compile it as a regular expression
