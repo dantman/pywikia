@@ -93,7 +93,7 @@ fixes = {
         ]
     },
     # Do NOT run this automatically!
-    # Recommendation: First run syntax2 automatically, afterwards
+    # Recommendation: First run syntax-safe automatically, afterwards
     # run syntax manually, carefully checking that you're not breaking
     # anything.
     'syntax': {
@@ -112,25 +112,27 @@ fixes = {
               },
         'replacements': [
             # external link in double brackets
-            (r'\[\[(?P<url>http://[^\]]+?)\]\]',   r'[\g<url>]'),
+            (r'\[\[(?P<url>https?://[^\]]+?)\]\]',   r'[\g<url>]'),
             # external link starting with double bracket
-            (r'\[\[(?P<url>http://.+?)\]',   r'[\g<url>]'),
+            (r'\[\[(?P<url>https?://.+?)\]',   r'[\g<url>]'),
+            # external link with forgotten closing bracket
+            (r'\[(?P<url>https?://[^\]\s]+)\r\n',   '[\g<url>]\r\n'),
             # external link ending with double bracket.
             # do not change weblinks that contain wiki links inside
             # inside the description
-            (r'\[(?P<url>http://[^\[\]]+?)\]\](?!\])',   r'[\g<url>]'),
+            (r'\[(?P<url>https?://[^\[\]]+?)\]\](?!\])',   r'[\g<url>]'),
             # external link and description separated by a dash.
             # ATTENTION: while this is a mistake in most cases, there are some
             # valid URLs that contain dashes!
-            (r'\[(?P<url>http://[^\|\]\s]+?) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
+            (r'\[(?P<url>https?://[^\|\]\s]+?) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
             # wiki link closed by single bracket.
             # ATTENTION: There are some false positives, for example
             # Brainfuck code examples or MS-DOS parameter instructions.
             # There are also sometimes better ways to fix it than
             # just putting an additional ] after the link.
+            (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),
             # wiki link opened by single bracket.
             # ATTENTION: same as above.
-            (r'\[\[([^\[\]]+?)\](?!\])',  r'[[\1]]'),
             (r'(?<!\[)\[([^\[\]]+?)\]\](?!\])',  r'[[\1]]'),
             # template closed by single bracket
             # ATTENTION: There are some false positives, especially in
@@ -159,25 +161,26 @@ fixes = {
                'he':u'בוט: מתקן תחביר ויקי',
                'ia':u'Robot: Reparation de syntaxe wiki',
                'lt':u'robotas: Taisoma wiki sintaksė',
+               'nl':u'Bot: reparatie wikisyntaxis',
                'pl':u'Robot poprawia wiki-składnię',
                'pt':u'Bot: Corrigindo sintaxe wiki',
                'sr':u'Бот: Поправка вики синтаксе',
               },
         'replacements': [
             # external link in double brackets
-            (r'\[\[(?P<url>http://[^\]]+?)\]\]',   r'[\g<url>]'),
+            (r'\[\[(?P<url>https?://[^\]]+?)\]\]',   r'[\g<url>]'),
             # external link starting with double bracket
-            (r'\[\[(?P<url>http://.+?)\]',   r'[\g<url>]'),
+            (r'\[\[(?P<url>https?://.+?)\]',   r'[\g<url>]'),
             # external link with forgotten closing bracket
-            (r'\[(?P<url>http://[^\]\s]+)\r\n',   r'[\g<url>]\r\n'),
+            (r'\[(?P<url>https?://[^\]\s]+)\r\n',   '[\g<url>]\r\n'),
              # external link and description separated by a dash, with
              # whitespace in front of the dash, so that it is clear that
              # the dash is not a legitimate part of the URL.
-            (r'\[(?P<url>http://[^\|\]\r\n]+?) +\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
+            (r'\[(?P<url>https?://[^\|\] \r\n]+?) +\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
             # dash in external link, where the correct end of the URL can
             # be detected from the file extension. It is very unlikely that
             # this will cause mistakes.
-            (r'\[(?P<url>http://[^\|\] ]+?(\.pdf|\.html|\.htm|\.php|\.asp|\.aspx)) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
+            (r'\[(?P<url>https?://[^\|\] ]+?(\.pdf|\.html|\.htm|\.php|\.asp|\.aspx|\.jsp)) *\| *(?P<label>[^\|\]]+?)\]', r'[\g<url> \g<label>]'),
         ],
     },
     'case-de': { # German upper / lower case issues
