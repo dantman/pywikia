@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 
 import urllib
 import family, config
@@ -22,7 +22,7 @@ class Family(family.Family):
             'tokipona':'tokipona.wikipedia.org',
             'zh-cn':'zh.wikipedia.org',
             'zh-tw':'zh.wikipedia.org',
-            }
+        }
         for lang in self.knownlanguages:
             if lang not in self.langs:
                 self.langs[lang] = lang+'.wikipedia.org'
@@ -580,7 +580,7 @@ class Family(family.Family):
             'simple', 'sd', 'ss', 'sk', 'sl', 'cu', 'so', 'sr', 'sh', 'fi', 'sv', 'tl',
             'ta', 'kab', 'roa-tara', 'tt', 'te', 'tet', 'th', 'vi', 'ti', 'tg', 'tpi', 'cv', 'tr',
             'tk', 'tw', 'udm', 'uk', 'ur', 'vec', 'vo', 'fiu-vro', 'wa', 'vls', 'war',
-            'wo', 'wuu', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'cbk-zam', 'diq', 'zea', 'bat-msg', 'zh',
+            'wo', 'wuu', 'ts', 'ii', 'yi', 'yo', 'zh-yue', 'cbk-zam', 'diq', 'zea', 'bat-smg', 'zh',
             'zh-tw', 'zh-cn']
 
         # Order for fy: alphabetical by code, but y counts as i
