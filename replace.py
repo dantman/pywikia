@@ -258,9 +258,9 @@ class ReplaceRobot:
                         choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
                         if choice in ['a', 'A']:
                             self.acceptall = True
-                    if choice in ['y', 'Y']:
-                        page.put_async(new_text)
-                    elif self.acceptall:
+                        if choice in ['y', 'Y']:
+                            page.put_async(new_text)
+                    if self.acceptall:
                         try:
                             page.put(new_text)
                         except wikipedia.EditConflict:
