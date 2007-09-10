@@ -85,6 +85,7 @@ msg = {
     'ia': u'Disambiguation assistite per robot: %s',
     'it': u'Sistemazione automatica della disambigua: %s',
     'lt': u'Nuorodų į nukrepiamąjį straipsnį keitimas: %s',
+    'kk': u'Айрықты мағыналарды бот көмегімен шешу: %s',
     'nl': u'Robot-geholpen doorverwijzing: %s',
     'no': u'bot: Retter lenke til peker: %s',
     'pl': u'Wspomagane przez robota ujednoznacznienie: %s',
@@ -105,6 +106,7 @@ msg_redir = {
     'ia': u'Resolution de redirectiones assistite per robot: %s',
     'it': u'Sistemazione automatica del redirect: %s',
     'lt': u'Nuorodų į peradresavimo straipsnį keitimas: %s',
+    'kk': u'Айрықты мағыналарды бот көмегімен шешу: %s',
     'nl': u'Robot-geholpen redirect-oplossing: %s',
     'no': u'bot: Endrer omdirigeringslenke: %s',
     'pl': u'Wspomagane przez robota ujednoznacznienie: %s',
@@ -123,6 +125,7 @@ primary_topic_format = {
     'ia': u'%s_(disambiguation)',
     'it': u'%s_(disambigua)',
     'lt': u'%s_(reikšmės)',
+    'kk': u'%s_(айрық)',
     'nl': u'%s_(doorverwijspagina)',
     'no': u'%s_(peker)',
     'pl': u'%s_(ujednoznacznienie)',
@@ -225,6 +228,9 @@ ignore_title = {
             u'Aiuto:Disambigua/Disorfanamento',
             u'Discussioni utente:.+',
             u'Utente:Civvì/disorfanamento',
+        ],
+        'kk': [
+            u'Санат:Айрықты бет',
         ],
         'lt': [
             u'Wikipedia:Rodomi nukreipiamieji straipsniai',
@@ -432,6 +438,9 @@ class DisambiguationRobot(object):
     ignore_contents = {
         'de':(u'{{[Ii]nuse}}',
               u'{{[Ll]öschen}}',
+            ),
+        'kk':(u'{{[Ii]nuse}}',
+              u'{{[Pp]rocessing}}',
             ),
         'nl':(u'{{wiu2}}',
               u'{{nuweg}}',

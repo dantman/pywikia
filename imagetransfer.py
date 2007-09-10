@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to copy images to Wikimedia Commons, or to another wiki.
 
@@ -39,6 +39,7 @@ copy_message = {
     'he':u"תמונה זו הועתקה מהאתר %s. תיאור הקובץ המקורי היה:\r\n\r\n%s",
     'ia':u"Iste imagine esseva copiate de %s. Le description original esseva:\r\n\r\n%s",
     'it':u"Questa immagine è stata copiata da %s. La descrizione originale era:\r\n\r\n%s",
+    'kk':u"Бұл сурет %s дегеннен көшірілді. Түпнұсқа сипатттамасы былай болды:\r\n\r\n%s",
     'lt':u"Šis paveikslėlis buvo įkeltas iš %s. Originalus aprašymas buvo:\r\n\r\n%s",
     'nl':u"Afbeelding gekopieerd vanaf %s. De beschrijving daar was:\r\n\r\n%s",
     'pl':u"Ten obraz został skopiowany z %s. Oryginalny opis to:\r\n\r\n%s",
@@ -53,6 +54,7 @@ nowCommonsTemplate = {
     'he': u'{{תמונת ויקישיתוף|Image:%s}}',
     'ia': u'{{OraInCommons|Imagine:%s}}',
     'it': u'{{NowCommons unlink|%s}}',
+    'kk': u'{{NowCommons|Image:%s}}',
     'lt': u'{{NowCommons|Image:%s}}',
     'nl': u'{{NuCommons|Image:%s}}',
     'pl': u'{{NowCommons|%s}}',
@@ -63,6 +65,7 @@ nowCommonsTemplate = {
 #nowCommonsThis = {
     #'en': u'{{NowCommonsThis|%s}}',
     #'it': u'{{NowCommons omonima|%s}}',
+    #'kk': u'{{NowCommonsThis|%s}}',
     #'pt': u'{{NowCommonsThis|%s}}',
 #}
 
@@ -72,6 +75,7 @@ nowCommonsMessage = {
     'he': u'הקובץ זמין כעת בוויקישיתוף.',
     'ia': u'Le file es ora disponibile in Wikimedia Commons.',
     'it': u'L\'immagine è adesso disponibile su Wikimedia Commons.',
+    'kk': u'Файлды енді Wikimedia Ортаққорынан қатынауға болады.',
     'lt': u'Failas įkeltas į Wikimedia Commons projektą.',
     'nl': u'Dit bestand staat nu op [[w:nl:Wikimedia Commons|Wikimedia Commons]].',
     'pl': u'Plik jest teraz dostępny na Wikimedia Commons.',
@@ -83,6 +87,7 @@ nowCommonsMessage = {
     #'en': u'File is now available on Commons with the same name.',
     #'he': u'הקובץ זמין כעת בוויקישיתוף בשם זהה.',
     #'it': u'L\'immagine è adesso disponibile su Wikimedia Commons con lo stesso nome.',
+    #'kk': u'Файлды дәл сол атауымен енді Ортаққордан қатынауға болады.',
     #'pt': u'Esta imagem está agora no Commons com o mesmo nome.',
 #}
 

@@ -114,6 +114,7 @@ msg = {
        'is':u'Vélmenni: breyti texta %s',
        'it':u'Bot: Sostituzione automatica %s',
        'ka':u'რობოტი: ტექსტის ავტომატური შეცვლა %s',
+       'kk':u'Бот: Мәтінді өздікті алмастырды: %s',
        'ksh':u'Bot: hät outomatesch Täx jetuusch: %s',
        'lt':u'robotas: Automatinis teksto keitimas %s',
        'nds':u'Bot: Text automaatsch utwesselt: %s',

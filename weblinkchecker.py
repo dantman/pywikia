@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This bot is used for checking external links found at the wiki. It checks
 several pages at once, with a limit set by the config variable
@@ -73,6 +73,7 @@ talk_report_msg = {
     'fr': u'Bot: Rapporte lien externe inaccessible',
     'he': u'רובוט: מדווח על קישור חיצוני בלתי זמין',
     'ia': u'Robot: Reporto de un ligamine externe non functionante',
+    'kk': u'Бот: Қатынаулы емес сілтеме туралы есеп беру',
     'nds': u'Lenk-Bot: Weblenk geiht nich mehr',
     'nl': u'Robot: Melding (tijdelijk) onbereikbare externe link',
     'no': u'bot: Rapporter død eksternlenke',
@@ -90,6 +91,7 @@ talk_report = {
     'fr': u'== Lien mort ==\n\nPendant plusieurs patrouilles par bot, le lien suivant a été inaccessible. Veuillez vérifier si le lien est effectivement mort et corrigez ou retirez-le si oui.\n\n%s\n%s--~~~~',
     'he': u'== קישור שבור ==\n\nבמהלך מספר ריצות אוטומטיות של הבוט, נמצא שהקישור החיצוני הבא אינו זמין. אנא בדקו אם הקישור אכן שבור, ותקנו אותו או הסירו את הפיסקאות הללו במקרה זה!\n\n%s\n%s--~~~~',
     'ia': u'== Ligamine defuncte ==\n\nDurante plure sessiones automatic, le robot ha constatate que le sequente ligamine externe non es disponibile. Per favor confirma que le ligamine de facto es defuncte, e in caso de si, repara o elimina lo!\n\n%s\n%s--~~~~',
+    'kk': u'== Өлі сілтеме ==\n\nӨздікті бот бірнеше жегілгенде келесі сыртқы сілтемеге қатынай алмады. Бұл сілтеменің қатыналуын тексеріп шығыңыз да, не түзетіңіз, не аластаңыз!\n\n%s\n%s--~~~~',
     'nds': u'== Weblenk geiht nich mehr ==\n\nDe Bot hett en poor Mal al versöcht, disse Siet optoropen un kunn dor nich bikamen. Schall man een nakieken, wat de Siet noch dor is un den Lenk richten oder rutnehmen.\n\n%s\n%s--~~~~',
     'nl': u'== Dode link ==\nTijdens enkele automatische controles bleek de onderstaande externe link onbereikbaar. Controleer alstublieft of de link inderdaad onbereikbaar is. Verwijder deze tekst alstublieft na een succesvolle controle of na het verwijderen of corrigeren van de externe link.\n\n%s\n%s--~~~~[[Categorie:Wikipedia:Onbereikbare externe link]]',
     'no': u'{{subst:Bruker:JhsBot/Død lenke}}\n\n%s\n%s~~~~\n\n{{ødelagt lenke}}',
@@ -101,6 +103,7 @@ talk_report = {
 talk_report_archive = {
     'de': u'Die Webseite wurde vom Internet Archive gespeichert. Bitte verlinke gegebenenfalls eine geeignete archivierte Version: [%s]. ',
     'en': u'\nThe web page has been saved by the Internet Archive. Please consider linking to an appropriate archived version: [%s]. ',
+    'kk': u'\nБұл ғаламтордың беті Интернет Мұрағатында сақталған. Мұрағатталған нұсқасына сәйкесті сілтеуді ескеріңіз: [%s]. ',
     'nl': u'\nDeze website is bewaard in het Internet Archive. Overweeg te linken naar een gearchiveerde pagina: [%s]. ',
     'no': u'\nDenne nettsiden er lagra i Internet Archive. Vurder om lenka kan endres til å peke til en av de arkiverte versjonene: [%s]. ',
     'pt': u'Esta página web foi gravada na Internet Archive. Por favor considere o link para a versão arquivada: [%s]. ',

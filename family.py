@@ -1721,7 +1721,7 @@ class Family:
            'da': u'[a-zæøå]*',
            'fr': u'[a-zàâçéèêîôû]*',
            'it': u'[a-zàèéìòù]*',
-           'it': u'[a-zàèéìòù]*',
+           'kk': u'[a-zäçéğıïñöşüýа-яёәғіқңөұүһʺʹ]*',
            'nl': u'[a-zäöüïëéèéàç]*',
            'pt': u'[a-záâàãéêíóôõúüç]*',
            'ru': u'[a-zа-я]*',
@@ -2378,6 +2378,7 @@ class Family:
         'id': [u'redirected', u'alih'],
         'is': [u'tilvísun'],
         'ka': [u'გადამისამართება'],
+        'kk': [u'айдау'],
         'nn': [u'omdiriger'],
         'ru': [u'перенаправление', u'перенапр'],
         'sk': [u'presmeruj'],
@@ -2389,6 +2390,7 @@ class Family:
     # So can be pagename code
     pagename = {
         'bg': [u'СТРАНИЦА'],
+        'kk': [u'БЕТАТАУЫ'],
         'nn': ['SIDENAMN','SIDENAVN'],
         'ru': [u'НАЗВАНИЕСТРАНИЦЫ'],
         'sr': [u'СТРАНИЦА'],
@@ -2396,6 +2398,7 @@ class Family:
     }
 
     pagenamee = {
+        'kk': [u'БЕТАТАУЫ2'],
         'nn': ['SIDENAMNE','SIDENAVNE'],
         'ru': [u'НАЗВАНИЕСТРАНИЦЫ2'],
         'sr': [u'СТРАНИЦЕ']
