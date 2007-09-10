@@ -40,6 +40,7 @@ import wikipedia, pagegenerators, catlib
 
 msg = {
     'en': u'Robot: Create redirect to [[%s]]',
+    'fr': u'robot: créez redirect à [[%s]]',
     'pt': u'Bot: Criando redirect para [[%s]]',
     }
 
@@ -53,9 +54,9 @@ class CapitalizeBot:
             page_t = page.title()
             # Show the title of the page we're working on.
             # Highlight the title in purple.
-            wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"
+            wikipedia.output(u"\n>>> \03{lightpurple}%s\03{default} <<<"
                              % page_t)
-            if not page_t.exists():
+            if not page.exists():
                 wikipedia.output(u'%s doesn\'t exist' % page_t.title())
                 if not self.acceptall:
                     choice = wikipedia.inputChoice(
