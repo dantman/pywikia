@@ -429,7 +429,9 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         try:
             article.put(text, comment)
         except wikipedia.EditConflict:
-            wikipedia.output(u'Skipping %s because of edit conflict' % (article.title()))
+            wikipedia.output(u'Skipping %s because of edit conflict' % article.title())
+        except wikipedia.LockedPage:
+            wikipedia.output(u'Skipping locked page %s' % article.title())
         return
 
     # This loop will replace all occurrences of the category to be changed, and remove duplicates.
