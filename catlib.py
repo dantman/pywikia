@@ -432,6 +432,16 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             wikipedia.output(u'Skipping %s because of edit conflict' % article.title())
         except wikipedia.LockedPage:
             wikipedia.output(u'Skipping locked page %s' % article.title())
+        except wikipedia.SpamFilterError, error:
+            wikipedia.output(u'Changing page %s blocked by spam filter (URL=%s)'
+                             % (article.title(), error.url))
+        except wikipedia.NoUsername:
+            wikipedia.output(
+                u"Page [[%s]] not saved; sysop privileges required."
+                             % article.title())
+        except wikipedia.PageNotSaved, error:
+            wikipedia.output(u"Saving page [[%s]] failed: %s"
+                             % (page.title(), error.message))
         return
 
     # This loop will replace all occurrences of the category to be changed, and remove duplicates.
