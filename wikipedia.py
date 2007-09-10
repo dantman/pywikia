@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -2865,7 +2865,14 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
         site = getSite()
 
     catNamespace = '|'.join(site.category_namespaces())
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\]' % (catNamespace, oldcat.titleWithoutNamespace()))
+    title = oldcat.titleWithoutNamespace()
+    if not title:
+        return
+    # title might not be formatted correctly on the wiki
+    if title[0].isalpha() and not site.nocapitalize:
+        title = "[%s%s]" % (title[0].upper(), title[0].lower()) + title[1:]
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*\]\]'
+                               % (catNamespace, title))
     if newcat is None:
         text = replaceExcept(oldtext, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])
     else:
