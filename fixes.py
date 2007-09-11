@@ -66,7 +66,6 @@ fixes = {
     # Grammar fixes for German language
     'grammar-de': {
         'regex': True,
-        'exceptions':  ['sic!'],
         'msg': {
                'de':u'Bot: korrigiere Grammatik',
               },
@@ -90,6 +89,11 @@ fixes = {
             # Leerzeichen und Komma vertauscht
             (u'([a-z](\]\])?) ,((\[\[)?[a-zA-Z])',                                                                          r'\1, \3'),
             #(u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
+        ],
+        'exceptions':  [
+            'sic!',
+            'Ju 52/3m', # Flugzeugbezeichnung
+            'AH-1W',    # Hubschrauberbezeichnung
         ]
     },
     # Do NOT run this automatically!
