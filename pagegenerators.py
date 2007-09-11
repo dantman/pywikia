@@ -15,65 +15,65 @@ These parameters are supported to specify which pages titles to print:
 """
 __version__='$Id$'
 
-parameterHelp = """    -cat           Work on all pages which are in a specific category.
-                   Argument can also be given as "-cat:categoryname".
+parameterHelp = """\
+-cat              Work on all pages which are in a specific category.
+                  Argument can also be given as "-cat:categoryname".
 
-    -file          Read a list of pages to treat from the named text file.
-                   Page titles in the file must be enclosed with [[brackets]]. 
-                   Argument can also be given as "-file:filename".
+-file             Read a list of pages to treat from the named text file.
+                  Page titles in the file must be enclosed with [[brackets]]. 
+                  Argument can also be given as "-file:filename".
 
-    -filelinks     Work on all pages that use a certain image/media file.
-                   Argument can also be given as "-file:filename".
+-filelinks        Work on all pages that use a certain image/media file.
+                  Argument can also be given as "-file:filename".
 
-    -google        Work on all pages that are found in a Google search.
-                   You need a Google Web API license key. Note that Google
-                   doesn't give out license keys anymore. See google_key in
-                   config.py for instructions.
-                   Argument can also be given as "-google:searchstring".
+-google           Work on all pages that are found in a Google search.
+                  You need a Google Web API license key. Note that Google
+                  doesn't give out license keys anymore. See google_key in
+                  config.py for instructions.
+                  Argument can also be given as "-google:searchstring".
 
-    -interwiki     Work on the given page and all equivalent pages in other
-                   languages. This can, for example, be used to fight
-                   multi-site spamming.
-                   Attention: this will cause the bot to modify
-                   pages on several wiki sites, this is not well tested,
-                   so check your edits!
+-interwiki        Work on the given page and all equivalent pages in other
+                  languages. This can, for example, be used to fight
+                  multi-site spamming.
+                  Attention: this will cause the bot to modify
+                  pages on several wiki sites, this is not well tested,
+                  so check your edits!
 
-    -links         Work on all pages that are linked from a certain page.
-                   Argument can also be given as "-links:linkingpagetitle".
+-links            Work on all pages that are linked from a certain page.
+                  Argument can also be given as "-links:linkingpagetitle".
 
-    -new           Work on the 60 newest pages. If given as -new:x, will work
-                   on the x newest pages.
+-new              Work on the 60 newest pages. If given as -new:x, will work
+                  on the x newest pages.
 
-    -ref           Work on all pages that link to a certain page.
-                   Argument can also be given as "-ref:referredpagetitle".
+-ref              Work on all pages that link to a certain page.
+                  Argument can also be given as "-ref:referredpagetitle".
 
-    -start         Specifies that the robot should go alphabetically through
-                   all pages on the home wiki, starting at the named page.
-                   Argument can also be given as "-subcat:pagetitle".
+-start            Specifies that the robot should go alphabetically through
+                  all pages on the home wiki, starting at the named page.
+                  Argument can also be given as "-start:pagetitle"
 
-    -subcat        Like -cat, but also includes pages in subcategories of the
-                   given category.
-                   Argument can also be given as "-subcat:categoryname".
+-subcat           Like -cat, but also includes pages in subcategories of the
+                  given category.
+                  Argument can also be given as "-subcat:categoryname".
 
-    -transcludes   Work on all pages that use a certain template.
-                   Argument can also be given as "-transcludes:Template:Title".
+-transcludes      Work on all pages that use a certain template.
+                  Argument can also be given as "-transcludes:Template:Title".
 
-    -unusedfiles   Work on all description pages of images/media files that are
-                   not used anywhere.
-                   Argument can also be given as "-unusedfiles:n" where
-                   n is some number (??).
+-unusedfiles      Work on all description pages of images/media files that are
+                  not used anywhere.
+                  Argument can be given as "-unusedfiles:n" where
+                  n is the maximum number of articles to work on.
 
-    -unwatched     Work on all articles that are not watched by anyone.
-                   Argument can also be given as "-unusedfiles:n" where
-                   n is some number (??).
+-unwatched        Work on all articles that are not watched by anyone.
+                  Argument can be given as "-unwatched:n" where
+                  n is the maximum number of articles to work on.
 
-    -weblink       Specifies that the robot should go alphabetically through
-                   all pages on the home wiki, starting at the named page.
-                   Argument can also be given as "-subcat:pagetitle".
+-weblink          Work on all articles that contain an external link to
+                  a given URL; may be given as "-weblink:url"
 
-    -withoutinterwiki Work on all pages that don't have interlanguage links.
-                   Argument can also be given as "-withoutinterwiki:n" where
-                   n is some number (??).
+-withoutinterwiki Work on all pages that don't have interlanguage links.
+                  Argument can be given as "-withoutinterwiki:n" where
+                  n is some number (??).
 """
 
 
@@ -260,9 +260,11 @@ def PagesFromTitlesGenerator(iterable):
         yield wikipedia.Page(wikipedia.getSite(), title)
 
 def LinksearchPageGenerator(link, step=500, site = None):
-    """Yields all pages that include a specified link, according to [[Special:Linksearch]].
+    """Yields all pages that include a specified link, according to
+    [[Special:Linksearch]].
     Retrieves in chunks of size "step" (default 500).
-    Does not guarantee that resulting pages are unique."""
+    Does not guarantee that resulting pages are unique.
+    """
     if site is None:
         site = wikipedia.getSite()
     elRX = re.compile('<a .* class="external ?" .*</a>.*<a .*>(.*)</a>') #TODO: de-uglify?
