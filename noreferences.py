@@ -53,7 +53,8 @@ msg = {
 # link sections. This dictionary defines these sections, sorted by priority.
 # For example, on an English wiki, the script would place the "References"
 # section in front of the "Further reading" section, if that existed.
-# Otherwise, it would try to do it 
+# Otherwise, it would try to put it in front of the "External links" section,
+# or if that fails, the "See also" section, etc.
 placeBeforeSections = {
     'de': [              # no explicit policy on where to put the references
         u'Literatur',
@@ -68,7 +69,9 @@ placeBeforeSections = {
     ],
 }
 
-# How the references section should look like.
+# Titles of sections where a reference tag would fit into.
+# The first title should be the preferred one: It's the one that
+# will be used when a new section has to be created.
 referencesSections = {
     'de': [
         u'Einzelnachweise', # The "Einzelnachweise" title is disputed, some people prefer the other variants
@@ -204,8 +207,8 @@ class NoReferencesBot:
                         return
                 else:
                     break
-        # TODO: Think of a clever way of handling this.
-        wikipedia.output(u'Found no section that can be preceeded by a new references section. Please add a references section.')
+        # TODO: Make up a clever way of handling this.
+        wikipedia.output(u'Found no section that can be preceeded by a new references section. Please add a references section manually.')
 
     def save(self, page, newText):
         """
