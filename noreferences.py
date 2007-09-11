@@ -92,8 +92,8 @@ class XmlDumpNoReferencesPageGenerator:
             * xmlFilename  - The dump's path, either absolute or relative
         """
         self.xmlFilename = xmlFilename
-        self.refR = re.compile('</ref>')
-        self.referencesR = re.compile('<references */>')
+        self.refR = re.compile('</ref>', re.IGNORECASE)
+        self.referencesR = re.compile('<references */>', re.IGNORECASE)
 
     def __iter__(self):
         import xmlreader
@@ -109,8 +109,8 @@ class NoReferencesBot:
         self.generator = generator
         self.always = always
 
-        self.refR = re.compile('</ref>')
-        self.referencesR = re.compile('<references */>')
+        self.refR = re.compile('</ref>', re.IGNORECASE)
+        self.referencesR = re.compile('<references */>', re.IGNORECASE)
         try:
             self.referencesTemplates = referencesTemplates[wikipedia.getSite().family.name][wikipedia.getSite().lang]
         except KeyError:
