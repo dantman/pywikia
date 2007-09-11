@@ -47,6 +47,7 @@ docuReplacements = {
 msg = {
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
+    'lt':u'robotas: Pridedama trūkstama <references /> žymė',
 }
 
 # References sections are usually placed before further reading / external
@@ -68,6 +69,9 @@ placeBeforeSections = {
         u'See also',
         u'Notes'
     ],
+    'lt': [              # no explicit policy on where to put the references
+        u'Nuorodos'
+    ],
 }
 
 # Titles of sections where a reference tag would fit into.
@@ -85,6 +89,10 @@ referencesSections = {
         u'Footnotes',
         u'Notes',
     ],
+    'lt': [             # not sure about which ones are preferred.
+        u'Šaltiniai',
+        u'Literatūra',
+    ],
 }
 
 # Templates which include a <references/> tag. If there is no such template
@@ -92,6 +100,7 @@ referencesSections = {
 referencesTemplates = {
     'wikipedia': {
         'en': [u'Reflist'],
+        'lt': [u'Reflist', u'Ref', u'Litref'],
     },
 }
 
