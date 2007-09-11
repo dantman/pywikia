@@ -20,6 +20,8 @@ These command line parameters can be used to specify which pages to work on:
                    want to iterate over all categories starting at M, use
                    -start:Category:M.
 
+    -always        Don't prompt you for each replacement.
+
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
 
@@ -52,7 +54,7 @@ msg = {
 # For example, on an English wiki, the script would place the "References"
 # section in front of the "Further reading" section, if that existed.
 # Otherwise, it would try to do it 
-placeBeforeSection = {
+placeBeforeSections = {
     'de': [              # no explicit policy on where to put the references
         u'Literatur',
         u'Weblinks',
@@ -67,9 +69,18 @@ placeBeforeSection = {
 }
 
 # How the references section should look like.
-referencesSection = {
-    'de': u'\n== Einzelnachweise ==\n\n<references/>\n', # The "Einzelnachweise" title is disputed, some people prefer "Quellen", "Quellenangaben", "Fußnoten", etc.
-    'en': u'\n== References ==\n\n<references/>\n',
+referencesSections = {
+    'de': [
+        u'Einzelnachweise', # The "Einzelnachweise" title is disputed, some people prefer the other variants
+        u'Quellen',
+        u'Quellenangaben',
+        u'Fußnoten',
+    ],
+    'en': [             # not sure about which ones are preferred.
+        u'References',
+        u'Footnotes',
+        u'Notes',
+    ],
 }
 
 # Templates which include a <references/> tag. If there is no such template
@@ -116,7 +127,10 @@ class NoReferencesBot:
         except KeyError:
             self.referencesTemplates = []
 
-    def needsTreatment(self, page):
+    def lacksReferences(self, page):
+        """
+        Checks whether or not the page is lacking a references tag.
+        """
         # Show the title of the page we're working on.
         # Highlight the title in purple.
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
@@ -144,48 +158,72 @@ class NoReferencesBot:
             wikipedia.output(u"Page %s is locked?!" % page.aslink())
         return False
 
-    def treat(self, page):
+    def addReferences(self, page):
+        """
+        Tries to add a references tag into an existing section where it fits
+        into. If there is no such section, creates a new section containing
+        the references tag.
+        """
         oldText = page.get()
-        for section in wikipedia.translate(wikipedia.getSite(), placeBeforeSection):
-            sectionR = re.compile(r'\r\n=+ *%s *=+' % section)
+
+        # Is there an existing section where we can add the references tag?
+        for section in wikipedia.translate(wikipedia.getSite(), referencesSections):
+            sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
+            match = sectionR.search(oldText)
+            if match:
+                wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
+                newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
+                self.save(page, newText)
+                return
+
+        # Create a new section for the references tag
+        for section in wikipedia.translate(wikipedia.getSite(), placeBeforeSections):
+            # Find out where to place the new section
+            sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
             match = sectionR.search(oldText)
             if match:
                 wikipedia.output(u'Adding references section...\n')
                 pos = match.start()
-                newSection = wikipedia.translate(wikipedia.getSite(), referencesSection)
+                newSection = u'\n== %s ==\n\n<references/>\n' % wikipedia.translate(wikipedia.getSite(), referencesSections)[0]
                 newText = oldText[:match.start()] + newSection + oldText[match.start():]
-                wikipedia.showDiff(oldText, newText)
-                if not self.always:
-                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'Always yes'], ['y', 'N', 'a'], 'N')
-                    if choice == 'n':
-                        return
-                    elif choice == 'a':
-                        self.always = True
-
-                if self.always:
-                    try:
-                        page.put(newText)
-                    except wikipedia.EditConflict:
-                        wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
-                    except wikipedia.SpamfilterError, e:
-                        wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                    except wikipedia.LockedPage:
-                        wikipedia.output(u'Skipping %s (locked page)' % (page.title(),))
-                else:
-                    # Save the page in the background. No need to catch exceptions.
-                    page.put_async(newText)
+                self.save(page, newText)
                 return
-        # TODO: Think of a more clever way of doing this.
-        wikipedia.output(u'Found no section that can be preceeded by a new references section. Please fix it manually.')
-        
+        # TODO: Think of a clever way of handling this.
+        wikipedia.output(u'Found no section that can be preceeded by a new references section. Please add a references section.')
+
+    def save(self, page, newText):
+        """
+        Saves the page to the wiki, if the user accepts the changes made.
+        """
+        wikipedia.showDiff(page.get(), newText)
+        if not self.always:
+            choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'Always yes'], ['y', 'N', 'a'], 'N')
+            if choice == 'n':
+                return
+            elif choice == 'a':
+                self.always = True
+
+        if self.always:
+            try:
+                page.put(newText)
+            except wikipedia.EditConflict:
+                wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
+            except wikipedia.SpamfilterError, e:
+                wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
+            except wikipedia.LockedPage:
+                wikipedia.output(u'Skipping %s (locked page)' % (page.title(),))
+        else:
+            # Save the page in the background. No need to catch exceptions.
+            page.put_async(newText)
+        return
 
     def run(self):
         comment = wikipedia.translate(wikipedia.getSite(), msg)
         wikipedia.setAction(comment)
 
         for page in self.generator:
-            if self.needsTreatment(page):
-                self.treat(page)
+            if self.lacksReferences(page):
+                self.addReferences(page)
 
 def main():
     #page generator
