@@ -2642,7 +2642,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
     text = text[:markerpos] + marker + text[markerpos:]
     return text
 
-def removeDisabledParts(text, parts=['*']):
+def removeDisabledParts(text, tags = ['*']):
     """
     Removes those parts of a wiki text where wiki markup is disabled, i.e.
     * HTML comments
@@ -2659,10 +2659,25 @@ def removeDisabledParts(text, parts=['*']):
             'nowiki':      r'<nowiki>.*?</nowiki>',
             'pre':         r'<pre>.*?</pre>',
             }
-    if '*' in parts:
-        parts = regexes.keys()
-    toRemoveR = re.compile('|'.join([regexes[p] for p in parts]), re.IGNORECASE | re.DOTALL)
+    if '*' in tags:
+        tags = regexes.keys()
+    toRemoveR = re.compile('|'.join([regexes[tag] for tag in tags]), re.IGNORECASE | re.DOTALL)
     return toRemoveR.sub('', text)
+
+def isDisabled(text, index, tags = ['*']):
+    """
+    Checks whether the text part at the given location is disabled, e.g.
+    by a comment or by nowiki tags.
+
+    For the tags parameter, see removeDisabledParts() above.
+    """
+    # Find a marker that is not already in the text.
+    marker = '@@'
+    while marker in text:
+        marker += '@'
+    text = text[:index] + marker + text[index:]
+    text = removeDisabledParts(text, tags)
+    return (marker not in text)
 
 # Part of library dealing with interwiki links
 

@@ -171,10 +171,13 @@ class NoReferencesBot:
             sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
             match = sectionR.search(oldText)
             if match:
-                wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
-                newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
-                self.save(page, newText)
-                return
+                if wikipedia.isDisabled(oldText, match.start()):
+                    wikipedia.output('Existing  %s section is commented out, skipping.' % section)
+                else:
+                    wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
+                    newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
+                    self.save(page, newText)
+                    return
 
         # Create a new section for the references tag
         for section in wikipedia.translate(wikipedia.getSite(), placeBeforeSections):
