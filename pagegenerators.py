@@ -169,11 +169,14 @@ def ReferringPagesGenerator(referredPages, followRedirects=False,
     for page in allPages:
         yield page
 
-def CategorizedPageGenerator(category, recurse = False, start = None):
+def CategorizedPageGenerator(category, recurse=False, start=None):
     '''
     Yields all pages in a specific category.
 
-    If recurse is True, pages in subcategories are included as well.
+    If recurse is True, pages in subcategories are included as well; if
+    recurse is an int, only subcategories to that depth will be included
+    (e.g., recurse=2 will get pages in subcats and sub-subcats, but will
+    not go any further).
     If start is a string value, only pages whose title comes after start
     alphabetically are included.
     '''
@@ -550,6 +553,12 @@ def PreloadingGenerator(generator, pageNumber=60):
     if pageNumber < 2:
         raise ValueError("PreloadingGenerator needs to load more than 1 page.")
     pagequeue = Queue.Queue(min(pageNumber//2, 10))
+    # Note: queue size will determine how quickly the Preloader goes back for
+    # more pages. If the queue size is unlimited, it will preload all pages
+    # before yielding any of them to the consumer. If the queue size is small,
+    # it will wait until most pages have been yielded before preloading the
+    # next batch. This value tries to strike a compromise, but may need
+    # adjustment based upon experience.
     preloader = _Preloader(pagequeue, generator, pageNumber)
     preloader.start()
     while True:
