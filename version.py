@@ -1,4 +1,4 @@
-﻿""" Module to determine the pywikipedia version (tag, revision and date) """
+""" Module to determine the pywikipedia version (tag, revision and date) """
 #
 # (C) Merlijn 'valhallasw' van Deen
 #
