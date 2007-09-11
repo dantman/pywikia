@@ -4743,6 +4743,8 @@ Global arguments available for all bots:
                   wikipedia, wiktionary, wikitravel, ...
                   This will override the configuration in user-config.py.
 
+-help             Shows this help text.
+
 -log              Enable the logfile. Logs will be stored in the logs
                   subdirectory.
 
