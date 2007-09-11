@@ -127,7 +127,7 @@ class NoReferencesBot:
                 wikipedia.output(u'No changes necessary: no ref tags found.')
                 return False
             elif self.referencesR.search(oldTextCleaned):
-                wikipedia.output(u'No changes necessary: references tags found.')
+                wikipedia.output(u'No changes necessary: references tag found.')
                 return False
             else:
                 for template in page.templates():
@@ -147,7 +147,7 @@ class NoReferencesBot:
     def treat(self, page):
         oldText = page.get()
         for section in wikipedia.translate(wikipedia.getSite(), placeBeforeSection):
-            sectionR = re.compile(r'\r\n=+ +%s +=+' % section)
+            sectionR = re.compile(r'\r\n=+ *%s *=+' % section)
             match = sectionR.search(oldText)
             if match:
                 wikipedia.output(u'Adding references section...\n')
