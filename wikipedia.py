@@ -2042,6 +2042,7 @@ class Page(object):
 
         # Copyright (c) Orgullomoore, Bryan
 
+        # TODO: document and simplify the code, use understandable variable names
         site = self.site()
 
         text = self.get()
@@ -2051,6 +2052,10 @@ class Page(object):
             s = re.escape(s)
             return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
         def create_regex_i(s):
+            """
+            Creates a pattern that matches the string (unescaped), case-insensitively.
+            Somehow an awkward way of doing this.
+            """
             return ur'(?:%s)' % u''.join([u'[%s%s]' % (c.upper(), c.lower()) for c in s])
 
         namespaces = ('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True)
@@ -2078,13 +2083,15 @@ class Page(object):
                 break
             new_text = new_text[:m.start()] +  simple_replacer(m, 2) + new_text[m.end():]
 
+
         # Remove the image from galleries
         r_galleries = ur'(?s)(\<%s\>)(?s)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'),
             create_regex_i('gallery'))
-        r_gallery = ur'(?m)^((?:%s)?)(%s)(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
+        r_gallery_item = ur'(?m)^((?:%s)?)%s(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
         def gallery_replacer(match):
-            return ur'%s%s%s' % (match.group(1), re.sub(r_gallery,
-                simple_replacer, match.group(2)), match.group(3))
+            return ur'%s%s%s' % (match.group(1),
+                re.sub(r_gallery_item, simple_replacer, match.group(2)),
+                match.group(3))
         new_text = re.sub(r_galleries, gallery_replacer, new_text)
 
         if (text == new_text) or (not safe):
