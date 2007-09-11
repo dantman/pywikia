@@ -2574,10 +2574,15 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         'startspace':  re.compile(r'(?m)^ (.*?)$'),
         # tables often have whitespace that is used to improve wiki
         # source code readability.
+        # TODO: handle nested tables.
         'table':       re.compile(r'(?ims)^{\|.*?^\|}|<table>.*?</table>'),
         # templates with parameters often have whitespace that is used to
         # improve wiki source code readability.
-        'template':    re.compile(r'(?s){{.*?}}'),
+        # 'template':    re.compile(r'(?s){{.*?}}'),
+        # The regex above fails on nested templates. This regex can handle
+        # templates inside templates, but no deeper cascades.
+        'template':    re.compile(r'(?s){{(({{.*?}})?.*?)*}}'),
+
     }
 
     # if we got a string, compile it as a regular expression
