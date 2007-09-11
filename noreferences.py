@@ -169,28 +169,41 @@ class NoReferencesBot:
         # Is there an existing section where we can add the references tag?
         for section in wikipedia.translate(wikipedia.getSite(), referencesSections):
             sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
-            match = sectionR.search(oldText)
-            if match:
-                if wikipedia.isDisabled(oldText, match.start()):
-                    wikipedia.output('Existing  %s section is commented out, skipping.' % section)
+            index = 0
+            while index < len(oldText):
+                match = sectionR.search(oldText, index)
+                if match:
+                    if wikipedia.isDisabled(oldText, match.start()):
+                        wikipedia.output('Existing  %s section is commented out, skipping.' % section)
+                        index = match.end()
+                    else:
+                        wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
+                        newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
+                        self.save(page, newText)
+                        return
                 else:
-                    wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
-                    newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
-                    self.save(page, newText)
-                    return
+                    break
 
         # Create a new section for the references tag
         for section in wikipedia.translate(wikipedia.getSite(), placeBeforeSections):
             # Find out where to place the new section
             sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
-            match = sectionR.search(oldText)
-            if match:
-                wikipedia.output(u'Adding references section...\n')
-                pos = match.start()
-                newSection = u'\n== %s ==\n\n<references/>\n' % wikipedia.translate(wikipedia.getSite(), referencesSections)[0]
-                newText = oldText[:match.start()] + newSection + oldText[match.start():]
-                self.save(page, newText)
-                return
+            index = 0
+            while index < len(oldText):
+                match = sectionR.search(oldText, index)
+                if match:
+                    if wikipedia.isDisabled(oldText, match.start()):
+                        wikipedia.output('Existing  %s section is commented out, won\'t add the references in front of it.' % section)
+                        index = match.end()
+                    else:
+                        wikipedia.output(u'Adding references section before %s section...\n' % section)
+                        pos = match.start()
+                        newSection = u'\n== %s ==\n\n<references/>\n' % wikipedia.translate(wikipedia.getSite(), referencesSections)[0]
+                        newText = oldText[:match.start()] + newSection + oldText[match.start():]
+                        self.save(page, newText)
+                        return
+                else:
+                    break
         # TODO: Think of a clever way of handling this.
         wikipedia.output(u'Found no section that can be preceeded by a new references section. Please add a references section.')
 
