@@ -59,7 +59,8 @@ placeBeforeSections = {
     'de': [              # no explicit policy on where to put the references
         u'Literatur',
         u'Weblinks',
-        u'Siehe auch'
+        u'Siehe auch',
+        u'Weblink',      # bad, but common singular form of Weblinks
     ],
     'en': [              # no explicit policy on where to put the references
         u'Further reading',
@@ -170,7 +171,7 @@ class NoReferencesBot:
         oldText = page.get()
 
         # Is there an existing section where we can add the references tag?
-        for section in wikipedia.translate(wikipedia.getSite(), referencesSections):
+        for section in wikipedia.translate(page.site(), referencesSections):
             sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
             index = 0
             while index < len(oldText):
@@ -188,7 +189,7 @@ class NoReferencesBot:
                     break
 
         # Create a new section for the references tag
-        for section in wikipedia.translate(wikipedia.getSite(), placeBeforeSections):
+        for section in wikipedia.translate(page.site(), placeBeforeSections):
             # Find out where to place the new section
             sectionR = re.compile(r'\r\n=+ *%s *=+\r\n' % section)
             index = 0
@@ -200,15 +201,43 @@ class NoReferencesBot:
                         index = match.end()
                     else:
                         wikipedia.output(u'Adding references section before %s section...\n' % section)
-                        pos = match.start()
-                        newSection = u'\n== %s ==\n\n<references/>\n' % wikipedia.translate(wikipedia.getSite(), referencesSections)[0]
-                        newText = oldText[:match.start()] + newSection + oldText[match.start():]
-                        self.save(page, newText)
+                        index = match.start()
+                        self.createReferenceSection(page, index)
                         return
                 else:
                     break
-        # TODO: Make up a clever way of handling this.
-        wikipedia.output(u'Found no section that can be preceeded by a new references section. Please add a references section manually.')
+        # This gets complicated: we want to place the new references
+        # section over the interwiki links and categories, but also
+        # over all navigation bars, persondata, and other templates
+        # that are at the bottom of the page. So we need some advanced
+        # regex magic.
+        # The strategy is: create a temporary copy of the text. From that,
+        # keep removing interwiki links, templates etc. from the bottom.
+        # At the end, look at the length of the temp text. That's the position
+        # where we'll insert the references section.
+        catNamespaces = '|'.join(page.site().category_namespaces())
+        categoryPattern  = r'\[\[\s*(%s)\s*:[^\n]*\]\]\s*' % catNamespaces
+        interwikiPattern = r'\[\[([a-zA-Z\-]+)\s?:([^\[\]\n]*)\]\]\s*'
+        # won't work with nested templates
+        templatePattern  = r'{{((?!}}).)+?}}\s*' # the negative lookahead assures that we'll match the last template occurence in the temp text.
+        commentPattern   = r'<!--((?!-->).)*?-->\s*'
+        metadataR = re.compile(r'(\r\n)?(%s|%s|%s|%s)$' % (categoryPattern, interwikiPattern, templatePattern, commentPattern), re.DOTALL)
+        tmpText = oldText
+        while True:
+            match = metadataR.search(tmpText)
+            if match:
+                tmpText = tmpText[:match.start()]
+            else:
+                break
+        wikipedia.output(u'Found no section that can be preceeded by a new references section. Placing it before interwiki links, categories, and bottom templates.')
+        index = len(tmpText)
+        self.createReferenceSection(page, index)
+
+    def createReferenceSection(self, page, index):
+        oldText = page.get()
+        newSection = u'\n== %s ==\n\n<references/>\n' % wikipedia.translate(page.site(), referencesSections)[0]
+        newText = oldText[:index] + newSection + oldText[index:]
+        self.save(page, newText)
 
     def save(self, page, newText):
         """
