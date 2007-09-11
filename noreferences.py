@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 
 """
-This script goes over multiple pages, searches for pages where <references/>
+This script goes over multiple pages, searches for pages where <references />
 is missing although a <ref> tag is present, and in that case adds a new
 references section.
 
@@ -95,7 +95,7 @@ referencesSections = {
     ],
 }
 
-# Templates which include a <references/> tag. If there is no such template
+# Templates which include a <references /> tag. If there is no such template
 # on your wiki, you don't have to enter anything here.
 referencesTemplates = {
     'wikipedia': {
@@ -191,7 +191,7 @@ class NoReferencesBot:
                         index = match.end()
                     else:
                         wikipedia.output(u'Adding references tag to existing %s section...\n' % section)
-                        newText = oldText[:match.end()] + u'\n<references/>\n' + oldText[match.end():]
+                        newText = oldText[:match.end()] + u'\n<references />\n' + oldText[match.end():]
                         self.save(page, newText)
                         return
                 else:
@@ -244,7 +244,7 @@ class NoReferencesBot:
 
     def createReferenceSection(self, page, index):
         oldText = page.get()
-        newSection = u'\n== %s ==\n\n<references/>\n' % wikipedia.translate(page.site(), referencesSections)[0]
+        newSection = u'\n== %s ==\n\n<references />\n' % wikipedia.translate(page.site(), referencesSections)[0]
         newText = oldText[:index] + newSection + oldText[index:]
         self.save(page, newText)
 
