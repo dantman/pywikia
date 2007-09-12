@@ -13,6 +13,9 @@ Command line options:
 
 -remove      Remove every occurence of the template from every article
 
+-subst       Resolves the template by putting its text directly into the article.
+             This is done by changing {{...}} or {{msg:...}} into {{subst:...}}
+
 -xml         retrieve information from a local dump (http://download.wikimedia.org).
              if this argument isn\'t given, info will be loaded from the maintenance
              page of the live wiki.
@@ -34,18 +37,12 @@ Command line options:
              a category is being broken out from a template parameter or when templates are
              being upmerged but more information must be preserved.
 
--extras      Specify this to signal that all parameters are templates that should either be
-             substituted or removed.  Allows you to input way more than just two.  Not
-             compatible with -xml (yet)  Disables template replacement.
-
 other:       First argument is the old template name, second one is the new
-             name. If only one argument is given, the bot resolves the
-             template by putting its text directly into the article.
-             This is done by changing {{...}} or {{msg:...}} into {{subst:...}}
-             
+             name.
+
              If you want to address a template which has spaces, put quotation
-             marks around it.
-             
+             marks around it, or use underscores.
+
 Examples:
 
 If you have a template called [[Template:Cities in Washington]] and want to
@@ -76,7 +73,7 @@ Note that -putthrottle: is a global pywikipedia parameter.
 This next example removes the templates {{cfr}}, {{cfru}}, and {{cfr-speedy}} from five
 category pages as given:
 
-    python template.py cfr cfru cfr-speedy -remove -always -extras
+    python template.py cfr cfru cfr-speedy -remove -always
         -page:"Category:Mountain monuments and memorials" -page:"Category:Indian family names"
         -page:"Category:Tennis tournaments in Belgium" -page:"Category:Tennis tournaments in Germany"
         -page:"Category:Episcopal cathedrals in the United States"
@@ -85,7 +82,7 @@ category pages as given:
 
 This next example substitutes templates test1, test2, and space test on all pages:
 
-    python template.py test1 test2 "space test" -always -extras
+    python template.py test1 test2 "space test" -subst -always
 
 """
 #
@@ -113,6 +110,7 @@ class XmlDumpTemplatePageGenerator:
             * xmlfilename - The dump's path, either absolute or relative
         """
         self.template = template
+        wikipedia.Page(mysite, ns + ':' + thisPage)
         self.xmlfilename = xmlfilename
 
     def __iter__(self):
@@ -165,8 +163,9 @@ class TemplateRobot:
     #Needs more translations!
     msgs_change={
         'en':u'Robot: Changing templates: %s',
-        'he':u'רובוט: משנה תבניות: %s',
+        'de':u'Bot: Ändere Vorlagen: %s',
         'fr':u'Bot: Modifie modèles %s',
+        'he':u'רובוט: משנה תבניות: %s',
         'kk':u'Бот: Мына үлгілер өзгертілді: %s',
         'lt':u'robotas: Keičiami šablonai: %s',
         'nds':u'Bot: Vörlagen utwesselt: %s',
@@ -195,6 +194,7 @@ class TemplateRobot:
     #Needs more translations!
     msgs_remove={
         'en':u'Robot: Removing templates: %s',
+        'de':u'Bot: Entferne Vorlagen: %s',
         'he':u'רובוט: מסיר תבניות: %s',
         'fr':u'Bot: Enlève modèles : %s',
         'kk':u'Бот: Мына үлгілер аластатылды: %s',
@@ -209,6 +209,7 @@ class TemplateRobot:
     #Needs more translations!
     msg_subst={
         'en':u'Robot: Substituting template: %s',
+        'de':u'Bot: Umgehe Vorlage: %s',
         'fr':u'Bot: Remplace modèle : %s',
         'he':u'רובוט: מכליל תבנית בקוד הדף: %s',
         'kk':u'Бот: Мына үлгі бәделдірленді: %s',
@@ -221,6 +222,7 @@ class TemplateRobot:
     #Needs more translations!
     msgs_subst={
         'en':u'Robot: Substituting templates: %s',
+        'de':u'Bot: Umgehe Vorlagen: %s',
         'fr':u'Bot: Remplace modèles : %s',
         'he':u'רובוט: מכליל תבניות בקוד הדף: %s',
         'kk':u'Бот: Мына үлгілер бәделдірленді: %s',
@@ -230,56 +232,49 @@ class TemplateRobot:
         'pt':u'Bot: Substituindo predefinição: %s',
     }
 
-    def __init__(self, generator, old, new = None, remove = False, editSummary = '',
-                 acceptAll = False, extras = False, addedCat = None):
+    def __init__(self, generator, templates, subst = False, remove = False, editSummary = '',
+                 acceptAll = False, addedCat = None):
         """
         Arguments:
-            * generator - A page generator.
-            * old       - The title of the old template (without namespace)
-            * new       - The title of the new template (without namespace), or
-                          None if you want to substitute the template with its
-                          text.
-            * remove    - True if the template should be removed.
+            * generator    - A page generator.
+            * replacements - A dictionary which maps old template names to
+                             their replacements. If remove or subst is True,
+                             it maps the names of the templates that should be
+                             removed/resolved to None.
+            * remove       - True if the template should be removed.
+            * subst        - True if the template should be resolved.
         """
         self.generator = generator
-        self.old = old
-        self.new = new
+        self.templates = templates
+        self.subst = subst
         self.remove = remove
         self.editSummary = editSummary
         self.acceptAll = acceptAll
-        self.extras = extras
         self.addedCat = addedCat
         if self.addedCat:
             self.addedCat = catlib.Category(wikipedia.getSite(), 'Category:' + self.addedCat)
-        # if only one argument is given, don't replace the template with another
-        # one, but resolve the template by putting its text directly into the
-        # article.
-        self.resolve = (new == None)
 
         # get edit summary message
-        if isinstance(self.old, list):
-            allTemplates = (', ').join(old)
-        else:
-            allTemplates = old
         if self.editSummary:
             wikipedia.setAction(self.editSummary)
         else:
+            oldTemplateNames = (', ').join(self.templates.keys())
             mysite = wikipedia.getSite()
             if self.remove:
-                if self.extras:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_remove) % allTemplates)
+                if len(self.templates) > 1:
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_remove) % oldTemplateNames)
                 else:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % allTemplates)
-            elif self.resolve:
-                if self.extras:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_subst) % allTemplates)
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_remove) % oldTemplateNames)
+            elif self.subst:
+                if len(self.templates) > 1:
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_subst) % oldTemplateNames)
                 else:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_subst) % allTemplates)
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_subst) % oldTemplateNames)
             else:
-                if self.extras:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_change) % allTemplates)
+                if len(self.templates) > 1:
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msgs_change) % oldTemplateNames)
                 else:
-                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_change) % allTemplates)
+                    wikipedia.setAction(wikipedia.translate(mysite, self.msg_change) % oldTemplateNames)
 
     def run(self):
         """
@@ -292,45 +287,44 @@ class TemplateRobot:
         # empty string if there are none.
 
         replacements = []
-        if not isinstance(self.old, list):
-            self.old = [self.old]
 
-        for old in self.old:
+        for old, new in self.templates.iteritems():
             if not wikipedia.getSite().nocapitalize:
                 pattern = '[' + re.escape(old[0].upper()) + re.escape(old[0].lower()) + ']' + re.escape(old[1:])
             else:
                 pattern = re.escape(old)
-            pattern = re.sub('_|\\\\ ', '[_ ]', pattern)
-            templateRegex = re.compile(r'\{\{ *([Tt]emplate:|[mM][sS][gG]:)?' + pattern + '(?P<parameters>\s*\|.+?|) *}}', re.DOTALL)
+            pattern = re.sub(r'_|\\ ', r'[_ ]', pattern)
+            templateRegex = re.compile(r'\{\{ *([Tt]emplate:|[mM][sS][gG]:)?' + pattern + r'(?P<parameters>\s*\|.+?|) *}}', re.DOTALL)
 
             if self.remove:
                 replacements.append((templateRegex, ''))
-            elif self.resolve:
+            elif self.subst:
                 replacements.append((templateRegex, '{{subst:' + old + '\g<parameters>}}'))
             else:
-                replacements.append((templateRegex, '{{' + self.new + '\g<parameters>}}'))
+                replacements.append((templateRegex, '{{' + new + '\g<parameters>}}'))
 
         #Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
         replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.acceptAll, addedCat=self.addedCat)
         replaceBot.run()
 
 def main():
-    template_names = []
-    resolve = False
+    templateNames = []
+    templates = {}
+    subst = False
     remove = False
     namespaces = []
     editSummary = ''
     addedCat = ''
     acceptAll = False
     pageTitles = []
-    extras = False
     # If xmlfilename is None, references will be loaded from the live wiki.
     xmlfilename = None
-    new = None
     # read command line parameters
     for arg in wikipedia.handleArgs():
         if arg == '-remove':
             remove = True
+        elif arg == '-subst':
+            subst = True
         elif arg.startswith('-xml'):
             if len(arg) == 4:
                 xmlfilename = wikipedia.input(u'Please enter the XML dump\'s filename: ')
@@ -349,49 +343,41 @@ def main():
                 pageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
             else:
                 pageTitles.append(arg[len('-page:'):])
-        elif arg.startswith('-extras'):
-            extras = True
         else:
-            template_names.append(arg)
+            templateNames.append(arg)
 
-    if extras:
-        old = template_names
-    elif len(template_names) == 0 or len(template_names) > 2:
-        wikipedia.showHelp()
-        sys.exit()
+    if subst or remove:
+        for templateName in templateNames:
+            templates[templateName] = None
     else:
-        old = template_names[0]
-        if len(template_names) == 2:
-            new = template_names[1]
-
-    mysite = wikipedia.getSite()
-    ns = mysite.template_namespace()
-
-    if extras:
-        oldTemplate = []
-        for thisPage in old:
-            oldTemplate.append(wikipedia.Page(mysite, ns + ':' + thisPage))
-    else:
-        oldTemplate = wikipedia.Page(mysite, ns + ':' + old)
+        try:
+            for i in range(0, len(templateNames), 2):
+                templates[templateNames[i]] = templateNames[i + 1]
+        except IndexError:
+            wikipedia.output(u'Unless using -subst or -remove, you must give an even number of template names.')
+            return
 
     if xmlfilename:
-        gen = XmlDumpTemplatePageGenerator(oldTemplate, xmlfilename)
+        gen = XmlDumpTemplatePageGenerator(templates.keys(), xmlfilename)
     elif pageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), pageTitle) for pageTitle in pageTitles]
         gen = iter(pages)
-    elif extras:
-        gen = pagegenerators.ReferringPagesGenerator(oldTemplate, onlyTemplateInclusion = True)
     else:
-        gen = pagegenerators.ReferringPageGenerator(oldTemplate, onlyTemplateInclusion = True)
+        gens = []
+        ns = wikipedia.getSite().template_namespace()
+        for templateName in templates.keys():
+            template = wikipedia.Page(wikipedia.getSite(), ns + ':' + templateName)
+            singleGen = pagegenerators.ReferringPageGenerator(template, onlyTemplateInclusion = True)
+            gens.append(singleGen)
+        gen = pagegenerators.CombinedPageGenerator(gens)
+        gen = pagegenerators.DuplicateFilterPageGenerator(gen)
 
     if namespaces:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
 
     preloadingGen = pagegenerators.PreloadingGenerator(gen)
 
-    #At this point, if extras is set to False, old is the name of a single template.
-    #But if extras is set to True, old is a whole list of templates to be replaced.
-    bot = TemplateRobot(preloadingGen, old, new, remove, editSummary, acceptAll, extras, addedCat)
+    bot = TemplateRobot(preloadingGen, templates, subst, remove, editSummary, acceptAll, addedCat)
     bot.run()
 
 if __name__ == "__main__":
