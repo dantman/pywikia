@@ -39,43 +39,51 @@ class TemplateCountRobot:
         mysite = wikipedia.getSite()
         finalText = [u'Number of transclusions per template',u'------------------------------------']
         total = 0
+        # The names of the templates are the keys, and the numbers of transclusions are the values.
+        templateDict = {}
         for template in templates:
             gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
             if namespaces:
                 gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
             count = 0
             for page in gen:
-                count = count + 1
+                count += 1
+            templateDict[template] = count
             finalText.append(u'%s: %d' % (template, count))
             total = total + count
         for line in finalText:
             wikipedia.output(line, toStdout=True)
         wikipedia.output(u'TOTAL: %d' % total, toStdout=True)
         wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
+        return templateDict
 
     def listTemplates(self, templates, namespaces):
         mysite = wikipedia.getSite()
         count = 0
+        # The names of the templates are the keys, and lists of pages transcluding templates are the values.
+        templateDict = {}
         finalText = [u'List of pages transcluding templates:']
         for template in templates:
             finalText.append(u'* %s' % template)
         finalText.append(u'------------------------------------')
         for template in templates:
+            transcludingArray = []
             gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
             if namespaces:
                 gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
             for page in gen:
                 finalText.append(u'%s' % page.title())
-                count = count + 1
+                count += 1
+                transcludingArray.append(page)
+            templateDict[template] = transcludingArray;
         finalText.append(u'Total page count: %d' % count)
         for line in finalText:
             wikipedia.output(line, toStdout=True)
         wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
+        return templateDict
 
 def main():
-    operation = "None"
-    doCount = False
-    doList = False
+    operation = None
     argsList = []
     namespaces = []
 
@@ -92,7 +100,7 @@ def main():
         else:
             argsList.append(arg)
 
-    if operation == "None":
+    if operation == None:
         wikipedia.output(__doc__, 'utf-8')
     else:
         robot = TemplateCountRobot()
