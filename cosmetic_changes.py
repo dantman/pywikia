@@ -25,7 +25,7 @@ if you're running a bot on multiple sites and want to do cosmetic changes on
 all of them, but be careful if you do.
 """
 __version__ = '$Id$'
-import wikipedia, pagegenerators
+import wikipedia, pagegenerators, isbn
 import sys
 import re
 
@@ -91,6 +91,7 @@ class CosmeticChangesToolkit:
         text = self.resolveHtmlEntities(text)
         text = self.validXhtml(text)
         text = self.removeUselessSpaces(text)
+        text = isbn.hyphenateIsbnNumbers(text)
         if self.debug:
             wikipedia.showDiff(oldText, text)
         return text
@@ -279,6 +280,7 @@ class CosmeticChangesToolkit:
         text = wikipedia.replaceExcept(text, spaceAtLineEndR, '', exceptions)
 
         return text
+
 
     def cleanUpSectionHeaders(self, text):
         """
