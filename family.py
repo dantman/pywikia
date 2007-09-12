@@ -2218,17 +2218,9 @@ class Family:
         """Add a new language to the langs and namespaces of the family.
            This is supposed to be called in the constructor of the family."""
         self.langs[code] = location
-        
+
         for num, val in namespaces.items():
             self.namespaces[num][code]=val
-
-    def _talkNamespace(self, code, associatedNamespaceIndex):
-        associatedNamespace = self.namespace(code, associatedNamespaceIndex)
-        if self.talkNamespacePatterns.has_key(code):
-            talk = self.talkNamespacePatterns[code]
-        else:
-            talk = self.talkNamespacePatterns['_default']
-        return talk(associatedNamespace)
 
     def linktrail(self, code, fallback = '_default'):
         if self.linktrails.has_key(code):
