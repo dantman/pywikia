@@ -373,8 +373,6 @@ def main():
     else:
         gens = []
         gens = [pagegenerators.ReferringPageGenerator(t, onlyTemplateInclusion = True) for t in oldTemplates]
-            singleGen = 
-            gens.append(singleGen)
         gen = pagegenerators.CombinedPageGenerator(gens)
         gen = pagegenerators.DuplicateFilterPageGenerator(gen)
 
