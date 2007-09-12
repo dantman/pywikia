@@ -13,8 +13,8 @@ unavailable, the bot ONLY reports links which were reported dead at least
 two times, with a time lag of at least one week. Such links will be logged to a
 .txt file in the deadlinks subdirectory.
 
-After running the bot and waiting for at least one weak, you can re-check those
-pages where dead links where found, using the -repeat parameter.
+After running the bot and waiting for at least one week, you can re-check those
+pages where dead links were found, using the -repeat parameter.
 
 In addition to the logging step, it is possible to automatically report dead
 links to the talk page of the article where the link was found. To use this
@@ -24,12 +24,43 @@ irrespective of the configuration variable.
 
 When a link is found alive, it will be removed from the .dat file.
 
-The following parameters are supported:
+These command line parameters can be used to specify which pages to work on:
 
 &params;
 
+-repeat      Work on all pages were dead links were found before. This is
+             useful to confirm that the links are dead after some time (at
+             least one week), which is required before the script will report
+             the problem.
+
+-namespace   Only process templates in the namespace with the given number or
+             name. This parameter may be used multiple times.
+
+Furthermore, the following command line parameters are supported:
+
+-talk        Overrides the report_dead_links_on_talk config variable, enabling
+             the feature.
+
+-notalk      Overrides the report_dead_links_on_talk config variable, disabling
+             the feature.
+
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
+
+The following config variables are supported:
+
+max_external_links        - The maximum number of web pages that should be
+                            loaded simultaneously. You should change this
+                            according to your Internet connection speed.
+                            Be careful: if it is set too high, the script
+                            might get socket errors because your network
+                            is congested, and will then think that the page
+                            is offline.
+
+report_dead_links_on_talk - If set to true, causes the script to report dead
+                            links on the article's talk page if (and ONLY if)
+                            the linked page has been unavailable at least two
+                            times during a timespan of at least one week.
 
 Syntax examples:
     python weblinkchecker.py
