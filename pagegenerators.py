@@ -151,24 +151,6 @@ def ReferringPageGenerator(referredPage, followRedirects=False,
                                            onlyTemplateInclusion):
         yield page
 
-def ReferringPagesGenerator(referredPages, followRedirects=False,
-                            withTemplateInclusion=True,
-                            onlyTemplateInclusion=False):
-    """Yields all unique pages referring to a list of specific pages."""
-    allPages = []
-    for referredPage in referredPages:
-        for page in referredPage.getReferences(followRedirects,
-                                               withTemplateInclusion,
-                                               onlyTemplateInclusion):
-            allPages.append(page)
-
-    #Remove duplicate pages.
-    allPages = list(set(allPages))
-    wikipedia.output(u'Page generator found %s pages.' % len(allPages))
-
-    for page in allPages:
-        yield page
-
 def CategorizedPageGenerator(category, recurse=False, start=None):
     '''
     Yields all pages in a specific category.
