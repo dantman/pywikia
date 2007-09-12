@@ -76,10 +76,10 @@ class MovePagesBot:
         try:
             msg = wikipedia.translate(wikipedia.getSite(), summary)
             wikipedia.output(u'Moving page %s to [[%s]]' % (page.aslink(), newPageTitle))
-            page.move(newPageTitle, msg, throttle=True)
-            if delete:
-                deletemsg = wikipedia.translate(wikipedia.getSite(), deletesummary)
-                page.delete(deletemsg)
+            if page.move(newPageTitle, msg, throttle=True):
+                if delete:
+                    deletemsg = wikipedia.translate(wikipedia.getSite(), deletesummary)
+                    page.delete(deletemsg)
         except wikipedia.NoPage:
             wikipedia.output(u'Page %s does not exist!' % page.title())
         except wikipedia.IsRedirectPage:
