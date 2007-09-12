@@ -8,54 +8,54 @@ These command line parameters can be used to specify which pages to work on:
 
 &params;
 
-    -xml           Retrieve information from a local XML dump (pages-articles
-                   or pages-meta-current, see http://download.wikimedia.org).
-                   Argument can also be given as "-xml:filename".
+-xml              Retrieve information from a local XML dump (pages-articles
+                  or pages-meta-current, see http://download.wikimedia.org).
+                  Argument can also be given as "-xml:filename".
 
-    -page          Only edit a specific page.
-                   Argument can also be given as "-page:pagetitle". You can
-                   give this parameter multiple times to edit multiple pages.
+-page             Only edit a specific page.
+                  Argument can also be given as "-page:pagetitle". You can
+                  give this parameter multiple times to edit multiple pages.
 
 Furthermore, the following command line parameters are supported:
 
-    -regex         Make replacements using regular expressions. If this argument
-                   isn't given, the bot will make simple text replacements.
+-regex            Make replacements using regular expressions. If this argument
+                  isn't given, the bot will make simple text replacements.
 
-    -nocase        Use case insensitive regular expressions.
+-nocase           Use case insensitive regular expressions.
 
-    -except:XYZ    Ignore pages which contain XYZ. If the -regex argument is
-                   given, XYZ will be regarded as a regular expression.
+-except:XYZ       Ignore pages which contain XYZ. If the -regex argument is
+                  given, XYZ will be regarded as a regular expression.
 
-    -summary:XYZ   Set the summary message text for the edit to XYZ, bypassing
-                   the predefined message texts with original and replacements
-                   inserted.
+-summary:XYZ      Set the summary message text for the edit to XYZ, bypassing
+                  the predefined message texts with original and replacements
+                  inserted.
 
-    -fix:XYZ       Perform one of the predefined replacements tasks, which are
-                   given in the dictionary 'fixes' defined inside the file
-                   fixes.py.
-                   The -regex and -nocase argument and given replacements will
-                   be ignored if you use -fix.
-                   Currently available predefined fixes are:
+-fix:XYZ          Perform one of the predefined replacements tasks, which are
+                  given in the dictionary 'fixes' defined inside the file
+                  fixes.py.
+                  The -regex and -nocase argument and given replacements will
+                  be ignored if you use -fix.
+                  Currently available predefined fixes are:
 &fixes-help;
 
-    -namespace:n   Number of namespace to process. The parameter can be used
-                   multiple times. It works in combination with all other
-                   parameters, except for the -start parameter. If you e.g.
-                   want to iterate over all categories starting at M, use
-                   -start:Category:M.
+-namespace:n      Number or name of namespace to process. The parameter can be
+                  used multiple times. It works in combination with all other
+                  parameters, except for the -start parameter. If you e.g.
+                  want to iterate over all categories starting at M, use
+                  -start:Category:M.
 
-    -always        Don't prompt you for each replacement
+-always           Don't prompt you for each replacement
 
-    -recursive     Recurse replacement until possible. Be careful, this might
-                   lead to an infinite loop.
+-recursive        Recurse replacement as long as possible. Be careful, this
+                  might lead to an infinite loop.
 
-    -allowoverlap  When occurences of the pattern overlap, replace all of them.
-                   Be careful, this might lead to an infinite loop.
+-allowoverlap     When occurences of the pattern overlap, replace all of them.
+                  Be careful, this might lead to an infinite loop.
 
-    other:         First argument is the old text, second argument is the new text.
-                   If the -regex argument is given, the first argument will be
-                   regarded as a regular expression, and the second argument might
-                   contain expressions like \\1 or \g<name>.
+other:            First argument is the old text, second argument is the new text.
+                  If the -regex argument is given, the first argument will be
+                  regarded as a regular expression, and the second argument might
+                  contain expressions like \\1 or \g<name>.
 
 Examples:
 
