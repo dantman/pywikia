@@ -2239,17 +2239,17 @@ class Family:
             v = self.namespaces[ns_number][fallback]
         else:
             raise KeyError('ERROR: title for namespace %d in language %s unknown' % (ns_number, code))  
-	
-	if all:
-		if type(v) == type([]):
-		    return tuple(v)
-		else:
-		    return (v, )
-	else:
-	        if type(v) == type([]):
-        	    return v[0]
-	        else:
-        	    return v
+
+        if all:
+            if type(v) == type([]):
+                return tuple(v)
+            else:
+                return (v, )
+        else:
+            if type(v) == type([]):
+                return v[0]
+            else:
+                return v
 
     def isDefinedNS(self, ns_number):
         """Return True if the namespace has been defined in this family.

@@ -333,7 +333,10 @@ def main():
             else:
                 xmlfilename = arg[5:]
         elif arg.startswith('-namespace:'):
-            namespaces.append(int(arg[len('-namespace:'):]))
+            try:
+                namespaces.append(int(arg[len('-namespace:'):]))
+            except ValueError:
+                namespaces.append(arg[len('-namespace:'):])
         elif arg.startswith('-category:'):
             addedCat = arg[len('-category:'):]
         elif arg.startswith('-summary:'):

@@ -417,9 +417,20 @@ def DayPageGenerator(startMonth=1, endMonth=12):
 
 def NamespaceFilterPageGenerator(generator, namespaces):
     """
-    Wraps around another generator. Yields only those pages that are in a list
-    of specific namespace.
+    Wraps around another generator. Yields only those pages that are in one
+    of the given namespaces.
+
+    The namespace list can contain both integers (namespace numbers) and
+    strings/unicode strings (namespace names).
     """
+    # convert namespace names to namespace numbers
+    for i in xrange(len(namespaces)):
+        ns = namespaces[i]
+        if isinstance(ns, unicode) or isinstance(ns, str):
+            index = wikipedia.getSite().getNamespaceIndex(ns)
+            if index is None:
+                raise ValueError(u'Unknown namespace: %s' % ns)
+            namespaces[i] = index
     for page in generator:
         if page.namespace() in namespaces:
             yield page

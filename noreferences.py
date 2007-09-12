@@ -14,8 +14,8 @@ These command line parameters can be used to specify which pages to work on:
                    or pages-meta-current, see http://download.wikimedia.org).
                    Argument can also be given as "-xml:filename".
 
-    -namespace:n   Number of namespace to process. The parameter can be used
-                   multiple times. It works in combination with all other
+    -namespace:n   Number or name of namespace to process. The parameter can be
+                   used multiple times. It works in combination with all other
                    parameters, except for the -start parameter. If you e.g.
                    want to iterate over all categories starting at M, use
                    -start:Category:M.
@@ -306,7 +306,10 @@ def main():
                 xmlFilename = arg[5:]
             gen = XmlDumpNoReferencesPageGenerator(xmlFilename)
         elif arg.startswith('-namespace:'):
-            namespaces.append(int(arg[11:]))
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         elif arg == '-always':
             always = True
         else:

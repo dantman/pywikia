@@ -47,7 +47,7 @@ You can run the bot with the following commandline parameters:
 -links       - Work on all pages that are linked to from a certain page.
                Argument can also be given as "-links:linkingpagetitle".
 -start       - Work on all pages in the wiki, starting at a given page.
--namespace:n - Number of namespace to process. The parameter can be used
+-namespace:n - Number or name of namespace to process. The parameter can be used
                multiple times.
 
 Examples:
@@ -961,7 +961,10 @@ def main():
             else:
                 PageTitles.append(arg[6:])
         elif arg.startswith('-namespace:'):
-            namespaces.append(int(arg[11:]))
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         elif arg.startswith('-forceupdate'):
             load_pages(force_update = True)
         elif arg == '-repeat':

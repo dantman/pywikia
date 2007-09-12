@@ -1,6 +1,10 @@
-﻿"""
+"""
 This script checks references to see if they are properly formatted.  Right now
 it just counts the total number of transclusions of any number of given templates.
+
+NOTE: This script is not capable of handling the <ref></ref> syntax. It just
+handles the {{ref}} syntax, which is still used, but DEPRECATED on the English
+Wikipedia.
 
 Syntax: python refcheck.py command [arguments]
 
@@ -50,7 +54,10 @@ def main():
 		if arg == '-count':
 			doCount = True
 		elif arg.startswith('-namespace:'):
-			namespaces.append(int(arg[len('-namespace:'):]))
+            try:
+                namespaces.append(int(arg[len('-namespace:'):]))
+            except ValueError:
+                namespaces.append(arg[len('-namespace:'):])
 		else:
 			argsList.append(arg)
 

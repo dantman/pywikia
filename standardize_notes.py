@@ -6,6 +6,10 @@ or a text file, or only change a single page.
 
 At present it converts to [[Wikipedia:Footnote3]] format (ref/note).
 
+NOTE: This script is not capable of handling the <ref></ref> syntax. It just
+handles the {{ref}} syntax, which is still used, but DEPRECATED on the English
+Wikipedia.
+
 You can run the bot with the following commandline parameters:
 
 -file        - Work on all pages given in a local text file.
@@ -1062,7 +1066,10 @@ def main():
         elif arg == '-always':
             acceptall = True
         elif arg.startswith('-namespace:'):
-            namespace = int(arg[11:])
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         else:
             commandline_replacements.append(arg)
 

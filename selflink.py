@@ -212,7 +212,10 @@ AND (old_text LIKE concat('%[[', page_title, ']]%')
 LIMIT 100"""
             gen = pagegenerators.MySQLPageGenerator(query)
         elif arg.startswith('-namespace:'):
-            namespaces.append(int(arg[11:]))
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         else:
             generator = genFactory.handleArg(arg)
             if generator:

@@ -669,7 +669,10 @@ def main():
         elif arg == '-notalk':
             config.report_dead_links_on_talk = False
         elif arg.startswith('-namespace:'):
-            namespaces.append(int(arg[11:]))
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         elif arg == '-repeat':
             gen = RepeatPageGenerator()
         else:

@@ -292,7 +292,10 @@ def main():
             else:
                 xmlFilename = arg[5:]
         elif arg.startswith('-namespace:'):
-            namespace = int(arg[11:])
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         elif arg.startswith('-restart:'):
             restart = int(arg[9:])
         else:

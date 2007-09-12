@@ -19,12 +19,13 @@ Command-line arguments:
 
     -start      Work on all pages on the home wiki, starting at the named
                 page.
-                   
+
     -page       Work on a single page.
 
     -namespace  Run over especific namespace.
-                Argument can also be given as "-namespace:100".
-                   
+                Argument can also be given as "-namespace:100" or
+                "-namespace:Image".
+
     -always     Don't prompt to make changes, just do them.
 
 Example: "python capitalize_redirects.py -start:B -always"
@@ -129,7 +130,10 @@ def main():
         elif arg == '-always':
             acceptall = True
         elif arg.startswith('-namespace:'):
-            namespaces.append(int(arg[11:]))
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         else:
             commandline_replacements.append(arg)
         

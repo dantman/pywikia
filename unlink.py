@@ -145,7 +145,10 @@ def main():
 
     for arg in wikipedia.handleArgs():
         if arg.startswith('-namespace:'):
-            namespaces.append(int(arg[11:]))
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         else:
             pageTitleParts.append(arg)
 

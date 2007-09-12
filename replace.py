@@ -351,7 +351,10 @@ def main():
         elif arg == '-nocase':
             caseInsensitive = True
         elif arg.startswith('-namespace:'):
-            namespaces.append(int(arg[11:]))
+            try:
+                namespaces.append(int(arg[11:]))
+            except ValueError:
+                namespaces.append(arg[11:])
         elif arg.startswith('-summary:'):
             wikipedia.setAction(arg[9:])
             summary_commandline = True

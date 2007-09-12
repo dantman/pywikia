@@ -1,4 +1,4 @@
-﻿"""
+"""
 This script will display the list of pages transcluding a given list of templates.
 It can also be used to simply count the number of pages (rather than listing each
 individually).
@@ -33,75 +33,78 @@ import re, sys, string
 import datetime
 
 class TemplateCountRobot:
-	#def __init__(self):
-		#Nothing
-	def countTemplates(self, templates, namespaces):
-		mysite = wikipedia.getSite()
-		finalText = [u'Number of transclusions per template',u'------------------------------------']
-		total = 0
-		for template in templates:
-			gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
-			if namespaces:
-				gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-			count = 0
-			for page in gen:
-				count = count + 1
-			finalText.append(u'%s: %d' % (template, count))
-			total = total + count
-		for line in finalText:
-			wikipedia.output(line, toStdout=True)
-		wikipedia.output(u'TOTAL: %d' % total, toStdout=True)
-		wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
+    #def __init__(self):
+        #Nothing
+    def countTemplates(self, templates, namespaces):
+        mysite = wikipedia.getSite()
+        finalText = [u'Number of transclusions per template',u'------------------------------------']
+        total = 0
+        for template in templates:
+            gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
+            if namespaces:
+                gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
+            count = 0
+            for page in gen:
+                count = count + 1
+            finalText.append(u'%s: %d' % (template, count))
+            total = total + count
+        for line in finalText:
+            wikipedia.output(line, toStdout=True)
+        wikipedia.output(u'TOTAL: %d' % total, toStdout=True)
+        wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
 
-	def listTemplates(self, templates, namespaces):
-		mysite = wikipedia.getSite()
-		count = 0
-		finalText = [u'List of pages transcluding templates:']
-		for template in templates:
-			finalText.append(u'* %s' % template)
-		finalText.append(u'------------------------------------')
-		for template in templates:
-			gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
-			if namespaces:
-				gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-			for page in gen:
-				finalText.append(u'%s' % page.title())
-				count = count + 1
-		finalText.append(u'Total page count: %d' % count)
-		for line in finalText:
-			wikipedia.output(line, toStdout=True)
-		wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
+    def listTemplates(self, templates, namespaces):
+        mysite = wikipedia.getSite()
+        count = 0
+        finalText = [u'List of pages transcluding templates:']
+        for template in templates:
+            finalText.append(u'* %s' % template)
+        finalText.append(u'------------------------------------')
+        for template in templates:
+            gen = pagegenerators.ReferringPageGenerator(wikipedia.Page(mysite, mysite.template_namespace() + ':' + template), onlyTemplateInclusion = True)
+            if namespaces:
+                gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
+            for page in gen:
+                finalText.append(u'%s' % page.title())
+                count = count + 1
+        finalText.append(u'Total page count: %d' % count)
+        for line in finalText:
+            wikipedia.output(line, toStdout=True)
+        wikipedia.output(u'Report generated on %s' % datetime.datetime.utcnow().isoformat(), toStdout=True)
 
 def main():
-	operation = "None"
-	doCount = False
-	doList = False
-	argsList = []
-	namespaces = []
+    operation = "None"
+    doCount = False
+    doList = False
+    argsList = []
+    namespaces = []
 
-	for arg in wikipedia.handleArgs():
-		if arg == '-count':
-			operation = "Count"
-		elif arg == '-list':
-			operation = "List"
-		elif arg.startswith('-namespace:'):
-			namespaces.append(int(arg[len('-namespace:'):]))
-		else:
-			argsList.append(arg)
+    for arg in wikipedia.handleArgs():
+        if arg == '-count':
+            operation = "Count"
+        elif arg == '-list':
+            operation = "List"
+        elif arg.startswith('-namespace:'):
+            try:
+                namespaces.append(int(arg[len('-namespace:'):]))
+            except ValueError:
+                namespaces.append(arg[len('-namespace:'):])
+        else:
+            argsList.append(arg)
 
-	if operation == "None":
-		wikipedia.output(__doc__, 'utf-8')
-	else:
-		robot = TemplateCountRobot()
-		if not argsList:
-			argsList = ['ref', 'note', 'ref label', 'note label']
-		if operation == "Count":
-			robot.countTemplates(argsList, namespaces)
-		elif operation == "List":
-			robot.listTemplates(argsList, namespaces)
+    if operation == "None":
+        wikipedia.output(__doc__, 'utf-8')
+    else:
+        robot = TemplateCountRobot()
+        if not argsList:
+            argsList = ['ref', 'note', 'ref label', 'note label']
+        if operation == "Count":
+            robot.countTemplates(argsList, namespaces)
+        elif operation == "List":
+            robot.listTemplates(argsList, namespaces)
 
 if __name__ == "__main__":
-	try:
-		main()
-	finally:
-		wikipedia.stopme()
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
