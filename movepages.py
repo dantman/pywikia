@@ -53,16 +53,14 @@ summary={
 
 deletesummary={
     'de': u'Bot: Lösche nach Seitenverschiebung nicht benötigte Umleitung',
-    'en': u'Robot: Deleting redirect after page has been moved'
+    'en': u'Robot: Deleting redirect after page has been moved',
+    'pt': u'Bot: Página apagada depois de movida',
     # These are too unspecific:
     #'ar': u'حذف الصفحة بواسطة البوت',
-    #'en': u'Robot: deleted page',
-    #'de': u'Bot: Seite gelöscht',
     #'el': u'Διαγραφή σελίδων με bot',
     #'fr': u'Page supprimée par bot',
     #'nl': u'Pagina verwijderd door robot',
     #'pl': u'Usunięcie artykułu przez robota',
-    #'pt': u'Página apagada por bot',
 }
 
 class MovePagesBot:
