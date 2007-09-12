@@ -2042,67 +2042,71 @@ class Page(object):
 
         # Copyright (c) Orgullomoore, Bryan
 
-        # TODO: document and simplify the code, use understandable variable names
+        # TODO: document and simplify the code
         site = self.site()
 
         text = self.get()
         new_text = text
 
-        def create_regex(s):
+        def caseInsensitivePattern(s):
+            """
+            Creates a pattern that matches the string case-insensitively.
+            """
             s = re.escape(s)
-            return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
-        def create_regex_i(s):
-            """
-            Creates a pattern that matches the string (unescaped), case-insensitively.
-            Somehow an awkward way of doing this.
-            """
             return ur'(?:%s)' % u''.join([u'[%s%s]' % (c.upper(), c.lower()) for c in s])
 
-        namespaces = ('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True)
-        # note that the colon is already included here
-        r_namespace = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(create_regex_i, namespaces))
-        r_image = u'(%s)' % create_regex(image).replace(r'\_', '[ _]')
+        def capitalizationPattern(s):
+            """
+            Given a string, creates a pattern that matches the string, with
+            the first letter case-insensitive if capitalization is switched
+            on on the site you're working on.
+            """
+            s = re.escape(s)
+            if self.site().nocapitalize:
+                return s
+            else:
+                return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
 
-        def simple_replacer(match, groupNumber = 1):
+        namespaces = set(('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True))
+        # note that the colon is already included here
+        namespacePattern = ur'\s*(?:%s)\s*\:\s*' % u'|'.join(map(caseInsensitivePattern, namespaces))
+
+        imagePattern = u'(%s)' % capitalizationPattern(image).replace(r'\_', '[ _]')
+
+        def filename_replacer(match):
             if replacement == None:
                 return u''
             else:
-                groups = list(match.groups())
-                groups[groupNumber] = replacement
-                return u''.join(groups)
+                old = match.group()
+                return old[:match.start('filename')] + replacement + old[match.end('filename'):]
 
         # The group params contains parameters such as thumb and 200px, as well
         # as the image caption. The caption can contain wiki links, but each
         # link has to be closed properly.
-        r_param = r'(?:\|(?:(?!\[\[).|\[\[.*?\]\])*?)'
-        rImage = re.compile(ur'(\[\[)(?P<namespace>%s)%s(?P<params>%s*?)(\]\])' % (r_namespace, r_image, r_param))
-
-        while True:
-            m = rImage.search(new_text)
-            if not m:
-                break
-            new_text = new_text[:m.start()] +  simple_replacer(m, 2) + new_text[m.end():]
-
+        paramPattern = r'(?:\|(?:(?!\[\[).|\[\[.*?\]\])*?)'
+        rImage = re.compile(ur'\[\[(?P<namespace>%s)(?P<filename>%s)(?P<params>%s*?)\]\]' % (namespacePattern, imagePattern, paramPattern))
+        if replacement == None:
+            new_text = rImage.sub('', new_text)
+        else:
+            new_text = rImage.sub('[[\g<namespace>%s\g<params>]]' % replacement, new_text)
 
         # Remove the image from galleries
-        r_galleries = ur'(?s)(\<%s\>)(?s)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'),
-            create_regex_i('gallery'))
-        r_gallery_item = ur'(?m)^((?:%s)?)%s(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
+        galleryR = re.compile(r'(?is)<gallery>(?P<items>.*?)</gallery>')
+        galleryItemR = re.compile(r'(?m)^%s?(?P<filename>%s)\s*(?P<label>\|.*?)?\s*$' % (namespacePattern, imagePattern))
         def gallery_replacer(match):
-            return ur'%s%s%s' % (match.group(1),
-                re.sub(r_gallery_item, simple_replacer, match.group(2)),
-                match.group(3))
-        new_text = re.sub(r_galleries, gallery_replacer, new_text)
+            return ur'<gallery>%s<gallery>' % galleryItemR.sub(filename_replacer, match.group('items'))
+        new_text = galleryR.sub(gallery_replacer, new_text)
 
         if (text == new_text) or (not safe):
             # All previous steps did not work, so the image is
             # likely embedded in a complicated template.
-            r_templates = ur'(?s)(\{\{.*?\}\})'
-            r_complicated = u'(?s)((?:%s)?)%s' % (r_namespace, r_image)
+            # Note: this regular expression can't handle nested templates.
+            templateR = re.compile(ur'(?s)\{\{(?<contents>.*?\}\}')
+            fileReferenceR = re.compile(u'%s(?P<filename>(?:%s)?)' % (namespacePattern, imagePattern))
 
             def template_replacer(match):
-                return re.sub(r_complicated, simple_replacer, match.group(1))
-            new_text = re.sub(r_templates, template_replacer, new_text)
+                return fileReferenceR.sub(filename_replacer, match.group('contents'))
+            new_text = templateR.sub(template_replacer, new_text)
 
         if put:
             if text != new_text:
