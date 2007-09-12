@@ -1797,8 +1797,10 @@ class Page(object):
             if self.site().mediawiki_message('pagemovedsub') in data:
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
                 return True
+            elif self.site().mediawiki_message('articleexists') in data:
+                output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
             else:
-                output(u'Page move failed.')
+                output(u'Page move failed for unknown reason.')
                 try:
                     ibegin = data.index('<!-- start content -->') + 22
                     iend = data.index('<!-- end content -->')
