@@ -103,14 +103,15 @@ class XmlDumpTemplatePageGenerator:
     template. These pages will be retrieved from a local XML dump file
     (cur table).
     """
-    def __init__(self, template, xmlfilename):
+    def __init__(self, templates, xmlfilename):
         """
         Arguments:
-            * template    - A Page object representing the searched template
-            * xmlfilename - The dump's path, either absolute or relative
+            * templateNames - A list of Page object representing the searched
+                              templates
+            * xmlfilename   - The dump's path, either absolute or relative
         """
-        self.template = template
-        wikipedia.Page(mysite, ns + ':' + thisPage)
+        
+        self.templates = templates
         self.xmlfilename = xmlfilename
 
     def __iter__(self):
@@ -124,14 +125,15 @@ class XmlDumpTemplatePageGenerator:
         # {{vfd}} does the same thing as {{Vfd}}, so both will be found.
         # The old syntax, {{msg:vfd}}, will also be found.
         # TODO: check site.nocapitalize()
-        templateName = self.template.titleWithoutNamespace()
-        if wikipedia.getSite().nocapitalize:
-            # FIXME
-            old = self.old
-        else:
-            templateName = '[' + templateName[0].upper() + templateName[0].lower() + ']' + templateName[1:]
-        templateName = re.sub(' ', '[_ ]', templateName)
-        templateRegex = re.compile(r'\{\{ *([mM][sS][gG]:)?' + templateName + ' *(?P<parameters>\|[^}]+|) *}}')
+        templatePatterns = []
+        for template in self.templates:
+            templatePattern = template.titleWithoutNamespace()
+            if not wikipedia.getSite().nocapitalize:
+                templatePattern = '[' + templatePattern[0].upper() + templatePattern[0].lower() + ']' + templatePattern[1:]
+            templatePattern = re.sub(' ', '[_ ]', templatePattern)
+            templatePatterns.append(templatePattern)
+        templateRegex = re.compile(r'\{\{ *([mM][sS][gG]:)?(?:%s) *(?P<parameters>\|[^}]+|) *}}' % '|'.join(templatePatterns))
+
         for entry in dump.parse():
             if templateRegex.search(entry.text):
                 page = wikipedia.Page(mysite, entry.title)
@@ -357,17 +359,21 @@ def main():
             wikipedia.output(u'Unless using -subst or -remove, you must give an even number of template names.')
             return
 
+    oldTemplates = []
+    ns = wikipedia.getSite().template_namespace()
+    for templateName in templates.keys():
+        oldTemplate = wikipedia.Page(wikipedia.getSite(), ns + ':' + templateName)
+        oldTemplates.append(oldTemplate)
+
     if xmlfilename:
-        gen = XmlDumpTemplatePageGenerator(templates.keys(), xmlfilename)
+        gen = XmlDumpTemplatePageGenerator(oldTemplates, xmlfilename)
     elif pageTitles:
         pages = [wikipedia.Page(wikipedia.getSite(), pageTitle) for pageTitle in pageTitles]
         gen = iter(pages)
     else:
         gens = []
-        ns = wikipedia.getSite().template_namespace()
-        for templateName in templates.keys():
-            template = wikipedia.Page(wikipedia.getSite(), ns + ':' + templateName)
-            singleGen = pagegenerators.ReferringPageGenerator(template, onlyTemplateInclusion = True)
+        gens = [pagegenerators.ReferringPageGenerator(t, onlyTemplateInclusion = True) for t in oldTemplates]
+            singleGen = 
             gens.append(singleGen)
         gen = pagegenerators.CombinedPageGenerator(gens)
         gen = pagegenerators.DuplicateFilterPageGenerator(gen)
