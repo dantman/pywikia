@@ -173,6 +173,7 @@ def compileLinkR(withoutBracketed = False, onlyBracketed = False):
     elif onlyBracketed:
         regex = r'\[' + regex
     linkR = re.compile(regex)
+    return linkR
 
 def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     text = wikipedia.removeDisabledParts(text)
