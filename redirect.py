@@ -112,7 +112,7 @@ class RedirectGenerator:
             # if self.namespace != -1 and self.namespace != entry.namespace:
                 # continue
             if alsoGetPageTitles:
-                pageTitles.add(entry.title)
+                pageTitles.add(entry.title.replace(' ', '_'))
 
             m = redirR.match(entry.text)
             if m:
@@ -139,8 +139,6 @@ class RedirectGenerator:
                         wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.title)
                         target = target[:target.index('|')]
                     dict[source] = target
-        print len(dict)
-        print len(pageTitles)
         if alsoGetPageTitles:
             return dict, pageTitles
         else:
@@ -152,7 +150,7 @@ class RedirectGenerator:
             mysite = wikipedia.getSite()
             # broken redirect maintenance page's URL
             path = mysite.broken_redirects_address(default_limit = False)
-            print 'Retrieving special page...'
+            wikipedia.output(u'Retrieving special page...')
             maintenance_txt = mysite.getUrl(path)
 
             # regular expression which finds redirects which point to a non-existing page inside the HTML
