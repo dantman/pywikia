@@ -88,6 +88,7 @@ class RedirectGenerator:
         self.namespace = namespace
         self.restart = restart
 
+    # TODO: I think namespaces are ignored here.
     def get_redirects_from_dump(self, alsoGetPageTitles = False):
         '''
         Loads a local XML dump file, looks at all pages which have the redirect flag
@@ -138,6 +139,8 @@ class RedirectGenerator:
                         wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.title)
                         target = target[:target.index('|')]
                     dict[source] = target
+        print len(dict)
+        print len(pageTitles)
         if alsoGetPageTitles:
             return dict, pageTitles
         else:
@@ -164,7 +167,7 @@ class RedirectGenerator:
             wikipedia.output(u'Getting a list of all redirects and of all page titles...')
             redirs, pageTitles = self.get_redirects_from_dump(alsoGetPageTitles = True)
             for (key, value) in redirs.iteritems():
-                if not pagetitles.has_key(value):
+                if value not in pagetitles:
                     yield key
 
     def retrieve_double_redirects(self):
@@ -242,7 +245,7 @@ class RedirectRobot:
             else:
                 try:
                     secondTargetPage = secondRedir.getRedirectTarget()
-                    anchorMatch = re.search(u'#(?P<section>.*)$', target)
+                    anchorMatch = re.search(u'#(?P<section>.*)$', secondRedir.title())
                     if anchorMatch and not u'#' in secondTargetPage.title():
                         secondTarget = wikipedia.Page(mysite, '%s#%s' % (secondTargetPage.sectionFreeTitle(), anchorMatch.group('section')))
                 except wikipedia.SectionError:
@@ -254,7 +257,6 @@ class RedirectRobot:
                 else:
                     wikipedia.output(u'%s is a redirect to %s, which is a redirect to %s. Fixing...' % (redir.aslink(), secondRedir.aslink(), secondTargetPage.aslink()))
                     txt = mysite.redirectRegex().sub('#REDIRECT [[%s]]')
-                    txt = redir.get(get_redirect=True).replace('[['+target,'[['+secondTargetPage.title())
                     wikipedia.showDiff(redir.get(get_redirect=True), txt)
                     try:
                         redir.put(txt)
