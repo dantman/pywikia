@@ -167,7 +167,7 @@ class RedirectGenerator:
             wikipedia.output(u'Getting a list of all redirects and of all page titles...')
             redirs, pageTitles = self.get_redirects_from_dump(alsoGetPageTitles = True)
             for (key, value) in redirs.iteritems():
-                if value not in pagetitles:
+                if value not in pageTitles:
                     yield key
 
     def retrieve_double_redirects(self):
