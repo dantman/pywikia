@@ -15,8 +15,6 @@
 
 __metaclass__ = type
 __version__ = "$Id$"
-sig = u" (edited with editarticle.py 0.4)"
-
 import sys
 import os
 import string
@@ -25,6 +23,11 @@ import tempfile
 
 import wikipedia
 import config
+
+msg = {
+    'de': 'Manuelle Bearbeitung: %s',
+    'en': 'Manual edit: %s',
+}
 
 class TextEditor:
     def __init__(self):
@@ -142,35 +145,6 @@ class ArticleEditor:
         if not self.options.edit_redirect and self.page.isRedirectPage():
             self.page = wikipedia.Page(site, self.page.getRedirectTarget())
 
-    def repair(self, content):
-        """
-        Removes single newlines.
-        """
-        #####
-        # This method was disabled because its functionality belong into
-        # cosmetic_changes.py, not here.
-        return content
-        #
-        #####
-        if self.options.join_lines:
-            lines = content.splitlines()
-            result = []
-            for i, line in enumerate(lines):
-                try:
-                    nextline = lines[i+1]
-                except IndexError:
-                    nextline = "last"
-                result.append(line)
-                if line.strip() == "" or line[0] not in self.joinchars or \
-                   nextline.strip() == "" or nextline[0] not in self.joinchars:
-                    result.append('\n')
-                else:
-                    result.append(" ")
-            s = "".join(result)
-        else:
-            s = content
-        return s
-
     def handle_edit_conflict(self):
         fn = os.path.join(tempfile.gettempdir(), self.page.title())
         fp = open(fn, 'w')
@@ -186,9 +160,9 @@ class ArticleEditor:
         textEditor = TextEditor()
         new = textEditor.edit(old)
         if new and old != new:
-            new = self.repair(new)
             wikipedia.showDiff(old, new)
-            comment = wikipedia.input(u"What did you change?") + sig
+            changes = wikipedia.input(u"What did you change?")
+            comment = wikipedia.translate(wikipedia.getSite(), msg) % changes
             try:
                 self.page.put(new, comment = comment, minorEdit = False, watchArticle=self.options.watch)
             except wikipedia.EditConflict:
