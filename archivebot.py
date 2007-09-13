@@ -414,10 +414,17 @@ def main():
             help='calculate key for PAGE and exit', metavar='PAGE')
     parser.add_option('-l', '--locale', dest='locale',
             help='switch to locale LOCALE', metavar='LOCALE')
+    parser.add_option('-T', '--timezone', dest='timezone',
+            help='switch timezone to TIMEZONE', metavar='TIMEZONE')
     (options, args) = parser.parse_args()
 
     if options.locale:
         locale.setlocale(locale.LC_TIME,options.locale) #Required for english month names
+
+    if options.timezone:
+        os.environ['TZ'] = options.timezone
+    #Or use the preset value
+    time.tzset()
 
     if options.calc:
         if not options.salt:
