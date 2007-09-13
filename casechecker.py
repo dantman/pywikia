@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """ Script to enumerate all pages on the wiki and find all titles
 with mixed latin and cyrilic alphabets.
@@ -403,7 +403,7 @@ class CaseChecker( object ):
                 if not dst.exists():
                     pagesDontExist.append(newTitle)
                 elif dst.isRedirectPage():
-                    pagesRedir[newTitle] = dst.getRedirectTarget()
+                    pagesRedir[newTitle] = dst.getRedirectTarget().title()
                 else:
                     pagesExist.append(newTitle)
 

@@ -120,7 +120,7 @@ def asktoadd(pl):
     if pl.site() != mysite:
         return
     if pl.isRedirectPage():
-        pl2 = wikipedia.Page(mysite,pl.getRedirectTarget())
+        pl2 = pl.getRedirectTarget()
         if needcheck(pl2):
             tocheck.append(pl2)
             checked[pl2]=pl2

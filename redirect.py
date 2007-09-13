@@ -206,15 +206,14 @@ class RedirectRobot:
             # Highlight the title in purple.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % redir_page.title())
             try:
-                target_name = redir_page.getRedirectTarget()
+                targetPage = redir_page.getRedirectTarget()
             except wikipedia.IsNotRedirectPage:
                 wikipedia.output(u'%s is not a redirect.' % redir_page.title())
             except wikipedia.NoPage:
                 wikipedia.output(u'%s doesn\'t exist.' % redir_page.title())
             else:
                 try:
-                    target_page = wikipedia.Page(wikipedia.getSite(), target_name)
-                    target_page.get()
+                    targetPage.get()
                 except wikipedia.NoPage:
                     redir_page.delete(reason, prompt = False)
                 except wikipedia.IsRedirectPage:
@@ -233,28 +232,28 @@ class RedirectRobot:
             # Highlight the title in purple.
             wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % redir.title())
             try:
-                target = redir.getRedirectTarget()
+                secondRedir = redir.getRedirectTarget()
             except wikipedia.IsNotRedirectPage:
                 wikipedia.output(u'%s is not a redirect.' % redir.aslink())
             except wikipedia.NoPage:
                 wikipedia.output(u'%s doesn\'t exist.' % redir.aslink())
             else:
                 try:
-                    second_redir = wikipedia.Page(mysite, target)
-                    second_target = second_redir.getRedirectTarget()
-                    anchor = re.search(u'#(.*)$', target)
-                    if anchor and not u'#' in second_target:
-                        second_target += u'#' + anchor.group(1)
+                    secondTargetPage = secondRedir.getRedirectTarget()
+                    anchorMatch = re.search(u'#(?P<section>.*)$', target)
+                    if anchorMatch and not u'#' in secondTargetPage.title():
+                        secondTarget = wikipedia.Page(mysite, '%s#%s' % (secondTargetPage.sectionFreeTitle(), anchorMatch.group('section')))
                 except wikipedia.SectionError:
-                    wikipedia.output(u'Warning: Redirect target section %s doesn\'t exist.' % second_redir.aslink())
+                    wikipedia.output(u'Warning: Redirect target section %s doesn\'t exist.' % secondRedir.aslink())
                 except wikipedia.IsNotRedirectPage:
-                    wikipedia.output(u'Redirect target %s is not a redirect.' % second_redir.aslink())
+                    wikipedia.output(u'Redirect target %s is not a redirect.' % secondRedir.aslink())
                 except wikipedia.NoPage:
-                    wikipedia.output(u'Redirect target %s doesn\'t exist.' % second_redir.aslink())
+                    wikipedia.output(u'Redirect target %s doesn\'t exist.' % secondRedir.aslink())
                 else:
-                    wikipedia.output(u'%s is a redirect to %s, which is a redirect to [[%s]]. Fixing...' % (redir.aslink(), second_redir.aslink(), second_target))
-                    # TODO: make this case-insensitive
-                    txt = redir.get(get_redirect=True).replace('[['+target,'[['+second_target)
+                    wikipedia.output(u'%s is a redirect to %s, which is a redirect to %s. Fixing...' % (redir.aslink(), secondRedir.aslink(), secondTargetPage.aslink()))
+                    txt = mysite.redirectRegex().sub('#REDIRECT [[%s]]')
+                    txt = redir.get(get_redirect=True).replace('[['+target,'[['+secondTargetPage.title())
+                    wikipedia.showDiff(redir.get(get_redirect=True), txt)
                     try:
                         redir.put(txt)
                     except wikipedia.LockedPage:

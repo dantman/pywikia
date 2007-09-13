@@ -932,8 +932,7 @@ class Page(object):
                     # make sure this is really a redirect to this page
                     # (MediaWiki will mark as a redirect any link that follows
                     # a #REDIRECT marker, not just the first one).
-                    if Page(self.site(), p.getRedirectTarget()
-                            ).sectionFreeTitle() == self.sectionFreeTitle():
+                    if p.getRedirectTarget().sectionFreeTitle() == self.sectionFreeTitle():
                         isredirect = True
                 if self.site().has_mediawiki_message("Istemplate") \
                         and self._istemplatemessage in textafter:
@@ -1488,19 +1487,19 @@ class Page(object):
 
     def getRedirectTarget(self):
         """
-        If the page is a redirect page, gives the title of the page it
-        redirects to. Otherwise it will raise an IsNotRedirectPage exception.
+        If the page is a redirect page, gives the page it redirects to.
+        Otherwise it will raise an IsNotRedirectPage exception.
 
         This function can raise a NoPage exception.
         """
         try:
             self.get()
         except NoPage:
-            raise NoPage(self)
+            raise
         except IsRedirectPage, arg:
             if '|' in arg:
                 warnings.warn("%s has a | character, this makes no sense", Warning)
-            return arg[0]
+            return Page(self.site(), arg[0])
         else:
             raise IsNotRedirectPage(self)
 
@@ -4017,9 +4016,9 @@ Maybe the server is down. Retrying in %i minutes..."""
             # no localized keyword for redirects
             redirKeywordsR = r'redirect'
         # A redirect starts with hash (#), followed by a keyword, then
-        # arbitrary stuff, then a wikilink. The link target ends before
-        # either a | or a ].
-        return re.compile(r'# *' + redirKeywordsR + '.*?\[\[(.*?)(?:\]|\|)', re.IGNORECASE | re.UNICODE | re.DOTALL)
+        # arbitrary stuff, then a wikilink. The wikilink may contain
+        # a label, although this is not useful.
+        return re.compile(r'# *' + redirKeywordsR + '.*?\[\[(.*?)(?:\|.*?)\]\]', re.IGNORECASE | re.UNICODE | re.DOTALL)
 
     # The following methods are for convenience, so that you can access
     # methods of the Family class easier.

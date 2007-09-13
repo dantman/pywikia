@@ -166,7 +166,7 @@ def findTranslated(page, oursite=None):
         oursite=wikipedia.getSite()
     wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"% page.title())
     if page.isRedirectPage():
-        page=wikipedia.Page(page.site(), page.getRedirectTarget())
+        page = page.getRedirectTarget()
     try:
         iw=page.interwiki()
     except:
@@ -184,7 +184,7 @@ def findTranslated(page, oursite=None):
         wikipedia.output(u"Our page doesn't exist: "+ourpage.title())
         return None
     if ourpage.isRedirectPage():
-        ourpage=wikipedia.Page(ourpage.site(),ourpage.getRedirectTarget())
+        ourpage = ourpage.getRedirectTarget()
     wikipedia.output(u"Corresponding page is "+ourpage.title())
     if ourpage.namespace() != 0:
         wikipedia.output(u"...not in the main namespace, skipping")
@@ -211,7 +211,7 @@ def findTranslated(page, oursite=None):
         # everything is ok
         return ourpage
     if backpage.isRedirectPage():
-        backpage=wikipedia.Page(backpage.site(),backpage.getRedirectTarget())
+        backpage = backpage.getRedirectTarget()
     if backpage==page:
         # everything is ok
         return ourpage

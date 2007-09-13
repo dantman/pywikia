@@ -617,9 +617,8 @@ class DisambiguationRobot(object):
                     elif choice in ['d', 'D']:
                         editor = editarticle.TextEditor()
                         if disambPage.isRedirectPage():
-                            disambredir1 = disambPage.getRedirectTarget()
-                            disambredir2 = wikipedia.Page(wikipedia.getSite(), disambredir1)
-                            disambigText = editor.edit(disambredir2.get(), jumpIndex = m.start(), highlight = disambredir2.title())
+                            disambredir = disambPage.getRedirectTarget()
+                            disambigText = editor.edit(disambredir.get(), jumpIndex = m.start(), highlight = disambredir.title())
                         else:
                             disambigText = editor.edit(disambPage.get(), jumpIndex = m.start(), highlight = disambPage.title())
                     elif choice in ['l', 'L']:
@@ -734,7 +733,7 @@ class DisambiguationRobot(object):
     def findAlternatives(self, disambPage):
         if disambPage.isRedirectPage() and not self.primary:
             try:
-                target = disambPage.getRedirectTarget()
+                target = disambPage.getRedirectTarget().title()
                 self.alternatives.append(target)
             except wikipedia.NoPage:
                 wikipedia.output(u"The specified page was not found.")

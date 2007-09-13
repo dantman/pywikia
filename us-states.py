@@ -1,4 +1,4 @@
-﻿#coding: utf-8
+#coding: utf-8
 """
 Check pages on the English Wikipedia whether they are in the form
 Something, State, and if so, create a redirect from Something, ST.
@@ -99,7 +99,7 @@ def main():
                 # A bit hacking here - the real work is done in the 'except wikipedia.NoPage'
                 # part rather than the 'try'.
                 try:
-                    goal = pl.getRedirectTarget()
+                    goal = pl.getRedirectTarget().title()
                     if wikipedia.Page(mysite, goal):
                         wikipedia.output(u"Not creating %s - redirect already exists." % goal)
                     else:
@@ -109,7 +109,7 @@ def main():
                 except wikipedia.NoPage:
                     change=''
                     if p.isRedirectPage():
-                        p2 = wikipedia.Page(mysite, p.getRedirectTarget())
+                        p2 = p.getRedirectTarget()
                         wikipeda.ouput(u'Note: goal page is redirect. Creating redirect to "%s" to avoid double redirect.'%p2.title().replace("%2C",",").replace("_"," "))
                     else:
                         p2 = p

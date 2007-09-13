@@ -276,7 +276,7 @@ def add_category(sort_by_last_name = False):
         except wikipedia.NoPage:
             wikipedia.output(u'%s could not be loaded from the server.' % listpage.aslink())
         except wikipedia.IsRedirectPage:
-            wikipedia.output(u'%s is a redirect to %s.' % (listpage.aslink(), listpage.getRedirectTarget()))
+            wikipedia.output(u'%s is a redirect to %s.' % (listpage.aslink(), listpage.getRedirectTarget().aslink()))
     else:
         referredPage = wikipedia.input(u'Wikipedia page that is now linked to:')
         page = wikipedia.Page(wikipedia.getSite(), referredPage)

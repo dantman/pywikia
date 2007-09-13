@@ -143,7 +143,7 @@ class ArticleEditor:
         pageTitle = self.options.page or wikipedia.input(u"Page to edit:")
         self.page = wikipedia.Page(site, pageTitle)
         if not self.options.edit_redirect and self.page.isRedirectPage():
-            self.page = wikipedia.Page(site, self.page.getRedirectTarget())
+            self.page = self.page.getRedirectTarget()
 
     def handle_edit_conflict(self):
         fn = os.path.join(tempfile.gettempdir(), self.page.title())
