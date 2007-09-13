@@ -2572,10 +2572,8 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         marker          - a string, it will be added to the last replacement,
                           if nothing is changed, it is added at the end
     """
-    # Hyperlink regex is defined in weblinkchecker.py. Only import
-    # when required.
-    if 'hyperlink' in exceptions:
-        import weblinkchecker
+    # Hyperlink regex is defined in weblinkchecker.py
+    import weblinkchecker
 
     exceptionRegexes = {
         'comment':     re.compile(r'(?s)<!--.*?-->'),
