@@ -270,11 +270,14 @@ fixes = {
             'en': u'Robot: Fixing ISBN format',
         },
         'replacements': [
-            (r'ISBN (\d+) (\d+) (\d+) (\d+) (\d)', r'ISBN \1-\2-\3-\4-\5'), # missing hyphens in ISBN13
-            (r'ISBN (\d+) (\d+) (\d+) (\d|X|x)', r'ISBN \1-\2-\3-\4'), # missing hyphens in ISBN10
-            (ur'ISBN (\d+)–(\d+)–(\d+)–(\d+)–(\d)', r'ISBN \1-\2-\3-\4-\5'), # dashes instead of hyphens in ISBN13
-            (ur'ISBN (\d+)–(\d+)–(\d+)–(\d|X|x)', r'ISBN \1-\2-\3-\4'), # dashes instead of hyphens in ISBN10
-            (r'ISBN: (\d+)', r'ISBN \1'), # colon
+             # colon
+            (r'ISBN: (\d+)', r'ISBN \1'),
+            # Spaces, dashes, or dots instead of hyphens as separators,
+            # or spaces between digits and separators.
+            # Note that these regular expressions also match valid ISBNs, but
+            # these won't be changed.
+            (ur'ISBN (\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d)(?!\d)', r'ISBN \1-\2-\3-\4-\5'), # ISBN13
+            (r'ISBN (\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d|X|x)(?!\d)', r'ISBN \1-\2-\3-\4'), # ISBN10
         ],
     },
 }
