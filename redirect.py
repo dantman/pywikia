@@ -10,20 +10,22 @@ Syntax:
 
 where action can be one of these:
 
-* double - fix redirects which point to other redirects
-* broken - delete redirects where targets don\'t exist. Requires adminship.
+double         Fix redirects which point to other redirects
+broken         Delete redirects where targets don\'t exist. Requires adminship.
 
 and argument can be:
 
-* xml         - retrieve information from a local XML dump
-                (http://download.wikimedia.org). Argument can also be given as
-                "-xml:filename.xml". If this argument isn't given, info will be
-                loaded from a special page of the live wiki.
+-xml           Retrieve information from a local XML dump
+               (http://download.wikimedia.org). Argument can also be given as
+               "-xml:filename.xml". If this argument isn't given, info will be
+               loaded from a special page of the live wiki.
 
-* namespace:n - Namespace to process. Works only with an XML dump. Currently not
-                supported!
-* restart:n   - Number of redirect to restart with (see progress). Works only
-                with an XML dump. Currently not supported!
+-namespace:n   Namespace to process. Works only with an XML dump.
+
+-offset:n      Number of redirect to restart with (see progress). Works only
+               with an XML dump.
+
+-always        Don't prompt you for each replacement.
 
 """
 #
@@ -41,52 +43,54 @@ __version__='$Id$'
 
 # Summary message for fixing double redirects
 msg_double={
-    'en':u'Robot: Fixing double redirect',
-    'ar':u'روبوت: تصليح تحويلة مزدوجة',
-    'br':u'Kempennet adkas doubl gant robot',
-    'de':u'Bot: Korrigiere doppelten Redirect',
-    'fr':u'Robot : répare double redirection',
-    'he':u'רובוט: מתקן הפניה כפולה',
-    'hr':u'Bot: Popravak dvostrukih preusmjeravanja',
-    'ia':u'Robot: reparation de duple redirection',
-    'is':u'Vélmenni: Lagfæri tvöfalda tilvísun',
-    'ka':u'რობოტი: ორმაგი გადამისამართების გასწორება',
-    'kk':u'Бот: Шынжырлы айдатуды түзетті',
+    'en': u'Robot: Fixing double redirect',
+    'ar': u'روبوت: تصليح تحويلة مزدوجة',
+    'br': u'Kempennet adkas doubl gant robot',
+    'de': u'Bot: Korrigiere doppelten Redirect',
+    'es': u'Robot: Arreglando doble redirección',
+    'fr': u'Robot : répare double redirection',
+    'he': u'רובוט: מתקן הפניה כפולה',
+    'hr': u'Bot: Popravak dvostrukih preusmjeravanja',
+    'ia': u'Robot: reparation de duple redirection',
+    'is': u'Vélmenni: Lagfæri tvöfalda tilvísun',
+    'ka': u'რობოტი: ორმაგი გადამისამართების გასწორება',
+    'kk': u'Бот: Шынжырлы айдатуды түзетті',
     'ksh':u'Bot: Dubbel Ömlëijdong fottjemaat',
-    'lt':u'robotas: Taisomas dvigubas peradresavimas',
-    'nl':u'Robot: Dubbele doorverwijzing gecorrigeerd',
-    'no':u'bot: Retter dobbel omdirigering',
-    'pl':u'Robot naprawia podwójne przekierowanie',
-    'pt':u'Bot: Corrigido duplo redirecionamento',
-    'ru':u'Робот: исправление двойного перенаправления',
-    'sr':u'Бот: Поправка дуплих преусмерења',
-    'tr':u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
-    }
+    'lt': u'robotas: Taisomas dvigubas peradresavimas',
+    'nl': u'Robot: Dubbele doorverwijzing gecorrigeerd',
+    'no': u'bot: Retter dobbel omdirigering',
+    'pl': u'Robot naprawia podwójne przekierowanie',
+    'pt': u'Bot: Corrigido duplo redirecionamento',
+    'ru': u'Робот: исправление двойного перенаправления',
+    'sr': u'Бот: Поправка дуплих преусмерења',
+    'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
+}
 
 # Reason for deleting broken redirects
 reason_broken={
-    'en':u'Robot: Redirect target doesn\'t exist',
-    'de':u'Bot: Weiterleitungsziel existiert nicht',
-    'fr':u'Robot : Cible du redirect inexistante',
-    'he':u'רובוט: יעד ההפניה אינו קיים',
-    'ia':u'Robot: Scopo del redirection non existe',
-    'ka':u'რობოტი: გადამისამართებული გვერდი არ არსებობს',
-    'kk':u'Бот: Айдату нысанасы жоқ болды',
+    'en': u'Robot: Redirect target doesn\'t exist',
+    'de': u'Bot: Weiterleitungsziel existiert nicht',
+    'es': u'Robot: La página a la que redirige no existe',
+    'fr': u'Robot : Cible du redirect inexistante',
+    'he': u'רובוט: יעד ההפניה אינו קיים',
+    'ia': u'Robot: Scopo del redirection non existe',
+    'ka': u'რობოტი: გადამისამართებული გვერდი არ არსებობს',
+    'kk': u'Бот: Айдату нысанасы жоқ болды',
     'ksh':u'Bot: Dė Ömlëijdong jingk ennet Liiere',
-    'lt':u'robotas: Peradresavimas į niekur',
-    'nl':u'Robot: Doel doorverwijzing bestaat niet',
-    'pl':u'Robot: cel przekierowania nie istnieje',
-    'pt':u'Bot: Redirecionamento não existe',
-    'ru':u'Робот: перенаправление в никуда',
-    'sr':u'Бот: Преусмерење не постоји',
-    'tr':u'Bot değişikliği: Var olmayan sayfaya olan yönlendirme',
-    }
+    'lt': u'robotas: Peradresavimas į niekur',
+    'nl': u'Robot: Doel doorverwijzing bestaat niet',
+    'pl': u'Robot: cel przekierowania nie istnieje',
+    'pt': u'Bot: Redirecionamento não existe',
+    'ru': u'Робот: перенаправление в никуда',
+    'sr': u'Бот: Преусмерење не постоји',
+    'tr': u'Bot değişikliği: Var olmayan sayfaya olan yönlendirme',
+}
 
 class RedirectGenerator:
-    def __init__(self, xmlFilename = None, namespace = -1, restart = -1):
+    def __init__(self, xmlFilename = None, namespace = None, offset = -1):
         self.xmlFilename = xmlFilename
         self.namespace = namespace
-        self.restart = restart
+        self.offset = offset
 
     # TODO: I think namespaces are ignored here.
     def get_redirects_from_dump(self, alsoGetPageTitles = False):
@@ -109,8 +113,8 @@ class RedirectGenerator:
             # always print status message after 10000 pages
             if readPagesCount % 10000 == 0:
                 wikipedia.output(u'%i pages read...' % readPagesCount)
-            # if self.namespace != -1 and self.namespace != entry.namespace:
-                # continue
+            if self.namespace and self.namespace != entry.namespace:
+                continue
             if alsoGetPageTitles:
                 pageTitles.add(entry.title.replace(' ', '_'))
 
@@ -190,14 +194,24 @@ class RedirectGenerator:
                 num += 1
                 # check if the value - that is, the redirect target - is a
                 # redirect as well
-                if num > self.restart and dict.has_key(value):
+                if num > self.offset and dict.has_key(value):
                     yield key
                     wikipedia.output(u'Checking redirect %i of %i...' % (num + 1, len(dict)))
 
 class RedirectRobot:
-    def __init__(self, action, generator):
+    def __init__(self, action, generator, always = False):
         self.action = action
         self.generator = generator
+        self.always = always
+
+    def prompt(self, question):
+        if not self.always:
+            choice = wikipedia.inputChoice(question, ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+            if choice == 'n':
+                return False
+            elif choice == 'a':
+                self.always = True
+        return True
 
     def delete_broken_redirects(self):
         # get reason for deletion text
@@ -218,7 +232,8 @@ class RedirectRobot:
                 try:
                     targetPage.get()
                 except wikipedia.NoPage:
-                    redir_page.delete(reason, prompt = False)
+                    if self.prompt(u'Do you want to delete %s?' % page.aslink()):
+                        redir_page.delete(reason, prompt = False)
                 except wikipedia.IsRedirectPage:
                     wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
                 else:
@@ -253,13 +268,14 @@ class RedirectRobot:
                 except wikipedia.NoPage:
                     wikipedia.output(u'Redirect target %s doesn\'t exist.' % secondRedir.aslink())
                 else:
-                    wikipedia.output(u'%s is a redirect to %s, which is a redirect to %s. Fixing...' % (redir.aslink(), secondRedir.aslink(), secondTargetPage.aslink()))
-                    txt = mysite.redirectRegex().sub('#REDIRECT [[%s]]')
-                    wikipedia.showDiff(redir.get(get_redirect=True), txt)
-                    try:
-                        redir.put(txt)
-                    except wikipedia.LockedPage:
-                        wikipedia.output(u'%s is locked.' % redir.title())
+                    oldText = redir.get(get_redirect=True)
+                    text = mysite.redirectRegex().sub('#REDIRECT [[%s]]' % secondTargetPage.title(), oldText)
+                    wikipedia.showDiff(oldText, text)
+                    if self.prompt(u'Do you want to accept the changes?'):
+                        try:
+                            redir.put(text)
+                        except wikipedia.LockedPage:
+                            wikipedia.output(u'%s is locked.' % redir.title())
 
     def run(self):
         if self.action == 'double':
@@ -278,10 +294,11 @@ def main():
     xmlFilename = None
     # Which namespace should be processed when using a XML dump
     # default to -1 which means all namespaces will be processed
-    namespace = -1
+    namespace = None
     # at which redirect shall we start searching double redirects again (only with dump)
     # default to -1 which means all redirects are checked
-    restart = -1
+    offset = -1
+    always = False
     for arg in wikipedia.handleArgs():
         if arg == 'double':
             action = 'double'
@@ -297,16 +314,18 @@ def main():
                 namespaces.append(int(arg[11:]))
             except ValueError:
                 namespaces.append(arg[11:])
-        elif arg.startswith('-restart:'):
-            restart = int(arg[9:])
+        elif arg.startswith('-offset:'):
+            offset = int(arg[9:])
+        elif arg == '-always':
+            always = True
         else:
-            print 'Unknown argument: %s' % arg
+            wikipedia.output(u'Unknown argument: %s' % arg)
 
     if not action:
         wikipedia.showHelp('redirect')
     else:
-        gen = RedirectGenerator(xmlFilename, namespace, restart)
-        bot = RedirectRobot(action, gen)
+        gen = RedirectGenerator(xmlFilename, namespace, offset)
+        bot = RedirectRobot(action, gen, always)
         bot.run()
 
 try:
