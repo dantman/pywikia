@@ -1275,7 +1275,7 @@ class ISBN10(ISBN):
         """
         result = []
         for c in self.code:
-            if c.isdigit() or c == 'X':
+            if c.isdigit() or c in 'Xx':
                 result.append(c)
             elif c != '-':
                 raise InvalidIsbnException('The ISBN %s contains invalid characters.' % self.code)
@@ -1295,13 +1295,13 @@ class ISBN10(ISBN):
         #print checksum
         lastDigit = self.digits()[-1]
         #print lastDigit
-        if not ((checksum == 10 and lastDigit == 'X') or (lastDigit.isdigit() and checksum == int(lastDigit))):
+        if not ((checksum == 10 and lastDigit in 'Xx') or (lastDigit.isdigit() and checksum == int(lastDigit))):
             raise InvalidIsbnException('The ISBN checksum of %s is incorrect.' % self.code)
 
     def checkValidity(self):
         if len(self.digits()) != 10:
             raise InvalidIsbnException('The ISBN %s is not 10 digits long.' % self.code)
-        if 'X' in self.digits()[:-1]:
+        if 'X' in self.digits()[:-1] or 'x' in self.digits()[:-1]:
             raise InvalidIsbnException('ISBN %s: X is only allowed at the end of the ISBN.' % self.code)
         self.checkChecksum()
 
@@ -1313,10 +1313,17 @@ class ISBN10(ISBN):
         ISBN number.
         """
         code = '978-' + self.code[:-1]
-        
+
         #cs = self.calculateChecksum()
         #code += str(cs)
         return ISBN13(code, checksumMissing = True)
+
+    def format(self):
+        # load overridden superclass method
+        ISBN.format(self)
+        # capitalize checksum
+        if self.code[-1] == 'x':
+            self.code = self.code[:-1] + 'X'
 
 def getIsbn(code):
     try:
@@ -1342,7 +1349,7 @@ def _hyphenateIsbnNumber(match):
     return i.code
 
 def hyphenateIsbnNumbers(text):
-    isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+X?)')
+    isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+[Xx]?)')
     text = isbnR.sub(_hyphenateIsbnNumber, text)
     return text
 
@@ -1360,7 +1367,7 @@ def _isbn10toIsbn13(match):
     return i13.code
 
 def convertIsbn10toIsbn13(text):
-    isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+X?)')
+    isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+[Xx]?)')
     text = isbnR.sub(_isbn10toIsbn13, text)
     return text
 
@@ -1371,7 +1378,7 @@ class IsbnBot:
         self.to13 = to13
         self.format = format
         self.always = always
-        self.isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+X?)')
+        self.isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+[Xx]?)')
 
     def treat(self, page):
         try:
