@@ -92,7 +92,6 @@ class RedirectGenerator:
         self.namespace = namespace
         self.offset = offset
 
-    # TODO: I think namespaces are ignored here.
     def get_redirects_from_dump(self, alsoGetPageTitles = False):
         '''
         Loads a local XML dump file, looks at all pages which have the redirect flag
@@ -196,7 +195,7 @@ class RedirectGenerator:
                 # redirect as well
                 if num > self.offset and dict.has_key(value):
                     yield key
-                    wikipedia.output(u'Checking redirect %i of %i...' % (num + 1, len(dict)))
+                    wikipedia.output(u'\nChecking redirect %i of %i...' % (num + 1, len(dict)))
 
 class RedirectRobot:
     def __init__(self, action, generator, always = False):
@@ -232,7 +231,7 @@ class RedirectRobot:
                 try:
                     targetPage.get()
                 except wikipedia.NoPage:
-                    if self.prompt(u'Do you want to delete %s?' % page.aslink()):
+                    if self.prompt(u'Do you want to delete %s?' % redir_page.aslink()):
                         redir_page.delete(reason, prompt = False)
                 except wikipedia.IsRedirectPage:
                     wikipedia.output(u'Redirect target is also a redirect! Won\'t delete anything.')
