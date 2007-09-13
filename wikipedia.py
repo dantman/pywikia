@@ -3813,14 +3813,16 @@ Maybe the server is down. Retrying in %i minutes..."""
                     fileext = title[len(title)-3:]
 
                 if title not in seen and fileext == extension:
-                    # Check whether the media is used in a Proofread page
-                    basename = title[6:]
-                    page = Page(self, 'Page:' + basename)
+                    ## Check whether the media is used in a Proofread page
+                    # code disabled because it slows this method down, and
+                    # because it is unclear what it's supposed to do.
+                    #basename = title[6:]
+                    #page = Page(self, 'Page:' + basename)
 
-                    if not page.exists():
-                        seen.add(title)
-                        image = ImagePage(self, title)
-                        yield image
+                    #if not page.exists():
+                    seen.add(title)
+                    image = ImagePage(self, title)
+                    yield image
             if not repeat:
                 break
 
