@@ -125,10 +125,10 @@ def ImagesPageGenerator(pageWithImages):
     for page in pageWithImages.imagelinks(followRedirects = False, loose = True):
         yield page
 
-def UnusedFilesGenerator(number = 100, repeat = False, site = None):
+def UnusedFilesGenerator(number = 100, repeat = False, site = None, extension = None):
     if site is None:
         site = wikipedia.getSite()
-    for page in site.unusedfiles(number=number, repeat=repeat):
+    for page in site.unusedfiles(number=number, repeat=repeat, extension=extension):
         yield wikipedia.ImagePage(page.site(), page.title())
 
 def WithoutInterwikiPageGenerator(number = 100, repeat = False, site = None):

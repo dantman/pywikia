@@ -3797,21 +3797,30 @@ Maybe the server is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def unusedfiles(self, number = 10, repeat = False):
+    def unusedfiles(self, number = 10, repeat = False, extension = None):
         throttle = True
         seen = set()
+        ns = self.image_namespace()
+        entryR = re.compile('<a href=".+?" title="(?P<title>%s:.+?)">.+?</a>' % ns)
         while True:
             path = self.unusedfiles_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile('<li>\(<a href=".+?" title="(?P<title>.+?)">.+?</a>\) ')
             for m in entryR.finditer(html):
+                fileext = None
                 title = m.group('title')
+                if extension:
+                    fileext = title[len(title)-3:]
 
-                if title not in seen:
-                    seen.add(title)
-                    page = ImagePage(self, title)
-                    yield page
+                if title not in seen and fileext == extension:
+                    # Check whether the media is used in a Proofread page
+                    basename = title[6:]
+                    page = Page(self, 'Page:' + basename)
+
+                    if not page.exists():
+                        seen.add(title)
+                        image = ImagePage(self, title)
+                        yield image
             if not repeat:
                 break
 
