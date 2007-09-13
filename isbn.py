@@ -1356,8 +1356,8 @@ def _isbn10toIsbn13(match):
     except InvalidIsbnException:
         # don't change
         return code
-    i.format()
-    return i.code
+    i13 = i.toISBN13()
+    return i13.code
 
 def convertIsbn10toIsbn13(text):
     isbnR = re.compile(r'(?<=ISBN )(?P<code>[\d\-]+X?)')
@@ -1386,6 +1386,7 @@ class IsbnBot:
             newText = oldText
             if self.to13:
                 newText = self.isbnR.sub(_isbn10toIsbn13, newText)
+
             if self.format:
                 newText = self.isbnR.sub(_hyphenateIsbnNumber, newText)
             self.save(page, newText)
