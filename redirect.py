@@ -124,18 +124,20 @@ class RedirectGenerator:
                         break
                 # if the redirect does not link to another wiki
                 if target:
+                    source = entry.title.replace(' ', '_')
                     target = target.replace(' ', '_')
                     # remove leading and trailing whitespace
                     target = target.strip()
                     # capitalize the first letter
                     if not wikipedia.getSite().nocapitalize:
+                        source = source[0].upper() + source[1:]
                         target = target[0].upper() + target[1:]
                     if '#' in target:
                         target = target[:target.index('#')]
                     if '|' in target:
                         wikipedia.output(u'HINT: %s is a redirect with a pipelink.' % entry.title)
                         target = target[:target.index('|')]
-                    dict[entry.title] = target
+                    dict[source] = target
         if alsoGetPageTitles:
             return dict, pageTitles
         else:
