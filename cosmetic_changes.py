@@ -85,7 +85,8 @@ class CosmeticChangesToolkit:
         text = self.standardizeCategories(text)
         text = self.cleanUpLinks(text)
         text = self.cleanUpSectionHeaders(text)
-        text = self.putSpacesInLists(text)
+        # Disabled because of a bug, and because its usefulness is disputed
+        # text = self.putSpacesInLists(text)
         text = self.translateAndCapitalizeNamespaces(text)
         text = self.removeDeprecatedTemplates(text)
         text = self.resolveHtmlEntities(text)
@@ -306,6 +307,7 @@ class CosmeticChangesToolkit:
         and French Wikipedia. It might be that it is not wanted on other wikis.
         If there are any complaints, please file a bug report.
         """
+        # FIXME: This breaks redirects.
         text = wikipedia.replaceExcept(text, r'(?m)^(?P<bullet>(\*+|#+):*)(?P<char>[^\s\*#:].+?)', '\g<bullet> \g<char>', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
