@@ -149,17 +149,7 @@ ignorelist = [
     re.compile('.*[\./@]bodo.kommune.no(/.*)?'), # bot can't handle their redirects
 ]
 
-def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
-    text = wikipedia.removeDisabledParts(text)
-
-    # MediaWiki parses templates before parsing external links. Thus, there
-    # might be a | or a } directly after a URL which does not belong to
-    # the URL itself.
-    # Blow up templates with spaces to avoid these problems.
-    templateWithParamsR = re.compile(r'{{([^}]*?[^ ])\|([^ ][^}]*?)}}', re.DOTALL)
-    while templateWithParamsR.search(text):
-        text = templateWithParamsR.sub(r'{{ \1 | \2 }}', text)
-
+def compileLinkR(withoutBracketed = False, onlyBracketed = False):
     # RFC 2396 says that URLs may only contain certain characters.
     # For this regex we also accept non-allowed characters, so that the bot
     # will later show these links as broken ('Non-ASCII Characters in URL').
@@ -183,9 +173,23 @@ def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
     elif onlyBracketed:
         regex = r'\[' + regex
     linkR = re.compile(regex)
+
+def weblinksIn(text, withoutBracketed = False, onlyBracketed = False):
+    text = wikipedia.removeDisabledParts(text)
+
+    # MediaWiki parses templates before parsing external links. Thus, there
+    # might be a | or a } directly after a URL which does not belong to
+    # the URL itself.
+    # Blow up templates with spaces to avoid these problems.
+    templateWithParamsR = re.compile(r'{{([^}]*?[^ ])\|([^ ][^}]*?)}}', re.DOTALL)
+    while templateWithParamsR.search(text):
+        text = templateWithParamsR.sub(r'{{ \1 | \2 }}', text)
+
+    linkR = compileLinkR(withoutBracketed, onlyBracketed)
+
     # Remove HTML comments in URLs as well as URLs in HTML comments.
-    # Also remove text inside nowiki links
-    text = re.sub('(?s)<nowiki>.*?</nowiki>|<!--.*?-->', '', text)
+    # Also remove text inside nowiki links etc.
+    text = wikipedia.removeDisabledParts(text)
     for m in linkR.finditer(text):
         yield m.group('url')
 
