@@ -23,8 +23,18 @@ Furthermore, the following command line parameters are supported:
 
 -nocase           Use case insensitive regular expressions.
 
--except:XYZ       Ignore pages which contain XYZ. If the -regex argument is
+-excepttitle:XYZ  Skip pages with titles that contain XYZ. If the -regex argument
+                  is given, XYZ will be regarded as a regular expression.
+
+-excepttext:XYZ   Skip pages which contain the text XYZ. If the -regex argument is
                   given, XYZ will be regarded as a regular expression.
+
+-exceptinside:XYZ Skip occurences of the to-be-replaced text which lie within XYZ.
+                  If the -regex argument is given, XYZ will be regarded as a regular
+                  expression.
+
+-exceptinsidetag:XYZ Skip occurences of the to-be-replaced text which lie within an
+                  XYZ tag.
 
 -summary:XYZ      Set the summary message text for the edit to XYZ, bypassing
                   the predefined message texts with original and replacements
@@ -70,10 +80,14 @@ Errror -> Error, use this:
 
     python replace.py -xml:foobar.xml "Errror" "Error" -namespace:0
 
-If you have a page called 'John Doe' and want to convert HTML tags to wiki
-syntax, use:
+If you have a page called 'John Doe' and want to fix the format of ISBNs, use:
 
-    python replace.py -page:John_Doe -fix:HTML
+    python replace.py -page:John_Doe -fix:isbn
+
+This command will change 'referer' to 'referrer', but not in pages which
+talk about HTTP, where the typo has become part of the standard:
+
+    python replace.py referer referrer -file:typos.txt -excepttext:HTTP
 """
 #
 # (C) Daniel Herding, 2004
@@ -83,7 +97,7 @@ syntax, use:
 
 from __future__ import generators
 import sys, re
-import wikipedia, pagegenerators,catlib, config
+import wikipedia, pagegenerators, catlib, config
 
 # Imports predefined replacements tasks from fixes.py
 import fixes
@@ -135,34 +149,50 @@ class XmlDumpReplacePageGenerator:
         """
         Arguments:
             * xmlFilename  - The dump's path, either absolute or relative
-            * replacements - A list of 2-tuples of original text (as a compiled
-                             regular expression) and replacement text (as a
-                             string).
-            * exceptions   - A list of compiled regular expression; pages which
-                             contain text that matches one of these won't be
-                             changed.
+            * replacements - A list of 2-tuples of original text (as a
+                             compiled regular expression) and replacement
+                             text (as a string).
+            * exceptions   - A dictionary which defines when to ignore an
+                             occurence. See docu of the ReplaceRobot
+                             constructor below.
         """
 
         self.xmlFilename = xmlFilename
         self.replacements = replacements
         self.exceptions = exceptions
 
+        self.excsInside = []
+        if self.exceptions.has_key('inside-tags'):
+            self.excsInside += self.exceptions['inside-tags']
+        if self.exceptions.has_key('inside'):
+            self.excsInside += self.exceptions['inside']
+
     def __iter__(self):
         import xmlreader
         mysite = wikipedia.getSite()
         dump = xmlreader.XmlDump(self.xmlFilename)
         for entry in dump.parse():
-            skip_page = False
-            for exception in self.exceptions:
-                if exception.search(entry.text):
-                    skip_page = True
-                    break
-            if not skip_page:
-                # TODO: leave out pages that only have old inside nowiki, comments, math
+            if not self.isTitleExcepted(entry.title) and not self.isTextExcepted(entry.text):
+                new_text = entry.text
                 for old, new in self.replacements:
-                    if old.search(entry.text):
+                    new_text = wikipedia.replaceExcept(new_text, old, new, self.excsInside)
+                    if new_text != entry.text:
                         yield wikipedia.Page(mysite, entry.title)
                         break
+
+    def isTitleExcepted(self, title):
+        if self.exceptions.has_key('title'):
+            for exc in self.exceptions['title']:
+                if exc.search(title):
+                    return True
+        False
+
+    def isTextExcepted(self, text):
+        if self.exceptions.has_key('text-contains'):
+            for exc in self.exceptions['text-contains']:
+                if exc.search(text):
+                    return True
+        return False
 
 class ReplaceRobot:
     """
@@ -176,13 +206,30 @@ class ReplaceRobot:
             * replacements - A list of 2-tuples of original text (as a compiled
                              regular expression) and replacement text (as a
                              string).
-            * exceptions   - A list of compiled regular expression; pages which
-                             contain text that matches one of these won't be
-                             changed.
+            * exceptions   - A dictionary which defines when not to change an
+                             occurence. See below.
             * acceptall    - If True, the user won't be prompted before changes
                              are made.
             * allowoverlap - If True, when matches overlap, all of them are replaced.
             * addedCat     - If set to a value, add this category to every page touched.
+
+        Structure of the exceptions dictionary:
+        This dictionary can have these keys:
+
+            title
+                A list of regular expressions. All pages with titles that
+                are matched by one of these regular expressions are skipped.
+            text-contains
+                A list of regular expressions. All pages with text that
+                contains a part which is matched by one of these regular
+                expressions are skipped.
+            inside
+                A list of regular expressions. All occurences are skipped which
+                lie within a text region which is matched by one of these
+                regular expressions.
+            inside-tags
+                A list of strings. These strings must be keys from the
+                exceptionRegexes dictionary in wikipedia.replaceExcept().
         """
         self.generator = generator
         self.replacements = replacements
@@ -192,16 +239,25 @@ class ReplaceRobot:
         self.recursive = recursive
         self.addedCat = addedCat
 
-    def checkExceptions(self, original_text):
+    def isTitleExcepted(self, title):
         """
-        If one of the exceptions applies for the given text, returns the
-        substring which matches the exception. Otherwise it returns None.
+        Iff one of the exceptions applies for the given title, returns True.
         """
-        for exception in self.exceptions:
-            hit = exception.search(original_text)
-            if hit:
-                return hit.group(0)
-        return None
+        if self.exceptions.has_key('title'):
+            for exc in self.exceptions['title']:
+                if exc.search(title):
+                    return True
+        return False
+
+    def isTextExcepted(self, original_text):
+        """
+        Iff one of the exceptions applies for the given page contents, returns True.
+        """
+        if self.exceptions.has_key('text-contains'):
+            for exc in self.exceptions['text-contains']:
+                if exc.search(original_text):
+                    return True
+        return False
 
     def doReplacements(self, original_text):
         """
@@ -209,8 +265,13 @@ class ReplaceRobot:
         given text.
         """
         new_text = original_text
+        exceptions = []
+        if self.exceptions.has_key('inside-tags'):
+            exceptions += self.exceptions['inside-tags']
+        if self.exceptions.has_key('inside'):
+            exceptions += self.exceptions['inside']
         for old, new in self.replacements:
-            new_text = wikipedia.replaceExcept(new_text, old, new, ['nowiki', 'comment', 'math', 'pre'], allowoverlap = self.allowoverlap)
+            new_text = wikipedia.replaceExcept(new_text, old, new, exceptions, allowoverlap = self.allowoverlap)
         return new_text
 
     def run(self):
@@ -231,11 +292,11 @@ class ReplaceRobot:
                 continue
             except wikipedia.IsRedirectPage:
                 original_text = page.get(get_redirect=True)
-            match = self.checkExceptions(original_text)
-            # skip all pages that contain certain texts
-            if match:
-                wikipedia.output(u'Skipping %s because it contains %s' % (page.aslink(), match))
+            if self.isTitleExcepted(page.title()):
+                wikipedia.output(u'Skipping %s because the title is on the exceptions list.' % page.aslink())
             else:
+                if self.isTextExcepted(original_text):
+                    wikipedia.output(u'Skipping %s because it contains text that is on the exceptions list.' % page.aslink())
                 new_text = self.doReplacements(original_text)
                 if new_text == original_text:
                     wikipedia.output('No changes were necessary in %s' % page.aslink())
@@ -293,7 +354,12 @@ def main():
     # A list of 2-tuples of original text and replacement text.
     replacements = []
     # Don't edit pages which contain certain texts.
-    exceptions = []
+    exceptions = {
+        'title':         [],
+        'text-contains': [],
+        'inside':        [],
+        'inside-tags':   [],
+    }
     # Should the elements of 'replacements' and 'exceptions' be interpreted
     # as regular expressions?
     regex = False
@@ -340,8 +406,14 @@ def main():
                 PageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
             else:
                 PageTitles.append(arg[6:])
-        elif arg.startswith('-except:'):
-            exceptions.append(arg[8:])
+        elif arg.startswith('-excepttitle:'):
+            exceptions['title'].append(arg[13:])
+        elif arg.startswith('-excepttext:'):
+            exceptions['text-contains'].append(arg[12:])
+        elif arg.startswith('-exceptinside:'):
+            exceptions['inside'].append(arg[14:])
+        elif arg.startswith('-exceptinsidetag:'):
+            exceptions['inside-tags'].append(arg[17:])
         elif arg.startswith('-fix:'):
             fix = arg[5:]
         elif arg == '-always':
@@ -367,7 +439,7 @@ def main():
             else:
                 commandline_replacements.append(arg)
 
-    if (len(commandline_replacements)%2):
+    if (len(commandline_replacements) % 2):
         raise wikipedia.Error, 'require even number of replacements.'
     elif (len(commandline_replacements) == 2 and fix == None):
         replacements.append((commandline_replacements[0], commandline_replacements[1]))
@@ -375,10 +447,9 @@ def main():
             wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg ) % ' (-' + commandline_replacements[0] + ' +' + commandline_replacements[1] + ')')
     elif (len(commandline_replacements) > 1):
         if (fix == None):
-            #replacements.extend(commandline_replacements)
-            for i in xrange (0,len(commandline_replacements),2):
+            for i in xrange (0, len(commandline_replacements), 2):
                 replacements.append((commandline_replacements[i],
-                                     commandline_replacements[i+1]))
+                                     commandline_replacements[i + 1]))
             if summary_commandline == None:
                 pairs = [(commandline_replacements[i], commandline_replacements[i + 1]) for i in range(0, len(commandline_replacements), 2)]
                 replacementsDescription = '(' + ', '.join([('-' + pair[0] + ' +' + pair[1]) for pair in pairs]) + ')'
@@ -433,15 +504,16 @@ def main():
         else:
             oldR = re.compile(old, re.UNICODE)
         replacements[i] = oldR, new
-    for i in range(len(exceptions)):
-        exception = exceptions[i]
-        if not regex:
-            exception = re.escape(exception)
-        if caseInsensitive:
-            exceptionR = re.compile(exception, re.UNICODE | re.IGNORECASE)
-        else:
-            exceptionR = re.compile(exception, re.UNICODE)
-        exceptions[i] = exceptionR
+    for exceptionCategory in ['title', 'text-contains', 'inside']:
+        if exceptions.has_key(exceptionCategory):
+            patterns = exceptions[exceptionCategory]
+            if not regex:
+                patterns = [re.escape(pattern) for pattern in patterns]
+            if caseInsensitive:
+                patterns = [re.compile(pattern, re.UNICODE | re.IGNORECASE) for pattern in patterns]
+            else:
+                patterns = [re.compile(pattern, re.UNICODE) for pattern in patterns]
+                exceptions[exceptionCategory] = patterns
 
     if xmlFilename:
         gen = XmlDumpReplacePageGenerator(xmlFilename, replacements, exceptions)

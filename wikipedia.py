@@ -2572,6 +2572,11 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         marker          - a string, it will be added to the last replacement,
                           if nothing is changed, it is added at the end
     """
+    # Hyperlink regex is defined in weblinkchecker.py. Only import
+    # when required.
+    if 'hyperlink' in exceptions:
+        import weblinkchecker
+
     exceptionRegexes = {
         'comment':     re.compile(r'(?s)<!--.*?-->'),
         'includeonly': re.compile(r'(?is)<includeonly>.*?</includeonly>'),
@@ -2597,6 +2602,8 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         # depth, we'd need recursion which can't be done in Python's re.
         # After all, the language of correct parenthesis words is not regular.
         'template':    re.compile(r'(?s){{(({{(({{.*?}})|.)*}})|.)*}}'),
+        'hyperlink':   weblinkchecker.compileLinkR(),
+        'gallery':     re.compile(r'(?is)<gallery.*?>.*?</gallery>'),
     }
 
     # if we got a string, compile it as a regular expression
@@ -2606,10 +2613,15 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         else:
             old = re.compile(old)
 
-    #noTouch = '|'.join([exceptions[name] for name in exceptList])
-    #noTouchR = re.compile(noTouch)
-    # How much of the text we have looked at so far
-    dontTouchRegexes = [exceptionRegexes[name] for name in exceptions]
+    dontTouchRegexes = []
+    for exc in exceptions:
+        if isinstance(exc, str) or isinstance(exc, unicode):
+            # assume it's a reference to the exceptionRegexes dictionary
+            # defined above.
+            dontTouchRegexes.append(exceptionRegexes[exc])
+        else:
+            # assume it's a regular expression
+            dontTouchRegexes.append(exc)
     index = 0
     markerpos = len(text)
     while True:

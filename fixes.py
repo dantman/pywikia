@@ -5,13 +5,14 @@ __version__ = '$Id$'
 help = """
                        * HTML       -  Convert HTML tags to wiki syntax, and
                                        fix XHTML.
+                       * isbn        - Fix badly formatted ISBNs.
                        * syntax     -  Try to fix bad wiki markup. Do not run
                                        this in automatic mode, as the bot may
                                        make mistakes.
                        * syntax-safe - Like syntax, but less risky, so you can
                                        run this in automatic mode.
-                       * case-de - fix upper/lower case errors in German
-                       * grammar-de - fix grammar and typography in German
+                       * case-de     - fix upper/lower case errors in German
+                       * grammar-de  - fix grammar and typography in German
 """
 
 fixes = {
@@ -19,9 +20,6 @@ fixes = {
     # make remaining tags XHTML compliant.
     'HTML': {
         'regex': True,
-        # We don't want to mess up pages which discuss HTML tags, so we skip
-        # all pages which contain nowiki tags.
-        'exceptions':  ['<nowiki>'],
         'msg': {
                'en':u'Robot: converting/fixing HTML',
                'de':u'Bot: konvertiere/korrigiere HTML',
@@ -61,7 +59,15 @@ fixes = {
             (r'(?i)([\r\n]) *<h5> *([^<]+?) *</h5> *([\r\n])',  r"\1===== \2 =====\3"),
             (r'(?i)([\r\n]) *<h6> *([^<]+?) *</h6> *([\r\n])',  r"\1====== \2 ======\3"),
             # TODO: maybe we can make the bot replace <p> tags with \r\n's.
-        ]
+        ],
+        'exceptions': {
+            'inside-tags': [
+                'nowiki',
+                'comment',
+                'math',
+                'pre'
+            ],
+        }
     },
     # Grammar fixes for German language
     'grammar-de': {
@@ -90,11 +96,29 @@ fixes = {
             (u'([a-z](\]\])?) ,((\[\[)?[a-zA-Z])',                                                                          r'\1, \3'),
             #(u'([a-z]\.)([A-Z])',                                                                             r'\1 \2'),
         ],
-        'exceptions':  [
-            'sic!',
-            'Ju 52/3m', # Flugzeugbezeichnung
-            'AH-1W',    # Hubschrauberbezeichnung
-        ]
+        'exceptions': {
+            'inside-tags': [
+                'nowiki',
+                'comment',
+                'math',
+                'pre',           # because of code examples
+                'startspace',    # because of code examples
+                'hyperlink',     # e.g. commas in URLs
+                'gallery',       # because of filenames
+            ],
+            'text-contains': [
+                r'sic!',
+            ],
+            'inside': [
+                r'Ju 52/3m', # Flugzeugbezeichnung
+                r'AH-1W',    # Hubschrauberbezeichnung
+                r'\d+h \d+m', # Schreibweise für Zeiten, vor allem in Film-Infoboxen. Nicht korrekt, aber dafür schön kurz.
+                r'(?i)\[\[(Bild|Image|Media):.+?\|', # Dateinamen auslassen
+            ],
+            'title': [
+                r'Arsen',  # chemische Formel
+            ],
+        }
     },
     # Do NOT run this automatically!
     # Recommendation: First run syntax-safe automatically, afterwards
@@ -143,16 +167,24 @@ fixes = {
             # mathematical context or program code.
             (r'{{([^{}]+?)}(?!})',       r'{{\1}}'),
         ],
-        'exceptions': [
-            r'http://.*?object=tx\|',               # regular dash in URL
-            r'http://.*?allmusic\.com',             # regular dash in URL
-            r'http://.*?allmovie\.com',             # regular dash in URL
-            r'http://physics.nist.gov/',            # regular dash in URL
-            r'http://www.forum-seniorenarbeit.de/', # regular dash in URL
-            r'http://kuenstlerdatenbank.ifa.de/',   # regular dash in URL
-            r'&object=med',                         # regular dash in URL
-            r'\[CDATA\['                            # lots of brackets
-        ]
+        'exceptions': {
+            'inside-tags': [
+                'nowiki',
+                'comment',
+                'math',
+                'pre',
+            ],
+            'text-contains': [
+                r'http://.*?object=tx\|',               # regular dash in URL
+                r'http://.*?allmusic\.com',             # regular dash in URL
+                r'http://.*?allmovie\.com',             # regular dash in URL
+                r'http://physics.nist.gov/',            # regular dash in URL
+                r'http://www.forum-seniorenarbeit.de/', # regular dash in URL
+                r'http://kuenstlerdatenbank.ifa.de/',   # regular dash in URL
+                r'&object=med',                         # regular dash in URL
+                r'\[CDATA\['                            # lots of brackets
+            ],
+        }
     },
     # The same as syntax, but restricted to replacements that should
     # be safe to run automatically.
@@ -210,7 +242,17 @@ fixes = {
             (r'Tag der deutschen Einheit', r'Tag der Deutschen Einheit'),
             (r'\bzweite(r|n|) Weltkrieg', r'Zweite\1 Weltkrieg'),
         ],
-        'exceptions':  ['sic!'],
+        'exceptions': {
+            'inside-tags': [
+                'nowiki',
+                'comment',
+                'math',
+                'pre',
+            ],
+            'text-contains': [
+                r'sic!',
+            ],
+        }
     },
     'vonbis': {
         'regex': True,
@@ -235,7 +277,13 @@ fixes = {
             (u'[[EP]]', u'[[Extended Play|EP]]'),
             (u'[[MC]]', u'[[Musikkassette|MC]]'),
             (u'[[Single]]', u'[[Single (Musik)|Single]]'),
-        ]
+        ],
+        'exceptions': {
+            'inside-tags': [
+                'hyperlink',
+            ]
+        }
+
     },
     # format of dates of birth and death, for de:
     # python replace.py -fix:datum -ref:Vorlage:Personendaten
@@ -257,11 +305,13 @@ fixes = {
             #(u'&dagger;\[\[(\d)', u'† [[\\1'),
             (u'\[\[(\d+\. (?:Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)) (\d{1,4})\]\]', u'[[\\1]] [[\\2]]'),
         ],
-        'exceptions': [
-            u'[[20. Juli 1944]]',
-            u'[[17. Juni 1953]]',
-            u'[[11. September 2001]]',
-        ]
+        'exceptions': {
+            'inside': [
+                r'[[20. Juli 1944]]',
+                r'[[17. Juni 1953]]',
+                r'[[11. September 2001]]',
+            ],
+        }
     },
     'isbn': {
         'regex': True,
@@ -276,8 +326,17 @@ fixes = {
             # or spaces between digits and separators.
             # Note that these regular expressions also match valid ISBNs, but
             # these won't be changed.
-            (ur'ISBN (\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d)(?!\d)', r'ISBN \1-\2-\3-\4-\5'), # ISBN13
+            (ur'ISBN (978|979) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d)(?!\d)', r'ISBN \1-\2-\3-\4-\5'), # ISBN13
             (r'ISBN (\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d+) *[\- –\.] *(\d|X|x)(?!\d)', r'ISBN \1-\2-\3-\4'), # ISBN10
         ],
+        'exceptions': {
+            'inside-tags': [
+                'comment',
+            ],
+            'inside': [
+                r'ISBN (\d(-?)){12}\d',    # matches valid ISBN-13s
+                r'ISBN (\d(-?)){9}[\dXx]', # matches valid ISBN-10s
+            ],
+        }
     },
 }
