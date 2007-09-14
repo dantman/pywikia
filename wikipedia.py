@@ -4788,6 +4788,9 @@ def showHelp(moduleName = None):
 
 Global arguments available for all bots:
 
+-dir:PATH         Read the bot's configuration data from directory given by
+                  PATH, instead of from the default directory.
+                  
 -lang:xx          Set the language of the wiki you want to work on, overriding
                   the configuration in user-config.py. xx should be the
                   language code.
@@ -4805,7 +4808,7 @@ Global arguments available for all bots:
 
 -nolog            Disable the logfile (if it is enabled by default).
 
--putthrottle:nn   Set the minimum time (in seconds) the bot will wait between
+-putthrottle:n    Set the minimum time (in seconds) the bot will wait between
 -pt:n             saving pages.
 
 -verbose          Have the bot provide additional output that may be useful in
