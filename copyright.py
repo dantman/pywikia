@@ -106,6 +106,10 @@ pages_for_exclusion_database = [
     #('sv', 'Wikipedia:Spegelsidor', 'Spegelsidor.txt'),
 ]
 
+reports_cat = {
+    'it': u'Segnalazioni automatiche sospetti problemi di copyright',
+}
+
 wikipedia_names = {
     '--': u'Wikipedia',
     'am': u'ዊኪፔድያ',
@@ -247,12 +251,12 @@ def load_pages(force_update = False):
     for page, path in exclusion_file_list():
         try:
             if not os.path.exists(path):
-                    print 'Creating file \'%s\' ([[%s]])' % (path, page.title())
+                    print 'Creating file \'%s\' (%s)' % (path, page.aslink())
                     force_update = True
             else:
                 file_age = time.time() - os.path.getmtime(path)
                 if file_age > 24 * 60 * 60:
-                    print 'Updating file \'%s\' ([[%s]])' % (path, page.title())
+                    print 'Updating file \'%s\' (%s)' % (path, page.aslink())
                     force_update = True
         except OSError:
             raise
