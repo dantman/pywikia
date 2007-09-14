@@ -45,19 +45,19 @@ separatorC = re.compile('(?m)^== +')
 def set_template():
 
     site = wikipedia.getSite()
-    url = "%s://%s%s" % (site.protocol, site.hostname(), site.path()
+    url = "%s://%s%s" % (site.protocol, site.hostname(), site.path())
 
     botdate = u"""
 <div style="text-align:right">{{{1}}}</div><noinclude>%s\n[[%s:%s]]</noinclude>
 """ % (template_cat[0], site.namespace(14), template_cat[1])
 
     botbox = """
-<div class=plainlinks style="text-align:right">[%s?title={{{1}}}&diff={{{2}}}&oldid={{{3}}} diff] - [%s?title={{{1}}}&action=history cron] - [%s?title=Special:Log&page={{{1}}} log]</div>
-""" % url, url, url)
+<div class=plainlinks style="text-align:right">[%s?title={{{1}}}&diff={{{2}}}&oldid={{{3}}} diff] - [%s?title={{{1}}}&action=history cron] - [%s?title=Special:Log&page={{{1}}} log]</div><noinclude>%s\n[[%s:%s]]</noinclude>
+""" % (url, url, url, template_cat[0], site.namespace(14), template_cat[1])
 
     if append_date_to_entries:
         p = wikipedia.Page(site, 'Template:botdate')
-        if not p.exists()
+        if not p.exists():
             p.put(botdate)
 
 def output_files_gen():
@@ -154,10 +154,10 @@ if final_summary:
 
     if len(final_summary)>=200:
         final_summary = final_summary[:200]
-        final_summary = final_summary[:add_comment.rindex("[")-3] + "..."
+        final_summary = final_summary[:final_summary.rindex("[")-3] + "..."
 
     try:
-        put(wikitext, comment = final_summary)
+        put(page, wikitext, comment = final_summary)
         for f in output_files:
             os.remove(f + '_pending')
             wikipedia.output("\'%s\' deleted." % f)
