@@ -94,7 +94,10 @@ class CosmeticChangesToolkit:
         text = self.resolveHtmlEntities(text)
         text = self.validXhtml(text)
         text = self.removeUselessSpaces(text)
-        text = isbn.hyphenateIsbnNumbers(text)
+        try:
+            text = isbn.hyphenateIsbnNumbers(text)
+        except isbn.InvalidIsbnException, error:
+            pass
         if self.debug:
             wikipedia.showDiff(oldText, text)
         return text

@@ -329,6 +329,8 @@ class ReplaceRobot:
                             wikipedia.output(u'Skipping %s because of edit conflict' % (page.title(),))
                         except wikipedia.SpamfilterError, e:
                             wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
+                        except wikipedia.PageNotSaved, error:
+                            wikipedia.output(u'Error putting page: %s' % (error.args,))
                         except wikipedia.LockedPage:
                             wikipedia.output(u'Skipping %s (locked page)' % (page.title(),))
 
