@@ -314,7 +314,7 @@ def main():
             except ValueError:
                 namespaces.append(arg[11:])
         elif arg.startswith('-offset:'):
-            offset = int(arg[9:])
+            offset = int(arg[8:])
         elif arg == '-always':
             always = True
         else:
