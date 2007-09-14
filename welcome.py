@@ -171,7 +171,7 @@ __version__ = '$Id: welcome.py,v 1.4 2007/04/14 18:05:42 siebrand Exp$'
 
 import wikipedia, config, string, locale
 import time, re, cPickle, os, urllib
-import codecs, wikipediatools
+import codecs
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -443,9 +443,11 @@ def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
             wikipedia.output(u'Error! - No fileName!')
             raise FilenameNotSet("No signature filename specified.")
         try:
-            f = codecs.open(wikipediatools.absoluteFilename(fileSignName), 'r', encoding = config.console_encoding)
+            f = codecs.open(os.path.join(wikipedia.base_dir, fileSignName), 'r',
+                            encoding = config.console_encoding)
         except:
-            f = codecs.open(wikipediatools.absoluteFilename(fileSignName), 'r', encoding = 'utf-8')
+            f = codecs.open(os.path.join(wikipedia.base_dir, fileSignName), 'r',
+                            encoding = 'utf-8')
         signText = f.read()
         f.close()
 
@@ -621,7 +623,8 @@ def main(settingsBot):
         welcomer = u'{{subst:Benvenuto}} %s'
 
     welcomed_users = list()
-    if savedata == True and os.path.exists(wikipediatools.absoluteFilename(filename)):
+    if savedata == True and os.path.exists(os.path.join(wikipedia.base_dir,
+                                                        filename)):
         f = file(filename)
         number_user = cPickle.load(f)
         yield number_user

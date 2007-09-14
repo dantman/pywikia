@@ -107,7 +107,7 @@ stopme(): Put this on a bot when it is not or not communicating with the Wiki
 """
 from __future__ import generators
 #
-# (C) Pywikipedia bot team, 2003-2006
+# (C) Pywikipedia bot team, 2003-2007
 #
 # Distributed under the terms of the MIT license.
 #
@@ -123,16 +123,21 @@ import xml.sax, xml.sax.handler
 import htmlentitydefs
 import warnings
 import unicodedata
-
-import config, login
 import xmlreader
 from BeautifulSoup import *
 import simplejson
 
-# we'll set the locale to system default. This will ensure correct string
+# Set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
 # longer needed.
 locale.setlocale(locale.LC_ALL, '')
+
+# Before importing config, determine the user's base directory
+import wikipediatools
+base_dir = wikipediatools.get_base_dir()
+del wikipediatools
+
+import config, login
 
 try:
     set # introduced in Python2.4: faster and future
@@ -2428,8 +2433,7 @@ class Throttle(object):
         self.setDelay(mindelay)
 
     def logfn(self):
-        import wikipediatools as _wt
-        return _wt.absoluteFilename('throttle.log')
+        return os.path.join(base_dir, 'throttle.log')
 
     def checkMultiplicity(self):
         self.lock.acquire()
@@ -3168,8 +3172,7 @@ def Family(fam = None, fatal = True):
         fam = config.family
     try:
         # search for family module in the 'families' subdirectory
-        import wikipediatools as _wt
-        sys.path.append(_wt.absoluteFilename('families'))
+        sys.path.append(os.path.join(base_dir, 'families'))
         exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
@@ -3378,9 +3381,9 @@ class Site(object):
             self._cookies = None
             self.loginStatusKnown = True
         else:
-            import wikipediatools as _wt
-            tmp = '%s-%s-%s-login.data' % (self.family.name, self.lang, username)
-            fn = _wt.absoluteFilename('login-data', tmp)
+            tmp = '%s-%s-%s-login.data' % (
+                    self.family.name, self.lang, username)
+            fn = os.path.join(base_dir, 'login-data', tmp)
             if not os.path.exists(fn):
                 self._cookies = None
                 self.loginStatusKnown = True
@@ -4363,7 +4366,7 @@ def handleArgs():
     that are not global. This makes sure that global arguments are applied
     first, regardless of the order in which the arguments were given.
     '''
-    global default_code, default_family, verbose
+    global user_directory, default_code, default_family, verbose
     # get commandline arguments
     args = sys.argv
     # get the name of the module calling this function. This is
@@ -4374,8 +4377,8 @@ def handleArgs():
     nonGlobalArgs = []
     for arg in args[1:]:
         if sys.platform=='win32':
-            # stupid Windows gives parameters encoded as windows-1252, but input
-            # encoded as cp850
+            # Windows gives parameters encoded as windows-1252,
+            # regardless of console encoding
             arg = unicode(arg, 'windows-1252')
         else:
             # Linux uses the same encoding for both
@@ -4383,11 +4386,14 @@ def handleArgs():
         if arg == '-help':
             showHelp(moduleName)
             sys.exit(0)
+        if arg.startswith('-dir:'):
+            user_directory = arg[5:]
+            if not os.path.isdir(user_directory):
+                raise RuntimeError("Directory '%s' does not exist."
+                                   % user_directory)
         elif arg.startswith('-family:'):
-            global default_family
             default_family = arg[8:]
         elif arg.startswith('-lang:'):
-            global default_code
             default_code = arg[6:]
         elif arg.startswith('-putthrottle:'):
             put_throttle.setDelay(int(arg[13:]), absolute = True)
@@ -4415,8 +4421,7 @@ def handleArgs():
 #########################
 
 # search for user interface module in the 'userinterfaces' subdirectory
-import wikipediatools as _wt
-sys.path.append(_wt.absoluteFilename('userinterfaces'))
+sys.path.append(os.path.join(base_dir, 'userinterfaces'))
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 verbose = 0
@@ -4653,8 +4658,7 @@ def setLogfileStatus(enabled, logname = None):
     if enabled:
         if not logname:
             logname = '%s.log' % calledModuleName()
-        import wikipediatools as _wt
-        logfn = _wt.absoluteFilename('logs', logname)
+        logfn = os.path.join(base_dir, 'logs', logname)
         try:
             logfile = codecs.open(logfn, 'a', 'utf-8')
         except IOError:
@@ -4928,8 +4932,7 @@ class MyURLopener(urllib.FancyURLopener):
 # Special opener in case we are using a site with authentication
 if config.authenticate:
     import urllib2, cookielib
-    import wikipediatools as _wt
-    COOKIEFILE = _wt.absoluteFilename('login-data', 'cookies.lwp')
+    COOKIEFILE = os.path.join(base_dir, 'login-data', 'cookies.lwp')
     cj = cookielib.LWPCookieJar()
     if os.path.isfile(COOKIEFILE):
         cj.load(COOKIEFILE)

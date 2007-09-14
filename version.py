@@ -6,7 +6,7 @@
 #
 __version__ = '$Id$'
 
-import wikipediatools
+import os.path
 import time
 import sys
 
@@ -28,11 +28,11 @@ def getversiondict():
             tag = ''
             date = time.strptime('T'.join(d[3:5]), '%Y-%m-%dT%H:%M:%SZ')
             rev = d[2] + ' (wikipedia.py)'
-    
     datestring = time.strftime('%b %d %Y, %H:%M:%S', date)
-    return {'tag': tag, 'rev': rev, 'date': datestring}          
+    return {'tag': tag, 'rev': rev, 'date': datestring}
+
 def getversion_svn():
-    entries = open(wikipediatools.absoluteFilename('.svn/entries'))
+    entries = open(os.path.join(wikipedia.base_dir, '.svn/entries'))
     for i in range(4):
         entries.readline()
     tag = entries.readline().strip()
@@ -48,7 +48,7 @@ def getversion_svn():
     return (tag, rev, date)    
 
 def getversion_nightly():
-    data = open(wikipediatools.absoluteFilename('version'))
+    data = open(os.path.join(wikipedia.base_dir, 'version'))
     tag = data.readline().strip()
     date = time.strptime(data.readline()[:19],'%Y-%m-%dT%H:%M:%S')
     rev = data.readline().strip()

@@ -208,6 +208,7 @@ __version__ = '$Id$'
 #
 
 import sys, copy, re
+import os.path
 import time
 import codecs
 import socket
@@ -1164,8 +1165,10 @@ class InterwikiBot(object):
 
     def dump(self):
         site = wikipedia.getSite()
-        import wikipediatools as _wt
-        dumpfn = _wt.absoluteFilename('interwiki-dumps', 'interwikidump-%s-%s.txt' % (site.family.name, site.lang))
+        dumpfn = os.path.join(wikipedia.base_dir,
+                              'interwiki-dumps',
+                              'interwikidump-%s-%s.txt'
+                                  % (site.family.name, site.lang))
         f = codecs.open(dumpfn, 'w', 'utf-8')
         for subj in self.subjects:
             f.write(subj.originPage.aslink(None)+'\n')
@@ -1517,8 +1520,10 @@ if __name__ == "__main__":
 
         if optRestore or optContinue:
             site = wikipedia.getSite()
-            import wikipediatools as _wt
-            dumpFileName = _wt.absoluteFilename('interwiki-dumps', u'interwikidump-%s-%s.txt' % (site.family.name, site.lang))
+            dumpFileName = os.path.join(wikipedia.base_dir,
+                                        'interwiki-dumps',
+                                        u'interwikidump-%s-%s.txt'
+                                            % (site.family.name, site.lang))
             hintlessPageGen = pagegenerators.TextfilePageGenerator(dumpFileName)
             if optContinue:
                 # We waste this generator to find out the last page's title

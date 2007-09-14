@@ -66,9 +66,10 @@ password_file = None
 
 # Get the names of all known families, and initialize
 # with empty dictionaries
-_RfamilyFile = re.compile('(?P<name>.+)_family.py$')
 import wikipediatools as _wt
-for _filename in os.listdir(_wt.absoluteFilename('families')):
+_base_dir = _wt.get_base_dir()
+_RfamilyFile = re.compile('(?P<name>.+)_family.py$')
+for _filename in os.listdir(os.path.join(_base_dir, 'families')):
     _m = _RfamilyFile.match(_filename)
     if _m:
         familyName = _m.group('name')
@@ -402,7 +403,7 @@ for _key in _gl:
 
 # Get the user files
 _thislevel=0
-_fns=[_wt.absoluteFilename("user-config.py")]
+_fns=[os.path.join(_base_dir, "user-config.py")]
 for _filename in _fns:
     _thislevel += 1
     if os.path.exists(_filename):
