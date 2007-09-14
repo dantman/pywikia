@@ -43,6 +43,7 @@ docuReplacements = {
 msg_standalone = {
     'de': u'Bot: Kosmetische Änderungen',
     'en': u'Robot: Cosmetic changes',
+    'es': u'Robot: Cambios triviales',
     'he': u'רובוט: שינויים קוסמטיים',
     'lt': u'robotas: smulkūs taisymai',
     'nl': u'Bot: Cosmetische veranderingen',
@@ -55,6 +56,7 @@ msg_standalone = {
 msg_append = {
     'de': u'; kosmetische Änderungen',
     'en': u'; cosmetic changes',
+    'es': u'; cambios triviales',
     'he': u'; שינויים קוסמטיים',
     'lt': u'; smulkūs taisymai',
     'nl': u'; cosmetische veranderingen',

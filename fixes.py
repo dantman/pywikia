@@ -318,6 +318,7 @@ fixes = {
         'msg': {
             'de': u'Bot: Korrigiere ISBN-Format',
             'en': u'Robot: Fixing ISBN format',
+            'es': u'Arreglando formato ISBN'
         },
         'replacements': [
              # colon
