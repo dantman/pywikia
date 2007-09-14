@@ -4366,7 +4366,7 @@ def handleArgs():
     that are not global. This makes sure that global arguments are applied
     first, regardless of the order in which the arguments were given.
     '''
-    global user_directory, default_code, default_family, verbose
+    global default_code, default_family, verbose
     # get commandline arguments
     args = sys.argv
     # get the name of the module calling this function. This is
@@ -4386,11 +4386,6 @@ def handleArgs():
         if arg == '-help':
             showHelp(moduleName)
             sys.exit(0)
-        if arg.startswith('-dir:'):
-            user_directory = arg[5:]
-            if not os.path.isdir(user_directory):
-                raise RuntimeError("Directory '%s' does not exist."
-                                   % user_directory)
         elif arg.startswith('-family:'):
             default_family = arg[8:]
         elif arg.startswith('-lang:'):
