@@ -6,11 +6,17 @@
 #
 __version__ = '$Id$'
 
-import os, re, sys
-
+import os, re
+import sys as __sys
 # IMPORTANT:
 # Do not change any of the variables in this file. Instead, make
 # a file user-config.py, and overwrite values in there.
+
+# Note: all variables defined in this module are made available to bots as
+# configuration settings, *except* variable names beginning with an
+# underscore (example: _variable).  Be sure to use an underscore on any
+# variables that are intended only for internal use and not to be exported
+# to other modules.
 
 ############## ACCOUNT SETTINGS ##############
 
@@ -60,12 +66,12 @@ password_file = None
 
 # Get the names of all known families, and initialize
 # with empty dictionaries
-RfamilyFile = re.compile('(?P<name>.+)_family.py$')
+_RfamilyFile = re.compile('(?P<name>.+)_family.py$')
 import wikipediatools as _wt
-for filename in os.listdir(_wt.absoluteFilename('families')):
-    m = RfamilyFile.match(filename)
-    if m:
-        familyName = m.group('name')
+for _filename in os.listdir(_wt.absoluteFilename('families')):
+    _m = _RfamilyFile.match(_filename)
+    if _m:
+        familyName = _m.group('name')
         usernames[familyName] = {}
         sysopnames[familyName] = {}
         disambiguation_comment[familyName] = {}
@@ -123,7 +129,7 @@ ring_bell = True
 # Set this to False if you're using Linux and your tty doesn't support
 # ANSI colors.
 try:
-  colorized_output = sys.stdout.isatty()
+  colorized_output = __sys.stdout.isatty()
 except:
   colorized_output = False
 
@@ -131,14 +137,14 @@ except:
 # The command for the editor you want to use. If set to None, a simple Tkinter
 # editor will be used.
 # On Windows systems, this script tries to determine the default text editor.
-if sys.platform=='win32':
+if __sys.platform=='win32':
     try:
         import _winreg
-        key1 = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.txt\OpenWithProgids')
-        progID = _winreg.EnumValue(key1, 1)[0]
-        key2 = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '%s\shell\open\command' % progID)
-        cmd = _winreg.QueryValueEx(key2, None)[0]
-        editor = cmd.replace('%1', '')
+        _key1 = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.txt\OpenWithProgids')
+        _progID = _winreg.EnumValue(_key1, 1)[0]
+        _key2 = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '%s\shell\open\command' % _progID)
+        _cmd = _winreg.QueryValueEx(_key2, None)[0]
+        editor = _cmd.replace('%1', '')
         # Notepad is even worse than our Tkinter editor. Nobody has
         # deserved to use it.
         if editor.lower().endswith('notepad.exe'):
@@ -393,7 +399,7 @@ _tp={}
 for _key in _gl:
     if _key[0]!='_':
         _tp[_key]=type(globals()[_key])
-del _key
+
 # Get the user files
 _thislevel=0
 _fns=[_wt.absoluteFilename("user-config.py")]
@@ -403,15 +409,16 @@ for _filename in _fns:
         _filestatus=os.stat(_filename)
         _filemode=_filestatus[0]
         _fileuid=_filestatus[4]
-        if (sys.platform=='win32' or _fileuid==os.getuid() or _fileuid==0):
-            if sys.platform=='win32' or _filemode&002==0:
+        if (__sys.platform=='win32' or _fileuid==os.getuid() or _fileuid==0):
+            if __sys.platform=='win32' or _filemode&002==0:
                 execfile(_filename)
             else:
                 print "WARNING: Skipped '%s': writeable by others."%_filename
         else:
             print "WARNING: Skipped '%s': owned by someone else."%_filename
         del _filemode,_fileuid,_filestatus
-del os,sys,_filename,_thislevel,_fns
+del os, re
+
 # Test for obsoleted and/or unknown variables.
 for _key in globals().keys():
     if _key[0]=='_':
@@ -436,23 +443,19 @@ for _key in globals().keys():
         del nt,ot
     else:
         print "WARNING: Configuration variable %r is defined but unknown. Misspelled?"%_key
-del _key,_tp
 
 # Fix up default console_encoding
 if console_encoding == None:
-    import sys as _sys
-    if _sys.platform=='win32':
+    if __sys.platform=='win32':
         console_encoding = 'cp850'
     else:
         console_encoding = 'iso-8859-1'
-    del _sys
 #
 # When called as main program, list all configuration variables
 #
 if __name__=="__main__":
-    import sys as _sys
     _all=1
-    for _arg in _sys.argv[1:]:
+    for _arg in __sys.argv[1:]:
         if _arg=="modified":
             _all=0
         else:
@@ -463,6 +466,12 @@ if __name__=="__main__":
         if _name[0]!='_':
             if _all or _glv[_name]!=globals()[_name]:
                 print _name,"=",repr(globals()[_name])
-    del _sys
-    
-del _glv
+
+# cleanup all locally-defined variables
+
+for __var in globals().keys():
+    if __var.startswith("_") and not __var.startswith("__"):
+        del __sys.modules[__name__].__dict__[__var]
+
+del __var, __sys
+
