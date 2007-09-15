@@ -644,16 +644,8 @@ class Page(object):
                 self._startTime = m.group(1)
             else:
                 self._startTime = "0"
-        # Find out if page actually exists. Only existing pages have a
-        # version history tab.
-        if self.site().family.RversionTab(self.site().language()):
-            # In case a family does not have version history tabs, or in
-            # another form
-            RversionTab = re.compile(self.site().family.RversionTab(self.site().language()))
-        else:
-            RversionTab = re.compile(r'<li id="ca-history"><a href=".*?title=.*?&amp;action=history".*?>.*?</a></li>')
-        matchVersionTab = RversionTab.search(text)
-        if not matchVersionTab:
+        
+        if len(text[i1:i2]) <= 1:
             raise NoPage(self.site(), self.aslink(forceInterwiki = True))
         # Look if the page is on our watchlist
         R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
@@ -694,7 +686,7 @@ class Page(object):
         """
         Get the permalink page for this page
         """
-        return "%s://%s%s&oldid=%i"%(self.site().protocol, self.site().hostname(), self.site().get_address(self.title()), self.latestRevision())
+        return "%s://%s%s&oldid=%i"%(self.site().protocol(), self.site().hostname(), self.site().get_address(self.title()), self.latestRevision())
 
     def latestRevision(self):
         """
@@ -2202,8 +2194,6 @@ class GetAll(object):
         self.site = site
         self.pages = []
         self.throttle = throttle
-        self.force = force
-
         for pl in pages:
             if (not hasattr(pl,'_contents') and not hasattr(pl,'_getexception')) or force:
                 self.pages.append(pl)
@@ -2274,7 +2264,7 @@ class GetAll(object):
         page = Page(self.site, title)
         for page2 in self.pages:
             if page2.sectionFreeTitle() == page.sectionFreeTitle():
-                if (hasattr(page2,'_contents') or hasattr(page2,'_getexception')) and not self.force:
+                if hasattr(page2,'_contents') or hasattr(page2,'_getexception'):
                     return
                 break
         else:
@@ -4407,6 +4397,8 @@ def handleArgs():
             output('Pywikipediabot %s' % (version.getversion()))
             output('Python %s' % (sys.version))
             verbose += 1
+        elif arg.startswith('-username'):
+            config.usernames[wikipedia.getSite().family.name][wikipedia.getSite().lang] = arg[9:]
         else:
             # the argument is not global. Let the specific bot script care
             # about it.
