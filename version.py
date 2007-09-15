@@ -6,9 +6,10 @@
 #
 __version__ = '$Id$'
 
-import os.path
+import os
 import time
 import sys
+import wikipediatools
 
 class ParseError(Exception):
     """ Parsing went wrong """
@@ -32,7 +33,7 @@ def getversiondict():
     return {'tag': tag, 'rev': rev, 'date': datestring}
 
 def getversion_svn():
-    entries = open(os.path.join(wikipedia.base_dir, '.svn/entries'))
+    entries = open(os.path.join(wikipediatools.get_base_dir, '.svn/entries'))
     for i in range(4):
         entries.readline()
     tag = entries.readline().strip()
@@ -48,7 +49,7 @@ def getversion_svn():
     return (tag, rev, date)    
 
 def getversion_nightly():
-    data = open(os.path.join(wikipedia.base_dir, 'version'))
+    data = open(os.path.join(wikipediatools.get_base_dir(), 'version'))
     tag = data.readline().strip()
     date = time.strptime(data.readline()[:19],'%Y-%m-%dT%H:%M:%S')
     rev = data.readline().strip()

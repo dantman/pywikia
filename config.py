@@ -417,7 +417,7 @@ for _filename in _fns:
                 print "WARNING: Skipped '%s': writeable by others."%_filename
         else:
             print "WARNING: Skipped '%s': owned by someone else."%_filename
-        del _filemode,_fileuid,_filestatus
+
 del os, re
 
 # Test for obsoleted and/or unknown variables.
@@ -451,6 +451,9 @@ if console_encoding == None:
         console_encoding = 'cp850'
     else:
         console_encoding = 'iso-8859-1'
+
+# Save base_dir for use by other modules
+base_dir = _base_dir
 #
 # When called as main program, list all configuration variables
 #
@@ -475,4 +478,3 @@ for __var in globals().keys():
         del __sys.modules[__name__].__dict__[__var]
 
 del __var, __sys
-

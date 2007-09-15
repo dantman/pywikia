@@ -67,7 +67,7 @@ __version__ = '$Id$'
 #
 # Distributed under the terms of the MIT license.
 #
-import re, sys, string, pickle, bz2
+import os, re, sys, string, pickle, bz2
 import wikipedia, catlib, config, pagegenerators
 
 # Summary messages
@@ -155,7 +155,9 @@ class CategoryDatabase:
             self.rebuild()
         else:
             try:
-
+                if not os.path.isabs(filename):
+                    filename = os.path.join(wikipedia.config.base_dir,
+                                            filename)
                 f = bz2.BZ2File(filename, 'r')
                 wikipedia.output(u'Reading dump from %s' % filename)
                 databases = pickle.load(f)
@@ -220,6 +222,8 @@ class CategoryDatabase:
         '''
         Saves the contents of the dictionaries superclassDB and catContentDB to disk.
         '''
+        if not os.path.isabs(filename):
+            filename = os.path.join(wikipedia.config.base_dir, filename)
         wikipedia.output(u'Dumping to %s, please wait...' % filename)
         f = bz2.BZ2File(filename, 'w')
         databases = {
@@ -674,6 +678,9 @@ class CategoryTreeRobot:
     def __init__(self, catTitle, catDB, filename = None, maxDepth = 10):
         self.catTitle = catTitle
         self.catDB = catDB
+        if not os.path.isabs(filename):
+            filename = os.path.join(wikipedia.config.base_dir,
+                                    filename)
         self.filename = filename
         # TODO: make maxDepth changeable with a parameter or config file entry
         self.maxDepth = maxDepth
@@ -745,10 +752,10 @@ class CategoryTreeRobot:
         """
         cat = catlib.Category(wikipedia.getSite(), 'Category:' + self.catTitle)
         tree = self.treeview(cat)
-        if filename:
-            wikipedia.output(u'Saving results in %s' % filename)
+        if self.filename:
+            wikipedia.output(u'Saving results in %s' % self.filename)
             import codecs
-            f = codecs.open(filename, 'a', 'utf-8')
+            f = codecs.open(self.filename, 'a', 'utf-8')
             f.write(tree)
             f.close()
         else:

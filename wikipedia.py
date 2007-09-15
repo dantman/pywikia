@@ -132,11 +132,6 @@ import simplejson
 # longer needed.
 locale.setlocale(locale.LC_ALL, '')
 
-# Before importing config, determine the user's base directory
-import wikipediatools
-base_dir = wikipediatools.get_base_dir()
-del wikipediatools
-
 import config, login
 
 try:
@@ -2435,7 +2430,7 @@ class Throttle(object):
         self.setDelay(mindelay)
 
     def logfn(self):
-        return os.path.join(base_dir, 'throttle.log')
+        return os.path.join(config.base_dir, 'throttle.log')
 
     def checkMultiplicity(self):
         self.lock.acquire()
@@ -3174,7 +3169,7 @@ def Family(fam = None, fatal = True):
         fam = config.family
     try:
         # search for family module in the 'families' subdirectory
-        sys.path.append(os.path.join(base_dir, 'families'))
+        sys.path.append(os.path.join(config.base_dir, 'families'))
         exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
@@ -3385,7 +3380,7 @@ class Site(object):
         else:
             tmp = '%s-%s-%s-login.data' % (
                     self.family.name, self.lang, username)
-            fn = os.path.join(base_dir, 'login-data', tmp)
+            fn = os.path.join(config.base_dir, 'login-data', tmp)
             if not os.path.exists(fn):
                 self._cookies = None
                 self.loginStatusKnown = True
@@ -4418,7 +4413,7 @@ def handleArgs():
 #########################
 
 # search for user interface module in the 'userinterfaces' subdirectory
-sys.path.append(os.path.join(base_dir, 'userinterfaces'))
+sys.path.append(os.path.join(config.base_dir, 'userinterfaces'))
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 verbose = 0
@@ -4655,7 +4650,7 @@ def setLogfileStatus(enabled, logname = None):
     if enabled:
         if not logname:
             logname = '%s.log' % calledModuleName()
-        logfn = os.path.join(base_dir, 'logs', logname)
+        logfn = os.path.join(config.base_dir, 'logs', logname)
         try:
             logfile = codecs.open(logfn, 'a', 'utf-8')
         except IOError:
@@ -4932,7 +4927,7 @@ class MyURLopener(urllib.FancyURLopener):
 # Special opener in case we are using a site with authentication
 if config.authenticate:
     import urllib2, cookielib
-    COOKIEFILE = os.path.join(base_dir, 'login-data', 'cookies.lwp')
+    COOKIEFILE = os.path.join(config.base_dir, 'login-data', 'cookies.lwp')
     cj = cookielib.LWPCookieJar()
     if os.path.isfile(COOKIEFILE):
         cj.load(COOKIEFILE)

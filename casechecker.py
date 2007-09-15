@@ -42,9 +42,7 @@ def SetColor(color):
 
 # end of console code
 
-
-
-
+import os
 import sys, query, wikipedia, re, codecs
 
 
@@ -154,13 +152,20 @@ class CaseChecker( object ):
         if len(self.localSuspects) != len(self.latinSuspects):
             raise ValueError(u'Suspects must be the same size')
 
+        if not os.path.isabs(self.wikilogfile):
+            self.wikilogfile = os.path.join(wikipedia.config.base_dir,
+                                            self.wikilogfile)
         try:
             self.wikilog = codecs.open(self.wikilogfile, 'a', 'utf-8')
         except IOError:
             self.wikilog = codecs.open(self.wikilogfile, 'w', 'utf-8')
 
-        self.lclToLatDict = dict([(ord(self.localSuspects[i]), self.latinSuspects[i]) for i in range(len(self.localSuspects))])
-        self.latToLclDict = dict([(ord(self.latinSuspects[i]), self.localSuspects[i]) for i in range(len(self.localSuspects))])
+        self.lclToLatDict = dict([(ord(self.localSuspects[i]),
+                                   self.latinSuspects[i])
+                                     for i in range(len(self.localSuspects))])
+        self.latToLclDict = dict([(ord(self.latinSuspects[i]),
+                                   self.localSuspects[i])
+                                     for i in range(len(self.localSuspects))])
 
         badPtrnStr = u'([%s][%s]|[%s][%s])' % (self.latLtr, self.localLtr, self.localLtr, self.latLtr)
         self.badPtrn = re.compile(badPtrnStr)

@@ -1165,7 +1165,7 @@ class InterwikiBot(object):
 
     def dump(self):
         site = wikipedia.getSite()
-        dumpfn = os.path.join(wikipedia.base_dir,
+        dumpfn = os.path.join(wikipedia.config.base_dir,
                               'interwiki-dumps',
                               'interwikidump-%s-%s.txt'
                                   % (site.family.name, site.lang))
@@ -1520,7 +1520,7 @@ if __name__ == "__main__":
 
         if optRestore or optContinue:
             site = wikipedia.getSite()
-            dumpFileName = os.path.join(wikipedia.base_dir,
+            dumpFileName = os.path.join(wikipedia.config.base_dir,
                                         'interwiki-dumps',
                                         u'interwikidump-%s-%s.txt'
                                             % (site.family.name, site.lang))
