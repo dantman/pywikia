@@ -26,8 +26,8 @@ separatorC = re.compile('(?m)^== +')
 next_headC = re.compile("(?m)^=+.*?=+")
 
 #
-# {{/box|title|newid|oldid|author|...}}
-rev_templateC = re.compile("(?m)^(?:{{/t\|.*?}}\n?)?{{/box\|.*?\|(.*?)\|")
+# {{botbox|title|newid|oldid|author|...}}
+rev_templateC = re.compile("(?m)^(?:{{/t\|.*?}}\n?)?{{botbox\|.*?\|(.*?)\|")
 
 def query_yurik_api(data):
 

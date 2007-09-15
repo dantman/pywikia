@@ -9,7 +9,7 @@
 #
 
 import sys, re, codecs, os, time, shutil
-import wikipedia, config
+import wikipedia, config, date
 
 from copyright import put, join_family_data, appdir, reports_cat
 
@@ -20,6 +20,10 @@ append_date_to_wiki_save_path = True
 #
 # Add pubblication date to entries (template:botdate)
 append_date_to_entries = False
+
+#
+# Send statistics
+send_stats = False
 
 msg_table = {
     'it': {'_default': [u'Pagine nuove', u'Nuove voci'],
@@ -37,8 +41,14 @@ template_cat = {
   'it': [u'Questo template è usato dallo script copyright.py del [[:m:Using the python wikipediabot|PyWikipediaBot]].', u'Template usati da bot'],
 }
 
+stat_msg = {
+    'en': [u'Statistics', u'Page', u'Entries', u'Total', 'Update'],
+    'it': [u'Statistiche', u'Pagina', u'Segnalazioni', u'Totale', u'Ultimo aggiornamento'],
+}
+
 wiki_save_path = wikipedia.translate(wikipedia.getSite(), wiki_save_path)
 template_cat = wikipedia.translate(wikipedia.getSite(), template_cat)
+stat_wiki_save_path = '%s/%s' % (wiki_save_path, wikipedia.translate(wikipedia.getSite(), stat_msg)[0])
 
 separatorC = re.compile('(?m)^== +')
 
@@ -59,6 +69,57 @@ def set_template():
         p = wikipedia.Page(site, 'Template:botdate')
         if not p.exists():
             p.put(botdate)
+
+def stat_sum(engine, text):
+    return len(re.findall('(?im)^\*.*?' + engine + '.*?- ', text))
+
+def get_stats():
+
+    import catlib, pagegenerators
+
+    msg = wikipedia.translate(wikipedia.getSite(), stat_msg)
+
+    cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % wikipedia.translate(wikipedia.getSite(), reports_cat))
+    gen = pagegenerators.CategorizedPageGenerator(cat, recurse = True)
+
+    output = u"""{| {{prettytable|width=|align=|text-align=left}}
+! %s
+! %s
+! %s
+! %s
+! %s
+|-
+""" % ( msg[1], msg[2], 'Google', 'Yahoo', 'Live Search' )
+
+    gnt = 0 ; ynt = 0 ; mnt = 0 ; ent = 0
+
+    for page in gen:
+        data = page.get()
+
+        gn = stat_sum('google', data)
+        yn = stat_sum('yahoo', data)
+        mn = stat_sum('(msn|live)', data)
+
+        en = len(re.findall('=== \[\[', data))
+
+        gnt += gn ; ynt += yn ; mnt += mn ; ent += en
+
+        output += u"|%s||%s||%s||%s||%s\n|-\n" % (page.aslink(), en, gn, yn, mn)
+
+    output += u"""|-
+|&nbsp;||||||||
+|-
+|'''%s'''||%s||%s||%s||%s
+|-
+|colspan="5" align=right style="background-color:#eeeeee;"|<small>''%s: %s''</small>
+|}
+""" % (msg[3], ent, gnt, ynt, mnt, msg[4], time.strftime("%d " + "%s" % (date.monthName(wikipedia.getSite().language(), time.localtime()[1])) + " %Y"))
+
+    return output
+
+def put_stats():
+    page = wikipedia.Page(wikipedia.getSite(), stat_wiki_save_path)
+    page.put(get_stats(), comment = wikipedia.translate(wikipedia.getSite(), stat_msg)[0])
 
 def output_files_gen():
     for f in os.listdir(appdir):
@@ -95,10 +156,9 @@ def read_output_file(filename):
     return data
 
 if append_date_to_wiki_save_path:
-    import date
-    wiki_save_path += '_' + date.formats['MonthName'][wikipedia.getSite().language()](time.localtime()[1]) + '_' + str(time.localtime()[0])
+    wiki_save_path += '_' + date.monthName(wikipedia.getSite().language(), time.localtime()[1]) + '_' + str(time.localtime()[0])
 
-page = wikipedia.Page(wikipedia.getSite(),wiki_save_path)
+page = wikipedia.Page(wikipedia.getSite(), wiki_save_path)
 
 try:
     wikitext = page.get()
@@ -163,5 +223,8 @@ if final_summary:
             wikipedia.output("\'%s\' deleted." % f)
     except wikipedia.PageNotSaved:
         raise
+
+if send_stats:
+    put_stats()
 
 wikipedia.stopme()
