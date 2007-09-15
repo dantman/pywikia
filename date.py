@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 This file is not runnable, but it only consists of various
 lists which are required by some other programs.
@@ -686,7 +686,7 @@ formats = {
         'ms' :      lambda v: dh_yearBC( v, u'%d SM' ),
         'nap':      lambda v: dh_yearBC( v, u'%d AC' ),
         'nds':      lambda v: dh_yearBC( v, u'%d v. Chr.' ),
-        'nl' :      lambda v: dh_yearBC( v, u'%d v. Chr.' ),
+        'nl' :      lambda v: dh_yearBC( v, u'%d v.Chr.' ),
         'nn' :      lambda v: dh_yearBC( v, u'-%d' ),
         'no' :      lambda v: dh_yearBC( v, u'%d f.Kr.' ),
         'pl' :      lambda v: dh_yearBC( v, u'%d p.n.e.' ),
@@ -855,8 +855,8 @@ formats = {
 
         # '19-10 v. Chr.'
         'nl' :      lambda m: multi( m, [
-            (lambda v: dh_constVal( v, 1, u'9-1 v. Chr.'),                                                  lambda p: p == 1),
-            (lambda v: dh( v, u'%d-%d v. Chr.', lambda i: (encDec0(i)+9,encDec0(i)), lambda ii: ii[1] ),    alwaysTrue)]),
+            (lambda v: dh_constVal( v, 1, u'9-1 v.Chr.'),                                                  lambda p: p == 1),
+            (lambda v: dh( v, u'%d-%d v.Chr.', lambda i: (encDec0(i)+9,encDec0(i)), lambda ii: ii[1] ),    alwaysTrue)]),
 
         'pt' :      lambda v: dh_decBC( v, u'Década de %d a.C.' ),
 
@@ -1034,7 +1034,7 @@ formats = {
         'ko' :      lambda v: dh_centuryBC( v, u'기원전 %d세기' ),
         'la' :      lambda v: dh_centuryBC( v, u'Saeculum %d a.C.n.' ),
         'lb' :      lambda v: dh_centuryBC( v, u'%d. Joerhonnert v. Chr.' ),
-        'nl' :      lambda v: dh_centuryBC( v, u'%de eeuw v. Chr.' ),
+        'nl' :      lambda v: dh_centuryBC( v, u'%de eeuw v.Chr.' ),
         'nn' :      lambda m: multi( m, [
             (lambda v: dh_constVal( v, 1, u'1. århundret fvt.'),                        lambda p: p == 1),
             (lambda v: dh( v, u'%d00-talet fvt.', lambda i: i-1, lambda ii: ii[0]+1 ),  alwaysTrue)]),
@@ -1147,7 +1147,7 @@ formats = {
         'ja' :      lambda v: dh_millenniumBC( v, u'紀元前%d千年紀' ),
         'ka' :      lambda v: dh_millenniumBC( v, u'ძვ. წ. %R ათასწლეული' ),
         'lb' :      lambda v: dh_millenniumBC( v, u'%d. Joerdausend v. Chr.' ),
-        'nl' :      lambda v: dh_millenniumBC( v, u'%de millennium v. Chr.' ),
+        'nl' :      lambda v: dh_millenniumBC( v, u'%de millennium v.Chr.' ),
         'pt' :      lambda v: slh( v, [u'Primeiro milénio a.C.', u'Segundo milénio a.C.', u'Terceiro milénio a.C.', u'Quarto milénio a.C.'] ),
         'ro' :      lambda v: dh_millenniumBC( v, u'Mileniul %R î.Hr.' ),
         'ru' :      lambda v: dh_millenniumBC( v, u'%d тысячелетие до н. э.' ),
