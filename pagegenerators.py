@@ -580,6 +580,22 @@ class GeneratorFactory:
     def __init__(self):
         pass
 
+    def setCategoryGen(self, arg, length, recurse = False):
+        if len(arg) == length:
+            categoryname = wikipedia.input(u'Please enter the category name:')
+        else:
+            categoryname = arg[length + 1:]
+
+        ind = categoryname.find('|')
+        if ind > 0:
+            startfrom = categoryname[ind + 1:]
+            categoryname = categoryname[:ind]
+        else:
+            startfrom = None
+
+        cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
+        return CategorizedPageGenerator(cat, start = startfrom, recurse = False)
+
     def handleArg(self, arg):
         gen = None
         if arg.startswith('-filelinks'):
@@ -618,19 +634,9 @@ class GeneratorFactory:
                 textfilename = arg[6:]
             gen = TextfilePageGenerator(textfilename)
         elif arg.startswith('-cat'):
-            if len(arg) == 4:
-                categoryname = wikipedia.input(u'Please enter the category name:')
-            else:
-                categoryname = arg[5:]
-            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
-            gen = CategorizedPageGenerator(cat)
+            gen = self.setCategoryGen(arg, 4)
         elif arg.startswith('-subcat'):
-            if len(arg) == 7:
-                categoryname = wikipedia.input(u'Please enter the category name:')
-            else:
-                categoryname = arg[8:]
-            cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
-            gen = CategorizedPageGenerator(cat, recurse = True)
+            gen = self.setCategoryGen(arg, 7, recurse = True)
         elif arg.startswith('-ref'):
             if len(arg) == 4:
                 referredPageTitle = wikipedia.input(u'Links to which page should be processed?')
