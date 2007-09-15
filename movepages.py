@@ -29,9 +29,8 @@ Furthermore, the following command line parameters are supported:
 
 __version__='$Id$'
 
-import wikipedia, pagegenerators, catlib, config
-import sys
-import re
+import wikipedia, pagegenerators
+import sys, re
 
 # This is required for the text that is shown when you run this script
 # with the parameter -help.
@@ -103,12 +102,14 @@ class MovePagesBot:
             newPageTitle = (u'%s%s' % (self.addprefix, pagetitle))
         if self.addprefix or self.appendAll or self.regexAll:
             if not self.always:
-                choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'quit'], ['y', 'n', 'q'])
-                if choice2 == 'y':
+                choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
+                if choice2 in ['y', 'Yes', 'Y']:
                     self.moveOne(page,newPageTitle,self.delete)
-                elif choice2 == 'q':
+                elif choice2 in ['a', 'all', 'A']:
+                    self.always = True
+                elif choice2 in ['q', 'Q', 'quit']:
                     sys.exit()
-                elif choice2 == 'n':
+                elif choice2 in ['n', 'N', 'no']:
                     pass
                 else:
                     self.treat(page)
@@ -130,14 +131,14 @@ class MovePagesBot:
                     else:
                         newPageTitle = (u'%s:%s' % (namesp, newPageTitle))
                 choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
-                if choice2 == 'y':
+                if choice2 in ['y', 'Y', 'yes']:
                     self.moveOne(page,newPageTitle,self.delete)
-                elif choice2 == 'a':
+                elif choice2 in ['a', 'A', 'all']:
                     self.appendAll = True
                     self.moveOne(page,newPageTitle,self.delete)
-                elif choice2 == 'q':
+                elif choice2 in ['q', 'Q', 'quit']:
                     sys.exit()
-                elif choice2 == 'n':
+                elif choice2 in ['n', 'no', 'N']:
                     pass
                 else:
                     self.treat(page)
@@ -155,20 +156,20 @@ class MovePagesBot:
                     else:
                         newPageTitle = self.regex.sub(self.replacePattern, page.title())
                 choice2 = wikipedia.inputChoice(u'Change the page title to "%s"?' % newPageTitle, ['yes', 'no', 'all', 'quit'], ['y', 'n', 'a', 'q'])
-                if choice2 == 'y':
+                if choice2 in ['y', 'Y', 'yes']:
                     self.moveOne(page,newPageTitle,self.delete)
-                elif choice2 == 'a':
+                elif choice2 in ['a', 'A', 'all']:
                     self.regexAll = True
                     self.moveOne(page,newPageTitle,self.delete)
-                elif choice2 == 'q':
+                elif choice2 in ['q', 'Q', 'quit']:
                     sys.exit()
-                elif choice2 == 'n':
+                elif choice2 in ['n', 'no', 'N']:
                     pass
                 else:
                     self.treat(page)
-            elif choice == 'n':
+            elif choice in ['n', 'N', 'no']:
                 pass
-            elif choice == 'q':
+            elif choice in ['q', 'Q', 'quit']:
                 sys.exit()
             else:
                 self.treat(page)
