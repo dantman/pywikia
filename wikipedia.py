@@ -702,12 +702,12 @@ class Page(object):
         """
         if not self._permalink:
             # When we get the page with getall, the permalink is received automatically
-            getall(self.site(),[self,],force=True)
+            getall(self.site(),[self],force=True)
         return int(self._permalink)
 
     def exists(self):
         """
-        True iff the page exists, even if it's a redirect.
+        True if the page exists, even if it's a redirect.
 
         If the title includes a section, False if this section isn't found.
         """
@@ -2202,6 +2202,8 @@ class GetAll(object):
         self.site = site
         self.pages = []
         self.throttle = throttle
+        self.force = force
+
         for pl in pages:
             if (not hasattr(pl,'_contents') and not hasattr(pl,'_getexception')) or force:
                 self.pages.append(pl)
@@ -2272,7 +2274,7 @@ class GetAll(object):
         page = Page(self.site, title)
         for page2 in self.pages:
             if page2.sectionFreeTitle() == page.sectionFreeTitle():
-                if hasattr(page2,'_contents') or hasattr(page2,'_getexception'):
+                if (hasattr(page2,'_contents') or hasattr(page2,'_getexception')) and not self.force:
                     return
                 break
         else:
