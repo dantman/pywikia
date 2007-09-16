@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -752,9 +752,9 @@ class Page(object):
         contains them and active bot is allowed or not allowed
         to edit said page
 
-        Note that the framework does not enforce this restriction; if it
-        is desired to implement authorization-checking for a particular
-        bot, the bot must call this method before editing.
+        The framework enforces this restriction by default. It is possible to
+        override this by setting wikipedia.ignore_bot_templates=True or using
+        page.put(force=True).
         """
         global ignore_bot_templates
         if ignore_bot_templates: #Check the "master ignore switch"
