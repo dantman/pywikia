@@ -1,4 +1,4 @@
-﻿""" Please describe your module here ;) """
+""" Please describe your module here ;) """
 
 __version__ = '$Id$'
 import wikipedia

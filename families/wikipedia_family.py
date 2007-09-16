@@ -894,5 +894,6 @@ class Family(family.Family):
         if code in self.latin1old:
             return 'utf-8', 'iso-8859-1'
         return self.code2encoding(code),
+
     def shared_image_repository(self, code):
         return ('commons', 'commons')

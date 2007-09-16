@@ -106,8 +106,7 @@ def get_stats():
 
         output += u"|%s||%s||%s||%s||%s\n|-\n" % (page.aslink(), en, gn, yn, mn)
 
-    output += u"""|-
-|&nbsp;||||||||
+    output += u"""|&nbsp;||||||||
 |-
 |'''%s'''||%s||%s||%s||%s
 |-

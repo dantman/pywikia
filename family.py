@@ -2441,6 +2441,7 @@ class Family:
 
     def querypath(self, code):
         return '/w/query.php'
+
     def apipath(self, code):
         return '/w/api.php'
 
