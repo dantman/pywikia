@@ -2168,7 +2168,13 @@ class ImagePage(Page):
 
         if history:
             lineR = re.compile('<tr><td>.*?</td><td><a href=".+?">(?P<datetime>.+?)</a></td><td><a href=".+?"(?: class="new"|) title=".+?">(?P<username>.+?)</a>.*?</td><td>(?P<resolution>.*?)</td><td class=".+?">(?P<filesize>.+?)</td><td>(?P<comment>.*?)</td></tr>')
+        else:
+            # backward compatible code
+            history = re.search('(?s)<ul class="special">.+?</ul>', self.getImagePageHtml())
+            if history:
+                lineR = re.compile('<li> \(.+?\) \(.+?\) <a href=".+?" title=".+?">(?P<datetime>.+?)</a> . . <a href=".+?" title=".+?">(?P<username>.+?)</a> \(.+?\) . . (?P<resolution>\d+.+?\d+) \((?P<filesize>[\d,\.]+) .+?\)( <span class="comment">(?P<comment>.*?)</span>)?</li>')
 
+        if history:
             for match in lineR.finditer(history.group()):
                 datetime = match.group('datetime')
                 username = match.group('username')
