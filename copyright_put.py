@@ -134,7 +134,7 @@ def output_files_gen():
             section = section_name_and_summary[0]
             summary = section_name_and_summary[1]
 
-            yield appdir + f, section, summary
+            yield os.path.join(appdir, f), section, summary
 
 def read_output_file(filename):
     if os.path.isfile(filename + '_pending'):
