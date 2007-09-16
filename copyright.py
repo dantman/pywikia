@@ -86,8 +86,8 @@ comma_ratio = 5
 # No checks if the page is a disambiguation page.
 skip_disambig = True
 
-appdir = "copyright/"
-output_file = appdir + "output.txt"
+appdir = os.path.join(wikipedia.config.base_dir, "copyright")
+output_file = os.path.join(appdir, "output.txt")
 
 pages_for_exclusion_database = [
     ('it', 'User:RevertBot/Lista_di_esclusione', 'exclusion_list.txt'),
@@ -242,17 +242,17 @@ def cut_section(text, sectC):
 
 def exclusion_file_list():
     for i in pages_for_exclusion_database:
-        path = appdir + i[0] + '/' + i[2]
+        path = os.path.join(appdir, i[0], i[2])
         wikipedia.makepath(path)
-        p = wikipedia.Page(wikipedia.getSite(i[0]),i[1])
+        p = wikipedia.Page(wikipedia.getSite(i[0]), i[1])
         yield p, path
 
 def load_pages(force_update = False):
     for page, path in exclusion_file_list():
         try:
             if not os.path.exists(path):
-                    print 'Creating file \'%s\' (%s)' % (path, page.aslink())
-                    force_update = True
+                print 'Creating file \'%s\' (%s)' % (path, page.aslink())
+                force_update = True
             else:
                 file_age = time.time() - os.path.getmtime(path)
                 if file_age > 24 * 60 * 60:
@@ -291,7 +291,11 @@ def exclusion_list():
 
     for page, path in exclusion_file_list():
         if 'exclusion_list.txt' in path:
-            result_list += re.sub("</?pre>","", read_file(path, cut_comment = True, cut_newlines = True)).splitlines()
+            result_list += re.sub("</?pre>","",
+                                  read_file(path,
+                                            cut_comment=True,
+                                            cut_newlines=True)
+                                  ).splitlines()
         else:
             data = read_file(path)
             # wikipedia:en:Wikipedia:Mirrors and forks
@@ -320,7 +324,10 @@ def exclusion_list():
             if len(entry) > 4:
                 result_list.append(entry)
 
-    result_list += read_file(appdir + 'exclusion_list.txt', cut_comment = True, cut_newlines = True).splitlines()
+    result_list += read_file(
+                        os.path.join(appdir, 'exclusion_list.txt'),
+                        cut_comment = True, cut_newlines = True
+                    ).splitlines()
 
     for i in range(len(result_list)):
             result_list[i] = re.sub('\s+$', '', result_list[i])
@@ -839,7 +846,12 @@ def checks_by_ids(ids):
             wikipedia.output(original_text)
             output = query(lines=original_text.splitlines())
             if output:
-                write_log("=== [[" + title + "]] ===\n{{/box|%s|prev|%s|%s|00}}" % (title.replace(" ", "_").replace("\"", "%22"), id, "author") + output, "copyright/ID_output.txt")
+                write_log(
+                    "=== [[" + title + "]] ===\n{{/box|%s|prev|%s|%s|00}}"
+                        % (title.replace(" ", "_").replace("\"", "%22"),
+                           id, "author")
+                        + output,
+                    os.path.join(appdir, "ID_output.txt"))
 
 class CheckRobot:
     def __init__(self, generator):
@@ -875,7 +887,8 @@ class CheckRobot:
                 text = skip_section(original_text)
                 output = query(lines = text.splitlines())
                 if output:
-                   write_log('=== [[' + page.title() + ']] ===' + output + '\n', filename = output_file)
+                   write_log('=== [[' + page.title() + ']] ===' + output + '\n',
+                             filename = output_file)
 
 def put(page, text, comment):
     while True:
