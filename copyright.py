@@ -256,7 +256,11 @@ def load_pages(force_update = False):
             else:
                 file_age = time.time() - os.path.getmtime(path)
                 if file_age > 24 * 60 * 60:
-                    print 'Updating file \'%s\' (%s)' % (path, page.aslink())
+                    short_path = path
+                    if path.startswith(wikipedia.config.base_dir):
+                        short_path = path[len(wikipedia.config.base_dir)
+                                          +len(os.path.sep) : ]
+                    print 'Updating file \'%s\' (%s)' % (short_path, page.aslink())
                     force_update = True
         except OSError:
             raise
