@@ -2156,6 +2156,11 @@ class ImagePage(Page):
     def fileIsOnCommons(self):
         return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
 
+    def fileIsShared(self):
+        if self.site().shared_image_repository()[0] == 'wikitravel_shared':
+            return self.fileUrl().startswith(u'http://wikitravel.org/upload/shared/')
+        return self.fileIsOnCommons()
+
     def getFileMd5Sum(self):
         uo = MyURLopener()
         f = uo.open(self.fileUrl())

@@ -52,5 +52,8 @@ class Family(family.Family):
     def path(self, code):
         return '/wiki/%s/index.php' % code
 
+    def shared_image_repository(self, code):
+        return ('wikitravel_shared', 'wikitravel_shared')
+
     def version(self, code):
         return "1.9.3"
