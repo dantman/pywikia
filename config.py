@@ -43,6 +43,7 @@ mylang = 'language'
 usernames = {}
 sysopnames = {}
 disambiguation_comment = {}
+gdab_namespaces = {}
 
 # Some sites will require password identication to access the HTML pages at
 # the site. If you have any such site, add lines to your user-config.py of

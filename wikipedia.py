@@ -2441,7 +2441,7 @@ class Throttle(object):
         self.setDelay(mindelay)
 
     def logfn(self):
-        return os.path.join(config.base_dir, 'throttle.log')
+        return datafilepath('throttle.log')
 
     def checkMultiplicity(self):
         self.lock.acquire()
@@ -3180,7 +3180,7 @@ def Family(fam = None, fatal = True):
         fam = config.family
     try:
         # search for family module in the 'families' subdirectory
-        sys.path.append(os.path.join(config.base_dir, 'families'))
+        sys.path.append(datafilepath('families'))
         exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
@@ -3391,7 +3391,7 @@ class Site(object):
         else:
             tmp = '%s-%s-%s-login.data' % (
                     self.family.name, self.lang, username)
-            fn = os.path.join(config.base_dir, 'login-data', tmp)
+            fn = datafilepath('login-data', tmp)
             if not os.path.exists(fn):
                 self._cookies = None
                 self.loginStatusKnown = True
@@ -4419,12 +4419,40 @@ def handleArgs():
             nonGlobalArgs.append(arg)
     return nonGlobalArgs
 
+def makepath(path):
+    """ creates missing directories for the given path and
+        returns a normalized absolute version of the path.
+
+    - if the given path already exists in the filesystem
+      the filesystem is not modified.
+
+    - otherwise makepath creates directories along the given path
+      using the dirname() of the path. You may append
+      a '/' to the path if you want it to be a directory path.
+
+    from holger@trillke.net 2002/03/18
+    """
+    from os import makedirs
+    from os.path import normpath,dirname,exists,abspath
+
+    dpath = normpath(dirname(path))
+    if not exists(dpath): makedirs(dpath)
+    return normpath(abspath(path))
+
+def datafilepath(*filename):
+    """Returns an absolute path to a data file, offset from the bot's
+       base directory.
+       Argument(s) are zero or more directory names, followed by a data file
+       name.
+    """
+    return os.path.join(config.base_dir, *filename)
+
 #########################
 # Interpret configuration
 #########################
 
 # search for user interface module in the 'userinterfaces' subdirectory
-sys.path.append(os.path.join(config.base_dir, 'userinterfaces'))
+sys.path.append(datafilepath('userinterfaces'))
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 verbose = 0
@@ -4636,32 +4664,12 @@ def showDiff(oldtext, newtext):
         result += diff[i]
     output(result)
 
-def makepath(path):
-    """ creates missing directories for the given path and
-        returns a normalized absolute version of the path.
-
-    - if the given path already exists in the filesystem
-      the filesystem is not modified.
-
-    - otherwise makepath creates directories along the given path
-      using the dirname() of the path. You may append
-      a '/' to the path if you want it to be a directory path.
-
-    from holger@trillke.net 2002/03/18
-    """
-    from os import makedirs
-    from os.path import normpath,dirname,exists,abspath
-
-    dpath = normpath(dirname(path))
-    if not exists(dpath): makedirs(dpath)
-    return normpath(abspath(path))
-
 def setLogfileStatus(enabled, logname = None):
     global logfile
     if enabled:
         if not logname:
             logname = '%s.log' % calledModuleName()
-        logfn = os.path.join(config.base_dir, 'logs', logname)
+        logfn = datafiledpath('logs', logname)
         try:
             logfile = codecs.open(logfn, 'a', 'utf-8')
         except IOError:
@@ -4938,7 +4946,7 @@ class MyURLopener(urllib.FancyURLopener):
 # Special opener in case we are using a site with authentication
 if config.authenticate:
     import urllib2, cookielib
-    COOKIEFILE = os.path.join(config.base_dir, 'login-data', 'cookies.lwp')
+    COOKIEFILE = datafilepath('login-data', 'cookies.lwp')
     cj = cookielib.LWPCookieJar()
     if os.path.isfile(COOKIEFILE):
         cj.load(COOKIEFILE)

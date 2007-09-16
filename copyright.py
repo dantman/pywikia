@@ -86,8 +86,8 @@ comma_ratio = 5
 # No checks if the page is a disambiguation page.
 skip_disambig = True
 
-appdir = os.path.join(wikipedia.config.base_dir, "copyright")
-output_file = os.path.join(appdir, "output.txt")
+appdir = "copyright"
+output_file = wikipedia.datafilepath(appdir, "output.txt")
 
 pages_for_exclusion_database = [
     ('it', 'User:RevertBot/Lista_di_esclusione', 'exclusion_list.txt'),
@@ -242,7 +242,7 @@ def cut_section(text, sectC):
 
 def exclusion_file_list():
     for i in pages_for_exclusion_database:
-        path = os.path.join(appdir, i[0], i[2])
+        path = wikipedia.datafilepath(appdir, i[0], i[2])
         wikipedia.makepath(path)
         p = wikipedia.Page(wikipedia.getSite(i[0]), i[1])
         yield p, path
@@ -325,7 +325,7 @@ def exclusion_list():
                 result_list.append(entry)
 
     result_list += read_file(
-                        os.path.join(appdir, 'exclusion_list.txt'),
+                        wikipedia.datafilepath(appdir, 'exclusion_list.txt'),
                         cut_comment = True, cut_newlines = True
                     ).splitlines()
 
@@ -455,7 +455,7 @@ def exclusion_list_sanity_check():
             print "** " + entry
 
 def exclusion_list_dump():
-    f = open(appdir + 'exclusion_list.dump', 'w')
+    f = open(wikipedia.datafilepath(appdir, 'exclusion_list.dump', 'w'))
     f.write('\n'.join(excl_list))
     f.close()
     print "Exclusion list dump saved."
@@ -851,7 +851,7 @@ def checks_by_ids(ids):
                         % (title.replace(" ", "_").replace("\"", "%22"),
                            id, "author")
                         + output,
-                    os.path.join(appdir, "ID_output.txt"))
+                    wikipedia.datafilepath(appdir, "ID_output.txt"))
 
 class CheckRobot:
     def __init__(self, generator):
