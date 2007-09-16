@@ -12,10 +12,23 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'wikitravel'
         self.langs = {
+            'ca':'ca',
             'de':'de',
             'en':'en',
+            'eo':'eo',
+            'es':'es',
+            'fi':'fi',
             'fr':'fr',
+            'he':'he',
+            'hi':'hi',
+            'hu':'hu',
+            'it':'it',
+            'ja':'ja',
+            'nl':'nl',
+            'pl':'pl',
+            'pt':'pt',
             'ro':'ro',
+            'ru':'ru',
             'sv':'sv',
         }
         self.namespaces[4] = {
