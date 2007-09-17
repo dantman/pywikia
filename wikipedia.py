@@ -4448,6 +4448,15 @@ def datafilepath(*filename):
     """
     return makepath(os.path.join(config.base_dir, *filename))
 
+def shortpath(path):
+    """
+    Short an absolute file path removing bot's base directory part if exists.
+    """
+    shortpath = path
+    if path.startswith(config.base_dir):
+        shortpath = path[len(config.base_dir) + len(os.path.sep) : ]
+    return shortpath
+
 #########################
 # Interpret configuration
 #########################
@@ -4963,4 +4972,3 @@ if __name__ == '__main__':
     print 'Pywikipediabot %s' % version.getversion()
     print 'Python %s' % sys.version
     doctest.testmod()
-

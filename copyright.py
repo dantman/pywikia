@@ -251,16 +251,12 @@ def load_pages(force_update = False):
     for page, path in exclusion_file_list():
         try:
             if not os.path.exists(path):
-                print 'Creating file \'%s\' (%s)' % (path, page.aslink())
+                print 'Creating file \'%s\' (%s)' % (wikipedia.shortpath(path), page.aslink())
                 force_update = True
             else:
                 file_age = time.time() - os.path.getmtime(path)
                 if file_age > 24 * 60 * 60:
-                    short_path = path
-                    if path.startswith(wikipedia.config.base_dir):
-                        short_path = path[len(wikipedia.config.base_dir)
-                                          +len(os.path.sep) : ]
-                    print 'Updating file \'%s\' (%s)' % (short_path, page.aslink())
+                    print 'Updating file \'%s\' (%s)' % (wikipedia.shortpath(path), page.aslink())
                     force_update = True
         except OSError:
             raise
@@ -901,7 +897,7 @@ def put(page, text, comment):
             break
         except wikipedia.SpamfilterError, url:
             print "Spam filter"
-            text = re.sub(url[0], '<blacklist>' + url[0][7:], text)
+            text = re.sub(url[0], '<blacklist>' + url[0][url[0].index('://')+3:], text)
         except wikipedia.EditConflict:
             print "Edit conflict"
             raise wikipedia.EditConflict
