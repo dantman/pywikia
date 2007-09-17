@@ -582,7 +582,8 @@ class Subject(object):
     def reportInterwikilessPage(self, page):
         wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
         if config.without_interwiki:
-            f = codecs.open('without_interwiki.txt', 'a', 'utf-8')
+            f = codecs.open(
+                wikipedia.datafilepath('without_interwiki.txt'), 'a', 'utf-8')
             f.write("# %s \n" % page.aslink())
             f.close()
 
@@ -728,7 +729,9 @@ class Subject(object):
             self.problemfound = True
         if globalvar.autonomous:
             try:
-                f = codecs.open('autonomous_problem.dat', 'a', 'utf-8')
+                f = codecs.open(
+                        wikipedia.datafilepath('autonomous_problem.dat'),
+                        'a', 'utf-8')
                 f.write("* %s {%s}" % (self.originPage.aslink(True), txt))
                 if config.interwiki_graph and config.interwiki_graph_url:
                     filename = interwiki_graph.getFilename(self.originPage, extension = config.interwiki_graph_formats[0])

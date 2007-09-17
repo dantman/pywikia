@@ -382,10 +382,11 @@ class PrimaryIgnoreManager(object):
         self.enabled = enabled
         
         self.ignorelist = []
-        filename = 'disambiguations/' + self.disambPage.urlname() + '.txt'
+        filename = wikipedia.datafilepath('disambiguations',
+                                          self.disambPage.urlname() + '.txt')
         try:
             # The file is stored in the disambiguation/ subdir. Create if necessary.
-            f = codecs.open(self.makepath(filename), 'r', 'utf-8')
+            f = codecs.open(filename, 'r', 'utf-8')
             for line in f.readlines():
                 # remove trailing newlines and carriage returns
                 while line[-1] in ['\n', '\r']:
@@ -403,36 +404,17 @@ class PrimaryIgnoreManager(object):
     def ignore(self, refPage):
         if self.enabled:
             # Skip this occurence next time.
-            filename = 'disambiguations/' + self.disambPage.urlname() + '.txt'
+            filename = wikipedia.datafilepath('disambiguations',
+                                     self.disambPage.urlname() + '.txt')
             try:
                 # Open file for appending. If none exists yet, create a new one.
                 # The file is stored in the disambiguation/ subdir. Create if necessary.
-                f = codecs.open(self.makepath(filename), 'a', 'utf-8')
+                f = codecs.open(filename, 'a', 'utf-8')
                 f.write(refPage.urlname() + '\n')
                 f.close()
             except IOError:
                 pass
 
-    def makepath(self, path):
-        """ creates missing directories for the given path and
-            returns a normalized absolute version of the path.
-    
-        - if the given path already exists in the filesystem
-          the filesystem is not modified.
-    
-        - otherwise makepath creates directories along the given path
-          using the dirname() of the path. You may append
-          a '/' to the path if you want it to be a directory path.
-    
-        from holger@trillke.net 2002/03/18
-        """
-        from os import makedirs
-        from os.path import normpath,dirname,exists,abspath
-    
-        dpath = normpath(dirname(path))
-        if not exists(dpath): makedirs(dpath)
-        return normpath(abspath(path))
-    
 
 class DisambiguationRobot(object):
     ignore_contents = {

@@ -115,11 +115,15 @@ class WarnfileRobot:
 def main():
     filename = None
     for arg in wikipedia.handleArgs():
-        filename = arg
+        if os.path.isabs(arg):
+            filename = arg
+        else:
+            filename = wikipedia.datafilepath("logs", arg)
 
     if not filename:
         mysite = wikipedia.getSite()
-        filename = 'logs/warning-%s-%s.log' % (mysite.family.name, mysite.lang)
+        filename = wikipedia.datafilepath('logs',
+                       'warning-%s-%s.log' % (mysite.family.name, mysite.lang)
     reader = WarnfileReader(filename)
     bot = WarnfileRobot(reader)
     bot.run()

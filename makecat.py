@@ -220,7 +220,8 @@ try:
     mysite = wikipedia.getSite()
     wikipedia.setAction(wikipedia.translate(mysite,msg) + ' ' + workingcatname)
     workingcat = catlib.Category(mysite,mysite.category_namespace()+':'+workingcatname)
-    filename = 'category/' + wikipedia.UnicodeToAsciiHtml(workingcatname) + '_exclude.txt'
+    filename = wikipedia.datafilepath('category',
+                   wikipedia.UnicodeToAsciiHtml(workingcatname) + '_exclude.txt')
     try:
         f = codecs.open(filename, 'r', encoding = mysite.encoding())
         for line in f.readlines():

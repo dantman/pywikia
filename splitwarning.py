@@ -17,7 +17,8 @@ files={}
 count={}
 
 # TODO: Variable log filename
-logFile = codecs.open('logs/interwiki.log', 'r', 'utf-8')
+fn = wikipedia.datafilepath("logs", "interwiki.log")
+logFile = codecs.open(fn, 'r', 'utf-8')
 rWarning = re.compile('WARNING: (?P<family>.+?): \[\[(?P<code>.+?):.*')
 for line in logFile:
     m = rWarning.match(line)
@@ -26,7 +27,10 @@ for line in logFile:
         code = m.group('code')
         if code in wikipedia.getSite().languages():
             if not files.has_key(code):
-                files[code] = codecs.open('logs/warning-%s-%s.log' % (family, code), 'w', 'utf-8')
+                files[code] = codecs.open(
+                                  wikipedia.datafilepath('logs',
+                                      '/warning-%s-%s.log' % (family, code),
+                                  'w', 'utf-8')
                 count[code] = 0
             files[code].write(line)
             count[code] += 1

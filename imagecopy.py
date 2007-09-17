@@ -393,7 +393,7 @@ def getCH(url, imageP, nn, tenemosuncambio):
         imageP.put(imtxt+u'\n\n{{NowCommons}}', u'{{NowCommons}}')
 #-etiqueta ok skip view
 #texto
-archivo="Uploadbot.localskips.txt"
+archivo=wikipedia.datafilepath("Uploadbot.localskips.txt")
 try:
     open(archivo, 'r')
 except IOError:

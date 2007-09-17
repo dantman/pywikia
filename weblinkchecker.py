@@ -472,7 +472,9 @@ class History:
         self.reportThread = reportThread
         site = wikipedia.getSite()
         self.semaphore = threading.Semaphore()
-        self.datfilename = 'deadlinks/deadlinks-%s-%s.dat' % (site.family.name, site.lang)
+        self.datfilename = wikipedia.datafilepath('deadlinks',
+                               'deadlinks-%s-%s.dat'
+                               % (site.family.name, site.lang))
         # Count the number of logged links, so that we can insert captions
         # from time to time
         self.logCount = 0
@@ -498,7 +500,8 @@ class History:
             isoDate = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(date))
             errorReport += "** In [[%s]] on %s, %s\n" % (pageTitle, isoDate, error)
         wikipedia.output(u"** Logging link for deletion.")
-        txtfilename = 'deadlinks/results-%s-%s.txt' % (site.family.name, site.lang)
+        txtfilename = wikipedia.datafilepath('deadlinks',
+                          'results-%s-%s.txt' % (site.family.name, site.lang))
         txtfile = codecs.open(txtfilename, 'a', 'utf-8')
         self.logCount += 1
         if self.logCount % 30 == 0:

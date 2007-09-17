@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -4444,8 +4444,9 @@ def datafilepath(*filename):
        base directory.
        Argument(s) are zero or more directory names, followed by a data file
        name.
+       Any directories in the path that do not already exist are created.
     """
-    return os.path.join(config.base_dir, *filename)
+    return makepath(os.path.join(config.base_dir, *filename))
 
 #########################
 # Interpret configuration

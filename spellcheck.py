@@ -56,9 +56,9 @@ Command-line options:
 
 __version__ = '$Id$'
 
-import re,sys
+import re, sys
 import wikipedia, pagegenerators
-import string,codecs
+import string, codecs
 
 msg={
     'en':u'Bot-aided spell checker',
@@ -75,25 +75,6 @@ class SpecialTerm(object):
     def __init__(self,text):
         self.style = text
 
-def makepath(path):
-    """ creates missing directories for the given path and
-        returns a normalized absolute version of the path.
-    
-    - if the given path already exists in the filesystem
-      the filesystem is not modified.
-    
-    - otherwise makepath creates directories along the given path
-      using the dirname() of the path. You may append
-      a '/' to the path if you want it to be a directory path.
-    
-    from holger@trillke.net 2002/03/18
-    """
-    from os import makedirs
-    from os.path import normpath,dirname,exists,abspath
-    
-    dpath = normpath(dirname(path))
-    if not exists(dpath): makedirs(dpath)
-    return normpath(abspath(path))
 
 def distance(a,b):
     # Calculates the Levenshtein distance between a and b.
@@ -458,10 +439,11 @@ try:
     if not checklang:
         checklang = mysite.language()
     wikipedia.setAction(wikipedia.translate(mysite,msg))
-    filename = 'spelling/spelling-' + checklang + '.txt'
+    filename = wikipedia.datafilepath('spelling',
+                                      'spelling-' + checklang + '.txt')
     print "Getting wordlist"
     try:
-        f = codecs.open(makepath(filename), 'r', encoding = mysite.encoding())
+        f = codecs.open(filename, 'r', encoding = mysite.encoding())
         for line in f.readlines():
             # remove trailing newlines and carriage returns
             try:
@@ -541,14 +523,15 @@ try:
             title = wikipedia.input(u"Which page to check now? (enter to stop)")
 finally:
     wikipedia.stopme()
-    filename = 'spelling/spelling-' + checklang + '.txt'
+    filename = wikipedia.datafilepath('spelling',
+                                      'spelling-' + checklang + '.txt')
     if rebuild:
         list = knownwords.keys()
         list.sort()
-        f = codecs.open(makepath(filename), 'w', encoding = mysite.encoding())
+        f = codecs.open(filename, 'w', encoding = mysite.encoding())
     else:
         list = newwords
-        f = codecs.open(makepath(filename), 'a', encoding = mysite.encoding())
+        f = codecs.open(filename, 'a', encoding = mysite.encoding())
     for word in list:
         if Word(word).isCorrect():
             if word != uncap(word):
