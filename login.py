@@ -62,25 +62,6 @@ botList = {
     }
 }
 
-def makepath(path):
-    """ creates missing directories for the given path and
-        returns a normalized absolute version of the path.
-
-    - if the given path already exists in the filesystem
-      the filesystem is not modified.
-
-    - otherwise makepath creates directories along the given path
-      using the dirname() of the path. You may append
-      a '/' to the path if you want it to be a directory path.
-
-    from holger@trillke.net 2002/03/18
-    """
-    from os import makedirs
-    from os.path import normpath,dirname,exists,abspath
-
-    dpath = normpath(dirname(path))
-    if not exists(dpath): makedirs(dpath)
-    return normpath(abspath(path))
 
 class LoginManager:
     def __init__(self, password = None, sysop = False, site = None):
@@ -177,8 +158,10 @@ class LoginManager:
         The argument data is the raw data, as returned by getCookie().
 
         Returns nothing."""
-        filename = 'login-data/%s-%s-%s-login.data' % (self.site.family.name, self.site.lang, self.username)
-        f = open(makepath(filename), 'w')
+        filename = wikipedia.datafilepath('login-data',
+                       '%s-%s-%s-login.data'
+                       % (self.site.family.name, self.site.lang, self.username))
+        f = open(filename, 'w')
         f.write(data)
         f.close()
 

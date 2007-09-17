@@ -34,7 +34,8 @@ def get(site = None):
         # Use cached copy if it exists.
         watchlist = cache[site]
     else:
-        fn = 'watchlists/watchlist-%s-%s.dat' % (site.family.name, site.lang)
+        fn = wikipedia.datafilepath('watchlists',
+                  'watchlist-%s-%s.dat' % (site.family.name, site.lang))
         try:
             # find out how old our saved dump is (in seconds)
             file_age = time.time() - os.path.getmtime(fn)
@@ -55,26 +56,6 @@ def get(site = None):
 def isWatched(pageName, site=None):
     watchlist = get(site)
     return pageName in watchlist
-
-def makepath(path):
-    """ creates missing directories for the given path and
-        returns a normalized absolute version of the path.
-
-    - if the given path already exists in the filesystem
-      the filesystem is not modified.
-
-    - otherwise makepath creates directories along the given path
-      using the dirname() of the path. You may append
-      a '/' to the path if you want it to be a directory path.
-
-    from holger@trillke.net 2002/03/18
-    """
-    from os import makedirs
-    from os.path import normpath,dirname,exists,abspath
-
-    dpath = normpath(dirname(path))
-    if not exists(dpath): makedirs(dpath)
-    return normpath(abspath(path))
     
 def refresh(site):
     # get watchlist special page's URL
@@ -91,13 +72,14 @@ def refresh(site):
         watchlist.append(pageName)
     # Save the watchlist to disk
     # The file is stored in the watchlists subdir. Create if necessary.
-    f = open(makepath('watchlists/watchlist-%s-%s.dat' % (site.family.name, site.lang)), 'w')
+    f = open(wikipedia.datafilepath('watchlists',
+                 'watchlist-%s-%s.dat' % (site.family.name, site.lang)), 'w')
     pickle.dump(watchlist, f)
     f.close()
 
 def refresh_all():
     import dircache, time
-    filenames = dircache.listdir('watchlists')
+    filenames = dircache.listdir(wikipedia.datafilepath('watchlists'))
     watchlist_filenameR = re.compile('watchlist-([a-z\-:]+).dat')
     for filename in filenames:
         match = watchlist_filenameR.match(filename)
