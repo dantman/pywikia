@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -4670,7 +4670,7 @@ def setLogfileStatus(enabled, logname = None):
     if enabled:
         if not logname:
             logname = '%s.log' % calledModuleName()
-        logfn = datafiledpath('logs', logname)
+        logfn = datafilepath('logs', logname)
         try:
             logfile = codecs.open(logfn, 'a', 'utf-8')
         except IOError:
