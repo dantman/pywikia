@@ -25,7 +25,7 @@ __version__ = '$Id$'
 def main():
     automatic = False
     msg = {
-        'de': u'Entferne in Spam-Whitelist eingetragenen Weblink auf %s',
+        'de': u'Entferne in Spam-Blacklist eingetragenen Weblink auf %s',
         'en': u'Removing links to spammed site %s',
         'nl': u'Links naar gespamde site %s verwijderd',
     }
@@ -49,7 +49,7 @@ def main():
             continue
         # Show the title of the page we're working on.
         # Highlight the title in purple.
-        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % p.title())
         lines = text.split('\n')
         newpage = []
         lastok = ""
