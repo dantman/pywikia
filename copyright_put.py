@@ -21,10 +21,6 @@ append_date_to_wiki_save_path = True
 # Add pubblication date to entries (template:botdate)
 append_date_to_entries = False
 
-#
-# Send statistics
-send_stats = False
-
 msg_table = {
     'it': {'_default': [u'Pagine nuove', u'Nuove voci'],
            'feed': [u'Aggiunte a voci esistenti', u'Testo aggiunto in']},
@@ -49,6 +45,9 @@ stat_msg = {
 wiki_save_path = wikipedia.translate(wikipedia.getSite(), wiki_save_path)
 template_cat = wikipedia.translate(wikipedia.getSite(), template_cat)
 stat_wiki_save_path = '%s/%s' % (wiki_save_path, wikipedia.translate(wikipedia.getSite(), stat_msg)[0])
+
+if append_date_to_wiki_save_path:
+    wiki_save_path += '_' + date.monthName(wikipedia.getSite().language(), time.localtime()[1]) + '_' + str(time.localtime()[0])
 
 separatorC = re.compile('(?m)^== +')
 
@@ -154,76 +153,88 @@ def read_output_file(filename):
 
     return data
 
-if append_date_to_wiki_save_path:
-    wiki_save_path += '_' + date.monthName(wikipedia.getSite().language(), time.localtime()[1]) + '_' + str(time.localtime()[0])
-
-page = wikipedia.Page(wikipedia.getSite(), wiki_save_path)
-
-try:
-    wikitext = page.get()
-except wikipedia.NoPage:
-    wikipedia.output("%s not found." % page.aslink())
-    wikitext = '[[%s:%s]]\n' % (wikipedia.getSite().namespace(14), wikipedia.translate(wikipedia.getSite(), reports_cat))
-
-final_summary = u''
-output_files = list()
-
-for f, section, summary in output_files_gen():
-    wikipedia.output('File: \'%s\'\nSection: %s\n' % (f, section))
-
-    output_data = read_output_file(f)
-    output_files.append(f)
-
-    entries = re.findall('=== (.*?) ===', output_data)
-
-    if not entries:
-        continue
-
-    if append_date_to_entries:
-        dt = time.strftime('%d-%m-%Y %H:%M', time.localtime())
-        output_data = re.sub("(?m)^(=== \[\[.*?\]\] ===\n)", r"\1{{botdate|%s}}\n" % dt, output_data)
-
-    m = re.search('(?m)^==\s*%s\s*==' % section, wikitext)
-    if m:
-        m_end = re.search(separatorC, wikitext[m.end():])
-        if m_end:
-            wikitext = wikitext[:m_end.start() + m.end()] + output_data + wikitext[m_end.start() + m.end():]
-        else:
-            wikitext += '\n' + output_data
-    else:
-        wikitext += '\n' + output_data
-
-    if final_summary:
-        final_summary += ' '
-    final_summary += u'%s: %s' % (summary, ', '.join(entries))
-
-if final_summary:
-    wikipedia.output(final_summary + '\n')
-
-    # if a page in 'Image' or 'Category' namespace is checked then fix
-    # title section by adding ':' in order to avoid wiki code effects.
-
-    wikitext = re.sub(u'(?i)=== \[\[%s:' % join_family_data('Image', 6), ur'== [[:\1:', wikitext)
-    wikitext = re.sub(u'(?i)=== \[\[%s:' % join_family_data('Category', 14), ur'== [[:\1:', wikitext)
-
-    # TODO:
-    # List of frequent rejected address to improve upload process.
-
-    wikitext = re.sub('http://(.*?)((forumcommunity|forumfree).net)',r'<blacklist>\1\2', wikitext)
-
-    if len(final_summary)>=200:
-        final_summary = final_summary[:200]
-        final_summary = final_summary[:final_summary.rindex("[")-3] + "..."
+def run(send_stats = False):
+    page = wikipedia.Page(wikipedia.getSite(), wiki_save_path)
 
     try:
-        put(page, wikitext, comment = final_summary)
-        for f in output_files:
-            os.remove(f + '_pending')
-            wikipedia.output("\'%s\' deleted." % f)
-    except wikipedia.PageNotSaved:
-        raise
+        wikitext = page.get()
+    except wikipedia.NoPage:
+        wikipedia.output("%s not found." % page.aslink())
+        wikitext = '[[%s:%s]]\n' % (wikipedia.getSite().namespace(14), wikipedia.translate(wikipedia.getSite(), reports_cat))
 
-if send_stats:
-    put_stats()
+    final_summary = u''
+    output_files = list()
 
-wikipedia.stopme()
+    for f, section, summary in output_files_gen():
+        wikipedia.output('File: \'%s\'\nSection: %s\n' % (f, section))
+
+        output_data = read_output_file(f)
+        output_files.append(f)
+
+        entries = re.findall('=== (.*?) ===', output_data)
+
+        if not entries:
+            continue
+
+        if append_date_to_entries:
+            dt = time.strftime('%d-%m-%Y %H:%M', time.localtime())
+            output_data = re.sub("(?m)^(=== \[\[.*?\]\] ===\n)", r"\1{{botdate|%s}}\n" % dt, output_data)
+
+        m = re.search('(?m)^==\s*%s\s*==' % section, wikitext)
+        if m:
+            m_end = re.search(separatorC, wikitext[m.end():])
+            if m_end:
+                wikitext = wikitext[:m_end.start() + m.end()] + output_data + wikitext[m_end.start() + m.end():]
+            else:
+                wikitext += '\n' + output_data
+        else:
+            wikitext += '\n' + output_data
+
+        if final_summary:
+            final_summary += ' '
+        final_summary += u'%s: %s' % (summary, ', '.join(entries))
+
+    if final_summary:
+        wikipedia.output(final_summary + '\n')
+
+        # if a page in 'Image' or 'Category' namespace is checked then fix
+        # title section by adding ':' in order to avoid wiki code effects.
+
+        wikitext = re.sub(u'(?i)=== \[\[%s:' % join_family_data('Image', 6), ur'== [[:\1:', wikitext)
+        wikitext = re.sub(u'(?i)=== \[\[%s:' % join_family_data('Category', 14), ur'== [[:\1:', wikitext)
+
+        # TODO:
+        # List of frequent rejected address to improve upload process.
+
+        wikitext = re.sub('http://(.*?)((forumcommunity|forumfree).net)',r'<blacklist>\1\2', wikitext)
+
+        if len(final_summary)>=200:
+            final_summary = final_summary[:200]
+            final_summary = final_summary[:final_summary.rindex("[")-3] + "..."
+
+        try:
+            put(page, wikitext, comment = final_summary)
+            for f in output_files:
+                os.remove(f + '_pending')
+                wikipedia.output("\'%s\' deleted." % f)
+        except wikipedia.PageNotSaved:
+            raise
+
+    if send_stats:
+        put_stats()
+
+def main():
+    #
+    # Send statistics
+    send_stats = False
+
+    for arg in wikipedia.handleArgs():
+        if arg == "-stats":
+            send_stats = True
+    run(send_stats = send_stats)
+
+if __name__ == "__main__":
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
