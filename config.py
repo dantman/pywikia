@@ -126,14 +126,17 @@ transliterate = True
 ring_bell = True
 
 # Colorization can be used to markup important text parts of the output.
-# ANSI escape codes are used for this. Unfortunatelly this only works in
-# Linux/Unix terminals.
+# On Linux/Unix terminals, ANSI escape codes are used for this. On Windows,
+# it is done by a DLL call via ctypes. ctypes is only available since
+# Python 2.5, so if you're using Python 2.4 or lower on Windows, you should
+# upgrade.
 # Set this to False if you're using Linux and your tty doesn't support
 # ANSI colors.
 try:
-  colorized_output = __sys.stdout.isatty()
+    # Don't print colorized when the output is, for example, piped to a file.
+    colorized_output = __sys.stdout.isatty()
 except:
-  colorized_output = False
+    colorized_output = False
 
 ############## EXTERNAL EDITOR SETTINGS ##############
 # The command for the editor you want to use. If set to None, a simple Tkinter
