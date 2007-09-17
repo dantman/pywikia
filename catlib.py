@@ -432,7 +432,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
             wikipedia.output(u'Skipping %s because of edit conflict' % article.title())
         except wikipedia.LockedPage:
             wikipedia.output(u'Skipping locked page %s' % article.title())
-        except wikipedia.SpamFilterError, error:
+        except wikipedia.SpamfilterError, error:
             wikipedia.output(u'Changing page %s blocked by spam filter (URL=%s)'
                              % (article.title(), error.url))
         except wikipedia.NoUsername:
