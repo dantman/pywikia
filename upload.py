@@ -73,7 +73,6 @@ class UploadRobot:
         ignoreWarning - Set this to True if you want to upload even if another
                         file would be overwritten or another mistake would be
                         risked.
-                        Attention: This parameter doesn't work yet for unknown reason.
         """
         self.url = url
         self.urlEncoding = urlEncoding
@@ -180,8 +179,6 @@ class UploadRobot:
         # This somehow doesn't work.
         if self.ignoreWarning:
             formdata["wpIgnoreWarning"] = "1"
-        else:
-            formdata["wpIgnoreWarning"] = "0"
 
         # try to encode the strings to the encoding used by the target site.
         # if that's not possible (e.g. because there are non-Latin-1 characters and
@@ -231,11 +228,18 @@ class UploadRobot:
                     pass
                 wikipedia.output(u'%s\n\n' % returned_html)
                 wikipedia.output(u'%i %s' % (response.status, response.reason))
-                answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
-                if answer in ["y", "Y"]:
-                    return self.upload_image(debug)
+
+                if self.targetSite.mediawiki_message('uploadwarning') in returned_html:
+                    answer = wikipedia.inputChoice(u"You have recevied an upload warning message. Ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
+                    if answer in ["y", "Y"]:
+                        self.ignoreWarning = 1
+                        return self.upload_image(debug)
                 else:
-                    return
+                    answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
+                    if answer in ["y", "Y"]:
+                        return self.upload_image(debug)
+                    else:
+                        return
         return filename
 
     def run(self):
