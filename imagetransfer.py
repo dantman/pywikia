@@ -108,7 +108,7 @@ licenseTemplates = {
     },
     ('wikipedia:pt', 'commons:commons'): {
         u'Domínio público':          u'PD',
-    },        
+    },
 }
 
 class ImageTransferBot:
@@ -116,7 +116,7 @@ class ImageTransferBot:
         self.generator = generator
         self.interwiki = interwiki
         self.targetSite = targetSite
-    
+
     def transferImage(self, sourceImagePage, debug=False):
         """Gets a wikilink to an image, downloads it and its description,
            and uploads it to another wikipedia.
@@ -137,7 +137,7 @@ class ImageTransferBot:
                     new = '{{%s}}' % new
                     old = re.compile('{{%s}}' % old)
                     description = wikipedia.replaceExcept(description, old, new, ['comment', 'math', 'nowiki', 'pre'])
-            
+           
             description = wikipedia.translate(self.targetSite, copy_message) % (sourceSite, description)
             description += '\n\n' + sourceImagePage.getFileVersionHistoryTable()
             # add interwiki link
@@ -166,8 +166,9 @@ class ImageTransferBot:
                     sourceImagePage.put(sourceImagePage.get() + '\n\n' + nowCommonsTemplate[sourceSite.lang] % targetFilename, comment = nowCommonsMessage[sourceSite.lang])
 
     def showImageList(self, imagelist):
-        for i in range(len(imagelist)):
-            image = imagelist[i]
+        i = 0
+        for image in imagelist:
+            i += 1
             #sourceSite = sourceImagePage.site()
             print "-"*60
             wikipedia.output(u"%s. Found image: %s"% (i, image.aslink()))
@@ -197,7 +198,7 @@ class ImageTransferBot:
                 break
 
         print "="*60
-    
+   
     def run(self):
         for page in self.generator:
             if self.interwiki:
@@ -239,7 +240,7 @@ def main():
     interwiki = False
     targetLang = None
     targetFamily = None
-    
+   
     for arg in wikipedia.handleArgs():
         if arg == '-interwiki':
             interwiki = True
