@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 Library to get and put pages on a MediaWiki.
 
@@ -2926,17 +2926,18 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
     # title might not be formatted correctly on the wiki
     if title[0].isalpha() and not site.nocapitalize:
         title = "[%s%s]" % (title[0].upper(), title[0].lower()) + title[1:]
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*\]\]'
-                               % (catNamespace, title))
+    categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*((?:\|[^]]+)?\]\])'
+                            % (catNamespace, title.replace(' ','[ _]+')))
     if newcat is None:
-        text = replaceExcept(oldtext, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])
+        text = replaceExcept(oldtext, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])    
     else:
-        text = replaceExcept(oldtext, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
-    categoryR = re.compile(r'\[\[\s*(%s)\s*:%s\]\]' % (catNamespace, oldcat.titleWithoutNamespace().replace(' ','_')))
-    if newcat is None:
-        text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])
-    else:
-        text = replaceExcept(text, categoryR, '[[Category:%s]]' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
+        text = replaceExcept(oldtext, categoryR, '[[Category:%s\\2' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
+##    categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*(\|[^]]+)?\]\]'
+##                            % (catNamespace, title.replace(' ','_')))
+##    if newcat is None:
+##        text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])
+##    else:
+##        text = replaceExcept(text, categoryR, '[[Category:%s\\2' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
     return text
 
 def replaceCategoryLinks(oldtext, new, site = None):
