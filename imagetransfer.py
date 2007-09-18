@@ -166,9 +166,8 @@ class ImageTransferBot:
                     sourceImagePage.put(sourceImagePage.get() + '\n\n' + nowCommonsTemplate[sourceSite.lang] % targetFilename, comment = nowCommonsMessage[sourceSite.lang])
 
     def showImageList(self, imagelist):
-        i = 0
-        for image in imagelist:
-            i += 1
+        for i in range(len(imagelist)):
+            image = imagelist[i]
             #sourceSite = sourceImagePage.site()
             print "-"*60
             wikipedia.output(u"%s. Found image: %s"% (i, image.aslink()))

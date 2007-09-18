@@ -1442,7 +1442,7 @@ class Page(object):
             imageR = re.compile('\w\w\w+\.(?:gif|png|jpg|jpeg|svg)', re.IGNORECASE)
             for imageName in imageR.findall(pageText):
                 results.append(ImagePage(self.site(), ns + ':' + imageName))
-        return set(results)
+        return list(set(results))
 
     def templates(self):
         """
