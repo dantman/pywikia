@@ -441,10 +441,11 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
                              % article.title())
         except wikipedia.PageNotSaved, error:
             wikipedia.output(u"Saving page [[%s]] failed: %s"
-                             % (page.title(), error.message))
+                             % (article.title(), error.message))
         return
 
-    # This loop will replace all occurrences of the category to be changed, and remove duplicates.
+    # This loop will replace all occurrences of the category to be changed,
+    # and remove duplicates.
     newCatList = []
     newCatSet = set()
     for i in range(len(cats)):
@@ -455,7 +456,8 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
                 sortKey = cat.sortKey
             if newCat:
                 if newCat.title() not in newCatSet:
-                    newCategory = Category(site, newCat.title(), sortKey = sortKey)
+                    newCategory = Category(site, newCat.title(),
+                                           sortKey=sortKey)
                     newCatSet.add(newCat.title())
                     newCatList.append(newCategory)
         elif cat.title() not in newCatSet:
@@ -468,8 +470,11 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         text = article.get(nofollow_redirects=True)
         try:
             text = wikipedia.replaceCategoryLinks(text, newCatList)
-        except ValueError:   #Make sure that the only way replaceCategoryLinks() can return a ValueError is in the case of interwiki links to self.
-            wikipedia.output(u'Skipping %s because of interwiki link to self' % (article))
+        except ValueError:
+            # Make sure that the only way replaceCategoryLinks() can return
+            # a ValueError is in the case of interwiki links to self.
+            wikipedia.output(
+                    u'Skipping %s because of interwiki link to self' % article)
         try:
             article.put(text, comment)
         except wikipedia.EditConflict:
