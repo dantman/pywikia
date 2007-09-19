@@ -100,21 +100,22 @@ class UploadRobot:
            If the upload fails, the user is asked whether to try again or not.
            If the user chooses not to retry, returns null.
         """
-        # Get file contents
-        if '://' in self.url:
-            uo = wikipedia.MyURLopener()
-            file = uo.open(self.url,"rb")
-        else:
-            # Opening local files with MyURLopener would be possible, but we
-            # don't do it because it only accepts ASCII characters in the
-            # filename.
-            file = open(self.url,"rb")
-        wikipedia.output(u'Reading file %s' % self.url)
-        contents = file.read()
-        if contents.find("The requested URL was not found on this server.") != -1:
-            print "Couldn't download the image."
-            return
-        file.close()
+        if not hasattr(self, "_contents"):
+            # Get file contents
+            if '://' in self.url:
+                uo = wikipedia.MyURLopener()
+                file = uo.open(self.url)
+            else:
+                # Opening local files with MyURLopener would be possible, but we
+                # don't do it because it only accepts ASCII characters in the
+                # filename.
+                file = open(self.url,"rb")
+            wikipedia.output(u'Reading file %s' % self.url)
+            self._contents = file.read()
+            if self._contents.find("The requested URL was not found on this server.") != -1:
+                print "Couldn't download the image."
+                return
+            file.close()
         # Isolate the pure name
         filename = self.url
         if '/' in filename:
@@ -197,7 +198,7 @@ class UploadRobot:
             response, returned_html = post_multipart(self.targetSite,
                                   self.targetSite.upload_address(),
                                   formdata.items(),
-                                  (('wpUploadFile', encodedFilename, contents),),
+                                  (('wpUploadFile', encodedFilename, self._contents),),
                                   cookies = self.targetSite.cookies()
                                   )
             # There are 2 ways MediaWiki can react on success: either it gives
@@ -233,6 +234,7 @@ class UploadRobot:
                     answer = wikipedia.inputChoice(u"You have recevied an upload warning message. Ignore?", ['Yes', 'No'], ['y', 'N'], 'N')
                     if answer in ["y", "Y"]:
                         self.ignoreWarning = 1
+                        self.keepFilename = True
                         return self.upload_image(debug)
                 else:
                     answer = wikipedia.inputChoice(u'Upload of %s probably failed. Above you see the HTML page which was returned by MediaWiki. Try again?' % filename, ['Yes', 'No'], ['y', 'N'], 'N')
