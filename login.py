@@ -95,14 +95,17 @@ class LoginManager:
         else:
             # No bot policies on other 
             return True
-    
+
     def getCookie(self, remember=True, captchaId = None, captchaAnswer = None):
-        """Login to wikipedia.
-    
+        """
+        Login to the site.
+
         remember    Remember login (default: True)
-        
-        Returns cookie data if succesful, None otherwise."""
-    
+        captchaId   The id number of the captcha, if any
+        captcha     The word displayed in the captcha, if any
+
+        Returns cookie data if succesful, None otherwise.
+        """
         predata = {
             "wpName": self.username.encode(self.site.encoding()),
             "wpPassword": self.password,
@@ -135,7 +138,7 @@ class LoginManager:
                 if m:
                     n += 1
                     L.append(m.group(1))
-            
+
             log_data = []
             for Ldata in L:
                 if (re.match('.*_session=.*', Ldata)):
@@ -146,7 +149,7 @@ class LoginManager:
                     log_data.append(Ldata)
                 elif (re.match('.*Token=.*', Ldata)):
                     log_data.append(Ldata)
-  
+
             if len(log_data) == 4:
                 return "\n".join(L)
             elif not captchaAnswer:
@@ -182,9 +185,9 @@ class LoginManager:
             (code, family, username, password) or (username, password) 
             to set a default password for an username. Default usernames
             should occur above specific usernames.
-		
+
             Example:
-            
+
             ("my_username", "my_default_password")
             ("my_sysop_user", "my_sysop_password")
             ("en", "wikipedia", "my_en_user", "my_en_pass")
@@ -220,7 +223,7 @@ class LoginManager:
             wikipedia.output(u"Should be logged in now")
             return True
         else:
-            wikipedia.output(u"Login failed. Wrong password?")
+            wikipedia.output(u"Login failed. Wrong password or CAPTCHA answer?")
             if retry:
                 self.password = None
                 return self.login(retry = True)
