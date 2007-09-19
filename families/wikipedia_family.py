@@ -173,6 +173,7 @@ class Family(family.Family):
             'nah': u'Wikipedia Discusión',
             'nap': u'Discussioni Wikipedia',
             'nds': u'Wikipedia Diskuschoon',
+            'nds-nl': u'Overleg Wikipedie',
             'new': u'विकिपिडिया खँलाबँला',
             'nl': u'Overleg Wikipedia',
             'nn': u'Wikipedia-diskusjon',
