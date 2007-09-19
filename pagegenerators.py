@@ -594,7 +594,7 @@ class GeneratorFactory:
             startfrom = None
 
         cat = catlib.Category(wikipedia.getSite(), 'Category:%s' % categoryname)
-        return CategorizedPageGenerator(cat, start = startfrom, recurse = False)
+        return CategorizedPageGenerator(cat, start = startfrom, recurse = recurse)
 
     def handleArg(self, arg):
         gen = None
