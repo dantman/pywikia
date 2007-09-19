@@ -2516,6 +2516,9 @@ class Family:
     def login_address(self, code):
         return '%s?title=%s:Userlogin&action=submit' % (self.path(code), self.special_namespace_url(code))
 
+    def captcha_image_address(self, code, id):
+        return '%s?title=%s:Captcha/image&wpCaptchaId=%s' % (self.path(code), self.special_namespace_url(code), id)
+
     def watchlist_address(self, code):
         return '%s?title=%s:Watchlist/edit' % (self.path(code), self.special_namespace_url(code))
     

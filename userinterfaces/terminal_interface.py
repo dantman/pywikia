@@ -1,8 +1,8 @@
-
 __version__ = '$Id$'
 
 import config, transliteration
 import traceback, re, sys
+import wikipedia
 
 try:
     import ctypes
@@ -230,3 +230,12 @@ class UI:
             return text
         editor = gui.EditBoxWindow()
         return editor.edit(text, jumpIndex = jumpIndex, highlight = highlight)
+
+    def askForCaptcha(self, url):
+        try:
+            import gui
+            # TODO
+            raise ImportError
+        except ImportError, e:
+            return wikipedia.input('What is the solution of the CAPTCHA at %s ?' % url)
+

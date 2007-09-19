@@ -4247,6 +4247,9 @@ Maybe the server is down. Retrying in %i minutes..."""
     def login_address(self):
         return self.family.login_address(self.lang)
 
+    def captcha_image_address(self, id):
+        return self.family.captcha_image_address(self.lang, id)
+
     def watchlist_address(self):
         return self.family.watchlist_address(self.lang)
 

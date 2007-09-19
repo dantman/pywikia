@@ -96,7 +96,7 @@ class LoginManager:
             # No bot policies on other 
             return True
     
-    def getCookie(self, remember=True):
+    def getCookie(self, remember=True, captchaId = None, captchaAnswer = None):
         """Login to wikipedia.
     
         remember    Remember login (default: True)
@@ -109,6 +109,9 @@ class LoginManager:
             "wpLoginattempt": "Aanmelden & Inschrijven", # dutch button label seems to work for all wikis
             "wpRemember": str(int(bool(remember)))
         }
+        if captchaId:
+            predata["wpCaptchaId"] = captchaId
+            predata["wpCaptchaWord"] = captchaAnswer
         address = self.site.login_address()
 
         if self.site.hostname() in config.authenticate.keys():
@@ -146,9 +149,15 @@ class LoginManager:
   
             if len(log_data) == 4:
                 return "\n".join(L)
+            elif not captchaAnswer:
+                captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')
+                match = captchaR.search(data)
+                if match:
+                    id = match.group('id')
+                    url = self.site.protocol() + '://' + self.site.hostname() + self.site.captcha_image_address(id)
+                    answer = wikipedia.ui.askForCaptcha(url)
+                    return self.getCookie(remember = remember, captchaId = id, captchaAnswer = answer)
             else:
-                if '<input type="hidden" name="wpCaptchaId"' in data:
-                    wikipedia.output(u'There is a CAPTCHA in the server\'s response.\nPlease wait a while or log in using a graphical web browser to reset the request and try again.')
                 return None
 
     def storecookiedata(self, data):
@@ -217,6 +226,9 @@ class LoginManager:
                 return self.login(retry = True)
             else:
                 return False
+
+    def showCaptchaWindow(self, url):
+        pass
 
 def main():
     username = password = None
