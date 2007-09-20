@@ -2210,11 +2210,11 @@ class GetAll(object):
         self.throttle = throttle
         self.force = force
 
-        for pl in pages:
-            if (not hasattr(pl,'_contents') and not hasattr(pl,'_getexception')) or force:
-                self.pages.append(pl)
+        for page in pages:
+            if (not hasattr(page, '_contents') and not hasattr(page, '_getexception')) or force:
+                self.pages.append(page)
             elif verbose:
-                output(u"BUGWARNING: %s already done!" % pl.aslink())
+                output(u"BUGWARNING: %s already done!" % page.aslink())
 
     def run(self):
         dt=15
@@ -2278,49 +2278,51 @@ class GetAll(object):
         editRestriction = entry.editRestriction
         moveRestriction = entry.moveRestriction
         page = Page(self.site, title)
+        successful = False
         for page2 in self.pages:
             if page2.sectionFreeTitle() == page.sectionFreeTitle():
-                if (hasattr(page2,'_contents') or hasattr(page2,'_getexception')) and not self.force:
-                    return
-                break
-        else:
+                if not (hasattr(page2,'_contents') or hasattr(page2,'_getexception')) or self.force:
+                    page2.editRestriction = entry.editRestriction
+                    page2.moveRestriction = entry.moveRestriction
+                    if editRestriction == 'autoconfirmed':
+                        page2._editrestriction = True
+                    page2._permalink = entry.revisionid
+                    page2._userName = username
+                    page2._ipedit = ipedit
+                    page2._editTime = timestamp
+                    section = page2.section()
+                    m = self.site.redirectRegex().match(text)
+                    if m:
+                        ## output(u"%s is a redirect" % page2.aslink())
+                        redirectto = m.group(1)
+                        if section and redirectto.find("#") == -1:
+                            redirectto = redirectto+"#"+section
+                        page2._getexception = IsRedirectPage
+                        page2._redirarg = redirectto
+                    # There's no possibility to read the wpStarttime argument from the XML.
+                    # It is this time that the MediaWiki software uses to check for edit
+                    # conflicts. We take the earliest time later than the last edit, which
+                    # seems to be the safest possible time.
+                    page2._startTime = str(int(timestamp)+1)
+                    if section:
+                        m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))
+                        if not m:
+                            try:
+                                page2._getexception
+                                output(u"WARNING: Section not found: %s" % page2.aslink(forceInterwiki = True))
+                            except AttributeError:
+                                # There is no exception yet
+                                page2._getexception = SectionError
+                    # Store the content
+                    page2._contents = text
+                successful = True
+                # Note that there is no break here. The reason is that there
+                # might be duplicates in the pages list.
+        if not successful:
             output(u"BUG>> title %s (%s) not found in list" % (title, page.aslink(forceInterwiki=True)))
             output(u'Expected one of: %s' % u','.join([page2.aslink(forceInterwiki=True) for page2 in self.pages]))
             raise PageNotFound
 
-        page2.editRestriction = entry.editRestriction
-        page2.moveRestriction = entry.moveRestriction
-        if editRestriction == 'autoconfirmed':
-            page2._editrestriction = True
-        page2._permalink = entry.revisionid
-        page2._userName = username
-        page2._ipedit = ipedit
-        page2._editTime = timestamp
-        section = page2.section()
-        m = self.site.redirectRegex().match(text)
-        if m:
-##            output(u"%s is a redirect" % page2.aslink())
-            redirectto = m.group(1)
-            if section and redirectto.find("#") == -1:
-                redirectto = redirectto+"#"+section
-            page2._getexception = IsRedirectPage
-            page2._redirarg = redirectto
-        # There's no possibility to read the wpStarttime argument from the XML.
-        # It is this time that the MediaWiki software uses to check for edit
-        # conflicts. We take the earliest time later than the last edit, which
-        # seems to be the safest possible time.
-        page2._startTime = str(int(timestamp)+1)
-        if section:
-            m = re.search("\.3D\_*(\.27\.27+)?(\.5B\.5B)?\_*%s\_*(\.5B\.5B)?(\.27\.27+)?\_*\.3D" % re.escape(section), sectionencode(text,page2.site().encoding()))
-            if not m:
-                try:
-                    page2._getexception
-                    output(u"WARNING: Section not found: %s" % page2.aslink(forceInterwiki = True))
-                except AttributeError:
-                    # There is no exception yet
-                    page2._getexception = SectionError
-        # Store the content
-        page2._contents = text
 
     def headerDone(self, header):
         # Verify our family data
