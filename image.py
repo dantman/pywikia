@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 This script can be used to change one image to another or remove an image entirely.
 
@@ -123,8 +123,7 @@ class ImageRobot:
         else:
             replacements.append((ImageRegex, ''))
 
-        #Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.always)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, acceptall = self.always)
         replaceBot.run()
 
 def main():

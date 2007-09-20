@@ -305,8 +305,7 @@ class TemplateRobot:
             else:
                 replacements.append((templateRegex, '{{' + new + '\g<parameters>}}'))
 
-        #Note that the [] parameter here is for exceptions (see replace.py).  For now we don't use it.
-        replaceBot = replace.ReplaceRobot(self.generator, replacements, [], self.acceptAll, addedCat=self.addedCat)
+        replaceBot = replace.ReplaceRobot(self.generator, replacements, exceptions = {}, acceptall = self.acceptAll, addedCat=self.addedCat)
         replaceBot.run()
 
 def main():

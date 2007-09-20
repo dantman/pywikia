@@ -198,7 +198,7 @@ class ReplaceRobot:
     """
     A bot that can do text replacements.
     """
-    def __init__(self, generator, replacements, exceptions = [], acceptall = False, allowoverlap = False,
+    def __init__(self, generator, replacements, exceptions = {}, acceptall = False, allowoverlap = False,
                  recursive = False, addedCat = None):
         """
         Arguments:
