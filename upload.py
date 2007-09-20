@@ -22,7 +22,7 @@ and for a description.
 #
 __version__='$Id$'
 
-import os, sys, re
+import os, sys, re, time
 import urllib, httplib
 import wikipedia, config
 
@@ -74,6 +74,7 @@ class UploadRobot:
                         file would be overwritten or another mistake would be
                         risked.
         """
+        self._retrieved = False
         self.url = url
         self.urlEncoding = urlEncoding
         self.description = description
@@ -100,22 +101,62 @@ class UploadRobot:
            If the upload fails, the user is asked whether to try again or not.
            If the user chooses not to retry, returns null.
         """
-        if not hasattr(self, "_contents"):
+
+        if not self._retrieved:
             # Get file contents
+            wikipedia.output(u'Reading file %s' % self.url)
             if '://' in self.url:
-                uo = wikipedia.MyURLopener()
-                file = uo.open(self.url)
+                resume = False
+                dt = 15
+
+                while not self._retrieved:
+                    uo = wikipedia.MyURLopener()
+                    if resume:
+                        wikipedia.output(u"Resume download...")
+                        uo.addheader('Range', 'bytes=%s-' % rlen)
+
+                    file = uo.open(self.url)
+
+                    if 'text/html' in file.info().getheader('Content-Type'):
+                        print "Couldn't download the image: the requested URL was not found on this server."
+                        return
+
+                    content_len = file.info().getheader('Content-Length')
+                    accept_ranges = file.info().getheader('Accept-Ranges') == 'bytes'
+
+                    if resume:
+                        self._contents += file.read()
+                    else:
+                        self._contents = file.read()
+
+                    file.close()
+                    self._retrieved = True
+
+                    if content_len:
+                        rlen = len(self._contents)
+                        content_len = int(content_len)
+                        if rlen < content_len:
+                            self._retrieved = False
+                            wikipedia.output(u"Connection closed at byte %s (%s left)" % (rlen, content_len))
+                            if accept_ranges and rlen > 0:
+                                resume = True
+                            wikipedia.output(u"Sleeping for %d seconds..." % dt)
+                            time.sleep(dt)
+                            if dt <= 60:
+                                dt += 15
+                            elif dt < 360:
+                                dt += 60
+                    else:
+                        if wikipedia.verbose:
+                            wikipedia.output(u"WARNING: No check length to retrieved data is possible.")
             else:
                 # Opening local files with MyURLopener would be possible, but we
                 # don't do it because it only accepts ASCII characters in the
                 # filename.
                 file = open(self.url,"rb")
-            wikipedia.output(u'Reading file %s' % self.url)
-            self._contents = file.read()
-            if self._contents.find("The requested URL was not found on this server.") != -1:
-                print "Couldn't download the image."
-                return
-            file.close()
+                self_contents = file.read()
+                file.close()
+
         # Isolate the pure name
         filename = self.url
         if '/' in filename:
@@ -169,7 +210,7 @@ class UploadRobot:
                 # if user saved / didn't press Cancel
                 if newDescription:
                         self.description = newDescription
-    
+
         formdata = {}
         formdata["wpUploadDescription"] = self.description
     #     if self.targetSite.version() >= '1.5':
