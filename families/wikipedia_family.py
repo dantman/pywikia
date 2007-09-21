@@ -615,14 +615,16 @@ class Family(family.Family):
             'yi': ['en','he','de']
         }
 
-        self.obsolete = {'dk':'da',
-                    'minnan':'zh-min-nan',
-                    'mo':None,
-                    'nb':'no',
-                    'jp':'ja',
-                    'tokipona':None,
-                    'zh-tw':'zh',
-                    'zh-cn':'zh'
+        self.obsolete = {
+            'dk': 'da',
+            'minnan': 'zh-min-nan',
+            'mo': None,
+            'nb': 'no',
+            'jp': 'ja',
+            'ru-sib': None,
+            'tokipona': None,
+            'zh-tw': 'zh',
+            'zh-cn': 'zh'
         }
 
         # Language codes of the largest wikis. They should be roughly sorted
