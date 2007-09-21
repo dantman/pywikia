@@ -154,8 +154,8 @@ for page in gen:
 
     if comment_entry:
         wikipedia.output(add_comment)
-
-        wikipedia.showDiff(output, page.get())
+        if wikipedia.verbose:
+            wikipedia.showDiff(page.get(), output)
 
         if len(sys.argv)!=1:
             choice = wikipedia.inputChoice(u'Do you want to clean the page?',  ['Yes', 'No'], ['y', 'n'], 'n')

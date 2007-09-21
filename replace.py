@@ -405,7 +405,7 @@ def main():
             useSql = True
         elif arg.startswith('-page'):
             if len(arg) == 5:
-                PageTitles.append(wikipedia.input(u'Which page do you want to chage?'))
+                PageTitles.append(wikipedia.input(u'Which page do you want to change?'))
             else:
                 PageTitles.append(arg[6:])
         elif arg.startswith('-excepttitle:'):

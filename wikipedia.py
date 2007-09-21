@@ -2161,6 +2161,8 @@ class ImagePage(Page):
             return self.fileUrl().startswith(u'http://wikitravel.org/upload/shared/')
         return self.fileIsOnCommons()
 
+    # FIXME: MD5 might be performed on not complete file due to server disconnection
+    # (see bug #1795683).
     def getFileMd5Sum(self):
         uo = MyURLopener()
         f = uo.open(self.fileUrl())

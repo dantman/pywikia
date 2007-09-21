@@ -2575,6 +2575,7 @@ class Family:
 
     def query_address(self, code):
         return '%s?' % self.querypath(code)
+
     def api_address(self, code):
         return '%s?' % self.apipath(code)
 
