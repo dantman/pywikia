@@ -1082,6 +1082,13 @@ class Subject(object):
                             wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
                             timeout *= 2
                             time.sleep(timeout)
+                        except wikipedia.ServerError:
+                            if timeout>3600:
+                                raise
+                            wikipedia.output(u'ERROR putting page: ServerError.')
+                            wikipedia.output(u'Sleeping %i seconds before trying again.' % (timeout,))
+                            timeout *= 2
+                            time.sleep(timeout)
                         else:
                             break
                     if str(status) == '302':
