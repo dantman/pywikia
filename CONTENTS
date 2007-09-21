@@ -215,7 +215,8 @@ parameter, e.g.
 
 You need to have at least python version 2.4 (http://www.python.org/download/) 
 installed on your computer to be able to run any of the code in this package.
-Support for older versions of python is not planned.
+Although some of the code may work on python version 2.3, support for older
+versions of python is not planned.
 
 You do not need to "install" this package to be able to make use of
 it. You can actually just run it from the directory where you unpacked

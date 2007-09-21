@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Edit a Wikipedia article with your favourite editor. Requires Python 2.3.
+# Edit a Wikipedia article with your favourite editor.
 #
 # (C) Gerrit Holl 2004
 # Distributed under the terms of the MIT license.
