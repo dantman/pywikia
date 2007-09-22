@@ -47,7 +47,7 @@ fixes = {
             # horizontal line without attributes in a single line
             (r'(?i)([\r\n])<hr[ /]*>([\r\n])', r'\1----\2'),
             # horizontal line without attributes with more text in the same line
-            (r'(?i) +<hr[ /]*> +',             r'\r\n----\r\n'),
+            #(r'(?i) +<hr[ /]*> +',             r'\r\n----\r\n'),
             # horizontal line with attributes; can't be done with wiki syntax
             # so we only make it XHTML compliant
             (r'(?i)<hr ([^>/]+?)>',            r'<hr \1 />'),
@@ -144,7 +144,7 @@ fixes = {
             # external link starting with double bracket
             (r'\[\[(?P<url>https?://.+?)\]',   r'[\g<url>]'),
             # external link with forgotten closing bracket
-            (r'\[(?P<url>https?://[^\]\s]+)\r\n',   '[\g<url>]\r\n'),
+            #(r'\[(?P<url>https?://[^\]\s]+)\r\n',  r'[\g<url>]\r\n'),
             # external link ending with double bracket.
             # do not change weblinks that contain wiki links inside
             # inside the description
@@ -208,7 +208,7 @@ fixes = {
             # external link starting with double bracket
             (r'\[\[(?P<url>https?://.+?)\]',   r'[\g<url>]'),
             # external link with forgotten closing bracket
-            (r'\[(?P<url>https?://[^\]\s]+)\r\n',   '[\g<url>]\r\n'),
+            #(r'\[(?P<url>https?://[^\]\s]+)\r\n',   r'[\g<url>]\r\n'),
              # external link and description separated by a dash, with
              # whitespace in front of the dash, so that it is clear that
              # the dash is not a legitimate part of the URL.
