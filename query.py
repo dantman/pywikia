@@ -114,14 +114,14 @@ def CleanParams( params ):
     if pt == type( {} ):
         return params
     elif pt == type( () ):
-        if len( params ) != 2: raise u"Tuple size must be 2"
+        if len( params ) != 2: raise "Tuple size must be 2"
         return {params[0]:params[1]}
     elif pt == type( [] ):
         for p in params:
-            if p != type( () ) or len( p ) != 2: raise u"Every list element must be a 2 item tuple"
+            if p != type( () ) or len( p ) != 2: raise "Every list element must be a 2 item tuple"
         return dict( params )
     else:
-        raise u"Unknown param type %s" % pt
+        raise "Unknown param type %s" % pt
     
 def CombineParams( params1, params2 ):
     """Merge two dictionaries. If they have the same keys, their values will
@@ -140,7 +140,7 @@ def CombineParams( params1, params2 ):
                 params1[k] = v2
             elif len( v2 ) > 0:
                 if type('') != type(v1) or type('') != type(v2):
-                    raise u"Both merged values must be of type 'str'"
+                    raise "Both merged values must be of type 'str'"
                 params1[k] = v1 + '|' + v2
             # else ignore
         else:
@@ -167,13 +167,14 @@ def ListToParam( list ):
     encList = ''
     # items may not have one symbol - '|'
     for l in list:
-        if '|' in l: raise u"item '%s' contains '|' symbol" % l
+        if '|' in l: raise "item '%s' contains '|' symbol" % l
         encList += ToUtf8(l) + '|'
     return encList[:-1]
 
 def ToUtf8(s):
     if type(s) != type(u''):
-        raise u"item %s is not unicode" % unicode(s)
+        wikipedia.output("item %s is not unicode" % unicode(s))
+        raise
     return s.encode('utf-8')
 
 def IsString(s):
