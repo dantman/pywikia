@@ -4941,7 +4941,10 @@ def _flush():
                              ['yes', 'no'], ['y', 'N'], 'N')
             if answer in ['y', 'Y']:
                 return
-    get_throttle.drop()
+    try:
+        get_throttle.drop()
+    except NameError:
+        pass
 
 import atexit
 atexit.register(_flush)
