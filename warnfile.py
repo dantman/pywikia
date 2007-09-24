@@ -123,7 +123,7 @@ def main():
     if not filename:
         mysite = wikipedia.getSite()
         filename = wikipedia.datafilepath('logs',
-                       'warning-%s-%s.log' % (mysite.family.name, mysite.lang)
+                       'warning-%s-%s.log' % (mysite.family.name, mysite.lang))
     reader = WarnfileReader(filename)
     bot = WarnfileRobot(reader)
     bot.run()
