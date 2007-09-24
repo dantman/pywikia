@@ -3635,12 +3635,12 @@ Maybe the server is down. Retrying in %i minutes..."""
             get_throttle()
             html = self.getUrl(path)
 
-            entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?" title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>\d+)[^\)\]]*[\)\]] .?<a href=".+?" title=".+?:(?P<username>.+?)">')
+            entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?" title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>[\d,.]+)[^\)\]]*[\)\]] .?<a href=".+?" title=".+?:(?P<username>.+?)">')
             for m in entryR.finditer(html):
                 date = m.group('date')
                 title = m.group('title')
                 title = title.replace('&quot;', '"')
-                length = int(m.group('length'))
+                length = int(re.sub("[,.]", "", m.group('length')))
                 loggedIn = u''
                 username = m.group('username')
                 comment = u''
