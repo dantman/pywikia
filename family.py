@@ -2617,6 +2617,9 @@ class Family:
     def uncategorizedcategories_address(self, code, limit=500):
         return "%s?title=%s:Uncategorizedcategories&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
     
+    def uncategorizedimages_address(self, code, limit=500):
+        return "%s?title=%s:Uncategorizedimages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
+    
     def uncategorizedpages_address(self, code, limit=500):
         return "%s?title=%s:Uncategorizedpages&limit=%d" % (self.path(code), self.special_namespace_url(code), limit)
     

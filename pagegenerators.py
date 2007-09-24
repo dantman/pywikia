@@ -19,6 +19,12 @@ parameterHelp = """\
 -cat              Work on all pages which are in a specific category.
                   Argument can also be given as "-cat:categoryname".
 
+-uncat            Work on all pages which are not categorised.
+
+-uncatcat         Work on all categories which are not categorised.
+
+-uncatfiles       Work on all files which are not categorised.
+
 -file             Read a list of pages to treat from the named text file.
                   Page titles in the file must be enclosed with [[brackets]]. 
                   Argument can also be given as "-file:filename".
@@ -165,6 +171,18 @@ def CategorizedPageGenerator(category, recurse=False, start=None):
     for page in category.articles(recurse = recurse, startFrom = start):
         if page.title() >= start:
             yield page
+
+def UnCategorizedCategoryGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.uncategorizedcategories(number=number, repeat=repeat):
+        yield page
+
+def UnCategorizedImageGenerator(number = 100, repeat = False, site = None):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.uncategorizedimages(number=number, repeat=repeat):
+        yield page
 
 def UnCategorizedPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
@@ -635,6 +653,12 @@ class GeneratorFactory:
             gen = TextfilePageGenerator(textfilename)
         elif arg.startswith('-cat'):
             gen = self.setCategoryGen(arg, 4)
+        elif arg.startswith('-uncatfiles'):
+            gen = UnCategorizedImageGenerator()
+        elif arg.startswith('-uncatcat'):
+            gen = UnCategorizedCategoryGenerator()
+        elif arg.startswith('-uncat'):
+            gen = UnCategorizedPageGenerator()
         elif arg.startswith('-subcat'):
             gen = self.setCategoryGen(arg, 7, recurse = True)
         elif arg.startswith('-ref'):

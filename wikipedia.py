@@ -69,6 +69,7 @@ Site: a MediaWiki site
             lonelypages(): Special:Lonelypages
             uncategorizedcategories(): Special:Uncategorizedcategories
             uncategorizedpages(): Special:Uncategorizedpages
+            uncategorizedimages(): Special:Uncategorizedimages
             unusedcategories(): Special:Unusuedcategories
 
 Other functions:
@@ -3795,6 +3796,26 @@ Maybe the server is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
+    def uncategorizedimages(self, number = 10, repeat = False):
+        throttle = True
+        seen = set()
+        ns = self.image_namespace()
+        entryR = re.compile('<a href=".+?" title="(?P<title>%s:.+?)">.+?</a>' % ns)
+        while True:
+            path = self.uncategorizedimages_address(n=number)
+            get_throttle()
+            html = self.getUrl(path)
+            for m in entryR.finditer(html):
+                title = m.group('title')
+
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+                    yield page
+            if not repeat:
+                break
+
+
     def uncategorizedpages(self, number = 10, repeat = False):
         throttle = True
         seen = set()
@@ -4165,6 +4186,9 @@ Maybe the server is down. Retrying in %i minutes..."""
 
     def uncategorizedcategories_address(self, n=500):
         return self.family.uncategorizedcategories_address(self.lang, n)
+
+    def uncategorizedimages_address(self, n=500):
+        return self.family.uncategorizedimages_address(self.lang, n)
 
     def uncategorizedpages_address(self, n=500):
         return self.family.uncategorizedpages_address(self.lang, n)
