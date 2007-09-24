@@ -32,6 +32,10 @@ parameterHelp = """\
 -filelinks        Work on all pages that use a certain image/media file.
                   Argument can also be given as "-file:filename".
 
+-yahoo            Work on all pages that are found in a Yahoo search.
+                  Depends on python module pYsearch.  See yahoo_appid in
+                  config.py for instructions.
+
 -google           Work on all pages that are found in a Google search.
                   You need a Google Web API license key. Note that Google
                   doesn't give out license keys anymore. See google_key in
@@ -285,6 +289,35 @@ def LinksearchPageGenerator(link, step=500, site = None):
                 pageyeldlist.append(pagenameofthelink)
                 yield wikipedia.Page(site, pagenameofthelink)
         offset += step
+
+class YahooSearchPageGenerator:
+    '''
+    To use this generator, install pYsearch
+    '''
+    def __init__(self, query = None, count = 100): # values larger than 100 fail
+        self.query = query or wikipedia.input(u'Please enter the search query:')
+        self.count = count;
+
+    def queryYahoo(self, query):
+       from yahoo.search.web import WebSearch
+       srch = WebSearch(config.yahoo_appid, query=query, results=self.count)
+
+       dom = srch.get_results()
+       results = srch.parse_results(dom)
+       for res in results:
+           url = res.Url
+           yield url
+
+    def __iter__(self):
+        site = wikipedia.getSite()
+        # restrict query to local site
+        localQuery = '%s site:%s' % (self.query, site.hostname())
+        base = 'http://%s%s' % (site.hostname(), site.nice_get_address(''))
+        for url in self.queryYahoo(localQuery):
+            if url[:len(base)] == base:
+                title = url[len(base):]
+                page = wikipedia.Page(site, title)
+                yield page
 
 class GoogleSearchPageGenerator:
     '''
@@ -707,6 +740,12 @@ class GeneratorFactory:
             else:
                 googleQuery = arg[8:]
             gen = GoogleSearchPageGenerator(googleQuery)
+        elif arg.startswith('-yahoo'):
+            if len(arg) == 7:
+                query = wikipedia.input(u'What do you want to search for?')
+            else:
+                query = arg[7:]
+            gen = YahooSearchPageGenerator(query)
         else:
             return None
         # make sure all yielded pages are unique
