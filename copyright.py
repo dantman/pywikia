@@ -13,6 +13,10 @@ and a Yahoo AppID from http://developer.yahoo.com.
 
 Windows Live Search requires to install the SOAPpy module from
 http://pywebsvcs.sf.net and get an AppID from http://search.msn.com/developer.
+If you use Python 2.5 and have SOAPpy version 0.12.0, you must edit three
+files (SOAPpy/Client.py, SOAPpy/Server.py, SOAPpy/Types.py) to fix a simple
+syntax error by moving 'from __future__ imports...' line to beginning of the
+code.
 
 You can run the bot with the following commandline parameters:
 
@@ -74,6 +78,9 @@ import sys, re, codecs, os, time, urllib2, httplib
 import wikipedia, pagegenerators, catlib, config
 
 __version__='$Id$'
+
+#
+no_result_with_those_words = '-Wikipedia'
 
 # Try to skip quoted text.
 exclude_quote = True
@@ -413,7 +420,7 @@ def cleanwikicode(text):
         text = re.sub('^[:*]?\s*[“][^”]+[”]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
 
     # remove URL
-    text = re.sub('https?://[\w/.,;:@&=%#\\\?_!~*\'|()\"+-]+', ' ', text)
+    text = re.sub('(ftp|https?)://[\w/.,;:@&=%#\\\?_!~*\'|()\"+-]+', ' ', text)
 
     # remove Image tags
     text = reImageC.sub("", text)
@@ -761,7 +768,7 @@ def get_results(query, numresults = 10):
         search_request_retry = config.copyright_connection_tries
         while search_request_retry:
             try:
-                data = google.doGoogleSearch('-Wikipedia "' + query + '"')
+                data = google.doGoogleSearch('%s "%s"' % (no_result_with_those_words, query)
                 search_request_retry = 0
                 for entry in data.results:
                     add_in_urllist(url, entry.URL, 'google')
@@ -780,9 +787,10 @@ def get_results(query, numresults = 10):
     if config.copyright_yahoo:
         import yahoo.search.web
         print "  Yahoo query..."
-        data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"' +
-                                          query.encode('utf_8') +
-                                          '" -Wikipedia', results=numresults)
+        data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"%s" %s' % (
+                                          query.encode('utf_8'),
+                                          no_result_with_those_words
+                                          ), results = numresults)
         search_request_retry = config.copyright_connection_tries
         while search_request_retry:
             try:
@@ -805,7 +813,8 @@ def get_results(query, numresults = 10):
         except:
             print "Live Search Error"
             raise
-        params = {'AppID': config.msn_appid, 'Query': '-Wikipedia "' + query + '"', 'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
+        params = {'AppID': config.msn_appid, 'Query': '%s "%s"' % (no_result_with_those_words, query),
+                 'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
                  'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
 
         search_request_retry = config.copyright_connection_tries
@@ -919,9 +928,6 @@ def main():
     PageTitles = []
     # IDs which will be processed when the -ids parameter is used
     ids = None
-    # will become True when the user presses a ('yes to all') or uses the -always
-    # commandline paramater.
-    acceptall = False
     # Which namespaces should be processed?
     # default to [] which means all namespaces will be processed
     namespaces = []
@@ -929,17 +935,16 @@ def main():
     repeat = False
     #
     text = None
+    # Number of pages to load at a time by Preload generator
+    pageNumber = 40
+    # Default number of pages for NewPages generator
+    number = 60
 
     firstPageTitle = None
     # This factory is responsible for processing command line arguments
     # that are also used by other scripts and that determine on which pages
     # to work on.
     genFactory = pagegenerators.GeneratorFactory()
-
-
-    config.copyright_yahoo = check_config(config.copyright_yahoo, config.yahoo_appid, "Yahoo AppID")
-    config.copyright_google = check_config(config.copyright_google, config.google_key, "Google Web API license key")
-    config.copyright_msn = check_config(config.copyright_msn, config.msn_appid, "Live Search AppID")
 
     # Read commandline parameters.
     for arg in wikipedia.handleArgs():
@@ -967,11 +972,6 @@ def main():
         elif arg.startswith('-text'):
             if len(arg) >= 6:
               text = arg[6:]
-        elif arg.startswith('-xml'):
-            if len(arg) == 4:
-                xmlFilename = wikipedia.input(u'Please enter the XML dump\'s filename:')
-            else:
-                xmlFilename = arg[5:]
         elif arg.startswith('-page'):
             if len(arg) == 5:
                 PageTitles.append(wikipedia.input(u'Which page do you want to change?'))
@@ -988,9 +988,12 @@ def main():
             repeat = True
         elif arg.startswith('-new'):
             if len(arg) >=5:
-              gen = pagegenerators.NewpagesPageGenerator(number=int(arg[5:]), repeat = repeat)
-            else:
-              gen = pagegenerators.NewpagesPageGenerator(number=60, repeat = repeat)
+              number = int(arg[5:])
+            gen = pagegenerators.NewpagesPageGenerator(number = number, repeat = repeat)
+            # Preload generator work better if 'pageNumber' is not major than 'number',
+            # this avoid unnecessary delay.
+            if number < pageNumber:
+                pageNumber = number
         else:
             generator = genFactory.handleArg(arg)
             if generator:
@@ -1000,13 +1003,17 @@ def main():
         pages = [wikipedia.Page(wikipedia.getSite(), PageTitle) for PageTitle in PageTitles]
         gen = iter(pages)
 
+    config.copyright_yahoo = check_config(config.copyright_yahoo, config.yahoo_appid, "Yahoo AppID")
+    config.copyright_google = check_config(config.copyright_google, config.google_key, "Google Web API license key")
+    config.copyright_msn = check_config(config.copyright_msn, config.msn_appid, "Live Search AppID")
+
     if ids:
         checks_by_ids(ids)
 
     if not gen and not ids and not text:
         # syntax error, show help text from the top of this file
         wikipedia.output(__doc__, 'utf-8')
-        
+
     if text:
         output = query(lines = text.splitlines())
         if output:
@@ -1017,7 +1024,7 @@ def main():
         sys.exit()
     if namespaces != []:
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-    preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = 20)
+    preloadingGen = pagegenerators.PreloadingGenerator(gen, pageNumber = pageNumber)
     bot = CheckRobot(preloadingGen)
     bot.run()
 

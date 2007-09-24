@@ -38,8 +38,8 @@ template_cat = {
 }
 
 stat_msg = {
-    'en': [u'Statistics', u'Page', u'Entries', u'Total', 'Update'],
-    'it': [u'Statistiche', u'Pagina', u'Segnalazioni', u'Totale', u'Ultimo aggiornamento'],
+    'en': [u'Statistics', u'Page', u'Entries', u'Size', u'Total', 'Update'],
+    'it': [u'Statistiche', u'Pagina', u'Segnalazioni', u'Lunghezza', u'Totale', u'Ultimo aggiornamento'],
 }
 
 wiki_save_path = wikipedia.translate(wikipedia.getSite(), wiki_save_path)
@@ -87,10 +87,11 @@ def get_stats():
 ! %s
 ! %s
 ! %s
+! %s
 |-
-""" % ( msg[1], msg[2], 'Google', 'Yahoo', 'Live Search' )
+""" % ( msg[1], msg[2], msg[3], 'Google', 'Yahoo', 'Live Search' )
 
-    gnt = 0 ; ynt = 0 ; mnt = 0 ; ent = 0
+    gnt = 0 ; ynt = 0 ; mnt = 0 ; ent = 0 ; sn = 0 ; snt = 0
 
     for page in gen:
         data = page.get()
@@ -100,18 +101,19 @@ def get_stats():
         mn = stat_sum('(msn|live)', data)
 
         en = len(re.findall('=== \[\[', data))
+        sn = len(data)
 
-        gnt += gn ; ynt += yn ; mnt += mn ; ent += en
+        gnt += gn ; ynt += yn ; mnt += mn ; ent += en ; snt += sn
 
-        output += u"|%s||%s||%s||%s||%s\n|-\n" % (page.aslink(), en, gn, yn, mn)
+        output += u"|%s||%s||%s KB||%s||%s||%s\n|-\n" % (page.aslink(), en, sn / 1024, gn, yn, mn)
 
     output += u"""|&nbsp;||||||||
 |-
-|'''%s'''||%s||%s||%s||%s
+|'''%s'''||%s||%s KB||%s||%s||%s
 |-
-|colspan="5" align=right style="background-color:#eeeeee;"|<small>''%s: %s''</small>
+|colspan="6" align=right style="background-color:#eeeeee;"|<small>''%s: %s''</small>
 |}
-""" % (msg[3], ent, gnt, ynt, mnt, msg[4], time.strftime("%d " + "%s" % (date.monthName(wikipedia.getSite().language(), time.localtime()[1])) + " %Y"))
+""" % (msg[4], ent, snt / 1024, gnt, ynt, mnt, msg[5], time.strftime("%d " + "%s" % (date.monthName(wikipedia.getSite().language(), time.localtime()[1])) + " %Y"))
 
     return output
 

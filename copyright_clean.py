@@ -27,7 +27,7 @@ next_headC = re.compile("(?m)^=+.*?=+")
 
 #
 # {{botbox|title|newid|oldid|author|...}}
-rev_templateC = re.compile("(?m)^(?:{{/t\|.*?}}\n?)?{{botbox\|.*?\|(.*?)\|")
+rev_templateC = re.compile("(?m)^(?:{{/t\|.*?}}\n?)?{{(?:/box|botbox)\|.*?\|(.*?)\|")
 
 def query_yurik_api(data):
 
@@ -48,21 +48,8 @@ def query_yurik_api(data):
 
     return data
 
-def manage_query(items, mode = "titles"):
-    """No more of 100 titles at a time using Yurik's API"""
-
-    global query_results
-
-    for s in mysplit(items, 100, "|"):
-        if mode == "titles":
-            query_results.append(simplejson.loads(query_yurik_api(('titles', s))))
-
-        elif mode == 'revids':
-            query_results2.append(simplejson.loads(query_yurik_api(('revids', s))))
-    return
-
 def page_exist(title):
-    for pageobjs in query_results:
+    for pageobjs in query_results_titles:
         for key in pageobjs['pages']:
             if pageobjs['pages'][key]['title'] == title:
                 if int(key) >= 0:
@@ -71,7 +58,7 @@ def page_exist(title):
     return False
 
 def revid_exist(revid):
-    for pageobjs in query_results2:
+    for pageobjs in query_results_revids:
         for id in pageobjs['pages']:
             for rv in range(len(pageobjs['pages'][id]['revisions'])):
                 if pageobjs['pages'][id]['revisions'][rv]['revid'] == int(revid):
@@ -85,7 +72,7 @@ gen = pagegenerators.CategorizedPageGenerator(cat, recurse = True)
 
 for page in gen:
     data = page.get()
-    wikipedia.output(page.title())
+    wikipedia.output(page.aslink())
     output = ''
 
     #
@@ -104,11 +91,14 @@ for page in gen:
     titles = headC.findall(data)
     revids = rev_templateC.findall(data)
 
-    query_results = list()
-    query_results2 = list()
+    query_results_titles = list()
+    query_results_revids = list()
 
-    manage_query(query.ListToParam(titles))
-    manage_query(query.ListToParam(revids), "revids")
+    # No more of 100 titles at a time using Yurik's API
+    for s in mysplit(query.ListToParam(titles), 100, "|"):
+        query_results_titles.append(simplejson.loads(query_yurik_api(('titles', s))))
+    for s in mysplit(query.ListToParam(revids), 100, "|"):
+        query_results_revids.append(simplejson.loads(query_yurik_api(('revids', s))))
 
     comment_entry = list()
     add_separator = False
@@ -131,7 +121,7 @@ for page in gen:
         exist = True
         if page_exist(title):
             # check {{botbox}}
-            revid = re.search("{{botbox\|.*?\|(.*?)\|", data[head.end():stop])
+            revid = re.search("{{(?:/box|botbox)\|.*?\|(.*?)\|", data[head.end():stop])
             if revid:
                 if not revid_exist(revid.group(1)):
                     exist = False

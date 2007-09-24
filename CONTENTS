@@ -85,7 +85,7 @@ catmove.pl             : Need Perl programming language for takes a list of cate
 clean_sandbox.py       : This bot makes the cleaned of the page of tests.
 commons_link.py        : This robot include commons template to linking Commons and 
                          your wiki project.
-copyright.py           : This robot check copyright text in Google and Yahoo.
+copyright.py           : This robot check copyright text in Google, Yahoo! and Live Search.
 cosmetic_changes.py    : Can do slight modifications to a wiki page source code
                          such that the code looks cleaner.
 delete.py              : This script can be used to delete pages en masse.
