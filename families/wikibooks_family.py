@@ -217,6 +217,14 @@ class Family(family.Family):
         self.namespaces[111] = {
             'en': u'Wikijunior talk',
         }   
+        
+        self.namespaces[112] = {
+            'en': u'Subject',
+        }
+        
+        self.namespaces[113] = {
+            'en': u'Subject talk',
+        }
 
         # Which languages have a special order for putting interlanguage links,
         # and what order is it? If a language is not in interwiki_putfirst,
