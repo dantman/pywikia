@@ -1,4 +1,3 @@
-
 __version__ = '$Id$'
 
 import time
@@ -6,13 +5,23 @@ import re, sys, threading
 import tkMessageBox, tkSimpleDialog
 from Tkinter import *
 
+# we run the Tkinter mainloop in a separate thread so as not to block
+# the main bot code;  however, this means that all communication with
+# the Tkinter interface has to be done through events that will be processed
+# by the mainloop in the separate thread.  It is not possible for the
+# interface code to call any of the Tkinter objects directly, except to
+# put events on their queue (e.g., .after_idle()).
+
 class MainloopThread(threading.Thread):
     def __init__(self, window):
         threading.Thread.__init__(self)
         self.window = window
 
     def run(self):
-        self.window.mainloop()
+        try:
+            self.window.mainloop()
+        except SystemExit:
+            return
 
 
 class EditBoxWindow:
@@ -105,34 +114,59 @@ class EditBoxWindow:
             self.text = unicode(self.text, 'ascii')
         self.top.destroy()
 
-class CustomMessageBox(tkMessageBox.Message):
-    def __init__(self, parent, question, options, hotkeys, default = None):
-        self.selection = None
+
+class CustomMessageBox(tkSimpleDialog.Dialog):
+    def __init__(self, master, question, options, hotkeys, default=None):
+        self.question = question
+        self.options = options
         self.hotkeys = hotkeys
         self.default = default
-
-        self.top = Toplevel(parent)
-        Label(self.top, text=question).grid(columnspan = len(options))
-        for i in range(len(options)):
+        tkSimpleDialog.Dialog.__init__(self, master)
+        
+    def body(self, master):
+        Label(self, text=self.question).grid(columnspan = len(self.options))
+        btns = []
+        for i in xrange(len(self.options)):
             # mark hotkey with underline
-            m = re.search('[%s%s]' % (hotkeys[i].lower(), hotkeys[i].upper()), options[i])
+            m = re.search('[%s%s]' % (self.hotkeys[i].lower(),
+                                      self.hotkeys[i].upper()), self.options[i])
             if m:
                 pos = m.start()
             else:
-                options[i] += ' (%s)' % hotkeys[i]
-                pos = len(options[i]) - 2
-            b = Button(self.top, text = options[i], underline = pos, command = lambda h=hotkeys[i]: self.select(h))
+                self.options[i] += ' (%s)' % self.hotkeys[i]
+                pos = len(self.options[i]) - 2
+            b = Button(self, text=self.options[i],
+                             underline=pos,
+                             command=lambda h=self.hotkeys[i]: self.select(h))
+            self.bind("<Control-%s" % self.hotkeys[i],
+                      lambda h=self.hotkeys[i]: self.select(h))
             b.grid(row = 1, column = i)
-
-    def select(self, i):
-        self.selection = i
-        self.top.destroy()
-
-    def ask(self):
-        if self.default and not self.selection:
-            return self.default
+            btns.append(b)
+        if self.default and self.default in self.hotkeys:
+            return btns[self.hotkeys.index(self.default)]
         else:
-            return self.selection
+            return btns[0]
+
+    def buttonbox(self):
+        return
+    
+    def select(self, i, event=None):
+        self.selection = i
+        self.ok()
+
+    def apply(self):
+        if self.default and not self.selection:
+            self.selection = self.default
+
+
+class OutputBox(Text):
+    def __init__(self, parent, *args, **kwargs):
+        Text.__init__(self, parent, *args, **kwargs)
+
+    def show(self, text):
+        self.insert(END, text)
+        self.yview(END)
+
 
 class UI:
     def __init__(self, parent = None):
@@ -140,19 +174,22 @@ class UI:
         self.parent = parent or Tk()
 
         self.top_frame = Frame(parent)
-
         scrollbar = Scrollbar(self.top_frame)
+
         # textarea with vertical scrollbar
-        self.logBox = Text(self.top_frame, yscrollcommand=scrollbar.set)
+        self.logBox = OutputBox(self.top_frame, yscrollcommand=scrollbar.set)
+
         # add scrollbar to main frame, associate it with our editbox
         scrollbar.pack(side=RIGHT, fill=Y)
         scrollbar.config(command=self.logBox.yview)
+
         # put textarea into top frame, using all available space
         self.logBox.pack(anchor=CENTER, fill=BOTH)
         self.top_frame.pack(side=TOP)
         self.logBox.tag_config(12, foreground='red')
         self.logBox.tag_config(10, foreground='green')
 
+#        self.parent.mainloop()
         MainloopThread(self.parent).start()
 
     def output(self, text, urgency = 1, toStdout = False):
@@ -165,43 +202,28 @@ class UI:
             TODO: introduce constants
         """
         if urgency >= 2:
-            box = CustomMessageBox(self.parent, text, ['OK'], ['O'], 'O')
-            box.ask()
+            box = CustomMessageBox(self.parent)
+            self.parent.after_idle(box.display, text, ['OK'], ['O'], 'O')
             self.parent.wait_window(box.top)
-            # this alternative uses a too large font
-            # d = tkMessageBox.showinfo('title', text)
         elif urgency >= 1:
-            # Save the line number before appending text
-            lineCount = float(self.logBox.index(END).split('.')[0]) - 1
-            self.logBox.insert(END, text)
-            # colors support currently broken, sorry.
-            #if colors:
-                ## How many characters we already added in this line
-                #offset = 0
-                ## We create a tag region for each colored character.
-                ## It would be more efficient to try to use longer
-                ## regions.
-                #for i in range(len(colors)):
-                    #if text[i] == '\n':
-                        #lineCount += 1
-                        #offset = i + 1
-                    #if colors[i]:
-                        #startidx = '%i.%i' % (lineCount, i - offset)
-                        #endidx = '%i.%i' % (lineCount, i + 1 - offset)
-                        ## tag the whole occurence (start included, stop excluded)
-                        #self.logBox.tag_add(colors[i], startidx , endidx)
-                        
-                        
-            # auto-scroll down
-            self.logBox.see(END)
+            self.parent.after_idle(self.logBox.show, text)
 
     def input(self, question, password = False):
         """
         Returns a unicode string.
         """
         # TODO: hide input if password = True
-        answer = tkSimpleDialog.askstring('title', question)
+        self.parent.after_idle(self.ask, question)
+        # wait until the answer has been given
+        while not hasattr(self, "answer"):
+            time.sleep(1)
+        answer = self.answer
+        del self.answer
         return answer
+
+    def ask(self, question, password=False):
+        # this method is called from the mainloopThread
+        self.answer = tkSimpleDialog.askstring('Question', question)
 
     def editText(self, text, jumpIndex = None, highlight = None):
         editBoxWindow = EditBoxWindow(text)
@@ -210,7 +232,6 @@ class UI:
         return editBoxWindow.text
 
     def inputChoice(self, question, options, hotkeys, default = None):
-
         d = CustomMessageBox(self.parent, question, options, hotkeys)
         self.parent.wait_window(d.top)
         answer = d.ask()
