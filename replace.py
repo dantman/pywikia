@@ -297,6 +297,7 @@ class ReplaceRobot:
             else:
                 if self.isTextExcepted(original_text):
                     wikipedia.output(u'Skipping %s because it contains text that is on the exceptions list.' % page.aslink())
+                    continue
                 new_text = self.doReplacements(original_text)
                 if new_text == original_text:
                     wikipedia.output('No changes were necessary in %s' % page.aslink())
