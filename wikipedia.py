@@ -4595,13 +4595,13 @@ def altlang(code):
         return ['pt']
     if code in ['mo','roa-rup']:
         return ['ro']
-    if code in ['av','bxr','cv','hy','lbe','ru-sib','tg','tt','udm','uk','xal']:
+    if code in ['av','bxr','cv','hy','lbe','ru-sib','tg','udm','uk','xal']:
         return ['ru']
     if code in ['be','be-x-old']:
         return ['be','be-x-old','ru']
-    if code in ['kk','ky','tk']:
-        return ['tr','ru']
-    if code in ['diq','ug','uz']:
+    if code in ['ky','tt','uz']:
+        return ['kk','tr','ru']
+    if code in ['az','diq','tk','ug']:
         return ['tr']
     if code in ['ja','minnan','zh','zh-cn']:
         return ['zh','zh-tw','zh-classical','zh-cn']
