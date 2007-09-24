@@ -3,7 +3,10 @@ __version__ = '$Id$'
 import time
 import re, sys, threading
 import tkMessageBox, tkSimpleDialog
+import config
 from Tkinter import *
+
+color_pattern = re.compile(r"%s\{(?P<colorname>\w+)\}" % "\x03")
 
 # we run the Tkinter mainloop in a separate thread so as not to block
 # the main bot code;  however, this means that all communication with
@@ -11,6 +14,7 @@ from Tkinter import *
 # by the mainloop in the separate thread.  It is not possible for the
 # interface code to call any of the Tkinter objects directly, except to
 # put events on their queue (e.g., .after_idle()).
+
 
 class MainloopThread(threading.Thread):
     def __init__(self, window):
@@ -72,7 +76,6 @@ class EditBoxWindow:
 
         # display the menu
         # root.config(menu=menubar)
-
 
     def edit(self):
         return self.text
@@ -162,9 +165,31 @@ class CustomMessageBox(tkSimpleDialog.Dialog):
 class OutputBox(Text):
     def __init__(self, parent, *args, **kwargs):
         Text.__init__(self, parent, *args, **kwargs)
+        # create color tags
+        # map Unix/ANSI color names to Tcl/Tk names
+        # because Tkinter background is white, we need darker colors
+        for ucolor, tcolor in (
+                ('default', 'Black'),
+                ('lightblue', 'Blue'),
+                ('lightgreen', 'Green'),
+                ('lightaqua', 'DarkSeaGreen'),
+                ('lightred', 'Red'),
+                ('lightpurple', 'Violet'),
+                ('lightyellow', 'DarkOrange')
+        ):
+            self.tag_config(ucolor, foreground=tcolor)
 
     def show(self, text):
-        self.insert(END, text)
+        global debugger
+        debugger = text
+        next_tag = 'default'
+        m = color_pattern.search(text)
+        while m:
+            self.insert(END, text[0:m.start()], next_tag)
+            next_tag = m.group("colorname")
+            text = text[m.end():]
+            m = color_pattern.search(text)
+        self.insert(END, text, next_tag)
         self.yview(END)
 
 
@@ -186,15 +211,12 @@ class UI:
         # put textarea into top frame, using all available space
         self.logBox.pack(anchor=CENTER, fill=BOTH)
         self.top_frame.pack(side=TOP)
-        self.logBox.tag_config(12, foreground='red')
-        self.logBox.tag_config(10, foreground='green')
 
-#        self.parent.mainloop()
         MainloopThread(self.parent).start()
 
     def output(self, text, urgency = 1, toStdout = False):
         """
-        urgency levels:
+        urgency levels:  (NOT IMPLEMENTED)
             0 - Debug output. Won't be shown in normal mode.
             1 - Will be shown in log window.
             2 - Will be shown in error box.
