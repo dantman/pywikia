@@ -727,13 +727,13 @@ def add_in_urllist(url, add_item, engine):
                     if length > 0:
                         comment.append("%d %s" % (length, unit))
 
-            if cache:
-                if engine == 'google':
-                    comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s google cache]' % add_item[7:])
-                elif engine == 'yahoo':
-                    cache = False
-                elif engine == 'msn':
-                    cache = False
+        if cache:
+            if engine == 'google':
+                comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s google cache]' % add_item[7:])
+            elif engine == 'yahoo':
+                cache = False
+            elif engine == 'msn':
+                cache = False
 
     for i in range(len(url)):
         if add_item in url[i]:
