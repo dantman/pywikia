@@ -2618,6 +2618,9 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
         'template':    re.compile(r'(?s){{(({{(({{.*?}})|.)*}})|.)*}}'),
         'hyperlink':   weblinkchecker.compileLinkR(),
         'gallery':     re.compile(r'(?is)<gallery.*?>.*?</gallery>'),
+        # this matches internal wikilinks, but also interwiki, categories, and
+        # images.
+        'link':        re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
     }
 
     # if we got a string, compile it as a regular expression
