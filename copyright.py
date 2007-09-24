@@ -768,7 +768,7 @@ def get_results(query, numresults = 10):
         search_request_retry = config.copyright_connection_tries
         while search_request_retry:
             try:
-                data = google.doGoogleSearch('%s "%s"' % (no_result_with_those_words, query)
+                data = google.doGoogleSearch('%s "%s"' % (no_result_with_those_words, query))
                 search_request_retry = 0
                 for entry in data.results:
                     add_in_urllist(url, entry.URL, 'google')
