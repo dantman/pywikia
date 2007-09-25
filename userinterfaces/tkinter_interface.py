@@ -1,9 +1,10 @@
 __version__ = '$Id$'
 
+import re
+import sys
+import threading
 import time
-import re, sys, threading
 import tkMessageBox, tkSimpleDialog
-import config
 from Tkinter import *
 
 color_pattern = re.compile(r"%s\{(?P<colorname>\w+)\}" % "\x03")
@@ -11,9 +12,8 @@ color_pattern = re.compile(r"%s\{(?P<colorname>\w+)\}" % "\x03")
 # we run the Tkinter mainloop in a separate thread so as not to block
 # the main bot code;  however, this means that all communication with
 # the Tkinter interface has to be done through events that will be processed
-# by the mainloop in the separate thread.  It is not possible for the
-# interface code to call any of the Tkinter objects directly, except to
-# put events on their queue (e.g., .after_idle()).
+# by the mainloop in the separate thread.  Code outside this module must not
+# call any of the Tkinter objects directly.
 
 
 class MainloopThread(threading.Thread):
@@ -22,10 +22,7 @@ class MainloopThread(threading.Thread):
         self.window = window
 
     def run(self):
-        try:
-            self.window.mainloop()
-        except SystemExit:
-            return
+        self.window.mainloop()
 
 
 class EditBoxWindow:
@@ -81,10 +78,10 @@ class EditBoxWindow:
         return self.text
 
     def highlight(self, searchkey = None):
-        '''
+        """
         Action-function for the Button: highlight all occurences of string.
         Taken from O'Reilly's Python in a Nutshell.
-        '''
+        """
         #remove previous uses of tag 'found', if any
         self.editbox.tag_remove('found', '1.0', END)
         # get string to look for (if empty, no searching)
@@ -141,7 +138,7 @@ class CustomMessageBox(tkSimpleDialog.Dialog):
             b = Button(self, text=self.options[i],
                              underline=pos,
                              command=lambda h=self.hotkeys[i]: self.select(h))
-            self.bind("<Control-%s" % self.hotkeys[i],
+            self.bind("<Control-%s>" % self.hotkeys[i],
                       lambda h=self.hotkeys[i]: self.select(h))
             b.grid(row = 1, column = i)
             btns.append(b)
@@ -174,7 +171,7 @@ class OutputBox(Text):
                 ('lightgreen', 'Green'),
                 ('lightaqua', 'DarkSeaGreen'),
                 ('lightred', 'Red'),
-                ('lightpurple', 'Violet'),
+                ('lightpurple', 'DarkViolet'),
                 ('lightyellow', 'DarkOrange')
         ):
             self.tag_config(ucolor, foreground=tcolor)
@@ -193,16 +190,67 @@ class OutputBox(Text):
         self.yview(END)
 
 
-class UI:
+class TkController(Frame):
+    """
+    Tkinter user interface controller.
+
+    This object receives and processes events dispatched to it by the UI
+    object.  Do not call this object's methods directly.  Methods of this
+    object cannot return values to the main thread; they must store them
+    in attributes to be retrieved by the main thread.
+    
+    """
+    # TODO: use Event for inter-thread communication instead of wait loops
+    def __init__(self, parent, **kwargs):
+        Frame.__init__(self, parent, **kwargs)
+
+    def showinfo(self, text, wait=True):
+        """
+        Show a pop-up message.
+
+        Set wait to False to allow the pop-up to remain on screen while the
+        bot continues to work.
+
+        """
+        box = tkMessageBox.showinfo("Bot Message", text)
+        box.display()
+        if wait:
+            self.wait_window(box.top)
+
+    def ask(self, question, password=False):
+        """
+        Show a question in a dialog window and store the user's answer.
+        """
+        self.answer = tkSimpleDialog.askstring('Question', question)
+
+    def ask_choice(self, question, options, hotkeys, default):
+        d = CustomMessageBox(self, question, options, hotkeys)
+        self.wait_window(d.top)
+        self.selection = d.selection or d.default
+
+    def edit_text(self, text, jumpIndex, highlight):
+        editBoxWindow = EditBoxWindow(text)
+        editBoxWindow.highlight(highlight)
+        self.wait_window(editBoxWindow.top)
+        self.edited_text = editBoxWindow.text
+
+
+class UI(object):
+    """
+    Tkinter user interface.
+
+    This object serves only to dispatch event calls to the TkController
+    object, to be run in that object's separate mainloop thread; and,
+    when necessary, to wait for the user's response.
+    
+    """
     def __init__(self, parent = None):
         # create a new window if necessary
-        self.parent = parent or Tk()
-
-        self.top_frame = Frame(parent)
-        scrollbar = Scrollbar(self.top_frame)
+        self.control = TkController(parent or Tk())
 
         # textarea with vertical scrollbar
-        self.logBox = OutputBox(self.top_frame, yscrollcommand=scrollbar.set)
+        scrollbar = Scrollbar(self.control)
+        self.logBox = OutputBox(self.control, yscrollcommand=scrollbar.set)
 
         # add scrollbar to main frame, associate it with our editbox
         scrollbar.pack(side=RIGHT, fill=Y)
@@ -210,11 +258,11 @@ class UI:
 
         # put textarea into top frame, using all available space
         self.logBox.pack(anchor=CENTER, fill=BOTH)
-        self.top_frame.pack(side=TOP)
+        self.control.pack(side=TOP)
 
-        MainloopThread(self.parent).start()
+        MainloopThread(self.control).start()
 
-    def output(self, text, urgency = 1, toStdout = False):
+    def output(self, text, urgency=1, toStdout=False, wait=True):
         """
         urgency levels:  (NOT IMPLEMENTED)
             0 - Debug output. Won't be shown in normal mode.
@@ -222,39 +270,43 @@ class UI:
             2 - Will be shown in error box.
 
             TODO: introduce constants
+
+        wait: block bot until user dismisses pop-up window (level 2 only)
         """
         if urgency >= 2:
-            box = CustomMessageBox(self.parent)
-            self.parent.after_idle(box.display, text, ['OK'], ['O'], 'O')
-            self.parent.wait_window(box.top)
+            self.control.after_idle(self.control.showinfo, text, wait)
         elif urgency >= 1:
-            self.parent.after_idle(self.logBox.show, text)
+            self.control.after_idle(self.logBox.show, text)
 
     def input(self, question, password = False):
         """
         Returns a unicode string.
         """
         # TODO: hide input if password = True
-        self.parent.after_idle(self.ask, question)
+        self.control.after_idle(self.control.ask, question)
         # wait until the answer has been given
-        while not hasattr(self, "answer"):
+        while not hasattr(self.control, "answer"):
             time.sleep(1)
-        answer = self.answer
-        del self.answer
+        # answer needs to be deleted so that it won't be reused the
+        # next time this method is called
+        answer = self.control.answer
+        del self.control.answer
         return answer
-
-    def ask(self, question, password=False):
-        # this method is called from the mainloopThread
-        self.answer = tkSimpleDialog.askstring('Question', question)
 
     def editText(self, text, jumpIndex = None, highlight = None):
-        editBoxWindow = EditBoxWindow(text)
-        editBoxWindow.highlight(highlight)
-        self.parent.wait_window(editBoxWindow.top)
-        return editBoxWindow.text
+        self.control.after_idle(self.control.edit_text,
+                                text, jumpIndex, highlight)
+        while not hasattr(self.control, "edited_text"):
+            time.sleep(1)
+        result = self.control.edited_text
+        del self.control.edited_text
+        return result
 
     def inputChoice(self, question, options, hotkeys, default = None):
-        d = CustomMessageBox(self.parent, question, options, hotkeys)
-        self.parent.wait_window(d.top)
-        answer = d.ask()
-        return answer
+        self.control.after_idle(self.control.ask_choice, question,
+                                options, hotkeys, default)
+        while not hasattr(self.control, "selection"):
+            time.sleep(1)
+        selection = self.control.selection
+        del self.control.selection
+        return selection
