@@ -154,7 +154,7 @@ class UploadRobot:
                 # don't do it because it only accepts ASCII characters in the
                 # filename.
                 file = open(self.url,"rb")
-                self_contents = file.read()
+                self._contents = file.read()
                 file.close()
 
         # Isolate the pure name
