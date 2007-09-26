@@ -370,12 +370,13 @@ def economize_query(text):
     if text.count(', ') > 4:
         l = len(text)
         c = text.count(', ')
-        r = 100 * c / l
+        r = 100 * float(c) / l
+
+        #if r >= 4 and r < 7:
+        #    write_log("%d/%d/%d: %s\n" % (l,c,r,text), "copyright/skip_%s.txt" % ("%0.1f" % r))
 
         if r >= comma_ratio:
             return True
-
-        # write_log("%d/%d/%d: %s\n" % (l,c,r,text), "copyright/skip" + str(r) + ".txt")
 
     # Numbers
     if re.search('[^0-9\'*/,. +?:;-]{5}', text):
@@ -738,6 +739,8 @@ def add_in_urllist(url, add_item, engine):
     for i in range(len(url)):
         if add_item in url[i]:
             if engine not in url[i][1]:
+                if url[i][2]:
+                    comment = url[i][2]
                 url[i] = (add_item, url[i][1] + ', ' + engine, comment)
             return
     url.append((add_item, engine, comment))
@@ -757,93 +760,85 @@ def exceeded_in_queries(engine):
     if config.copyright_exceeded_in_queries == 3:
         raise 'Got a queries exceeded error.'
 
-def get_results(query, numresults = 10):
-    url = list()
-    query = re.sub("[()\"<>]", "", query)
-    #wikipedia.output(query)
-    if config.copyright_google:
-        import google
-        google.LICENSE_KEY = config.google_key
-        print "  Google query..."
+def soap(engine, query, url, numresults = 10):
+        print "  %s query..." % engine.capitalize()
         search_request_retry = config.copyright_connection_tries
         while search_request_retry:
             try:
-                data = google.doGoogleSearch('%s "%s"' % (no_result_with_those_words, query))
+                if engine == 'google':
+                    import google
+                    google.LICENSE_KEY = config.google_key
+                    data = google.doGoogleSearch('%s "%s"' % (no_result_with_those_words, query))
+                    for entry in data.results:
+                       add_in_urllist(url, entry.URL, 'google')
+                elif engine == 'yahoo':
+                    import yahoo.search.web
+                    data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"%s" %s' % (
+                                                      query.encode('utf_8'),
+                                                      no_result_with_those_words
+                                                     ), results = numresults)
+                    for entry in data.parse_results():
+                        add_in_urllist(url, entry.Url, 'yahoo')
+                elif engine == 'msn':
+                    #max_query_len = 150?
+                    from SOAPpy import WSDL
+
+                    try:
+                        server = WSDL.Proxy('http://soap.search.msn.com/webservices.asmx?wsdl')
+                    except:
+                        print "Live Search Error"
+                        raise
+                    params = {'AppID': config.msn_appid, 'Query': '%s "%s"' % (no_result_with_those_words, query),
+                             'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
+                             'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
+
+                    results = ''
+
+                    server_results = server.Search(Request = params)
+                    if server_results.Responses[0].Results:
+                        results = server_results.Responses[0].Results[0]
+                    if results:
+                        # list or instance?
+                        if type(results) == type([]):
+                            for entry in results:
+                                add_in_urllist(url, entry.Url, 'msn')
+                        else:
+                            add_in_urllist(url, results.Url, 'msn')
                 search_request_retry = 0
-                for entry in data.results:
-                    add_in_urllist(url, entry.URL, 'google')
             except KeyboardInterrupt:
                 raise
             except Exception, err:
                 print "Got an error ->", err
+
                 #
                 # SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
                 # Daily limit of 1000 queries exceeded for key ***>
                 #
                 if 'Daily limit' in str(err):
                     exceeded_in_queries('google')
-                if search_request_retry:
-                    search_request_retry -= 1
-    if config.copyright_yahoo:
-        import yahoo.search.web
-        print "  Yahoo query..."
-        data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"%s" %s' % (
-                                          query.encode('utf_8'),
-                                          no_result_with_those_words
-                                          ), results = numresults)
-        search_request_retry = config.copyright_connection_tries
-        while search_request_retry:
-            try:
-                for entry in data.parse_results():
-                    add_in_urllist(url, entry.Url, 'yahoo')
-                search_request_retry = 0
-            except Exception, err:
-                print "Got an error ->", err
                 if 'limit exceeded' in str(err):
                     exceeded_in_queries('yahoo')
+
                 if search_request_retry:
                     search_request_retry -= 1
+
+def get_results(query, numresults = 10):
+    result_list = list()
+    query = re.sub("[()\"<>]", "", query)
+    # wikipedia.output(query)
+    if config.copyright_google:
+        soap('google', query, result_list)
+    if config.copyright_yahoo:
+        soap('yahoo', query, result_list, numresults = numresults)
     if config.copyright_msn:
-        #max_query_len = 150?
-        from SOAPpy import WSDL
-        print "  Live query..."
-
-        try:
-            server = WSDL.Proxy('http://soap.search.msn.com/webservices.asmx?wsdl')
-        except:
-            print "Live Search Error"
-            raise
-        params = {'AppID': config.msn_appid, 'Query': '%s "%s"' % (no_result_with_those_words, query),
-                 'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
-                 'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
-
-        search_request_retry = config.copyright_connection_tries
-        results = ''
-        while search_request_retry:
-            try:
-                server_results = server.Search(Request = params)
-                search_request_retry = 0
-                if server_results.Responses[0].Results:
-                    results = server_results.Responses[0].Results[0]
-            except Exception, err:
-                print "Got an error ->", err
-                if search_request_retry:
-                    search_request_retry -= 1
-
-        if results:
-            # list or instance?
-            if type(results) == type([]):
-                for entry in results:
-                    add_in_urllist(url, entry.Url, 'msn')
-            else:
-                add_in_urllist(url, results.Url, 'msn')
+        soap('msn', query, result_list)
 
     offset = 0
-    for i in range(len(url)):
-        if check_list(url[i + offset][0], excl_list, verbose = True):
-            url.pop(i + offset)
+    for i in range(len(result_list)):
+        if check_list(result_list[i + offset][0], excl_list, verbose = True):
+            result_list.pop(i + offset)
             offset += -1
-    return url
+    return result_list
 
 def get_by_id(title, id):
     return wikipedia.getSite().getUrl("/w/index.php?title=%s&oldid=%s&action=raw" % (title, id))
