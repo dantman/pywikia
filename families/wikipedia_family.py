@@ -167,7 +167,7 @@ class Family(family.Family):
             'mk': u'Разговор за Википедија',
             'ml': u'വിക്കിപീഡിയ സംവാദം',
             'mr': u'Wikipedia चर्चा',
-            'ms': u'Perbualan Wikipedia',
+            'ms': u'Perbincangan Wikipedia',
             'mt': u'Wikipedija talk',
             'mzn': u'بحث Wikipedia',
             'nah': u'Wikipedia Discusión',
