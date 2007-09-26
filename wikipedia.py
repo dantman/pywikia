@@ -2943,8 +2943,9 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
     # title might not be formatted correctly on the wiki
     if title[0].isalpha() and not site.nocapitalize:
         title = "[%s%s]" % (title[0].upper(), title[0].lower()) + title[1:]
+    title = title.replace(" ", "[ _]+").replace("(", r"\(").replace(")", r"\)")
     categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*((?:\|[^]]+)?\]\])'
-                            % (catNamespace, title.replace(' ','[ _]+')))
+                            % (catNamespace, title))
     if newcat is None:
         text = replaceExcept(oldtext, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])    
     else:
