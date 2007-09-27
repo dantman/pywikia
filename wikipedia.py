@@ -304,8 +304,8 @@ class Page(object):
                         if t != '' and t[0] == ':':
                             self._namespace = 0
                             t = t[1:]
-                    elif lowerNs in self.site().family.get_known_families(code = self.site().lang):
-                        if self.site().get_family.known_families(code = self.site().lang)[lowerNs] == self.site().family.name:
+                    elif lowerNs in self.site().family.get_known_families(site = self.site()):
+                        if self.site().family.get_known_families(site = self.site())[lowerNs] == self.site().family.name:
                             t = m.group(2)
                         else:
                             # This page is from a different family
@@ -313,7 +313,7 @@ class Page(object):
                             otherlang = self.site().lang
                             if lowerNs in ['commons']:
                                 otherlang = lowerNs
-                            familyName = self.site().family.known_families[lowerNs]
+                            familyName = self.site().family.get_known_families(site = self.site())[lowerNs]
                             try:
                                 self._site = getSite(otherlang, familyName)
                             except ValueError:
@@ -4031,7 +4031,7 @@ Maybe the server is down. Retrying in %i minutes..."""
                 return self.isInterwikiLink(rest)
             else:
                 return True
-        if first in self.family.get_known_families(code = self.lang):
+        if first in self.family.get_known_families(site = self):
             if first == self.family.name:
                 return self.isInterwikiLink(rest)
             else:
