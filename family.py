@@ -30,13 +30,13 @@ class Family:
            'tr','tk','tw','udm','bug','uk','ur','vec','vo','fiu-vro','wa',
            'vls','war','wo','wuu','ts','ii','yi','yo','zh-yue','cbk-zam','diq','zea','bat-smg','zh',
            'zh-tw','zh-cn']
-        
+
         # knownlanguages is the same list but sorted by code
         self.knownlanguages = list(self.alphabetic)
         self.knownlanguages.sort()
-        
+
         self.langs = {}
-        
+
         # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
@@ -1767,7 +1767,7 @@ class Family:
         # element that contains the actual page content; change this for
         # wikis that use something else (e.g., mozilla family)
         self.content_id = "bodyContent"
-        
+
         # A dictionary where keys are family codes that can be used in
         # inter-family interwiki links. Values are not used yet.
         # Generated from http://tools.wikimedia.de/~daniel/interwiki-en.txt:
@@ -2189,7 +2189,7 @@ class Family:
         # on_one_line is a list of languages that want the category links
         # one-after-another on a single line
         self.category_on_one_line = []
-        
+
         # String used as separator between category links and the text
         self.category_text_separator = '\r\n\r\n'
         
@@ -2258,17 +2258,26 @@ class Family:
         for num, val in namespaces.items():
             self.namespaces[num][code]=val
 
+    def get_known_families(self, code):
+        if code == 'sv':
+            # In Swedish wiki projects 's:' is part of page title
+            # not a family prefix for 'wikisource'.
+            d = self.known_families.copy()
+            d.pop('s') ; d['src'] = 'wikisource'
+            return d
+        return self.known_families
+
     def linktrail(self, code, fallback = '_default'):
         if self.linktrails.has_key(code):
             return self.linktrails[code]
         elif fallback:
             return self.linktrails[fallback]
         else:
-            raise KeyError('ERROR: linktrail in language %s unknown' % code)  
+            raise KeyError('ERROR: linktrail in language %s unknown' % code)
 
     def namespace(self, code, ns_number, fallback = '_default', all = False):
         if not self.isDefinedNS(ns_number):
-            raise KeyError('ERROR: Unknown namespace %d for %s:%s' % (ns_number, code, self.name))  
+            raise KeyError('ERROR: Unknown namespace %d for %s:%s' % (ns_number, code, self.name))
         elif self.isNsI18N(ns_number, code):
             v = self.namespaces[ns_number][code]
         elif fallback:

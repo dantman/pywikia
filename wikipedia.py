@@ -243,7 +243,7 @@ class Page(object):
                 site = getSite()
             elif type(site) in [type(''), type(u'')]:
                 site = getSite(site)
-            
+
             self._site = site
 
             if not insite:
@@ -304,8 +304,8 @@ class Page(object):
                         if t != '' and t[0] == ':':
                             self._namespace = 0
                             t = t[1:]
-                    elif lowerNs in self.site().family.known_families:
-                        if self.site().family.known_families[lowerNs] == self.site().family.name:
+                    elif lowerNs in self.site().family.get_known_families(code = self.site().lang):
+                        if self.site().get_family.known_families(code = self.site().lang)[lowerNs] == self.site().family.name:
                             t = m.group(2)
                         else:
                             # This page is from a different family
@@ -1357,7 +1357,7 @@ class Page(object):
         category links in the page text.
         """
         try:
-	    category_links_to_return = getCategoryLinks(self.get(nofollow_redirects=nofollow_redirects), self.site())
+            category_links_to_return = getCategoryLinks(self.get(nofollow_redirects=nofollow_redirects), self.site())
         except NoPage:
             category_links_to_return = []
         return category_links_to_return
@@ -4031,7 +4031,7 @@ Maybe the server is down. Retrying in %i minutes..."""
                 return self.isInterwikiLink(rest)
             else:
                 return True
-        if first in self.family.known_families:
+        if first in self.family.get_known_families(code = self.lang):
             if first == self.family.name:
                 return self.isInterwikiLink(rest)
             else:
