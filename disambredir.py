@@ -48,11 +48,11 @@ def treat(text, linkedPage, targetPage):
         # at the end of the link, reset the color to default
         wikipedia.output(text[max(0, m.start() - context) : m.start()] + '\03{lightred}' + text[m.start() : m.end()] + '\03{default}' + text[m.end() : m.end() + context])
         while True:
-            choice = wikipedia.input(u"Option (n=do not change, y=change link to \03{lightpurple}%s\03{default}, r=change and replace text, u=unlink)"%targetPage.title())
+            choice = wikipedia.input(u"Option (N=do not change, y=change link to \03{lightpurple}%s\03{default}, r=change and replace text, u=unlink)"%targetPage.title())
             try:
                 choice = choice[0]
             except:
-                continue
+                choice = 'N'
             if choice in 'nNyYrRuU':
                 break
         if choice in "nN":
