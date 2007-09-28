@@ -1694,63 +1694,32 @@ class Page(object):
         result += '|}\n'
         return result
 
-    def fullVersionHistory(self, max = 50, comment = False, since = None):
+    def fullVersionHistory(self):
         """
         Returns all previous versions. Gives a list of tuples consisting of
         edit date/time, user name and content
         """
-        RV_LIMIT = 50
-
-        address = self.site().api_address()
+        address = self.site().export_address()
         predata = {
-            'action': 'query',
-            'prop': 'revisions',
-            'titles': self.title(),
-            'rvprop': 'timestamp|user|comment|content',
-            'rvlimit': str(RV_LIMIT),
-            'format': 'json'
+            'action': 'submit',
+            'pages': self.title()
         }
-        if max < RV_LIMIT: predata['rvlimit'] = str(max)
-        if since: predata['rvend'] = since
-
         get_throttle(requestsize = 10)
         now = time.time()
-
-        count = 0
+        if self.site().hostname() in config.authenticate.keys():
+            predata["Content-type"] = "application/x-www-form-urlencoded"
+            predata["User-agent"] = useragent
+            data = self.site.urlEncode(predata)
+            response = urllib2.urlopen(urllib2.Request('http://' + self.site.hostname() + address, data))
+            data = response.read()
+        else:
+            response, data = self.site().postForm(address, predata)
+        data = data.encode(self.site().encoding())
+        get_throttle.setDelay(time.time() - now)
         output = []
-
-        while count < max and max != -1:
-            if self.site().hostname() in config.authenticate.keys():
-                predata["Content-type"] = "application/x-www-form-urlencoded"
-                predata["User-agent"] = useragent
-                data = self.site.urlEncode(predata)
-                response = urllib2.urlopen(urllib2.Request(self.site.protocol() + '://' + self.site.hostname() + address, data))
-                data = response.read().decode(self.site().encoding())
-            else:
-                response, data = self.site().postForm(address, predata)
-
-            get_throttle.setDelay(time.time() - now)
-            data = simplejson.loads(data)
-            page = data['query']['pages'].values()[0]
-            if 'missing' in page:
-                raise NoPage, 'Page %s not found' % self
-            revisions = page.get('revisions', ())
-            for revision in revisions:
-                if not comment:
-                    output.append((revision['timestamp'],
-                      revision['user'], revision.get('*', u'')))
-                else:
-                    output.append((revision['timestamp'], revision['user'],
-                      revision.get('*', u''), revision.get('comment', u'')))
-            count += len(revisions)
-            if max - count < RV_LIMIT:
-                predata['rvlimit'] = str(max - count)
-            if 'query-continue' in data:
-                predata['rvstartid'] = str(data['query-continue']['revisions']['rvstartid'])
-            else:
-                break
-        return output
-    fullRevisionHistory = fullVersionHistory
+        r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\</(?:ip|username)\>.*?\<text.*?\>(.*?)\<\/text\>",re.DOTALL)
+        #r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\<",re.DOTALL)
+        return [(match.group(1), unescape(match.group(2)), unescape(match.group(3))) for match in r.finditer(data)]
 
     def contributingUsers(self):
         """
