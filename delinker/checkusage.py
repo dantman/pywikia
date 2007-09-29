@@ -214,7 +214,7 @@ class HTTPPool(list):
  
 class CheckUsage(object):
 	def __init__(self, limit = 100, 
-			mysql_default_server = 2, mysql_host_prefix = 'sql-s', mysql_kwargs = {}, 
+			mysql_default_server = 3, mysql_host_prefix = 'sql-s', mysql_kwargs = {}, 
 			no_db = False, use_autoconn = False, 
 			
 			http_retry_timeout = 30, http_max_retries = -1, 
@@ -247,6 +247,8 @@ class CheckUsage(object):
 		# Mapping database name -> (lang, family)
 		self.sites = {}
 		
+		self.domains = {}
+		
 		self.unknown_families = []
 		# Mapping family name -> family object
 		self.known_families = {}
@@ -270,10 +272,9 @@ class CheckUsage(object):
 			else:
 				self.sites[dbname] = (lang, fam)
 				self.databases[dbname] = self.servers[server]
+				
+			self.domains[dbname] = domain
  
-		# Localized namespaces
-		#cursor.execute('SELECT dbname, ns_id, ns_name FROM toolserver.namespace')
-		# self.namespaces = dict((((i[0], i[1]), i[2].decode('utf-8')) for i in cursor))
  
 	def connect_mysql(self, host):
 		# A bug in MySQLdb 1.2.1_p will force you to set
@@ -297,10 +298,10 @@ class CheckUsage(object):
 			self.http = HTTPPool(retry_timeout = self.http_retry_timeout, 
 				max_retries = self.http_max_retries, callback = self.http_callback)
 
- 
 	def get_usage(self, image):
 		for dbname in self.databases:
-			for link in self.get_usage_db(dbname, image, True):
+			usage = self.get_usage_db(dbname, image, True)
+			for link in usage:
 				yield self.sites[dbname], link
  
 	def get_usage_db(self, dbname, image, shared = False):
@@ -327,17 +328,26 @@ class CheckUsage(object):
 	def get_usage_live(self, site, image, shared = False):
 		self.connect_http()
 		
+		if type(site) is str:
+			hostname = site
+			apipath = '/w/api.php'
+			live_version = (1, 11)
+		else:
+			hostname = site.hostname()
+			apipath = site.apipath()
+			live_version = site.live_version()[:2]
+		
 		# FIXME: Use continue
 		kwargs = {'action': 'query', 'titles': u'Image:' + image,
 			'prop': 'info'}
-		if site.live_version()[:2] > (1, 10):
+		if live_version > (1, 10):
 			kwargs['list'] = 'imageusage'
 			kwargs['iulimit'] = '500'
 		else:
 			kwargs['list'] = 'imagelinks'
 			kwargs['illimit'] = '500'
 		
-		res = self.http.query_api(site.hostname(), site.apipath(),
+		res = self.http.query_api(hostname, apipath,
 			**kwargs)
 		if '-1' not in res['query']['pages'] and shared:
 			return
