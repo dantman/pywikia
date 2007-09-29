@@ -44,6 +44,10 @@ the CheckUsages instances, from which onwards the process is the same as above.
 Both bots allow the use of on-wiki summary templates. Refer to 
 [[m:User:CommonsDelinker]] for information on the syntax.
 
+=== Plugins ===
+CommonsDelinker has a basic plugin framework. More information can be found
+in plugins.txt.
+
 == Requirements ==
 * A recent SVN checkout of the pywikipedia framework
 * Python 2.4 or higher
@@ -88,6 +92,7 @@ CommonsDelinker = {}
   GLOBALLY WITHOUT CONSULTING BRYAN AND SIEBRAND. Thank you.
 * ''no_sysop = True'': Disable delinking as sysop.
 * ''enable_logging = True'': Enable logging actions to database.
+* ''plugins'' = []: Enabled plugins. See plugins.txt for more information.
 
 === Delinker settings ===
 Those variables only need to be set if the delinker is enabled.
@@ -131,6 +136,13 @@ You do not need to set these if you have logging disabled.
 * ''replacer_table = "database_name.replacer_table"'': The database.table for the 
   replacer. Only required if the replacer is activated.
   
+=== Edit and debugging settings ===
+* ''edit = True'': Actually edit to the wiki.
+* ''enable_delinker = True'': Enable the delinker.
+* ''enable_replacer = True'': Enable the replacer.
+* ''single_process_replacer = False'': Start the replacer-reader and the 
+  replacer in one process. This is currently not yet supported.
+
 ==== SQL table layout ====
 <code lang="sql">
 CREATE TABLE delinker (
@@ -172,16 +184,7 @@ CREATE TABLE delinker (
 	newimg VARBINARY(255)
 );
 </code>
-  
-=== Edit and debugging settings ===
-* ''save_diff = False'': Save all changes to a diff. Create a directory diff/
-  before running.
-* ''edit = True'': Actually edit to the wiki.
-* ''enable_delinker = True'': Enable the delinker.
-* ''enable_replacer = True'': Enable the replacer.
-* ''single_process_replacer = False'': Start the replacer-reader and the 
-  replacer in one process. This is currently not yet supported.
-  
+   
 == Licensing ==
 The file ''delinker.py'' is copyrighted © 2006 - 2007 Orgullomoore, 
 © 2007 Siebrand Mazeland, © 2007 Bryan Tong Minh. The file ''replacer.py''
@@ -211,11 +214,11 @@ MIT license below:
  OTHER DEALINGS IN THE SOFTWARE.
  
 The most recent version of this documentation can be found in the 
-pywikipedia CVS, on <http://pywikipediabot.cvs.sourceforge.net/
-pywikipediabot/pywikipedia/delinker.txt?view=markup>. Copies
-maybe found on meta <http://meta.wikimedia.org/wiki/
-CommonsDelinker/For_operators> and BotWiki 
-<http://botwiki.sno.cc/wiki/Python:CommonsDelinker/For_operators>.
+pywikipedia SVN, on <http://svn.wikimedia.org/svnroot/pywikipedia/
+trunk/pywikipedia/> and browsable on <http://svn.wikimedia.org/viewvc/
+pywikipedia/>. Copies maybe found on meta <http://meta.wikimedia.org/
+wiki/CommonsDelinker/For_operators> and BotWiki <http://botwiki.sno.cc/
+wiki/Python:CommonsDelinker/For_operators>.
   
 == Example configuration file ==
 

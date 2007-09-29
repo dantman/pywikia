@@ -181,8 +181,10 @@ class Delinker(threadpool.Thread):
 				m_replacement = ImmutableByReference(replacement)
 				groups = list(match.groups())
 				if hook:
-					self.CommonsDelinker.exec_hook('%s_replace' % hook,
-						(page, summary, image, m_replacement, match, groups))
+					if False is self.CommonsDelinker.exec_hook('%s_replace' % hook,
+							(page, summary, image, m_replacement, match, groups)):
+						return u''.join(groups)						
+						
 				if m_replacement.get() is None:
 					return u''
 				else:
@@ -262,7 +264,8 @@ class Delinker(threadpool.Thread):
 				try:
 					new_text = ImmutableByReference(new_text)
 					m_summary = ImmutableByReference(summary)
-					if self.exec_hook('before_save', (page, text, new_text)) is False:
+					if False is self.exec_hook('before_save',
+							(page, text, new_text, m_summary)):
 						return 'skipped'
 					
 					if self.CommonsDelinker.config.get('edit', True) and not \
