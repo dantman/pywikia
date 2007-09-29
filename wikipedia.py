@@ -3243,8 +3243,12 @@ class Site(object):
         a http POST request"""
         if not query:
             return None
+        if hasattr('iteritems', query):
+            iterator = query.iteritems()
+        else:
+            iterator = iter(query)
         l = []
-        for key, value in query.iteritems():
+        for key, value in iterator:
             if isinstance(key, unicode):
                 key = key.encode('utf-8')
             if isinstance(value, unicode):
