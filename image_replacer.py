@@ -10,7 +10,7 @@ Please refer to delinker.txt for full documentation.
 # Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
-import config, wikipedia
+import config, wikipedia, simplejson
 import re, time
 import threadpool
 import sys, os, signal, traceback
@@ -74,8 +74,13 @@ class Replacer(object):
 		else:
 			since = None
 			
+		if self.config.get('clean_list', False):
+			username = config.sysopnames[self.site.family.name][self.site.lang]
+		else:
+			username = None
+			
 		try:
-			revisions = page.fullVersionHistory(max = 500, since = since)
+			revisions = self.get_history(page.title(), since, username)
 			# Fetch the page any way, to prevent editconflicts
 			old_text = text = page.get()
 		except StandardError, e:
@@ -84,17 +89,12 @@ class Replacer(object):
 			output('%s: %s' % (e.__class__.__name__, str(e)), False)
 			return time.sleep(self.config['timeout'])
 		
-		if text.lower().find('{{stop}}') != -1:
+		if '{{stop}}' in text.lower():
 			output(u'Found {{stop}} on command page. Not replacing anything.')
 			return time.sleep(self.config['timeout'])
 		
-		revisions.sort(key = lambda rev: rev[0])
+		revisions.sort(key = lambda rev: rev['timestamp'])
 		replacements = self.template.finditer(text)
-		
-		if self.config.get('clean_list', False):
-			username = config.sysopnames[self.site.family.name][self.site.lang]
-		else:
-			username = None
 		
 		remove_from_list = []
 		for replacement in replacements:
@@ -116,23 +116,38 @@ class Replacer(object):
 					return
 				except wikipedia.EditConflict:
 					text = page.get()
-		
+					
+	def get_history(self, title, since, username):
+		address = self.site.api_address()
+		predata = [
+			('action', 'query'),
+			('prop', 'revisions'),
+			('titles', title.encode('utf-8')),
+			('rvprop', 'timestamp|user|comment|content'),
+			('rvlimit', '50'),
+			('format', 'json'),
+			('rvend', since),
+			('rvexcludeuser', username.encode('utf-8'))
+		]
+		response, data = self.site.postForm(address, predata)
+		data = simplejson.loads(data)
+		if 'error' in data:
+			raise RuntimeError(data['error'])
+
+		page = data['query']['pages'].values()[0]
+		if 'missing' in page:
+			raise Exception('Missing page!')
+		return page.get('revisions', ())
 		
 	def examine_revision_history(self, revisions, replacement, username):
-		#if replacement.group(0) in revisions[0][2]:
-		#	return (db_timestamp(revisions[0][0]),
-		#		strip_image(replacement.group(1)),
-		#		strip_image(replacement.group(2)),
-		#		'<Unknown>', replacement.group(3))
-				
-		for timestamp, user, text in revisions:
-			if replacement.group(0) in text and user != username:
+		for revision in revisions:
+			if replacement.group(0) in revision['content']:
 				db_time = db_timestamp(timestamp)
 				if db_time < self.first_revision or not self.first_revision:
 					self.first_revision = int(db_time)
 				return (db_time, strip_image(replacement.group(1)),
 					strip_image(replacement.group(2)),
-					user, replacement.group(3))
+					revision['user'], replacement.group(3))
 					
 		output('Warning! Could not find out who did %s' % \
 				repr(replacement.group(0)), False)
