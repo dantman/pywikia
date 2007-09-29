@@ -3243,7 +3243,7 @@ class Site(object):
         a http POST request"""
         if not query:
             return None
-        if hasattr('iteritems', query):
+        if hasattr(query, 'iteritems'):
             iterator = query.iteritems()
         else:
             iterator = iter(query)
