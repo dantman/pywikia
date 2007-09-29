@@ -2420,6 +2420,7 @@ class Family:
         'ru': [u'перенаправление', u'перенапр'],
         'sk': [u'presmeruj'],
         'sr': [u'преусмери',u'Преусмери'], # Using lowercase only doesn't work?
+        'su': [u'redirected', u'alih'],
         'tt': [u'yünältü'],
         'yi': [u'ווייטערפירן']
     }
