@@ -33,6 +33,9 @@ __version__ = '$Id$'
 # * There is a problem with images in the es.wikisource project namespace.
 #   The exact problem is described somewhere in Bryan's IRC logs, but it is
 #   unknown where exactly.
+# HOOKS:
+# before_delink, simple_replace, gallery_replace, complex_replace, before_save,
+# after_delink
 
 import sys, os, threading, time
 import traceback
@@ -71,6 +74,20 @@ def connect_database():
 		return mysql_autoconnection.connect(**kwargs)
 	# TODO: Add support for sqlite3
 	raise RuntimeError('Unsupported database engine %s' % engine)
+	
+class ImmutableByReference(object):
+	def __init__(self, data):
+		self.data = data
+	def set(self, value):
+		self.data = value
+	def get(self):
+		return self.data
+	def __str__(self):
+		return str(self.data)
+	def __unicode__(self):
+		return unicode(self.data)
+	def __int__(self):
+		return int(self.data)
 
 class Delinker(threadpool.Thread):
 	# TODO: Method names could use some clean up
@@ -82,6 +99,9 @@ class Delinker(threadpool.Thread):
 	def delink_image(self, image, usage, timestamp, admin, reason, replacement = None):
 		""" Performs the delink for image on usage. """
 		output(u'%s Usage of %s: %s' % (self, image, usage))
+		if self.CommonsDelinker.exec_hook('before_delink',
+				(image, usage, timestamp, admin, reason, replacement)) is False:
+			return
 		
 		skipped_images = {}
 		for (lang, family), pages in usage.iteritems():
@@ -121,7 +141,9 @@ class Delinker(threadpool.Thread):
 								page_namespace, page_title, result, replacement))
 			finally:
 				self.CommonsDelinker.unlock_site(site)
-		
+
+		self.CommonsDelinker.exec_hook('after_delink', (image, usage, timestamp, admin, reason, replacement))
+
 		if skipped_images:
 			time.sleep(self.CommonsDelinker.config['timeout'])
 			return self.delink_image(image, skipped_images, timestamp, admin, reason, replacement)
@@ -134,6 +156,7 @@ class Delinker(threadpool.Thread):
 		will delink instead of replace."""
 		
 		page = wikipedia.Page(site, page_title)
+		hook = None
 		
 		# TODO: Per site config.
 		if page.namespace() in self.CommonsDelinker.config['delink_namespaces']:
@@ -155,11 +178,15 @@ class Delinker(threadpool.Thread):
 			r_image = u'(%s)' % create_regex(image).replace(r'\_', '[ _]')
 			
 			def simple_replacer(match):
-				if replacement == None:
+				m_replacement = ImmutableByReference(replacement)
+				groups = list(match.groups())
+				if hook:
+					self.CommonsDelinker.exec_hook('%s_replace' % hook,
+						(page, summary, image, m_replacement, match, groups))
+				if m_replacement.get() is None:
 					return u''
 				else:
-					groups = list(match.groups())
-					groups[1] = replacement
+					groups[1] = m_replacement.get()
 					return u''.join(groups)
 					
 			# Previously links in image descriptions will cause 
@@ -179,6 +206,7 @@ class Delinker(threadpool.Thread):
 			link_ends = [match.end() for match in re.finditer(r_e, text)]
 				
 			r_simple = u'(\[\[%s)%s(.*)' % (r_namespace, r_image)
+			hook = 'simple'
 			replacements = []
 			for image_start in image_starts:
 				current_link_starts = [link_start for link_start in link_starts 
@@ -206,6 +234,7 @@ class Delinker(threadpool.Thread):
 				if old: new_text = new_text.replace(old, new)
 			
 			# Remove the image from galleries
+			hook = 'gallery'
 			r_galleries = ur'(?s)(\<%s\>)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'), 
 				create_regex_i('gallery'))
 			r_gallery = ur'(?m)^((?:%s)?)%s(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
@@ -217,6 +246,7 @@ class Delinker(threadpool.Thread):
 			if text == new_text:
 				# All previous steps did not work, so the image is
 				# likely embedded in a complicated template.
+				hook = 'complex'
 				r_templates = ur'(?s)(\{\{.*?\}\})'
 				r_complicated = u'(?s)((?:%s)?)%s' % (r_namespace, r_image)
 				
@@ -230,22 +260,16 @@ class Delinker(threadpool.Thread):
 				# to summary() code, to avoid checking the user page
 				# for each removal.
 				try:
-					if config.CommonsDelinker.get('save_diff', False):
-						# Save a diff
-						import difflib
-						diff = difflib.context_diff(
-							text.encode('utf-8').splitlines(True),
-							new_text.encode('utf-8').splitlines(True))
-						f = open((u'diff/%s-%s-%s.txt' % (page_title.replace('/', '-'),
-							site.dbName(), page.editTime())).encode('utf-8', 'ignore'), 'w')
-						f.writelines(diff)
-						f.close()
+					new_text = ImmutableByReference(new_text)
+					m_summary = ImmutableByReference(summary)
+					if self.exec_hook('before_save', (page, text, new_text)) is False:
+						return 'skipped'
 					
 					if self.CommonsDelinker.config.get('edit', True) and not \
 							((self.CommonsDelinker.site.lang == 'commons') ^ \
 							(config.usernames.get('commons', {}).get(
 							'commons') == 'CommonsDelinker')):
-						page.put(new_text, summary)
+						page.put(new_text.get(), m_summary.get())
 					return 'ok'
 				except wikipedia.EditConflict:
 					# Try again
@@ -580,6 +604,32 @@ class CommonsDelinker(object):
 		#	self.log_limit = '500'
 		self.log_limit = '500'
 		
+	def init_plugins(self):
+		self.hooks = {}
+		for item in self.config.get('plugins', ()):
+			mname, name = item.split('.', 1)
+			module = __import__('delinker_plugins.' + mname)
+			plugin = getattr(module, mname)
+			if type(plugin) is type:
+				plugin = plugin(self)
+			if plugin.hook not in self.hooks:
+				self.hooks[plugin.hook] = []
+			self.hooks[plugin.hook].append(plugin)
+			
+	def exec_hook(self, name, args):
+		if name in self.hooks:
+			for plugin in self.hooks[name][:]:
+				try:
+					if plugin(*args) is False:
+						return False
+				except Exception, e:
+					if type(e) in (SystemExit, KeyboardInterrupt):
+						raise
+					output('Warning! Error executing hook %s' % plugin, False)
+					output('%s: %s' % (e.__class__.__name__, str(e)), False)
+					traceback.print_exc(file = sys.stderr)
+					self.hooks[name].remove(plugin)
+						
 	def connect_mysql(self):
 		self.database = connect_database()
 		self.cursor = self.database.cursor()
@@ -766,10 +816,9 @@ def output(message, toStdout = True):
 		sys.stdout.flush()
 	else:
 		sys.stderr.flush()
-			
+
 def main():
 	global CD
-	
 	output(u'Running ' + __version__)
 	CD = CommonsDelinker()
 	output(u'This bot runs from: ' + str(CD.site))
@@ -810,5 +859,6 @@ def main():
 		# Flush the standard streams
 		sys.stdout.flush()
 		sys.stderr.flush()
-		
+
 if __name__ == '__main__': main()
+
