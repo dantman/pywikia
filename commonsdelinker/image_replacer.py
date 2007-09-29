@@ -256,20 +256,24 @@ class Reporter(threadpool.Thread):
 				(old_image, new_image))
 			
 
-if __name__ == '__main__':
+def main():
+	global R
+	
 	import sys, traceback
 	output(u'Running ' + __version__)
 
 	try:
 		try:
 			# FIXME: Add support for single-process replacer.
-			r = Replacer()
-			output(u'This bot runs from: ' + str(r.site))
-			r.start()
+			R = Replacer()
+			output(u'This bot runs from: ' + str(R.site))
+			R.start()
 		except Exception, e:
 			if type(e) not in (SystemExit, KeyboardInterrupt):
 				output('A critical error has occured! Aborting!')
 				traceback.print_exc(file = sys.stderr)
 	finally:
-		r.reporters.exit()
+		R.reporters.exit()
 		wikipedia.stopme()
+		
+if __name__ == '__main__': main()

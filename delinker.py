@@ -1,9 +1,11 @@
 # Helper script for delinker and image_replacer
 
-__version__ = '$Id$'
+__version__ = '$Id: $'
 
-import sys
-sys.path.append('commonsdelinker')
+import wikipedia, config
+
+import sys, os
+sys.path.insert(0, 'commonsdelinker')
 
 module = 'delinker'
 if len(sys.argv) > 1:
@@ -11,4 +13,5 @@ if len(sys.argv) > 1:
 		del sys.argv[1]
 		module = 'image_replacer'
 
-__import__(module, locals = {'__name__': '__main__'})
+bot = __import__(module)
+bot.main()

@@ -767,7 +767,9 @@ def output(message, toStdout = True):
 	else:
 		sys.stderr.flush()
 			
-if __name__ == '__main__':	
+def main():
+	global CD
+	
 	output(u'Running ' + __version__)
 	CD = CommonsDelinker()
 	output(u'This bot runs from: ' + str(CD.site))
@@ -808,3 +810,5 @@ if __name__ == '__main__':
 		# Flush the standard streams
 		sys.stdout.flush()
 		sys.stderr.flush()
+		
+if __name__ == '__main__': main()
