@@ -1,4 +1,4 @@
-# -*- coding: utf-8  -*-
+﻿# -*- coding: utf-8  -*-
 """Splits a interwiki.log file into chunks of warnings separated by language"""
 #
 # (C) Rob W.W. Hooft, 2003
@@ -29,7 +29,7 @@ for line in logFile:
             if not files.has_key(code):
                 files[code] = codecs.open(
                                   wikipedia.datafilepath('logs',
-                                      '/warning-%s-%s.log' % (family, code),
+                                         'warning-%s-%s.log' % (family, code)),
                                   'w', 'utf-8')
                 count[code] = 0
             files[code].write(line)
