@@ -68,7 +68,7 @@ class CommonsLinkBot:
                         if s or s2:
                             wikipedia.output(u'** Already done.')
                         else:
-                            text = wikipedia.replaceCategoryLinks(text+u'{{commons||%s}}'%commonspage.title()', page.categories()) 
+                            text = wikipedia.replaceCategoryLinks(text+u'{{commons||%s}}'%commonspage.title(), page.categories())
                             if oldText != text:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
