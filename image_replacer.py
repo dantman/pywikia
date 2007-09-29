@@ -142,8 +142,8 @@ class Replacer(object):
 		
 	def examine_revision_history(self, revisions, replacement, username):
 		for revision in revisions:
-			if replacement.group(0) in revision['content']:
-				db_time = db_timestamp(timestamp)
+			if replacement.group(0) in revision['*']:
+				db_time = db_timestamp(revision['timestamp'])
 				if db_time < self.first_revision or not self.first_revision:
 					self.first_revision = int(db_time)
 				return (db_time, strip_image(replacement.group(1)),
