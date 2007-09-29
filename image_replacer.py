@@ -47,6 +47,7 @@ class Replacer(object):
 			for i in self.config.get('disallowed_replacements', ())]
 				
 		self.site = wikipedia.getSite(persistent_http = True)
+		self.site.forceLogin()
 		
 		self.database = connect_database()
 		self.cursor = self.database.cursor()
@@ -197,7 +198,8 @@ class Replacer(object):
 
 class Reporter(threadpool.Thread):
 	def __init__(self, pool, site, config):
-		self.site = site
+		self.site = wikipedia.Site(site.lang, site.family,
+			site.user, True)
 		self.config = config
 		
 		threadpool.Thread.__init__(self, pool)
@@ -259,13 +261,15 @@ if __name__ == '__main__':
 	output(u'Running ' + __version__)
 
 	try:
-		# FIXME: Add support for single-process replacer.
-		r = Replacer()
-		output(u'This bot runs from: ' + str(r.site))
-		r.start()
-	except Exception, e:
-		if type(e) not in (SystemExit, KeyboardInterrupt):
-			output('A critical error has occured! Aborting!')
-			traceback.print_exc(file = sys.stderr)
-	r.reporters.exit()
-	wikipedia.stopme()
+		try:
+			# FIXME: Add support for single-process replacer.
+			r = Replacer()
+			output(u'This bot runs from: ' + str(r.site))
+			r.start()
+		except Exception, e:
+			if type(e) not in (SystemExit, KeyboardInterrupt):
+				output('A critical error has occured! Aborting!')
+				traceback.print_exc(file = sys.stderr)
+	finally:
+		r.reporters.exit()
+		wikipedia.stopme()
