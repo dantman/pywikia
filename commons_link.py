@@ -47,7 +47,7 @@ class CommonsLinkBot:
     def __init__(self, generator, acceptall = False):
         self.generator = generator
         self.acceptall = acceptall
-            
+
     def pages(self):
         for page in self.generator:
             try:
@@ -81,17 +81,17 @@ class CommonsLinkBot:
                                         page.put(text, msg)
                                     except wikipedia.EditConflict:
                                         wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                            
+
                 except wikipedia.NoPage:
                     wikipedia.output(u'Page does not exist in Commons!')
-                    
+
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s does not exist?!' % page.title())
             except wikipedia.IsRedirectPage:
                 wikipedia.output(u'Page %s is a redirect; skipping.' % page.title())
             except wikipedia.LockedPage:
                 wikipedia.output(u'Page %s is locked?!' % page.title())
-                
+
     def categories(self):
         for page in self.generator:
             try:
@@ -112,7 +112,7 @@ class CommonsLinkBot:
                         if s:
                             wikipedia.output(u'** Already done.')
                         else:
-                            text = wikipedia.replaceCategoryLinks(text+u'{{commonscat|%s}}'%categoryname, page.categories()) 
+                            text = wikipedia.replaceCategoryLinks(text+u'{{commonscat|%s}}'%categoryname, page.categories())
                             if oldText != text:
                                 wikipedia.showDiff(oldText, text)
                                 if not self.acceptall:
@@ -125,10 +125,10 @@ class CommonsLinkBot:
                                         page.put(text, msg)
                                     except wikipedia.EditConflict:
                                         wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
-                            
+
                 except wikipedia.NoPage:
                     wikipedia.output(u'Category does not exist in Commons!')
-                    
+
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s does not exist?!' % page.title())
             except wikipedia.IsRedirectPage:
@@ -175,6 +175,6 @@ if __name__ == "__main__":
             bot.categories()
         else:
             wikipedia.showHelp(u'commons_link')
-                
+
     finally:
         wikipedia.stopme()
