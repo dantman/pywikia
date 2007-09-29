@@ -11,7 +11,7 @@ r_namespace_section = r'(?s)self\.namespaces\[%s]\s*\=\s*\{(.*?)\}'
 
 r_string = '[u]?[r]?[\'"].*?[\'"]'
 r_list = '\\[.*?\\]'
-r_namespace_def = re.compile(r'[\'"]([a-z_]*)[\'"]\s*\:\s*((?:%s)|(?:%s))\s*,' % (r_string, r_list))
+r_namespace_def = re.compile(r'[\'"]([a-z_-]*)[\'"]\s*\:\s*((?:%s)|(?:%s))\s*,' % (r_string, r_list))
 def update_family(family, changes):
 	global namespace_section_text, namespace_defs, new_defs
 	
