@@ -274,6 +274,7 @@ ignore_title = {
             u'Gebruiker:Lankhorst/Lijst.*',
             u'Gebruiker:Magalhães/Filipijnse geografie',
             u'Gebruiker:Michiel1972/Lijst plaatsen VS/Doorverwijspagina',
+            u'Gebruiker:Michiel1972/Lijst plaatsen VS/Doorverwijspagina/Bestaan al',
             u'Gebruiker:Michiel1972/Project Zwitserse gemeentes/Notaddedpages',
             u'Gebruiker:Mystro82',
             u'Gebruiker:Puckly/Bijdragen',
