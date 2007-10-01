@@ -2912,7 +2912,18 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
     # title might not be formatted correctly on the wiki
     if title[0].isalpha() and not site.nocapitalize:
         title = "[%s%s]" % (title[0].upper(), title[0].lower()) + title[1:]
-    title = title.replace(" ", "[ _]+").replace("(", r"\(").replace(")", r"\)")
+    # title might also contain regex special characters
+    title = title.replace(" ", "[ _]+")\
+                 .replace("(", r"\(")\
+                 .replace(")", r"\)")\
+                 .replace(".", r"\.")\
+                 .replace("^", r"\^")\
+                 .replace("$", r"\$")\
+                 .replace("*", r"\*")\
+                 .replace("+", r"\+")\
+                 .replace("?", r"\?")
+            # note: | [ ] { } not escaped here because they are not legal in
+            # MW page titles
     categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*((?:\|[^]]+)?\]\])'
                             % (catNamespace, title))
     if newcat is None:
