@@ -43,8 +43,8 @@ If the page to be uploaded already exists:
 
 __version__='$Id$'
 
+import re, codecs
 import wikipedia, config
-import re, sys, codecs
 
 class PageFromFileRobot:
     """
@@ -110,53 +110,67 @@ class PageFromFileRobot:
         'pt': u'sobrescrever texto'
     }
 
-    def __init__(self, reader, force, append, minor, debug):
+    def __init__(self, reader, force, append, summary, minor, autosummary, debug):
         self.reader = reader
         self.force = force
         self.append = append
+        self.summary = summary
         self.minor = minor
+        self.autosummary = autosummary
         self.debug = debug
 
     def run(self):
         for title, contents in self.reader.run():
-            self.create(title, contents)
+            self.put(title, contents)
 
-    def create(self, title, contents):
+    def put(self, title, contents):
         mysite = wikipedia.getSite()
 
         page = wikipedia.Page(mysite, title)
         # Show the title of the page we're working on.
         # Highlight the title in purple.
-        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
-        commenttext = wikipedia.translate(mysite, self.msg)
+        wikipedia.output(u">>> \03{lightpurple}%s\03{default} <<<" % page.title())
+
+        if self.summary:
+            comment = self.summary
+        else:
+            comment = wikipedia.translate(mysite, self.msg)
+
+        comment_top = comment + " - " + wikipedia.translate(mysite, self.msg_top)
+        comment_bottom = comment + " - " + wikipedia.translate(mysite, self.msg_bottom)
+        comment_force = comment + " *** " + wikipedia.translate(mysite, self.msg_force) + " ***"
 
         #Remove trailing newlines (cause troubles when creating redirects)
         contents = re.sub('^[\r\n]*','',contents)
+
         if page.exists():
             if self.append == "Top":
-                old_text = page.get()
-                contents = contents + old_text
-                commenttext_top = commenttext + " - " + wikipedia.translate(mysite, self.msg_top)
                 wikipedia.output(u"Page %s already exists, appending on top!" % title)
-                if not self.debug:
-                    page.put(contents, comment = commenttext_top, minorEdit = self.minor)
+                contents = contents + page.get()
+                comment = comment_top
             elif self.append == "Bottom":
-                old_text = page.get()
-                contents = old_text + contents
-                commenttext_bottom = commenttext + " - " + wikipedia.translate(mysite, self.msg_bottom)
-                wikipedia.output(u"Page %s already exists, appending on bottom!"%title)
-                if not self.debug:
-                    page.put(contents, comment = commenttext_bottom, minorEdit = self.minor)
+                wikipedia.output(u"Page %s already exists, appending on bottom!" % title)
+                contents = page.get() + contents
+                comment = comment_bottom
             elif self.force:
-                commenttext_force = commenttext + " *** " + wikipedia.translate(mysite, self.msg_force) + " ***"
                 wikipedia.output(u"Page %s already exists, ***overwriting!" % title)
-                if not self.debug:
-                    page.put(contents, comment = commenttext_force, minorEdit = self.minor)
+                comment = comment_force
             else:
                 wikipedia.output(u"Page %s already exists, not adding!" % title)
+                return
         else:
-            if not self.debug:
-                page.put(contents, comment = commenttext, minorEdit = self.minor)
+           if self.autosummary:
+                comment = ''
+                wikipedia.setAction('')
+
+        if self.debug:
+                wikipedia.output("*** UPLOAD OF ***\n" + \
+                    "\03{lightpurple}title\03{default}: " + title + "\n" + \
+                    "\03{lightpurple}contents\03{default}:\n" + contents + "\n" \
+                    "\03{lightpurple}comment\03{default}: " + comment + "\n")
+                return
+
+        page.put(contents, comment = comment, minorEdit = self.minor)
 
 class PageFromFileReader:
     """
@@ -195,14 +209,14 @@ class PageFromFileReader:
                 contents = location.group()
             else:
                 contents = location.group(1)
-            if self.notitle:
-                #Remove title (to allow creation of redirects)
-                contents = titleR.sub('', contents, count = 1)
         except AttributeError:
             wikipedia.output(u'\nStart or end marker not found.')
             return 0, None, None
         try:
             title = titleR.search(contents).group(1)
+            if self.notitle:
+                #Remove title (to allow creation of redirects)
+                contents = titleR.sub('', contents, count = 1)
         except AttributeError:
             wikipedia.output(u'\nNo title found - skipping a page.')
             return 0, None, None
@@ -225,7 +239,9 @@ def main():
     force = False
     append = None
     notitle = False
+    summary = None
     minor = False
+    autosummary = False
     debug = False
 
     for arg in wikipedia.handleArgs():
@@ -258,13 +274,15 @@ def main():
         elif arg.startswith("-titleend:"):
             titleEndMarker = arg[10:]
         elif arg.startswith("-summary:"):
-            commenttext = arg[9:]
+            summary = arg[9:]
+        elif arg == '-autosummary':
+            autosummary = True
         else:
             wikipedia.output(u"Disregarding unknown argument %s." % arg)
 
     reader = PageFromFileReader(filename, pageStartMarker, pageEndMarker, titleStartMarker, titleEndMarker, include, notitle)
 
-    bot = PageFromFileRobot(reader, force, append, minor, debug)
+    bot = PageFromFileRobot(reader, force, append, summary, minor, autosummary, debug)
     bot.run()
 
 if __name__ == "__main__":
