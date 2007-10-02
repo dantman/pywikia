@@ -263,11 +263,12 @@ class CheckUsage(object):
 				self.servers[server] = self.connect_mysql(mysql_host_prefix + str(server))
 			
 			# FIXME: wikimediafoundation!
+			# TODO: This is one big mess
 			try:
 				lang, fam = family(domain)
 				if fam not in self.known_families:
 					self.known_families[fam] = wikipedia.Family(fam, fatal = False)
-			except (RuntimeError, ValueError):
+			except (RuntimeError, ValueError, SyntaxError):
 				self.unknown_families.append(domain)
 			else:
 				self.sites[dbname] = (lang, fam)
