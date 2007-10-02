@@ -134,17 +134,23 @@ class NowCommonsDeleteBot:
                 if not filenameOnCommons:
                     wikipedia.output(u'NowCommons template not found.')
                     continue
-                commonsImagePage = wikipedia.ImagePage(commons, 'Image:%s' % filenameOnCommons)
+                commonsImagePage = wikipedia.ImagePage(commons,
+                                               'Image:%s' % filenameOnCommons)
                 if len(localImagePage.getFileVersionHistory()) > 1:
-                    wikipedia.output(u'This image has a version history. Please manually delete it after making sure that the old versions aren\'t worth keeping.')
+                    wikipedia.output(u"""\
+This image has a version history. Please delete it manually after making sure
+that the old versions aren't worth keeping.""")
                     continue
                 if localImagePage.titleWithoutNamespace() != commonsImagePage.titleWithoutNamespace():
-                    usingPages = localImagePage.usingPages()
+                    usingPages = list(localImagePage.usingPages())
                     if usingPages and usingPages != [localImagePage]:
-                        wikipedia.output('%s is still used in %i pages. Please change them manually.' % (localImagePage.title(), len(localImagePage.usingPages())))
+                        wikipedia.output(
+            '%s is still used in %i pages. Please change them manually.'
+                                % (localImagePage.title(), len(usingPages)))
                         continue
                     else:
-                        wikipedia.output('No page is using %s anymore.' % localImagePage.title())
+                        wikipedia.output('No page is using %s anymore.'
+                                         % localImagePage.title())
                 commonsText = commonsImagePage.get()
                 if md5 == commonsImagePage.getFileMd5Sum():
                     wikipedia.output(u'The image is identical to the one on Commons.')

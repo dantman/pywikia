@@ -127,8 +127,8 @@ def NewpagesPageGenerator(number = 100, get_redirect = False, repeat = False, si
     for page in site.newpages(number=number, get_redirect=get_redirect, repeat=repeat):
         yield page[0]
 
-def FileLinksGenerator(referredPage):
-    for page in referredPage.getFileLinks():
+def FileLinksGenerator(referredImagePage):
+    for page in referredImagePage.usingPages():
         yield page
 
 def ImagesPageGenerator(pageWithImages):

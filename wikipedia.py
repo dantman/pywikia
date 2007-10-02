@@ -6,72 +6,30 @@ Contents of the library (objects and functions to be used outside, situation
 late August 2004)
 
 Classes:
-Page: A MediaWiki page
-    __init__              : Page(Site, Title) - the page with title Title on wikimedia site Site
-    title                 : The name of the page, in a form suitable for an interwiki link
-    urlname               : The name of the page, in a form suitable for a URL
-    titleWithoutNamespace : The name of the page, with the namespace part removed
-    section               : The section of the page (the part of the name after '#')
-    sectionFreeTitle      : The name without the section part
-    aslink                : The name of the page in the form [[Title]] or [[lang:Title]]
-    site                  : The wiki this page is in
-    encoding              : The encoding of the page
-    isAutoTitle           : If the title is a well known, auto-translatable title
-    autoFormat            : Returns (dictName, value), where value can be a year, date, etc.,
-                            and dictName is 'YearBC', 'December', etc.
-    isCategory            : True if the page is a category, false otherwise
-    isImage               : True if the page is an image, false otherwise
+    Page(site, title):      A page on a MediaWiki site
+    ImagePage(site, title): An image descriptor Page
+    Site(lang, fam):        A MediaWiki site
+    Throttle:               Limits reading and writing rates
 
-    get (*)               : The text of the page
-    exists (*)            : True if the page actually exists, false otherwise
-    isRedirectPage (*)    : True if the page is a redirect, false otherwise
-    isEmpty (*)           : True if the page has 4 characters or less content, not
-                            counting interwiki and category links
-    botMayEdit (*)        : True if bot is allowed to edit page
-    interwiki (*)         : The interwiki links from the page (list of Pages)
-    categories (*)        : The categories the page is in (list of Pages)
-    linkedPages (*)       : The normal pages linked from the page (list of Pages)
-    imagelinks (*)        : The pictures on the page (list of ImagePages)
-    templates (*)         : All templates referenced on the page (list of strings)
-    getRedirectTarget (*) : The page the page redirects to
-    isDisambig (*)        : True if the page is a disambiguation page
-    getReferences         : List of pages linking to the page
-    namespace             : The namespace in which the page is
-    permalink (*)         : The url of the permalink of the current version
-    move                  : Move the page to another title
-    put(newtext)          : Saves the page
-    put_async(newtext)    : Queues the page to be saved asynchronously
-    delete                : Deletes the page (requires being logged in)
-
-    (*) : This loads the page if it has not been loaded before; permalink might
-          even reload it if it has been loaded before
-
-Site: a MediaWiki site
-    messages              : There are new messages on the site
-    forceLogin()          : Does not continue until the user has logged in to
-                            the site
-    getUrl()              : Retrieve an URL from the site
-    mediawiki_message(key): Retrieve the text of the MediaWiki message with
-                            the key "key"
-    has_mediawiki_message(key) : True if this site defines a MediaWiki message
-                                 with the key "key"
-    Special pages:
-        Dynamic pages:
-            allpages(): Special:Allpages
-            newpages(): Special:Newpages
-            longpages(): Special:Longpages
-            shortpages(): Special:Shortpages
-            categories(): Special:Categories
-
-        Cached pages:
-            deadendpages(): Special:Deadendpages
-            ancientpages(): Special:Ancientpages
-            lonelypages(): Special:Lonelypages
-            uncategorizedcategories(): Special:Uncategorizedcategories
-            uncategorizedpages(): Special:Uncategorizedpages
-            uncategorizedimages(): Special:Uncategorizedimages
-            unusedcategories(): Special:Unusuedcategories
-
+Exceptions:
+    Error:              Base class for all exceptions in this module
+    NoUsername:         Username is not in user-config.py
+    NoPage:             Page does not exist on the wiki
+    IsRedirectPage:     Page is a redirect page
+    IsNotRedirectPage:  Page is not a redirect page
+    LockedPage:         Page is locked
+    LockedNoPage:       Page does not exist, and creating it is not
+                        possible because of a lock (subclass of NoPage and
+                        LockedPage)
+    SectionError:       The section specified in the Page title does not exist
+    PageNotSaved:       Saving the page has failed
+      EditConflict:     PageNotSaved due to edit conflict while uploading
+      SpamfilterError:  PageNotSaved due to MediaWiki spam filter
+    ServerError:        Got unexpected response from wiki server
+    BadTitle:           Server responded with BadTitle.
+    UserBlocked:        Client's username or IP has been blocked
+    PageNotFound:       Page not found in list
+   
 Other functions:
 getall(): Load pages via Special:Export
 setAction(text): Use 'text' instead of "Wikipedia python library" in
@@ -140,7 +98,6 @@ try:
 except NameError:
     from sets import Set as set
 
-
 # Check Unicode support (is this a wide or narrow python build?)
 # See http://www.python.org/doc/peps/pep-0261/
 try:
@@ -148,16 +105,6 @@ try:
     WIDEBUILD = True
 except ValueError:
     WIDEBUILD = False
-
-
-# Local settings
-
-# If ignore_bot_templates is True, the bot will always ignore {{bots}}
-# and {{nobots}} templates - botMayEdit() will always return True.
-# In the default (False) state, it will honor these directives and
-# refuse to save pages that forbid it from editing.
-ignore_bot_templates = False
-
 
 # Local exceptions
 
@@ -182,9 +129,6 @@ class LockedPage(Error):
 class LockedNoPage(NoPage, LockedPage):
     """Page does not exist, and creating it is not possible because of a lock."""
 
-class NoSuchEntity(ValueError):
-    """No entity exist for this character"""
-
 class SectionError(Error):
     """The section specified by # does not exist"""
 
@@ -206,13 +150,13 @@ class ServerError(Error):
 class BadTitle(Error):
     """Server responded with BadTitle."""
 
-# UserBlocked exceptions should in general not be catched. If the bot has been
-# blocked, the bot operator has possibly done a mistake and should take care of
-# the issue before continuing.
+# UserBlocked exceptions should in general not be caught. If the bot has
+# been blocked, the bot operator should address the reason for the block
+# before continuing.
 class UserBlocked(Error):
     """Your username or IP has been blocked"""
 
-class PageNotFound(Exception):
+class PageNotFound(Error):
     """Page not found in list"""
 
 SaxError = xml.sax._exceptions.SAXParseException
@@ -220,19 +164,89 @@ SaxError = xml.sax._exceptions.SAXParseException
 # Pre-compile re expressions
 reNamespace = re.compile("^(.+?) *: *(.*)$")
 
-# The most important thing in this whole module: The Page class
-class Page(object):
-    """A page on the wiki."""
-    def __init__(self, site, title, insite = None, defaultNamespace = 0):
-        """
-        Constructor. Normally called with two arguments:
-        Parameters:
-         1) The wikimedia site on which the page resides
-         2) The title of the page as a unicode string
 
-        The argument insite can be specified to help decode
-        the name; it is the wikimedia site where this link was found.
-        """
+class Page(object):
+    """Page: A MediaWiki page
+
+    Constructor has two required parameters:
+      1) The wikimedia Site on which the page resides
+      2) The title of the page as a unicode string
+
+    Optional parameters:
+      insite - the wikimedia Site where this link was found (to help decode
+               interwiki links)
+      defaultNamespace - A namespace to use if the link does not contain one
+
+    Methods available:
+    
+    title                 : The name of the page, including namespace and
+                            section if any
+    urlname               : Title, in a form suitable for a URL
+    namespace             : The namespace in which the page is found
+    titleWithoutNamespace : Title, with the namespace part removed
+    section               : The section of the page (the part of the title
+                            after '#', if any)
+    sectionFreeTitle      : Title, without the section part
+    aslink                : Title in the form [[Title]] or [[lang:Title]]
+    site                  : The wiki this page is in
+    encoding              : The encoding of the page
+    isAutoTitle           : Title can be translated using the autoFormat method
+    autoFormat            : Auto-format certain dates and other standard
+                            format page titles
+    isCategory            : True if the page is a category
+    isDisambig (*)        : True if the page is a disambiguation page
+    isImage               : True if the page is an image
+    isRedirectPage (*)    : True if the page is a redirect, false otherwise
+    getRedirectTarget (*) : The page the page redirects to
+    isTalkPage            : True if the page is in any "talk" namespace
+    toggleTalkPage        : Return the talk page (if this is one, return the
+                            non-talk page)
+    get (*)               : The text of the page
+    latestRevision (*)    : The page's current revision id
+    userName              : Last user to edit page
+    isIpEdit              : True if last editor was unregistered
+    editTime              : Timestamp of the last revision to the page
+    previousRevision (*)  : The revision id of the previous version
+    permalink (*)         : The url of the permalink of the current version
+    getOldVersion(id) (*) : The text of a previous version of the page
+    getVersionHistory     : Load the version history information from wiki
+    getVersionHistoryTable: Create a wiki table from the history data
+    fullVersionHistory    : Return all past versions including wikitext
+    contributingUsers     : Return set of users who have edited page
+    exists (*)            : True if the page actually exists, false otherwise
+    isEmpty (*)           : True if the page has 4 characters or less content,
+                            not counting interwiki and category links
+    interwiki (*)         : The interwiki links from the page (list of Pages)
+    categories (*)        : The categories the page is in (list of Pages)
+    linkedPages (*)       : The normal pages linked from the page (list of
+                            Pages)
+    imagelinks (*)        : The pictures on the page (list of ImagePages)
+    templates (*)         : All templates referenced on the page (list of
+                            strings)
+    templatesWithParams(*): All templates on the page, with list of parameters
+    templatePages (*)     : Page objects for all templates used on this page
+    isDisambig (*)        : True if the page is a disambiguation page
+    getReferences         : List of pages linking to the page
+    canBeEdited (*)       : True if page is unprotected or user has edit
+                            privileges
+    botMayEdit (*)        : True if bot is allowed to edit page
+    put(newtext)          : Saves the page
+    put_async(newtext)    : Queues the page to be saved asynchronously
+    move                  : Move the page to another title
+    delete                : Deletes the page (requires being logged in)
+    protect               : Protect or unprotect a page (requires sysop status)
+    removeImage           : Remove all instances of an image from this page
+    replaceImage          : Replace all instances of an image with another
+    loadDeletedRevisions  : Load all deleted versions of this page
+    getDeletedRevision    : Return a particular deleted revision
+    markDeletedRevision   : Mark a version to be undeleted, or not
+    undelete              : Undelete past version(s) of the page
+
+    (*) : This loads the page if it has not been loaded before; permalink might
+          even reload it if it has been loaded before
+
+    """
+    def __init__(self, site, title, insite=None, defaultNamespace=0):
         try:
             # if _editrestriction is True, it means that the page has been found
             # to have an edit restriction, but we do not know yet whether the
@@ -362,134 +376,136 @@ class Page(object):
             raise
 
     def site(self):
-        """The site of the page this Page refers to,
-           without :"""
+        """Return the Site object for the wiki on which this Page resides."""
         return self._site
 
     def encoding(self):
-        """
-        Returns the character encoding used on this page's wiki.
-        """
+        """Return the character encoding used on this Page's wiki Site."""
         return self._site.encoding()
 
-    def urlname(self):
-        """The name of the page this Page refers to, in a form suitable
-           for the URL of the page."""
-        title = self.title(underscore = True)
-        encodedTitle = title.encode(self.site().encoding())
-        return urllib.quote(encodedTitle)
-
     def title(self, underscore = False, savetitle = False):
-        """The name of this Page, as a Unicode string"""
+        """Return the title of this Page, as a Unicode string.
+
+        If underscore is True, replace all ' ' characters with '_'.
+        If savetitle is True, try to quote all non-ASCII characters.
+        """
         title = self._title
         if savetitle: # Ensure there's no wiki syntax in the title
             if title.find("''") > -1:
                 try:
                     title = urllib.quote(title).replace('%20',' ')
                 except KeyError:
-                    # We can't encode everything; to be on the safe side, we encode nothing
+                    # We can't encode everything; to be on the safe side,
+                    # we encode nothing
                     pass
         if underscore:
             title = title.replace(' ', '_')
         return title
 
-    def titleWithoutNamespace(self, underscore = False):
-        """
-        Returns the name of the page without the namespace and without section.
-        """
+    def titleWithoutNamespace(self, underscore=False):
+        """Return title of Page without namespace and without section."""
         if self.namespace() == 0:
-            return self.title(underscore = underscore)
+            return self.sectionFreeTitle(underscore=underscore)
         else:
-            return self.sectionFreeTitle(underscore = underscore).split(':', 1)[1]
+            return self.sectionFreeTitle(underscore=underscore).split(':', 1)[1]
 
     def section(self, underscore = False):
-        """The name of the section this Page refers to. Sections are
-           denominated by a # in the title(). If no section is referenced,
-           None is returned."""
-        return self._section
-        # ln = self.title(underscore = underscore)
-        # ln = re.sub('&#', '&hash;', ln)
-        # if not '#' in ln:
-            # return None
-        # else:
-            # hn = ln[ln.find('#') + 1:]
-            # hn = re.sub('&hash;', '&#', hn)
-            # return hn
+        """Return the name of the section this Page refers to.
 
-    def sectionFreeTitle(self, underscore = False):
-        sectionName = self.section(underscore = underscore)
-        title = self.title(underscore = underscore)
+        The section is the part of the title following a '#' character, if any.
+        If no section is present, return None.
+        """
+        return self._section
+
+    def sectionFreeTitle(self, underscore=False):
+        """Return the title of this Page, without the section (if any)."""
+        sectionName = self.section(underscore=underscore)
+        title = self.title(underscore=underscore)
         if sectionName:
             return title[:-len(sectionName)-1]
         else:
             return title
 
+    def urlname(self):
+        """Return the Page title encoded for use in an URL."""
+        title = self.title(underscore = True)
+        encodedTitle = title.encode(self.site().encoding())
+        return urllib.quote(encodedTitle)
+
     def __str__(self):
-        """A console representation of the pagelink"""
+        """Return a console representation of the pagelink."""
         return self.aslink().encode(config.console_encoding, 'replace')
 
     def __repr__(self):
-        """A more complete string representation"""
+        """Return a more complete string representation."""
         return "%s{%s}" % (self.__class__.__name__, str(self))
 
-    def aslink(self, forceInterwiki = False, textlink=False):
-        """
-        A string representation in the form of a link. The link will
-        be an interwiki link if needed.
+    def aslink(self, forceInterwiki=False, textlink=False):
+        """Return a string representation in the form of a wikilink.
 
-        If you set forceInterwiki to True, the link will have the format
-        of an interwiki link even if it points to the home wiki.
+        If forceInterwiki is True, return an interwiki link even if it
+        points to the home wiki. If False, return an interwiki link only if
+        needed.
 
-        If you set textlink to True, the link will always appear in text
-        form (that is, links to the Category: and Image: namespaces will
-        be preceded by a : character).
-
-        Note that the family is never included.
+        If textlink is True, always return a link in text form (that
+        is, links to the Category: and Image: namespaces will be preceded by
+        a : character). (Not needed if forceInterwiki is True.)
+        
         """
         if forceInterwiki or self.site() != getSite():
             if self.site().family != getSite().family:
-                return '[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, self.title(savetitle=True))
+                return u'[[%s:%s:%s]]' % (self.site().family.name, self.site().lang, self.title(savetitle=True))
             else:
-                return '[[%s:%s]]' % (self.site().lang, self.title(savetitle=True))
-        elif textlink and self.namespace() in (6, 14): # Image: or Category:
-                return '[[:%s]]' % self.title()
+                return u'[[%s:%s]]' % (self.site().lang, self.title(savetitle=True))
+        elif textlink and (self.isImage() or self.isCategory()):
+                return u'[[:%s]]' % self.title()
         else:
-            return '[[%s]]' % self.title()
-
-    def isAutoTitle(self):
-        """If the title is a well known, auto-translatable title
-        """
-        return self.autoFormat()[0] is not None
+            return u'[[%s]]' % self.title()
 
     def autoFormat(self):
-        """Returns (dictName, value), where value can be a year, date, etc.,
-           and dictName is 'YearBC', 'Year_December', or another dictionary name.
-           Please note that two entries may have exactly the same autoFormat,
-           but be in two different namespaces, as some sites have categories with the same names.
-           Regular titles return (None,None)."""
+        """Return (dictName, value) if title is in date.autoFormat dictionary.
+
+        Value can be a year, date, etc., and dictName is 'YearBC',
+        'Year_December', or another dictionary name. Please note that two
+        entries may have exactly the same autoFormat, but be in two
+        different namespaces, as some sites have categories with the
+        same names. Regular titles return (None, None).
+
+        """
         if not hasattr(self, '_autoFormat'):
             import date
-            _autoFormat = date.getAutoFormat(self.site().language(), self.titleWithoutNamespace())
+            _autoFormat = date.getAutoFormat(self.site().language(),
+                                             self.titleWithoutNamespace())
         return _autoFormat
 
+    def isAutoTitle(self):
+        """Return True if title of this Page is in the autoFormat dictionary."""
+        return self.autoFormat()[0] is not None
 
-    def get(self, force = False, get_redirect=False, throttle = True, sysop = False, nofollow_redirects=False, change_edit_time = True):
-        """The wiki-text of the page. This will retrieve the page if it has not
-           been retrieved yet. This can raise the following exceptions that
-           should be caught by the calling code:
+    def get(self, force=False, get_redirect=False, throttle=True,
+            sysop=False, nofollow_redirects=False, change_edit_time=True):
+        """Return the wiki-text of the page.
+
+        This will retrieve the page from the server if it has not been
+        retrieved yet, or if force is True. This can raise the following
+        exceptions that should be caught by the calling code:
 
             NoPage: The page does not exist
-
             IsRedirectPage: The page is a redirect. The argument of the
                             exception is the title of the page it redirects to.
-
             SectionError: The subject does not exist on a page with a # link
 
-            Set get_redirect to True to follow redirects rather than raise an exception.
-            Set force to True to force a reload of all page attributes, including errors.
-            Set nofollow_redirects to True to not follow redirects but obey all other exceptions.
-            Set change_version_date to False if you have already loaded the page before and
-                do not check this version for changes before saving
+        If get_redirect is True, return the redirect text and save the
+        target of the redirect, do not raise an exception.
+        If force is True, reload all page attributes, including
+        errors.
+        If nofollow_redirects is True, ignore redirects entirely (do not
+        raise an exception for redirects but do not mark the page as a
+        redirect or save the redirect target page).
+        If change_edit_time is False, do not check this version for changes
+        before saving. This should be used only if the page has been loaded
+        previously.
+        
         """
         # NOTE: The following few NoPage exceptions could already be thrown at
         # the Page() constructor. They are raised here instead for convenience,
@@ -497,7 +513,7 @@ class Page(object):
         # get(), but not for such raised by the constructor.
         # \ufffd represents a badly encoded character, the other characters are
         # disallowed by MediaWiki.
-        for illegalChar in ['#', '<', '>', '[', ']', '|', '{', '}', '\n', u'\ufffd']:
+        for illegalChar in u'#<>[]|{}\n\ufffd':
             if illegalChar in self.sectionFreeTitle():
                 if verbose:
                     output(u'Illegal character in %s!' % self.aslink())
@@ -505,11 +521,12 @@ class Page(object):
         if self.namespace() == -1:
             raise NoPage('%s is in the Special namespace!' % self.aslink())
         if self.site().isInterwikiLink(self.title()):
-            raise NoPage('%s is not a local page on %s!' % (self.aslink(), self.site()))
+            raise NoPage('%s is not a local page on %s!'
+                         % (self.aslink(), self.site()))
         if force:
             # When forcing, we retry the page no matter what. Old exceptions
             # and contents do not apply any more.
-            for attr in ['_redirarg','_getexception','_contents']:
+            for attr in ['_redirarg', '_getexception', '_contents']:
                 if hasattr(self, attr):
                     delattr(self,attr)
         else:
@@ -526,7 +543,7 @@ class Page(object):
         # Make sure we did try to get the contents once
         if not hasattr(self, '_contents'):
             try:
-                self._contents, self._isWatched, self.editRestriction = self.getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop, nofollow_redirects=nofollow_redirects)
+                self._contents, self._isWatched, self.editRestriction = self._getEditPage(get_redirect = get_redirect, throttle = throttle, sysop = sysop, nofollow_redirects=nofollow_redirects)
                 hn = self.section()
                 if hn:
                     m = re.search("=+ *%s *=+" % hn, self._contents)
@@ -548,15 +565,19 @@ class Page(object):
                 raise
         return self._contents
 
-    def getEditPage(self, get_redirect=False, throttle = True, sysop = False, oldid = None, nofollow_redirects = False, change_edit_time = True):
-        """
-        Get the contents of the Page via the edit page.
+    def _getEditPage(self, get_redirect=False, throttle=True, sysop=False,
+                     oldid=None, nofollow_redirects=False,
+                     change_edit_time=True):
+        """Get the contents of the Page via the edit page.
+
         Do not use this directly, use get() instead.
 
         Arguments:
+            oldid - Retrieve an old revision (by id), not the current one
             get_redirect  - Get the contents, even if it is a redirect page
 
-        This routine returns a unicode string containing the wiki text.
+        This method returns a 3-tuple containing the raw wiki text as a
+        unicode string, the watchlist status, and any edit restrictions.
         """
         isWatched = False
         editRestriction = None
@@ -657,14 +678,15 @@ class Page(object):
         if matchWatching:
             isWatched = True
         # Now process the contents of the textarea
-        m = self.site().redirectRegex().match(text[i1:i2])
         if self._editTime == "0":
             if verbose:
                 output(u"DBG> page may be locked?!")
             editRestriction = 'sysop'
+        m = self.site().redirectRegex().match(text[i1:i2])
         if m:
+            # page text matches the redirect pattern
             if self.section():
-                redirtarget = "%s#%s"%(m.group(1),self.section())
+                redirtarget = "%s#%s" % (m.group(1), self.section())
             else:
                 redirtarget = m.group(1)
             if get_redirect:
@@ -686,26 +708,45 @@ class Page(object):
 
         return x, isWatched, editRestriction
 
+    def getOldVersion(self, oldid, force=False, get_redirect=False,
+                      throttle=True, sysop=False, nofollow_redirects=False,
+                      change_edit_time=True):
+        """Return text of an old revision of this page; same options as get()."""
+        # TODO: should probably check for bad pagename, NoPage, and other
+        # exceptions that would prevent retrieving text, as get() does
+        return self._getEditPage(
+                        get_redirect=get_redirect, throttle=throttle,
+                        sysop=sysop, oldid=oldid,
+                        nofollow_redirects=nofollow_redirects,
+                        change_edit_time=change_edit_time
+                    )[0]
+
     def permalink(self):
-        """
-        Get the permalink page for this page
-        """
-        return "%s://%s%s&oldid=%i"%(self.site().protocol(), self.site().hostname(), self.site().get_address(self.title()), self.latestRevision())
+        """Return the permalink URL for current revision of this page."""
+        return "%s://%s%s&oldid=%i" % (self.site().protocol(),
+                                       self.site().hostname(),
+                                       self.site().get_address(self.title()),
+                                       self.latestRevision())
 
     def latestRevision(self):
-        """
-        Get the latest revision for this page
-        """
+        """Return the latest revision id for this page."""
         if not self._permalink:
-            # When we get the page with getall, the permalink is received automatically
+            # When we get the page with getall, the permalink is received
+            # automatically
             getall(self.site(),[self],force=True)
         return int(self._permalink)
 
-    def exists(self):
-        """
-        True if the page exists, even if it's a redirect.
+    def previousRevision(self):
+        """Return the revision id for the previous revision of this Page."""
+        vh = self.getVersionHistory(revCount=2)
+        return vh[1][0]
 
-        If the title includes a section, False if this section isn't found.
+    def exists(self):
+        """Return True if page exists on the wiki, even if it's a redirect.
+
+        If the title includes a section, return False if this section isn't
+        found.
+
         """
         try:
             self.get()
@@ -718,7 +759,7 @@ class Page(object):
         return True
 
     def isRedirectPage(self):
-        """True if the page is a redirect page, False if not or not existing"""
+        """Return True if this is a redirect, False if not or not existing."""
         try:
             self.get()
         except NoPage:
@@ -730,10 +771,11 @@ class Page(object):
         return False
 
     def isEmpty(self):
-        """
-        True if the page has less than 4 characters, except for
-        language links and category links, False otherwise.
-        Can raise the same exceptions as get()
+        """Return True if the page text has less than 4 characters.
+
+        Character count ignores language links and category links.
+        Can raise the same exceptions as get().
+        
         """
         txt = self.get()
         txt = removeLanguageLinks(txt)
@@ -744,21 +786,25 @@ class Page(object):
             return False
 
     def isTalkPage(self):
+        """Return True if this page is in any talk namespace."""
         ns = self.namespace()
         return ns >= 0 and ns % 2 == 1
 
     def botMayEdit(self):
-        """
-        True if page doesn't contain {{bots}} or {{nobots}} or
-        contains them and active bot is allowed or not allowed
-        to edit said page
+        """Return True if this page allows bots to edit it.
+        
+        This will be True if the page doesn't contain {{bots}} or
+        {{nobots}}, or it contains them and the active bot is allowed to
+        edit this page. (This method is only useful on those sites that
+        recognize the bot-exclusion protocol; on other sites, it will always
+        return True.)
 
-        The framework enforces this restriction by default. It is possible to
-        override this by setting wikipedia.ignore_bot_templates=True or using
-        page.put(force=True).
+        The framework enforces this restriction by default. It is possible
+        to override this by setting ignore_bot_templates=True in
+        user_config.py, or using page.put(force=True).
+        
         """
-        global ignore_bot_templates
-        if ignore_bot_templates: #Check the "master ignore switch"
+        if config.ignore_bot_templates: #Check the "master ignore switch"
             return True
 
         try:
@@ -798,41 +844,53 @@ class Page(object):
         return True
 
     def userName(self):
+        """Return name or IP address of last user to edit page.
+
+        Returns None unless page was retrieved with getAll().
+
+        """
         return self._userName
 
     def isIpEdit(self):
+        """Return True if last editor was unregistered.
+
+        Returns None unless page was retrieved with getAll().
+        
+        """
         return self._ipedit
 
     def editTime(self):
+        """Return timestamp (in MediaWiki format) of last revision to page.
+
+        Returns None if last edit time is unknown.
+
+        """
         return self._editTime
 
     def namespace(self):
-        """Gives the number of the namespace of the page. Does not work for
-           all namespaces in all languages, only when defined in family.py.
-           If not defined, it will return 0 (the main namespace)"""
+        """Return the number of the namespace of the page.
+
+        Only recognizes those namespaces defined in family.py.
+        If not defined, it will return 0 (the main namespace).
+
+        """
         return self._namespace
-        # t=self.sectionFreeTitle()
-        # p=t.split(':')
-        # if p[1:]==[]:
-            # return 0
-        # for namespaceNumber in self.site().family.namespaces.iterkeys():
-            # if p[0]==self.site().namespace(namespaceNumber):
-                # return namespaceNumber
-        # return 0
 
     def isCategory(self):
-        """
-        True if the page is a Category, false otherwise.
-        """
+        """Return True if the page is a Category, False otherwise."""
         return self.namespace() == 14
 
     def isImage(self):
-        """
-        True if the page is an image description page, false otherwise.
-        """
+        """Return True if this is an image description page, False otherwise."""
         return self.namespace() == 6
 
     def isDisambig(self):
+        """Return True if this is a disambiguation page, False otherwise.
+
+        Relies on the presence of specific templates, identified in the Family
+        file, to identify disambiguation pages.
+
+        """
         if not hasattr(self, '_isDisambig'):
             locdis = self.site().family.disambig( self._site.lang )
 
@@ -853,10 +911,9 @@ class Page(object):
     def getReferences(self,
             follow_redirects=True, withTemplateInclusion=True,
             onlyTemplateInclusion=False, redirectsOnly=False):
-        """
-        Yield all pages that link to the page. If you need a full list of
-        referring pages, use this:
+        """Yield all pages that link to the page.
 
+        If you need a full list of referring pages, use this:
             pages = [page for page in s.getReferences()]
 
         Parameters:
@@ -867,6 +924,7 @@ class Page(object):
         * onlyTemplateInclusion - if True, only returns pages where self is
                                   used as a template.
         * redirectsOnly         - if True, only returns redirects to self.
+        
         """
         # Temporary bug-fix while researching more robust solution:
         if config.special_page_limit > 999:
@@ -913,12 +971,10 @@ class Page(object):
     def _parse_reflist(self, reflist,
             follow_redirects=True, withTemplateInclusion=True,
             onlyTemplateInclusion=False, redirectsOnly=False):
-        """
-        For internal use only
+        """For internal use only
 
         Parse a "Special:Whatlinkshere" list of references and yield Page
-        objects that meet the criteria
-        (used by getReferences)
+        objects that meet the criteria (used by getReferences)
         """
         for link in reflist("li", recursive=False):
             title = link.a.string
@@ -953,92 +1009,23 @@ class Page(object):
                                 onlyTemplateInclusion, redirectsOnly):
                         yield p
 
-
-    def getFileLinks(self):
-        """
-        Yield all pages that link to the page. If you need a full list of
-        referring pages, use this:
-
-            pages = [page for page in s.getReferences()]
-
-        """
-        site = self.site()
-        #path = site.references_address(self.urlname())
-        path = site.get_address(self.urlname())
-
-        delay = 1
-
-        # NOTE: this code relies on the way MediaWiki 1.6 formats the
-        #       "Whatlinkshere" special page; if future versions change the
-        #       format, they may break this code.
-        if self.site().versionnumber() >= 5:
-            startmarker = u"<!-- start content -->"
-            endmarker = u"<!-- end content -->"
-        else:
-            startmarker = u"<body "
-            endmarker = "printfooter"
-        listitempattern = re.compile(r"<li><a href=.*>(?P<title>.*)</a></li>")
-        # to tell the previous and next link apart, we rely on the closing ) at the end of the "previous" label.
-        more = True
-
-        while more:
-            more = False #Kill after one loop because MediaWiki will only display up to the first 500 File links.
-            fileLinks = set()  # use a set to avoid duplications
-            output(u'Getting references to %s' % self.aslink())
-            while True:
-                txt = site.getUrl(path)
-                # trim irrelevant portions of page
-                try:
-                    start = txt.index(startmarker) + len(startmarker)
-                    end = txt.index(endmarker)
-                except ValueError:
-                    output(u"Invalid page received from server.... Retrying in %i minutes." % delay)
-                    time.sleep(delay * 60.)
-                    delay *= 2
-                    if delay > 30:
-                        delay = 30
-                    continue
-                txt = txt[start:end]
-                break
-            try:
-                start = txt.index(u"<ul>")
-                end = txt.rindex(u"</ul>")
-            except ValueError:
-                # No incoming links found on page
-                continue
-            txt = txt[start:end+5]
-
-            txtlines = txt.split(u"\n")
-            for num, line in enumerate(txtlines):
-                if line == u"</ul>":
-                    # end of list of references to redirect page
-                    continue
-                if line == u"</li>":
-                    continue
-                lmatch = listitempattern.search(line)
-                if lmatch:
-                    fileLinks.add(lmatch.group("title"))
-                    if lmatch is None:
-                        output(u"DBG> Unparsed line:")
-                        output(u"(%i) %s" % (num, line))
-            fileLinks = list(fileLinks)
-            fileLinks.sort()
-            for fileLink in fileLinks:
-                # create Page objects
-                yield Page(site, fileLink)
-
     def put_async(self, newtext,
                   comment=None, watchArticle=None, minorEdit=True, force=False,
                   callback=None):
-        """Asynchronous version of put (takes the same arguments), which
-           places pages on a queue to be saved by a daemon thread.
-           All arguments are the same as for .put(), except --
-           callback: a callable object that will be called after the page put
-                     operation; this object must take two arguments:
-                     (1) a Page object, and (2) an exception instance, which
-                     will be None if the page was saved successfully.
-           The callback is intended to be used by bots that need to keep track
-           of which saves were successful.
+        """Put page on queue to be saved to wiki asynchronously.
+
+        Asynchronous version of put (takes the same arguments), which places
+        pages on a queue to be saved by a daemon thread. All arguments  are
+        the same as for .put(), except --
+
+        callback: a callable object that will be called after the page put
+                  operation; this object must take two arguments:
+                  (1) a Page object, and (2) an exception instance, which
+                  will be None if the page was saved successfully.
+   
+        The callback is intended to be used by bots that need to keep track
+        of which saves were successful.
+        
         """
         try:
             page_put_queue.mutex.acquire()
@@ -1053,11 +1040,16 @@ class Page(object):
 
     def put(self, newtext, comment=None, watchArticle=None, minorEdit=True,
             force=False):
-        """Replace the new page with the contents of the first argument.
-           The second argument is a string that is to be used as the
-           summary for the modification
+        """Save the page with the contents of the first argument as the text.
 
-           If watchArticle is None, leaves the watchlist status unchanged.
+        Optional parameters:
+          comment:  a unicode string that is to be used as the summary for
+                    the modification.
+          watchArticle: a bool, add or remove this Page to/from bot user's
+                        watchlist (if None, leave watchlist status unchanged)
+          minorEdit: mark this edit as minor if True
+          force: ignore botMayEdit() setting
+
         """
         # Fetch a page to get an edit token. If we already have
         # fetched a page, this will do nothing, because get() is cached.
@@ -1119,17 +1111,15 @@ class Page(object):
         # of Bordeaux
         if self.site().lang == 'eo':
             newtext = doubleXForEsperanto(newtext)
-        return self.putPage(newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
+        return self._putPage(newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
-    def putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
+    def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
                 newPage=False, token=None, gettoken=False, sysop=False):
-        """
-        Upload 'text' as new contents for this Page by filling out the edit
-        page.
+        """Upload 'text' as new content of Page by filling out the edit form.
 
         Don't use this directly, use put() instead.
+        
         """
-
         newTokenRetrieved = False
         if self.site().versionnumber() >= 4:
             if gettoken or not token:
@@ -1267,7 +1257,7 @@ class Page(object):
                         if not sysop:
                             self.site().forceLogin(sysop = True)
                             output(u'Page is locked, retrying using sysop account.')
-                            return self.putPage(text, comment, watchArticle,
+                            return self._putPage(text, comment, watchArticle,
                                                 minorEdit, newPage, token=None,
                                                 gettoken=True, sysop=True)
                     except NoUsername:
@@ -1275,7 +1265,7 @@ class Page(object):
                 elif not newTokenRetrieved and "<textarea" in data:
                     # We might have been using an outdated token
                     output(u"Changing page has failed. Retrying.")
-                    return self.putPage(text = text, comment = comment,
+                    return self._putPage(text = text, comment = comment,
                             watchArticle = watchArticle, minorEdit = minorEdit, newPage = newPage,
                             token = None, gettoken = True, sysop = sysop)
                 else:
@@ -1290,10 +1280,11 @@ class Page(object):
                 return response.status, response.reason, data
 
     def canBeEdited(self):
-        """
-        Returns True iff:
-            * the page is unprotected, and we have an account for this site, or
-            * the page is protected, and we have a sysop account for this site.
+        """Return bool indicating whether this page can be edited.
+
+        This returns True if and only if:
+          * page is unprotected, and bot has an account for this site, or
+          * page is protected, and bot has a sysop account for this site.
         """
         if self.editRestriction:
             userdict = config.sysopnames
@@ -1308,10 +1299,12 @@ class Page(object):
             return False
 
     def toggleTalkPage(self):
-        """
+        """Return the other member of the article-talk page pair for this Page.
+        
         If self is a talk page, returns the associated content page; otherwise,
-        returns the associated talk page. Returns None if self is a special
-        page.
+        returns the associated talk page.
+        Returns None if self is a special page.
+        
         """
         ns = self.namespace()
         if ns < 0: # Special page
@@ -1325,36 +1318,45 @@ class Page(object):
             return Page(self.site(), self.site().namespace(ns + 1) + ':' + self.titleWithoutNamespace())
 
     def interwiki(self):
-        """A list of interwiki links in the page. This will retrieve
-           the page text to do its work, so it can raise the same exceptions
-           that are raised by the get() method.
+        """Return a list of interwiki links in the page text.
 
-           The return value is a list of Page objects for each of the
-           interwiki links in the page text.
+        This will retrieve the page to do its work, so it can raise
+        the same exceptions that are raised by the get() method.
+
+        The return value is a list of Page objects for each of the
+        interwiki links in the page text.
+        
         """
         result = []
-        ll = getLanguageLinks(self.get(), insite = self.site(), pageLink = self.aslink())
+        ll = getLanguageLinks(self.get(), insite=self.site(),
+                              pageLink=self.aslink())
         for newSite, newPage in ll.iteritems():
-            for pagenametext in self.site().family.pagenamecodes(self.site().language()):
-                newTitle = newPage.title().replace("{{" + pagenametext + "}}", self.title())
+            for pagenametext in self.site().family.pagenamecodes(
+                                                   self.site().language()):
+                newTitle = newPage.title().replace(
+                             "{{" + pagenametext + "}}", self.title())
             try:
-                result.append(self.__class__(newSite, newTitle, insite = self.site()))
+                result.append(
+                        self.__class__(newSite, newTitle, insite=self.site()))
             except UnicodeError:
-                output(u"ERROR: link from %s to [[%s:%s]] is invalid encoding?!" % (self.aslink(), newSite, newTitle))
-            except NoSuchEntity:
-                output(u"ERROR: link from %s to [[%s:%s]] contains invalid character?!" % (self.aslink(), newSite, newTitle))
+                output(
+    u"ERROR: link from %s to [[%s:%s]] is in an invalid encoding?!"
+                        % (self.aslink(), newSite, newTitle))
             except ValueError:
-                output(u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!" % (self.aslink(), newSite, newTitle))
+                output(
+    u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!"
+                        % (self.aslink(), newSite, newTitle))
         return result
 
     def categories(self, nofollow_redirects=False):
-        """
-        A list of categories that the article is in. This will retrieve
-        the page text to do its work, so it can raise the same exceptions
-        that are raised by the get() method.
+        """Return a list of categories that the article is in.
+
+        This will retrieve the page text to do its work, so it can raise
+        the same exceptions that are raised by the get() method.
 
         The return value is a list of Category objects, one for each of the
         category links in the page text.
+        
         """
         try:
             category_links_to_return = getCategoryLinks(self.get(nofollow_redirects=nofollow_redirects), self.site())
@@ -1363,8 +1365,7 @@ class Page(object):
         return category_links_to_return
 
     def __cmp__(self, other):
-        """Pseudo method to be able to use equality and inequality tests on
-           Page objects"""
+        """Test for equality and inequality of Page objects"""
         if not isinstance(other, Page):
             # especially, return -1 if other is None
             return -1
@@ -1375,19 +1376,20 @@ class Page(object):
         return cmp(owntitle, othertitle)
 
     def __hash__(self):
-        """Pseudo method that makes it possible to store Page objects as
-           keys in hash-tables. This relies on the fact that the string
-           representation of an instance can not change after the construction.
-        """
+        # Pseudo method that makes it possible to store Page objects as keys
+        # in hash-tables. This relies on the fact that the string
+        # representation of an instance can not change after the construction.
         return hash(str(self))
 
     def linkedPages(self):
-        """Gives the normal (not-interwiki, non-category) pages the page
-           links to, as a list of Page objects
+        """Return a list of Pages that this Page links to.
+
+        Excludes interwiki and category links.
         """
         result = []
         try:
-            thistxt = removeLanguageLinks(self.get(get_redirect=True), self.site())
+            thistxt = removeLanguageLinks(self.get(get_redirect=True),
+                                          self.site())
         except NoPage:
             raise
             #return []
@@ -1416,12 +1418,14 @@ class Page(object):
                     result.append(page)
         return result
 
-    def imagelinks(self, followRedirects = False, loose = False):
-        """
-        Gives the images the page shows, as a list of ImagePage objects.
-        This includes images in galleries.
-        If loose is set to true, this will find anything that looks like it could be an image.
-        This is useful for finding, say, images that are passed as parameters to templates.
+    def imagelinks(self, followRedirects=False, loose=False):
+        """Return a list of ImagePage objects for images displayed on this Page.
+
+        Includes images in galleries.
+        If loose is True, this will find anything that looks like it
+        could be an image. This is useful for finding, say, images that are
+        passed as parameters to templates.
+
         """
         results = []
         # Find normal images
@@ -1446,17 +1450,20 @@ class Page(object):
         return list(set(results))
 
     def templates(self):
-        """
-        Gives a list of template names used on a page, as a list of strings.
+        """Return a list of strings containing template names used on this Page.
+        
         Template parameters are ignored.
+        
         """
         return [template for (template, param) in self.templatesWithParams()]
 
     def templatesWithParams(self):
-        """
-        Gives a list of tuples. There is one tuple for each use of a template
-        in the page, with the template name as the first entry and a list
-        of parameters as the second entry.
+        """Return a list of templates used on this Page.
+        
+        Return value is a list of tuples. There is one tuple for each use of
+        a template in the page, with the template name as the first entry
+        and a list of parameters as the second entry.
+        
         """
         try:
             thistxt = self.get()
@@ -1481,17 +1488,19 @@ class Page(object):
         return result
 
     def templatePages(self):
+        """Return a list of Page objects for templates used on the page.
+
+        Template parameters are ignored.
         """
-        Gives a list of Page objects containing the templates used on the page. Template parameters are ignored.
-        """
-        return [Page(self.site(), template, self.site(), 10) for template in self.templates()]
+        return [Page(self.site(), template, self.site(), 10)
+                for template in self.templates()]
 
     def getRedirectTarget(self):
-        """
-        If the page is a redirect page, gives the page it redirects to.
-        Otherwise it will raise an IsNotRedirectPage exception.
+        """Return a Page object for the target this Page redirects to.
 
-        This function can raise a NoPage exception.
+        If this page is not a redirect page, will raise an IsNotRedirectPage
+        exception. This method also can raise a NoPage exception.
+        
         """
         try:
             self.get()
@@ -1499,21 +1508,22 @@ class Page(object):
             raise
         except IsRedirectPage, arg:
             if '|' in arg:
-                warnings.warn("%s has a | character, this makes no sense", Warning)
+                warnings.warn("%s has a | character, this makes no sense",
+                              Warning)
             return Page(self.site(), arg[0])
         else:
             raise IsNotRedirectPage(self)
 
-    def getPreviousVersion(self):
-        vh = self.getVersionHistory(revCount=2)
-        oldid = vh[1][0]
-        return self.getEditPage(oldid=oldid)[0]
+    def getVersionHistory(self, forceReload=False, reverseOrder=False,
+                          getAll=False, revCount=500):
+        """Load the version history page and return history information.
 
-    def getVersionHistory(self, forceReload = False, reverseOrder = False, getAll = False, revCount = 500):
-        """
-        Loads the version history page and returns a list of tuples, where each
-        tuple represents one edit and is built of edit date/time, user name, and edit
-        summary.  Defaults to getting the first revCount edits.
+        Return value is a list of tuples, where each tuple represents one
+        edit and is built of revision id, edit date/time, user name, and
+        edit summary. Starts with the most current revision, unless
+        reverseOrder is True. Defaults to getting the first revCount edits,
+        unless getAll is True.
+        
         """
         site = self.site()
 
@@ -1682,10 +1692,9 @@ class Page(object):
             return self._versionhistory[0:revCount]
         return self._versionhistory
 
-    def getVersionHistoryTable(self, forceReload = False, reverseOrder = False, getAll = False, revCount = 500):
-        """
-        Returns the version history as a wiki table.
-        """
+    def getVersionHistoryTable(self, forceReload=False, reverseOrder=False,
+                               getAll=False, revCount=500):
+        """Return the version history as a wiki table."""
         result = '{| border="1"\n'
         result += '! oldid || date/time || username || edit summary\n'
         for oldid, time, username, summary in self.getVersionHistory(forceReload = forceReload, reverseOrder = reverseOrder, getAll = getAll, revCount = revCount):
@@ -1696,9 +1705,12 @@ class Page(object):
 
     def fullVersionHistory(self):
         """
-        Returns all previous versions. Gives a list of tuples consisting of
-        edit date/time, user name and content
+        Return all previous versions including wikitext.
+
+        Gives a list of tuples consisting of edit date/time, user name and
+        content
         """
+        # TODO: probably should return revision id, as well.
         address = self.site().export_address()
         predata = {
             'action': 'submit',
@@ -1717,27 +1729,29 @@ class Page(object):
         data = data.encode(self.site().encoding())
         get_throttle.setDelay(time.time() - now)
         output = []
+        # TODO: parse XML using an actual XML parser instead of regex!
         r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\</(?:ip|username)\>.*?\<text.*?\>(.*?)\<\/text\>",re.DOTALL)
         #r = re.compile("\<revision\>.*?\<timestamp\>(.*?)\<\/timestamp\>.*?\<(?:ip|username)\>(.*?)\<",re.DOTALL)
-        return [(match.group(1), unescape(match.group(2)), unescape(match.group(3))) for match in r.finditer(data)]
+        return [  (match.group(1),
+                   unescape(match.group(2)),
+                   unescape(match.group(3)))
+                for match in r.finditer(data)  ]
 
     def contributingUsers(self):
-        """
-        Returns a set of all user names (including anonymous IPs) of those who
-        edited the page.
-        """
+        """Return a set of usernames (or IPs) of users who edited this page."""
         edits = self.getVersionHistory()
-        users = set()
-        for edit in edits:
-            users.add(edit[2])
+        users = set([edit[2] for edit in edits])
         return users
 
-    def move(self, newtitle, reason = None, movetalkpage = True, sysop = False, throttle = False):
+    def move(self, newtitle, reason=None, movetalkpage=True, sysop=False,
+             throttle=True):
+        """Move this page to new title given by newtitle."""
         if throttle:
             put_throttle()
         if reason == None:
-            reason = "Pagemove by bot"
-        if self.namespace() // 2 == 1:
+            reason = input(u'Please enter a reason for the move:')
+        reason = reason.encode(self.site().encoding())
+        if self.isTalkPage():
             movetalkpage = False
         host = self.site().hostname()
         address = self.site().move_address()
@@ -1767,7 +1781,9 @@ class Page(object):
                 output(u'Page %s moved to %s' % (self.title(), newtitle))
                 return True
             elif self.site().mediawiki_message('articleexists') in data:
-                output(u'Page moved failed: Target page [[%s]] already exists.' % newtitle)
+                output(u'Page moved failed: Target page [[%s]] already exists.'
+                       % newtitle)
+                return False
             else:
                 output(u'Page move failed for unknown reason.')
                 try:
@@ -1782,10 +1798,13 @@ class Page(object):
                 output(data)
                 return False
 
-    def delete(self, reason = None, prompt = True, throttle = False):
-        """Deletes the page from the wiki. Requires administrator status. If
-           reason is None, asks for a reason. If prompt is True, asks the user
-           if he wants to delete the page.
+    def delete(self, reason=None, prompt=True, throttle=True):
+        """Deletes the page from the wiki.
+
+        Requires administrator status. If reason is None, asks for a
+        reason. If prompt is True, asks the user if he wants to delete the
+        page.
+        
         """
         if throttle:
             put_throttle()
@@ -1841,9 +1860,12 @@ class Page(object):
                     return False
 
     def loadDeletedRevisions(self):
-        """Loads up Special/Undelete for the page and stores all revisions'
-           timestamps, dates, editors and comments.
-           Returns list of timestamps (which are used to refer to revisions later on).
+        """Retrieve all deleted revisions for this Page from Special/Undelete.
+
+        Stores all revisions' timestamps, dates, editors and comments.
+        Returns list of timestamps (which can be used to retrieve revisions
+        later on).
+        
         """
         #TODO: Handle image file revisions too.
         output(u'Loading list of deleted revisions for [[%s]]...' % self.title())
@@ -1868,8 +1890,12 @@ class Page(object):
         return self._deletedRevs.keys()
 
     def getDeletedRevision(self, timestamp, retrieveText=False):
-        """Returns a deleted revision [date, editor, comment, text, restoration marker].
-           text will be None, unless retrieveText is True (or has been retrieved earlier).
+        """Return a particular deleted revision by timestamp.
+
+        Return value is a list of [date, editor, comment, text, restoration
+        marker]. text will be None, unless retrieveText is True (or has been
+        retrieved earlier).
+        
         """
         if self._deletedRevs == None:
             self.loadDeletedRevisions()
@@ -1889,8 +1915,10 @@ class Page(object):
         return self._deletedRevs[timestamp]
 
     def markDeletedRevision(self, timestamp, undelete=True):
-        """Marks revision (identified by timestamp) for undeletion (default)
-           or to remain as deleted (if undelete=False).
+        """Mark the revision identified by timestamp for undeletion.
+
+        If undelete is False, mark the revision to remain deleted.
+
         """
         if self._deletedRevs == None:
             self.loadDeletedRevisions()
@@ -1900,20 +1928,23 @@ class Page(object):
         self._deletedRevs[timestamp][4] = undelete
         self._deletedRevsModified = True
 
-    def undelete(self, comment='', throttle=False):
+    def undelete(self, comment='', throttle=True):
         """Undeletes page based on the undeletion markers set by previous calls.
-           If no calls have been made since loadDeletedRevisions(), everything will be restored.
 
-           Simplest case:
-              wikipedia.Page(...).undelete('This will restore all revisions')
+        If no calls have been made since loadDeletedRevisions(), everything
+        will be restored.
 
-           More complex:
-              pg = wikipedia.Page(...)
-              revs = pg.loadDeletedRevsions()
-              for rev in revs:
-                  if ... #decide whether to undelete a revision
-                      pg.markDeletedRevision(rev) #mark for undeletion
-              pg.undelete('This will restore only selected revisions.')
+        Simplest case:
+            wikipedia.Page(...).undelete('This will restore all revisions')
+
+        More complex:
+            pg = wikipedia.Page(...)
+            revs = pg.loadDeletedRevsions()
+            for rev in revs:
+                if ... #decide whether to undelete a revision
+                    pg.markDeletedRevision(rev) #mark for undeletion
+            pg.undelete('This will restore only selected revisions.')
+
         """
         if throttle:
             put_throttle()
@@ -1939,13 +1970,17 @@ class Page(object):
         #TODO: Check for errors below (have we succeeded? etc):
         return self.site().postForm(address,formdata,sysop=True)
 
-    def protect(self, edit = 'sysop', move = 'sysop', unprotect = False, reason = None, prompt = True, throttle = False):
-        """(Un)protects a wiki page. Requires administrator status. If reason is None,
-           asks for a reason. If prompt is True, asks the user if he wants to protect the page.
-           Valid values for edit and move are:
+    def protect(self, edit='sysop', move='sysop', unprotect=False,
+                reason=None, prompt=True, throttle=True):
+        """(Un)protect a wiki page. Requires administrator status.
+
+        If reason is None,  asks for a reason. If prompt is True, asks the
+        user if he wants to protect the page. Valid values for edit and move
+        are:
            * '' (equivalent to 'none')
            * 'autoconfirmed'
            * 'sysop'
+
         """
         address = self.site().protect_address(self.urlname())
         if unprotect:
@@ -1994,22 +2029,29 @@ class Page(object):
                 output(data)
                 return False
 
-    def removeImage(self, image, put = False, summary = None, safe = True):
+    def removeImage(self, image, put=False, summary=None, safe=True):
+        """Remove all occurrences of an image from this Page."""
+        # TODO: this should be grouped with other functions that operate on
+        # wiki-text rather than the Page object
         return self.replaceImage(image, None, put, summary, safe)
 
-    def replaceImage(self, image, replacement = None, put = False, summary = None, safe = True):
+    def replaceImage(self, image, replacement=None, put=False, summary=None,
+                     safe=True):
         """Replace all occurences of an image by another image.
-        Giving None as argument for replacement will delink
-        instead of replace.
 
-        The argument image must be without namespace and all
-        spaces replaced by underscores.
+        Giving None as argument for replacement will delink instead of
+        replace.
 
-        If put is false, the new text will be returned.
+        The argument image must be without namespace and all spaces replaced
+        by underscores.
 
-        If put is true, the edits will be saved to the wiki
-        and True will be returned on succes, and otherwise
-        False. Edit errors propagate."""
+        If put is False, the new text will be returned.  If put is True, the
+        edits will be saved to the wiki and True will be returned on succes,
+        and otherwise False. Edit errors propagate.
+
+        """
+        # TODO: this should be grouped with other functions that operate on
+        # wiki-text rather than the Page object
 
         # Copyright (c) Orgullomoore, Bryan
 
@@ -2024,7 +2066,9 @@ class Page(object):
             Creates a pattern that matches the string case-insensitively.
             """
             s = re.escape(s)
-            return ur'(?:%s)' % u''.join([u'[%s%s]' % (c.upper(), c.lower()) for c in s])
+            return ur'(?:%s)' % u''.join([u'[%s%s]'
+                                            % (c.upper(), c.lower())
+                                          for c in s])
 
         def capitalizationPattern(s):
             """
@@ -2088,18 +2132,20 @@ class Page(object):
         else:
             return new_text
 
+
 class ImagePage(Page):
     # a Page in the Image namespace
     def __init__(self, site, title = None, insite = None):
+        # TODO: raise an exception if title is not in Image: namespace
         Page.__init__(self, site, title, insite)
         self._imagePageHtml = None
 
     def getImagePageHtml(self):
         """
-        Downloads the image page, and returns the HTML, as a unicode string.
+        Download the image page, and return the HTML, as a unicode string.
 
         Caches the HTML code, so that if you run this method twice on the
-        same ImagePage object, the page only will be downloaded once.
+        same ImagePage object, the page will only be downloaded once.
         """
         if not self._imagePageHtml:
             path = self.site().get_address(self.urlname())
@@ -2168,12 +2214,14 @@ class ImagePage(Page):
         return u'{| border="1"\n! date/time || username || resolution || size || edit summary\n|----\n' + u'\n|----\n'.join(lines) + '\n|}'
 
     def usingPages(self):
-        result = []
-        titleList = re.search('(?s)<h2 id="filelinks">.+?</ul>', self.getImagePageHtml()).group()
-        lineR = re.compile('<li><a href=".+?" title=".+?">(?P<title>.+?)</a></li>')
+        """Yield Pages on which this ImagePage is displayed."""
+        titleList = re.search('(?s)<h2 id="filelinks">.+?</ul>',
+                              self.getImagePageHtml()).group()
+        lineR = re.compile(
+                    '<li><a href=".+?" title=".+?">(?P<title>.+?)</a></li>')
         for match in lineR.finditer(titleList):
-            result.append(Page(self.site(), match.group('title')))
-        return result
+            yield Page(self.site(), match.group('title'))
+
 
 class GetAll(object):
     def __init__(self, site, pages, throttle, force):
@@ -2295,7 +2343,6 @@ class GetAll(object):
             output(u'Expected one of: %s' % u','.join([page2.aslink(forceInterwiki=True) for page2 in self.pages]))
             raise PageNotFound
 
-
     def headerDone(self, header):
         # Verify our family data
         lang = self.site.lang
@@ -2364,8 +2411,8 @@ def getall(site, pages, throttle=True, force=False):
     output(u'Getting %d pages from %s...' % (len(pages), site))
     return GetAll(site, pages, throttle, force).run()
 
-# Library functions
 
+# Library functions
 
 def unescape(s):
     """Replace escaped HTML-special characters by their originals"""
@@ -2519,9 +2566,12 @@ class Throttle(object):
         f.close()
 
     def __call__(self, requestsize=1):
-        """This is called from getEditPage without arguments. It will make sure
-           that if there are no 'ignores' left, there are at least delay seconds
-           since the last time it was called before it returns."""
+        """
+        Block the calling program if the throttle time has not expired.
+        
+        Parameter requestsize is the number of Pages to be read/written;
+        multiply delay time by an appropriate factor.
+        """
         self.lock.acquire()
         try:
             waittime = self.waittime()
@@ -2896,8 +2946,8 @@ def removeCategoryLinks(text, site, marker = ''):
     text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'], marker = marker)
     return normalWhitespace(text)
 
-def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
-    """Replaces the category oldcat with the category newcat and then returns
+def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
+    """Replace the category oldcat with the category newcat and then return
        the modified Wiki source.
     """
     #Note that this doesn't work yet and it has some very strange side-effects.
@@ -2909,21 +2959,13 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site = None):
     title = oldcat.titleWithoutNamespace()
     if not title:
         return
-    # title might not be formatted correctly on the wiki
+    # title might contain regex special characters
+    title = re.escape(title)
+    # title might not be capitalized correctly on the wiki
     if title[0].isalpha() and not site.nocapitalize:
         title = "[%s%s]" % (title[0].upper(), title[0].lower()) + title[1:]
-    # title might also contain regex special characters
-    title = title.replace(" ", "[ _]+")\
-                 .replace("(", r"\(")\
-                 .replace(")", r"\)")\
-                 .replace(".", r"\.")\
-                 .replace("^", r"\^")\
-                 .replace("$", r"\$")\
-                 .replace("*", r"\*")\
-                 .replace("+", r"\+")\
-                 .replace("?", r"\?")
-            # note: | [ ] { } not escaped here because they are not legal in
-            # MW page titles
+    # spaces and underscores in page titles are interchangeable, and collapsible
+    title = title.replace(" ", "[ _]+")
     categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*((?:\|[^]]+)?\]\])'
                             % (catNamespace, title))
     if newcat is None:
@@ -3192,6 +3234,35 @@ def Family(fam = None, fatal = True):
     return myfamily.Family()
 
 class Site(object):
+    """A MediaWiki site.
+
+    messages              : There are new messages on the site
+    forceLogin()          : Does not continue until the user has logged in to
+                            the site
+    getUrl()              : Retrieve an URL from the site
+    mediawiki_message(key): Retrieve the text of the MediaWiki message with
+                            the key "key"
+    has_mediawiki_message(key) : True if this site defines a MediaWiki message
+                                 with the key "key"
+                                 
+    Special pages:
+        Dynamic pages:
+            allpages(): Special:Allpages
+            newpages(): Special:Newpages
+            longpages(): Special:Longpages
+            shortpages(): Special:Shortpages
+            categories(): Special:Categories
+
+        Cached pages:
+            deadendpages(): Special:Deadendpages
+            ancientpages(): Special:Ancientpages
+            lonelypages(): Special:Lonelypages
+            uncategorizedcategories(): Special:Uncategorizedcategories
+            uncategorizedpages(): Special:Uncategorizedpages
+            uncategorizedimages(): Special:Uncategorizedimages
+            unusedcategories(): Special:Unusuedcategories
+
+    """
     def __init__(self, code, fam=None, user=None, persistent_http = None):
         """Constructor takes four arguments:
 

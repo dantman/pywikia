@@ -78,6 +78,9 @@ for _filename in os.listdir(os.path.join(_base_dir, 'families')):
         sysopnames[familyName] = {}
         disambiguation_comment[familyName] = {}
 
+# Set to True to override the {{bots}} exclusion protocol (at your own risk!)
+ignore_bot_templates = False
+
 ############## USER INTERFACE SETTINGS ##############
 
 # The encoding that's used in the user's console, i.e. how strings are encoded
