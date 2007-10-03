@@ -48,6 +48,7 @@ msg = {
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
+    'pt':u'Bot: Adicionando a tag <references />',
 }
 
 # References sections are usually placed before further reading / external
@@ -72,6 +73,11 @@ placeBeforeSections = {
     'lt': [              # no explicit policy on where to put the references
         u'Nuorodos'
     ],
+    'pt': [
+        u'Ligações externas',
+        u'Veja também',
+        u'Notas',
+    ],
 }
 
 # Titles of sections where a reference tag would fit into.
@@ -92,6 +98,10 @@ referencesSections = {
     'lt': [             # not sure about which ones are preferred.
         u'Šaltiniai',
         u'Literatūra',
+    ],
+    'pt': [
+        u'Ligações externas',
+        u'Veja também',
     ],
 }
 
