@@ -348,7 +348,6 @@ class GoogleSearchPageGenerator:
         #if config.google_key:
         if True:
             #try:
-                import google
                 for url in self.queryViaSoapApi(query):
                     yield url
                 return
@@ -359,6 +358,7 @@ class GoogleSearchPageGenerator:
         #    yield url
 
     def queryViaSoapApi(self, query):
+        import google
         google.LICENSE_KEY = config.google_key
         offset = 0
         estimatedTotalResultsCount = None
@@ -758,19 +758,14 @@ class GeneratorFactory:
             else:
               gen = NewpagesPageGenerator(number = 60)
         elif arg.startswith('-search'):
-            if len(arg) == 8:
+            if len(arg) == 7:
                 mediawikiQuery = wikipedia.input(u'What do you want to search for?')
             else:
                 mediawikiQuery = arg[8:]
             # In order to be useful, all namespaces are required
             gen = SearchPageGenerator(mediawikiQuery, namespaces = [])
-
         elif arg.startswith('-google'):
-            if len(arg) == 7:
-                googleQuery = wikipedia.input(u'What do you want to search for?')
-            else:
-                googleQuery = arg[8:]
-            gen = GoogleSearchPageGenerator(googleQuery)
+            gen = GoogleSearchPageGenerator(arg[8:])
         elif arg.startswith('-regex'):
             if len(arg) == 6:
                 regex = wikipedia.input(u'What page names are you looking for?')
@@ -778,11 +773,7 @@ class GeneratorFactory:
                 regex = arg[7:]
             gen = RegexFilterPageGenerator(wikipedia.getSite().allpages(), regex)
         elif arg.startswith('-yahoo'):
-            if len(arg) == 7:
-                query = wikipedia.input(u'What do you want to search for?')
-            else:
-                query = arg[7:]
-            gen = YahooSearchPageGenerator(query)
+            gen = YahooSearchPageGenerator(arg[7:])
         else:
             return None
         # make sure all yielded pages are unique
