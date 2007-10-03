@@ -16,6 +16,13 @@ import pagegenerators
 import sys, re
 import catlib
 
+msg = {
+    'en': u'Changing redirects on a disambiguation page',
+    'nl': u'Verandering van redirects op een doorverwijspagina',
+    'pl': u'Zmiana przekierowań na stronie ujednoznaczającej',
+    'pt': u'Arrumando redirects na página de desambiguação',
+}
+
 def firstcap(string):
     return string[0].upper()+string[1:]
 
@@ -118,12 +125,6 @@ def workon(page):
         page.put(text, comment)
 
 try:
-    msg = {
-        'en': u'Changing redirects on a disambiguation page',
-        'nl': u'Verandering van redirects op een doorverwijspagina',
-        'pl': u'Zmiana przekierowań na stronie ujednoznaczającej',
-        'pt': u'Arrumando redirects na página de desambiguação',
-        }
     start = []
     test = False
     for arg in wikipedia.handleArgs():
