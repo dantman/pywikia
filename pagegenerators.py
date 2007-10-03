@@ -36,6 +36,9 @@ parameterHelp = """\
                   Depends on python module pYsearch.  See yahoo_appid in
                   config.py for instructions.
 
+-search           Work on all pages that are found in a MediaWiki search
+                  across all namespaces.
+
 -google           Work on all pages that are found in a Google search.
                   You need a Google Web API license key. Note that Google
                   doesn't give out license keys anymore. See google_key in
@@ -289,6 +292,15 @@ def LinksearchPageGenerator(link, step=500, site = None):
                 pageyeldlist.append(pagenameofthelink)
                 yield wikipedia.Page(site, pagenameofthelink)
         offset += step
+
+def SearchPageGenerator(query, number = 100, namespaces = None, site = None):
+    """
+    Provides a list of results using the internal MediaWiki search engine
+    """
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.search(query, number=number, namespaces = namespaces):
+        yield page[0]
 
 class YahooSearchPageGenerator:
     '''
@@ -745,6 +757,14 @@ class GeneratorFactory:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
             else:
               gen = NewpagesPageGenerator(number = 60)
+        elif arg.startswith('-search'):
+            if len(arg) == 8:
+                mediawikiQuery = wikipedia.input(u'What do you want to search for?')
+            else:
+                mediawikiQuery = arg[8:]
+            # In order to be useful, all namespaces are required
+            gen = SearchPageGenerator(mediawikiQuery, namespaces = [])
+
         elif arg.startswith('-google'):
             if len(arg) == 7:
                 googleQuery = wikipedia.input(u'What do you want to search for?')

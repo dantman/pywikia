@@ -3666,6 +3666,44 @@ Maybe the server is down. Retrying in %i minutes..."""
         except KeyError:
             return False
 
+    def search(self, query, number = 10, repeat = False, namespaces = None):
+        """
+        Generator which yields search results
+        """
+        seen = set()
+        throttle = True
+        while True:
+            path = self.search_address(query, n=number, ns = namespaces)
+            get_throttle()
+            html = self.getUrl(path)
+            entryR = re.compile(ur'<li[^>]*><a href=".+?" title="(?P<title>.+?)">.+?</a>'
+                                  '(?P<match>.*?)<br ?/><span[^>]*>Relevance: '
+                                  '(?P<relevance>[0-9.]+)% - '
+                                  '(?P<size>[0-9.]+) '
+                                  '(?P<sizeunit>[A-Za-z]+) '
+                                  '\((?P<words>.+?) words\) - '
+                                  '(?P<date>.+?)</span></li>', re.DOTALL)
+
+            for m in entryR.finditer(html):
+                title = m.group('title')
+
+                if title not in seen:
+                    seen.add(title)
+                    page = Page(self, title)
+
+                    match = m.group('match')
+                    relevance = m.group('relevance')
+                    size = m.group('size')
+                    # sizeunit appears to always be "KB"
+                    words = m.group('words')
+                    date = m.group('date')
+
+                    #print "%s - %s %s (%s words) - %s" % (relevance, size, sizeunit, words, date)
+
+                    yield page, match, relevance, size, words, date
+            if not repeat:
+                break
+
     # TODO: avoid code duplication for the following methods
     def newpages(self, number = 10, get_redirect = False, repeat = False):
         """Generator which yields new articles subsequently.
@@ -4212,6 +4250,9 @@ Maybe the server is down. Retrying in %i minutes..."""
         assert self.charset.lower() == charset.lower(), "charset for %s changed from %s to %s" % (repr(self), self.charset, charset)
         if self.encoding().lower() != charset.lower():
             raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s" % (repr(self), charset, self.encoding()))
+
+    def search_address(self, q, n=50, ns = 0):
+        return self.family.search_address(self.lang, q, n, ns)
 
     def allpages_address(self, s, ns = 0):
         return self.family.allpages_address(self.lang, start = s, namespace = ns)

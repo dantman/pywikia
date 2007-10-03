@@ -2613,6 +2613,30 @@ class Family:
     def api_address(self, code):
         return '%s?' % self.apipath(code)
 
+    def search_address(self, code, query, limit=100, namespaces = None):
+        """
+        Constructs a URL for searching using Special:Search
+        'namespaces' may be an int or a list; an empty list selects
+        all namespaces.  Defaults to namespace 0
+        """
+        namespace_params = ''
+        if namespaces is not None:
+            if isinstance(namespaces, int):
+                namespace_params = "&ns%d=1" % namespaces
+            elif isinstance (namespaces, list):
+                if len(namespaces) == 0:
+                    # add all namespaces
+                    namespaces = self.namespaces.keys()
+                for i in namespaces:
+                    if i > 0:
+                        namespace_params = namespace_params + '&ns%d=1' % i
+
+        return "%s?title=%s:Search&search=%s&limit=%d%s" % (self.path(code),
+                                                            self.special_namespace_url(code),
+                                                            query,
+                                                            limit,
+                                                            namespace_params)
+
     def allpages_address(self, code, start, namespace = 0):
         if self.version(code)=="1.2":
             return '%s?title=%s:Allpages&printable=yes&from=%s' % (
