@@ -43,7 +43,8 @@ import sys, re
 
 msg = {
     'en': u'This image was inline linked from %s. No information on author, copyright status, or license is available.',
-    'pl': u'Obraz ten został dolinkowany z adresu %s. Brak jest informacji o autorze, prawach autorskich czy licencji.'
+    'pl': u'Obraz ten został dolinkowany z adresu %s. Brak jest informacji o autorze, prawach autorskich czy licencji.',
+    'pt': u'Esta imagem foi inserida como linha de %s. Nenhum infomação sobre autor, direitos autorais ou licença foi listada.', 
 }
 
 ###################################
@@ -104,7 +105,7 @@ def main():
         page = wikipedia.Page(wikipedia.getSite(), ' '.join(pageTitle))
         gen = iter([page])
     if not gen:
-        wikipedia.showHelp('touch')
+        wikipedia.showHelp('inline_images')
     else:
         preloadingGen = pagegenerators.PreloadingGenerator(gen)
         bot = InlineImagesRobot(preloadingGen)
