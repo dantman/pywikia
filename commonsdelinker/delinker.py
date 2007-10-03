@@ -264,7 +264,7 @@ class Delinker(threadpool.Thread):
 				try:
 					new_text = ImmutableByReference(new_text)
 					m_summary = ImmutableByReference(summary)
-					if False is self.exec_hook('before_save',
+					if False is self.CommonsDelinker.exec_hook('before_save',
 							(page, text, new_text, m_summary)):
 						return 'skipped'
 					
@@ -322,7 +322,7 @@ class SummaryCache(object):
 		self.lock = threading.Lock()
 		self.CommonsDelinker = CommonsDelinker
 		
-	def get(self, site, type, key = None):
+	def get(self, site, type, key = None, default = None):
 		# This can probably also provide something for 
 		# localised settings, but then it first needs to 
 		# check whether the page is sysop only.
@@ -362,6 +362,8 @@ class SummaryCache(object):
 		# This will cause the bot to function even on special wikis
 		# like mediawiki.org and meta and species.
 		output(u'%s Using default summary for %s' % (self, site))
+		
+		if default: return default
 				
 		if site.family.name != 'wikipedia' and self.CommonsDelinker.config['global']:
 			if site.family.name in ('wiktionary', 'wikibooks', 'wikiquote', 
@@ -606,6 +608,7 @@ class CommonsDelinker(object):
 		#else:
 		#	self.log_limit = '500'
 		self.log_limit = '500'
+		self.init_plugins()
 		
 	def init_plugins(self):
 		self.hooks = {}
@@ -811,6 +814,10 @@ class CommonsDelinker(object):
 			output(u'ERROR!!! Too few Loggers left to function', False)
 			print >>sys.stderr, 'Currently unlogged:', unlogged
 			threadpool.terminate()
+			
+	@staticmethod
+	def output(*args):
+		return output(*args)
 			
 def output(message, toStdout = True):
 	message = time.strftime('[%Y-%m-%d %H:%M:%S] ') + message
