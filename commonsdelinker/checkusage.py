@@ -353,7 +353,7 @@ class CheckUsage(object):
 		if '-1' not in res['query']['pages'] and shared:
 			return
 			
-		if site.live_version()[:2] > (1, 10):
+		if live_version > (1, 10):
 			usages = res['query'].get('imageusage', ())
 		else:
 			usages = res['query'].get('imagelinks', {}).itervalues()
