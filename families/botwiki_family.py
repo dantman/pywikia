@@ -63,7 +63,7 @@ class Family(family.Family):
         }
 
     def version(self, code):
-        return "1.10.0"
+        return "1.11.0"
 
     def path(self, code):
         return '/w/index.php'
