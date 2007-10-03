@@ -198,7 +198,7 @@ def findTranslated(page, oursite=None):
     try:
         iw=ourpage.interwiki()
     except:
-	    return None
+        return None
     backpage=None
     for p in iw:
         if p.site()==page.site():
