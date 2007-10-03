@@ -235,6 +235,7 @@ def featuredWithInterwiki(fromsite, tosite):
 
     pairs=[]
     for a in arts:
+        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"% a.title())
         if a.title()<afterpage:
             continue
         if u"/" in a.title():
