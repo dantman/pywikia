@@ -38,21 +38,21 @@ def LINKS(site,name, ignore=[]):
     return links
 
 msg = {
-    'bs': u'Interwiki za izabrane članke za [[%s:%s]]',
-    'en': u'Featured article link for [[%s:%s]]',
-    'cs': u'Nejlepší článek:  [[%s:%s]]',
-    'fi': u'Suositeltu artikkeli -tähti: [[%s:%s]]',
-    'fr': u'Lien AdQ pour [[%s:%s]]',
-    'he': u'קישור לערך מומלץ עבור [[%s:%s]]',
-    'hr': u'Interwiki za izabrane članke za [[%s:%s]]',
-    'it': u'collegamento articolo in vetrina [[%s:%s]]',
-    'ka': u'რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
-    'lt': u'Pavyzdinis straipsnis [[%s:%s]]',
-    'nl': u'Etalage-artikel link voor [[%s:%s]]',
+    'bs': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
+    'en': u'Bot: Featured article link for [[%s:%s]]',
+    'cs': u'Bot: Nejlepší článek:  [[%s:%s]]',
+    'fi': u'Bot: Suositeltu artikkeli -tähti: [[%s:%s]]',
+    'fr': u'Bot: Lien AdQ pour [[%s:%s]]',
+    'he': u'Bot: קישור לערך מומלץ עבור [[%s:%s]]',
+    'hr': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
+    'it': u'Bot: collegamento articolo in vetrina [[%s:%s]]',
+    'ka': u'Bot: რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
+    'lt': u'Bot: Pavyzdinis straipsnis [[%s:%s]]',
+    'nl': u'Bot: Etalage-artikel link voor [[%s:%s]]',
     'no': u'bot: [[%s:%s]] er en utmerka artikkel',
-    'pl': u'Link do artykułu wyróżnionego [[%s:%s]]',
-    'pt': u'Ligando artigos destacados para [[%s:%s]]',
-    'sr': u'Међувики за изабране чланке за [[%s:%s]]',
+    'pl': u'Bot: Link do artykułu wyróżnionego [[%s:%s]]',
+    'pt': u'Bot: Ligando artigos destacados para [[%s:%s]]',
+    'sr': u'Bot: Међувики за изабране чланке за [[%s:%s]]',
 }
 
 # default is en:Link FA
