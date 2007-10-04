@@ -10,6 +10,8 @@ Can be using with:
 
 """
 #
+# This script based on disambredir.py and solve_disambiguation.py
+#
 # Distributed under the terms of the MIT license.
 #
 __version__='$Id: disambredir.py 4407 2007-10-03 17:27:14Z leogregianin $'
