@@ -250,7 +250,7 @@ class Delinker(threadpool.Thread):
 				# likely embedded in a complicated template.
 				hook = 'complex'
 				r_templates = ur'(?s)(\{\{.*?\}\})'
-				r_complicated = u'(?s)[|={]\s*((?:%s)?)%s' % (r_namespace, r_image)
+				r_complicated = u'(?s)\s*((?:%s)?)%s' % (r_namespace, r_image)
 				
 				def template_replacer(match):
 					return re.sub(r_complicated, simple_replacer, match.group(1))
@@ -623,6 +623,7 @@ class CommonsDelinker(object):
 			self.hooks[plugin.hook].append(plugin)
 			
 	def exec_hook(self, name, args):
+		# TODO: Threadsafety!
 		if name in self.hooks:
 			for plugin in self.hooks[name][:]:
 				try:
