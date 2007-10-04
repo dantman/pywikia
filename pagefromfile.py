@@ -164,7 +164,7 @@ class PageFromFileRobot:
                 wikipedia.setAction('')
 
         if self.debug:
-                wikipedia.output("*** UPLOAD OF ***\n" + \
+                wikipedia.output("*** Debug mode ***\n" + \
                     "\03{lightpurple}title\03{default}: " + title + "\n" + \
                     "\03{lightpurple}contents\03{default}:\n" + contents + "\n" \
                     "\03{lightpurple}comment\03{default}: " + comment + "\n")
@@ -260,7 +260,6 @@ def main():
         elif arg == "-force":
             force=True
         elif arg == "-debug":
-            wikipedia.output(u"Debug mode enabled.")
             debug = True
         elif arg == "-safe":
             force = False

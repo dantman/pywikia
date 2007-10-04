@@ -285,7 +285,7 @@ class ReplaceRobot:
                 # Load the page's text from the wiki
                 original_text = page.get()
                 if not page.canBeEdited():
-                    wikipedia.output(u'Skipping locked page %s' % page.aslink())
+                    wikipedia.output(u"You can't edit page %s" % page.aslink())
                     continue
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s not found' % page.aslink())
