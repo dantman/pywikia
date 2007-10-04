@@ -505,7 +505,7 @@ class Page(object):
         If change_edit_time is False, do not check this version for changes
         before saving. This should be used only if the page has been loaded
         previously.
-        
+
         """
         # NOTE: The following few NoPage exceptions could already be thrown at
         # the Page() constructor. They are raised here instead for convenience,
@@ -3666,43 +3666,37 @@ Maybe the server is down. Retrying in %i minutes..."""
         except KeyError:
             return False
 
-    def search(self, query, number = 10, repeat = False, namespaces = None):
+    def search(self, query, number = 10, namespaces = None):
         """
         Generator which yields search results
         """
-        seen = set()
         throttle = True
-        while True:
-            path = self.search_address(query, n=number, ns = namespaces)
-            get_throttle()
-            html = self.getUrl(path)
-            entryR = re.compile(ur'<li[^>]*><a href=".+?" title="(?P<title>.+?)">.+?</a>'
-                                  '(?P<match>.*?)<br ?/><span[^>]*>Relevance: '
-                                  '(?P<relevance>[0-9.]+)% - '
-                                  '(?P<size>[0-9.]+) '
-                                  '(?P<sizeunit>[A-Za-z]+) '
-                                  '\((?P<words>.+?) words\) - '
-                                  '(?P<date>.+?)</span></li>', re.DOTALL)
+        path = self.search_address(urllib.quote_plus(query), n=number, ns = namespaces)
+        get_throttle()
+        html = self.getUrl(path)
 
-            for m in entryR.finditer(html):
-                title = m.group('title')
+        entryR = re.compile(ur'<li[^>]*><a href=".+?" title="(?P<title>.+?)">.+?</a>'
+                              '<br />(?P<match>.*?)<span style="color[^>]*>.+?: '
+                              '(?P<relevance>[0-9.]+)% - '
+#                              '(?P<size>[0-9.]*) '
+#                              '(?P<sizeunit>[A-Za-z]) '
+#                              '\((?P<words>.+?) \w+\) - '
+#                              '(?P<date>.+?)</span></li>'
+                              , re.DOTALL)
 
-                if title not in seen:
-                    seen.add(title)
-                    page = Page(self, title)
+        for m in entryR.finditer(html):
+            page = Page(self, m.group('title'))
+            match = m.group('match')
+            relevance = m.group('relevance')
+            #size = m.group('size')
+            ## sizeunit appears to always be "KB"
+            #words = m.group('words')
+            #date = m.group('date')
 
-                    match = m.group('match')
-                    relevance = m.group('relevance')
-                    size = m.group('size')
-                    # sizeunit appears to always be "KB"
-                    words = m.group('words')
-                    date = m.group('date')
+            #print "%s - %s %s (%s words) - %s" % (relevance, size, sizeunit, words, date)
 
-                    #print "%s - %s %s (%s words) - %s" % (relevance, size, sizeunit, words, date)
-
-                    yield page, match, relevance, size, words, date
-            if not repeat:
-                break
+            #yield page, match, relevance, size, words, date
+            yield page, match, relevance, '', '', ''
 
     # TODO: avoid code duplication for the following methods
     def newpages(self, number = 10, get_redirect = False, repeat = False):

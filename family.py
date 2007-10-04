@@ -2631,7 +2631,7 @@ class Family:
                     if i > 0:
                         namespace_params = namespace_params + '&ns%d=1' % i
 
-        return "%s?title=%s:Search&search=%s&limit=%d%s" % (self.path(code),
+        return "%s?title=%s:Search&search=%s&limit=%d%s&fulltext=1" % (self.path(code),
                                                             self.special_namespace_url(code),
                                                             query,
                                                             limit,
