@@ -290,7 +290,7 @@ if __name__=="__main__":
                     if not ll2: ll2="zzzzzzz"
                     fromlang=[ll for ll in featured_name.keys() if ll>=ll1 and ll<=ll2]
             except:
-                wikipedia.output(__doc__)
+                wikipedia.showHelp('featured')
         elif arg == '-fromall':
             fromlang=featured_name.keys()
         elif arg.startswith('-after:'):
