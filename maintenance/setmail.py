@@ -1,77 +1,22 @@
-""" This tool sets an email address on all bot accounts.
-In the future it will also auto-confirm them."""
+""" This tool sets an email address on all bot accounts and email confirms them."""
 
 import sys, os, getpass
 sys.path.append('..')
 
 import poplib
 import wikipedia, config
+import preferences
+import re
+import urllib2
 
-from HTMLParser import HTMLParser
-from htmlentitydefs import name2codepoint 
-class FormParser(HTMLParser):
-	def __init__(self):
-		HTMLParser.__init__(self)
-		self.in_form = False
-		self.data = {}
-		self.select = None
-	
-	def handle_entityref(self, name):
-		if name in name2codepoint: 
-			self.handle_data(unichr(name2codepoint[name]))
-		else:
-			self.handle_data(u'&%s;' % name)
-	def handle_charref(self, name):
-		try:
-			self.handle_data(unichr(int(name)))
-		except ValueError:
-			self.handle_data(u'&#$s;' % name)
-	def handle_starttag(self, tag, attrs):
-		if tag == 'form': 
-			self.in_form = ('method', 'post') in attrs
-		
-		attrs = dict(attrs)
-		if tag == 'input' and self.in_form:
-			if attrs.get('type', 'text') in ('hidden', 'text'):
-				if 'value' in attrs and 'name' in attrs:
-					self.data[attrs['name']] = attrs['value']
-			elif attrs.get('type') in ('radio', 'checkbox'):
-				if 'checked' in attrs:
-					self.data[attrs['name']] = attrs['value']
-		if tag == 'select' and self.in_form:
-			self.select = attrs['name']
-		if tag == 'option' and self.in_form:
-			if self.select and 'selected' in attrs:
-				self.data[self.select] = attrs['value']
-		
-	def handle_endtag(self, tag):
-		if self.in_form and tag == 'form': 
-			self.in_form = False
-		if self.select and tag == 'select':
-			self.select = None
-
-def set(email):
-	site = wikipedia.getSite(lang, family, persistent_http = True)
-	site.forceLogin()
-	data = site.postForm(site.path(), {'title': 'Special:Preferences'})
-	parser = FormParser()
-	parser.feed(data[1])
-	parser.close()
-	
-	old = parser.data.get('wpUserEmail', '')
-	wikipedia.output(u'Old email for %s was: %s' % (site, old))
-	parser.data['wpUserEmail'] = email
-	parser.data['wpSaveprefs'] = '1'
-	parser.data['title'] = 'Special:Preferences'
-	for key in parser.data.keys():
-		if not parser.data[key]: del parser.data[key]
-	parser.data['wpEmailFlag'] = '1'
-	if 'wpOpenotifusertalkpages' in parser.data:
-		del parser.data['wpOpenotifusertalkpages']
-	site.postForm(site.path(), parser.data)
-	site.conn.close()
+def confirm(link):
+	req = urllib2.Request(link, headers = {'User-Agent': wikipedia.useragent})
+	u = urllib2.urlopen(req)
+	u.close()
 
 if __name__ == '__main__':
+	r_mail = re.compile(ur'(http\:\/\/\S*Confirmemail\S*)')
+	
 	email = wikipedia.input('Email?')
 	host = wikipedia.input('Host?')
 	port = wikipedia.input('Port (default: 110; ssl: 995)?')
@@ -83,18 +28,36 @@ if __name__ == '__main__':
 		port = 110
 	ssl = wikipedia.inputChoice('SSL? ', ['no', 'yes'], 
 		['n', 'y'], (port == 995) and 'y' or 'n') == 'y'
+	username = wikipedia.input('User?')
+	password = wikipedia.input('Password?', True)
+	do_delete = wikipedia.inputChoice('Delete confirmed mails?', ['yes', 'no'], ['y', 'n'], 'y') == 'y'
 		
-	if os.path.exists('mail-done.txt'):
-		f = open('mail-done.txt')
-		already_done = [eval(l) for l in f if l]
-		f.close()
+	if email:
+		preferences.set_all(['wpUserEmail', 'wpEmailFlag', 'wpOpenotifusertalkpages'],
+			[email, True, False], verbose = True)
+	
+	if ssl:
+		pop = poplib.POP3_SSL(host, port)
 	else:
-		already_done = []
-	f_done = open('mail-done.txt', 'a')
+		pop = poplib.POP3(host, port)
 		
-	for family in config.usernames:
-		wikipedia.output(u'Doing %s' % family)
-		for lang in config.usernames[family]:
-			if (family, lang) not in already_done:
-				set(email)
-				print >>f_done, repr((family, lang))
+	pop.user(username)
+	pop.pass_(password)
+	wikipedia.output(unicode(pop.getwelcome()))
+	messages = [i.split(' ', 1)[0] for i in pop.list()[1]]
+	for i in messages:
+		msg = pop.retr(i)
+		confirmed = False
+		for line in msg[1]:
+			if r_mail.search(line):
+				confirmed = True
+				link = r_mail.search(line).group(1)
+				wikipedia.output(u'Confirming %s.' % link)
+				confirm(link)
+				
+		if not confirmed:
+			wikipedia.output(u'Unconfirmed mail!')
+		elif do_delete:
+			pop.dele(i)
+	pop.quit()
+		
