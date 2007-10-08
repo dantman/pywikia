@@ -5014,7 +5014,7 @@ def async_put():
                        % (page.title(), error.url))
         elif isinstance(error, PageNotSaved):
             output(u"Saving page [[%s]] failed: %s"
-                       % (page.title(), error.message))
+                       % (page.title(), error))
         elif isinstance(error, LockedPage):
             output(u"Page [[%s]] is locked; not saved." % page.title())
         elif isinstance(error, NoUsername):
