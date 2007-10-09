@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
-This robot checks copyright text in Google, Yahoo and Live Search.
+This robot checks copyright text in Google, Yahoo! and Live Search.
 
 Google search requires to install the pyGoogle module from
 http://pygoogle.sf.net and get a Google API license key from
@@ -79,11 +79,20 @@ import wikipedia, pagegenerators, catlib, config
 
 __version__='$Id$'
 
-#
+# Search keywords added to all the queries.
 no_result_with_those_words = '-Wikipedia'
+
+# Split the text into strings of a specified number of words.
+number_of_words = 31
+
+# Performing a search engine query if string length is greater than the given value.
+min_query_string_len = 120
 
 # Try to skip quoted text.
 exclude_quote = True
+
+# Enable DOTALL regular expression flag in remove_wikicode() function.
+remove_wikicode_dotall = True
 
 # If ratio between query length and number of commas is greater or equal
 # to 'comma_ratio' then the script identify a comma separated list and
@@ -92,6 +101,15 @@ comma_ratio = 5
 
 # No checks if the page is a disambiguation page.
 skip_disambig = True
+
+# Parameter used in Live Search query.
+# (http://msdn2.microsoft.com/en-us/library/bb266177.aspx)
+region_code = 'en-US'
+
+enable_color = True
+
+warn_color = 'lightyellow'
+error_color = 'lightred'
 
 appdir = "copyright"
 output_file = wikipedia.datafilepath(appdir, "output.txt")
@@ -220,6 +238,27 @@ sections_to_skip = {
     'it':['Bibliografia', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni principali'],
 }
 
+num_google_queries = 0 ; num_yahoo_queries = 0 ; num_msn_queries = 0
+
+if enable_color:
+    warn_color = '\03{%s}' % warn_color
+    error_color = '\03{%s}' % error_color
+    default_color = '\03{default}'
+else:
+    warn_color = '' ; error_color = '' ; default_color = ''
+
+def _output(text, prefix = None, color = ''):
+    if prefix:
+        wikipedia.output('%s%s: %s%s' % (color, prefix, default_color, text))
+    else:
+        wikipedia.output('%s%s' % (color, text))
+
+def warn(text, prefix = None):
+    _output(text, prefix = prefix, color = warn_color)
+
+def error(text ,prefix = None):
+    _output(text, prefix = prefix, color = error_color)
+
 def skip_section(text):
     l = list()
     for s in sections_to_skip.values():
@@ -279,16 +318,17 @@ def load_pages(force_update = False):
             except wikipedia.IsRedirectPage, arg:
                 data = wikipedia.Page(page.site(), arg).get()
             except:
-                print 'Getting page failed'
+                error('Getting page failed')
     return
 
-def check_list(text, cl, verbose = False):
-    for entry in cl:
+def check_list(url, clist, verbose = False):
+    for entry in clist:
         if entry:
-            if text.find(entry) != -1:
-                #print entry
-                if verbose:
-                    print 'SKIP URL ' + text
+            if url.find(entry) != -1:
+                if verbose > 1:
+                    warn('URL Excluded: %s\nReason: %s' % (url, entry))
+                elif verbose:
+                    warn('URL Excluded: %s' % url)
                 return True
 
 def exclusion_list():
@@ -384,7 +424,7 @@ def economize_query(text):
     return True
 
 #
-# Set regex used in cleanwikicode() to remove [[Image:]] tags
+# Set regex used in remove_wikicode() to remove [[Image:]] tags
 # and regex used in check_in_source() to reject pages with
 # 'Wikipedia'.
 
@@ -402,23 +442,21 @@ reWikipediaC = re.compile('(' + '|'.join(wikipedia_names.values()) + ')', re.I)
 reSectionNamesC = re.compile('(' + '|'.join(editsection_names.values()) + ')')
 
 def cleanwikicode(text):
+    remove_wikicode(text)
+
+def remove_wikicode(text, re_dotall = False, debug = False):
     if not text:
         return ""
 
-    #write_log(text+'\n', "copyright/debug_cleanwikicode1.txt")
+    if debug:
+        write_log(text+'\n', "copyright/wikicode.txt")
 
     text = re.sub('(?i)</?(p|u|i|b|em|div|span|font|small|big|code|tt).*?>', '', text)
     text = re.sub('(?i)<(/\s*)?br(\s*/)?>', '', text)
     text = re.sub('<!--.*?-->', '', text)
-    text = re.sub('&lt;', '<', text)
-    text = re.sub('&gt;', '>', text)
 
-    if exclude_quote:
-        text = re.sub("(?i){{quote\|.*?}}", "", text)
-        text = re.sub("^[:*]?\s*''.*?''\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$", "", text)
-        text = re.sub('^[:*]?\s*["][^"]+["]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
-        text = re.sub('^[:*]?\s*[«][^»]+[»]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
-        text = re.sub('^[:*]?\s*[“][^”]+[”]\.?\s*((\(|<ref>).*?(\)|</ref>))?\.?$', "", text)
+    text = text.replace('&lt;', '<')
+    text = text.replace('&gt;', '>')
 
     # remove URL
     text = re.sub('(ftp|https?)://[\w/.,;:@&=%#\\\?_!~*\'|()\"+-]+', ' ', text)
@@ -432,26 +470,72 @@ def cleanwikicode(text):
     # remove unicode and polytonic template
     text = re.sub("(?i){{(unicode|polytonic)\|(.*?)}}", "\\1", text)
 
+    if re_dotall:
+       flags = "(?xsim)"
+       # exclude wikitable
+       text = re.sub('(?s){\|.*?^\|}', '', text)
+    else:
+       flags = "(?xim)"
+
     text = re.sub("""
-    (?xim)
+    %s
     (
-        <ref.*?>.*?</ref>    | # exclude <ref> notes
-        ^[\ \t]*({\||[|!]).* | # exclude wikitable
-        </*nowiki>           | # remove <nowiki> tags
-        {{.*?}}              | # remove template
-        <math>.*?</math>     | # remove LaTeX staff
-        [\[\]]               | # remove [, ]
-        ^[*:;]+              | # remove *, :, ; in begin of line
-        <!--                 |
-        -->                  |
+        <ref[^>]*?\s*/\s*>     | # exclude <ref name = '' / > tags
+        <ref.*?>.*?</ref>      | # exclude <ref> notes
+        ^[\ \t]*({\||[|!]).*?$ | # exclude wikitable
+        </*nowiki>             | # remove <nowiki> tags
+        {{.*?}}                | # remove (not nested) template
+        <math>.*?</math>       | # remove LaTeX staff
+        [\[\]]                 | # remove [, ]
+        ^[*:;]+                | # remove *, :, ; in begin of line
+        <!--                   |
+        -->                    |
     )
-    """, "", text)
+    """ % flags, "", text)
+
+    if exclude_quote:
+        # '' text ''
+        # '' text ''.
+        # '' text '' (text)
+        # « text »
+        # ...
+        #
+
+        italic_quoteC = re.compile("(?m)^[:*]?\s*(''.*?'')\.?\s*(\(.*?\))?\r?$")
+
+        index = 0
+        try:
+            import pywikiparser
+        except ImportError:
+            pywikiparser = False
+
+        while pywikiparser:
+            m = italic_quoteC.search(text, index)
+            if not m:
+                break
+
+            s = pywikiparser.Parser(m.group(1), debug = True)
+
+            try:
+                xmldata = s.parse().toxml()
+                if '<wikipage><p><i>' in xmldata and '</i></p></wikipage>' in xmldata:
+                    if xmldata.count('<i>') == 1:
+                        text = text[:m.start()] + text[m.end():]
+            except:
+                pass
+
+            index = m.start() + 1
+
+        text = re.sub('(?m)^[:*]*\s*["][^"]+["]\.?\s*(\(.*?\))?\r?$', "", text)
+        text = re.sub('(?m)^[:*]*\s*[«][^»]+[»]\.?\s*(\(.*?\))?\r?$', "", text)
+        text = re.sub('(?m)^[:*]*\s*[“][^”]+[”]\.?\s*(\(.*?\))?\r?$', "", text)
 
     # remove useless spaces
-    text = re.sub("(?m)(^[ \t]+|[ \t]+$)", "", text)
+    text = re.sub("(?m)(^[ \t]+|[ \t]+\r?$)", "", text)
 
-    #if text:
-    #    write_log(text+'\n', "copyright/debug_cleanwikicode2.txt")
+    if debug:
+        write_log(text+'\n', "copyright/wikicode_removed.txt")
+
     return text
 
 excl_list = exclusion_list()
@@ -463,7 +547,7 @@ def exclusion_list_sanity_check():
             print "** " + entry
 
 def exclusion_list_dump():
-    f = open(wikipedia.datafilepath(appdir, 'exclusion_list.dump', 'w'))
+    f = open(wikipedia.datafilepath(appdir, 'exclusion_list.dump'), 'w')
     f.write('\n'.join(excl_list))
     f.close()
     print "Exclusion list dump saved."
@@ -494,7 +578,7 @@ def mysplit(text, dim, sep):
         break
     return l
 
-def query(lines = [], max_query_len = 1300):
+def query(lines = [], max_query_len = 1300, wikicode = True):
     # Google max_query_len = 1480?
     # - '-Wikipedia ""' = 1467
 
@@ -505,18 +589,19 @@ def query(lines = [], max_query_len = 1300):
     previous_group_url = 'none'
 
     for line in lines:
-        line = cleanwikicode(line)
-        for search_words in mysplit(line, 31, " "):
-            if len(search_words) > 120:
+        if wikicode:
+            line = remove_wikicode(line)
+        for search_words in mysplit(line, number_of_words, " "):
+            if len(search_words) > min_query_string_len:
                 if config.copyright_economize_query:
                     if economize_query(search_words):
-                        wikipedia.output('SKIP TEXT: ' + search_words)
+                        warn(search_words, prefix = 'Text excluded')
                         consecutive = False
                         continue
                 n_query += 1
                 #wikipedia.output(search_words)
                 if config.copyright_max_query_for_page and n_query > config.copyright_max_query_for_page:
-                    wikipedia.output(u"Max query limit for page reached")
+                    warn(u"Max query limit for page reached")
                     return output
                 if config.copyright_skip_query > n_query:
                     continue
@@ -526,17 +611,18 @@ def query(lines = [], max_query_len = 1300):
                     if " " in search_words:
                          search_words = search_words[:search_words.rindex(" ")]
                 results = get_results(search_words)
-                group_url = ''
+                group_url = '' ; cmp_group_url = ''
                 for url, engine, comment in results:
                     if comment:
                         group_url += '\n*%s - %s (%s)' % (engine, url, "; ".join(comment))
                     else:
                         group_url += '\n*%s - %s' % (engine, url)
+                    cmp_group_url += '\n*%s - %s' % (engine, url)
                 if results:
                     group_url_list = group_url.splitlines()
                     group_url_list.sort()
                     group_url = '\n'.join(group_url_list)
-                    if previous_group_url == group_url:
+                    if previous_group_url == cmp_group_url:
                         if consecutive:
                             output += ' ' + search_words
                         else:
@@ -544,7 +630,7 @@ def query(lines = [], max_query_len = 1300):
                     else:
                         output += group_url + '\n**' + search_words
 
-                    previous_group_url = group_url
+                    previous_group_url = cmp_group_url
                     consecutive = True
                 else:
                     consecutive = False
@@ -569,8 +655,9 @@ class WebPage(object):
     def __init__(self, url):
         """
         """
+        global source_seen
 
-        if check_list(url, excl_list):
+        if url in source_seen or check_list(url, excl_list):
             raise URL_exclusion
 
         self._url = url
@@ -580,16 +667,16 @@ class WebPage(object):
         #except httplib.BadStatusLine, line:
         #    print 'URL: %s\nBad status line: %s' % (url, line)
         except urllib2.HTTPError, err:
-            print "HTTP error: %d / %s (%s)" % (err.code, err.msg, url)
-            #if err.code == 404:
+            error("HTTP error: %d / %s (%s)" % (err.code, err.msg, url))
             if err.code >= 400:
+                source_seen.add(self._url)
                 raise NoWebPage
             return None
         except urllib2.URLError, arg:
-            print "URL error: %s / %s" % (url, arg)
+            error("URL error: %s / %s" % (url, arg))
             return None
         except Exception, err:
-            print "ERROR: %s" % (err)
+            error("ERROR: %s" % (err))
 
         self._lastmodified = self._urldata.info().getdate('Last-Modified')
         self._length = self._urldata.info().getheader('Content-Length')
@@ -678,7 +765,7 @@ class WebPage(object):
         source_seen.add(self._url)
         return False
 
-def add_in_urllist(url, add_item, engine):
+def add_in_urllist(url, add_item, engine, cache_url = None):
 
     if (engine == 'google' and config.copyright_check_in_source_google) or \
     (engine == 'yahoo' and config.copyright_check_in_source_yahoo) or \
@@ -729,12 +816,16 @@ def add_in_urllist(url, add_item, engine):
                         comment.append("%d %s" % (length, unit))
 
         if cache:
-            if engine == 'google':
-                comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s google cache]' % add_item[7:])
-            elif engine == 'yahoo':
-                cache = False
-            elif engine == 'msn':
-                cache = False
+            if cache_url:
+                if engine == 'google':
+                    comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s Google cache]' % short_url(add_item))
+                elif engine == 'yahoo':
+                    #cache = False
+                    comment.append('[%s Yahoo cache]' % re.sub('&appid=[^&]*','', urllib.unquote(cache_url)))
+                elif engine == 'msn':
+                    comment.append('[%s Live cache]' % re.sub('&lang=[^&]*','', cache_url))
+            else:
+                comment.append('[http://web.archive.org/*/%s archive.org]' % short_url(add_item))
 
     for i in range(len(url)):
         if add_item in url[i]:
@@ -754,13 +845,15 @@ def exceeded_in_queries(engine):
         exec('config.copyright_' + engine + ' = False')
     # Sleeping
     if config.copyright_exceeded_in_queries == 2:
-        print "Got a queries exceeded error. Sleeping for %d hours..." % (config.copyright_exceeded_in_queries_sleep_hours)
+        error("Got a queries exceeded error. Sleeping for %d hours..." % (config.copyright_exceeded_in_queries_sleep_hours))
         time.sleep(config.copyright_exceeded_in_queries_sleep_hours * 60 * 60)
     # Stop execution
     if config.copyright_exceeded_in_queries == 3:
         raise 'Got a queries exceeded error.'
 
 def soap(engine, query, url, numresults = 10):
+        global num_google_queries, num_yahoo_queries, num_msn_queries
+
         print "  %s query..." % engine.capitalize()
         search_request_retry = config.copyright_connection_tries
         while search_request_retry:
@@ -770,7 +863,10 @@ def soap(engine, query, url, numresults = 10):
                     google.LICENSE_KEY = config.google_key
                     data = google.doGoogleSearch('%s "%s"' % (no_result_with_those_words, query))
                     for entry in data.results:
-                       add_in_urllist(url, entry.URL, 'google')
+                       add_in_urllist(url, entry.URL, 'google', entry.cachedSize)
+
+                    num_google_queries += 1
+
                 elif engine == 'yahoo':
                     import yahoo.search.web
                     data = yahoo.search.web.WebSearch(config.yahoo_appid, query='"%s" %s' % (
@@ -778,7 +874,13 @@ def soap(engine, query, url, numresults = 10):
                                                       no_result_with_those_words
                                                      ), results = numresults)
                     for entry in data.parse_results():
-                        add_in_urllist(url, entry.Url, 'yahoo')
+                        cacheurl = None
+                        if entry.Cache:
+                            cacheurl = entry.Cache.Url
+                        add_in_urllist(url, entry.Url, 'yahoo', cacheurl)
+
+                    num_yahoo_queries += 1
+
                 elif engine == 'msn':
                     #max_query_len = 150?
                     from SOAPpy import WSDL
@@ -786,10 +888,11 @@ def soap(engine, query, url, numresults = 10):
                     try:
                         server = WSDL.Proxy('http://soap.search.msn.com/webservices.asmx?wsdl')
                     except:
-                        print "Live Search Error"
+                        error("Live Search Error")
                         raise
+
                     params = {'AppID': config.msn_appid, 'Query': '%s "%s"' % (no_result_with_those_words, query),
-                             'CultureInfo': 'en-US', 'SafeSearch': 'Off', 'Requests': {
+                             'CultureInfo': region_code, 'SafeSearch': 'Off', 'Requests': {
                              'SourceRequest':{'Source': 'Web', 'Offset': 0, 'Count': 10, 'ResultFields': 'All',}}}
 
                     results = ''
@@ -801,14 +904,23 @@ def soap(engine, query, url, numresults = 10):
                         # list or instance?
                         if type(results) == type([]):
                             for entry in results:
-                                add_in_urllist(url, entry.Url, 'msn')
+                                cacheurl = None
+                                if hasattr(entry, 'CacheUrl'):
+                                    cacheurl = entry.CacheUrl
+                                add_in_urllist(url, entry.Url, 'msn', cacheurl)
                         else:
-                            add_in_urllist(url, results.Url, 'msn')
+                            cacheurl = None
+                            if hasattr(results, 'CacheUrl'):
+                                cacheurl = results.CacheUrl
+                            add_in_urllist(url, results.Url, 'msn', cacheurl)
+
+                    num_msn_queries += 1
+
                 search_request_retry = 0
             except KeyboardInterrupt:
                 raise
             except Exception, err:
-                print "Got an error ->", err
+                error(err, "Got an error")
 
                 #
                 # SOAP.faultType: <Fault SOAP-ENV:Server: Exception from service object:
@@ -851,7 +963,7 @@ def checks_by_ids(ids):
             output = query(lines=original_text.splitlines())
             if output:
                 write_log(
-                    "=== [[" + title + "]] ===\n{{/box|%s|prev|%s|%s|00}}"
+                    "=== [[" + title + "]] ===\n{{botbox|%s|prev|%s|%s|00}}"
                         % (title.replace(" ", "_").replace("\"", "%22"),
                            id, "author")
                         + output,
@@ -876,23 +988,32 @@ class CheckRobot:
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s not found' % page.title())
                 continue
-            except wikipedia.IsRedirectPage:
-                original_text = page.get(get_redirect=True)
+            except wikipedia.IsRedirectPage, error:
+                wikipedia.output(u'Page %s redirect to \'%s\'' % (page.aslink(), error.message))
+                bot = CheckRobot(iter([wikipedia.Page(page.site(), error.message),]))
+                bot.run()
+                continue
 
             if skip_disambig:
                 if page.isDisambig():
-                    wikipedia.output(u'Page %s is a disambiguation page' % page.title())
+                    wikipedia.output(u'Page %s is a disambiguation page' % page.aslink())
                     continue
 
-#            colors = [13] * len(page.title())
     	    wikipedia.output(page.title())
 
 	    if original_text:
                 text = skip_section(original_text)
-                output = query(lines = text.splitlines())
+
+                if remove_wikicode_dotall:
+                    text = remove_wikicode(text, re_dotall = True)
+
+                output = query(lines = text.splitlines(), wikicode = not remove_wikicode_dotall)
                 if output:
                    write_log('=== [[' + page.title() + ']] ===' + output + '\n',
                              filename = output_file)
+
+def short_url(url):
+    return url[url.index('://')+3:]
 
 def put(page, text, comment):
     while True:
@@ -900,16 +1021,17 @@ def put(page, text, comment):
             page.put(text, comment = comment)
             break
         except wikipedia.SpamfilterError, url:
-            print "Spam filter"
-            text = re.sub(url[0], '<blacklist>' + url[0][url[0].index('://')+3:], text)
+            warn(url, prefix = "Spam filter")
+            text = re.sub(url[0], '<blacklist>' + short_url(url[0]), text)
         except wikipedia.EditConflict:
-            print "Edit conflict"
+            warn("Edit conflict")
             raise wikipedia.EditConflict
 
 def check_config(var, license_id, license_name):
     if var:
         if not license_id:
-            wikipedia.output(u"WARNING: You don't have set a " + license_name + ", search engine is disabled.")
+            warn(u"You don't have set a " + license_name + ", search engine is disabled.",
+                 prefix = "WARNING")
             return False
     return var
 
