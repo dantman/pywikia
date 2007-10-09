@@ -514,7 +514,7 @@ def remove_wikicode(text, re_dotall = False, debug = False):
             if not m:
                 break
 
-            s = pywikiparser.Parser(m.group(1), debug = True)
+            s = pywikiparser.Parser(m.group(1))
 
             try:
                 xmldata = s.parse().toxml()
