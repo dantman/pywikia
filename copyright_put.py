@@ -51,10 +51,10 @@ if append_date_to_wiki_save_path:
 
 separatorC = re.compile('(?m)^== +')
 
-def set_template():
+def set_template(name = None):
 
     site = wikipedia.getSite()
-    url = "%s://%s%s" % (site.protocol, site.hostname(), site.path())
+    url = "%s://%s%s" % (site.protocol(), site.hostname(), site.path())
 
     botdate = u"""
 <div style="text-align:right">{{{1}}}</div><noinclude>%s\n[[%s:%s]]</noinclude>
@@ -64,10 +64,15 @@ def set_template():
 <div class=plainlinks style="text-align:right">[%s?title={{{1}}}&diff={{{2}}}&oldid={{{3}}} diff] - [%s?title={{{1}}}&action=history cron] - [%s?title=Special:Log&page={{{1}}} log]</div><noinclude>%s\n[[%s:%s]]</noinclude>
 """ % (url, url, url, template_cat[0], site.namespace(14), template_cat[1])
 
-    if append_date_to_entries:
+    if name == 'botdate':
         p = wikipedia.Page(site, 'Template:botdate')
         if not p.exists():
-            p.put(botdate)
+            p.put(botdate, comment = 'Init.')
+
+    if name == 'botbox':
+        p = wikipedia.Page(site, 'Template:botbox')
+        if not p.exists():
+            p.put(botbox, comment = 'Init.')
 
 def stat_sum(engine, text):
     return len(re.findall('(?im)^\*.*?' + engine + '.*?- ', text))
@@ -221,6 +226,11 @@ def run(send_stats = False):
                 wikipedia.output("\'%s\' deleted." % f)
         except wikipedia.PageNotSaved:
             raise
+
+        if append_date_to_entries:
+            set_template(name =  'botdate')
+        if '{{botbox' in wikitext:
+            set_template(name =  'botbox')
 
     if send_stats:
         put_stats()
