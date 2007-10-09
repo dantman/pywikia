@@ -2,14 +2,16 @@
 """
 Library to get and put pages on a MediaWiki.
 
-Contents of the library (objects and functions to be used outside, situation
-late August 2004)
+Contents of the library (objects and functions to be used outside)
 
 Classes:
-    Page(site, title):      A page on a MediaWiki site
+    Page(site, title): A page on a MediaWiki site
     ImagePage(site, title): An image descriptor Page
-    Site(lang, fam):        A MediaWiki site
-    Throttle:               Limits reading and writing rates
+    Site(lang, fam): A MediaWiki site
+
+Factory functions:
+    Family(name): Import the named family.
+    getSite(lang, fam): Return a Site instance.
 
 Exceptions:
     Error:              Base class for all exceptions in this module
@@ -29,36 +31,74 @@ Exceptions:
     BadTitle:           Server responded with BadTitle.
     UserBlocked:        Client's username or IP has been blocked
     PageNotFound:       Page not found in list
-   
+
+Objects:
+    get_throttle:       Call to limit rate of read-access to wiki
+    put_throttle:       Call to limit rate of write-access to wiki
+
 Other functions:
-getall(): Load pages via Special:Export
-setAction(text): Use 'text' instead of "Wikipedia python library" in
-    editsummaries
-handleArgs(): Checks whether text is an argument defined on wikipedia.py
-    (these are -family, -lang, -log and others)
-translate(xx, dict): dict is a dictionary, giving text depending on language,
-    xx is a language. Returns the text in the most applicable language for
-    the xx: wiki
-setUserAgent(text): Sets the string being passed to the HTTP server as
-    the User-agent: header. Defaults to 'Pywikipediabot/1.0'.
+    getall(): Load a group of pages via Special:Export
 
-output(text): Prints the text 'text' in the encoding of the user's console.
-input(text): Asks input from the user, printing the text 'text' first.
-showDiff(oldtext, newtext): Prints the differences between oldtext and newtext
-    on the screen
+    handleArgs(): Process all standard command line arguments (such as -family,
+        -lang, -log and others)
 
-getLanguageLinks(text,xx): get all interlanguage links in wikicode text 'text'
-    in the form xx:pagename
-removeLanguageLinks(text): gives the wiki-code 'text' without any interlanguage
-    links.
-replaceLanguageLinks(oldtext, new): in the wiki-code 'oldtext' remove the
-    language links and replace them by the language links in new, a dictionary
-    with the languages as keys and either Pages or titles as values
-getCategoryLinks(text,xx): get all category links in text 'text' (links in the
-    form xx:pagename)
-removeCategoryLinks(text,xx): remove all category links in 'text'
-replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
-    those in new (new a list of category Pages)
+    translate(xx, dict): dict is a dictionary, giving text depending on language,
+        xx is a language. Returns the text in the most applicable language for
+        the xx: wiki
+
+    setAction(text): Use 'text' instead of "Wikipedia python library" in
+        edit summaries
+    setUserAgent(text): Sets the string being passed to the HTTP server as
+        the User-agent: header. Defaults to 'Pywikipediabot/1.0'.
+
+    output(text): Prints the text 'text' in the encoding of the user's
+        console.
+    input(text): Asks input from the user, printing the text 'text' first.
+    showDiff(oldtext, newtext): Prints the differences between oldtext and
+        newtext on the screen
+    url2link: Convert urlname of a wiki page into interwiki link format.
+
+Wikitext manipulation functions: each of these takes a unicode string
+    containing wiki text as its first argument, and returns a modified
+    version of the text unless otherwise noted --
+
+    replaceExcept: replace all instances of 'old' by 'new', skipping any
+        instances of 'old' within comments and other special text blocks
+    removeDisabledParts: remove text portions exempt from wiki markup
+    isDisabled(text,index): return boolean indicating whether text[index] is
+        within a non-wiki-markup section of text
+    decodeEsperantoX: decode Esperanto text using the x convention.
+    encodeEsperantoX: convert wikitext to the Esperanto x-encoding.
+    sectionencode: encode text for use as a section title in wiki-links.
+
+Wikitext maniupulation functions for interlanguage links:
+    getLanguageLinks(text,xx): extract interlanguage links from text and
+        return in a dict
+    removeLanguageLinks(text): remove all interlanguage links from text
+    replaceLanguageLinks(oldtext, new): remove the language links and
+        replace them with links from a dict like the one returned by
+        getLanguageLinks
+    interwikiFormat(links): convert a dict of interlanguage links to text
+        (using same dict format as getLanguageLinks)
+
+Wikitext manipulation functions for category links:
+    getCategoryLinks(text): return list of Category objects corresponding
+        to links in text
+    removeCategoryLinks(text): remove all category links from text
+    replaceCategoryLinks(oldtext,new): replace the category links in oldtext by
+        those in a list of Category objects
+    replaceCategoryInPlace(text,oldcat,newtitle): replace a single link to
+        oldcat with a link to category given by newtitle
+    categoryFormat(links): return a string containing links to all
+        Categories in a list.
+
+Unicode utility functions:
+    UnicodeToAsciiHtml: Convert unicode to a bytestring using HTML entities.
+    url2unicode: Convert url-encoded text to unicode using a site's encoding.
+    unicode2html: Ensure unicode string is encodable; if not, convert to
+        ASCII for HTML.
+    html2unicode: Replace HTML entities in text with unicode characters.
+
 stopme(): Put this on a bot when it is not or not communicating with the Wiki
     any longer. It will remove the bot from the list of running processes,
     and thus not slow down other bot threads anymore.
@@ -270,7 +310,7 @@ class Page(object):
             # Sometimes users copy the link to a site from one to another. Try both the source site and the destination site to decode.
             t = url2unicode(t, site = insite, site2 = site)
 
-            #Normalize unicode string to a NFC (composed) format to allow proper string comparisons
+            # Normalize unicode string to a NFC (composed) format to allow proper string comparisons
             # According to http://svn.wikimedia.org/viewvc/mediawiki/branches/REL1_6/phase3/includes/normal/UtfNormal.php?view=markup
             # the mediawiki code normalizes everything to NFC, not NFKC (which might result in information loss).
             t = unicodedata.normalize('NFC', t)
@@ -331,7 +371,10 @@ class Page(object):
                             try:
                                 self._site = getSite(otherlang, familyName)
                             except ValueError:
-                                raise NoPage('%s is not a local page on %s, and the %s family is not supported by PyWikipediaBot!' % (title, self.site(), familyName))
+                                raise NoPage("""\
+%s is not a local page on %s, and the %s family is
+not supported by PyWikipediaBot!"""
+                                            % (title, self.site(), familyName))
                             t = m.group(2)
                     else:
                         # If there's no recognized interwiki or namespace,
@@ -477,7 +520,6 @@ class Page(object):
             _autoFormat = date.getAutoFormat(self.site().language(),
                                              self.titleWithoutNamespace())
         return _autoFormat
-
     def isAutoTitle(self):
         """Return True if title of this Page is in the autoFormat dictionary."""
         return self.autoFormat()[0] is not None
@@ -550,7 +592,7 @@ class Page(object):
                     if verbose and not m:
                         output(u"WARNING: Section does not exist: %s" % self.aslink(forceInterwiki = True))
                 if self.site().lang == 'eo':
-                    self._contents = resolveEsperantoXConvention(self._contents)
+                    self._contents = decodeEsperantoX(self._contents)
             # Store any exceptions for later reference
             except NoPage:
                 self._getexception = NoPage
@@ -578,6 +620,7 @@ class Page(object):
 
         This method returns a 3-tuple containing the raw wiki text as a
         unicode string, the watchlist status, and any edit restrictions.
+        
         """
         isWatched = False
         editRestriction = None
@@ -1110,7 +1153,7 @@ class Page(object):
         # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
         # of Bordeaux
         if self.site().lang == 'eo':
-            newtext = doubleXForEsperanto(newtext)
+            newtext = encodeEsperantoX(newtext)
         return self._putPage(newtext, comment, watchArticle, minorEdit, newPage, self.site().getToken(sysop = sysop), sysop = sysop)
 
     def _putPage(self, text, comment=None, watchArticle=False, minorEdit=True,
@@ -2134,10 +2177,27 @@ class Page(object):
 
 
 class ImagePage(Page):
-    # a Page in the Image namespace
-    def __init__(self, site, title = None, insite = None):
+    """A subclass of Page representing an image descriptor wiki page.
+
+    Supports the same interface as Page, with the following added methods:
+
+    getImagePageHtml          : Download image page and return raw HTML text.
+    fileURL                   : Return the URL for the image described on this
+                                page.
+    fileIsOnCommons           : Return True if image stored on Wikimedia
+                                Commons.
+    fileIsShared              : Return True if image stored on Wikitravel
+                                shared repository.
+    getFileMd5Sum             : Return image file's MD5 checksum.
+    getFileVersionHistory     : Return the image file's version history.
+    getFileVersionHistoryTable: Return the version history in the form of a
+                                wiki table.
+    usingPages                : Yield Pages on which the image is displayed.
+
+    """
+    def __init__(self, site, title, insite = None):
         # TODO: raise an exception if title is not in Image: namespace
-        Page.__init__(self, site, title, insite)
+        Page.__init__(self, site, title, insite, defaultNamespace=6)
         self._imagePageHtml = None
 
     def getImagePageHtml(self):
@@ -2153,6 +2213,7 @@ class ImagePage(Page):
         return self._imagePageHtml
 
     def fileUrl(self):
+        """Return the URL for the image described on this page."""
         # There are three types of image pages:
         # * normal, small images with links like: filename.png (10KB, MIME type: image/png)
         # * normal, large images with links like: Download high resolution version (1024x768, 200 KB)
@@ -2166,26 +2227,38 @@ class ImagePage(Page):
         try:
             url = m.group('url') or m.group('url2')
         except AttributeError:
-            raise NoPage(u'Image file URL for %s not found.' % self.aslink(forceInterwiki = True))
+            raise NoPage(u'Image file URL for %s not found.'
+                         % self.aslink(forceInterwiki = True))
         return url
 
     def fileIsOnCommons(self):
-        return self.fileUrl().startswith(u'http://upload.wikimedia.org/wikipedia/commons/')
+        """Return True if the image is stored on Wikimedia Commons"""
+        return self.fileUrl().startswith(
+            u'http://upload.wikimedia.org/wikipedia/commons/')
 
     def fileIsShared(self):
+        """Return True if image is stored on Wikitravel shared repository."""
         if 'wikitravel_shared' in self.site().shared_image_repository():
-            return self.fileUrl().startswith(u'http://wikitravel.org/upload/shared/')
+            return self.fileUrl().startswith(
+                u'http://wikitravel.org/upload/shared/')
         return self.fileIsOnCommons()
 
     # FIXME: MD5 might be performed on not complete file due to server disconnection
     # (see bug #1795683).
     def getFileMd5Sum(self):
+        """Return image file's MD5 checksum."""
         uo = MyURLopener()
         f = uo.open(self.fileUrl())
         md5Checksum = md5.new(f.read()).hexdigest()
         return md5Checksum
 
     def getFileVersionHistory(self):
+        """Return the image file's version history.
+
+        Return value is a list of tuples containing (timestamp, username,
+        resolution, filesize, comment).
+        
+        """
         result = []
         history = re.search('(?s)<table class="filehistory">.+?</table>', self.getImagePageHtml())
 
@@ -2208,13 +2281,14 @@ class ImagePage(Page):
         return result
 
     def getFileVersionHistoryTable(self):
+        """Return the version history in the form of a wiki table."""
         lines = []
         for (datetime, username, resolution, size, comment) in self.getFileVersionHistory():
             lines.append('| %s || %s || %s || %s || <nowiki>%s</nowiki>' % (datetime, username, resolution, size, comment))
         return u'{| border="1"\n! date/time || username || resolution || size || edit summary\n|----\n' + u'\n|----\n'.join(lines) + '\n|}'
 
     def usingPages(self):
-        """Yield Pages on which this ImagePage is displayed."""
+        """Yield Pages on which the image is displayed."""
         titleList = re.search('(?s)<h2 id="filelinks">.+?</ul>',
                               self.getImagePageHtml()).group()
         lineR = re.compile(
@@ -2223,7 +2297,8 @@ class ImagePage(Page):
             yield Page(self.site(), match.group('title'))
 
 
-class GetAll(object):
+class _GetAll(object):
+    """For internal use only - supports getall() function"""
     def __init__(self, site, pages, throttle, force):
         self.site = site
         self.pages = []
@@ -2245,7 +2320,7 @@ class GetAll(object):
                 except (socket.error, httplib.BadStatusLine, ServerError):
                     # Print the traceback of the caught exception
                     output(u''.join(traceback.format_exception(*sys.exc_info())))
-                    output(u'DBG> got network error in GetAll.run. Sleeping for %d seconds...' % dt)
+                    output(u'DBG> got network error in _GetAll.run. Sleeping for %d seconds...' % dt)
                     time.sleep(dt)
                     if dt <= 60:
                         dt += 15
@@ -2373,7 +2448,7 @@ class GetAll(object):
         pagenames = [page.sectionFreeTitle() for page in self.pages]
         # We need to use X convention for requested page titles.
         if self.site.lang == 'eo':
-            pagenames = [doubleXForEsperanto(pagetitle) for pagetitle in pagenames]
+            pagenames = [encodeEsperantoX(pagetitle) for pagetitle in pagenames]
         pagenames = u'\r\n'.join(pagenames)
         if type(pagenames) != type(u''):
             output(u'Warning: xmlreader.WikipediaXMLHandler.getData() got non-unicode page names. Please report this.')
@@ -2405,11 +2480,15 @@ class GetAll(object):
 
 def getall(site, pages, throttle=True, force=False):
     """Use Special:Export to bulk-retrieve a group of pages from site
-       Arguments: site = Site object
-                  pages = iterable that yields Page objects
+
+    Arguments: site = Site object
+               pages = iterable that yields Page objects
+
     """
+    # TODO: why isn't this a Site method?
+    pages = list(pages)  # if pages is an iterator, we need to 
     output(u'Getting %d pages from %s...' % (len(pages), site))
-    return GetAll(site, pages, throttle, force).run()
+    _GetAll(site, pages, throttle, force).run()
 
 
 # Library functions
@@ -2443,9 +2522,19 @@ setUserAgent('PythonWikipediaBot/1.0')
 
 # Mechanics to slow down page download rate.
 class Throttle(object):
-    def __init__(self, mindelay = config.minthrottle, maxdelay = config.maxthrottle, multiplydelay = True):
-        """Make sure there are at least 'delay' seconds between page-gets
-           after 'ignore' initial page-gets"""
+    """For internal use only - control rate of access to wiki server
+
+    Calling this object blocks the calling thread until at least 'delay'
+    seconds have passed since the previous call.
+
+    The framework initiates two Throttle objects: get_throttle to control
+    the rate of read access, and put_throttle to control the rate of write
+    access.
+
+    """
+    def __init__(self, mindelay=config.minthrottle,
+                 maxdelay=config.maxthrottle,
+                 multiplydelay=True):
         self.lock = threading.RLock()
         self.mindelay = mindelay
         self.maxdelay = maxdelay
@@ -2589,23 +2678,30 @@ class Throttle(object):
         finally:
             self.lock.release()
 
-def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowoverlap = False, marker = ''):
+# functions to manipulate wikitext strings (by default, all text arguments
+# should be Unicode)
+# All return the modified text as a unicode object
+
+def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
+                  allowoverlap=False, marker = ''):
     """
-    Replaces old by new in text, skipping occurences of old e.g. within nowiki
-    tags or HTML comments.
-    If caseInsensitive is true, then use case insensitivity in the regex
-    matching. If allowoverlap is true, overlapping occurences are all replaced
-    (watch out when using this, it might lead to infinite loops!).
+    Return text with 'old' replaced by 'new', ignoring specified types of text.
+
+    Skips occurences of 'old' within exceptions; e.g., within nowiki tags or
+    HTML comments. If caseInsensitive is true, then use case insensitive
+    regex matching. If allowoverlap is true, overlapping occurences are all
+    replaced (watch out when using this, it might lead to infinite loops!).
 
     Parameters:
-        text            - a string
+        text            - a unicode string
         old             - a compiled regular expression
-        new             - a string
-        exceptList      - a list of strings which signal what to leave out,
+        new             - a unicode string
+        exceptions      - a list of strings which signal what to leave out,
                           e.g. ['math', 'table', 'template']
         caseInsensitive - a boolean
-        marker          - a string, it will be added to the last replacement,
+        marker          - a string that will be added to the last replacement;
                           if nothing is changed, it is added at the end
+
     """
     # Hyperlink regex is defined in weblinkchecker.py
     import weblinkchecker
@@ -2720,7 +2816,9 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive = False, allowover
 
 def removeDisabledParts(text, tags = ['*']):
     """
-    Removes those parts of a wiki text where wiki markup is disabled, i.e.
+    Return text without portions where wiki markup is disabled
+
+    Parts that can/will be removed are --
     * HTML comments
     * nowiki tags
     * pre tags
@@ -2737,13 +2835,13 @@ def removeDisabledParts(text, tags = ['*']):
             }
     if '*' in tags:
         tags = regexes.keys()
-    toRemoveR = re.compile('|'.join([regexes[tag] for tag in tags]), re.IGNORECASE | re.DOTALL)
+    toRemoveR = re.compile('|'.join([regexes[tag] for tag in tags]),
+                           re.IGNORECASE | re.DOTALL)
     return toRemoveR.sub('', text)
 
 def isDisabled(text, index, tags = ['*']):
     """
-    Checks whether the text part at the given location is disabled, e.g.
-    by a comment or by nowiki tags.
+    Return True if text[index] is disabled, e.g. by a comment or by nowiki tags.
 
     For the tags parameter, see removeDisabledParts() above.
     """
@@ -2755,13 +2853,24 @@ def isDisabled(text, index, tags = ['*']):
     text = removeDisabledParts(text, tags)
     return (marker not in text)
 
-# Part of library dealing with interwiki links
+# Part of library dealing with interwiki language links
+
+# Note - MediaWiki supports two kinds of interwiki links; interlanguage and
+#        interproject.  These functions only deal with links to a
+#        corresponding page in another language on the same project (e.g.,
+#        Wikipedia, Wiktionary, etc.) in another language. They do not find
+#        or change links to a different project, or any that are formatted
+#        as in-line interwiki links (e.g., "[[:es:Articulo]]".  (CONFIRM)
 
 def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     """
-    Returns a dictionary with language codes as keys and Page objects as values
-    for each interwiki link found in the text. Do not call this routine
-    directly, use Page objects instead"""
+    Return a dict of interlanguage links found in text.
+    
+    Dict uses language codes as keys and Page objects as values.
+    Do not call this routine directly, use Page.interwikiLinks() method
+    instead.
+
+    """
     if insite == None:
         insite = getSite()
     result = {}
@@ -2785,7 +2894,8 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
                 # ignore text after the pipe
                 pagetitle = pagetitle[:pagetitle.index('|')]
             if not pagetitle:
-                output(u"ERROR: %s - ignoring impossible link to %s:%s" % (pageLink, lang, pagetitle))
+                output(u"ERROR: %s - ignoring impossible link to %s:%s"
+                       % (pageLink, lang, pagetitle))
             else:
                 # we want the actual page objects rather than the titles
                 site = insite.getSite(code = lang)
@@ -2793,11 +2903,14 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
     return result
 
 def removeLanguageLinks(text, site = None, marker = ''):
-    """Given the wiki-text of a page, return that page with all interwiki
-       links removed. If a link to an unknown language is encountered,
-       a warning is printed. If a marker is defined, the marker is placed
-       at the location of the last occurence of an interwiki link (at the end
-       if there are no interwikilinks)."""
+    """Return text with all interlanguage links removed.
+
+    If a link to an unknown language is encountered, a warning is printed.
+    If a marker is defined, that string is placed at the location of the
+    last occurence of an interwiki link (at the end if there are no
+    interwikilinks).
+
+    """
     if site == None:
         site = getSite()
     if not site.validLanguageLinks():
@@ -2805,16 +2918,19 @@ def removeLanguageLinks(text, site = None, marker = ''):
     # This regular expression will find every interwiki link, plus trailing
     # whitespace.
     languageR = '|'.join(site.validLanguageLinks())
-    interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*' % languageR, re.IGNORECASE)
-    text = replaceExcept(text, interwikiR, '', ['nowiki', 'comment', 'math', 'pre'], marker = marker)
-    return normalWhitespace(text)
+    interwikiR = re.compile(r'\[\[(%s)\s?:[^\]]*\]\][\s]*'
+                            % languageR, re.IGNORECASE)
+    text = replaceExcept(text, interwikiR, '',
+                         ['nowiki', 'comment', 'math', 'pre'], marker=marker)
+    return text.strip()
 
 def replaceLanguageLinks(oldtext, new, site = None):
-    """Replace the interwiki language links given in the wikitext given
-       in oldtext by the new links given in new.
+    """Replace interlanguage links in the text with a new set of links.
 
-       'new' should be a dictionary with the language names as keys, and
-       Page objects as values.
+    'new' should be a dict with the language names as keys, and Page objects
+    as values (i.e., just like the dict returned by getLanguageLinks
+    function).
+    
     """
     # Find a marker that is not already in the text.
     marker = '@@'
@@ -2845,14 +2961,14 @@ def replaceLanguageLinks(oldtext, new, site = None):
     return newtext
 
 def interwikiFormat(links, insite = None):
-    """Create a suitable string encoding all interwiki links for a wikipedia
-       page.
+    """Convert interwiki link dict into a wikitext string.
 
-       'links' should be a dictionary with the language codes as keys, and
-       Page objects as values.
+    'links' should be a dict with the language codes as keys, and Page
+    objects as values.
 
-       The string is formatted for inclusion in insite (defaulting to your
-       own site).
+    Return a unicode string that is formatted for inclusion in insite
+    (defaulting to the current site).
+    
     """
     if insite is None:
         insite = getSite()
@@ -2886,42 +3002,27 @@ def interwikiFormat(links, insite = None):
         ar = insite.interwiki_putfirst_doubled(ar) + ar
     for site in ar:
         try:
-            link = links[site].aslink(forceInterwiki = True)
+            link = links[site].aslink(forceInterwiki=True)
             s.append(link)
         except AttributeError:
-            s.append(site.linkto(links[site],othersite=insite))
+            s.append(site.linkto(links[site], othersite=insite))
     if insite.lang in insite.family.interwiki_on_one_line:
-        sep = ' '
+        sep = u' '
     else:
-        sep = '\r\n'
-    s=sep.join(s) + '\r\n'
+        sep = u'\r\n'
+    s=sep.join(s) + u'\r\n'
     return s
 
-def normalWhitespace(text):
-    # Remove white space at the beginning
-    while 1:
-        if text and text.startswith('\r\n'):
-            text=text[2:]
-        elif text and text.startswith(' '):
-            # This assumes that the first line NEVER starts with a space!
-            text=text[1:]
-        else:
-            break
-    # Remove white space at the end
-    while 1:
-        if text and text[-1:] in '\r\n \t':
-            text=text[:-1]
-        else:
-            break
-    return text
-
-# Categories
+# Wikitext manipulation functions dealing with category links
 
 def getCategoryLinks(text, site):
     import catlib
-    """Returns a list of category links.
-       in the form {code:pagename}. Do not call this routine directly, use
-       Page objects instead"""
+    """Return a list of category links found in text.
+
+    List contains Category objects.
+    Do not call this routine directly, use Page.categories() instead.
+
+    """
     result = []
     # Ignore category links within nowiki tags, pre tags, includeonly tags,
     # and HTML comments
@@ -2934,9 +3035,12 @@ def getCategoryLinks(text, site):
     return result
 
 def removeCategoryLinks(text, site, marker = ''):
-    """Given the wiki-text of a page, return that page with all category
-       links removed. Puts the marker after the last replacement (at the
-       end of the text if there is no replacement)"""
+    """Return text with all category links removed.
+
+    Put the string marker after the last replacement (at the end of the text
+    if  there is no replacement).
+
+    """
     # This regular expression will find every link that is possibly an
     # interwiki link, plus trailing whitespace. The language code is grouped.
     # NOTE: This assumes that language codes only consist of non-capital
@@ -2944,7 +3048,7 @@ def removeCategoryLinks(text, site, marker = ''):
     catNamespace = '|'.join(site.category_namespaces())
     categoryR = re.compile(r'\[\[\s*(%s)\s*:.*?\]\][\s]*' % catNamespace)
     text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'], marker = marker)
-    return normalWhitespace(text)
+    return text.strip()
 
 def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
     """Replace the category oldcat with the category newcat and then return
@@ -2972,15 +3076,9 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
         text = replaceExcept(oldtext, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])    
     else:
         text = replaceExcept(oldtext, categoryR, '[[Category:%s\\2' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
-##    categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*(\|[^]]+)?\]\]'
-##                            % (catNamespace, title.replace(' ','_')))
-##    if newcat is None:
-##        text = replaceExcept(text, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])
-##    else:
-##        text = replaceExcept(text, categoryR, '[[Category:%s\\2' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
-    return text
+    return text.strip()
 
-def replaceCategoryLinks(oldtext, new, site = None):
+def replaceCategoryLinks(oldtext, new, site=None):
     """Replace the category links given in the wikitext given
        in oldtext by the new links given in new.
 
@@ -3019,15 +3117,15 @@ def replaceCategoryLinks(oldtext, new, site = None):
     else:
         s2 = s2.replace(marker,'')
         return s2
-    return newtext
+    return newtext.strip()
 
 def categoryFormat(categories, insite = None):
-    """Create a suitable string with all category links for a wiki
-       page.
+    """Return a string containing links to all categories in a list.
 
-       'categories' should be a list of Category objects.
+    'categories' should be a list of Category objects.
 
-       The string is formatted for inclusion in insite.
+    The string is formatted for inclusion in insite.
+    
     """
     if not categories:
         return ''
@@ -3043,22 +3141,28 @@ def categoryFormat(categories, insite = None):
     return sep.join(catLinks) + '\r\n'
 
 # end of category specific code
-
 def url2link(percentname, insite, site):
-    """Convert a url-name of a page into a proper name for an interwiki link
-       the argument 'insite' specifies the target wiki
-       """
+    """Convert urlname of a wiki page into interwiki link format.
+
+    'percentname' is the page title as given by Page.urlname();
+    'insite' specifies the target Site;
+    'site' is the Site on which the page is found.
+
+    """
+    # Note: this is only needed if linking between wikis that use different
+    # encodings, so it is now largely obsolete.  [CONFIRM]
     percentname = percentname.replace('_', ' ')
     x = url2unicode(percentname, site = site)
     return unicode2html(x, insite.encoding())
 
-def resolveEsperantoXConvention(text):
-
+def decodeEsperantoX(text):
     """
-    Resolves the x convention used to encode Esperanto special characters,
-    e.g. Cxefpagxo and CXefpagXo will both be converted to Ĉefpaĝo.
+    Decode Esperanto text encoded using the x convention.
+    
+    E.g., Cxefpagxo and CXefpagXo will both be converted to Ĉefpaĝo.
     Note that to encode non-Esperanto words like Bordeaux, one uses a
     double x, i.e. Bordeauxx or BordeauxX.
+    
     """
     chars = {
         u'c': u'ĉ',
@@ -3088,10 +3192,12 @@ def resolveEsperantoXConvention(text):
                 if len(old) % 2 == 0:
                     # The first two chars represent an Esperanto letter.
                     # Following x's are doubled.
-                    new = esperanto + ''.join([old[2 * i] for i in range(1, len(old)/2)])
+                    new = esperanto + ''.join([old[2 * i]
+                                               for i in range(1, len(old)/2)])
                 else:
                     # The first character stays latin; only the x's are doubled.
-                    new = latin + ''.join([old[2 * i + 1] for i in range(0, len(old)/2)])
+                    new = latin + ''.join([old[2 * i + 1]
+                                           for i in range(0, len(old)/2)])
                 result += text[pos : match.start() + pos] + new
                 pos += match.start() + len(old)
             else:
@@ -3100,9 +3206,11 @@ def resolveEsperantoXConvention(text):
                 break
     return text
 
-def doubleXForEsperanto(text):
+def encodeEsperantoX(text):
     """
-    Doubles X-es where necessary so that we can submit a page to an Esperanto
+    Convert standard wikitext to the Esperanto x-encoding.
+    
+    Double X-es where necessary so that we can submit a page to an Esperanto
     wiki. Again, we have to keep stupid stuff like cXxXxxX in mind. Maybe
     someone wants to write about the Sony Cyber-shot DSC-Uxx camera series on
     eo: ;)
@@ -3127,12 +3235,13 @@ def doubleXForEsperanto(text):
     return text
 
 def sectionencode(text, encoding):
-    # change the text so that it can be used as a section title in wiki-links
+    """Encode text so that it can be used as a section title in wiki-links."""
     return urllib.quote(text.replace(" ","_").encode(encoding)).replace("%",".")
 
 ######## Unicode library functions ########
 
 def UnicodeToAsciiHtml(s):
+    """Convert unicode to a bytestring using HTML entities."""
     html = []
     for c in s:
         cord = ord(c)
@@ -3143,6 +3252,12 @@ def UnicodeToAsciiHtml(s):
     return ''.join(html)
 
 def url2unicode(title, site, site2 = None):
+    """Convert url-encoded text to unicode using site's encoding.
+
+    If site2 is provided, try its encodings as well.  Uses the first encoding
+    that doesn't cause an error.
+    
+    """
     # create a list of all possible encodings for both hint sites
     encList = [site.encoding()] + list(site.encodings())
     if site2 and site2 <> site:
@@ -3164,9 +3279,12 @@ def url2unicode(title, site, site2 = None):
 
 def unicode2html(x, encoding):
     """
-    We have a unicode string. We can attempt to encode it into the desired
-    format, and if that doesn't work, we encode the unicode into html #
-    entities. If it does work, we return it unchanged.
+    Ensure unicode string is encodable, or else convert to ASCII for HTML.
+    
+    Arguments are a unicode string and an encoding. Attempt to encode the
+    string into the desired format; if that doesn't work, encode the unicode
+    into html &#; entities. If it does work, return it unchanged.
+
     """
     try:
         x.encode(encoding)
@@ -3175,10 +3293,7 @@ def unicode2html(x, encoding):
     return x
 
 def html2unicode(text, ignore = []):
-    """
-    Given a string, replaces all HTML entities by the equivalent unicode
-    characters.
-    """
+    """Replace all HTML entities in text by equivalent unicode characters."""
     # This regular expression will match any decimal and hexadecimal entity and
     # also entities that might be named entities.
     entityR = re.compile(r'&(#(?P<decimal>\d+)|#x(?P<hex>[0-9a-fA-F]+)|(?P<name>[A-Za-z]+));')
@@ -3211,11 +3326,13 @@ def html2unicode(text, ignore = []):
             found = False
     return result
 
+
 def Family(fam = None, fatal = True):
     """
     Import the named family.
-    If fatal is true, the bot will stop running when the given family is
-    unknown. If fatal is false, it will only raise a ValueError exception.
+
+    If fatal is True, the bot will stop running when the given family is
+    unknown. If fatal is False, it will only raise a ValueError exception.
     """
     if fam == None:
         fam = config.family
@@ -3225,7 +3342,10 @@ def Family(fam = None, fatal = True):
         exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
-            output(u"Error importing the %s family. This probably means the family does not exist. Also check your configuration file." % fam)
+            output(u"""\
+Error importing the %s family. This probably means the family
+does not exist. Also check your configuration file."""
+                       % fam)
             import traceback
             traceback.print_stack()
             sys.exit(1)
@@ -3233,49 +3353,99 @@ def Family(fam = None, fatal = True):
             raise ValueError("Family does not exist")
     return myfamily.Family()
 
+
 class Site(object):
-    """A MediaWiki site.
+    """A MediaWiki site. Do not instantiate directly; use getSite() function.
 
-    messages              : There are new messages on the site
-    forceLogin()          : Does not continue until the user has logged in to
-                            the site
-    getUrl()              : Retrieve an URL from the site
-    mediawiki_message(key): Retrieve the text of the MediaWiki message with
-                            the key "key"
-    has_mediawiki_message(key) : True if this site defines a MediaWiki message
-                                 with the key "key"
-                                 
-    Special pages:
-        Dynamic pages:
-            allpages(): Special:Allpages
-            newpages(): Special:Newpages
-            longpages(): Special:Longpages
-            shortpages(): Special:Shortpages
-            categories(): Special:Categories
+    Constructor takes four arguments; only site is mandatory:
 
-        Cached pages:
-            deadendpages(): Special:Deadendpages
-            ancientpages(): Special:Ancientpages
-            lonelypages(): Special:Lonelypages
-            uncategorizedcategories(): Special:Uncategorizedcategories
-            uncategorizedpages(): Special:Uncategorizedpages
-            uncategorizedimages(): Special:Uncategorizedimages
-            unusedcategories(): Special:Unusuedcategories
+    code            language code for Site
+    fam             Wikimedia family (optional: defaults to configured).
+                    Can either be a string or a Family object.
+    user            User to use (optional: defaults to configured)
+    persistent_http Use a persistent http connection. An http connection
+                    has to be established only once, making stuff a whole
+                    lot faster. Do NOT EVER use this if you share Site
+                    objects across threads without proper locking.
+
+    Methods:
+    
+    loggedInAs: return current username, or None if not logged in.
+    forceLogin: require the user to log in to the site
+    messages:   return True if there are new messages on the site
+    cookies:    return user's cookies as a string
+    
+    getUrl:     retrieve an URL from the site
+    urlEncode:  Encode a query to be sent using an http POST request.
+    postForm:   Post form data to an address at this site.
+    postData:   Post encoded form data to an http address at this site.
+    
+    redirect: Return the localized redirect tag for the site.
+    redirectRegex: Return compiled regular expression matching on redirect pages.
+    mediawiki_message: Retrieve the text of a specified MediaWiki message
+    has_mediawiki_message: True if this site defines specified MediaWiki
+                           message
+    linkto(title): Return string in the form of a wikilink to 'title'
+    isInterwikiLink(s): Return True if s is in the form of an interwiki link.
+
+
+    Methods that yield Page objects derived from a wiki's Special: pages
+    (note, some methods yield other information in a tuple along with the
+    Pages; see method docs for details) --
+
+    search(query):             query results from Special:Search
+    allpages():                Special:Allpages
+    newpages():                Special:Newpages
+    longpages():               Special:Longpages
+    shortpages():              Special:Shortpages
+    categories():              Special:Categories (yields Category objects)
+    deadendpages():            Special:Deadendpages
+    ancientpages():            Special:Ancientpages
+    lonelypages():             Special:Lonelypages
+    unwatchedpages():          Special:Unwatchedpages (sysop accounts only)
+    uncategorizedcategories(): Special:Uncategorizedcategories (yields Category)
+    uncategorizedpages():      Special:Uncategorizedpages
+    uncategorizedimages():     Special:Uncategorizedimages (yields ImagePage)
+    unusedcategories():        Special:Unusuedcategories (yields Category)
+    unusedfiles():             Special:Unusedimages (yields ImagePage)
+    withoutinterwiki:          Special:Withoutinterwiki
+    linksearch:                Special:Linksearch
+
+    Convenience methods that provide access to properties of the wiki Family
+    object; all of these are read-only and return a unicode string unless
+    noted --
+
+    encoding: The current encoding for this site.
+    encodings: List of all historical encodings for this site.
+    category_namespace: Canonical name of the Category namespace on this
+        site.
+    category_namespaces: List of all valid names for the Category namespace.
+    image_namespace: Canonical name of the Image namespace on this site.
+    template_namespace: Canonical name of the Template namespace on this
+        site.
+    export_address: URL path for Special:Export.
+    query_address: URL path + '?' for query.php
+    api_address: Return URL path + '?' for api.php
+    apipath: URL path for api.php
+    protocol: Protocol ('http' or 'https') for access to this site.
+    hostname: Host portion of site URL.
+    path: URL path for index.php on this Site.
+    dbName: MySQL database name.
+    move_address: URL path for Special:Movepage.
+    delete_address(s): URL path to delete title 's'.
+    undelete_view_address(s): URL path to view Special:Undelete for title 's'
+    undelete_address: Return URL path to Special:Undelete.
+    protect_address(s): Return URL path to protect title 's'.
+    unprotect_address(s): Return URL path to unprotect title 's'.
+    put_address(s): Return URL path to submit revision to page titled 's'.
+    get_address(s): Return URL path to retrieve page titled 's'.
+    nice_get_address(s): Return shorter URL path to retrieve page titled 's'.
+    edit_address(s): Return URL path for edit form for page titled 's'.
+    purge_address(s): Return URL path to purge cache and retrieve page 's'.
+    block_address: Return path to block an IP address.
 
     """
     def __init__(self, code, fam=None, user=None, persistent_http = None):
-        """Constructor takes four arguments:
-
-        code    language code for Site
-        fam     Wikimedia family (optional: defaults to configured).
-                Can either be a string or a Family object.
-        user    User to use (optional: defaults to configured)
-        persistent_http Use a persistent http connection. An http connection
-                has to be established only once, making stuff a whole lot
-                faster. Do NOT EVER use this if you share Site objects
-                across threads without proper locking.
-        """
-
         self.lang = code.lower()
         if isinstance(fam, basestring) or fam is None:
             self.family = Family(fam, fatal = False)
@@ -3320,9 +3490,84 @@ class Site(object):
 
         self.sandboxpage = Page(self,self.family.sandboxpage(code))
 
+    def loggedInAs(self, sysop = False):
+        """Return the current username if logged in, otherwise return None.
+
+        Checks if we're logged in by loading a page and looking for the login
+        link. We assume that we're not being logged out during a bot run, so
+        loading the test page is only required once.
+
+        """
+        self._loadCookies(sysop = sysop)
+        if not self.loginStatusKnown:
+            output(u'Getting a page to check if we\'re logged in on %s' % self)
+            path = self.put_address('Non-existing_page')
+            text = self.getUrl(path, sysop = sysop)
+            # Search for the "my talk" link at the top
+            mytalkR = re.compile('<li id="pt-userpage"><a href=".+?">(?P<username>.+?)</a></li>')
+            m = mytalkR.search(text)
+            if m:
+                self.loginStatusKnown = True
+                self._loggedInAs = m.group('username')
+                # While we're at it, check if we have got unread messages
+                if '<div class="usermessage">' in text:
+                    output(u'NOTE: You have unread messages on %s' % self)
+                    messages=True
+                else:
+                    messages=False
+                # Check whether we found a token
+                Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+                tokenloc = Rwatch.search(text)
+                if tokenloc:
+                    self.putToken(tokenloc.group(1), sysop = sysop)
+        return self._loggedInAs
+
+    def forceLogin(self, sysop = False):
+        """Log the user in if not already logged in."""
+        if not self.loggedInAs(sysop = sysop):
+            loginMan = login.LoginManager(site = self, sysop = sysop)
+            if loginMan.login(retry = True):
+                self.loginStatusKnown = True
+                self._loggedInAs = loginMan.username
+
+    def cookies(self, sysop = False):
+        """Return a string containing the user's current cookies."""
+        # TODO: cookie caching is disabled
+        #if not hasattr(self,'_cookies'):
+        self._loadCookies(sysop = sysop)
+        return self._cookies
+
+    def _loadCookies(self, sysop = False):
+        """Retrieve session cookies for login"""
+        try:
+            if sysop:
+                try:
+                    username = config.sysopnames[self.family.name][self.lang]
+                except KeyError:
+                    raise NoUsername("""\
+You tried to perform an action that requires admin privileges, but you haven't
+entered your sysop name in your user-config.py. Please add
+sysopnames['%s']['%s']='name' to your user-config.py"""
+                                     % (self.family.name, self.lang))
+            else:
+                username = config.usernames[self.family.name][self.lang]
+        except KeyError:
+            self._cookies = None
+            self.loginStatusKnown = True
+        else:
+            tmp = '%s-%s-%s-login.data' % (
+                    self.family.name, self.lang, username)
+            fn = datafilepath('login-data', tmp)
+            if not os.path.exists(fn):
+                self._cookies = None
+                self.loginStatusKnown = True
+            else:
+                f = open(fn)
+                self._cookies = '; '.join([x.strip() for x in f.readlines()])
+                f.close()
+
     def urlEncode(self, query):
-        """This can encode a query so that it can be sent as a query using
-        a http POST request"""
+        """Encode a query so that it can be sent using an http POST request."""
         if not query:
             return None
         if hasattr(query, 'iteritems'):
@@ -3340,26 +3585,33 @@ class Site(object):
             l.append(key + '=' + value)
         return '&'.join(l)
 
-    def postForm(self, address, predata, sysop = False, useCookie=True):
-        """
-        Posts the given form data to the given address at this site.
+    def postForm(self, address, predata, sysop=False, useCookie=True):
+        """Post http form data to the given address at this site.
+        
         address is the absolute path without hostname.
-        predata is a list of key-value tuples.
-        Returns a (response, data) tuple where response is the HTTP
+        predata is a dict or any iterable that can be converted to a dict,
+        containing keys and values for the http form.
+        
+        Return a (response, data) tuple, where response is the HTTP
         response object and data is a Unicode string containing the
         body of the response.
+        
         """
         data = self.urlEncode(predata)
         try:
-            return self.postData(address, data, sysop = sysop, useCookie=useCookie)
+            return self.postData(address, data, sysop=sysop,
+                                 useCookie=useCookie)
         except socket.error, e:
             raise ServerError(e)
 
-    def postData(self, address, data, contentType = 'application/x-www-form-urlencoded', sysop = False, useCookie=True):
-        """
-        Posts the given data to the given address at this site.
+    def postData(self, address, data,
+                 contentType='application/x-www-form-urlencoded',
+                 sysop=False, useCookie=True):
+        """Post encoded data to the given http address at this site.
+        
         address is the absolute path without hostname.
-        data is an ASCII string. (or isn't it?)
+        data is an ASCII string that has been URL-encoded.
+        
         Returns a (response, data) tuple where response is the HTTP
         response object and data is a Unicode string containing the
         body of the response.
@@ -3403,76 +3655,6 @@ class Site(object):
         if not self.persistent_http:
             conn.close()
         return response, data
-
-    def forceLogin(self, sysop = False):
-        if not self.loggedInAs(sysop = sysop):
-            loginMan = login.LoginManager(site = self, sysop = sysop)
-            if loginMan.login(retry = True):
-                self.loginStatusKnown = True
-                self._loggedInAs = loginMan.username
-
-    def loggedInAs(self, sysop = False):
-        """
-        Checks if we're logged in by loading a page and looking for the login
-        link. We assume that we're not being logged out during a bot run, so
-        loading the test page is only required once.
-
-        If logged in, returns the username. Otherwise, returns None
-        """
-        self._loadCookies(sysop = sysop)
-        if not self.loginStatusKnown:
-            output(u'Getting a page to check if we\'re logged in on %s' % self)
-            path = self.put_address('Non-existing_page')
-            text = self.getUrl(path, sysop = sysop)
-            # Search for the "my talk" link at the top
-            mytalkR = re.compile('<li id="pt-userpage"><a href=".+?">(?P<username>.+?)</a></li>')
-            m = mytalkR.search(text)
-            if m:
-                self.loginStatusKnown = True
-                self._loggedInAs = m.group('username')
-                # While we're at it, check if we have got unread messages
-                if '<div class="usermessage">' in text:
-                    output(u'NOTE: You have unread messages on %s' % self)
-                    messages=True
-                else:
-                    messages=False
-                # Check whether we found a token
-                Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
-                tokenloc = Rwatch.search(text)
-                if tokenloc:
-                    self.putToken(tokenloc.group(1), sysop = sysop)
-        return self._loggedInAs
-
-    def cookies(self, sysop = False):
-        # TODO: cookie caching is disabled
-        #if not hasattr(self,'_cookies'):
-        self._loadCookies(sysop = sysop)
-        return self._cookies
-
-    def _loadCookies(self, sysop = False):
-        """Retrieve session cookies for login"""
-        try:
-            if sysop:
-                try:
-                    username = config.sysopnames[self.family.name][self.lang]
-                except KeyError:
-                    raise NoUsername('You tried to perform an action that requires admin privileges, but you haven\'t entered your sysop name in your user-config.py. Please add sysopnames[\'%s\'][\'%s\']=\'name\' to your user-config.py' % (self.family.name, self.lang))
-            else:
-                username = config.usernames[self.family.name][self.lang]
-        except KeyError:
-            self._cookies = None
-            self.loginStatusKnown = True
-        else:
-            tmp = '%s-%s-%s-login.data' % (
-                    self.family.name, self.lang, username)
-            fn = datafilepath('login-data', tmp)
-            if not os.path.exists(fn):
-                self._cookies = None
-                self.loginStatusKnown = True
-            else:
-                f = open(fn)
-                self._cookies = '; '.join([x.strip() for x in f.readlines()])
-                f.close()
 
     r_userGroups = re.compile(ur'var wgUserGroups \= (.*)\;')
     def getUrl(self, path, retry = True, sysop = False, data = None, compress = True):
@@ -3548,7 +3730,11 @@ class Site(object):
                     if retry:
                         # We assume that the server is down. Wait some time, then try again.
                         output(u"%s" % e)
-                        output(u"WARNING: Could not open '%s://%s%s'. Maybe the server or your connection is down. Retrying in %i minutes..." % (self.protocol(), self.hostname(), path, retry_idle_time))
+                        output(u"""\
+WARNING: Could not open '%s://%s%s'. Maybe the server or
+your connection is down. Retrying in %i minutes..."""
+                               % (self.protocol(), self.hostname(), path,
+                                  retry_idle_time))
                         time.sleep(retry_idle_time * 60)
                         # Next time wait longer, but not longer than half an hour
                         retry_idle_time *= 2
@@ -3667,11 +3853,10 @@ Maybe the server is down. Retrying in %i minutes..."""
             return False
 
     def search(self, query, number = 10, namespaces = None):
-        """
-        Generator which yields search results
-        """
+        """Yield search results (using Special:Search page) for query."""
         throttle = True
-        path = self.search_address(urllib.quote_plus(query), n=number, ns = namespaces)
+        path = self.search_address(urllib.quote_plus(query),
+                                   n=number, ns=namespaces)
         get_throttle()
         html = self.getUrl(path)
 
@@ -3700,30 +3885,36 @@ Maybe the server is down. Retrying in %i minutes..."""
 
     # TODO: avoid code duplication for the following methods
     def newpages(self, number = 10, get_redirect = False, repeat = False):
-        """Generator which yields new articles subsequently.
-           It starts with the article created 'number' articles
-           ago (first argument). When these are all yielded
-           and repeat is True,
-           it fetches NewPages again. If there is no new page,
-           it blocks until there is one, sleeping between subsequent
-           fetches of NewPages.
+        """Yield new articles (as Page objects) from Special:Newpages.
 
-           The objects yielded are dictionairies. The keys are
-           date (datetime object), title (pagelink), length (int)
-           user_login (only if user is logged in, string), comment
-           (string) and user_anon (if user is not logged in, string).
+        Starts with the newest article and fetches the number of articles
+        specified in the first argument. If repeat is True, it fetches
+        Newpages again. If there is no new page, it blocks until there is
+        one, sleeping between subsequent fetches of Newpages.
 
+        The objects yielded are tuples composed of the Page object,
+        timestamp (unicode), length (int), an empty unicode string, username
+        or IP address (str), comment (unicode).
+           
         """
-        # The throttling is important here, so always enabled.
-        if repeat:
-            throttle = True
+        # TODO: in recent MW versions Special:Newpages takes a namespace parameter,
+        #       and defaults to 0 if not specified.
+        # TODO: Detection of unregistered users is broken
+        # TODO: Repeat mechanism doesn't make much sense as implemented;
+        #       should use both offset and limit parameters, and have an
+        #       option to fetch older rather than newer pages
         seen = set()
         while True:
             path = self.newpages_address(n=number)
+            # The throttling is important here, so always enabled.
             get_throttle()
             html = self.getUrl(path)
 
-            entryR = re.compile('<li[^>]*>(?P<date>.+?) \S*?<a href=".+?" title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>[\d,.]+)[^\)\]]*[\)\]] .?<a href=".+?" title=".+?:(?P<username>.+?)">')
+            entryR = re.compile(
+'<li[^>]*>(?P<date>.+?) \S*?<a href=".+?"'
+' title="(?P<title>.+?)">.+?</a>.+?[\(\[](?P<length>[\d,.]+)[^\)\]]*[\)\]]'
+' .?<a href=".+?" title=".+?:(?P<username>.+?)">'
+                                )
             for m in entryR.finditer(html):
                 date = m.group('date')
                 title = m.group('title')
@@ -3737,12 +3928,18 @@ Maybe the server is down. Retrying in %i minutes..."""
                     seen.add(title)
                     page = Page(self, title)
                     yield page, date, length, loggedIn, username, comment
-
             if not repeat:
                 break
 
     def longpages(self, number = 10, repeat = False):
-        throttle = True
+        """Yield Pages from Special:Longpages.
+
+        Return values are a tuple of Page object, length(int).
+
+        """
+        #TODO: should use offset and limit parameters; 'repeat' as now
+        #      implemented is fairly useless
+        # this comment applies to all the XXXXpages methods following, as well
         seen = set()
         while True:
             path = self.longpages_address(n=number)
@@ -3752,7 +3949,6 @@ Maybe the server is down. Retrying in %i minutes..."""
             for m in entryR.finditer(html):
                 title = m.group('title')
                 length = int(m.group('length'))
-
                 if title not in seen:
                     seen.add(title)
                     page = Page(self, title)
@@ -3761,6 +3957,7 @@ Maybe the server is down. Retrying in %i minutes..."""
                 break
 
     def shortpages(self, number = 10, repeat = False):
+        """Yield Pages and lengths from Special:Shortpages."""
         throttle = True
         seen = set()
         while True:
@@ -3779,32 +3976,34 @@ Maybe the server is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def categories(self, number = 10, repeat = False):
-        throttle = True
+    def categories(self, number=10, repeat=False):
+        """Yield Category objects from Special:Categories"""
+        import catlib
         seen = set()
         while True:
             path = self.categories_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            entryR = re.compile(
+                '<li><a href=".+?" title="(?P<title>.+?)">.+?</a>.*?</li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
-
                 if title not in seen:
                     seen.add(title)
-                    page = Page(self, title)
+                    page = catlib.Category(self, title)
                     yield page
             if not repeat:
                 break
 
     def deadendpages(self, number = 10, repeat = False):
-        throttle = True
+        """Yield Page objects retrieved from Special:Deadendpages."""
         seen = set()
         while True:
             path = self.deadendpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            entryR = re.compile(
+                '<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
 
@@ -3816,17 +4015,17 @@ Maybe the server is down. Retrying in %i minutes..."""
                 break
 
     def ancientpages(self, number = 10, repeat = False):
-        throttle = True
+        """Yield Pages, datestamps from Special:Ancientpages."""
         seen = set()
         while True:
             path = self.ancientpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a> (?P<date>.+?)</li>')
+            entryR = re.compile(
+'<li><a href=".+?" title="(?P<title>.+?)">.+?</a> (?P<date>.+?)</li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
                 date = m.group('date')
-
                 if title not in seen:
                     seen.add(title)
                     page = Page(self, title)
@@ -3835,13 +4034,15 @@ Maybe the server is down. Retrying in %i minutes..."""
                 break
 
     def lonelypages(self, number = 10, repeat = False):
+        """Yield Pages retrieved from Special:Lonelypages."""
         throttle = True
         seen = set()
         while True:
             path = self.lonelypages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            entryR = re.compile(
+                '<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
 
@@ -3853,13 +4054,14 @@ Maybe the server is down. Retrying in %i minutes..."""
                 break
 
     def unwatchedpages(self, number = 10, repeat = False):
-        throttle = True
+        """Yield Pages from Special:Unwatchedpages (requires Admin privileges)."""
         seen = set()
         while True:
             path = self.unwatchedpages_address(n=number)
             get_throttle()
             html = self.getUrl(path, sysop = True)
-            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a>.+?</li>')
+            entryR = re.compile(
+                '<li><a href=".+?" title="(?P<title>.+?)">.+?</a>.+?</li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
                 if title not in seen:
@@ -3870,51 +4072,52 @@ Maybe the server is down. Retrying in %i minutes..."""
                 break
 
     def uncategorizedcategories(self, number = 10, repeat = False):
-        throttle = True
+        """Yield Categories from Special:Uncategorizedcategories."""
+        import catlib
         seen = set()
         while True:
             path = self.uncategorizedcategories_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            entryR = re.compile(
+                '<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
-
                 if title not in seen:
                     seen.add(title)
-                    page = Page(self, title)
+                    page = catlib.Category(self, title)
                     yield page
             if not repeat:
                 break
 
     def uncategorizedimages(self, number = 10, repeat = False):
-        throttle = True
+        """Yield ImagePages from Special:Uncategorizedimages."""
         seen = set()
         ns = self.image_namespace()
-        entryR = re.compile('<a href=".+?" title="(?P<title>%s:.+?)">.+?</a>' % ns)
+        entryR = re.compile(
+            '<a href=".+?" title="(?P<title>%s:.+?)">.+?</a>' % ns)
         while True:
             path = self.uncategorizedimages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
             for m in entryR.finditer(html):
                 title = m.group('title')
-
                 if title not in seen:
                     seen.add(title)
-                    page = Page(self, title)
+                    page = ImagePage(self, title)
                     yield page
             if not repeat:
                 break
 
-
     def uncategorizedpages(self, number = 10, repeat = False):
-        throttle = True
+        """Yield Pages from Special:Uncategorizedpages."""
         seen = set()
         while True:
             path = self.uncategorizedpages_address(n=number)
             get_throttle()
             html = self.getUrl(path)
-            entryR = re.compile('<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
+            entryR = re.compile(
+                '<li><a href=".+?" title="(?P<title>.+?)">.+?</a></li>')
             for m in entryR.finditer(html):
                 title = m.group('title')
 
@@ -3926,7 +4129,8 @@ Maybe the server is down. Retrying in %i minutes..."""
                 break
 
     def unusedcategories(self, number = 10, repeat = False):
-        throttle = True
+        """Yield Category objects from Special:Unusedcategories."""
+        import catlib
         seen = set()
         while True:
             path = self.unusedcategories_address(n=number)
@@ -3938,16 +4142,17 @@ Maybe the server is down. Retrying in %i minutes..."""
 
                 if title not in seen:
                     seen.add(title)
-                    page = Page(self, title)
+                    page = catlib.Category(self, title)
                     yield page
             if not repeat:
                 break
 
     def unusedfiles(self, number = 10, repeat = False, extension = None):
-        throttle = True
+        """Yield ImagePage objects from Special:Unusedimages."""
         seen = set()
         ns = self.image_namespace()
-        entryR = re.compile('<a href=".+?" title="(?P<title>%s:.+?)">.+?</a>' % ns)
+        entryR = re.compile(
+            '<a href=".+?" title="(?P<title>%s:.+?)">.+?</a>' % ns)
         while True:
             path = self.unusedfiles_address(n=number)
             get_throttle()
@@ -3957,7 +4162,6 @@ Maybe the server is down. Retrying in %i minutes..."""
                 title = m.group('title')
                 if extension:
                     fileext = title[len(title)-3:]
-
                 if title not in seen and fileext == extension:
                     ## Check whether the media is used in a Proofread page
                     # code disabled because it slows this method down, and
@@ -3972,8 +4176,8 @@ Maybe the server is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def withoutinterwiki(self, number = 10, repeat = False):
-        throttle = True
+    def withoutinterwiki(self, number=10, repeat=False):
+        """Yield Pages without language links from Special:Withoutinterwiki."""
         seen = set()
         while True:
             path = self.withoutinterwiki_address(n=number)
@@ -3989,20 +4193,25 @@ Maybe the server is down. Retrying in %i minutes..."""
             if not repeat:
                 break
 
-    def allpages(self, start = '!', namespace = 0, includeredirects = True, throttle = True):
-        """Generator which yields all articles in the home language in
-           alphanumerical order, starting at a given page. By default,
-           it starts at '!', so it should yield all pages.
+    def allpages(self, start='!', namespace=0, includeredirects=True,
+                 throttle=True):
+        """Yield all Pages from Special:Allpages.
 
-           If includeredirects is False, redirects will not be found.
-           If includeredirects equals the string 'only', only redirects
-           will be found. Note that this has not been tested on older
-           versions of the MediaWiki code.
+        Parameters:
+        start   Start at this page. By default, it starts at '!', and yields
+                all pages.
+        namespace Yield all pages in this namespace; defaults to 0.
+                MediaWiki software will only return pages in one namespace
+                at a time.
 
-           The objects returned by this generator are all Page()s.
+        If includeredirects is False, redirects will not be found.
+        If includeredirects equals the string 'only', only redirects
+        will be found. Note that this has not been tested on older
+        versions of the MediaWiki code.
 
-           It is advised not to use this directly, but to use the
-           AllpagesPageGenerator from pagegenerators.py instead.
+        It is advised not to use this directly, but to use the
+        AllpagesPageGenerator from pagegenerators.py instead.
+           
         """
         while True:
             # encode Non-ASCII characters in hexadecimal format (e.g. %F6)
@@ -4024,7 +4233,8 @@ Maybe the server is down. Retrying in %i minutes..."""
                 ibegin = returned_html.index(begin_s)
                 iend = returned_html.index(end_s,ibegin + 3)
             except ValueError:
-                raise ServerError('Couldn\'t extract allpages special page. Make sure you\'re using the MonoBook skin.')
+                raise ServerError(
+"Couldn't extract allpages special page. Make sure you're using MonoBook skin.")
             # remove the irrelevant sections
             returned_html = returned_html[ibegin:iend]
             if self.versionnumber()==2:
@@ -4063,13 +4273,12 @@ Maybe the server is down. Retrying in %i minutes..."""
                 else:
                     break
 
-    def linksearch(self,siteurl):
-        # gives a list of page items, being the pages found on a linksearch
-        # for site site.
+    def linksearch(self, siteurl):
+        """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         if siteurl.startswith('*.'):
             siteurl = siteurl[2:]
-        for url in [siteurl,"*."+siteurl]:
-            path = self.family.linksearch_address(self.lang,url)
+        for url in [siteurl, "*."+siteurl]:
+            path = self.family.linksearch_address(self.lang, url)
             get_throttle()
             html = self.getUrl(path)
             loc = html.find('<div class="mw-spcontent">')
@@ -4080,27 +4289,33 @@ Maybe the server is down. Retrying in %i minutes..."""
                 html = html[:loc]
             R = re.compile('title ?=\"(.*?)\"')
             for title in R.findall(html):
-                if not siteurl in title: # the links themselves have similar form
+                if not siteurl in title:
+                    # the links themselves have similar form
                     yield Page(self,title)
 
     def __repr__(self):
         return self.family.name+":"+self.lang
 
     def linkto(self, title, othersite = None):
+        """Return unicode string in the form of a wikilink to 'title'
+
+        Use optional Site argument 'othersite' to generate an interwiki link.
+
+        """
         if othersite and othersite.lang != self.lang:
-            return '[[%s:%s]]' % (self.lang, title)
+            return u'[[%s:%s]]' % (self.lang, title)
         else:
-            return '[[%s]]' % title
+            return u'[[%s]]' % title
 
     def isInterwikiLink(self, s):
+        """Return True if s is in the form of an interwiki link.
+
+        Interwiki links have the form "foo:bar" or ":foo:bar" where foo is a
+        known language code or family. Called recursively if the first part
+        of the link refers to this site's own family and/or language.
+        
         """
-        Try to check whether s is in the form "foo:bar" or ":foo:bar"
-        where foo is a known language code or family. In such a case
-        we are dealing with an interwiki link.
-        Called recursively if the first part of the link refers to this
-        site's own family and/or language.
-        """
-        s = s.lstrip(":")
+        s = s.strip().lstrip(":")
         if not ':' in s:
             return False
         first, rest = s.split(':',1)
@@ -4125,16 +4340,12 @@ Maybe the server is down. Retrying in %i minutes..."""
                 return True
         return False
 
-    def encoding(self):
-        return self.family.code2encoding(self.lang)
-
-    def encodings(self):
-        return self.family.code2encodings(self.lang)
-
     def redirect(self, default = False):
-        """
-        Gives the localized redirect tag for the site. Falls back
-        to 'REDIRECT' if the site has no special redirect tag.
+        """Return the localized redirect tag for the site.
+
+        If default is True, falls back to 'REDIRECT' if the site has no
+        special redirect tag.
+        
         """
         if default:
             return self.family.redirect.get(self.lang, "REDIRECT")
@@ -4142,9 +4353,10 @@ Maybe the server is down. Retrying in %i minutes..."""
             return self.family.redirect.get(self.lang, None)
 
     def redirectRegex(self):
-        """
-        Regular expression recognizing redirect pages, with a
-        group on the target title.
+        """Return a compiled regular expression matching on redirect pages.
+
+        Group 1 in the regex match object will be the target title.
+        
         """
         try:
             redirKeywords = [u'redirect'] + self.family.redirect[self.lang]
@@ -4155,78 +4367,121 @@ Maybe the server is down. Retrying in %i minutes..."""
         # A redirect starts with hash (#), followed by a keyword, then
         # arbitrary stuff, then a wikilink. The wikilink may contain
         # a label, although this is not useful.
-        return re.compile(r'# *' + redirKeywordsR + '.*?\[\[(.*?)(?:\|.*?)?\]\]', re.IGNORECASE | re.UNICODE | re.DOTALL)
+        return re.compile(r'# *' + redirKeywordsR +
+                                   '.*?\[\[(.*?)(?:\|.*?)?\]\]',
+                          re.IGNORECASE | re.UNICODE | re.DOTALL)
 
     # The following methods are for convenience, so that you can access
     # methods of the Family class easier.
+    def encoding(self):
+        """Return the current encoding for this site."""
+        return self.family.code2encoding(self.lang)
+
+    def encodings(self):
+        """Return a list of all historical encodings for this site."""
+        return self.family.code2encodings(self.lang)
+
     def category_namespace(self):
+        """Return the canonical name of the Category namespace on this site."""
+        # equivalent to self.namespace(14)?
         return self.family.category_namespace(self.lang)
 
     def category_namespaces(self):
+        """Return a list of all valid names for the Category namespace."""
         return self.family.category_namespaces(self.lang)
 
     def image_namespace(self, fallback = '_default'):
+        """Return the canonical name of the Image namespace on this site."""
+        # equivalent to self.namespace(6)?
         return self.family.image_namespace(self.lang, fallback)
 
     def template_namespace(self, fallback = '_default'):
+        """Return the canonical name of the Template namespace on this site."""
+        # equivalent to self.namespace(10)?
         return self.family.template_namespace(self.lang, fallback)
 
     def export_address(self):
+        """Return URL path for Special:Export."""
         return self.family.export_address(self.lang)
 
     def query_address(self):
+        """Return URL path + '?' for query.php (if enabled on this Site)."""
         return self.family.query_address(self.lang)
+
     def api_address(self):
+        """Return URL path + '?' for api.php (if enabled on this Site)."""
         return self.family.api_address(self.lang)
+
     def apipath(self):
+        """Return URL path for api.php (if enabled on this Site)."""
         return self.family.apipath(self.lang)
 
     def protocol(self):
+        """Return protocol ('http' or 'https') for access to this site."""
         return self.family.protocol(self.lang)
 
     def hostname(self):
+        """Return host portion of site URL."""
         return self.family.hostname(self.lang)
 
     def path(self):
+        """Return URL path for index.php on this Site."""
         return self.family.path(self.lang)
 
     def dbName(self):
+        """Return MySQL database name."""
         return self.family.dbName(self.lang)
 
     def move_address(self):
+        """Return URL path for Special:Movepage."""
         return self.family.move_address(self.lang)
 
     def delete_address(self, s):
+        """Return URL path to delete title 's'."""
         return self.family.delete_address(self.lang, s)
 
     def undelete_view_address(self, s, ts=''):
+        """Return URL path to view Special:Undelete for title 's'
+
+        Optional argument 'ts' returns path to view specific deleted version.
+
+        """
         return self.family.undelete_view_address(self.lang, s, ts)
 
     def undelete_address(self):
+        """Return URL path to Special:Undelete."""
         return self.family.undelete_address(self.lang)
 
     def protect_address(self, s):
+        """Return URL path to protect title 's'."""
         return self.family.protect_address(self.lang, s)
 
     def unprotect_address(self, s):
+        """Return URL path to unprotect title 's'."""
         return self.family.unprotect_address(self.lang, s)
 
     def put_address(self, s):
+        """Return URL path to submit revision to page titled 's'."""
         return self.family.put_address(self.lang, s)
 
     def get_address(self, s):
+        """Return URL path to retrieve page titled 's'."""
         return self.family.get_address(self.lang, s)
 
     def nice_get_address(self, s):
+        """Return shorter URL path to retrieve page titled 's'."""
         return self.family.nice_get_address(self.lang, s)
 
     def edit_address(self, s):
+        """Return URL path for edit form for page titled 's'."""
         return self.family.edit_address(self.lang, s)
 
     def purge_address(self, s):
+        """Return URL path to purge cache and retrieve page 's'."""
         return self.family.purge_address(self.lang, s)
 
     def block_address(self):
+        """Return path to block an IP address."""
         return self.family.block_address(self.lang)
 
     def unblock_address(self):
@@ -4237,13 +4492,6 @@ Maybe the server is down. Retrying in %i minutes..."""
 
     def linksearch_address(self, s, limit=500, offset=0):
         return self.family.linksearch_address(self.lang, s, limit=limit, offset=offset)
-
-    def checkCharset(self, charset):
-        if not hasattr(self,'charset'):
-            self.charset = charset
-        assert self.charset.lower() == charset.lower(), "charset for %s changed from %s to %s" % (repr(self), self.charset, charset)
-        if self.encoding().lower() != charset.lower():
-            raise ValueError("code2encodings has wrong charset for %s. It should be %s, but is %s" % (repr(self), charset, self.encoding()))
 
     def search_address(self, q, n=50, ns = 0):
         return self.family.search_address(self.lang, q, n, ns)
@@ -4315,15 +4563,24 @@ Maybe the server is down. Retrying in %i minutes..."""
         return hash(repr(self))
 
     def version(self):
+        """Returns MediaWiki version number as a string."""
         return self.family.version(self.lang)
 
     def versionnumber(self):
+        """Returns an int identifying MediaWiki version.
+
+        Currently this is implemented as returning the minor version
+        number; i.e., 'X' in version '1.X.Y'
+
+        """
         return self.family.versionnumber(self.lang)
 
     def live_version(self):
         """Return the 'real' version number found on [[Special:Versions]]
-           as a tuple (int, int, str) of the major and minor version numbers
-           and any other text contained in the version.
+
+        Return value is a tuple (int, int, str) of the major and minor
+        version numbers and any other text contained in the version.
+        
         """
         global htmldata
         if not hasattr(self, "_mw_version"):
@@ -4339,17 +4596,28 @@ Maybe the server is down. Retrying in %i minutes..."""
                 self._mw_version = self.family.version(self.lang).split(".")
         return self._mw_version
 
+    def checkCharset(self, charset):
+        """Warn if charset returned by wiki doesn't match family file."""
+        if not hasattr(self,'charset'):
+            self.charset = charset
+        assert self.charset.lower() == charset.lower(), \
+               "charset for %s changed from %s to %s" \
+                   % (repr(self), self.charset, charset)
+        if self.encoding().lower() != charset.lower():
+            raise ValueError(
+"code2encodings has wrong charset for %s. It should be %s, but is %s"
+                             % (repr(self), charset, self.encoding()))
+
     def shared_image_repository(self):
         return self.family.shared_image_repository(self.lang)
 
     def __cmp__(self, other):
-        """Pseudo method to be able to use equality and inequality tests on
-           Site objects"""
-        if not isinstance(other,Site):
+        """Perform equality and inequality tests on Site objects."""
+        if not isinstance(other, Site):
             return 1
-        if self.family==other.family:
-            return cmp(self.lang,other.lang)
-        return cmp(self.family.name,other.family.name)
+        if self.family == other.family:
+            return cmp(self.lang ,other.lang)
+        return cmp(self.family.name, other.family.name)
 
     def category_on_one_line(self):
         return self.lang in self.family.category_on_one_line
@@ -4724,30 +4992,31 @@ def altlang(code):
         return ['io','eo']
     return []
 
-
-def translate(code, dict):
+def translate(code, xdict):
     """
     Given a language code and a dictionary, returns the dictionary's value for
     key 'code' if this key exists; otherwise tries to return a value for an
     alternative language that is most applicable to use on the Wikipedia in
     language 'code'.
+    
     The language itself is always checked first, then languages that
     have been defined to be alternatives, and finally English. If none of
     the options gives result, we just take the first language in the
     list.
+    
     """
     # If a site is given instead of a code, use its language
     if hasattr(code,'lang'):
         code = code.lang
 
-    if dict.has_key(code):
-        return dict[code]
+    if xdict.has_key(code):
+        return xdict[code]
     for alt in altlang(code):
-        if dict.has_key(alt):
-            return dict[alt]
-    if dict.has_key('en'):
-        return dict['en']
-    return dict.values()[0]
+        if xdict.has_key(alt):
+            return xdict[alt]
+    if xdict.has_key('en'):
+        return xdict['en']
+    return xdict.values()[0]
 
 def showDiff(oldtext, newtext):
     """
