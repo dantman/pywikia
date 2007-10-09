@@ -23,6 +23,7 @@ import re, sys
 msg = {
     'en': u'Bot: Fixing redirects',
     'pt': u'Bot: Arrumando redirects',
+    'zh': u'Bot: 修复重定向',
     }
 
 featured_articles = {
@@ -34,6 +35,7 @@ featured_articles = {
     'nl': u'Wikipedia:Etalage',
     'sv': u'Wikipedia:Utvalda_artiklar',
     'pt': u'Wikipedia:Os_melhores_artigos',
+    'zh': u'Wikipedia:特色条目',
     }
 
 def firstcap(string):
