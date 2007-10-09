@@ -10,8 +10,8 @@ Classes:
     Site(lang, fam): A MediaWiki site
 
 Factory functions:
-    Family(name): Import the named family.
-    getSite(lang, fam): Return a Site instance.
+    Family(name): Import the named family
+    getSite(lang, fam): Return a Site instance
 
 Exceptions:
     Error:              Base class for all exceptions in this module
@@ -28,7 +28,7 @@ Exceptions:
       EditConflict:     PageNotSaved due to edit conflict while uploading
       SpamfilterError:  PageNotSaved due to MediaWiki spam filter
     ServerError:        Got unexpected response from wiki server
-    BadTitle:           Server responded with BadTitle.
+    BadTitle:           Server responded with BadTitle
     UserBlocked:        Client's username or IP has been blocked
     PageNotFound:       Page not found in list
 
@@ -262,9 +262,8 @@ class Page(object):
                             Pages)
     imagelinks (*)        : The pictures on the page (list of ImagePages)
     templates (*)         : All templates referenced on the page (list of
-                            strings)
+                            Pages)
     templatesWithParams(*): All templates on the page, with list of parameters
-    templatePages (*)     : Page objects for all templates used on this page
     isDisambig (*)        : True if the page is a disambiguation page
     getReferences         : List of pages linking to the page
     canBeEdited (*)       : True if page is unprotected or user has edit
@@ -395,7 +394,7 @@ not supported by PyWikipediaBot!"""
                 if not self.site().nocapitalize:
                     t = t[0].upper() + t[1:]
     #        else:
-    #            output( u"DBG>>> Strange title: %s:%s" % (site.lang, title) )
+    #            output(u"DBG>>> Strange title: %s:%s" % (site.lang, title) )
 
             if self._namespace != 0:
                 t = self.site().namespace(self._namespace) + u':' + t
@@ -520,6 +519,7 @@ not supported by PyWikipediaBot!"""
             _autoFormat = date.getAutoFormat(self.site().language(),
                                              self.titleWithoutNamespace())
         return _autoFormat
+
     def isAutoTitle(self):
         """Return True if title of this Page is in the autoFormat dictionary."""
         return self.autoFormat()[0] is not None
@@ -1022,8 +1022,13 @@ not supported by PyWikipediaBot!"""
         for link in reflist("li", recursive=False):
             title = link.a.string
             if title is None:
-                output("DBG> invalid <li> item in Whatlinkshere: %s" % link)
-            p = Page(self.site(), title)
+                output(u"DBG> invalid <li> item in Whatlinkshere: %s" % link)
+            try:
+                p = Page(self.site(), title)
+            except Error:
+                output(u"DBG> Whatlinkshere:%s contains invalid link to %s"
+                       % (self.title(), title))
+                continue
             isredirect, istemplate = False, False
             textafter = link.a.findNextSibling(text=True)
             if textafter is not None:
@@ -1356,9 +1361,13 @@ not supported by PyWikipediaBot!"""
             if self.namespace() == 1:
                 return Page(self.site(), self.titleWithoutNamespace())
             else:
-                return Page(self.site(), self.site().namespace(ns - 1) + ':' + self.titleWithoutNamespace())
+                return Page(self.site(),
+                            self.site().namespace(ns - 1) + ':'
+                              + self.titleWithoutNamespace())
         else:
-            return Page(self.site(), self.site().namespace(ns + 1) + ':' + self.titleWithoutNamespace())
+            return Page(self.site(),
+                        self.site().namespace(ns + 1) + ':'
+                          + self.titleWithoutNamespace())
 
     def interwiki(self):
         """Return a list of interwiki links in the page text.
@@ -1388,6 +1397,10 @@ not supported by PyWikipediaBot!"""
             except ValueError:
                 output(
     u"ERROR: link from %s to [[%s:%s]] contains invalid unicode reference?!"
+                        % (self.aslink(), newSite, newTitle))
+            except Error:
+                output(
+    u"ERROR: link from %s to [[%s:%s]] is improperly formatted?"
                         % (self.aslink(), newSite, newTitle))
         return result
 
@@ -1455,7 +1468,9 @@ not supported by PyWikipediaBot!"""
             if not self.site().isInterwikiLink(title):
                 try:
                     page = Page(self.site(), title)
-                except:
+                except Error:
+                    output(u"Page %s contains invalid link to [[%s]]."
+                           % (self.title(), title))
                     continue
                 if page.sectionFreeTitle():
                     result.append(page)
@@ -1493,7 +1508,7 @@ not supported by PyWikipediaBot!"""
         return list(set(results))
 
     def templates(self):
-        """Return a list of strings containing template names used on this Page.
+        """Return a list of Page objects for templates used on this Page.
         
         Template parameters are ignored.
         
@@ -1504,7 +1519,7 @@ not supported by PyWikipediaBot!"""
         """Return a list of templates used on this Page.
         
         Return value is a list of tuples. There is one tuple for each use of
-        a template in the page, with the template name as the first entry
+        a template in the page, with the template Page as the first entry
         and a list of parameters as the second entry.
         
         """
@@ -1526,17 +1541,14 @@ not supported by PyWikipediaBot!"""
             name = m.group('name')
             if self.site().isInterwikiLink(name):
                 continue
-            name = Page(self.site(), name).title()
+            try:
+                name = Page(self.site(), name).title()
+            except Error:
+                output(u"Page %s contains invalid template name %s."
+                       % (self.title(), name))
+                continue
             result.append((name, params))
         return result
-
-    def templatePages(self):
-        """Return a list of Page objects for templates used on the page.
-
-        Template parameters are ignored.
-        """
-        return [Page(self.site(), template, self.site(), 10)
-                for template in self.templates()]
 
     def getRedirectTarget(self):
         """Return a Page object for the target this Page redirects to.
@@ -2294,7 +2306,12 @@ class ImagePage(Page):
         lineR = re.compile(
                     '<li><a href=".+?" title=".+?">(?P<title>.+?)</a></li>')
         for match in lineR.finditer(titleList):
-            yield Page(self.site(), match.group('title'))
+            try:
+                yield Page(self.site(), match.group('title'))
+            except Error:
+                output(
+        u"Image description page %s contains invalid reference to [[%s]]."
+                    % (self.title(), match.group('title')))
 
 
 class _GetAll(object):
@@ -2899,7 +2916,13 @@ def getLanguageLinks(text, insite = None, pageLink = "[[]]"):
             else:
                 # we want the actual page objects rather than the titles
                 site = insite.getSite(code = lang)
-                result[site] = Page(site, pagetitle, insite = insite)
+                try:
+                    result[site] = Page(site, pagetitle, insite = insite)
+                except Error:
+                    output(
+        u"[getLanguageLinks] Text contains invalid interwiki link [[%s:%s]]."
+                           % (lang, pagetitle))
+                    continue
     return result
 
 def removeLanguageLinks(text, site = None, marker = ''):
@@ -3479,7 +3502,8 @@ class Site(object):
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
 
-        if persistent_http is None: persistent_http = config.persistent_http
+        if persistent_http is None:
+            persistent_http = config.persistent_http
         self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
         if persistent_http:
             if self.protocol() == 'http':
@@ -3487,8 +3511,7 @@ class Site(object):
             elif self.protocol() == 'https':
                 self.conn = httplib.HTTPSConnection(self.hostname())
 
-
-        self.sandboxpage = Page(self,self.family.sandboxpage(code))
+        self.sandboxpage = Page(self, self.family.sandboxpage(code))
 
     def loggedInAs(self, sysop = False):
         """Return the current username if logged in, otherwise return None.
@@ -4813,8 +4836,8 @@ def handleArgs():
             setLogfileStatus(False)
         elif arg == '-verbose' or arg == "-v":
             import version
-            output('Pywikipediabot %s' % (version.getversion()))
-            output('Python %s' % (sys.version))
+            output(u'Pywikipediabot %s' % (version.getversion()))
+            output(u'Python %s' % (sys.version))
             verbose += 1
         else:
             # the argument is not global. Let the specific bot script care
@@ -5258,9 +5281,7 @@ Global arguments available for all bots:
 
 page_put_queue = Queue.Queue()
 def async_put():
-    '''
-    Daemon that takes pages from the queue and tries to save them on the wiki.
-    '''
+    """Daemon; take pages from the queue and try to save them on the wiki."""
     while True:
         (page, newtext, comment, watchArticle,
                  minorEdit, force, callback) = page_put_queue.get()
@@ -5309,13 +5330,17 @@ def stopme():
     get_throttle.drop()
 
 def _flush():
-    '''Wait for the page-putter to flush its queue;
-       called automatically upon exiting from Python.
-    '''
+    """Wait for the page-putter to flush its queue.
+
+    Called automatically upon exiting from Python.
+    
+    """
     if page_put_queue.qsize() > 0:
         import datetime
-        remaining = datetime.timedelta(seconds = page_put_queue.qsize() * config.put_throttle)
-        output('Waiting for %i pages to be put. Estimated time remaining: %s' % (page_put_queue.qsize(), remaining))
+        remaining = datetime.timedelta(
+                      seconds = page_put_queue.qsize() * config.put_throttle)
+        output(u'Waiting for %i pages to be put. Estimated time remaining: %s'
+               % (page_put_queue.qsize(), remaining))
 
     page_put_queue.put((None, None, None, None, None, None, None))
 
