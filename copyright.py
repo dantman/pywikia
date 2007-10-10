@@ -316,7 +316,11 @@ def load_pages(force_update = False):
             except KeyboardInterrupt:
                 raise
             except wikipedia.IsRedirectPage, arg:
-                data = wikipedia.Page(page.site(), arg).get()
+                if isinstance(arg, wikipedia.IsRedirectPage):
+                    newtitle = arg.args[0]
+                else:
+                    newtitle = arg.message
+                data = wikipedia.Page(page.site(), newtitle).get()
             except:
                 error('Getting page failed')
     return
@@ -989,8 +993,12 @@ class CheckRobot:
                 wikipedia.output(u'Page %s not found' % page.title())
                 continue
             except wikipedia.IsRedirectPage, error:
-                wikipedia.output(u'Page %s redirect to \'%s\'' % (page.aslink(), error.message))
-                bot = CheckRobot(iter([wikipedia.Page(page.site(), error.message),]))
+                if isinstance(error, wikipedia.IsRedirectPage):
+                    newtitle = error.args[0]
+                else:
+                    newtitle = error.message
+                wikipedia.output(u'Page %s redirect to \'%s\'' % (page.aslink(), newtitle))
+                bot = CheckRobot(iter([wikipedia.Page(page.site(), newtitle),]))
                 bot.run()
                 continue
 
