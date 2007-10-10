@@ -825,7 +825,7 @@ def add_in_urllist(url, add_item, engine, cache_url = None):
                     comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s Google cache]' % short_url(add_item))
                 elif engine == 'yahoo':
                     #cache = False
-                    comment.append('[%s Yahoo cache]' % re.sub('&appid=[^&]*','', urllib.unquote(cache_url)))
+                    comment.append('[%s Yahoo cache]' % re.sub('&appid=[^&]*','', urllib2.unquote(cache_url)))
                 elif engine == 'msn':
                     comment.append('[%s Live cache]' % re.sub('&lang=[^&]*','', cache_url))
             else:
