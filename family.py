@@ -2307,25 +2307,31 @@ class Family:
         return self.namespaces[ns_number].has_key(code)
 
     def normalizeNamespace(self, code, value):
-        """Given a value, attempt to match it with all available namespaces, with default and localized versions.
-        Sites may have more than one way to write the same namespace - choose the first one in the list.
+        """Given a value, attempt to match it with all available namespaces,
+        with default and localized versions. Sites may have more than one
+        way to write the same namespace - choose the first one in the list.
         If nothing can be normalized, return the original value.
         """
         for ns, items in self.namespaces.iteritems():
             if items.has_key(code):
                 v = items[code]
-                if type(v) == type([]):
-                    if value in v: return v[0]
-                else:
-                    if value == v: return v
+            elif items.has_key('_default'):
+                v = items['_default']
+            else:
+                continue
+            if type(v) is list:
+                if value in v: return v[0]
+            else:
+                if value == v: return v
             if value == self.namespace('_default', ns):
                 return self.namespace(code, ns)
         return value
 
     def getNamespaceIndex(self, lang, namespace):
-        """Given a namespace, attempt to match it with all available namespaces.
-        Sites may have more than one way to write the same namespace - choose the first one in the list.
-        Returns namespace index or None
+        """Given a namespace, attempt to match it with all available
+        namespaces. Sites may have more than one way to write the same
+        namespace - choose the first one in the list. Returns namespace
+        index or None.
         """
         namespace = namespace.lower()
         for n in self.namespaces.keys():

@@ -203,6 +203,11 @@ SaxError = xml.sax._exceptions.SAXParseException
 
 # Pre-compile re expressions
 reNamespace = re.compile("^(.+?) *: *(.*)$")
+Rwatch = re.compile(
+         r"<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
+Rwatchlist = re.compile(r"<input tabindex='[\d]+' type='checkbox' "
+                        r"name='wpWatchthis' checked='checked'")
+Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
 
 
 class Page(object):
@@ -686,7 +691,6 @@ not supported by PyWikipediaBot!"""
                         retry_idle_time = 30
         # We now know that there is a textarea.
         # Look for the edit token
-        Rwatch = re.compile(r"\<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
         tokenloc = Rwatch.search(text)
         if tokenloc:
             self.site().putToken(tokenloc.group(1), sysop = sysop)
@@ -716,8 +720,7 @@ not supported by PyWikipediaBot!"""
         if not matchVersionTab:
             raise NoPage(self.site(), self.aslink(forceInterwiki = True))
         # Look if the page is on our watchlist
-        R = re.compile(r"\<input tabindex='[\d]+' type='checkbox' name='wpWatchthis' checked='checked'")
-        matchWatching = R.search(text)
+        matchWatching = Rwatchlist.search(text)
         if matchWatching:
             isWatched = True
         # Now process the contents of the textarea
@@ -1459,7 +1462,6 @@ not supported by PyWikipediaBot!"""
         # from text before processing
         thistxt = removeDisabledParts(thistxt)
 
-        Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
         for match in Rlink.finditer(thistxt):
             title = match.group('title')
             if title.strip().startswith("#"):
@@ -3380,7 +3382,7 @@ does not exist. Also check your configuration file."""
 class Site(object):
     """A MediaWiki site. Do not instantiate directly; use getSite() function.
 
-    Constructor takes four arguments; only site is mandatory:
+    Constructor takes four arguments; only code is mandatory:
 
     code            language code for Site
     fam             Wikimedia family (optional: defaults to configured).
@@ -3395,77 +3397,125 @@ class Site(object):
     
     loggedInAs: return current username, or None if not logged in.
     forceLogin: require the user to log in to the site
-    messages:   return True if there are new messages on the site
-    cookies:    return user's cookies as a string
+    messages: return True if there are new messages on the site
+    cookies: return user's cookies as a string
     
-    getUrl:     retrieve an URL from the site
-    urlEncode:  Encode a query to be sent using an http POST request.
-    postForm:   Post form data to an address at this site.
-    postData:   Post encoded form data to an http address at this site.
+    getUrl: retrieve an URL from the site
+    urlEncode: Encode a query to be sent using an http POST request.
+    postForm: Post form data to an address at this site.
+    postData: Post encoded form data to an http address at this site.
     
     redirect: Return the localized redirect tag for the site.
-    redirectRegex: Return compiled regular expression matching on redirect pages.
+    redirectRegex: Return compiled regular expression matching on redirect
+                   pages.
     mediawiki_message: Retrieve the text of a specified MediaWiki message
     has_mediawiki_message: True if this site defines specified MediaWiki
                            message
+    shared_image_repository: Return tuple of image repositories used by this
+        site.
+    category_on_one_line: Return True if this site wants all category links
+        on one line.
+    interwiki_putfirst: Return list of language codes for ordering of
+        interwiki links.
     linkto(title): Return string in the form of a wikilink to 'title'
-    isInterwikiLink(s): Return True if s is in the form of an interwiki link.
-
+    isInterwikiLink(s): Return True if 's' is in the form of an interwiki
+                        link.
+    version: Return MediaWiki version string from Family file.
+    versionnumber: Return int identifying the MediaWiki version.
+    live_version: Return version number read from Special:Version.
+    checkCharset(charset): Warn if charset doesn't match family file.
 
     Methods that yield Page objects derived from a wiki's Special: pages
     (note, some methods yield other information in a tuple along with the
     Pages; see method docs for details) --
 
-    search(query):             query results from Special:Search
-    allpages():                Special:Allpages
-    newpages():                Special:Newpages
-    longpages():               Special:Longpages
-    shortpages():              Special:Shortpages
-    categories():              Special:Categories (yields Category objects)
-    deadendpages():            Special:Deadendpages
-    ancientpages():            Special:Ancientpages
-    lonelypages():             Special:Lonelypages
-    unwatchedpages():          Special:Unwatchedpages (sysop accounts only)
-    uncategorizedcategories(): Special:Uncategorizedcategories (yields Category)
-    uncategorizedpages():      Special:Uncategorizedpages
-    uncategorizedimages():     Special:Uncategorizedimages (yields ImagePage)
-    unusedcategories():        Special:Unusuedcategories (yields Category)
-    unusedfiles():             Special:Unusedimages (yields ImagePage)
-    withoutinterwiki:          Special:Withoutinterwiki
-    linksearch:                Special:Linksearch
+        search(query): query results from Special:Search
+        allpages(): Special:Allpages
+        newpages(): Special:Newpages
+        longpages(): Special:Longpages
+        shortpages(): Special:Shortpages
+        categories(): Special:Categories (yields Category objects)
+        deadendpages(): Special:Deadendpages
+        ancientpages(): Special:Ancientpages
+        lonelypages(): Special:Lonelypages
+        unwatchedpages(): Special:Unwatchedpages (sysop accounts only)
+        uncategorizedcategories(): Special:Uncategorizedcategories (yields
+            Category objects)
+        uncategorizedpages(): Special:Uncategorizedpages
+        uncategorizedimages(): Special:Uncategorizedimages (yields
+            ImagePage objects)
+        unusedcategories(): Special:Unusuedcategories (yields Category)
+        unusedfiles(): Special:Unusedimages (yields ImagePage)
+        withoutinterwiki: Special:Withoutinterwiki
+        linksearch: Special:Linksearch
 
     Convenience methods that provide access to properties of the wiki Family
     object; all of these are read-only and return a unicode string unless
     noted --
 
-    encoding: The current encoding for this site.
-    encodings: List of all historical encodings for this site.
-    category_namespace: Canonical name of the Category namespace on this
-        site.
-    category_namespaces: List of all valid names for the Category namespace.
-    image_namespace: Canonical name of the Image namespace on this site.
-    template_namespace: Canonical name of the Template namespace on this
-        site.
-    export_address: URL path for Special:Export.
-    query_address: URL path + '?' for query.php
-    api_address: Return URL path + '?' for api.php
-    apipath: URL path for api.php
-    protocol: Protocol ('http' or 'https') for access to this site.
-    hostname: Host portion of site URL.
-    path: URL path for index.php on this Site.
-    dbName: MySQL database name.
-    move_address: URL path for Special:Movepage.
-    delete_address(s): URL path to delete title 's'.
-    undelete_view_address(s): URL path to view Special:Undelete for title 's'
-    undelete_address: Return URL path to Special:Undelete.
-    protect_address(s): Return URL path to protect title 's'.
-    unprotect_address(s): Return URL path to unprotect title 's'.
-    put_address(s): Return URL path to submit revision to page titled 's'.
-    get_address(s): Return URL path to retrieve page titled 's'.
-    nice_get_address(s): Return shorter URL path to retrieve page titled 's'.
-    edit_address(s): Return URL path for edit form for page titled 's'.
-    purge_address(s): Return URL path to purge cache and retrieve page 's'.
-    block_address: Return path to block an IP address.
+        encoding: The current encoding for this site.
+        encodings: List of all historical encodings for this site.
+        category_namespace: Canonical name of the Category namespace on this
+            site.
+        category_namespaces: List of all valid names for the Category
+            namespace.
+        image_namespace: Canonical name of the Image namespace on this site.
+        template_namespace: Canonical name of the Template namespace on this
+            site.
+        protocol: Protocol ('http' or 'https') for access to this site.
+        hostname: Host portion of site URL.
+        path: URL path for index.php on this Site.
+        dbName: MySQL database name.
+
+    Methods that return addresses to pages on this site (usually in
+    Special: namespace); these methods only return URL paths, they do not
+    interact with the wiki --
+    
+        export_address: Special:Export.
+        query_address: URL path + '?' for query.php
+        api_address: URL path + '?' for api.php
+        apipath: URL path for api.php
+        move_address: Special:Movepage.
+        delete_address(s): Delete title 's'.
+        undelete_view_address(s): Special:Undelete for title 's'
+        undelete_address: Special:Undelete.
+        protect_address(s): Protect title 's'.
+        unprotect_address(s): Unprotect title 's'.
+        put_address(s): Submit revision to page titled 's'.
+        get_address(s): Retrieve page titled 's'.
+        nice_get_address(s): Short URL path to retrieve page titled 's'.
+        edit_address(s): Edit form for page titled 's'.
+        purge_address(s): Purge cache and retrieve page 's'.
+        block_address: Block an IP address.
+        unblock_address: Unblock an IP address.
+        blocksearch_address(s): Search for blocks on IP address 's'.
+        linksearch_address(s): Special:Linksearch for target 's'.
+        search_address(q): Special:Search for query 'q'.
+        allpages_address(s): Special:Allpages.
+        newpages_address: Special:Newpages.
+        longpages_address: Special:Longpages.
+        shortpages_address: Special:Shortpages.
+        unusedfiles_address: Special:Unusedimages.
+        categories_address: Special:Categories.
+        deadendpages_address: Special:Deadendpages.
+        ancientpages_address: Special:Ancientpages.
+        lonelypages_address: Special:Lonelypages.
+        unwatchedpages_address: Special:Unwatchedpages.
+        uncategorizedcategories_address: Special:Uncategorizedcategories.
+        uncategorizedimages_address: Special:Uncategorizedimages.
+        uncategorizedpages_address: Special:Uncategorizedpages.
+        unusedcategories_address: Special:Unusedcategories.
+        withoutinterwiki_address: Special:Withoutinterwiki.
+        references_address(s): Special:Whatlinksere for page 's'.
+        allmessages_address: Special:Allmessages.
+        upload_address: Special:Upload.
+        maintenance_address(sub): Special:Maintenance for subfunction 'sub'.
+        double_redirects_address: Special:Doubleredirects.
+        broken_redirects_address: Special:Brokenredirects.
+        login_address: Special:Userlogin.
+        captcha_image_address(id): Special:Captcha for image 'id'.
+        watchlist_address: Special:Watchlist editor.
+        contribs_address(target): Special:Contributions for user 'target'.
 
     """
     def __init__(self, code, fam=None, user=None, persistent_http = None):
@@ -4508,89 +4558,131 @@ Maybe the server is down. Retrying in %i minutes..."""
         return self.family.block_address(self.lang)
 
     def unblock_address(self):
+        """Return path to unblock an IP address."""
         return self.family.unblock_address(self.lang)
 
     def blocksearch_address(self, s):
+        """Return path to search for blocks on IP address 's'."""
         return self.family.blocksearch_address(self.lang, s)
 
     def linksearch_address(self, s, limit=500, offset=0):
+        """Return path to Special:Linksearch for target 's'."""
         return self.family.linksearch_address(self.lang, s, limit=limit, offset=offset)
 
-    def search_address(self, q, n=50, ns = 0):
+    def search_address(self, q, n=50, ns=0):
+        """Return path to Special:Search for query 'q'."""
         return self.family.search_address(self.lang, q, n, ns)
 
     def allpages_address(self, s, ns = 0):
-        return self.family.allpages_address(self.lang, start = s, namespace = ns)
+        """Return path to Special:Allpages."""
+        return self.family.allpages_address(self.lang, start=s, namespace = ns)
 
     def newpages_address(self, n=50):
+        """Return path to Special:Newpages."""
         return self.family.newpages_address(self.lang, n)
 
     def longpages_address(self, n=500):
+        """Return path to Special:Longpages."""
         return self.family.longpages_address(self.lang, n)
 
     def shortpages_address(self, n=500):
+        """Return path to Special:Shortpages."""
         return self.family.shortpages_address(self.lang, n)
 
     def unusedfiles_address(self, n=500):
+        """Return path to Special:Unusedimages."""
         return self.family.unusedfiles_address(self.lang, n)
 
     def categories_address(self, n=500):
+        """Return path to Special:Categories."""
         return self.family.categories_address(self.lang, n)
 
     def deadendpages_address(self, n=500):
+        """Return path to Special:Deadendpages."""
         return self.family.deadendpages_address(self.lang, n)
 
     def ancientpages_address(self, n=500):
+        """Return path to Special:Ancientpages."""
         return self.family.ancientpages_address(self.lang, n)
 
     def lonelypages_address(self, n=500):
+        """Return path to Special:Lonelypages."""
         return self.family.lonelypages_address(self.lang, n)
 
     def unwatchedpages_address(self, n=500):
+        """Return path to Special:Unwatchedpages."""
         return self.family.unwatchedpages_address(self.lang, n)
 
     def uncategorizedcategories_address(self, n=500):
+        """Return path to Special:Uncategorizedcategories."""
         return self.family.uncategorizedcategories_address(self.lang, n)
 
     def uncategorizedimages_address(self, n=500):
+        """Return path to Special:Uncategorizedimages."""
         return self.family.uncategorizedimages_address(self.lang, n)
 
     def uncategorizedpages_address(self, n=500):
+        """Return path to Special:Uncategorizedpages."""
         return self.family.uncategorizedpages_address(self.lang, n)
 
     def unusedcategories_address(self, n=500):
+        """Return path to Special:Unusedcategories."""
         return self.family.unusedcategories_address(self.lang, n)
 
     def withoutinterwiki_address(self, n=500):
+        """Return path to Special:Withoutinterwiki."""
         return self.family.withoutinterwiki_address(self.lang, n)
 
     def references_address(self, s):
+        """Return path to Special:Whatlinksere for page 's'."""
         return self.family.references_address(self.lang, s)
 
     def allmessages_address(self):
+        """Return path to Special:Allmessages."""
         return self.family.allmessages_address(self.lang)
 
     def upload_address(self):
+        """Return path to Special:Upload."""
         return self.family.upload_address(self.lang)
 
     def maintenance_address(self, sub, default_limit = True):
+        """Return path to Special:Maintenance for subfunction 'sub'."""
+        #TODO: this address seems to be non-functioning on Wikimedia projects
         return self.family.maintenance_address(self.lang, sub, default_limit)
 
     def double_redirects_address(self, default_limit = True):
+        """Return path to Special:Doubleredirects."""
         return self.family.double_redirects_address(self.lang, default_limit)
 
     def broken_redirects_address(self, default_limit = True):
+        """Return path to Special:Brokenredirects."""
         return self.family.broken_redirects_address(self.lang, default_limit)
+
+    def login_address(self):
+        """Return path to Special:Userlogin."""
+        return self.family.login_address(self.lang)
+
+    def captcha_image_address(self, id):
+        """Return path to Special:Captcha for image 'id'."""
+        return self.family.captcha_image_address(self.lang, id)
+
+    def watchlist_address(self):
+        """Return path to Special:Watchlist editor."""
+        return self.family.watchlist_address(self.lang)
+
+    def contribs_address(self, target, limit=500, offset=''):
+        """Return path to Special:Contributions for user 'target'."""
+        return self.family.contribs_address(self.lang,target,limit,offset)
 
     def __hash__(self):
         return hash(repr(self))
 
     def version(self):
-        """Returns MediaWiki version number as a string."""
+        """Return MediaWiki version number as a string."""
         return self.family.version(self.lang)
 
     def versionnumber(self):
-        """Returns an int identifying MediaWiki version.
+        """Return an int identifying MediaWiki version.
 
         Currently this is implemented as returning the minor version
         number; i.e., 'X' in version '1.X.Y'
@@ -4599,7 +4691,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         return self.family.versionnumber(self.lang)
 
     def live_version(self):
-        """Return the 'real' version number found on [[Special:Versions]]
+        """Return the 'real' version number found on [[Special:Version]]
 
         Return value is a tuple (int, int, str) of the major and minor
         version numbers and any other text contained in the version.
@@ -4632,6 +4724,7 @@ Maybe the server is down. Retrying in %i minutes..."""
                              % (repr(self), charset, self.encoding()))
 
     def shared_image_repository(self):
+        """Return a tuple of image repositories used by this site."""
         return self.family.shared_image_repository(self.lang)
 
     def __cmp__(self, other):
@@ -4643,12 +4736,16 @@ Maybe the server is down. Retrying in %i minutes..."""
         return cmp(self.family.name, other.family.name)
 
     def category_on_one_line(self):
+        """Return True if this site wants all category links on one line."""
         return self.lang in self.family.category_on_one_line
 
     def interwiki_putfirst(self):
-        return self.family.interwiki_putfirst.get(self.lang,None)
+        """Return list of language codes for ordering of interwiki links."""
+        return self.family.interwiki_putfirst.get(self.lang, None)
 
-    def interwiki_putfirst_doubled(self,list_of_links):
+    def interwiki_putfirst_doubled(self, list_of_links):
+        # TODO: is this even needed?  No family in the framework has this
+        # dictionary defined!
         if self.family.interwiki_putfirst_doubled.has_key(self.lang):
             if len(list_of_links) >= self.family.interwiki_putfirst_doubled[self.lang][0]:
                 list_of_links2 = []
@@ -4666,28 +4763,35 @@ Maybe the server is down. Retrying in %i minutes..."""
         else:
             return False
 
-    def login_address(self):
-        return self.family.login_address(self.lang)
-
-    def captcha_image_address(self, id):
-        return self.family.captcha_image_address(self.lang, id)
-
-    def watchlist_address(self):
-        return self.family.watchlist_address(self.lang)
-
-    def contribs_address(self, target, limit=500, offset=''):
-        return self.family.contribs_address(self.lang,target,limit,offset)
-
     def getSite(self, code):
+        """Return Site object for language 'code' in this Family."""
         return getSite(code = code, fam = self.family, user=self.user)
 
     def namespace(self, num, all = False):
+        """Return string containing local name of namespace 'num'.
+
+        If optional argument 'all' is true, return a tuple of all recognized
+        values for this namespace.
+
+        """
         return self.family.namespace(self.lang, num, all = all)
 
     def normalizeNamespace(self, value):
+        """Return canonical name for namespace 'value' in this Site's language.
+
+        If no match, return 'value' unmodified.
+        
+        """
         return self.family.normalizeNamespace(self.lang, value)
 
     def namespaces(self):
+        """Return list of canonical namespace names for this Site."""
+
+        # n.b.: this does not return namespace numbers; to determine which
+        # numeric namespaces the framework recognizes for this Site (which
+        # may or may not actually exist on the wiki), use
+        # self.family.namespaces.keys()
+
         if _namespaceCache.has_key(self):
             return _namespaceCache[self]
         else:
@@ -4727,7 +4831,8 @@ Maybe the server is down. Retrying in %i minutes..."""
     def disambcategory(self):
         import catlib
         try:
-            return catlib.Category(self,self.namespace(14)+':'+self.family.disambcatname[self.lang])
+            return catlib.Category(self,
+                    self.namespace(14)+':'+self.family.disambcatname[self.lang])
         except KeyError:
             raise NoPage
 
@@ -4779,11 +4884,11 @@ def setSite(site):
     default_family = site.family
 
 def calledModuleName():
-    """
-    Gets the name of the module calling this function. This is
-    required because the -help option loads the module's docstring
-    and because the module name will be used for the filename of the
-    log.
+    """Return the name of the module calling this function.
+
+    This is required because the -help option loads the module's docstring
+    and because the module name will be used for the filename of the log.
+    
     """
     # get commandline arguments
     args = sys.argv
@@ -4794,12 +4899,14 @@ def calledModuleName():
         return args[0]
 
 def handleArgs():
-    '''
+    """Handle standard command line arguments, return the rest as a list.
+
     Takes the commandline arguments, converts them to Unicode, processes all
     global parameters such as -lang or -log. Returns a list of all arguments
     that are not global. This makes sure that global arguments are applied
     first, regardless of the order in which the arguments were given.
-    '''
+    
+    """
     global default_code, default_family, verbose
     # get commandline arguments
     args = sys.argv
@@ -4846,8 +4953,7 @@ def handleArgs():
     return nonGlobalArgs
 
 def makepath(path):
-    """ creates missing directories for the given path and
-        returns a normalized absolute version of the path.
+    """Return a normalized absolute version of the path argument.
 
     - if the given path already exists in the filesystem
       the filesystem is not modified.
@@ -4857,31 +4963,30 @@ def makepath(path):
       a '/' to the path if you want it to be a directory path.
 
     from holger@trillke.net 2002/03/18
+    
     """
     from os import makedirs
-    from os.path import normpath,dirname,exists,abspath
+    from os.path import normpath, dirname, exists, abspath
 
     dpath = normpath(dirname(path))
     if not exists(dpath): makedirs(dpath)
     return normpath(abspath(path))
 
 def datafilepath(*filename):
-    """Returns an absolute path to a data file, offset from the bot's
-       base directory.
-       Argument(s) are zero or more directory names, followed by a data file
-       name.
-       Any directories in the path that do not already exist are created.
+    """Return an absolute path to a data file in a standard location.
+
+    Argument(s) are zero or more directory names, optionally followed by a
+    data file name. The return path is offset to config.base_dir. Any
+    directories in the path that do not already exist are created.
+    
     """
     return makepath(os.path.join(config.base_dir, *filename))
 
 def shortpath(path):
-    """
-    Short an absolute file path removing bot's base directory part if exists.
-    """
-    shortpath = path
+    """Return a file path relative to config.base_dir."""
     if path.startswith(config.base_dir):
-        shortpath = path[len(config.base_dir) + len(os.path.sep) : ]
-    return shortpath
+        return path[len(config.base_dir) + len(os.path.sep) : ]
+    return path
 
 #########################
 # Interpret configuration
