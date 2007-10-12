@@ -1,28 +1,29 @@
 # -*- coding: utf-8  -*-
 
 import urllib
-import family,wikipedia
+import family, wikipedia
 
-# The wikimedia family that is known as Wikibooks
+# The wikimedia family that is known as Wesolve
 
 class UploadDisabled(wikipedia.Error):
     """Uploads are disabled on this wiki"""
 
 class Family(family.Family):
-    name = 'wesolve'
     def __init__(self):
+        family.Family.__init__(self)
+        self.name = 'wesolve'
         self.langs = {}
         for lang in ['en','it']:
             self._addlang(lang,
-			location = 'wesolveitnet.com',
-			namespaces = {-2: u'Media',
+                        location = 'wesolveitnet.com',
+                        namespaces = {-2: u'Media',
                                       -1: u'Special',
                                       0: None,
                                       1: u'Talk',
                                       2: u'User',
                                       3: u'User talk',
                                       4: u'MozillaWiki',
-			              5: u'MozillaWiki talk',
+                                      5: u'MozillaWiki talk',
                                       6: u'Image',
                                       7: u'Image talk',
                                       8: u'MediaWiki',
@@ -44,7 +45,9 @@ class Family(family.Family):
         return '/wsiwiki/index.php?title='+name+"&redirect=no"
 
     def references_address(self, code, name):
-        return "/wsiwiki/index.php?title=%s:Whatlinkshere&target=%s&limit=%d" % (self.special_namespace_url(code), name, config.special_page_limit)
+        return ("/wsiwiki/index.php?title=%s:Whatlinkshere&target=%s&limit=%d"
+                % (self.special_namespace_url(code), name,
+                   config.special_page_limit))
 
     def upload_address(self, code):
         raise UploadDisabled
@@ -54,8 +57,9 @@ class Family(family.Family):
             return ('/wsiwiki/index.php?title=%s:Maintenance&subfunction=' %
                     self.special_namespace_url(code)) + maintenance_page
         else:
-            return ('/wsiwiki/index.php?title=%s:Maintenance&subfunction=' %
-                    self.special_namespace_url(code)) + maintenance_page + '&limit=' + str(config.special_page_limit)
+            return (('/wsiwiki/index.php?title=%s:Maintenance&subfunction=' %
+                    self.special_namespace_url(code)) + maintenance_page
+                    + '&limit=' + str(config.special_page_limit))
 
     def allmessages_address(self, code):
         return ("/wsiwiki/index.php?title=%s:Allmessages&ot=html" %
@@ -73,8 +77,10 @@ class Family(family.Family):
         return '/wsiwiki/index.php?title=%s&action=delete' % name
 
     def version_history_address(self, code, name):
-        return '/wsiwiki/index.php?title=%s&action=history&limit=%d' % (name, config.special_page_limit)
+        return ('/wsiwiki/index.php?title=%s&action=history&limit=%d'
+                % (name, config.special_page_limit))
 
     def export_address(self, code):
-        return '/wsiwiki/index.php?title=%s:Export' % self.special_namespace_url(code)
+        return ('/wsiwiki/index.php?title=%s:Export'
+                % self.special_namespace_url(code))
 
