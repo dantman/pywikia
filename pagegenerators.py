@@ -676,7 +676,12 @@ class GeneratorFactory:
             fileLinksPageTitle = arg[11:]
             if not fileLinksPageTitle:
                 fileLinksPageTitle = wikipedia.input(u'Links to which image page should be processed?')
-            fileLinksPage = wikipedia.Page(wikipedia.getSite(), 'Image:' + fileLinksPageTitle)
+            if fileLinksPageTitle.startswith(wikipedia.getSite().namespace(6) + ":"):
+                fileLinksPage = wikipedia.ImagePage(wikipedia.getSite(),
+                                                    fileLinksPageTitle)
+            else:
+                fileLinksPage = wikipedia.ImagePage(wikipedia.getSite(),
+                                                'Image:' + fileLinksPageTitle)
             gen = FileLinksGenerator(fileLinksPage)
         elif arg.startswith('-unusedfiles'):
             if len(arg) == 12:
