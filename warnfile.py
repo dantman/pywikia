@@ -18,8 +18,8 @@ Example:
 # 
 __version__ = '$Id$'
 #
+import sys, os, re
 import wikipedia, interwiki
-import sys, re
 
 class WarnfileReader:
     def __init__(self, filename):
