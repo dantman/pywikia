@@ -224,7 +224,7 @@ netext = {
     'en':u'{{subst:welcome}} %s',
     'fa':u'{{جا:خوشامد}} %s',
     'it':u'{{Benvebot}} %s',
-    'nl':u'{{Welkomstbericht}} %s',
+    'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
     'sq':u'{{subst:tung}} %s',
     }
