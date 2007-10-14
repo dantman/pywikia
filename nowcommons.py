@@ -77,7 +77,6 @@ namespaceInTemplate = [
     'he',
     'ia',
     'lt',
-    'nl',
     'ro',
 ]
 

@@ -816,8 +816,11 @@ if __name__ == "__main__":
                 showImages = True
             elif arg.startswith('-summary:'):
                 editSummary = arg[len('-summary:'):]
-            elif arg.startswith('-match:'):
-                titleRegex = arg[len('-match:'):]
+            elif arg.startswith('-match'):
+                if len(arg) == len('-match'):
+                    titleRegex = wikipedia.input(u'Which regular expression should affected objects match?')
+                else:
+                    titleRegex = arg[len('-match:'):]
             elif arg == '-talkpages':
                 talkPages = True
             elif arg == '-recurse':
