@@ -539,10 +539,6 @@ class CategoryTidyRobot:
         self.catTitle = catTitle
         self.catDB = catDB
 
-        # This is a purely interactive robot. We set the delays lower.
-        wikipedia.get_throttle.setDelay(1)
-        wikipedia.put_throttle.setDelay(10)
-
     def move_to_category(self, article, original_cat, current_cat):
         '''
         Given an article which is in category original_cat, ask the user if
