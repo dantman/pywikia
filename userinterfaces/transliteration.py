@@ -276,7 +276,7 @@ def trans(char, default = '?', prev = '-', next = '-'):
         return u"!"
 
     #Punctuation and typography
-    if char in u"«»“”¨":
+    if char in u"«»“”„¨":
         return u'"'
     if char in u"‘’′":
         return u"'"
