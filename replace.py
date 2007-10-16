@@ -132,6 +132,7 @@ msg = {
        'ksh':u'Bot: hät outomatesch Täx jetuusch: %s',
        'lt':u'robotas: Automatinis teksto keitimas %s',
        'nds':u'Bot: Text automaatsch utwesselt: %s',
+       'nds-nl':u'Bot: autematisch tekse vervungen %s',
        'nl':u'Bot: automatisch tekst vervangen %s',
        'no':u'bot: Autometisk teksterstatning: %s',
        'pl':u'Robot automatycznie zamienia tekst %s',
