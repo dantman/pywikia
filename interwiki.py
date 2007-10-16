@@ -418,13 +418,11 @@ class Subject(object):
         have been found, the first one will be returned.
         Otherwise, None will be returned.
         """
-        # Hmmm... working on the todo list is quite risky,
-        # because we don't know yet if the pages there
-        # really exist...
         for page in self.done + self.pending + self.todo:
             if page.site() == site:
                 if page.namespace() == self.originPage.namespace():
-                    return page
+                    if page.exists() and not page.isRedirectPage():
+                        return page
         return None
 
     def translate(self, hints = None):
