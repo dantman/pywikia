@@ -822,10 +822,11 @@ def add_in_urllist(url, add_item, engine, cache_url = None):
         if cache:
             if cache_url:
                 if engine == 'google':
-                    comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s Google cache]' % short_url(add_item))
+                    comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s Google cache]' % urllib2.quote(short_url(add_item)))
                 elif engine == 'yahoo':
                     #cache = False
-                    comment.append('[%s Yahoo cache]' % re.sub('&appid=[^&]*','', urllib2.unquote(cache_url)))
+                    #comment.append('[%s Yahoo cache]' % re.sub('&appid=[^&]*','', urllib2.unquote(cache_url)))
+                    comment.append("''Yahoo cache''")
                 elif engine == 'msn':
                     comment.append('[%s Live cache]' % re.sub('&lang=[^&]*','', cache_url))
             else:
