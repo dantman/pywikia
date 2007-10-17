@@ -86,9 +86,10 @@ ignore_bot_templates = False
 # The encoding that's used in the user's console, i.e. how strings are encoded
 # when they are read by raw_input(). On Windows systems' DOS box, this should
 # be 'cp850' ('cp437' for older versions). Linux users might try 'iso-8859-1'
-# or 'utf-8'. If this variable is set to None, the default is 'cp850' on
-# windows, and iso-8859-1 on other systems
-console_encoding = None
+# or 'utf-8'.
+# This default code should work fine, so you don't have to think about it.
+# TODO: consider getting rid of this config variable.
+console_encoding = __sys.stdout.encoding
 
 # The encoding in which textfiles are stored, which contain lists of page titles.
 textfile_encoding = 'utf-8'
@@ -451,13 +452,6 @@ for _key in globals().keys():
         del nt,ot
     else:
         print "WARNING: Configuration variable %r is defined but unknown. Misspelled?"%_key
-
-# Fix up default console_encoding
-if console_encoding == None:
-    if __sys.platform=='win32':
-        console_encoding = 'cp850'
-    else:
-        console_encoding = 'iso-8859-1'
 
 # Save base_dir for use by other modules
 base_dir = _base_dir
