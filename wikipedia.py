@@ -2714,7 +2714,10 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
     Parameters:
         text            - a unicode string
         old             - a compiled regular expression
-        new             - a unicode string
+        new             - a unicode string (which can contain regular
+                          expression references), or a function which takes
+                          a match object as parameter. See parameter repl of
+                          re.sub().
         exceptions      - a list of strings which signal what to leave out,
                           e.g. ['math', 'table', 'template']
         caseInsensitive - a boolean
@@ -2805,23 +2808,29 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
             if sys.platform=='win32':
                 new = new.replace('\\n', '\n')
 
-            # We cannot just insert the new string, as it may contain regex
-            # group references such as \2 or \g<name>.
-            # On the other hand, this approach does not work because it can't
-            # handle lookahead or lookbehind (see bug #1731008):
-            #replacement = old.sub(new, text[match.start():match.end()])
-            #text = text[:match.start()] + replacement + text[match.end():]
+            try:
+                # the parameter new can be a function which takes the match as a parameter.
+                replacement = new(match)
+            except TypeError:
+                # it is not a function, but a string.
 
-            # So we have to process the group references manually.
-            replacement = new
+                # We cannot just insert the new string, as it may contain regex
+                # group references such as \2 or \g<name>.
+                # On the other hand, this approach does not work because it can't
+                # handle lookahead or lookbehind (see bug #1731008):
+                #replacement = old.sub(new, text[match.start():match.end()])
+                #text = text[:match.start()] + replacement + text[match.end():]
 
-            groupR = re.compile(r'\\(?P<number>\d+)|\\g<(?P<name>.+?)>')
-            while True:
-                groupMatch = groupR.search(replacement)
-                if not groupMatch:
-                    break
-                groupID = groupMatch.group('name') or int(groupMatch.group('number'))
-                replacement = replacement[:groupMatch.start()] + match.group(groupID) + replacement[groupMatch.end():]
+                # So we have to process the group references manually.
+                replacement = new
+
+                groupR = re.compile(r'\\(?P<number>\d+)|\\g<(?P<name>.+?)>')
+                while True:
+                    groupMatch = groupR.search(replacement)
+                    if not groupMatch:
+                        break
+                    groupID = groupMatch.group('name') or int(groupMatch.group('number'))
+                    replacement = replacement[:groupMatch.start()] + match.group(groupID) + replacement[groupMatch.end():]
             text = text[:match.start()] + replacement + text[match.end():]
 
             # continue the search on the remaining text
