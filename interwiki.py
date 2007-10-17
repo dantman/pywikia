@@ -323,7 +323,8 @@ msg = {
     'uk': (u'робот', u'додав', u'видалив', u'змінив'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
-    }
+    'zh': (u'機器人 ', u'正在新增', u'移除', u'修改'),
+}
 
 class Global(object):
     """Container class for global settings.
