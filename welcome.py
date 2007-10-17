@@ -400,7 +400,8 @@ def report(wsite, rep_page, username, com, rep):
     if another_page.exists():
         text_get = another_page.get()
     else:
-        text_get = u'This is a report page for the Bad-username, please translate me. --[[User:%s|%s]]' % (config.usernames[project], config.usernames[project])
+        nameBot = config.usernames[wsite.family.name][wsite.lang]
+        text_get = u'This is a report page for the Bad-username, please translate me. --[[User:%s|%s]]' % (nameBot, nameBot)
     pos = 0
     # The talk page includes "_" between the two names, in this way i replace them to " ".
     username = wikipedia.url2link(username, wsite, wsite)
