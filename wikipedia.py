@@ -38,29 +38,30 @@ Objects:
 
 Other functions:
     getall(): Load a group of pages via Special:Export
-
-    handleArgs(): Process all standard command line arguments (such as -family,
-        -lang, -log and others)
-
-    translate(xx, dict): dict is a dictionary, giving text depending on language,
-        xx is a language. Returns the text in the most applicable language for
-        the xx: wiki
-
+    handleArgs(): Process all standard command line arguments (such as
+        -family, -lang, -log and others)
+    translate(xx, dict): dict is a dictionary, giving text depending on
+        language, xx is a language. Returns the text in the most applicable
+        language for the xx: wiki
     setAction(text): Use 'text' instead of "Wikipedia python library" in
         edit summaries
     setUserAgent(text): Sets the string being passed to the HTTP server as
         the User-agent: header. Defaults to 'Pywikipediabot/1.0'.
 
     output(text): Prints the text 'text' in the encoding of the user's
-        console.
+        console. **Use this instead of "print" statements**
     input(text): Asks input from the user, printing the text 'text' first.
+    inputChoice: Shows user a list of choices and returns user's selection.
+
     showDiff(oldtext, newtext): Prints the differences between oldtext and
         newtext on the screen
-    url2link: Convert urlname of a wiki page into interwiki link format.
-
+    datafilepath: Return an absolute path to a data file in a standard
+        location.
+    shortpath: Return a relative form of the data file pathname.
+    
 Wikitext manipulation functions: each of these takes a unicode string
-    containing wiki text as its first argument, and returns a modified
-    version of the text unless otherwise noted --
+containing wiki text as its first argument, and returns a modified version
+of the text unless otherwise noted --
 
     replaceExcept: replace all instances of 'old' by 'new', skipping any
         instances of 'old' within comments and other special text blocks
@@ -71,7 +72,8 @@ Wikitext manipulation functions: each of these takes a unicode string
     encodeEsperantoX: convert wikitext to the Esperanto x-encoding.
     sectionencode: encode text for use as a section title in wiki-links.
 
-Wikitext maniupulation functions for interlanguage links:
+Wikitext manipulation functions for interlanguage links:
+
     getLanguageLinks(text,xx): extract interlanguage links from text and
         return in a dict
     removeLanguageLinks(text): remove all interlanguage links from text
@@ -80,8 +82,10 @@ Wikitext maniupulation functions for interlanguage links:
         getLanguageLinks
     interwikiFormat(links): convert a dict of interlanguage links to text
         (using same dict format as getLanguageLinks)
+    url2link: Convert urlname of a wiki page into interwiki link format.
 
 Wikitext manipulation functions for category links:
+
     getCategoryLinks(text): return list of Category objects corresponding
         to links in text
     removeCategoryLinks(text): remove all category links from text
@@ -3404,6 +3408,13 @@ class Site(object):
 
     Methods:
     
+    language: This Site's language code.
+    family: This Site's Family object.
+    sitename: A string representing this Site.
+    languages: A list of all languages contained in this site's Family.
+    validLanguageLinks: A list of language codes that can be used in interwiki
+        links.
+
     loggedInAs: return current username, or None if not logged in.
     forceLogin: require the user to log in to the site
     messages: return True if there are new messages on the site
@@ -3413,6 +3424,13 @@ class Site(object):
     urlEncode: Encode a query to be sent using an http POST request.
     postForm: Post form data to an address at this site.
     postData: Post encoded form data to an http address at this site.
+
+    namespace(num): Return local name of namespace 'num'.
+    normalizeNamespace(value): Return preferred name for namespace 'value' in
+        this Site's language.
+    namespaces: Return list of canonical namespace names for this Site.
+    getNamespaceIndex(name): Return the int index of namespace 'name', or None
+        if invalid.
     
     redirect: Return the localized redirect tag for the site.
     redirectRegex: Return compiled regular expression matching on redirect
@@ -3420,6 +3438,7 @@ class Site(object):
     mediawiki_message: Retrieve the text of a specified MediaWiki message
     has_mediawiki_message: True if this site defines specified MediaWiki
                            message
+
     shared_image_repository: Return tuple of image repositories used by this
         site.
     category_on_one_line: Return True if this site wants all category links
@@ -3429,10 +3448,15 @@ class Site(object):
     linkto(title): Return string in the form of a wikilink to 'title'
     isInterwikiLink(s): Return True if 's' is in the form of an interwiki
                         link.
+    getSite(lang): Return Site object for wiki in same family, language
+                   'lang'.
     version: Return MediaWiki version string from Family file.
     versionnumber: Return int identifying the MediaWiki version.
     live_version: Return version number read from Special:Version.
     checkCharset(charset): Warn if charset doesn't match family file.
+
+    linktrail: Return regex for trailing chars displayed as part of a link.
+    disambcategory: Category in which disambiguation pages are listed.
 
     Methods that yield Page objects derived from a wiki's Special: pages
     (note, some methods yield other information in a tuple along with the
@@ -3927,7 +3951,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         return self._mediawiki_messages[key]
 
     def has_mediawiki_message(self, key):
-        """Return True iff this site defines a MediaWiki message for key "key" """
+        """Return True iff this site defines a MediaWiki message for 'key'."""
         try:
             v = self.mediawiki_message(key)
             return True
@@ -4788,9 +4812,12 @@ Maybe the server is down. Retrying in %i minutes..."""
     def normalizeNamespace(self, value):
         """Return canonical name for namespace 'value' in this Site's language.
 
+        'Value' should be a string or unicode.
         If no match, return 'value' unmodified.
         
         """
+        if not self.nocapitalize and value[0].islower():
+            value = value[0].upper() + value[1:]
         return self.family.normalizeNamespace(self.lang, value)
 
     def namespaces(self):
@@ -4817,27 +4844,35 @@ Maybe the server is down. Retrying in %i minutes..."""
             return nslist
 
     def getNamespaceIndex(self, namespace):
+        """Given a namespace name, return its int index, or None if invalid."""
         return self.family.getNamespaceIndex(self.lang, namespace)
 
     def linktrail(self):
+        """Return regex for trailing chars displayed as part of a link."""
         return self.family.linktrail(self.lang)
 
     def language(self):
+        """Return Site's language code."""
         return self.lang
 
     def fam(self):
+        """Return Family object for this Site."""
         return self.family
 
     def sitename(self):
+        """Return string representing this Site's name and language."""
         return self.family.name+':'+self.lang
 
     def languages(self):
+        """Return list of all valid language codes for this site's Family."""
         return self.family.langs.keys()
 
     def validLanguageLinks(self):
+        """Return list of language codes that can be used in interwiki links."""
         return self._validlanguages
 
     def disambcategory(self):
+        """Return Category in which disambig pages are listed."""
         import catlib
         try:
             return catlib.Category(self,
@@ -4866,7 +4901,7 @@ Maybe the server is down. Retrying in %i minutes..."""
             else:
                 return self._token
 
-    def putToken(self,value, sysop = False):
+    def putToken(self, value, sysop = False):
         if sysop:
             self._sysoptoken = value
         else:
@@ -5131,7 +5166,8 @@ def altlang(code):
     return []
 
 def translate(code, xdict):
-    """
+    """Return the most appropriate translation from a translation dict.
+
     Given a language code and a dictionary, returns the dictionary's value for
     key 'code' if this key exists; otherwise tries to return a value for an
     alternative language that is most applicable to use on the Wikipedia in
@@ -5236,9 +5272,7 @@ if '*' in config.log or calledModuleName() in config.log:
 colorTagR = re.compile('\03{.*?}', re.UNICODE)
 
 def log(text):
-    """
-    Writes the given text to the logfile.
-    """
+    """Write the given text to the logfile."""
     if logfile:
         # remove all color markup
         # TODO: consider pre-compiling this regex for speed improvements
@@ -5251,7 +5285,8 @@ output_lock = threading.Lock()
 input_lock = threading.Lock()
 output_cache = []
 def output(text, decoder = None, newline = True, toStdout = False):
-    """
+    """Output a message to the user via the userinterface.
+
     Works like print, but uses the encoding used by the user's console
     (console_encoding in the configuration file) instead of ASCII.
     If decoder is None, text should be a unicode string. Otherwise it
@@ -5266,6 +5301,7 @@ def output(text, decoder = None, newline = True, toStdout = False):
     text can contain special sequences to create colored output. These
     consist of the escape character \03 and the color name in curly braces,
     e. g. \03{lightpurple}. \03{default} resets the color.
+    
     """
     output_lock.acquire()
     try:
@@ -5299,8 +5335,7 @@ def flush_output_cache():
         ui.output(*args, **kwargs)
 
 def input(question, password = False):
-    """
-    Asks the user a question, then returns the user's answer.
+    """Ask the user a question, return the user's answer.
 
     Parameters:
     * question - a unicode string that will be shown to the user. Don't add a
@@ -5309,6 +5344,7 @@ def input(question, password = False):
     * password - if True, hides the user's input (for password entry).
 
     Returns a unicode string.
+    
     """
     input_lock.acquire()
     try:
@@ -5320,10 +5356,10 @@ def input(question, password = False):
     return data
 
 def inputChoice(question, answers, hotkeys, default = None):
-    """
-    Asks the user a question and offers several options, then returns the
-    user's choice. The user's input will be case-insensitive, so the hotkeys
-    should be distinctive case-insensitively.
+    """Ask the user a question with several options, return the user's choice.
+
+    The user's input will be case-insensitive, so the hotkeys should be
+    distinctive case-insensitively.
 
     Parameters:
     * question - a unicode string that will be shown to the user. Don't add a
@@ -5335,6 +5371,7 @@ def inputChoice(question, answers, hotkeys, default = None):
                  be returned when the user just presses Enter.
 
     Returns a one-letter string in lowercase.
+    
     """
     input_lock.acquire()
     try:
