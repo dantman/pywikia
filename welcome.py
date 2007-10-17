@@ -201,6 +201,7 @@ logbook = {
     'nl': u'Project:Logboek welkom',
     'no': u'Project:Velkomstlogg',
     'sq': u'Project:Tung log',
+    'zh': u'user:Welcomebot/欢迎日志',
     }
 #The edit summary for the welcome message (e.g. Welcome!).
 summary = {
@@ -212,7 +213,8 @@ summary = {
     'it':u'Benvenuto!',
     'nl':u'Welkom!',
     'no':u'Velkommen!',
-    'sq':u'Tung'
+    'sq':u'Tung',
+    'zh':u'欢迎！',
     }
 # The text for the welcome message (e.g. {{welcome}}) and %s at the end
 # that is your signature (the bot has a random parameter to add different
@@ -227,6 +229,7 @@ netext = {
     'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
     'sq':u'{{subst:tung}} %s',
+    'zh':u'{{subst:welcome|sign=%s}}',
     }
 # The edit summary for updating the welcome log (e.g. Updating log).
 summary2 = {
@@ -239,6 +242,7 @@ summary2 = {
     'nl':u'Logboek bijwerken',
     'no':u'Oppdaterer logg',
     'sq':u'Rifreskoj log',
+    'zh':u'更新日志',
     }
 # The page where the bot will report users with a possibly bad username.
 report_page = {
@@ -277,7 +281,7 @@ bad_pag = {
     'sq': u'User:Eagleal/Bad_names',
     }
 # The text for reporting a possibly bad username (e.g. *[[Talk_page:Username|Username]]).
-timeselected = u' {{subst:LOCALTIME}}, {{subst:CURRENTDAY}} {{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}} (UTC).'
+timeselected = u'--~~~~~'
 report_text = {
     'commons':u"\n*{{user3|%s}}" + timeselected,
     'ar':u"\n*{{user13|%s}}" + timeselected,
@@ -296,6 +300,7 @@ random_sign = {
     'fa': u'Project:سیاهه خوشامد/امضاها',
     'en': u'User:Filnik/Sign',
     'it': u'Project:Benvenuto log/User',
+	'zh': u'user:Welcomebot/欢迎日志/用户',
     }
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
@@ -305,7 +310,7 @@ whitelist_pg = {
     'it':u'Utente:Filbot/whitelist',
     }
 # Add your project (in alphabetical order) if you want that the bot start.
-project_inserted = ['ar', 'commons', 'de', 'en', 'fa', 'it', 'nl', 'no', 'sq']
+project_inserted = ['ar', 'commons', 'de', 'en', 'fa', 'it', 'nl', 'no', 'sq','zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed
 # and it will run correctly in your project ;)
@@ -724,7 +729,10 @@ def main(settingsBot):
                 if number_user + 1> len(signList):
                     number_user = 0
                     yield number_user
-                welcom = welcomer % signList[number_user] + ' {{subst:LOCALTIME}}, {{subst:CURRENTDAY}} {{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}} (UTC).'
+                if wsite.family.name == "wikipedia" and wsite.lang == "zh":
+				    welcom = welcomer % signList[number_user] + timeselected + '<small>(via ~~~)</small>'
+                else:
+				welcom = welcomer % signList[number_user] + timeselected                
             else:
                 welcom = welcomer % sign
             username = str(found_result[0])
@@ -870,7 +878,7 @@ if __name__ == "__main__":
     except wikipedia.BadTitle:
         wikipedia.output(u"Wikidown or server's problem. Quit.")
         wikipedia.stopme()
-    finally:
+    # finally:
         # If there is the savedata, the script must save the number_user.
         if random == True and savedata == True and number_user != None:
             f = file(filename, 'w')
