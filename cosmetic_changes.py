@@ -158,25 +158,12 @@ class CosmeticChangesToolkit:
         return text
 
     def cleanUpLinks(self, text):
-        trailR = re.compile(self.site.linktrail())
-        # The regular expression which finds links. Results consist of four groups:
-        # group title is the target page title, that is, everything before | or ].
-        # group section is the page section. It'll include the # to make life easier for us.
-        # group label is the alternative link title, that's everything between | and ].
-        # group linktrail is the link trail, that's letters after ]] which are part of the word.
-        # note that the definition of 'letter' varies from language to language.
-        self.linkR = re.compile(r'\[\[(?P<titleWithSection>[^\]\|]+)(\|(?P<label>[^\]\|]*))?\]\](?P<linktrail>' + self.site.linktrail() + ')')
-        curpos = 0
-        # This loop will run until we have finished the current page
-        while True:
-            m = self.linkR.search(text, pos = curpos)
-            if not m:
-                break
-            # Make sure that next time around we will not find this same hit.
-            curpos = m.start() + 1
-            titleWithSection = m.group('titleWithSection')
-            label = m.group('label')
-            trailingChars = m.group('linktrail')
+        # helper function which works on one link and either returns it
+        # unmodified, or returns a replacement.
+        def handleOneLink(match):
+            titleWithSection = match.group('titleWithSection')
+            label = match.group('label')
+            trailingChars = match.group('linktrail')
 
             if not self.site.isInterwikiLink(titleWithSection):
                 # The link looks like this:
@@ -210,7 +197,7 @@ class CosmeticChangesToolkit:
 
                     if titleWithSection == '':
                         # just skip empty links.
-                        continue
+                        return match.group()
 
                     # Remove unnecessary initial and final spaces from label.
                     # Please note that some editors prefer spaces around pipes. (See [[en:Wikipedia:Semi-bots]]). We remove them anyway.
@@ -256,7 +243,20 @@ class CosmeticChangesToolkit:
                         newLink = ' ' + newLink
                     if hadTrailingSpaces:
                         newLink = newLink + ' '
-                    text = text[:m.start()] + newLink + text[m.end():]
+                    return newLink
+            # don't change anything
+            return match.group()
+
+        trailR = re.compile(self.site.linktrail())
+        # The regular expression which finds links. Results consist of four groups:
+        # group title is the target page title, that is, everything before | or ].
+        # group section is the page section. It'll include the # to make life easier for us.
+        # group label is the alternative link title, that's everything between | and ].
+        # group linktrail is the link trail, that's letters after ]] which are part of the word.
+        # note that the definition of 'letter' varies from language to language.
+        linkR = re.compile(r'\[\[(?P<titleWithSection>[^\]\|]+)(\|(?P<label>[^\]\|]*))?\]\](?P<linktrail>' + self.site.linktrail() + ')')
+
+        text = wikipedia.replaceExcept(text, linkR, handleOneLink, ['comment', 'math', 'nowiki', 'pre', 'startspace'])
         return text
 
     def resolveHtmlEntities(self, text):
@@ -273,7 +273,7 @@ class CosmeticChangesToolkit:
         return text
 
     def validXhtml(self, text):
-        text = wikipedia.replaceExcept(text, r'<br>', r'<br />', ['comment', 'nowiki', 'pre'])
+        text = wikipedia.replaceExcept(text, r'<br>', r'<br />', ['comment', 'math', 'nowiki', 'pre'])
         return text
 
     def removeUselessSpaces(self, text):
