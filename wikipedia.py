@@ -4926,12 +4926,13 @@ def handleArgs():
     moduleName = calledModuleName()
     nonGlobalArgs = []
     for arg in args[1:]:
-        if sys.platform=='win32':
-            # Windows gives parameters encoded as windows-1252,
-            # regardless of console encoding
+        if sys.platform=='win32' and config.console_encoding == 'cp850':
+            # Western Windows versions give parameters encoded as windows-1252
+            # even though the console encoding is cp850.
             arg = unicode(arg, 'windows-1252')
         else:
-            # Linux uses the same encoding for both
+            # Linux uses the same encoding for both.
+            # I don't know how non-Western Windows versions behave.
             arg = unicode(arg, config.console_encoding)
         if arg == '-help':
             showHelp(moduleName)
