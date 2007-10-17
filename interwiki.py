@@ -171,6 +171,16 @@ multiple languages, and specify on which sites the bot should modify pages:
                    will be changed if there are that number or more links to
                    change or add
 
+The following arguments influence how many pages the bot works on at once:
+    -array:        The number of pages the bot tries to be working on at once.
+                   If the number of pages loaded is lower than this number,
+                   a new set of pages is loaded from the starting wiki. The
+                   default is 100, but can be changed in the config variable
+                   interwiki_min_subjects
+
+    -query:        The maximum number of pages that the bot will load at once.
+                   Default value is 60.
+
 Some configuration option can be used to change the working of this robot:
 
 interwiki_min_subjects: the minimum amount of subjects that should be processed
@@ -354,6 +364,7 @@ class Global(object):
     bracketonly = False
     rememberno = False
     followinterwiki = True
+    minsubjects = config.interwiki_min_subjects
 
 class Subject(object):
     """
@@ -1253,7 +1264,7 @@ class InterwikiBot(object):
         # Do we still have enough subjects to work on for which the
         # home language has been retrieved? This is rough, because
         # some subjects may need to retrieve a second home-language page!
-        if len(self.subjects) - mycount < config.interwiki_min_subjects:
+        if len(self.subjects) - mycount < globalvar.minsubjects:
             # Can we make more home-language queries by adding subjects?
             if self.pageGenerator and mycount < globalvar.maxquerysize:
                 timeout = 60
@@ -1510,6 +1521,10 @@ if __name__ == "__main__":
                 globalvar.bracketonly = True
             elif arg == '-localright':
                 globalvar.followinterwiki = False
+            elif arg.startswith('-array:'):
+                globalvar.minsubjects = int(arg[7:])
+            elif arg.startswith('-query:'):
+                globalvar.maxquerysize = int(arg[7:])
             else:
                 generator = genFactory.handleArg(arg)
                 if generator:
