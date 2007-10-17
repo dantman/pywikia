@@ -729,7 +729,10 @@ def main():
     if gen:
         if namespaces != []:
             gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-        gen = pagegenerators.PreloadingGenerator(gen, pageNumber = 240)
+        # fetch at least 240 pages simultaneously from the wiki, but more if
+        # a high thread number is set.
+        pageNumber = max(240, config.max_external_links * 2)
+        gen = pagegenerators.PreloadingGenerator(gen, pageNumber = pageNumber)
         gen = pagegenerators.RedirectFilterPageGenerator(gen)
         bot = WeblinkCheckerRobot(gen)
         try:
