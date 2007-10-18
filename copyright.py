@@ -74,7 +74,7 @@ request, use this:
 #
 
 from __future__ import generators
-import sys, re, codecs, os, time, urllib2, httplib
+import sys, re, codecs, os, time, urllib, urllib2, httplib
 import wikipedia, pagegenerators, catlib, config
 
 __version__='$Id$'
@@ -82,11 +82,11 @@ __version__='$Id$'
 # Search keywords added to all the queries.
 no_result_with_those_words = '-Wikipedia'
 
-# Split the text into strings of a specified number of words.
-number_of_words = 31
-
 # Performing a search engine query if string length is greater than the given value.
 min_query_string_len = 120
+
+# Split the text into strings of a specified number of words.
+number_of_words = 31
 
 # Try to skip quoted text.
 exclude_quote = True
@@ -115,7 +115,7 @@ appdir = "copyright"
 output_file = wikipedia.datafilepath(appdir, "output.txt")
 
 pages_for_exclusion_database = [
-    ('it', 'User:RevertBot/Lista_di_esclusione', 'exclusion_list.txt'),
+    ('it', 'Wikipedia:Sospette violazioni di copyright/Lista di esclusione', 'exclusion_list.txt'),
     ('en', 'Wikipedia:Mirrors_and_forks/Abc', 'Abc.txt'),
     ('en', 'Wikipedia:Mirrors_and_forks/Def', 'Def.txt'),
     ('en', 'Wikipedia:Mirrors_and_forks/Ghi', 'Ghi.txt'),
@@ -259,6 +259,15 @@ def warn(text, prefix = None):
 def error(text ,prefix = None):
     _output(text, prefix = prefix, color = error_color)
 
+def print_stats():
+        wikipedia.output('\n'
+                         'Search engine | number of queries\n'
+                         '---------------------------------\n'
+                         'Google        | %s\n'
+                         'Yahoo!        | %s\n'
+                         'Live Search   | %s\n'
+                         % (num_google_queries, num_yahoo_queries, num_msn_queries))
+
 def skip_section(text):
     l = list()
     for s in sections_to_skip.values():
@@ -308,21 +317,20 @@ def load_pages(force_update = False):
             raise
 
         if force_update:
+            data = None
             try:
                 data = page.get()
-                f = codecs.open(path, 'w', 'utf-8')
-                f.write(data)
-                f.close()
             except KeyboardInterrupt:
                 raise
             except wikipedia.IsRedirectPage, arg:
-                if isinstance(arg, wikipedia.IsRedirectPage):
-                    newtitle = arg.args[0]
-                else:
-                    newtitle = arg.message
-                data = wikipedia.Page(page.site(), newtitle).get()
+                data = page.getRedirectTarget().get()
             except:
                 error('Getting page failed')
+
+            if data:
+                f = codecs.open(path, 'w', 'utf-8')
+                f.write(data)
+                f.close()
     return
 
 def check_list(url, clist, verbose = False):
@@ -542,8 +550,6 @@ def remove_wikicode(text, re_dotall = False, debug = False):
 
     return text
 
-excl_list = exclusion_list()
-
 def exclusion_list_sanity_check():
     print "Exclusion list sanity check..."
     for entry in excl_list:
@@ -614,8 +620,11 @@ def query(lines = [], max_query_len = 1300, wikicode = True):
                     consecutive = False
                     if " " in search_words:
                          search_words = search_words[:search_words.rindex(" ")]
+
                 results = get_results(search_words)
+
                 group_url = '' ; cmp_group_url = ''
+
                 for url, engine, comment in results:
                     if comment:
                         group_url += '\n*%s - %s (%s)' % (engine, url, "; ".join(comment))
@@ -624,8 +633,11 @@ def query(lines = [], max_query_len = 1300, wikicode = True):
                     cmp_group_url += '\n*%s - %s' % (engine, url)
                 if results:
                     group_url_list = group_url.splitlines()
+                    cmp_group_url_list = cmp_group_url.splitlines()
                     group_url_list.sort()
+                    cmp_group_url_list.sort()
                     group_url = '\n'.join(group_url_list)
+                    cmp_group_url = '\n'.join(cmp_group_url_list)
                     if previous_group_url == cmp_group_url:
                         if consecutive:
                             output += ' ' + search_words
@@ -808,7 +820,7 @@ def add_in_urllist(url, add_item, engine, cache_url = None):
 
             if config.copyright_show_length:
                 length = s.length()
-                if length:
+                if length > 1024:
                     # convert in kilobyte
                     length /= 1024
                     unit = 'KB'
@@ -816,13 +828,13 @@ def add_in_urllist(url, add_item, engine, cache_url = None):
                         # convert in megabyte
                         length /= 1024
                         unit = 'MB'
-                    if length > 0:
-                        comment.append("%d %s" % (length, unit))
+                if length > 0:
+                    comment.append("%d %s" % (length, unit))
 
         if cache:
             if cache_url:
                 if engine == 'google':
-                    comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s Google cache]' % urllib2.quote(short_url(add_item)))
+                    comment.append('[http://www.google.com/search?sourceid=navclient&q=cache:%s Google cache]' % urllib.quote(short_url(add_item)))
                 elif engine == 'yahoo':
                     #cache = False
                     #comment.append('[%s Yahoo cache]' % re.sub('&appid=[^&]*','', urllib2.unquote(cache_url)))
@@ -993,13 +1005,10 @@ class CheckRobot:
             except wikipedia.NoPage:
                 wikipedia.output(u'Page %s not found' % page.title())
                 continue
-            except wikipedia.IsRedirectPage, error:
-                if isinstance(error, wikipedia.IsRedirectPage):
-                    newtitle = error.args[0]
-                else:
-                    newtitle = error.message
-                wikipedia.output(u'Page %s redirect to \'%s\'' % (page.aslink(), newtitle))
-                bot = CheckRobot(iter([wikipedia.Page(page.site(), newtitle),]))
+            except wikipedia.IsRedirectPage:
+                newpage = page.getRedirectTarget()
+                wikipedia.output(u'Page %s redirect to \'%s\'' % (page.aslink(), newpage.title()))
+                bot = CheckRobot(iter([newpage,]))
                 bot.run()
                 continue
 
@@ -1095,6 +1104,9 @@ def main():
         elif arg.startswith('-skipquery'):
             if len(arg) >= 11:
                 config.copyright_skip_query = int(arg[11:])
+        elif arg.startswith('-nwords'):
+            if len(arg) >= 8:
+                number_of_words = int(arg[8:])
         elif arg.startswith('-text'):
             if len(arg) >= 6:
               text = arg[6:]
@@ -1154,8 +1166,19 @@ def main():
     bot = CheckRobot(preloadingGen)
     bot.run()
 
+excl_list = exclusion_list()
+
+if number_of_words > 22:
+    if not config.copyright_google and not config.copyright_yahoo and config.copyright_msn:
+        warn("'number_of_words' variable set to 22 as Live Search requires a lower value of %s" % number_of_words, prefix = 'Warning')
+        number_of_words = 22
+    elif config.copyright_msn:
+        warn("Live Search requires a lower value for 'number_of_words' variable "
+             "(current value is %d, a good value may be 22)." % (number_of_words), prefix = 'Warning')
+
 if __name__ == "__main__":
     try:
         main()
     finally:
         wikipedia.stopme()
+        print_stats()
