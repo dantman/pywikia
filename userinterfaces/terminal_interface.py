@@ -1,3 +1,8 @@
+#
+# (C) Pywikipedia bot team, 2003-2007
+#
+# Distributed under the terms of the MIT license.
+#
 __version__ = '$Id$'
 
 import config, transliteration
@@ -9,6 +14,48 @@ try:
     ctypes_found = True
 except ImportError:
     ctypes_found = False
+
+def getDefaultTextColorInWindows():
+    """
+    This method determines the default text color and saves its color
+    code inside the variable self._windowsDefaultColor.
+
+    Based on MIT-licensed code by Andre Burgaud published at
+    http://starship.python.net/crew/theller/wiki/ColorConsole
+    """
+    if sys.platform != 'win32' or not ctypes_found:
+        return -1
+    SHORT = ctypes.c_short
+    WORD = ctypes.c_ushort
+
+    # wincon.h
+    class COORD(ctypes.Structure):
+        _fields_ = [
+            ("X", SHORT),
+            ("Y", SHORT)
+        ]
+
+    class SMALL_RECT(ctypes.Structure):
+        _fields_ = [
+            ("Left", SHORT),
+            ("Top", SHORT),
+            ("Right", SHORT),
+            ("Bottom", SHORT)
+        ]
+
+    class CONSOLE_SCREEN_BUFFER_INFO(ctypes.Structure):
+        _fields_ = [
+            ("dwSize", COORD),
+            ("dwCursorPosition", COORD),
+            ("wAttributes", WORD),
+            ("srWindow", SMALL_RECT),
+            ("dwMaximumWindowSize", COORD)
+        ]
+
+    std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
+    csbi = CONSOLE_SCREEN_BUFFER_INFO()
+    ctypes.windll.kernel32.GetConsoleScreenBufferInfo(std_out_handle, ctypes.byref(csbi))
+    return csbi.wAttributes & 0x0007
 
 # TODO: other colors:
          #0 = Black
@@ -39,7 +86,7 @@ unixColors = {
 }
 
 windowsColors = {
-    'default':     config.defaultcolor,
+    'default':     getDefaultTextColorInWindows(),
     'lightblue':   9,
     'lightgreen':  10,
     'lightaqua':   11,
@@ -55,9 +102,6 @@ class UI:
     def __init__(self):
         pass
 
-    # NOTE: We use sys.stdout.write() instead of print because print adds a
-    # newline.
-    
     def printColorizedInUnix(self, text, targetStream):
         lastColor = None
         for key, value in unixColors.iteritems():
@@ -99,7 +143,7 @@ class UI:
             # print the rest of the text
             targetStream.write(text.encode(config.console_encoding, 'replace'))
             # just to be sure, reset the color
-            ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, windowsColors['default'])
+            ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, _windowsDefaultColor)
         else:
             # ctypes is only available since Python 2.5, and we won't
             # try to colorize without it. Instead we add *** after the text as a whole
