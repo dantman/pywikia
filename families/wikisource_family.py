@@ -9,7 +9,7 @@ class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wikisource'
-       
+
         self.langs = {
             '-':'wikisource.org',
             'dk':'da.wikisource.org',
@@ -20,10 +20,20 @@ class Family(family.Family):
             'zh-cn':'zh.wikisource.org',
             'zh-tw':'zh.wikisource.org'
             }
-          
+
         for lang in self.knownlanguages:
             if lang not in self.langs:
                 self.langs[lang] = lang+'.wikisource.org'
+
+        self.namespaces[2] = {
+            '_default': self.namespaces[2]['_default'],
+            'pl': 'Wikiskryba',
+        }
+
+        self.namespaces[3] = {
+            '_default': self.namespaces[2]['_default'],
+            'pl': 'Dyskusja Wikiskryby',
+        }
 
         self.namespaces[4] = {
             '_default': [u'Wikisource', self.namespaces[4]['_default']],
