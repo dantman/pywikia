@@ -105,7 +105,7 @@ userinterface = 'terminal'
 transliterate = True
 
 # Should the system bell be ringed if the bot expects user input?
-ring_bell = True
+ring_bell = False
 
 # Colorization can be used to markup important text parts of the output.
 # On Linux/Unix terminals, ANSI escape codes are used for this. On Windows,
