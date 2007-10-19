@@ -2782,7 +2782,7 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
             dontTouchRegexes.append(exc)
     index = 0
     markerpos = len(text)
-    while True:
+    while index < len(text):
         match = old.search(text, index)
         if not match:
             # nothing left to replace
