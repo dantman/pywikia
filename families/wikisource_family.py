@@ -25,15 +25,8 @@ class Family(family.Family):
             if lang not in self.langs:
                 self.langs[lang] = lang+'.wikisource.org'
 
-        self.namespaces[2] = {
-            '_default': self.namespaces[2]['_default'],
-            'pl': 'Wikiskryba',
-        }
-
-        self.namespaces[3] = {
-            '_default': self.namespaces[2]['_default'],
-            'pl': 'Dyskusja Wikiskryby',
-        }
+        self.namespaces[2]['pl'] = 'Wikiskryba'
+        self.namespaces[3]['pl'] = 'Dyskusja Wikiskryby'
 
         self.namespaces[4] = {
             '_default': [u'Wikisource', self.namespaces[4]['_default']],
