@@ -18,7 +18,7 @@ except ImportError:
 def getDefaultTextColorInWindows():
     """
     This method determines the default text color and saves its color
-    code inside the variable self._windowsDefaultColor.
+    code inside the variable windowsColors['default'].
 
     Based on MIT-licensed code by Andre Burgaud published at
     http://starship.python.net/crew/theller/wiki/ColorConsole
@@ -143,7 +143,7 @@ class UI:
             # print the rest of the text
             targetStream.write(text.encode(config.console_encoding, 'replace'))
             # just to be sure, reset the color
-            ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, _windowsDefaultColor)
+            ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, windowsColors['default'])
         else:
             # ctypes is only available since Python 2.5, and we won't
             # try to colorize without it. Instead we add *** after the text as a whole
