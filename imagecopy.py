@@ -388,7 +388,7 @@ def getCH(url, imageP, nn, tenemosuncambio):
     bot.run()
     imtxt=imageP.get()
     if tenemosuncambio==1:
-        imageP.put(imtxt+u'\n\n{{NowCommons|Image:'+nn.decode('utf-8')+'}}', u'{{NowCommons}}')
+        imageP.put(imtxt+u'\n\n{{NowCommons|'+nn.decode('utf-8')+'}}', u'{{NowCommons}}')
     else:
         imageP.put(imtxt+u'\n\n{{NowCommons}}', u'{{NowCommons}}')
 #-etiqueta ok skip view
@@ -421,7 +421,7 @@ class Tkstuff:
         uploader=uploader.decode('utf-8')
         scrollbar=Scrollbar(self.root, orient=VERTICAL)
         etiqueta=Label(self.root,text=u"Enter new name or leave blank.")
-        imageinfo=Label(self.root, text=self.nP.titleWithoutNamespace()+' uploaded by '+uploader+'.')
+        imageinfo=Label(self.root, text='Uploaded by '+uploader+'.')
         texto=Text(self.root)
         texto.insert(END, contenido.decode('utf-8'))
         texto.config(state=DISABLED, height=8, width=40, padx=0, pady=0, wrap=WORD, yscrollcommand=scrollbar.set)
@@ -487,10 +487,10 @@ class Tkstuff:
 
 def doiskip(pagetext):
     saltos=getautoskip()
-    print saltos
+    #print saltos
     for salto in saltos:
         rex=ur'\{\{\s*['+salto[0].upper()+salto[0].lower()+']'+salto[1:]+'(\}\}|\|)'
-        print rex
+        #print rex
         if re.search(rex, pagetext):
             return True
     return False
@@ -547,7 +547,7 @@ def main(args):
         tenemosuncambio=0
         nn=url.split('/')[-1]
         if doiskip(categorizada[2]):
-            print "Autoskipping"
+            print "Autoskipping " + nn
             continue
         #changename=wikipedia.input(u'The name on Commons will be '+nn+', ok? Enter a better name or press ENTER to proceed: ')
         changename=Tkstuff(nn, categorizada[2], categorizada[3]).getnewname()
