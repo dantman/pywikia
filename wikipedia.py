@@ -3089,11 +3089,10 @@ def removeCategoryLinks(text, site, marker = ''):
     return text.strip()
 
 def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
-    """Replace the category oldcat with the category newcat and then return
-       the modified Wiki source.
+    """Replace the category oldcat with the category newcat and return
+       the modified text.
+       
     """
-    #Note that this doesn't work yet and it has some very strange side-effects.
-
     if site is None:
         site = getSite()
 
@@ -3111,10 +3110,14 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
     categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*((?:\|[^]]+)?\]\])'
                             % (catNamespace, title))
     if newcat is None:
-        text = replaceExcept(oldtext, categoryR, '', ['nowiki', 'comment', 'math', 'pre'])    
+        text = replaceExcept(oldtext, categoryR, '',
+                             ['nowiki', 'comment', 'math', 'pre'])
     else:
-        text = replaceExcept(oldtext, categoryR, '[[Category:%s\\2' % newcat.titleWithoutNamespace(), ['nowiki', 'comment', 'math', 'pre'])
-    return text.strip()
+        text = replaceExcept(oldtext, categoryR,
+                             '[[Category:%s\\2'
+                                 % newcat.titleWithoutNamespace(),
+                             ['nowiki', 'comment', 'math', 'pre'])
+    return text
 
 def replaceCategoryLinks(oldtext, new, site=None):
     """Replace the category links given in the wikitext given
