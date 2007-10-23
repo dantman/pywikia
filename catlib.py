@@ -424,24 +424,30 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
     changesMade = False
 
     if inPlace == True:
-        text = article.get(nofollow_redirects=True)
-        text = wikipedia.replaceCategoryInPlace(text, oldCat, newCat)
+        oldtext = article.get(nofollow_redirects=True)
+        newtext = wikipedia.replaceCategoryInPlace(oldtext, oldCat, newCat)
+        if newtext == oldtext:
+            wikipedia.output(
+                u'No changes in made in page %s.' % article.aslink())
+            return
         try:
-            article.put(text, comment)
+            article.put(newtext, comment)
         except wikipedia.EditConflict:
-            wikipedia.output(u'Skipping %s because of edit conflict' % article.title())
+            wikipedia.output(
+                u'Skipping %s because of edit conflict' % article.aslink())
         except wikipedia.LockedPage:
-            wikipedia.output(u'Skipping locked page %s' % article.title())
+            wikipedia.output(u'Skipping locked page %s' % article.aslink())
         except wikipedia.SpamfilterError, error:
-            wikipedia.output(u'Changing page %s blocked by spam filter (URL=%s)'
-                             % (article.title(), error.url))
+            wikipedia.output(
+                u'Changing page %s blocked by spam filter (URL=%s)'
+                             % (article.aslink(), error.url))
         except wikipedia.NoUsername:
             wikipedia.output(
-                u"Page [[%s]] not saved; sysop privileges required."
-                             % article.title())
+                u"Page %s not saved; sysop privileges required."
+                             % article.aslink())
         except wikipedia.PageNotSaved, error:
-            wikipedia.output(u"Saving page [[%s]] failed: %s"
-                             % (article.title(), error.message))
+            wikipedia.output(u"Saving page %s failed: %s"
+                             % (article.aslink(), error.message))
         return
 
     # This loop will replace all occurrences of the category to be changed,

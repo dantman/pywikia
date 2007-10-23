@@ -3106,7 +3106,7 @@ def replaceCategoryInPlace(oldtext, oldcat, newcat, site=None):
     if title[0].isalpha() and not site.nocapitalize:
         title = "[%s%s]" % (title[0].upper(), title[0].lower()) + title[1:]
     # spaces and underscores in page titles are interchangeable, and collapsible
-    title = title.replace(" ", "[ _]+")
+    title = title.replace(r"\ ", "[ _]+").replace(r"\_", "[ _]+")
     categoryR = re.compile(r'\[\[\s*(%s)\s*:\s*%s\s*((?:\|[^]]+)?\]\])'
                             % (catNamespace, title))
     if newcat is None:
