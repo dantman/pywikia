@@ -301,6 +301,7 @@ msg = {
     'io': (u'roboto ', u'adjuntas', u'efacas', u'modifikas'),
     'is': (u'robot ', u'Bæti við', u'Fjarlægi', u'Breyti'),
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),
+    'ja': (u'ロボットによる ', u'追加', u'変更', u'除去'),
     'ka': (u'რობოტი ', u'დამატება', u'წაშლა', u'შეცვლა'),
     'kk': (u'Боттың ', u'үстегені', u'аластағаны', u'түзеткені'),
     'ksh': (u'Bot: ', u'dobëijedonn', u'erußjenumme', u'ußjewääßelt'),
