@@ -901,7 +901,7 @@ class Subject(object):
             lclSite = self.originPage.site()
             lclSiteDone = False
             frgnSiteDone = False
-            for siteCode in lclSite.family.languages_by_size + [s for s in lclSite.family.knownlanguages if (not s in lclSite.family.languages_by_size and not s in lclSite.family.obsolete)]:
+            for siteCode in lclSite.family.languages_by_size + [s for s in lclSite.family.langs.keys() if (not s in lclSite.family.languages_by_size and not s in lclSite.family.obsolete)]:
                 site = wikipedia.getSite(code = siteCode)
                 if (not lclSiteDone and site == lclSite) or (not frgnSiteDone and site != lclSite and new.has_key(site)):
                     if site == lclSite:
