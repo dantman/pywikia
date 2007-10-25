@@ -429,7 +429,14 @@ for _key in globals().keys():
             print "       Now: ",nt
         del nt,ot
     else:
-        print "WARNING: Configuration variable %r is defined but unknown. Misspelled?"%_key
+        print "WARNING: Configuration variable %r is defined but unknown. Misspelled?" %_key
+
+# Fix up default console_encoding
+if console_encoding == None:
+    if __sys.platform=='win32':
+        console_encoding = 'cp850'
+    else:
+        console_encoding = 'iso-8859-1'
 
 # Save base_dir for use by other modules
 base_dir = _base_dir
