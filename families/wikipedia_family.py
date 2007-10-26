@@ -887,9 +887,19 @@ class Family(family.Family):
             'zu' :            u'Main Page',
         }
 
+    def get_known_families(self, site):
+        # In Swedish Wikipedia 's:' is part of page title not a family
+        # prefix for 'wikisource'.
+        if site.lang == 'sv':
+            d = self.known_families.copy()
+            d.pop('s') ; d['src'] = 'wikisource'
+            return d
+        else:
+            return self.known_families
+
     def version(self, code):
         return "1.11"
-    
+
     def dbName(self, code):
         # returns the name of the MySQL database
         # for historic reasons, the databases are called wikixx instead of

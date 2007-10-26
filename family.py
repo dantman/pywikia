@@ -2259,12 +2259,6 @@ class Family:
             self.namespaces[num][code]=val
 
     def get_known_families(self, site):
-        # In Swedish Wikipedia 's:' is part of page title not a family
-        # prefix for 'wikisource'.
-        if site.lang == 'sv' and site.family.name in ['wikipedia']:
-            d = self.known_families.copy()
-            d.pop('s') ; d['src'] = 'wikisource'
-            return d
         return self.known_families
 
     def linktrail(self, code, fallback = '_default'):
