@@ -2409,6 +2409,7 @@ class Family:
         'cy': [u'ail-cyfeirio'],
         'et': [u'suuna'],
         'eu': [u'bidali'],
+        'fa': [u'تغییرمسیر'],
         'fi': [u'uudelleenohjaus', u'ohjaus', u'OHJAUS'],
         'ga': [u'athsheoladh'],
         'he': [u'הפניה'],
