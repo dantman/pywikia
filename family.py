@@ -1900,7 +1900,7 @@ class Family:
             'ganfyd':           'ganfyd',
             'gatorpedia':       'gatorpedia',
             'gausswiki':        'gausswiki',
-            'gentoo-wiki':      'gentoo-wiki',
+            'gentoo-wiki':      'gentoo',
             'genwiki':          'genwiki',
             'glencookwiki':     'glencookwiki',
             'globalvoices':     'globalvoices',

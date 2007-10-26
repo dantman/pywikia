@@ -62,6 +62,7 @@ class Family(family.Family):
             '_default': [u'Ucpt talk'],
         }
 
+        self.known_families.pop('gentoo-wiki')
 
     def path(self, code):
         return '/index.php'
