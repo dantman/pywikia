@@ -861,24 +861,25 @@ def main(settingsBot):
 if __name__ == "__main__":
     # Use try and finally, to put the wikipedia.stopme() always at the end of the code.
     try:
-        number_user = None
-        settingsBot = mainSettings()
-        # Take two settings for the "finally" block.
-        filename = settingsBot[2]
-        random = settingsBot[11]
-        savedata = settingsBot[13]
-        # I need to know what is the number_user, in this way I get it.
-        for x in main(settingsBot):
-            try:
-                number_user = x[0]
-            except TypeError:
-                number_user = x
-            else:
-                break
-    except wikipedia.BadTitle:
-        wikipedia.output(u"Wikidown or server's problem. Quit.")
-        wikipedia.stopme()
-    # finally:
+        try:
+            number_user = None
+            settingsBot = mainSettings()
+            # Take two settings for the "finally" block.
+            filename = settingsBot[2]
+            random = settingsBot[11]
+            savedata = settingsBot[13]
+            # I need to know what is the number_user, in this way I get it.
+            for x in main(settingsBot):
+                try:
+                    number_user = x[0]
+                except TypeError:
+                    number_user = x
+                else:
+                    break
+        except wikipedia.BadTitle:
+            wikipedia.output(u"Wikidown or server's problem. Quit.")
+            wikipedia.stopme()
+    finally:
         # If there is the savedata, the script must save the number_user.
         if random == True and savedata == True and number_user != None:
             f = file(filename, 'w')
