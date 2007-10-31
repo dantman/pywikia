@@ -45,6 +45,10 @@ sysopnames = {}
 disambiguation_comment = {}
 gdab_namespaces = {}
 
+# Solve captchas in the webbrowser. Setting this to False will result in the 
+# exception CaptchaError be thrown if a captcha is encountered. 
+solve_captcha = True
+
 # Some sites will require password identication to access the HTML pages at
 # the site. If you have any such site, add lines to your user-config.py of
 # the following form:

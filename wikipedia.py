@@ -203,6 +203,9 @@ class UserBlocked(Error):
 class PageNotFound(Error):
     """Page not found in list"""
 
+class CaptchaError(Error):
+    """Captcha is asked and config.solve_captcha == False."""
+
 SaxError = xml.sax._exceptions.SAXParseException
 
 # Pre-compile re expressions

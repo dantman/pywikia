@@ -156,6 +156,8 @@ class LoginManager:
                 captchaR = re.compile('<input type="hidden" name="wpCaptchaId" id="wpCaptchaId" value="(?P<id>\d+)" />')
                 match = captchaR.search(data)
                 if match:
+                    if not config.solve_captcha:
+                        raise wikipedia.CaptchaError(id)
                     id = match.group('id')
                     url = self.site.protocol() + '://' + self.site.hostname() + self.site.captcha_image_address(id)
                     answer = wikipedia.ui.askForCaptcha(url)
