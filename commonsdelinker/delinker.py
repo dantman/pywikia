@@ -127,7 +127,14 @@ class Delinker(threadpool.Thread):
 						output(u'%s Delinking %s from %s' % (self, image, site))
 						
 						try:
-							result = self.replace_image(image, site, title, summary, replacement)
+							try:
+								result = self.replace_image(image, site, title, summary, replacement)
+							except wikipedia.CaptchaError, e:
+								output(u'%s Warning! Captcha encountered at %s.' % (self, site))
+								if (lang, family) not in skipped_images:
+									skipped_images[(lang, family)] = []
+								skipped_images[(lang, family)].append(
+									(page_namespace, page_title, title))
 						finally:
 							self.CommonsDelinker.unset_edit(str(site), title)
 						
