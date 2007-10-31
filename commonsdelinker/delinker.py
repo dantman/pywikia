@@ -250,7 +250,7 @@ class Delinker(threadpool.Thread):
 				# likely embedded in a complicated template.
 				hook = 'complex'
 				r_templates = ur'(?s)(\{\{.*?\}\})'
-				r_complicated = u'(?s)\s*((?:%s)?)%s' % (r_namespace, r_image)
+				r_complicated = u'(?s)((?:%s)?)%s' % (r_namespace, r_image)
 				
 				def template_replacer(match):
 					return re.sub(r_complicated, simple_replacer, match.group(1))
@@ -368,9 +368,10 @@ class SummaryCache(object):
 		if site.family.name != 'wikipedia' and self.CommonsDelinker.config['global']:
 			if site.family.name in ('wiktionary', 'wikibooks', 'wikiquote', 
 					'wikisource', 'wikinews', 'wikiversity'):
-				newsite = self.CommonsDelinker.get_site(site.lang, 
-					wikipedia.Family('wikipedia'))
-				return self.get(newsite, type, key = key)
+				if site.lang in config.usernames['wikipedia']:
+					newsite = self.CommonsDelinker.get_site(site.lang, 
+						wikipedia.Family('wikipedia'))
+					return self.get(newsite, type, key = key)
 		return self.CommonsDelinker.config['default_settings'].get(type, '')
 				
 	def check_user_page(self, site):
@@ -610,32 +611,49 @@ class CommonsDelinker(object):
 		self.log_limit = '500'
 		self.init_plugins()
 		
-	def init_plugins(self):
+	def init_plugins(self, do_reload = False):
+		import plugins
 		self.hooks = {}
 		for item in self.config.get('plugins', ()):
 			mname, name = item.split('.', 1)
-			module = __import__('delinker_plugins.' + mname)
-			plugin = getattr(module, mname)
+			__import__('plugins.' + mname)
+			module = getattr(plugins, mname)
+			if do_reload: module = reload(module)
+			plugin = getattr(module, name)
 			if type(plugin) is type:
 				plugin = plugin(self)
 			if plugin.hook not in self.hooks:
 				self.hooks[plugin.hook] = []
 			self.hooks[plugin.hook].append(plugin)
+			output(u"%s Loaded plugin %s for hook '%s'" % \
+				(self, plugin, plugin.hook))
 			
 	def exec_hook(self, name, args):
 		# TODO: Threadsafety!
 		if name in self.hooks:
-			for plugin in self.hooks[name][:]:
+			self.siteLock.acquire()
+			try:
+				plugins = self.hooks[name][:]
+			finally:
+				self.siteLock.release()
+			for plugin in plugins:
 				try:
 					if plugin(*args) is False:
 						return False
 				except Exception, e:
 					if type(e) in (SystemExit, KeyboardInterrupt):
 						raise
-					output('Warning! Error executing hook %s' % plugin, False)
-					output('%s: %s' % (e.__class__.__name__, str(e)), False)
-					traceback.print_exc(file = sys.stderr)
-					self.hooks[name].remove(plugin)
+					self.siteLock.acquire()
+					try:
+						output('Warning! Error executing hook %s' % plugin, False)
+						output('%s: %s' % (e.__class__.__name__, str(e)), False)
+						traceback.print_exc(file = sys.stderr)
+						self.hooks[name].remove(plugin)
+					finally:
+						self.siteLock.release()
+						
+	def reload_plugins(signalnum, stack):
+		pass
 						
 	def connect_mysql(self):
 		self.database = connect_database()
@@ -742,15 +760,9 @@ class CommonsDelinker(object):
 
 
 		for id, timestamp, old_image, new_image, user, comment in result:
-			# TODO: remove code; should now be part of the replacer
-			if (not old_image.lower().endswith('.svg')) and \
-					new_image.lower().endswith('.svg'):
-				output(u'Refused to replace %s by %s' % (old_image, new_image))
-				self.cursor.execute(update, ('refused', id))
-			else:
-				self.CheckUsages.append((old_image, timestamp, user, comment, new_image))
-				output(u'Replacing %s by %s'  % (old_image, new_image))
-				self.cursor.execute(update, ('ok', id))
+			self.CheckUsages.append((old_image, timestamp, user, comment, new_image))
+			output(u'Replacing %s by %s'  % (old_image, new_image))
+			self.cursor.execute(update, ('ok', id))
 			
 		self.database.commit()
 			
@@ -766,13 +778,6 @@ class CommonsDelinker(object):
 		# Give threads some time to initialize
 		time.sleep(self.config['timeout'])
 		output(u'All workers started')
-		
-		if self.config.get('monitor'):
-			# For debugging a special monitor may be used.
-			# This monitor is optional, and will be used if
-			# a configuration variable monitor is set and True.
-			import monitor
-			monitor.Monitor(self).start()
 		
 		# Main loop
 		while True:

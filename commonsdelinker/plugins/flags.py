@@ -9,7 +9,7 @@ class NlWiki(object):
 	def __call__(self, page, summary, image, replacement, match, groups):
 		site = page.site()
 		if (site.lang, site.family.name) == ('nl', 'wikipedia') and replacement.get() is None:
-			commands = self.CommonsDelinker.SummaryCache(site, 'Vlaggen', default = '')
+			commands = self.CommonsDelinker.SummaryCache.get(site, 'Vlaggen', default = '')
 			
 			flags = re.findall(r'(?s)\<\!\-\-begin\-flags (.*?)\-\-\>(.*?)\<\!\-\-end\-flags\-\-\>', commands)
 			text = page.get()
@@ -29,5 +29,4 @@ class NlWiki(object):
 							u'%s %s replaced by %s in category %s' % \
 							(self, image, new_image, category))
 						replacement.set(new_image.replace(' ', '_'))
-					
 			
