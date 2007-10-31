@@ -334,7 +334,10 @@ msg = {
     'uk': (u'робот', u'додав', u'видалив', u'змінив'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
+    'yue': (u'機械人 ', u'加', u'減', u'改'),
     'zh': (u'機器人 ', u'正在新增', u'移除', u'修改'),
+    'zh-classical': (u'僕 ', u'增', u'削', u'修'),
+    'zh-yue': (u'機械人 ', u'加', u'減', u'改'),
 }
 
 class Global(object):
