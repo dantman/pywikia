@@ -14,7 +14,7 @@ This requires administrator privileges.
 # Distributed under the terms of the MIT license.
 #
  
-__version__='$Id:'
+__version__ = '$Id: pageimport.py 4336 2007-09-20 14:51:04Z wikipedian $'
  
 import wikipedia
  
