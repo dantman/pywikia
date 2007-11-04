@@ -27,7 +27,7 @@ def main():
     msg = {
         'de': u'Entferne in Spam-Blacklist eingetragenen Weblink auf %s',
         'en': u'Removing links to spammed site %s',
-        'nl': u'Links naar gespamde site %s verwijderd',
+        'nl': u'Links naar gespamde site: %s verwijderd',
         'pt': u'Removendo links de spam do site %s',
     }
     spamSite = ''
