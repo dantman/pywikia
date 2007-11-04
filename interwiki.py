@@ -303,6 +303,7 @@ msg = {
     'it': (u'robot ', u'Aggiungo', u'Tolgo', u'Modifico'),
     'ja': (u'ロボットによる ', u'追加', u'変更', u'除去'),
     'ka': (u'რობოტი ', u'დამატება', u'წაშლა', u'შეცვლა'),
+    'ko': (u'로봇이 ', u'더함', u'지움', u'바꿈'),
     'kk': (u'Боттың ', u'үстегені', u'аластағаны', u'түзеткені'),
     'ksh': (u'Bot: ', u'dobëijedonn', u'erußjenumme', u'ußjewääßelt'),
     'lmo': (u'Robot ', u'jontant', u'trant via', u'modifiant'),
