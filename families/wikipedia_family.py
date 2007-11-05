@@ -67,6 +67,7 @@ class Family(family.Family):
             'hu': u'Wikipédia',
             'ka': u'ვიკიპედია',
             'kk': u'Уикипедия',
+            'kn': u'ವಿಕಿಪೀಡಿಯ',
             'ko': u'위키백과',
             'ku': u'Wîkîpediya',
             'la': u'Vicipaedia',
@@ -159,7 +160,7 @@ class Family(family.Family):
             'ka': u'ვიკიპედია განხილვა',
             'kab': u'Amyannan n Wikipedia',
             'kk': u'Уикипедия талқылауы',
-            'kn': u'Wikipedia ಚರ್ಚೆ',
+            'kn': u'ವಿಕಿಪೀಡಿಯ ಚರ್ಚೆ',
             'ko': u'위키백과토론',
             'ksh': u'Wikipedia Klaaf',
             'ku': u'Wîkîpediya nîqaş',
@@ -253,7 +254,9 @@ class Family(family.Family):
             'sk': u'Portál',
             'sr': u'Портал',
             'tg': u'Портал',
+            'th': u'สถานีย่อย',
             'uk': u'Портал',
+            'vi': u'Chủ đề',
             'vo': u'Bespik dö Vükiped',
             'zh-classical': u'門',
         }
@@ -302,8 +305,10 @@ class Family(family.Family):
             'su': u'Obrolan portal',
             'sv': u'Portaldiskussion',
             'tg': u'Баҳси портал',
+            'th': u'คุยเรื่องสถานีย่อย',
             'tr': u'Portal tartışma',
             'uk': u'Обговорення порталу',
+            'vi': u'Thảo luận Chủ đề',
             'zh-classical': u'議',
         }
 
