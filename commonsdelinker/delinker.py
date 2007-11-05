@@ -173,6 +173,13 @@ class Delinker(threadpool.Thread):
 				return 'failed'
 			new_text = text
 			
+			m_image = ImmutableByReference(image)
+			m_replacement = ImmutableByReference(replacement)
+			self.CommonsDelinker.exec_hook('before_replace', 
+				(page, summary, m_image, m_replacement))
+			image = m_image.get()
+			replacement = m_replacement.get()
+			
 			def create_regex(s):
 				s = re.escape(s)
 				return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
@@ -190,7 +197,7 @@ class Delinker(threadpool.Thread):
 				if hook:
 					if False is self.CommonsDelinker.exec_hook('%s_replace' % hook,
 							(page, summary, image, m_replacement, match, groups)):
-						return u''.join(groups)						
+						return u''.join(groups)
 						
 				if m_replacement.get() is None:
 					return u''
@@ -246,7 +253,7 @@ class Delinker(threadpool.Thread):
 			hook = 'gallery'
 			r_galleries = ur'(?s)(\<%s\>)(.*?)(\<\/%s\>)' % (create_regex_i('gallery'), 
 				create_regex_i('gallery'))
-			r_gallery = ur'(?m)^((?:%s)?)%s(\s*(?:\|.*?)?\s*)$' % (r_namespace, r_image)
+			r_gallery = ur'(?m)^((?:%s)?)%s(\s*(?:\|.*?)?\s*$)' % (r_namespace, r_image)
 			def gallery_replacer(match):
 				return ur'%s%s%s' % (match.group(1), re.sub(r_gallery, 
 					simple_replacer, match.group(2)), match.group(3))
