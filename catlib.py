@@ -489,7 +489,7 @@ def change_category(article, oldCat, newCat, comment=None, sortKey=None, inPlace
         except wikipedia.SpamfilterError, e:
             wikipedia.output(
                     u'Skipping %s because of blacklist entry %s'
-                    % (page.title(), e.url))
+                    % (article.title(), e.url))
         except wikipedia.LockedPage:
             wikipedia.output(
                     u'Skipping %s because page is locked' % article.title())
