@@ -16,7 +16,7 @@ class Family(family.Family):
             'nl': [u'WikiBond'],
         }
         self.namespaces[5] = {
-            'botwiki': [u'Overleg WikiBond'],
+            'nl': [u'Overleg WikiBond'],
         }
 
     def path(self, code):
