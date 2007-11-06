@@ -34,7 +34,7 @@ def get(site = None):
         # Use cached copy if it exists.
         watchlist = cache[site]
     else:
-        fn = wikipedia.datafilepath('watchlists',
+        fn = wikipedia.config.datafilepath('watchlists',
                   'watchlist-%s-%s.dat' % (site.family.name, site.lang))
         try:
             # find out how old our saved dump is (in seconds)
@@ -72,14 +72,14 @@ def refresh(site):
         watchlist.append(pageName)
     # Save the watchlist to disk
     # The file is stored in the watchlists subdir. Create if necessary.
-    f = open(wikipedia.datafilepath('watchlists',
+    f = open(wikipedia.config.datafilepath('watchlists',
                  'watchlist-%s-%s.dat' % (site.family.name, site.lang)), 'w')
     pickle.dump(watchlist, f)
     f.close()
 
 def refresh_all():
     import dircache, time
-    filenames = dircache.listdir(wikipedia.datafilepath('watchlists'))
+    filenames = dircache.listdir(wikipedia.config.datafilepath('watchlists'))
     watchlist_filenameR = re.compile('watchlist-([a-z\-:]+).dat')
     for filename in filenames:
         match = watchlist_filenameR.match(filename)

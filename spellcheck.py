@@ -439,7 +439,7 @@ try:
     if not checklang:
         checklang = mysite.language()
     wikipedia.setAction(wikipedia.translate(mysite,msg))
-    filename = wikipedia.datafilepath('spelling',
+    filename = wikipedia.config.datafilepath('spelling',
                                       'spelling-' + checklang + '.txt')
     print "Getting wordlist"
     try:
@@ -523,7 +523,7 @@ try:
             title = wikipedia.input(u"Which page to check now? (enter to stop)")
 finally:
     wikipedia.stopme()
-    filename = wikipedia.datafilepath('spelling',
+    filename = wikipedia.config.datafilepath('spelling',
                                       'spelling-' + checklang + '.txt')
     if rebuild:
         list = knownwords.keys()

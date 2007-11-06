@@ -112,7 +112,7 @@ warn_color = 'lightyellow'
 error_color = 'lightred'
 
 appdir = "copyright"
-output_file = wikipedia.datafilepath(appdir, "output.txt")
+output_file = wikipedia.config.datafilepath(appdir, "output.txt")
 
 pages_for_exclusion_database = [
     ('it', 'Wikipedia:Sospette violazioni di copyright/Lista di esclusione', 'exclusion_list.txt'),
@@ -297,7 +297,7 @@ def cut_section(text, sectC):
 
 def exclusion_file_list():
     for i in pages_for_exclusion_database:
-        path = wikipedia.datafilepath(appdir, i[0], i[2])
+        path = wikipedia.config.datafilepath(appdir, i[0], i[2])
         wikipedia.makepath(path)
         p = wikipedia.Page(wikipedia.getSite(i[0]), i[1])
         yield p, path
@@ -306,12 +306,14 @@ def load_pages(force_update = False):
     for page, path in exclusion_file_list():
         try:
             if not os.path.exists(path):
-                print 'Creating file \'%s\' (%s)' % (wikipedia.shortpath(path), page.aslink())
+                print 'Creating file \'%s\' (%s)' % (
+                            wikipedia.config.shortpath(path), page.aslink())
                 force_update = True
             else:
                 file_age = time.time() - os.path.getmtime(path)
                 if file_age > 24 * 60 * 60:
-                    print 'Updating file \'%s\' (%s)' % (wikipedia.shortpath(path), page.aslink())
+                    print 'Updating file \'%s\' (%s)' % (
+                            wikipedia.config.shortpath(path), page.aslink())
                     force_update = True
         except OSError:
             raise
@@ -384,7 +386,7 @@ def exclusion_list():
                 result_list.append(entry)
 
     result_list += read_file(
-                        wikipedia.datafilepath(appdir, 'exclusion_list.txt'),
+                        wikipedia.config.datafilepath(appdir, 'exclusion_list.txt'),
                         cut_comment = True, cut_newlines = True
                     ).splitlines()
 
@@ -557,7 +559,7 @@ def exclusion_list_sanity_check():
             print "** " + entry
 
 def exclusion_list_dump():
-    f = open(wikipedia.datafilepath(appdir, 'exclusion_list.dump'), 'w')
+    f = open(wikipedia.config.datafilepath(appdir, 'exclusion_list.dump'), 'w')
     f.write('\n'.join(excl_list))
     f.close()
     print "Exclusion list dump saved."
@@ -984,7 +986,7 @@ def checks_by_ids(ids):
                         % (title.replace(" ", "_").replace("\"", "%22"),
                            id, "author")
                         + output,
-                    wikipedia.datafilepath(appdir, "ID_output.txt"))
+                    wikipedia.config.datafilepath(appdir, "ID_output.txt"))
 
 class CheckRobot:
     def __init__(self, generator):

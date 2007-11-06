@@ -598,7 +598,7 @@ class Subject(object):
         wikipedia.output(u"NOTE: %s does not have any interwiki links" % self.originPage.aslink(True))
         if config.without_interwiki:
             f = codecs.open(
-                wikipedia.datafilepath('without_interwiki.txt'), 'a', 'utf-8')
+                wikipedia.config.datafilepath('without_interwiki.txt'), 'a', 'utf-8')
             f.write("# %s \n" % page.aslink())
             f.close()
 
@@ -745,7 +745,7 @@ class Subject(object):
         if globalvar.autonomous:
             try:
                 f = codecs.open(
-                        wikipedia.datafilepath('autonomous_problem.dat'),
+                        wikipedia.config.datafilepath('autonomous_problem.dat'),
                         'a', 'utf-8')
                 f.write("* %s {%s}" % (self.originPage.aslink(True), txt))
                 if config.interwiki_graph and config.interwiki_graph_url:
@@ -1189,7 +1189,7 @@ class InterwikiBot(object):
 
     def dump(self):
         site = wikipedia.getSite()
-        dumpfn = wikipedia.datafilepath(
+        dumpfn = wikipedia.config.datafilepath(
                      'interwiki-dumps',
                      'interwikidump-%s-%s.txt' % (site.family.name, site.lang))
         f = codecs.open(dumpfn, 'w', 'utf-8')
@@ -1547,7 +1547,7 @@ if __name__ == "__main__":
 
         if optRestore or optContinue:
             site = wikipedia.getSite()
-            dumpFileName = wikipedia.datafilepath(
+            dumpFileName = wikipedia.config.datafilepath(
                                'interwiki-dumps',
                                u'interwikidump-%s-%s.txt'
                                  % (site.family.name, site.lang))

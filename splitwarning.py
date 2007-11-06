@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """Splits a interwiki.log file into chunks of warnings separated by language"""
 #
 # (C) Rob W.W. Hooft, 2003
@@ -17,7 +17,7 @@ files={}
 count={}
 
 # TODO: Variable log filename
-fn = wikipedia.datafilepath("logs", "interwiki.log")
+fn = wikipedia.config.datafilepath("logs", "interwiki.log")
 logFile = codecs.open(fn, 'r', 'utf-8')
 rWarning = re.compile('WARNING: (?P<family>.+?): \[\[(?P<code>.+?):.*')
 for line in logFile:
@@ -28,7 +28,7 @@ for line in logFile:
         if code in wikipedia.getSite().languages():
             if not files.has_key(code):
                 files[code] = codecs.open(
-                                  wikipedia.datafilepath('logs',
+                                  wikipedia.config.datafilepath('logs',
                                          'warning-%s-%s.log' % (family, code)),
                                   'w', 'utf-8')
                 count[code] = 0

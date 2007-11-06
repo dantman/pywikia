@@ -55,7 +55,7 @@ def getDefaultTextColorInWindows():
     std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
     csbi = CONSOLE_SCREEN_BUFFER_INFO()
     ctypes.windll.kernel32.GetConsoleScreenBufferInfo(std_out_handle, ctypes.byref(csbi))
-    return csbi.wAttributes & 0x0007
+    return (csbi.wAttributes & 0x0007)
 
 # TODO: other colors:
          #0 = Black
@@ -86,7 +86,7 @@ unixColors = {
 }
 
 windowsColors = {
-    'default':     getDefaultTextColorInWindows(),
+    'default':     7,
     'lightblue':   9,
     'lightgreen':  10,
     'lightaqua':   11,
@@ -94,7 +94,6 @@ windowsColors = {
     'lightpurple': 13,
     'lightyellow': 14,
 }
-
 
 colorTagR = re.compile('\03{(?P<name>%s)}' % '|'.join(windowsColors.keys()))
 

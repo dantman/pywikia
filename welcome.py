@@ -449,10 +449,10 @@ def defineSign(wsite, signPageTitle, fileSignName = None, fileOption = False):
             wikipedia.output(u'Error! - No fileName!')
             raise FilenameNotSet("No signature filename specified.")
         try:
-            f = codecs.open(wikipedia.datafilepath(fileSignName), 'r',
+            f = codecs.open(wikipedia.config.datafilepath(fileSignName), 'r',
                             encoding=config.console_encoding)
         except:
-            f = codecs.open(wikipedia.datafilepath(fileSignName), 'r',
+            f = codecs.open(wikipedia.config.datafilepath(fileSignName), 'r',
                             encoding='utf-8')
         signText = f.read()
         f.close()
@@ -629,7 +629,8 @@ def main(settingsBot):
         welcomer = u'{{subst:Benvenuto}} %s'
 
     welcomed_users = list()
-    if savedata == True and os.path.exists(wikipedia.datafilepath(filename)):
+    if savedata == True and os.path.exists(
+                                wikipedia.config.datafilepath(filename)):
         f = file(filename)
         number_user = cPickle.load(f)
         yield number_user

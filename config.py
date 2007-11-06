@@ -408,8 +408,6 @@ for _filename in _fns:
         else:
             print "WARNING: Skipped '%s': owned by someone else."%_filename
 
-del os, re
-
 # Test for obsoleted and/or unknown variables.
 for _key in globals().keys():
     if _key[0]=='_':
@@ -444,6 +442,45 @@ if console_encoding == None:
 
 # Save base_dir for use by other modules
 base_dir = _base_dir
+
+def makepath(path):
+    """Return a normalized absolute version of the path argument.
+
+    - if the given path already exists in the filesystem
+      the filesystem is not modified.
+
+    - otherwise makepath creates directories along the given path
+      using the dirname() of the path. You may append
+      a '/' to the path if you want it to be a directory path.
+
+    from holger@trillke.net 2002/03/18
+    
+    """
+    from os import makedirs
+    from os.path import normpath, dirname, exists, abspath
+
+    dpath = normpath(dirname(path))
+    if not exists(dpath): makedirs(dpath)
+    return normpath(abspath(path))
+
+def datafilepath(*filename):
+    """Return an absolute path to a data file in a standard location.
+
+    Argument(s) are zero or more directory names, optionally followed by a
+    data file name. The return path is offset to config.base_dir. Any
+    directories in the path that do not already exist are created.
+    
+    """
+    import os
+    return makepath(os.path.join(base_dir, *filename))
+
+def shortpath(path):
+    """Return a file path relative to config.base_dir."""
+    import os
+    if path.startswith(base_dir):
+        return path[len(base_dir) + len(os.path.sep) : ]
+    return path
+
 #
 # When called as main program, list all configuration variables
 #
@@ -468,3 +505,5 @@ for __var in globals().keys():
         del __sys.modules[__name__].__dict__[__var]
 
 del __var, __sys
+del os, re
+

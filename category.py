@@ -163,10 +163,10 @@ class CategoryDatabase:
         else:
             try:
                 if not os.path.isabs(filename):
-                    filename = wikipedia.datafilepath(filename)
+                    filename = wikipedia.config.datafilepath(filename)
                 f = bz2.BZ2File(filename, 'r')
                 wikipedia.output(u'Reading dump from %s'
-                                 % wikipedia.shortpath(filename))
+                                 % wikipedia.config.shortpath(filename))
                 databases = pickle.load(f)
                 f.close()
                 # keys are categories, values are 2-tuples with lists as entries.
@@ -230,9 +230,9 @@ class CategoryDatabase:
         Saves the contents of the dictionaries superclassDB and catContentDB to disk.
         '''
         if not os.path.isabs(filename):
-            filename = wikipedia.datafilepath(filename)
+            filename = wikipedia.config.datafilepath(filename)
         wikipedia.output(u'Dumping to %s, please wait...'
-                         % wikipedia.shortpath(filename))
+                         % wikipedia.config.shortpath(filename))
         f = bz2.BZ2File(filename, 'w')
         databases = {
             'catContentDB': self.catContentDB,
@@ -686,7 +686,7 @@ class CategoryTreeRobot:
         self.catTitle = catTitle
         self.catDB = catDB
         if not os.path.isabs(filename):
-            filename = wikipedia.datafilepath(filename)
+            filename = wikipedia.config.datafilepath(filename)
         self.filename = filename
         # TODO: make maxDepth changeable with a parameter or config file entry
         self.maxDepth = maxDepth

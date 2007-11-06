@@ -2,14 +2,18 @@ __version__ = '$Id$'
 import os, sys
 
 def get_base_dir():
-    """ Determine the directory in which user-specific information is stored.
-        This is determined in the following order -
-     1. If the script was called with a -dir: argument, use the directory provided
-        in this argument
-     2. If the user has a PYWIKIBOT_DIR environment variable, use the value of it
-     3. If the script was started from a directory that contains a user-config.py
-        file, use this directory as the base
-     4. If all else fails, use the directory from which this module was loaded
+    """Return the directory in which user-specific information is stored.
+
+    This is determined in the following order -
+    1.  If the script was called with a -dir: argument, use the directory
+        provided in this argument
+    2.  If the user has a PYWIKIBOT_DIR environment variable, use the value
+        of it
+    3.  If the script was started from a directory that contains a
+        user-config.py file, use this directory as the base
+    4.  If all else fails, use the directory from which this module was
+        loaded.
+    
     """
     for arg in sys.argv[1:]:
         if arg.startswith("-dir:"):

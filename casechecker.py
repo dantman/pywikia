@@ -153,7 +153,7 @@ class CaseChecker( object ):
             raise ValueError(u'Suspects must be the same size')
 
         if not os.path.isabs(self.wikilogfile):
-            self.wikilogfile = wikipedia.datafilepath(self.wikilogfile)
+            self.wikilogfile = wikipedia.config.datafilepath(self.wikilogfile)
         try:
             self.wikilog = codecs.open(self.wikilogfile, 'a', 'utf-8')
         except IOError:

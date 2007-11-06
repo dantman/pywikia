@@ -172,7 +172,7 @@ class LoginManager:
         The argument data is the raw data, as returned by getCookie().
 
         Returns nothing."""
-        filename = wikipedia.datafilepath('login-data',
+        filename = wikipedia.config.datafilepath('login-data',
                        '%s-%s-%s-login.data'
                        % (self.site.family.name, self.site.lang, self.username))
         f = open(filename, 'w')

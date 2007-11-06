@@ -55,9 +55,6 @@ Other functions:
 
     showDiff(oldtext, newtext): Prints the differences between oldtext and
         newtext on the screen
-    datafilepath: Return an absolute path to a data file in a standard
-        location.
-    shortpath: Return a relative form of the data file pathname.
     
 Wikitext manipulation functions: each of these takes a unicode string
 containing wiki text as its first argument, and returns a modified version
@@ -561,6 +558,10 @@ not supported by PyWikipediaBot!"""
         previously.
 
         """
+        # TODO: is the description of nofollow_redirects accurate? I can't
+        # tell where nofollow_redirects is doing anything different than
+        # get_redirect!
+        
         # NOTE: The following few NoPage exceptions could already be thrown at
         # the Page() constructor. They are raised here instead for convenience,
         # because all scripts are prepared for NoPage exceptions raised by
@@ -767,6 +768,9 @@ not supported by PyWikipediaBot!"""
         """Return text of an old revision of this page; same options as get()."""
         # TODO: should probably check for bad pagename, NoPage, and other
         # exceptions that would prevent retrieving text, as get() does
+        
+        # TODO: should this default to change_edit_time = False? If we're not
+        # getting the current version, why change the timestamps?
         return self._getEditPage(
                         get_redirect=get_redirect, throttle=throttle,
                         sysop=sysop, oldid=oldid,
@@ -1163,8 +1167,6 @@ not supported by PyWikipediaBot!"""
                     change_edit_time = True, sysop = True)
             except NoPage:
                 pass
-
-
         # if posting to an Esperanto wiki, we must e.g. write Bordeauxx instead
         # of Bordeaux
         if self.site().lang == 'eo':
@@ -1451,6 +1453,7 @@ not supported by PyWikipediaBot!"""
         """Return a list of Pages that this Page links to.
 
         Excludes interwiki and category links.
+        
         """
         result = []
         try:
@@ -2577,7 +2580,7 @@ class Throttle(object):
         self.setDelay(mindelay)
 
     def logfn(self):
-        return datafilepath('throttle.log')
+        return config.datafilepath('throttle.log')
 
     def checkMultiplicity(self):
         self.lock.acquire()
@@ -3382,7 +3385,7 @@ def Family(fam = None, fatal = True):
         fam = config.family
     try:
         # search for family module in the 'families' subdirectory
-        sys.path.append(datafilepath('families'))
+        sys.path.append(config.datafilepath('families'))
         exec "import %s_family as myfamily" % fam
     except ImportError:
         if fatal:
@@ -3669,7 +3672,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         else:
             tmp = '%s-%s-%s-login.data' % (
                     self.family.name, self.lang, username)
-            fn = datafilepath('login-data', tmp)
+            fn = config.datafilepath('login-data', tmp)
             if not os.path.exists(fn):
                 self._cookies = None
                 self.loginStatusKnown = True
@@ -5003,48 +5006,12 @@ def handleArgs():
             nonGlobalArgs.append(arg)
     return nonGlobalArgs
 
-def makepath(path):
-    """Return a normalized absolute version of the path argument.
-
-    - if the given path already exists in the filesystem
-      the filesystem is not modified.
-
-    - otherwise makepath creates directories along the given path
-      using the dirname() of the path. You may append
-      a '/' to the path if you want it to be a directory path.
-
-    from holger@trillke.net 2002/03/18
-    
-    """
-    from os import makedirs
-    from os.path import normpath, dirname, exists, abspath
-
-    dpath = normpath(dirname(path))
-    if not exists(dpath): makedirs(dpath)
-    return normpath(abspath(path))
-
-def datafilepath(*filename):
-    """Return an absolute path to a data file in a standard location.
-
-    Argument(s) are zero or more directory names, optionally followed by a
-    data file name. The return path is offset to config.base_dir. Any
-    directories in the path that do not already exist are created.
-    
-    """
-    return makepath(os.path.join(config.base_dir, *filename))
-
-def shortpath(path):
-    """Return a file path relative to config.base_dir."""
-    if path.startswith(config.base_dir):
-        return path[len(config.base_dir) + len(os.path.sep) : ]
-    return path
-
 #########################
 # Interpret configuration
 #########################
 
 # search for user interface module in the 'userinterfaces' subdirectory
-sys.path.append(datafilepath('userinterfaces'))
+sys.path.append(config.datafilepath('userinterfaces'))
 exec "import %s_interface as uiModule" % config.userinterface
 ui = uiModule.UI()
 verbose = 0
@@ -5263,7 +5230,7 @@ def setLogfileStatus(enabled, logname = None):
     if enabled:
         if not logname:
             logname = '%s.log' % calledModuleName()
-        logfn = datafilepath('logs', logname)
+        logfn = config.datafilepath('logs', logname)
         try:
             logfile = codecs.open(logfn, 'a', 'utf-8')
         except IOError:
@@ -5546,7 +5513,7 @@ class MyURLopener(urllib.FancyURLopener):
 # Special opener in case we are using a site with authentication
 if config.authenticate:
     import urllib2, cookielib
-    COOKIEFILE = datafilepath('login-data', 'cookies.lwp')
+    COOKIEFILE = config.datafilepath('login-data', 'cookies.lwp')
     cj = cookielib.LWPCookieJar()
     if os.path.isfile(COOKIEFILE):
         cj.load(COOKIEFILE)

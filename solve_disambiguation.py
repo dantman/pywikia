@@ -379,7 +379,7 @@ class PrimaryIgnoreManager(object):
         self.enabled = enabled
         
         self.ignorelist = []
-        filename = wikipedia.datafilepath('disambiguations',
+        filename = wikipedia.config.datafilepath('disambiguations',
                                           self.disambPage.urlname() + '.txt')
         try:
             # The file is stored in the disambiguation/ subdir. Create if necessary.
@@ -401,7 +401,7 @@ class PrimaryIgnoreManager(object):
     def ignore(self, refPage):
         if self.enabled:
             # Skip this occurence next time.
-            filename = wikipedia.datafilepath('disambiguations',
+            filename = wikipedia.config.datafilepath('disambiguations',
                                      self.disambPage.urlname() + '.txt')
             try:
                 # Open file for appending. If none exists yet, create a new one.
