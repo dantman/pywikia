@@ -298,7 +298,7 @@ def cut_section(text, sectC):
 def exclusion_file_list():
     for i in pages_for_exclusion_database:
         path = wikipedia.config.datafilepath(appdir, i[0], i[2])
-        wikipedia.makepath(path)
+        wikipedia.config.makepath(path)
         p = wikipedia.Page(wikipedia.getSite(i[0]), i[1])
         yield p, path
 
