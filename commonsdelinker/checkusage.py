@@ -91,19 +91,19 @@ class HTTP(object):
 		self._conn = httplib.HTTPConnection(host)
 		#self._conn.set_debuglevel(100)
 		self._conn.connect()
- 
+
 	def request(self, method, path, headers, data):		
 		if not headers: headers = {}
 		if not data: data = ''
 		headers['Connection'] = 'Keep-Alive'
 		headers['User-Agent'] = 'MwClient/' + __ver__
- 
+
 		try:
 			self._conn.request(method, path, data, headers)
 		except socket.error, e:
 			self._conn.close()
 			raise
- 
+
 		try:
 			res = self._conn.getresponse()
 		except httplib.BadStatusLine:
@@ -111,16 +111,16 @@ class HTTP(object):
 			self._conn.connect()
 			self._conn.request(method, path, data, headers)
 			res = self._conn.getresponse()
- 
+
 		if res.status >= 500:
 			self._conn.request(method, path, data, headers)
 			res = self._conn.getresponse()
- 
+
 		if res.status != 200:
 			raise RuntimeError, (res.status, res)
- 
+
 		return res
- 
+
 	def query_api(self, host, path, **kwargs):
 		data = urlencode([(k, v.encode('utf-8')) for k, v in kwargs.iteritems()])
 		if path.endswith('query.php'):
@@ -132,7 +132,7 @@ class HTTP(object):
 			method = 'POST'
 		else:
 			raise ValueError('Unknown api %s' % repr(api))
- 
+
 		try:
 			res = self.request(method, query_string,
 				{'Host': host, 'Content-Type': 'application/x-www-form-urlencoded'}, data)
@@ -151,7 +151,7 @@ class HTTP(object):
 		return data
 	def close(self):
 		self._conn.close()
- 
+
 class HTTPPool(list):
 	def __init__(self, retry_timeout = 10, max_retries = -1, 
 		callback = lambda *args: None):
@@ -211,7 +211,7 @@ class HTTPPool(list):
 			conn.close()
 		del self[:]
 		
- 
+
 class CheckUsage(object):
 	def __init__(self, limit = 100, 
 			mysql_default_server = 3, mysql_host_prefix = 'sql-s', mysql_kwargs = {}, 
@@ -229,7 +229,7 @@ class CheckUsage(object):
 		self.http_callback = http_callback
 		
 		if no_db: return
- 
+
 		self.mysql_host_prefix = mysql_host_prefix
 		if 'host' in mysql_kwargs: del mysql_kwargs['host']
 		self.mysql_kwargs = mysql_kwargs
@@ -252,10 +252,10 @@ class CheckUsage(object):
 		self.unknown_families = []
 		# Mapping family name -> family object
 		self.known_families = {}
- 
+
 		database, cursor = self.connect_mysql(mysql_host_prefix + str(mysql_default_server))
 		self.servers[mysql_default_server] = (database, cursor)
- 
+
 		# Find where the databases are located
 		cursor.execute('SELECT dbname, domain, server FROM toolserver.wiki ORDER BY size DESC LIMIT %s', (limit, ))
 		for dbname, domain, server in cursor.fetchall():
@@ -275,8 +275,8 @@ class CheckUsage(object):
 				self.databases[dbname] = self.servers[server]
 				
 			self.domains[dbname] = domain
- 
- 
+
+
 	def connect_mysql(self, host):
 		# A bug in MySQLdb 1.2.1_p will force you to set
 		# all your connections to use_unicode = False.
@@ -304,7 +304,7 @@ class CheckUsage(object):
 			usage = self.get_usage_db(dbname, image, True)
 			for link in usage:
 				yield self.sites[dbname], link
- 
+
 	def get_usage_db(self, dbname, image, shared = False):
 		#image = strip_image(image)
 		lang, family_name = self.sites[dbname]
@@ -325,7 +325,7 @@ class CheckUsage(object):
 			else:
 				title = stripped_title
 			yield page_namespace, stripped_title, title
- 
+
 	def get_usage_live(self, site, image, shared = False):
 		self.connect_http()
 		
