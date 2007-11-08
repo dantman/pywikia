@@ -5000,6 +5000,12 @@ def handleArgs():
             output(u'Pywikipediabot %s' % (version.getversion()))
             output(u'Python %s' % (sys.version))
             verbose += 1
+        elif arg == '-daemonize':
+            import daemonize
+            daemonize.daemonize()
+        elif arg.startswith('-daemonize:'):
+            import daemonize
+            daemonize.daemonize(redirect_std = arg[11:])
         else:
             # the argument is not global. Let the specific bot script care
             # about it.
@@ -5376,6 +5382,10 @@ Global arguments available for all bots:
 -family:xyz       Set the family of the wiki you want to work on, e.g.
                   wikipedia, wiktionary, wikitravel, ...
                   This will override the configuration in user-config.py.
+
+-daemonize:xyz    Immediately returns control to the terminal and redirects
+                  stdout and stderr to xyz (only use for bots that require 
+                  no input from stdin).
 
 -help             Shows this help text.
 
