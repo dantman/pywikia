@@ -33,7 +33,7 @@ def daemonize(close_fd = True, chdir = True, write_pid = False, redirect_std = N
                 os.close(2)
                 os.open('/dev/null', os.O_RDWR)
                 if redirect_std:
-                    os.open(redirect_std, os.O_RDONLY | os.O_APPEND)
+                    os.open(redirect_std, os.O_WRONLY | os.O_APPEND)
                 else:
                     os.dup2(0, 1)
                 os.dup2(1, 2)
