@@ -46,13 +46,14 @@ msg = {
     'he': u'Bot: קישור לערך מומלץ עבור [[%s:%s]]',
     'hr': u'Bot: Interwiki za izabrane članke za [[%s:%s]]',
     'it': u'Bot: collegamento articolo in vetrina [[%s:%s]]',
-    'ka': u'Bot: რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
+    'ka': u'ბოტი: რჩეული სტატიის ბმული გვერდისათვის [[%s:%s]]',
     'lt': u'Bot: Pavyzdinis straipsnis [[%s:%s]]',
     'nl': u'Bot: Etalage-artikel link voor [[%s:%s]]',
     'no': u'bot: [[%s:%s]] er en utmerka artikkel',
     'pl': u'Bot: Link do artykułu wyróżnionego [[%s:%s]]',
     'pt': u'Bot: Ligando artigos destacados para [[%s:%s]]',
     'sr': u'Bot: Међувики за изабране чланке за [[%s:%s]]',
+    'vo': u'Bot: Yüm yegeda gudik tefü [[%s:%s]]',
 }
 
 # default is en:Link FA
@@ -82,6 +83,7 @@ template = {
     'sv': u'UA',
     'tr': u'Link FA',
     'vi': u'Liên kết chọn lọc',
+    'vo': u'Yüm YG'
 }
 
 featured_name = {
@@ -127,11 +129,12 @@ featured_name = {
     'sl': (CAT, u"Category:Izbrani članki"),
     'sq': (BACK, u"Template:Perfekt"),
     'sr': (BACK, u"Шаблон:Изабрани"),
-    'sv': (CAT, u"Wikipedia:Utmärkta artiklar"),
+    'sv': (CAT, u"Kategori:Wikipedia:Utmärkta artiklar"),
     'ta': (BACK, u"வார்ப்புரு:சிறப்பு"),
     'tl': (BACK, u"Template:Napiling artikulo"),
     'uk': (CAT, u"Категорія:Вибрані статті"),
     'vi': (CAT, u"Thể loại:Bài viết chọn lọc"),
+    'vo': (CAT, u"Klad:Yegeds gudik"),
     'zh': (CAT, u"Category:特色条目"),
     'zh-yue': (BACK, u"Template:正文"),
     'zh-classical': (BACK, u"Template:絕妙好文"),
