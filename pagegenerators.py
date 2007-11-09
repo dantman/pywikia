@@ -114,7 +114,8 @@ def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True)
     """
     if namespace==None:
         namespace = wikipedia.Page(wikipedia.getSite(), start).namespace()
-    for page in wikipedia.getSite().allpages(start=start, namespace=namespace, includeredirects = includeredirects):
+        title = wikipedia.Page(wikipedia.getSite(), start).titleWithoutNamespace()
+    for page in wikipedia.getSite().allpages(start=title, namespace=namespace, includeredirects = includeredirects):
         yield page
 
 def PrefixingPageGenerator(prefix, namespace=None):
