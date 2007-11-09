@@ -333,6 +333,7 @@ msg = {
     'to': (u'mīsini', u'ʻoku tānaki', u'ʻoku toʻo', u'ʻoku liliu'),
     'tr': (u'Bot değişikliği', u'Ekleniyor', u'Kaldırılıyor', u'Değiştiriliyor'),
     'uk': (u'робот', u'додав', u'видалив', u'змінив'),
+    'uz': (u'Bot', u'Qoʻshdi', u'Tuzatdi', u'Oʻchirdi'),
     'vi': (u'robot ', u'Thêm', u'Dời', u'Thay'),
     'vo': (u'bot ', u'läükon', u'moükon', u'votükon'),
     'yue': (u'機械人 ', u'加', u'減', u'改'),
