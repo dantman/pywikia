@@ -20,6 +20,7 @@ URLs to current implementations:
 * Italian Wikipedia: http://it.wikipedia.org/wiki/Wikipedia:Benvenuto_log
 * English Wikiquote: http://en.wikiquote.org/wiki/Wikiquote:Welcome_log
 * Persian Wikipedia: http://fa.wikipedia.org/wiki/ویکی‌پدیا:سیاهه خوشامد
+* Korean Wikipedia: http://ko.wikipedia.org/wiki/위키백과:Welcome log
 
 Everything that needs customisation to support additional projects is
 indicated by comments.
@@ -138,9 +139,7 @@ NOTE: The white space and <pre></pre> aren't required but I suggest you to
       use them.
 
 *************************** Known issues/FIXMEs ****************************
-* use default pages if a wiki is not configured, so no configuration of
-  the script would be required at all. Suggestion: use English language
-  defaults.
+
 * The regex to load the user might be slightly different from project to project.
   (in this case, write to Filnik for help...)
 * Understand if it's the case to use a class to group toghether the functions used.
@@ -300,7 +299,7 @@ random_sign = {
     'fa': u'Project:سیاهه خوشامد/امضاها',
     'en': u'User:Filnik/Sign',
     'it': u'Project:Benvenuto log/User',
-	'zh': u'user:Welcomebot/欢迎日志/用户',
+    'zh': u'user:Welcomebot/欢迎日志/用户',
     }
 # The page where the bot reads the real-time whitelist page.
 # (this parameter is optional).
@@ -309,8 +308,6 @@ whitelist_pg = {
     'en':u'User:Filnik/whitelist',
     'it':u'Utente:Filbot/whitelist',
     }
-# Add your project (in alphabetical order) if you want that the bot start.
-project_inserted = ['ar', 'commons', 'de', 'en', 'fa', 'it', 'nl', 'no', 'sq','zh']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed
 # and it will run correctly in your project ;)
@@ -320,9 +317,6 @@ project_inserted = ['ar', 'commons', 'de', 'en', 'fa', 'it', 'nl', 'no', 'sq','z
 
 class FilenameNotSet(wikipedia.Error):
     """An exception indicating that a signature filename was not specifed."""
-
-class NoProjectFound(wikipedia.Error):
-    """An exception indicating that the Bot can't find the Project's parameters."""
 
 # Function stolen from wikipedia.py and modified.
 def urlname(talk_page, site):
@@ -596,10 +590,6 @@ def main(settingsBot):
 
     # The site
     wsite = wikipedia.getSite()
-
-    # A little block-statement to ensure that the bot won't start with en-parameters.
-    if wsite.lang not in project_inserted:
-        raise NoProjectFound(u'Your project is not supported by the framework. You have to edit the script and add it!')
 
     # The follow lines translate the language's parameters.
     welcomer = wikipedia.translate(wsite, netext)
