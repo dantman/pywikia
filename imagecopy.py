@@ -24,6 +24,7 @@ Arguments:
   -start        Start at index within category (optional)
 
 Known issues/FIXMEs (no critical issues known):
+* make it use pagegenerators.py
 * Some variable names are in Spanish, which makes the code harder to read.
 * Depending on sorting within a file category, the "next batch" is sometimes
   not working, leading to an endless loop
