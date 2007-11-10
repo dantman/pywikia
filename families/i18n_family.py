@@ -12,7 +12,7 @@ class Family(family.Family):
         family.Family.__init__(self)
         self.name = 'i18n'
         self.langs = {
-            'i18n': 'nike.users.idler.fi',
+            'i18n': 'translatewiki.net',
         }
         
         self.namespaces[102] = {
@@ -25,8 +25,5 @@ class Family(family.Family):
             '_default': [u'Translating talk'],
         }
 
-    def path(self, code):
-        return '/dev/'
-
     def version(self, code):
-        return "1.11alpha"
+        return "1.12alpha"
