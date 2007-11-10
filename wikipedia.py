@@ -1817,7 +1817,6 @@ not supported by PyWikipediaBot!"""
             put_throttle()
         if reason == None:
             reason = input(u'Please enter a reason for the move:')
-        reason = reason.encode(self.site().encoding())
         if self.isTalkPage():
             movetalkpage = False
         host = self.site().hostname()
