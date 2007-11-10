@@ -235,7 +235,7 @@ editsection_names = {
 sections_to_skip = {
     'en':['References', 'Further reading', 'Citations', 'External links'],
     'fr':['Liens externes'],
-    'it':['Bibliografia', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni principali'],
+    'it':['Bibliografia', 'Riferimenti bibliografici', 'Collegamenti esterni',  'Pubblicazioni', 'Pubblicazioni principali'],
 }
 
 num_google_queries = 0 ; num_yahoo_queries = 0 ; num_msn_queries = 0
@@ -305,20 +305,21 @@ def exclusion_file_list():
 def load_pages(force_update = False):
     for page, path in exclusion_file_list():
         try:
+            force_load = force_update
             if not os.path.exists(path):
                 print 'Creating file \'%s\' (%s)' % (
                             wikipedia.config.shortpath(path), page.aslink())
-                force_update = True
+                force_load = True
             else:
                 file_age = time.time() - os.path.getmtime(path)
                 if file_age > 24 * 60 * 60:
                     print 'Updating file \'%s\' (%s)' % (
                             wikipedia.config.shortpath(path), page.aslink())
-                    force_update = True
+                    force_load = True
         except OSError:
             raise
 
-        if force_update:
+        if force_load:
             data = None
             try:
                 data = page.get()
@@ -458,7 +459,7 @@ reSectionNamesC = re.compile('(' + '|'.join(editsection_names.values()) + ')')
 def cleanwikicode(text):
     remove_wikicode(text)
 
-def remove_wikicode(text, re_dotall = False, debug = False):
+def remove_wikicode(text, re_dotall = False, remove_quote = exclude_quote, debug = False):
     if not text:
         return ""
 
@@ -507,7 +508,7 @@ def remove_wikicode(text, re_dotall = False, debug = False):
     )
     """ % flags, "", text)
 
-    if exclude_quote:
+    if remove_quote:
         # '' text ''
         # '' text ''.
         # '' text '' (text)
@@ -875,6 +876,8 @@ def soap(engine, query, url, numresults = 10):
 
         print "  %s query..." % engine.capitalize()
         search_request_retry = config.copyright_connection_tries
+        query_success = False
+
         while search_request_retry:
             try:
                 if engine == 'google':
@@ -936,6 +939,7 @@ def soap(engine, query, url, numresults = 10):
                     num_msn_queries += 1
 
                 search_request_retry = 0
+                query_success = True
             except KeyboardInterrupt:
                 raise
             except Exception, err:
@@ -949,9 +953,14 @@ def soap(engine, query, url, numresults = 10):
                     exceeded_in_queries('google')
                 if 'limit exceeded' in str(err):
                     exceeded_in_queries('yahoo')
+                #FIXME: Live Search
+                #
 
                 if search_request_retry:
                     search_request_retry -= 1
+
+        if not query_success:
+            error('No response for: %s' % query, "Error (%s)" % engine)
 
 def get_results(query, numresults = 10):
     result_list = list()
