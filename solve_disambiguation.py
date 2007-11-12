@@ -76,46 +76,87 @@ import wikipedia, pagegenerators, editarticle
 
 # Summary message when working on disambiguation pages
 msg = {
-    'cs': u'Odstranění linku na rozcestník [[%s]] s použitím robota',
-    'en': u'Robot-assisted disambiguation: %s',
-    'da': u'Retter flertydigt link til: %s',
-    'de': u'Bot-unterstützte Begriffsklärung: %s',
-    'fr': u'Homonymie résolue à l\'aide du robot: %s',
-    'he': u'תיקון הפניה לדף פירושונים באמצעות בוט: %s',
-    'ia': u'Disambiguation assistite per robot: %s',
-    'it': u'Sistemazione automatica della disambigua: %s',
-    'lt': u'Nuorodų į nukrepiamąjį straipsnį keitimas: %s',
-    'kk': u'Айрықты мағыналарды бот көмегімен шешу: %s',
-    'nl': u'Robot-geholpen doorverwijzing: %s',
-    'no': u'bot: Retter lenke til peker: %s',
-    'pl': u'Wspomagane przez robota ujednoznacznienie: %s',
-    'pt': u'Desambiguação assistida por bot: %s',
-    'ru': u'Разрешение значений с помощью бота: %s',
-    'sr': u'Решавање вишезначних одредница помоћу бота: %s',
-    'sv': u'Länkar direkt till rätt artikel för: %s',
+    'cs': u'Odstranění linku na rozcestník [[%s]] s použitím robota - Změněn(y) odkaz(y) na %s',
+    'en': u'Robot-assisted disambiguation: %s - Changed link(s) to %s',
+    'da': u'Retter flertydigt link til: %s - Ændrede link(s) til %s',
+    'de': u'Bot-unterstützte Begriffsklärung: %s - Link(s) ersetzt durch %s',
+    'fr': u'Homonymie résolue à l\'aide du robot: %s - Modifications du (des) lien(s) pour %s',
+    'he': u'תיקון קישור לדף פירושונים באמצעות בוט: %s שונה ל%s',
+    'ia': u'Disambiguation assistite per robot: %s - Changed link(s) to %s',
+    'it': u'Sistemazione automatica della disambigua: %s - Inversione di redirect %s',
+    'lt': u'Nuorodų į nukrepiamąjį straipsnį keitimas: %s - Pakeistos nuorodos į %s',
+    'kk': u'Айрықты мағыналарды бот көмегімен шешу: %s - Changed link(s) to %s',
+    'nl': u'Robot-geholpen doorverwijzing: [[%s]] - Link(s) veranderd naar %s',
+    'no': u'bot: Retter lenke til peker: %s - Endret lenke(r) til %s',
+    'pl': u'Wspomagane przez robota ujednoznacznienie: %s - Zmieniono link(i) %s',
+    'pt': u'Desambiguação assistida por bot: %s - Mudado(s) link(s) para  %s',
+    'ru': u'Разрешение значений с помощью бота: %s - Changed link(s) to %s',
+    'sr': u'Решавање вишезначних одредница помоћу бота: %s - Changed link(s) to %s',
+    'sv': u'Länkar direkt till rätt artikel för: %s - Bytte länk(ar) till %s',
     }
 
+# Summary message when working on disambiguation pages and the link is removed
+msg_unlink = {
+    'cs': u'Odstranění linku na rozcestník [[%s]] s použitím robota - Odstraněn(y) odkaz(y)',
+    'en': u'Robot-assisted disambiguation: %s - Removed link(s).',
+    'da': u'Retter flertydigt link til: %s - Fjernede link(s)',
+    'de': u'Bot-unterstützte Begriffsklärung: %s - Link(s) entfernt',
+    'fr': u'Homonymie résolue à l\'aide du robot: %s - Retrait du (des) lien(s)',
+    'he': u'הסרת קישור לדף פירושונים באמצעות בוט: %s',
+    'ia': u'Disambiguation assistite per robot: %s - Removed link(s).',
+    'it': u'Sistemazione automatica della disambigua: %s - Collegamenti rimossi',
+    'lt': u'Nuorodų į nukrepiamąjį straipsnį keitimas: %s - Pašalintos nuorodos',
+    'kk': u'Айрықты мағыналарды бот көмегімен шешу: %s - Removed link(s).',
+    'nl': u'Robot-geholpen doorverwijzing: [[%s]] - Link(s) weggehaald.',
+    'no': u'bot: Retter lenke til peker: %s - Fjernet lenke(r)',
+    'pl': u'Wspomagane przez robota ujednoznacznienie: %s - Usunięto link(i)',
+    'pt': u'Desambiguação assistida por bot: %s - Removido(s) link(s)',
+    'ru': u'Разрешение значений с помощью бота: %s - Removed link(s)',
+    'sr': u'Решавање вишезначних одредница помоћу бота: %s - Removed link(s)',
+    'sv': u'Länkar direkt till rätt artikel för: %s - Tog bort länk(ar)',
+    }
+    
 # Summary message when working on redirects
 msg_redir = {
-    'cs': u'Robot opravil přesměrování na %s',
-    'en': u'Robot-assisted disambiguation: %s',
-    'da': u'Retter flertydigt link til: %s',
-    'de': u'Bot-unterstützte Redirectauflösung: %s',
-    'fr': u'Correction de lien vers redirect: %s',
-    'he': u'תיקון הפניה לדף פירושונים באמצעות בוט: %s',
-    'ia': u'Resolution de redirectiones assistite per robot: %s',
-    'it': u'Sistemazione automatica del redirect: %s',
-    'lt': u'Nuorodų į peradresavimo straipsnį keitimas: %s',
-    'kk': u'Айрықты мағыналарды бот көмегімен шешу: %s',
-    'nl': u'Robot-geholpen redirect-oplossing: %s',
-    'no': u'bot: Endrer omdirigeringslenke: %s',
-    'pl': u'Wspomagane przez robota ujednoznacznienie: %s',
-    'pt': u'Desambiguação assistida por bot: %s',
-    'ru': u'Разрешение значений с помощью бота: %s',
-    'sr': u'Решавање вишезначних одредница помоћу бота: %s',
-    'sv': u'Länkar direkt till rätt artikel för: %s',
+    'cs': u'Robot opravil přesměrování na %s - Změněn(y) odkaz(y) na %s',
+    'en': u'Robot-assisted disambiguation: %s - Changed link(s) to %s',
+    'da': u'Retter flertydigt link til: %s - Ændrede link(s) til %s',
+    'de': u'Bot-unterstützte Redirectauflösung: %s - Link(s) ersetzt durch %s',
+    'fr': u'Correction de lien vers redirect: %s - Modifications du (des) lien(s) pour %s',
+    'he': u'תיקון קישור לדף פירושונים באמצעות בוט: %s שונה ל%s',
+    'ia': u'Resolution de redirectiones assistite per robot: %s - Changed link(s) to %s',
+    'it': u'Sistemazione automatica del redirect: %s - Inversione di redirect %s',
+    'lt': u'Nuorodų į peradresavimo straipsnį keitimas: %s - Pakeistos nuorodos į %s',
+    'kk': u'Айрықты мағыналарды бот көмегімен шешу: %s - Changed link(s) to %s',
+    'nl': u'Robot-geholpen redirect-oplossing: [[%s]] - Link(s) veranderd naar %s',
+    'no': u'bot: Endrer omdirigeringslenke: %s - Endret lenke(r) til %s',
+    'pl': u'Wspomagane przez robota ujednoznacznienie: %s - Zmieniono link(i) %s',
+    'pt': u'Desambiguação assistida por bot: %s - Mudado(s) link(s) para  %s',
+    'ru': u'Разрешение значений с помощью бота: %s - Changed link(s) to %s',
+    'sr': u'Решавање вишезначних одредница помоћу бота: %s - Changed link(s) to %s',
+    'sv': u'Länkar direkt till rätt artikel för: %s - Bytte länk(ar) till %s',
     }
 
+# Summary message when working on redirects and the link is removed
+msg_redir_unlink = {
+    'cs': u'Robot opravil přesměrování na %s - Odstraněn(y) odkaz(y)',
+    'en': u'Robot-assisted disambiguation: %s - Removed link(s)',
+    'da': u'Retter flertydigt link til: %s - Fjernede link(s)',
+    'de': u'Bot-unterstützte Redirectauflösung: %s - Link(s) entfernt',
+    'fr': u'Correction de lien vers redirect: %s - Retrait du (des) lien(s)',
+    'he': u'הסרת קישור לדף פירושונים באמצעות בוט: %s',
+    'ia': u'Resolution de redirectiones assistite per robot: %s - Removed link(s).',
+    'it': u'Sistemazione automatica del redirect: %s - Collegamenti rimossi',
+    'lt': u'Nuorodų į peradresavimo straipsnį keitimas: %s - Pašalintos nuorodos',
+    'kk': u'Айрықты мағыналарды бот көмегімен шешу: %s - Removed link(s).',
+    'nl': u'Robot-geholpen redirect-oplossing: [[%s]] - Link(s) weggehaald',
+    'no': u'bot: Endrer omdirigeringslenke: %s - Fjernet lenke(r)',
+    'pl': u'Wspomagane przez robota ujednoznacznienie: %s - Usunięto link(i)',
+    'pt': u'Desambiguação assistida por bot: %s - Removido(s) link(s)',
+    'ru': u'Разрешение значений с помощью бота: %s - Removed link(s)',
+    'sr': u'Решавање вишезначних одредница помоћу бота: %s - Removed link(s)',
+    'sv': u'Länkar direkt till rätt artikel för: %s - Tog bort länk(ar)',
+    }
 # disambiguation page name format for "primary topic" disambiguations
 # (Begriffsklärungen nach Modell 2)
 primary_topic_format = {
@@ -300,6 +341,7 @@ ignore_title = {
             u'Wikipedia:Woorden die niet als zoekterm gebruikt kunnen worden',
             u"Gebruiker:Michiel1972/Lijst plaatsen VS.+",
             u"Gebruiker:Zanaq/SG1",
+            u'Gebruiker:Erwin.*',
          ],
         'pl': [
             u'Wikipedysta:.+',
@@ -499,6 +541,8 @@ class DisambiguationRobot(object):
         # TODO: break this function up into subroutines!
 
         include = False
+        unlink = False
+        new_targets = []
         try:
             text=refPage.get(throttle=False)
             ignoreReason = self.checkContents(text)
@@ -649,6 +693,7 @@ class DisambiguationRobot(object):
                 if choice in ['u', 'U']:
                     # unlink - we remove the section if there's any
                     text = text[:m.start()] + link_text + text[m.end():]
+                    unlink = True
                     continue
                 else:
                     if len(choice)>0 and choice[0] == 'r':
@@ -681,6 +726,8 @@ class DisambiguationRobot(object):
                     else:
                         new_page_title = repPl.title()
                         new_page_title = new_page_title[0].lower() + new_page_title[1:]
+                    if new_page_title not in new_targets:
+                        new_targets.append(new_page_title)
                     if replaceit and trailing_chars:
                         newlink = "[[%s%s]]%s" % (new_page_title, section, trailing_chars)
                     elif replaceit or (new_page_title == link_text and not section):
@@ -701,6 +748,7 @@ class DisambiguationRobot(object):
                 wikipedia.showDiff(original_text, text)
                 wikipedia.output(u'')
                 # save the page
+                self.setSummaryMessage(disambPage, new_targets, unlink)
                 try:
                     refPage.put_async(text,comment=self.comment)
                 except wikipedia.LockedPage:
@@ -754,18 +802,41 @@ or press enter to quit:""")
             self.alternatives += links
         return True
     
-    def setSummaryMessage(self, disambPage):
+    def setSummaryMessage(self, disambPage, new_targets = [], unlink = False):
+        # make list of new targets
+        targets = ''
+        for page_title in new_targets:
+            targets += u'[[%s]], ' % page_title
+        # remove last comma
+        targets = targets[:-2]
+        
+        if not targets:
+            targets = u'(unknown)'
+        
         # first check whether user has customized the edit comment
         if wikipedia.config.disambiguation_comment.has_key(self.mysite.family.name)  and wikipedia.config.disambiguation_comment[self.mysite.family.name].has_key(self.mylang):
-            self.comment = wikipedia.translate(self.mysite,
-                            wikipedia.config.disambiguation_comment[
-                            self.mysite.family.name]
-                            ) % disambPage.title()
+            try:
+                self.comment = wikipedia.translate(self.mysite,
+                                wikipedia.config.disambiguation_comment[
+                                self.mysite.family.name]
+                                ) % (disambPage.title(), targets)
+            #Backwards compatibility, type error probably caused by too many arguments for format string
+            except TypeError:
+                self.comment = wikipedia.translate(self.mysite,
+                                wikipedia.config.disambiguation_comment[
+                                self.mysite.family.name]
+                                ) % disambPage.title()
         elif disambPage.isRedirectPage():
             # when working on redirects, there's another summary message
-            self.comment = wikipedia.translate(self.mysite, msg_redir) % disambPage.title()
+            if unlink and not new_targets:
+                self.comment = wikipedia.translate(self.mysite, msg_redir_unlink) % disambPage.title()
+            else:
+                self.comment = wikipedia.translate(self.mysite, msg_redir) % (disambPage.title(), targets)
         else:
-            self.comment = wikipedia.translate(self.mysite, msg) % disambPage.title()
+            if unlink and not new_targets:
+                self.comment = wikipedia.translate(self.mysite, msg_unlink) % disambPage.title()
+            else:
+                self.comment = wikipedia.translate(self.mysite, msg) % (disambPage.title(), targets)
         
     def run(self):
         if self.main_only:
@@ -777,7 +848,6 @@ or press enter to quit:""")
                 u'%s:' % namespace for namespace in self.mysite.namespaces()]
 
         for disambPage in self.generator:
-            self.setSummaryMessage(disambPage)
             self.primaryIgnoreManager = PrimaryIgnoreManager(disambPage, enabled=self.primary)
 
             if not self.findAlternatives(disambPage):
