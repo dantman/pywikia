@@ -95,12 +95,13 @@ class Importer(wikipedia.Page):
                 response, data = self.site().postForm(address, predata, sysop = True)
             if data:
                 wikipedia.output(u'Page imported, checking...')
-                if wikipedia.Page(self.importsite, target).exists():
+                if wikipedia.Page(self.importsite, target.decode('utf-8')).exists():
                     wikipedia.output(u'Import success!')
                     return True
                 else:
                     wikipedia.output(u'Import failed!')
                     return False
+                
 if __name__=='__main__':
     wikipedia.output(u'This is just a module! Read the documentation and write your own script!')
     wikipedia.stopme()
