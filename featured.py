@@ -10,6 +10,8 @@ This script understands various command-line arguments:
 
 * -fromlang:xx,yy  : xx is your language and yy the language was verified or
                     using -fromall to verified all languages.
+				
+* -after:zzzz      : process pages after and including page zzzz
 
 usage: featured.py [-interactive] [-nocache] [-fromlang:xx,yy|-fromall]
 
