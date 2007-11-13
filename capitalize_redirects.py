@@ -40,9 +40,10 @@ import time, sys
 import wikipedia, pagegenerators, catlib
 
 msg = {
-    'en': u'Robot: Create redirect to [[%s]]',
-    'fr': u'robot: créez redirect à [[%s]]',
-    'pt': u'Bot: Criando redirect para [[%s]]',
+     'en': u'Robot: Create redirect to [[%s]]',
+     'fr': u'robot: créez redirect à [[%s]]',
+     'he': u'בוט: יוצר הפניה לדף [[%s]]',
+     'pt': u'Bot: Criando redirect para [[%s]]',
     }
 
 class CapitalizeBot:

@@ -71,7 +71,7 @@ class PageFromFileRobot:
     msg_top = {
         'de': u'ergänze am Anfang',
         'en': u'append on top',
-        'he': u'הצמד בהתחלה',
+        'he': u'הוספה בראש הדף',
         'fr': u'attaché en haut',
         'id': u'ditambahkan di atas',
         'it': u'aggiungo in cima',
@@ -85,7 +85,7 @@ class PageFromFileRobot:
     msg_bottom = {
         'de': u'ergänze am Ende',
         'en': u'append on bottom',
-        'he': u'הצמד בסוף',
+        'he': u'הוספה בתחתית הדף',
         'fr': u'attaché en bas',
         'id': u'ditambahkan di bawah',
         'it': u'aggiungo in fondo',
@@ -99,7 +99,7 @@ class PageFromFileRobot:
     msg_force = {
         'en': u'bestehender Text überschrieben',
         'en': u'existing text overwritten',
-        'he': u'הטקסט הקיים נדרס',
+        'he': u'הטקסט הישן נמחק',
         'fr': u'texte existant écrasé',
         'id': u'menimpa teks yang ada',
         'it': u'sovrascritto il testo esistente',

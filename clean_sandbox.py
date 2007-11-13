@@ -11,7 +11,7 @@ This script understands the following command-line arguments:
 
 """
 #
-# (C) Leogregianin, 2006
+# (C) Leonardo Gregianin, 2006
 # (C) Wikipedian, 2006-2007
 # (C) Andre Engels, 2007
 # (C) Siebrand Mazeland, 2007

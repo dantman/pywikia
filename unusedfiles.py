@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8  -*-
 """
 This bot appends some text to all unused images and other text to the respective uploaders.
@@ -13,6 +13,7 @@ import sys
 
 comment = {
     'en': u'images for elimination',
+    'he': u'תמונות להסרה',
     'pt': u'marcação de imagens para eliminação',
     }
 

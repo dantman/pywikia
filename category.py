@@ -84,7 +84,7 @@ msg_add={
     'id':u'Bot: Menambahkan [[Kategori:%s]]',
     'fi':u'Botti lisäsi luokkaan [[Luokka:%s]]',
     'fr':u'Robot : ajoute [[Catégorie:%s]]',
-    'he':u'רובוט: מוסיף [[קטגוריה:%s]]',
+    'he':u'בוט: מוסיף [[קטגוריה:%s]]',
     'ia':u'Robot: Addition de [[Categoria:%s]]',
     'is':u'Vélmenni: Bæti við [[Flokkur:%s]]',
     'it':u'Bot: Aggiungo [[Categoria:%s]]',
@@ -109,7 +109,7 @@ msg_change={
     'id':u'Bot: Mengganti %s',
     'fi':u'Botti vaihtoi luokan %s',
     'fr':u'Robot : modifie [[%s]]',
-    'he':u'רובוט: משנה %s',
+    'he':u'בוט: משנה %s',
     'ia':u'Robot: Modification de %s',
     'is':u'Vélmenni: Breyti flokknum [[%s]]',
     'it':u'Bot: Modifico %s',
@@ -131,7 +131,7 @@ deletion_reason_move = {
     'de':u'Bot: Kategorie wurde nach [[Category:%s|%s]] verschoben',
     'en':u'Robot: Category was moved to [[Category:%s|%s]]',
     'fr':u'Robot : catégorie déplacée sur [[Category:%s|%s]]',
-    'he':u'רובוט: הקטגוריה הועברה לשם [[Category:%s|%s]]',
+    'he':u'בוט: הקטגוריה הועברה לשם [[קטגוריה:%s|%s]]',
     'ia':u'Robot: Categoria transferite a [[Category:%s|%s]]',
     'id':u'Bot: Kategori dipindahkan ke [[Category:%s|%s]]',
     'it':u'Bot: La categoria è stata sostituita da [[Categoria:%s|%s]]',
@@ -149,6 +149,7 @@ deletion_reason_move = {
 
 cfd_templates = {
     'en':['cfd', 'cfr', 'cfru', 'cfr-speedy', 'cfm', 'cfdu'],
+    'he':[u'הצבעת מחיקה', u'למחוק'],
     }
 
 class CategoryDatabase:
@@ -399,6 +400,7 @@ class CategoryListifyRobot:
     '''
     listify_msg={
         'en':u'Robot: Listifying from %s (%d entries)',
+        'he':u'בוט: יוצר רשימה מהקטגוריה %s (%d דפים)',
         'kk':u'Бот: %s дегеннен (%d буын) тізімдеді',
         'nds-nl':u'Bot: lieste van %s (%d pagina\'s)',
         'nl':u'Bot: Lijst van %s (%d pagina\'s)',
@@ -452,7 +454,7 @@ class CategoryRemoveRobot:
         'da':u'Robot: Kategorien blev opløst',
         'de':u'Bot: Kategorie wurde aufgelöst',
         'en':u'Robot: Category was disbanded',
-        'he':u'רובוט: הקטגוריה פורקה',
+        'he':u'בוט: הקטגוריה פורקה',
         'ia':u'Robot: Categoria esseva dissolvite',
         'kk':u'Бот: Санат тарқатылды',
         'nds':u'Kat-Bot: Kategorie is nu oplööst',
@@ -467,7 +469,7 @@ class CategoryRemoveRobot:
         'de':u'Bot: Entferne aus %s',
         'en':u'Robot: Removing from %s',
         'es':u'Bot: Eliminada de la %s',
-        'he':u'רובוט: מסיר מהקטגוריה %s',
+        'he':u'בוט: מסיר את הדף מהקטגוריה %s',
         'ia':u'Robot: Eliminate de %s',
         'is':u'Vélmenni: Fjarlægi [[Flokkur:%s]]',
         'kk':u'Бот: %s дегеннен аластатты',

@@ -1756,6 +1756,7 @@ class Family:
            'de': u'[a-zäöüß]*',
            'da': u'[a-zæøå]*',
            'fr': u'[a-zàâçéèêîôû]*',
+           'he': u'[a-zא-ת]*',
            'it': u'[a-zàèéìòù]*',
            'kk': u'[a-zäçéğıïñöşüýа-яёәғіқңөұүһʺʹ]*',
            'nl': u'[a-zäöüïëéèéàç]*',
@@ -2429,6 +2430,7 @@ class Family:
     # So can be pagename code
     pagename = {
         'bg': [u'СТРАНИЦА'],
+        'he': [u'שם הדף'],
         'kk': [u'БЕТАТАУЫ'],
         'nn': ['SIDENAMN','SIDENAVN'],
         'ru': [u'НАЗВАНИЕСТРАНИЦЫ'],
@@ -2437,6 +2439,7 @@ class Family:
     }
 
     pagenamee = {
+        'he': [u'שם הדף מקודד'],
         'kk': [u'БЕТАТАУЫ2'],
         'nn': ['SIDENAMNE','SIDENAVNE'],
         'ru': [u'НАЗВАНИЕСТРАНИЦЫ2'],

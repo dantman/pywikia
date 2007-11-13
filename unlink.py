@@ -32,6 +32,7 @@ import re, sys
 msg = {
           'de':u'Bot: Entlinke "%s"',
           'en':u'Robot: Unlinking "%s"',
+          'he':u'בוט: מסיר קישורים לדף "%s"',
           'pt':u'Bot: Retirando link para "%s"',
        }
 

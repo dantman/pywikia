@@ -54,6 +54,7 @@ class SpeedyRobot:
         'es': u'Categoría:Wikipedia:Borrar (definitivo)',
         'fa': u'رده:مقالات نامزد حذف سریع',
         'fi': u'Luokka:Roskaa',
+        'he': u'קטגוריה:ויקיפדיה: למחיקה מהירה',
         'hsb': u'Kategorija:Strony k spěšnemu wušmórnjenju',
         'ia': u'Categoria:Wikipedia:Eliminar',
         'it': 'Categoria:Da_cancellare_subito',
@@ -101,6 +102,10 @@ class SpeedyRobot:
             u'Db-r1':         u'Deleting page per [[WP:CSD|CSD]] R1: Redirect to a deleted or non-existent page.',
             u'Db-experiment': u'Deleting page per [[WP:CSD|CSD]] G2: Page was created as an experiment.',
             },
+        'he': {
+            u'_default':      u'מחיקת מועמד למחיקה מהירה לפי [[ויקיפדיה:מדיניות המחיקה|מדיניות המחיקה]]',
+            u'גם בוויקישיתוף': u'הקובץ זמין כעת בוויקישיתוף.',
+            },
         'pt': {
             u'_default':      u'Apagando página por [[Wikipedia:Páginas para eliminar|eliminação rápida]]',
             },
@@ -116,6 +121,7 @@ class SpeedyRobot:
     talk_deletion_msg={
         'de':u'Verwaiste Diskussionsseite',
         'en':u'Orphaned talk page',
+        'he':u'דף שיחה של ערך שנמחק',
         'it':u'Bot: Cancello pagina discussione di una pagina già cancellata',
         'pl':u'Osierocona strona dyskusji',
         'pt':u'Página de discussão órfã',

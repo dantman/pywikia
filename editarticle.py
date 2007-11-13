@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Edit a Wikipedia article with your favourite editor.
 #
@@ -25,8 +26,10 @@ import wikipedia
 import config
 
 msg = {
-    'de': 'Manuelle Bearbeitung: %s',
-    'en': 'Manual edit: %s',
+    'de': u'Manuelle Bearbeitung: %s',
+    'en': u'Manual edit: %s',
+    'he': u'עריכה ידנית: %s',
+    'pt': u'Editando manualmente: %s',
 }
 
 class TextEditor:
