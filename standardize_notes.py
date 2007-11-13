@@ -66,7 +66,7 @@ msg = {
        'en':u'Robot: Automated reference processing %s',
        'es':u'Robot: Reemplazo automático de texto %s',
        'fr':u'Bot : Remplacement de texte automatisé %s',
-       'he':u'רובוט: הופך את הערת השוליים %s לאוטומטית',
+       'he':u'בוט: הופך את הערת השוליים %s לאוטומטית',
        'hu':u'Robot: Automatikus szövegcsere %s',
        'ia':u'Robot: Reimplaciamento automatic de texto %s',
        'is':u'Vélmenni: breyti texta %s',
@@ -83,7 +83,7 @@ fixes = {
         'exceptions':  ['<nowiki>[^<]{3,}</nowiki>'],
         'msg': {
                'en':u'Robot: Adding/sorting references.',
-               'he':u'רובוט: מוסיף/מסדר הערות שוליים',
+               'he':u'בוט: מוסיף/מסדר הערות שוליים',
                'ia':u'Robot: Addition/assortimento de referentias',
                'pl':u'Robot dodaje/sortuje źródła',
               },

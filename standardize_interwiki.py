@@ -23,6 +23,7 @@ import difflib
 # The summary that the Bot will use.
 comment = {
     'en':u'Robot: interwiki standardization',
+    'he':u'בוט: מסדר את האינטרוויקי',
     'no':u'bot: Språklenkestandardisering',
     'it':u'Bot: Standardizzo interwiki',
     }

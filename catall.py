@@ -26,6 +26,7 @@ msg={
     'en':u'Bot: Changing categories',
     'he':u'Bot: משנה קטגוריות',
     'fr':u'Bot: Change categories',
+    'he':u'בוט: משנה קטגוריות',
     'ia':u'Bot: Alteration de categorias',
     'lt':u'robotas: Keičiamos kategorijos',
     'nl':u'Bot: Verandering van categorieen',

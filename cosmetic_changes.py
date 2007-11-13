@@ -44,7 +44,7 @@ msg_standalone = {
     'de': u'Bot: Kosmetische Änderungen',
     'en': u'Robot: Cosmetic changes',
     'es': u'Robot: Cambios triviales',
-    'he': u'רובוט: שינויים קוסמטיים',
+    'he': u'בוט: שינויים קוסמטיים',
     'lt': u'robotas: smulkūs taisymai',
     'nl': u'Bot: Cosmetische veranderingen',
     'pl': u'Robot dokonuje poprawek kosmetycznych',

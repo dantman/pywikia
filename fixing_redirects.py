@@ -22,6 +22,7 @@ import re, sys
 
 msg = {
     'en': u'Bot: Fixing redirects',
+    'he': u'בוט: מתקן הפניות',
     'pt': u'Bot: Arrumando redirects',
     'zh': u'Bot: 修复重定向',
     }
@@ -29,6 +30,7 @@ msg = {
 featured_articles = {
     'de': u'Wikipedia:Exzellente_Artikel',
     'en': u'Wikipedia:Featured_articles',
+    'he': u'פורטל:ערכים_מומלצים',
     'es': u'Wikipedia:Artículos_destacados',
     'fr': u'Wikipédia:Articles_de_qualité',
     'it': u'Wikipedia:Articoli_in_vetrina',

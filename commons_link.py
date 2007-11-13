@@ -37,10 +37,12 @@ import wikipedia, pagegenerators, catlib
 import re
 
 comment1 = {
-    'en':'Robot: Include commons template'
+    'en':'Robot: Include commons template',
+    'he':u'בוט: מוסיף תבנית Commons',
     }
 comment2 = {
-    'en':'Robot: Include commonscat template'
+    'en':'Robot: Include commonscat template',
+    'he':u'בוט: מוסיף תבנית Commonscat',
     }
 
 class CommonsLinkBot:

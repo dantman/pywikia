@@ -49,6 +49,8 @@ docuReplacements = {
 msg = {
     'de': 'Bot: Formatiere ISBN',
     'en': 'Robot: Formatting ISBN',
+    'he': u'בוט: מעצב ISBN',
+    'pt': u'Bot: Formatando ISBN',
 }
 
 # Maps each group number to the list of its publisher number ranges.
