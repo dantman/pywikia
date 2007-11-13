@@ -404,7 +404,7 @@ class Family(family.Family):
             'fy':  [u'Tfs',u'Neibetsjuttings'],
             'ga':  [u'Idirdhealú', u'Disambig'],
             'gl':  [u'Homónimos', u'Disambig'],
-            'he':  [u'DisambiguationAfter', u'פירושונים', u'Disambig'],
+            'he':  [u'פירושונים', u'Disambig'],
             'hi':  [u'बहुविकल्पी शब्द', u'Disambig',],
             'hr':  [u'Disambig', u'Razdvojba'],
             'ht':  [u'Menm non', u'Disambig'],

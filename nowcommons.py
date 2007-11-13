@@ -54,7 +54,7 @@ nowCommons = {
         u'Désormais sur Commons'
     ],
     'he': [
-        u'תמונת ויקישיתוף'
+        u'גם בוויקישיתוף'
     ],
     'ia': [
         u'OraInCommons'
@@ -74,7 +74,6 @@ nowCommons = {
 
 namespaceInTemplate = [
     'en',
-    'he',
     'ia',
     'lt',
     'ro',

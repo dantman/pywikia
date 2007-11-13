@@ -51,7 +51,7 @@ nowCommonsTemplate = {
     'de': u'{{NowCommons|%s}}',
     'fr': u'{{Désormais sur Commons|%s}}',
     'en': u'{{subst:ncd|Image:%s}}',
-    'he': u'{{תמונת ויקישיתוף|Image:%s}}',
+    'he': u'{{גם בוויקישיתוף|%s}}',
     'ia': u'{{OraInCommons|Imagine:%s}}',
     'it': u'{{NowCommons unlink|%s}}',
     'kk': u'{{NowCommons|Image:%s}}',
@@ -105,6 +105,14 @@ licenseTemplates = {
     },
     ('wikipedia:fr', 'commons:commons'): {
         u'Domaine public':           u'PD'
+    },
+    ('wikipedia:he', 'commons:commons'): {
+        u'שימוש חופשי':              u'PD-self',
+        u'שימוש חופשי מוגן':         u'Copyrighted free use',
+        u'שימוש חופשי מוגן בתנאי':   u'Copyrighted free use provided that',
+        u'תמונה ישנה':              u'PD-Israel',
+        u'ייחוס':                   u'Attribution',
+        u'לוגו ויקימדיה':           u'Copyright by Wikimedia',
     },
     ('wikipedia:pt', 'commons:commons'): {
         u'Domínio público':          u'PD',

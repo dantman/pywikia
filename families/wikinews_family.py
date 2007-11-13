@@ -147,6 +147,7 @@ class Family(family.Family):
             'en': self.alphabetic,
             'fi': self.alphabetic,
             'fr': self.alphabetic,
+            'he': ['en'],
             'hu': ['en'],
             'pl': self.alphabetic,
             'simple': self.alphabetic

@@ -47,6 +47,7 @@ docuReplacements = {
 msg = {
     'de':u'Bot: Trage fehlendes <references /> nach',
     'en':u'Robot: Adding missing <references /> tag',
+    'he':u'בוט: מוסיף תגית <references /> חסרה',
     'lt':u'robotas: Pridedama trūkstama <references /> žymė',
     'pt':u'Bot: Adicionando a tag <references />',
 }
@@ -94,6 +95,9 @@ referencesSections = {
         u'References',
         u'Footnotes',
         u'Notes',
+    ],
+    'he': [
+        u'הערות שוליים',
     ],
     'lt': [             # not sure about which ones are preferred.
         u'Šaltiniai',

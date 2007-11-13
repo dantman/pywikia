@@ -310,6 +310,7 @@ class Family(family.Family):
             'et': self.alphabetic,
             'fi': self.alphabetic,
             'fr': self.alphabetic,
+            'he': ['en'],
             'hu': ['en'],
             'pl': self.alphabetic,
             'simple': self.alphabetic

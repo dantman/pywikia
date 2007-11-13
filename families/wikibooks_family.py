@@ -249,6 +249,7 @@ class Family(family.Family):
             'en': alphabetic,
             'fi': alphabetic,
             'fr': alphabetic,
+            'he': ['en'],
             'hu': ['en'],
             'pl': alphabetic,
             'simple': alphabetic

@@ -27,7 +27,7 @@ def main():
     start = '0'
     force = False
     msg = {'en':'Creating state abbreviation redirect',
-           'he':'יוצר הפניה מראשי התיבות של המדינה',
+           'he':u'יוצר הפניה מראשי התיבות של המדינה',
            }
 
     abbrev = {

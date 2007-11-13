@@ -41,7 +41,7 @@ docuReplacements = {
 msg = {
     'de':u'Bot: Entferne Selbstlinks',
     'en':u'Robot: Removing selflinks',
-    'he':u'רובוט: מסיר קישורים של הדף לעצמו',
+    'he':u'בוט: מסיר קישורים של הדף לעצמו',
     'fr':u'Bot: Enlève autoliens',
     'nl':u'Bot: links naar pagina zelf verwijderd',
     'pl':u'Robot automatycznie usuwa linki zwrotne',

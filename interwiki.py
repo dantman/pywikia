@@ -293,7 +293,7 @@ msg = {
     'fr': (u'robot ', u'Ajoute', u'Retire', u'Modifie'),
     'frp': (u'robot ', u'Apond', u'Retire', u'Modifie'),
     'fur': (u'Robot: ', u'o zonti', u'o cambii', u'o gjavi'),
-    'he': (u'רובוט ', u'מוסיף', u'מסיר', u'משנה'),
+    'he': (u'בוט ', u'מוסיף', u'מסיר', u'משנה'),
     'hr': (u'robot', u'Dodaje', u'Uklanja', u'Mijenja'),
     'hu': (u'Robot: ', u'következő hozzáadása', u'következő eltávolítása', u'következő módosítása'),
     'ia': (u'Robot: ', u'Addition de', u'Elimination de', u'Modification de'),

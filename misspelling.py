@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8  -*-
+# -*- coding: utf-8  -*-
 """
 This script works similar to solve_disambiguation.py. It is supposed to fix
 links that contain common spelling mistakes. This is only possible on wikis
@@ -46,6 +46,7 @@ class MisspellingRobot(solve_disambiguation.DisambiguationRobot):
     msg = {
         'de': u'Bot: korrigiere Link auf Falschschreibung: %s',
         'en': u'Robot: Fixing misspelled link to %s',
+        'he': u'בוט: מתקן קישור עם שגיאה לדף %s',
         'nds': u'Bot: rut mit verkehrt schreven Lenk op %s',
         'pl': u'Robot poprawia literówkę w linku do %s',
         'pt': u'Bot: Corrigindo link com erro ortográfico para %s'

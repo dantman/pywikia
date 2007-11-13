@@ -44,7 +44,7 @@ summary={
     'de': u'Bot: Seite verschoben',
     'el': u'Μετακίνηση σελίδων με bot',
     'fr': u'Bot: Page renommée',
-    'he': u'העברת דף באמצעות בוט',
+    'he': u'בוט: מעביר דף',
     'nl': u'Bot: paginatitel gewijzigd',
     'pl': u'Przeniesienie artykułu przez robota',
     'pt': u'Bot: Página movida',
@@ -53,6 +53,7 @@ summary={
 deletesummary={
     'de': u'Bot: Lösche nach Seitenverschiebung nicht benötigte Umleitung',
     'en': u'Robot: Deleting redirect after page has been moved',
+    'he': u'בוט: מוחק הפניה לאחר שהדף הועבר',
     'pt': u'Bot: Página apagada depois de movida',
     # These are too unspecific:
     #'ar': u'حذف الصفحة بواسطة البوت',

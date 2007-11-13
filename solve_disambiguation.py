@@ -81,7 +81,7 @@ msg = {
     'da': u'Retter flertydigt link til: %s - Ændrede link(s) til %s',
     'de': u'Bot-unterstützte Begriffsklärung: %s - Link(s) ersetzt durch %s',
     'fr': u'Homonymie résolue à l\'aide du robot: %s - Modifications du (des) lien(s) pour %s',
-    'he': u'תיקון קישור לדף פירושונים באמצעות בוט: %s שונה ל%s',
+    'he': u'תיקון קישור לדף פירושונים באמצעות בוט: %s',
     'ia': u'Disambiguation assistite per robot: %s - Changed link(s) to %s',
     'it': u'Sistemazione automatica della disambigua: %s - Inversione di redirect %s',
     'lt': u'Nuorodų į nukrepiamąjį straipsnį keitimas: %s - Pakeistos nuorodos į %s',

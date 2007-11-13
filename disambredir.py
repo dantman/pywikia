@@ -18,6 +18,7 @@ import catlib
 
 msg = {
     'en': u'Changing redirects on a disambiguation page',
+    'he': u'משנה קישורים להפניות בדף פירושונים',
     'nl': u'Verandering van redirects op een doorverwijspagina',
     'pl': u'Zmiana przekierowań na stronie ujednoznaczającej',
     'pt': u'Arrumando redirects na página de desambiguação',

@@ -195,6 +195,7 @@ logbook = {
     'ar': u'Project:سجل الترحيب',
     'de': None, # no welcome log on de.wiki
     'en': u'Project:Welcome log',
+    'he': None, # no welcome log on he.wiki
     'fa': u'Project:سیاهه خوشامد',
     'it': u'Project:Benvenuto log',
     'nl': u'Project:Logboek welkom',
@@ -208,6 +209,7 @@ summary = {
     'ar':u'مرحبا!',
     'de':u'Herzlich willkommen!',
     'en':u'Welcome!',
+    'he':u'ברוך הבא!',
     'fa':u'خوش آمدید!',
     'it':u'Benvenuto!',
     'nl':u'Welkom!',
@@ -223,6 +225,7 @@ netext = {
     'ar':u'{{نسخ:مستخدم:Alnokta/ترحيب}} %s',
     'de':u'{{subst:Hallo}} %s',
     'en':u'{{subst:welcome}} %s',
+    'he':u'{{ס:ברוך הבא}} %s',
     'fa':u'{{جا:خوشامد}} %s',
     'it':u'{{Benvebot}} %s',
     'nl':u'{{hola|bot|%s}}',

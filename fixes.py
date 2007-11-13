@@ -24,7 +24,7 @@ fixes = {
 			'en':u'Robot: converting/fixing HTML',
 			'de':u'Bot: konvertiere/korrigiere HTML',
 			'fr':u'Robot: convertit/fixe HTML',
-			'he':u'רובוט: ממיר/מתקן HTML',
+			'he':u'בוט: ממיר/מתקן HTML',
 			'ia':u'Robot: conversion/reparation de HTML',
 			'lt':u'robotas: konvertuojamas/taisomas HTML',
 			'nl':u'Bot: conversie/reparatie HTML',
@@ -325,7 +325,8 @@ fixes = {
 		'msg': {
 			'de': u'Bot: Korrigiere ISBN-Format',
 			'en': u'Robot: Fixing ISBN format',
-			'es': u'Arreglando formato ISBN'
+                        'he': u'בוט: מתקן פורמט ISBN',
+			'es': u'Arreglando formato ISBN',
 		},
 		'replacements': [
 			# colon
