@@ -40,6 +40,7 @@ msg = {
     'ar': u'روبوت: هذه الصفحة سيتم تفريغها تلقائياً',
     'de': u'Bot: Setze Seite zurück.',
     'en': u'Robot: This page will automatically be cleaned.',
+    'ja': u'BOT: 砂場ならし',
     'nl': u'Robot: Automatisch voorzien van schoon zand.',
     'no': u'bot: Rydder sandkassa.',
     'pl': u'Robot czyści brudnopis',
