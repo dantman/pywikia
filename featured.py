@@ -3,19 +3,18 @@
 """
 This script understands various command-line arguments:
 
-* -interactive     : ask before changing page
+* -interactive       : ask before changing page
 
-* -nocache         : doesn't include /featured/cache file to remembers if the
-                     article already was verified.
+* -nocache           : doesn't include /featured/cache file to remembers if the
+                       article already was verified.
 
-* -fromlang:xx,yy  : xx is your language and yy the language was verified or
-                     using.
+* -fromlang:xx,yy,xx : xx,..,.. is the languages was verified.
 
-* -fromall         : to verified all languages.
+* -fromall           : to verified all languages.
 				
-* -after:zzzz      : process pages after and including page zzzz
+* -after:zzzz        : process pages after and including page zzzz
 
-usage: featured.py [-interactive] [-nocache] [-fromlang:xx,yy|-fromall]
+usage: featured.py [-interactive] [-nocache] [-after:zzzz] [-fromlang:xx,yy,zz|-fromall]
 
 """
 __version__ = '$Id$'
@@ -157,7 +156,11 @@ except:
     cache={}
 
 def featuredArticles(site):
-    method=featured_name[site.lang][0]
+    try:
+        method=featured_name[site.lang][0]
+    except KeyError, ex:
+        print 'Error: language %s doesn\'t have feature category source.' % ex
+        sys.exit()
     name=featured_name[site.lang][1]
     args=featured_name[site.lang][2:]
     raw=method(site, name, *args)
@@ -273,8 +276,19 @@ def featuredWithInterwiki(fromsite, tosite):
                             wikipedia.output(u"no interwiki record, very strange")
                             continue
                         comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
-                        text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(findtemplate, fromsite.lang)), atrans.categories())
-                        atrans.put(text, comment)
+
+                        # TODO: create commandline for this
+                        ### Placing {{Link FA|xx}} right next to corresponding interwiki ###
+                        text=(text[:m.end()]
+                              + (u" {{%s|%s}}" % (findtemplate, fromsite.lang))
+                              + text[m.end():])
+                        ### Moving {{Link FA|xx}} to top of interwikis ###
+                        # text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(findtemplate, fromsite.lang)), atrans.categories())
+                        
+                        try:
+                            atrans.put(text, comment)
+                        except wikipedia.LockedPage:
+                            wikipedia.output(u'Page %s is locked!' % atrans.title())
 
                 cc[a.title()]=atrans.title()
         except wikipedia.PageNotSaved, e:
@@ -292,12 +306,12 @@ if __name__=="__main__":
             fromlang=arg[10:].split(",")
             try:
                 if len(fromlang)==1 and fromlang[0].index("-")>=0:
-                    ll1,ll2=fromlang[0].split("-",1)
+                    ll1,ll2=fromlang[0]
                     if not ll1: ll1=""
                     if not ll2: ll2="zzzzzzz"
                     fromlang=[ll for ll in featured_name.keys() if ll>=ll1 and ll<=ll2]
             except:
-                wikipedia.showHelp('featured')
+                pass
         elif arg == '-fromall':
             fromlang=featured_name.keys()
         elif arg.startswith('-after:'):
