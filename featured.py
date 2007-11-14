@@ -71,7 +71,7 @@ template = {
     'en': u'Link FA',
     'eo': u'LigoElstara',
     'es': u'destacado',
-    'fr': u'lien AdQ',
+    'fr': u'Lien AdQ',
     'he': u'Link FA',
     'hr': u'Link FA',
     'it': u'Link AdQ',
@@ -236,7 +236,7 @@ def featuredWithInterwiki(fromsite, tosite):
         cc={}
 
     findtemplate = wikipedia.translate(wikipedia.getSite(), template)
-    re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate, fromsite.lang))
+    re_Link_FA=re.compile(ur"\{\{%s\|%s\}\}" % (findtemplate, fromsite.lang), re.IGNORECASE)
     re_this_iw=re.compile(ur"\[\[%s:[^]]+\]\]" % fromsite.lang)
 
     arts=featuredArticles(fromsite)
