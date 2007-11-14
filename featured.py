@@ -243,7 +243,6 @@ def featuredWithInterwiki(fromsite, tosite):
 
     pairs=[]
     for a in arts:
-        wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<"% a.title())
         if a.title()<afterpage:
             continue
         if u"/" in a.title():
@@ -253,7 +252,7 @@ def featuredWithInterwiki(fromsite, tosite):
             wikipedia.output(u"(cached) %s -> %s"%(a.title(), cc[a.title()]))
             continue
         if a.isRedirectPage():
-            a=wikipedia.Page(a.site(),a.getRedirectTarget())
+            a=a.getRedirectTarget()
         try:
             if not a.exists():
                 wikipedia.output(u"source page doesn't exist: %s" % a.title())
