@@ -373,16 +373,16 @@ class Page(object):
                             # This page is from a different family
                             output(u"Target link '%s' has different family '%s'" % (title, lowerNs))
                             otherlang = self.site().lang
-                            if lowerNs in ['commons']:
-                                otherlang = lowerNs
                             familyName = self.site().family.get_known_families(site = self.site())[lowerNs]
+                            if familyName in ['commons', 'meta']:
+                                otherlang = familyName
                             try:
                                 self._site = getSite(otherlang, familyName)
                             except ValueError:
                                 raise NoPage("""\
 %s is not a local page on %s, and the %s family is
 not supported by PyWikipediaBot!"""
-                                            % (title, self.site(), familyName))
+                                  % (title, self.site(), familyName))
                             t = m.group(2)
                     else:
                         # If there's no recognized interwiki or namespace,

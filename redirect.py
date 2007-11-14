@@ -256,18 +256,34 @@ class RedirectRobot:
             except wikipedia.NoPage:
                 wikipedia.output(u'%s doesn\'t exist.' % redir.aslink())
             else:
+                if secondRedir.site() != redir.site():
+                    wikipedia.output(
+                        u'Skipping %s; redirect target (%s) is on a different site.'
+                          % (redir.aslink(), secondRedir.aslink()))
+                    continue
                 try:
                     secondTargetPage = secondRedir.getRedirectTarget()
                     anchorMatch = re.search(u'#(?P<section>.*)$', secondRedir.title())
                     if anchorMatch and not u'#' in secondTargetPage.title():
                         secondTarget = wikipedia.Page(mysite, '%s#%s' % (secondTargetPage.sectionFreeTitle(), anchorMatch.group('section')))
                 except wikipedia.SectionError:
-                    wikipedia.output(u'Warning: Redirect target section %s doesn\'t exist.' % secondRedir.aslink())
+                    wikipedia.output(
+                        u'Warning: Redirect target section %s doesn\'t exist.'
+                          % secondRedir.aslink())
                 except wikipedia.IsNotRedirectPage:
-                    wikipedia.output(u'Redirect target %s is not a redirect.' % secondRedir.aslink())
+                    wikipedia.output(
+                        u'Redirect target %s is not a redirect.'
+                          % secondRedir.aslink())
                 except wikipedia.NoPage:
-                    wikipedia.output(u'Redirect target %s doesn\'t exist.' % secondRedir.aslink())
+                    wikipedia.output(
+                        u'Redirect target %s doesn\'t exist.'
+                          % secondRedir.aslink())
                 else:
+                    if secondTargetPage.site() != secondRedir.site():
+                        wikipedia.output(
+                            u"Page %s is a redirect to a different site (%s)"
+                              % (secondRedir.aslink(), secondTargetPage.aslink()))
+                        continue
                     oldText = redir.get(get_redirect=True)
                     text = mysite.redirectRegex().sub('#REDIRECT [[%s]]' % secondTargetPage.title(), oldText)
                     wikipedia.showDiff(oldText, text)
