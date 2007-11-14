@@ -9,7 +9,9 @@ This script understands various command-line arguments:
                      article already was verified.
 
 * -fromlang:xx,yy  : xx is your language and yy the language was verified or
-                    using -fromall to verified all languages.
+                     using.
+
+* -fromall         : to verified all languages.
 				
 * -after:zzzz      : process pages after and including page zzzz
 
