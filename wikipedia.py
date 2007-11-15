@@ -2182,7 +2182,7 @@ not supported by PyWikipediaBot!"""
             # All previous steps did not work, so the image is
             # likely embedded in a complicated template.
             # Note: this regular expression can't handle nested templates.
-            templateR = re.compile(ur'(?s)\{\{(?<contents>.*?\}\}')
+            templateR = re.compile(ur'(?s)\{\{(?P<contents>.*?\}\}')
             fileReferenceR = re.compile(u'%s(?P<filename>(?:%s)?)' % (namespacePattern, imagePattern))
 
             def template_replacer(match):
