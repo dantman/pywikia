@@ -200,6 +200,7 @@ logbook = {
     'it': u'Project:Benvenuto log',
     'nl': u'Project:Logboek welkom',
     'no': u'Project:Velkomstlogg',
+    'pt': None, # no welcome log on pt.wiki
     'sq': u'Project:Tung log',
     'zh': u'user:Welcomebot/欢迎日志',
     }
@@ -214,6 +215,7 @@ summary = {
     'it':u'Benvenuto!',
     'nl':u'Welkom!',
     'no':u'Velkommen!',
+    'pt':u'Bem vindo!',
     'sq':u'Tung',
     'zh':u'欢迎！',
     }
@@ -230,6 +232,7 @@ netext = {
     'it':u'{{Benvebot}} %s',
     'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
+    'pt':u'{{subst:bem vindo}} %s,
     'sq':u'{{subst:tung}} %s',
     'zh':u'{{subst:welcome|sign=%s}}',
     }
