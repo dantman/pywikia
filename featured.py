@@ -8,9 +8,9 @@ This script understands various command-line arguments:
 * -nocache           : doesn't include /featured/cache file to remembers if the
                        article already was verified.
 
-* -fromlang:xx,yy,xx : xx,..,.. is the languages was verified.
+* -fromlang:xx[,yy[,...]]] : xx,.. are the languages to be verified.
 
-* -fromall           : to verified all languages.
+* -fromall           : to verifiy all languages.
 				
 * -after:zzzz        : process pages after and including page zzzz
 
