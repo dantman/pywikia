@@ -1597,9 +1597,9 @@ not supported by PyWikipediaBot!"""
         # results will have 4 groups: oldid, edit date/time, user name, and edit
         # summary.
         if self.site().versionnumber() < 4:
-            editR = re.compile('<li>.*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
+            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'user\'><a href=".*?" title=".*?">([^<]*?)</a></span>.*?(?:<span class=\'comment\'>(.*?)</span>)?</li>')
         else:
-            editR = re.compile('<li>.*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a>.*?</span>.*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
+            editR = re.compile('<li>\(.*?\)\s+\(.*\).*?<a href=".*?oldid=([0-9]*)" title=".*?">([^<]*)</a> <span class=\'history-user\'><a href=".*?" title=".*?">([^<]*?)</a>.*?</span>.*?(?:<span class=[\'"]comment[\'"]>(.*?)</span>)?</li>')
 
         startFromPage = None
         thisHistoryDone = False
@@ -2181,7 +2181,7 @@ not supported by PyWikipediaBot!"""
             # All previous steps did not work, so the image is
             # likely embedded in a complicated template.
             # Note: this regular expression can't handle nested templates.
-            templateR = re.compile(ur'(?s)\{\{(?P<contents>.*?\}\}')
+            templateR = re.compile(ur'(?s)\{\{(?P<contents>.*?)\}\}')
             fileReferenceR = re.compile(u'%s(?P<filename>(?:%s)?)' % (namespacePattern, imagePattern))
 
             def template_replacer(match):
@@ -5251,7 +5251,6 @@ def log(text):
     """Write the given text to the logfile."""
     if logfile:
         # remove all color markup
-        # TODO: consider pre-compiling this regex for speed improvements
         plaintext = colorTagR.sub('', text)
         # save the text in a logfile (will be written in utf-8)
         logfile.write(plaintext)
