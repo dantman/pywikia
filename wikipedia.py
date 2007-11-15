@@ -3800,6 +3800,15 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             text = response.read()
             contentType = response.getheader('Content-Type')
             contentEncoding = response.getheader('Content-Encoding')
+            
+            # Ensure that all sent data is received
+            if int(response.getheader('Content-Length', '0')) != len(text):
+                output(u'Warning! len(text) does not match content-length: %s != %s' % \
+                    (len(text), response.getheader('Content-Length', '0')))
+                self.conn.close()
+                self.conn.connect()
+                return self.getUrl(path, retry, sysop, data, compress)
+                
         else:
             if self.hostname() in config.authenticate.keys():
                 uo = authenticateURLopener
