@@ -232,7 +232,7 @@ netext = {
     'it':u'{{Benvebot}} %s',
     'nl':u'{{hola|bot|%s}}',
     'no':u'{{subst:bruker:jhs/vk}} %s',
-    'pt':u'{{subst:bem vindo}} %s,
+    'pt':u'{{subst:bem vindo}} %s',
     'sq':u'{{subst:tung}} %s',
     'zh':u'{{subst:welcome|sign=%s}}',
     }
