@@ -2812,14 +2812,9 @@ def replaceExcept(text, old, new, exceptions, caseInsensitive=False,
             except TypeError:
                 # it is not a function, but a string.
 
-                # This is a hack for Windows users. As they're unable to enter real
-                # linebreaks in the command prompt, this line allows them to enter
-                # backslash-n instead.
-                # This means that it is impossible replace a string with a real
-                # backslash-n sequence (it will always become a linebreak), but
-                # it is unprobable that someone will want to do that.
-                if sys.platform=='win32':
-                    new = new.replace('\\n', '\n')
+                # it is a little hack to make \n work. It would be better to fix it
+                # previously, but better than nothing.
+                new = new.replace('\\n', '\n')
 
                 # We cannot just insert the new string, as it may contain regex
                 # group references such as \2 or \g<name>.
