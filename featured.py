@@ -14,7 +14,10 @@ This script understands various command-line arguments:
 				
 * -after:zzzz        : process pages after and including page zzzz
 
-usage: featured.py [-interactive] [-nocache] [-after:zzzz] [-fromlang:xx,yy,zz|-fromall]
+* -top               : using -top if you want moving {{Link FA|lang}} to top of interwiki.
+                       DEFAULT: placing {{Link FA|lang}} right next to corresponding interwiki.
+
+usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy,zz|-fromall]
 
 """
 __version__ = '$Id$'
@@ -229,7 +232,7 @@ def findTranslated(page, oursite=None):
     wikipedia.output(u"back interwiki ref target is "+backpage.title())
     return None
 
-def featuredWithInterwiki(fromsite, tosite):
+def featuredWithInterwiki(fromsite, tosite, template_on_top):
     if not fromsite.lang in cache:
         cache[fromsite.lang]={}
     if not tosite.lang in cache[fromsite.lang]:
@@ -277,14 +280,16 @@ def featuredWithInterwiki(fromsite, tosite):
                             continue
                         comment = wikipedia.setAction(wikipedia.translate(wikipedia.getSite(), msg) % (fromsite.lang, a.title()))
 
-                        # TODO: create commandline for this
+                        ### Moving {{Link FA|xx}} to top of interwikis ###  
+                        if template_on_top == True:
+                            text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(findtemplate, fromsite.lang)), atrans.categories())
+
                         ### Placing {{Link FA|xx}} right next to corresponding interwiki ###
-                        text=(text[:m.end()]
-                              + (u" {{%s|%s}}" % (findtemplate, fromsite.lang))
-                              + text[m.end():])
-                        ### Moving {{Link FA|xx}} to top of interwikis ###
-                        # text=wikipedia.replaceCategoryLinks(text+(u"{{%s|%s}}"%(findtemplate, fromsite.lang)), atrans.categories())
-                        
+                        else:
+                            text=(text[:m.end()]
+                                  + (u" {{%s|%s}}" % (findtemplate, fromsite.lang))
+                                  + text[m.end():])
+
                         try:
                             atrans.put(text, comment)
                         except wikipedia.LockedPage:
@@ -295,7 +300,7 @@ def featuredWithInterwiki(fromsite, tosite):
             wikipedia.output(u"Page not saved")
 
 if __name__=="__main__":
-
+    template_on_top = False
     fromlang=[]
     for arg in wikipedia.handleArgs():
         if arg == '-interactive':
@@ -316,7 +321,9 @@ if __name__=="__main__":
             fromlang=featured_name.keys()
         elif arg.startswith('-after:'):
             afterpage=arg[7:]
-
+        elif arg == '-top':
+            template_on_top = True
+        
     if not fromlang:
         wikipedia.showHelp('featured')
         sys.exit(1)
@@ -326,7 +333,7 @@ if __name__=="__main__":
         for ll in fromlang:
             fromsite=wikipedia.Site(ll)
             if not fromsite==wikipedia.getSite():
-                featuredWithInterwiki(fromsite, wikipedia.getSite())
+                featuredWithInterwiki(fromsite, wikipedia.getSite(), template_on_top)
     finally:
         wikipedia.stopme()
         if not nocache:
