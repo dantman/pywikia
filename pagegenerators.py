@@ -65,6 +65,9 @@ parameterHelp = """\
                   all pages on the home wiki, starting at the named page.
                   Argument can also be given as "-start:pagetitle"
 
+-prefixindex      Work on pages commencing with a common prefix.  Argument
+                  may also be given as "-prefixindex:namespace:pagename".
+
 -subcat           Like -cat, but also includes pages in subcategories of the
                   given category.
                   Argument can also be given as "-subcat:categoryname".
@@ -750,6 +753,19 @@ class GeneratorFactory:
             namespace = wikipedia.Page(wikipedia.getSite(), firstPageTitle).namespace()
             firstPageTitle = wikipedia.Page(wikipedia.getSite(), firstPageTitle).titleWithoutNamespace()
             gen = AllpagesPageGenerator(firstPageTitle, namespace, includeredirects = False)
+        elif arg.startswith('-prefixindex'):
+            prefix = arg[13:]
+            namespace = None
+            if not prefix:
+                prefix = wikipedia.input(u'What page names are you looking for?')
+            colon = prefix.find(':')
+            if colon > 0:
+                namespace = wikipedia.getSite().getNamespaceIndex(prefix[0:colon])
+                # If the text before the colon is a valid namespace that
+                # that is not the main namespace, use the remainder.
+                if namespace:
+                    prefix = prefix[colon+1:]
+            gen = PrefixingPageGenerator(prefix = prefix, namespace = namespace)
         elif arg.startswith('-new'):
             if len(arg) >=5:
               gen = NewpagesPageGenerator(number = int(arg[5:]))
