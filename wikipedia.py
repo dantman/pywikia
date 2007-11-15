@@ -1259,7 +1259,7 @@ not supported by PyWikipediaBot!"""
                     output(u"Pausing 5 seconds due to database server lag.")
                     time.sleep(5)
                     continue
-                if data.find( "<title>Wikimedia Error</title>"):
+                if data.find( "<title>Wikimedia Error</title>") > -1:
                     output(
             u"Wikimedia has technical problems; will retry in %i minutes."
                             % retry_delay)
