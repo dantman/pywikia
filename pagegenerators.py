@@ -121,8 +121,8 @@ def AllpagesPageGenerator(start ='!', namespace = None, includeredirects = True)
     for page in wikipedia.getSite().allpages(start=title, namespace=namespace, includeredirects = includeredirects):
         yield page
 
-def PrefixingPageGenerator(prefix, namespace=None):
-    for page in AllpagesPageGenerator(prefix, namespace):
+def PrefixingPageGenerator(prefix, namespace=None, includeredirects=True):
+    for page in AllpagesPageGenerator(prefix, namespace, includeredirects):
         if page.titleWithoutNamespace().startswith(prefix):
             yield page
         else:
