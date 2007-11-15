@@ -36,14 +36,23 @@ def GetData( lang, params, verbose = False ):
         wikipedia.output( u"Requesting %d titles from %s:%s" % (titlecount, lang, path) )
     
     url = site.family.querypath(lang)
+
+    retryCount = 1
     
-    jsontext = site.getUrl( path, retry=True, data=data )
+    while retryCount >= 0:
+        try:
+            jsontext = site.getUrl( path, retry=True, data=data )
 
-
-    # This will also work, but all unicode strings will need to be converted from \u notation
-    # return eval( jsontext )
-
-    return simplejson.loads( jsontext )
+            # This will also work, but all unicode strings will need to be converted from \u notation
+            # decodedObj = eval( jsontext )
+            decodedObj = simplejson.loads( jsontext )
+            break
+            
+        except ValueError, error:
+            retryCount -= 1
+            wikipedia.output( u"Error downloading data: %s" % error )
+    
+    return decodedObj
 
 def GetInterwikies( lang, titles, extraParams = None ):
     """ Usage example: data = GetInterwikies('ru','user:yurik')

@@ -23,22 +23,38 @@ __version__ = '$Id$'
 # Windows Concose colors
 # This code makes this script Windows ONLY!!!  Feel free to adapt it to another platform
 #
+# Adapted from http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/496901
 #
-FOREGROUND_BLUE = 1
-FOREGROUND_GREEN = 2
-FOREGROUND_RED = 4
+STD_OUTPUT_HANDLE= -11
 
-FOREGROUND_WHITE = 1|2|4
+FOREGROUND_BLUE = 0x01 # text color contains blue.
+FOREGROUND_GREEN= 0x02 # text color contains green.
+FOREGROUND_RED  = 0x04 # text color contains red.
+FOREGROUND_INTENSITY = 0x08 # text color is intensified.
+BACKGROUND_BLUE = 0x10 # background color contains blue.
+BACKGROUND_GREEN= 0x20 # background color contains green.
+BACKGROUND_RED  = 0x40 # background color contains red.
+BACKGROUND_INTENSITY = 0x80 # background color is intensified.
+
+FOREGROUND_WHITE = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED
+
+try:
+    import ctypes
+    std_out_handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+except:
+    std_out_handle = None
+
 
 def SetColor(color):
-    try:
-        import win32console
-        stdout=win32console.GetStdHandle(win32console.STD_OUTPUT_HANDLE)
-        stdout.SetConsoleTextAttribute(color)
-    except:
-        if color == FOREGROUND_BLUE: print '(b:'
-        if color == FOREGROUND_GREEN: print '(g:'
-        if color == FOREGROUND_RED: print '(r:'
+    if std_out_handle:
+        try:
+            return ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, color)
+        except:
+            pass
+
+    if color == FOREGROUND_BLUE: print '(b:',
+    if color == FOREGROUND_GREEN: print '(g:',
+    if color == FOREGROUND_RED: print '(r:',
 
 # end of console code
 
@@ -47,6 +63,14 @@ import sys, query, wikipedia, re, codecs
 
 
 class CaseChecker( object ):
+    msgRename = {
+        'en': u'mixed case rename',
+        'ru': u'[[ВП:КЛ]]',
+    }
+    msgLinkReplacement = {
+        'en': u'Case Replacements',
+        'ru': u'[[ВП:КЛ]]',
+    }
 
     langs = {
         'ru': {
@@ -207,10 +231,10 @@ class CaseChecker( object ):
                                     else:
                                         changed = False
                                         if self.replace:
-                                            newTitle = self.PickTarget(False, title, err[1])
+                                            newTitle = self.PickTarget(False, title, title, err[1])
                                             if newTitle:
                                                 src = wikipedia.Page(self.site, title)
-                                                src.move( newTitle, u'mixed case rename')
+                                                src.move( newTitle, wikipedia.translate(self.site, self.msgRename))
                                                 changed = True
 
                                         if not changed:
@@ -238,7 +262,7 @@ class CaseChecker( object ):
                                         if err:
                                             newTitle = None
                                             if self.replace:
-                                                newTitle = self.PickTarget(True, ltxt, err[1])
+                                                newTitle = self.PickTarget(True, title, ltxt, err[1])
                                                 if newTitle:
                                                     if pageObj is None:
                                                         pageObj = wikipedia.Page(self.site, title)
@@ -274,7 +298,7 @@ class CaseChecker( object ):
                                         else:
                                             wikipedia.output(u'Case Replacements: %s' % u', '.join(msg))
                                             try:
-                                                pageObj.put(pageTxt, u'Case Replacements: %s' % u', '.join(msg))
+                                                pageObj.put(pageTxt, u'%s: %s' % (wikipedia.translate(self.site, self.msgLinkReplacement), u', '.join(msg)))
                                             except KeyboardInterrupt:
                                                 raise
                                             except:
@@ -390,7 +414,7 @@ class CaseChecker( object ):
 
         return (infoText, possibleAlternatives)
 
-    def PickTarget(self, isLink, original, candidates):
+    def PickTarget(self, isLink, title, original, candidates):
         if len(candidates) == 0:
             return None
 
@@ -428,7 +452,7 @@ class CaseChecker( object ):
                     return pagesRedir.keys()[0]
 
             if not self.autonomous:
-                wikipedia.output(u'Could not auto-decide. Which should be chosen?')
+                wikipedia.output(u'Could not auto-decide for page [[%s]]. Which link should be chosen?' % title)
                 wikipedia.output(u'Original title: ', newline=False)
                 self.ColorCodeWord(original + "\n", True)
                 count = 1
