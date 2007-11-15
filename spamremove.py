@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/python
 
-import wikipedia, editarticle
 """
 Script to remove links that are being or have been spammed.
 Usage:
@@ -20,6 +19,10 @@ Command line options:
               in using this option!
 
 """
+
+import sys
+import wikipedia, editarticle
+
 __version__ = '$Id$'
 
 def main():
@@ -40,6 +43,7 @@ def main():
     if not automatic:
         wikipedia.put_throttle.setDelay(1)
     if not spamSite:
+        wikipedia.showHelp('spamremove')
         wikipedia.output(u"No spam site specified.")
         sys.exit()
     mysite = wikipedia.getSite()
