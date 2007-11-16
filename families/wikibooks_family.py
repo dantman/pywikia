@@ -157,7 +157,7 @@ class Family(family.Family):
             'id': u'Resep',
             'fr': u'Transwiki',
             'he': u'שער',
-            'it': u'Portale',
+            'it': u'Progetto',
             'ms': u'Resipi',
         }
         
@@ -166,7 +166,7 @@ class Family(family.Family):
             'id': u'Pembicaraan Resep',
             'fr': u'Discussion Transwiki',
             'he': u'שיחת שער',
-            'it': u'Discussioni portale',
+            'it': u'Discussioni progetto',
             'ms': u'Perbualan Resipi',
         }
 
@@ -176,6 +176,7 @@ class Family(family.Family):
             'en': u'Cookbook',
             'es': u'Wikiversidad',
             'id': u'Wisata',
+            'it': u'Ripiano',
             'nl': u'Transwiki',
             'sr': u'Кувар',
         }   
@@ -186,6 +187,7 @@ class Family(family.Family):
             'en': u'Cookbook talk',
             'es': u'Wikiversidad Discusión',
             'id': u'Pembicaraan Wisata',
+            'it': u'Discussioni ripiano',
             'nl': u'Overleg transwiki',
             'sr': u'Разговор о кувару',
         }   
