@@ -29,7 +29,7 @@ msg = {
     'de': u'Manuelle Bearbeitung: %s',
     'en': u'Manual edit: %s',
     'he': u'עריכה ידנית: %s',
-    'pt': u'Editando manualmente: %s',
+    'pt': u'Editando manualmente com bot: %s',
 }
 
 class TextEditor:
