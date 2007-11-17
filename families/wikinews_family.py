@@ -90,11 +90,13 @@ class Family(family.Family):
         }   
 
         self.namespaces[102] = {
+            'en': u'Comments',
             'fr': u'Transwiki',
             'pt': u'Efeméride',
         }   
 
         self.namespaces[103] = {
+            'en': u'Comments talk',
             'fr': u'Discussion Transwiki',
             'pt': u'Efeméride Discussão',
         }   

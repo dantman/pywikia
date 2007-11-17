@@ -65,6 +65,7 @@ class Family(family.Family):
             'ar': u'نقاش ويكي مصدر',
             'az': u'VikiMənbə müzakirəsi',
             'bg': u'Уикиизточник беседа',
+            'bn': u'Wikisource আলাপ',
             'bs': u'Razgovor s Wikizvor',
             'ca': u'Viquitexts Discussió',
             'cs': u'Wikisource diskuse',
