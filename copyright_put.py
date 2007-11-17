@@ -207,8 +207,8 @@ def run(send_stats = False):
         # if a page in 'Image' or 'Category' namespace is checked then fix
         # title section by adding ':' in order to avoid wiki code effects.
 
-        wikitext = re.sub(u'(?i)=== \[\[%s:' % join_family_data('Image', 6), ur'== [[:\1:', wikitext)
-        wikitext = re.sub(u'(?i)=== \[\[%s:' % join_family_data('Category', 14), ur'== [[:\1:', wikitext)
+        wikitext = re.sub(u'(?i)=== \[\[%s:' % join_family_data('Image', 6), ur'=== [[:\1:', wikitext)
+        wikitext = re.sub(u'(?i)=== \[\[%s:' % join_family_data('Category', 14), ur'=== [[:\1:', wikitext)
 
         # TODO:
         # List of frequent rejected address to improve upload process.
