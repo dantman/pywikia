@@ -71,6 +71,7 @@ class Family(family.Family):
             'ko': u'위키백과',
             'ku': u'Wîkîpediya',
             'la': u'Vicipaedia',
+            'lbe': u'Википедия',
             'mk': u'Википедија',
             'ml': u'വിക്കിപീഡിയ',
             'mt': u'Wikipedija',
@@ -94,6 +95,7 @@ class Family(family.Family):
             'uz': u'Vikipediya',
             'vo': u'Vükiped',
             'yi': u'װיקיפּעדיע',
+            'zh-classical': u'維基大典',
         }
 
         self.namespaces[5] = {
@@ -118,8 +120,9 @@ class Family(family.Family):
             'bpy': u'উইকিপিডিয়া য়্যারী',
             'br': u'Kaozeadenn Wikipedia',
             'bs': u'Razgovor s Wikipediom',
+            'bug': u'Pembicaraan Wikipedia',
             'ca': u'Viquipèdia Discussió',
-            'ce': u'Обсуждение Wikipedia',
+            'ce': u'Wikipedia Дийца',
             'cs': u'Wikipedie diskuse',
             'csb': u'Diskùsëjô Wiki',
             'cu': u'Википедїѩ бесѣда',
@@ -142,6 +145,7 @@ class Family(family.Family):
             'fur': u'Discussion Vichipedie',
             'fy': u'Wikipedy oerlis',
             'ga': u'Plé Vicipéide',
+            'glk': u'بحث Wikipedia',
             'gn': u'Wikipedia Discusión',
             'gu': u'વિકિપીડિયા talk',
             'he': u'שיחת ויקיפדיה',
@@ -166,7 +170,10 @@ class Family(family.Family):
             'ku': u'Wîkîpediya nîqaş',
             'kv': u'Обсуждение Wikipedia',
             'la': u'Disputatio Vicipaediae',
+            'lb': u'Wikipedia Diskussion',
+            'lbe': u'Википедиялиясса ихтилат',
             'li': u'Euverlèk Wikipedia',
+            'ln': u'Discussion Wikipedia',
             'lt': u'Wikipedia aptarimas',
             'lv': u'Wikipedia diskusija',
             'mk': u'Разговор за Википедија',
@@ -187,10 +194,11 @@ class Family(family.Family):
             'oc': u'Discussion Wikipèdia',
             'os': u'Дискусси Wikipedia',
             'pa': u'ਵਿਕਿਪੀਡਿਆ ਚਰਚਾ',
+            'pdc': u'Wikipedia Diskussion',
             'pl': u'Dyskusja Wikipedii',
             'pms': u'Discussion ant sla Wikipedia',
             'pt': u'Wikipedia Discussão',
-            'qu': u'Wikipedia Discusión',
+            'qu': u'Wikipedia rimanakuy',
             'rmy': u'Vikipidiyake vakyarimata',
             'ro': u'Discuţie Wikipedia',
             'ru': u'Обсуждение Википедии',
@@ -224,6 +232,7 @@ class Family(family.Family):
             'xal': u'Wikipedia тускар ухалвр',
             'yi': u'װיקיפּעדיע רעדן',
             'zea': u'Overleg Wikipedia',
+            'zh-classical': u'維基大典 talk',
         }
 
         self.namespaces[100] = {
@@ -263,6 +272,7 @@ class Family(family.Family):
 
         self.namespaces[101] = {
             '_default': u'Portal talk',
+            'als': u'Portal Diskussion',
             'ar': u'نقاش البوابة',
             'bpy': u'হমিলদুৱার য়্যারী',
             'br': u'Kaozeal:Porched',
