@@ -120,7 +120,7 @@ def set_all(keys, values, verbose = False):
 	import wikipedia, config
 	for family in config.usernames:
 		for lang in config.usernames[family]:
-			site = wikipedia.getSite(family, lang, persistent_http = True)
+			site = wikipedia.getSite(lang, family, persistent_http = True)
 			prefs = Preferences(site)
 			for key, value in zip(keys, values):
 				prev = unicode(prefs.get(key, ''))
@@ -135,7 +135,7 @@ def main():
 	
 	wikipedia.output(u'Warning! This script will set preferences on all configured accounts!')
 	wikipedia.output(u'You have %s accounts configured.' % \
-		len(map(len, filter(None, config.usernames.itervalues()))))
+		sum(map(len, filter(lambda key: bool(config.usernames[key]), config.usernames.iterkeys()))))
 	
 	if wikipedia.inputChoice(u'Do you wish to continue?', ['no', 'yes'], ['n', 'y'], 'n') == 'n': return
 	
