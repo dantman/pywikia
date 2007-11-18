@@ -63,11 +63,13 @@ class Family(family.Family):
             '_default': u'',
             'de': u'Kurs',
             'fr': u'Faculté',
+			'it': u'Dipartimento',
         }
         self.namespaces[107] = {
             '_default': u'',
             'de': u'Kurs Diskussion',
             'fr': u'Discussion Faculté',
+			'it': u'Discussioni dipartimento',
         }
         self.namespaces[108] = {
             '_default': u'',
