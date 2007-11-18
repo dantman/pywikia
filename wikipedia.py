@@ -3389,7 +3389,7 @@ does not exist. Also check your configuration file."""
             traceback.print_stack()
             sys.exit(1)
         else:
-            raise ValueError("Family does not exist")
+            raise ValueError("Family %s does not exist" % repr(fam))
     return myfamily.Family()
 
 
