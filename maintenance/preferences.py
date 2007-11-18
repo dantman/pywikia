@@ -117,18 +117,35 @@ def table_cell(value, length):
 	return s
 	
 def set_all(keys, values, verbose = False):
-	import wikipedia, config
+	import wikipedia, config, time
+	
+	log = open('preferences.txt', 'w')
+	log.write('PREFERENCES\t%s\n' % time.gmtime())
+	log.write('KEYS\t%s\n' % keys)
+	log.write('VALUES\t%s\n' % values)
+	
 	for family in config.usernames:
 		for lang in config.usernames[family]:
-			site = wikipedia.getSite(lang, family, persistent_http = True)
-			prefs = Preferences(site)
-			for key, value in zip(keys, values):
-				prev = unicode(prefs.get(key, ''))
+			try:
 				if verbose: wikipedia.output(u"Setting '%s' on %s from '%s' to '%s'." % \
-						(key, site, prev, value))
-				prefs.set(key, value)
-			prefs.save()
-			site.conn.close()
+					(key, site, prev, value))
+				set_for(lang, family)
+			except Exception, e:
+				output(u'Warning! An exception occured! %s: %s' % (e.__class__.__name__, str(e)))
+				log.write('FAILED\t%s\t%s\n' % (family, lang))
+			else:
+				log.write('SUCCESS\t%s\t%s\n' % (family, lang))
+	log.close()
+	
+def set_for(lang, family):
+	site = wikipedia.getSite(lang, family, persistent_http = True)
+	prefs = Preferences(site)
+	for key, value in zip(keys, values):
+		prev = unicode(prefs.get(key, ''))
+		prefs.set(key, value)
+	prefs.save()
+	site.conn.close()
+	
 
 def main():
 	import wikipedia, config
