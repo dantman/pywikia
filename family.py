@@ -2322,7 +2322,7 @@ class Family:
             # languages that use the cyrillic alphabet
             'cyril': [
                 'ab', 'ba', 'be', 'be-x-old', 'bg', 'ce', 'cv', 'kk', 'kv', 'ky', 'mk',
-                'mn', 'mo', 'os', 'ru', 'sr', 'tg', 'tk', 'udm', 'uk', 'xal'
+                'mn', 'os', 'ru', 'sr', 'tg', 'tk', 'udm', 'uk', 'xal'
             ],
             'scand': [
                 'da', 'fo', 'is', 'nb', 'no', 'sv'
