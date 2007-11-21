@@ -93,7 +93,12 @@ ignore_bot_templates = False
 # or 'utf-8'.
 # This default code should work fine, so you don't have to think about it.
 # TODO: consider getting rid of this config variable.
-console_encoding = __sys.stdout.encoding
+try:
+    console_encoding = __sys.stdout.encoding
+except:
+    #When using pywikipedia inside a daemonized twisted application,
+    #we get "StdioOnnaStick instance has no attribute 'encoding'"
+    console_encoding = None
 
 # The encoding in which textfiles are stored, which contain lists of page titles.
 textfile_encoding = 'utf-8'
