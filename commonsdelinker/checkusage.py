@@ -145,6 +145,8 @@ class HTTP(object):
 			res.close()
 			
 		if 'error' in data:
+			if data['error']['code'] == u'internal_api_error_DBConnectionError':
+				return self.query_api(host, path, **kwargs)
 			raise wikipedia.Error(data['error']['code'], 
 				data['error']['info'])
 			
