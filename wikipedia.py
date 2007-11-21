@@ -5107,7 +5107,7 @@ def altlang(code):
         return ['pt']
     if code in ['mo','roa-rup']:
         return ['ro']
-    if code in ['av','bxr','cv','hy','lbe','ru-sib','tg','udm','uk','xal']:
+    if code in ['av','bxr','cv','hy','lbe','tg','udm','uk','xal']:
         return ['ru']
     if code in ['be','be-x-old']:
         return ['be','be-x-old','ru']

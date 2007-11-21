@@ -205,7 +205,6 @@ wikipedia_names = {
     'qu': u'Wikipidiya',
     'rmy': u'Vikipidiya',
     'ru': u'Википедия',
-    'ru-sib': u'Википеддя',
     'sco': u'Wikipaedia',
     'si': u'විකිපීඩියා',
     'sk': u'Wikipédia',
