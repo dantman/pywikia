@@ -92,8 +92,11 @@ class Preferences(HTMLParser, dict):
 		predata = {'wpSaveprefs': '1', 'title': 'Special:Preferences'}
 		for key, value in self.iteritems():
 			if value:
-				if type(value) in (Checkbox, Select):
+				if type(value) is Select:
 					predata[key] = value.value
+				elif type(value) is Checkbox:
+					if value.state:
+						predata[key] = value.value
 				else:
 					predata[key] = value
 		self.site.postForm(self.site.path(), predata)
@@ -119,7 +122,7 @@ def table_cell(value, length):
 def set_all(keys, values, verbose = False):
 	import wikipedia, config, time
 	
-	log = open('preferences.txt', 'w')
+	log = open('preferences.txt', 'a')
 	log.write('PREFERENCES\t%s\n' % time.gmtime())
 	log.write('KEYS\t%s\n' % keys)
 	log.write('VALUES\t%s\n' % values)
@@ -127,21 +130,24 @@ def set_all(keys, values, verbose = False):
 	for family in config.usernames:
 		for lang in config.usernames[family]:
 			try:
-				if verbose: wikipedia.output(u"Setting '%s' on %s from '%s' to '%s'." % \
-					(key, site, prev, value))
-				set_for(lang, family)
+				set_for(lang, family, keys, values, verbose)
+			except (SystemExit, KeyboardInterrupt):
+				return
 			except Exception, e:
-				output(u'Warning! An exception occured! %s: %s' % (e.__class__.__name__, str(e)))
+				wikipedia.output(u'Warning! An exception occured! %s: %s' % (e.__class__.__name__, str(e)))
 				log.write('FAILED\t%s\t%s\n' % (family, lang))
 			else:
 				log.write('SUCCESS\t%s\t%s\n' % (family, lang))
 	log.close()
 	
-def set_for(lang, family):
+def set_for(lang, family, keys, values, verbose = False):
+	import wikipedia
 	site = wikipedia.getSite(lang, family, persistent_http = True)
 	prefs = Preferences(site)
 	for key, value in zip(keys, values):
 		prev = unicode(prefs.get(key, ''))
+		if verbose: wikipedia.output(u"Setting '%s' on %s from '%s' to '%s'." % \
+			(key, site, prev, value))
 		prefs.set(key, value)
 	prefs.save()
 	site.conn.close()
@@ -152,7 +158,7 @@ def main():
 	
 	wikipedia.output(u'Warning! This script will set preferences on all configured accounts!')
 	wikipedia.output(u'You have %s accounts configured.' % \
-		sum(map(len, filter(lambda key: bool(config.usernames[key]), config.usernames.iterkeys()))))
+		sum([len(family) for family in config.usernames.itervalues()]))
 	
 	if wikipedia.inputChoice(u'Do you wish to continue?', ['no', 'yes'], ['n', 'y'], 'n') == 'n': return
 	
