@@ -275,26 +275,30 @@ class Delinker(threadpool.Thread):
 				# Code for checking user page existance has been moved
 				# to summary() code, to avoid checking the user page
 				# for each removal.
-				try:
-					new_text = ImmutableByReference(new_text)
-					m_summary = ImmutableByReference(summary)
-					if False is self.CommonsDelinker.exec_hook('before_save',
-							(page, text, new_text, m_summary)):
-						return 'skipped'
-					
-					if self.CommonsDelinker.config.get('edit', True) and not \
-							((self.CommonsDelinker.site.lang == 'commons') ^ \
-							(config.usernames.get('commons', {}).get(
-							'commons') == 'CommonsDelinker')):
-						page.put(new_text.get(), m_summary.get())
-					return 'ok'
-				except wikipedia.EditConflict:
-					# Try again
-					output(u'Got EditConflict trying to remove %s from %s:%s.' % \
-						(image, site, page_title))
-					return self.replace_image(image, site, page_title, summary, replacement = None)
-				except (wikipedia.LockedPage, wikipedia.PageNotSaved):
-					return 'failed'
+				new_text = ImmutableByReference(new_text)
+				m_summary = ImmutableByReference(summary)
+				if False is self.CommonsDelinker.exec_hook('before_save',
+						(page, text, new_text, m_summary)):
+					return 'skipped'
+				
+				while True:
+					try:
+						if self.CommonsDelinker.config.get('edit', True) and not \
+								((self.CommonsDelinker.site.lang == 'commons') ^ \
+								(config.usernames.get('commons', {}).get(
+								'commons') == 'CommonsDelinker')):
+							page.put(new_text.get(), m_summary.get())
+						return 'ok'
+					except wikipedia.ServerError, e:
+						output(u'Warning! ServerError: %s' % str(e))
+					except wikipedia.EditConflict:
+						# Try again
+						output(u'Got EditConflict trying to remove %s from %s:%s.' % \
+							(image, site, page_title))
+						return self.replace_image(image, site, page_title, summary, replacement = None)
+					except (wikipedia.LockedPage, wikipedia.PageNotSaved):
+						return 'failed'
+					output(u'Retrying...')
 			else:
 				return 'skipped'
 		return 'skipped'

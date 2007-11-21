@@ -84,7 +84,9 @@ class Replacer(object):
 			revisions = self.get_history(page.title(), since, username)
 			# Fetch the page any way, to prevent editconflicts
 			old_text = text = page.get()
-		except StandardError, e:
+		except (SystemExit, KeyboardInterrupt):
+			raise
+		except Exception, e:
 			# Network error, not critical
 			output(u'Warning! Unable to read replacement log.', False)
 			output('%s: %s' % (e.__class__.__name__, str(e)), False)
