@@ -44,6 +44,7 @@ class Family(family.Family):
             'bn': u'উইকিপেডিয়া',
             'bpy': u'উইকিপিডিয়া',
             'ca': u'Viquipèdia',
+            'ce': u'Википедийа',
             'cs': u'Wikipedie',
             'csb': u'Wiki',
             'cu': u'Википедї',
@@ -122,7 +123,7 @@ class Family(family.Family):
             'bs': u'Razgovor s Wikipediom',
             'bug': u'Pembicaraan Wikipedia',
             'ca': u'Viquipèdia Discussió',
-            'ce': u'Wikipedia Дийца',
+            'ce': u'Википедийа Дийца',
             'cs': u'Wikipedie diskuse',
             'csb': u'Diskùsëjô Wiki',
             'cu': u'Википедїѩ бесѣда',
@@ -145,6 +146,7 @@ class Family(family.Family):
             'fur': u'Discussion Vichipedie',
             'fy': u'Wikipedy oerlis',
             'ga': u'Plé Vicipéide',
+            'gl': u'Conversa Wikipedia',
             'glk': u'بحث Wikipedia',
             'gn': u'Wikipedia Discusión',
             'gu': u'વિકિપીડિયા talk',
@@ -267,6 +269,7 @@ class Family(family.Family):
             'uk': u'Портал',
             'vi': u'Chủ đề',
             'vo': u'Bespik dö Vükiped',
+            'yi': u'פארטאל',
             'zh-classical': u'門',
         }
 
@@ -319,6 +322,7 @@ class Family(family.Family):
             'tr': u'Portal tartışma',
             'uk': u'Обговорення порталу',
             'vi': u'Thảo luận Chủ đề',
+            'yi': u'פארטאל רעדן',
             'zh-classical': u'議',
         }
 
