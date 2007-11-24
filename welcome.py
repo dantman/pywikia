@@ -363,7 +363,7 @@ def parselog(wsite, raw, talk, number):
     # and i put them in a list (i find it more easy and secure).
     while 1:
         # FIXME: That's the regex, if there are problems, take a look here.
-        reg = r'\(<a href=\"/w/index.php\?title=' + talk + r'(.*?)&(amp;|)action=edit\"'
+        reg = r'\(<a href=\"/w/index.php\?title=%s(.*?)&(amp;|)action=edit\"' % talk
         p = re.compile(reg, re.UNICODE)
         x = p.search(raw, pos)
         if x == None:
@@ -378,10 +378,10 @@ def parselog(wsite, raw, talk, number):
         if username not in done:
             done.append(username)
         userpage = wikipedia.Page(wsite, username)
-        usertalkpage = wikipedia.Page(wsite, talk + username)
+        usertalkpage = wikipedia.Page(wsite, str(talk) + str(username))
         # Defing the contrib's page of the user.
         pathWiki = wsite.family.nicepath(wsite.lang)
-        con = pathWiki + 'Special:Contributions/'+ userpage.urlname()
+        con = '%sSpecial:Contributions/%s' % (pathWiki, userpage.urlname())
         # Getting the contribs...
         contribs = wsite.getUrl(con)
         contribnum = contribs.count('<li>') # Maxes at 50, but not important.
@@ -485,9 +485,9 @@ def logmaker(wsite, welcomed_users, logg, summ2, usernam, contrib):
         else:
             safety.append(u'{|border="2" cellpadding="4" cellspacing="0" style="margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em; background: #bfcda5; border: 1px #b6fd2c solid; border-collapse: collapse; font-size: 95%;"')
         # The string below show how the "Usernames" will be notified.
-        safety.append('\n!' + usernam)
+        safety.append('\n!%s' % usernam)
         # The string below show how the "Contribs" will be notified.
-        safety.append(u'\n!' + contrib)
+        safety.append(u'\n!%s' % contrib)
 
     for found_result in welcomed_users:
         # Adding the log... (don't take care of the variable's name...).
@@ -613,7 +613,7 @@ def main(settingsBot):
     contrib = string.capitalize(wsite.mediawiki_message('contribslink'))
     # The talk_page's variable gives "Talk page".
     talk_page = wsite.namespace(3)
-    talk = urlname(talk_page, wsite) + ':'
+    talk = '%s:' % urlname(talk_page, wsite)
 
     # Some project of the same language, have different settings. (this is the place to add them).
     if wsite.family.name == "wikinews" and wsite.lang == "it":
@@ -709,7 +709,7 @@ def main(settingsBot):
         # The URL for new users is the same in every project. It should not be changed.
         URL = "/w/index.php?title=Special:Log&type=newusers&limit=%d&offset=%d" % (limit, offset_variable)
         log = wsite.getUrl(URL)
-        wikipedia.output(u'Loading latest ' + str(limit) + u' new users from ' + (wsite.hostname()) + u'...\n')
+        wikipedia.output(u'Loading latest %s new users from %s...\n' % (limit, wsite.hostname()))
         # Determine which signature to use
         if random == True:
             try:
@@ -727,9 +727,9 @@ def main(settingsBot):
                     number_user = 0
                     yield number_user
                 if wsite.family.name == "wikipedia" and wsite.lang == "zh":
-				    welcom = welcomer % signList[number_user] + timeselected + '<small>(via ~~~)</small>'
+		    welcom = welcomer % signList[number_user] + timeselected + '<small>(via ~~~)</small>'
                 else:
-				welcom = welcomer % signList[number_user] + timeselected                
+                    welcom = welcomer % signList[number_user] + timeselected                
             else:
                 welcom = welcomer % sign
             username = str(found_result[0])
@@ -753,7 +753,7 @@ def main(settingsBot):
                 if word.lower() in username.lower():
                     baduser = True
                     if wsite.lang == 'it':
-                        final_rep = rep_text + word + '}}'
+                        final_rep = "%s%s}}" % (rep_text, word)
                         break
                     else:
                         final_rep = rep_text
