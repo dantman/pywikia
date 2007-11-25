@@ -145,8 +145,8 @@ class CosmeticChangesToolkit:
             thisNs = family.namespace(self.site.lang, nsNumber)
             defaultNs = family.namespace('_default', nsNumber)
 
-            # skip main (article) namespace
-            if thisNs:
+            # skip main (article) namespace, and namespaces with no default translation
+            if thisNs and defaultNs:
                 wrongNamespaces = []
                 if defaultNs != thisNs:
                     wrongNamespaces.append(defaultNs)

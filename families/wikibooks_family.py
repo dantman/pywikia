@@ -175,6 +175,7 @@ class Family(family.Family):
         }
 
         self.namespaces[102] = {
+            '_default': u'',
             'cy': u'Silff lyfrau',
             'de': u'Regal',
             'en': u'Cookbook',
@@ -186,6 +187,7 @@ class Family(family.Family):
         }   
 
         self.namespaces[103] = {
+            '_default': u'',
             'cy': u'Sgwrs Silff lyfrau',
             'de': u'Regal Diskussion',
             'en': u'Cookbook talk',
@@ -197,38 +199,46 @@ class Family(family.Family):
         }   
 
         self.namespaces[104] = {
+            '_default': u'',
             'he': u'מדף',
             'ka': u'თარო',
             'nl': u'Wikijunior',
         }   
 
         self.namespaces[105] = {
+            '_default': u'',
             'he': u'שיחת מדף',
             'ka': u'თარო განხილვა',
             'nl': u'Overleg Wikijunior',
         }   
 
         self.namespaces[108] = {
+            '_default': u'',
             'en': u'Transwiki',
         }   
 
         self.namespaces[109] = {
+            '_default': u'',
             'en': u'Transwiki talk',
         }   
 
         self.namespaces[110] = {
+            '_default': u'',
             'en': u'Wikijunior',
         }   
 
         self.namespaces[111] = {
+            '_default': u'',
             'en': u'Wikijunior talk',
         }   
         
         self.namespaces[112] = {
+            '_default': u'',
             'en': u'Subject',
         }
         
         self.namespaces[113] = {
+            '_default': u'',
             'en': u'Subject talk',
         }
 
