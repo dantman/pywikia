@@ -53,6 +53,7 @@ class Family(family.Family):
             'ca': u'Viquinotícies Discussió',
             'de': u'Wikinews Diskussion',
             'es': u'Wikinoticias Discusión',
+            'fi': u'Keskustelu Wikinewsistä',
             'fr': u'Discussion Wikinews',
             'he': u'שיחת ויקיחדשות',
             'it': u'Discussioni Wikinotizie',

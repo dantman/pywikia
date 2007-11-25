@@ -84,6 +84,7 @@ class Family(family.Family):
             'hr': u'Razgovor o Wikizvoru',
             'ht': u'Diskisyon Wikisòrs',
             'hu': u'Wikiforrás vita',
+            'hy': u'Wikisource քննարկում',
             'id': u'Pembicaraan Wikisource',
             'is': u'Wikiheimildspjall',
             'it': u'Discussioni Wikisource',
