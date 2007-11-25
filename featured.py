@@ -253,7 +253,7 @@ def featuredWithInterwiki(fromsite, tosite, template_on_top):
     for a in arts:
         if a.title()<afterpage:
             continue
-        if u"/" in a.title():
+        if u"/" in a.title() and a.namespace() != 0:
             wikipedia.output(u"%s is a subpage" % a.title())
             continue
         if a.title() in cc:
