@@ -736,6 +736,10 @@ not supported by PyWikipediaBot!"""
             if verbose:
                 output(u"DBG> page may be locked?!")
             editRestriction = 'sysop'
+        # This is a hack to find if the page is semi-protected.
+        # TODO: Use API to check if the page is semi-protected.
+        if text.find('var wgRestrictionEdit = ["autoconfirmed"]') != -1:
+            editRestriction = 'autoconfirmed'
         m = self.site().redirectRegex().match(text[i1:i2])
         if m:
             # page text matches the redirect pattern
