@@ -14,8 +14,12 @@ import wikipedia, config, date
 from copyright import put, join_family_data, appdir, reports_cat
 
 #
-# Month + Year save method
+# Month + Year save method (e.g. User:BotName/Report_December_2007)
 append_date_to_wiki_save_path = True
+
+#
+# Append day of mouth to wiki save path (e.g. User:BotName/Report_25_December_2007)
+append_day_to_wiki_save_path = False
 
 #
 # Add pubblication date to entries (template:botdate)
@@ -25,11 +29,6 @@ msg_table = {
     'it': {'_default': [u'Pagine nuove', u'Nuove voci'],
            'feed': [u'Aggiunte a voci esistenti', u'Testo aggiunto in']},
     'en': {'_default': [u'New entries', u'New entries']}
-}
-
-wiki_save_path = {
-  '_default': u'User:%s/Report' % config.usernames[wikipedia.getSite().family.name][wikipedia.getSite().lang],
-  'it': u'Utente:RevertBot/Report'
 }
 
 template_cat = {
@@ -42,18 +41,38 @@ stat_msg = {
     'it': [u'Statistiche', u'Pagina', u'Segnalazioni', u'Lunghezza', u'Totale', u'Ultimo aggiornamento'],
 }
 
-wiki_save_path = wikipedia.translate(wikipedia.getSite(), wiki_save_path)
-template_cat = wikipedia.translate(wikipedia.getSite(), template_cat)
-stat_wiki_save_path = '%s/%s' % (wiki_save_path, wikipedia.translate(wikipedia.getSite(), stat_msg)[0])
-
-if append_date_to_wiki_save_path:
-    wiki_save_path += '_' + date.monthName(wikipedia.getSite().language(), time.localtime()[1]) + '_' + str(time.localtime()[0])
-
 separatorC = re.compile('(?m)^== +')
+
+def get_wiki_save_page(stat_page = False):
+
+    site = wikipedia.getSite()
+
+    wiki_save_path = {
+        '_default': u'User:%s/Report' % config.usernames[site.family.name][site.lang],
+        'it': u'Utente:RevertBot/Report'
+    }
+
+    save_path = wikipedia.translate(site, wiki_save_path)
+
+    if stat_page:
+        return wikipedia.Page(site, '%s/%s' % (save_path, wikipedia.translate(site, stat_msg)[0]))
+
+    if append_date_to_wiki_save_path:
+        t = time.localtime()
+        day = ''
+        if append_day_to_wiki_save_path:
+            day = str(t[2]) + '_'
+
+        save_path += day + '_' + date.monthName(site.language(), t[1]) + '_' + str(t[0])
+
+    return wikipedia.Page(site, save_path)
 
 def set_template(name = None):
 
     site = wikipedia.getSite()
+
+    template_cat = wikipedia.translate(site, template_cat)
+
     url = "%s://%s%s" % (site.protocol(), site.hostname(), site.path())
 
     botdate = u"""
@@ -123,7 +142,7 @@ def get_stats():
     return output
 
 def put_stats():
-    page = wikipedia.Page(wikipedia.getSite(), stat_wiki_save_path)
+    page = get_wiki_save_page(stat_page = True)
     page.put(get_stats(), comment = wikipedia.translate(wikipedia.getSite(), stat_msg)[0])
 
 def output_files_gen():
@@ -161,7 +180,7 @@ def read_output_file(filename):
     return data
 
 def run(send_stats = False):
-    page = wikipedia.Page(wikipedia.getSite(), wiki_save_path)
+    page = wikipedia.Page(wikipedia.getSite(), get_wiki_save_page())
 
     try:
         wikitext = page.get()
