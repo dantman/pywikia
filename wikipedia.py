@@ -4464,7 +4464,7 @@ Maybe the server is down. Retrying in %i minutes..."""
         
         """
         if default:
-            return self.family.redirect.get(self.lang, "REDIRECT")
+            return self.family.redirect.get(self.lang, [u"REDIRECT"])[0]
         else:
             return self.family.redirect.get(self.lang, None)
 

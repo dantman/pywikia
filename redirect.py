@@ -285,7 +285,7 @@ class RedirectRobot:
                               % (secondRedir.aslink(), secondTargetPage.aslink()))
                         continue
                     oldText = redir.get(get_redirect=True)
-                    text = mysite.redirectRegex().sub('#REDIRECT [[%s]]' % secondTargetPage.title(), oldText)
+                    text = mysite.redirectRegex().sub('#%s [[%s]]' % ( mysite.redirect( True ), secondTargetPage.title() ), oldText)
                     wikipedia.showDiff(oldText, text)
                     if self.prompt(u'Do you want to accept the changes?'):
                         try:
