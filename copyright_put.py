@@ -61,7 +61,7 @@ def get_wiki_save_page(stat_page = False):
         t = time.localtime()
         day = ''
         if append_day_to_wiki_save_path:
-            day = str(t[2]) + '_'
+            day = '_' + str(t[2])
 
         save_path += day + '_' + date.monthName(site.language(), t[1]) + '_' + str(t[0])
 
@@ -71,17 +71,17 @@ def set_template(name = None):
 
     site = wikipedia.getSite()
 
-    template_cat = wikipedia.translate(site, template_cat)
+    tcat = wikipedia.translate(site, template_cat)
 
     url = "%s://%s%s" % (site.protocol(), site.hostname(), site.path())
 
     botdate = u"""
 <div style="text-align:right">{{{1}}}</div><noinclude>%s\n[[%s:%s]]</noinclude>
-""" % (template_cat[0], site.namespace(14), template_cat[1])
+""" % (tcat[0], site.namespace(14), tcat[1])
 
     botbox = """
 <div class=plainlinks style="text-align:right">[%s?title={{{1}}}&diff={{{2}}}&oldid={{{3}}} diff] - [%s?title={{{1}}}&action=history cron] - [%s?title=Special:Log&page={{{1}}} log]</div><noinclude>%s\n[[%s:%s]]</noinclude>
-""" % (url, url, url, template_cat[0], site.namespace(14), template_cat[1])
+""" % (url, url, url, tcat[0], site.namespace(14), tcat[1])
 
     if name == 'botdate':
         p = wikipedia.Page(site, 'Template:botdate')
@@ -180,7 +180,7 @@ def read_output_file(filename):
     return data
 
 def run(send_stats = False):
-    page = wikipedia.Page(wikipedia.getSite(), get_wiki_save_page())
+    page = get_wiki_save_page()
 
     try:
         wikitext = page.get()
