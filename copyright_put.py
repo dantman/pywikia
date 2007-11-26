@@ -18,7 +18,7 @@ from copyright import put, join_family_data, appdir, reports_cat
 append_date_to_wiki_save_path = True
 
 #
-# Append day of mouth to wiki save path (e.g. User:BotName/Report_25_December_2007)
+# Append day of month to wiki save path (e.g. User:BotName/Report_25_December_2007)
 append_day_to_wiki_save_path = False
 
 #
