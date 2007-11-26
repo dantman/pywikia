@@ -79,7 +79,7 @@ msg_add={
     'ar':u'إضافة [[تصنيف:%s]]',
     'da':u'Robot: Tilføjer [[Kategori:%s]]',
     'de':u'Bot: Ergänze [[Kategorie:%s]]',
-    'en':u'Adding [[Category:%s]]',
+    'en':u'Robot: Adding [[Category:%s]]',
     'es':u'Bot: Añadida [[Categoría:%s]]',
     'id':u'Bot: Menambahkan [[Kategori:%s]]',
     'fi':u'Botti lisäsi luokkaan [[Luokka:%s]]',
