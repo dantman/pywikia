@@ -64,9 +64,6 @@ class BasicBot:
         except wikipedia.IsRedirectPage:
             wikipedia.output(u"Page %s is a redirect; skipping." % page.aslink())
             return
-        except wikipedia.LockedPage:
-            wikipedia.output(u"Page %s is locked; skipping." % page.aslink())
-            return
 
         ################################################################
         # NOTE: Here you can modify the text in whatever way you want. #
@@ -89,6 +86,8 @@ class BasicBot:
                     try:
                         # Save the page
                         page.put(text)
+                    except wikipedia.LockedPage:
+                        wikipedia.output(u"Page %s is locked; skipping." % page.aslink())
                     except wikipedia.EditConflict:
                         wikipedia.output(u'Skipping %s because of edit conflict' % (page.title()))
                     except wikipedia.SpamfilterError, error:

@@ -20,9 +20,6 @@ Exceptions:
     IsRedirectPage:     Page is a redirect page
     IsNotRedirectPage:  Page is not a redirect page
     LockedPage:         Page is locked
-    LockedNoPage:       Page does not exist, and creating it is not
-                        possible because of a lock (subclass of NoPage and
-                        LockedPage)
     SectionError:       The section specified in the Page title does not exist
     PageNotSaved:       Saving the page has failed
       EditConflict:     PageNotSaved due to edit conflict while uploading
@@ -166,9 +163,6 @@ class IsNotRedirectPage(Error):
 
 class LockedPage(Error):
     """Page is locked"""
-
-class LockedNoPage(NoPage, LockedPage):
-    """Page does not exist, and creating it is not possible because of a lock."""
 
 class SectionError(Error):
     """The section specified by # does not exist"""
@@ -647,6 +641,8 @@ not supported by PyWikipediaBot!"""
         if throttle:
             get_throttle()
         textareaFound = False
+        readonly = False
+        checkBlocks = True
         retry_idle_time = 1
         while not textareaFound:
             text = self.site().getUrl(path, sysop = sysop)
@@ -664,40 +660,56 @@ not supported by PyWikipediaBot!"""
             else:
                 self.site().messages=False
             # Extract the actual text from the textarea
-            try:
-                i1 = re.search('<textarea[^>]*>', text).end()
-                i2 = re.search('</textarea>', text).start()
+            m1 = re.search('<textarea([^>]*)>', text)
+            m2 = re.search('</textarea>', text)
+            if m1 and m2:
+                i1 = m1.end()
+                i2 = m2.start()
                 textareaFound = True
-            except AttributeError:
-                # find out if the username or IP has been blocked
-                if text.find(self.site().mediawiki_message('blockedtitle')) != -1:
-                    raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
-                # If there is no text area and the heading is 'View Source',
-                # it is a non-existent page with a title protected via
-                # cascading protection.
-                # See http://en.wikipedia.org/wiki/Wikipedia:Protected_titles
-                # and http://de.wikipedia.org/wiki/Wikipedia:Gesperrte_Lemmata
-                elif text.find(self.site().mediawiki_message('viewsource')) != -1:
-                    raise LockedNoPage(u'%s does not exist, and it is blocked via cascade protection.' % self.aslink())
-                # search for 'Login required to edit' message
-                elif text.find(self.site().mediawiki_message('whitelistedittitle')) != -1:
-                    raise LockedNoPage(u'Page editing is forbidden for anonymous users.')
-                # on wikipedia:en, anonymous users can't create new articles.
-                # older MediaWiki versions don't have the 'nocreatetitle' message.
+                if m1.group(1).find( "readonly" ) >= 0:
+                    readonly = True
+            else:
+                # search for messages with no "view source" (aren't used in new versions)
+                if text.find(self.site().mediawiki_message('whitelistedittitle')) != -1:
+                    raise NoPage(u'Page editing is forbidden for anonymous users.')
                 elif self.site().has_mediawiki_message('nocreatetitle') and text.find(self.site().mediawiki_message('nocreatetitle')) != -1:
-                    raise LockedNoPage(u'%s does not exist, and page creation is forbidden for anonymous users.' % self.aslink())
+                    raise NoPage(self.site(), self.aslink(forceInterwiki = True))
+                # Bad title
                 elif text.find('var wgPageName = "Special:Badtitle";') != -1:
                     raise BadTitle('BadTitle: %s' % self)
+                # find out if the username or IP has been blocked
+                # check this only once in this method
+                elif checkBlocks == True:
+                    checkBlocks = False;
+                    if self.site().isBlocked():
+                        raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
+                # If there is no text area and the heading is 'View Source'
+                # but user is not blocked, the page does not exist, and is
+                # locked
+                elif text.find(self.site().mediawiki_message('viewsource')) != -1:
+                    raise NoPage(self.site(), self.aslink(forceInterwiki = True))
                 else:
-                    output( unicode(text) )
-                    # We assume that the server is down. Wait some time, then try again.
-                    output( u"WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site().hostname(), path, retry_idle_time) )
+                    if data.find( "<title>Wikimedia Error</title>") > -1:
+                        output( u"Wikimedia has technical problems; will retry in %i minutes." % retry_idle_time)
+                    else:
+                        output( unicode(text) )
+                        # We assume that the server is down. Wait some time, then try again.
+                        output( u"WARNING: No text area found on %s%s. Maybe the server is down. Retrying in %i minutes..." % (self.site().hostname(), path, retry_idle_time) )
                     time.sleep(retry_idle_time * 60)
                     # Next time wait longer, but not longer than half an hour
                     retry_idle_time *= 2
                     if retry_idle_time > 30:
                         retry_idle_time = 30
         # We now know that there is a textarea.
+        # If read-only, check blocks.
+        if readonly and checkBlocks and self.site().isBlocked():
+            raise UserBlocked(self.site(), self.aslink(forceInterwiki = True))
+        # Check locks
+        m = re.search('var wgRestrictionEdit = \\["(\w+)"\\]', text)
+        if m:
+            if verbose:
+                output(u"DBG> page is locked for group %s" % m.group(1))
+            editRestriction = m.group(1);
         # Look for the edit token
         tokenloc = Rwatch.search(text)
         if tokenloc:
@@ -732,14 +744,6 @@ not supported by PyWikipediaBot!"""
         if matchWatching:
             isWatched = True
         # Now process the contents of the textarea
-        if self._editTime == "0":
-            if verbose:
-                output(u"DBG> page may be locked?!")
-            editRestriction = 'sysop'
-        # This is a hack to find if the page is semi-protected.
-        # TODO: Use API to check if the page is semi-protected.
-        if text.find('var wgRestrictionEdit = ["autoconfirmed"]') != -1:
-            editRestriction = 'autoconfirmed'
         m = self.site().redirectRegex().match(text[i1:i2])
         if m:
             # page text matches the redirect pattern
@@ -1137,10 +1141,13 @@ not supported by PyWikipediaBot!"""
             self._editrestriction = False
         # If no comment is given for the change, use the default
         comment = comment or action
-        if self.editRestriction:
+        # Check if using sysop account
+        sysop = False
+        if self.editRestriction == 'sysop':
             try:
                 self.site().forceLogin(sysop = True)
                 output(u'Page is locked, using sysop account.')
+                sysop = True
             except NoUsername:
                 raise LockedPage()
         else:
@@ -1162,7 +1169,6 @@ not supported by PyWikipediaBot!"""
                 import watchlist
                 watchArticle = watchlist.isWatched(self.title(), site = self.site())
         newPage = not self.exists()
-        sysop = not not self.editRestriction
         # If we are a sysop, we need to re-obtain the tokens.
         if sysop:
             if hasattr(self, '_contents'): del self._contents
@@ -1309,12 +1315,6 @@ not supported by PyWikipediaBot!"""
                     # detected when getting the page, but there are some
                     # reasons why this didn't work, e.g. the page might be
                     # locked via a cascade lock.
-                    # We won't raise a LockedPage exception here because
-                    # these exceptions are usually already raised when
-                    # getting pages, not when putting them, and it would be
-                    # too much work at this moment to rewrite all scripts.
-                    # Maybe we can later create two different lock
-                    # exceptions, one for getting and one for putting.
                     try:
                         # Page is restricted - try using the sysop account, unless we're using one already
                         if not sysop:
@@ -1324,7 +1324,7 @@ not supported by PyWikipediaBot!"""
                                                 minorEdit, newPage, token=None,
                                                 gettoken=True, sysop=True)
                     except NoUsername:
-                        raise PageNotSaved(u"The page %s is locked. Possible reasons: There is a cascade lock, or you're affected by this MediaWiki bug: http://bugzilla.wikimedia.org/show_bug.cgi?id=9226" % self.aslink())
+                        raise LockedPage()
                 elif not newTokenRetrieved and "<textarea" in data:
                     # We might have been using an outdated token
                     output(u"Changing page has failed. Retrying.")
@@ -3640,6 +3640,11 @@ class Site(object):
             if loginMan.login(retry = True):
                 self.loginStatusKnown = True
                 self._loggedInAs = loginMan.username
+
+    def isBlocked(self, sysop = False):
+        """Check if the user is blocked."""
+        text = self.getUrl( "%saction=query&meta=userinfo&uiprop=blockinfo" % self.api_address(), sysop = sysop );
+        return text.find( "blockedby=" ) > -1;
 
     def cookies(self, sysop = False):
         """Return a string containing the user's current cookies."""
