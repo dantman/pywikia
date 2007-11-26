@@ -77,6 +77,7 @@ template = {
     'fr': u'Lien AdQ',
     'he': u'Link FA',
     'hr': u'Link FA',
+    'io': u'Link FA',
     'it': u'Link AdQ',
     'ka': u'Link FA',
 	'ko': u'Link FA',
