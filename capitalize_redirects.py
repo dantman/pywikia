@@ -43,7 +43,7 @@ msg = {
      'en': u'Robot: Create redirect to [[%s]]',
      'fr': u'robot: créez redirect à [[%s]]',
      'he': u'בוט: יוצר הפניה לדף [[%s]]',
-     'pt': u'Bot: Criando redirect para [[%s]]',
+     'pt': u'Bot: Criando redirecionamento para [[%s]]',
     }
 
 class CapitalizeBot:
@@ -58,8 +58,9 @@ class CapitalizeBot:
             # Highlight the title in purple.
             wikipedia.output(u"\n>>> \03{lightpurple}%s\03{default} <<<"
                              % page_t)
-            if not page.exists():
-                wikipedia.output(u'%s doesn\'t exist' % page_t.title())
+            page_cap = wikipedia.Page(wikipedia.getSite(), page_t.title().capitalize())
+            if not page_cap.exists():
+                wikipedia.output(u'%s doesn\'t exist' % page_cap.title())
                 if not self.acceptall:
                     choice = wikipedia.inputChoice(
                             u'Do you want to create a redirect?',
@@ -71,7 +72,7 @@ class CapitalizeBot:
                         wikipedia.setAction(
                             wikipedia.translate(wikipedia.getSite(), msg)
                             % page_t)
-                        np.put(u"#REDIRECT [[%s]]" % page_t)
+                        page_cap.put(u"#REDIRECT [[%s]]" % page_t)
                         print
                     except:
                         wikipedia.output(
