@@ -125,6 +125,7 @@ def main():
     summary = None
     addText = None
     regexSkip = None
+    generator = None
     always = False
     exceptUrl = False
     genFactory = pagegenerators.GeneratorFactory()
