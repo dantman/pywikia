@@ -82,12 +82,14 @@ n_txt = {
         'commons':'\n{{subst:nld}}',
 	'en'     :'\n{{subst:nld}}',
 	'it'     :'\n{{subst:unverdata}}',
+	'hu'     :u'\n{{nincslicenc|~~~~~}}',
 	}
 
 txt_find =  {
 	'commons':['{{no license', '{{nld'],
         'en':['{{nld', '{{no license'],
 	'it':['{{unverdata', '{{unverified'],
+	'hu':[u'{{nincsforrás',u'{{nincslicenc'],
                 }
 
 # Summary for when the will add the no source
@@ -95,6 +97,7 @@ comm = {
 		'commons':'Bot: Marking newly uploaded untagged file',
 		'en'     :'Bot: Marking newly uploaded untagged file',
 		'it'     :"Bot: Aggiungo unverified",
+		 'hu'    :'Robot: Frissen feltöltött licencsablon nélküli fájl megjelölése',
 		}
 
 # Summary that the bot use when it notify the problem with the image's license
@@ -102,6 +105,7 @@ comm2 = {
 		'commons':"Bot: Requesting source information." ,
 		'en'     :"Bot: Requesting source information." ,
 		'it'     :"Bot: Notifico l'unverified",
+		'hu'     :'Robot: Forrásinformáció kérése',
 		}
 
 # When the Bot find that the usertalk is empty is not pretty to put only the no source without the welcome, isn't it?
@@ -109,6 +113,7 @@ empty = {
 		'commons':'{{subst:welcome}}\n~~~~\n',
 		'en'     :'{{welcome}}\n~~~~\n',
 		'it'     :'{{benvenuto}}\n~~~~\n',
+		'hu'     :u'{{subst:Üdvözlet|~~~~}}\n',
 		}
 
 # General summary
@@ -116,6 +121,7 @@ unver = {
 		'commons':'Bot: no source',
 		'en'     :'Bot: no source',
 		'it'     :'Bot: Unverified!',
+		'hu'     :'Robot: nincs forrás',
 		}
 
 # if the file has an unknown extension it will be tagged with this template.
@@ -124,6 +130,7 @@ delete_immediately = {
 					'commons':"{{db-meta|The file has .%s as extension.}}",
 					'en'     :"{{db-meta|The file has .%s as extension.}}",
 					'it'     :'{{cancella subito|motivo=Il file ha come estensione ".%s"}}',
+					'hu'     :u'{{azonnali|A fájlnak .%s a kiterjesztése}}',
 					}
 
 # The header of the Unknown extension's message.
@@ -131,6 +138,7 @@ delete_immediately_head = {
 						'commons':"\n== Unknown extension! ==\n",
 						'en'     :"\n== Unknown extension! ==\n",
 						'it'     :'\n== File non specificato ==\n',
+						'hu'     :u'\n== Ismeretlen kiterjesztésű fájl ==\n',
 						}
 
 # Text that will be add if the bot find a unknown extension.
@@ -138,12 +146,14 @@ delete_immediately_notification = {
 						'commons':'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
 						'en'     :'The [[:Image:%s]] file has a wrong extension, please check. ~~~~',
 						'it'     :'{{subst:Utente:Filbot/Ext|%s}}',
+						'hu'     :u'A [[:Kép:%s]] fájlnak rossz a kiterjesztése, kérlek ellenőrízd. ~~~~',
 						}
 # Summary of the delate immediately. (f.e: Adding {{db-meta|The file has .%s as extension.}})
 del_comm = {
 			'commons':'Bot: Adding %s',
 			'en'     :'Bot: Adding %s',
 			'it'     :'Bot: Aggiungo %s',
+			'hu'     :u'Robot:"%s" hozzáadása',
 			}
 
 # This is the most important header, because it will be used a lot. That's the header that the bot
@@ -152,12 +162,14 @@ nothing_head = {
 				'commons':"",# Nothing, the template has already the header inside.
 				'en'     :"\n== Image without license ==\n",
 				'it'     :"\n== Immagine senza licenza ==\n",
+				'hu'     :u"\n== Licenc nélküli kép ==\n",
 				}
 # That's the text that the bot will add if it doesn't find the license.
 nothing_notification = {
 				'commons':"{{subst:User:Filnik/untagged|Image:%s}}Image:%s}}\n\n''This message was '''added automatically by [[User:Filbot|Filbot]]''', if you need some help about it, ask [[User:Filnik|its master]] or go to the [[Commons:Help desk]]''. --~~~~",
 				'en'     :"{{subst:image source|Image:%s}} --~~~~",
 				'it'     :"{{subst:Utente:Filbot/Senza licenza|%s}} --~~~~",
+				'hu'     :u"{{subst:adjforrást|Kép:%s}} \n Ezt az üzenetet ~~~ automatikusan helyezte el a vitalapodon, kérdéseddel fordulj a gazdájához, vagy a [[WP:KF|Kocsmafalhoz]]. --~~~~",
 				}
 # This is a list of what bots used this script in your project.
 # NOTE: YOUR Botnick is automatically added. It's not required to add it twice.
@@ -172,12 +184,14 @@ second_message_without_license = {
 				'commons':None,
                                 'en': None,
 				'it':'{{subst:Utente:Filbot/Senza licenza2|%s}} --~~~~',
+				'hu':u'\nSzia! Úgy tűnik a [[:Kép:%s]] képpel is hasonló a probléma, mint az előbbivel. Kérlek olvasd el a [[WP:KÉPLIC|feltölthető képek]]ről szóló oldalunk, és segítségért fordulj a [[WP:KF-JO|Jogi kocsmafalhoz]]. Köszönöm --~~~~',
 				}
 # You can add some settings to wikipedia. In this way, you can change them without touch the code.
 # That's useful if you are running the bot on Toolserver.
 page_with_settings = {
 					'commons':None,
                                         'en':None,
+                                        'hu':None,
 					'it':'Utente:Nikbot/Settings#Settings',
 					}
 # The bot can report some images (like the images that have the same name of an image on commons)
@@ -186,6 +200,7 @@ report_page = {
 				'commons':'User:Filbot/Report',
                                 'en'     :'User:Filnik/Report',
 				'it'     :'Utente:Nikbot/Report',
+				'hu'     :'User:Bdamokos/Report',
 				}
 # Adding the date after the signature. 
 timeselected = u' ~~~~~'
@@ -194,12 +209,14 @@ report_text = {
 			'commons':"\n*[[:Image:%s]] " + timeselected,
 			'en':"\n*[[:Image:%s]] " + timeselected,
 			'it':"\n*[[:Immagine:%s]] " + timeselected,
+			'hu':u"\n*[[:Kép:%s]] " + timeselected,
 			}
 # The summary of the report
 comm10 = {
 		'commons':'Bot: Updating the log',
 		'en':'Bot: Updating the log',
 		'it':'Bot: Aggiorno il log',
+		'hu': 'Robot: A napló frissítése',
 		}
 
 # If a template isn't a license but it's included on a lot of images, that can be skipped to
@@ -208,10 +225,11 @@ HiddenTemplate = {
 		'commons':['{{information'],
 		'en':['{{information'],
 		'it':['{{edp', '{{informazioni file', '{{information'],
+		'hu':[u'{{információ','{{enwiki', '{{azonnali'],
 		}
 
 # Add your project (in alphabetical order) if you want that the bot start
-project_inserted = ['commons', 'en', 'it']
+project_inserted = ['commons', 'en','hu', 'it']
 
 # Ok, that's all. What is below, is the rest of code, now the code is fixed and it will run correctly in your project.
 #########################################################################################################################
@@ -464,37 +482,40 @@ class main:
 	
 	def takesettings(self, settings):
 		pos = 0
-		x = wikipedia.Page(self.site, settings)
-		lista = list()
-		try:
-			testo = x.get()
-			rxp = "<------- ------->\n\*[Nn]ame=['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
-			r = re.compile(rxp, re.UNICODE|re.M)
-			number = 1
-			while 1:
-				m = r.search(testo, pos)
-				if m == None:
-					if lista == list():
-						wikipedia.output(u"You've set wrongly your settings, please take a look to the relative page. (run without them)")
-						lista = None
-					else:
-						break
-				else:
-					pos = m.end()
-					name = str(m.group(1))
-					find_tipe = str(m.group(2))
-					find = str(m.group(3))
-					imagechanges = str(m.group(4))
-					summary = str(m.group(5))
-					head = str(m.group(6))
-					text = str(m.group(7))
-					mexcatched = str(m.group(8))
-					tupla = [number, name, find_tipe, find, imagechanges, summary, head, text, mexcatched]
-					lista += [tupla]
-					number += 1
-		except wikipedia.NoPage:
-			lista = None
-		return lista
+		if settings != None:
+                        x = wikipedia.Page(self.site, settings)
+                        lista = list()
+                        try:
+                                testo = x.get()
+                                rxp = "<------- ------->\n\*[Nn]ame=['\"](.*?)['\"]\n\*([Ff]ind|[Ff]indonly)=(.*?)\n\*[Ii]magechanges=(.*?)\n\*[Ss]ummary=['\"](.*?)['\"]\n\*[Hh]ead=['\"](.*?)['\"]\n\*[Tt]ext ?= ?['\"](.*?)['\"]\n\*[Mm]ex ?= ?['\"]?(.*?)['\"]?$"
+                                r = re.compile(rxp, re.UNICODE|re.M)
+                                number = 1
+                                while 1:
+                                        m = r.search(testo, pos)
+                                        if m == None:
+                                                if lista == list():
+                                                        wikipedia.output(u"You've set wrongly your settings, please take a look to the relative page. (run without them)")
+                                                        lista = None
+                                                else:
+                                                        break
+                                        else:
+                                                pos = m.end()
+                                                name = str(m.group(1))
+                                                find_tipe = str(m.group(2))
+                                                find = str(m.group(3))
+                                                imagechanges = str(m.group(4))
+                                                summary = str(m.group(5))
+                                                head = str(m.group(6))
+                                                text = str(m.group(7))
+                                                mexcatched = str(m.group(8))
+                                                tupla = [number, name, find_tipe, find, imagechanges, summary, head, text, mexcatched]
+                                                lista += [tupla]
+                                                number += 1
+                        except wikipedia.NoPage:
+                                lista = None
+                        return lista
+                else:
+                        return []
 	
 	def load(self, raw):
 		list_loaded = list()
