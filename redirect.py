@@ -293,6 +293,21 @@ class RedirectRobot:
                             redir.put(text)
                         except wikipedia.LockedPage:
                             wikipedia.output(u'%s is locked.' % redir.title())
+                        except wikipedia.SpamfilterError, error:
+                            wikipedia.output(
+u"Saving page [[%s]] prevented by spam filter: %s"
+                                   % (redir.title(), error.url))
+                        except wikipedia.PageNotSaved, error:
+                            wikipedia.output(u"Saving page [[%s]] failed: %s"
+                                   % (redir.title(), error))
+                        except wikipedia.NoUsername:
+                            wikipedia.output(
+u"Page [[%s]] not saved; sysop privileges required."
+                                   % redir.title())
+                        except wikipedia.Error, error:
+                            wikipedia.output(
+u"Unexpected error occurred trying to save [[%s]]: %s"
+                                   % (redir.title(), error))
 
     def run(self):
         if self.action == 'double':
