@@ -344,8 +344,9 @@ def main():
         bot = RedirectRobot(action, gen, always)
         bot.run()
 
-try:
-    main()
-finally:
-    wikipedia.stopme()
+if __name__ == '__main__':
+    try:
+        main()
+    finally:
+        wikipedia.stopme()
 
