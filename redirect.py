@@ -262,6 +262,9 @@ class RedirectRobot:
                         u'Skipping %s; redirect target (%s) is on a different site.'
                           % (redir.aslink(), secondRedir.aslink()))
                     continue
+                if not page.canBeEdited():
+                    wikipedia.output(u'You can\'t edit page %s' % page.aslink())
+                    continue
                 try:
                     secondTargetPage = secondRedir.getRedirectTarget()
                     anchorMatch = re.search(u'#(?P<section>.*)$', secondRedir.title())
