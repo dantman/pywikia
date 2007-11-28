@@ -2517,6 +2517,7 @@ class Family:
         'bg': [u'виж'],
         'bs': [u'preusmjeri'],
         'cy': [u'ail-cyfeirio'],
+        'el': [u'ΑΝΑΚΑΤΕΥΘΥΝΣΗ'],
         'et': [u'suuna'],
         'eu': [u'bidali'],
         'fa': [u'تغییرمسیر'],
