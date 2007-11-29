@@ -101,6 +101,7 @@ class Family(family.Family):
             'fi': u'Keskustelu Wikisitaatitista',
             'fr': u'Discussion Wikiquote',
             'ga': u'Plé Vicísliocht',
+            'gl': u'Conversa Wikiquote',
             'he': u'שיחת ויקיציטוט',
             'hi': u'Wikiquote वार्ता',
             'hr': u'Razgovor Wikicitat',
