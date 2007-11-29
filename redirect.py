@@ -53,6 +53,7 @@ msg_double={
     'hr': u'Bot: Popravak dvostrukih preusmjeravanja',
     'ia': u'Robot: reparation de duple redirection',
     'is': u'Vélmenni: Lagfæri tvöfalda tilvísun',
+    'ja': u'ロボットによる: 二重リダイレクト修正',
     'ka': u'რობოტი: ორმაგი გადამისამართების გასწორება',
     'ko': u'로봇: 이중 넘겨주기 수정',
     'kk': u'Бот: Шынжырлы айдатуды түзетті',
@@ -65,6 +66,8 @@ msg_double={
     'ru': u'Робот: исправление двойного перенаправления',
     'sr': u'Бот: Поправка дуплих преусмерења',
     'tr': u'Bot değişikliği: Yönlendirmeye olan yönlendirme',
+    'zh': u'機器人:修正雙重重定向',
+    'zh-yue': u'機械人：拉直連串跳轉 ',
 }
 
 # Reason for deleting broken redirects
@@ -74,6 +77,7 @@ reason_broken={
     'es': u'Robot: La página a la que redirige no existe',
     'fr': u'Robot : Cible du redirect inexistante',
     'he': u'בוט: יעד ההפניה אינו קיים',
+    'ja': u'ロボットによる:リダイレクトの目標は存在しませんでした',
     'ka': u'რობოტი: გადამისამართებული გვერდი არ არსებობს',
     'ko': u'로봇: 끊긴 넘겨주기',
     'kk': u'Бот: Айдату нысанасы жоқ болды',
@@ -85,6 +89,8 @@ reason_broken={
     'ru': u'Робот: перенаправление в никуда',
     'sr': u'Бот: Преусмерење не постоји',
     'tr': u'Bot değişikliği: Var olmayan sayfaya olan yönlendirme',
+    'zh': u'機器人:該重定向的目標不存在',
+    'zh-yue': u'機械人：跳轉目標唔存在',
 }
 
 class RedirectGenerator:
