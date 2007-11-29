@@ -45,6 +45,7 @@ def choosecats(pagetext):
     print ("?: Give the text of the page with GUI.")
     print ("??: Give the text of the page in console.") 
     print ("xx: if the first, remove all categories and add no new.")
+    print ("q: quit.")
     while flag == False:
         choice=wikipedia.input(u"?")
         if choice=="":
@@ -62,6 +63,9 @@ def choosecats(pagetext):
         elif choice=="xx" and chosen==[]:
             chosen = None
             flag=True
+        elif choice=="q":
+            print "quit..."
+            sys.exit()
         else:
             chosen.append(choice)
     return chosen
