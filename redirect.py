@@ -264,9 +264,6 @@ class RedirectRobot:
                     continue
                 try:
                     secondTargetPage = secondRedir.getRedirectTarget()
-                    anchorMatch = re.search(u'#(?P<section>.*)$', secondRedir.title())
-                    if anchorMatch and not u'#' in secondTargetPage.title():
-                        secondTarget = wikipedia.Page(mysite, '%s#%s' % (secondTargetPage.sectionFreeTitle(), anchorMatch.group('section')))
                 except wikipedia.SectionError:
                     wikipedia.output(
                         u'Warning: Redirect target section %s doesn\'t exist.'
@@ -285,8 +282,16 @@ class RedirectRobot:
                             u"Page %s is a redirect to a different site (%s)"
                               % (secondRedir.aslink(), secondTargetPage.aslink()))
                         continue
+                    # watch out for redirect loops
+                    if secondTargetPage.sectionFreeTitle() == secondRedir.sectionFreeTitle() \
+                            or secondTargetPage.sectionFreeTitle() == redir.sectionFreeTitle():
+                        continue
                     oldText = redir.get(get_redirect=True)
-                    text = mysite.redirectRegex().sub('#%s [[%s]]' % ( mysite.redirect( True ), secondTargetPage.title() ), oldText)
+                    text = mysite.redirectRegex().sub(
+                            '#%s [[%s]]' %
+                                (mysite.redirect( True ),
+                                 secondTargetPage.title()),
+                            oldText)
                     wikipedia.showDiff(oldText, text)
                     if self.prompt(u'Do you want to accept the changes?'):
                         try:

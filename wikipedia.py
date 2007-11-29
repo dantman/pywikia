@@ -747,7 +747,7 @@ not supported by PyWikipediaBot!"""
         m = self.site().redirectRegex().match(text[i1:i2])
         if m:
             # page text matches the redirect pattern
-            if self.section():
+            if self.section() and not "#" in m.group(1):
                 redirtarget = "%s#%s" % (m.group(1), self.section())
             else:
                 redirtarget = m.group(1)
