@@ -90,6 +90,8 @@ class Replacer(object):
 			# Network error, not critical
 			output(u'Warning! Unable to read replacement log.', False)
 			output('%s: %s' % (e.__class__.__name__, str(e)), False)
+			self.site.conn.close()
+			self.site.conn.connect()
 			return time.sleep(self.config['timeout'])
 		
 		if '{{stop}}' in text.lower():
