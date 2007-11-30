@@ -4,8 +4,9 @@ __version__ = '$Id$'
 import wikipedia
 import simplejson
 import urllib
+import time
 
-def GetData( lang, params, verbose = False ):
+def GetData( lang, params, verbose = False, useAPI = False, retryCount = 5 ):
     """Get data from the query api, and convert it into a data object
     """
     site = wikipedia.getSite( lang )
@@ -15,7 +16,9 @@ def GetData( lang, params, verbose = False ):
             params[k] = unicode(v)
 
     params['format'] = 'json'
-    params['noprofile'] = ''
+
+    if not useAPI:
+        params['noprofile'] = ''
     
     for k,v in params.iteritems():
         if type(v) == type(u''):
@@ -30,29 +33,45 @@ def GetData( lang, params, verbose = False ):
         data = None
         titlecount = 0
     
-    path = u"/w/query.php?" + urllib.urlencode( params.items() )
+    if useAPI:
+        path = site.api_address() + urllib.urlencode( params.items() )
+    else:
+        path = site.query_address() + urllib.urlencode( params.items() )
     
     if verbose:
-        wikipedia.output( u"Requesting %d titles from %s:%s" % (titlecount, lang, path) )
+        if titlecount > 0:
+            wikipedia.output( u"Requesting %d titles from %s:%s" % (titlecount, lang, path) )
+        else:
+            wikipedia.output( u"Request %s:%s" % (lang, path) )
     
-    url = site.family.querypath(lang)
-
-    retryCount = 1
-    
+    lastError = None
+    retry_idle_time = 5
     while retryCount >= 0:
         try:
+            jsontext = "Nothing received"
             jsontext = site.getUrl( path, retry=True, data=data )
 
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
-            decodedObj = simplejson.loads( jsontext )
+            return simplejson.loads( jsontext )
             break
             
         except ValueError, error:
             retryCount -= 1
             wikipedia.output( u"Error downloading data: %s" % error )
+            wikipedia.output( u"Request %s:%s" % (lang, path) )
+            wikipedia.debugDump('ApiGetDataParse', site, str(error) + '\n' + path, jsontext)
+            lastError = error
+            if retryCount >= 0:
+                wikipedia.output( u"Retrying in %i seconds..." % retry_idle_time )
+                time.sleep(retry_idle_time)
+                # Next time wait longer, but not longer than half an hour
+                retry_idle_time *= 2
+                if retry_idle_time > 300:
+                    retry_idle_time = 300
+
     
-    return decodedObj
+    raise lastError
 
 def GetInterwikies( lang, titles, extraParams = None ):
     """ Usage example: data = GetInterwikies('ru','user:yurik')

@@ -74,9 +74,9 @@ class CaseChecker( object ):
 
     langs = {
         'ru': {
-           'alphabet'  : u'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя',
-           'localsuspects': u'АаВЕеКкМНОоРрСсТуХх',
-           'latinsuspects': u'AaBEeKkMHOoPpCcTyXx',
+           'alphabet'  : u'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯяІі',
+           'localsuspects': u'АаВЕеКкМНОоРрСсТуХхІі',
+           'latinsuspects': u'AaBEeKkMHOoPpCcTyXxIi',
            },
         'uk': {
            'alphabet'  : u'АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЮюЯяЬь',
@@ -111,7 +111,6 @@ class CaseChecker( object ):
     title = None
     replace = False
     stopAfter = 0
-    verbose = False
     wikilog = None
     wikilogfile = 'wikilog.txt'
     autonomous = False
@@ -136,9 +135,7 @@ class CaseChecker( object ):
                 self.replace = True
             elif arg.startswith('-limit:'):
                 self.stopAfter = int(arg[7:])
-            elif arg == '-verbose':
-                self.verbose = True
-            elif arg == '-autonomous':
+            elif arg == '-autonomous' or arg == '-a':
                 self.autonomous = True
             elif arg.startswith('-ns:'):
                 self.namespaces.append( int(arg[4:]) )
@@ -155,13 +152,14 @@ class CaseChecker( object ):
             else:
                 self.namespaces = [0]
 
-        self.params = {'what'         : 'allpages',
-                      'aplimit'       : self.aplimit, 
-                      'apfilterredir' : 'nonredirects',
-                      'noprofile'     : '' }
-
+        self.params = { 'action'        : 'query',
+                        'generator'     : 'allpages',
+                        'gaplimit'      : self.aplimit, 
+                        'gapfilterredir': 'nonredirects'}
+                      
         if self.links:
-            self.params['what'] += '|links|categories';
+            self.params['prop'] = 'links|categories'
+
 
         self.site = wikipedia.getSite()
 
@@ -200,46 +198,53 @@ class CaseChecker( object ):
             count = 0
             lastLetter = ''
             for namespace in self.namespaces:
-                self.params['apnamespace'] = namespace
+                self.params['gapnamespace'] = namespace
                 title = None
 
                 while True:
                     # Get data
-                    self.params['apfrom'] = self.apfrom
-                    data = query.GetData(self.site.lang, self.params, self.verbose)
+                    self.params['gapfrom'] = self.apfrom
+                    data = query.GetData(self.site.lang, self.params, wikipedia.verbose, True)
                     try:
-                        self.apfrom = data['query']['allpages']['next']
+                        self.apfrom = data['query-continue']['allpages']['gapfrom']
                     except:
                         self.apfrom = None
 
                     # Process received data
-                    if 'pages' in data:
+                    if 'query' in data and 'pages' in data['query']:
                         firstItem = True
-                        for pageID, page in data['pages'].iteritems():
+                        for pageID, page in data['query']['pages'].iteritems():
                             printed = False
                             title = page['title']
                             if firstItem:
                                 if lastLetter != title[0]:
-                                    print 'Processing ' + title
+                                    try:
+                                        print 'Processing ' + title
+                                    except:
+                                        print 'Processing unprintable title'
                                     lastLetter = title[0]
                                 firstItem = False
                             if self.titles:
                                 err = self.ProcessTitle(title)
                                 if err:
-                                    if page['ns'] == 14:
-                                        self.WikiLog(u"* Move category content: " + err[0])
-                                    else:
-                                        changed = False
-                                        if self.replace:
-                                            newTitle = self.PickTarget(False, title, title, err[1])
-                                            if newTitle:
-                                                src = wikipedia.Page(self.site, title)
-                                                src.move( newTitle, wikipedia.translate(self.site, self.msgRename))
-                                                changed = True
+                                    changed = False
+                                    if self.replace:
+                                        newTitle = self.PickTarget(False, title, title, err[1])
+                                        if newTitle:
+                                            editSummary = wikipedia.translate(self.site, self.msgRename)
+                                            src = wikipedia.Page(self.site, title)
+                                            if page['ns'] == 14:
+                                                import category
+                                                dst = wikipedia.Page(self.site, newTitle)
+                                                bot = category.CategoryMoveRobot(src.titleWithoutNamespace(), dst.titleWithoutNamespace(), self.autonomous, editSummary, True)
+                                                bot.run()
+                                            else:
+                                                src.move(newTitle, editSummary)
+                                            changed = True
 
-                                        if not changed:
-                                            self.WikiLog(u"* " + err[0])
-                                            printed = True
+                                    if not changed:
+                                        self.WikiLog(u"* " + err[0])
+                                        printed = True
 
                             if self.links:
                                 allLinks = None
@@ -257,7 +262,7 @@ class CaseChecker( object ):
                                     msg = []
 
                                     for l in allLinks:
-                                        ltxt = l['*']
+                                        ltxt = l['title']
                                         err = self.ProcessTitle(ltxt)
                                         if err:
                                             newTitle = None
