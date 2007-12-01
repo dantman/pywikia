@@ -196,14 +196,14 @@ class Family(family.Family):
 
         # attop is a list of languages that prefer to have the interwiki
         # links at the top of the page.
-        self.interwiki_attop = ['pl']
+        self.interwiki_attop = []
 
         # on_one_line is a list of languages that want the interwiki links
         # one-after-another on a single line
-        self.interwiki_on_one_line = ['pl']
+        self.interwiki_on_one_line = []
         
         # Similar for category
-        self.category_attop = ['pl']
+        self.category_attop = []
 
         # List of languages that want the category on_one_line.
         self.category_on_one_line = []
