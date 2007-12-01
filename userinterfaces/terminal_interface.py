@@ -282,4 +282,6 @@ class UI:
             return wikipedia.input(u'What is the solution of the CAPTCHA that is shown in your web browser?')
         except ImportError, e:
             return wikipedia.input(u'What is the solution of the CAPTCHA at %s ?' % url)
+        except WindowsError:
+            return wikipedia.input(u'What is the solution of the CAPTCHA at %s ?' % url)
 
