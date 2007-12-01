@@ -2134,9 +2134,8 @@ not supported by PyWikipediaBot!"""
             """
             Creates a pattern that matches the string case-insensitively.
             """
-            s = re.escape(s)
             return ur'(?:%s)' % u''.join([u'[%s%s]'
-                                            % (c.upper(), c.lower())
+                                            % (re.escape(c.upper()), re.escape(c.lower()))
                                           for c in s])
 
         def capitalizationPattern(s):
@@ -2145,11 +2144,10 @@ not supported by PyWikipediaBot!"""
             the first letter case-insensitive if capitalization is switched
             on on the site you're working on.
             """
-            s = re.escape(s)
             if self.site().nocapitalize:
-                return s
+                return re.escape(s)
             else:
-                return ur'(?:[%s%s]%s)' % (s[0].upper(), s[0].lower(), s[1:])
+                return ur'(?:[%s%s]%s)' % (re.escape(s[0].upper()), re.escape(s[0].lower()), re.escape(s[1:]))
 
         namespaces = set(('Image', 'Media') + site.namespace(6, all = True) + site.namespace(-2, all = True))
         # note that the colon is already included here
