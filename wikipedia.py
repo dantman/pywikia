@@ -2187,7 +2187,7 @@ not supported by PyWikipediaBot!"""
             fileReferenceR = re.compile(u'%s(?P<filename>(?:%s)?)' % (namespacePattern, imagePattern))
 
             def template_replacer(match):
-                return fileReferenceR.sub(filename_replacer, match.group('contents'))
+                return fileReferenceR.sub(filename_replacer, match.group(0))
             new_text = templateR.sub(template_replacer, new_text)
 
         if put:
