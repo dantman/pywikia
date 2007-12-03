@@ -437,7 +437,7 @@ def main():
             if len(arg) == 5:
                 generator = list(wikipedia.input(u'What page do you want to use?'))
             else:
-                generator = listr(arg[6:])
+                generator = list(arg[6:])
         elif arg.startswith('-excepturl'):
             exceptUrl = True
             if len(arg) == 10:
