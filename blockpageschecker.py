@@ -55,6 +55,7 @@ def main():
     always = False
     generator = False
     genFactory = pagegenerators.GeneratorFactory()
+    errorCount = 0
     # Loading the default options.
     for arg in wikipedia.handleArgs():
         if arg == '-always':
@@ -103,28 +104,40 @@ def main():
                 wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
                 wikipedia.showDiff(oldtext, text)
                 choice = ''
-                if not always:
-                    choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
-                if choice.lower() in ['a', 'all']:
-                    always = True
-                if choice.lower() in ['n', 'no']:
-                    break
-                if choice.lower() in ['y', 'yes'] or always:
-                    try:
-                        page.put(text, commentUsed)
-                    except wikipedia.EditConflict:
-                        wikipedia.output(u'Edit conflict! skip!')
-                        continue
-                    except wikipedia.SpamfilterError, e:
-                        wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
-                        continue
-                    except wikipedia.PageNotSaved, error:
-                        wikipedia.output(u'Error putting page: %s' % (error.args,))
-                        continue
-                    except wikipedia.LockedPage:
-                        wikipedia.output(u'The page is still protected. Skipping...')
-                        continue
-
+                while 1:
+                    if not always:
+                        choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
+                    if choice.lower() in ['a', 'all']:
+                        always = True
+                    if choice.lower() in ['n', 'no']:
+                        break
+                    if choice.lower() in ['y', 'yes'] or always:
+                        try:
+                            page.put(text, commentUsed)
+                        except wikipedia.EditConflict:
+                            wikipedia.output(u'Edit conflict! skip!')
+                            break
+                        except wikipedia.ServerError:
+                            errorCount += 1
+                            if errorCount < 5:
+                                wikipedia.output(u'Server Error! Wait..')
+                                time.sleep(3)
+                                continue
+                            else:
+                                raise wikipedia.ServerError(u'Fifth Server Error!')
+                        except wikipedia.SpamfilterError, e:
+                            wikipedia.output(u'Cannot change %s because of blacklist entry %s' % (page.title(), e.url))
+                            break
+                        except wikipedia.PageNotSaved, error:
+                            wikipedia.output(u'Error putting page: %s' % (error.args,))
+                            break
+                        except wikipedia.LockedPage:
+                            wikipedia.output(u'The page is still protected. Skipping...')
+                            break
+                        else:
+                            # Break only if the errors are one after the other...
+                            errorCount = 0
+                            break
 if __name__ == "__main__":
     try:
         main()
