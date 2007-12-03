@@ -251,6 +251,7 @@ def main():
             newtext = addText + '\n' + text
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         wikipedia.showDiff(text, newtext)
+        choice = ''
         while 1:
             if not always:
                 choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
