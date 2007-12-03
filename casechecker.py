@@ -72,30 +72,28 @@ class CaseChecker( object ):
         'ru': u'[[ВП:КЛ]]',
     }
 
-    langs = {
-        'ru': {
-           'alphabet'  : u'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯяІі',
-           'localsuspects': u'АаВЕеКкМНОоРрСсТуХхІі',
-           'latinsuspects': u'AaBEeKkMHOoPpCcTyXxIi',
-           },
-        'uk': {
-           'alphabet'  : u'АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЮюЯяЬь',
-           'localsuspects': u'АаВЕеІіКкМНОоРрСсТУуХх',
-           'latinsuspects': u'AaBEeIiKkMHOoPpCcTYyXx',
-           },
-        'bg': {
-           'alphabet'  : u'АаБбВвГгДдЕеЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЬьЮюЯя',
-           'localsuspects': u'АаВЕеКкМНОоРрСсТуХх',
-           'latinsuspects': u'AaBEeKkMHOoPpCcTyXx',
-           },
-        'be': {
-           'alphabet'  : u'АаБбВвГгҐґДдЖжЗзЕеЁёЖжЗзІіЙйКкЛлМмНнОоПпРрСсТтУуЎўФфХхЦцЧчШшЫыЬьЭэЮюЯя',
-           'localsuspects': u'АаВЕеІіКкМНОоРрСсТуХх',
-           'latinsuspects': u'AaBEeIiKkMHOoPpCcTyXx',
-           },
-        }
+    # These words are always in one language, even though they could be typed in both
+    alwaysInLocal = [ u'СССР', u'Как', u'как' ]
+    alwaysInLatin = [ u'II', u'III' ]
+    
+    localUpperLtr = u'ЁІЇЎАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯҐ'
+    localLowerLtr = u'ёіїўабвгдежзийклмнопрстуфхцчшщъыьэюяґ'
+    localLtr = localUpperLtr + localLowerLtr
+    
+    localSuspects = u'АВЕКМНОРСТХІЁЇаеорсухіёї'
+    latinSuspects = u'ABEKMHOPCTXIËÏaeopcyxiëï'
+    
+    localKeyboard = u'йцукенгшщзфывапролдячсмить'   # possibly try to fix one character mistypes in an alternative keyboard layout
+    latinKeyboard = u'qwertyuiopasdfghjklzxcvbnm'
 
-    knownWords = set([u'Zемфира', u'KoЯn', u'Deadушки', u'ENTERМУЗЫКА', u'Юz', u'Lюк', u'Яndex', u'КариZма', u'Стогoff', u'UltraВожык', u'Hardcoreманія', u'БМАgroup', u'Tviй', u'Undergroўnd', u'recordц', u'Bэzu'])
+    romanNumChars = u'IVXLMC'
+    romannumSuffixes = localLowerLtr                # all letters that may be used as suffixes after roman numbers:  "Iый"
+    romanNumSfxPtrn = re.compile(u'^[' + romanNumChars + ']+[' + localLowerLtr + ']+$')
+
+    whitelists = {
+        'ru': u'ВП:КЛ/Whitelist'
+        }
+    
     latLtr = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     lclClrFnt = u'<font color=green>'
@@ -163,16 +161,10 @@ class CaseChecker( object ):
 
         self.site = wikipedia.getSite()
 
-        if self.site.lang in self.langs:
-            l = self.langs[self.site.lang]
-            self.localSuspects = l['localsuspects']
-            self.latinSuspects = l['latinsuspects']
-            self.localLtr = l['alphabet']
-        else:
-            raise ValueError(u'Unsupported site ' + self.site.lang)
-
         if len(self.localSuspects) != len(self.latinSuspects):
             raise ValueError(u'Suspects must be the same size')
+        if len(self.localKeyboard) != len(self.latinKeyboard):
+            raise ValueError(u'Keyboard info must be the same size')
 
         if not os.path.isabs(self.wikilogfile):
             self.wikilogfile = wikipedia.config.datafilepath(self.wikilogfile)
@@ -188,10 +180,44 @@ class CaseChecker( object ):
                                    self.localSuspects[i])
                                      for i in range(len(self.localSuspects))])
 
-        badPtrnStr = u'([%s][%s]|[%s][%s])' % (self.latLtr, self.localLtr, self.localLtr, self.latLtr)
-        self.badPtrn = re.compile(badPtrnStr)
-        self.badWordPtrn = re.compile(u'[%s%s]*%s[%s%s]*' % (self.latLtr, self.localLtr, badPtrnStr, self.latLtr, self.localLtr) )
+        if self.localKeyboard is not None:
+            self.lclToLatKeybDict = dict([(ord(self.localKeyboard[i]),
+                                       self.latinKeyboard[i])
+                                         for i in range(len(self.localKeyboard))])
+            self.latToLclKeybDict = dict([(ord(self.latinKeyboard[i]),
+                                       self.localKeyboard[i])
+                                         for i in range(len(self.localKeyboard))])
+        else:
+            self.lclToLatKeybDict = {}
+            self.latToLclKeybDict = {}
 
+        badPtrnStr = u'([%s][%s]|[%s][%s])' % (self.latLtr, self.localLtr, self.localLtr, self.latLtr)
+        self.badWordPtrn = re.compile(u'[%s%s]*%s[%s%s]*' % (self.latLtr, self.localLtr, badPtrnStr, self.latLtr, self.localLtr) )
+        
+        # Get whitelist
+        if self.site.lang in self.whitelists:
+            wlpage = self.whitelists[self.site.lang]
+            wikipedia.output(u'Loading whitelist from %s' % wlpage)
+            wlparams = {
+                        'action'    : 'query',
+                        'prop'      : 'links',
+                        'titles'    : wlpage,
+                        'redirects' : '',
+                        'indexpageids' : '',
+                        }
+
+            data = query.GetData(self.site.lang, wlparams, wikipedia.verbose, useAPI=True, encodeTitle=False)
+            if len(data['query']['pageids']) == 1:
+                pageid = data['query']['pageids'][0]
+                links = data['query']['pages'][pageid]['links']
+                self.knownWords = set( [n['title'] for n in links] )
+            else:
+                raise "The number of pageids is not 1"
+            wikipedia.output(u'Loaded whitelist with %i items' % len(self.knownWords))
+            if wikipedia.verbose and len(self.knownWords) > 0:
+                wikipedia.output(u'Whitelist: [[%s]]' % u']], [['.join(self.knownWords))
+        else:
+            wikipedia.output(u'Whitelist is not known for language %s' % self.site.lang)
 
     def Run(self):
         try:
@@ -341,6 +367,10 @@ class CaseChecker( object ):
             if badWord in self.knownWords:
                 continue
 
+            # Allow any roman numerals with local suffixes
+            if self.romanNumSfxPtrn.match(badWord) is not None:
+                continue
+
             if not found:
                 # lazy-initialization of the local variables
                 possibleWords = []
@@ -363,6 +393,13 @@ class CaseChecker( object ):
                     if mightBeLcl and l not in self.latinSuspects:
                         mightBeLcl = False
                     if l not in self.latLtr: raise "Assert failed"
+
+            # Some words are well known and frequently mixed-typed
+            if mightBeLcl and mightBeLat:
+                if badWord in self.alwaysInLocal:
+                    mightBeLat = False
+                elif badWord in self.alwaysInLatin:
+                    mightBeLoc = False
 
             if mightBeLcl:
                 mapLcl[badWord] = badWord.translate(self.latToLclDict)

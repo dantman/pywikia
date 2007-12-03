@@ -6,7 +6,7 @@ import simplejson
 import urllib
 import time
 
-def GetData( lang, params, verbose = False, useAPI = False, retryCount = 5 ):
+def GetData( lang, params, verbose = False, useAPI = False, retryCount = 5, encodeTitle = True ):
     """Get data from the query api, and convert it into a data object
     """
     site = wikipedia.getSite( lang )
@@ -25,13 +25,13 @@ def GetData( lang, params, verbose = False, useAPI = False, retryCount = 5 ):
             params[k] = ToUtf8(v)
 
     # Titles param might be long, case convert it to post request
+    data = None
+    titlecount = 0
     if 'titles' in params:
-        data = urllib.urlencode( {'titles' : params['titles']} )
         titlecount = params['titles'].count('|')
-        del params['titles']
-    else:
-        data = None
-        titlecount = 0
+        if encodeTitle:
+            data = urllib.urlencode( {'titles' : params['titles']} )
+            del params['titles']
     
     if useAPI:
         path = site.api_address() + urllib.urlencode( params.items() )
@@ -54,7 +54,6 @@ def GetData( lang, params, verbose = False, useAPI = False, retryCount = 5 ):
             # This will also work, but all unicode strings will need to be converted from \u notation
             # decodedObj = eval( jsontext )
             return simplejson.loads( jsontext )
-            break
             
         except ValueError, error:
             retryCount -= 1
