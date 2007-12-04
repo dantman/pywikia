@@ -218,6 +218,7 @@ class CaseChecker( object ):
                 wikipedia.output(u'Whitelist: [[%s]]' % u']], [['.join(self.knownWords))
         else:
             wikipedia.output(u'Whitelist is not known for language %s' % self.site.lang)
+            self.knownWords = set()
 
     def Run(self):
         try:
