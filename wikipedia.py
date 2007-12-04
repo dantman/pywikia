@@ -205,7 +205,7 @@ Rwatch = re.compile(
          r"<input type='hidden' value=\"(.*?)\" name=\"wpEditToken\"")
 Rwatchlist = re.compile(r"<input tabindex='[\d]+' type='checkbox' "
                         r"name='wpWatchthis' checked='checked'")
-Rlink = re.compile(r'\[\[(?P<title>[^\]\|]*)(\|[^\]]*)?\]\]')
+Rlink = re.compile(r'\[\[(?P<title>[^\]\|\[]*)(\|[^\]]*)?\]\]')
 
 
 class Page(object):
