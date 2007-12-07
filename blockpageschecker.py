@@ -19,7 +19,7 @@ Note: This script uses also genfactory, you can use these generator as default.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: $'
+__version__ = '$Id: blockpageschecker.py,v 1.1 2007/12/7 19.23.00 filnik Exp$'
 #
 
 import re
