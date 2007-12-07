@@ -150,7 +150,10 @@ def set_for(lang, family, keys, values, verbose = False):
 			(key, site, prev, value))
 		prefs.set(key, value)
 	prefs.save()
-	site.conn.close()
+	try:
+		site.conn.close()
+	except AttributeError:
+		pass
 	
 
 def main():
