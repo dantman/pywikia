@@ -3588,14 +3588,15 @@ class Site(object):
             if not language[0].upper() + language[1:] in self.namespaces():
                 self._validlanguages.append(language)
 
-        if persistent_http is None:
-            persistent_http = config.persistent_http
-        self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
-        if persistent_http:
-            if self.protocol() == 'http':
-                self.conn = httplib.HTTPConnection(self.hostname())
-            elif self.protocol() == 'https':
-                self.conn = httplib.HTTPSConnection(self.hostname())
+        #if persistent_http is None:
+        #    persistent_http = config.persistent_http
+        #self.persistent_http = persistent_http and self.protocol() in ('http', 'https')
+        #if persistent_http:
+        #    if self.protocol() == 'http':
+        #        self.conn = httplib.HTTPConnection(self.hostname())
+        #    elif self.protocol() == 'https':
+        #        self.conn = httplib.HTTPSConnection(self.hostname())
+        self.persistent_http = False
 
         self.sandboxpage = Page(self, self.family.sandboxpage(code))
 
@@ -3733,7 +3734,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
         # TODO: add the authenticate stuff here
 
-        if self.persistent_http:
+        if False: #self.persistent_http:
             conn = self.conn
         else:
             # Encode all of this into a HTTP request
@@ -3749,7 +3750,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         conn.putheader('User-agent', useragent)
         if useCookie and self.cookies(sysop = sysop):
             conn.putheader('Cookie', self.cookies(sysop = sysop))
-        if self.persistent_http:
+        if False: #self.persistent_http:
             conn.putheader('Connection', 'Keep-Alive')
         conn.endheaders()
         conn.send(data)
@@ -3766,7 +3767,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             return self.postData(address, data, contentType, sysop, useCookie)
         data = response.read().decode(self.encoding())
         response.close()
-        if not self.persistent_http:
+        if True: #not self.persistent_http:
             conn.close()
         return response, data
 
@@ -3784,7 +3785,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
 
            Returns the HTML text of the page converted to unicode.
         """
-        if self.persistent_http and not data:
+        if False: #self.persistent_http and not data:
             self.conn.putrequest('GET', path)
             self.conn.putheader('User-agent', useragent)
             self.conn.putheader('Cookie', self.cookies(sysop = sysop))
