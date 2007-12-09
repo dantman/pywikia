@@ -2403,12 +2403,12 @@ class Family:
             raise KeyError('ERROR: title for namespace %d in language %s unknown' % (ns_number, code))  
 
         if all:
-            if type(v) == type([]):
+            if type(v) is list:
                 return tuple(v)
             else:
                 return (v, )
         else:
-            if type(v) == type([]):
+            if type(v) is list:
                 return v[0]
             else:
                 return v
