@@ -187,6 +187,16 @@ class Family(family.Family):
             'sv': u'Siddiskussion',
             'te': u'పేజీ చర్చ',
         }
+
+        self.namespaces[106] = {
+            '_default': u'',
+            'he': u'ביאור',
+        }
+
+        self.namespaces[107] = {
+            '_default': u'',
+            'he': u'שיחת ביאור',
+        }
         
         self.alphabetic = ['ang','ar','az','bg','bs','ca','cs','cy',
                       'da','de','el','en','es','et','fa','fi',
