@@ -1244,8 +1244,8 @@ not supported by PyWikipediaBot!"""
                 output(u'Changing page %s' % self.aslink(forceInterwiki=True))
             # Submit the prepared information
             if self.site().hostname() in config.authenticate.keys():
-                predata.append(("Content-type","application/x-www-form-urlencoded"))
-                predata.append(("User-agent", useragent))
+                predata["Content-type"] = "application/x-www-form-urlencoded"
+                predata["User-agent"] = useragent
                 data = self.site().urlEncode(predata)
                 response = urllib2.urlopen(urllib2.Request(self.site().protocol() + '://' + self.site().hostname() + address, data))
                 # I'm not sure what to check in this case, so I just assume
