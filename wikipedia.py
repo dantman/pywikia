@@ -878,7 +878,7 @@ not supported by PyWikipediaBot!"""
             return True
 
         try:
-            if self.editRestriction:
+            if self.editRestriction == 'sysop':
                 self.site().forceLogin(sysop=True)
             else:
                 self.site().forceLogin()
@@ -1349,7 +1349,7 @@ not supported by PyWikipediaBot!"""
           * page is unprotected, and bot has an account for this site, or
           * page is protected, and bot has a sysop account for this site.
         """
-        if self.editRestriction:
+        if self.editRestriction == 'sysop':
             userdict = config.sysopnames
         else:
             userdict = config.usernames
