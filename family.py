@@ -2423,6 +2423,19 @@ class Family:
         (it has a custom entry for a given language)"""
         return self.namespaces[ns_number].has_key(code)
 
+    def isDefinedNSLanguage(self, ns_number, code, fallback='_default'):
+        """Return True if the namespace has been defined in this family
+        for this language or its fallback.
+        """
+        if not self.isDefinedNS(ns_number):
+            return False
+        elif self.isNsI18N(ns_number, code):
+            return True
+        elif fallback and self.isNsI18N(ns_number, fallback):
+            return True
+        else:
+            return False
+
     def normalizeNamespace(self, code, value):
         """Given a value, attempt to match it with all available namespaces,
         with default and localized versions. Sites may have more than one

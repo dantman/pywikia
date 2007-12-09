@@ -2454,7 +2454,7 @@ class _GetAll(object):
         ids.sort()
         for id in ids:
             nshdr = header.namespaces[id]
-            if self.site.family.isDefinedNS(id):
+            if self.site.family.isDefinedNSLanguage(id, lang):
                 ns = self.site.namespace(id)
                 if ns == None:
                     ns = u''
