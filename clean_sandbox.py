@@ -28,7 +28,7 @@ content = {
     'ar': u'{{من فضلك اترك هذا السطر ولا تعدله (عنوان ساحة اللعب)}}\n<!-- مرحبا! خذ راحتك في تجربة مهارتك في التنسيق والتحرير أسفل هذا السطر. هذه الصفحة لتجارب التعديل ، سيتم تفريغ هذه الصفحة كل 6 ساعات. -->',
     'de': u'{{Bitte erst NACH dieser Zeile schreiben! (Begrüßungskasten)}}\r\n',
     'en': u'{{Please leave this line alone (sandbox heading)}}\n <!-- Hello! Feel free to try your formatting and editing skills below this line. As this page is for editing experiments, this page will automatically be cleaned every 12 hours. -->',
-    'he': u'{{ארגז חול}}\n<!-- נא לא למחוק שורה זו ולא למחוק את השורה שמעליה – אנא כתבו רק מתחת לשורה זו. -->',
+    'he': u'{{ארגז חול}}\n<!-- נא לערוך מתחת לשורה זו בלבד, תודה. -->',
     'it': u'{{sandbox}}  <!-- Scrivi SOTTO questa riga senza cancellarla. Grazie. -->',
     'ja': u'{{subst:サンドボックス}}',
     'ko': u'{{연습장 안내문}}',
@@ -81,17 +81,22 @@ class SandboxBot:
         while True:
             now = time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime())
             localSandboxTitle = wikipedia.translate(mySite, sandboxTitle)
-            sandboxPage = wikipedia.Page(mySite, localSandboxTitle)
-            try:
-                text = sandboxPage.get()
-                translatedContent = wikipedia.translate(mySite, content)
-                if text.strip() == translatedContent.strip():
-                    wikipedia.output(u'The sandbox is still clean, no change necessary.')
-                else:
-                    translatedMsg = wikipedia.translate(mySite, msg)
-                    sandboxPage.put(translatedContent, translatedMsg)
-            except wikipedia.EditConflict:
-                wikipedia.output(u'*** Loading again because of edit conflict.\n')
+            if type(localSandboxTitle) is list:
+                titles = localSandboxTitle
+            else:
+                titles = [localSandboxTitle,]
+            for title in titles:
+                sandboxPage = wikipedia.Page(mySite, localSandboxTitle)
+                try:
+                    text = sandboxPage.get()
+                    translatedContent = wikipedia.translate(mySite, content)
+                    if text.strip() == translatedContent.strip():
+                        wikipedia.output(u'The sandbox is still clean, no change necessary.')
+                    else:
+                        translatedMsg = wikipedia.translate(mySite, msg)
+                        sandboxPage.put(translatedContent, translatedMsg)
+                except wikipedia.EditConflict:
+                    wikipedia.output(u'*** Loading again because of edit conflict.\n')
             if self.no_repeat:
                 wikipedia.output(u'\nDone.')
                 wikipedia.stopme()
