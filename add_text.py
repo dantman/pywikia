@@ -32,6 +32,17 @@ This is a Bot written by Filnik to add a text in a given category.
 -untagged           Add text in the images that doesn't have any license template
 -always             If used, the bot won't asked if it should add the text specified
 -up                 If used, put the text above and not below
+
+--- Example ---
+
+python add_text.py -start:! -summary:"Bot: Adding a template" -text:"{{Something}}" -except:"\{\{(?:[Tt]emplate:|)[Ss]omething" -up
+
+--- Credits and Help ---
+This script has been written by Botwiki's stuff, if you want to help us
+or you need some help regarding this script, you can find us here:
+
+* http://botwiki.sno.cc
+
 """
 
 #
@@ -51,88 +62,63 @@ class NoEnoughData(wikipedia.Error):
 class NothingFound(wikipedia.Error):
 	""" An exception indicating that a regex has return [] instead of results."""
 
+# Useful for the untagged function
 def pageText(url):
-	try:
-                request = urllib2.Request(url)
-                user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-                request.add_header("User-Agent", user_agent)
-                response = urllib2.urlopen(request)
-                text = response.read()
-                response.close()
-                # When you load to many users, urllib2 can give this error.
-	except urllib2.HTTPError:
-		wikipedia.output(u"Server error. Pausing for 10 seconds... " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()) )
-		time.sleep(10)
-                request = urllib2.Request(url)
-                user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
-                request.add_header("User-Agent", user_agent)
-                response = urllib2.urlopen(request)
-                text = response.read()
-                response.close()
-	return text
+    """ Function to load HTML text of a URL """
+    try:
+        request = urllib2.Request(url)
+        user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
+        request.add_header("User-Agent", user_agent)
+        response = urllib2.urlopen(request)
+        text = response.read()
+        response.close()
+        # When you load to many users, urllib2 can give this error.
+    except urllib2.HTTPError:
+        wikipedia.output(u"Server error. Pausing for 10 seconds... " + time.strftime("%d %b %Y %H:%M:%S (UTC)", time.gmtime()) )
+        time.sleep(10)
+        request = urllib2.Request(url)
+        user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7'
+        request.add_header("User-Agent", user_agent)
+        response = urllib2.urlopen(request)
+        text = response.read()
+        response.close()
+    return text
 
 def untaggedGenerator(untaggedProject, limit = 500):
-        lang = untaggedProject.split('.', 1)[0]
-        project = '.' + untaggedProject.split('.', 1)[1]
-        if lang == 'commons':
-                link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
-        else:
-                link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=' + lang + '&wikifam=' + project + '&order=img_timestamp&max=' + str(limit) + '&ofs=0&max=' + str(limit)         
-        text = pageText(link)
-        #print text
-        regexp = r"""<td valign='top' title='Name'><a href='http://.*?\..*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
-        results = re.findall(regexp, text)
-        if results == []:
-                print link
-                raise NothingFound('Nothing found! Try to use the tool by yourself to be sure that it works!')
-        else:
-                for result in results:
-                        yield wikipedia.Page(self.site, result)
-
-def newImages(limit):
-        # Search regular expression to find links like this (and the class attribute is optional too)
-        # class="new" title="Immagine:Soldatino2.jpg">Immagine:Soldatino2.jpg</a>" ‎ <span class="comment">
-        url = "/w/index.php?title=Special:Log&type=upload&user=&page=&pattern=&limit=%d&offset=0" % int(limit)
-        site = wikipedia.getSite()
-        textrun = site.getUrl(url)
-	image_namespace = site.image_namespace() + ":"
-        regexp = r'(class=\"new\" |)title=\"' + image_namespace + '(.*?)\.(\w\w\w|jpeg)\">.*?</a>\".*?<span class=\"comment\">'    
-        pos = 0
-        done = list()
-        ext_list = list()
-        r = re.compile(regexp, re.UNICODE)
-        while 1:
-                m = r.search(textrun, pos)
-                if m == None:
-                        wikipedia.output(u"\t\t>> All images checked. <<")
-                        break
-                pos = m.end()
-                new = m.group(1)
-                im = m.group(2)
-                ext = m.group(3)
-                # This prevent pages with strange characters. They will be loaded without problem.
-                image = im + "." + ext
-                if new != '':
-                        wikipedia.output(u"Skipping %s because it has been deleted." % image)
-                        done.append(image)
-                if image not in done:
-                        done.append(image)
-                        yield wikipedia.Page(site, 'Image:%s' % image)				
+    """ Function to get the pages returned by this tool: http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php """
+    lang = untaggedProject.split('.', 1)[0]
+    project = '.' + untaggedProject.split('.', 1)[1]
+    if lang == 'commons':
+        link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikifam=commons.wikimedia.org&since=-100d&until=&img_user_text=&order=img_timestamp&max=100&order=img_timestamp&format=html'
+    else:
+        link = 'http://tools.wikimedia.de/~daniel/WikiSense/UntaggedImages.php?wikilang=' + lang + '&wikifam=' + project + '&order=img_timestamp&max=' + str(limit) + '&ofs=0&max=' + str(limit)         
+    text = pageText(link)
+    #print text
+    regexp = r"""<td valign='top' title='Name'><a href='http://.*?\.org/w/index\.php\?title=(.*?)'>.*?</a></td>"""
+    results = re.findall(regexp, text)
+    if results == []:
+        print link
+        raise NothingFound('Nothing found! Try to use the tool by yourself to be sure that it works!')
+    else:
+        for result in results:
+            yield wikipedia.Page(self.site, result)
 
 def main():
+    # When a page is tagged as "really well written" it has a star in the interwiki links.
+    # This is a list of all the templates used (in regex format) to make the stars appear.
     starsList = ['link[ _]fa', 'link[ _]adq', 'enllaç[ _]ad',
                  'link[ _]ua', 'legătură[ _]af', 'destacado',
                  'ua', 'liên k[ _]t[ _]chọn[ _]lọc']
-    summary = None
-    addText = None
-    regexSkip = None
-    generator = None
-    always = False
-    exceptUrl = False
+    # If none, the var is setted only for check purpose.
+    summary = None; addText = None; regexSkip = None
+    generator = None; always = False; exceptUrl = False
+    # Load a lot of default generators
     genFactory = pagegenerators.GeneratorFactory()
     errorCount = 0
+    # Put the text above or below the text?
     up = False
-    
+
+    # Loading the arguments
     for arg in wikipedia.handleArgs():
         if arg.startswith('-text'):
             if len(arg) == 5:
@@ -173,20 +159,23 @@ def main():
                 limit = wikipedia.input(u'How many images do you want to check?')
             else:
                 limit = arg[11:]
-            generator = newImages(limit)      
+            generator = pagegenerators.newImages(limit, wikipedia.getSite())
         elif arg == '-always':
             always = True
         else:
             generator = genFactory.handleArg(arg)
                 
     site = wikipedia.getSite()
+    # /wiki/ is not always the right path in non-wiki projects
     pathWiki = site.family.nicepath(site.lang)
+    # Check if there are the minimal settings
     if not generator:
         raise NoEnoughData('You have to specify the generator you want to use for the script!')
     if not addText:
         raise NoEnoughData('You have to specify what text you want to add!')
     if not summary:
         summary = 'Bot: Adding %s' % addText
+    # Main Loop
     for page in generator:
         wikipedia.output(u'Loading %s...' % page.title())
         try:
@@ -197,6 +186,7 @@ def main():
         except wikipedia.IsRedirectPage:
             wikipedia.output(u"%s is a redirect, skip!" % page.title())
             continue
+        # Understand if the bot has to skip the page or not
         if regexSkip and exceptUrl:          
             url = '%s%s' % (pathWiki, page.urlname())
             result = re.findall(regexSkip, site.getUrl(url))
@@ -205,23 +195,30 @@ def main():
         else:
             result = []
         if result != []:
-            wikipedia.output(u'Exception! regex (or word) use with -except, is in the page. Skip!')
+            wikipedia.output(u'Exception! regex (or word) use with -except is in the page. Skip!')
             continue
+        # If not up, text put below
         if not up:
             newtext = text
             categoryNamespace = site.namespace(14)
+            # Getting the categories
             regexpCat = re.compile(r'\[\[((?:category|%s):.*?)\]\]' % categoryNamespace.lower(), re.I)
             categorieInside = regexpCat.findall(text)
+            # Deleting the categories
             newtext = wikipedia.removeCategoryLinks(newtext, site)
+            # Getting the interwiki
             interwikiInside = page.interwiki()
             interwikiList = list()
             for paginetta in interwikiInside:
                 nome = str(paginetta).split('[[')[1].split(']]')[0]
                 interwikiList.append(nome)
                 lang = nome.split(':')[0]
+            # Removing the interwiki
             newtext = wikipedia.removeLanguageLinks(newtext, site)
+            # Sorting the interwiki
             interwikiList.sort()
             newtext += "\n%s" % addText
+            # Reputting the categories
             for paginetta in categorieInside:
                 try:
                     newtext += '\n[[%s]]' % paginetta.decode('utf-8')
@@ -231,6 +228,7 @@ def main():
                     except UnicodeEncodeError:
                         newtext += '\n[[%s]]' % paginetta
             newtext += '\n'
+            # Dealing the stars' issue
             starsListInPage = list()
             for star in starsList:
                 regex = re.compile('(\{\{(?:template:|)%s\|.*?\}\}\n)' % star, re.I)
@@ -239,6 +237,7 @@ def main():
                     newtext = regex.sub('', newtext)
                     for element in risultato:
                         newtext += '\n%s' % element
+            # Adding the interwiki
             for paginetta in interwikiList:
                 try:
                     newtext += '\n[[%s]]' % paginetta.decode('utf-8')
@@ -247,11 +246,13 @@ def main():
                         newtext += '\n[[%s]]' % paginetta.decode('Latin-1')
                     except UnicodeEncodeError:
                         newtext += '\n[[%s]]' % paginetta
+        # If instead the text must be added above...
         else:
             newtext = addText + '\n' + text
         wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
         wikipedia.showDiff(text, newtext)
         choice = ''
+        # Let's put the changes.
         while 1:
             if not always:
                 choice = wikipedia.inputChoice(u'Do you want to accept these changes?', ['Yes', 'No', 'All'], ['y', 'N', 'a'], 'N')
