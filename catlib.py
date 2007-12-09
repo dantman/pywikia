@@ -83,7 +83,7 @@ class Category(wikipedia.Page):
             return '[[%s]]' % titleWithSortKey
 
     def _getContentsAndSupercats(self, recurse=False, purge=False,
-                                 startFrom=None):
+                                 startFrom=None, cache=[]):
         """
         Cache results of _parseCategory for a second call.
 
@@ -107,36 +107,46 @@ class Category(wikipedia.Page):
                 newrecurse = recurse
         if self.completelyCached:
             for article in self.articleCache:
-                yield ARTICLE, article
+                if article not in cache:
+                    cache.append(article)
+                    yield ARTICLE, article
             for subcat in self.subcatCache:
-                yield SUBCATEGORY, subcat
-                if recurse:
-                    # contents of subcategory are cached by calling
-                    # this method recursively; therefore, do not cache
-                    # them again
-                    for item in subcat._getContentsAndSupercats(newrecurse,
+                if subcat not in cache:
+                    cache.append(subcat)
+                    yield SUBCATEGORY, subcat
+                    if recurse:
+                        # contents of subcategory are cached by calling
+                        # this method recursively; therefore, do not cache
+                        # them again
+                        for item in subcat._getContentsAndSupercats(newrecurse,
                                                                 purge):
-                        if item[0] != SUPERCATEGORY:
-                            yield item
+                            if item[0] != SUPERCATEGORY:
+                                yield item
             for supercat in self.supercatCache:
                 yield SUPERCATEGORY, supercat
         else:
             for tag, page in self._parseCategory(purge, startFrom):
                 if tag == ARTICLE:
                     self.articleCache.append(page)
+                    if not page in cache:
+                        cache.append(page)
+                        yield ARTICLE, page
                 elif tag == SUBCATEGORY:
                     self.subcatCache.append(page)
-                    if recurse:
-                        # contents of subcategory are cached by calling
-                        # this method recursively; therefore, do not cache
-                        # them again
-                        for item in page._getContentsAndSupercats(newrecurse,
+                    if not page in cache:
+                        cache.append(page)
+                        yield SUBCATEGORY, page
+                        if recurse:
+                            # contents of subcategory are cached by calling
+                            # this method recursively; therefore, do not cache
+                            # them again
+                            for item in page._getContentsAndSupercats(newrecurse,
                                                                   purge):
-                            if item[0] != SUPERCATEGORY:
-                                yield item
+                                if item[0] != SUPERCATEGORY:
+                                    yield item
                 elif tag == SUPERCATEGORY:
                     self.supercatCache.append(page)
-                yield tag, page
+                    yield SUPERCATEGORY, page
             if not startFrom:
                 self.completelyCached = True
 
