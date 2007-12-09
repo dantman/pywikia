@@ -29,8 +29,13 @@ class Family(family.Family):
         # Most namespaces are inherited from family.Family.
 
         # Override defaults
+        self.namespaces[2]['pl'] = u'Wikipedysta'
         self.namespaces[3]['pl'] = u'Dyskusja Wikipedysty'
 
+        # Most namespaces are inherited from family.Family.
+        # Translation used on all wikis for the different namespaces.
+        # (Please sort languages alphabetically)
+        # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': [u'Wiktionary', self.namespaces[4]['_default']],
             'ar': u'ويكاموس',
@@ -113,6 +118,7 @@ class Family(family.Family):
             'fr': u'Discussion Wiktionnaire',
             'fy': u'Wiktionary oerlis',
             'ga': u'Plé Vicífhoclóra',
+            'gl': u'Conversa Wiktionary',
             'gn': u'Wiktionary Discusión',
             'gu': u'વિક્ષનરી talk',
             'he': u'שיחת ויקימילון',

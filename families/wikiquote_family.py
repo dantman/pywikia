@@ -33,15 +33,10 @@ class Family(family.Family):
         for lang in self.languages_by_size:
             self.langs[lang] = lang+'.wikiquote.org'
 
-        # Most namespaces are inherited from family.Family()
+        # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
-
-        # Override defaults
-        self.namespaces[2]['pl'] = u'Użytkownik'
-        self.namespaces[3]['pl'] = u'Dyskusja użytkownika'
-
         self.namespaces[4] = {
             '_default': [u'Wikiquote', self.namespaces[4]['_default']],
             'ar': u'ويكي الاقتباس',

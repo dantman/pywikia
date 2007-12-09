@@ -19,6 +19,10 @@ class Family(family.Family):
             if lang not in self.langs:
                 self.langs[lang] = lang+'.wikiversity.org'
 
+        # Most namespaces are inherited from family.Family.
+        # Translation used on all wikis for the different namespaces.
+        # (Please sort languages alphabetically)
+        # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': [u'Wikiversity', self.namespaces[4]['_default']],
             'es': u'Wikiversidad',

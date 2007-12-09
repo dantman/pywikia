@@ -24,9 +24,14 @@ class Family(family.Family):
             if lang not in self.langs:
                 self.langs[lang] = lang+'.wikisource.org'
 
+        # Override defaults
         self.namespaces[2]['pl'] = 'Wikiskryba'
         self.namespaces[3]['pl'] = 'Dyskusja Wikiskryby'
 
+        # Most namespaces are inherited from family.Family.
+        # Translation used on all wikis for the different namespaces.
+        # (Please sort languages alphabetically)
+        # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': [u'Wikisource', self.namespaces[4]['_default']],
             'ang': u'Wicifruma',
@@ -247,6 +252,16 @@ class Family(family.Family):
             'tokipona': None,
             'zh-tw': 'zh',
             'zh-cn': 'zh'
+        }
+
+        self.interwiki_putfirst = {
+            'en': self.alphabetic,
+            'fi': self.alphabetic,
+            'fr': self.alphabetic,
+            'he': ['en'],
+            'hu': ['en'],
+            'pl': self.alphabetic,
+            'simple': self.alphabetic
         }
 
     def version(self, code):

@@ -11,27 +11,24 @@ class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
         self.name = 'wikibooks'
-        # Known wikibooks languages, given as a dictionary mapping the language code
-        # to the hostname of the site hosting that wiktibooks. For human consumption,
-        # the full name of the language is given behind each line as a comment
+
         self.langs = {
+            'dk':'da.wikibooks.org',
+            'jp':'ja.wikibooks.org',
             'minnan':'zh-min-nan.wikibooks.org',
             'nb':'no.wikibooks.org',
             'zh-cn':'zh.wikibooks.org',
             'zh-tw':'zh.wikibooks.org'
             }
-        
+
         for lang in self.knownlanguages:
             self.langs[lang] = '%s.wikibooks.org' % lang
 
-        self.obsolete = {'nb':'no',
-                    'minnan':'zh-min-nan',
-                    'zh-tw':'zh',
-                    'zh-cn':'zh'}
-
         # Override defaults
+        self.namespaces[2]['pl'] = u'Wikipedysta'
         self.namespaces[3]['pl'] = u'Dyskusja Wikipedysty'
 
+        # Most namespaces are inherited from family.Family.
         # Translation used on all wikis for the different namespaces.
         # (Please sort languages alphabetically)
         # You only need to enter translations that differ from _default.
@@ -99,6 +96,7 @@ class Family(family.Family):
             'fr': u'Discussion Wikilivres',
             'fy': u'Wikibooks oerlis',
             'ga': u'Plé Vicíleabhar',
+            'gl': u'Conversa Wikibooks',
             'gn': u'Wikibooks Discusión',
             'he': u'שיחת ויקיספר',
             'hi': u'Wikibooks वार्ता',
@@ -157,16 +155,14 @@ class Family(family.Family):
         }
 
         self.namespaces[100] = {
-            '_default': u'Portal',
             'id': u'Resep',
             'fr': u'Transwiki',
             'he': u'שער',
             'it': u'Progetto',
             'ms': u'Resipi',
         }
-        
+
         self.namespaces[101] = {
-            '_default': u'Portal talk',
             'id': u'Pembicaraan Resep',
             'fr': u'Discussion Transwiki',
             'he': u'שיחת שער',
@@ -175,7 +171,6 @@ class Family(family.Family):
         }
 
         self.namespaces[102] = {
-            '_default': u'',
             'cy': u'Silff lyfrau',
             'de': u'Regal',
             'en': u'Cookbook',
@@ -184,10 +179,9 @@ class Family(family.Family):
             'it': u'Ripiano',
             'nl': u'Transwiki',
             'sr': u'Кувар',
-        }   
+        }
 
         self.namespaces[103] = {
-            '_default': u'',
             'cy': u'Sgwrs Silff lyfrau',
             'de': u'Regal Diskussion',
             'en': u'Cookbook talk',
@@ -196,49 +190,41 @@ class Family(family.Family):
             'it': u'Discussioni ripiano',
             'nl': u'Overleg transwiki',
             'sr': u'Разговор о кувару',
-        }   
+        }
 
         self.namespaces[104] = {
-            '_default': u'',
             'he': u'מדף',
             'ka': u'თარო',
             'nl': u'Wikijunior',
-        }   
+        }
 
         self.namespaces[105] = {
-            '_default': u'',
             'he': u'שיחת מדף',
             'ka': u'თარო განხილვა',
             'nl': u'Overleg Wikijunior',
-        }   
+        }
 
         self.namespaces[108] = {
-            '_default': u'',
             'en': u'Transwiki',
-        }   
+        }
 
         self.namespaces[109] = {
-            '_default': u'',
             'en': u'Transwiki talk',
-        }   
+        }
 
         self.namespaces[110] = {
-            '_default': u'',
             'en': u'Wikijunior',
-        }   
+        }
 
         self.namespaces[111] = {
-            '_default': u'',
             'en': u'Wikijunior talk',
-        }   
-        
+        }
+
         self.namespaces[112] = {
-            '_default': u'',
             'en': u'Subject',
         }
-        
+
         self.namespaces[113] = {
-            '_default': u'',
             'en': u'Subject talk',
         }
 
@@ -257,9 +243,19 @@ class Family(family.Family):
                       'mk','mg','ml','mi','mr','ms','zh-cfr','mn','nah','na',
                       'nl','ja','no','nb','oc','nds','pl','pt','ro','ru',
                       'sa','st','sq','si','simple','sk','sl','sr','su',
-                      'fi','sv','ta','tt','th','ur','vi','tokipona',
+                      'fi','sv','ta','tt','th','ur','vi',
                       'tpi','tr','uk','vo','yi','yo','za','zh','zh-cn',
                       'zh-tw']
+
+        self.obsolete = {
+            'dk': 'da',
+            'jp': 'ja',
+            'minnan':'zh-min-nan',
+            'nb': 'no',
+            'tokipona': None,
+            'zh-tw': 'zh',
+            'zh-cn': 'zh'
+        }
 
         self.interwiki_putfirst = {
             'en': alphabetic,
@@ -273,6 +269,6 @@ class Family(family.Family):
 
     def version(self, code):
         return "1.11"
-    
+
     def shared_image_repository(self, code):
         return ('commons', 'commons')

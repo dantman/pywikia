@@ -27,6 +27,9 @@ class Family(family.Family):
         self.namespaces[3]['pl'] = u'Dyskusja Wikireportera'
 
         # Most namespaces are inherited from family.Family.
+        # Translation used on all wikis for the different namespaces.
+        # (Please sort languages alphabetically)
+        # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': [u'Wikinews', self.namespaces[4]['_default']],
             'ar': u'ويكي الأخبار',

@@ -29,8 +29,13 @@ class Family(family.Family):
         # Override defaults
         self.namespaces[2]['cs'] = u'Wikipedista'
         self.namespaces[3]['cs'] = u'Wikipedista diskuse'
+        self.namespaces[2]['pl'] = u'Wikipedysta'
+        self.namespaces[3]['pl'] = u'Dyskusja wikipedysty'
 
         # Most namespaces are inherited from family.Family.
+        # Translation used on all wikis for the different namespaces.
+        # (Please sort languages alphabetically)
+        # You only need to enter translations that differ from _default.
         self.namespaces[4] = {
             '_default': [u'Wikipedia', self.namespaces[4]['_default']],
             'ar': u'ويكيبيديا',
