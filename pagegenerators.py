@@ -195,6 +195,12 @@ def UnCategorizedImageGenerator(number = 100, repeat = False, site = None):
     for page in site.uncategorizedimages(number=number, repeat=repeat):
         yield page
 
+def newImages(limit = 50, site = None, repeat = False):
+    if site is None:
+        site = wikipedia.getSite()
+    for page in site.newImages(limit, repeat=repeat):
+        yield page			
+
 def UnCategorizedPageGenerator(number = 100, repeat = False, site = None):
     if site is None:
         site = wikipedia.getSite()
