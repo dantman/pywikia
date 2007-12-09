@@ -54,10 +54,10 @@ def main():
 		if arg == '-count':
 			doCount = True
 		elif arg.startswith('-namespace:'):
-            try:
-                namespaces.append(int(arg[len('-namespace:'):]))
-            except ValueError:
-                namespaces.append(arg[len('-namespace:'):])
+			try:
+				namespaces.append(int(arg[len('-namespace:'):]))
+			except ValueError:
+				namespaces.append(arg[len('-namespace:'):])
 		else:
 			argsList.append(arg)
 
