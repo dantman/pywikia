@@ -4235,7 +4235,7 @@ Maybe the server is down. Retrying in %i minutes..."""
             # This prevent pages with strange characters. They will be loaded without problem.
             image =  "%s.%s" % (im, ext)
             if new != '':
-                wikipedia.output(u"Skipping %s because it has been deleted." % image)
+                output(u"Skipping %s because it has been deleted." % image)
                 if image not in seen:
                     seen.append(image)
             if image not in seen:
@@ -4243,7 +4243,7 @@ Maybe the server is down. Retrying in %i minutes..."""
                 page = Page(self, 'Image:%s' % image)
                 yield page
             if not repeat:            
-                wikipedia.output(u"\t\t>> All images checked. <<")
+                output(u"\t\t>> All images checked. <<")
                 break
 
     def uncategorizedimages(self, number = 10, repeat = False):
