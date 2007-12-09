@@ -1,9 +1,10 @@
 # -*- coding: utf-8  -*-
 """
-This is a script originally written by Wikihermit and then rewritten by Filnik, to delete the templates used to warn in the
-pages that a page is blocked, when the page isn't blocked at all. Indeed, very often sysops block the pages for a setted
-time but then the forget to delete the warning! This script is useful if you want to delete those useless warning left in these
-pages.
+This is a script originally written by Wikihermit and then rewritten by Filnik,
+to delete the templates used to warn in the pages that a page is blocked,
+when the page isn't blocked at all. Indeed, very often sysops block the pages
+for a setted time but then the forget to delete the warning! This script is useful
+if you want to delete those useless warning left in these pages.
 
 Parameters:
 
@@ -13,9 +14,11 @@ Parameters:
 Note: This script uses also genfactory, you can use those generator as default.
 
 --- Warning! ---
-You have to edit this script in order to add your preferences otherwise the script won't work!
+You have to edit this script in order to add your preferences
+otherwise the script won't work!
 
-If you have problems, ask on botwiki ( http://botwiki.sno.cc ) or on IRC (#pywikipediabot)
+If you have problems, ask on botwiki ( http://botwiki.sno.cc )
+or on IRC (#pywikipediabot)
 
 --- Example of how to use the script ---
 
@@ -59,7 +62,7 @@ categoryToCheck = {
 # Comment used when the Bot edits
 comment = {
             'en':u'Bot: Deleting out-dated template',
-            'fr':u'Robot : Retrait du bandeau protection/semi-protection d\'une page qui ne l\'es plus',
+            'fr':u'Robot: Retrait du bandeau protection/semi-protection d\'une page qui ne l\'es plus',
             'it':u'Bot: Tolgo template di avviso blocco scaduto',
             }
 # Check list to block the users that haven't set their preferences
@@ -129,7 +132,7 @@ def main():
             oldtext = text
             # Deleting the template because the page doesn't need it.
             for replaceToPerform in TTR:
-                text = re.sub(replaceToPerform, '', text)
+                text = re.sub('(?:<noinclude>|)%s(?:</noinclude>|)' % replaceToPerform, '', text)
             if oldtext != text:
                 # Ok, asking if the change has to be performed and do it.
                 wikipedia.output(u"\n\n>>> \03{lightpurple}%s\03{default} <<<" % page.title())
